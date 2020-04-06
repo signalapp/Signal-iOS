@@ -50,15 +50,20 @@ public extension String {
     }
 }
 
+// MARK: -
+
+@objc
 public extension NSString {
-    @objc
     var ensureArabicNumerals: String {
         return (self as String).ensureArabicNumerals
     }
 
-    @objc
     class func stringFromSysctlKey(_ key: String) -> String? {
         return String(sysctlKey: key)
+    }
+
+    var asAttributedString: NSAttributedString {
+        return NSAttributedString(string: self as String)
     }
 }
 

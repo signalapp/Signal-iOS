@@ -34,6 +34,9 @@ import Foundation
     static public let retryButton = NSLocalizedString("RETRY_BUTTON_TEXT", comment: "Generic text for button that retries whatever the last action was.")
 
     @objc
+    static public let okayButton = NSLocalizedString("BUTTON_OKAY", comment: "Label for the 'okay' button.")
+
+    @objc
     static public let openSettingsButton = NSLocalizedString("OPEN_SETTINGS_BUTTON", comment: "Button text which opens the settings app")
 
     @objc

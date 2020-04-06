@@ -645,7 +645,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
     // MARK: - Generic Group Change
 
-    public func updateGroupv2(groupModel: TSGroupModelV2,
+    public func updateGroupV2(groupModel: TSGroupModelV2,
                               changeSetBlock: @escaping (GroupsV2ChangeSet) -> Void) -> Promise<TSGroupThread> {
         return DispatchQueue.global().async(.promise) { () throws -> GroupsV2ChangeSet in
             let changeSet = GroupsV2ChangeSetImpl(groupId: groupModel.groupId,

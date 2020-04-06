@@ -224,7 +224,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     BOOL hasCustomName = self.customName.length > 0;
     BOOL isNoteToSelf = IsNoteToSelfEnabled() && self.address.isLocalAddress;
     if (hasCustomName > 0) {
-        self.nameLabel.text = self.customName;
+        self.nameLabel.attributedText = self.customName;
     } else if (isNoteToSelf) {
         self.nameLabel.text = MessageStrings.noteToSelf;
     } else {

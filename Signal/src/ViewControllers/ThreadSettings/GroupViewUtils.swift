@@ -42,7 +42,9 @@ class GroupViewUtils {
         AssertIsOnMainThread()
 
         let showUpdateNetworkErrorUI = {
-            OWSActionSheets.showActionSheet(title: NSLocalizedString("UPDATE_GROUP_FAILED_DUE_TO_NETWORK",
+            OWSActionSheets.showActionSheet(title: NSLocalizedString("ERROR_NETWORK_FAILURE",
+                                                                     comment: "Error indicating network connectivity problems."),
+                                            message: NSLocalizedString("UPDATE_GROUP_FAILED_DUE_TO_NETWORK",
                                                                      comment: "Error indicating that a group could not be updated due to network connectivity problems."))
         }
 

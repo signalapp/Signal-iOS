@@ -48,7 +48,9 @@ public extension NewGroupViewController {
         AssertIsOnMainThread()
 
         if error.isNetworkFailureOrTimeout {
-            OWSActionSheets.showActionSheet(title: NSLocalizedString("NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK",
+            OWSActionSheets.showActionSheet(title: NSLocalizedString("ERROR_NETWORK_FAILURE",
+                                                                     comment: "Error indicating network connectivity problems."),
+                                            message: NSLocalizedString("NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK",
                                                                      comment: "Error indicating that a new group could not be created due to network connectivity problems."))
             return
         }

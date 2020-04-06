@@ -80,6 +80,9 @@ extension ConversationSettingsViewController {
                 contents.addSection(buildGroupAccessSection(groupModelV2: groupModelV2))
             }
             contents.addSection(buildGroupMembershipSection(groupModel: groupModel))
+            if thread.isGroupV2Thread {
+                contents.addSection(buildPendingMembersSection(groupModel: groupModel))
+            }
         }
 
         if !isNoteToSelf {
@@ -642,10 +645,8 @@ extension ConversationSettingsViewController {
                 }
 
                 if isLocalUser {
-                    cell.setCustomName(self.contactsManager.displayName(for: memberAddress) +
-                        " " +
-                        NSLocalizedString("GROUP_MEMBER_LOCAL_USER_INDICATOR",
-                                          comment: "Label indicating the local user."))
+                    cell.setCustomName(NSLocalizedString("GROUP_MEMBER_LOCAL_USER",
+                                                         comment: "Label indicating the local user."))
                 }
 
                 cell.configure(withRecipientAddress: memberAddress)
@@ -675,11 +676,7 @@ extension ConversationSettingsViewController {
         }
 
         if hasMoreMembers {
-            section.add(OWSTableItem(customCellBlock: { [weak self] in
-                guard let self = self else {
-                    owsFailDebug("Missing self")
-                    return OWSTableItem.newCell()
-                }
+            section.add(OWSTableItem(customCellBlock: {
                 return OWSTableItem.buildCell(name: NSLocalizedString("CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS",
                                                                       comment: "Label for 'view all members' button in conversation settings view."),
                                               icon: .settingsShowAllMembers)
@@ -688,6 +685,45 @@ extension ConversationSettingsViewController {
                                         self?.showAllGroupMembers()
             })
         }
+
+        return section
+    }
+
+    private func buildPendingMembersSection(groupModel: TSGroupModel) -> OWSTableSection {
+        let section = OWSTableSection()
+        section.customHeaderHeight = 10
+        section.customFooterHeight = 10
+
+        let pendingMembers = groupModel.groupMembership.pendingMembers
+        let accessoryText: String
+        let hasPendingMembers = !pendingMembers.isEmpty
+        if hasPendingMembers {
+            accessoryText = OWSFormat.formatInt(pendingMembers.count)
+        } else {
+            accessoryText = NSLocalizedString("CONVERSATION_SETTINGS_PENDING_MEMBER_INVITES_NONE",
+                                              comment: "Indicates that there are no pending member invites in the group.")
+        }
+
+        section.add(OWSTableItem(customCellBlock: { [weak self] in
+            guard let self = self else {
+                owsFailDebug("Missing self")
+                return OWSTableItem.newCell()
+            }
+            let cellName = NSLocalizedString("PENDING_GROUP_MEMBERS_VIEW_TITLE",
+                                             comment: "The title for the 'pending group members' view.")
+            let cell = OWSTableItem.buildCellWithAccessoryLabel(icon: .settingsViewPendingInvites,
+                                                                itemName: cellName,
+                                                                accessoryText: accessoryText)
+            cell.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "pending.members")
+            cell.accessoryType = hasPendingMembers ? .disclosureIndicator : .none
+            return cell
+            },
+                                 customRowHeight: UITableView.automaticDimension) { [weak self] in
+                                    guard hasPendingMembers else {
+                                        return
+                                    }
+                                    self?.showPendingMembersView()
+        })
 
         return section
     }

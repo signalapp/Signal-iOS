@@ -473,6 +473,17 @@ class ConversationSettingsViewController: OWSTableViewController {
         navigationController?.pushViewController(addGroupMembersViewController, animated: true)
     }
 
+    func showPendingMembersView() {
+        guard let groupThread = thread as? TSGroupThread else {
+                owsFailDebug("Invalid thread.")
+                return
+        }
+        let pendingGroupMembersViewController = PendingGroupMembersViewController(groupModel: groupThread.groupModel,
+                                                                                  groupViewHelper: groupViewHelper)
+        pendingGroupMembersViewController.pendingGroupMembersViewControllerDelegate = self
+        navigationController?.pushViewController(pendingGroupMembersViewController, animated: true)
+    }
+
     func presentContactViewController() {
         if !contactsManager.supportsContactEditing {
             owsFailDebug("Contact editing not supported")
@@ -854,7 +865,7 @@ extension ConversationSettingsViewController: ColorPickerDelegate {
 
 extension ConversationSettingsViewController: GroupAttributesViewControllerDelegate {
     func groupAttributesDidUpdate() {
-        updateTableContents()
+        reloadGroupModelAndUpdateContent()
     }
 }
 
@@ -862,7 +873,15 @@ extension ConversationSettingsViewController: GroupAttributesViewControllerDeleg
 
 extension ConversationSettingsViewController: AddGroupMembersViewControllerDelegate {
     func addGroupMembersViewDidUpdate() {
-        updateTableContents()
+        reloadGroupModelAndUpdateContent()
+    }
+}
+
+// MARK: -
+
+extension ConversationSettingsViewController: PendingGroupMembersViewControllerDelegate {
+    func pendingGroupMembersViewDidUpdate() {
+        reloadGroupModelAndUpdateContent()
     }
 }
 

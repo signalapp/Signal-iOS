@@ -898,7 +898,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     if (addressesWithTheSameName.count > 1) {
         NSUInteger index =
             [[addressesWithTheSameName sortedArrayUsingSelector:@selector((compare:))] indexOfObject:address];
-        NSString *indexText = [OWSFormat formatInt:(int)index + 1];
+        NSString *indexText = [OWSFormat formatUInt:index + 1];
         addressLabel =
             [NSString stringWithFormat:NSLocalizedString(@"PHONE_NUMBER_TYPE_AND_INDEX_NAME_FORMAT",
                                            @"Format for phone number label with an index. Embeds {{Phone number label "

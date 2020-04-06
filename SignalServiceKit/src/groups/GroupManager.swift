@@ -928,7 +928,7 @@ public class GroupManager: NSObject {
             return simpleUpdate()
         }
 
-        return updateGroupv2(groupModel: groupModel,
+        return updateGroupV2(groupModel: groupModel,
                              description: "Update disappearing messages") { groupChangeSet in
             groupChangeSet.setNewDisappearingMessageToken(disappearingMessageToken)
         }.asVoid()
@@ -1010,7 +1010,7 @@ public class GroupManager: NSObject {
     // MARK: - Accept Invites
 
     public static func localAcceptInviteToGroupV2(groupModel: TSGroupModelV2) -> Promise<TSGroupThread> {
-        return updateGroupv2(groupModel: groupModel,
+        return updateGroupV2(groupModel: groupModel,
                              description: "Accept invite") { groupChangeSet in
             groupChangeSet.setShouldAcceptInvite()
         }
@@ -1063,7 +1063,7 @@ public class GroupManager: NSObject {
     }
 
     private static func localLeaveGroupV2OrDeclineInvite(groupModel: TSGroupModelV2) -> Promise<TSGroupThread> {
-        return updateGroupv2(groupModel: groupModel,
+        return updateGroupV2(groupModel: groupModel,
                              description: "Leave group or decline invite") { groupChangeSet in
             groupChangeSet.setShouldLeaveGroupDeclineInvite()
         }
@@ -1093,10 +1093,12 @@ public class GroupManager: NSObject {
     // MARK: - Remove From Group / Revoke Invite
 
     public static func removeFromGroupOrRevokeInviteV2(groupModel: TSGroupModelV2,
-                                                       uuid: UUID) -> Promise<TSGroupThread> {
-        return updateGroupv2(groupModel: groupModel,
+                                                       uuids: [UUID]) -> Promise<TSGroupThread> {
+        return updateGroupV2(groupModel: groupModel,
                              description: "Remove from group or revoke invite") { groupChangeSet in
-            groupChangeSet.removeMember(uuid)
+                                for uuid in uuids {
+                                    groupChangeSet.removeMember(uuid)
+                                }
         }
     }
 
@@ -1105,7 +1107,7 @@ public class GroupManager: NSObject {
     public static func changeMemberRoleV2(groupModel: TSGroupModelV2,
                                           uuid: UUID,
                                           role: TSGroupMemberRole) -> Promise<TSGroupThread> {
-        return updateGroupv2(groupModel: groupModel,
+        return updateGroupV2(groupModel: groupModel,
                              description: "Change member role") { groupChangeSet in
                                 groupChangeSet.changeRoleForMember(uuid, role: role)
         }
@@ -1115,7 +1117,7 @@ public class GroupManager: NSObject {
 
     public static func changeGroupAttributesAccessV2(groupModel: TSGroupModelV2,
                                                      access: GroupV2Access) -> Promise<TSGroupThread> {
-        return updateGroupv2(groupModel: groupModel,
+        return updateGroupV2(groupModel: groupModel,
                              description: "Change group membership access") { groupChangeSet in
                                 groupChangeSet.setAccessForAttributes(access)
         }
@@ -1123,13 +1125,13 @@ public class GroupManager: NSObject {
 
     // MARK: - Generic Group Change
 
-    public static func updateGroupv2(groupModel: TSGroupModelV2,
+    public static func updateGroupV2(groupModel: TSGroupModelV2,
                                      description: String,
                                      changeSetBlock: @escaping (GroupsV2ChangeSet) -> Void) -> Promise<TSGroupThread> {
         return firstly {
             return self.ensureLocalProfileHasCommitmentIfNecessary()
         }.then(on: .global()) { () throws -> Promise<TSGroupThread> in
-            return self.groupsV2.updateGroupv2(groupModel: groupModel, changeSetBlock: changeSetBlock)
+            return self.groupsV2.updateGroupV2(groupModel: groupModel, changeSetBlock: changeSetBlock)
         }.timeout(seconds: GroupManager.groupUpdateTimeoutDuration,
                   description: description) {
                     GroupsV2Error.timeout

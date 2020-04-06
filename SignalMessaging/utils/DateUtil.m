@@ -1,11 +1,12 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "DateUtil.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/NSString+OWS.h>
 #import <SignalMessaging/OWSFormat.h>
+#import <SignalMessaging/SignalMessaging-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -371,7 +372,7 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
     }
 
     if (hoursDiff < 1) {
-        NSString *minutesString = [OWSFormat formatInt:(int)minutesDiff];
+        NSString *minutesString = [OWSFormat formatInt:minutesDiff];
         return [NSString stringWithFormat:NSLocalizedString(@"DATE_MINUTES_AGO_FORMAT",
                                               @"Format string for a relative time, expressed as a certain number of "
                                               @"minutes in the past. Embeds {{The number of minutes}}."),
@@ -399,7 +400,7 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
         NSString *formattedTime = [[self timeFormatter] stringFromDate:date];
         return [[dayOfWeek stringByAppendingString:@" "] stringByAppendingString:formattedTime];
     } else {
-        NSString *hoursString = [OWSFormat formatInt:(int)hoursDiff];
+        NSString *hoursString = [OWSFormat formatInt:hoursDiff];
         return [NSString stringWithFormat:NSLocalizedString(@"DATE_HOURS_AGO_FORMAT",
                                               @"Format string for a relative time, expressed as a certain number of "
                                               @"hours in the past. Embeds {{The number of hours}}."),
@@ -427,7 +428,7 @@ static NSString *const DATE_FORMAT_WEEKDAY = @"EEEE";
 
 + (NSString *)exemplaryMinutesTimeFormat
 {
-    NSString *minutesString = [OWSFormat formatInt:(int)59];
+    NSString *minutesString = [OWSFormat formatInt:59];
     return [NSString stringWithFormat:NSLocalizedString(@"DATE_MINUTES_AGO_FORMAT",
                                           @"Format string for a relative time, expressed as a certain number of "
                                           @"minutes in the past. Embeds {{The number of minutes}}."),

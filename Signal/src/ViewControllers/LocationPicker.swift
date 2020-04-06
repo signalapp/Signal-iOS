@@ -220,8 +220,7 @@ public class LocationPicker: UIViewController {
             if let error = error, !geocodeCanceled {
                 // show error and remove annotation
                 let alert = ActionSheetController(title: nil, message: error.localizedDescription)
-                alert.addAction(ActionSheetAction(title: NSLocalizedString("BUTTON_OKAY",
-                                                                       comment: "Label for the 'okay' button."),
+                alert.addAction(ActionSheetAction(title: CommonStrings.okayButton,
                                               style: .cancel, handler: { _ in }))
                 self.present(alert, animated: true) {
                     self.mapView.removeAnnotation(annotation)

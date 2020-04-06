@@ -90,7 +90,7 @@ public class AddGroupMembersViewController: BaseGroupMemberViewController {
             let messageFormat = NSLocalizedString("ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT",
                                                   comment: "Format for the message for the 'add group members' confirmation alert.  Embeds {{ %1$@ number of new members, %2$@ name of the group. }}.")
             alertMessage = String(format: messageFormat,
-                             OWSFormat.formatInt(Int32(newRecipientSet.count)),
+                             OWSFormat.formatInt(newRecipientSet.count),
                              groupName)
             alertTitle = NSLocalizedString("ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_N",
                                             comment: "Title for the 'add group members' confirmation alert.")
