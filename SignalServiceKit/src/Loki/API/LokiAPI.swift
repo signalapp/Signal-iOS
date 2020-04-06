@@ -29,6 +29,7 @@ public final class LokiAPI : NSObject {
     internal static let userHexEncodedPublicKey = getUserHexEncodedPublicKey()
     
     // MARK: Settings
+    private static let useOnionRequests = true
     private static let maxRetryCount: UInt = 4
     private static let defaultTimeout: TimeInterval = 20
     private static let longPollingTimeout: TimeInterval = 40
@@ -99,9 +100,14 @@ public final class LokiAPI : NSObject {
         let request = TSRequest(url: url, method: "POST", parameters: [ "method" : method.rawValue, "params" : parameters ])
         if let headers = headers { request.allHTTPHeaderFields = headers }
         request.timeoutInterval = timeout ?? defaultTimeout
-        return LokiSnodeProxy(for: target).perform(request, withCompletionQueue: DispatchQueue.global())
-            .handlingSnodeErrorsIfNeeded(for: target, associatedWith: hexEncodedPublicKey)
-            .recoveringNetworkErrorsIfNeeded()
+        if useOnionRequests {
+            return OnionRequestAPI.sendOnionRequest(invoking: method, on: target, with: parameters).map { $0 as Any }
+        } else {
+            return TSNetworkManager.shared().perform(request, withCompletionQueue: DispatchQueue.global())
+                .map { $0.responseObject }
+                .handlingSnodeErrorsIfNeeded(for: target, associatedWith: hexEncodedPublicKey)
+                .recoveringNetworkErrorsIfNeeded()
+        }
     }
     
     internal static func getRawMessages(from target: LokiAPITarget, usingLongPolling useLongPolling: Bool) -> RawResponsePromise {

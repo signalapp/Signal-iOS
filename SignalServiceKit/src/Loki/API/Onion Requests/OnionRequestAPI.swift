@@ -18,7 +18,7 @@ internal enum OnionRequestAPI {
     // MARK: Settings
     private static let pathCount: UInt = 2
     /// The number of snodes (including the guard snode) in a path.
-    private static let pathSize: UInt = 3
+    private static let pathSize: UInt = 1
 
     private static var guardSnodeCount: UInt { return pathCount } // One per path
 
@@ -178,7 +178,7 @@ internal enum OnionRequestAPI {
 
     // MARK: Internal API
     /// Sends an onion request to `snode`. Builds new paths as needed.
-    internal static func invoke(_ method: LokiAPITarget.Method, on snode: LokiAPITarget, with parameters: JSON) -> Promise<JSON> {
+    internal static func sendOnionRequest(invoking method: LokiAPITarget.Method, on snode: LokiAPITarget, with parameters: JSON) -> Promise<JSON> {
         let (promise, seal) = Promise<JSON>.pending()
         workQueue.async {
             let payload: JSON = [ "method" : method.rawValue, "params" : parameters ]
