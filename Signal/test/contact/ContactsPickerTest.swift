@@ -4,7 +4,7 @@
 
 import XCTest
 import Contacts
-@testable import Signal
+@testable import Session
 
 final class ContactsPickerTest: SignalBaseTest {
     private var prevLang: Any?

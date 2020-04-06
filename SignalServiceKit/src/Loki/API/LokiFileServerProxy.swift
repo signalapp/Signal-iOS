@@ -56,7 +56,6 @@ internal class LokiFileServerProxy : LokiHTTPClient {
                         serverURLEndIndex < urlAsString.endIndex else { throw Error.endpointParsingFailed }
                     let endpointStartIndex = urlAsString.index(after: serverURLEndIndex)
                     let endpoint = String(urlAsString[endpointStartIndex..<urlAsString.endIndex])
-                    print("[Loki] Proxying file server request (\(endpoint)) through \(proxy).")
                     let parametersAsString: String
                     if let tsRequest = request as? TSRequest {
                         headers["Content-Type"] = "application/json"

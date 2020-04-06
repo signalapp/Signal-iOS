@@ -5,7 +5,7 @@
 import XCTest
 import PromiseKit
 import SignalServiceKit
-@testable import Signal
+@testable import Session
 
 struct VerificationFailedError: Error { }
 struct FailedToGetRPRegistrationTokenError: Error { }

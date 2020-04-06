@@ -780,7 +780,7 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
 - (void)saveFriendRequestStatus:(LKThreadFriendRequestStatus)friendRequestStatus withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction
 {
     self.friendRequestStatus = friendRequestStatus;
-    NSLog(@"[Loki] Setting thread friend request status to %@.", self.friendRequestStatusDescription);
+    [LKLogger print:[NSString stringWithFormat:@"[Loki] Setting thread friend request status to %@.", self.friendRequestStatusDescription]];
     void (^postNotification)() = ^() {
         [NSNotificationCenter.defaultCenter postNotificationName:NSNotification.threadFriendRequestStatusChanged object:self.uniqueId];
     };

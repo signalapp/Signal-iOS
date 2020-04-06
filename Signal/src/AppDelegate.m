@@ -1181,11 +1181,9 @@ static BOOL isUsingFullAPNs = YES;
     PMKJoin(promises).then(^(id results) {
         completionHandler(UIBackgroundFetchResultNewData);
         CurrentAppContext().wasWokenUpBySilentPushNotification = false;
-        [LKLogger print:@"[Loki] UIBackgroundFetchResultNewData"];
     }).catch(^(id error) {
         completionHandler(UIBackgroundFetchResultFailed);
         CurrentAppContext().wasWokenUpBySilentPushNotification = false;
-        [LKLogger print:@"[Loki] UIBackgroundFetchResultFailed"];
     });
 }
 

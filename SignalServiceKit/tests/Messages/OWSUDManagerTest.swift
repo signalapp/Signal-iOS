@@ -39,6 +39,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
     // MARK: registration
     let aliceRecipientId = "+13213214321"
 
+    /*
     override func setUp() {
         super.setUp()
 
@@ -61,6 +62,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
 
         udManager.setSenderCertificate(try! senderCertificate.serialized())
     }
+     */
 
     override func tearDown() {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
