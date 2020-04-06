@@ -160,6 +160,11 @@
 		3464450E22B7F93600A957B1 /* OWSOrphanDataCleaner.h in Headers */ = {isa = PBXBuildFile; fileRef = 3464450C22B7F93600A957B1 /* OWSOrphanDataCleaner.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		3464451122B7F97100A957B1 /* DateUtil.m in Sources */ = {isa = PBXBuildFile; fileRef = 3464450F22B7F97000A957B1 /* DateUtil.m */; };
 		3464451222B7F97100A957B1 /* DateUtil.h in Headers */ = {isa = PBXBuildFile; fileRef = 3464451022B7F97100A957B1 /* DateUtil.h */; };
+		3465947C2433B77700E5C510 /* NewGroupMembersBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3465947B2433B77700E5C510 /* NewGroupMembersBar.swift */; };
+		3465947E2434CCC100E5C510 /* NewGroupConfirmViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3465947D2434CCC100E5C510 /* NewGroupConfirmViewController.swift */; };
+		346594802434D49F00E5C510 /* NewGroupState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3465947F2434D49F00E5C510 /* NewGroupState.swift */; };
+		346594822434D5E000E5C510 /* GroupAttributesEditorHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 346594812434D5E000E5C510 /* GroupAttributesEditorHelper.swift */; };
+		3465948424352FE900E5C510 /* OWSTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3465948324352FE900E5C510 /* OWSTableViewController.swift */; };
 		3466087220E550F400AFFE73 /* ConversationStyle.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3466087120E550F300AFFE73 /* ConversationStyle.swift */; };
 		34661FB820C1C0D60056EDD6 /* message_sent.aiff in Resources */ = {isa = PBXBuildFile; fileRef = 34661FB720C1C0D60056EDD6 /* message_sent.aiff */; };
 		346941A1215D2EE400B5BFAD /* Theme.h in Headers */ = {isa = PBXBuildFile; fileRef = 3469419D215D2EE400B5BFAD /* Theme.h */; settings = {ATTRIBUTES = (Public, ); }; };
@@ -192,6 +197,8 @@
 		348A9C35234E462D00789068 /* ThreadFinderPerformanceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348A9C34234E462D00789068 /* ThreadFinderPerformanceTest.swift */; };
 		348BB25D20A0C5530047AEC2 /* ContactShareViewHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348BB25C20A0C5530047AEC2 /* ContactShareViewHelper.swift */; };
 		3491D9A121022DB7001EF5A1 /* RemoteAttestationSigningCertificateTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 3491D9A021022DB7001EF5A1 /* RemoteAttestationSigningCertificateTest.m */; };
+		349439D624360C30001045F7 /* AddGroupMembersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349439D524360C30001045F7 /* AddGroupMembersViewController.swift */; };
+		349439D824360D63001045F7 /* BaseGroupMemberViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349439D724360D63001045F7 /* BaseGroupMemberViewController.swift */; };
 		3496744D2076768700080B5F /* OWSMessageBubbleView.m in Sources */ = {isa = PBXBuildFile; fileRef = 3496744C2076768700080B5F /* OWSMessageBubbleView.m */; };
 		3496744F2076ACD000080B5F /* LongTextViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3496744E2076ACCE00080B5F /* LongTextViewController.swift */; };
 		3496955C219B605E00DCFE74 /* ImagePickerController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34969559219B605E00DCFE74 /* ImagePickerController.swift */; };
@@ -205,7 +212,6 @@
 		3496957321A301A100DCFE74 /* OWSBackupJob.m in Sources */ = {isa = PBXBuildFile; fileRef = 3496956A21A301A100DCFE74 /* OWSBackupJob.m */; };
 		3496957421A301A100DCFE74 /* OWSBackupAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3496956B21A301A100DCFE74 /* OWSBackupAPI.swift */; };
 		34995F182411838D00C70546 /* NewGroupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34995F142411838C00C70546 /* NewGroupViewController.swift */; };
-		34995F192411838D00C70546 /* NewGroupSearchBar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34995F152411838C00C70546 /* NewGroupSearchBar.swift */; };
 		34995F1A2411838D00C70546 /* NewGroupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34995F162411838C00C70546 /* NewGroupViewController.m */; };
 		34995F1B2411838D00C70546 /* NewGroupViewController2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34995F172411838C00C70546 /* NewGroupViewController2.swift */; };
 		3499998122EF1E2100654932 /* SearcherTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3499997E22EF1E2100654932 /* SearcherTest.swift */; };
@@ -1029,6 +1035,11 @@
 		3464450C22B7F93600A957B1 /* OWSOrphanDataCleaner.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSOrphanDataCleaner.h; sourceTree = "<group>"; };
 		3464450F22B7F97000A957B1 /* DateUtil.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DateUtil.m; sourceTree = "<group>"; };
 		3464451022B7F97100A957B1 /* DateUtil.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DateUtil.h; sourceTree = "<group>"; };
+		3465947B2433B77700E5C510 /* NewGroupMembersBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewGroupMembersBar.swift; sourceTree = "<group>"; };
+		3465947D2434CCC100E5C510 /* NewGroupConfirmViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewGroupConfirmViewController.swift; sourceTree = "<group>"; };
+		3465947F2434D49F00E5C510 /* NewGroupState.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewGroupState.swift; sourceTree = "<group>"; };
+		346594812434D5E000E5C510 /* GroupAttributesEditorHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupAttributesEditorHelper.swift; sourceTree = "<group>"; };
+		3465948324352FE900E5C510 /* OWSTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSTableViewController.swift; sourceTree = "<group>"; };
 		3466087120E550F300AFFE73 /* ConversationStyle.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ConversationStyle.swift; sourceTree = "<group>"; };
 		34661FB720C1C0D60056EDD6 /* message_sent.aiff */ = {isa = PBXFileReference; lastKnownFileType = audio.aiff; name = message_sent.aiff; path = Signal/AudioFiles/message_sent.aiff; sourceTree = SOURCE_ROOT; };
 		3469419D215D2EE400B5BFAD /* Theme.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Theme.h; sourceTree = "<group>"; };
@@ -1064,6 +1075,8 @@
 		348BB25C20A0C5530047AEC2 /* ContactShareViewHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ContactShareViewHelper.swift; sourceTree = "<group>"; };
 		348F2EAD1F0D21BC00D4ECE0 /* DeviceSleepManager.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceSleepManager.swift; sourceTree = "<group>"; };
 		3491D9A021022DB7001EF5A1 /* RemoteAttestationSigningCertificateTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = RemoteAttestationSigningCertificateTest.m; sourceTree = "<group>"; };
+		349439D524360C30001045F7 /* AddGroupMembersViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AddGroupMembersViewController.swift; sourceTree = "<group>"; };
+		349439D724360D63001045F7 /* BaseGroupMemberViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BaseGroupMemberViewController.swift; sourceTree = "<group>"; };
 		3495BC911F1426B800B478F5 /* ar */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ar; path = translations/ar.lproj/Localizable.strings; sourceTree = "<group>"; };
 		3496744B2076768600080B5F /* OWSMessageBubbleView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSMessageBubbleView.h; sourceTree = "<group>"; };
 		3496744C2076768700080B5F /* OWSMessageBubbleView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSMessageBubbleView.m; sourceTree = "<group>"; };
@@ -1085,7 +1098,6 @@
 		3496956D21A301A100DCFE74 /* OWSBackupIO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSBackupIO.h; sourceTree = "<group>"; };
 		34995F132411838C00C70546 /* NewGroupViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewGroupViewController.h; sourceTree = "<group>"; };
 		34995F142411838C00C70546 /* NewGroupViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewGroupViewController.swift; sourceTree = "<group>"; };
-		34995F152411838C00C70546 /* NewGroupSearchBar.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewGroupSearchBar.swift; sourceTree = "<group>"; };
 		34995F162411838C00C70546 /* NewGroupViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewGroupViewController.m; sourceTree = "<group>"; };
 		34995F172411838C00C70546 /* NewGroupViewController2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewGroupViewController2.swift; sourceTree = "<group>"; };
 		3499997E22EF1E2100654932 /* SearcherTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearcherTest.swift; sourceTree = "<group>"; };
@@ -1940,6 +1952,7 @@
 		340FC897204DAC8D007AEB0F /* ThreadSettings */ = {
 			isa = PBXGroup;
 			children = (
+				349439D524360C30001045F7 /* AddGroupMembersViewController.swift */,
 				34235F3724213550008C74CB /* ConversationSettingsViewController.swift */,
 				34E20D4D2425672A002C011E /* ConversationSettingsViewController+Contents.swift */,
 				34E20D4B24256563002C011E /* ConversationSettingsViewController+Header.swift */,
@@ -1948,6 +1961,7 @@
 				340FC8A2204DAC8D007AEB0F /* FingerprintViewController.m */,
 				340FC8A5204DAC8D007AEB0F /* FingerprintViewScanController.h */,
 				340FC89F204DAC8D007AEB0F /* FingerprintViewScanController.m */,
+				346594812434D5E000E5C510 /* GroupAttributesEditorHelper.swift */,
 				34EA09FF2423C7F80059B75F /* GroupAttributesViewController.swift */,
 				34E6003924251AD50026AD4B /* GroupViewUtils.swift */,
 				88A357B823639384009D6B9A /* MemberActionSheet.swift */,
@@ -2313,10 +2327,13 @@
 		34995F122411838C00C70546 /* NewGroupView */ = {
 			isa = PBXGroup;
 			children = (
+				349439D724360D63001045F7 /* BaseGroupMemberViewController.swift */,
+				3465947D2434CCC100E5C510 /* NewGroupConfirmViewController.swift */,
+				3465947B2433B77700E5C510 /* NewGroupMembersBar.swift */,
+				3465947F2434D49F00E5C510 /* NewGroupState.swift */,
 				34995F132411838C00C70546 /* NewGroupViewController.h */,
-				34995F142411838C00C70546 /* NewGroupViewController.swift */,
-				34995F152411838C00C70546 /* NewGroupSearchBar.swift */,
 				34995F162411838C00C70546 /* NewGroupViewController.m */,
+				34995F142411838C00C70546 /* NewGroupViewController.swift */,
 				34995F172411838C00C70546 /* NewGroupViewController2.swift */,
 			);
 			path = NewGroupView;
@@ -2640,6 +2657,7 @@
 				34AC09C1211B39AF00997B47 /* OWSNavigationController.m */,
 				34AC09CE211B39B000997B47 /* OWSTableViewController.h */,
 				34AC09CB211B39AF00997B47 /* OWSTableViewController.m */,
+				3465948324352FE900E5C510 /* OWSTableViewController.swift */,
 				34AC09D4211B39B000997B47 /* OWSViewController.h */,
 				34AC09C5211B39AF00997B47 /* OWSViewController.m */,
 				8827004B232071C500F01C46 /* OWSWindow.swift */,
@@ -4344,6 +4362,7 @@
 				4C9B4F23225025F100DD5B9A /* OWS1XXGRDBMigration.swift in Sources */,
 				340872CA2239563500CB25B0 /* AttachmentApprovalViewController.swift in Sources */,
 				346129AD1FD1F34E00532771 /* ImageCache.swift in Sources */,
+				3465948424352FE900E5C510 /* OWSTableViewController.swift in Sources */,
 				34D5872F208E2C4200D2255A /* OWS109OutgoingMessageState.m in Sources */,
 				340B870E23DF3E3A00BE0AFC /* GroupV2UpdatesImpl.swift in Sources */,
 				340872D02239787F00CB25B0 /* AttachmentTextToolbar.swift in Sources */,
@@ -4502,6 +4521,7 @@
 				3496956E21A301A100DCFE74 /* OWSBackupExportJob.m in Sources */,
 				88D23D2823CEC0C700B0E74B /* TurnServerInfo.swift in Sources */,
 				4C1885D2218F8E1C00B67051 /* PhotoGridViewCell.swift in Sources */,
+				349439D824360D63001045F7 /* BaseGroupMemberViewController.swift in Sources */,
 				886F08A7234958970085C27F /* InputAccessoryViewPlaceholder.swift in Sources */,
 				34D1F0501F7D45A60066283D /* GifPickerCell.swift in Sources */,
 				881677C522DD2B21007BAF49 /* OWSPinReminderViewController.swift in Sources */,
@@ -4572,6 +4592,7 @@
 				8835DDFD230CEE8900DC6B66 /* RecipientPickerDelegate.swift in Sources */,
 				34E6003A24251AD50026AD4B /* GroupViewUtils.swift in Sources */,
 				340E9AC4236095CD00FA362C /* AttachmentMultisend.swift in Sources */,
+				3465947E2434CCC100E5C510 /* NewGroupConfirmViewController.swift in Sources */,
 				34CE88E71F2FB9A10098030F /* ProfileViewController.m in Sources */,
 				3403B95D20EA9527001A1F44 /* OWSContactShareButtonsView.m in Sources */,
 				88A357B923639384009D6B9A /* MemberActionSheet.swift in Sources */,
@@ -4583,7 +4604,6 @@
 				4CB5F26720F6E1E2004D1B42 /* MessageActionsViewController.swift in Sources */,
 				4C81DAD5242051C100F4C4D1 /* MessageSelectionView.swift in Sources */,
 				3496955E219B605E00DCFE74 /* PhotoLibrary.swift in Sources */,
-				34995F192411838D00C70546 /* NewGroupSearchBar.swift in Sources */,
 				349ED990221B0194008045B0 /* Onboarding2FAViewController.swift in Sources */,
 				45D231771DC7E8F10034FA89 /* SessionResetJob.swift in Sources */,
 				340FC8A9204DAC8D007AEB0F /* NotificationSettingsOptionsViewController.m in Sources */,
@@ -4608,6 +4628,7 @@
 				340FC8B2204DAC8D007AEB0F /* AdvancedSettingsTableViewController.m in Sources */,
 				452B999020A34B6B006F2F9E /* AddContactShareToExistingContactViewController.swift in Sources */,
 				88D23D2223CEC0C700B0E74B /* OutboundCallInitiator.swift in Sources */,
+				346594822434D5E000E5C510 /* GroupAttributesEditorHelper.swift in Sources */,
 				346129991FD1E4DA00532771 /* SignalApp.m in Sources */,
 				88F8195A2383569A007914E8 /* CNContactViewController+OWS.m in Sources */,
 				34BE2F5822A7371D002C94AC /* PdfViewController.swift in Sources */,
@@ -4621,6 +4642,7 @@
 				4556FA681F54AA9500AF40DD /* DebugUIProfile.swift in Sources */,
 				4C2EBB7F2356B2B900BBC171 /* SecondaryLinkingSetDeviceNameViewController.swift in Sources */,
 				4C30E224234F9F34009558B7 /* SecondaryLinkingPrepViewController.swift in Sources */,
+				349439D624360C30001045F7 /* AddGroupMembersViewController.swift in Sources */,
 				45A6DAD61EBBF85500893231 /* ReminderView.swift in Sources */,
 				34D1F0881F8678AA0066283D /* ConversationViewLayout.m in Sources */,
 				4CA485BB2232339F004B9E7D /* PhotoCaptureViewController.swift in Sources */,
@@ -4716,6 +4738,7 @@
 				76EB054018170B33006006FC /* AppDelegate.m in Sources */,
 				88D23D2C23CEC17400B0E74B /* CallAudioService.swift in Sources */,
 				34D1F0831F8678AA0066283D /* ConversationInputTextView.m in Sources */,
+				346594802434D49F00E5C510 /* NewGroupState.swift in Sources */,
 				340FC8B6204DAC8D007AEB0F /* OWSQRCodeScanningViewController.m in Sources */,
 				4CB5F26920F7D060004D1B42 /* MessageActions.swift in Sources */,
 				4C46361322EE680700185951 /* ConversationPicker.swift in Sources */,
@@ -4725,6 +4748,7 @@
 				34BECE2B1F74C12700D7438D /* DebugUIStress.m in Sources */,
 				340E9AC0235F876800FA362C /* ForwardMessageNavigationController.swift in Sources */,
 				340FC8B9204DAC8D007AEB0F /* UpdateGroupViewController.m in Sources */,
+				3465947C2433B77700E5C510 /* NewGroupMembersBar.swift in Sources */,
 				3448E1662215B313004B052E /* OnboardingCaptchaViewController.swift in Sources */,
 				88081437234D80150004C187 /* UIResponder+OWS.swift in Sources */,
 				3457811B23EB56B300CE01C3 /* ConversationViewController+MessageRequest.swift in Sources */,

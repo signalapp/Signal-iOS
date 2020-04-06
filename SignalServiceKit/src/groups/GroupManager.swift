@@ -80,7 +80,9 @@ public class GroupManager: NSObject {
     // MARK: -
 
     // GroupsV2 TODO: Finalize this value with the designers.
-    public static let KGroupUpdateTimeoutDuration: TimeInterval = 30
+    public static let groupUpdateTimeoutDuration: TimeInterval = 30
+
+    public static let maxGroupMemberCount: UInt = 100
 
     private static func groupIdLength(for groupsVersion: GroupsVersion) -> Int32 {
         switch groupsVersion {
@@ -160,7 +162,6 @@ public class GroupManager: NSObject {
         }
         // NOTE: We do consider users to support groups v2 even if:
         //
-        // * We don't know their UUID.
         // * We don't know their profile key.
         // * They've never done a versioned profile update.
         // * We don't have a profile key credential for them.
@@ -333,7 +334,7 @@ public class GroupManager: NSObject {
             } else {
                 return Promise.value(thread)
             }
-        }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration,
+        }.timeout(seconds: GroupManager.groupUpdateTimeoutDuration,
                   description: "Create new group") {
             GroupsV2Error.timeout
         }
@@ -766,7 +767,7 @@ public class GroupManager: NSObject {
             }
         }.then(on: .global()) { (_: UpdateInfo, changeSet: GroupsV2ChangeSet) throws -> Promise<TSGroupThread> in
             return self.groupsV2.updateExistingGroupOnService(changeSet: changeSet)
-        }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration,
+        }.timeout(seconds: GroupManager.groupUpdateTimeoutDuration,
                   description: "Update existing group") {
             GroupsV2Error.timeout
         }
@@ -1129,7 +1130,7 @@ public class GroupManager: NSObject {
             return self.ensureLocalProfileHasCommitmentIfNecessary()
         }.then(on: .global()) { () throws -> Promise<TSGroupThread> in
             return self.groupsV2.updateGroupv2(groupModel: groupModel, changeSetBlock: changeSetBlock)
-        }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration,
+        }.timeout(seconds: GroupManager.groupUpdateTimeoutDuration,
                   description: description) {
                     GroupsV2Error.timeout
         }
@@ -1670,7 +1671,7 @@ public extension GroupManager {
     private class func messageProcessingPromise(description: String) -> Promise<Void> {
         return firstly {
             self.messageProcessing.allMessageFetchingAndProcessingPromise()
-        }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration,
+        }.timeout(seconds: GroupManager.groupUpdateTimeoutDuration,
                   description: description) {
             GroupsV2Error.timeout
         }

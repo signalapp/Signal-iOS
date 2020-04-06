@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -29,6 +29,14 @@ extern const NSUInteger kLargeAvatarSize;
                                  iconSize:(CGSize)iconSize
                           backgroundColor:(UIColor *)backgroundColor
                                  diameter:(NSUInteger)diameter;
+
++ (nullable UIImage *)avatarImageWithIcon:(UIImage *)icon
+                                 iconSize:(CGSize)iconSize
+                                iconColor:(UIColor *)iconColor
+                          backgroundColor:(UIColor *)backgroundColor
+                                 diameter:(NSUInteger)diameter;
+
++ (UIColor *)avatarForegroundColor;
 
 @end
 

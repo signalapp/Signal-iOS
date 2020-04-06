@@ -7,40 +7,7 @@ import PromiseKit
 import UIKit
 
 protocol GroupAttributesViewControllerDelegate: class {
-    func groupAttributesDidUpdate(groupName: String?, groupAvatar: GroupAvatar?)
-}
-
-// MARK: -
-
-struct GroupAvatar {
-    let imageData: Data
-    let image: UIImage
-
-    static func build(imageData: Data?) -> GroupAvatar? {
-        guard let imageData = imageData else {
-            return nil
-        }
-        guard (imageData as NSData).ows_isValidImage() else {
-            owsFailDebug("Invalid image data.")
-            return nil
-        }
-        guard let image = UIImage(data: imageData) else {
-            owsFailDebug("Could not load image.")
-            return nil
-        }
-        return GroupAvatar(imageData: imageData, image: image)
-    }
-
-    static func build(image: UIImage?) -> GroupAvatar? {
-        guard let image = image else {
-            return nil
-        }
-        guard let imageData = TSGroupModel.data(forGroupAvatar: image) else {
-            owsFailDebug("Invalid image.")
-            return nil
-        }
-        return GroupAvatar(imageData: imageData, image: image)
-    }
+    func groupAttributesDidUpdate()
 }
 
 // MARK: -
@@ -69,33 +36,16 @@ class GroupAttributesViewController: OWSViewController {
 
     private let groupThread: TSGroupThread
 
-    private let avatarViewHelper = AvatarViewHelper()
-
-    private var avatarView: UIImageView?
+    private let helper: GroupAttributesEditorHelper
 
     private var editAction: EditAction?
 
-    private let iconViewSize: UInt = kLargeAvatarSize
-
-    private let avatarImageView = UIImageView()
-
-    private let cameraButton = GroupAttributesViewController.buildCameraButton()
-
-    private let nameTextField = UITextField()
-
-    private var groupNameOriginal: String?
-
-    private var groupNameCurrent: String? {
-        return nameTextField.text?.filterStringForDisplay()
+    private var nameTextField: UITextField {
+        return helper.nameTextField
     }
 
-    private var avatarOriginal: GroupAvatar?
-
-    private var avatarCurrent: GroupAvatar?
-
     private var hasUnsavedChanges: Bool {
-        return (groupNameOriginal != groupNameCurrent ||
-                avatarOriginal?.imageData != avatarCurrent?.imageData)
+        return helper.hasUnsavedChanges
     }
 
     public required init(groupThread: TSGroupThread,
@@ -105,14 +55,13 @@ class GroupAttributesViewController: OWSViewController {
         self.editAction = editAction
         self.delegate = delegate
 
+        self.helper = GroupAttributesEditorHelper(groupId: groupThread.groupModel.groupId,
+                                                  conversationColorName: groupThread.conversationColorName.rawValue,
+                                                  groupNameOriginal: groupThread.groupModel.groupName,
+                                                  avatarOriginalData: groupThread.groupModel.groupAvatarData,
+                                                  iconViewSize: kLargeAvatarSize)
+
         super.init(nibName: nil, bundle: nil)
-
-        avatarViewHelper.delegate = self
-
-        groupNameOriginal = groupThread.groupModel.groupName?.filterStringForDisplay()
-
-        avatarOriginal = GroupAvatar.build(imageData: groupThread.groupModel.groupAvatarData)
-        avatarCurrent = avatarOriginal
     }
 
     @available(*, unavailable, message:"use other constructor instead.")
@@ -131,31 +80,10 @@ class GroupAttributesViewController: OWSViewController {
 
         title = NSLocalizedString("EDIT_GROUP_DEFAULT_TITLE", comment: "The navbar title for the 'update group' view.")
 
-        // We need to specify a contentMode since the size of the image
-        // might not match the aspect ratio of the view.
-        avatarImageView.contentMode = .scaleAspectFill
-        // Use trilinear filters for better scaling quality at
-        // some performance cost.
-        avatarImageView.layer.minificationFilter = .trilinear
-        avatarImageView.layer.magnificationFilter = .trilinear
-        updateAvatarView(groupAvatar: avatarCurrent)
-        avatarImageView.layer.cornerRadius = CGFloat(iconViewSize) * 0.5
-        avatarImageView.clipsToBounds = true
-        avatarImageView.autoSetDimensions(to: CGSize(width: CGFloat(iconViewSize),
-                                                     height: CGFloat(iconViewSize)))
-        avatarImageView.isUserInteractionEnabled = true
-        avatarImageView.addGestureRecognizer(UITapGestureRecognizer(target: self,
-                                                              action: #selector(didTapAvatarView)))
+        helper.delegate = self
+        helper.buildContents(avatarViewHelperDelegate: self)
 
-        let avatarWrapper = UIView.container()
-        avatarWrapper.addSubview(avatarImageView)
-        avatarImageView.autoPinEdgesToSuperviewEdges()
-
-        avatarWrapper.addSubview(cameraButton)
-        cameraButton.autoPinEdge(toSuperviewEdge: .trailing)
-        cameraButton.autoPinEdge(toSuperviewEdge: .bottom)
-
-        let avatarStack = UIStackView(arrangedSubviews: [ avatarWrapper ])
+        let avatarStack = UIStackView(arrangedSubviews: [ helper.avatarWrapper ])
         avatarStack.axis = .vertical
         avatarStack.spacing = 10
         avatarStack.alignment = .center
@@ -173,15 +101,8 @@ class GroupAttributesViewController: OWSViewController {
         nameLabel.setCompressionResistanceHorizontalHigh()
         nameLabel.setContentHuggingHorizontalHigh()
 
-        nameTextField.text = groupNameOriginal
-        nameTextField.font = .ows_dynamicTypeBody
-        nameTextField.backgroundColor = .clear
-        nameTextField.textColor = Theme.primaryTextColor
-        nameTextField.textAlignment = CurrentAppContext().isRTL ? .left : .right
-        nameTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
-        nameTextField.placeholder = NSLocalizedString("NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT",
-                                                      comment: "Placeholder text for group name field")
         nameTextField.setCompressionResistanceHorizontalLow()
+        nameTextField.textAlignment = CurrentAppContext().isRTL ? .left : .right
 
         let nameStack = UIStackView(arrangedSubviews: [ nameLabel, nameTextField ])
         nameStack.axis = .horizontal
@@ -213,33 +134,6 @@ class GroupAttributesViewController: OWSViewController {
         stackView.autoPinEdge(toSuperviewEdge: .bottom)
     }
 
-    public static func buildCameraButton() -> UIView {
-        let cameraImageView = UIImageView()
-        cameraImageView.setTemplateImageName("camera-outline-24", tintColor: .ows_gray45)
-        let cameraWrapper = UIView.container()
-        cameraWrapper.backgroundColor = .ows_white
-        cameraWrapper.addSubview(cameraImageView)
-        cameraImageView.autoCenterInSuperview()
-        let wrapperSize: CGFloat = 32
-        cameraWrapper.layer.shadowColor = UIColor.ows_black.cgColor
-        cameraWrapper.layer.shadowOpacity = 0.5
-        cameraWrapper.layer.shadowRadius = 4
-        cameraWrapper.layer.shadowOffset = CGSize(width: 0, height: 4)
-        cameraWrapper.layer.cornerRadius = wrapperSize * 0.5
-        cameraWrapper.autoSetDimensions(to: CGSize(width: wrapperSize, height: wrapperSize))
-        return cameraWrapper
-    }
-
-    private func updateAvatarView(groupAvatar: GroupAvatar?) {
-        if let groupAvatar = groupAvatar {
-            avatarImageView.image = groupAvatar.image
-            cameraButton.isHidden = true
-        } else {
-            avatarImageView.image = OWSGroupAvatarBuilder(thread: groupThread, diameter: iconViewSize).buildDefaultImage()
-            cameraButton.isHidden = false
-        }
-    }
-
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
@@ -248,7 +142,7 @@ class GroupAttributesViewController: OWSViewController {
             case .none, .name:
                 nameTextField.becomeFirstResponder()
             case .avatar:
-                showAvatarUI()
+                helper.showAvatarUI()
             }
             self.editAction = nil
         }
@@ -256,8 +150,8 @@ class GroupAttributesViewController: OWSViewController {
 
     // MARK: -
 
-    private func updateNavbar() {
-        if hasUnsavedChanges {
+    fileprivate func updateNavbar() {
+        if helper.hasUnsavedChanges {
             navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("EDIT_GROUP_UPDATE_BUTTON",
                                                                                           comment: "The title for the 'update group' button."),
                                                                 style: .plain,
@@ -276,18 +170,8 @@ class GroupAttributesViewController: OWSViewController {
     // MARK: - Events
 
     @objc
-    func textFieldDidChange(_ textField: UITextField) {
-        updateNavbar()
-    }
-
-    @objc
     func didTapAvatarView(sender: UIGestureRecognizer) {
-        showAvatarUI()
-    }
-
-    private func showAvatarUI() {
-        nameTextField.resignFirstResponder()
-        avatarViewHelper.showChangeAvatarUI()
+        helper.didTapAvatarView(sender: sender)
     }
 }
 
@@ -298,26 +182,8 @@ extension GroupAttributesViewController: AvatarViewHelperDelegate {
         return NSLocalizedString("NEW_GROUP_ADD_PHOTO_ACTION", comment: "Action Sheet title prompting the user for a group avatar")
     }
 
-    private func setAvatarImage(_ image: UIImage?) {
-        let groupAvatar: GroupAvatar? = {
-            guard let image = image else {
-                return nil
-            }
-            guard let groupAvatar = GroupAvatar.build(image: image) else {
-                OWSActionSheets.showErrorAlert(message: NSLocalizedString("EDIT_GROUP_ERROR_INVALID_AVATAR",
-                                                                          comment: "Error message indicating that an avatar image is invalid and cannot be used."))
-                owsFailDebug("Invalid image.")
-                return nil
-            }
-            return groupAvatar
-        }()
-        avatarCurrent = groupAvatar
-        updateAvatarView(groupAvatar: avatarCurrent)
-        updateNavbar()
-    }
-
     func avatarDidChange(_ image: UIImage) {
-        setAvatarImage(image)
+        helper.setAvatarImage(image)
     }
 
     func fromViewController() -> UIViewController {
@@ -329,7 +195,7 @@ extension GroupAttributesViewController: AvatarViewHelperDelegate {
     }
 
     func clearAvatar() {
-        setAvatarImage(nil)
+        helper.setAvatarImage(nil)
     }
 
     func clearAvatarActionLabel() -> String {
@@ -400,15 +266,19 @@ private extension GroupAttributesViewController {
 
     func updateGroupThreadAndDismiss() {
 
-        let groupNameCurrent: String? = self.groupNameCurrent
-        let avatarCurrent: GroupAvatar? = self.avatarCurrent
+        guard let newGroupName = helper.groupNameCurrent,
+            !newGroupName.isEmpty else {
+                NewGroupConfirmViewController.showMissingGroupNameAlert()
+                return
+        }
+        let avatarCurrent: GroupAvatar? = helper.avatarCurrent
 
         let dismissAndUpdateDelegate = { [weak self] in
             guard let self = self else {
                 return
             }
             if let delegate = self.delegate {
-                delegate.groupAttributesDidUpdate(groupName: groupNameCurrent, groupAvatar: avatarCurrent)
+                delegate.groupAttributesDidUpdate()
             }
             self.navigationController?.popViewController(animated: true)
         }
@@ -420,7 +290,7 @@ private extension GroupAttributesViewController {
 
         let groupThread = self.groupThread
         let oldGroupModel = groupThread.groupModel
-        guard let newGroupModel = buildNewGroupModel(groupName: groupNameCurrent,
+        guard let newGroupModel = buildNewGroupModel(groupName: newGroupName,
                                                      groupAvatar: avatarCurrent) else {
                                                         let error = OWSAssertionError("Couldn't build group model.")
                                                         GroupViewUtils.showUpdateErrorUI(error: error)
@@ -452,5 +322,13 @@ private extension GroupAttributesViewController {
                                                   dmConfiguration: nil,
                                                   groupUpdateSourceAddress: localAddress)
         }.asVoid()
+    }
+}
+
+// MARK: -
+
+extension GroupAttributesViewController: GroupAttributesEditorHelperDelegate {
+    func groupAttributesEditorContentsDidChange() {
+        updateNavbar()
     }
 }

@@ -29,6 +29,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) BOOL shouldShowAlphabetSlider;
 /// Defaults to `NO`
 @property (nonatomic) BOOL shouldShowSearchBar;
+/// Defaults to `NO`
+@property (nonatomic) BOOL shouldShowNewGroup;
 
 @property (nonatomic, nullable) NSString *findByPhoneNumberButtonTitle;
 
