@@ -2090,6 +2090,9 @@
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "New Group";
 
+/* Accessibility label for the new group button */
+"NEW_GROUP_BUTTON_LABEL" = "NEW_GROUP_BUTTON_LABEL";
+
 /* The title for the 'create group' button. */
 "NEW_GROUP_CREATE_BUTTON" = "Create";
 
