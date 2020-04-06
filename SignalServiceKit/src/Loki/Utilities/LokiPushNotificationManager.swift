@@ -27,7 +27,7 @@ final class LokiPushNotificationManager : NSObject {
             return print("[Loki] Device token hasn't changed; no need to re-upload.")
         }
         guard !isUsingFullAPNs else {
-            return print("[Loki] Using full APNs; no need to upload device token.")
+            return print("[Loki] Using full APNs; ignoring call to register(with:).")
         }
         let parameters = [ "token" : hexEncodedToken ]
         let url = URL(string: server + "register")!

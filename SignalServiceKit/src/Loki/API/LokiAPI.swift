@@ -2,7 +2,7 @@ import PromiseKit
 
 @objc(LKAPI)
 public final class LokiAPI : NSObject {
-    private static let stateQueue = DispatchQueue(label: "stateQueue")
+    private static let stateQueue = DispatchQueue(label: "LokiAPI.stateQueue")
 
     /// Only ever modified from the message processing queue (`OWSBatchMessageProcessor.processingQueue`).
     private static var syncMessageTimestamps: [String:Set<UInt64>] = [:]
@@ -22,19 +22,21 @@ public final class LokiAPI : NSObject {
     }
     
     /// All service node related errors must be handled on this queue to avoid race conditions maintaining e.g. failure counts.
-    public static let errorHandlingQueue = DispatchQueue(label: "errorHandlingQueue")
+    public static let errorHandlingQueue = DispatchQueue(label: "LokiAPI.errorHandlingQueue")
     
     // MARK: Convenience
     internal static let storage = OWSPrimaryStorage.shared()
     internal static let userHexEncodedPublicKey = getUserHexEncodedPublicKey()
     
     // MARK: Settings
-    private static let apiVersion = "v1"
-    private static let maxRetryCount: UInt = 8
+    private static let useOnionRequests = true
+    private static let maxRetryCount: UInt = 4
     private static let defaultTimeout: TimeInterval = 20
     private static let longPollingTimeout: TimeInterval = 40
     private static var userIDScanLimit: UInt = 4096
-    internal static var powDifficulty: UInt = 4
+
+    internal static var powDifficulty: UInt = 2
+
     public static let defaultMessageTTL: UInt64 = 24 * 60 * 60 * 1000
     public static let deviceLinkUpdateInterval: TimeInterval = 20
     
@@ -93,17 +95,19 @@ public final class LokiAPI : NSObject {
     
     // MARK: Internal API
     internal static func invoke(_ method: LokiAPITarget.Method, on target: LokiAPITarget, associatedWith hexEncodedPublicKey: String,
-        parameters: [String:Any], headers: [String:String]? = nil, timeout: TimeInterval? = nil) -> RawResponsePromise {
-        let url = URL(string: "\(target.address):\(target.port)/storage_rpc/\(apiVersion)")!
+        parameters: JSON, headers: [String:String]? = nil, timeout: TimeInterval? = nil) -> RawResponsePromise {
+        let url = URL(string: "\(target.address):\(target.port)/storage_rpc/v1")!
         let request = TSRequest(url: url, method: "POST", parameters: [ "method" : method.rawValue, "params" : parameters ])
         if let headers = headers { request.allHTTPHeaderFields = headers }
         request.timeoutInterval = timeout ?? defaultTimeout
-        let headers = request.allHTTPHeaderFields ?? [:]
-        let headersDescription = headers.isEmpty ? "no custom headers specified" : headers.prettifiedDescription
-        print("[Loki] Invoking \(method.rawValue) on \(target) with \(parameters.prettifiedDescription) (\(headersDescription)).")
-        return LokiSnodeProxy(for: target).perform(request, withCompletionQueue: DispatchQueue.global())
-            .handlingSwarmSpecificErrorsIfNeeded(for: target, associatedWith: hexEncodedPublicKey)
-            .recoveringNetworkErrorsIfNeeded()
+        if useOnionRequests {
+            return OnionRequestAPI.sendOnionRequest(invoking: method, on: target, with: parameters, associatedWith: hexEncodedPublicKey).map { $0 as Any }
+        } else {
+            return TSNetworkManager.shared().perform(request, withCompletionQueue: DispatchQueue.global())
+                .map { $0.responseObject }
+                .handlingSnodeErrorsIfNeeded(for: target, associatedWith: hexEncodedPublicKey)
+                .recoveringNetworkErrorsIfNeeded()
+        }
     }
     
     internal static func getRawMessages(from target: LokiAPITarget, usingLongPolling useLongPolling: Bool) -> RawResponsePromise {
@@ -202,7 +206,7 @@ public final class LokiAPI : NSObject {
                                 print("[Loki] Failed to update proof of work difficulty from: \(rawResponse).")
                             }
                             return rawResponse
-                        }
+                        }.retryingIfNeeded(maxRetryCount: maxRetryCount)
                     })
                 }.retryingIfNeeded(maxRetryCount: maxRetryCount)
             }
@@ -259,11 +263,6 @@ public final class LokiAPI : NSObject {
         let newRawMessages = removeDuplicates(from: rawMessages)
         let newMessages = parseProtoEnvelopes(from: newRawMessages)
         let newMessageCount = newMessages.count
-        if newMessageCount == 1 {
-            print("[Loki] Retrieved 1 new message.")
-        } else if (newMessageCount != 0) {
-            print("[Loki] Retrieved \(newMessageCount) new messages.")
-        }
         return newMessages
     }
     

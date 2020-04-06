@@ -3,7 +3,8 @@
 //
 
 import XCTest
-@testable import Signal
+import Contacts
+@testable import Session
 @testable import SignalMessaging
 
 // TODO: We might be able to merge this with OWSFakeContactsManager.
@@ -74,6 +75,7 @@ class FullTextSearcherTest: SignalBaseTest {
         super.tearDown()
     }
 
+    /*
     override func setUp() {
         super.setUp()
 
@@ -428,4 +430,5 @@ class SearcherTest: SignalBaseTest {
         XCTAssertEqual(FullTextSearchFinder.normalize(text: "renaldo RENALDO reñaldo REÑALDO"), "renaldo RENALDO reñaldo REÑALDO")
         XCTAssertEqual(FullTextSearchFinder.normalize(text: "😏"), "😏")
     }
+     */
 }

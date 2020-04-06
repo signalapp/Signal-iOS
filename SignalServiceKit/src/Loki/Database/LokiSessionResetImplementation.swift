@@ -16,7 +16,7 @@ public class LokiSessionResetImplementation : NSObject, SessionResetProtocol {
 
     public func validatePreKeyForFriendRequestAcceptance(for recipientID: String, whisperMessage: CipherMessage, protocolContext: Any?) throws {
          guard let transaction = protocolContext as? YapDatabaseReadWriteTransaction else {
-            print("[Loki] Could not verify friend request acceptance pre key because an invalid transaction was provided.")
+            print("[Loki] Couldn't verify friend request acceptance pre key because an invalid transaction was provided.")
             return
         }
         guard let preKeyMessage = whisperMessage as? PreKeyWhisperMessage else { return }
@@ -32,7 +32,7 @@ public class LokiSessionResetImplementation : NSObject, SessionResetProtocol {
 
     public func getSessionResetStatus(for recipientID: String, protocolContext: Any?) -> SessionResetStatus {
         guard let transaction = protocolContext as? YapDatabaseReadWriteTransaction else {
-            print("[Loki] Could not get session reset status for \(recipientID) because an invalid transaction was provided.")
+            print("[Loki] Couldn't get session reset status for \(recipientID) because an invalid transaction was provided.")
             return .none
         }
         guard let thread = TSContactThread.getWithContactId(recipientID, transaction: transaction) else { return .none }

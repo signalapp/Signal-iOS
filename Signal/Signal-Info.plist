@@ -7,7 +7,7 @@
 		<key>CarthageVersion</key>
 		<string>0.34.0</string>
 		<key>OSXVersion</key>
-		<string>10.15.3</string>
+		<string>10.15.4</string>
 		<key>WebRTCCommit</key>
 		<string>1445d719bf05280270e9f77576f80f973fd847f8 M73</string>
 	</dict>
@@ -83,7 +83,7 @@
 				<key>NSIncludesSubdomains</key>
 				<true/>
 			</dict>
-			<key>imaginary.stream</key>
+			<key>public.loki.foundation</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>
@@ -113,7 +113,7 @@
 	<key>NSContactsUsageDescription</key>
 	<string>Signal uses your contacts to find users you know. We do not store your contacts on the server.</string>
 	<key>NSFaceIDUsageDescription</key>
-	<string>Session's Screen Lock feature uses Face ID.</string>
+	<string>Session&apos;s Screen Lock feature uses Face ID.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Session needs access to your microphone to record videos.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
