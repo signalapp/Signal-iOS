@@ -178,8 +178,8 @@ internal enum OnionRequestAPI {
 
     // MARK: Internal API
     /// Sends an onion request to `snode`. Builds new paths as needed.
-    internal static func invoke(_ method: LokiAPITarget.Method, on snode: LokiAPITarget, with parameters: JSON) -> Promise<Data> {
-        let (promise, seal) = Promise<Data>.pending()
+    internal static func invoke(_ method: LokiAPITarget.Method, on snode: LokiAPITarget, with parameters: JSON) -> Promise<JSON> {
+        let (promise, seal) = Promise<JSON>.pending()
         workQueue.async {
             let payload: JSON = [ "method" : method.rawValue, "params" : parameters ]
             buildOnion(around: payload, targetedAt: snode).done(on: workQueue) { intermediate in
@@ -200,8 +200,11 @@ internal enum OnionRequestAPI {
                     do {
                         let gcm = GCM(iv: iv.bytes, tagLength: Int(gcmTagSize), mode: .combined)
                         let aes = try AES(key: targetSnodeSymmetricKey.bytes, blockMode: gcm, padding: .noPadding)
-                        let result = try aes.decrypt(ciphertext.bytes)
-                        seal.fulfill(Data(bytes: result))
+                        let data = Data(try aes.decrypt(ciphertext.bytes))
+                        guard let json = try JSONSerialization.jsonObject(with: data, options: []) as? JSON,
+                            let bodyAsString = json["body"] as? String, let bodyAsData = bodyAsString.data(using: .utf8),
+                            let body = try JSONSerialization.jsonObject(with: bodyAsData, options: []) as? JSON else { return seal.reject(HTTP.Error.invalidJSON) }
+                        seal.fulfill(body)
                     } catch (let error) {
                         seal.reject(error)
                     }

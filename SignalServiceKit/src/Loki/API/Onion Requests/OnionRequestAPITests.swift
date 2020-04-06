@@ -5,8 +5,6 @@ import XCTest
 
 class OnionRequestAPITests : XCTestCase {
 
-    /// Builds a path and then routes the same request through it several times. Logs the number of successes
-    /// versus the number of failures.
     func testOnionRequestSending() {
         let semaphore = DispatchSemaphore(value: 0)
         var totalSuccessRate: Double = 0
@@ -20,9 +18,9 @@ class OnionRequestAPITests : XCTestCase {
                 let mockSessionID = "0582bc30f11e8a9736407adcaca03b049f4acd4af3ae7eb6b6608d30f0b1e6a20e"
                 let parameters: JSON = [ "pubKey" : mockSessionID ]
                 let (promise, seal) = Promise<Void>.pending()
-                OnionRequestAPI.invoke(.getSwarm, on: snode, with: parameters).done(on: OnionRequestAPI.workQueue) { data in
+                OnionRequestAPI.invoke(.getSwarm, on: snode, with: parameters).done(on: OnionRequestAPI.workQueue) { json in
                     successCount += 1
-                    print("[Loki] [Onion Request API] Onion request succeeded with result: \(String(data: data, encoding: .utf8)).")
+                    print("[Loki] [Onion Request API] Onion request succeeded with result: \(json.prettifiedDescription).")
                     seal.fulfill(())
                 }.catch(on: OnionRequestAPI.workQueue) { error in
                     if case GCM.Error.fail = error {
