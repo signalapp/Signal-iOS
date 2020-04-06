@@ -255,10 +255,6 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"Not registered.");
         return;
     }
-    if (!CurrentAppContext().isMainApp) {
-        OWSFail(@"Not the main app.");
-        return;
-    }
 
     OWSLogInfo(@"Handling decrypted envelope: %@.", [self descriptionForEnvelope:envelope]);
 
