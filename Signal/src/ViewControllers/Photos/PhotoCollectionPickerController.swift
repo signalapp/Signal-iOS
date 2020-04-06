@@ -96,7 +96,7 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
-        let kImageSize = 80
+        let kImageSize: CGFloat = 80
         imageView.autoSetDimensions(to: CGSize(square: kImageSize))
 
         let hStackView = UIStackView(arrangedSubviews: [imageView, textStack])
