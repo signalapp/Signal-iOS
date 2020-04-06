@@ -11,6 +11,7 @@
 }
 
 - (BOOL)shouldBeSaved { return NO; }
+- (uint)ttl { return 23 * kHourInMs; }
 
 #pragma mark Building
 - (nullable SSKProtoDataMessageBuilder *)dataMessageBuilder
