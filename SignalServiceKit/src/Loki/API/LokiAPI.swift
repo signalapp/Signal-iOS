@@ -206,7 +206,7 @@ public final class LokiAPI : NSObject {
                                 print("[Loki] Failed to update proof of work difficulty from: \(rawResponse).")
                             }
                             return rawResponse
-                        }
+                        }.retryingIfNeeded(maxRetryCount: maxRetryCount)
                     })
                 }.retryingIfNeeded(maxRetryCount: maxRetryCount)
             }
