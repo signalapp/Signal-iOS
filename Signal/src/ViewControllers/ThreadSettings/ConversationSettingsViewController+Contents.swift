@@ -455,36 +455,9 @@ extension ConversationSettingsViewController {
     private func buildBlockAndLeaveSection() -> OWSTableSection {
         let section = OWSTableSection()
         section.customHeaderHeight = 10
-        section.customFooterHeight = 10
 
-        let switchAction = #selector(blockConversationSwitchDidChange)
-        section.add(OWSTableItem(customCellBlock: { [weak self] in
-            guard let self = self else {
-                owsFailDebug("Missing self")
-                return OWSTableItem.newCell()
-            }
-
-            let cellTitle =
-                (self.thread.isGroupThread
-                    ? NSLocalizedString("CONVERSATION_SETTINGS_BLOCK_THIS_GROUP",
-                                        comment: "table cell label in conversation settings")
-                    : NSLocalizedString("CONVERSATION_SETTINGS_BLOCK_THIS_USER",
-                                        comment: "table cell label in conversation settings"))
-            let cell = OWSTableItem.buildDisclosureCell(name: cellTitle,
-                                                        icon: .settingsBlock,
-                                                        accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "block"))
-
-            cell.selectionStyle = .none
-
-            let switchView = UISwitch()
-            switchView.isOn = self.blockingManager.isThreadBlocked(self.thread)
-            switchView.addTarget(self, action: switchAction, for: .valueChanged)
-            cell.accessoryView = switchView
-            switchView.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "block_conversation_switch")
-
-            return cell
-            },
-                                 actionBlock: nil))
+        section.footerTitle = NSLocalizedString("CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER",
+                                                comment: "Footer text for the 'block and leave' section of conversation settings view.")
 
         if isGroupThread, isLocalUserInConversation {
             section.add(OWSTableItem(customCellBlock: { [weak self] in
@@ -493,16 +466,56 @@ extension ConversationSettingsViewController {
                     return OWSTableItem.newCell()
                 }
 
-                let cell = OWSTableItem.buildCell(name: NSLocalizedString("LEAVE_GROUP_ACTION",
-                                                                          comment: "table cell label in conversation settings"),
-                                                  icon: .settingsLeaveGroup,
-                                                  accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "leave_group"))
-                return cell
+                return OWSTableItem.buildIconNameCell(icon: .settingsLeaveGroup,
+                                                      itemName: NSLocalizedString("LEAVE_GROUP_ACTION",
+                                                                                  comment: "table cell label in conversation settings"),
+                                                      customColor: UIColor.ows_accentRed,
+                                                      accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "leave_group"))
                 },
                                      actionBlock: { [weak self] in
                                         self?.didTapLeaveGroup()
             }))
         }
+
+        let isCurrentlyBlocked = blockingManager.isThreadBlocked(thread)
+
+        section.add(OWSTableItem(customCellBlock: { [weak self] in
+            guard let self = self else {
+                owsFailDebug("Missing self")
+                return OWSTableItem.newCell()
+            }
+
+            let cellTitle: String
+            var customColor: UIColor?
+            if isCurrentlyBlocked {
+                cellTitle =
+                    (self.thread.isGroupThread
+                        ? NSLocalizedString("CONVERSATION_SETTINGS_UNBLOCK_GROUP",
+                                            comment: "Label for 'unblock group' action in conversation settings view.")
+                        : NSLocalizedString("CONVERSATION_SETTINGS_UNBLOCK_USER",
+                                            comment: "Label for 'unblock user' action in conversation settings view."))
+            } else {
+                cellTitle =
+                    (self.thread.isGroupThread
+                        ? NSLocalizedString("CONVERSATION_SETTINGS_BLOCK_GROUP",
+                                            comment: "Label for 'block group' action in conversation settings view.")
+                        : NSLocalizedString("CONVERSATION_SETTINGS_BLOCK_USER",
+                                            comment: "Label for 'block user' action in conversation settings view."))
+                customColor = UIColor.ows_accentRed
+            }
+            let cell = OWSTableItem.buildIconNameCell(icon: .settingsBlock,
+                                                      itemName: cellTitle,
+                                                      customColor: customColor,
+                                                      accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "block"))
+            return cell
+            },
+                                 actionBlock: { [weak self] in
+                                    if isCurrentlyBlocked {
+                                        self?.didTapUnblockGroup()
+                                    } else {
+                                        self?.didTapBlockGroup()
+                                    }
+        }))
 
         return section
     }
@@ -690,7 +703,7 @@ extension ConversationSettingsViewController {
                 return OWSTableItem.buildCell(name: NSLocalizedString("CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS",
                                                                       comment: "Label for 'view all members' button in conversation settings view."),
                                               icon: .settingsShowAllMembers)
-                },
+            },
                                      customRowHeight: UITableView.automaticDimension) { [weak self] in
                                         self?.showAllGroupMembers()
             })
