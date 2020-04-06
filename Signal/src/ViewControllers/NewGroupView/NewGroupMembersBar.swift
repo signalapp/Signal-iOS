@@ -34,7 +34,7 @@ public class NewGroupMembersBar: UIView {
     }
 
     private let collectionView: UICollectionView
-    private let collectionViewLayout = NewGroupMembersBarLayout()
+    private let collectionViewLayout = UICollectionViewFlowLayout()
 
     private var heightConstraint: NSLayoutConstraint?
 
@@ -53,8 +53,17 @@ public class NewGroupMembersBar: UIView {
         notImplemented()
     }
 
+    static let hMargin: CGFloat = 12
+    static let vMargin: CGFloat = 6
+    static let spacing: CGFloat = 8
+
     private func configure() {
-        collectionViewLayout.layoutDelegate = self
+        collectionViewLayout.minimumInteritemSpacing = Self.spacing
+        collectionViewLayout.minimumLineSpacing = Self.spacing
+        collectionViewLayout.estimatedItemSize = CGSize(width: 1,
+                                                        height: CGFloat(NewGroupMemberCell.minAvatarDiameter) * 2)
+        collectionViewLayout.scrollDirection = .horizontal
+        collectionView.contentInset = UIEdgeInsets(top: Self.vMargin, leading: Self.hMargin, bottom: Self.vMargin, trailing: Self.hMargin)
 
         collectionView.dataSource = self
         collectionView.delegate = self
@@ -72,9 +81,7 @@ public class NewGroupMembersBar: UIView {
     private func resetContentAndLayout() {
         AssertIsOnMainThread()
 
-        UIView.performWithoutAnimation {
-            collectionView.reloadSections(IndexSet(integer: 0))
-        }
+        collectionView.reloadData()
     }
 
     func updateHeightConstraint() {
@@ -87,10 +94,49 @@ public class NewGroupMembersBar: UIView {
     }
 
     private var contentHeight: CGFloat {
-        collectionViewLayout.prepare()
-        return collectionViewLayout.collectionViewContentSize.height
+        return preferredCellHeight() + Self.vMargin * 2
     }
 
+}
+
+// MARK: - NewGroupMembersBar
+
+extension NewGroupMembersBar: UICollectionViewDelegateFlowLayout {
+    public func preferredCellHeight() -> CGFloat {
+        let indexPath = IndexPath(item: 0, section: 0)
+        guard let cell = collectionView.dequeueReusableCell(withReuseIdentifier: NewGroupMemberCell.reuseIdentifier, for: indexPath) as? NewGroupMemberCell else {
+            owsFail("Missing or invalid cell.")
+        }
+        let address = SignalServiceAddress(uuid: UUID())
+        let recipient = PickedRecipient.for(address: address)
+        let member = NewGroupMember(recipient: recipient,
+                                        address: address,
+                                        displayName: "mock",
+                                        shortName: "mock",
+                                        comparableName: "mock",
+                                        conversationColorName: .default)
+        cell.configure(member: member)
+        let cellSize = cell.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize)
+        return cellSize.height
+    }
+
+    public func collectionView(_ collectionView: UICollectionView,
+                               layout collectionViewLayout: UICollectionViewLayout,
+                               sizeForItemAt indexPath: IndexPath) -> CGSize {
+        let cell = cellForLayoutMeasurement(at: indexPath)
+        let cellSize = cell.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize)
+
+        let collectionViewWidth = collectionView.width
+        let maxRowWidth = collectionViewWidth - Self.hMargin * 2
+        let maxCellWidth = maxRowWidth
+        let minCellWidth: CGFloat = 20
+        let cellWidth = max(min(cellSize.width, maxCellWidth), minCellWidth)
+        return CGSize(width: cellWidth, height: cellSize.height)
+    }
+
+    func cellForLayoutMeasurement(at indexPath: IndexPath) -> UICollectionViewCell {
+        return memberCell(at: indexPath)
+    }
 }
 
 // MARK: -
@@ -124,14 +170,6 @@ extension NewGroupMembersBar: UICollectionViewDataSource {
         cell.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "new-group-member-bar-\(indexPath.row)")
         #endif
         return cell
-    }
-}
-
-// MARK: -
-
-extension NewGroupMembersBar: NewGroupMembersBarLayoutDelegate {
-    func cellForLayoutMeasurement(at indexPath: IndexPath) -> UICollectionViewCell {
-        return memberCell(at: indexPath)
     }
 }
 
@@ -255,173 +293,5 @@ private class NewGroupMemberCell: UICollectionViewCell {
             return
         }
         delegate?.removeRecipient(recipient)
-    }
-}
-
-// MARK: -
-
-private protocol NewGroupMembersBarLayoutDelegate: class {
-    func cellForLayoutMeasurement(at indexPath: IndexPath) -> UICollectionViewCell
-}
-
-// MARK: -
-
-// A simple horizontal layout.
-private class NewGroupMembersBarLayout: UICollectionViewLayout {
-
-    fileprivate weak var layoutDelegate: NewGroupMembersBarLayoutDelegate?
-
-    private var itemAttributesMap = [UICollectionViewLayoutAttributes]()
-
-    private var contentSize: CGSize = .zero
-
-    // MARK: Initializers and Factory Methods
-
-    public override init() {
-        super.init()
-    }
-
-    @available(*, unavailable, message:"use other constructor instead.")
-    required init?(coder aDecoder: NSCoder) {
-        notImplemented()
-    }
-
-    // MARK: Methods
-
-    override func invalidateLayout() {
-        super.invalidateLayout()
-
-        itemAttributesMap.removeAll()
-    }
-
-    override func invalidateLayout(with context: UICollectionViewLayoutInvalidationContext) {
-        super.invalidateLayout(with: context)
-
-        itemAttributesMap.removeAll()
-    }
-
-    static let hMargin: CGFloat = 12
-    static let vMargin: CGFloat = 6
-
-    override func prepare() {
-        super.prepare()
-
-        guard let collectionView = collectionView else {
-            owsFailDebug("Missing collectionView.")
-            contentSize = .zero
-            return
-        }
-        guard let layoutDelegate = self.layoutDelegate else {
-            owsFailDebug("Missing layoutDelegate.")
-            contentSize = .zero
-            return
-        }
-        let hMargin = Self.hMargin
-        let vMargin = Self.vMargin
-        let hSpacing: CGFloat = 8
-        let collectionViewWidth = collectionView.width
-        guard collectionViewWidth > hMargin * 2 else {
-            contentSize = .zero
-            return
-        }
-        let maxRowWidth = collectionViewWidth - hMargin * 2
-        let maxCellWidth = maxRowWidth
-        let minCellWidth: CGFloat = 20
-
-        struct Item {
-            let indexPath: IndexPath
-            var frame: CGRect
-        }
-
-        // 1. Measure all cells and assign to rows with "x" values.
-        //    NOTE: this pass ignores margins.
-        var items = [Item]()
-        var nextCellX: CGFloat = 0
-        let sectionCount = collectionView.numberOfSections
-        for section in 0..<sectionCount {
-            let itemCount = collectionView.numberOfItems(inSection: section)
-            for itemIndex in 0..<itemCount {
-                let indexPath = IndexPath(row: itemIndex, section: section)
-                let cell = layoutDelegate.cellForLayoutMeasurement(at: indexPath)
-                // We use layoutFittingExpandedSize to ensure we get a proper
-                // measurement for the input cell, whose contents are scrollable.
-                let cellSize = cell.systemLayoutSizeFitting(UIView.layoutFittingExpandedSize)
-
-                let cellWidth = max(min(cellSize.width, maxCellWidth), minCellWidth)
-                var itemFrame = CGRect(x: 0, y: 0, width: cellWidth, height: cellSize.height)
-
-                itemFrame.origin.x = nextCellX
-                let item = Item(indexPath: indexPath, frame: itemFrame)
-                items.append(item)
-                nextCellX += itemFrame.width + hSpacing
-            }
-        }
-        guard !items.isEmpty else {
-            self.contentSize = .zero
-            return
-        }
-
-        // 2. Find max cell height.
-        let cellHeights: [CGFloat] = items.map { $0.frame.height }
-        let maxCellHeight = cellHeights.max()!
-
-        // 3. In a second pass, finalize positioning.
-        //
-        // * Assign "y" values.
-        // * Apply RTL.
-        // * Apply margins.
-        items = items.map { item in
-            var frame = item.frame
-
-            // V-center within row.
-            frame.origin.y = (maxCellHeight - frame.height) * 0.5
-
-            // Apply RTL
-            if CurrentAppContext().isRTL {
-                frame.origin.x = maxRowWidth - frame.maxX
-            }
-
-            // Apply margins.
-            frame.origin.x += hMargin
-            frame.origin.y += vMargin
-
-            return Item(indexPath: item.indexPath, frame: frame)
-        }
-
-        // 4. Update local state.
-        let cellFrames = items.map { $0.frame }
-        let maxX = cellFrames.map { $0.maxX }.max()!
-        let maxY = cellFrames.map { $0.maxY }.max()!
-        let contentWidth = maxX + hMargin
-        let contentHeight = maxY + vMargin
-
-        for item in items {
-            let itemAttributes = UICollectionViewLayoutAttributes(forCellWith: item.indexPath)
-            itemAttributes.frame = item.frame
-            itemAttributesMap.append(itemAttributes)
-        }
-
-        contentSize = CGSize(width: contentWidth, height: contentHeight)
-    }
-
-    override func layoutAttributesForElements(in rect: CGRect) -> [UICollectionViewLayoutAttributes]? {
-        return itemAttributesMap.filter { itemAttributes in
-            return itemAttributes.frame.intersects(rect)
-        }
-    }
-
-    override func layoutAttributesForItem(at indexPath: IndexPath) -> UICollectionViewLayoutAttributes? {
-        return itemAttributesMap[safe: indexPath.row]
-    }
-
-    override var collectionViewContentSize: CGSize {
-        return contentSize
-    }
-
-    override func shouldInvalidateLayout(forBoundsChange newBounds: CGRect) -> Bool {
-        guard let collectionView = collectionView else {
-            return false
-        }
-        return collectionView.width != newBounds.size.width
     }
 }

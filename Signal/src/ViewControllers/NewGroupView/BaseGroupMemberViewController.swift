@@ -197,13 +197,12 @@ public class BaseGroupMemberViewController: OWSViewController {
             let comparableName = self.contactsManager.comparableName(for: address, transaction: transaction)
             let conversationColorName = ConversationColorName(rawValue: self.contactsManager.conversationColorName(for: address,
                                                                                                                    transaction: transaction))
-            let shortName: String
-            if let nameComponents = self.contactsManager.nameComponents(for: address, transaction: transaction),
+            var shortName = displayName
+            if  !Locale.current.isCJKV,
+                let nameComponents = self.contactsManager.nameComponents(for: address, transaction: transaction),
                 let givenName = nameComponents.givenName?.filterForDisplay,
                 !givenName.isEmpty {
                 shortName = givenName
-            } else {
-                shortName = displayName
             }
             return NewGroupMember(recipient: recipient,
                                   address: address,
