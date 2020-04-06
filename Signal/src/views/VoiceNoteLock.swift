@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -52,7 +52,7 @@ public class VoiceMemoLockView: UIView {
         let imageTemplate = #imageLiteral(resourceName: "ic_lock_outline").withRenderingMode(.alwaysTemplate)
         let imageView = UIImageView(image: imageTemplate)
         imageView.tintColor = .ows_accentRed
-        imageView.autoSetDimensions(to: CGSize(width: 24, height: 24))
+        imageView.autoSetDimensions(to: CGSize(square: 24))
         return imageView
     }()
 

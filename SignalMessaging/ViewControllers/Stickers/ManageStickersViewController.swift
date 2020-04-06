@@ -33,7 +33,7 @@ private class StickerPackActionButton: UIView {
         actionIconView.tintColor = Theme.secondaryTextAndIconColor
         actionCircleView.addSubview(actionIconView)
         actionIconView.autoCenterInSuperview()
-        actionIconView.autoSetDimensions(to: CGSize(width: actionIconSize, height: actionIconSize))
+        actionIconView.autoSetDimensions(to: CGSize(square: actionIconSize))
 
         self.addSubview(actionCircleView)
         actionCircleView.autoPinEdgesToSuperviewEdges()
@@ -334,7 +334,7 @@ public class ManageStickersViewController: OWSTableViewController {
             iconView = UIView()
         }
         let iconSize: CGFloat = 64
-        iconView.autoSetDimensions(to: CGSize(width: iconSize, height: iconSize))
+        iconView.autoSetDimensions(to: CGSize(square: iconSize))
 
         let title: String
         if let titleValue = titleValue?.ows_stripped(),

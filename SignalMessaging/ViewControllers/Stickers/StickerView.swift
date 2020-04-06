@@ -23,7 +23,7 @@ public class StickerView: YYAnimatedImageView {
         super.init(frame: .zero)
 
         if let size = size {
-            autoSetDimensions(to: CGSize(width: size, height: size))
+            autoSetDimensions(to: CGSize(square: size))
         }
 
         loadSticker()

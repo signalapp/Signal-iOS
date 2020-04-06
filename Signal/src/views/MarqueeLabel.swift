@@ -1,10 +1,5 @@
-//  Grabbed from: https://github.com/cbpowell/MarqueeLabel-Swift/blob/cd331f3cfc3f9d7114ffa5aa4f243f1d5eda9d0d/Classes/MarqueeLabel.swift
-//  License: MIT License
 //
-//  MarqueeLabel.swift
-//
-//  Created by Charles Powell on 8/6/14.
-//  Copyright (c) 2015 Charles Powell. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -84,7 +79,7 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
      - SeeAlso: ScrollStep
      - SeeAlso: FadeStep
      */
-    open var scrollSequence: Array<MarqueeStep>?
+    open var scrollSequence: [MarqueeStep]?
 
     /**
      Specifies the animation curve used in the scrolling motion of the labels.
@@ -623,7 +618,7 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
 
         switch type {
         case .continuous, .continuousReverse:
-            if (type == .continuous) {
+            if type == .continuous {
                 homeLabelFrame = CGRect(x: leadingBuffer, y: 0.0, width: expectedLabelSize.width, height: bounds.size.height).integral
                 awayOffset = -(homeLabelFrame.size.width + minTrailing)
             } else { // .ContinuousReverse
@@ -657,7 +652,7 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
             repliLayer?.instanceTransform = CATransform3DMakeTranslation(-awayOffset, 0.0, 0.0)
 
         case .leftRight, .left, .rightLeft, .right:
-            if (type == .leftRight || type == .left) {
+            if type == .leftRight || type == .left {
                 homeLabelFrame = CGRect(x: leadingBuffer, y: 0.0, width: expectedLabelSize.width, height: bounds.size.height).integral
                 awayOffset = bounds.size.width - (expectedLabelSize.width + leadingBuffer + trailingBuffer)
                 // Enforce text alignment for this type
@@ -674,7 +669,7 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
             // Remove any replication
             repliLayer?.instanceCount = 1
 
-            if (type == .leftRight || type == .rightLeft) {
+            if type == .leftRight || type == .rightLeft {
                 sequence = scrollSequence ?? [
                     ScrollStep(timeStep: 0.0, position: .home, edgeFades: .trailing),               // Starting point, at home, with trailing fade
                     ScrollStep(timeStep: animationDelay, position: .home, edgeFades: .trailing),    // Delay at home, maintaining fade state
@@ -712,7 +707,7 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
 
     private func sublabelSize() -> CGSize {
         // Bound the expected size
-        let maximumLabelSize = CGSize(width: CGFloat.greatestFiniteMagnitude, height: CGFloat.greatestFiniteMagnitude)
+        let maximumLabelSize = CGSize(square: CGFloat.greatestFiniteMagnitude)
         // Calculate the expected size
         var expectedLabelSize = sublabel.sizeThatFits(maximumLabelSize)
 
@@ -845,7 +840,7 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
                 return
             }
 
-            guard (self != nil) else {
+            guard self != nil else {
                 return
             }
 
@@ -866,7 +861,7 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
             }
 
             // Begin again, if conditions met
-            if (self!.labelShouldScroll() && !self!.tapToScroll && !self!.holdScrolling) {
+            if self!.labelShouldScroll() && !self!.tapToScroll && !self!.holdScrolling {
                 // Perform completion callback
                 self!.scroll(scroller, fader: fader)
             }
@@ -958,7 +953,7 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
 
         for (offset, step) in fadeSteps {
             // Fade times
-            if (step is ScrollStep) {
+            if step is ScrollStep {
                 totalTime += step.timeStep
                 stepTime = totalTime
             } else {
@@ -1005,7 +1000,7 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
         maskLayer?.removeAllAnimations()
 
         // Check for zero-length fade
-        if (fadeLength <= 0.0) {
+        if fadeLength <= 0.0 {
             removeGradientMask()
             return
         }
@@ -1066,7 +1061,7 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
             return
         #endif
 
-        if (animated) {
+        if animated {
             // Finish transaction
             CATransaction.commit()
 
@@ -1275,7 +1270,7 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
      */
     public func pauseLabel() {
         // Prevent pausing label while not in scrolling animation, or when already paused
-        guard (!isPaused && awayFromHome) else {
+        guard !isPaused && awayFromHome else {
             return
         }
 
@@ -1297,7 +1292,7 @@ open class MarqueeLabel: UILabel, CAAnimationDelegate {
      */
     public func unpauseLabel() {
         // Only unpause if label was previously paused
-        guard (isPaused) else {
+        guard isPaused else {
             return
         }
 
@@ -1764,14 +1759,14 @@ fileprivate extension CAMediaTimingFunction {
             // Calculate f(t0)
             f0 = YforCurveAt(t0, controlPoints: controlPoints) - y_0
             // Check if this is close (enough)
-            if (abs(f0) < epsilon) {
+            if abs(f0) < epsilon {
                 // Done!
                 return t0
             }
             // Else continue Newton's Method
             df0 = derivativeCurveYValueAt(t0, controlPoints: controlPoints)
             // Check if derivative is small or zero ( http://en.wikipedia.org/wiki/Newton's_method#Failure_analysis )
-            if (abs(df0) < 1e-6) {
+            if abs(df0) < 1e-6 {
                 break
             }
             // Else recalculate t1

@@ -626,7 +626,7 @@ private class ConversationPickerCell: ContactTableViewCell {
 
     static let selectedBadgeImage = #imageLiteral(resourceName: "image_editor_checkmark_full").withRenderingMode(.alwaysTemplate)
 
-    let selectionBadgeSize = CGSize(width: 20, height: 20)
+    let selectionBadgeSize = CGSize(square: 20)
     lazy var selectionView: UIView = {
         let container = UIView()
         container.layoutMargins = .zero
@@ -649,7 +649,7 @@ private class ConversationPickerCell: ContactTableViewCell {
 
         let timerView = DisappearingTimerConfigurationView(durationSeconds: disappearingMessagesConfig.durationSeconds)
         timerView.tintColor = Theme.middleGrayColor
-        timerView.autoSetDimensions(to: CGSize(width: 44, height: 44))
+        timerView.autoSetDimensions(to: CGSize(square: 44))
         timerView.setCompressionResistanceHigh()
 
         let stackView = UIStackView(arrangedSubviews: [timerView, selectionView])

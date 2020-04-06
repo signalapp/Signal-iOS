@@ -110,7 +110,7 @@ public class VideoEditorView: UIView {
         playButton.contentMode = .scaleAspectFit
 
         let playButtonWidth = ScaleFromIPhone5(70)
-        playButton.autoSetDimensions(to: CGSize(width: playButtonWidth, height: playButtonWidth))
+        playButton.autoSetDimensions(to: CGSize(square: playButtonWidth))
         addSubview(playButton)
 
         playButton.addTarget(self, action: #selector(playButtonTapped), for: .touchUpInside)
@@ -167,7 +167,7 @@ public class VideoEditorView: UIView {
             let asset = AVURLAsset(url: url, options: nil)
             let generator = AVAssetImageGenerator(asset: asset)
             // We generate square thumbnails.
-            generator.maximumSize = CGSize(width: timelineHeight, height: timelineHeight)
+            generator.maximumSize = CGSize(square: timelineHeight)
             generator.appliesPreferredTrackTransform = true
             var thumbnails = [UIImage]()
             for index in 0..<thumbnailCount {

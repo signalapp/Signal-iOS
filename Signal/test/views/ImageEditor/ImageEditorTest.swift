@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -48,7 +48,7 @@ class ImageEditorTest: SignalBaseTest {
     }
 
     private func writeDummyImage() -> String {
-        let image = UIImage.init(color: .red, size: CGSize(width: 1, height: 1))
+        let image = UIImage.init(color: .red, size: CGSize(square: 1))
         guard let data = image.pngData() else {
             owsFail("Couldn't export dummy image.")
         }

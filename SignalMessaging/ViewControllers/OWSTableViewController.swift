@@ -41,7 +41,7 @@ public extension OWSTableItem {
         iconView.contentMode = .scaleAspectFit
         iconView.layer.minificationFilter = .trilinear
         iconView.layer.magnificationFilter = .trilinear
-        iconView.autoSetDimensions(to: CGSize(width: iconSize, height: iconSize))
+        iconView.autoSetDimensions(to: CGSize(square: iconSize))
         return iconView
     }
 

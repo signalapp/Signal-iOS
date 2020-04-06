@@ -241,7 +241,7 @@ private class NewGroupMemberCell: UICollectionViewCell {
                                                     right: buttonInset)
         removeButton.addTarget(self, action: #selector(removeButtonWasPressed), for: .touchUpInside)
         let buttonSize = 12 + 2 * buttonInset
-        removeButton.autoSetDimensions(to: CGSize(width: buttonSize, height: buttonSize))
+        removeButton.autoSetDimensions(to: CGSize(square: buttonSize))
 
         contentView.addSubview(avatarImageView)
         avatarImageView.autoPinEdges(toSuperviewMarginsExcludingEdge: .trailing)

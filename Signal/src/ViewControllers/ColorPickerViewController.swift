@@ -7,7 +7,7 @@ import Foundation
 @objc
 class OWSColorPickerAccessoryView: NeverClearView {
     override var intrinsicContentSize: CGSize {
-        return CGSize(width: kSwatchSize, height: kSwatchSize)
+        return CGSize(square: kSwatchSize)
     }
 
     override func sizeThatFits(_ size: CGSize) -> CGSize {
@@ -60,7 +60,7 @@ class ColorView: UIView {
 
         // Selected Ring
         let cellHeight: CGFloat = ScaleFromIPhone5(60)
-        selectedRing.autoSetDimensions(to: CGSize(width: cellHeight, height: cellHeight))
+        selectedRing.autoSetDimensions(to: CGSize(square: cellHeight))
 
         selectedRing.layer.borderColor = Theme.secondaryTextAndIconColor.cgColor
         selectedRing.layer.borderWidth = 2
@@ -71,7 +71,7 @@ class ColorView: UIView {
         swatchView.backgroundColor = conversationColor.primaryColor
 
         let swatchSize: CGFloat = ScaleFromIPhone5(46)
-        swatchView.autoSetDimensions(to: CGSize(width: swatchSize, height: swatchSize))
+        swatchView.autoSetDimensions(to: CGSize(square: swatchSize))
 
         swatchView.autoCenterInSuperview()
 

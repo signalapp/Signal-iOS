@@ -102,8 +102,7 @@ class GroupAttributesEditorHelper: NSObject {
         updateAvatarView(groupAvatar: avatarCurrent)
         avatarImageView.layer.cornerRadius = CGFloat(iconViewSize) * 0.5
         avatarImageView.clipsToBounds = true
-        avatarImageView.autoSetDimensions(to: CGSize(width: CGFloat(iconViewSize),
-                                                     height: CGFloat(iconViewSize)))
+        avatarImageView.autoSetDimensions(to: CGSize(square: CGFloat(iconViewSize)))
         avatarImageView.isUserInteractionEnabled = true
         avatarImageView.addGestureRecognizer(UITapGestureRecognizer(target: self,
                                                               action: #selector(didTapAvatarView)))
@@ -136,7 +135,7 @@ class GroupAttributesEditorHelper: NSObject {
         cameraWrapper.layer.shadowRadius = 4
         cameraWrapper.layer.shadowOffset = CGSize(width: 0, height: 4)
         cameraWrapper.layer.cornerRadius = wrapperSize * 0.5
-        cameraWrapper.autoSetDimensions(to: CGSize(width: wrapperSize, height: wrapperSize))
+        cameraWrapper.autoSetDimensions(to: CGSize(square: wrapperSize))
         return cameraWrapper
     }
 
@@ -144,7 +143,7 @@ class GroupAttributesEditorHelper: NSObject {
         let cameraImageView = UIImageView()
         cameraImageView.setTemplateImageName("camera-outline-24", tintColor: .ows_accentBlue)
         let iconSize: CGFloat = 32
-        cameraImageView.autoSetDimensions(to: CGSize(width: iconSize, height: iconSize))
+        cameraImageView.autoSetDimensions(to: CGSize(square: iconSize))
         return cameraImageView
     }
 

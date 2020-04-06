@@ -335,7 +335,7 @@ extension StickerPackCollectionView {
         let contentWidth = containerWidth - 2 * inset
         let columnCount = UInt((contentWidth + spacing) / (preferredCellSize + spacing))
         let cellWidth = (contentWidth - spacing * (CGFloat(columnCount) - 1)) / CGFloat(columnCount)
-        let itemSize = CGSize(width: cellWidth, height: cellWidth)
+        let itemSize = CGSize(square: cellWidth)
 
         if itemSize != flowLayout.itemSize {
             flowLayout.itemSize = itemSize

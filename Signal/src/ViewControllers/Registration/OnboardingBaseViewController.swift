@@ -109,14 +109,14 @@ public class OnboardingBaseViewController: OWSViewController {
 
         self.shouldBottomViewReserveSpaceForKeyboard = true
 
-        if (shouldShowBackButton()) {
+        if shouldShowBackButton() {
             let backButton = UIButton()
             let backButtonImage = CurrentAppContext().isRTL ? #imageLiteral(resourceName: "NavBarBackRTL") : #imageLiteral(resourceName: "NavBarBack")
             backButton.setTemplateImage(backButtonImage, tintColor: Theme.secondaryTextAndIconColor)
             backButton.addTarget(self, action: #selector(navigateBack), for: .touchUpInside)
 
             view.addSubview(backButton)
-            backButton.autoSetDimensions(to: CGSize(width: 40, height: 40))
+            backButton.autoSetDimensions(to: CGSize(square: 40))
             backButton.autoPinEdge(toSuperviewMargin: .leading)
             backButton.autoPinEdge(toSuperviewMargin: .top)
         }

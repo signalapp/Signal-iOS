@@ -183,7 +183,7 @@ public class MediaAlbumCellView: UIStackView {
     private func autoSet(viewSize: CGFloat,
                          ofViews views: [ConversationMediaView]) {
         for itemView in views {
-            itemView.autoSetDimensions(to: CGSize(width: viewSize, height: viewSize))
+            itemView.autoSetDimensions(to: CGSize(square: viewSize))
         }
     }
 

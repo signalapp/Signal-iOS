@@ -115,7 +115,7 @@ public class StickerPackViewController: OWSViewController {
         dismissButton.contentEdgeInsets = UIEdgeInsets(top: 20, leading: hMargin, bottom: 20, trailing: hMargin)
         dismissButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "dismissButton")
 
-        coverView.autoSetDimensions(to: CGSize(width: 64, height: 64))
+        coverView.autoSetDimensions(to: CGSize(square: 64))
         coverView.setCompressionResistanceHigh()
         coverView.setContentHuggingHigh()
 
@@ -311,7 +311,7 @@ public class StickerPackViewController: OWSViewController {
         UIView.setAnimationsEnabled(false)
 
         if #available(iOS 11.0, *) {
-            if (!CurrentAppContext().isMainApp) {
+            if !CurrentAppContext().isMainApp {
                 self.additionalSafeAreaInsets = .zero
             } else if OWSWindowManager.shared.hasCall {
                 self.additionalSafeAreaInsets = UIEdgeInsets(top: 20, leading: 0, bottom: 0, trailing: 0)

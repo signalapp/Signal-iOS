@@ -36,7 +36,7 @@ class ContactCell: UITableViewCell {
         textStackView.axis = .vertical
         textStackView.addArrangedSubview(titleLabel)
 
-        contactImageView.autoSetDimensions(to: CGSize(width: CGFloat(ContactCell.kAvatarDiameter), height: CGFloat(ContactCell.kAvatarDiameter)))
+        contactImageView.autoSetDimensions(to: CGSize(square: CGFloat(ContactCell.kAvatarDiameter)))
 
         let contentColumns: UIStackView = UIStackView(arrangedSubviews: [contactImageView, textStackView])
         contentColumns.axis = .horizontal

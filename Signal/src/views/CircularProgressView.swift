@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -90,12 +90,10 @@ public class CircularProgressView: UIView {
         let bezierPath1 = UIBezierPath()
         bezierPath1.append(UIBezierPath(ovalIn: CGRect(origin: center.minus(CGPoint(x: innerRadius,
                                                                                     y: innerRadius)),
-                                                       size: CGSize(width: innerRadius * 2,
-                                                                    height: innerRadius * 2))))
+                                                       size: CGSize(square: innerRadius * 2))))
         bezierPath1.append(UIBezierPath(ovalIn: CGRect(origin: center.minus(CGPoint(x: outerRadius,
                                                                                     y: outerRadius)),
-                                                       size: CGSize(width: outerRadius * 2,
-                                                                    height: outerRadius * 2))))
+                                                       size: CGSize(square: outerRadius * 2))))
         shapeLayer1.path = bezierPath1.cgPath
         shapeLayer1.fillColor = trackColor.cgColor
         shapeLayer1.fillRule = .evenOdd
