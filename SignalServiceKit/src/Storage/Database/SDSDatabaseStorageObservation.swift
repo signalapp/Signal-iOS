@@ -65,13 +65,7 @@ public class SDSDatabaseStorageChange: NSObject {
         case .grdb(updatedCollections: let updatedCollections, updatedInteractionRowIds: _):
             return updatedCollections.contains(collection)
         case .ydb(notifications: let notifications):
-            guard let primaryStorage = self.primaryStorage else {
-                owsFailDebug("Missing primaryStorage.")
-                return false
-            }
-            let connection = primaryStorage.uiDatabaseConnection
-            return connection.hasChange(forCollection: collection, in: notifications) ||
-                connection.didClearCollection(collection, in: notifications)
+            return false
         }
     }
 
@@ -98,14 +92,7 @@ public class SDSDatabaseStorageChange: NSObject {
         case .grdb(updatedCollections: _, updatedInteractionRowIds: let rowIds):
             return rowIds.contains(Int64(interaction.sortId))
         case .ydb(notifications: let notifications):
-            guard let primaryStorage = self.primaryStorage else {
-                owsFailDebug("Missing primaryStorage.")
-                return false
-            }
-            let connection = primaryStorage.uiDatabaseConnection
-            return connection.hasChange(forKey: interaction.uniqueId,
-                                        inCollection: TSInteraction.collection(),
-                                        in: notifications)
+            return false
         }
     }
 }

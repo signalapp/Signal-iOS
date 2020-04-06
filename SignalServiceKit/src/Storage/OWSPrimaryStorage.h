@@ -12,9 +12,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (class, nonatomic, readonly, nullable) OWSPrimaryStorage *shared;
 
-// POST GRDB TODO: Remove this property.
-@property (nonatomic, readonly) YapDatabaseConnection *uiDatabaseConnection;
-
 @property (nonatomic, readonly) YapDatabaseConnection *dbReadConnection;
 @property (nonatomic, readonly) YapDatabaseConnection *dbReadWriteConnection;
 @property (class, nonatomic, readonly) YapDatabaseConnection *dbReadConnection;
@@ -33,11 +30,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)legacyDatabaseDirPath;
 + (NSString *)sharedDataDatabaseDirPath;
-
-#pragma mark - Misc.
-
-// POST GRDB TODO: Remove this method.
-- (void)touchDbAsync;
 
 @end
 

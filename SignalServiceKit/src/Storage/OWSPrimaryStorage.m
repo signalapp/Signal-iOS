@@ -55,8 +55,6 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage, dispatch_block_t 
 
 @implementation OWSPrimaryStorage
 
-@synthesize uiDatabaseConnection = _uiDatabaseConnection;
-
 + (nullable instancetype)shared
 {
     OWSAssertDebug(SSKEnvironment.shared.primaryStorage);
@@ -75,11 +73,6 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage, dispatch_block_t 
         self.dbReadPool.connectionLimit = 10;
 
         _dbReadWriteConnection = [self newDatabaseConnection];
-        _uiDatabaseConnection = [self newDatabaseConnection];
-
-        // Increase object cache limit. Default is 250.
-        _uiDatabaseConnection.objectCacheLimit = 500;
-        [_uiDatabaseConnection beginLongLivedReadTransaction];
 
         [OWSPrimaryStorage protectFiles];
 
@@ -97,16 +90,9 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage, dispatch_block_t 
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-- (YapDatabaseConnection *)uiDatabaseConnection
-{
-    OWSAssertIsOnMainThread();
-    return _uiDatabaseConnection;
-}
-
 - (void)resetStorage
 {
     _dbReadPool = nil;
-    _uiDatabaseConnection = nil;
     _dbReadWriteConnection = nil;
 
     [super resetStorage];
@@ -413,24 +399,6 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage, dispatch_block_t 
 + (YapDatabaseConnection *)dbReadWriteConnection
 {
     return OWSPrimaryStorage.shared.dbReadWriteConnection;
-}
-
-#pragma mark - Misc.
-
-- (void)touchDbAsync
-{
-    OWSLogInfo(@"");
-
-    // There appears to be a bug in YapDatabase that sometimes delays modifications
-    // made in another process (e.g. the SAE) from showing up in other processes.
-    // There's a simple workaround: a trivial write to the database flushes changes
-    // made from other processes.
-    if (StorageCoordinator.dataStoreForUI != DataStoreYdb) {
-        OWSFailDebug(@"Unexpected storage mode.");
-    }
-    [self.dbReadWriteConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [transaction setObject:[NSUUID UUID].UUIDString forKey:@"conversation_view_noop_mod" inCollection:@"temp"];
-    }];
 }
 
 @end

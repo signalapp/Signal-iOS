@@ -1221,10 +1221,6 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
 
     [self.udManager setup];
 
-    if (StorageCoordinator.dataStoreForUI == DataStoreYdb) {
-        [self.primaryStorage touchDbAsync];
-    }
-
     // Every time the user upgrades to a new version:
     //
     // * Update account attributes.

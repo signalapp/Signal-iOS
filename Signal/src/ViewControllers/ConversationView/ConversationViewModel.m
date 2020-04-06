@@ -18,10 +18,6 @@
 #import <SignalServiceKit/TSIncomingMessage.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <SignalServiceKit/TSThread.h>
-#import <YapDatabase/YapDatabase.h>
-#import <YapDatabase/YapDatabaseAutoView.h>
-#import <YapDatabase/YapDatabaseViewChange.h>
-#import <YapDatabase/YapDatabaseViewChangePrivate.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -212,11 +208,6 @@ NS_ASSUME_NONNULL_BEGIN
     return SSKEnvironment.shared.primaryStorage;
 }
 
-- (nullable YapDatabaseConnection *)uiDatabaseConnection
-{
-    return self.primaryStorage.uiDatabaseConnection;
-}
-
 - (SDSDatabaseStorage *)databaseStorage
 {
     return SDSDatabaseStorage.shared;
@@ -325,25 +316,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSAssertDebug(StorageCoordinator.dataStoreForUI == DataStoreGrdb);
     [self.databaseStorage.grdbStorage.conversationViewDatabaseObserver appendSnapshotDelegate:self];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(applicationWillEnterForeground:)
-                                                 name:OWSApplicationWillEnterForegroundNotification
-                                               object:nil];
 }
 
 - (void)viewDidLoad
 {
     [self addNotificationListeners];
-
-    [self touchDbAsync];
-}
-
-- (void)touchDbAsync
-{
-    if (StorageCoordinator.dataStoreForUI == DataStoreYdb) {
-        // See comments in primaryStorage.touchDbAsync.
-        [self.primaryStorage touchDbAsync];
-    }
 }
 
 - (void)dealloc
@@ -588,10 +565,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
 
     OWSLogVerbose(@"");
-
-    // External database modifications (e.g. changes from another process such as the SAE)
-    // are "flushed" using touchDbAsync when the app re-enters the foreground.
-    // POST GRDB TODO - remove touchDbAsync
 }
 
 #pragma mark -
@@ -883,11 +856,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     // PERF TODO: don't call "reload" when appending new items, do a batch insert. Otherwise we re-render every cell.
     [self.delegate conversationViewModelDidUpdate:ConversationUpdate.reloadUpdate transaction:transaction];
-}
-
-- (void)applicationWillEnterForeground:(NSNotification *)notification
-{
-    [self touchDbAsync];
 }
 
 #pragma mark - View Items
@@ -1537,28 +1505,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self.delegate conversationViewModelDidUpdate:ConversationUpdate.reloadUpdate transaction:transaction];
     [self.delegate conversationViewModelRangeDidChangeWithTransaction:transaction];
-}
-
-- (nullable NSNumber *)findGroupIndexOfThreadInteraction:(TSInteraction *)interaction
-                                             transaction:(YapDatabaseReadTransaction *)transaction
-{
-    OWSAssertDebug(interaction);
-    OWSAssertDebug(transaction);
-
-    YapDatabaseAutoViewTransaction *_Nullable extension = [transaction extension:TSMessageDatabaseViewExtensionName];
-    if (!extension) {
-        OWSFailDebug(@"Couldn't load view.");
-        return nil;
-    }
-
-    NSUInteger groupIndex = 0;
-    BOOL foundInGroup =
-        [extension getGroup:nil index:&groupIndex forKey:interaction.uniqueId inCollection:TSInteraction.collection];
-    if (!foundInGroup) {
-        OWSLogError(@"Couldn't find quoted message in group.");
-        return nil;
-    }
-    return @(groupIndex);
 }
 
 - (void)typingIndicatorStateDidChange:(NSNotification *)notification
