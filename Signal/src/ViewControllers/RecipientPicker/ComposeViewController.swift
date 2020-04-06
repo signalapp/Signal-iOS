@@ -13,18 +13,30 @@ class ComposeViewController: OWSViewController {
 
         title = NSLocalizedString("MESSAGE_COMPOSEVIEW_TITLE", comment: "Title for the compose view.")
 
+        let showNewGroupAsCell = RemoteConfig.groupsV2CreateGroups
+
         recipientPicker.allowsSelectingUnregisteredPhoneNumbers = false
         recipientPicker.shouldShowInvites = true
-        recipientPicker.shouldShowNewGroup = true
+        recipientPicker.shouldShowNewGroup = showNewGroupAsCell
         recipientPicker.delegate = self
         addChild(recipientPicker)
         view.addSubview(recipientPicker.view)
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(dismissPressed))
+
+        if !showNewGroupAsCell {
+            navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "btnGroup--white"), style: .plain, target: self, action: #selector(newGroupPressed))
+            navigationItem.rightBarButtonItem?.accessibilityLabel = NSLocalizedString("NEW_GROUP_BUTTON_LABEL",
+                                                                                      comment: "Accessibility label for the new group button")
+        }
     }
 
     @objc func dismissPressed() {
         dismiss(animated: true)
+    }
+
+    @objc func newGroupPressed() {
+        showNewGroupUI()
     }
 
     func newConversation(address: SignalServiceAddress) {
@@ -36,6 +48,13 @@ class ComposeViewController: OWSViewController {
     func newConversation(thread: TSThread) {
         SignalApp.shared().presentConversation(for: thread, action: .compose, animated: false)
         presentingViewController?.dismiss(animated: true)
+    }
+
+    func showNewGroupUI() {
+        let newGroupView: UIViewController = (RemoteConfig.groupsV2CreateGroups
+            ? NewGroupViewController2()
+            : NewGroupViewController())
+        navigationController?.pushViewController(newGroupView, animated: true)
     }
 }
 
@@ -86,9 +105,6 @@ extension ComposeViewController: RecipientPickerDelegate {
     func recipientPickerTableViewWillBeginDragging(_ recipientPickerViewController: RecipientPickerViewController) {}
 
     func recipientPickerNewGroupButtonWasPressed() {
-        let newGroupView: UIViewController = (RemoteConfig.groupsV2CreateGroups
-            ? NewGroupViewController2()
-            : NewGroupViewController())
-        navigationController?.pushViewController(newGroupView, animated: true)
+        showNewGroupUI()
     }
 }
