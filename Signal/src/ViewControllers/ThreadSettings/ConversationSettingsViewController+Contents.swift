@@ -66,9 +66,7 @@ extension ConversationSettingsViewController {
 
         contents.addSection(mainSection)
 
-        if canEditConversationAttributes {
-            contents.addSection(buildDisappearingMessagesSection())
-        }
+        contents.addSection(buildDisappearingMessagesSection())
 
         if !isNoteToSelf {
             contents.addSection(buildNotificationsSection())
@@ -79,7 +77,9 @@ extension ConversationSettingsViewController {
                 let groupModelV2 = groupModel as? TSGroupModelV2 {
                 contents.addSection(buildGroupAccessSection(groupModelV2: groupModelV2))
             }
+
             contents.addSection(buildGroupMembershipSection(groupModel: groupModel))
+
             if thread.isGroupV2Thread {
                 contents.addSection(buildPendingMembersSection(groupModel: groupModel))
             }
@@ -257,6 +257,8 @@ extension ConversationSettingsViewController {
         let section = OWSTableSection()
         section.customHeaderHeight = 10
 
+        let canEditConversationAttributes = self.canEditConversationAttributes
+
         let disappearingMessagesConfiguration: OWSDisappearingMessagesConfiguration = self.disappearingMessagesConfiguration
         let switchAction = #selector(disappearingMessagesSwitchValueDidChange)
         section.add(OWSTableItem(customCellBlock: { [weak self] in
@@ -284,6 +286,7 @@ extension ConversationSettingsViewController {
             let switchView = UISwitch()
             switchView.isOn = disappearingMessagesConfiguration.isEnabled
             switchView.addTarget(self, action: switchAction, for: .valueChanged)
+            switchView.isEnabled = canEditConversationAttributes
 
             let topRow = UIStackView(arrangedSubviews: [ iconView, rowLabel, switchView ])
             topRow.spacing = self.iconSpacing
@@ -337,6 +340,7 @@ extension ConversationSettingsViewController {
                 slider.autoPinEdge(.leading, to: .leading, of: rowLabel)
                 slider.autoPinTrailingToSuperviewMargin()
                 slider.autoPinBottomToSuperviewMargin()
+                slider.isEnabled = canEditConversationAttributes
 
                 slider.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "disappearing_messages_slider")
                 cell.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "disappearing_messages_duration")
