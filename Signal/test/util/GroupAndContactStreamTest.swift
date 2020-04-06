@@ -355,6 +355,10 @@ class TestContactsManager: NSObject, ContactsManagerProtocol {
         return PersonNameComponents()
     }
 
+    func nameComponents(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> PersonNameComponents? {
+        return PersonNameComponents()
+    }
+
     func signalAccounts() -> [SignalAccount] {
         return []
     }
@@ -375,7 +379,8 @@ class TestContactsManager: NSObject, ContactsManagerProtocol {
         return .orderedSame
     }
 
-    func sortSignalServiceAddresses(_ addresses: [SignalServiceAddress], transaction: SDSAnyReadTransaction) -> [SignalServiceAddress] {
+    public func sortSignalServiceAddresses(_ addresses: [SignalServiceAddress],
+                                           transaction: SDSAnyReadTransaction) -> [SignalServiceAddress] {
         return addresses
     }
 

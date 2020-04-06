@@ -327,6 +327,25 @@ extension ConversationViewController: MessageActionsToolbarDelegate {
     }
 }
 
+// MARK: -
+
+extension ConversationViewController: GroupViewHelperDelegate {
+    func groupViewHelperDidUpdateGroup() {
+        // Do nothing.
+    }
+
+    var currentGroupModel: TSGroupModel? {
+        guard let groupThread = self.thread as? TSGroupThread else {
+            return nil
+        }
+        return groupThread.groupModel
+    }
+
+    var fromViewController: UIViewController? {
+        return self
+    }
+}
+
 // MARK: - UIMode
 
 extension ConversationViewController {

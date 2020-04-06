@@ -73,16 +73,20 @@ class ConversationSettingsViewController: OWSTableViewController {
 
     var isShowingAllGroupMembers = false
 
+    private let groupViewHelper: GroupViewHelper
+
     @objc
     public required init(threadViewModel: ThreadViewModel) {
         self.threadViewModel = threadViewModel
         if let groupThread = threadViewModel.threadRecord as? TSGroupThread {
             self.currentGroupModel = groupThread.groupModel
         }
+        groupViewHelper = GroupViewHelper(threadViewModel: threadViewModel)
 
         super.init()
 
         contactsViewHelper = ContactsViewHelper(delegate: self)
+        groupViewHelper.delegate = self
     }
 
     @available(*, unavailable, message:"use other constructor instead.")
@@ -108,89 +112,21 @@ class ConversationSettingsViewController: OWSTableViewController {
 
     // MARK: - Accessors
 
-    // Don't use this method directly;
-    // Use canEditConversationAttributes or canEditConversationMembership instead.
-    private func canLocalUserEditConversation(v2AccessTypeBlock: (GroupAccess) -> GroupV2Access) -> Bool {
-        if threadViewModel.hasPendingMessageRequest {
-            return false
-        }
-        guard isLocalUserInConversation else {
-            return false
-        }
-        guard let groupThread = thread as? TSGroupThread else {
-            // Both users can edit contact threads.
-            return true
-        }
-        guard let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {
-            // All users can edit v1 groups.
-            return true
-        }
-        guard let localAddress = tsAccountManager.localAddress else {
-            owsFailDebug("Missing localAddress.")
-            return false
-        }
-        // Use the block to pick the access type: attributes or members?
-        let access = v2AccessTypeBlock(groupModelV2.access)
-        switch access {
-        case .unknown:
-            owsFailDebug("Unknown access.")
-            return false
-        case .any:
-            return true
-        case .member:
-            return groupModelV2.groupMembership.isNonPendingMember(localAddress)
-        case .administrator:
-            return (groupModelV2.groupMembership.isNonPendingMember(localAddress) &&        groupModelV2.groupMembership.isAdministrator(localAddress))
-        }
-    }
-
-    // Can local user edit conversation attributes:
-    //
-    // * DM state
-    // * Group title (if group)
-    // * Group avatar (if group)
     var canEditConversationAttributes: Bool {
-        return canLocalUserEditConversation { groupAccess in
-            return groupAccess.attributes
-        }
+        return groupViewHelper.canEditConversationAttributes
     }
 
-    // Can local user edit group membership.
     var canEditConversationMembership: Bool {
-        return canLocalUserEditConversation { groupAccess in
-            return groupAccess.members
-        }
+        return groupViewHelper.canEditConversationMembership
     }
 
     // Can local user edit group access.
     var canEditConversationAccess: Bool {
-        if threadViewModel.hasPendingMessageRequest {
-            return false
-        }
-        guard isLocalUserInConversation else {
-            return false
-        }
-        guard let groupThread = thread as? TSGroupThread else {
-            // Contact threads don't use access.
-            return false
-        }
-        guard let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {
-            // v1 groups don't use access.
-            return false
-        }
-        guard let localAddress = tsAccountManager.localAddress else {
-            owsFailDebug("Missing localAddress.")
-            return false
-        }
-        return groupModelV2.groupMembership.isAdministrator(localAddress)
+        return groupViewHelper.canEditConversationAccess
     }
 
     var isLocalUserInConversation: Bool {
-        guard let groupThread = thread as? TSGroupThread else {
-            return true
-        }
-
-        return groupThread.isLocalUserInGroup
+        return groupViewHelper.isLocalUserInConversation
     }
 
     var isGroupThread: Bool {
@@ -316,8 +252,7 @@ class ConversationSettingsViewController: OWSTableViewController {
             owsFailDebug("Missing contactsViewHelper.")
             return
         }
-        let memberActionSheet = MemberActionSheet(address: memberAddress, contactsViewHelper: helper)
-        memberActionSheet.delegate = self
+        let memberActionSheet = MemberActionSheet(address: memberAddress, contactsViewHelper: helper, groupViewHelper: groupViewHelper)
         memberActionSheet.present(fromViewController: self)
     }
 
@@ -982,5 +917,17 @@ extension ConversationSettingsViewController: OWSNavigationView {
             GroupManager.localUpdateDisappearingMessages(thread: thread,
                                                          disappearingMessageToken: dmConfiguration.asToken)
         }
+    }
+}
+
+// MARK: -
+
+extension ConversationSettingsViewController: GroupViewHelperDelegate {
+    func groupViewHelperDidUpdateGroup() {
+        reloadGroupModelAndUpdateContent()
+    }
+
+    var fromViewController: UIViewController? {
+        return self
     }
 }
