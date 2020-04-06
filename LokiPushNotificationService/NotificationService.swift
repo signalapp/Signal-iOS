@@ -45,7 +45,7 @@ class NotificationService: UNNotificationServiceExtension {
         let contentProto = try? SSKProtoContent.parseData(result.plaintextData!)
         var thread: TSThread
         var newNotificationBody = ""
-        let masterHexEncodedPublicKey: String = LokiDatabaseUtilities.objc_getMasterHexEncodedPublicKey(for: result.source, in: transaction) ?? result.source
+        let masterHexEncodedPublicKey: String = OWSPrimaryStorage.shared().getMasterHexEncodedPublicKey(for: result.source, in: transaction) ?? result.source
         var displayName = masterHexEncodedPublicKey
         if let groupId = contentProto?.dataMessage?.group?.id {
            thread = TSGroupThread.getOrCreateThread(withGroupId: groupId, groupType: .closedGroup, transaction: transaction)

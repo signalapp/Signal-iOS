@@ -75,8 +75,8 @@ final class LokiPushNotificationManager : NSObject {
     }
     
     @objc(acknowledgeDeliveryForMessageWithHash:expiration:hexEncodedPublicKey:)
-    static func acknowledgeDeliveryForMessage(with hash: String, expiration:Int, hexEncodedPublicKey: String) {
-        let parameters: [String : Any] = [ "lastHash" : hash,
+    static func acknowledgeDelivery(forMessageWithHash hash: String, expiration:Int, hexEncodedPublicKey: String) {
+        let parameters: JSON = [ "lastHash" : hash,
                                            "pubKey" : hexEncodedPublicKey,
                                            "expiration": expiration]
         let url = URL(string: server + "acknowledge_message_delivery")!

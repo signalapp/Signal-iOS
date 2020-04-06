@@ -1884,15 +1884,6 @@ NS_ASSUME_NONNULL_BEGIN
     if (incomingMessage.isFriendRequest) {
         [thread removeOldIncomingFriendRequestMessagesIfNeededWithTransaction:transaction];
     }
-//    
-//    if (!CurrentAppContext().isMainApp) {
-//        dispatch_async(dispatch_get_main_queue(), ^{
-//            [self.typingIndicators didReceiveIncomingMessageInThread:masterThread
-//                                                         recipientId:(masterThread.contactIdentifier ?: envelope.source)
-//                                                            deviceId:envelope.sourceDevice];
-//        });
-//        return;
-//    }
 
     // Any messages sent from the current user - from this device or another - should be automatically marked as read.
     if ([(masterThread.contactIdentifier ?: envelope.source) isEqualToString:self.tsAccountManager.localNumber]) {
