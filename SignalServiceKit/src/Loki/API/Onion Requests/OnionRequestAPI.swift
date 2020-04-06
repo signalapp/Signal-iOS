@@ -224,10 +224,19 @@ internal enum OnionRequestAPI {
             guard case HTTP.Error.httpRequestFailed(_, _) = error else { return }
             dropPath(containing: guardSnode) // A snode in the path is bad; retry with a different path
         }
-        promise.recover(on: LokiAPI.errorHandlingQueue) { error -> Promise<JSON> in // Must be invoked on LokiAPI.errorHandlingQueue
+        promise.handlingErrorsIfNeeded(forTargetSnode: snode, associatedWith: hexEncodedPublicKey)
+        return promise
+    }
+}
+
+// MARK: Target Snode Error Handling
+private extension Promise where T == JSON {
+
+    func handlingErrorsIfNeeded(forTargetSnode snode: LokiAPITarget, associatedWith hexEncodedPublicKey: String) -> Promise<JSON> {
+        return recover(on: LokiAPI.errorHandlingQueue) { error -> Promise<JSON> in // Must be invoked on LokiAPI.errorHandlingQueue
             // The code below is very similar to that in LokiAPI.handlingSnodeErrorsIfNeeded(for:associatedWith:), but unfortunately slightly
             // different due to the fact that OnionRequestAPI uses the newer HTTP API, whereas LokiAPI still uses TSNetworkManager
-            guard case Error.httpRequestFailedAtTargetSnode(let statusCode, let json) = error else { throw error }
+            guard case OnionRequestAPI.Error.httpRequestFailedAtTargetSnode(let statusCode, let json) = error else { throw error }
             switch statusCode {
             case 0, 400, 500, 503:
                 // The snode is unreachable
@@ -261,6 +270,5 @@ internal enum OnionRequestAPI {
             }
             throw error
         }
-        return promise
     }
 }
