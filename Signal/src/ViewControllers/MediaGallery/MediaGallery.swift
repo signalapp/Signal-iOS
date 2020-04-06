@@ -252,78 +252,18 @@ class MediaGallery {
     }
 
     func setupDatabaseObservation() {
-        if StorageCoordinator.dataStoreForUI == .grdb {
-            guard let mediaGalleryDatabaseObserver = databaseStorage.grdbStorage.mediaGalleryDatabaseObserver else {
-                owsFailDebug("observer was unexpectedly nil")
-                return
-            }
-            mediaGalleryDatabaseObserver.appendSnapshotDelegate(self)
-        } else {
-            guard let primaryStorage = primaryStorage else {
-                owsFail("Missing primaryStorage.")
-            }
-
-            NotificationCenter.default.addObserver(self,
-                                                   selector: #selector(uiDatabaseDidUpdate),
-                                                   name: .OWSUIDatabaseConnectionDidUpdate,
-                                                   object: primaryStorage.dbNotificationObject)
-        }
-    }
-
-    // MARK: - Yap Database Notifications
-
-    @objc
-    func uiDatabaseDidUpdate(notification: Notification) {
-        guard let primaryStorage = primaryStorage else {
-            owsFail("Missing primaryStorage.")
-        }
-
-        guard let notifications = notification.userInfo?[OWSUIDatabaseConnectionNotificationsKey] as? [Notification] else {
-            owsFailDebug("notifications was unexpectedly nil")
+        guard StorageCoordinator.dataStoreForUI == .grdb else {
+            owsFailDebug("Invalid data store.")
             return
         }
-
-        guard mediaGalleryFinder.yapAdapter.hasMediaChanges(in: notifications, dbConnection: primaryStorage.uiDatabaseConnection) else {
+        guard let mediaGalleryDatabaseObserver = databaseStorage.grdbStorage.mediaGalleryDatabaseObserver else {
+            owsFailDebug("observer was unexpectedly nil")
             return
         }
-
-        let rowChanges = extractRowChanges(notifications: notifications)
-        assert(rowChanges.count > 0)
-
-        process(rowChanges: rowChanges)
+        mediaGalleryDatabaseObserver.appendSnapshotDelegate(self)
     }
 
-    func extractRowChanges(notifications: [Notification]) -> [YapDatabaseViewRowChange] {
-        return notifications.flatMap { notification -> [YapDatabaseViewRowChange] in
-            guard let userInfo = notification.userInfo else {
-                owsFailDebug("userInfo was unexpectedly nil")
-                return []
-            }
-
-            guard let extensionChanges = userInfo["extensions"] as? [AnyHashable: Any] else {
-                owsFailDebug("extensionChanges was unexpectedly nil")
-                return []
-            }
-
-            guard let galleryData = extensionChanges[YAPDBMediaGalleryFinder.databaseExtensionName()] as? [AnyHashable: Any] else {
-                owsFailDebug("galleryData was unexpectedly nil")
-                return []
-            }
-
-            guard let galleryChanges = galleryData["changes"] as? [Any] else {
-                owsFailDebug("gallerlyChanges was unexpectedly nil")
-                return []
-            }
-
-            return galleryChanges.compactMap { $0 as? YapDatabaseViewRowChange }
-        }
-    }
-
-    func process(rowChanges: [YapDatabaseViewRowChange]) {
-        let deletedIds = rowChanges.filter { $0.type == .delete }.map { $0.collectionKey.key }
-
-        process(deletedAttachmentIds: deletedIds)
-    }
+    // MARK: - 
 
     func process(deletedAttachmentIds: [String]) {
         let deletedItems: [MediaGalleryItem] = deletedAttachmentIds.compactMap { attachmentId in

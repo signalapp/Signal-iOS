@@ -134,20 +134,6 @@ public protocol SDSDatabaseStorageObserver: AnyObject {
 class SDSDatabaseStorageObservation {
 
     init() {
-        self.addYDBObservers()
-    }
-
-    private func addYDBObservers() {
-        guard StorageCoordinator.dataStoreForUI != .grdb || CurrentAppContext().isRunningTests else {
-            return
-        }
-
-        NotificationCenter.default.addObserver(forName: .OWSUIDatabaseConnectionDidUpdate, object: nil, queue: nil) { [weak self] notification in
-            self?.ydbDidUpdate(notification: notification)
-        }
-        NotificationCenter.default.addObserver(forName: .OWSUIDatabaseConnectionDidUpdateExternally, object: nil, queue: nil) { [weak self] notification in
-            self?.ydbDidUpdateExternally(notification: notification)
-        }
     }
 
     func set(grdbStorage: GRDBDatabaseStorageAdapter) {
@@ -221,31 +207,6 @@ class SDSDatabaseStorageObservation {
         AssertIsOnMainThread()
 
         _databaseStorageObservers = _databaseStorageObservers.filter { $0.value != nil} + [Weak(value: databaseStorageObserver)]
-    }
-}
-
-// MARK: - YDB
-
-extension SDSDatabaseStorageObservation {
-
-    private func ydbDidUpdate(notification: Notification) {
-        AssertIsOnMainThread()
-
-        guard let notifications = notification.userInfo?[OWSUIDatabaseConnectionNotificationsKey] as? [Notification] else {
-            owsFailDebug("notifications was unexpectedly nil")
-            return
-        }
-
-        let change = SDSDatabaseStorageChange(.ydb(notifications: notifications))
-        notifyDidUpdate(change: change)
-    }
-
-    private func ydbDidUpdateExternally(notification: Notification) {
-        AssertIsOnMainThread()
-
-        Logger.verbose("")
-
-        notifyDidUpdateExternally()
     }
 }
 

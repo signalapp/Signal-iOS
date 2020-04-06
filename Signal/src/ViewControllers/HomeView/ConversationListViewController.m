@@ -185,22 +185,9 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                                              selector:@selector(applicationWillResignActive:)
                                                  name:OWSApplicationWillResignActiveNotification
                                                object:nil];
-    if (StorageCoordinator.dataStoreForUI == DataStoreGrdb) {
-        [self.databaseStorage.grdbStorage.conversationListDatabaseObserver appendSnapshotDelegate:self];
-    } else {
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(uiDatabaseDidUpdateExternally:)
-                                                     name:OWSUIDatabaseConnectionDidUpdateExternallyNotification
-                                                   object:self.primaryStorage.dbNotificationObject];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(uiDatabaseWillUpdate:)
-                                                     name:OWSUIDatabaseConnectionWillUpdateNotification
-                                                   object:self.primaryStorage.dbNotificationObject];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(uiDatabaseDidUpdate:)
-                                                     name:OWSUIDatabaseConnectionDidUpdateNotification
-                                                   object:self.primaryStorage.dbNotificationObject];
-    }
+    OWSAssertDebug(StorageCoordinator.dataStoreForUI == DataStoreGrdb);
+    [self.databaseStorage.grdbStorage.conversationListDatabaseObserver appendSnapshotDelegate:self];
+
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(registrationStateDidChange:)
                                                  name:NSNotificationNameRegistrationStateDidChange
@@ -1777,47 +1764,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         // do it when we resume.
         [self resetMappings];
     }
-}
-
-#pragma mark YapDB Update
-
-- (void)uiDatabaseWillUpdate:(NSNotification *)notification
-{
-    OWSAssertIsOnMainThread();
-    [self anyUIDBWillUpdate];
-}
-
-- (void)uiDatabaseDidUpdate:(NSNotification *)notification
-{
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug(StorageCoordinator.dataStoreForUI == DataStoreYdb);
-
-    if (!self.shouldObserveDBModifications) {
-        return;
-    }
-
-    NSArray *notifications = notification.userInfo[OWSUIDatabaseConnectionNotificationsKey];
-    YapDatabaseConnection *uiDatabaseConnection = self.primaryStorage.uiDatabaseConnection;
-    if (![[uiDatabaseConnection ext:TSThreadDatabaseViewExtensionName] hasChangesForGroup:self.currentGrouping
-                                                                          inNotifications:notifications]) {
-
-        [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-            [self.threadMapping updateSwallowingErrorsWithIsViewingArchive:self.isViewingArchive
-                                                               transaction:transaction];
-        }];
-        [self updateViewState];
-
-        return;
-    }
-
-    NSSet<NSString *> *updatedThreadIds = [self.threadMapping updatedYapItemIdsForNotifications:notifications];
-    [self anyUIDBDidUpdateWithUpdatedThreadIds:updatedThreadIds];
-}
-
-- (void)uiDatabaseDidUpdateExternally:(NSNotification *)notification
-{
-    OWSAssertIsOnMainThread();
-    [self anyUIDBDidUpdateExternally];
 }
 
 #pragma mark AnyDB Update

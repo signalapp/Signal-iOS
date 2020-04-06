@@ -306,10 +306,6 @@ NS_ASSUME_NONNULL_BEGIN
     // size, since it depends on where the unread indicator is placed.
     self.typingIndicatorsSender = [self.typingIndicators typingAddressForThread:self.thread];
 
-    if (StorageCoordinator.dataStoreForUI == DataStoreYdb) {
-        [self.primaryStorage updateUIDatabaseConnectionToLatest];
-    }
-
     [BenchManager benchWithTitle:@"loading initial interactions"
                            block:^{
                                [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
@@ -327,22 +323,8 @@ NS_ASSUME_NONNULL_BEGIN
                                }];
                            }];
 
-    if (StorageCoordinator.dataStoreForUI == DataStoreGrdb) {
-        [self.databaseStorage.grdbStorage.conversationViewDatabaseObserver appendSnapshotDelegate:self];
-    } else {
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(uiDatabaseDidUpdateExternally:)
-                                                     name:OWSUIDatabaseConnectionDidUpdateExternallyNotification
-                                                   object:self.primaryStorage.dbNotificationObject];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(uiDatabaseWillUpdate:)
-                                                     name:OWSUIDatabaseConnectionWillUpdateNotification
-                                                   object:self.primaryStorage.dbNotificationObject];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(uiDatabaseDidUpdate:)
-                                                     name:OWSUIDatabaseConnectionDidUpdateNotification
-                                                   object:self.primaryStorage.dbNotificationObject];
-    }
+    OWSAssertDebug(StorageCoordinator.dataStoreForUI == DataStoreGrdb);
+    [self.databaseStorage.grdbStorage.conversationViewDatabaseObserver appendSnapshotDelegate:self];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationWillEnterForeground:)
                                                  name:OWSApplicationWillEnterForegroundNotification
@@ -485,35 +467,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self resetMappingWithSneakyTransaction];
 }
 
-#pragma mark - YapDB Updates
-
-- (void)uiDatabaseWillUpdate:(NSNotification *)notification
-{
-    [self anyDBWillUpdate];
-}
-
-- (void)uiDatabaseDidUpdate:(NSNotification *)notification
-{
-    OWSAssertIsOnMainThread();
-
-    OWSLogVerbose(@"");
-
-    NSArray<NSNotification *> *notifications = notification.userInfo[OWSUIDatabaseConnectionNotificationsKey];
-    OWSAssertDebug([notifications isKindOfClass:[NSArray class]]);
-
-    YapDatabaseAutoViewConnection *messageDatabaseView =
-        [self.uiDatabaseConnection ext:TSMessageDatabaseViewExtensionName];
-    OWSAssertDebug([messageDatabaseView isKindOfClass:[YapDatabaseAutoViewConnection class]]);
-    if (![messageDatabaseView hasChangesForGroup:self.thread.uniqueId inNotifications:notifications]
-        && !self.shouldShowThreadDetails) {
-        [self.delegate conversationViewModelDidUpdateWithSneakyTransaction:ConversationUpdate.minorUpdate];
-        return;
-    }
-
-    NSSet<NSString *> *updatedInteractionIds = [self.messageMapping updatedItemIdsFor:notifications];
-
-    [self anyDBDidUpdateWithUpdatedInteractionIds:updatedInteractionIds];
-}
+#pragma mark -
 
 - (void)anyDBDidUpdateWithUpdatedInteractionIds:(NSSet<NSString *> *)updatedInteractionIds
 {
@@ -620,11 +574,6 @@ NS_ASSUME_NONNULL_BEGIN
     [updatedItemSet intersectSet:[NSSet setWithArray:self.viewState.interactionIndexMap.allKeys]];
 
     [self updateViewWithOldItemIdList:oldItemIdList updatedItemSet:updatedItemSet];
-}
-
-- (void)uiDatabaseDidUpdateExternally:(NSNotification *)notification
-{
-    [self anyDBDidUpdateExternally];
 }
 
 #pragma mark - AnyDB Update

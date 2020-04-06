@@ -22,13 +22,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const OWSUIDatabaseConnectionWillUpdateNotification = @"OWSUIDatabaseConnectionWillUpdateNotification";
-NSString *const OWSUIDatabaseConnectionDidUpdateNotification = @"OWSUIDatabaseConnectionDidUpdateNotification";
-NSString *const OWSUIDatabaseConnectionWillUpdateExternallyNotification = @"OWSUIDatabaseConnectionWillUpdateExternallyNotification";
-NSString *const OWSUIDatabaseConnectionDidUpdateExternallyNotification = @"OWSUIDatabaseConnectionDidUpdateExternallyNotification";
-
-NSString *const OWSUIDatabaseConnectionNotificationsKey = @"OWSUIDatabaseConnectionNotificationsKey";
-
 void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage, dispatch_block_t completion)
 {
     OWSCAssertDebug(storage);
@@ -87,15 +80,6 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage, dispatch_block_t 
         // Increase object cache limit. Default is 250.
         _uiDatabaseConnection.objectCacheLimit = 500;
         [_uiDatabaseConnection beginLongLivedReadTransaction];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(yapDatabaseModified:)
-                                                     name:YapDatabaseModifiedNotification
-                                                   object:self.dbNotificationObject];
-
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(yapDatabaseModifiedExternally:)
-                                                     name:YapDatabaseModifiedExternallyNotification
-                                                   object:nil];
 
         [OWSPrimaryStorage protectFiles];
 
@@ -111,48 +95,6 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage, dispatch_block_t 
     OWSLogVerbose(@"Dealloc: %@", self.class);
 
     [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-- (void)yapDatabaseModifiedExternally:(NSNotification *)notification
-{
-    // Notify observers we're about to update the database connection
-    [[NSNotificationCenter defaultCenter] postNotificationName:OWSUIDatabaseConnectionWillUpdateExternallyNotification object:self.dbNotificationObject];
-    
-    // Move uiDatabaseConnection to the latest commit.
-    // Do so atomically, and fetch all the notifications for each commit we jump.
-    NSArray *notifications = [self.uiDatabaseConnection beginLongLivedReadTransaction];
-    
-    // Notify observers that the uiDatabaseConnection was updated
-    NSDictionary *userInfo = @{ OWSUIDatabaseConnectionNotificationsKey: notifications };
-    [[NSNotificationCenter defaultCenter] postNotificationName:OWSUIDatabaseConnectionDidUpdateExternallyNotification
-                                                        object:self.dbNotificationObject
-                                                      userInfo:userInfo];
-}
-
-- (void)yapDatabaseModified:(NSNotification *)notification
-{
-    OWSAssertIsOnMainThread();
-
-    OWSLogVerbose(@"");
-    [self updateUIDatabaseConnectionToLatest];
-}
-
-- (void)updateUIDatabaseConnectionToLatest
-{
-    OWSAssertIsOnMainThread();
-
-    // Notify observers we're about to update the database connection
-    [[NSNotificationCenter defaultCenter] postNotificationName:OWSUIDatabaseConnectionWillUpdateNotification object:self.dbNotificationObject];
-
-    // Move uiDatabaseConnection to the latest commit.
-    // Do so atomically, and fetch all the notifications for each commit we jump.
-    NSArray *notifications = [self.uiDatabaseConnection beginLongLivedReadTransaction];
-    
-    // Notify observers that the uiDatabaseConnection was updated
-    NSDictionary *userInfo = @{ OWSUIDatabaseConnectionNotificationsKey: notifications };
-    [[NSNotificationCenter defaultCenter] postNotificationName:OWSUIDatabaseConnectionDidUpdateNotification
-                                                        object:self.dbNotificationObject
-                                                      userInfo:userInfo];
 }
 
 - (YapDatabaseConnection *)uiDatabaseConnection

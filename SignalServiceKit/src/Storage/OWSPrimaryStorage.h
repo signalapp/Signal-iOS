@@ -1,16 +1,10 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSStorage.h"
 
 NS_ASSUME_NONNULL_BEGIN
-
-extern NSString *const OWSUIDatabaseConnectionWillUpdateNotification;
-extern NSString *const OWSUIDatabaseConnectionDidUpdateNotification;
-extern NSString *const OWSUIDatabaseConnectionWillUpdateExternallyNotification;
-extern NSString *const OWSUIDatabaseConnectionDidUpdateExternallyNotification;
-extern NSString *const OWSUIDatabaseConnectionNotificationsKey;
 
 @interface OWSPrimaryStorage : OWSStorage
 
@@ -25,9 +19,6 @@ extern NSString *const OWSUIDatabaseConnectionNotificationsKey;
 @property (nonatomic, readonly) YapDatabaseConnection *dbReadWriteConnection;
 @property (class, nonatomic, readonly) YapDatabaseConnection *dbReadConnection;
 @property (class, nonatomic, readonly) YapDatabaseConnection *dbReadWriteConnection;
-
-// POST GRDB TODO: Remove this method.
-- (void)updateUIDatabaseConnectionToLatest;
 
 + (nullable NSError *)migrateToSharedData;
 
