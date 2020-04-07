@@ -1,12 +1,15 @@
 
 final class TextField : UITextField {
     private let usesDefaultHeight: Bool
+    private let height: CGFloat
+    private let horizontalInset: CGFloat
+    private let verticalInset: CGFloat
 
-    private let horizontalInset = isSmallScreen ? Values.mediumSpacing : Values.largeSpacing
-    private let verticalInset = isSmallScreen ? Values.smallSpacing : Values.largeSpacing
-
-    init(placeholder: String, usesDefaultHeight: Bool = true) {
+    init(placeholder: String, usesDefaultHeight: Bool = true, customHeight: CGFloat? = nil, customHorizontalInset: CGFloat? = nil, customVerticalInset: CGFloat? = nil) {
         self.usesDefaultHeight = usesDefaultHeight
+        self.height = customHeight ?? Values.textFieldHeight
+        self.horizontalInset = customHorizontalInset ?? (isSmallScreen ? Values.mediumSpacing : Values.largeSpacing)
+        self.verticalInset = customVerticalInset ?? (isSmallScreen ? Values.smallSpacing : Values.largeSpacing)
         super.init(frame: CGRect.zero)
         self.placeholder = placeholder
         setUpStyle()
@@ -30,7 +33,7 @@ final class TextField : UITextField {
         tintColor = Colors.accent
         keyboardAppearance = isLightMode ? .light : .dark
         if usesDefaultHeight {
-            set(.height, to: Values.textFieldHeight)
+            set(.height, to: height)
         }
         layer.borderColor = isLightMode ? Colors.text.cgColor : Colors.border.withAlphaComponent(Values.textFieldBorderOpacity).cgColor
         layer.borderWidth = Values.borderThickness

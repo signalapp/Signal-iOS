@@ -150,7 +150,7 @@ private final class EnterPublicKeyVC : UIViewController {
     private var linkButtonBottomConstraint: NSLayoutConstraint!
     
     // MARK: Components
-    private lazy var publicKeyTextField = TextField(placeholder: NSLocalizedString("Enter your Session ID", comment: ""))
+    private lazy var publicKeyTextField = TextField(placeholder: NSLocalizedString("Enter your Session ID", comment: ""), customHeight: 56, customVerticalInset: 12)
     
     // MARK: Lifecycle
     override func viewDidLoad() {
@@ -184,7 +184,7 @@ private final class EnterPublicKeyVC : UIViewController {
         // Set up top stack view
         let topStackView = UIStackView(arrangedSubviews: [ titleLabel, explanationLabel, publicKeyTextField ])
         topStackView.axis = .vertical
-        topStackView.spacing = isSmallScreen ? Values.smallSpacing : Values.largeSpacing
+        topStackView.spacing = Values.smallSpacing
         // Set up spacers
         let topSpacer = UIView.vStretchingSpacer()
         let bottomSpacer = UIView.vStretchingSpacer()
