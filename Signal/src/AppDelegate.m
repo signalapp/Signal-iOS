@@ -709,6 +709,7 @@ static BOOL isUsingFullAPNs = YES;
 
 - (void)enableBackgroundRefreshIfNecessary
 {
+    if (isUsingFullAPNs) { return; }
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
         [UIApplication.sharedApplication setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
         // Loki: Original code
