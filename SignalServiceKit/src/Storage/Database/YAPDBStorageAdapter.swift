@@ -26,6 +26,7 @@ extension YAPDBStorageAdapter: SDSDatabaseStorageAdapter {
     }
 
     func uiRead(block: @escaping (YapDatabaseReadTransaction) -> Void) {
+        owsFailDebug("YDB UI read.")
         storage.dbReadConnection.read { yapTransaction in
             block(yapTransaction)
         }

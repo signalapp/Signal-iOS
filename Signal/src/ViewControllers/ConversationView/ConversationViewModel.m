@@ -308,7 +308,7 @@ NS_ASSUME_NONNULL_BEGIN
                                }];
                            }];
 
-    OWSAssertDebug(StorageCoordinator.dataStoreForUI == DataStoreGrdb);
+    OWSAssert(StorageCoordinator.dataStoreForUI == DataStoreGrdb);
     [self.databaseStorage.grdbStorage.conversationViewDatabaseObserver appendSnapshotDelegate:self];
 }
 

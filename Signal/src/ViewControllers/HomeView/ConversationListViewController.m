@@ -176,7 +176,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                                              selector:@selector(applicationWillResignActive:)
                                                  name:OWSApplicationWillResignActiveNotification
                                                object:nil];
-    OWSAssertDebug(StorageCoordinator.dataStoreForUI == DataStoreGrdb);
+    OWSAssert(StorageCoordinator.dataStoreForUI == DataStoreGrdb);
     [self.databaseStorage.grdbStorage.conversationListDatabaseObserver appendSnapshotDelegate:self];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -1732,7 +1732,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 - (void)conversationListDatabaseSnapshotDidUpdateWithUpdatedThreadIds:(NSSet<NSString *> *)updatedThreadIds
 {
     OWSAssertIsOnMainThread();
-    OWSAssertDebug(StorageCoordinator.dataStoreForUI == DataStoreGrdb);
+    OWSAssert(StorageCoordinator.dataStoreForUI == DataStoreGrdb);
 
     if (!self.shouldObserveDBModifications) {
         return;

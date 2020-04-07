@@ -349,6 +349,7 @@ public class SDSDatabaseStorage: SDSTransactable {
                 owsFail("error: \(error.grdbErrorForLogging)")
             }
         case .ydb:
+            owsFailDebug("YDB UI read.")
             // We no longer use a UI connection with YDB.
             yapStorage.read { transaction in
                 block(transaction.asAnyRead)
@@ -412,6 +413,7 @@ public class SDSDatabaseStorage: SDSTransactable {
                 }
             }
         case .ydb:
+            owsFailDebug("YDB UI read.")
             // We no longer use a UI connection with YDB.
             try yapStorage.readThrows { transaction in
                 try block(transaction.asAnyRead)
