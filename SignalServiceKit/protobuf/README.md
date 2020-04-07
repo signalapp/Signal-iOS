@@ -1,6 +1,6 @@
 # SignalServiceKit Protobufs
 
-These protobuf definitions are copied from Signal-Android, but modified
+These protobuf definitions are copied from Session-Android, but modified
 to match some iOS conventions.
 
 ## Prequisites
