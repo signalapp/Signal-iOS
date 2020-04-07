@@ -2,7 +2,7 @@ import UserNotifications
 import SignalServiceKit
 import SignalMessaging
 
-final class NotificationService : UNNotificationServiceExtension {
+final class NotificationServiceExtension : UNNotificationServiceExtension {
     static let isFromRemoteKey = "remote"
     static let threadIdKey = "Signal.AppNotificationsUserInfoKey.threadId"
 
@@ -67,7 +67,7 @@ final class NotificationService : UNNotificationServiceExtension {
                                                   groupType: oldGroupModel.groupType,
                                                   adminIds: group.admins)
             removeMembers.subtract(Set(arrayLiteral: newGroupModel.groupMemberIds))
-            newGroupModel.removedMembers = removeMembers as! NSMutableSet
+            newGroupModel.removedMembers = NSMutableSet(set: removeMembers)
             switch contentProto?.dataMessage?.group?.type {
             case .update:
                 newNotificationBody = oldGroupModel.getInfoStringAboutUpdate(to: newGroupModel, contactsManager: SSKEnvironment.shared.contactsManager)
