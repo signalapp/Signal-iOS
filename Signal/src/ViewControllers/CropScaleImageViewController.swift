@@ -82,7 +82,7 @@ import SignalMessaging
         // normalized() can be slightly expensive but in practice this is fine.
         self.srcImage = srcImage.normalized()
         self.successCompletion = successCompletion
-        super.init(nibName: nil, bundle: nil)
+        super.init()
 
         configureCropAndScale()
     }

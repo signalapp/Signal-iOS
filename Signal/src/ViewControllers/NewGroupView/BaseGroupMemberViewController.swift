@@ -67,8 +67,8 @@ public class BaseGroupMemberViewController: OWSViewController {
     private let memberCountLabel = UILabel()
     private let memberCountWrapper = UIView()
 
-    public init() {
-        super.init(nibName: nil, bundle: nil)
+    public override init() {
+        super.init()
     }
 
     @available(*, unavailable, message:"use other constructor instead.")

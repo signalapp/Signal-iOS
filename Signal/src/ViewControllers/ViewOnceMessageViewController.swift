@@ -52,7 +52,7 @@ class ViewOnceMessageViewController: OWSViewController {
     required init(content: Content) {
         self.content = content
 
-        super.init(nibName: nil, bundle: nil)
+        super.init()
     }
 
     public required init?(coder aDecoder: NSCoder) {

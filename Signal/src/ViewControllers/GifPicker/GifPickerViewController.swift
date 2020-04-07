@@ -127,12 +127,12 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
     }
 
     @objc
-    required init() {
+    required override init() {
         self.searchBar = OWSSearchBar()
         self.layout = GifPickerLayout()
         self.collectionView = UICollectionView(frame: CGRect.zero, collectionViewLayout: self.layout)
 
-        super.init(nibName: nil, bundle: nil)
+        super.init()
 
         self.layout.delegate = self
     }

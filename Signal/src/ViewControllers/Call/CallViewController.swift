@@ -140,7 +140,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         contactsManager = Environment.shared.contactsManager
         self.call = call
         self.thread = TSContactThread.getOrCreateThread(contactAddress: call.remoteAddress)
-        super.init(nibName: nil, bundle: nil)
+        super.init()
 
         allAudioSources = Set(callUIAdapter.audioService.availableInputs)
 

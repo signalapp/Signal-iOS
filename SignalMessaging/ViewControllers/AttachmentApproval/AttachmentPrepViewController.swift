@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -51,7 +51,7 @@ public class AttachmentPrepViewController: OWSViewController {
 
     init(attachmentApprovalItem: AttachmentApprovalItem) {
         self.attachmentApprovalItem = attachmentApprovalItem
-        super.init(nibName: nil, bundle: nil)
+        super.init()
         assert(!attachment.hasError)
     }
 

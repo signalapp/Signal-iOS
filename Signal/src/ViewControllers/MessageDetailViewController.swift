@@ -87,7 +87,7 @@ class MessageDetailViewController: OWSViewController {
         self.mode = mode
         self.conversationStyle = ConversationStyle(thread: thread)
 
-        super.init(nibName: nil, bundle: nil)
+        super.init()
     }
 
     // MARK: View Lifecycle

@@ -144,7 +144,7 @@ public class EditContactShareNameViewController: OWSViewController, ContactNameF
         self.contactShare = contactShare
         self.delegate = delegate
 
-        super.init(nibName: nil, bundle: nil)
+        super.init()
 
         buildFields()
     }

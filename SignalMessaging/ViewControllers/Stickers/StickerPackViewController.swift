@@ -36,7 +36,7 @@ public class StickerPackViewController: OWSViewController {
         self.dataSource = TransientStickerPackDataSource(stickerPackInfo: stickerPackInfo,
                                                          shouldDownloadAllStickers: true)
 
-        super.init(nibName: nil, bundle: nil)
+        super.init()
 
         stickerCollectionView.stickerDelegate = self
         stickerCollectionView.show(dataSource: dataSource)

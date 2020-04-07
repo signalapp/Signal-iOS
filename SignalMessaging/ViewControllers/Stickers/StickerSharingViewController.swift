@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -24,7 +24,7 @@ public class StickerSharingViewController: SelectThreadViewController {
     init(stickerPackInfo: StickerPackInfo) {
         self.stickerPackInfo = stickerPackInfo
 
-        super.init(nibName: nil, bundle: nil)
+        super.init()
 
         self.selectThreadViewDelegate = self
     }

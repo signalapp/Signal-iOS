@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -30,7 +30,7 @@ public class PdfViewController: OWSViewController {
         self.viewItem = viewItem
         self.attachmentStream = attachmentStream
 
-        super.init(nibName: nil, bundle: nil)
+        super.init()
     }
 
     @objc
@@ -158,7 +158,7 @@ public class PdfViewController: OWSViewController {
 
     private var shouldHideToolbars: Bool = false {
         didSet {
-            if (oldValue == shouldHideToolbars) {
+            if oldValue == shouldHideToolbars {
                 return
             }
 

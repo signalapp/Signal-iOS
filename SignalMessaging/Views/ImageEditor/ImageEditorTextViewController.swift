@@ -131,7 +131,7 @@ public class ImageEditorTextViewController: OWSViewController, VAlignTextViewDel
                                                 itemIdsToIgnore: [textItem.itemId])
         self.paletteView = ImageEditorPaletteView(currentColor: textItem.color)
 
-        super.init(nibName: nil, bundle: nil)
+        super.init()
 
         self.textView.textViewDelegate = self
     }

@@ -39,7 +39,7 @@ public class PinReminderViewController: OWSViewController {
     @objc
     init(completionHandler: (() -> Void)? = nil) {
         self.completionHandler = completionHandler
-        super.init(nibName: nil, bundle: nil)
+        super.init()
         modalPresentationStyle = .custom
         transitioningDelegate = self
     }

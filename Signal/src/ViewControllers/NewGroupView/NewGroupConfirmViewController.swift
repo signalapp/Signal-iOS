@@ -57,7 +57,7 @@ public class NewGroupConfirmViewController: OWSViewController {
                                                   avatarOriginalData: newGroupState.avatarData,
                                                   iconViewSize: 64)
 
-        super.init(nibName: nil, bundle: nil)
+        super.init()
     }
 
     @available(*, unavailable, message:"use other constructor instead.")

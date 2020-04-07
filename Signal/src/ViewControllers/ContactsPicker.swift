@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 //  Originally based on EPContacts
@@ -65,7 +65,7 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
     required public init(allowsMultipleSelection: Bool, subtitleCellType: SubtitleCellValue) {
         self.allowsMultipleSelection = allowsMultipleSelection
         self.subtitleCellType = subtitleCellType
-        super.init(nibName: nil, bundle: nil)
+        super.init()
     }
 
     required public init?(coder aDecoder: NSCoder) {
@@ -253,7 +253,7 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
 
         // Make sure we preserve selection across tableView.reloadData which happens when toggling between 
         // search controller
-        if (isSelected) {
+        if isSelected {
             self.tableView.selectRow(at: indexPath, animated: false, scrollPosition: .none)
         } else {
             self.tableView.deselectRow(at: indexPath, animated: false)
@@ -277,7 +277,7 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
         let cell = tableView.cellForRow(at: indexPath) as! ContactCell
         let selectedContact = cell.contact!
 
-        guard (contactsPickerDelegate == nil || contactsPickerDelegate!.contactsPicker(self, shouldSelectContact: selectedContact)) else {
+        guard contactsPickerDelegate == nil || contactsPickerDelegate!.contactsPicker(self, shouldSelectContact: selectedContact) else {
             self.tableView.deselectRow(at: indexPath, animated: false)
             return
         }
