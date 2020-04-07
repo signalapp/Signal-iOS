@@ -6,89 +6,80 @@ import Foundation
 import SignalServiceKit
 import SignalMessaging
 
-class NotificationServiceExtensionContext: NSObject, AppContext {
-    var wasWokenUpBySilentPushNotification: Bool = true
-    
-    var openSystemSettingsAction: UIAlertAction?
-    
+final class NotificationServiceExtensionContext : NSObject, AppContext {
+    let appLaunchTime = Date()
     let isMainApp = false
     let isMainAppAndActive = false
 
-    func isInBackground() -> Bool { true }
-    func isAppForegroundAndActive() -> Bool { false }
-    func mainApplicationStateOnLaunch() -> UIApplication.State { .inactive }
+    var openSystemSettingsAction: UIAlertAction?
+    var wasWokenUpBySilentPushNotification = true
 
     var shouldProcessIncomingMessages: Bool { true }
-    func canPresentNotifications() -> Bool { true }
 
-    let appLaunchTime = Date()
     lazy var buildTime: Date = {
         guard let buildTimestamp = Bundle.main.object(forInfoDictionaryKey: "BuildTimestamp") as? TimeInterval, buildTimestamp > 0 else {
-            Logger.debug("No build timestamp, assuming app never expires.")
+            print("[Loki] No build timestamp; assuming app never expires.")
             return .distantFuture
         }
-
         return .init(timeIntervalSince1970: buildTimestamp)
     }()
 
-    func keychainStorage() -> SSKKeychainStorage {
-        return SSKDefaultKeychainStorage.shared
+    override init() { super.init() }
+
+    func canPresentNotifications() -> Bool { true }
+    func isAppForegroundAndActive() -> Bool { false }
+    func isInBackground() -> Bool { true }
+    func mainApplicationStateOnLaunch() -> UIApplication.State { .inactive }
+
+    func appDatabaseBaseDirectoryPath() -> String {
+        return appSharedDataDirectoryPath()
     }
 
     func appDocumentDirectoryPath() -> String {
         guard let documentDirectoryURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).last else {
-            owsFail("failed to query document directory")
+            preconditionFailure("Couldn't get document directory.")
         }
         return documentDirectoryURL.path
     }
 
     func appSharedDataDirectoryPath() -> String {
         guard let groupContainerURL = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: SignalApplicationGroup) else {
-            owsFail("failed to query group container")
+            preconditionFailure("Couldn't get shared data directory.")
         }
         return groupContainerURL.path
     }
 
-    func appDatabaseBaseDirectoryPath() -> String {
-        return appSharedDataDirectoryPath()
-    }
-
     func appUserDefaults() -> UserDefaults {
         guard let userDefaults = UserDefaults(suiteName: SignalApplicationGroup) else {
-            owsFail("failed to initialize user defaults")
+            preconditionFailure("Couldn't set up shared user defaults.")
         }
         return userDefaults
     }
 
-    override init() { super.init() }
+    func keychainStorage() -> SSKKeychainStorage {
+        return SSKDefaultKeychainStorage.shared
+    }
 
-    // MARK: - Unused in this extension
-
+    // MARK: - Currently Unused
+    
+    let frame = CGRect.zero
+    let interfaceOrientation = UIInterfaceOrientation.unknown
     let isRTL = false
     let isRunningTests = false
+    let reportedApplicationState = UIApplication.State.background
+    let statusBarHeight = CGFloat.zero
 
     var mainWindow: UIWindow?
-    let frame: CGRect = .zero
-    let interfaceOrientation: UIInterfaceOrientation = .unknown
-    let reportedApplicationState: UIApplication.State = .background
-    let statusBarHeight: CGFloat = .zero
-
-    func beginBackgroundTask(expirationHandler: @escaping BackgroundTaskExpirationHandler) -> UInt { 0 }
-    func endBackgroundTask(_ backgroundTaskIdentifier: UInt) {}
 
     func beginBackgroundTask(expirationHandler: @escaping BackgroundTaskExpirationHandler) -> UIBackgroundTaskIdentifier { .invalid }
-    func endBackgroundTask(_ backgroundTaskIdentifier: UIBackgroundTaskIdentifier) {}
-
-    func ensureSleepBlocking(_ shouldBeBlocking: Bool, blockingObjectsDescription: String) {}
-
-    func setMainAppBadgeNumber(_ value: Int) {}
-    func setStatusBarHidden(_ isHidden: Bool, animated isAnimated: Bool) {}
-
+    func beginBackgroundTask(expirationHandler: @escaping BackgroundTaskExpirationHandler) -> UInt { 0 }
+    func endBackgroundTask(_ backgroundTaskIdentifier: UIBackgroundTaskIdentifier) { }
+    func endBackgroundTask(_ backgroundTaskIdentifier: UInt) { }
+    func ensureSleepBlocking(_ shouldBeBlocking: Bool, blockingObjects: [Any]) { }
+    func ensureSleepBlocking(_ shouldBeBlocking: Bool, blockingObjectsDescription: String) { }
     func frontmostViewController() -> UIViewController? { nil }
-
-    func setNetworkActivityIndicatorVisible(_ value: Bool) {}
-
-    func runNowOr(whenMainAppIsActive block: @escaping AppActiveBlock) {}
-    
-    func ensureSleepBlocking(_ shouldBeBlocking: Bool, blockingObjects: [Any]) {}
+    func runNowOr(whenMainAppIsActive block: @escaping AppActiveBlock) { }
+    func setMainAppBadgeNumber(_ value: Int) { }
+    func setNetworkActivityIndicatorVisible(_ value: Bool) { }
+    func setStatusBarHidden(_ isHidden: Bool, animated isAnimated: Bool) { }
 }
