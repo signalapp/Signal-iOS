@@ -376,7 +376,7 @@ public class AccountManager: NSObject {
                 registrationResponse.uuid = uuid
             }
 
-            registrationResponse.hasPreviouslyUsedKBS = params.hasKey("backupCredentials")
+            registrationResponse.hasPreviouslyUsedKBS = try params.optional(key: "storageCapable") ?? false
 
             return registrationResponse
         }
