@@ -34,7 +34,7 @@ final class OpenGroupSuggestionSheet : Sheet {
         let bottomExplanationLabel = UILabel()
         bottomExplanationLabel.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
         bottomExplanationLabel.font = .systemFont(ofSize: Values.verySmallFontSize)
-        bottomExplanationLabel.text = NSLocalizedString("Open groups can be joined by anyone and do not provide full metadata protection", comment: "")
+        bottomExplanationLabel.text = NSLocalizedString("Open groups can be joined by anyone and do not provide full privacy protection", comment: "")
         bottomExplanationLabel.numberOfLines = 0
         bottomExplanationLabel.textAlignment = .center
         bottomExplanationLabel.lineBreakMode = .byWordWrapping

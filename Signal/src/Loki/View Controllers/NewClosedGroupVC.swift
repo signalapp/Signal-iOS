@@ -78,7 +78,7 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
             let explanationLabel = UILabel()
             explanationLabel.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
             explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-            explanationLabel.text = NSLocalizedString("Closed groups are end-to-end encrypted group chats for up to 10 members. They provide the same privacy protections as one-on-one sessions.", comment: "")
+            explanationLabel.text = NSLocalizedString("Closed groups support up to 10 members and provide the same privacy protections as one-on-one sessions.", comment: "")
             explanationLabel.numberOfLines = 0
             explanationLabel.textAlignment = .center
             explanationLabel.lineBreakMode = .byWordWrapping

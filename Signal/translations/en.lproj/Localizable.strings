@@ -2798,12 +2798,12 @@
 "Please pick at least 2 group members" = "Please pick at least 2 group members";
 "Enable Link Previews?" = "Enable Link Previews?";
 "You will not have full metadata protection when sending or receiving link previews." = "You will not have full metadata protection when sending or receiving link previews.";
-"Open groups can be joined by anyone and do not provide full metadata protection" = "Open groups can be joined by anyone and do not provide full metadata protection";
+"Open groups can be joined by anyone and do not provide full privacy protection" = "Open groups can be joined by anyone and do not provide full privacy protection";
 "Search GIFs?" = "Search GIFs?";
 "You will not have full metadata protection when sending GIFs." = "You will not have full metadata protection when sending GIFs.";
 "The ability to add members to a closed group is coming soon." = "The ability to add members to a closed group is coming soon.";
 "A closed group cannot have more than 10 members" = "A closed group cannot have more than 10 members";
-"Closed groups are end-to-end encrypted group chats for up to 10 members. They provide the same privacy protections as one-on-one sessions." = "Closed groups are end-to-end encrypted group chats for up to 10 members. They provide the same privacy protections as one-on-one sessions.";
+"Closed groups support up to 10 members and provide the same privacy protections as one-on-one sessions" = "Closed groups support up to 10 members and provide the same privacy protections as one-on-one sessions";
 "No messages yet" = "No messages yet";
 "Would you like to join the Session Public Chat?" = "Would you like to join the Session Public Chat?";
 "Join Public Chat" = "Join Public Chat";

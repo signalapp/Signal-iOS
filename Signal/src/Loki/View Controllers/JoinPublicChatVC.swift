@@ -188,7 +188,7 @@ private final class EnterChatURLVC : UIViewController {
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
         explanationLabel.font = .systemFont(ofSize: Values.verySmallFontSize)
-        explanationLabel.text = NSLocalizedString("Open groups can be joined by anyone and do not provide full metadata protection", comment: "")
+        explanationLabel.text = NSLocalizedString("Open groups can be joined by anyone and do not provide full privacy protection", comment: "")
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping
