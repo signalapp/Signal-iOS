@@ -361,6 +361,8 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         Logger.verbose("Version: \(oldVersion) -> \(newVersion)")
         actionsBuilder.setVersion(newVersion)
 
+        var nonPendingAdministratorCount: Int = currentGroupModel.groupMembership.nonPendingAdministrators.count
+
         var didChange = false
 
         if let title = self.title {
@@ -400,7 +402,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
                 continue
             }
             guard let profileKeyCredential = profileKeyCredentialMap[uuid] else {
-                throw OWSAssertionError("Missing profile key credential]: \(uuid)")
+                throw OWSAssertionError("Missing profile key credential: \(uuid)")
             }
             let actionBuilder = GroupsProtoGroupChangeActionsAddMemberAction.builder()
             actionBuilder.setAdded(try GroupsV2Protos.buildMemberProto(profileKeyCredential: profileKeyCredential,
@@ -408,6 +410,10 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
                                                                        groupV2Params: groupV2Params))
             actionsBuilder.addAddMembers(try actionBuilder.build())
             didChange = true
+
+            if role == .administrator {
+                nonPendingAdministratorCount += 1
+            }
         }
 
         for (uuid, role) in self.pendingMembersToAdd {
@@ -433,6 +439,10 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
                 actionBuilder.setDeletedUserID(userId)
                 actionsBuilder.addDeleteMembers(try actionBuilder.build())
                 didChange = true
+
+                if currentGroupMembership.isAdministrator(SignalServiceAddress(uuid: uuid)) {
+                    nonPendingAdministratorCount -= 1
+                }
             } else if currentGroupMembership.isPendingMember(uuid) {
                 let actionBuilder = GroupsProtoGroupChangeActionsDeletePendingMemberAction.builder()
                 let userId = try groupV2Params.userId(forUuid: uuid)
@@ -447,12 +457,13 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
             }
         }
 
-        for (uuid, role) in self.membersToChangeRole {
+        for (uuid, newRole) in self.membersToChangeRole {
             guard currentGroupMembership.isNonPendingMember(uuid) else {
                 // User is no longer a member.
                 throw GroupsV2Error.conflictingChange
             }
-            guard currentGroupMembership.role(for: SignalServiceAddress(uuid: uuid)) != role else {
+            let currentRole = currentGroupMembership.role(for: SignalServiceAddress(uuid: uuid))
+            guard currentRole != newRole else {
                 // Another user has already modifed the role of this member.
                 // We don't treat that as a conflict.
                 continue
@@ -460,9 +471,15 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
             let actionBuilder = GroupsProtoGroupChangeActionsModifyMemberRoleAction.builder()
             let userId = try groupV2Params.userId(forUuid: uuid)
             actionBuilder.setUserID(userId)
-            actionBuilder.setRole(role.asProtoRole)
+            actionBuilder.setRole(newRole.asProtoRole)
             actionsBuilder.addModifyMemberRoles(try actionBuilder.build())
             didChange = true
+
+            if currentRole == .administrator {
+                nonPendingAdministratorCount -= 1
+            } else if newRole == .administrator {
+                nonPendingAdministratorCount += 1
+            }
         }
 
         let currentAccess = currentGroupModel.access
@@ -493,7 +510,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
                 throw GroupsV2Error.redundantChange
             }
             guard let profileKeyCredential = profileKeyCredentialMap[localUuid] else {
-                throw OWSAssertionError("Missing profile key credential]: \(localUuid)")
+                throw OWSAssertionError("Missing profile key credential: \(localUuid)")
             }
             let actionBuilder = GroupsProtoGroupChangeActionsPromotePendingMemberAction.builder()
             actionBuilder.setPresentation(try GroupsV2Protos.presentationData(profileKeyCredential: profileKeyCredential,
@@ -503,6 +520,15 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         }
 
         if self.shouldLeaveGroupDeclineInvite {
+            let isLastAdminInV2Group = (currentGroupMembership.isNonPendingMember(localAddress) &&
+                currentGroupMembership.isAdministrator(localAddress) &&
+                nonPendingAdministratorCount == 1)
+            guard !isLastAdminInV2Group else {
+                // This could happen if the last two admins leave at the same time
+                // and race.
+                throw GroupsV2Error.lastAdminCantLeaveGroup
+            }
+
             // Check that we are still invited or in group.
             if currentGroupMembership.pendingMembers.contains(localAddress) {
                 // Decline invite
@@ -544,7 +570,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
 
         if shouldUpdateLocalProfileKey {
             guard let profileKeyCredential = profileKeyCredentialMap[localUuid] else {
-                throw OWSAssertionError("Missing profile key credential]: \(localUuid)")
+                throw OWSAssertionError("Missing profile key credential: \(localUuid)")
             }
             let actionBuilder = GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction.builder()
             actionBuilder.setPresentation(try GroupsV2Protos.presentationData(profileKeyCredential: profileKeyCredential,

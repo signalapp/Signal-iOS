@@ -17,6 +17,7 @@ public enum GroupsV2Error: Error {
     case timeout
     case localUserNotInGroup
     case conflictingChange
+    case lastAdminCantLeaveGroup
 }
 
 @objc

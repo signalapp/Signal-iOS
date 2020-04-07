@@ -194,6 +194,7 @@
 		347B83F92436820C0019A52C /* GroupViewHelper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347B83F82436820C0019A52C /* GroupViewHelper.swift */; };
 		347B83FB243779270019A52C /* OWSFormat.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347B83FA243779270019A52C /* OWSFormat.swift */; };
 		347B83FD24378DDF0019A52C /* PendingGroupMembersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 347B83FC24378DDE0019A52C /* PendingGroupMembersViewController.swift */; };
+		348433DF243CA94600C7F64A /* ReplaceAdminViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 348433DE243CA94500C7F64A /* ReplaceAdminViewController.swift */; };
 		34843B2421432293004DED45 /* SignalBaseTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 34843B2221432292004DED45 /* SignalBaseTest.m */; };
 		34843B26214327C9004DED45 /* OWSOrphanDataCleanerTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 34843B25214327C9004DED45 /* OWSOrphanDataCleanerTest.m */; };
 		34843B2C214FE296004DED45 /* MockEnvironment.m in Sources */ = {isa = PBXBuildFile; fileRef = 34843B2A214FE295004DED45 /* MockEnvironment.m */; };
@@ -1072,6 +1073,7 @@
 		347B83F82436820C0019A52C /* GroupViewHelper.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupViewHelper.swift; sourceTree = "<group>"; };
 		347B83FA243779270019A52C /* OWSFormat.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSFormat.swift; sourceTree = "<group>"; };
 		347B83FC24378DDE0019A52C /* PendingGroupMembersViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PendingGroupMembersViewController.swift; sourceTree = "<group>"; };
+		348433DE243CA94500C7F64A /* ReplaceAdminViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReplaceAdminViewController.swift; sourceTree = "<group>"; };
 		34843B2221432292004DED45 /* SignalBaseTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SignalBaseTest.m; sourceTree = "<group>"; };
 		34843B2321432293004DED45 /* SignalBaseTest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SignalBaseTest.h; sourceTree = "<group>"; };
 		34843B25214327C9004DED45 /* OWSOrphanDataCleanerTest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSOrphanDataCleanerTest.m; sourceTree = "<group>"; };
@@ -1979,6 +1981,7 @@
 				3425648723E214BC0016905B /* OWSConversationSettingsViewController.swift */,
 				340FC899204DAC8D007AEB0F /* OWSConversationSettingsViewDelegate.h */,
 				347B83FC24378DDE0019A52C /* PendingGroupMembersViewController.swift */,
+				348433DE243CA94500C7F64A /* ReplaceAdminViewController.swift */,
 				340FC89E204DAC8D007AEB0F /* ShowGroupMembersViewController.h */,
 				340FC8A6204DAC8D007AEB0F /* ShowGroupMembersViewController.m */,
 				340FC8A3204DAC8D007AEB0F /* UpdateGroupViewController.h */,
@@ -4544,6 +4547,7 @@
 				340FC8AF204DAC8D007AEB0F /* OWSLinkDeviceViewController.m in Sources */,
 				8806F21B23E90B0B00692638 /* MessageRequests.swift in Sources */,
 				3434AE1E22AEF5A4002EE04E /* CircularProgressView.swift in Sources */,
+				348433DF243CA94600C7F64A /* ReplaceAdminViewController.swift in Sources */,
 				34E3EF0D1EFC235B007F6822 /* DebugUIDiskUsage.m in Sources */,
 				887EEC1F23F0B20600F8C26D /* PinReminderMegaphone.swift in Sources */,
 				454A84042059C787008B8C75 /* MediaTileViewController.swift in Sources */,

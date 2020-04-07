@@ -86,7 +86,7 @@ public class GroupMembership: MTLModel {
         return Set(memberStateMap.filter { !$0.value.isAdministrator && !$0.value.isPending }.keys)
     }
     @objc
-    public var administrators: Set<SignalServiceAddress> {
+    public var nonPendingAdministrators: Set<SignalServiceAddress> {
         return Set(memberStateMap.filter { $0.value.isAdministrator && !$0.value.isPending }.keys)
     }
     @objc

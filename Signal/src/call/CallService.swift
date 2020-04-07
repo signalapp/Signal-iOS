@@ -154,7 +154,7 @@ extension SignalCall: CallManagerCallReference { }
         return AppEnvironment.shared.notificationPresenter
     }
 
-    var databaseStorage: SDSDatabaseStorage {
+    private var databaseStorage: SDSDatabaseStorage {
         return SDSDatabaseStorage.shared
     }
 
