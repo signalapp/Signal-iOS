@@ -190,13 +190,6 @@ NS_ASSUME_NONNULL_BEGIN
         [DeviceSleepManager.sharedInstance addBlockWithBlockObject:sleepBlockObject];
 
         dispatch_block_t completionBlock = ^{
-            if (StorageCoordinator.dataStoreForUI == DataStoreYdb) {
-                // It's only safe to do this for YDB. For GRDB-only users in
-                // the post yap world, the tables for this won't exist yet on
-                // the first launch of a new install.
-                [SSKEnvironment.shared warmCaches];
-            }
-
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 if (AppSetup.shouldTruncateGrdbWal) {
                     // Try to truncate GRDB WAL before any readers or writers are

@@ -7,7 +7,6 @@
 #import "AppSettingsViewController.h"
 #import "ConversationListCell.h"
 #import "OWSNavigationController.h"
-#import "OWSPrimaryStorage.h"
 #import "RegistrationUtils.h"
 #import "Signal-Swift.h"
 #import "SignalApp.h"
@@ -29,8 +28,6 @@
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <StoreKit/StoreKit.h>
-#import <YapDatabase/YapDatabaseViewChange.h>
-#import <YapDatabase/YapDatabaseViewConnection.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -154,12 +151,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     return SDSDatabaseStorage.shared;
 }
 
-// POST GRDB TODO - Remove
-- (nullable OWSPrimaryStorage *)primaryStorage
-{
-    return SSKEnvironment.shared.primaryStorage;
-}
-
 - (nullable MessageFetcherJob *)messageFetcherJob
 {
     return SSKEnvironment.shared.messageFetcherJob;
@@ -185,22 +176,9 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                                              selector:@selector(applicationWillResignActive:)
                                                  name:OWSApplicationWillResignActiveNotification
                                                object:nil];
-    if (StorageCoordinator.dataStoreForUI == DataStoreGrdb) {
-        [self.databaseStorage.grdbStorage.conversationListDatabaseObserver appendSnapshotDelegate:self];
-    } else {
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(uiDatabaseDidUpdateExternally:)
-                                                     name:OWSUIDatabaseConnectionDidUpdateExternallyNotification
-                                                   object:self.primaryStorage.dbNotificationObject];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(uiDatabaseWillUpdate:)
-                                                     name:OWSUIDatabaseConnectionWillUpdateNotification
-                                                   object:self.primaryStorage.dbNotificationObject];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(uiDatabaseDidUpdate:)
-                                                     name:OWSUIDatabaseConnectionDidUpdateNotification
-                                                   object:self.primaryStorage.dbNotificationObject];
-    }
+    OWSAssert(StorageCoordinator.dataStoreForUI == DataStoreGrdb);
+    [self.databaseStorage.grdbStorage.conversationListDatabaseObserver appendSnapshotDelegate:self];
+
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(registrationStateDidChange:)
                                                  name:NSNotificationNameRegistrationStateDidChange
@@ -1754,7 +1732,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 - (void)conversationListDatabaseSnapshotDidUpdateWithUpdatedThreadIds:(NSSet<NSString *> *)updatedThreadIds
 {
     OWSAssertIsOnMainThread();
-    OWSAssertDebug(StorageCoordinator.dataStoreForUI == DataStoreGrdb);
+    OWSAssert(StorageCoordinator.dataStoreForUI == DataStoreGrdb);
 
     if (!self.shouldObserveDBModifications) {
         return;
@@ -1777,47 +1755,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         // do it when we resume.
         [self resetMappings];
     }
-}
-
-#pragma mark YapDB Update
-
-- (void)uiDatabaseWillUpdate:(NSNotification *)notification
-{
-    OWSAssertIsOnMainThread();
-    [self anyUIDBWillUpdate];
-}
-
-- (void)uiDatabaseDidUpdate:(NSNotification *)notification
-{
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug(StorageCoordinator.dataStoreForUI == DataStoreYdb);
-
-    if (!self.shouldObserveDBModifications) {
-        return;
-    }
-
-    NSArray *notifications = notification.userInfo[OWSUIDatabaseConnectionNotificationsKey];
-    YapDatabaseConnection *uiDatabaseConnection = self.primaryStorage.uiDatabaseConnection;
-    if (![[uiDatabaseConnection ext:TSThreadDatabaseViewExtensionName] hasChangesForGroup:self.currentGrouping
-                                                                          inNotifications:notifications]) {
-
-        [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-            [self.threadMapping updateSwallowingErrorsWithIsViewingArchive:self.isViewingArchive
-                                                               transaction:transaction];
-        }];
-        [self updateViewState];
-
-        return;
-    }
-
-    NSSet<NSString *> *updatedThreadIds = [self.threadMapping updatedYapItemIdsForNotifications:notifications];
-    [self anyUIDBDidUpdateWithUpdatedThreadIds:updatedThreadIds];
-}
-
-- (void)uiDatabaseDidUpdateExternally:(NSNotification *)notification
-{
-    OWSAssertIsOnMainThread();
-    [self anyUIDBDidUpdateExternally];
 }
 
 #pragma mark AnyDB Update

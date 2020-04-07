@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -11,9 +11,9 @@ struct YAPDBStorageAdapter {
 // MARK: -
 
 extension YAPDBStorageAdapter: SDSDatabaseStorageAdapter {
-    func uiReadThrows(block: @escaping (YapDatabaseReadTransaction) throws -> Void) throws {
+    func readThrows(block: @escaping (YapDatabaseReadTransaction) throws -> Void) throws {
         var errorToRaise: Error?
-        storage.uiDatabaseConnection.read { yapTransaction in
+        storage.dbReadConnection.read { yapTransaction in
             do {
                 try block(yapTransaction)
             } catch {
@@ -26,7 +26,8 @@ extension YAPDBStorageAdapter: SDSDatabaseStorageAdapter {
     }
 
     func uiRead(block: @escaping (YapDatabaseReadTransaction) -> Void) {
-        storage.uiDatabaseConnection.read { yapTransaction in
+        owsFailDebug("YDB UI read.")
+        storage.dbReadConnection.read { yapTransaction in
             block(yapTransaction)
         }
     }
