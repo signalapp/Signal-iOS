@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalServiceKit/BaseModel.h>
@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
                       uniqueId:(NSString *)uniqueId
                  durationSeconds:(unsigned int)durationSeconds
                          enabled:(BOOL)enabled
-NS_SWIFT_NAME(init(grdbId:uniqueId:durationSeconds:enabled:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:durationSeconds:enabled:));
 
 // clang-format on
 

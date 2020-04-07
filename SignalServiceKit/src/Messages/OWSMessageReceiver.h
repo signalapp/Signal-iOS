@@ -35,7 +35,7 @@ extern NSNotificationName const kNSNotificationNameMessageDecryptionDidFlushQueu
                       uniqueId:(NSString *)uniqueId
                        createdAt:(NSDate *)createdAt
                     envelopeData:(NSData *)envelopeData
-NS_SWIFT_NAME(init(grdbId:uniqueId:createdAt:envelopeData:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:createdAt:envelopeData:));
 
 // clang-format on
 

@@ -81,7 +81,7 @@ typedef void (^OWSThumbnailFailure)(void);
               isValidImageCached:(nullable NSNumber *)isValidImageCached
               isValidVideoCached:(nullable NSNumber *)isValidVideoCached
            localRelativeFilePath:(nullable NSString *)localRelativeFilePath
-NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:attachmentType:blurHash:byteCount:caption:contentType:encryptionKey:serverId:sourceFilename:uploadTimestamp:cachedAudioDurationSeconds:cachedImageHeight:cachedImageWidth:creationTimestamp:digest:isUploaded:isValidImageCached:isValidVideoCached:localRelativeFilePath:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:attachmentType:blurHash:byteCount:caption:contentType:encryptionKey:serverId:sourceFilename:uploadTimestamp:cachedAudioDurationSeconds:cachedImageHeight:cachedImageWidth:creationTimestamp:digest:isUploaded:isValidImageCached:isValidVideoCached:localRelativeFilePath:));
 
 // clang-format on
 

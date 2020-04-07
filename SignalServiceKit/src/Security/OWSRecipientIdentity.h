@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "BaseModel.h"
@@ -63,7 +63,7 @@ SSKProtoVerified *_Nullable BuildVerifiedProtoWithAddress(SignalServiceAddress *
                      identityKey:(NSData *)identityKey
                  isFirstKnownKey:(BOOL)isFirstKnownKey
                verificationState:(OWSVerificationState)verificationState
-NS_SWIFT_NAME(init(grdbId:uniqueId:accountId:createdAt:identityKey:isFirstKnownKey:verificationState:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:accountId:createdAt:identityKey:isFirstKnownKey:verificationState:));
 
 // clang-format on
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "BaseModel.h"
@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
                       uniqueId:(NSString *)uniqueId
                      emojiString:(nullable NSString *)emojiString
                             info:(StickerInfo *)info
-NS_SWIFT_NAME(init(grdbId:uniqueId:emojiString:info:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:emojiString:info:));
 
 // clang-format on
 

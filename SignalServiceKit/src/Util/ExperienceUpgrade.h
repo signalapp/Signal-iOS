@@ -24,7 +24,7 @@ NS_ASSUME_NONNULL_BEGIN
             firstViewedTimestamp:(double)firstViewedTimestamp
                       isComplete:(BOOL)isComplete
             lastSnoozedTimestamp:(double)lastSnoozedTimestamp
-NS_SWIFT_NAME(init(grdbId:uniqueId:firstViewedTimestamp:isComplete:lastSnoozedTimestamp:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:firstViewedTimestamp:isComplete:lastSnoozedTimestamp:));
 
 // clang-format on
 

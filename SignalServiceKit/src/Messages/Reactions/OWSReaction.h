@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "BaseModel.h"
@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
              receivedAtTimestamp:(uint64_t)receivedAtTimestamp
                  sentAtTimestamp:(uint64_t)sentAtTimestamp
                  uniqueMessageId:(NSString *)uniqueMessageId
-NS_SWIFT_NAME(init(grdbId:uniqueId:emoji:reactorE164:reactorUUID:receivedAtTimestamp:sentAtTimestamp:uniqueMessageId:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:emoji:reactorE164:reactorUUID:receivedAtTimestamp:sentAtTimestamp:uniqueMessageId:));
 
 // clang-format on
 

@@ -58,7 +58,7 @@ NS_SWIFT_NAME(init(uniqueId:createdAt:deviceId:lastSeenAt:name:));
                         deviceId:(NSInteger)deviceId
                       lastSeenAt:(NSDate *)lastSeenAt
                             name:(nullable NSString *)name
-NS_SWIFT_NAME(init(grdbId:uniqueId:createdAt:deviceId:lastSeenAt:name:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:createdAt:deviceId:lastSeenAt:name:));
 
 // clang-format on
 

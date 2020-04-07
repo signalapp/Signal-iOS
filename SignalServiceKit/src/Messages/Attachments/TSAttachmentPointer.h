@@ -104,7 +104,7 @@ typedef NS_ENUM(NSUInteger, TSAttachmentPointerState) {
                        mediaSize:(CGSize)mediaSize
                      pointerType:(TSAttachmentPointerType)pointerType
                            state:(TSAttachmentPointerState)state
-NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:attachmentType:blurHash:byteCount:caption:contentType:encryptionKey:serverId:sourceFilename:uploadTimestamp:digest:lazyRestoreFragmentId:mediaSize:pointerType:state:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:attachmentType:blurHash:byteCount:caption:contentType:encryptionKey:serverId:sourceFilename:uploadTimestamp:digest:lazyRestoreFragmentId:mediaSize:pointerType:state:));
 
 // clang-format on
 

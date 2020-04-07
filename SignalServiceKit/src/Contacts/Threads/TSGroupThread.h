@@ -32,7 +32,7 @@ extern NSString *const TSGroupThread_NotificationKey_UniqueId;
                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
                       groupModel:(TSGroupModel *)groupModel
-NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorName:creationDate:isArchived:lastInteractionRowId:messageDraft:mutedUntilDate:shouldThreadBeVisible:groupModel:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorName:creationDate:isArchived:lastInteractionRowId:messageDraft:mutedUntilDate:shouldThreadBeVisible:groupModel:));
 
 // clang-format on
 

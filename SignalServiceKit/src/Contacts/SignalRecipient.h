@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "BaseModel.h"
@@ -39,7 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
                          devices:(NSOrderedSet<NSNumber *> *)devices
             recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
                    recipientUUID:(nullable NSString *)recipientUUID
-NS_SWIFT_NAME(init(grdbId:uniqueId:devices:recipientPhoneNumber:recipientUUID:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:devices:recipientPhoneNumber:recipientUUID:));
 
 // clang-format on
 

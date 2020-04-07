@@ -56,7 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
           configurationIsEnabled:(BOOL)configurationIsEnabled
              createdByRemoteName:(nullable NSString *)createdByRemoteName
           createdInExistingGroup:(BOOL)createdInExistingGroup
-NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:customMessage:infoMessageUserInfo:messageType:read:unregisteredAddress:configurationDurationSeconds:configurationIsEnabled:createdByRemoteName:createdInExistingGroup:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:customMessage:infoMessageUserInfo:messageType:read:unregisteredAddress:configurationDurationSeconds:configurationIsEnabled:createdByRemoteName:createdInExistingGroup:));
 
 // clang-format on
 

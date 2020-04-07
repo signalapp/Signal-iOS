@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "SSKJobRecord.h"
@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
                           sortId:(unsigned long long)sortId
                           status:(SSKJobRecordStatus)status
                     attachmentId:(NSString *)attachmentId
-NS_SWIFT_NAME(init(grdbId:uniqueId:failureCount:label:sortId:status:attachmentId:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:failureCount:label:sortId:status:attachmentId:));
 
 // clang-format on
 

@@ -55,7 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
              unregisteredAddress:(nullable SignalServiceAddress *)unregisteredAddress
                  protocolVersion:(NSUInteger)protocolVersion
                           sender:(nullable SignalServiceAddress *)sender
-NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:customMessage:infoMessageUserInfo:messageType:read:unregisteredAddress:protocolVersion:sender:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:customMessage:infoMessageUserInfo:messageType:read:unregisteredAddress:protocolVersion:sender:));
 
 // clang-format on
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "SSKJobRecord.h"
@@ -42,7 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
                        messageId:(nullable NSString *)messageId
        removeMessageAfterSending:(BOOL)removeMessageAfterSending
                         threadId:(nullable NSString *)threadId
-NS_SWIFT_NAME(init(grdbId:uniqueId:failureCount:label:sortId:status:invisibleMessage:messageId:removeMessageAfterSending:threadId:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:failureCount:label:sortId:status:invisibleMessage:messageId:removeMessageAfterSending:threadId:));
 
 // clang-format on
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "BaseModel.h"
@@ -62,7 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
                      isInstalled:(BOOL)isInstalled
                            items:(NSArray<StickerPackItem *> *)items
                            title:(nullable NSString *)title
-NS_SWIFT_NAME(init(grdbId:uniqueId:author:cover:dateCreated:info:isInstalled:items:title:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:author:cover:dateCreated:info:isInstalled:items:title:));
 
 // clang-format on
 

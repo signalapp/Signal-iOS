@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSThread.h"
@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
               contactPhoneNumber:(nullable NSString *)contactPhoneNumber
                      contactUUID:(nullable NSString *)contactUUID
               hasDismissedOffers:(BOOL)hasDismissedOffers
-NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorName:creationDate:isArchived:lastInteractionRowId:messageDraft:mutedUntilDate:shouldThreadBeVisible:contactPhoneNumber:contactUUID:hasDismissedOffers:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorName:creationDate:isArchived:lastInteractionRowId:messageDraft:mutedUntilDate:shouldThreadBeVisible:contactPhoneNumber:contactUUID:hasDismissedOffers:));
 
 // clang-format on
 

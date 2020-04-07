@@ -62,7 +62,7 @@ extern ConversationColorName const ConversationColorNameDefault;
                     messageDraft:(nullable NSString *)messageDraft
                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
-NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorName:creationDate:isArchived:lastInteractionRowId:messageDraft:mutedUntilDate:shouldThreadBeVisible:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorName:creationDate:isArchived:lastInteractionRowId:messageDraft:mutedUntilDate:shouldThreadBeVisible:));
 
 // clang-format on
 

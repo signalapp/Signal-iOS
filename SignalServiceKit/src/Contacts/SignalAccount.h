@@ -84,7 +84,7 @@ NS_ASSUME_NONNULL_BEGIN
         multipleAccountLabelText:(NSString *)multipleAccountLabelText
             recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
                    recipientUUID:(nullable NSString *)recipientUUID
-NS_SWIFT_NAME(init(grdbId:uniqueId:contact:contactAvatarHash:contactAvatarJpegData:multipleAccountLabelText:recipientPhoneNumber:recipientUUID:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:contact:contactAvatarHash:contactAvatarJpegData:multipleAccountLabelText:recipientPhoneNumber:recipientUUID:));
 
 // clang-format on
 
