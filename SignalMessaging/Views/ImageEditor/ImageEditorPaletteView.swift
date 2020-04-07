@@ -112,8 +112,7 @@ private class PalettePreviewView: OWSLayerView {
         //
         // The size doesn't matter since this view is
         // mostly transparent and isn't hot.
-        autoSetDimensions(to: CGSize(width: PalettePreviewView.innerRadius * 4,
-                                     height: PalettePreviewView.innerRadius * 4))
+        autoSetDimensions(to: CGSize(square: PalettePreviewView.innerRadius * 4))
     }
 
     @available(*, unavailable, message: "use other init() instead.")
@@ -163,8 +162,7 @@ private class PalettePreviewView: OWSLayerView {
         teardropLayer.path = teardropPath.cgPath
         teardropLayer.frame = bounds
 
-        let innerCircleSize = CGSize(width: innerRadius * 2,
-                                height: innerRadius * 2)
+        let innerCircleSize = CGSize(square: innerRadius * 2)
         let circleFrame = CGRect(origin: circleCenter.minus(innerCircleSize.asPoint.times(0.5)),
                                  size: innerCircleSize)
         circleLayer.path = UIBezierPath(ovalIn: circleFrame).cgPath
@@ -243,7 +241,7 @@ public class ImageEditorPaletteView: UIView {
 
         selectionView.addBorder(with: .white)
         selectionView.layer.cornerRadius = selectionSize / 2
-        selectionView.autoSetDimensions(to: CGSize(width: selectionSize, height: selectionSize))
+        selectionView.autoSetDimensions(to: CGSize(square: selectionSize))
         imageWrapper.addSubview(selectionView)
         selectionView.autoHCenterInSuperview()
 

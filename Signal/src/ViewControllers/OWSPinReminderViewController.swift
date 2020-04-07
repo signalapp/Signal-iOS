@@ -219,7 +219,7 @@ public class PinReminderViewController: OWSViewController {
         let path = UIBezierPath(
             roundedRect: containerView.bounds,
             byRoundingCorners: [.topLeft, .topRight],
-            cornerRadii: CGSize(width: cornerRadius, height: cornerRadius)
+            cornerRadii: CGSize(square: cornerRadius)
         )
         let shapeLayer = CAShapeLayer()
         shapeLayer.path = path.cgPath

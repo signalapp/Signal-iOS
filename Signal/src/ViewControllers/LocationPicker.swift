@@ -80,7 +80,7 @@ public class LocationPicker: UIViewController {
         currentLocationButton.contentEdgeInsets = UIEdgeInsets(top: 2, left: 0, bottom: 0, right: 2)
 
         view.addSubview(currentLocationButton)
-        currentLocationButton.autoSetDimensions(to: CGSize(width: 48, height: 48))
+        currentLocationButton.autoSetDimensions(to: CGSize(square: 48))
         currentLocationButton.autoPinEdge(toSuperviewSafeArea: .trailing, withInset: 15)
         currentLocationButton.autoPinEdge(toSuperviewSafeArea: .bottom, withInset: 15)
 
@@ -111,7 +111,7 @@ public class LocationPicker: UIViewController {
         // to use the background image.
         let backgroundImage = UIImage(
             color: Theme.searchFieldBackgroundColor,
-            size: CGSize(width: 36, height: 36)
+            size: CGSize(square: 36)
         ).withCornerRadius(10)
         searchBar.setSearchFieldBackgroundImage(backgroundImage, for: .normal)
         searchBar.searchTextPositionAdjustment = UIOffset(horizontal: 8.0, vertical: 0.0)
@@ -445,7 +445,7 @@ public class Location: NSObject {
             // The output size will be 256 * the device's scale. We don't adjust the
             // scale directly on the options to ensure a consistent size because it
             // produces poor results on some devices.
-            options.size = CGSize(width: 256, height: 256)
+            options.size = CGSize(square: 256)
 
             MKMapSnapshotter(options: options).start(with: .global()) { snapshot, error in
                 guard error == nil else {

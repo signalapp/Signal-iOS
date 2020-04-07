@@ -678,7 +678,7 @@ class CaptureButton: UIView {
         innerButton.addGestureRecognizer(longPressGesture)
 
         addSubview(innerButton)
-        innerButtonSizeConstraints = autoSetDimensions(to: CGSize(width: defaultDiameter, height: defaultDiameter))
+        innerButtonSizeConstraints = autoSetDimensions(to: CGSize(square: defaultDiameter))
         innerButton.backgroundColor = UIColor.ows_white.withAlphaComponent(0.33)
         innerButton.layer.shadowOffset = .zero
         innerButton.layer.shadowOpacity = 0.33
@@ -686,7 +686,7 @@ class CaptureButton: UIView {
         innerButton.autoPinEdgesToSuperviewEdges()
 
         addSubview(zoomIndicator)
-        zoomIndicatorSizeConstraints = zoomIndicator.autoSetDimensions(to: CGSize(width: defaultDiameter, height: defaultDiameter))
+        zoomIndicatorSizeConstraints = zoomIndicator.autoSetDimensions(to: CGSize(square: defaultDiameter))
         zoomIndicator.isUserInteractionEnabled = false
         zoomIndicator.layer.borderColor = UIColor.ows_white.cgColor
         zoomIndicator.layer.borderWidth = 1.5
@@ -950,7 +950,7 @@ class RecordingTimerView: UIView {
         icon.layer.shadowRadius = 4
 
         icon.backgroundColor = .red
-        icon.autoSetDimensions(to: CGSize(width: iconWidth, height: iconWidth))
+        icon.autoSetDimensions(to: CGSize(square: iconWidth))
         icon.alpha = 0
 
         return icon

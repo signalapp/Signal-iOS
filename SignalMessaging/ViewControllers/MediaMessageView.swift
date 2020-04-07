@@ -301,10 +301,10 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         imageView.layer.minificationFilter = .trilinear
         imageView.layer.magnificationFilter = .trilinear
         imageView.layer.shadowColor = UIColor.black.cgColor
-        let shadowScaling = 5.0
+        let shadowScaling: CGFloat = 5.0
         imageView.layer.shadowRadius = CGFloat(2.0 * shadowScaling)
         imageView.layer.shadowOpacity = 0.25
-        imageView.layer.shadowOffset = CGSize(width: 0.75 * shadowScaling, height: 0.75 * shadowScaling)
+        imageView.layer.shadowOffset = CGSize(square: 0.75 * shadowScaling)
         imageView.autoSetDimension(.width, toSize: imageSize)
         imageView.autoSetDimension(.height, toSize: imageSize)
 

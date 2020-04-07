@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -96,15 +96,15 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
         let imageView = UIImageView()
         imageView.contentMode = .scaleAspectFill
         imageView.clipsToBounds = true
-        let kImageSize = 80
-        imageView.autoSetDimensions(to: CGSize(width: kImageSize, height: kImageSize))
+        let kImageSize: CGFloat = 80
+        imageView.autoSetDimensions(to: CGSize(square: kImageSize))
 
         let hStackView = UIStackView(arrangedSubviews: [imageView, textStack])
         hStackView.axis = .horizontal
         hStackView.alignment = .center
         hStackView.spacing = 11
 
-        let photoMediaSize = PhotoMediaSize(thumbnailSize: CGSize(width: kImageSize, height: kImageSize))
+        let photoMediaSize = PhotoMediaSize(thumbnailSize: CGSize(square: kImageSize))
         if let assetItem = contents.lastAssetItem(photoMediaSize: photoMediaSize) {
             imageView.image = assetItem.asyncThumbnail { [weak imageView] image in
                 AssertIsOnMainThread()

@@ -40,7 +40,7 @@ public class GroupsV2Test: NSObject {
         let members = [SignalServiceAddress]()
         let title0 = "hello"
         let title1 = "goodbye"
-        let avatar1Image = UIImage(color: .red, size: CGSize(width: 1, height: 1))
+        let avatar1Image = UIImage(color: .red, size: CGSize(square: 1))
         guard let avatar1Data = avatar1Image.pngData() else {
             owsFailDebug("Invalid avatar1Data.")
             return

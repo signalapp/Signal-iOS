@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 public enum PhotoGridItemType {
@@ -110,17 +110,17 @@ public class PhotoGridViewCell: UICollectionViewCell {
 
         // Note assets were rendered to match exactly. We don't want to re-size with
         // content mode lest they become less legible.
-        let kContentTypeBadgeSize = CGSize(width: 18, height: 12)
+        let kContentTypeBadgeSize = CGSize(square: 12)
         contentTypeBadgeView.autoPinEdge(toSuperviewEdge: .leading, withInset: 3)
         contentTypeBadgeView.autoPinEdge(toSuperviewEdge: .bottom, withInset: 3)
         contentTypeBadgeView.autoSetDimensions(to: kContentTypeBadgeSize)
 
-        let kUnselectedBadgeSize = CGSize(width: 22, height: 22)
+        let kUnselectedBadgeSize = CGSize(square: 22)
         unselectedBadgeView.autoPinEdge(toSuperviewEdge: .trailing, withInset: 4)
         unselectedBadgeView.autoPinEdge(toSuperviewEdge: .top, withInset: 4)
         unselectedBadgeView.autoSetDimensions(to: kUnselectedBadgeSize)
 
-        let kSelectedBadgeSize = CGSize(width: 22, height: 22)
+        let kSelectedBadgeSize = CGSize(square: 22)
         selectedBadgeView.autoSetDimensions(to: kSelectedBadgeSize)
         selectedBadgeView.autoAlignAxis(.vertical, toSameAxisOf: unselectedBadgeView)
         selectedBadgeView.autoAlignAxis(.horizontal, toSameAxisOf: unselectedBadgeView)

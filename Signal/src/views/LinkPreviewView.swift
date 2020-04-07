@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 public extension CGPoint {
@@ -499,7 +499,7 @@ public class LinkPreviewView: UIStackView {
         self.spacing = sentNonHeroHSpacing
 
         if let imageView = imageView {
-            imageView.autoSetDimensions(to: CGSize(width: sentNonHeroImageSize, height: sentNonHeroImageSize))
+            imageView.autoSetDimensions(to: CGSize(square: sentNonHeroImageSize))
             imageView.contentMode = .scaleAspectFill
             imageView.setContentHuggingHigh()
             imageView.setCompressionResistanceHigh()
@@ -611,7 +611,7 @@ public class LinkPreviewView: UIStackView {
             imageView.contentMode = .scaleAspectFill
             imageView.autoPinToSquareAspectRatio()
             let imageSize = draftHeight
-            imageView.autoSetDimensions(to: CGSize(width: imageSize, height: imageSize))
+            imageView.autoSetDimensions(to: CGSize(square: imageSize))
             imageView.setContentHuggingHigh()
             imageView.setCompressionResistanceHigh()
             imageView.clipsToBounds = true
@@ -749,7 +749,7 @@ public class LinkPreviewView: UIStackView {
         activityIndicator.startAnimating()
         addArrangedSubview(activityIndicator)
         let activityIndicatorSize: CGFloat = 25
-        activityIndicator.autoSetDimensions(to: CGSize(width: activityIndicatorSize, height: activityIndicatorSize))
+        activityIndicator.autoSetDimensions(to: CGSize(square: activityIndicatorSize))
 
         // Stroke
         let strokeView = UIView()

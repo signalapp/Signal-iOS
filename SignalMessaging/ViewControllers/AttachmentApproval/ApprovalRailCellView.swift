@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -36,7 +36,7 @@ public class ApprovalRailCellView: GalleryRailCellView {
         button.layer.shadowOffset = .zero
 
         let kButtonWidth: CGFloat = 24
-        button.autoSetDimensions(to: CGSize(width: kButtonWidth, height: kButtonWidth))
+        button.autoSetDimensions(to: CGSize(square: kButtonWidth))
 
         return button
     }()

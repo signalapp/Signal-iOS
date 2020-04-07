@@ -155,7 +155,7 @@ public class PinSetupViewController: OWSViewController {
             let topButtonImage = CurrentAppContext().isRTL ? #imageLiteral(resourceName: "NavBarBackRTL") : #imageLiteral(resourceName: "NavBarBack")
 
             topButton.setTemplateImage(topButtonImage, tintColor: Theme.secondaryTextAndIconColor)
-            topButton.autoSetDimensions(to: CGSize(width: 40, height: 40))
+            topButton.autoSetDimensions(to: CGSize(square: 40))
             topButton.addTarget(self, action: #selector(navigateBack), for: .touchUpInside)
 
             // Title

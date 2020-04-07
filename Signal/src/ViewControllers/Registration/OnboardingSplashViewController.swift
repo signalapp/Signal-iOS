@@ -29,7 +29,7 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
             OnboardingController.defaultOnboardingMode == .registering ? "link-24" : "link-broken-24",
             tintColor: .ows_gray25
         )
-        modeSwitchButton.autoSetDimensions(to: CGSize(width: 40, height: 40))
+        modeSwitchButton.autoSetDimensions(to: CGSize(square: 40))
         modeSwitchButton.autoPinEdge(toSuperviewMargin: .trailing)
         modeSwitchButton.autoPinEdge(toSuperviewMargin: .top)
         modeSwitchButton.addTarget(self, action: #selector(didTapModeSwitch), for: .touchUpInside)
