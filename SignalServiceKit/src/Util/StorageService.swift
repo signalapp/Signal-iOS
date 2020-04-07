@@ -485,14 +485,12 @@ public extension StorageService {
 
         // Fetch Existing
         fetchLatestManifest().map { response in
-            let previousVersion: UInt64
             var existingKeys: [StorageIdentifier]?
             switch response {
             case .latestManifest(let latestManifest):
-                previousVersion = latestManifest.version
-                existingKeys = latestManifest.keys.map { StorageIdentifier(data: $0.data, type: $0.type ?? .unknown) }
+                existingKeys = latestManifest.keys.map { StorageIdentifier(data: $0.data, type: $0.type) }
             case .noNewerManifest, .noExistingManifest:
-                previousVersion = ourManifestVersion
+                break
             }
 
             // set keys
