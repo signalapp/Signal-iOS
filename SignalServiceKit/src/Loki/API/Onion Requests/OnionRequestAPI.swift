@@ -3,11 +3,9 @@ import PromiseKit
 
 /// See the "Onion Requests" section of [The Session Whitepaper](https://arxiv.org/pdf/2002.04609.pdf) for more information.
 internal enum OnionRequestAPI {
-    /// - Note: Exposed for testing purposes.
-    internal static let workQueue = DispatchQueue(label: "OnionRequestAPI.workQueue", qos: .userInitiated)
-    /// - Note: Must only be modified from `workQueue`.
+    /// - Note: Must only be modified from `LokiAPI.workQueue`.
     internal static var guardSnodes: Set<LokiAPITarget> = []
-    /// - Note: Must only be modified from `workQueue`.
+    /// - Note: Must only be modified from `LokiAPI.workQueue`.
     internal static var paths: Set<Path> = []
 
     private static var snodePool: Set<LokiAPITarget> {
@@ -79,8 +77,8 @@ internal enum OnionRequestAPI {
             return Promise<Set<LokiAPITarget>> { $0.fulfill(guardSnodes) }
         } else {
             print("[Loki] [Onion Request API] Populating guard snode cache.")
-            return LokiAPI.getRandomSnode().then(on: workQueue) { _ -> Promise<Set<LokiAPITarget>> in // Just used to populate the snode pool
-                var unusedSnodes = snodePool // Sync on workQueue
+            return LokiAPI.getRandomSnode().then(on: LokiAPI.workQueue) { _ -> Promise<Set<LokiAPITarget>> in // Just used to populate the snode pool
+                var unusedSnodes = snodePool // Sync on LokiAPI.workQueue
                 guard unusedSnodes.count >= guardSnodeCount else { throw Error.insufficientSnodes }
                 func getGuardSnode() -> Promise<LokiAPITarget> {
                     // randomElement() uses the system's default random generator, which is cryptographically secure
@@ -88,10 +86,10 @@ internal enum OnionRequestAPI {
                     unusedSnodes.remove(candidate) // All used snodes should be unique
                     print("[Loki] [Onion Request API] Testing guard snode: \(candidate).")
                     // Loop until a reliable guard snode is found
-                    return testSnode(candidate).map(on: workQueue) { candidate }.recover(on: workQueue) { _ in getGuardSnode() }
+                    return testSnode(candidate).map(on: LokiAPI.workQueue) { candidate }.recover(on: LokiAPI.workQueue) { _ in getGuardSnode() }
                 }
                 let promises = (0..<guardSnodeCount).map { _ in getGuardSnode() }
-                return when(fulfilled: promises).map(on: workQueue) { guardSnodes in
+                return when(fulfilled: promises).map(on: LokiAPI.workQueue) { guardSnodes in
                     let guardSnodesAsSet = Set(guardSnodes)
                     OnionRequestAPI.guardSnodes = guardSnodesAsSet
                     return guardSnodesAsSet
@@ -104,8 +102,8 @@ internal enum OnionRequestAPI {
     /// if not enough (reliable) snodes are available.
     private static func buildPaths() -> Promise<Set<Path>> {
         print("[Loki] [Onion Request API] Building onion request paths.")
-        return LokiAPI.getRandomSnode().then(on: workQueue) { _ -> Promise<Set<Path>> in // Just used to populate the snode pool
-            return getGuardSnodes().map(on: workQueue) { guardSnodes in
+        return LokiAPI.getRandomSnode().then(on: LokiAPI.workQueue) { _ -> Promise<Set<Path>> in // Just used to populate the snode pool
+            return getGuardSnodes().map(on: LokiAPI.workQueue) { guardSnodes in
                 var unusedSnodes = snodePool.subtracting(guardSnodes)
                 let pathSnodeCount = guardSnodeCount * pathSize - guardSnodeCount
                 guard unusedSnodes.count >= pathSnodeCount else { throw Error.insufficientSnodes }
@@ -135,7 +133,7 @@ internal enum OnionRequestAPI {
                 seal.fulfill(paths.filter { !$0.contains(snode) }.randomElement()!)
             }
         } else {
-            return buildPaths().map(on: workQueue) { paths in
+            return buildPaths().map(on: LokiAPI.workQueue) { paths in
                 let path = paths.filter { !$0.contains(snode) }.randomElement()!
                 OnionRequestAPI.paths = paths
                 return path
@@ -152,10 +150,10 @@ internal enum OnionRequestAPI {
         var guardSnode: LokiAPITarget!
         var targetSnodeSymmetricKey: Data! // Needed by invoke(_:on:with:) to decrypt the response sent back by the target snode
         var encryptionResult: EncryptionResult!
-        return getPath(excluding: snode).then(on: workQueue) { path -> Promise<EncryptionResult> in
+        return getPath(excluding: snode).then(on: LokiAPI.workQueue) { path -> Promise<EncryptionResult> in
             guardSnode = path.first!
             // Encrypt in reverse order, i.e. the target snode first
-            return encrypt(payload, forTargetSnode: snode).then(on: workQueue) { r -> Promise<EncryptionResult> in
+            return encrypt(payload, forTargetSnode: snode).then(on: LokiAPI.workQueue) { r -> Promise<EncryptionResult> in
                 targetSnodeSymmetricKey = r.symmetricKey
                 // Recursively encrypt the layers of the onion (again in reverse order)
                 encryptionResult = r
@@ -166,7 +164,7 @@ internal enum OnionRequestAPI {
                         return Promise<EncryptionResult> { $0.fulfill(encryptionResult) }
                     } else {
                         let lhs = path.removeLast()
-                        return OnionRequestAPI.encryptHop(from: lhs, to: rhs, using: encryptionResult).then(on: workQueue) { r -> Promise<EncryptionResult> in
+                        return OnionRequestAPI.encryptHop(from: lhs, to: rhs, using: encryptionResult).then(on: LokiAPI.workQueue) { r -> Promise<EncryptionResult> in
                             encryptionResult = r
                             rhs = lhs
                             return addLayer()
@@ -175,7 +173,7 @@ internal enum OnionRequestAPI {
                 }
                 return addLayer()
             }
-        }.map(on: workQueue) { _ in (guardSnode, encryptionResult, targetSnodeSymmetricKey) }
+        }.map(on: LokiAPI.workQueue) { _ in (guardSnode, encryptionResult, targetSnodeSymmetricKey) }
     }
 
     // MARK: Internal API
@@ -183,9 +181,9 @@ internal enum OnionRequestAPI {
     internal static func sendOnionRequest(invoking method: LokiAPITarget.Method, on snode: LokiAPITarget, with parameters: JSON, associatedWith hexEncodedPublicKey: String) -> Promise<JSON> {
         let (promise, seal) = Promise<JSON>.pending()
         var guardSnode: LokiAPITarget!
-        workQueue.async {
+        LokiAPI.workQueue.async {
             let payload: JSON = [ "method" : method.rawValue, "params" : parameters ]
-            buildOnion(around: payload, targetedAt: snode).done(on: workQueue) { intermediate in
+            buildOnion(around: payload, targetedAt: snode).done(on: LokiAPI.workQueue) { intermediate in
                 guardSnode = intermediate.guardSnode
                 let url = "\(guardSnode.address):\(guardSnode.port)/onion_req"
                 let finalEncryptionResult = intermediate.finalEncryptionResult
@@ -195,7 +193,7 @@ internal enum OnionRequestAPI {
                     "ephemeral_key" : finalEncryptionResult.ephemeralPublicKey.toHexString()
                 ]
                 let targetSnodeSymmetricKey = intermediate.targetSnodeSymmetricKey
-                HTTP.execute(.post, url, parameters: parameters).done(on: workQueue) { rawResponse in
+                HTTP.execute(.post, url, parameters: parameters).done(on: LokiAPI.workQueue) { rawResponse in
                     guard let json = rawResponse as? JSON, let base64EncodedIVAndCiphertext = json["result"] as? String,
                         let ivAndCiphertext = Data(base64Encoded: base64EncodedIVAndCiphertext) else { return seal.reject(HTTP.Error.invalidJSON) }
                     let iv = ivAndCiphertext[0..<Int(ivSize)]
@@ -213,14 +211,14 @@ internal enum OnionRequestAPI {
                     } catch (let error) {
                         seal.reject(error)
                     }
-                }.catch(on: workQueue) { error in
+                }.catch(on: LokiAPI.workQueue) { error in
                     seal.reject(error)
                 }
-            }.catch(on: workQueue) { error in
+            }.catch(on: LokiAPI.workQueue) { error in
                 seal.reject(error)
             }
         }
-        promise.catch(on: workQueue) { error in // Must be invoked on workQueue
+        promise.catch(on: LokiAPI.workQueue) { error in // Must be invoked on LokiAPI.workQueue
             guard case HTTP.Error.httpRequestFailed(_, _) = error else { return }
             dropPath(containing: guardSnode) // A snode in the path is bad; retry with a different path
         }

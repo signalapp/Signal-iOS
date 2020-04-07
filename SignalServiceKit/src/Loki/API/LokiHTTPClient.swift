@@ -10,7 +10,7 @@ internal class LokiHTTPClient {
         securityPolicy.validatesDomainName = false
         result.securityPolicy = securityPolicy
         result.responseSerializer = AFHTTPResponseSerializer()
-        result.completionQueue = DispatchQueue.global() // All of this has to happen on DispatchQueue.global() due to the way OWSMessageManager works
+        result.completionQueue = LokiAPI.workQueue
         return result
     }()
 

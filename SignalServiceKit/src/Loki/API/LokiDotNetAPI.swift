@@ -46,7 +46,7 @@ public class LokiDotNetAPI : NSObject {
         if let token = getAuthTokenFromDatabase(for: server, in: transaction) {
             return Promise.value(token)
         } else {
-            return requestNewAuthToken(for: server).then(on: DispatchQueue.global()) { submitAuthToken($0, for: server) }.map { token -> String in
+            return requestNewAuthToken(for: server).then(on: LokiAPI.workQueue) { submitAuthToken($0, for: server) }.map { token -> String in
                 setAuthToken(for: server, to: token, in: transaction)
                 return token
             }
@@ -159,11 +159,11 @@ public class LokiDotNetAPI : NSObject {
                 }
             }
             if server == LokiFileServerAPI.server {
-                DispatchQueue.global().async {
+                LokiAPI.workQueue.async {
                     proceed(with: "loki") // Uploads to the Loki File Server shouldn't include any personally identifiable information so use a dummy auth token
                 }
             } else {
-                getAuthToken(for: server).done(on: DispatchQueue.global()) { token in
+                getAuthToken(for: server).done(on: LokiAPI.workQueue) { token in
                     proceed(with: token)
                 }.catch { error in
                     print("[Loki] Couldn't upload attachment due to error: \(error).")
@@ -179,8 +179,7 @@ public class LokiDotNetAPI : NSObject {
         let queryParameters = "pubKey=\(userHexEncodedPublicKey)"
         let url = URL(string: "\(server)/loki/v1/get_challenge?\(queryParameters)")!
         let request = TSRequest(url: url)
-        // All of this has to happen on DispatchQueue.global() due to the way OWSMessageManager works
-        return LokiFileServerProxy(for: server).perform(request, withCompletionQueue: DispatchQueue.global()).map(on: DispatchQueue.global()) { rawResponse in
+        return LokiFileServerProxy(for: server).perform(request, withCompletionQueue: LokiAPI.workQueue).map(on: LokiAPI.workQueue) { rawResponse in
             guard let json = rawResponse as? JSON, let base64EncodedChallenge = json["cipherText64"] as? String, let base64EncodedServerPublicKey = json["serverPubKey64"] as? String,
                 let challenge = Data(base64Encoded: base64EncodedChallenge), var serverPublicKey = Data(base64Encoded: base64EncodedServerPublicKey) else {
                 throw LokiDotNetAPIError.parsingFailed
@@ -204,8 +203,7 @@ public class LokiDotNetAPI : NSObject {
         let url = URL(string: "\(server)/loki/v1/submit_challenge")!
         let parameters = [ "pubKey" : userHexEncodedPublicKey, "token" : token ]
         let request = TSRequest(url: url, method: "POST", parameters: parameters)
-        // All of this has to happen on DispatchQueue.global() due to the way OWSMessageManager works
-        return LokiFileServerProxy(for: server).perform(request, withCompletionQueue: DispatchQueue.global()).map { _ in token }
+        return LokiFileServerProxy(for: server).perform(request, withCompletionQueue: LokiAPI.workQueue).map { _ in token }
     }
     
     // MARK: Attachments (Public Obj-C API)

@@ -38,7 +38,6 @@ public extension LokiAPI {
     
     // MARK: Internal API
     internal static func getRandomSnode() -> Promise<LokiAPITarget> {
-        // All of this has to happen on DispatchQueue.global() due to the way OWSMessageManager works
         if randomSnodePool.isEmpty {
             let target = seedNodePool.randomElement()!
             let url = "\(target)/json_rpc"
@@ -56,7 +55,7 @@ public extension LokiAPI {
             ]
             print("[Loki] Populating snode pool using: \(target).")
             let (promise, seal) = Promise<LokiAPITarget>.pending()
-            let queue = DispatchQueue.global()
+            let queue = workQueue
             HTTP.execute(.post, url, parameters: parameters).map(on: queue) { json in
                 guard let intermediate = json["result"] as? JSON, let rawTargets = intermediate["service_node_states"] as? [JSON] else { throw LokiAPIError.randomSnodePoolUpdatingFailed }
                 randomSnodePool = try Set(rawTargets.flatMap { rawTarget in
@@ -88,8 +87,7 @@ public extension LokiAPI {
             return Promise<[LokiAPITarget]> { $0.fulfill(cachedSwarm) }
         } else {
             let parameters: [String:Any] = [ "pubKey" : hexEncodedPublicKey ]
-            // All of this has to happen on DispatchQueue.global() due to the way OWSMessageManager works
-            return getRandomSnode().then(on: DispatchQueue.global()) { invoke(.getSwarm, on: $0, associatedWith: hexEncodedPublicKey, parameters: parameters) }.map { parseTargets(from: $0) }.get { swarmCache[hexEncodedPublicKey] = $0 }
+            return getRandomSnode().then(on: workQueue) { invoke(.getSwarm, on: $0, associatedWith: hexEncodedPublicKey, parameters: parameters) }.map { parseTargets(from: $0) }.get { swarmCache[hexEncodedPublicKey] = $0 }
         }
     }
 
@@ -99,7 +97,6 @@ public extension LokiAPI {
     }
 
     internal static func getFileServerProxy() -> Promise<LokiAPITarget> {
-        // All of this has to happen on DispatchQueue.global() due to the way OWSMessageManager works
         let (promise, seal) = Promise<LokiAPITarget>.pending()
         func getVersion(for snode: LokiAPITarget) -> Promise<String> {
             if let version = snodeVersion[snode] {
@@ -107,7 +104,7 @@ public extension LokiAPI {
             } else {
                 let url = URL(string: "\(snode.address):\(snode.port)/get_stats/v1")!
                 let request = TSRequest(url: url)
-                return TSNetworkManager.shared().perform(request, withCompletionQueue: DispatchQueue.global()).map(on: DispatchQueue.global()) { intermediate in
+                return TSNetworkManager.shared().perform(request, withCompletionQueue: workQueue).map(on: workQueue) { intermediate in
                     let rawResponse = intermediate.responseObject
                     guard let json = rawResponse as? JSON, let version = json["version"] as? String else { throw LokiAPIError.missingSnodeVersion }
                     snodeVersion[snode] = version
@@ -115,8 +112,8 @@ public extension LokiAPI {
                 }
             }
         }
-        getRandomSnode().then(on: DispatchQueue.global()) { snode -> Promise<LokiAPITarget> in
-            return getVersion(for: snode).then(on: DispatchQueue.global()) { version -> Promise<LokiAPITarget> in
+        getRandomSnode().then(on: workQueue) { snode -> Promise<LokiAPITarget> in
+            return getVersion(for: snode).then(on: workQueue) { version -> Promise<LokiAPITarget> in
                 if version >= "2.0.2" {
                     print("[Loki] Using file server proxy with version number \(version).")
                     return Promise { $0.fulfill(snode) }
@@ -124,12 +121,12 @@ public extension LokiAPI {
                     print("[Loki] Rejecting file server proxy with version number \(version).")
                     return getFileServerProxy()
                 }
-            }.recover(on: DispatchQueue.global()) { _ in
+            }.recover(on: workQueue) { _ in
                 return getFileServerProxy()
             }
-        }.done(on: DispatchQueue.global()) { snode in
+        }.done(on: workQueue) { snode in
             seal.fulfill(snode)
-        }.catch(on: DispatchQueue.global()) { error in
+        }.catch(on: workQueue) { error in
             seal.reject(error)
         }
         return promise

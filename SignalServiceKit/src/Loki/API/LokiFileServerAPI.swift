@@ -26,14 +26,13 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
     /// Gets the device links associated with the given hex encoded public keys from the
     /// server and stores and returns the valid ones.
     public static func getDeviceLinks(associatedWith hexEncodedPublicKeys: Set<String>, in transaction: YapDatabaseReadWriteTransaction? = nil) -> Promise<Set<DeviceLink>> {
-        // All of this has to happen on DispatchQueue.global() due to the way OWSMessageManager works
         let hexEncodedPublicKeysDescription = "[ \(hexEncodedPublicKeys.joined(separator: ", ")) ]"
         print("[Loki] Getting device links for: \(hexEncodedPublicKeysDescription).")
-        return getAuthToken(for: server, in: transaction).then(on: DispatchQueue.global()) { token -> Promise<Set<DeviceLink>> in
+        return getAuthToken(for: server, in: transaction).then(on: LokiAPI.workQueue) { token -> Promise<Set<DeviceLink>> in
             let queryParameters = "ids=\(hexEncodedPublicKeys.map { "@\($0)" }.joined(separator: ","))&include_user_annotations=1"
             let url = URL(string: "\(server)/users?\(queryParameters)")!
             let request = TSRequest(url: url)
-            return LokiFileServerProxy(for: server).perform(request, withCompletionQueue: DispatchQueue.global()).map(on: DispatchQueue.global()) { rawResponse -> Set<DeviceLink> in
+            return LokiFileServerProxy(for: server).perform(request, withCompletionQueue: LokiAPI.workQueue).map(on: LokiAPI.workQueue) { rawResponse -> Set<DeviceLink> in
                 guard let json = rawResponse as? JSON, let data = json["data"] as? [JSON] else {
                     print("[Loki] Couldn't parse device links for users: \(hexEncodedPublicKeys) from: \(rawResponse).")
                     throw LokiDotNetAPIError.parsingFailed
@@ -75,7 +74,7 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
                         return deviceLink
                     }
                 })
-            }.map(on: DispatchQueue.global()) { deviceLinks -> Set<DeviceLink> in
+            }.map(on: LokiAPI.workQueue) { deviceLinks -> Set<DeviceLink> in
                 func setDeviceLinks(in transaction: YapDatabaseReadWriteTransaction) {
                     storage.setDeviceLinks(deviceLinks, in: transaction)
                 }

@@ -20,6 +20,8 @@ public final class LokiAPI : NSObject {
         get { stateQueue.sync { _userHexEncodedPublicKeyCache } }
         set { stateQueue.sync { _userHexEncodedPublicKeyCache = newValue } }
     }
+
+    internal static let workQueue = DispatchQueue(label: "LokiAPI.workQueue", qos: .userInitiated)
     
     /// All service node related errors must be handled on this queue to avoid race conditions maintaining e.g. failure counts.
     public static let errorHandlingQueue = DispatchQueue(label: "LokiAPI.errorHandlingQueue")
@@ -103,7 +105,7 @@ public final class LokiAPI : NSObject {
         if useOnionRequests {
             return OnionRequestAPI.sendOnionRequest(invoking: method, on: target, with: parameters, associatedWith: hexEncodedPublicKey).map { $0 as Any }
         } else {
-            return TSNetworkManager.shared().perform(request, withCompletionQueue: DispatchQueue.global())
+            return TSNetworkManager.shared().perform(request, withCompletionQueue: workQueue)
                 .map { $0.responseObject }
                 .handlingSnodeErrorsIfNeeded(for: target, associatedWith: hexEncodedPublicKey)
                 .recoveringNetworkErrorsIfNeeded()
@@ -134,7 +136,6 @@ public final class LokiAPI : NSObject {
     }
     
     public static func getDestinations(for hexEncodedPublicKey: String, in transaction: YapDatabaseReadWriteTransaction) -> Promise<[Destination]> {
-        // All of this has to happen on DispatchQueue.global() due to the way OWSMessageManager works
         let (promise, seal) = Promise<[Destination]>.pending()
         func getDestinations(in transaction: YapDatabaseReadTransaction? = nil) {
             func getDestinationsInternal(in transaction: YapDatabaseReadTransaction) {
@@ -163,10 +164,10 @@ public final class LokiAPI : NSObject {
         }
         if timeSinceLastUpdate > deviceLinkUpdateInterval {
             let masterHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: hexEncodedPublicKey, in: transaction) ?? hexEncodedPublicKey
-            LokiFileServerAPI.getDeviceLinks(associatedWith: masterHexEncodedPublicKey, in: transaction).done(on: DispatchQueue.global()) { _ in
+            LokiFileServerAPI.getDeviceLinks(associatedWith: masterHexEncodedPublicKey, in: transaction).done(on: workQueue) { _ in
                 getDestinations()
                 lastDeviceLinkUpdate[hexEncodedPublicKey] = Date()
-            }.catch(on: DispatchQueue.global()) { error in
+            }.catch(on: workQueue) { error in
                 if (error as? LokiDotNetAPI.LokiDotNetAPIError) == LokiDotNetAPI.LokiDotNetAPIError.parsingFailed {
                     // Don't immediately re-fetch in case of failure due to a parsing error
                     lastDeviceLinkUpdate[hexEncodedPublicKey] = Date()

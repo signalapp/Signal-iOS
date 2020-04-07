@@ -60,7 +60,7 @@ public final class LokiPoller : NSObject {
             // randomElement() uses the system's default random generator, which is cryptographically secure
             let nextSnode = unusedSnodes.randomElement()!
             usedSnodes.insert(nextSnode)
-            poll(nextSnode, seal: seal).done(on: DispatchQueue.global()) {
+            poll(nextSnode, seal: seal).done(on: LokiAPI.workQueue) {
                 seal.fulfill(())
             }.catch(on: LokiAPI.errorHandlingQueue) { [weak self] error in
                 print("[Loki] Polling \(nextSnode) failed; dropping it and switching to next snode.")
@@ -73,7 +73,7 @@ public final class LokiPoller : NSObject {
     }
 
     private func poll(_ target: LokiAPITarget, seal longTermSeal: Resolver<Void>) -> Promise<Void> {
-        return LokiAPI.getRawMessages(from: target, usingLongPolling: false).then(on: DispatchQueue.global()) { [weak self] rawResponse -> Promise<Void> in
+        return LokiAPI.getRawMessages(from: target, usingLongPolling: false).then(on: LokiAPI.workQueue) { [weak self] rawResponse -> Promise<Void> in
             guard let strongSelf = self, !strongSelf.hasStopped else { return Promise { $0.fulfill(()) } }
             let messages = LokiAPI.parseRawMessagesResponse(rawResponse, from: target)
             strongSelf.onMessagesReceived(messages)
