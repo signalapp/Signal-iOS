@@ -53,7 +53,7 @@ internal enum OnionRequestAPI {
     /// Tests the given snode. The returned promise errors out if the snode is faulty; the promise is fulfilled otherwise.
     private static func testSnode(_ snode: LokiAPITarget) -> Promise<Void> {
         let (promise, seal) = Promise<Void>.pending()
-        let queue = DispatchQueue(label: UUID().uuidString, qos: .userInitiated) // No need to block the work queue for this
+        let queue = DispatchQueue.global() // No need to block the work queue for this
         queue.async {
             let url = "\(snode.address):\(snode.port)/get_stats/v1"
             let timeout: TimeInterval = 6 // Use a shorter timeout for testing

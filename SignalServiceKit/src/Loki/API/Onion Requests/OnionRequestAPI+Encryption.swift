@@ -7,10 +7,6 @@ extension OnionRequestAPI {
 
     internal typealias EncryptionResult = (ciphertext: Data, symmetricKey: Data, ephemeralPublicKey: Data)
 
-    private static func getQueue() -> DispatchQueue {
-        return DispatchQueue(label: UUID().uuidString, qos: .userInitiated)
-    }
-
     /// Returns `size` bytes of random data generated using the default secure random number generator. See
     /// [SecRandomCopyBytes](https://developer.apple.com/documentation/security/1399291-secrandomcopybytes) for more information.
     private static func getSecureRandomData(ofSize size: UInt) throws -> Data {
@@ -46,7 +42,7 @@ extension OnionRequestAPI {
     /// Encrypts `payload` for `snode` and returns the result. Use this to build the core of an onion request.
     internal static func encrypt(_ payload: JSON, forTargetSnode snode: LokiAPITarget) -> Promise<EncryptionResult> {
         let (promise, seal) = Promise<EncryptionResult>.pending()
-        getQueue().async {
+        DispatchQueue.global().async {
             do {
                 guard JSONSerialization.isValidJSONObject(payload) else { return seal.reject(HTTP.Error.invalidJSON) }
                 let payloadAsData = try JSONSerialization.data(withJSONObject: payload, options: [])
@@ -66,7 +62,7 @@ extension OnionRequestAPI {
     /// Encrypts the previous encryption result (i.e. that of the hop after this one) for this hop. Use this to build the layers of an onion request.
     internal static func encryptHop(from lhs: LokiAPITarget, to rhs: LokiAPITarget, using previousEncryptionResult: EncryptionResult) -> Promise<EncryptionResult> {
         let (promise, seal) = Promise<EncryptionResult>.pending()
-        getQueue().async {
+        DispatchQueue.global().async {
             let parameters: JSON = [
                 "ciphertext" : previousEncryptionResult.ciphertext.base64EncodedString(),
                 "ephemeral_key" : previousEncryptionResult.ephemeralPublicKey.toHexString(),
