@@ -176,8 +176,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
             self.dismiss(animated: false) { [weak self] in
                 AssertIsOnMainThread()
-                guard let strongSelf = self else { return }
-                strongSelf.extensionContext!.completeRequest(returningItems: [], completionHandler: nil)
+                self?.extensionContext?.completeRequest(returningItems: [], completionHandler: nil)
             }
         }
     }
