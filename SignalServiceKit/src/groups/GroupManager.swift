@@ -1018,11 +1018,14 @@ public class GroupManager: NSObject {
 
     // MARK: - Leave Group / Decline Invite
 
-    public static func localLeaveGroupOrDeclineInvite(groupThread: TSGroupThread) -> Promise<TSGroupThread> {
+    public static func localLeaveGroupOrDeclineInvite(groupThread: TSGroupThread,
+                                                      replacementAdminUuid: UUID? = nil) -> Promise<TSGroupThread> {
         guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
+            assert(replacementAdminUuid == nil)
             return localLeaveGroupV1(groupId: groupThread.groupModel.groupId)
         }
-        return localLeaveGroupV2OrDeclineInvite(groupModel: groupModel)
+        return localLeaveGroupV2OrDeclineInvite(groupModel: groupModel,
+                                                replacementAdminUuid: replacementAdminUuid)
     }
 
     private static func localLeaveGroupV1(groupId: Data) -> Promise<TSGroupThread> {
@@ -1062,10 +1065,16 @@ public class GroupManager: NSObject {
         }
     }
 
-    private static func localLeaveGroupV2OrDeclineInvite(groupModel: TSGroupModelV2) -> Promise<TSGroupThread> {
+    private static func localLeaveGroupV2OrDeclineInvite(groupModel: TSGroupModelV2,
+                                                         replacementAdminUuid: UUID? = nil) -> Promise<TSGroupThread> {
         return updateGroupV2(groupModel: groupModel,
                              description: "Leave group or decline invite") { groupChangeSet in
-            groupChangeSet.setShouldLeaveGroupDeclineInvite()
+                                groupChangeSet.setShouldLeaveGroupDeclineInvite()
+
+                                // Sometimes when we leave a group we take care to assign a new admin.
+                                if let replacementAdminUuid = replacementAdminUuid {
+                                    groupChangeSet.changeRoleForMember(replacementAdminUuid, role: .administrator)
+                                }
         }
     }
 

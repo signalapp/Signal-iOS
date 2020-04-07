@@ -18,6 +18,7 @@ public extension GroupManager {
 
     static func leaveGroupOrDeclineInviteAsyncWithUI(groupThread: TSGroupThread,
                                                      fromViewController: UIViewController,
+                                                     replacementAdminUuid: UUID? = nil,
                                                      success: (() -> Void)?) {
 
         guard groupThread.isLocalUserPendingOrNonPendingMember else {
@@ -27,7 +28,8 @@ public extension GroupManager {
 
         ModalActivityIndicatorViewController.present(fromViewController: fromViewController, canCancel: false) { modalView in
             firstly {
-                self.leaveGroupOrDeclineInvitePromise(groupThread: groupThread).asVoid()
+                self.leaveGroupOrDeclineInvitePromise(groupThread: groupThread,
+                                                      replacementAdminUuid: replacementAdminUuid).asVoid()
             }.done { _ in
                 modalView.dismiss {
                     success?()
@@ -69,12 +71,14 @@ public extension GroupManager {
 // MARK: -
 
 extension GroupManager {
-    static func leaveGroupOrDeclineInvitePromise(groupThread: TSGroupThread) -> Promise<TSGroupThread> {
+    static func leaveGroupOrDeclineInvitePromise(groupThread: TSGroupThread,
+                                                 replacementAdminUuid: UUID? = nil) -> Promise<TSGroupThread> {
         return firstly {
             return GroupManager.messageProcessingPromise(for: groupThread,
                                                          description: "Leave or decline invite")
         }.then(on: .global()) {
-            GroupManager.localLeaveGroupOrDeclineInvite(groupThread: groupThread)
+            GroupManager.localLeaveGroupOrDeclineInvite(groupThread: groupThread,
+                                                        replacementAdminUuid: replacementAdminUuid)
         }
     }
 

@@ -90,6 +90,8 @@ extension ConversationSettingsViewController {
         }
 
         self.contents = contents
+
+        updateNavigationBar()
     }
 
     private func addBasicItems(to section: OWSTableSection) {

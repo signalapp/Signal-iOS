@@ -145,9 +145,7 @@ class ConversationSettingsViewController: OWSTableViewController {
         view.backgroundColor = Theme.backgroundColor
 
         if isGroupThread {
-            navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("CONVERSATION_SETTINGS_EDIT_GROUP",
-                                                                                         comment: "Label for the 'edit group' button in conversation settings view."),
-                                                                style: .plain, target: self, action: #selector(editGroupButtonWasPressed))
+            updateNavigationBar()
         } else {
             self.title = NSLocalizedString(
                 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE", comment: "Navbar title when viewing settings for a 1-on-1 thread")
@@ -171,6 +169,16 @@ class ConversationSettingsViewController: OWSTableViewController {
         updateTableContents()
 
         observeNotifications()
+    }
+
+    func updateNavigationBar() {
+        if canEditConversationAttributes {
+            navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("CONVERSATION_SETTINGS_EDIT_GROUP",
+                                                                                         comment: "Label for the 'edit group' button in conversation settings view."),
+                                                                style: .plain, target: self, action: #selector(editGroupButtonWasPressed))
+        } else {
+            navigationItem.rightBarButtonItem = nil
+        }
     }
 
     override func viewDidAppear(_ animated: Bool) {
@@ -524,8 +532,7 @@ class ConversationSettingsViewController: OWSTableViewController {
         }
     }
 
-    func showLeaveGroupConfirmAlert() {
-
+    func showLeaveGroupConfirmAlert(replacementAdminUuid: UUID? = nil) {
         let alert = ActionSheetController(title: NSLocalizedString("CONFIRM_LEAVE_GROUP_TITLE",
                                                                    comment: "Alert title"),
                                           message: NSLocalizedString("CONFIRM_LEAVE_GROUP_DESCRIPTION",
@@ -535,7 +542,7 @@ class ConversationSettingsViewController: OWSTableViewController {
                                                                      comment: "Confirmation button within contextual alert"),
                                             accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "leave_group_confirm"),
                                             style: .destructive) { _ in
-                                                self.leaveGroup()
+                                                self.leaveGroup(replacementAdminUuid: replacementAdminUuid)
         }
         alert.addAction(leaveAction)
         alert.addAction(OWSActionSheets.cancelAction)
@@ -560,7 +567,7 @@ class ConversationSettingsViewController: OWSTableViewController {
         alert.addAction(ActionSheetAction(title: NSLocalizedString("GROUPS_REPLACE_ADMIN_BUTTON",
                                                                    comment: "Label for the 'replace group admin' button."),
                                           accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "replace_admin_alert"),
-                                          style: .destructive) { _ in
+                                          style: .default) { _ in
                                             self.showReplaceAdminView(candidates: candidates)
         })
         alert.addAction(OWSActionSheets.cancelAction)
@@ -606,18 +613,33 @@ class ConversationSettingsViewController: OWSTableViewController {
             owsFailDebug("missing local address")
             return []
         }
-        var candidates = groupModelV2.groupMembership.nonPendingAdministrators
+        var candidates = groupModelV2.groupMembership.nonPendingMembers
         candidates.remove(localAddress)
         return candidates
     }
 
-    private func leaveGroup() {
+    private func leaveGroup(replacementAdminUuid: UUID? = nil) {
         guard let groupThread = thread as? TSGroupThread else {
             owsFailDebug("Invalid thread.")
             return
         }
-        GroupManager.leaveGroupOrDeclineInviteAsyncWithUI(groupThread: groupThread, fromViewController: self) {
-            self.navigationController?.popViewController(animated: true)
+        guard let navigationController = self.navigationController else {
+            owsFailDebug("Invalid navigationController.")
+            return
+        }
+        // On success, we want to pop back to the conversation view controller.
+        let viewControllers = navigationController.viewControllers
+        guard let index = viewControllers.firstIndex(of: self),
+            index > 0 else {
+                owsFailDebug("Invalid navigation stack.")
+                return
+        }
+        let conversationViewController = viewControllers[index - 1]
+        GroupManager.leaveGroupOrDeclineInviteAsyncWithUI(groupThread: groupThread,
+                                                          fromViewController: self,
+                                                          replacementAdminUuid: replacementAdminUuid) {
+                                                            self.navigationController?.popToViewController(conversationViewController,
+                                                                                                           animated: true)
         }
     }
 
@@ -1010,7 +1032,7 @@ extension ConversationSettingsViewController: GroupViewHelperDelegate {
 // MARK: -
 
 extension ConversationSettingsViewController: ReplaceAdminViewControllerDelegate {
-    func replaceAdmin(address: SignalServiceAddress) {
-        // TODO:
+    func replaceAdmin(uuid: UUID) {
+        showLeaveGroupConfirmAlert(replacementAdminUuid: uuid)
     }
 }

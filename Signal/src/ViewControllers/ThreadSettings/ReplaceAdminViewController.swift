@@ -6,7 +6,7 @@ import Foundation
 import UIKit
 
 protocol ReplaceAdminViewControllerDelegate: class {
-    func replaceAdmin(address: SignalServiceAddress)
+    func replaceAdmin(uuid: UUID)
 }
 
 // MARK: -
@@ -77,7 +77,7 @@ class ReplaceAdminViewController: OWSTableViewController {
                 },
                                      customRowHeight: UITableView.automaticDimension,
                                      actionBlock: { [weak self] in
-                                        self?.replaceAdminViewControllerDelegate?.replaceAdmin(address: address)
+                                        self?.candidateWasSelected(candidate: address)
                 }
             ))
         }
@@ -85,5 +85,14 @@ class ReplaceAdminViewController: OWSTableViewController {
         contents.addSection(section)
 
         self.contents = contents
+    }
+
+    private func candidateWasSelected(candidate: SignalServiceAddress) {
+        guard let replacementAdminUuid = candidate.uuid else {
+            owsFailDebug("Invalid replacement Admin.")
+            return
+        }
+
+        replaceAdminViewControllerDelegate?.replaceAdmin(uuid: replacementAdminUuid)
     }
 }
