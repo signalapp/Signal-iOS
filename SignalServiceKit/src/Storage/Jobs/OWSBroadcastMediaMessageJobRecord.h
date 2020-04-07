@@ -27,15 +27,19 @@ NS_ASSUME_NONNULL_BEGIN
 ///     ]
 @property (nonatomic, readonly) NSDictionary<NSString *, NSArray<NSString *> *> *attachmentIdMap;
 
-- (instancetype)init NS_UNAVAILABLE;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
-- (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
-- (instancetype)initWithGrdbId:(int64_t)grdbId uniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
 
 - (instancetype)initWithAttachmentIdMap:(NSDictionary<NSString *, NSArray<NSString *> *> *)attachmentIdMap
                                   label:(NSString *)label NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithLabel:(NSString *)label NS_UNAVAILABLE;
+
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
+                  failureCount:(NSUInteger)failureCount
+                         label:(NSString *)label
+                        sortId:(unsigned long long)sortId
+                        status:(SSKJobRecordStatus)status NS_UNAVAILABLE;
 
 // --- CODE GENERATION MARKER
 

@@ -41,11 +41,16 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSDate *dateCreated;
 @property (nonatomic, readonly) BOOL isInstalled;
 
+- (instancetype)init NS_UNAVAILABLE;
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
+- (instancetype)initWithGrdbId:(int64_t)grdbId uniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
+
 - (instancetype)initWithInfo:(StickerPackInfo *)info
                        title:(nullable NSString *)title
                       author:(nullable NSString *)author
                        cover:(StickerPackItem *)cover
-                    stickers:(NSArray<StickerPackItem *> *)items;
+                    stickers:(NSArray<StickerPackItem *> *)items NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 

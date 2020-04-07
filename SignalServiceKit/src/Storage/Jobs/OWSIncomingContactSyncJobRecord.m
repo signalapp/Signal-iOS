@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSIncomingContactSyncJobRecord.h"
@@ -9,6 +9,11 @@
 + (NSString *)defaultLabel
 {
     return @"IncomingContactSync";
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    return [super initWithCoder:coder];
 }
 
 - (instancetype)initWithAttachmentId:(NSString *)attachmentId label:(NSString *)label

@@ -12,11 +12,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) NSString *contactThreadId;
 
-- (instancetype)initWithContactThread:(TSContactThread *)contactThread
-                                label:(NSString *)label NS_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
+- (instancetype)initWithContactThread:(TSContactThread *)contactThread
+                                label:(NSString *)label NS_DESIGNATED_INITIALIZER;
+
 - (nullable)initWithLabel:(NSString *)label NS_UNAVAILABLE;
+
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
+                  failureCount:(NSUInteger)failureCount
+                         label:(NSString *)label
+                        sortId:(unsigned long long)sortId
+                        status:(SSKJobRecordStatus)status NS_UNAVAILABLE;
 
 // --- CODE GENERATION MARKER
 

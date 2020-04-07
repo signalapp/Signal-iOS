@@ -74,6 +74,11 @@ ConversationColorName const ConversationColorNameDefault = ConversationColorName
     return YES;
 }
 
+- (instancetype)init
+{
+    return [super init];
+}
+
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
 {
     self = [super initWithUniqueId:uniqueId];

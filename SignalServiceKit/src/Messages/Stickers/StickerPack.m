@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "StickerPack.h"
@@ -41,6 +41,11 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 @implementation StickerPack
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    return [super initWithCoder:coder];
+}
 
 - (instancetype)initWithInfo:(StickerPackInfo *)info
                        title:(nullable NSString *)title

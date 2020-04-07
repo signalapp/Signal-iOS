@@ -70,6 +70,11 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
     return SSKEnvironment.shared.messageSenderJobQueue;
 }
 
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    return [super initWithCoder:coder];
+}
+
 - (instancetype)initWithGroupModelPrivate:(TSGroupModel *)groupModel
 {
     OWSAssertDebug(groupModel);
