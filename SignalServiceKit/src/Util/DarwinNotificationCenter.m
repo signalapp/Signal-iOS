@@ -18,7 +18,7 @@ const int DarwinNotificationInvalidObserver = NOTIFY_TOKEN_INVALID;
 + (void)postNotificationName:(DarwinNotificationName *)name
 {
     OWSAssertDebug(name.isValid);
-    notify_post(name.cString);
+    notify_post((const char *)name.cString);
 }
 
 + (int)addObserverForName:(DarwinNotificationName *)name
@@ -28,7 +28,7 @@ const int DarwinNotificationInvalidObserver = NOTIFY_TOKEN_INVALID;
     OWSAssertDebug(name.isValid);
 
     int observerToken;
-    notify_register_dispatch(name.cString, &observerToken, queue, block);
+    notify_register_dispatch((const char *)name.cString, &observerToken, queue, block);
     return observerToken;
 }
 
