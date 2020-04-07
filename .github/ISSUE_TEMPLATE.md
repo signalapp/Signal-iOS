@@ -40,7 +40,7 @@ Describe here the issue that you are experiencing.
 
 **iOS version**: X.Y.Z
 
-**Session version:** Z.Y
+**Session version:** X.Y.Z
 
 ### Link to debug log
 <!-- Ensure that "Enable Debug Log" is on in Session's settings then make the bug happen and immediately after that tap "Submit Debug Log" from settings and paste the link below. -->
