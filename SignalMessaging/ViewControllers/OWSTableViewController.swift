@@ -45,8 +45,9 @@ public extension OWSTableItem {
         return iconView
     }
 
-    static func buildCell(name: String, icon: ThemeIcon,
-                           accessibilityIdentifier: String? = nil) -> UITableViewCell {
+    static func buildCell(name: String,
+                          icon: ThemeIcon,
+                          accessibilityIdentifier: String? = nil) -> UITableViewCell {
         let iconView = imageView(forIcon: icon)
         let cell = buildCell(name: name, iconView: iconView)
         cell.accessibilityIdentifier = accessibilityIdentifier
@@ -54,8 +55,8 @@ public extension OWSTableItem {
     }
 
     static func buildDisclosureCell(name: String,
-                                     icon: ThemeIcon,
-                                     accessibilityIdentifier: String) -> UITableViewCell {
+                                    icon: ThemeIcon,
+                                    accessibilityIdentifier: String) -> UITableViewCell {
         let cell = buildCell(name: name, icon: icon)
         cell.accessoryType = .disclosureIndicator
         cell.accessibilityIdentifier = accessibilityIdentifier
@@ -63,8 +64,8 @@ public extension OWSTableItem {
     }
 
     static func buildLabelCell(name: String,
-                                icon: ThemeIcon,
-                                accessibilityIdentifier: String) -> UITableViewCell {
+                               icon: ThemeIcon,
+                               accessibilityIdentifier: String) -> UITableViewCell {
         let cell = buildCell(name: name, icon: icon)
         cell.accessoryType = .none
         cell.accessibilityIdentifier = accessibilityIdentifier
@@ -72,8 +73,23 @@ public extension OWSTableItem {
     }
 
     static func buildCellWithAccessoryLabel(icon: ThemeIcon,
-                                             itemName: String,
-                                             accessoryText: String) -> UITableViewCell {
+                                            itemName: String,
+                                            accessoryText: String? = nil,
+                                            accessibilityIdentifier: String? = nil) -> UITableViewCell {
+        let cell = buildIconNameCell(icon: icon,
+                                     itemName: itemName,
+                                     accessoryText: accessoryText,
+                                     accessibilityIdentifier: accessibilityIdentifier)
+        cell.accessoryType = .disclosureIndicator
+        return cell
+
+    }
+
+    static func buildIconNameCell(icon: ThemeIcon,
+                                  itemName: String,
+                                  accessoryText: String? = nil,
+                                  customColor: UIColor? = nil,
+                                  accessibilityIdentifier: String? = nil) -> UITableViewCell {
 
         // We can't use the built-in UITableViewCell with CellStyle.value1,
         // because if the content of the primary label and the accessory label
@@ -93,20 +109,29 @@ public extension OWSTableItem {
         nameLabel.lineBreakMode = .byTruncatingTail
         nameLabel.setCompressionResistanceHorizontalLow()
 
-        let accessoryLabel = UILabel()
-        accessoryLabel.text = accessoryText
-        accessoryLabel.textColor = Theme.secondaryTextAndIconColor
-        accessoryLabel.font = .ows_dynamicTypeBody
-        accessoryLabel.lineBreakMode = .byTruncatingTail
+        if let customColor = customColor {
+            iconView.tintColor = customColor
+            nameLabel.textColor = customColor
+        }
 
-        let contentRow =
-            UIStackView(arrangedSubviews: [ iconView, nameLabel, UIView.hStretchingSpacer(), accessoryLabel ])
+        var arrangedSubviews = [ iconView, nameLabel ]
+
+        if let accessoryText = accessoryText {
+            let accessoryLabel = UILabel()
+            accessoryLabel.text = accessoryText
+            accessoryLabel.textColor = Theme.secondaryTextAndIconColor
+            accessoryLabel.font = .ows_dynamicTypeBody
+            accessoryLabel.lineBreakMode = .byTruncatingTail
+            arrangedSubviews += [ UIView.hStretchingSpacer(), accessoryLabel ]
+        }
+
+        let contentRow = UIStackView(arrangedSubviews: arrangedSubviews)
         contentRow.spacing = self.iconSpacing
         contentRow.alignment = .center
         cell.contentView.addSubview(contentRow)
         contentRow.autoPinEdgesToSuperviewMargins()
 
-        cell.accessoryType = .disclosureIndicator
+        cell.accessibilityIdentifier = accessibilityIdentifier
 
         return cell
     }

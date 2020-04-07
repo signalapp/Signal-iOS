@@ -557,42 +557,25 @@ class ConversationSettingsViewController: OWSTableViewController {
         updateTableContents()
     }
 
-    @objc
-    func blockConversationSwitchDidChange(_ sender: UISwitch) {
-
+    func didTapUnblockGroup() {
         let isCurrentlyBlocked = blockingManager.isThreadBlocked(thread)
+        if !isCurrentlyBlocked {
+            owsFailDebug("Not blocked.")
+            return
+        }
+        BlockListUIUtils.showUnblockThreadActionSheet(thread, from: self) { [weak self] _ in
+            self?.updateTableContents()
+        }
+    }
 
-        if sender.isOn {
-            if isCurrentlyBlocked {
-                owsFailDebug("Already blocked.")
-                return
-            }
-            BlockListUIUtils.showBlockThreadActionSheet(thread, from: self) { [weak self] isBlocked in
-                guard let self = self else {
-                    owsFailDebug("Missing self")
-                    return
-                }
-
-                // Update switch state if user cancels action.
-                sender.isOn = isBlocked
-
-                self.updateTableContents()
-            }
-        } else {
-            if !isCurrentlyBlocked {
-                owsFailDebug("Not blocked.")
-                return
-            }
-            BlockListUIUtils.showUnblockThreadActionSheet(thread, from: self) { [weak self] isBlocked in
-                guard let self = self else {
-                    owsFailDebug("Missing self")
-                    return
-                }
-                // Update switch state if user cancels action.
-                sender.isOn = isBlocked
-
-                self.updateTableContents()
-            }
+    func didTapBlockGroup() {
+        let isCurrentlyBlocked = blockingManager.isThreadBlocked(thread)
+        if isCurrentlyBlocked {
+            owsFailDebug("Already blocked.")
+            return
+        }
+        BlockListUIUtils.showBlockThreadActionSheet(thread, from: self) { [weak self] _ in
+            self?.updateTableContents()
         }
     }
 
