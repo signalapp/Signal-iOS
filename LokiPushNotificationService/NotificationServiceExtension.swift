@@ -83,7 +83,7 @@ final class NotificationServiceExtension : UNNotificationServiceExtension {
             thread = TSContactThread.getOrCreateThread(withContactId: result.source, transaction: transaction)
             displayName = contentProto?.dataMessage?.profile?.displayName ?? displayName
         }
-        let userInfo: [String:Any] = [ NotificationService.threadIdKey : thread.uniqueId!, NotificationService.isFromRemoteKey : true ]
+        let userInfo: [String:Any] = [ NotificationServiceExtension.threadIdKey : thread.uniqueId!, NotificationServiceExtension.isFromRemoteKey : true ]
         notificationContent.title = displayName
         notificationContent.userInfo = userInfo
         notificationContent.badge = 1
