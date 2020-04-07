@@ -1115,9 +1115,9 @@ extension SignalCall: CallManagerCallReference { }
             // There should only be an existing call record due to a race where the call is answered
             // simultaneously on multiple devices, and the caller is proceeding with the *other*
             // devices call.
-            existingCallRecord.updateCallType(.incomingAnsweredElsewhere)
+            existingCallRecord.updateCallType(.incomingDeclinedElsewhere)
         } else {
-            let callRecord = TSCall(callType: .incomingAnsweredElsewhere, in: call.thread, sentAtTimestamp: call.sentAtTimestamp)
+            let callRecord = TSCall(callType: .incomingDeclinedElsewhere, in: call.thread, sentAtTimestamp: call.sentAtTimestamp)
             call.callRecord = callRecord
             databaseStorage.write { callRecord.anyInsert(transaction: $0) }
         }
@@ -1125,28 +1125,28 @@ extension SignalCall: CallManagerCallReference { }
         call.state = .declinedElsewhere
 
         // Notify UI
-        callUIAdapter.didAnswerElsewhere(call: call)
+        callUIAdapter.didDeclineElsewhere(call: call)
 
         terminate(call: call)
     }
 
     // @integration
     func handleBusyElsewhere(call: SignalCall) {
-//        if let existingCallRecord = call.callRecord {
-//            // There should only be an existing call record due to a race where the call is answered
-//            // simultaneously on multiple devices, and the caller is proceeding with the *other*
-//            // devices call.
-//            existingCallRecord.updateCallType(.incomingAnsweredElsewhere)
-//        } else {
-//            let callRecord = TSCall(callType: .incomingAnsweredElsewhere, in: call.thread, sentAtTimestamp: call.sentAtTimestamp)
-//            call.callRecord = callRecord
-//            databaseStorage.write { callRecord.anyInsert(transaction: $0) }
-//        }
+        if let existingCallRecord = call.callRecord {
+            // There should only be an existing call record due to a race where the call is answered
+            // simultaneously on multiple devices, and the caller is proceeding with the *other*
+            // devices call.
+            existingCallRecord.updateCallType(.incomingBusyElsewhere)
+        } else {
+            let callRecord = TSCall(callType: .incomingBusyElsewhere, in: call.thread, sentAtTimestamp: call.sentAtTimestamp)
+            call.callRecord = callRecord
+            databaseStorage.write { callRecord.anyInsert(transaction: $0) }
+        }
 
         call.state = .busyElsewhere
 
         // Notify UI
-//        callUIAdapter.didAnswerElsewhere(call: call)
+        callUIAdapter.reportMissedCall(call)
 
         terminate(call: call)
     }

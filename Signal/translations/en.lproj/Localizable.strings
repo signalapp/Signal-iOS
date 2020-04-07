@@ -1655,8 +1655,14 @@
 /* Call setup status label */
 "IN_CALL_CONNECTING" = "Connecting…";
 
-/* Call screen label when call was canceled on this device because the call recipient answered on another linked device. */
+/* Call screen label when call was canceled on this device because the call recipient answered on another device. */
 "IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Answered on other device.";
+
+/* Call screen label when call was canceled on this device because the call recipient has a call in progress on another device. */
+"IN_CALL_ENDED_BECAUSE_BUSY_ELSEWHERE" = "Missed because a call in progress on another device.";
+
+/* Call screen label when call was canceled on this device because the call recipient declined on another device. */
+"IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Declined on other device.";
 
 /* Call setup status label */
 "IN_CALL_RECONNECTING" = "Reconnecting…";
@@ -1682,8 +1688,14 @@
 /* info message text in conversation view */
 "INCOMING_CALL_ANSWERED" = "Answered Call";
 
-/* info message recorded in conversation history when a call was answered from a linked device */
+/* info message recorded in conversation history when a call was answered from another device */
 "INCOMING_CALL_ANSWERED_ELSEWHERE" = "Answered on other device";
+
+/* info message recorded in conversation history when a call was missed due to an active call on another device */
+"INCOMING_CALL_BUSY_ELSEWHERE" = "Missed because a call is in progress on another device";
+
+/* info message recorded in conversation history when a call was declined from another device */
+"INCOMING_CALL_DECLINED_ELSEWHERE" = "Declined on other device";
 
 /* info message recorded in conversation history when local user declined a call */
 "INCOMING_DECLINED_CALL" = "You declined a call";

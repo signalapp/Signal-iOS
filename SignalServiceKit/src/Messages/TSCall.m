@@ -30,6 +30,10 @@ NSString *NSStringFromCallType(RPRecentCallType callType)
             return @"RPRecentCallTypeOutgoingMissed";
         case RPRecentCallTypeIncomingAnsweredElsewhere:
             return @"RPRecentCallTypeIncomingAnsweredElsewhere";
+        case RPRecentCallTypeIncomingDeclinedElsewhere:
+            return @"RPRecentCallTypeIncomingDeclinedElsewhere";
+        case RPRecentCallTypeIncomingBusyElsewhere:
+            return @"RPRecentCallTypeIncomingBusyElsewhere";
     }
 }
 
@@ -156,7 +160,14 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
                 @"info message recorded in conversation history when local user tries and fails to call another user.");
         case RPRecentCallTypeIncomingAnsweredElsewhere:
             return NSLocalizedString(@"INCOMING_CALL_ANSWERED_ELSEWHERE",
-                                     @"info message recorded in conversation history when a call was answered from a linked device");
+                @"info message recorded in conversation history when a call was answered from another device");
+        case RPRecentCallTypeIncomingDeclinedElsewhere:
+            return NSLocalizedString(@"INCOMING_CALL_DECLINED_ELSEWHERE",
+                @"info message recorded in conversation history when a call was declined from another device");
+        case RPRecentCallTypeIncomingBusyElsewhere:
+            return NSLocalizedString(@"INCOMING_CALL_BUSY_ELSEWHERE",
+                @"info message recorded in conversation history when a call was missed due to an active call on "
+                @"another device");
     }
 }
 

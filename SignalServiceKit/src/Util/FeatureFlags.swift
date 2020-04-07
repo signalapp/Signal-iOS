@@ -203,16 +203,6 @@ public class FeatureFlags: NSObject {
     @objc
     public static let answerCallsOnSecondaryDevice: Bool = build.includes(.internalPreview)
 
-    // TODO MULTIRING
-    //
-    // We can't enable this until after `sendCallsToAllDevices` has rolled out on iOS and Android.
-    //
-    // Note: As well as exposing incoming calls on iPads, this also exposes the outgoing call button
-    // on iPads, because we don't want to allow outgoing calls from an iPad until we're also ready
-    // to receive them on iPad.
-    @objc
-    public static let answerCallsOnSecondaryDevice: Bool = build.includes(.internalPreview)
-
     @objc
     public static let groupsV2 = build.includes(.qa) && !isUsingProductionService
 

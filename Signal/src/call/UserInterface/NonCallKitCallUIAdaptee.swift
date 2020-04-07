@@ -140,6 +140,12 @@ class NonCallKitCallUIAdaptee: NSObject, CallUIAdaptee {
         Logger.debug("is no-op")
     }
 
+    internal func didDeclineElsewhere(call: SignalCall) {
+        AssertIsOnMainThread()
+
+        Logger.debug("is no-op")
+    }
+
     internal func failCall(_ call: SignalCall, error: CallError) {
         AssertIsOnMainThread()
 

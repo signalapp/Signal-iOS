@@ -262,6 +262,14 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         callManager.removeCall(call)
     }
 
+    func didDeclineElsewhere(call: SignalCall) {
+        AssertIsOnMainThread()
+        Logger.info("")
+
+        provider.reportCall(with: call.localId, endedAt: nil, reason: .declinedElsewhere)
+        callManager.removeCall(call)
+    }
+
     func setIsMuted(call: SignalCall, isMuted: Bool) {
         AssertIsOnMainThread()
         Logger.info("")
