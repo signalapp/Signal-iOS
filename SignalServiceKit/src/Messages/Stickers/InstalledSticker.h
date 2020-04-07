@@ -19,7 +19,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSData *packKey;
 @property (nonatomic, readonly) UInt32 stickerId;
 
-- (instancetype)initWithInfo:(StickerInfo *)info emojiString:(nullable NSString *)emojiString;
+- (instancetype)init NS_UNAVAILABLE;
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
+- (instancetype)initWithGrdbId:(int64_t)grdbId uniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
+
+- (instancetype)initWithInfo:(StickerInfo *)info emojiString:(nullable NSString *)emojiString NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 

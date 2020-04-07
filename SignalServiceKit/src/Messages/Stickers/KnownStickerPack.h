@@ -15,7 +15,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) NSInteger referenceCount;
 @property (nonatomic, readonly) NSDate *dateCreated;
 
-- (instancetype)initWithInfo:(StickerPackInfo *)info;
+- (instancetype)init NS_UNAVAILABLE;
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
+- (instancetype)initWithGrdbId:(int64_t)grdbId uniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
+
+- (instancetype)initWithInfo:(StickerPackInfo *)info NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 

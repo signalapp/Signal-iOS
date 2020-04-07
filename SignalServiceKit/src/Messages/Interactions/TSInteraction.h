@@ -37,14 +37,16 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value);
 
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId timestamp:(uint64_t)timestamp inThread:(TSThread *)thread;
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
+                       timestamp:(uint64_t)timestamp
+                        inThread:(TSThread *)thread NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
                        timestamp:(uint64_t)timestamp
              receivedAtTimestamp:(uint64_t)receivedAtTimestamp
-                        inThread:(TSThread *)thread;
+                        inThread:(TSThread *)thread NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread;
+- (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 
