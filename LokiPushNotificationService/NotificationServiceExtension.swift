@@ -199,7 +199,7 @@ final class NotificationServiceExtension : UNNotificationServiceExtension {
     func completeWithFailure(content: UNMutableNotificationContent) {
         content.body = "You've got a new message."
         content.title = "Session"
-        let userInfo: [String:Any] = [NotificationService.isFromRemoteKey : true]
+        let userInfo: [String:Any] = [NotificationServiceExtension.isFromRemoteKey : true]
         content.userInfo = userInfo
         contentHandler?(content)
     }
