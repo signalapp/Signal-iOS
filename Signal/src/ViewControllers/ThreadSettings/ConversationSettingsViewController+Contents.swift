@@ -523,7 +523,9 @@ extension ConversationSettingsViewController {
     private func buildGroupAccessSection(groupModelV2: TSGroupModelV2) -> OWSTableSection {
         let section = OWSTableSection()
         section.customHeaderHeight = 10
-        section.customFooterHeight = 10
+
+        section.footerTitle = NSLocalizedString("CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER",
+                                                comment: "Footer for the 'attributes access' section in conversation settings view.")
 
         section.add(OWSTableItem(customCellBlock: { [weak self] in
             guard let self = self else {
