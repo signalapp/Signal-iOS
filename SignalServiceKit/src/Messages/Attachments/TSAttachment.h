@@ -60,6 +60,11 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
 
 #pragma mark -
 
+- (instancetype)init NS_UNAVAILABLE;
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
+- (instancetype)initWithGrdbId:(int64_t)grdbId uniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
+
 // This constructor is used for new instances of TSAttachmentPointer,
 // i.e. undownloaded incoming attachments.
 - (instancetype)initWithServerId:(UInt64)serverId
@@ -70,7 +75,7 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
                          caption:(nullable NSString *)caption
                   albumMessageId:(nullable NSString *)albumMessageId
                         blurHash:(nullable NSString *)blurHash
-                 uploadTimestamp:(unsigned long long)uploadTimestamp;
+                 uploadTimestamp:(unsigned long long)uploadTimestamp NS_DESIGNATED_INITIALIZER;
 
 // This constructor is used for new instances of TSAttachmentPointer,
 // i.e. undownloaded restoring attachments.
@@ -78,7 +83,7 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
                                contentType:(NSString *)contentType
                             sourceFilename:(nullable NSString *)sourceFilename
                                    caption:(nullable NSString *)caption
-                            albumMessageId:(nullable NSString *)albumMessageId;
+                            albumMessageId:(nullable NSString *)albumMessageId NS_DESIGNATED_INITIALIZER;
 
 // This constructor is used for new instances of TSAttachmentStream
 // that represent new, un-uploaded outgoing attachments.
@@ -86,11 +91,12 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
                                     byteCount:(UInt32)byteCount
                                sourceFilename:(nullable NSString *)sourceFilename
                                       caption:(nullable NSString *)caption
-                               albumMessageId:(nullable NSString *)albumMessageId;
+                               albumMessageId:(nullable NSString *)albumMessageId NS_DESIGNATED_INITIALIZER;
 
 // This constructor is used for new instances of TSAttachmentStream
 // that represent downloaded incoming attachments.
-- (instancetype)initWithPointer:(TSAttachmentPointer *)pointer transaction:(SDSAnyReadTransaction *)transaction;
+- (instancetype)initWithPointer:(TSAttachmentPointer *)pointer
+                    transaction:(SDSAnyReadTransaction *)transaction NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 
@@ -115,8 +121,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:atta
 // clang-format on
 
 // --- CODE GENERATION MARKER
-
-- (nullable instancetype)initWithCoder:(NSCoder *)coder;
 
 - (void)upgradeFromAttachmentSchemaVersion:(NSUInteger)attachmentSchemaVersion;
 

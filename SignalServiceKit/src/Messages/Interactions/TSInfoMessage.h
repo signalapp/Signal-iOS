@@ -55,6 +55,47 @@ extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyGroupUpdateSourceAddre
                              linkPreview:(nullable OWSLinkPreview *)linkPreview
                           messageSticker:(nullable MessageSticker *)messageSticker
                        isViewOnceMessage:(BOOL)isViewOnceMessage NS_UNAVAILABLE;
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
+           receivedAtTimestamp:(uint64_t)receivedAtTimestamp
+                        sortId:(uint64_t)sortId
+                     timestamp:(uint64_t)timestamp
+                uniqueThreadId:(NSString *)uniqueThreadId
+                 attachmentIds:(NSArray<NSString *> *)attachmentIds
+                          body:(nullable NSString *)body
+                  contactShare:(nullable OWSContact *)contactShare
+               expireStartedAt:(uint64_t)expireStartedAt
+                     expiresAt:(uint64_t)expiresAt
+              expiresInSeconds:(unsigned int)expiresInSeconds
+            isViewOnceComplete:(BOOL)isViewOnceComplete
+             isViewOnceMessage:(BOOL)isViewOnceMessage
+                   linkPreview:(nullable OWSLinkPreview *)linkPreview
+                messageSticker:(nullable MessageSticker *)messageSticker
+                 quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+  storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer NS_UNAVAILABLE;
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         inThread:(TSThread *)contact
+                      messageType:(TSInfoMessageType)infoMessage NS_DESIGNATED_INITIALIZER;
+
+// Convenience initializer which is neither "designated" nor "unavailable".
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         inThread:(TSThread *)thread
+                      messageType:(TSInfoMessageType)infoMessage
+                    customMessage:(NSString *)customMessage;
+
+// Convenience initializer which is neither "designated" nor "unavailable".
+- (instancetype)initWithThread:(TSThread *)thread
+                   messageType:(TSInfoMessageType)infoMessage
+           infoMessageUserInfo:(NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo;
+
+// Convenience initializer which is neither "designated" nor "unavailable".
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         inThread:(TSThread *)thread
+                      messageType:(TSInfoMessageType)infoMessage
+              unregisteredAddress:(SignalServiceAddress *)unregisteredAddress;
 
 // --- CODE GENERATION MARKER
 
@@ -90,33 +131,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 // clang-format on
 
 // --- CODE GENERATION MARKER
-
-- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(TSThread *)contact
-                      messageType:(TSInfoMessageType)infoMessage NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(TSThread *)thread
-                      messageType:(TSInfoMessageType)infoMessage
-                    customMessage:(NSString *)customMessage;
-
-- (instancetype)initWithThread:(TSThread *)thread
-                   messageType:(TSInfoMessageType)infoMessage
-           infoMessageUserInfo:(NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo;
-
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(TSThread *)thread
-                      messageType:(TSInfoMessageType)infoMessage
-              unregisteredAddress:(SignalServiceAddress *)unregisteredAddress;
-
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(TSThread *)thread
-                      messageBody:(nullable NSString *)body
-                    attachmentIds:(NSArray<NSString *> *)attachmentIds
-                 expiresInSeconds:(uint32_t)expiresInSeconds
-                  expireStartedAt:(uint64_t)expireStartedAt NS_UNAVAILABLE;
 
 - (NSString *)systemMessageTextWithTransaction:(SDSAnyReadTransaction *)transaction;
 

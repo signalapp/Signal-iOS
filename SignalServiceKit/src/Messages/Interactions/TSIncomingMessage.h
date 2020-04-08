@@ -29,29 +29,27 @@ NS_ASSUME_NONNULL_BEGIN
                              linkPreview:(nullable OWSLinkPreview *)linkPreview
                           messageSticker:(nullable MessageSticker *)messageSticker
                        isViewOnceMessage:(BOOL)isViewOnceMessage NS_UNAVAILABLE;
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
+           receivedAtTimestamp:(uint64_t)receivedAtTimestamp
+                        sortId:(uint64_t)sortId
+                     timestamp:(uint64_t)timestamp
+                uniqueThreadId:(NSString *)uniqueThreadId
+                 attachmentIds:(NSArray<NSString *> *)attachmentIds
+                          body:(nullable NSString *)body
+                  contactShare:(nullable OWSContact *)contactShare
+               expireStartedAt:(uint64_t)expireStartedAt
+                     expiresAt:(uint64_t)expiresAt
+              expiresInSeconds:(unsigned int)expiresInSeconds
+            isViewOnceComplete:(BOOL)isViewOnceComplete
+             isViewOnceMessage:(BOOL)isViewOnceMessage
+                   linkPreview:(nullable OWSLinkPreview *)linkPreview
+                messageSticker:(nullable MessageSticker *)messageSticker
+                 quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+  storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer NS_UNAVAILABLE;
 
-/**
- *  Inits an incoming group message that expires.
- *
- *  @param timestamp
- *    When the message was created in milliseconds since epoch
- *  @param thread
- *    Thread to which the message belongs
- *  @param authorAddress
- *    SignalServiceAddress of the user who sent the message
- *  @param sourceDeviceId
- *    Numeric ID of the device used to send the message. Used to detect duplicate messages.
- *  @param body
- *    Body of the message
- *  @param attachmentIds
- *    The uniqueIds for the message's attachments, possibly an empty list.
- *  @param expiresInSeconds
- *    Seconds from when the message is read until it is deleted.
- *  @param quotedMessage
- *    If this message is a quoted reply to another message, contains data about that message.
- *
- *  @return initiated incoming group message
- */
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
+
 - (instancetype)initIncomingMessageWithTimestamp:(uint64_t)timestamp
                                         inThread:(TSThread *)thread
                                    authorAddress:(SignalServiceAddress *)authorAddress
@@ -102,8 +100,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 // clang-format on
 
 // --- CODE GENERATION MARKER
-
-- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 // This will be 0 for messages created before we were tracking sourceDeviceId
 @property (nonatomic, readonly) UInt32 sourceDeviceId;

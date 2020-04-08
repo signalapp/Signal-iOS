@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSInvalidIdentityKeyReceivingErrorMessage.h"
@@ -47,6 +47,11 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
                                                     inThread:contactThread
                                             incomingEnvelope:envelope];
     return errorMessage;
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    return [super initWithCoder:coder];
 }
 
 - (nullable instancetype)initForUnknownIdentityKeyWithTimestamp:(uint64_t)timestamp

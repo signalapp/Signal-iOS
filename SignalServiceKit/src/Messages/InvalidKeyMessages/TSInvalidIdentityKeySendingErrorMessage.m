@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSInvalidIdentityKeySendingErrorMessage.h"
@@ -32,6 +32,11 @@ NSString *TSInvalidRecipientKey = @"TSInvalidRecipientKey";
 #pragma clang diagnostic ignored "-Wdeprecated-implementations"
 @implementation TSInvalidIdentityKeySendingErrorMessage
 #pragma clang diagnostic pop
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    return [super initWithCoder:coder];
+}
 
 // --- CODE GENERATION MARKER
 

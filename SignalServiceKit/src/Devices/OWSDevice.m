@@ -136,6 +136,11 @@ NSString *const kMayHaveLinkedDevicesKey = @"kTSStorageManager_MayHaveLinkedDevi
 
 #pragma mark -
 
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    return [super initWithCoder:coder];
+}
+
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
                        createdAt:(NSDate *)createdAt
                         deviceId:(NSInteger)deviceId

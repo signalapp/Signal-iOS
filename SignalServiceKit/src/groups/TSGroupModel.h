@@ -43,9 +43,8 @@ typedef NS_CLOSED_ENUM(
 
 + (nullable NSData *)dataForGroupAvatar:(nullable UIImage *)image;
 
-- (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;
-
+- (instancetype)init NS_UNAVAILABLE;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithGroupId:(NSData *)groupId

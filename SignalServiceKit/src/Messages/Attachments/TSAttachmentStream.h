@@ -21,27 +21,39 @@ typedef void (^OWSThumbnailFailure)(void);
 
 @interface TSAttachmentStream : TSAttachment
 
-- (instancetype)init NS_UNAVAILABLE;
-
 - (instancetype)initWithServerId:(UInt64)serverId
                    encryptionKey:(NSData *)encryptionKey
                        byteCount:(UInt32)byteCount
                      contentType:(NSString *)contentType
                   sourceFilename:(nullable NSString *)sourceFilename
                          caption:(nullable NSString *)caption
-                  albumMessageId:(nullable NSString *)albumMessageId NS_UNAVAILABLE;
-
+                  albumMessageId:(nullable NSString *)albumMessageId
+                        blurHash:(nullable NSString *)blurHash
+                 uploadTimestamp:(unsigned long long)uploadTimestamp NS_UNAVAILABLE;
 - (instancetype)initForRestoreWithUniqueId:(NSString *)uniqueId
                                contentType:(NSString *)contentType
                             sourceFilename:(nullable NSString *)sourceFilename
                                    caption:(nullable NSString *)caption
                             albumMessageId:(nullable NSString *)albumMessageId NS_UNAVAILABLE;
-
 - (instancetype)initAttachmentWithContentType:(NSString *)contentType
                                     byteCount:(UInt32)byteCount
                                sourceFilename:(nullable NSString *)sourceFilename
                                       caption:(nullable NSString *)caption
                                albumMessageId:(nullable NSString *)albumMessageId NS_UNAVAILABLE;
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
+                albumMessageId:(nullable NSString *)albumMessageId
+                attachmentType:(TSAttachmentType)attachmentType
+                      blurHash:(nullable NSString *)blurHash
+                     byteCount:(unsigned int)byteCount
+                       caption:(nullable NSString *)caption
+                   contentType:(NSString *)contentType
+                 encryptionKey:(nullable NSData *)encryptionKey
+                      serverId:(unsigned long long)serverId
+                sourceFilename:(nullable NSString *)sourceFilename
+               uploadTimestamp:(unsigned long long)uploadTimestamp NS_UNAVAILABLE;
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithContentType:(NSString *)contentType
                           byteCount:(UInt32)byteCount
@@ -51,8 +63,6 @@ typedef void (^OWSThumbnailFailure)(void);
 
 - (instancetype)initWithPointer:(TSAttachmentPointer *)pointer
                     transaction:(SDSAnyReadTransaction *)transaction NS_DESIGNATED_INITIALIZER;
-
-- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 

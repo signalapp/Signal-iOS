@@ -17,10 +17,39 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BOOL isLocalChange;
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
+                         inThread:(TSThread *)contact
+                      messageType:(TSInfoMessageType)infoMessage NS_UNAVAILABLE;
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
+           receivedAtTimestamp:(uint64_t)receivedAtTimestamp
+                        sortId:(uint64_t)sortId
+                     timestamp:(uint64_t)timestamp
+                uniqueThreadId:(NSString *)uniqueThreadId
+                 attachmentIds:(NSArray<NSString *> *)attachmentIds
+                          body:(nullable NSString *)body
+                  contactShare:(nullable OWSContact *)contactShare
+               expireStartedAt:(uint64_t)expireStartedAt
+                     expiresAt:(uint64_t)expiresAt
+              expiresInSeconds:(unsigned int)expiresInSeconds
+            isViewOnceComplete:(BOOL)isViewOnceComplete
+             isViewOnceMessage:(BOOL)isViewOnceMessage
+                   linkPreview:(nullable OWSLinkPreview *)linkPreview
+                messageSticker:(nullable MessageSticker *)messageSticker
+                 quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+  storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
+                 customMessage:(nullable NSString *)customMessage
+           infoMessageUserInfo:(nullable NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo
+                   messageType:(TSInfoMessageType)messageType
+                          read:(BOOL)read
+           unregisteredAddress:(nullable SignalServiceAddress *)unregisteredAddress NS_UNAVAILABLE;
+
+- (instancetype)initWithTimestamp:(uint64_t)timestamp
                            thread:(TSThread *)thread
                  recipientAddress:(SignalServiceAddress *)recipientAddress
                 verificationState:(OWSVerificationState)verificationState
-                    isLocalChange:(BOOL)isLocalChange;
+                    isLocalChange:(BOOL)isLocalChange NS_DESIGNATED_INITIALIZER;
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 
