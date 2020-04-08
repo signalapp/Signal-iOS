@@ -40,11 +40,6 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
 
     // MARK: - Initializers
 
-    @available(*, unavailable, message: "use init(call:) constructor instead.")
-    required init?(coder aDecoder: NSCoder) {
-        notImplemented()
-    }
-
     @objc
     required init(contactShare: ContactShareViewModel) {
         contactsManager = Environment.shared.contactsManager

@@ -134,11 +134,6 @@ public class EditContactShareNameViewController: OWSViewController, ContactNameF
 
     // MARK: Initializers
 
-    @available(*, unavailable, message:"use other constructor instead.")
-    required public init?(coder aDecoder: NSCoder) {
-        notImplemented()
-    }
-
     @objc
     required public init(contactShare: ContactShareViewModel, delegate: EditContactShareNameViewControllerDelegate) {
         self.contactShare = contactShare

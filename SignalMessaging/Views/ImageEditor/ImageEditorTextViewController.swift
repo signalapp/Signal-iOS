@@ -136,11 +136,6 @@ public class ImageEditorTextViewController: OWSViewController, VAlignTextViewDel
         self.textView.textViewDelegate = self
     }
 
-    @available(*, unavailable, message: "use other init() instead.")
-    required public init?(coder aDecoder: NSCoder) {
-        notImplemented()
-    }
-
     // MARK: - View Lifecycle
 
     public override func viewWillAppear(_ animated: Bool) {

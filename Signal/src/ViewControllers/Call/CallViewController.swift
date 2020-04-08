@@ -131,11 +131,6 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     // MARK: - Initializers
 
-    @available(*, unavailable, message: "use init(call:) constructor instead.")
-    required init?(coder aDecoder: NSCoder) {
-        notImplemented()
-    }
-
     required init(call: SignalCall) {
         contactsManager = Environment.shared.contactsManager
         self.call = call

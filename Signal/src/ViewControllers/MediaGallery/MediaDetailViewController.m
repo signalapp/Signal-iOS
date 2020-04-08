@@ -61,7 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithGalleryItemBox:(GalleryItemBox *)galleryItemBox
                               viewItem:(nullable id<ConversationViewItem>)viewItem
 {
-    self = [super initWithNibName:nil bundle:nil];
+    self = [super init];
     if (!self) {
         return self;
     }

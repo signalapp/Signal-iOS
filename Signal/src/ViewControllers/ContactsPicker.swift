@@ -68,10 +68,6 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
         super.init()
     }
 
-    required public init?(coder aDecoder: NSCoder) {
-        notImplemented()
-    }
-
     // MARK: - Lifecycle Methods
 
     override public func loadView() {

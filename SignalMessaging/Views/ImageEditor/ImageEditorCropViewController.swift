@@ -73,11 +73,6 @@ class ImageEditorCropViewController: OWSViewController {
         super.init()
     }
 
-    @available(*, unavailable, message: "use other init() instead.")
-    required public init?(coder aDecoder: NSCoder) {
-        notImplemented()
-    }
-
     // MARK: - View Lifecycle
 
     private var isCropLocked = false

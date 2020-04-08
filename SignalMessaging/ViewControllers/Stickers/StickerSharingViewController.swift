@@ -29,10 +29,6 @@ public class StickerSharingViewController: SelectThreadViewController {
         self.selectThreadViewDelegate = self
     }
 
-    required public init(coder: NSCoder) {
-        notImplemented()
-    }
-
     public override func viewDidLoad() {
         super.viewDidLoad()
 

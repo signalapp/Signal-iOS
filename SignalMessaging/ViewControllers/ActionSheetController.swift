@@ -59,10 +59,6 @@ public class ActionSheetController: OWSViewController {
         createHeader(title: title, message: message)
     }
 
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
     var firstCancelAction: ActionSheetAction? {
         return actions.first(where: { $0.style == .cancel })
     }

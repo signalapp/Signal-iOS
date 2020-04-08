@@ -55,10 +55,6 @@ public class AttachmentPrepViewController: OWSViewController {
         assert(!attachment.hasError)
     }
 
-    public required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
     // MARK: - View Lifecycle
 
     override public func loadView() {

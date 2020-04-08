@@ -71,12 +71,6 @@ public class BaseGroupMemberViewController: OWSViewController {
         super.init()
     }
 
-    @available(*, unavailable, message:"use other constructor instead.")
-    @objc
-    public required init(coder aDecoder: NSCoder) {
-        notImplemented()
-    }
-
     // MARK: - View Lifecycle
 
     @objc
