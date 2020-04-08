@@ -107,8 +107,8 @@ public class GroupsV2Test: NSObject {
                 throw OWSAssertionError("Unexpected members: \(groupMembership.nonPendingMembers).")
             }
             let expectedAdministrators = expectedMembers
-            guard groupMembership.administrators == expectedAdministrators else {
-                throw OWSAssertionError("Unexpected administrators: \(groupMembership.administrators).")
+            guard groupMembership.nonPendingAdministrators == expectedAdministrators else {
+                throw OWSAssertionError("Unexpected administrators: \(groupMembership.nonPendingAdministrators).")
             }
             guard groupV2Snapshot.accessControlForMembers == .member else {
                 throw OWSAssertionError("Unexpected accessControlForMembers: \(groupV2Snapshot.accessControlForMembers).")
@@ -120,7 +120,7 @@ public class GroupsV2Test: NSObject {
         }.then(on: .global()) { (groupId: Data) throws -> Promise<TSGroupThread> in
             let (groupThread, dmConfiguration) = try self.fetchGroupThread(groupId: groupId)
             let oldGroupModel = groupThread.groupModel as! TSGroupModelV2
-            guard oldGroupModel.groupMembership.administrators == localAddressSet else {
+            guard oldGroupModel.groupMembership.nonPendingAdministrators == localAddressSet else {
                 throw OWSAssertionError("Unexpected groupMembership.")
             }
             guard oldGroupModel.groupMembership.nonAdminMembers.isEmpty else {
@@ -196,8 +196,8 @@ public class GroupsV2Test: NSObject {
                 throw OWSAssertionError("Unexpected members: \(groupMembership.nonPendingMembers).")
             }
             let expectedAdministrators = localAddressSet
-            guard groupMembership.administrators == expectedAdministrators else {
-                throw OWSAssertionError("Unexpected administrators: \(groupMembership.administrators).")
+            guard groupMembership.nonPendingAdministrators == expectedAdministrators else {
+                throw OWSAssertionError("Unexpected administrators: \(groupMembership.nonPendingAdministrators).")
             }
             guard groupV2Snapshot.accessControlForMembers == .member else {
                 throw OWSAssertionError("Unexpected accessControlForMembers: \(groupV2Snapshot.accessControlForMembers).")
@@ -211,7 +211,7 @@ public class GroupsV2Test: NSObject {
             guard let oldGroupModel = groupThread.groupModel as? TSGroupModelV2 else {
                 throw OWSAssertionError("Invalid group model.")
             }
-            guard oldGroupModel.groupMembership.administrators == localAddressSet else {
+            guard oldGroupModel.groupMembership.nonPendingAdministrators == localAddressSet else {
                 throw OWSAssertionError("Unexpected groupMembership.")
             }
             guard oldGroupModel.groupMembership.nonAdminMembers == otherAddresses else {
@@ -285,8 +285,8 @@ public class GroupsV2Test: NSObject {
                 throw OWSAssertionError("Unexpected members: \(groupMembership.nonPendingMembers).")
             }
             let expectedAdministrators = localAddressSet
-            guard groupMembership.administrators == expectedAdministrators else {
-                throw OWSAssertionError("Unexpected administrators: \(groupMembership.administrators).")
+            guard groupMembership.nonPendingAdministrators == expectedAdministrators else {
+                throw OWSAssertionError("Unexpected administrators: \(groupMembership.nonPendingAdministrators).")
             }
             guard groupV2Snapshot.accessControlForMembers == .member else {
                 throw OWSAssertionError("Unexpected accessControlForMembers: \(groupV2Snapshot.accessControlForMembers).")
@@ -298,7 +298,7 @@ public class GroupsV2Test: NSObject {
         }.map(on: .global()) { (groupId: Data) throws -> Data in
             let (groupThread, dmConfiguration) = try self.fetchGroupThread(groupId: groupId)
             let groupModel = groupThread.groupModel as! TSGroupModelV2
-            guard groupModel.groupMembership.administrators == localAddressSet else {
+            guard groupModel.groupMembership.nonPendingAdministrators == localAddressSet else {
                 throw OWSAssertionError("Unexpected groupMembership.")
             }
             guard groupModel.groupMembership.nonAdminMembers.isEmpty else {

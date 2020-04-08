@@ -31,7 +31,7 @@ class AttachmentCaptionViewController: OWSViewController {
         self.attachmentApprovalItem = attachmentApprovalItem
         self.originalCaptionText = attachmentApprovalItem.captionText
 
-        super.init(nibName: nil, bundle: nil)
+        super.init()
 
         self.addObserver(textView, forKeyPath: "contentSize", options: .new, context: nil)
     }

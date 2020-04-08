@@ -29,7 +29,7 @@ public class FindByPhoneNumberViewController: OWSViewController {
         self.delegate = delegate
         self.buttonText = buttonText
         self.requiresRegisteredNumber = requiresRegisteredNumber
-        super.init(nibName: nil, bundle: nil)
+        super.init()
     }
 
     required init?(coder: NSCoder) {

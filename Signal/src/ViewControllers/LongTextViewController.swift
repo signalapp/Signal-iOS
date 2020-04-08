@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -48,7 +48,7 @@ public class LongTextViewController: OWSViewController {
     @objc
     public required init(viewItem: ConversationViewItem) {
         self.viewItem = viewItem
-        super.init(nibName: nil, bundle: nil)
+        super.init()
     }
 
     // MARK: View Lifecycle

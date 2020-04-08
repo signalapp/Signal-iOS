@@ -25,10 +25,6 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
         super.init()
     }
 
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
     // MARK: View Lifecycle
 
     override func viewDidLoad() {

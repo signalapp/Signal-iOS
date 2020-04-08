@@ -51,7 +51,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         self.contactShare = contactShare
         self.contactShareViewHelper = ContactShareViewHelper(contactsManager: contactsManager)
 
-        super.init(nibName: nil, bundle: nil)
+        super.init()
 
         contactShareViewHelper.delegate = self
 

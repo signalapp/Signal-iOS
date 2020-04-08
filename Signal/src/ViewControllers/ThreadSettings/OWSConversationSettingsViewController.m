@@ -1302,6 +1302,7 @@ const CGFloat kIconViewLength = 24;
     [GroupManager
         leaveGroupOrDeclineInviteAsyncWithUIWithGroupThread:groupThread
                                          fromViewController:self
+                                       replacementAdminUuid:nil
                                                     success:^{
                                                         [self.navigationController popViewControllerAnimated:YES];
                                                     }];

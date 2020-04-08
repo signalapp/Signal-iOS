@@ -230,6 +230,7 @@ typedef void (^BlockAlertCompletionBlock)(ActionSheetAction *action);
     [GroupManager
         leaveGroupOrDeclineInviteAsyncWithUIWithGroupThread:groupThread
                                          fromViewController:fromViewController
+                                       replacementAdminUuid:nil
                                                     success:^{
                                                         // block the group regardless of the ability to deliver the
                                                         // "leave group" message.

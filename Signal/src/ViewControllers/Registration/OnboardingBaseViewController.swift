@@ -15,7 +15,7 @@ public class OnboardingBaseViewController: OWSViewController {
     public init(onboardingController: OnboardingController) {
         self.onboardingController = onboardingController
 
-        super.init(nibName: nil, bundle: nil)
+        super.init()
 
         self.shouldUseTheme = false
     }

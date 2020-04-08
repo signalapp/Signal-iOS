@@ -284,7 +284,7 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
     required public init(contactShare: ContactShareViewModel) {
         self.contactShare = contactShare
 
-        super.init(nibName: nil, bundle: nil)
+        super.init()
 
         buildFields()
     }

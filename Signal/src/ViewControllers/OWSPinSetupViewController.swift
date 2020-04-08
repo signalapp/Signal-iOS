@@ -77,7 +77,7 @@ public class PinSetupViewController: OWSViewController {
         self.pinType = pinType
         self.enableRegistrationLock = enableRegistrationLock
         self.completionHandler = completionHandler
-        super.init(nibName: nil, bundle: nil)
+        super.init()
 
         if case .confirming = self.initialMode {
             owsFailDebug("pin setup flow should never start in the confirming state")

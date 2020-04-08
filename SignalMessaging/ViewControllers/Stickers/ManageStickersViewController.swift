@@ -66,11 +66,6 @@ public class ManageStickersViewController: OWSTableViewController {
 
     // MARK: Initializers
 
-    @available(*, unavailable, message:"use other constructor instead.")
-    required public init?(coder aDecoder: NSCoder) {
-        notImplemented()
-    }
-
     @objc
     public required override init() {
         super.init()

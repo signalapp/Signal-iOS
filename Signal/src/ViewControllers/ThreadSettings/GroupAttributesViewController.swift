@@ -61,7 +61,7 @@ class GroupAttributesViewController: OWSViewController {
                                                   avatarOriginalData: groupThread.groupModel.groupAvatarData,
                                                   iconViewSize: kLargeAvatarSize)
 
-        super.init(nibName: nil, bundle: nil)
+        super.init()
     }
 
     @available(*, unavailable, message:"use other constructor instead.")

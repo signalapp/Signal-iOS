@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -35,7 +35,7 @@ public class ImageEditorBrushViewController: OWSViewController {
         self.paletteView = ImageEditorPaletteView(currentColor: currentColor)
         self.firstUndoOperationId = model.currentUndoOperationId()
 
-        super.init(nibName: nil, bundle: nil)
+        super.init()
 
         model.add(observer: self)
     }

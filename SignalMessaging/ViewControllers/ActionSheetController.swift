@@ -46,8 +46,9 @@ public class ActionSheetController: OWSViewController {
     }
 
     @objc
-    public init() {
-        super.init(nibName: nil, bundle: nil)
+    public override init() {
+        super.init()
+
         modalPresentationStyle = .custom
         transitioningDelegate = self
     }

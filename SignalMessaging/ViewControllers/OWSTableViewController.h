@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalMessaging/OWSViewController.h>
@@ -169,6 +169,9 @@ typedef BOOL (^OWSTableSwitchBlock)(void);
 @property (nonatomic) UITableViewStyle tableViewStyle;
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithNibName:(nullable NSString *)nibNameOrNil
+                         bundle:(nullable NSBundle *)nibBundleOrNil NS_UNAVAILABLE;
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
 
 #pragma mark - Presentation
 
