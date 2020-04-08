@@ -13,6 +13,8 @@ NS_ASSUME_NONNULL_BEGIN
 __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage : TSInvalidIdentityKeyErrorMessage
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
+
+// This initializer is only for internal use.
 - (nullable instancetype)initForUnknownIdentityKeyWithTimestamp:(uint64_t)timestamp
                                                        inThread:(TSThread *)thread
                                                incomingEnvelope:(SSKProtoEnvelope *)envelope NS_DESIGNATED_INITIALIZER;
