@@ -27,7 +27,22 @@ NSString *NSStringFromCallType(RPRecentCallType callType);
 
 @property (nonatomic, readonly) RPRecentCallType callType;
 
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
+                       timestamp:(uint64_t)timestamp
+                        inThread:(TSThread *)thread NS_UNAVAILABLE;
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
+                       timestamp:(uint64_t)timestamp
+             receivedAtTimestamp:(uint64_t)receivedAtTimestamp
+                        inThread:(TSThread *)thread NS_UNAVAILABLE;
 - (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread NS_UNAVAILABLE;
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
+           receivedAtTimestamp:(uint64_t)receivedAtTimestamp
+                        sortId:(uint64_t)sortId
+                     timestamp:(uint64_t)timestamp
+                uniqueThreadId:(NSString *)uniqueThreadId NS_UNAVAILABLE;
+
+- (instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithCallType:(RPRecentCallType)callType
                         inThread:(TSContactThread *)thread
@@ -52,8 +67,6 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 // clang-format on
 
 // --- CODE GENERATION MARKER
-
-- (instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 - (void)updateCallType:(RPRecentCallType)callType;
 - (void)updateCallType:(RPRecentCallType)callType transaction:(SDSAnyWriteTransaction *)transaction;
