@@ -148,7 +148,7 @@ extension ConversationViewController: MessageActionsDelegate {
                 guard let self = self else { return }
 
                 self.databaseStorage.write { transaction in
-                    for (id, item) in self.selectedItems {
+                    for (_, item) in self.selectedItems {
                         item.interaction.anyRemove(transaction: transaction)
                     }
                 }

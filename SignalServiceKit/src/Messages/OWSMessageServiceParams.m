@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSMessageServiceParams.h"
@@ -31,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
         return self;
     }
 
-    _type = type;
+    _type = (int) type;
     _destination = address.serviceIdentifier;
     OWSAssertDebug(_destination != nil);
     _destinationDeviceId = deviceId;

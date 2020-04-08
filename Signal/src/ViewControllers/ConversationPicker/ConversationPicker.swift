@@ -438,8 +438,6 @@ extension ConversationPickerViewController: UITableViewDelegate {
 
         guard !item.isBlocked else {
             // TODO remove these passed in dependencies.
-            let contactsManager = Environment.shared.contactsManager!
-            let blockingManager = OWSBlockingManager.shared()
             switch item.messageRecipient {
             case .contact(let address):
                 BlockListUIUtils.showUnblockAddressActionSheet(address,

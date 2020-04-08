@@ -49,7 +49,7 @@ class MessageDetailViewController: OWSViewController {
 
     var attachments: [TSAttachment]?
     var attachmentStreams: [TSAttachmentStream]? {
-        return attachments?.flatMap { $0 as? TSAttachmentStream }
+        return attachments?.compactMap { $0 as? TSAttachmentStream }
     }
     var messageBody: String?
 

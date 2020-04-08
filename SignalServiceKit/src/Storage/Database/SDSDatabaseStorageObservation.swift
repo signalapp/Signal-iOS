@@ -64,7 +64,7 @@ public class SDSDatabaseStorageChange: NSObject {
         switch changeSet {
         case .grdb(updatedCollections: let updatedCollections, updatedInteractionRowIds: _):
             return updatedCollections.contains(collection)
-        case .ydb(notifications: let notifications):
+        case .ydb:
             return false
         }
     }
@@ -91,7 +91,7 @@ public class SDSDatabaseStorageChange: NSObject {
         switch changeSet {
         case .grdb(updatedCollections: _, updatedInteractionRowIds: let rowIds):
             return rowIds.contains(Int64(interaction.sortId))
-        case .ydb(notifications: let notifications):
+        case .ydb:
             return false
         }
     }

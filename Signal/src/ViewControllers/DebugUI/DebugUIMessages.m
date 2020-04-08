@@ -4370,7 +4370,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
             SignalServiceAddress *member = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+1323555555"];
             [self createRandomGroupWithName:string
                                      member:member
-                                    success:^(TSGroupThread *thread) {
+                                    success:^(TSGroupThread *ignore) {
                                         // Do nothing.
                                     }];
         }
@@ -4422,7 +4422,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
             SignalServiceAddress *member = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+1323555555"];
             [self createRandomGroupWithName:string
                                      member:member
-                                    success:^(TSGroupThread *thread) {
+                                    success:^(TSGroupThread *ignore) {
                                         // Do nothing.
                                     }];
         }
@@ -4451,7 +4451,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
             SignalServiceAddress *member = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+1323555555"];
             [self createRandomGroupWithName:string
                                      member:member
-                                    success:^(TSGroupThread *thread) {
+                                    success:^(TSGroupThread *ignore) {
                                         // Do nothing.
                                     }];
         }
