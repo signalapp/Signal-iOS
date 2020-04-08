@@ -21,7 +21,7 @@ public class RemoteConfig: NSObject {
         // If we've turned off the KBS feature we don't want to present the
         // pins for everyone migration even if this user is in the bucket.
         guard kbs else { return false }
-        return isEnabled(.pinsForEveryone)
+        return isEnabled(.pinsForEveryone) || isEnabled(.pinsForEveryoneV2)
     }
 
     @objc
@@ -73,6 +73,7 @@ private struct Flags {
     // marked true regardless of the remote state.
     enum Sticky: String, FlagType {
         case pinsForEveryone
+        case pinsForEveryoneV2
     }
 
     // We filter the received config down to just the supported flags.
@@ -82,6 +83,7 @@ private struct Flags {
     // to production.
     enum Supported: String, FlagType {
         case pinsForEveryone
+        case pinsForEveryoneV2
         case kbs
         case profileNameReminder
         case mandatoryPins
