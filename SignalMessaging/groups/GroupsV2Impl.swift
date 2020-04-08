@@ -87,20 +87,36 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
     private func verifyServerPublicParams() {
         let serverPublicParamsBase64 = TSConstants.serverPublicParamsBase64
         let lastServerPublicParamsKey = "lastServerPublicParamsKey"
+        let lastZKgroupVersionCounterKey = "lastZKgroupVersionCounterKey"
+        // This _does not_ conform to the public version number of the
+        // zkgroup library.  Instead it's a counter we should bump
+        // every time there are breaking changes zkgroup library, e.g.
+        // changes to data formats.
+        let zkgroupVersionCounter: Int = 1
 
-        guard serverPublicParamsBase64 != (databaseStorage.read { transaction in
-            return self.serviceStore.getString(lastServerPublicParamsKey, transaction: transaction)
-        }) else {
+        let shouldReset = databaseStorage.read { transaction -> Bool in
+            guard serverPublicParamsBase64 == self.serviceStore.getString(lastServerPublicParamsKey, transaction: transaction) else {
+                Logger.info("Server public params have changed.")
+                return true
+            }
+            guard zkgroupVersionCounter == self.serviceStore.getInt(lastZKgroupVersionCounterKey, transaction: transaction) else {
+                Logger.info("ZKGroup library has changed.")
+                return true
+            }
+            return false
+        }
+        guard shouldReset else {
             // Nothing to be done; server public params haven't changed.
             return
         }
 
-        Logger.info("Server public params have changed.")
+        Logger.info("Resetting zkgroup-related state.")
 
         databaseStorage.write { transaction in
             self.clearTemporalCredentials(transaction: transaction)
             VersionedProfiles.clearProfileKeyCredentials(transaction: transaction)
             self.serviceStore.setString(serverPublicParamsBase64, key: lastServerPublicParamsKey, transaction: transaction)
+            self.serviceStore.setInt(zkgroupVersionCounter, key: lastZKgroupVersionCounterKey, transaction: transaction)
         }
         AppReadiness.runNowOrWhenAppDidBecomeReady {
             if FeatureFlags.versionedProfiledUpdate {
