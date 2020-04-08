@@ -763,7 +763,7 @@ extension MessageDetailViewController: OWSMessageBubbleViewDelegate {
             owsFailDebug("Invalid url: \(urlString).")
             return
         }
-        UIApplication.shared.openURL(url)
+        UIApplication.shared.open(url, options: [:])
     }
 
     @objc func didLongPressSent(sender: UIGestureRecognizer) {

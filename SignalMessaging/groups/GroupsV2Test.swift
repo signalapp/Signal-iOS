@@ -90,13 +90,13 @@ public class GroupsV2Test: NSObject {
                 throw OWSAssertionError("Unexpected group title: \(groupV2Snapshot.title).")
             }
             guard groupV2Snapshot.avatarData == nil else {
-                throw OWSAssertionError("Unexpected group avatarData: \(groupV2Snapshot.avatarData?.hexadecimalString).")
+                throw OWSAssertionError("Unexpected group avatarData: \(String(describing: groupV2Snapshot.avatarData?.hexadecimalString)).")
             }
             guard groupModel.groupName == title0 else {
-                throw OWSAssertionError("Unexpected group title: \(groupModel.groupName).")
+                throw OWSAssertionError("Unexpected group title: \(String(describing: groupModel.groupName)).")
             }
             guard groupModel.groupAvatarData == nil else {
-                throw OWSAssertionError("Unexpected group avatarData: \(groupModel.groupAvatarData?.hexadecimalString).")
+                throw OWSAssertionError("Unexpected group avatarData: \(String(describing: groupModel.groupAvatarData?.hexadecimalString)).")
             }
 
             let groupMembership = groupModel.groupMembership
@@ -130,10 +130,10 @@ public class GroupsV2Test: NSObject {
                 throw OWSAssertionError("Unexpected groupV2Revision: \(oldGroupModel.revision).")
             }
             guard oldGroupModel.groupName == title0 else {
-                throw OWSAssertionError("Unexpected group title: \(oldGroupModel.groupName).")
+                throw OWSAssertionError("Unexpected group title: \(String(describing: oldGroupModel.groupName)).")
             }
             guard oldGroupModel.groupAvatarData == nil else {
-                throw OWSAssertionError("Unexpected group avatarData: \(oldGroupModel.groupAvatarData?.hexadecimalString).")
+                throw OWSAssertionError("Unexpected group avatarData: \(String(describing: oldGroupModel.groupAvatarData?.hexadecimalString)).")
             }
 
             var groupMembershipBuilder = oldGroupModel.groupMembership.asBuilder
@@ -178,13 +178,13 @@ public class GroupsV2Test: NSObject {
                 throw OWSAssertionError("Unexpected group title: \(groupV2Snapshot.title).")
             }
             guard groupV2Snapshot.avatarData == avatar1Data else {
-                throw OWSAssertionError("Unexpected group avatarData: \(groupV2Snapshot.avatarData?.hexadecimalString).")
+                throw OWSAssertionError("Unexpected group avatarData: \(String(describing: groupV2Snapshot.avatarData?.hexadecimalString)).")
             }
             guard groupModel.groupName == title1 else {
-                throw OWSAssertionError("Unexpected group title: \(groupModel.groupName).")
+                throw OWSAssertionError("Unexpected group title: \(String(describing: groupModel.groupName)).")
             }
             guard groupModel.groupAvatarData == avatar1Data else {
-                throw OWSAssertionError("Unexpected group avatarData: \(groupModel.groupAvatarData?.hexadecimalString).")
+                throw OWSAssertionError("Unexpected group avatarData: \(String(describing: groupModel.groupAvatarData?.hexadecimalString)).")
             }
 
             let groupMembership = groupModel.groupMembership
@@ -221,10 +221,10 @@ public class GroupsV2Test: NSObject {
                 throw OWSAssertionError("Unexpected groupV2Revision: \(oldGroupModel.revision).")
             }
             guard oldGroupModel.groupName == title1 else {
-                throw OWSAssertionError("Unexpected group title: \(oldGroupModel.groupName).")
+                throw OWSAssertionError("Unexpected group title: \(String(describing: oldGroupModel.groupName)).")
             }
             guard oldGroupModel.groupAvatarData == avatar1Data else {
-                throw OWSAssertionError("Unexpected group avatarData: \(oldGroupModel.groupAvatarData?.hexadecimalString).")
+                throw OWSAssertionError("Unexpected group avatarData: \(String(describing: oldGroupModel.groupAvatarData?.hexadecimalString)).")
             }
 
             var groupMembershipBuilder = oldGroupModel.groupMembership.asBuilder
@@ -267,13 +267,13 @@ public class GroupsV2Test: NSObject {
                 throw OWSAssertionError("Unexpected group title: \(groupV2Snapshot.title).")
             }
             guard groupV2Snapshot.avatarData == nil else {
-                throw OWSAssertionError("Unexpected group avatarData: \(groupV2Snapshot.avatarData?.hexadecimalString).")
+                throw OWSAssertionError("Unexpected group avatarData: \(String(describing: groupV2Snapshot.avatarData?.hexadecimalString)).")
             }
             guard groupModel.groupName == title1 else {
-                throw OWSAssertionError("Unexpected group title: \(groupModel.groupName).")
+                throw OWSAssertionError("Unexpected group title: \(String(describing: groupModel.groupName)).")
             }
             guard groupModel.groupAvatarData == nil else {
-                throw OWSAssertionError("Unexpected group avatarData: \(groupModel.groupAvatarData?.hexadecimalString).")
+                throw OWSAssertionError("Unexpected group avatarData: \(String(describing: groupModel.groupAvatarData?.hexadecimalString)).")
             }
 
             let groupMembership = groupModel.groupMembership
@@ -296,7 +296,7 @@ public class GroupsV2Test: NSObject {
             }
             return groupId
         }.map(on: .global()) { (groupId: Data) throws -> Data in
-            let (groupThread, dmConfiguration) = try self.fetchGroupThread(groupId: groupId)
+            let (groupThread, _) = try self.fetchGroupThread(groupId: groupId)
             let groupModel = groupThread.groupModel as! TSGroupModelV2
             guard groupModel.groupMembership.nonPendingAdministrators == localAddressSet else {
                 throw OWSAssertionError("Unexpected groupMembership.")
@@ -308,10 +308,10 @@ public class GroupsV2Test: NSObject {
                 throw OWSAssertionError("Unexpected groupV2Revision: \(groupModel.revision).")
             }
             guard groupModel.groupName == title1 else {
-                throw OWSAssertionError("Unexpected group title: \(groupModel.groupName).")
+                throw OWSAssertionError("Unexpected group title: \(String(describing: groupModel.groupName)).")
             }
             guard groupModel.groupAvatarData == nil else {
-                throw OWSAssertionError("Unexpected group avatarData: \(groupModel.groupAvatarData?.hexadecimalString).")
+                throw OWSAssertionError("Unexpected group avatarData: \(String(describing: groupModel.groupAvatarData?.hexadecimalString)).")
             }
             return groupId
         }.done { (_: Data) -> Void in

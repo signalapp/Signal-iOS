@@ -572,7 +572,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
             owsFailDebug("could not open phone number.")
             return
         }
-        UIApplication.shared.openURL(url as URL)
+        UIApplication.shared.open(url as URL, options: [:])
     }
 
     func didPressEmail(email: OWSContactEmail) {
@@ -600,7 +600,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
             owsFailDebug("could not open email.")
             return
         }
-        UIApplication.shared.openURL(url as URL)
+        UIApplication.shared.open(url as URL, options: [:])
     }
 
     func didPressAddress(address: OWSContactAddress) {
@@ -638,7 +638,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
             return
         }
 
-        UIApplication.shared.openURL(url as URL)
+        UIApplication.shared.open(url as URL, options: [:])
     }
 
     func formatAddressForQuery(address: OWSContactAddress) -> String {
