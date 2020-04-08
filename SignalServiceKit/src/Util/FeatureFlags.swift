@@ -18,7 +18,7 @@ extension FeatureBuild {
     }
 }
 
-let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .beta
+let build: FeatureBuild = .qa
 
 // MARK: -
 
@@ -178,13 +178,15 @@ public class FeatureFlags: NSObject {
     public static let multiRing: Bool = false
 
     @objc
-    public static let groupsV2 = build.includes(.dev) && !isUsingProductionService
+    public static let groupsV2 = build.includes(.qa)
 
     // Don't consult this feature flag directly; instead
     // consult RemoteConfig.groupsV2CreateGroups.
     @objc
     public static let groupsV2CreateGroups = groupsV2
 
+    // Don't consult this feature flag directly; instead
+    // consult RemoteConfig.groupsV2IncomingMessages.
     @objc
     public static let groupsV2IncomingMessages = groupsV2
 
@@ -199,6 +201,8 @@ public class FeatureFlags: NSObject {
     @objc
     public static let groupsV2processProtosInGroupUpdates = false
 
+    // Don't consult this feature flag directly; instead
+    // consult RemoteConfig.groupsV2SetCapability.
     @objc
     public static let groupsV2SetCapability = groupsV2
 
@@ -209,12 +213,12 @@ public class FeatureFlags: NSObject {
     public static let isUsingProductionService = true
 
     @objc
-    public static let versionedProfiledFetches = false || groupsV2
+    public static let versionedProfiledFetches = groupsV2
 
     // When we activate this feature flag, we also need to ensure that all
     // users update their profile once in a durable way.
     @objc
-    public static let versionedProfiledUpdate = false || groupsV2
+    public static let versionedProfiledUpdate = groupsV2
 
     @objc
     public static let useOrphanDataCleaner = true
@@ -254,14 +258,14 @@ public class DebugFlags: NSObject {
     public static let logSQLQueries = build.includes(.dev)
 
     @objc
-    public static let groupsV2IgnoreCapability = false
+    public static let groupsV2IgnoreCapability = true
 
     // We can use this to test recovery from "missed updates".
     @objc
     public static let groupsV2dontSendUpdates = false
 
     @objc
-    public static let groupsV2showV2Indicator = FeatureFlags.groupsV2 && build.includes(.internalPreview)
+    public static let groupsV2showV2Indicator = FeatureFlags.groupsV2 && build.includes(.qa)
 
     // If set, v2 groups will be created and updated with invalid avatars
     // so that we can test clients' robustness to this case.
@@ -276,7 +280,7 @@ public class DebugFlags: NSObject {
 
     // This flag auto-enables the groupv2 flags in RemoteConfig.
     @objc
-    public static let groupsV2IgnoreServerFlags = FeatureFlags.groupsV2
+    public static let groupsV2IgnoreServerFlags = true
 
     // If set, this will invite instead of adding other users.
     @objc

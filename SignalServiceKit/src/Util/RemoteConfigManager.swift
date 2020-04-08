@@ -52,7 +52,21 @@ public class RemoteConfig: NSObject {
     public static var groupsV2CreateGroups: Bool {
         guard FeatureFlags.groupsV2CreateGroups else { return false }
         if DebugFlags.groupsV2IgnoreServerFlags { return true }
-        return isEnabled(.groupsV2CreateGroups)
+        return isEnabled(.groupsV2GoodCitizen)
+    }
+
+    @objc
+    public static var groupsV2IncomingMessages: Bool {
+        guard FeatureFlags.groupsV2IncomingMessages else { return false }
+        if DebugFlags.groupsV2IgnoreServerFlags { return true }
+        return isEnabled(.groupsV2GoodCitizen)
+    }
+
+    @objc
+    public static var groupsV2SetCapability: Bool {
+        guard FeatureFlags.groupsV2SetCapability else { return false }
+        if DebugFlags.groupsV2IgnoreServerFlags { return true }
+        return isEnabled(.groupsV2GoodCitizen)
     }
 
     @objc
@@ -89,6 +103,7 @@ private struct Flags {
         case mandatoryPins
         case messageRequests
         case groupsV2CreateGroups
+        case groupsV2GoodCitizen
         case storageServiceV3
     }
 }
