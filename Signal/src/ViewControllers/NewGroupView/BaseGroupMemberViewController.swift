@@ -212,8 +212,22 @@ public class BaseGroupMemberViewController: OWSViewController {
     }
 
     private func showInvalidGroupMemberAlert(recipient: PickedRecipient) {
-        OWSActionSheets.showErrorAlert(message: NSLocalizedString("EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER",
-                                                                  comment: "Error message indicating the a user can't be added to a group."))
+        let actionSheet = ActionSheetController(title: CommonStrings.errorAlertTitle,
+                                                message: NSLocalizedString("EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER",
+                                                                           comment: "Error message indicating the a user can't be added to a group."))
+
+        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_LEARN_MORE",
+                                                                         comment: "Label for 'learn more' button when a user can't be added to a group."),
+                                                style: .default) { _ in
+                                                    guard let url = URL(string: "https://support.signal.org/hc/en-us/articles/360007319331") else {
+                                                        owsFailDebug("Invalid url.")
+                                                        return
+                                                    }
+                                                    UIApplication.shared.open(url, options: [:])
+        })
+        actionSheet.addAction(ActionSheetAction(title: CommonStrings.okayButton,
+                                                style: .default))
+        presentActionSheet(actionSheet)
     }
 
     // MARK: -
