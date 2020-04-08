@@ -15,9 +15,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) uint64_t messageIdTimestamp;
 @property (nonatomic, readonly) uint64_t readTimestamp;
 
+- (instancetype)init NS_UNAVAILABLE;
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
+- (instancetype)initWithGrdbId:(int64_t)grdbId uniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
+
 - (instancetype)initWithSenderAddress:(SignalServiceAddress *)address
                    messageIdTimestamp:(uint64_t)messageIdtimestamp
-                        readTimestamp:(uint64_t)readTimestamp;
+                        readTimestamp:(uint64_t)readTimestamp NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 

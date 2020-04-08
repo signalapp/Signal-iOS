@@ -36,6 +36,12 @@ extern NSString *const kNSNotificationKey_ProfileGroupId;
 @property (atomic, readonly, nullable) NSString *avatarFileName;
 
 - (instancetype)init NS_UNAVAILABLE;
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
+- (instancetype)initWithGrdbId:(int64_t)grdbId uniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
+
+// This initializer should only be called internally.
+- (instancetype)initWithAddress:(SignalServiceAddress *)address NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSTableViewController.h"
@@ -511,30 +511,6 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 - (instancetype)init
 {
     self = [super init];
-    if (!self) {
-        return self;
-    }
-
-    [self owsTableCommonInit];
-
-    return self;
-}
-
-- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder
-{
-    self = [super initWithCoder:aDecoder];
-    if (!self) {
-        return self;
-    }
-
-    [self owsTableCommonInit];
-
-    return self;
-}
-
-- (instancetype)initWithNibName:(nullable NSString *)nibNameOrNil bundle:(nullable NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
     if (!self) {
         return self;
     }

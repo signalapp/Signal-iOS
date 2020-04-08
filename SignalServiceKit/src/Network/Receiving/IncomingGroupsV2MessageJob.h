@@ -17,12 +17,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nullable) NSData *plaintextData;
 @property (nonatomic, readonly) BOOL wasReceivedByUD;
 
+- (instancetype)init NS_UNAVAILABLE;
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
+- (instancetype)initWithGrdbId:(int64_t)grdbId uniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
+
 - (instancetype)initWithEnvelopeData:(NSData *)envelopeData
                        plaintextData:(NSData *_Nullable)plaintextData
                      wasReceivedByUD:(BOOL)wasReceivedByUD NS_DESIGNATED_INITIALIZER;
-- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
-- (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
-- (instancetype)init NS_UNAVAILABLE;
 
 // --- CODE GENERATION MARKER
 

@@ -38,6 +38,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) NSNumber *uncompressedDataLength;
 
 - (instancetype)init NS_UNAVAILABLE;
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
+- (instancetype)initWithGrdbId:(int64_t)grdbId uniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
 
 // --- CODE GENERATION MARKER
 

@@ -14,7 +14,14 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSDisappearingMessagesConfiguration : BaseModel
 
 - (instancetype)init NS_UNAVAILABLE;
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
+- (instancetype)initWithGrdbId:(int64_t)grdbId uniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
+
+// This initializer should only be used internally.
+- (instancetype)initWithThreadId:(NSString *)threadId
+                         enabled:(BOOL)isEnabled
+                 durationSeconds:(uint32_t)seconds NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 

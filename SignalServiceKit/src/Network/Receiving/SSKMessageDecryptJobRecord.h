@@ -10,6 +10,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly, nullable) NSData *envelopeData;
 
+- (instancetype)initWithLabel:(NSString *)label NS_UNAVAILABLE;
+
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithEnvelopeData:(NSData *)message label:(NSString *)label NS_DESIGNATED_INITIALIZER;
