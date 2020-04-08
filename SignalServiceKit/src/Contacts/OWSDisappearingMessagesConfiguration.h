@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalServiceKit/BaseModel.h>
@@ -14,7 +14,14 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSDisappearingMessagesConfiguration : BaseModel
 
 - (instancetype)init NS_UNAVAILABLE;
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
+- (instancetype)initWithGrdbId:(int64_t)grdbId uniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
+
+// This initializer should only be used internally.
+- (instancetype)initWithThreadId:(NSString *)threadId
+                         enabled:(BOOL)isEnabled
+                 durationSeconds:(uint32_t)seconds NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 
@@ -26,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
                       uniqueId:(NSString *)uniqueId
                  durationSeconds:(unsigned int)durationSeconds
                          enabled:(BOOL)enabled
-NS_SWIFT_NAME(init(grdbId:uniqueId:durationSeconds:enabled:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:durationSeconds:enabled:));
 
 // clang-format on
 

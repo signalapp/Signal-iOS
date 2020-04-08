@@ -21,6 +21,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSDisappearingConfigurationUpdateInfoMessage
 
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    return [super initWithCoder:coder];
+}
+
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
                            thread:(TSThread *)thread
                     configuration:(OWSDisappearingMessagesConfiguration *)configuration

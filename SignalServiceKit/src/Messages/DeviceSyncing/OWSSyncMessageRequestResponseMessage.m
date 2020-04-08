@@ -13,7 +13,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+#pragma mark -
+
 @implementation OWSSyncMessageRequestResponseMessage
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    return [super initWithCoder:coder];
+}
 
 - (instancetype)initWithThread:(TSThread *)thread responseType:(OWSSyncMessageRequestResponseType)responseType
 {

@@ -217,7 +217,7 @@ public extension ExperienceUpgrade {
     var hasViewed: Bool { firstViewedTimestamp > 0 }
 
     func upsertWith(transaction: SDSAnyWriteTransaction, changeBlock: (ExperienceUpgrade) -> Void) {
-        guard id.shouldSave else { return Logger.debug("Skipping save for experience upgrade \(id)") }
+        guard id.shouldSave else { return Logger.debug("Skipping save for experience upgrade \(String(describing: id))") }
 
         let experienceUpgrade = ExperienceUpgrade.anyFetch(uniqueId: uniqueId, transaction: transaction) ?? self
         changeBlock(experienceUpgrade)

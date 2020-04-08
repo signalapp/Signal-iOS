@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "SSKJobRecord.h"
@@ -10,7 +10,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly, nullable) NSData *envelopeData;
 
-- (instancetype)initWithEnvelopeData:(NSData *)message label:(NSString *)label;
+- (instancetype)initWithLabel:(NSString *)label NS_UNAVAILABLE;
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithEnvelopeData:(NSData *)message label:(NSString *)label NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
+                  failureCount:(NSUInteger)failureCount
+                         label:(NSString *)label
+                        sortId:(unsigned long long)sortId
+                        status:(SSKJobRecordStatus)status NS_UNAVAILABLE;
 
 // --- CODE GENERATION MARKER
 
@@ -25,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
                           sortId:(unsigned long long)sortId
                           status:(SSKJobRecordStatus)status
                     envelopeData:(nullable NSData *)envelopeData
-NS_SWIFT_NAME(init(grdbId:uniqueId:failureCount:label:sortId:status:envelopeData:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:failureCount:label:sortId:status:envelopeData:));
 
 // clang-format on
 

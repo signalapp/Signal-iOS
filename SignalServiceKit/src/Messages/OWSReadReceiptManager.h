@@ -30,6 +30,11 @@ extern NSString *const kIncomingMessageMarkedAsReadNotification;
 // Map of "recipient"-to-"read timestamp".
 @property (nonatomic, readonly) NSDictionary<SignalServiceAddress *, NSNumber *> *recipientMap;
 
+- (instancetype)init NS_UNAVAILABLE;
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
+- (instancetype)initWithGrdbId:(int64_t)grdbId uniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
+
 - (instancetype)initWithSentTimestamp:(uint64_t)sentTimestamp NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
@@ -42,7 +47,7 @@ extern NSString *const kIncomingMessageMarkedAsReadNotification;
                       uniqueId:(NSString *)uniqueId
                     recipientMap:(NSDictionary<SignalServiceAddress *,NSNumber *> *)recipientMap
                    sentTimestamp:(uint64_t)sentTimestamp
-NS_SWIFT_NAME(init(grdbId:uniqueId:recipientMap:sentTimestamp:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:recipientMap:sentTimestamp:));
 
 // clang-format on
 

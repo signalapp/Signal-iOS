@@ -75,7 +75,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(groupThread);
 
-    self = [super initWithNibName:nil bundle:nil];
+    self = [super init];
     if (!self) {
         return self;
     }

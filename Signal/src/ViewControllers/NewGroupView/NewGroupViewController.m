@@ -77,18 +77,6 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder
-{
-    self = [super initWithCoder:aDecoder];
-    if (!self) {
-        return self;
-    }
-
-    [self commonInit];
-
-    return self;
-}
-
 - (void)commonInit
 {
     _groupSeed = [NewGroupSeed new];

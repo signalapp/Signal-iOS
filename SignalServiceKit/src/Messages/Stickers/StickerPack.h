@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "BaseModel.h"
@@ -41,11 +41,16 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSDate *dateCreated;
 @property (nonatomic, readonly) BOOL isInstalled;
 
+- (instancetype)init NS_UNAVAILABLE;
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
+- (instancetype)initWithGrdbId:(int64_t)grdbId uniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
+
 - (instancetype)initWithInfo:(StickerPackInfo *)info
                        title:(nullable NSString *)title
                       author:(nullable NSString *)author
                        cover:(StickerPackItem *)cover
-                    stickers:(NSArray<StickerPackItem *> *)items;
+                    stickers:(NSArray<StickerPackItem *> *)items NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 
@@ -62,7 +67,7 @@ NS_ASSUME_NONNULL_BEGIN
                      isInstalled:(BOOL)isInstalled
                            items:(NSArray<StickerPackItem *> *)items
                            title:(nullable NSString *)title
-NS_SWIFT_NAME(init(grdbId:uniqueId:author:cover:dateCreated:info:isInstalled:items:title:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:author:cover:dateCreated:info:isInstalled:items:title:));
 
 // clang-format on
 

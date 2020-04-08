@@ -117,20 +117,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     return self;
 }
 
-- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder
-{
-    OWSFailDebug(@"Do not load this from the storyboard.");
-
-    self = [super initWithCoder:aDecoder];
-    if (!self) {
-        return self;
-    }
-
-    [self commonInit];
-
-    return self;
-}
-
 - (void)commonInit
 {
     _blocklistCache = [OWSBlockListCache new];

@@ -20,10 +20,11 @@ extern NSNotificationName const kNSNotificationNameMessageDecryptionDidFlushQueu
 @property (nonatomic, readonly, nullable) SSKProtoEnvelope *envelopeProto;
 
 - (instancetype)init NS_UNAVAILABLE;
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
+- (instancetype)initWithGrdbId:(int64_t)grdbId uniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
 
 - (instancetype)initWithEnvelopeData:(NSData *)envelopeData NS_DESIGNATED_INITIALIZER;
-- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 
@@ -35,7 +36,7 @@ extern NSNotificationName const kNSNotificationNameMessageDecryptionDidFlushQueu
                       uniqueId:(NSString *)uniqueId
                        createdAt:(NSDate *)createdAt
                     envelopeData:(NSData *)envelopeData
-NS_SWIFT_NAME(init(grdbId:uniqueId:createdAt:envelopeData:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:createdAt:envelopeData:));
 
 // clang-format on
 

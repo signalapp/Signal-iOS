@@ -1045,7 +1045,7 @@ extension %s {
                 alignment = max(0, len('- (instancetype)initWithUniqueId') - objc_initializer_param.index(':'))
                 h_snippet += (' ' * alignment) + objc_initializer_param + '\n'
 
-            h_snippet += 'NS_SWIFT_NAME(init(grdbId:%s:));\n' % ':'.join([str(property.name) for property in deserialize_properties])
+            h_snippet += 'NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:%s:));\n' % ':'.join([str(property.name) for property in deserialize_properties])
             h_snippet += '''
 // clang-format on
 '''

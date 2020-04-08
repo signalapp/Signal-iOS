@@ -36,15 +36,20 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value);
 @interface TSInteraction : BaseModel
 
 - (instancetype)init NS_UNAVAILABLE;
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
+- (instancetype)initWithGrdbId:(int64_t)grdbId uniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId timestamp:(uint64_t)timestamp inThread:(TSThread *)thread;
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
+                       timestamp:(uint64_t)timestamp
+                        inThread:(TSThread *)thread NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
                        timestamp:(uint64_t)timestamp
              receivedAtTimestamp:(uint64_t)receivedAtTimestamp
-                        inThread:(TSThread *)thread;
+                        inThread:(TSThread *)thread NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread;
+- (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 
@@ -58,7 +63,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value);
                           sortId:(uint64_t)sortId
                        timestamp:(uint64_t)timestamp
                   uniqueThreadId:(NSString *)uniqueThreadId
-NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:));
 
 // clang-format on
 

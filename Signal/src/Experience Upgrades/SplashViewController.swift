@@ -20,10 +20,6 @@ public class SplashViewController: OWSViewController, ExperienceUpgradeView {
         super.init()
     }
 
-    required init?(coder aDecoder: NSCoder) {
-        notImplemented()
-    }
-
     // MARK: - View lifecycle
 
     override public var preferredStatusBarStyle: UIStatusBarStyle {

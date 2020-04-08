@@ -49,7 +49,7 @@ class MessageDetailViewController: OWSViewController {
 
     var attachments: [TSAttachment]?
     var attachmentStreams: [TSAttachmentStream]? {
-        return attachments?.flatMap { $0 as? TSAttachmentStream }
+        return attachments?.compactMap { $0 as? TSAttachmentStream }
     }
     var messageBody: String?
 
@@ -74,11 +74,6 @@ class MessageDetailViewController: OWSViewController {
     var audioAttachmentPlayer: OWSAudioPlayer?
 
     // MARK: Initializers
-
-    @available(*, unavailable, message:"use other constructor instead.")
-    required init?(coder aDecoder: NSCoder) {
-        notImplemented()
-    }
 
     @objc
     required init(viewItem: ConversationViewItem, message: TSMessage, thread: TSThread, mode: MessageMetadataViewMode) {
@@ -763,7 +758,7 @@ extension MessageDetailViewController: OWSMessageBubbleViewDelegate {
             owsFailDebug("Invalid url: \(urlString).")
             return
         }
-        UIApplication.shared.openURL(url)
+        UIApplication.shared.open(url, options: [:])
     }
 
     @objc func didLongPressSent(sender: UIGestureRecognizer) {

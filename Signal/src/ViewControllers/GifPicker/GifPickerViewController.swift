@@ -121,11 +121,6 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
     // MARK: Initializers
 
-    @available(*, unavailable, message:"use other constructor instead.")
-    required init?(coder aDecoder: NSCoder) {
-        notImplemented()
-    }
-
     @objc
     required override init() {
         self.searchBar = OWSSearchBar()

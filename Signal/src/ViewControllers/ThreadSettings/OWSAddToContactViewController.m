@@ -45,30 +45,6 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder
-{
-    self = [super initWithCoder:aDecoder];
-    if (!self) {
-        return self;
-    }
-
-    [self commonInit];
-
-    return self;
-}
-
-- (instancetype)initWithNibName:(nullable NSString *)nibNameOrNil bundle:(nullable NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (!self) {
-        return self;
-    }
-
-    [self commonInit];
-
-    return self;
-}
-
 - (void)commonInit
 {
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];

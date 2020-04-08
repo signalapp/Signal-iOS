@@ -225,7 +225,7 @@ typedef enum : NSUInteger {
                                  action:(ConversationViewAction)action
                          focusMessageId:(nullable NSString *)focusMessageId
 {
-    self = [super initWithNibName:nil bundle:nil];
+    self = [super init];
 
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
     _contactShareViewHelper = [[ContactShareViewHelper alloc] initWithContactsManager:self.contactsManager];

@@ -36,11 +36,6 @@ class AttachmentCaptionViewController: OWSViewController {
         self.addObserver(textView, forKeyPath: "contentSize", options: .new, context: nil)
     }
 
-    @available(*, unavailable, message: "use other init() instead.")
-    required public init?(coder aDecoder: NSCoder) {
-        notImplemented()
-    }
-
     deinit {
         self.removeObserver(textView, forKeyPath: "contentSize")
     }

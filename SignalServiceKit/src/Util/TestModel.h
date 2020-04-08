@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "BaseModel.h"
@@ -22,6 +22,8 @@ NSUInteger NSUIntegerMaxValue(void);
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithGrdbId:(int64_t)grdbId uniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
 
 // --- CODE GENERATION MARKER
 
@@ -40,7 +42,7 @@ NSUInteger NSUIntegerMaxValue(void);
         nsNumberValueUsingUInt64:(nullable NSNumber *)nsNumberValueUsingUInt64
                  nsuIntegerValue:(NSUInteger)nsuIntegerValue
                      uint64Value:(uint64_t)uint64Value
-NS_SWIFT_NAME(init(grdbId:uniqueId:dateValue:doubleValue:floatValue:int64Value:nsIntegerValue:nsNumberValueUsingInt64:nsNumberValueUsingUInt64:nsuIntegerValue:uint64Value:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:dateValue:doubleValue:floatValue:int64Value:nsIntegerValue:nsNumberValueUsingInt64:nsNumberValueUsingUInt64:nsuIntegerValue:uint64Value:));
 
 // clang-format on
 

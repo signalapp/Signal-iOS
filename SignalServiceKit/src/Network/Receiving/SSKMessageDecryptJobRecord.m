@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "SSKMessageDecryptJobRecord.h"
@@ -7,6 +7,11 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @implementation SSKMessageDecryptJobRecord
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    return [super initWithCoder:coder];
+}
 
 - (instancetype)initWithEnvelopeData:(NSData *)envelopData label:(NSString *)label
 {

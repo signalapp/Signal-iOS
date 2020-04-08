@@ -40,11 +40,6 @@ public class LongTextViewController: OWSViewController {
 
     // MARK: Initializers
 
-    @available(*, unavailable, message:"use other constructor instead.")
-    public required init?(coder aDecoder: NSCoder) {
-        notImplemented()
-    }
-
     @objc
     public required init(viewItem: ConversationViewItem) {
         self.viewItem = viewItem

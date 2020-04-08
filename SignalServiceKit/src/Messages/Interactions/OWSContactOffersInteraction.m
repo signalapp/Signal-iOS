@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSContactOffersInteraction.h"
@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSContactOffersInteraction
 
-- (instancetype)initWithCoder:(NSCoder *)coder
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
     return [super initWithCoder:coder];
 }

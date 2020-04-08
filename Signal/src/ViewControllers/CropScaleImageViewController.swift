@@ -73,11 +73,6 @@ import SignalMessaging
 
     // MARK: Initializers
 
-    @available(*, unavailable, message:"use other constructor instead.")
-    required init?(coder aDecoder: NSCoder) {
-        notImplemented()
-    }
-
     @objc required init(srcImage: UIImage, successCompletion : @escaping (UIImage) -> Void) {
         // normalized() can be slightly expensive but in practice this is fine.
         self.srcImage = srcImage.normalized()

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSInteraction.h"
@@ -40,7 +40,22 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BOOL isViewOnceMessage;
 @property (nonatomic, readonly) BOOL isViewOnceComplete;
 
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
+                       timestamp:(uint64_t)timestamp
+                        inThread:(TSThread *)thread NS_UNAVAILABLE;
+- (instancetype)initWithUniqueId:(NSString *)uniqueId
+                       timestamp:(uint64_t)timestamp
+             receivedAtTimestamp:(uint64_t)receivedAtTimestamp
+                        inThread:(TSThread *)thread NS_UNAVAILABLE;
 - (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread NS_UNAVAILABLE;
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
+           receivedAtTimestamp:(uint64_t)receivedAtTimestamp
+                        sortId:(uint64_t)sortId
+                     timestamp:(uint64_t)timestamp
+                uniqueThreadId:(NSString *)uniqueThreadId NS_UNAVAILABLE;
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initMessageWithTimestamp:(uint64_t)timestamp
                                 inThread:(TSThread *)thread
@@ -78,13 +93,11 @@ NS_ASSUME_NONNULL_BEGIN
                   messageSticker:(nullable MessageSticker *)messageSticker
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
     storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
-NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:));
 
 // clang-format on
 
 // --- CODE GENERATION MARKER
-
-- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 - (BOOL)hasAttachments;
 - (NSArray<TSAttachment *> *)bodyAttachmentsWithTransaction:(SDSAnyReadTransaction *)transaction;

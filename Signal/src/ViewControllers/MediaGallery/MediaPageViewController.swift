@@ -343,13 +343,6 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
     }()
 
     private func updateFooterBarButtonItems(isPlayingVideo: Bool) {
-        // TODO do we still need this? seems like a vestige
-        // from when media detail view was used for attachment approval
-        if self.footerBar == nil {
-            owsFailDebug("No footer bar visible.")
-            return
-        }
-
         var toolbarItems: [UIBarButtonItem] = [
             shareBarButton,
             buildFlexibleSpace(),

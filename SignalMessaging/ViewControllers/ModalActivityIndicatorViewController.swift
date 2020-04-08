@@ -27,11 +27,6 @@ public class ModalActivityIndicatorViewController: OWSViewController {
 
     // MARK: Initializers
 
-    @available(*, unavailable, message:"use other constructor instead.")
-    public required init?(coder aDecoder: NSCoder) {
-        notImplemented()
-    }
-
     public required init(canCancel: Bool, presentationDelay: TimeInterval) {
         self.canCancel = canCancel
         self.presentationDelay = presentationDelay

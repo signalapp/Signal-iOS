@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "BaseModel.h"
@@ -15,9 +15,14 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) uint64_t messageIdTimestamp;
 @property (nonatomic, readonly) uint64_t readTimestamp;
 
+- (instancetype)init NS_UNAVAILABLE;
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
+- (instancetype)initWithGrdbId:(int64_t)grdbId uniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
+
 - (instancetype)initWithSenderAddress:(SignalServiceAddress *)address
                    messageIdTimestamp:(uint64_t)messageIdtimestamp
-                        readTimestamp:(uint64_t)readTimestamp;
+                        readTimestamp:(uint64_t)readTimestamp NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 
@@ -31,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
                    readTimestamp:(uint64_t)readTimestamp
                senderPhoneNumber:(nullable NSString *)senderPhoneNumber
                       senderUUID:(nullable NSString *)senderUUID
-NS_SWIFT_NAME(init(grdbId:uniqueId:messageIdTimestamp:readTimestamp:senderPhoneNumber:senderUUID:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:messageIdTimestamp:readTimestamp:senderPhoneNumber:senderUUID:));
 
 // clang-format on
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "BaseModel.h"
@@ -39,10 +39,9 @@ SSKProtoVerified *_Nullable BuildVerifiedProtoWithAddress(SignalServiceAddress *
 #pragma mark - Initializers
 
 - (instancetype)init NS_UNAVAILABLE;
-
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
-
-- (instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithGrdbId:(int64_t)grdbId uniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
 
 - (instancetype)initWithAccountId:(NSString *)accountId
                       identityKey:(NSData *)identityKey
@@ -63,7 +62,7 @@ SSKProtoVerified *_Nullable BuildVerifiedProtoWithAddress(SignalServiceAddress *
                      identityKey:(NSData *)identityKey
                  isFirstKnownKey:(BOOL)isFirstKnownKey
                verificationState:(OWSVerificationState)verificationState
-NS_SWIFT_NAME(init(grdbId:uniqueId:accountId:createdAt:identityKey:isFirstKnownKey:verificationState:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:accountId:createdAt:identityKey:isFirstKnownKey:verificationState:));
 
 // clang-format on
 

@@ -20,11 +20,6 @@ public class OnboardingBaseViewController: OWSViewController {
         self.shouldUseTheme = false
     }
 
-    @available(*, unavailable, message: "use other init() instead.")
-    required public init?(coder aDecoder: NSCoder) {
-        notImplemented()
-    }
-
     // MARK: - Factory Methods
 
     func titleLabel(text: String) -> UILabel {

@@ -58,17 +58,21 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSString *)contactLastName;
 
 - (instancetype)init NS_UNAVAILABLE;
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
+- (instancetype)initWithGrdbId:(int64_t)grdbId uniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
 
+// Convenience initializer which is neither "designated" nor "unavailable".
 - (instancetype)initWithSignalRecipient:(SignalRecipient *)signalRecipient;
 
-- (instancetype)initWithSignalServiceAddress:(SignalServiceAddress *)address NS_SWIFT_NAME(init(address:));
+- (instancetype)initWithSignalServiceAddress:(SignalServiceAddress *)address NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(address:));
 
 - (instancetype)initWithContact:(nullable Contact *)contact
               contactAvatarHash:(nullable NSData *)contactAvatarHash
           contactAvatarJpegData:(nullable NSData *)contactAvatarJpegData
        multipleAccountLabelText:(NSString *)multipleAccountLabelText
            recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
-                  recipientUUID:(nullable NSString *)recipientUUID;
+                  recipientUUID:(nullable NSString *)recipientUUID NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 
@@ -84,7 +88,7 @@ NS_ASSUME_NONNULL_BEGIN
         multipleAccountLabelText:(NSString *)multipleAccountLabelText
             recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
                    recipientUUID:(nullable NSString *)recipientUUID
-NS_SWIFT_NAME(init(grdbId:uniqueId:contact:contactAvatarHash:contactAvatarJpegData:multipleAccountLabelText:recipientPhoneNumber:recipientUUID:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:contact:contactAvatarHash:contactAvatarJpegData:multipleAccountLabelText:recipientPhoneNumber:recipientUUID:));
 
 // clang-format on
 

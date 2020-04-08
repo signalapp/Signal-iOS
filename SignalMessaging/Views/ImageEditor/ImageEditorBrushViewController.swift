@@ -40,11 +40,6 @@ public class ImageEditorBrushViewController: OWSViewController {
         model.add(observer: self)
     }
 
-    @available(*, unavailable, message: "use other init() instead.")
-    required public init?(coder aDecoder: NSCoder) {
-        notImplemented()
-    }
-
     // MARK: - View Lifecycle
 
     public override func loadView() {

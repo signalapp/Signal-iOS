@@ -56,18 +56,6 @@
     return self;
 }
 
-- (instancetype)initWithCoder:(NSCoder *)aDecoder
-{
-    self = [super initWithCoder:aDecoder];
-    if (!self) {
-        return self;
-    }
-
-    _contactsManager = Environment.shared.contactsManager;
-
-    return self;
-}
-
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];

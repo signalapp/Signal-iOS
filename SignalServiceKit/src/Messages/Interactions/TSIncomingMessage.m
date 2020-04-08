@@ -31,7 +31,7 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
 
 @implementation TSIncomingMessage
 
-- (instancetype)initWithCoder:(NSCoder *)coder
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
     self = [super initWithCoder:coder];
     if (!self) {

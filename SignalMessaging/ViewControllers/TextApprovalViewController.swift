@@ -41,11 +41,6 @@ public class TextApprovalViewController: OWSViewController, UITextViewDelegate {
 
     // MARK: - Initializers
 
-    @available(*, unavailable, message:"use attachment: constructor instead.")
-    required public init?(coder aDecoder: NSCoder) {
-        notImplemented()
-    }
-
     @objc
     required public init(messageText: String) {
         self.initialMessageText = messageText
