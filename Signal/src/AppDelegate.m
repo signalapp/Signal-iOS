@@ -919,8 +919,6 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
         INInteraction *interaction = [userActivity interaction];
         INIntent *intent = interaction.intent;
 
-        // TODO: iOS 13 – when we're building with the iOS 13 SDK, we should
-        // switch this to reference the new `INStartCallIntent` class.
         if (![intent isKindOfClass:NSClassFromString(@"INStartCallIntent")]) {
             OWSLogError(@"unexpected class for start call: %@", intent);
             return NO;
