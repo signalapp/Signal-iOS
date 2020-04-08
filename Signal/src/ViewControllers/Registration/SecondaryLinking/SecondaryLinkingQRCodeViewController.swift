@@ -84,7 +84,7 @@ public class SecondaryLinkingQRCodeViewController: OnboardingBaseViewController 
             return
         }
 
-        UIApplication.shared.open(URL(string: "https://support.signal.org/hc/en-us/articles/360007320451")!)
+        UIApplication.shared.open(URL(string: "https://support.signal.org/hc/articles/360007320451")!)
     }
 
     // MARK: -
