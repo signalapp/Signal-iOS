@@ -33,8 +33,8 @@ extension OnionRequestAPI {
         let snodeX25519PublicKey = Data(hex: hexEncodedSnodeX25519PublicKey)
         let ephemeralKeyPair = Curve25519.generateKeyPair()
         let ephemeralSharedSecret = try Curve25519.generateSharedSecret(fromPublicKey: snodeX25519PublicKey, privateKey: ephemeralKeyPair.privateKey)
-        let key = "LOKI"
-        let symmetricKey = try HMAC(key: key.bytes, variant: .sha256).authenticate(ephemeralSharedSecret.bytes)
+        let salt = "LOKI"
+        let symmetricKey = try HMAC(key: salt.bytes, variant: .sha256).authenticate(ephemeralSharedSecret.bytes)
         let ciphertext = try encrypt(plaintext, usingAESGCMWithSymmetricKey: Data(bytes: symmetricKey))
         return (ciphertext, Data(bytes: symmetricKey), ephemeralKeyPair.publicKey)
     }

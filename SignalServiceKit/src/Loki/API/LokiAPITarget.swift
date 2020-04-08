@@ -11,7 +11,6 @@ internal final class LokiAPITarget : NSObject, NSCoding {
         /// Only supported by snode targets.
         case getMessages = "retrieve"
         case sendMessage = "store"
-        case getStats = "get_stats"
     }
     
     internal struct KeySet {

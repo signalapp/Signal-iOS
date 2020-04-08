@@ -4,9 +4,9 @@ import PromiseKit
 /// See the "Onion Requests" section of [The Session Whitepaper](https://arxiv.org/pdf/2002.04609.pdf) for more information.
 internal enum OnionRequestAPI {
     /// - Note: Must only be modified from `LokiAPI.workQueue`.
-    internal static var guardSnodes: Set<LokiAPITarget> = []
+    private static var guardSnodes: Set<LokiAPITarget> = []
     /// - Note: Must only be modified from `LokiAPI.workQueue`.
-    internal static var paths: Set<Path> = []
+    private static var paths: Set<Path> = []
 
     private static var snodePool: Set<LokiAPITarget> {
         let unreliableSnodes = Set(LokiAPI.failureCount.keys)
@@ -111,7 +111,7 @@ internal enum OnionRequestAPI {
                 return Set(guardSnodes.map { guardSnode in
                     let result = [ guardSnode ] + (0..<(pathSize - 1)).map { _ in
                         // randomElement() uses the system's default random generator, which is cryptographically secure
-                        let pathSnode = unusedSnodes.randomElement()! // Safe because of the minSnodeCount check above
+                        let pathSnode = unusedSnodes.randomElement()! // Safe because of the pathSnodeCount check above
                         unusedSnodes.remove(pathSnode) // All used snodes should be unique
                         return pathSnode
                     }
