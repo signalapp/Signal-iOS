@@ -23,7 +23,8 @@ protocol ContactStoreAdaptee {
 
 public
 class ContactsFrameworkContactStoreAdaptee: NSObject, ContactStoreAdaptee {
-    private let contactStore = CNContactStore()
+    private let contactStoreForLargeRequests = CNContactStore()
+    private let contactStoreForSmallRequests = CNContactStore()
     private var changeHandler: (() -> Void)?
     private var initializedObserver = false
     private var lastSortOrder: CNContactSortOrder?
@@ -92,7 +93,7 @@ class ContactsFrameworkContactStoreAdaptee: NSObject, ContactStoreAdaptee {
     }
 
     func requestAccess(completionHandler: @escaping (Bool, Error?) -> Void) {
-        self.contactStore.requestAccess(for: .contacts, completionHandler: completionHandler)
+        contactStoreForLargeRequests.requestAccess(for: .contacts, completionHandler: completionHandler)
     }
 
     func fetchContacts() -> Result<[Contact], Error> {
@@ -100,7 +101,7 @@ class ContactsFrameworkContactStoreAdaptee: NSObject, ContactStoreAdaptee {
         do {
             let contactFetchRequest = CNContactFetchRequest(keysToFetch: ContactsFrameworkContactStoreAdaptee.allowedContactKeys)
             contactFetchRequest.sortOrder = .userDefault
-            try self.contactStore.enumerateContacts(with: contactFetchRequest) { (contact, _) -> Void in
+            try contactStoreForLargeRequests.enumerateContacts(with: contactFetchRequest) { (contact, _) -> Void in
                 systemContacts.append(contact)
             }
         } catch let error as NSError {
@@ -124,7 +125,8 @@ class ContactsFrameworkContactStoreAdaptee: NSObject, ContactStoreAdaptee {
             contactFetchRequest.sortOrder = .userDefault
             contactFetchRequest.predicate = CNContact.predicateForContacts(withIdentifiers: [contactId])
 
-            try self.contactStore.enumerateContacts(with: contactFetchRequest) { (contact, _) -> Void in
+
+            try self.contactStoreForSmallRequests.enumerateContacts(with: contactFetchRequest) { (contact, _) -> Void in
                 guard result == nil else {
                     owsFailDebug("More than one contact with contact id.")
                     return
