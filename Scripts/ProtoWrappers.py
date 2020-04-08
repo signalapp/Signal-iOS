@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import os
@@ -6,7 +6,6 @@ import sys
 import subprocess
 import datetime
 import argparse
-import commands
 import re
 
 
@@ -1665,7 +1664,7 @@ def preserve_validation_logic(args, proto_file_path, dst_file_path):
 
             if len(validation_block) > 0:
                 if args.verbose:
-                    print 'Preserving validation logic for:', name
+                    print('Preserving validation logic for:', name)
 
             args.validation_map[name] = validation_block
 
@@ -1698,12 +1697,12 @@ def process_proto_file(args, proto_file_path, dst_file_path):
             global proto_syntax
             proto_syntax = syntax_match.group(1).strip()
             if args.verbose:
-                print 'Syntax:', proto_syntax
+                print('Syntax:', proto_syntax)
             continue
 
         if option_regex.search(line):
             if args.verbose:
-                print '# Ignoring option'
+                print('# Ignoring option')
             continue
 
         package_match = package_regex.search(line)
@@ -1713,7 +1712,7 @@ def process_proto_file(args, proto_file_path, dst_file_path):
             args.package = package_match.group(1).strip()
 
             if args.verbose:
-                print '# package:', args.package
+                print('# package:', args.package)
             continue
 
         message_regex = re.compile(r'^message\s+(.+?)\s+\{$')
@@ -1751,7 +1750,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.verbose:
-        print 'args:', args
+        print('args:', args)
 
     proto_file_path = os.path.abspath(os.path.join(args.proto_dir, args.proto_file))
     if not os.path.exists(proto_file_path):
@@ -1764,7 +1763,7 @@ if __name__ == "__main__":
     dst_file_path = os.path.join(dst_dir_path, "%s.swift" % args.wrapper_prefix)
 
     if args.verbose:
-        print 'dst_file_path:', dst_file_path
+        print('dst_file_path:', dst_file_path)
 
     args.package = None
     process_proto_file(args, proto_file_path, dst_file_path)
