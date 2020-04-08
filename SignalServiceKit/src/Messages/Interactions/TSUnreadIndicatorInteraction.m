@@ -26,7 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
                   uniqueThreadId:uniqueThreadId];
 }
 
-- (instancetype)initWithCoder:(NSCoder *)coder
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
     return [super initWithCoder:coder];
 }
