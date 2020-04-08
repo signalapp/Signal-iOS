@@ -42,7 +42,7 @@
 "ACTION_VIDEO_CALL" = "اتصال فيديو";
 
 /* Label for the 'add group member' button. */
-"ADD_GROUP_MEMBERS_ACTION_TITLE_1" = "Add Member";
+"ADD_GROUP_MEMBERS_ACTION_TITLE_1" = "إضافة عضو";
 
 /* Label for the 'add group members' button. */
 "ADD_GROUP_MEMBERS_ACTION_TITLE_N" = "Add Members";
@@ -750,7 +750,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Choose who can edit the group name, avatar and disappearing messages timer.";
 
 /* Footer text for the 'block and leave' section of conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER" = "You will no longer receive messages or updates from this group.";
+"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER" = "لن تستقبل رسائل أو تحديثات من من هذه المجموعة بعد الآن.";
 
 /* Label for 'block group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_GROUP" = "Block Group";
@@ -828,7 +828,7 @@
 "CONVERSATION_SETTINGS_NEW_CONTACT" = "إنشاء جهة اتصال جديدة";
 
 /* Indicates that there are no pending member invites in the group. */
-"CONVERSATION_SETTINGS_PENDING_MEMBER_INVITES_NONE" = "None";
+"CONVERSATION_SETTINGS_PENDING_MEMBER_INVITES_NONE" = "لا شيء ";
 
 /* Label for 'remove from group' button in conversation settings view. */
 "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "Remove From Group";
@@ -1401,7 +1401,7 @@
 "GROUP_MEMBER_COUNT_FORMAT" = "%1$@/%2$@";
 
 /* Label indicating the local user. */
-"GROUP_MEMBER_LOCAL_USER" = "You";
+"GROUP_MEMBER_LOCAL_USER" = "أنت";
 
 /* Button label for the 'call group member' button */
 "GROUP_MEMBERS_CALL" = "اتصال هاتفي";
@@ -1562,6 +1562,9 @@
 /* Message indicating that the local user left the group. */
 "GROUP_YOU_LEFT" = "لقد غادرت المجموعة";
 
+/* Message for the 'can't replace group admin' alert. */
+"GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Choose a new admin for this group before you leave.";
+
 /* Error indicating that an error occurred while accepting an invite. */
 "GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "Could not accept invite.";
 
@@ -1573,6 +1576,15 @@
 
 /* Label for 'block inviter' button in group invite view. Embeds {{name of user who invited you}}. */
 "GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "Block %@";
+
+/* Message for the 'replace group admin' alert. */
+"GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "Before you leave, choose a new admin for this group.";
+
+/* Title for the 'replace group admin' alert. */
+"GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "Choose New Admin";
+
+/* Label for the 'replace group admin' button. */
+"GROUPS_REPLACE_ADMIN_BUTTON" = "Choose new admin";
 
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "أرشيف المحادثة";
@@ -2091,10 +2103,10 @@
 "NEW_GROUP_ADD_PHOTO_ACTION" = "ضع صورة للمجموعة";
 
 /* Label for the 'create new group' button. */
-"NEW_GROUP_BUTTON" = "New Group";
+"NEW_GROUP_BUTTON" = "مجموعة جديدة";
 
 /* Accessibility label for the new group button */
-"NEW_GROUP_BUTTON_LABEL" = "New Group";
+"NEW_GROUP_BUTTON_LABEL" = "مجموعة جديدة";
 
 /* The title for the 'create group' button. */
 "NEW_GROUP_CREATE_BUTTON" = "إنشاء";
@@ -2911,6 +2923,9 @@
 
 /* Alert title after wrong guess for 'two-factor auth pin' reminder activity */
 "REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "That is not the correct PIN.";
+
+/* The title for the 'replace group admin' view. */
+"REPLACE_ADMIN_VIEW_TITLE" = "Choose New Admin";
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "إعادة الإشتراك في خدمة الإشعارات اللحظية";
