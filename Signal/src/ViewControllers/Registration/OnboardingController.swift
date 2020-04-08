@@ -402,7 +402,12 @@ public class OnboardingController: NSObject {
     }
 
     public func linkingDidComplete(from viewController: UIViewController) {
-        showConversationSplitView(view: viewController)
+        guard let navigationController = viewController.navigationController else {
+            owsFailDebug("navigationController was unexpectedly nil")
+            return
+        }
+
+        showNextMilestone(navigationController: navigationController)
     }
 
     func buildProfileViewController() -> ProfileViewController {
