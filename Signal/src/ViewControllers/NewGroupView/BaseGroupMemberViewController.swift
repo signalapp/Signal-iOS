@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import SafariServices
 
 protocol GroupMemberViewDelegate: class {
     var groupMemberViewRecipientSet: OrderedSet<PickedRecipient> { get }
@@ -219,15 +220,20 @@ public class BaseGroupMemberViewController: OWSViewController {
         actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_LEARN_MORE",
                                                                          comment: "Label for 'learn more' button when a user can't be added to a group."),
                                                 style: .default) { _ in
-                                                    guard let url = URL(string: "https://support.signal.org/hc/en-us/articles/360007319331") else {
-                                                        owsFailDebug("Invalid url.")
-                                                        return
-                                                    }
-                                                    UIApplication.shared.open(url, options: [:])
+                                                    self.showCantAddMemberView()
         })
         actionSheet.addAction(ActionSheetAction(title: CommonStrings.okayButton,
                                                 style: .default))
         presentActionSheet(actionSheet)
+    }
+
+    private func showCantAddMemberView() {
+        guard let url = URL(string: "https://support.signal.org/hc/articles/360007319331") else {
+            owsFailDebug("Invalid url.")
+            return
+        }
+        let vc = SFSafariViewController(url: url)
+        present(vc, animated: true, completion: nil)
     }
 
     // MARK: -
