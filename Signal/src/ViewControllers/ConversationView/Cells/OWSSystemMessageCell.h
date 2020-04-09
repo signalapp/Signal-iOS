@@ -10,10 +10,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (NSString *)cellReuseIdentifier;
 
-- (instancetype)init NS_DESIGNATED_INITIALIZER;
-
-- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
-- (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
+- (instancetype)init;
+- (nullable instancetype)initWithCoder:(NSCoder *)coder;
+- (instancetype)initWithFrame:(CGRect)frame NS_DESIGNATED_INITIALIZER;
 
 @end
 

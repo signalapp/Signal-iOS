@@ -27,10 +27,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSContactOffersCell
 
-// `[UIView init]` invokes `[self initWithFrame:...]`.
 - (instancetype)init
 {
-    if (self = [super initWithFrame:CGRectZero]) {
+    return [self initWithFrame:CGRectZero];
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    return [self initWithFrame:CGRectZero];
+}
+
+// `[UIView init]` invokes `[self initWithFrame:...]`.
+- (instancetype)initWithFrame:(CGRect)frame
+{
+    if (self = [super initWithFrame:frame]) {
         [self commonInit];
     }
 

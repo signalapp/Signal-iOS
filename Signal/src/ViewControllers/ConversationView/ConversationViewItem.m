@@ -559,7 +559,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
             case OWSInteractionType_Error:
             case OWSInteractionType_Info:
             case OWSInteractionType_Call:
-                measurementCell = [OWSSystemMessageCell new];
+                measurementCell = [OWSSystemMessageCell alloc];
                 break;
             case OWSInteractionType_Offer:
                 measurementCell = [OWSContactOffersCell new];
