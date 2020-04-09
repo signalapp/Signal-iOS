@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "DataSource.h"
@@ -41,6 +41,7 @@ NS_SWIFT_NAME(OutgoingAttachmentInfo)
 @property (nonatomic, readonly, nullable) NSString *caption;
 @property (nonatomic, readonly, nullable) NSString *albumMessageId;
 
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithDataSource:(id<DataSource>)dataSource

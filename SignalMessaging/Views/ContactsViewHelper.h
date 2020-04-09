@@ -39,6 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
 // previously denied contact access.
 - (void)presentMissingContactAccessAlertControllerFromViewController:(UIViewController *)viewController;
 
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithDelegate:(id<ContactsViewHelperDelegate>)delegate;

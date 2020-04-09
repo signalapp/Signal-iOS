@@ -287,7 +287,7 @@ extension OWSProfileManager {
 
     private class func updateLocalProfile(with attempt: ProfileUpdateAttempt,
                                           transaction: SDSAnyWriteTransaction) {
-        Logger.verbose("profile givenName: \(attempt.update.profileGivenName), familyName: \(attempt.update.profileFamilyName), avatarFilename: \(attempt.avatarFilename)")
+        Logger.verbose("profile givenName: \(String(describing: attempt.update.profileGivenName)), familyName: \(String(describing: attempt.update.profileFamilyName)), avatarFilename: \(String(describing: attempt.avatarFilename))")
 
         attempt.userProfile.updateWith(givenName: attempt.update.profileGivenName,
                                    familyName: attempt.update.profileFamilyName,

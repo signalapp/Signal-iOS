@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSNavigationController.h"
@@ -26,28 +26,22 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)init
 {
-    return [self initWithOWSNavbar];
-}
-
-- (instancetype)initWithRootViewController:(UIViewController *)rootViewController
-{
-
-    self = [self initWithOWSNavbar];
-    if (!self) {
-        return self;
-    }
-    [self pushViewController:rootViewController animated:NO];
-
-    return self;
-}
-
-- (instancetype)initWithOWSNavbar
-{
     self = [super initWithNavigationBarClass:[OWSNavigationBar class] toolbarClass:nil];
     if (!self) {
         return self;
     }
     [self setupNavbar];
+
+    return self;
+}
+
+- (instancetype)initWithRootViewController:(UIViewController *)rootViewController
+{
+    self = [self init];
+    if (!self) {
+        return self;
+    }
+    [self pushViewController:rootViewController animated:NO];
 
     return self;
 }

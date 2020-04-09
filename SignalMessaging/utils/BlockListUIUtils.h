@@ -16,6 +16,7 @@ typedef void (^BlockActionCompletionBlock)(BOOL isBlocked);
 
 @interface BlockListUIUtils : NSObject
 
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
 #pragma mark - Block

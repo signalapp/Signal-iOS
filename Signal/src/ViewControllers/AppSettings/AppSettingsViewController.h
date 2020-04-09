@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSTableViewController.h"
@@ -11,6 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface AppSettingsViewController : OWSTableViewController
 
 + (OWSNavigationController *)inModalNavigationController;
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

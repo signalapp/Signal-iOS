@@ -20,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
                 mutedUntilDate:(nullable NSDate *)mutedUntilDate
          shouldThreadBeVisible:(BOOL)shouldThreadBeVisible NS_UNAVAILABLE;
 
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
 

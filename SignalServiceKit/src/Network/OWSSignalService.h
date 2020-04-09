@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -22,6 +22,7 @@ extern NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidCha
 
 + (instancetype)sharedInstance;
 
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
 #pragma mark - Censorship Circumvention

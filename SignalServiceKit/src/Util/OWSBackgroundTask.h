@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -15,6 +15,7 @@ typedef void (^BackgroundTaskCompletionBlock)(BackgroundTaskState backgroundTask
 // This class can be safely accessed and used from any thread.
 @interface OWSBackgroundTaskManager : NSObject
 
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
 + (instancetype)sharedManager;
@@ -41,6 +42,7 @@ typedef void (^BackgroundTaskCompletionBlock)(BackgroundTaskState backgroundTask
 //   if possible.
 @interface OWSBackgroundTask : NSObject
 
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
 + (OWSBackgroundTask *)backgroundTaskWithLabelStr:(const char *)labelStr;

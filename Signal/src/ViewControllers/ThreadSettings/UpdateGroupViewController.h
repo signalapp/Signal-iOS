@@ -19,6 +19,7 @@ typedef NS_ENUM(NSUInteger, UpdateGroupMode) {
 
 @property (nonatomic, weak) id<OWSConversationSettingsViewDelegate> conversationSettingsViewDelegate;
 
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithGroupThread:(TSGroupThread *)groupThread mode:(UpdateGroupMode)mode NS_DESIGNATED_INITIALIZER;

@@ -22,8 +22,8 @@ typedef NS_ENUM(NSInteger, ProfileViewMode) {
 - (instancetype)initWithMode:(ProfileViewMode)profileViewMode
            completionHandler:(void (^)(ProfileViewController *))completionHandler;
 
-- (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;
+- (instancetype)init NS_UNAVAILABLE;
 
 + (BOOL)shouldDisplayProfileViewOnLaunch;
 

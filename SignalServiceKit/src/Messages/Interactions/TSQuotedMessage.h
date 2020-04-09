@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import <Mantle/MTLModel.h>
@@ -31,6 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 // References an already downloaded or locally generated thumbnail file
 @property (atomic, nullable) NSString *thumbnailAttachmentStreamId;
 
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithAttachmentId:(nullable NSString *)attachmentId
@@ -89,6 +90,7 @@ typedef NS_ENUM(NSUInteger, TSQuotedMessageContentSource) {
 - (NSArray<TSAttachmentStream *> *)createThumbnailAttachmentsIfNecessaryWithTransaction:
     (SDSAnyWriteTransaction *)transaction;
 
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
 // used when receiving quoted messages

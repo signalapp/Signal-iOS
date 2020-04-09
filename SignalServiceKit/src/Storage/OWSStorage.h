@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import <YapDatabase/YapDatabase.h>
@@ -21,6 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (atomic, weak) id<OWSDatabaseConnectionDelegate> delegate;
 @property (atomic) BOOL isCleanupConnection;
 
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithDatabase:(YapDatabase *)database
                         delegate:(id<OWSDatabaseConnectionDelegate>)delegate NS_DESIGNATED_INITIALIZER;
@@ -31,6 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSDatabase : YapDatabase
 
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
 - (id)initWithPath:(NSString *)inPath

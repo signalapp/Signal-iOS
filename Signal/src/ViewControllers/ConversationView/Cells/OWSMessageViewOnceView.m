@@ -48,9 +48,9 @@ typedef NS_ENUM(NSUInteger, ViewOnceMessageType) {
 
 #pragma mark -
 
-- (instancetype)initWithFrame:(CGRect)frame
+- (instancetype)init
 {
-    self = [super initWithFrame:frame];
+    self = [super initWithFrame:CGRectZero];
 
     if (!self) {
         return self;

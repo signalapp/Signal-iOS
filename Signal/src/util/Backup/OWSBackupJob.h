@@ -70,6 +70,7 @@ typedef void (^OWSBackupJobManifestFailure)(NSError *error);
 
 @property (nonatomic, readonly) NSString *jobTempDirPath;
 
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithDelegate:(id<OWSBackupJobDelegate>)delegate recipientId:(NSString *)recipientId;

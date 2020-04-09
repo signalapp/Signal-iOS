@@ -10,6 +10,7 @@ typedef void (^UploadDebugLogsFailure)(NSString *localizedErrorMessage);
 
 @interface Pastelog : NSObject
 
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
 + (void)submitLogs;

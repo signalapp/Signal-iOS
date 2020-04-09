@@ -51,6 +51,7 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
 @property (nonatomic) BOOL hasCompleted;
 @property (nonatomic, readonly) OWSBackgroundTask *backgroundTask;
 
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
 @end

@@ -65,15 +65,10 @@ public class OnboardingNavigationController: OWSNavigationController {
     @objc
     public init(onboardingController: OnboardingController) {
         self.onboardingController = onboardingController
-        super.init(owsNavbar: ())
+        super.init()
         if let nextMilestone = onboardingController.nextMilestone {
             setViewControllers([onboardingController.nextViewController(milestone: nextMilestone)], animated: false)
         }
-    }
-
-    @available(*, unavailable)
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 }
 

@@ -47,7 +47,7 @@ class ForwardMessageNavigationController: OWSNavigationController {
             self.approvalMessageText = conversationViewItem.displayableBodyText?.fullText
         }
 
-        super.init(owsNavbar: ())
+        super.init()
 
         let pickerVC = ConversationPickerViewController()
         pickerVC.delegate = self
@@ -64,10 +64,6 @@ class ForwardMessageNavigationController: OWSNavigationController {
         let modal = ForwardMessageNavigationController(conversationViewItem: viewItem)
         modal.forwardMessageDelegate = delegate
         fromViewController.presentFormSheet(modal, animated: true)
-    }
-
-    required init(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 }
 

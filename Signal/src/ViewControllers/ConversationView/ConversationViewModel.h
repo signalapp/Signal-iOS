@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -101,6 +101,7 @@ typedef NS_ENUM(NSUInteger, ConversationUpdateItemType) {
 @property (nonatomic, readonly) ConversationViewState *viewState;
 @property (nonatomic, nullable) NSString *focusMessageIdOnOpen;
 
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithThread:(TSThread *)thread
           focusMessageIdOnOpen:(nullable NSString *)focusMessageIdOnOpen

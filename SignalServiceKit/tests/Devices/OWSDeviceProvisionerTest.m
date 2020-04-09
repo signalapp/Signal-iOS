@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDeviceProvisioner.h"
@@ -67,7 +67,7 @@
     SignalServiceAddress *accountAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:@"13213214321"];
     NSString *theirEphemeralDeviceId;
 
-    OWSFakeNetworkManager *networkManager = [OWSFakeNetworkManager new];
+    OWSFakeNetworkManager *networkManager = [[OWSFakeNetworkManager alloc] init];
 
     OWSDeviceProvisioner *provisioner = [[OWSDeviceProvisioner alloc]
             initWithMyPublicKey:myPublicKey

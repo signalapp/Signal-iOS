@@ -71,9 +71,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) OWSMessageFooterView *footerView;
 @property (nonatomic, weak) id<OWSMessageBubbleViewDelegate> delegate;
 
-- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initWithFrame:(CGRect)frame NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
 

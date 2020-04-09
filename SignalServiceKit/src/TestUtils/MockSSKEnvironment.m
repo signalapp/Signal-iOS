@@ -49,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [SMKEnvironment setShared:[[SMKEnvironment alloc] initWithAccountIdFinder:[OWSAccountIdFinder new]]];
 
-    MockSSKEnvironment *instance = [self new];
+    MockSSKEnvironment *instance = [[self alloc] init];
     [self setShared:instance];
     [instance configure];
 
@@ -68,7 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     id<ContactsManagerProtocol> contactsManager = [OWSFakeContactsManager new];
     OWSLinkPreviewManager *linkPreviewManager = [OWSLinkPreviewManager new];
-    TSNetworkManager *networkManager = [OWSFakeNetworkManager new];
+    TSNetworkManager *networkManager = [[OWSFakeNetworkManager alloc] init];
     OWSMessageSender *messageSender = [OWSFakeMessageSender new];
     MessageSenderJobQueue *messageSenderJobQueue = [MessageSenderJobQueue new];
 
