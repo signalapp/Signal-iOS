@@ -18,7 +18,7 @@ extension FeatureBuild {
     }
 }
 
-let build: FeatureBuild = .qa
+let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .beta
 
 // MARK: -
 
@@ -258,7 +258,7 @@ public class DebugFlags: NSObject {
     public static let logSQLQueries = build.includes(.dev)
 
     @objc
-    public static let groupsV2IgnoreCapability = true
+    public static let groupsV2IgnoreCapability = false
 
     // We can use this to test recovery from "missed updates".
     @objc
@@ -280,7 +280,7 @@ public class DebugFlags: NSObject {
 
     // This flag auto-enables the groupv2 flags in RemoteConfig.
     @objc
-    public static let groupsV2IgnoreServerFlags = true
+    public static let groupsV2IgnoreServerFlags = FeatureFlags.groupsV2
 
     // If set, this will invite instead of adding other users.
     @objc
