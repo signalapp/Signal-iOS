@@ -42,32 +42,6 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (instancetype)initWithNibName:(nullable NSString *)nibNameOrNil bundle:(nullable NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (!self) {
-        self.shouldUseTheme = YES;
-        return self;
-    }
-    
-    [self observeActivation];
-    
-    return self;
-}
-
-- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder
-{
-    self = [super initWithCoder:aDecoder];
-    if (!self) {
-        self.shouldUseTheme = YES;
-        return self;
-    }
-
-    [self observeActivation];
-
-    return self;
-}
-
 #pragma mark - View Lifecycle
 
 - (void)viewDidAppear:(BOOL)animated

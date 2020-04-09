@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSBackupSettingsViewController.h"
@@ -102,8 +102,11 @@ NS_ASSUME_NONNULL_BEGIN
             addItem:[OWSTableItem
                         longDisclosureItemWithText:[OWSBackupAPI errorMessageForCloudKitAccessError:self.iCloudError]
                                        actionBlock:^{
-                                           [[UIApplication sharedApplication]
-                                               openURL:[NSURL URLWithString:UIApplicationOpenSettingsURLString]];
+                                           [UIApplication.sharedApplication
+                                                         openURL:[NSURL
+                                                                     URLWithString:UIApplicationOpenSettingsURLString]
+                                                         options:@{}
+                                               completionHandler:nil];
                                        }]];
         [contents addSection:iCloudSection];
     }

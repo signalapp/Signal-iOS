@@ -2886,7 +2886,7 @@ typedef enum : NSUInteger {
         }
     }
 
-    [UIApplication.sharedApplication openURL:url];
+    [UIApplication.sharedApplication openURL:url options:@{} completionHandler:nil];
 }
 
 - (void)showDetailViewForViewItem:(id<ConversationViewItem>)conversationItem
