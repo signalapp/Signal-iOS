@@ -18,7 +18,7 @@ extension FeatureBuild {
     }
 }
 
-let build: FeatureBuild = .qa
+let build: FeatureBuild = .internalPreview
 
 // MARK: -
 
@@ -113,7 +113,7 @@ public class FeatureFlags: NSObject {
     }
 
     @objc
-    public static let uuidCapabilities = !isUsingProductionService
+    public static let uuidCapabilities = true
 
     @objc
     public static var storageModeDescription: String {
@@ -136,12 +136,7 @@ public class FeatureFlags: NSObject {
 
     @objc
     public static var allowUUIDOnlyContacts: Bool {
-        // TODO UUID: Remove production check once this rolls out to prod service
-        if OWSIsDebugBuild() && !isUsingProductionService {
-            return true
-        } else {
-            return false
-        }
+        return true
     }
 
     @objc
@@ -178,7 +173,7 @@ public class FeatureFlags: NSObject {
     public static let multiRing: Bool = false
 
     @objc
-    public static let groupsV2 = build.includes(.qa) && !isUsingProductionService
+    public static let groupsV2 = true
 
     // Don't consult this feature flag directly; instead
     // consult RemoteConfig.groupsV2CreateGroups.
@@ -210,7 +205,7 @@ public class FeatureFlags: NSObject {
     public static let linkedPhones = build.includes(.internalPreview)
 
     @objc
-    public static let isUsingProductionService = false
+    public static let isUsingProductionService = true
 
     @objc
     public static let versionedProfiledFetches = groupsV2
@@ -265,7 +260,7 @@ public class DebugFlags: NSObject {
     public static let groupsV2dontSendUpdates = false
 
     @objc
-    public static let groupsV2showV2Indicator = FeatureFlags.groupsV2 && build.includes(.qa)
+    public static let groupsV2showV2Indicator = true
 
     // If set, v2 groups will be created and updated with invalid avatars
     // so that we can test clients' robustness to this case.
