@@ -425,6 +425,10 @@ typedef enum : NSUInteger {
                                                  name:NSNotification.threadSessionRestoreDevicesChanged
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
+                                              selector:@selector(handleGroupThreadLeftNotification:)
+                                                  name:NSNotification.groupThreadLeft
+                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleCalculatingPoWNotification:)
                                                  name:NSNotification.calculatingPoW
                                                object:nil];
@@ -505,6 +509,20 @@ typedef enum : NSUInteger {
     OWSAssertIsOnMainThread();
 
     [self ensureBannerState];
+}
+
+- (void)handleGroupThreadLeftNotification:(NSNotification *)notification
+{
+    OWSAssertIsOnMainThread();
+    
+    // Check thread
+    NSString *threadID = (NSString *)notification.object;
+    if (![threadID isEqualToString:self.thread.uniqueId]) { return; }
+    // Ensure thread instance is up to date
+    [self.thread reload];
+    // Update UI
+    [self hideInputIfNeeded];
+    [self resetContentAndLayout];
 }
 
 - (void)handleThreadFriendRequestStatusChangedNotification:(NSNotification *)notification
@@ -687,7 +705,7 @@ typedef enum : NSUInteger {
 
     if (self.thread.isGroupThread) {
         TSGroupThread *thread = (TSGroupThread *)self.thread;
-        if (thread.isRSSFeed) { return; }
+        if (!thread.isPublicChat) { return; }
         __block LKPublicChat *publicChat;
         [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             publicChat = [LKDatabaseUtilities getPublicChatForThreadID:thread.uniqueId transaction:transaction];

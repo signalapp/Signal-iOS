@@ -1455,6 +1455,8 @@ NS_ASSUME_NONNULL_BEGIN
         }
         
         NSString *hexEncodedPublicKey = ([LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:envelope.source in:transaction] ?: envelope.source);
+        NSString *localHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+        NSString *ourHexEncodedPublicKey = ([LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:localHexEncodedPublicKey in:transaction] ?: localHexEncodedPublicKey);
 
         // Group messages create the group if it doesn't already exist.
         //
@@ -1464,7 +1466,6 @@ NS_ASSUME_NONNULL_BEGIN
             // Loki: Determine removed members
             removedMemberIds = [NSMutableSet setWithArray:oldGroupThread.groupModel.groupMemberIds];
             [removedMemberIds minusSet:newMemberIds];
-            [removedMemberIds removeObject:hexEncodedPublicKey];
         }
 
         // Only set the display name here, the logic for updating profile pictures is handled when we're setting profile key
@@ -1508,6 +1509,11 @@ NS_ASSUME_NONNULL_BEGIN
                                                                         customMessage:updateGroupInfo];
                 [infoMessage saveWithTransaction:transaction];
 
+                // If we were the one that was removed then we need to leave the group
+                if ([removedMemberIds containsObject:ourHexEncodedPublicKey]) {
+                    [newGroupThread leaveGroupWithTransaction:transaction];
+                }
+
                 return nil;
             }
             case SSKProtoGroupContextTypeQuit: {
@@ -1529,6 +1535,12 @@ NS_ASSUME_NONNULL_BEGIN
                                                  inThread:oldGroupThread
                                               messageType:TSInfoMessageTypeGroupUpdate
                                             customMessage:updateGroupInfo] saveWithTransaction:transaction];
+
+                // If we were the one that quit then we need to leave the group
+                if ([newMemberIds containsObject:ourHexEncodedPublicKey]) {
+                    [oldGroupThread leaveGroupWithTransaction:transaction];
+                }
+                
                 return nil;
             }
             case SSKProtoGroupContextTypeDeliver: {
