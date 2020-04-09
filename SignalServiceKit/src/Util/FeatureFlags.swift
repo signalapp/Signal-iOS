@@ -18,7 +18,7 @@ extension FeatureBuild {
     }
 }
 
-let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .beta
+let build: FeatureBuild = .qa
 
 // MARK: -
 
@@ -178,7 +178,7 @@ public class FeatureFlags: NSObject {
     public static let multiRing: Bool = false
 
     @objc
-    public static let groupsV2 = build.includes(.qa)
+    public static let groupsV2 = build.includes(.qa) && !isUsingProductionService
 
     // Don't consult this feature flag directly; instead
     // consult RemoteConfig.groupsV2CreateGroups.
@@ -210,7 +210,7 @@ public class FeatureFlags: NSObject {
     public static let linkedPhones = build.includes(.internalPreview)
 
     @objc
-    public static let isUsingProductionService = true
+    public static let isUsingProductionService = false
 
     @objc
     public static let versionedProfiledFetches = groupsV2
