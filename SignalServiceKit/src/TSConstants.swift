@@ -177,7 +177,7 @@ private class TSConstantsProduction: TSConstantsProtocol {
     //
     // We need to discard all profile key credentials if these values ever change.
     // See: VersionedProfiles.clearProfileKeyCredentials(...)
-    public let serverPublicParamsBase64 = "ItsUM4YUuP4rTNjlX1HAKyKFWW5BdxC9HLInA/EB0yJqr4aUNRUPvpm7roGpwpupSPsghu1FzZi6dB5bobVmRyLbFDOGFLj+K0zY5V9RwCsihVluQXcQvRyyJwPxAdMilqsVLWH3+BMDltODguZu2oh9NAgg4D9CD8Cft97dagA24LwJsa5jt/X/YdJSJK6ry8jLWIoaYit8+h4e37I3Vg=="
+    public let serverPublicParamsBase64 = "DDZM414H2QbA3brAa6NCMaZIN1ZRY+B46PWDvw4LmwrY6CEQArF4OF/yHdBL7HW/JPgjjauzJau+cpikvqH3dDZQ7KFKgx/MGsbw49ATUj6fhBXko9iyPwVwC3+kjNY6PGZuSoYpD4SJJIgzTJ8Gnuk23tSbX1aQWAWNlc8WiyWIHm/A+22w/D1zQmGuFCEGImU4blMK+HhNfC7jM5leBQ=="
 }
 
 // MARK: -
@@ -216,5 +216,5 @@ private class TSConstantsStaging: TSConstantsProtocol {
 
     // We need to discard all profile key credentials if these values ever change.
     // See: VersionedProfiles.clearProfileKeyCredentials(...)
-    public let serverPublicParamsBase64 = "jHLJYMj7S8O5OvZ87aGUrVGINUogjubZH1vVd8b1jg/4taA66YhFlWn5aHBsTrBQwFvkbfTCU1kbSplGpQnSXIxyyWDI+0vDuTr2fO2hlK1RiDVKII7m2R9b1XfG9Y4PxpwzLIqkabDAsT4utVWhDNrTWOREVu68zydVW8QqExvArnPdGsTUv+Qq7N3xgbi7BLmNjEo0G/sr7WS7tV2wDA=="
+    public let serverPublicParamsBase64 = "ZFt6K+dFE23BsKZMqTroFbbxOXDhDHXcIeCFlWeOIjXeNPrpm9pGwwcQ1AiENlEM1xOaQ2EW48s++quhVv1TEkKormac7WM6Z01kWn/FH2zVcXJxQmsKfYWmAa6lnLhIHO8MXCfllR9uDW2Jfj++8SEzn6oD3+wmzqOzPqiOPAtQxuqWsVTFk4bt7ChuiVWjF7PVZ37deUH/mKhV0flvFA=="
 }
