@@ -67,16 +67,16 @@ typedef void (^SystemMessageActionBlock)(void);
 @implementation OWSSystemMessageCell
 
 // `[UIView init]` invokes `[self initWithFrame:...]`.
-- (instancetype)initWithFrame:(CGRect)frame
+- (instancetype)init
 {
-    if (self = [super initWithFrame:frame]) {
-        [self commontInit];
+    if (self = [super initWithFrame:CGRectZero]) {
+        [self commonInit];
     }
 
     return self;
 }
 
-- (void)commontInit
+- (void)commonInit
 {
     OWSAssertDebug(!self.iconView);
 

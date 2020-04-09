@@ -56,12 +56,12 @@ typedef NS_ENUM(NSUInteger, ViewOnceMessageType) {
         return self;
     }
 
-    [self commontInit];
+    [self commonInit];
 
     return self;
 }
 
-- (void)commontInit
+- (void)commonInit
 {
     // Ensure only called once.
     OWSAssertDebug(!self.vStackView);

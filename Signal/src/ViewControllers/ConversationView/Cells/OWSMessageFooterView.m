@@ -25,16 +25,16 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation OWSMessageFooterView
 
 // `[UIView init]` invokes `[self initWithFrame:...]`.
-- (instancetype)initWithFrame:(CGRect)frame
+- (instancetype)init
 {
-    if (self = [super initWithFrame:frame]) {
-        [self commontInit];
+    if (self = [super initWithFrame:CGRectZero]) {
+        [self commonInit];
     }
 
     return self;
 }
 
-- (void)commontInit
+- (void)commonInit
 {
     // Ensure only called once.
     OWSAssertDebug(!self.timestampLabel);

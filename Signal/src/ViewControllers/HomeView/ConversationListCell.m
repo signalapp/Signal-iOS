@@ -64,7 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(nullable NSString *)reuseIdentifier
 {
     if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
-        [self commontInit];
+        [self commonInit];
     }
     return self;
 }
@@ -73,13 +73,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithFrame:(CGRect)frame
 {
     if (self = [super initWithFrame:frame]) {
-        [self commontInit];
+        [self commonInit];
     }
 
     return self;
 }
 
-- (void)commontInit
+- (void)commonInit
 {
     OWSAssertDebug(!self.avatarView);
 
