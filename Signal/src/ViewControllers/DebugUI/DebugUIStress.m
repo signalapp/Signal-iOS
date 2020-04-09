@@ -174,8 +174,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                    SSKProtoDataMessageBuilder *dataBuilder =
                                                        [SSKProtoDataMessage builder];
                                                    SSKProtoAttachmentPointerBuilder *attachmentPointer =
-                                                       [SSKProtoAttachmentPointer
-                                                           builderWithId:arc4random_uniform(32) + 1];
+                                                       [SSKProtoAttachmentPointer builder];
+                                                   attachmentPointer.cdnID = arc4random_uniform(32) + 1;
                                                    [attachmentPointer setContentType:@"1"];
                                                    [attachmentPointer setSize:arc4random_uniform(32) + 1];
                                                    [attachmentPointer setDigest:[Cryptography generateRandomBytes:1]];

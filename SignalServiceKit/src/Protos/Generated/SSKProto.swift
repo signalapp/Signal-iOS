@@ -7989,14 +7989,20 @@ public class SSKProtoAttachmentPointer: NSObject {
     // MARK: - SSKProtoAttachmentPointerBuilder
 
     @objc
-    public class func builder(id: UInt64) -> SSKProtoAttachmentPointerBuilder {
-        return SSKProtoAttachmentPointerBuilder(id: id)
+    public class func builder() -> SSKProtoAttachmentPointerBuilder {
+        return SSKProtoAttachmentPointerBuilder()
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc
     public func asBuilder() -> SSKProtoAttachmentPointerBuilder {
-        let builder = SSKProtoAttachmentPointerBuilder(id: id)
+        let builder = SSKProtoAttachmentPointerBuilder()
+        if hasCdnID {
+            builder.setCdnID(cdnID)
+        }
+        if let _value = cdnKey {
+            builder.setCdnKey(_value)
+        }
         if let _value = contentType {
             builder.setContentType(_value)
         }
@@ -8033,6 +8039,9 @@ public class SSKProtoAttachmentPointer: NSObject {
         if hasUploadTimestamp {
             builder.setUploadTimestamp(uploadTimestamp)
         }
+        if hasCdnNumber {
+            builder.setCdnNumber(cdnNumber)
+        }
         return builder
     }
 
@@ -8045,15 +8054,19 @@ public class SSKProtoAttachmentPointer: NSObject {
         fileprivate override init() {}
 
         @objc
-        fileprivate init(id: UInt64) {
-            super.init()
-
-            setId(id)
+        public func setCdnID(_ valueParam: UInt64) {
+            proto.cdnID = valueParam
         }
 
         @objc
-        public func setId(_ valueParam: UInt64) {
-            proto.id = valueParam
+        @available(swift, obsoleted: 1.0)
+        public func setCdnKey(_ valueParam: String?) {
+            guard let valueParam = valueParam else { return }
+            proto.cdnKey = valueParam
+        }
+
+        public func setCdnKey(_ valueParam: String) {
+            proto.cdnKey = valueParam
         }
 
         @objc
@@ -8159,6 +8172,11 @@ public class SSKProtoAttachmentPointer: NSObject {
         }
 
         @objc
+        public func setCdnNumber(_ valueParam: UInt32) {
+            proto.cdnNumber = valueParam
+        }
+
+        @objc
         public func build() throws -> SSKProtoAttachmentPointer {
             return try SSKProtoAttachmentPointer.parseProto(proto)
         }
@@ -8172,7 +8190,25 @@ public class SSKProtoAttachmentPointer: NSObject {
     fileprivate let proto: SignalServiceProtos_AttachmentPointer
 
     @objc
-    public let id: UInt64
+    public var cdnID: UInt64 {
+        return proto.cdnID
+    }
+    @objc
+    public var hasCdnID: Bool {
+        return proto.hasCdnID
+    }
+
+    @objc
+    public var cdnKey: String? {
+        guard hasCdnKey else {
+            return nil
+        }
+        return proto.cdnKey
+    }
+    @objc
+    public var hasCdnKey: Bool {
+        return proto.hasCdnKey
+    }
 
     @objc
     public var contentType: String? {
@@ -8303,10 +8339,17 @@ public class SSKProtoAttachmentPointer: NSObject {
         return proto.hasUploadTimestamp
     }
 
-    private init(proto: SignalServiceProtos_AttachmentPointer,
-                 id: UInt64) {
+    @objc
+    public var cdnNumber: UInt32 {
+        return proto.cdnNumber
+    }
+    @objc
+    public var hasCdnNumber: Bool {
+        return proto.hasCdnNumber
+    }
+
+    private init(proto: SignalServiceProtos_AttachmentPointer) {
         self.proto = proto
-        self.id = id
     }
 
     @objc
@@ -8321,17 +8364,11 @@ public class SSKProtoAttachmentPointer: NSObject {
     }
 
     fileprivate class func parseProto(_ proto: SignalServiceProtos_AttachmentPointer) throws -> SSKProtoAttachmentPointer {
-        guard proto.hasID else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: id")
-        }
-        let id = proto.id
-
         // MARK: - Begin Validation Logic for SSKProtoAttachmentPointer -
 
         // MARK: - End Validation Logic for SSKProtoAttachmentPointer -
 
-        let result = SSKProtoAttachmentPointer(proto: proto,
-                                               id: id)
+        let result = SSKProtoAttachmentPointer(proto: proto)
         return result
     }
 

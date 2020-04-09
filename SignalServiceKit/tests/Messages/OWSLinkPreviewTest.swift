@@ -28,7 +28,8 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         let body = "\(url)"
         let previewBuilder = SSKProtoDataMessagePreview.builder(url: url)
         previewBuilder.setTitle("Some Youtube Video")
-        let imageAttachmentBuilder = SSKProtoAttachmentPointer.builder(id: 1)
+        let imageAttachmentBuilder = SSKProtoAttachmentPointer.builder()
+        imageAttachmentBuilder.setCdnID(1)
         imageAttachmentBuilder.setKey(Randomness.generateRandomBytes(32))
         imageAttachmentBuilder.setContentType(OWSMimeTypeImageJpeg)
         previewBuilder.setImage(try! imageAttachmentBuilder.build())
@@ -61,7 +62,8 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         let url = "https://www.youtube.com/watch?v=tP-Ipsat90c"
         let body = "\(url)"
         let previewBuilder = SSKProtoDataMessagePreview.builder(url: url)
-        let imageAttachmentBuilder = SSKProtoAttachmentPointer.builder(id: 1)
+        let imageAttachmentBuilder = SSKProtoAttachmentPointer.builder()
+        imageAttachmentBuilder.setCdnID(1)
         imageAttachmentBuilder.setKey(Randomness.generateRandomBytes(32))
         imageAttachmentBuilder.setContentType(OWSMimeTypeImageJpeg)
         previewBuilder.setImage(try! imageAttachmentBuilder.build())

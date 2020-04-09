@@ -240,7 +240,7 @@ message DataMessage {
     MESSAGE_TIMERS  = 1;
     VIEW_ONCE       = 2;
     VIEW_ONCE_VIDEO = 3;
-    REACTIONS       = 4; 
+    REACTIONS       = 4;
     CURRENT         = 4;
   }
 
@@ -419,8 +419,14 @@ message AttachmentPointer {
     VOICE_MESSAGE = 1;
   }
 
-  // @required
-  optional fixed64 id              =  1;
+  // oneof commented out because swift generated
+  // enum with associated values can't be converted
+  // to objc representation
+  //
+  // oneof attachment_identifier {
+  optional fixed64 cdnId           = 1;
+  optional string  cdnKey          = 15;
+  // }
   optional string  contentType     =  2;
   optional bytes   key             =  3;
   optional uint32  size            =  4;
@@ -433,6 +439,7 @@ message AttachmentPointer {
   optional string  caption         = 11;
   optional string  blurHash        = 12;
   optional uint64  uploadTimestamp = 13;
+  optional uint32  cdnNumber       = 14;
 }
 
 message GroupContext {
@@ -452,8 +459,8 @@ message GroupContext {
   optional bytes             id          = 1;
   optional Type              type        = 2;
   optional string            name        = 3;
-  // A list of known phone numbers in the group, only maintained 
-  // to support legacy apps that don't know about UUIDs. We may want 
+  // A list of known phone numbers in the group, only maintained
+  // to support legacy apps that don't know about UUIDs. We may want
   // to eventually stop populating this.
   repeated string            membersE164 = 4;
   optional AttachmentPointer avatar      = 5;
@@ -499,8 +506,8 @@ message GroupDetails {
   // @required
   optional bytes  id          = 1;
   optional string name        = 2;
-  // A list of known phone numbers in the group, only maintained 
-  // to support legacy apps that don't know about UUIDs. We may want 
+  // A list of known phone numbers in the group, only maintained
+  // to support legacy apps that don't know about UUIDs. We may want
   // to eventually stop populating this.
   repeated string membersE164 = 3;
   optional Avatar avatar      = 4;

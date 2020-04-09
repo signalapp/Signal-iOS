@@ -163,7 +163,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (nullable TSAttachmentPointer *)attachmentPointerFromProto:(SSKProtoAttachmentPointer *)attachmentProto
                                                 albumMessage:(nullable TSMessage *)albumMessage
 {
-    if (attachmentProto.id < 1) {
+    // TODO: Use the cdnKey and cdnNumber to fetch the attachment
+    if (attachmentProto.cdnID < 1) {
         OWSFailDebug(@"Invalid attachment id.");
         return nil;
     }
@@ -212,7 +213,7 @@ NS_ASSUME_NONNULL_BEGIN
         mediaSize = CGSizeMake(attachmentProto.width, attachmentProto.height);
     }
 
-    UInt64 serverId = attachmentProto.id;
+    UInt64 serverId = attachmentProto.cdnID;
     if (![SDS fitsInInt64:serverId]) {
         OWSFailDebug(@"Invalid server id.");
         return nil;

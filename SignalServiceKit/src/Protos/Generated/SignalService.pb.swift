@@ -2460,16 +2460,30 @@ struct SignalServiceProtos_AttachmentPointer {
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  /// @required
-  var id: UInt64 {
-    get {return _id ?? 0}
-    set {_id = newValue}
+  /// oneof commented out because swift generated
+  /// enum with associated values can't be converted
+  /// to objc representation
+  ///
+  /// oneof attachment_identifier {
+  var cdnID: UInt64 {
+    get {return _cdnID ?? 0}
+    set {_cdnID = newValue}
   }
-  /// Returns true if `id` has been explicitly set.
-  var hasID: Bool {return self._id != nil}
-  /// Clears the value of `id`. Subsequent reads from it will return its default value.
-  mutating func clearID() {self._id = nil}
+  /// Returns true if `cdnID` has been explicitly set.
+  var hasCdnID: Bool {return self._cdnID != nil}
+  /// Clears the value of `cdnID`. Subsequent reads from it will return its default value.
+  mutating func clearCdnID() {self._cdnID = nil}
 
+  var cdnKey: String {
+    get {return _cdnKey ?? String()}
+    set {_cdnKey = newValue}
+  }
+  /// Returns true if `cdnKey` has been explicitly set.
+  var hasCdnKey: Bool {return self._cdnKey != nil}
+  /// Clears the value of `cdnKey`. Subsequent reads from it will return its default value.
+  mutating func clearCdnKey() {self._cdnKey = nil}
+
+  /// }
   var contentType: String {
     get {return _contentType ?? String()}
     set {_contentType = newValue}
@@ -2578,6 +2592,15 @@ struct SignalServiceProtos_AttachmentPointer {
   /// Clears the value of `uploadTimestamp`. Subsequent reads from it will return its default value.
   mutating func clearUploadTimestamp() {self._uploadTimestamp = nil}
 
+  var cdnNumber: UInt32 {
+    get {return _cdnNumber ?? 0}
+    set {_cdnNumber = newValue}
+  }
+  /// Returns true if `cdnNumber` has been explicitly set.
+  var hasCdnNumber: Bool {return self._cdnNumber != nil}
+  /// Clears the value of `cdnNumber`. Subsequent reads from it will return its default value.
+  mutating func clearCdnNumber() {self._cdnNumber = nil}
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum Flags: SwiftProtobuf.Enum {
@@ -2605,7 +2628,8 @@ struct SignalServiceProtos_AttachmentPointer {
 
   init() {}
 
-  fileprivate var _id: UInt64?
+  fileprivate var _cdnID: UInt64?
+  fileprivate var _cdnKey: String?
   fileprivate var _contentType: String?
   fileprivate var _key: Data?
   fileprivate var _size: UInt32?
@@ -2618,6 +2642,7 @@ struct SignalServiceProtos_AttachmentPointer {
   fileprivate var _caption: String?
   fileprivate var _blurHash: String?
   fileprivate var _uploadTimestamp: UInt64?
+  fileprivate var _cdnNumber: UInt32?
 }
 
 #if swift(>=4.2)
@@ -2661,8 +2686,8 @@ struct SignalServiceProtos_GroupContext {
   /// Clears the value of `name`. Subsequent reads from it will return its default value.
   mutating func clearName() {self._name = nil}
 
-  /// A list of known phone numbers in the group, only maintained 
-  /// to support legacy apps that don't know about UUIDs. We may want 
+  /// A list of known phone numbers in the group, only maintained
+  /// to support legacy apps that don't know about UUIDs. We may want
   /// to eventually stop populating this.
   var membersE164: [String] = []
 
@@ -2978,8 +3003,8 @@ struct SignalServiceProtos_GroupDetails {
   /// Clears the value of `name`. Subsequent reads from it will return its default value.
   mutating func clearName() {self._name = nil}
 
-  /// A list of known phone numbers in the group, only maintained 
-  /// to support legacy apps that don't know about UUIDs. We may want 
+  /// A list of known phone numbers in the group, only maintained
+  /// to support legacy apps that don't know about UUIDs. We may want
   /// to eventually stop populating this.
   var membersE164: [String] = []
 
@@ -5154,7 +5179,8 @@ extension SignalServiceProtos_SyncMessage.MessageRequestResponse.TypeEnum: Swift
 extension SignalServiceProtos_AttachmentPointer: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".AttachmentPointer"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "id"),
+    1: .same(proto: "cdnId"),
+    15: .same(proto: "cdnKey"),
     2: .same(proto: "contentType"),
     3: .same(proto: "key"),
     4: .same(proto: "size"),
@@ -5166,13 +5192,14 @@ extension SignalServiceProtos_AttachmentPointer: SwiftProtobuf.Message, SwiftPro
     10: .same(proto: "height"),
     11: .same(proto: "caption"),
     12: .same(proto: "blurHash"),
-    13: .same(proto: "uploadTimestamp")
+    13: .same(proto: "uploadTimestamp"),
+    14: .same(proto: "cdnNumber")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       switch fieldNumber {
-      case 1: try decoder.decodeSingularFixed64Field(value: &self._id)
+      case 1: try decoder.decodeSingularFixed64Field(value: &self._cdnID)
       case 2: try decoder.decodeSingularStringField(value: &self._contentType)
       case 3: try decoder.decodeSingularBytesField(value: &self._key)
       case 4: try decoder.decodeSingularUInt32Field(value: &self._size)
@@ -5185,13 +5212,15 @@ extension SignalServiceProtos_AttachmentPointer: SwiftProtobuf.Message, SwiftPro
       case 11: try decoder.decodeSingularStringField(value: &self._caption)
       case 12: try decoder.decodeSingularStringField(value: &self._blurHash)
       case 13: try decoder.decodeSingularUInt64Field(value: &self._uploadTimestamp)
+      case 14: try decoder.decodeSingularUInt32Field(value: &self._cdnNumber)
+      case 15: try decoder.decodeSingularStringField(value: &self._cdnKey)
       default: break
       }
     }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if let v = self._id {
+    if let v = self._cdnID {
       try visitor.visitSingularFixed64Field(value: v, fieldNumber: 1)
     }
     if let v = self._contentType {
@@ -5230,11 +5259,18 @@ extension SignalServiceProtos_AttachmentPointer: SwiftProtobuf.Message, SwiftPro
     if let v = self._uploadTimestamp {
       try visitor.visitSingularUInt64Field(value: v, fieldNumber: 13)
     }
+    if let v = self._cdnNumber {
+      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 14)
+    }
+    if let v = self._cdnKey {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 15)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: SignalServiceProtos_AttachmentPointer, rhs: SignalServiceProtos_AttachmentPointer) -> Bool {
-    if lhs._id != rhs._id {return false}
+    if lhs._cdnID != rhs._cdnID {return false}
+    if lhs._cdnKey != rhs._cdnKey {return false}
     if lhs._contentType != rhs._contentType {return false}
     if lhs._key != rhs._key {return false}
     if lhs._size != rhs._size {return false}
@@ -5247,6 +5283,7 @@ extension SignalServiceProtos_AttachmentPointer: SwiftProtobuf.Message, SwiftPro
     if lhs._caption != rhs._caption {return false}
     if lhs._blurHash != rhs._blurHash {return false}
     if lhs._uploadTimestamp != rhs._uploadTimestamp {return false}
+    if lhs._cdnNumber != rhs._cdnNumber {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
