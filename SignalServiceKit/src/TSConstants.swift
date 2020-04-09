@@ -177,7 +177,7 @@ private class TSConstantsProduction: TSConstantsProtocol {
     //
     // We need to discard all profile key credentials if these values ever change.
     // See: VersionedProfiles.clearProfileKeyCredentials(...)
-    public let serverPublicParamsBase64 = "Mmngo/SFRpC5kRLUKE8sXnpUx0QhQGcxUGI3b5eQXUX0kgK6SSL7XWcmjQv2ZsL5qKqyADTfhBakDSSfVEr2dHheAw/6JYMjgXnYZAn1845KOk9gHwWGaISIZWR55u4xpHdqZhZBdUyQ2MuDpIurLWifw8Jq/W6pumywOTg6zAeegHWx9MwyGaQD4R35nAAcPgqWuKrlIBX/z7kCYDwEFCaZwW+KmB0HluyEN362MzuzgGv+zK1SZR2aIpBmtsFYeG7FAV7aXXwB0aqB+5kDBJYCdhrzxWAqnWHC0Gm0JFASX3yaxmIWElacrfYtqLAP9KZcfViLRa4IiBIx3w9OAQ=="
+    public let serverPublicParamsBase64 = "ItsUM4YUuP4rTNjlX1HAKyKFWW5BdxC9HLInA/EB0yJqr4aUNRUPvpm7roGpwpupSPsghu1FzZi6dB5bobVmRyLbFDOGFLj+K0zY5V9RwCsihVluQXcQvRyyJwPxAdMilqsVLWH3+BMDltODguZu2oh9NAgg4D9CD8Cft97dagA24LwJsa5jt/X/YdJSJK6ry8jLWIoaYit8+h4e37I3Vg=="
 }
 
 // MARK: -
@@ -216,5 +216,5 @@ private class TSConstantsStaging: TSConstantsProtocol {
 
     // We need to discard all profile key credentials if these values ever change.
     // See: VersionedProfiles.clearProfileKeyCredentials(...)
-    public let serverPublicParamsBase64 = "fK6E7h1+VAYcjhPlWfvzUMp2FkXrnl+fwn2GWR8ckX5KKVTR2HZEChXftmMiVg1Jylm8Q1xxVgA6sMYnZPeWFHyuhO4dflQGHI4T5Vn781DKdhZF655fn8J9hlkfHJF+apgc1sDFloo7VSzCcSejZtPrGyr6Ly5EWriNxqlpABCeLkKnC57a3wc0VC+ivu6/QFTDfHLNZp60vgUAjVNYGQ=="
+    public let serverPublicParamsBase64 = "jHLJYMj7S8O5OvZ87aGUrVGINUogjubZH1vVd8b1jg/4taA66YhFlWn5aHBsTrBQwFvkbfTCU1kbSplGpQnSXIxyyWDI+0vDuTr2fO2hlK1RiDVKII7m2R9b1XfG9Y4PxpwzLIqkabDAsT4utVWhDNrTWOREVu68zydVW8QqExvArnPdGsTUv+Qq7N3xgbi7BLmNjEo0G/sr7WS7tV2wDA=="
 }
