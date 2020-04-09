@@ -210,7 +210,7 @@ class GifPickerCell: UICollectionViewCell {
             let imageView = YYAnimatedImageView()
             self.imageView = imageView
             self.contentView.addSubview(imageView)
-            imageView.ows_autoPinToSuperviewEdges()
+            imageView.autoPinEdgesToSuperviewEdges()
         }
         guard let imageView = imageView else {
             owsFailDebug("missing imageview.")

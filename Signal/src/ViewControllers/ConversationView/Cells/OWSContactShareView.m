@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSContactShareView.h"
@@ -155,7 +155,7 @@ NS_ASSUME_NONNULL_BEGIN
     [hStackView addArrangedSubview:labelsView];
     [hStackView addArrangedSubview:disclosureImageView];
     [self addSubview:hStackView];
-    [hStackView ows_autoPinToSuperviewEdges];
+    [hStackView autoPinEdgesToSuperviewEdges];
 }
 
 @end

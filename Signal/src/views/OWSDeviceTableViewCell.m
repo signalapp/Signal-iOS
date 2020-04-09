@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDeviceTableViewCell.h"
@@ -39,7 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
     stackView.alignment = UIStackViewAlignmentLeading;
     stackView.spacing = 2;
     [self.contentView addSubview:stackView];
-    [stackView ows_autoPinToSuperviewMargins];
+    [stackView autoPinEdgesToSuperviewMargins];
 }
 
 - (void)configureWithDevice:(OWSDevice *)device

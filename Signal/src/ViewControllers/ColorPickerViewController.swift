@@ -216,7 +216,7 @@ class ColorPickerView: UIView, ColorViewDelegate {
         titleLabel.textColor = Theme.primaryTextColor
 
         headerView.addSubview(titleLabel)
-        titleLabel.ows_autoPinToSuperviewMargins()
+        titleLabel.autoPinEdgesToSuperviewMargins()
 
         let bottomBorderView = UIView()
         bottomBorderView.backgroundColor = Theme.hairlineColor

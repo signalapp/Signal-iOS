@@ -75,7 +75,7 @@ public class PdfViewController: OWSViewController {
         }
 
         view.addSubview(contentView)
-        contentView.ows_autoPinToSuperviewEdges()
+        contentView.autoPinEdgesToSuperviewEdges()
 
         // Setup top + bottom bars
 

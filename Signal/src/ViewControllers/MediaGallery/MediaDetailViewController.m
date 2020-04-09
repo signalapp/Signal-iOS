@@ -182,7 +182,7 @@ NS_ASSUME_NONNULL_BEGIN
         self.automaticallyAdjustsScrollViewInsets = NO;
     }
 
-    [scrollView ows_autoPinToSuperviewEdges];
+    [scrollView autoPinEdgesToSuperviewEdges];
 
     if (self.isAnimated) {
         if (self.attachmentStream.isValidImage) {

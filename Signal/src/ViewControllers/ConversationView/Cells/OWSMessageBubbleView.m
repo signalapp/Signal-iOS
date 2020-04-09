@@ -485,7 +485,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.viewConstraints addObjectsFromArray:[clipView autoPinToEdgesOfView:proxyView]];
 
     [clipView addSubview:buttonsView];
-    [self.viewConstraints addObjectsFromArray:[buttonsView ows_autoPinToSuperviewEdges]];
+    [self.viewConstraints addObjectsFromArray:[buttonsView autoPinEdgesToSuperviewEdges]];
 
     [self.bubbleView addPartnerView:shadowView];
     [self.bubbleView addPartnerView:clipView];

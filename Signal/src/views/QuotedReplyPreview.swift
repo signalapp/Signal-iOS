@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -64,7 +64,7 @@ class QuotedReplyPreview: UIView, OWSQuotedMessageViewDelegate {
         quotedMessageView.setCompressionResistanceHorizontalLow()
         quotedMessageView.backgroundColor = .clear
         self.addSubview(quotedMessageView)
-        quotedMessageView.ows_autoPinToSuperviewMargins()
+        quotedMessageView.autoPinEdgesToSuperviewMargins()
 
         updateHeight()
     }

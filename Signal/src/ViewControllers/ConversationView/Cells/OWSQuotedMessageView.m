@@ -339,7 +339,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
     }
 
     [innerBubbleView addSubview:contentView];
-    [contentView ows_autoPinToSuperviewEdges];
+    [contentView autoPinEdgesToSuperviewEdges];
 }
 
 - (UIView *)buildRemoteContentSourceView

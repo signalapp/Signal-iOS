@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSMessageTimerView.h"
@@ -55,7 +55,7 @@ const CGFloat kDisappearingMessageIconSize = 12.f;
 {
     self.imageView = [UIImageView new];
     [self addSubview:self.imageView];
-    [self.imageView ows_autoPinToSuperviewEdges];
+    [self.imageView autoPinEdgesToSuperviewEdges];
     [self.imageView autoSetDimension:ALDimensionWidth toSize:kDisappearingMessageIconSize];
     [self.imageView autoSetDimension:ALDimensionHeight toSize:kDisappearingMessageIconSize];
 }

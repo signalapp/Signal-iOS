@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "UIView+OWS.h"
@@ -95,28 +95,6 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value)
     NSArray<NSLayoutConstraint *> *result = @[
         [self autoPinEdgeToSuperviewMargin:ALEdgeTop],
         [self autoPinEdgeToSuperviewMargin:ALEdgeBottom],
-    ];
-    return result;
-}
-
-- (NSArray<NSLayoutConstraint *> *)ows_autoPinToSuperviewEdges
-{
-    NSArray<NSLayoutConstraint *> *result = @[
-        [self autoPinEdgeToSuperviewEdge:ALEdgeLeft],
-        [self autoPinEdgeToSuperviewEdge:ALEdgeRight],
-        [self autoPinEdgeToSuperviewEdge:ALEdgeTop],
-        [self autoPinEdgeToSuperviewEdge:ALEdgeBottom],
-    ];
-    return result;
-}
-
-- (NSArray<NSLayoutConstraint *> *)ows_autoPinToSuperviewMargins
-{
-    NSArray<NSLayoutConstraint *> *result = @[
-        [self autoPinTopToSuperviewMargin],
-        [self autoPinLeadingToSuperviewMargin],
-        [self autoPinTrailingToSuperviewMargin],
-        [self autoPinBottomToSuperviewMargin],
     ];
     return result;
 }
