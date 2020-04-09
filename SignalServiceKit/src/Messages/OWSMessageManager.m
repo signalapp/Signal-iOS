@@ -589,6 +589,14 @@ NS_ASSUME_NONNULL_BEGIN
             [TSGroupThread threadWithGroupId:dataMessage.group.id transaction:transaction];
 
         if (groupThread) {
+            BOOL isClosedGroup = groupThread.groupModel.groupType == closedGroup;
+            if (isClosedGroup && dataMessage.group.type == SSKProtoGroupContextTypeDeliver) {
+                // Only allow messages from members of the group
+                if (![groupThread isUserInGroup:envelope.source transaction:transaction]) {
+                    return;
+                }
+            }
+
             if (dataMessage.group.type != SSKProtoGroupContextTypeUpdate) {
                 if (![groupThread isLocalUserInGroupWithTransaction:transaction]) {
                     OWSLogInfo(@"Ignoring messages for left group.");
