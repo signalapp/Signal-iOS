@@ -30,9 +30,6 @@ public class SplashViewController: OWSViewController, ExperienceUpgradeView {
     public override func viewDidLoad() {
         super.viewDidLoad()
 
-        // TODO Xcode 11: Delete this once we're compiling only in Xcode 11
-        #if swift(>=5.1)
-
         // Don't allow interactive dismissal.
         if #available(iOS 13, *) {
             presentationController?.delegate = self
@@ -40,12 +37,6 @@ public class SplashViewController: OWSViewController, ExperienceUpgradeView {
         } else {
             addDismissGesture()
         }
-
-        #else
-
-        addDismissGesture()
-
-        #endif
     }
 
     // MARK: -
