@@ -72,9 +72,7 @@ public class SignalServiceProfile: NSObject {
                 // The capability has been retired from the service.
                 self.supportsUUID = true
             }
-            if !FeatureFlags.groupsV2SetCapability {
-                self.supportsGroupsV2 = false
-            } else if let value: Bool = try capabilities.optional(key: "gv2") {
+            if let value: Bool = try capabilities.optional(key: "gv2") {
                 self.supportsGroupsV2 = value
             } else {
                 if RemoteConfig.groupsV2CreateGroups {
