@@ -516,7 +516,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
         return firstly { () -> Promise<ServiceResponse> in
             return self.performServiceRequest(requestBuilder: requestBuilder,
-                                              groupId: nil,
+                                              groupId: groupId,
                                               behavior403: .removeFromGroup)
         }.map(on: DispatchQueue.global()) { (response: ServiceResponse) -> GroupsProtoGroupChanges in
             guard let groupChangesProtoData = response.responseObject as? Data else {
