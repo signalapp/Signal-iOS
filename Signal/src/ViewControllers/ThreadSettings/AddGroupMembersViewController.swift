@@ -231,13 +231,16 @@ extension AddGroupMembersViewController: GroupMemberViewDelegate {
         }
     }
 
+    func groupMemberViewGroupMemberCount() -> Int {
+        return (oldGroupModel.groupMembership.pendingAndNonPendingMemberCount +
+                newRecipientSet.count)
+    }
+
     func groupMemberViewIsGroupFull() -> Bool {
         guard groupThread.isGroupV2Thread else {
             return false
         }
-        let memberCount = (oldGroupModel.groupMembership.pendingAndNonPendingMemberCount +
-            newRecipientSet.count)
-        return memberCount >= GroupManager.maxGroupMemberCount
+        return groupMemberViewGroupMemberCount() >= GroupManager.maxGroupMemberCount
     }
 
     func groupMemberViewMaxMemberCount() -> UInt? {

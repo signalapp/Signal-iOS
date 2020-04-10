@@ -16,6 +16,8 @@ protocol GroupMemberViewDelegate: class {
 
     func groupMemberViewCanAddRecipient(_ recipient: PickedRecipient) -> Bool
 
+    func groupMemberViewGroupMemberCount() -> Int
+
     func groupMemberViewIsGroupFull() -> Bool
 
     func groupMemberViewIsPreExistingMember(_ recipient: PickedRecipient) -> Bool
@@ -138,8 +140,10 @@ public class BaseGroupMemberViewController: OWSViewController {
         memberCountWrapper.isHidden = false
         let format = NSLocalizedString("GROUP_MEMBER_COUNT_FORMAT",
                                        comment: "Format string for the group member count indicator. Embeds {{ %1$@ the number of members in the group, %2$@ the maximum number of members in the group. }}.")
+        let memberCount = groupMemberViewDelegate?.groupMemberViewGroupMemberCount() ?? 0
+
         memberCountLabel.text = String(format: format,
-                                       OWSFormat.formatInt(recipientSet.count),
+                                       OWSFormat.formatInt(memberCount),
                                        OWSFormat.formatUInt(GroupManager.maxGroupMemberCount))
     }
 
