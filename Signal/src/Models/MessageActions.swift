@@ -10,6 +10,7 @@ protocol MessageActionsDelegate: class {
     func messageActionsReplyToItem(_ conversationViewItem: ConversationViewItem)
     func messageActionsForwardItem(_ conversationViewItem: ConversationViewItem)
     func messageActionsStartedSelect(initialItem conversationViewItem: ConversationViewItem)
+    func messageActionsDeleteItem(_ conversationViewItem: ConversationViewItem)
 }
 
 // MARK: -
@@ -47,8 +48,8 @@ struct MessageActionBuilder {
         return MessageAction(.delete,
                              accessibilityLabel: NSLocalizedString("MESSAGE_ACTION_DELETE_MESSAGE", comment: "Action sheet button title"),
                              accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "delete_message"),
-                             block: { (_) in
-                                conversationViewItem.deleteAction()
+                             block: { [weak delegate] (_) in
+                                delegate?.messageActionsDeleteItem(conversationViewItem)
         })
     }
 

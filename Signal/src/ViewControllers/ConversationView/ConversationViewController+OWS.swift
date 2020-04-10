@@ -80,6 +80,54 @@ extension ConversationViewController: MessageActionsDelegate {
         self.conversationCell(conversationCell, didSelect: conversationViewItem)
     }
 
+    func messageActionsDeleteItem(_ conversationViewItem: ConversationViewItem) {
+        // TODO: Actual send flow for delete-for-everyone
+
+        guard FeatureFlags.deleteForEveryone,
+        let outgoingMessage = conversationViewItem.interaction as? TSOutgoingMessage,
+            Date.ows_millisecondTimestamp() - outgoingMessage.timestamp <= kHourInMs else {
+            conversationViewItem.deleteAction()
+            return
+        }
+
+        let actionSheetController = ActionSheetController(title: NSLocalizedString(
+            "MESSAGE_ACTION_DELETE_FOR_TITLE",
+            comment: "The title for the action sheet asking who the user wants to delete the message for."
+        ))
+
+        let deleteForEveryoneAction = ActionSheetAction(
+            title: NSLocalizedString(
+                "MESSAGE_ACTION_DELETE_FOR_EVERYONE",
+                comment: "The title for the action that deletes a message for all users in the conversation."
+            ),
+            style: .destructive
+        ) { [weak self] _ in
+            guard let self = self else { return }
+            let deleteMessage = TSOutgoingDeleteMessage(thread: self.thread, message: outgoingMessage)
+
+            self.databaseStorage.write { transaction in
+                outgoingMessage.updateWithRemotelyDeletedAndRemoveRenderableContent(with: transaction)
+                SSKEnvironment.shared.messageSenderJobQueue.add(message: deleteMessage.asPreparer, transaction: transaction)
+            }
+        }
+        actionSheetController.addAction(deleteForEveryoneAction)
+
+        let deleteForYouAction = ActionSheetAction(
+            title: NSLocalizedString(
+                "MESSAGE_ACTION_DELETE_FOR_YOU",
+                comment: "The title for the action that deletes a message for the local user only."
+            ),
+            style: .destructive
+        ) { _ in
+            conversationViewItem.deleteAction()
+        }
+        actionSheetController.addAction(deleteForYouAction)
+
+        actionSheetController.addAction(OWSActionSheets.cancelAction)
+
+        presentActionSheet(actionSheetController)
+    }
+
     func clearSelection() {
         selectedItems = [:]
         clearCollectionViewSelection()
@@ -514,13 +562,17 @@ extension ConversationViewController: MessageActionsViewControllerDelegate {
 
         switch messageActionsViewController.focusedInteraction {
         case let outgoingMessage as TSOutgoingMessage:
+            if outgoingMessage.wasRemotelyDeleted { return false }
+
             switch outgoingMessage.messageState {
             case .failed, .sending:
                 return false
             default:
                 return true
             }
-        case is TSIncomingMessage:
+        case let incomingMessage as TSIncomingMessage:
+            if incomingMessage.wasRemotelyDeleted { return false }
+
             return true
         default:
             return false

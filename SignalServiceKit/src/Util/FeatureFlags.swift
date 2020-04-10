@@ -231,6 +231,9 @@ public class FeatureFlags: NSObject {
 
     @objc
     public static let pinsForNewUsers = true
+
+    @objc
+    public static let deleteForEveryone = build.includes(.dev)
 }
 
 /// Flags that we'll leave in the code base indefinitely that are helpful for

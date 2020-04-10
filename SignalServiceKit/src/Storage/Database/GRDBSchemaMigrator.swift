@@ -63,6 +63,7 @@ public class GRDBSchemaMigrator: NSObject {
         case createInteractionAttachmentIdsIndex
         case addIsUuidCapableToUserProfiles
         case uploadTimestamp
+        case addRemoteDeleteToInteractions
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -442,6 +443,12 @@ public class GRDBSchemaMigrator: NSObject {
         migrator.registerMigration(MigrationId.uploadTimestamp.rawValue) { db in
             try db.alter(table: "model_TSAttachment") { (table: TableAlteration) -> Void in
                 table.add(column: "uploadTimestamp", .integer).notNull().defaults(to: 0)
+            }
+        }
+
+        migrator.registerMigration(MigrationId.addRemoteDeleteToInteractions.rawValue) { db in
+            try db.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
+                table.add(column: "wasRemotelyDeleted", .boolean).notNull().defaults(to: 0)
             }
         }
 

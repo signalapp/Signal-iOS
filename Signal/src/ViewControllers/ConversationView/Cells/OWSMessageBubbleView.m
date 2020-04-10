@@ -219,6 +219,16 @@ NS_ASSUME_NONNULL_BEGIN
     return self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage;
 }
 
+- (BOOL)wasRemotelyDeleted
+{
+    if (![self.viewItem.interaction isKindOfClass:[TSMessage class]]) {
+        return NO;
+    }
+
+    TSMessage *message = (TSMessage *)self.viewItem.interaction;
+    return message.wasRemotelyDeleted;
+}
+
 #pragma mark - Load
 
 - (void)configureViews
@@ -702,6 +712,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)configureBodyTextView
 {
+    if (self.wasRemotelyDeleted) {
+        self.bodyTextView.hidden = NO;
+        self.bodyTextView.text
+            = NSLocalizedString(@"THIS_MESSAGE_WAS_DELETED", "text indicating the message was remotely deleted");
+        self.bodyTextView.textColor = self.bodyTextColor;
+        self.bodyTextView.font = self.textMessageFont.ows_italic;
+        return;
+    }
+
     OWSAssertDebug(self.hasBodyText);
 
     BOOL shouldIgnoreEvents = NO;

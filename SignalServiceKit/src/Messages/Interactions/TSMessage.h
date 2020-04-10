@@ -39,6 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) BOOL isViewOnceMessage;
 @property (nonatomic, readonly) BOOL isViewOnceComplete;
+@property (nonatomic, readonly) BOOL wasRemotelyDeleted;
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
                        timestamp:(uint64_t)timestamp
@@ -139,6 +140,10 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 #pragma mark - View Once
 
 - (void)updateWithViewOnceCompleteAndRemoveRenderableContentWithTransaction:(SDSAnyWriteTransaction *)transaction;
+
+#pragma mark - Remote Delete
+
+- (void)updateWithRemotelyDeletedAndRemoveRenderableContentWithTransaction:(SDSAnyWriteTransaction *)transaction;
 
 @end
 

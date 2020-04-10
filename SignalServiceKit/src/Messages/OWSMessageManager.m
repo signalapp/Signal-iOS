@@ -1406,6 +1406,28 @@ NS_ASSUME_NONNULL_BEGIN
                                                 reactor:envelope.sourceAddress
                                               timestamp:syncMessage.sent.timestamp
                                             transaction:transaction];
+        } else if (dataMessage.delete != nil) {
+            TSThread *_Nullable thread = nil;
+
+            NSData *_Nullable groupId = [self groupIdForDataMessage:dataMessage];
+            if (groupId != nil) {
+                thread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
+            } else {
+                thread = [TSContactThread getOrCreateThreadWithContactAddress:syncMessage.sent.destinationAddress
+                                                                  transaction:transaction];
+            }
+            if (thread == nil) {
+                OWSFailDebug(@"Could not process delete from sync transcript.");
+                return;
+            }
+            BOOL deleted = [TSMessage tryToRemotelyDeleteMessageFromAddress:envelope.sourceAddress
+                                                            sentAtTimestamp:dataMessage.delete.targetSentTimestamp
+                                                             threadUniqueId:thread.uniqueId
+                                                            serverTimestamp:envelope.serverTimestamp
+                                                                transaction:transaction];
+            if (!deleted) {
+                OWSLogError(@"Failed to remotely delete message: %llu", dataMessage.delete.targetSentTimestamp);
+            }
         } else {
             [OWSRecordTranscriptJob
                 processIncomingSentMessageTranscript:transcript
@@ -1757,6 +1779,18 @@ NS_ASSUME_NONNULL_BEGIN
                                             reactor:envelope.sourceAddress
                                           timestamp:timestamp
                                         transaction:transaction];
+        return nil;
+    }
+
+    if (dataMessage.delete) {
+        BOOL deleted = [TSMessage tryToRemotelyDeleteMessageFromAddress:envelope.sourceAddress
+                                                        sentAtTimestamp:dataMessage.delete.targetSentTimestamp
+                                                         threadUniqueId:thread.uniqueId
+                                                        serverTimestamp:envelope.serverTimestamp
+                                                            transaction:transaction];
+        if (!deleted) {
+            OWSLogError(@"Failed to remotely delete message: %llu", dataMessage.delete.targetSentTimestamp);
+        }
         return nil;
     }
 

@@ -44,6 +44,7 @@ public enum AppNotificationAction: CaseIterable {
 
 public struct AppNotificationUserInfoKey {
     public static let threadId = "Signal.AppNotificationsUserInfoKey.threadId"
+    public static let messageId = "Signal.AppNotificationsUserInfoKey.messageId"
     public static let callBackUuid = "Signal.AppNotificationsUserInfoKey.callBackUuid"
     public static let callBackPhoneNumber = "Signal.AppNotificationsUserInfoKey.callBackPhoneNumber"
     public static let localCallId = "Signal.AppNotificationsUserInfoKey.localCallId"
@@ -136,6 +137,7 @@ protocol NotificationPresenterAdaptee: class {
     func notify(category: AppNotificationCategory, title: String?, body: String, threadIdentifier: String?, userInfo: [AnyHashable: Any], sound: OWSSound?, replacingIdentifier: String?)
 
     func cancelNotifications(threadId: String)
+    func cancelNotifications(messageId: String)
     func clearAllNotifications()
 
     func notifyUserForGRDBMigration()
@@ -414,7 +416,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             category = .incomingMessageWithActions
         }
         let userInfo = [
-            AppNotificationUserInfoKey.threadId: thread.uniqueId
+            AppNotificationUserInfoKey.threadId: thread.uniqueId,
+            AppNotificationUserInfoKey.messageId: incomingMessage.uniqueId
         ]
 
         DispatchQueue.main.async {
@@ -587,7 +590,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
 
         let threadId = thread.uniqueId
         let userInfo = [
-            AppNotificationUserInfoKey.threadId: threadId
+            AppNotificationUserInfoKey.threadId: threadId,
+            AppNotificationUserInfoKey.messageId: infoOrErrorMessage.uniqueId
         ]
 
         transaction.addAsyncCompletion {
@@ -618,6 +622,11 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
     @objc
     public func cancelNotifications(threadId: String) {
         adaptee.cancelNotifications(threadId: threadId)
+    }
+
+    @objc
+    public func cancelNotifications(messageId: String) {
+        adaptee.cancelNotifications(messageId: messageId)
     }
 
     @objc

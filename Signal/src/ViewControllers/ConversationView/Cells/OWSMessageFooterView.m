@@ -148,7 +148,7 @@ NS_ASSUME_NONNULL_BEGIN
                 break;
         }
 
-        if (statusIndicatorImage == nil) {
+        if (statusIndicatorImage == nil || outgoingMessage.wasRemotelyDeleted) {
             [self hideStatusIndicator];
         } else {
             [self showStatusIndicatorWithIcon:statusIndicatorImage textColor:textColor];

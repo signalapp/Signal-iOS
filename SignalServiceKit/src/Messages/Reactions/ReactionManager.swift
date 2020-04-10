@@ -93,6 +93,11 @@ public class ReactionManager: NSObject {
             return
         }
 
+        guard !message.wasRemotelyDeleted else {
+            Logger.info("Ignoring reaction for a message that was remotely deleted")
+            return
+        }
+
         // If this is a reaction removal, we want to remove *any* reaction from this author
         // on this message, regardless of the specified emoji.
         if reaction.remove {

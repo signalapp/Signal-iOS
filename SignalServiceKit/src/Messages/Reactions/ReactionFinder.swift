@@ -35,7 +35,7 @@ protocol ReactionFinderAdapter {
     func allUniqueIds(transaction: ReadTransaction) -> [String]
 
     /// Delete all reaction records associated with this message
-    func deleteAllReactions(transaction: WriteTransaction) throws
+    func deleteAllReactions(transaction: WriteTransaction)
 }
 
 // MARK: -
@@ -125,12 +125,12 @@ public class ReactionFinder: NSObject, ReactionFinderAdapter {
     }
 
     @objc
-    public func deleteAllReactions(transaction: SDSAnyWriteTransaction) throws {
+    public func deleteAllReactions(transaction: SDSAnyWriteTransaction) {
         switch transaction.writeTransaction {
         case .yapWrite(let yapWrite):
-            return try yapAdapter.deleteAllReactions(transaction: yapWrite)
+            return yapAdapter.deleteAllReactions(transaction: yapWrite)
         case .grdbWrite(let grdbWrite):
-            return try grdbAdapter.deleteAllReactions(transaction: grdbWrite)
+            return grdbAdapter.deleteAllReactions(transaction: grdbWrite)
         }
     }
 }
@@ -315,7 +315,7 @@ class YAPDBReactionFinderAdapter: NSObject, ReactionFinderAdapter {
         return uniqueIds
     }
 
-    func deleteAllReactions(transaction: YapDatabaseReadWriteTransaction) throws {
+    func deleteAllReactions(transaction: YapDatabaseReadWriteTransaction) {
         enumerateReactions(transaction: transaction) { reaction, _ in
             reaction.anyRemove(transaction: transaction.asAnyWrite)
         }
@@ -520,7 +520,7 @@ struct GRDBReactionFinderAdapter: ReactionFinderAdapter {
         }
     }
 
-    func deleteAllReactions(transaction: GRDBWriteTransaction) throws {
+    func deleteAllReactions(transaction: GRDBWriteTransaction) {
         let sql = """
             DELETE FROM \(ReactionRecord.databaseTableName)
             WHERE \(reactionColumn: .uniqueMessageId) = ?

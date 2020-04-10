@@ -2273,6 +2273,13 @@ typedef enum : NSUInteger {
         return NO;
     }
 
+    if ([viewItem.interaction isKindOfClass:[TSMessage class]]) {
+        TSMessage *message = (TSMessage *)viewItem.interaction;
+        if (message.wasRemotelyDeleted) {
+            return NO;
+        }
+    }
+
     if (viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)viewItem.interaction;
         if (outgoingMessage.messageState == TSOutgoingMessageStateFailed) {
