@@ -206,7 +206,7 @@ public class FeatureFlags: NSObject {
     public static let linkedPhones = build.includes(.internalPreview)
 
     @objc
-    public static let isUsingProductionService = true
+    public static let isUsingProductionService = false
 
     @objc
     public static let versionedProfiledFetches = groupsV2
