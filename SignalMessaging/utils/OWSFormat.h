@@ -6,6 +6,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSFormat : NSObject
 
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
 @property (nonatomic, class, readonly) NSNumberFormatter *defaultNumberFormatter;

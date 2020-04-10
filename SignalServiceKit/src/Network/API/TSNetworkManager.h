@@ -24,6 +24,7 @@ typedef void (^TSNetworkManagerFailure)(NSURLSessionDataTask *task, NSError *err
 
 @interface TSNetworkManager : NSObject
 
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initDefault;

@@ -37,6 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 // See comments in `OWSBackupIO`.
 @property (nonatomic, nullable) NSNumber *uncompressedDataLength;
 
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
 @end
@@ -87,6 +88,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) NSUInteger totalItemCount;
 
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
 @end
@@ -219,6 +221,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) NSString *relativeFilePath;
 @property (nonatomic) OWSBackupEncryptedItem *encryptedItem;
 
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
 @end
@@ -818,8 +821,8 @@ NS_ASSUME_NONNULL_BEGIN
                 NSString *recordName = record.recordID.recordName;
                 OWSAssertDebug(recordName.length > 0);
 
-                OWSBackupExportItem *exportItem = [OWSBackupExportItem new];
-                exportItem.encryptedItem = attachmentExport.encryptedItem;
+                OWSBackupExportItem *exportItem =
+                    [[OWSBackupExportItem alloc] initWithEncryptedItem:attachmentExport.encryptedItem];
                 exportItem.recordName = recordName;
                 exportItem.attachmentExport = attachmentExport;
                 if (![SDS fitsInInt64WithNSNumber:exportItem.uncompressedDataLength]) {
@@ -892,8 +895,8 @@ NS_ASSUME_NONNULL_BEGIN
     attachmentExport.encryptedItem = encryptedItem;
     attachmentExport.relativeFilePath = lastBackupFragment.relativeFilePath;
 
-    OWSBackupExportItem *exportItem = [OWSBackupExportItem new];
-    exportItem.encryptedItem = attachmentExport.encryptedItem;
+    OWSBackupExportItem *exportItem =
+        [[OWSBackupExportItem alloc] initWithEncryptedItem:attachmentExport.encryptedItem];
     exportItem.recordName = recordName;
     exportItem.attachmentExport = attachmentExport;
     [self.savedAttachmentItems addObject:exportItem];
@@ -920,8 +923,7 @@ NS_ASSUME_NONNULL_BEGIN
         return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Could not encrypt local profile avatar.")];
     }
 
-    OWSBackupExportItem *exportItem = [OWSBackupExportItem new];
-    exportItem.encryptedItem = encryptedItem;
+    OWSBackupExportItem *exportItem = [[OWSBackupExportItem alloc] initWithEncryptedItem:encryptedItem];
 
     NSString *recordName =
         [OWSBackupAPI recordNameForEphemeralFileWithRecipientId:self.recipientId label:@"local-profile-avatar"];
@@ -944,9 +946,7 @@ NS_ASSUME_NONNULL_BEGIN
         return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Could not generate manifest.")];
     }
 
-    OWSBackupExportItem *exportItem = [OWSBackupExportItem new];
-    exportItem.encryptedItem = encryptedItem;
-
+    OWSBackupExportItem *exportItem = [[OWSBackupExportItem alloc] initWithEncryptedItem:encryptedItem];
 
     NSString *recordName = [OWSBackupAPI recordNameForManifestWithRecipientId:self.recipientId];
     CKRecord *record =

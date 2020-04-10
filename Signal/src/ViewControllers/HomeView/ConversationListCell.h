@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -16,6 +16,14 @@ NS_ASSUME_NONNULL_BEGIN
                   isBlocked:(BOOL)isBlocked
             overrideSnippet:(nullable NSAttributedString *)overrideSnippet
                overrideDate:(nullable NSDate *)overrideDate;
+
++ (instancetype)new NS_UNAVAILABLE;
+- (instancetype)init NS_UNAVAILABLE;
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
+
+- (instancetype)initWithStyle:(UITableViewCellStyle)style
+              reuseIdentifier:(nullable NSString *)reuseIdentifier NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithFrame:(CGRect)frame NS_DESIGNATED_INITIALIZER;
 
 @end
 

@@ -37,6 +37,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 // only be accessed on the main thread.
 @property (nonatomic) BOOL isUpdatingProfileOnService;
 
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithDatabaseStorage:(SDSDatabaseStorage *)databaseStorage NS_DESIGNATED_INITIALIZER;

@@ -30,6 +30,7 @@ extern NSString *const kIncomingMessageMarkedAsReadNotification;
 // Map of "recipient"-to-"read timestamp".
 @property (nonatomic, readonly) NSDictionary<SignalServiceAddress *, NSNumber *> *recipientMap;
 
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;

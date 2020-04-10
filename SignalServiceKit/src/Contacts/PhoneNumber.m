@@ -9,6 +9,7 @@
 #import <libPhoneNumber_iOS/NBPhoneMetaData.h>
 #import <libPhoneNumber_iOS/NBPhoneNumber.h>
 #import <libPhoneNumber_iOS/NBPhoneNumberUtil.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -87,7 +88,15 @@ static NSString *const RPDefaultsKeyPhoneNumberCanonical = @"RPDefaultsKeyPhoneN
     countryCode = [locale objectForKey:NSLocaleCountryCode];
 #endif
     if (!countryCode) {
-        OWSFailDebugUnlessRunningTests(@"Could not identify country code for locale: %@", locale);
+        if (Platform.isSimulator) {
+            OWSLogVerbose(@"localeIdentifier: %@", locale.localeIdentifier);
+            OWSLogVerbose(@"languageCode: %@", locale.languageCode);
+            OWSLogVerbose(@"countryCode: %@", locale.countryCode);
+            OWSLogVerbose(@"variantCode: %@", locale.variantCode);
+            OWSLogWarn(@"Could not identify country code for locale: %@", locale);
+        } else {
+            OWSFailDebugUnlessRunningTests(@"Could not identify country code for locale: %@", locale);
+        }
         countryCode = @"US";
     }
     return countryCode;

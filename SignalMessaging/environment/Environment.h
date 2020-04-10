@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalServiceKit/SSKEnvironment.h>
@@ -25,6 +25,7 @@
 // TODO: Rename to SMGEnvironment?
 @interface Environment : NSObject
 
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithAudioSession:(OWSAudioSession *)audioSession

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSFingerprintBuilder : NSObject
 
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithAccountManager:(TSAccountManager *)accountManager
                        contactsManager:(id<ContactsManagerProtocol>)contactsManager NS_DESIGNATED_INITIALIZER;

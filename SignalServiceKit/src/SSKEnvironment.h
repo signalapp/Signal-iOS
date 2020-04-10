@@ -54,6 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface SSKEnvironment : NSObject
 
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithContactsManager:(id<ContactsManagerProtocol>)contactsManager

@@ -138,8 +138,6 @@ NSString *NSStringForContactAddressType(OWSContactAddressType value);
 // "Profile" avatars should _not_ be saved to device contacts.
 @property (nonatomic, readonly) BOOL isProfileAvatar;
 
-- (instancetype)init NS_UNAVAILABLE;
-
 - (void)normalize;
 
 - (BOOL)ows_isValid;

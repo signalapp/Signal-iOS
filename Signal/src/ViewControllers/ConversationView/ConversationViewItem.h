@@ -191,6 +191,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState value);
 @interface ConversationInteractionViewItem
     : NSObject <ConversationViewItem, ConversationViewLayoutItem, OWSAudioPlayerDelegate>
 
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithInteraction:(TSInteraction *)interaction
                              thread:(TSThread *)thread

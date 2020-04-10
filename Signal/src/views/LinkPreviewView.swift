@@ -853,7 +853,7 @@ public class LinkPreviewView: UIStackView {
             borderView.strokeThickness = CGHairlineWidthFraction(1.8)
             heroImageView.addSubview(borderView)
             bubbleView.addPartnerView(borderView)
-            borderView.ows_autoPinToSuperviewEdges()
+            borderView.autoPinEdgesToSuperviewEdges()
         }
         if let sentBodyView = self.sentBodyView {
             let borderView = OWSBubbleShapeView(draw: ())
@@ -862,7 +862,7 @@ public class LinkPreviewView: UIStackView {
             borderView.strokeThickness = CGHairlineWidthFraction(1.8)
             sentBodyView.addSubview(borderView)
             bubbleView.addPartnerView(borderView)
-            borderView.ows_autoPinToSuperviewEdges()
+            borderView.autoPinEdgesToSuperviewEdges()
         } else {
             owsFailDebug("Missing sentBodyView")
         }

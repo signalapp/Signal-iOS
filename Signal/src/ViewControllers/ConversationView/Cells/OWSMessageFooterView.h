@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -9,6 +9,11 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol ConversationViewItem;
 
 @interface OWSMessageFooterView : UIStackView
+
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
+- (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 
 - (void)configureWithConversationViewItem:(id<ConversationViewItem>)viewItem
                         conversationStyle:(ConversationStyle *)conversationStyle

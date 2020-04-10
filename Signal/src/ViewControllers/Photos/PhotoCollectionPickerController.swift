@@ -119,7 +119,7 @@ class PhotoCollectionPickerController: OWSTableViewController, PhotoLibraryDeleg
         }
 
         cell.contentView.addSubview(hStackView)
-        hStackView.ows_autoPinToSuperviewMargins()
+        hStackView.autoPinEdgesToSuperviewMargins()
 
         return cell
     }

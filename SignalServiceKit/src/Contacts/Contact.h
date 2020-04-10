@@ -50,8 +50,8 @@ NS_ASSUME_NONNULL_BEGIN
                           emails:(NSArray<NSString *> *)emails
                  imageDataToHash:(nullable NSData *)imageDataToHash NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)init NS_UNAVAILABLE;
 + (instancetype)new NS_UNAVAILABLE;
+- (instancetype)init NS_UNAVAILABLE;
 
 + (nullable Contact *)contactWithVCardData:(NSData *)data;
 + (nullable CNContact *)cnContactWithVCardData:(NSData *)data;

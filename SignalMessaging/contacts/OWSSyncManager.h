@@ -20,6 +20,7 @@ extern NSString *const OWSSyncManagerKeysSyncDidCompleteNotification;
 
 + (SDSKeyValueStore *)keyValueStore;
 
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initDefault NS_DESIGNATED_INITIALIZER;

@@ -387,15 +387,15 @@ class MessageDetailViewController: OWSViewController {
 
         let messageView: OWSMessageView
         if viewItem.messageCellType == .stickerMessage {
-            let messageStickerView = OWSMessageStickerView(frame: CGRect.zero)
+            let messageStickerView = OWSMessageStickerView()
             messageStickerView.delegate = self
             messageView = messageStickerView
         } else if viewItem.messageCellType == .viewOnce {
-            let messageViewOnceView = OWSMessageViewOnceView(frame: CGRect.zero)
+            let messageViewOnceView = OWSMessageViewOnceView()
             messageViewOnceView.delegate = self
             messageView = messageViewOnceView
         } else {
-            let messageBubbleView = OWSMessageBubbleView(frame: CGRect.zero)
+            let messageBubbleView = OWSMessageBubbleView()
             messageBubbleView.delegate = self
             messageView = messageBubbleView
         }

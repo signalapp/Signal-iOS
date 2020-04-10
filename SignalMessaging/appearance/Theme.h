@@ -20,6 +20,7 @@ extern NSString *const ThemeDidChangeNotification;
 
 + (SDSKeyValueStore *)keyValueStore;
 
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
 @property (class, readonly, atomic) BOOL isDarkThemeEnabled;

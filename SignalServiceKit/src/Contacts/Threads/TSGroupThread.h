@@ -26,6 +26,7 @@ extern NSString *const TSGroupThread_NotificationKey_UniqueId;
                 mutedUntilDate:(nullable NSDate *)mutedUntilDate
          shouldThreadBeVisible:(BOOL)shouldThreadBeVisible NS_UNAVAILABLE;
 
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
 

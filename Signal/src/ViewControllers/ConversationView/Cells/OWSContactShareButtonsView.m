@@ -130,7 +130,7 @@ NS_ASSUME_NONNULL_BEGIN
     label.textColor = Theme.conversationButtonTextColor;
     label.textAlignment = NSTextAlignmentCenter;
     [self addSubview:label];
-    [label ows_autoPinToSuperviewEdges];
+    [label autoPinEdgesToSuperviewEdges];
     [label autoSetDimension:ALDimensionHeight toSize:OWSContactShareButtonsView.buttonHeight];
 
     self.userInteractionEnabled = YES;

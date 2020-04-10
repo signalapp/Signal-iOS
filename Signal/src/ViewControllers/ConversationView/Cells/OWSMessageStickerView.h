@@ -20,11 +20,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak) id<OWSMessageStickerViewDelegate> delegate;
 
-- (instancetype)init NS_UNAVAILABLE;
-
-- (instancetype)initWithFrame:(CGRect)frame NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
+- (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 
 @end
 

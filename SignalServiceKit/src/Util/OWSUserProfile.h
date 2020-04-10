@@ -35,6 +35,7 @@ extern NSString *const kNSNotificationKey_ProfileGroupId;
 // This filename is relative to OWSProfileManager.profileAvatarsDirPath.
 @property (atomic, readonly, nullable) NSString *avatarFileName;
 
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;

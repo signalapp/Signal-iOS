@@ -28,6 +28,7 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
 @property (nonatomic, readonly, nullable) NSNumber *attachmentId;
 @property (nonatomic, readonly, nullable) NSString *attachmentIdString;
 
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithAcl:(NSString *)acl

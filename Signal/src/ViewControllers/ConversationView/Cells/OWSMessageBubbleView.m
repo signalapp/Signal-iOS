@@ -79,20 +79,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-- (instancetype)initWithFrame:(CGRect)frame
+- (instancetype)init
 {
-    self = [super initWithFrame:frame];
+    self = [super initWithFrame:CGRectZero];
 
     if (!self) {
         return self;
     }
 
-    [self commontInit];
+    [self commonInit];
 
     return self;
 }
 
-- (void)commontInit
+- (void)commonInit
 {
     // Ensure only called once.
     OWSAssertDebug(!self.bodyTextView);
@@ -485,7 +485,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.viewConstraints addObjectsFromArray:[clipView autoPinToEdgesOfView:proxyView]];
 
     [clipView addSubview:buttonsView];
-    [self.viewConstraints addObjectsFromArray:[buttonsView ows_autoPinToSuperviewEdges]];
+    [self.viewConstraints addObjectsFromArray:[buttonsView autoPinEdgesToSuperviewEdges]];
 
     [self.bubbleView addPartnerView:shadowView];
     [self.bubbleView addPartnerView:clipView];

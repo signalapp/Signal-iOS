@@ -18,6 +18,7 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 
 @interface OWSRequestFactory : NSObject
 
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
 + (TSRequest *)enable2FARequestWithPin:(NSString *)pin;

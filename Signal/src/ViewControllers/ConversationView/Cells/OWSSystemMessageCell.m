@@ -66,6 +66,16 @@ typedef void (^SystemMessageActionBlock)(void);
 
 @implementation OWSSystemMessageCell
 
+- (instancetype)init
+{
+    return [self initWithFrame:CGRectZero];
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    return [self initWithFrame:CGRectZero];
+}
+
 // `[UIView init]` invokes `[self initWithFrame:...]`.
 - (instancetype)initWithFrame:(CGRect)frame
 {
@@ -691,7 +701,7 @@ typedef void (^SystemMessageActionBlock)(void);
 - (void)showUpgradeAppUI
 {
     NSString *url = @"https://itunes.apple.com/us/app/signal-private-messenger/id874139669?mt=8";
-    [UIApplication.sharedApplication openURL:[NSURL URLWithString:url]];
+    [UIApplication.sharedApplication openURL:[NSURL URLWithString:url] options:@{} completionHandler:nil];
 }
 
 #pragma mark - Reuse

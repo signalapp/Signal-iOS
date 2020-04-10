@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -9,6 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 // Indicates whether any write failed.
 @property (nonatomic, readonly) BOOL hasError;
 
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithOutputStream:(NSOutputStream *)outputStream;

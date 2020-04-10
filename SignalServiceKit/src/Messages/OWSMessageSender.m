@@ -138,6 +138,7 @@ void AssertIsOnSendingQueue()
  */
 @interface OWSSendMessageOperation : OWSOperation
 
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithMessage:(TSOutgoingMessage *)message
                   messageSender:(OWSMessageSender *)messageSender

@@ -17,6 +17,7 @@ extern uint32_t const OWSDevicePrimaryDeviceId;
 
 + (SDSKeyValueStore *)keyValueStore;
 
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
 + (instancetype)sharedManager;
@@ -39,6 +40,7 @@ extern uint32_t const OWSDevicePrimaryDeviceId;
 @property (nonatomic, readonly) NSDate *createdAt;
 @property (nonatomic, readonly) NSDate *lastSeenAt;
 
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 - (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;

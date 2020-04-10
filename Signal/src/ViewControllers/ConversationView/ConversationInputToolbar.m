@@ -509,7 +509,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     self.quotedReplyWrapper.hidden = NO;
     self.quotedReplyWrapper.layoutMargins = UIEdgeInsetsZero;
     [self.quotedReplyWrapper addSubview:quotedMessagePreview];
-    [quotedMessagePreview ows_autoPinToSuperviewMargins];
+    [quotedMessagePreview autoPinEdgesToSuperviewMargins];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, quotedMessagePreview);
 
     self.linkPreviewView.hasAsymmetricalRounding = !self.quotedReply;
@@ -1377,7 +1377,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 
     self.linkPreviewWrapper.hidden = NO;
     [self.linkPreviewWrapper addSubview:linkPreviewView];
-    [linkPreviewView ows_autoPinToSuperviewMargins];
+    [linkPreviewView autoPinEdgesToSuperviewMargins];
 }
 
 - (void)clearLinkPreviewStateAndView

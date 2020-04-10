@@ -52,20 +52,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-- (instancetype)initWithFrame:(CGRect)frame
+- (instancetype)init
 {
-    self = [super initWithFrame:frame];
+    self = [super initWithFrame:CGRectZero];
 
     if (!self) {
         return self;
     }
 
-    [self commontInit];
+    [self commonInit];
 
     return self;
 }
 
-- (void)commontInit
+- (void)commonInit
 {
     // Ensure only called once.
     OWSAssertDebug(!self.stackView);
@@ -87,7 +87,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.senderNameContainer = [UIView new];
     self.senderNameContainer.layoutMargins = UIEdgeInsetsMake(0, 0, self.senderNameBottomSpacing, 0);
     [self.senderNameContainer addSubview:self.senderNameLabel];
-    [self.senderNameLabel ows_autoPinToSuperviewMargins];
+    [self.senderNameLabel autoPinEdgesToSuperviewMargins];
 
     self.footerView = [OWSMessageFooterView new];
 }

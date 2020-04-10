@@ -20,13 +20,9 @@ public class GifPickerNavigationViewController: OWSNavigationController {
     }()
 
     @objc
-    init() {
-        super.init(owsNavbar: ())
+    override init() {
+        super.init()
         pushViewController(gifPickerViewController, animated: false)
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 }
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -113,7 +113,6 @@ public class VideoPlayerView: UIView {
     }
 
     public override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey: Any]?, context: UnsafeMutableRawPointer?) {
-
 
         delegate?.videoPlayerViewStatusDidChange(self)
     }
@@ -249,7 +248,7 @@ public class PlayerProgressBar: UIView {
         backgroundColor = UIColor.lightGray.withAlphaComponent(0.5)
         if !UIAccessibility.isReduceTransparencyEnabled {
             addSubview(blurEffectView)
-            blurEffectView.ows_autoPinToSuperviewEdges()
+            blurEffectView.autoPinEdgesToSuperviewEdges()
         }
 
         // Configure controls

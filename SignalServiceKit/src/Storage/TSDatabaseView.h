@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSStorage.h"
@@ -33,6 +33,7 @@ extern NSString *const TSLazyRestoreAttachmentsDatabaseViewExtensionName;
 
 @interface TSDatabaseView : NSObject
 
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
 #pragma mark - Views
