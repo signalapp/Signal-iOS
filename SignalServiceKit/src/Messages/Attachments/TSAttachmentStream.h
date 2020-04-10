@@ -22,6 +22,8 @@ typedef void (^OWSThumbnailFailure)(void);
 @interface TSAttachmentStream : TSAttachment
 
 - (instancetype)initWithServerId:(UInt64)serverId
+                          cdnKey:(NSString *)cdnKey
+                       cdnNumber:(UInt32)cdnNumber
                    encryptionKey:(NSData *)encryptionKey
                        byteCount:(UInt32)byteCount
                      contentType:(NSString *)contentType
@@ -47,6 +49,8 @@ typedef void (^OWSThumbnailFailure)(void);
                       blurHash:(nullable NSString *)blurHash
                      byteCount:(unsigned int)byteCount
                        caption:(nullable NSString *)caption
+                        cdnKey:(NSString *)cdnKey
+                     cdnNumber:(UInt32)cdnNumber
                    contentType:(NSString *)contentType
                  encryptionKey:(nullable NSData *)encryptionKey
                       serverId:(unsigned long long)serverId
@@ -77,6 +81,8 @@ typedef void (^OWSThumbnailFailure)(void);
                         blurHash:(nullable NSString *)blurHash
                        byteCount:(unsigned int)byteCount
                          caption:(nullable NSString *)caption
+                          cdnKey:(NSString *)cdnKey
+                       cdnNumber:(unsigned int)cdnNumber
                      contentType:(NSString *)contentType
                    encryptionKey:(nullable NSData *)encryptionKey
                         serverId:(unsigned long long)serverId
@@ -91,7 +97,7 @@ typedef void (^OWSThumbnailFailure)(void);
               isValidImageCached:(nullable NSNumber *)isValidImageCached
               isValidVideoCached:(nullable NSNumber *)isValidVideoCached
            localRelativeFilePath:(nullable NSString *)localRelativeFilePath
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:attachmentType:blurHash:byteCount:caption:contentType:encryptionKey:serverId:sourceFilename:uploadTimestamp:cachedAudioDurationSeconds:cachedImageHeight:cachedImageWidth:creationTimestamp:digest:isUploaded:isValidImageCached:isValidVideoCached:localRelativeFilePath:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:attachmentType:blurHash:byteCount:caption:cdnKey:cdnNumber:contentType:encryptionKey:serverId:sourceFilename:uploadTimestamp:cachedAudioDurationSeconds:cachedImageHeight:cachedImageWidth:creationTimestamp:digest:isUploaded:isValidImageCached:isValidVideoCached:localRelativeFilePath:));
 
 // clang-format on
 
@@ -174,6 +180,8 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:atta
 - (void)updateAsUploadedWithEncryptionKey:(NSData *)encryptionKey
                                    digest:(NSData *)digest
                                  serverId:(UInt64)serverId
+                                   cdnKey:(NSString *)cdnKey
+                                cdnNumber:(UInt32)cdnNumber
                           uploadTimestamp:(unsigned long long)uploadTimestamp
                               transaction:(SDSAnyWriteTransaction *)transaction;
 

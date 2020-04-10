@@ -24,11 +24,9 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
 // TSAttachment is a base class for TSAttachmentPointer (a yet-to-be-downloaded
 // incoming attachment) and TSAttachmentStream (an outgoing or already-downloaded
 // incoming attachment).
-//
-// The attachmentSchemaVersion and serverId properties only apply to
-// TSAttachmentPointer, which can be distinguished by the isDownloaded
-// property.
 @property (atomic, readwrite) UInt64 serverId;
+@property (atomic) NSString *cdnKey;
+@property (atomic) UInt32 cdnNumber;
 @property (atomic, readwrite, nullable) NSData *encryptionKey;
 @property (nonatomic, readonly) NSString *contentType;
 @property (nonatomic) TSAttachmentType attachmentType;
@@ -69,6 +67,8 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
 // This constructor is used for new instances of TSAttachmentPointer,
 // i.e. undownloaded incoming attachments.
 - (instancetype)initWithServerId:(UInt64)serverId
+                          cdnKey:(NSString *)cdnKey
+                       cdnNumber:(UInt32)cdnNumber
                    encryptionKey:(NSData *)encryptionKey
                        byteCount:(UInt32)byteCount
                      contentType:(NSString *)contentType
@@ -112,12 +112,14 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
                         blurHash:(nullable NSString *)blurHash
                        byteCount:(unsigned int)byteCount
                          caption:(nullable NSString *)caption
+                          cdnKey:(NSString *)cdnKey
+                       cdnNumber:(unsigned int)cdnNumber
                      contentType:(NSString *)contentType
                    encryptionKey:(nullable NSData *)encryptionKey
                         serverId:(unsigned long long)serverId
                   sourceFilename:(nullable NSString *)sourceFilename
                  uploadTimestamp:(unsigned long long)uploadTimestamp
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:attachmentType:blurHash:byteCount:caption:contentType:encryptionKey:serverId:sourceFilename:uploadTimestamp:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:attachmentType:blurHash:byteCount:caption:cdnKey:cdnNumber:contentType:encryptionKey:serverId:sourceFilename:uploadTimestamp:));
 
 // clang-format on
 

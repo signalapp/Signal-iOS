@@ -3853,6 +3853,8 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                 UInt32 filesize = 64;
                 TSAttachmentPointer *pointer =
                     [[TSAttachmentPointer alloc] initWithServerId:237391539706350548
+                                                           cdnKey:@""
+                                                        cdnNumber:0
                                                               key:[self createRandomNSDataOfSize:filesize]
                                                            digest:nil
                                                         byteCount:filesize
@@ -4737,6 +4739,8 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         UInt32 filesize = 64;
         TSAttachmentPointer *attachmentPointer =
             [[TSAttachmentPointer alloc] initWithServerId:237391539706350548
+                                                   cdnKey:@""
+                                                cdnNumber:0
                                                       key:[self createRandomNSDataOfSize:filesize]
                                                    digest:nil
                                                 byteCount:filesize

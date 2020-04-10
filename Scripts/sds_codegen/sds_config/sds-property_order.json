@@ -8,6 +8,8 @@
     "AttachmentRecord.cachedImageHeight": 11, 
     "AttachmentRecord.cachedImageWidth": 12, 
     "AttachmentRecord.caption": 5, 
+    "AttachmentRecord.cdnKey": 24, 
+    "AttachmentRecord.cdnNumber": 25, 
     "AttachmentRecord.contentType": 6, 
     "AttachmentRecord.creationTimestamp": 13, 
     "AttachmentRecord.digest": 14, 

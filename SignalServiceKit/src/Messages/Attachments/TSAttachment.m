@@ -33,6 +33,8 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
 // This constructor is used for new instances of TSAttachmentPointer,
 // i.e. undownloaded incoming attachments.
 - (instancetype)initWithServerId:(UInt64)serverId
+                          cdnKey:(NSString *)cdnKey
+                       cdnNumber:(UInt32)cdnNumber
                    encryptionKey:(NSData *)encryptionKey
                        byteCount:(UInt32)byteCount
                      contentType:(NSString *)contentType
@@ -42,7 +44,7 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
                         blurHash:(nullable NSString *)blurHash
                  uploadTimestamp:(unsigned long long)uploadTimestamp
 {
-    OWSAssertDebug(serverId > 0);
+    OWSAssertDebug(serverId > 0 || cdnKey.length > 0);
     OWSAssertDebug(encryptionKey.length > 0);
     if (byteCount <= 0) {
         // This will fail with legacy iOS clients which don't upload attachment size.
@@ -61,6 +63,8 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
     }
 
     _serverId = serverId;
+    _cdnKey = cdnKey;
+    _cdnNumber = cdnNumber;
     _encryptionKey = encryptionKey;
     _byteCount = byteCount;
     _contentType = contentType;
@@ -146,11 +150,14 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
 - (instancetype)initWithPointer:(TSAttachmentPointer *)pointer transaction:(SDSAnyReadTransaction *)transaction
 {
     if (![pointer lazyRestoreFragmentWithTransaction:transaction]) {
-        OWSAssertDebug(pointer.serverId > 0);
+        OWSAssertDebug(pointer.serverId > 0 || pointer.cdnKey.length > 0);
         OWSAssertDebug(pointer.encryptionKey.length > 0);
         if (pointer.byteCount <= 0) {
             // This will fail with legacy iOS clients which don't upload attachment size.
-            OWSLogWarn(@"Missing pointer.byteCount for attachment with serverId: %lld", pointer.serverId);
+            OWSLogWarn(@"Missing pointer.byteCount for attachment with serverId: %lld, cdnKey: %@, cdnNumber: %u",
+                pointer.serverId,
+                pointer.cdnKey,
+                pointer.cdnNumber);
         }
     }
     OWSAssertDebug(pointer.contentType.length > 0);
@@ -162,6 +169,8 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
     }
 
     _serverId = pointer.serverId;
+    _cdnKey = pointer.cdnKey;
+    _cdnNumber = pointer.cdnNumber;
     _encryptionKey = pointer.encryptionKey;
     _byteCount = pointer.byteCount;
     _sourceFilename = pointer.sourceFilename;
@@ -222,6 +231,8 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
                         blurHash:(nullable NSString *)blurHash
                        byteCount:(unsigned int)byteCount
                          caption:(nullable NSString *)caption
+                          cdnKey:(NSString *)cdnKey
+                       cdnNumber:(unsigned int)cdnNumber
                      contentType:(NSString *)contentType
                    encryptionKey:(nullable NSData *)encryptionKey
                         serverId:(unsigned long long)serverId
@@ -240,6 +251,8 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
     _blurHash = blurHash;
     _byteCount = byteCount;
     _caption = caption;
+    _cdnKey = cdnKey;
+    _cdnNumber = cdnNumber;
     _contentType = contentType;
     _encryptionKey = encryptionKey;
     _serverId = serverId;
