@@ -231,6 +231,21 @@ extension AddGroupMembersViewController: GroupMemberViewDelegate {
         }
     }
 
+    func groupMemberViewIsGroupFull() -> Bool {
+        guard groupThread.isGroupV2Thread else {
+            return false
+        }
+        let memberCount = (oldGroupModel.groupMembership.pendingAndNonPendingMemberCount +
+            newRecipientSet.count)
+        return memberCount >= GroupManager.maxGroupMemberCount
+    }
+
+    func groupMemberViewMaxMemberCount() -> UInt? {
+        return (groupThread.isGroupV2Thread
+        ? GroupManager.maxGroupMemberCount
+        : nil)
+    }
+
     func groupMemberViewIsPreExistingMember(_ recipient: PickedRecipient) -> Bool {
         guard let address = recipient.address else {
             owsFailDebug("Invalid recipient.")

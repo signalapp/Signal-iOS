@@ -75,6 +75,12 @@ extension NewGroupViewController2: GroupMemberViewDelegate {
         return true
     }
 
+    func groupMemberViewIsGroupFull() -> Bool {
+        // We add one for the local user.
+        let memberCount = newGroupState.recipientSet.count + 1
+        return memberCount >= GroupManager.maxGroupMemberCount
+    }
+
     func groupMemberViewIsPreExistingMember(_ recipient: PickedRecipient) -> Bool {
         return false
     }

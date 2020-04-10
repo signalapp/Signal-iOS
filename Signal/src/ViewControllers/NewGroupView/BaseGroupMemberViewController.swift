@@ -16,6 +16,8 @@ protocol GroupMemberViewDelegate: class {
 
     func groupMemberViewCanAddRecipient(_ recipient: PickedRecipient) -> Bool
 
+    func groupMemberViewIsGroupFull() -> Bool
+
     func groupMemberViewIsPreExistingMember(_ recipient: PickedRecipient) -> Bool
 
     func groupMemberViewDismiss()
@@ -165,6 +167,11 @@ public class BaseGroupMemberViewController: OWSViewController {
             showInvalidGroupMemberAlert(recipient: recipient)
             return
         }
+        guard !groupMemberViewDelegate.groupMemberViewIsGroupFull() else {
+            showGroupFullAlert()
+            return
+        }
+
         groupMemberViewDelegate.groupMemberViewAddRecipient(recipient)
         recipientPicker.pickedRecipients = recipientSet.orderedMembers
         updateMemberBar()
@@ -225,6 +232,11 @@ public class BaseGroupMemberViewController: OWSViewController {
         actionSheet.addAction(ActionSheetAction(title: CommonStrings.okayButton,
                                                 style: .default))
         presentActionSheet(actionSheet)
+    }
+
+    private func showGroupFullAlert() {
+        OWSActionSheets.showErrorAlert(message: NSLocalizedString("EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL",
+                                                                  comment: "Message for 'group full' error alert when a user can't be added to a group."))
     }
 
     private func showCantAddMemberView() {
