@@ -685,6 +685,15 @@ struct SignalServiceProtos_DataMessage {
   /// Clears the value of `reaction`. Subsequent reads from it will return its default value.
   mutating func clearReaction() {self._reaction = nil}
 
+  var delete: SignalServiceProtos_DataMessage.Delete {
+    get {return _delete ?? SignalServiceProtos_DataMessage.Delete()}
+    set {_delete = newValue}
+  }
+  /// Returns true if `delete` has been explicitly set.
+  var hasDelete: Bool {return self._delete != nil}
+  /// Clears the value of `delete`. Subsequent reads from it will return its default value.
+  mutating func clearDelete() {self._delete = nil}
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum Flags: SwiftProtobuf.Enum {
@@ -1466,6 +1475,28 @@ struct SignalServiceProtos_DataMessage {
     fileprivate var _timestamp: UInt64?
   }
 
+  struct Delete {
+    // SwiftProtobuf.Message conformance is added in an extension below. See the
+    // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+    // methods supported on all messages.
+
+    /// @required
+    var targetSentTimestamp: UInt64 {
+      get {return _targetSentTimestamp ?? 0}
+      set {_targetSentTimestamp = newValue}
+    }
+    /// Returns true if `targetSentTimestamp` has been explicitly set.
+    var hasTargetSentTimestamp: Bool {return self._targetSentTimestamp != nil}
+    /// Clears the value of `targetSentTimestamp`. Subsequent reads from it will return its default value.
+    mutating func clearTargetSentTimestamp() {self._targetSentTimestamp = nil}
+
+    var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    init() {}
+
+    fileprivate var _targetSentTimestamp: UInt64?
+  }
+
   init() {}
 
   fileprivate var _body: String?
@@ -1480,6 +1511,7 @@ struct SignalServiceProtos_DataMessage {
   fileprivate var _requiredProtocolVersion: UInt32?
   fileprivate var _isViewOnce: Bool?
   fileprivate var _reaction: SignalServiceProtos_DataMessage.Reaction?
+  fileprivate var _delete: SignalServiceProtos_DataMessage.Delete?
 }
 
 #if swift(>=4.2)
@@ -3681,7 +3713,8 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
     11: .same(proto: "sticker"),
     12: .same(proto: "requiredProtocolVersion"),
     14: .same(proto: "isViewOnce"),
-    16: .same(proto: "reaction")
+    16: .same(proto: "reaction"),
+    17: .same(proto: "delete")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -3702,6 +3735,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
       case 14: try decoder.decodeSingularBoolField(value: &self._isViewOnce)
       case 15: try decoder.decodeSingularMessageField(value: &self._groupV2)
       case 16: try decoder.decodeSingularMessageField(value: &self._reaction)
+      case 17: try decoder.decodeSingularMessageField(value: &self._delete)
       default: break
       }
     }
@@ -3753,6 +3787,9 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
     if let v = self._reaction {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 16)
     }
+    if let v = self._delete {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 17)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -3772,6 +3809,7 @@ extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf.
     if lhs._requiredProtocolVersion != rhs._requiredProtocolVersion {return false}
     if lhs._isViewOnce != rhs._isViewOnce {return false}
     if lhs._reaction != rhs._reaction {return false}
+    if lhs._delete != rhs._delete {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -4375,6 +4413,35 @@ extension SignalServiceProtos_DataMessage.Reaction: SwiftProtobuf.Message, Swift
     if lhs._authorE164 != rhs._authorE164 {return false}
     if lhs._authorUuid != rhs._authorUuid {return false}
     if lhs._timestamp != rhs._timestamp {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension SignalServiceProtos_DataMessage.Delete: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SignalServiceProtos_DataMessage.protoMessageName + ".Delete"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "targetSentTimestamp")
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 1: try decoder.decodeSingularUInt64Field(value: &self._targetSentTimestamp)
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if let v = self._targetSentTimestamp {
+      try visitor.visitSingularUInt64Field(value: v, fieldNumber: 1)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SignalServiceProtos_DataMessage.Delete, rhs: SignalServiceProtos_DataMessage.Delete) -> Bool {
+    if lhs._targetSentTimestamp != rhs._targetSentTimestamp {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
