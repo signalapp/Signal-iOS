@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # e.g. put in whatever passphrase is actually being used
-PASSPHRASE="x'e057e05681c8123bfa60c391eb075da2a022164eb230e88201b5447a9a5fc62b6d0b88087f5fa283391945b845087016'"
+PASSPHRASE="x'6d66c344496fdcc0165e6d3271bfbe1745eb5225aee52694d7cd412c1957a551cd8c069d53030b03f3827c82cfe60a46'"
 
 BIN_NAME=$0
 

@@ -118,6 +118,7 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
                   messageSticker:(nullable MessageSticker *)messageSticker
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
     storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
+              wasRemotelyDeleted:(BOOL)wasRemotelyDeleted
                authorPhoneNumber:(nullable NSString *)authorPhoneNumber
                       authorUUID:(nullable NSString *)authorUUID
                             read:(BOOL)read
@@ -142,7 +143,8 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
                        linkPreview:linkPreview
                     messageSticker:messageSticker
                      quotedMessage:quotedMessage
-      storedShouldStartExpireTimer:storedShouldStartExpireTimer];
+      storedShouldStartExpireTimer:storedShouldStartExpireTimer
+                wasRemotelyDeleted:wasRemotelyDeleted];
 
     if (!self) {
         return self;

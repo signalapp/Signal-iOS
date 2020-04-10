@@ -128,6 +128,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                   messageSticker:(nullable MessageSticker *)messageSticker
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
     storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
+              wasRemotelyDeleted:(BOOL)wasRemotelyDeleted
 {
     self = [super initWithGrdbId:grdbId
                         uniqueId:uniqueId
@@ -152,6 +153,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     _messageSticker = messageSticker;
     _quotedMessage = quotedMessage;
     _storedShouldStartExpireTimer = storedShouldStartExpireTimer;
+    _wasRemotelyDeleted = wasRemotelyDeleted;
 
     [self sdsFinalizeMessage];
 

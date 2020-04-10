@@ -90,6 +90,7 @@ NSUInteger const OWSUnknownProtocolVersionMessageSchemaVersion = 1;
                   messageSticker:(nullable MessageSticker *)messageSticker
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
     storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
+              wasRemotelyDeleted:(BOOL)wasRemotelyDeleted
                    customMessage:(nullable NSString *)customMessage
              infoMessageUserInfo:(nullable NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo
                      messageType:(TSInfoMessageType)messageType
@@ -116,6 +117,7 @@ NSUInteger const OWSUnknownProtocolVersionMessageSchemaVersion = 1;
                     messageSticker:messageSticker
                      quotedMessage:quotedMessage
       storedShouldStartExpireTimer:storedShouldStartExpireTimer
+                wasRemotelyDeleted:wasRemotelyDeleted
                      customMessage:customMessage
                infoMessageUserInfo:infoMessageUserInfo
                        messageType:messageType
