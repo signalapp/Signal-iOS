@@ -199,7 +199,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
         return performServiceRequest(requestBuilder: requestBuilder,
                                      groupId: nil,
-                                     behavior403: .nothing).asVoid()
+                                     behavior403: .fail).asVoid()
     }
 
     // MARK: - Update Group
@@ -275,7 +275,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         return firstly {
             return self.performServiceRequest(requestBuilder: requestBuilder,
                                               groupId: groupId,
-                                              behavior403: .updateGroup)
+                                              behavior403: .fetchGroupUpdates)
         }.then(on: DispatchQueue.global()) { (response: ServiceResponse) -> Promise<UpdatedV2Group> in
 
             guard let changeActionsProtoData = response.responseObject as? Data else {
@@ -384,7 +384,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             let groupId = try self.groupId(forGroupSecretParamsData: groupV2Params.groupSecretParamsData)
             return self.performServiceRequest(requestBuilder: requestBuilder,
                                               groupId: groupId,
-                                              behavior403: .updateGroup)
+                                              behavior403: .fetchGroupUpdates)
         }.map(on: DispatchQueue.global()) { (response: ServiceResponse) -> GroupsProtoAvatarUploadAttributes in
 
             guard let protoData = response.responseObject as? Data else {
@@ -515,9 +515,12 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         }
 
         return firstly { () -> Promise<ServiceResponse> in
+            // We can't remove the local user from the group on 403.
+            // For example, user might just be joining the group
+            // using an invite OR have just been re-added after leaving.
             return self.performServiceRequest(requestBuilder: requestBuilder,
                                               groupId: groupId,
-                                              behavior403: .removeFromGroup)
+                                              behavior403: .ignore)
         }.map(on: DispatchQueue.global()) { (response: ServiceResponse) -> GroupsProtoGroupChanges in
             guard let groupChangesProtoData = response.responseObject as? Data else {
                 throw OWSAssertionError("Invalid responseObject.")
@@ -705,9 +708,10 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
     // Represents how we should respond to 403 status codes.
     private enum Behavior403 {
-        case nothing
+        case fail
         case removeFromGroup
-        case updateGroup
+        case fetchGroupUpdates
+        case ignore
     }
 
     private func performServiceRequest(requestBuilder: @escaping RequestBuilder,
@@ -764,9 +768,15 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
                         if let groupId = groupId {
                             switch behavior403 {
-                            case .nothing:
+                            case .fail:
                                 // We should never receive 403 when creating groups.
                                 owsFailDebug("Unexpected 403.")
+                                break
+                            case .ignore:
+                                // We can't remove the local user from the group on 403
+                                // when fetching change actions.
+                                // For example, user might just be joining the group
+                                // using an invite OR have just been re-added after leaving.
                                 break
                             case .removeFromGroup:
                                 // If we receive 403 when trying to fetch group state,
@@ -777,7 +787,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                                     GroupManager.handleNotInGroup(groupId: groupId,
                                                                   transaction: transaction)
                                 }
-                            case .updateGroup:
+                            case .fetchGroupUpdates:
                                 // Service returns 403 if client tries to perform an
                                 // update for which it is not authorized (e.g. add a
                                 // new member if membership access is admin-only).
