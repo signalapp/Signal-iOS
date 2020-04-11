@@ -1155,6 +1155,8 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
     SSKProtoAttachmentPointerBuilder *builder = [SSKProtoAttachmentPointer builder];
     builder.cdnID = self.serverId;
+    builder.cdnKey = self.cdnKey;
+    builder.cdnNumber = self.cdnNumber;
 
     OWSAssertDebug(self.contentType.length > 0);
     builder.contentType = self.contentType;

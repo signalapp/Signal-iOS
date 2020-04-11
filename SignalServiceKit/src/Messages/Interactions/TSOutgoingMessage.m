@@ -1048,8 +1048,6 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         requiredProtocolVersion = SSKProtoDataMessageProtocolVersionViewOnceVideo;
     }
 
-    [builder setRequiredProtocolVersion:(uint32_t)requiredProtocolVersion];
-
     if ([self.body lengthOfBytesUsingEncoding:NSUTF8StringEncoding] <= kOversizeTextMessageSizeThreshold) {
         [builder setBody:self.body];
     } else {
@@ -1099,6 +1097,10 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                 return nil;
             }
             [attachments addObject:attachmentProto];
+            if (requiredProtocolVersion < SSKProtoDataMessageProtocolVersionCdnSelectorAttachments
+                && (attachmentProto.cdnKey.length > 0 || attachmentProto.cdnNumber > 0)) {
+                requiredProtocolVersion = SSKProtoDataMessageProtocolVersionCdnSelectorAttachments;
+            }
         }
         [builder setAttachments:attachments];
     }
@@ -1177,6 +1179,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         }
     }
 
+    [builder setRequiredProtocolVersion:(uint32_t)requiredProtocolVersion];
     return builder;
 }
 
