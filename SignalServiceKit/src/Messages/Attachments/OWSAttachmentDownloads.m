@@ -777,7 +777,15 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
 
     AFHTTPSessionManager *manager = [self cdnSessionManagerForCdnNumber:attachmentPointer.cdnNumber];
     manager.completionQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-    NSString *urlPath = [NSString stringWithFormat:@"attachments/%llu", attachmentPointer.serverId];
+    NSString *urlPath;
+    if (attachmentPointer.cdnKey.length > 0) {
+        urlPath = [NSString
+            stringWithFormat:@"attachments/%@",
+            [attachmentPointer.cdnKey
+                stringByAddingPercentEncodingWithAllowedCharacters:NSCharacterSet.URLPathAllowedCharacterSet]];
+    } else {
+        urlPath = [NSString stringWithFormat:@"attachments/%llu", attachmentPointer.serverId];
+    }
     NSURL *url = [[NSURL alloc] initWithString:urlPath relativeToURL:manager.baseURL];
 
     // We want to avoid large downloads from a compromised or buggy service.

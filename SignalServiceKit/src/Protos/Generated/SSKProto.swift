@@ -4296,6 +4296,7 @@ public enum SSKProtoDataMessageProtocolVersion: Int32 {
     case viewOnce = 2
     case viewOnceVideo = 3
     case reactions = 4
+    case cdnSelectorAttachments = 5
 }
 
 private func SSKProtoDataMessageProtocolVersionWrap(_ value: SignalServiceProtos_DataMessage.ProtocolVersion) -> SSKProtoDataMessageProtocolVersion {
@@ -4305,6 +4306,7 @@ private func SSKProtoDataMessageProtocolVersionWrap(_ value: SignalServiceProtos
     case .viewOnce: return .viewOnce
     case .viewOnceVideo: return .viewOnceVideo
     case .reactions: return .reactions
+    case .cdnSelectorAttachments: return .cdnSelectorAttachments
     }
 }
 
@@ -4315,6 +4317,7 @@ private func SSKProtoDataMessageProtocolVersionUnwrap(_ value: SSKProtoDataMessa
     case .viewOnce: return .viewOnce
     case .viewOnceVideo: return .viewOnceVideo
     case .reactions: return .reactions
+    case .cdnSelectorAttachments: return .cdnSelectorAttachments
     }
 }
 

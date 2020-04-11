@@ -732,7 +732,8 @@ struct SignalServiceProtos_DataMessage {
     case viewOnce // = 2
     case viewOnceVideo // = 3
     case reactions // = 4
-    static let current = reactions
+    case cdnSelectorAttachments // = 5
+    static let current = cdnSelectorAttachments
 
     init() {
       self = .initial
@@ -745,6 +746,7 @@ struct SignalServiceProtos_DataMessage {
       case 2: self = .viewOnce
       case 3: self = .viewOnceVideo
       case 4: self = .reactions
+      case 5: self = .cdnSelectorAttachments
       default: return nil
       }
     }
@@ -756,6 +758,7 @@ struct SignalServiceProtos_DataMessage {
       case .viewOnce: return 2
       case .viewOnceVideo: return 3
       case .reactions: return 4
+      case .cdnSelectorAttachments: return 5
       }
     }
 
@@ -3829,7 +3832,8 @@ extension SignalServiceProtos_DataMessage.ProtocolVersion: SwiftProtobuf._ProtoN
     1: .same(proto: "MESSAGE_TIMERS"),
     2: .same(proto: "VIEW_ONCE"),
     3: .same(proto: "VIEW_ONCE_VIDEO"),
-    4: .aliased(proto: "REACTIONS", aliases: ["CURRENT"])
+    4: .same(proto: "REACTIONS"),
+    5: .aliased(proto: "CDN_SELECTOR_ATTACHMENTS", aliases: ["CURRENT"])
   ]
 }
 
