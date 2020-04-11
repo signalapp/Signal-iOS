@@ -102,9 +102,9 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
     return SSKEnvironment.shared.networkManager;
 }
 
-- (AFHTTPSessionManager *)cdnSessionManager
+- (AFHTTPSessionManager *)cdnSessionManagerForCdnNumber:(UInt32)cdnNumber
 {
-    return OWSSignalService.sharedInstance.CDNSessionManager;
+    return [OWSSignalService.sharedInstance cdnSessionManagerForCdnNumber:cdnNumber];
 }
 
 - (id<ProfileManagerProtocol>)profileManager
@@ -775,7 +775,7 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
     OWSAssertDebug(job);
     OWSAssertDebug(attachmentPointer);
 
-    AFHTTPSessionManager *manager = self.cdnSessionManager;
+    AFHTTPSessionManager *manager = [self cdnSessionManagerForCdnNumber:attachmentPointer.cdnNumber];
     manager.completionQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
     NSString *urlPath = [NSString stringWithFormat:@"attachments/%llu", attachmentPointer.serverId];
     NSURL *url = [[NSURL alloc] initWithString:urlPath relativeToURL:manager.baseURL];

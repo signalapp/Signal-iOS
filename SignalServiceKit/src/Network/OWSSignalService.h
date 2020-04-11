@@ -14,9 +14,6 @@ extern NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidCha
 
 - (SDSKeyValueStore *)keyValueStore;
 
-/// For uploading and downloading avatar assets and attachments
-@property (nonatomic, readonly) AFHTTPSessionManager *CDNSessionManager;
-
 /// For backing up and restoring signal account information
 @property (nonatomic, readonly) AFHTTPSessionManager *storageServiceSessionManager;
 
@@ -24,6 +21,9 @@ extern NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidCha
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
+
+/// For uploading and downloading blobs on the specified CDN.
+- (AFHTTPSessionManager *)cdnSessionManagerForCdnNumber:(UInt32)cdnNumber;
 
 #pragma mark - Censorship Circumvention
 

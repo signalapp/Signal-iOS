@@ -160,11 +160,6 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
 
 #pragma mark - Dependencies
 
-- (AFHTTPSessionManager *)uploadHTTPManager
-{
-    return [OWSSignalService sharedInstance].CDNSessionManager;
-}
-
 - (TSNetworkManager *)networkManager
 {
     return SSKEnvironment.shared.networkManager;
@@ -244,11 +239,6 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
 @implementation OWSAttachmentUploadV2
 
 #pragma mark - Dependencies
-
-- (AFHTTPSessionManager *)uploadHTTPManager
-{
-    return [OWSSignalService sharedInstance].CDNSessionManager;
-}
 
 - (TSNetworkManager *)networkManager
 {
