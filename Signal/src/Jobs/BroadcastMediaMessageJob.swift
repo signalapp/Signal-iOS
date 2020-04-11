@@ -123,7 +123,7 @@ public class BroadcastMediaMessageOperation: OWSOperation, DurableOperation {
                 let uploadTimestamp = uploadedAttachment.uploadTimestamp
                 guard let encryptionKey = uploadedAttachment.encryptionKey,
                     let digest = uploadedAttachment.digest,
-                    (serverId > 0 || cdnKey.isEmpty) else {
+                    (serverId > 0 || !cdnKey.isEmpty) else {
                         owsFailDebug("uploaded attachment was incomplete")
                         continue
                 }
