@@ -344,6 +344,7 @@ const CGFloat kIconViewLength = 24;
                                                                      OWSConversationSettingsViewController,
                                                                      @"add_to_system_contacts")];
                                  }
+                                 customRowHeight:UITableViewAutomaticDimension
                                  actionBlock:^{
                                      ActionSheetController *actionSheet =
                                          [[ActionSheetController alloc] initWithTitle:nil message:nil];
@@ -392,6 +393,7 @@ const CGFloat kIconViewLength = 24;
                                      accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
                                                                  OWSConversationSettingsViewController, @"all_media")];
                              }
+                             customRowHeight:UITableViewAutomaticDimension
                              actionBlock:^{
                                  [weakSelf showMediaGallery];
                              }]];
@@ -407,6 +409,7 @@ const CGFloat kIconViewLength = 24;
                                      accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
                                                                  OWSConversationSettingsViewController, @"search")];
                              }
+                             customRowHeight:UITableViewAutomaticDimension
                              actionBlock:^{
                                  [weakSelf tappedConversationSearch];
                              }]];
@@ -423,6 +426,7 @@ const CGFloat kIconViewLength = 24;
                                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
                                                             OWSConversationSettingsViewController, @"safety_numbers")];
                         }
+                        customRowHeight:UITableViewAutomaticDimension
                         actionBlock:^{
                             [weakSelf showVerificationView];
                         }]];
@@ -444,6 +448,7 @@ const CGFloat kIconViewLength = 24;
                                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
                                                             OWSConversationSettingsViewController, @"is_in_contacts")];
                         }
+                        customRowHeight:UITableViewAutomaticDimension
                         actionBlock:^{
                             if (weakSelf.contactsManager.supportsContactEditing) {
                                 [weakSelf presentContactViewController];
@@ -490,7 +495,8 @@ const CGFloat kIconViewLength = 24;
                                                             OWSConversationSettingsViewController,
                                                             @"profile_is_shared")];
                         }
-                                    actionBlock:nil]];
+                        customRowHeight:UITableViewAutomaticDimension
+                        actionBlock:nil]];
     } else {
         [mainSection
             addItem:[OWSTableItem
@@ -512,6 +518,7 @@ const CGFloat kIconViewLength = 24;
 
                             return cell;
                         }
+                        customRowHeight:UITableViewAutomaticDimension
                         actionBlock:^{
                             [weakSelf showShareProfileAlert];
                         }]];
@@ -575,8 +582,8 @@ const CGFloat kIconViewLength = 24;
 
                                      return cell;
                                  }
-                                         customRowHeight:UITableViewAutomaticDimension
-                                             actionBlock:nil]];
+                                 customRowHeight:UITableViewAutomaticDimension
+                                 actionBlock:nil]];
 
         if (self.disappearingMessagesConfiguration.isEnabled) {
             [mainSection addItem:[OWSTableItem
@@ -626,8 +633,8 @@ const CGFloat kIconViewLength = 24;
 
                                          return cell;
                                      }
-                                             customRowHeight:UITableViewAutomaticDimension
-                                                 actionBlock:nil]];
+                                     customRowHeight:UITableViewAutomaticDimension
+                                     actionBlock:nil]];
         }
     }
 #ifdef SHOW_COLOR_PICKER
@@ -649,6 +656,7 @@ const CGFloat kIconViewLength = 24;
                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
                                                         OWSConversationSettingsViewController, @"conversation_color")];
                     }
+                    customRowHeight:UITableViewAutomaticDimension
                     actionBlock:^{
                         [weakSelf showColorPicker];
                     }]];
@@ -673,6 +681,7 @@ const CGFloat kIconViewLength = 24;
                                                                           @"edit_group")];
                                           return cell;
                                       }
+                                      customRowHeight:UITableViewAutomaticDimension
                                       actionBlock:^{
                                           [weakSelf showUpdateGroupView:UpdateGroupMode_Default];
                                       }]];
@@ -690,6 +699,7 @@ const CGFloat kIconViewLength = 24;
                                                         OWSConversationSettingsViewController, @"group_members")];
                         return cell;
                     }
+                    customRowHeight:UITableViewAutomaticDimension
                     actionBlock:^{
                         [weakSelf showGroupMembersView];
                     }],
@@ -703,6 +713,7 @@ const CGFloat kIconViewLength = 24;
                                                         OWSConversationSettingsViewController, @"leave_group")];
                         return cell;
                     }
+                    customRowHeight:UITableViewAutomaticDimension
                     actionBlock:^{
                         [weakSelf didTapLeaveGroup];
                     }],
@@ -886,7 +897,8 @@ const CGFloat kIconViewLength = 24;
 
                                  return cell;
                              }
-                                         actionBlock:nil]];
+                             customRowHeight:UITableViewAutomaticDimension
+                             actionBlock:nil]];
         [contents addSection:section];
     }
 
@@ -933,6 +945,7 @@ const CGFloat kIconViewLength = 24;
 
     UIStackView *contentRow = [[UIStackView alloc] initWithArrangedSubviews:@[ iconView, rowLabel ]];
     contentRow.spacing = self.iconSpacing;
+    contentRow.alignment = UIStackViewAlignmentCenter;
 
     [cell.contentView addSubview:contentRow];
     [contentRow autoPinEdgesToSuperviewMargins];
