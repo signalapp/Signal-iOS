@@ -495,8 +495,8 @@ const CGFloat kIconViewLength = 24;
                                                             OWSConversationSettingsViewController,
                                                             @"profile_is_shared")];
                         }
-                        customRowHeight:UITableViewAutomaticDimension
-                        actionBlock:nil]];
+                                customRowHeight:UITableViewAutomaticDimension
+                                    actionBlock:nil]];
     } else {
         [mainSection
             addItem:[OWSTableItem
@@ -582,8 +582,8 @@ const CGFloat kIconViewLength = 24;
 
                                      return cell;
                                  }
-                                 customRowHeight:UITableViewAutomaticDimension
-                                 actionBlock:nil]];
+                                         customRowHeight:UITableViewAutomaticDimension
+                                             actionBlock:nil]];
 
         if (self.disappearingMessagesConfiguration.isEnabled) {
             [mainSection addItem:[OWSTableItem
@@ -633,8 +633,8 @@ const CGFloat kIconViewLength = 24;
 
                                          return cell;
                                      }
-                                     customRowHeight:UITableViewAutomaticDimension
-                                     actionBlock:nil]];
+                                             customRowHeight:UITableViewAutomaticDimension
+                                                 actionBlock:nil]];
         }
     }
 #ifdef SHOW_COLOR_PICKER
@@ -897,8 +897,8 @@ const CGFloat kIconViewLength = 24;
 
                                  return cell;
                              }
-                             customRowHeight:UITableViewAutomaticDimension
-                             actionBlock:nil]];
+                                     customRowHeight:UITableViewAutomaticDimension
+                                         actionBlock:nil]];
         [contents addSection:section];
     }
 
