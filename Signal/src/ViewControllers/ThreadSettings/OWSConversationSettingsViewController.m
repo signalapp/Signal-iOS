@@ -409,7 +409,7 @@ const CGFloat kIconViewLength = 24;
                                      accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
                                                                  OWSConversationSettingsViewController, @"search")];
                              }
-                             customRowHeight: UITableViewAutomaticDimension
+                             customRowHeight:UITableViewAutomaticDimension
                              actionBlock:^{
                                  [weakSelf tappedConversationSearch];
                              }]];
@@ -426,7 +426,7 @@ const CGFloat kIconViewLength = 24;
                                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
                                                             OWSConversationSettingsViewController, @"safety_numbers")];
                         }
-                        customRowHeight: UITableViewAutomaticDimension
+                        customRowHeight:UITableViewAutomaticDimension
                         actionBlock:^{
                             [weakSelf showVerificationView];
                         }]];
@@ -448,7 +448,7 @@ const CGFloat kIconViewLength = 24;
                                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
                                                             OWSConversationSettingsViewController, @"is_in_contacts")];
                         }
-                        customRowHeight: UITableViewAutomaticDimension
+                        customRowHeight:UITableViewAutomaticDimension
                         actionBlock:^{
                             if (weakSelf.contactsManager.supportsContactEditing) {
                                 [weakSelf presentContactViewController];
@@ -495,7 +495,7 @@ const CGFloat kIconViewLength = 24;
                                                             OWSConversationSettingsViewController,
                                                             @"profile_is_shared")];
                         }
-                        customRowHeight: UITableViewAutomaticDimension
+                        customRowHeight:UITableViewAutomaticDimension
                         actionBlock:nil]];
     } else {
         [mainSection
@@ -518,7 +518,7 @@ const CGFloat kIconViewLength = 24;
 
                             return cell;
                         }
-                        customRowHeight: UITableViewAutomaticDimension
+                        customRowHeight:UITableViewAutomaticDimension
                         actionBlock:^{
                             [weakSelf showShareProfileAlert];
                         }]];
@@ -656,7 +656,7 @@ const CGFloat kIconViewLength = 24;
                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
                                                         OWSConversationSettingsViewController, @"conversation_color")];
                     }
-                    customRowHeight: UITableViewAutomaticDimension
+                    customRowHeight:UITableViewAutomaticDimension
                     actionBlock:^{
                         [weakSelf showColorPicker];
                     }]];
@@ -681,7 +681,7 @@ const CGFloat kIconViewLength = 24;
                                                                           @"edit_group")];
                                           return cell;
                                       }
-                                      customRowHeight: UITableViewAutomaticDimension
+                                      customRowHeight:UITableViewAutomaticDimension
                                       actionBlock:^{
                                           [weakSelf showUpdateGroupView:UpdateGroupMode_Default];
                                       }]];
@@ -699,7 +699,7 @@ const CGFloat kIconViewLength = 24;
                                                         OWSConversationSettingsViewController, @"group_members")];
                         return cell;
                     }
-                    customRowHeight: UITableViewAutomaticDimension
+                    customRowHeight:UITableViewAutomaticDimension
                     actionBlock:^{
                         [weakSelf showGroupMembersView];
                     }],
@@ -713,7 +713,7 @@ const CGFloat kIconViewLength = 24;
                                                         OWSConversationSettingsViewController, @"leave_group")];
                         return cell;
                     }
-                    customRowHeight: UITableViewAutomaticDimension
+                    customRowHeight:UITableViewAutomaticDimension
                     actionBlock:^{
                         [weakSelf didTapLeaveGroup];
                     }],
