@@ -145,6 +145,10 @@ internal enum OnionRequestAPI {
         paths = paths.filter { !$0.contains(snode) }
     }
 
+    private static func dropGuardSnode(_ snode: LokiAPITarget) {
+        guardSnodes = guardSnodes.filter { $0 != snode }
+    }
+
     /// Builds an onion around `payload` and returns the result.
     private static func buildOnion(around payload: JSON, targetedAt snode: LokiAPITarget) -> Promise<OnionBuildingResult> {
         var guardSnode: LokiAPITarget!
@@ -221,6 +225,7 @@ internal enum OnionRequestAPI {
         promise.catch(on: LokiAPI.workQueue) { error in // Must be invoked on LokiAPI.workQueue
             guard case HTTP.Error.httpRequestFailed(_, _) = error else { return }
             dropPath(containing: guardSnode) // A snode in the path is bad; retry with a different path
+            dropGuardSnode(guardSnode)
         }
         promise.handlingErrorsIfNeeded(forTargetSnode: snode, associatedWith: hexEncodedPublicKey)
         return promise

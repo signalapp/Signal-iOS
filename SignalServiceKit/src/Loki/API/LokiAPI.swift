@@ -122,9 +122,11 @@ public final class LokiAPI : NSObject {
     
     // MARK: Public API
     public static func getMessages() -> Promise<Set<MessageListPromise>> {
-        return getTargetSnodes(for: userHexEncodedPublicKey).mapValues { targetSnode in
-            return getRawMessages(from: targetSnode, usingLongPolling: false).map { parseRawMessagesResponse($0, from: targetSnode) }
-        }.map { Set($0) }.retryingIfNeeded(maxRetryCount: maxRetryCount)
+        return attempt(maxRetryCount: maxRetryCount, recoveringOn: workQueue) {
+            getTargetSnodes(for: userHexEncodedPublicKey).mapValues { targetSnode in
+                getRawMessages(from: targetSnode, usingLongPolling: false).map { parseRawMessagesResponse($0, from: targetSnode) }
+            }.map { Set($0) }
+        }
     }
     
     public static func getDestinations(for hexEncodedPublicKey: String) -> Promise<[Destination]> {
@@ -189,16 +191,18 @@ public final class LokiAPI : NSObject {
         let destination = lokiMessage.destination
         func sendLokiMessage(_ lokiMessage: LokiMessage, to target: LokiAPITarget) -> RawResponsePromise {
             let parameters = lokiMessage.toJSON()
-            return invoke(.sendMessage, on: target, associatedWith: destination, parameters: parameters)
+            return attempt(maxRetryCount: maxRetryCount, recoveringOn: workQueue) {
+                invoke(.sendMessage, on: target, associatedWith: destination, parameters: parameters)
+            }
         }
         func sendLokiMessageUsingSwarmAPI() -> Promise<Set<RawResponsePromise>> {
             notificationCenter.post(name: .calculatingPoW, object: NSNumber(value: signalMessage.timestamp))
             return lokiMessage.calculatePoW().then { lokiMessageWithPoW -> Promise<Set<RawResponsePromise>> in
                 notificationCenter.post(name: .routing, object: NSNumber(value: signalMessage.timestamp))
-                return getTargetSnodes(for: destination).map { swarm in
-                    return Set(swarm.map { target in
+                return getTargetSnodes(for: destination).map { snodes in
+                    return Set(snodes.map { snode in
                         notificationCenter.post(name: .messageSending, object: NSNumber(value: signalMessage.timestamp))
-                        return sendLokiMessage(lokiMessageWithPoW, to: target).map { rawResponse in
+                        return sendLokiMessage(lokiMessageWithPoW, to: snode).map { rawResponse in
                             if let json = rawResponse as? JSON, let powDifficulty = json["difficulty"] as? Int {
                                 guard powDifficulty != LokiAPI.powDifficulty else { return rawResponse }
                                 print("[Loki] Setting proof of work difficulty to \(powDifficulty).")
@@ -207,14 +211,15 @@ public final class LokiAPI : NSObject {
                                 print("[Loki] Failed to update proof of work difficulty from: \(rawResponse).")
                             }
                             return rawResponse
-                        }.retryingIfNeeded(maxRetryCount: maxRetryCount)
+                        }
                     })
-                }.retryingIfNeeded(maxRetryCount: maxRetryCount)
+                }
             }
         }
         if let peer = LokiP2PAPI.getInfo(for: destination), (lokiMessage.isPing || peer.isOnline) {
             let target = LokiAPITarget(address: peer.address, port: peer.port, publicKeySet: nil)
-            return Promise.value([ target ]).mapValues { sendLokiMessage(lokiMessage, to: $0) }.map { Set($0) }.retryingIfNeeded(maxRetryCount: maxRetryCount).get { _ in
+            // TODO: Retrying
+            return Promise.value([ target ]).mapValues { sendLokiMessage(lokiMessage, to: $0) }.map { Set($0) }.get { _ in
                 LokiP2PAPI.markOnline(destination)
                 onP2PSuccess()
             }.recover { error -> Promise<Set<RawResponsePromise>> in
