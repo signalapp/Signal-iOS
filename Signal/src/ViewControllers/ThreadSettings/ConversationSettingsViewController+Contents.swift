@@ -90,7 +90,7 @@ extension ConversationSettingsViewController {
         }
 
         let emptySection = OWSTableSection()
-        emptySection.customFooterHeight = 30
+        emptySection.customFooterHeight = 24
         contents.addSection(emptySection)
 
         self.contents = contents

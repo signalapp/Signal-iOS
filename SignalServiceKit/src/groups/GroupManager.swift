@@ -84,6 +84,8 @@ public class GroupManager: NSObject {
 
     public static let maxGroupMemberCount: UInt = 100
 
+    public static let maxGroupNameLength: Int = 32
+
     private static func groupIdLength(for groupsVersion: GroupsVersion) -> Int32 {
         switch groupsVersion {
         case .V1:

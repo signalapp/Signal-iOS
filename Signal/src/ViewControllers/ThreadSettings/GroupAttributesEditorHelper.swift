@@ -117,6 +117,7 @@ class GroupAttributesEditorHelper: NSObject {
         nameTextField.font = .ows_dynamicTypeBody
         nameTextField.backgroundColor = .clear
         nameTextField.textColor = Theme.primaryTextColor
+        nameTextField.delegate = self
         nameTextField.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
         nameTextField.placeholder = NSLocalizedString("GROUP_NAME_PLACEHOLDER",
                                                       comment: "Placeholder text for 'group name' field.")
@@ -226,5 +227,26 @@ struct GroupAvatar {
             return nil
         }
         return GroupAvatar(imageData: imageData, image: image)
+    }
+}
+
+// MARK: 
+
+extension GroupAttributesEditorHelper: UITextFieldDelegate {
+    public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString: String) -> Bool {
+        // Truncate the replacement to fit.
+        let left: String = (textField.text ?? "").substring(to: range.location)
+        let right: String = (textField.text ?? "").substring(from: range.location + range.length)
+        let maxReplacementLength = GroupManager.maxGroupNameLength - Int(left.count + right.count)
+        let center = replacementString.substring(to: maxReplacementLength)
+        textField.text = (left + center + right)
+        // Place the cursor after the truncated replacement.
+        let positionAfterChange = left.count + center.count
+        guard let position = textField.position(from: textField.beginningOfDocument, offset: positionAfterChange) else {
+            owsFailDebug("Invalid position")
+            return false
+        }
+        textField.selectedTextRange = textField.textRange(from: position, to: position)
+        return false
     }
 }
