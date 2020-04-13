@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -190,7 +190,7 @@ public class SystemContactsFetcher: NSObject {
     }
 
     @objc
-    public private(set) var systemContactsHaveBeenRequestedAtLeastOnce = false
+    public private(set) var systemContactsPreviouslyRequested = false
     private var hasSetupObservation = false
 
     override init() {
@@ -237,7 +237,7 @@ public class SystemContactsFetcher: NSObject {
             })
         }
 
-        guard !systemContactsHaveBeenRequestedAtLeastOnce else {
+        guard !systemContactsPreviouslyRequested else {
             completion(nil)
             return
         }
@@ -284,7 +284,7 @@ public class SystemContactsFetcher: NSObject {
             self.delegate?.systemContactsFetcher(self, hasAuthorizationStatus: authorizationStatus)
             return
         }
-        guard !systemContactsHaveBeenRequestedAtLeastOnce else {
+        guard !systemContactsPreviouslyRequested else {
             return
         }
 
@@ -328,7 +328,7 @@ public class SystemContactsFetcher: NSObject {
                 return
             }
 
-            guard let _ = self else {
+            guard self != nil else {
                 return
             }
             Logger.error("background task time ran out before contacts fetch completed.")
@@ -344,7 +344,7 @@ public class SystemContactsFetcher: NSObject {
             })
         }
 
-        systemContactsHaveBeenRequestedAtLeastOnce = true
+        systemContactsPreviouslyRequested = true
         setupObservationIfNecessary()
 
         serialQueue.async {
@@ -363,6 +363,7 @@ public class SystemContactsFetcher: NSObject {
             guard let contacts = fetchedContacts else {
                 owsFailDebug("contacts was unexpectedly not set.")
                 completion(nil)
+                return
             }
 
             Logger.info("fetched \(contacts.count) contacts.")

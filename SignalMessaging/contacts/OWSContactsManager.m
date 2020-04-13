@@ -172,7 +172,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
 - (BOOL)systemContactsHaveBeenRequestedAtLeastOnce
 {
-    return self.systemContactsFetcher.systemContactsHaveBeenRequestedAtLeastOnce;
+    return self.systemContactsFetcher.systemContactsPreviouslyRequested;
 }
 
 - (BOOL)supportsContactEditing

@@ -1,3 +1,6 @@
+function_body_length:
+  - 60
+  - 100
 line_length: 200
 disabled_rules:
   - file_length
