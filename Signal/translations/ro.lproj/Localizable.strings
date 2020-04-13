@@ -1040,6 +1040,12 @@
 /* Error message indicating the a user can't be added to a group. */
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Acest utilizator nu poate fi adăugat la grup până când nu își actualizează aplicația Signal.";
 
+/* Message for 'group full' error alert when a user can't be added to a group. */
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "Maximum group size of 100 members reached.";
+
+/* Label for 'learn more' button when a user can't be added to a group. */
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_LEARN_MORE" = "Learn More";
+
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "Avatar invalid.";
 
@@ -1563,7 +1569,7 @@
 "GROUP_YOU_LEFT" = "Ați părăsit grupul.";
 
 /* Message for the 'can't replace group admin' alert. */
-"GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Choose a new admin for this group before you leave.";
+"GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Alegeți un nou administrator pentru acest grup înainte de a pleca.";
 
 /* Error indicating that an error occurred while accepting an invite. */
 "GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "Invitația nu a putut fi acceptată.";
@@ -1578,13 +1584,13 @@
 "GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "Blocați %@";
 
 /* Message for the 'replace group admin' alert. */
-"GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "Before you leave, choose a new admin for this group.";
+"GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "Înainte de a pleca, alege un nou administrator pentru acest grup.";
 
 /* Title for the 'replace group admin' alert. */
-"GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "Choose New Admin";
+"GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "Alegeți un nou admin";
 
 /* Label for the 'replace group admin' button. */
-"GROUPS_REPLACE_ADMIN_BUTTON" = "Choose new admin";
+"GROUPS_REPLACE_ADMIN_BUTTON" = "Alegeți un nou admin";
 
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Conversații arhivate";
@@ -2925,7 +2931,7 @@
 "REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "Acesta nu este PIN-ul corect.";
 
 /* The title for the 'replace group admin' view. */
-"REPLACE_ADMIN_VIEW_TITLE" = "Choose New Admin";
+"REPLACE_ADMIN_VIEW_TITLE" = "Alegeți un nou admin";
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "Reînregistrează-te pentru a primi notificarile push";

@@ -228,7 +228,7 @@
 "ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Ge tillgång till dina foton i inställningar för att skicka dem här.";
 
 /* A string indicating to the user that once they take photos, they'll be able to send them from this view. */
-"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "När du har tagit bilder, kommer du att kunna skicka dina senaste här.";
+"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "När du har tagit foton kan du skicka dina senaste här.";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Bilaga";
@@ -561,7 +561,7 @@
 "CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Är du säker på att du vill ta bort ditt konto?";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TEXT" = "Detta återställer programmet genom att ta bort alla dina meddelanden från den här enheten. Du kan alltid koppla med din telefon igen men det kommer inte att återställa borttagna meddelanden. Appen kommer att stängas efter att den här processen är klar.";
+"CONFIRM_DELETE_LINKED_DATA_TEXT" = "Detta återställer programmet genom att ta bort alla dina meddelanden från den här enheten. Du kan alltid länka med din telefon igen men det kommer inte att återställa borttagna meddelanden. Appen kommer att stängas efter att den här processen är klar.";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_LINKED_DATA_TITLE" = "Är du säker på att du vill ta bort alla data?";
@@ -573,7 +573,7 @@
 "CONFIRM_LEAVE_GROUP_TITLE" = "Vill du verkligen lämna?";
 
 /* Button text */
-"CONFIRM_LINK_NEW_DEVICE_ACTION" = "Koppla ny enhet";
+"CONFIRM_LINK_NEW_DEVICE_ACTION" = "Länka ny enhet";
 
 /* Action sheet body presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
 "CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@ kan ha installerat om eller bytt enhet. Verifiera säkerhetsnumret så att du är säker på vem du pratar med.";
@@ -993,7 +993,7 @@
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Senast aktiv: %@";
 
 /* {{Short Date}} when device was linked. */
-"DEVICE_LINKED_AT_LABEL" = "Kopplad: %@";
+"DEVICE_LINKED_AT_LABEL" = "Länkad: %@";
 
 /* Alert title that can occur when viewing device manager. */
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "Det gick inte att uppdatera enhetslistan.";
@@ -1039,6 +1039,12 @@
 
 /* Error message indicating the a user can't be added to a group. */
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Den här användaren kan inte läggas till i gruppen förrän de uppgraderar Signal.";
+
+/* Message for 'group full' error alert when a user can't be added to a group. */
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "Maximum group size of 100 members reached.";
+
+/* Label for 'learn more' button when a user can't be added to a group. */
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_LEARN_MORE" = "Learn More";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "Ogiltig avatar.";
@@ -1200,7 +1206,7 @@
 "ERROR_NETWORK_FAILURE" = "Nätverksfel";
 
 /* Error indicating a send failure due to a delinked application. */
-"ERROR_SENDING_DELINKED" = "Din enhet är inte längre kopplad. Vänligen koppla igen för att skicka ytterligare meddelanden.";
+"ERROR_SENDING_DELINKED" = "Din enhet är inte längre länkad. Vänligen koppla igen för att skicka ytterligare meddelanden.";
 
 /* Error indicating a send failure due to a deregistered application. */
 "ERROR_SENDING_DEREGISTERED" = "Din enhet är inte längre registrerad. Vänligen registrera dig för att skicka ytterligare meddelanden.";
@@ -1563,7 +1569,7 @@
 "GROUP_YOU_LEFT" = "Du har lämnat gruppen.";
 
 /* Message for the 'can't replace group admin' alert. */
-"GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Choose a new admin for this group before you leave.";
+"GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Välj en ny administratör för den här gruppen innan du lämnar.";
 
 /* Error indicating that an error occurred while accepting an invite. */
 "GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "Kunde inte acceptera inbjudan.";
@@ -1578,13 +1584,13 @@
 "GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "Blockera %@";
 
 /* Message for the 'replace group admin' alert. */
-"GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "Before you leave, choose a new admin for this group.";
+"GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "Innan du lämnar, välj en ny administratör för den här gruppen.";
 
 /* Title for the 'replace group admin' alert. */
-"GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "Choose New Admin";
+"GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "Välj ny administratör";
 
 /* Label for the 'replace group admin' button. */
-"GROUPS_REPLACE_ADMIN_BUTTON" = "Choose new admin";
+"GROUPS_REPLACE_ADMIN_BUTTON" = "Välj ny administratör";
 
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Arkiverade konversationer";
@@ -1668,7 +1674,7 @@
 "INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "Missade samtalet, för den andra personens säkerhetsnummer har ändrats.";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "Du kan skicka eller ta emot synkroniserade meddelanden från din telefon eller iPad. ↵För din säkerhet överförs inte konversationshistorik till nya kopplade enheter.";
+"INFO_MESSAGE_SYNCED_THREAD" = "Du kan skicka eller ta emot synkroniserade meddelanden från din telefon eller iPad. ↵För din säkerhet överförs inte konversationshistorik till nya länkade enheter.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ är på Signal!";
@@ -1758,37 +1764,37 @@
 "LEAVE_GROUP_FAILED" = "Ett fel uppstod när gruppen lämnades.";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_BODY" = "Den här QR-koden är inte giltig. Vänligen se till att du skannar QR-koden som visas på enheten som du vill koppla.";
+"LINK_DEVICE_INVALID_CODE_BODY" = "Den här QR-koden är inte giltig. Vänligen se till att du skannar QR-koden som visas på enheten som du vill länka.";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_TITLE" = "Det gick inte att koppla enheten";
+"LINK_DEVICE_INVALID_CODE_TITLE" = "Det gick inte att länka enhet";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_BODY" = "Den här enheten kommer att se dina grupper och kontakter, få tillgång till dina konversationer och skicka meddelanden i ditt namn.";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Koppla den här enheten?";
+"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Länka den här enheten?";
 
 /* attempt another linking */
 "LINK_DEVICE_RESTART" = "Försök igen";
 
 /* QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Skanna QR-koden som visas på enheten som du vill koppla.";
+"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Skanna QR-koden som visas på enheten som du vill länka.";
 
 /* Subheading for 'Link New Device' navigation */
 "LINK_NEW_DEVICE_SUBTITLE" = "Skanna QR-kod";
 
 /* Navigation title when scanning QR code to add new device. */
-"LINK_NEW_DEVICE_TITLE" = "Koppla ny enhet";
+"LINK_NEW_DEVICE_TITLE" = "Länka ny enhet";
 
 /* Label for link previews with an unknown host. */
 "LINK_PREVIEW_UNKNOWN_DOMAIN" = "Länkförhandsvisning";
 
 /* Menu item and navbar title for the device manager */
-"LINKED_DEVICES_TITLE" = "Kopplade enheter";
+"LINKED_DEVICES_TITLE" = "Länkade enheter";
 
 /* Alert Title */
-"LINKING_DEVICE_FAILED_TITLE" = "Det gick inte att koppla enheten";
+"LINKING_DEVICE_FAILED_TITLE" = "Det gick inte att länka enhet";
 
 /* table cell label in conversation settings */
 "LIST_GROUP_MEMBERS_ACTION" = "Gruppmedlemmar";
@@ -2082,10 +2088,10 @@
 "MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "För den här funktionen behöver Signal åtkomst till dina foton.";
 
 /* alert title: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_DESC" = "Du kan inte koppla fler enheter.";
+"MULTIDEVICE_PAIRING_MAX_DESC" = "Du kan inte länka fler enheter.";
 
 /* alert body: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Du har nått maximalt antal enheter som du för närvarande kan koppla med ditt konto. Vänligen ta bort en enhet och försök igen.";
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Du har nått maximalt antal enheter som du för närvarande kan länka med ditt konto. Vänligen ta bort en enhet och försök igen.";
 
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "Du kommer inte få notiser för tystade konversationer.";
@@ -2244,25 +2250,25 @@
 "ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Registrera iPad";
 
 /* button indicating that the user will link their phone */
-"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Koppla iPhone";
+"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Länka iPhone";
 
 /* explanation to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Genom att trycka på \"Registrera iPad\" kan du skapa ett helt nytt Signal-konto eller flytta ett befintligt konto till denna iPad. Detta kommer att inaktivera Signal på alla andra enheter som för närvarande är registrerade med samma telefonnummer.";
 
 /* explanation to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Genom att trycka på \"Koppla iPhone\" kan du ansluta din telefon till ett befintligt konto. Att koppla din telefon rekommenderas i allmänhet inte och kommer att begränsa vissa funktioner, såsom att ringa.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Genom att trycka på \"Länka iPhone\" kan du ansluta din telefon till ett befintligt konto. Att koppla din telefon rekommenderas i allmänhet inte och kommer att begränsa vissa funktioner, såsom att ringa.";
 
 /* header text indicating to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "Registrera denna iPad";
 
 /* header text indicating to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Koppla denna iPhone";
+"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Länka denna iPhone";
 
 /* warning to the user that registering an ipad is not recommended */
 "ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Registrering av denna iPad inaktiverar Signal på alla andra enheter som för närvarande är registrerad med samma telefonnummer.";
 
 /* warning to the user that linking a phone is not recommended */
-"ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "Att koppla din iPhone rekommenderas inte och kommer att begränsa kärnfunktioner.";
+"ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "Att länka din iPhone rekommenderas inte och kommer att begränsa kärnfunktioner.";
 
 /* Label for the 'give access' button in the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Aktivera behörigheter";
@@ -2925,7 +2931,7 @@
 "REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "Det är inte rätt PIN-kod.";
 
 /* The title for the 'replace group admin' view. */
-"REPLACE_ADMIN_VIEW_TITLE" = "Choose New Admin";
+"REPLACE_ADMIN_VIEW_TITLE" = "Välj ny administratör";
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "Omregistrera för pushnotiser";
@@ -3012,13 +3018,13 @@
 "SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "Uppdatera skanningsenhet";
 
 /* alert title */
-"SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "Det gick inte att koppla din enhet";
+"SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "Det gick inte att länka din enhet";
 
 /* header text when this device is being added as a secondary */
 "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Välj ett namn för den här enheten";
 
 /* label text */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "Det här namnet visas under \"Kopplade enheter.\"";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "Det här namnet visas under \"Länkade enheter.\"";
 
 /* text field placeholder */
 "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "Välj ett namn";
@@ -3027,22 +3033,22 @@
 "SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "Koppling klar";
 
 /* header text before the user can link this device */
-"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Starta Signal på din telefon för att koppla denna iPad till ditt konto";
+"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Starta Signal på din telefon för att länka denna iPad till ditt konto";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
 "SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "Jag har inte Signal på min telefon.…";
 
 /* alert body */
-"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Gå till App Store på din telefon, installera Signal, slutför registreringsprocessen och sedan kan du koppla din iPad till samma konto.";
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Gå till App Store på din telefon, installera Signal, slutför registreringsprocessen och sedan kan du länka din iPad till samma konto.";
 
 /* alert title */
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Installera Signal på din telefon";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Tryck på din profilbild för att öppna inställningarna för Signal på din telefon. Sedan \"Kopplade enheter\" och \"Koppla ny enhet\" för att skanna den här koden med din telefon:";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Tryck på din profilbild för att öppna inställningarna för Signal på din telefon. Sedan \"Länkade enheter\" och \"Länka ny enhet\" för att skanna den här koden med din telefon:";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
-"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Få hjälp med att koppla din iPad här";
+"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Få hjälp med att länka din iPad här";
 
 /* header text while displaying a QR code which, when scanned, will link this device. */
 "SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Skanna QR-koden med din telefon";
@@ -3303,7 +3309,7 @@
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Visa och dela när meddelanden har lästs. Inställningen är valfri och påverkar alla konversationer.";
 
 /* Label for re-link button. */
-"SETTINGS_RELINK_BUTTON" = "Koppla igen";
+"SETTINGS_RELINK_BUTTON" = "Länka igen";
 
 /* Label for re-registration button. */
 "SETTINGS_REREGISTER_BUTTON" = "Registrera igen";
@@ -3507,7 +3513,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Medlem av %@, %@, och %lu ytterligare grupper";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Du kan lägga till anteckningar för dig själv i den här konversationen. Om ditt konto har några kopplade enheter synkroniseras nya anteckningar.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Du kan lägga till anteckningar för dig själv i den här konversationen. Om ditt konto har några länkade enheter synkroniseras nya anteckningar.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Medlem av %@";
@@ -3609,19 +3615,19 @@
 "UNKNOWN_VALUE" = "Okänt";
 
 /* button title for unlinking a device */
-"UNLINK_ACTION" = "Koppla bort";
+"UNLINK_ACTION" = "Sluta länka";
 
 /* Alert message to confirm unlinking a device */
-"UNLINK_CONFIRMATION_ALERT_BODY" = "Denna enhet kommer inte längre att skicka eller ta emot meddelanden om den är frånkopplad.";
+"UNLINK_CONFIRMATION_ALERT_BODY" = "Denna enhet kommer inte längre att skicka eller ta emot meddelanden om den är avlänkad.";
 
 /* Alert title for confirming device deletion */
-"UNLINK_CONFIRMATION_ALERT_TITLE" = "Koppla bort \"%@\"?";
+"UNLINK_CONFIRMATION_ALERT_TITLE" = "Sluta länka \"%@\"?";
 
 /* Label warning the user that they have been unlinked from their primary device. */
-"UNLINKED_WARNING" = "Enheten är inte längre kopplad. Koppla igen Signal med din telefon för att fortsätta skicka meddelanden.";
+"UNLINKED_WARNING" = "Enheten är inte längre länkad. Länka igen Signal med din telefon för att fortsätta skicka meddelanden.";
 
 /* Alert title when unlinking device fails */
-"UNLINKING_FAILED_ALERT_TITLE" = "Signal kunde inte koppla bort din enhet.";
+"UNLINKING_FAILED_ALERT_TITLE" = "Signal kunde inte sluta länka din enhet.";
 
 /* Label text in device manager for a device with no name */
 "UNNAMED_DEVICE" = "Namnlös enhet";

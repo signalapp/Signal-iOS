@@ -1040,6 +1040,12 @@
 /* Error message indicating the a user can't be added to a group. */
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Cet utilisateur ou cette utilisatrice ne peut pas être ajouté(e) au groupe tant qu’il ou elle n’a pas mis(e) à jour Signal.";
 
+/* Message for 'group full' error alert when a user can't be added to a group. */
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "Maximum group size of 100 members reached.";
+
+/* Label for 'learn more' button when a user can't be added to a group. */
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_LEARN_MORE" = "Learn More";
+
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "Avatar non valide.";
 
@@ -1563,7 +1569,7 @@
 "GROUP_YOU_LEFT" = "Vous avez quitté le groupe.";
 
 /* Message for the 'can't replace group admin' alert. */
-"GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Choose a new admin for this group before you leave.";
+"GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Choisissez un nouvel admin pour ce groupe avant de partir.";
 
 /* Error indicating that an error occurred while accepting an invite. */
 "GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "L’invitation n’a pas pu être acceptée.";
@@ -1578,13 +1584,13 @@
 "GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "Bloquer %@";
 
 /* Message for the 'replace group admin' alert. */
-"GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "Before you leave, choose a new admin for this group.";
+"GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "Avant de partir, choisissez un nouvel admin pour ce groupe.";
 
 /* Title for the 'replace group admin' alert. */
-"GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "Choose New Admin";
+"GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "Choisir un nouvel admin";
 
 /* Label for the 'replace group admin' button. */
-"GROUPS_REPLACE_ADMIN_BUTTON" = "Choose new admin";
+"GROUPS_REPLACE_ADMIN_BUTTON" = "Choisir un nouvel admin";
 
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Conversations archivées";
@@ -2925,7 +2931,7 @@
 "REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "Ce n’est pas le bon NIP.";
 
 /* The title for the 'replace group admin' view. */
-"REPLACE_ADMIN_VIEW_TITLE" = "Choose New Admin";
+"REPLACE_ADMIN_VIEW_TITLE" = "Choisir un nouvel admin";
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "Réactiver les notifications poussées";
