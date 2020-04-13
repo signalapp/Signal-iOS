@@ -175,6 +175,10 @@ NS_ASSUME_NONNULL_BEGIN
     // This should always be valid for the appropriate cell types.
     OWSAssertDebug(self.viewItem);
 
+    if (self.wasRemotelyDeleted) {
+        return YES;
+    }
+
     return self.viewItem.hasBodyText;
 }
 
@@ -712,6 +716,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)configureBodyTextView
 {
+    OWSAssertDebug(self.hasBodyText);
+
     if (self.wasRemotelyDeleted) {
         self.bodyTextView.hidden = NO;
         self.bodyTextView.text
@@ -720,8 +726,6 @@ NS_ASSUME_NONNULL_BEGIN
         self.bodyTextView.font = self.textMessageFont.ows_italic;
         return;
     }
-
-    OWSAssertDebug(self.hasBodyText);
 
     BOOL shouldIgnoreEvents = NO;
     if (self.viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {

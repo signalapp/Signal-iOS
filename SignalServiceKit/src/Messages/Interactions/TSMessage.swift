@@ -32,9 +32,13 @@ public extension TSMessage {
         sentAtTimestamp: UInt64,
         receivedAtTimestamp: UInt64,
         transaction: SDSAnyWriteTransaction
-    ) -> OWSReaction {
-
+    ) -> OWSReaction? {
         Logger.info("")
+
+        guard !wasRemotelyDeleted else {
+            owsFailDebug("attempted to record a reaction for a message that was deleted")
+            return nil
+        }
 
         assert(emoji.isSingleEmoji)
 

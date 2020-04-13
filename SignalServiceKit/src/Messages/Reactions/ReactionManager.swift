@@ -112,7 +112,7 @@ public class ReactionManager: NSObject {
             )
 
             // If this is a reaction to a message we sent, notify the user.
-            if let message = message as? TSOutgoingMessage, !reactor.isLocalAddress {
+            if let reaction = reaction, let message = message as? TSOutgoingMessage, !reactor.isLocalAddress {
                 guard let thread = TSThread.anyFetch(uniqueId: threadId, transaction: transaction) else {
                     return owsFailDebug("Failed to lookup thread for reaction notification.")
                 }
