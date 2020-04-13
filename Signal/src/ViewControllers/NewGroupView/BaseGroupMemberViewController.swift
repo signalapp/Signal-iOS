@@ -321,11 +321,6 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
             return false
         }
 
-//        guard groupMemberViewDelegate.groupMemberViewCanAddRecipient(recipient) else {
-//            showInvalidGroupMemberAlert(recipient: recipient)
-//            return
-//        }
-
         return !groupMemberViewDelegate.groupMemberViewIsPreExistingMember(recipient)
     }
 
@@ -448,9 +443,9 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
         return firstly { () -> Promise<Void> in
             return GroupManager.tryToEnableGroupsV2(for: [address],
                                                     ignoreErrors: ignoreErrors)
-        }.map { _ in
+        }.map { [weak self] _ in
             // Reload view content.
-            recipientPicker.reloadContent()
+            self?.recipientPicker.reloadContent()
 
             return ()
         }
