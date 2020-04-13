@@ -336,6 +336,7 @@ NSNotificationName const kNSNotificationNameMessageProcessingDidFlushQueue
         } else if ([GroupsV2MessageProcessor isGroupsV2MessageWithEnvelope:envelope plaintextData:job.plaintextData]) {
             [self.groupsV2MessageProcessor enqueueWithEnvelopeData:job.envelopeData
                                                      plaintextData:job.plaintextData
+                                                          envelope:envelope
                                                    wasReceivedByUD:job.wasReceivedByUD
                                                        transaction:transaction];
         } else {

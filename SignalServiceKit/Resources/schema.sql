@@ -838,12 +838,20 @@ CREATE
             ,"envelopeData" BLOB NOT NULL
             ,"plaintextData" BLOB
             ,"wasReceivedByUD" INTEGER NOT NULL
+            ,"groupId" BLOB
         )
 ;
 
 CREATE
     INDEX "index_model_IncomingGroupsV2MessageJob_on_uniqueId"
         ON "model_IncomingGroupsV2MessageJob"("uniqueId"
+)
+;
+
+CREATE
+    INDEX "index_model_IncomingGroupsV2MessageJob_on_groupId_and_id"
+        ON "model_IncomingGroupsV2MessageJob"("groupId"
+    ,"id"
 )
 ;
 

@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithEnvelopeData:(NSData *)envelopeData
                        plaintextData:(NSData *_Nullable)plaintextData
+                             groupId:(NSData *_Nullable)groupId
                      wasReceivedByUD:(BOOL)wasReceivedByUD
 {
     OWSAssertDebug(envelopeData);
@@ -27,6 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     _envelopeData = envelopeData;
     _plaintextData = plaintextData;
+    _groupId = groupId;
     _wasReceivedByUD = wasReceivedByUD;
     _createdAt = [NSDate new];
 
@@ -44,6 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
                       uniqueId:(NSString *)uniqueId
                        createdAt:(NSDate *)createdAt
                     envelopeData:(NSData *)envelopeData
+                         groupId:(nullable NSData *)groupId
                    plaintextData:(nullable NSData *)plaintextData
                  wasReceivedByUD:(BOOL)wasReceivedByUD
 {
@@ -56,6 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     _createdAt = createdAt;
     _envelopeData = envelopeData;
+    _groupId = groupId;
     _plaintextData = plaintextData;
     _wasReceivedByUD = wasReceivedByUD;
 
