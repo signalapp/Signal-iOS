@@ -108,6 +108,11 @@ public class GroupMembership: MTLModel {
         return Set(memberStateMap.filter { $0.value.isPending }.keys)
     }
 
+    @objc
+    public var pendingAndNonPendingMemberCount: Int {
+        return memberStateMap.count
+    }
+
     // allUsers includes _all_ users:
     //
     // * Normal and administrator.
