@@ -53,17 +53,17 @@ public extension GroupV2Params {
             return Randomness.generateRandomBytes(Int32(plaintext.count))
         }
         let clientZkGroupCipher = ClientZkGroupCipher(groupSecretParams: groupSecretParams)
-        let cipherText = try clientZkGroupCipher.encryptBlob(plaintext: [UInt8](plaintext)).asData
-        assert(cipherText.count != plaintext.count)
-        assert(cipherText.count > 0)
-        return cipherText
+        let ciphertext = try clientZkGroupCipher.encryptBlob(plaintext: [UInt8](plaintext)).asData
+        assert(ciphertext != plaintext)
+        assert(ciphertext.count > 0)
+        return ciphertext
     }
 
-    func decryptBlob(_ cipherText: Data) throws -> Data {
+    func decryptBlob(_ ciphertext: Data) throws -> Data {
         let clientZkGroupCipher = ClientZkGroupCipher(groupSecretParams: groupSecretParams)
-        let plaintext = try clientZkGroupCipher.decryptBlob(blobCiphertext: [UInt8](cipherText)).asData
-        assert(cipherText.count != plaintext.count)
-        return plaintext
+        let plaintext = try clientZkGroupCipher.decryptBlob(blobCiphertext: [UInt8](ciphertext)).asData
+        assert(ciphertext != plaintext)
+        return ciphertext
     }
 
     func uuid(forUserId userId: Data) throws -> UUID {
