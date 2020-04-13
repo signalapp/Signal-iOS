@@ -47,6 +47,10 @@ public class BaseGroupMemberViewController: OWSViewController {
         return Environment.shared.contactsManager
     }
 
+    private var tsAccountManager: TSAccountManager {
+        return .sharedInstance()
+    }
+
     // MARK: -
 
     // This delegate is the subclass.
@@ -391,16 +395,13 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
             owsFailDebug("Invalid recipient.")
             return
         }
+        guard RemoteConfig.groupsV2CreateGroups ||
+            RemoteConfig.groupsV2IncomingMessages else {
+                return
+        }
         // GroupsV2 TODO: We could debounce this effort.
         if !doesRecipientSupportGroupsV2(recipient) {
-            firstly {
-                tryToEnableGroupsV2ForAddress(address)
-            }.done { _ in
-                // Do nothing.
-            }.catch { error in
-                // This isn't an error; some users don't support groups v2.
-                Logger.warn("Error: \(error)")
-            }.retainUntilComplete()
+            tryToEnableGroupsV2ForAddress(address, ignoreErrors: true).retainUntilComplete()
         }
     }
 
@@ -414,19 +415,16 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
             owsFailDebug("Missing delegate.")
             return AnyPromise(Promise.value(()))
         }
+        guard RemoteConfig.groupsV2CreateGroups ||
+            RemoteConfig.groupsV2IncomingMessages else {
+                return AnyPromise(Promise.value(()))
+        }
         guard !doesRecipientSupportGroupsV2(recipient) else {
             // Recipient already supports groups v2.
             return AnyPromise(Promise.value(()))
         }
-        let promise = tryToEnableGroupsV2ForAddress(address)
-        if groupMemberViewDelegate.groupMemberViewIsGroupsV2Required() {
-            return AnyPromise(promise)
-        } else {
-            return AnyPromise(promise.recover { error -> Guarantee<Void> in
-                Logger.warn("Error: \(error).")
-                return Guarantee.value(())
-            })
-        }
+        let ignoreErrors = !groupMemberViewDelegate.groupMemberViewIsGroupsV2Required()
+        return AnyPromise(tryToEnableGroupsV2ForAddress(address, ignoreErrors: ignoreErrors))
     }
 
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
@@ -445,28 +443,16 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
         }
     }
 
-    private func tryToEnableGroupsV2ForAddress(_ address: SignalServiceAddress) -> Promise<Void> {
+    func tryToEnableGroupsV2ForAddress(_ address: SignalServiceAddress,
+                                       ignoreErrors: Bool) -> Promise<Void> {
         return firstly { () -> Promise<Void> in
-            guard address.isValid else {
-                throw OWSAssertionError("Invalid address: \(address).")
-            }
-            return Promise.value(())
-        }.then(on: .global()) { _ -> Promise<Void> in
-            // Try to ensure UUID.
-            guard address.uuid != nil else {
-                return GroupManager.tryToEnsureUuids(for: [address])
-            }
-            return Promise.value(())
-        }.then(on: .global()) { _ -> Promise<Void> in
-            let hasCapability = self.databaseStorage.read { transaction in
-                GroupManager.doesUserHaveGroupsV2Capability(address: address, transaction: transaction)
-            }
-            guard hasCapability else {
-                return ProfileFetcherJob.fetchAndUpdateProfilePromise(address: address,
-                                                                      mainAppOnly: false,
-                                                                      ignoreThrottling: true).asVoid()
-            }
-            return Promise.value(())
+            return GroupManager.tryToEnableGroupsV2(for: [address],
+                                                    ignoreErrors: ignoreErrors)
+        }.map { _ in
+            // Reload view content.
+            recipientPicker.reloadContent()
+
+            return ()
         }
     }
 

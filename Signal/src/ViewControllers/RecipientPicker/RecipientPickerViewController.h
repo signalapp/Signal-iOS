@@ -42,6 +42,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, nullable) NSString *customSearchQuery;
 
+- (void)reloadContent;
+
 @end
 
 NS_ASSUME_NONNULL_END

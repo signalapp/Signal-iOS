@@ -215,8 +215,12 @@ public class GroupManager: NSObject {
         // By default, DMs are disable for new groups.
         let disappearingMessageToken = DisappearingMessageToken.disabledToken
 
-        return firstly {
+        return firstly { () -> Promise<Void> in
             return self.ensureLocalProfileHasCommitmentIfNecessary()
+        }.then(on: .global()) { () -> Promise<Void> in
+            var memberSet = Set(membersParam)
+            memberSet.insert(localAddress)
+            return self.tryToEnableGroupsV2(for: Array(memberSet), ignoreErrors: true)
         }.map(on: .global()) { () throws -> GroupMembership in
             // Build member list.
             //
@@ -234,8 +238,6 @@ public class GroupManager: NSObject {
                 return Promise.value(groupMembership)
             }
             return firstly { () -> Promise<Void> in
-                self.groupsV2.tryToEnsureUuidsForGroupMembers(for: Array(groupMembership.allUsers))
-            }.then(on: .global()) { () -> Promise<Void> in
                 self.groupsV2.tryToEnsureProfileKeyCredentials(for: Array(groupMembership.allUsers))
             }.map(on: .global()) { (_) -> GroupMembership in
                 return groupMembership
@@ -712,7 +714,10 @@ public class GroupManager: NSObject {
         let groupId = proposedGroupModel.groupId
 
         return firstly { () -> Promise<Void> in
-            self.groupsV2.tryToEnsureUuidsForGroupMembers(for: Array(proposedGroupModel.groupMembership.allUsers))
+            guard RemoteConfig.groupsV2CreateGroups else {
+                return Promise.value(())
+            }
+            return self.tryToEnableGroupsV2(for: Array(proposedGroupModel.groupMembership.allUsers), ignoreErrors: true)
         }.then(on: .global()) { () -> Promise<Void> in
             return self.ensureLocalProfileHasCommitmentIfNecessary()
         }.then(on: DispatchQueue.global()) { () -> Promise<String?> in
@@ -1189,8 +1194,49 @@ public class GroupManager: NSObject {
 
     // MARK: - UUIDs
 
-    public static func tryToEnsureUuids(for addresses: [SignalServiceAddress]) -> Promise<Void> {
-        return groupsV2.tryToEnsureUuidsForGroupMembers(for: addresses)
+    public static func tryToEnableGroupsV2(for addresses: [SignalServiceAddress],
+                                           ignoreErrors: Bool) -> Promise<Void> {
+        let promise = tryToEnableGroupsV2(for: addresses)
+        if ignoreErrors {
+            return promise.recover { error -> Guarantee<Void> in
+                Logger.warn("Error: \(error).")
+                return Guarantee.value(())
+            }
+        } else {
+            return promise
+        }
+    }
+
+    private static func tryToEnableGroupsV2(for addresses: [SignalServiceAddress]) -> Promise<Void> {
+        return firstly { () -> Promise<Void> in
+            for address in addresses {
+                guard address.isValid else {
+                    throw OWSAssertionError("Invalid address: \(address).")
+                }
+            }
+            return Promise.value(())
+        }.then(on: .global()) { _ -> Promise<Void> in
+            // Try to ensure UUIDs.
+            return self.groupsV2.tryToEnsureUuidsForGroupMembers(for: addresses)
+        }.then(on: .global()) { _ -> Promise<Void> in
+            // Try to ensure groups v2 capability.
+            var addressesWithoutCapability = [SignalServiceAddress]()
+            self.databaseStorage.read { transaction in
+                for address in addresses {
+                    if !GroupManager.doesUserHaveGroupsV2Capability(address: address, transaction: transaction) {
+                        addressesWithoutCapability.append(address)
+                    }
+                }
+            }
+            guard !addressesWithoutCapability.isEmpty else {
+                return Promise.value(())
+            }
+            var promises = [Promise<Void>]()
+            for address in addressesWithoutCapability {
+                promises.append(self.profileManager.updateProfile(forAddressPromise: address).asVoid())
+            }
+            return when(fulfilled: promises)
+        }
     }
 
     // MARK: - Messages

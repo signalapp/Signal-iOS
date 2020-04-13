@@ -333,6 +333,11 @@ const NSUInteger kMinimumSearchLength = 2;
 
 #pragma mark - Table Contents
 
+- (void)reloadContent
+{
+    [self updateTableContents];
+}
+
 - (void)updateTableContents
 {
     OWSAssertIsOnMainThread();
