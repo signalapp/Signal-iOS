@@ -1042,7 +1042,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     }
 
     // else fall back to phone number, username, profile name, etc.
-    return phoneNumber ?: username ?: profileName ?: self.unknownUserLabel;
+    return phoneNumber ?: username ?: self.unknownUserLabel;
 }
 
 - (NSString *)displayNameForAddress:(SignalServiceAddress *)address

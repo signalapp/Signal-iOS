@@ -239,14 +239,9 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 
     if (!isNoteToSelf && !hasCustomName && !RemoteConfig.messageRequests
         && ![self.contactsManager hasNameInSystemContactsForAddress:self.address]) {
-        __block NSString *_Nullable formattedProfileName = nil;
-        __block NSString *_Nullable profileName = nil;
-        [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-            formattedProfileName = [self.contactsManager formattedProfileNameForAddress:self.address];
-            profileName = [self.profileManager fullNameForAddress:self.address transaction:transaction];
-        }];
-        if (formattedProfileName != nil && profileName != nil && ![profileName isEqualToString:self.nameLabel.text]) {
-            self.profileNameLabel.text = formattedProfileName;
+        NSString *_Nullable profileName = [self.contactsManager formattedProfileNameForAddress:self.address];
+        if (profileName != nil && ![profileName isEqualToString:self.nameLabel.text]) {
+            self.profileNameLabel.text = profileName;
             self.profileNameLabel.hidden = NO;
             [self.profileNameLabel setNeedsLayout];
         } else {
