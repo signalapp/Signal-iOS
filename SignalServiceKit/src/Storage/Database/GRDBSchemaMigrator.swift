@@ -63,6 +63,7 @@ public class GRDBSchemaMigrator: NSObject {
         case createInteractionAttachmentIdsIndex
         case addIsUuidCapableToUserProfiles
         case uploadTimestamp
+        case addGroupIdToGroupsV2IncomingMessageJobs
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -443,6 +444,15 @@ public class GRDBSchemaMigrator: NSObject {
             try db.alter(table: "model_TSAttachment") { (table: TableAlteration) -> Void in
                 table.add(column: "uploadTimestamp", .integer).notNull().defaults(to: 0)
             }
+        }
+
+        migrator.registerMigration(MigrationId.addGroupIdToGroupsV2IncomingMessageJobs.rawValue) { db in
+            try db.alter(table: "model_IncomingGroupsV2MessageJob") { (table: TableAlteration) -> Void in
+                table.add(column: "groupId", .blob)
+            }
+            try db.create(index: "index_model_IncomingGroupsV2MessageJob_on_groupId_and_id",
+                          on: "model_IncomingGroupsV2MessageJob",
+                          columns: ["groupId", "id"])
         }
 
         // MARK: - Schema Migration Insertion Point
