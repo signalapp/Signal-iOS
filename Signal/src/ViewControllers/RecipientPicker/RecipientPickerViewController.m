@@ -333,6 +333,11 @@ const NSUInteger kMinimumSearchLength = 2;
 
 #pragma mark - Table Contents
 
+- (void)reloadContent
+{
+    [self updateTableContents];
+}
+
 - (void)updateTableContents
 {
     OWSAssertIsOnMainThread();
@@ -720,20 +725,13 @@ const NSUInteger kMinimumSearchLength = 2;
                                 cell.accessibilityIdentifier
                                     = ACCESSIBILITY_IDENTIFIER_WITH_NAME(RecipientPickerViewController, cellName);
 
+                                [strongSelf.delegate recipientPicker:strongSelf willRenderRecipient:recipient];
+
                                 return cell;
                             }
                             customRowHeight:UITableViewAutomaticDimension
                             actionBlock:^{
-                                __strong typeof(self) strongSelf = weakSelf;
-                                if (!strongSelf) {
-                                    return;
-                                }
-
-                                if (![strongSelf.delegate recipientPicker:strongSelf canSelectRecipient:recipient]) {
-                                    return;
-                                }
-
-                                [strongSelf.delegate recipientPicker:strongSelf didSelectRecipient:recipient];
+                                [weakSelf tryToSelectRecipient:recipient];
                             }]];
         } else if (isRegistered || self.allowsSelectingUnregisteredPhoneNumbers) {
             [phoneNumbersSection addItem:[self itemForRecipient:recipient]];
@@ -980,13 +978,7 @@ const NSUInteger kMinimumSearchLength = 2;
                               }
 
                               [modal dismissWithCompletion:^{
-                                  __strong typeof(self) strongSelf = weakSelf;
-                                  if (!strongSelf) {
-                                      return;
-                                  }
-
-                                  [strongSelf.delegate recipientPicker:strongSelf
-                                                    didSelectRecipient:[PickedRecipient forAddress:address]];
+                                  [weakSelf tryToSelectRecipient:[PickedRecipient forAddress:address]];
                               }];
                           }
                           notFound:^{
@@ -1053,7 +1045,8 @@ const NSUInteger kMinimumSearchLength = 2;
          didSelectAddress:(SignalServiceAddress *)address
 {
     OWSAssertDebug(address.isValid);
-    [self.delegate recipientPicker:self didSelectRecipient:[PickedRecipient forAddress:address]];
+
+    [self tryToSelectRecipient:[PickedRecipient forAddress:address]];
 }
 
 #pragma mark - UISearchBarDelegate

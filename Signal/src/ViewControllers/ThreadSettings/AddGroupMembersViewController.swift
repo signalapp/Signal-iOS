@@ -257,6 +257,10 @@ extension AddGroupMembersViewController: GroupMemberViewDelegate {
         return oldGroupModel.groupMembership.isPendingOrNonPendingMember(address)
     }
 
+    func groupMemberViewIsGroupsV2Required() -> Bool {
+        return groupThread.isGroupV2Thread
+    }
+
     func groupMemberViewDismiss() {
         navigationController?.popViewController(animated: true)
     }

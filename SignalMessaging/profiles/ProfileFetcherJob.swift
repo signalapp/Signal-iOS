@@ -390,7 +390,7 @@ public class ProfileFetcherJob: NSObject {
 
     // TODO: This method can cause many database writes.
     //       Perhaps we can use a single transaction?
-    private func updateProfile(fetchedProfile: FetchedProfile) {
+    private func updateProfile(fetchedProfile: FetchedProfile) -> Promise<Void> {
         let profile = fetchedProfile.profile
         let address = profile.address
 
@@ -408,7 +408,7 @@ public class ProfileFetcherJob: NSObject {
                                  verifier: profile.unidentifiedAccessVerifier,
                                  hasUnrestrictedAccess: profile.hasUnrestrictedUnidentifiedAccess)
 
-        databaseStorage.asyncWrite { transaction in
+        return databaseStorage.write(.promise) { transaction in
             GroupManager.setUserHasGroupsV2Capability(address: address,
                                                       value: profile.supportsGroupsV2,
                                                       transaction: transaction)
