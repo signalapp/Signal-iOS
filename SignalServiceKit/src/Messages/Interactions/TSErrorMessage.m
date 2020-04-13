@@ -172,6 +172,7 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
                   messageSticker:(nullable MessageSticker *)messageSticker
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
     storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
+              wasRemotelyDeleted:(BOOL)wasRemotelyDeleted
                        errorType:(TSErrorMessageType)errorType
                             read:(BOOL)read
                 recipientAddress:(nullable SignalServiceAddress *)recipientAddress
@@ -193,7 +194,8 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
                        linkPreview:linkPreview
                     messageSticker:messageSticker
                      quotedMessage:quotedMessage
-      storedShouldStartExpireTimer:storedShouldStartExpireTimer];
+      storedShouldStartExpireTimer:storedShouldStartExpireTimer
+                wasRemotelyDeleted:wasRemotelyDeleted];
 
     if (!self) {
         return self;

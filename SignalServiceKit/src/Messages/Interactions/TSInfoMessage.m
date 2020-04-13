@@ -153,6 +153,7 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
                   messageSticker:(nullable MessageSticker *)messageSticker
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
     storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
+              wasRemotelyDeleted:(BOOL)wasRemotelyDeleted
                    customMessage:(nullable NSString *)customMessage
              infoMessageUserInfo:(nullable NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo
                      messageType:(TSInfoMessageType)messageType
@@ -176,7 +177,8 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
                        linkPreview:linkPreview
                     messageSticker:messageSticker
                      quotedMessage:quotedMessage
-      storedShouldStartExpireTimer:storedShouldStartExpireTimer];
+      storedShouldStartExpireTimer:storedShouldStartExpireTimer
+                wasRemotelyDeleted:wasRemotelyDeleted];
 
     if (!self) {
         return self;

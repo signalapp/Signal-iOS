@@ -4151,6 +4151,117 @@ extension SSKProtoDataMessageReaction.SSKProtoDataMessageReactionBuilder {
 
 #endif
 
+// MARK: - SSKProtoDataMessageDelete
+
+@objc
+public class SSKProtoDataMessageDelete: NSObject {
+
+    // MARK: - SSKProtoDataMessageDeleteBuilder
+
+    @objc
+    public class func builder(targetSentTimestamp: UInt64) -> SSKProtoDataMessageDeleteBuilder {
+        return SSKProtoDataMessageDeleteBuilder(targetSentTimestamp: targetSentTimestamp)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc
+    public func asBuilder() -> SSKProtoDataMessageDeleteBuilder {
+        let builder = SSKProtoDataMessageDeleteBuilder(targetSentTimestamp: targetSentTimestamp)
+        return builder
+    }
+
+    @objc
+    public class SSKProtoDataMessageDeleteBuilder: NSObject {
+
+        private var proto = SignalServiceProtos_DataMessage.Delete()
+
+        @objc
+        fileprivate override init() {}
+
+        @objc
+        fileprivate init(targetSentTimestamp: UInt64) {
+            super.init()
+
+            setTargetSentTimestamp(targetSentTimestamp)
+        }
+
+        @objc
+        public func setTargetSentTimestamp(_ valueParam: UInt64) {
+            proto.targetSentTimestamp = valueParam
+        }
+
+        @objc
+        public func build() throws -> SSKProtoDataMessageDelete {
+            return try SSKProtoDataMessageDelete.parseProto(proto)
+        }
+
+        @objc
+        public func buildSerializedData() throws -> Data {
+            return try SSKProtoDataMessageDelete.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SignalServiceProtos_DataMessage.Delete
+
+    @objc
+    public let targetSentTimestamp: UInt64
+
+    private init(proto: SignalServiceProtos_DataMessage.Delete,
+                 targetSentTimestamp: UInt64) {
+        self.proto = proto
+        self.targetSentTimestamp = targetSentTimestamp
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc
+    public class func parseData(_ serializedData: Data) throws -> SSKProtoDataMessageDelete {
+        let proto = try SignalServiceProtos_DataMessage.Delete(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: SignalServiceProtos_DataMessage.Delete) throws -> SSKProtoDataMessageDelete {
+        guard proto.hasTargetSentTimestamp else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: targetSentTimestamp")
+        }
+        let targetSentTimestamp = proto.targetSentTimestamp
+
+        // MARK: - Begin Validation Logic for SSKProtoDataMessageDelete -
+
+        // MARK: - End Validation Logic for SSKProtoDataMessageDelete -
+
+        let result = SSKProtoDataMessageDelete(proto: proto,
+                                               targetSentTimestamp: targetSentTimestamp)
+        return result
+    }
+
+    @objc
+    public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SSKProtoDataMessageDelete {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoDataMessageDelete.SSKProtoDataMessageDeleteBuilder {
+    @objc
+    public func buildIgnoringErrors() -> SSKProtoDataMessageDelete? {
+        return try! self.build()
+    }
+}
+
+#endif
+
 // MARK: - SSKProtoDataMessageFlags
 
 @objc
@@ -4261,6 +4372,9 @@ public class SSKProtoDataMessage: NSObject {
         }
         if let _value = reaction {
             builder.setReaction(_value)
+        }
+        if let _value = delete {
+            builder.setDelete(_value)
         }
         return builder
     }
@@ -4412,6 +4526,17 @@ public class SSKProtoDataMessage: NSObject {
         }
 
         @objc
+        @available(swift, obsoleted: 1.0)
+        public func setDelete(_ valueParam: SSKProtoDataMessageDelete?) {
+            guard let valueParam = valueParam else { return }
+            proto.delete = valueParam.proto
+        }
+
+        public func setDelete(_ valueParam: SSKProtoDataMessageDelete) {
+            proto.delete = valueParam.proto
+        }
+
+        @objc
         public func build() throws -> SSKProtoDataMessage {
             return try SSKProtoDataMessage.parseProto(proto)
         }
@@ -4447,6 +4572,9 @@ public class SSKProtoDataMessage: NSObject {
 
     @objc
     public let reaction: SSKProtoDataMessageReaction?
+
+    @objc
+    public let delete: SSKProtoDataMessageDelete?
 
     @objc
     public var body: String? {
@@ -4525,7 +4653,8 @@ public class SSKProtoDataMessage: NSObject {
                  contact: [SSKProtoDataMessageContact],
                  preview: [SSKProtoDataMessagePreview],
                  sticker: SSKProtoDataMessageSticker?,
-                 reaction: SSKProtoDataMessageReaction?) {
+                 reaction: SSKProtoDataMessageReaction?,
+                 delete: SSKProtoDataMessageDelete?) {
         self.proto = proto
         self.attachments = attachments
         self.group = group
@@ -4535,6 +4664,7 @@ public class SSKProtoDataMessage: NSObject {
         self.preview = preview
         self.sticker = sticker
         self.reaction = reaction
+        self.delete = delete
     }
 
     @objc
@@ -4583,6 +4713,11 @@ public class SSKProtoDataMessage: NSObject {
             reaction = try SSKProtoDataMessageReaction.parseProto(proto.reaction)
         }
 
+        var delete: SSKProtoDataMessageDelete?
+        if proto.hasDelete {
+            delete = try SSKProtoDataMessageDelete.parseProto(proto.delete)
+        }
+
         // MARK: - Begin Validation Logic for SSKProtoDataMessage -
 
         // MARK: - End Validation Logic for SSKProtoDataMessage -
@@ -4595,7 +4730,8 @@ public class SSKProtoDataMessage: NSObject {
                                          contact: contact,
                                          preview: preview,
                                          sticker: sticker,
-                                         reaction: reaction)
+                                         reaction: reaction,
+                                         delete: delete)
         return result
     }
 

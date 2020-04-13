@@ -62,6 +62,7 @@ NSString *TSInvalidRecipientKey = @"TSInvalidRecipientKey";
                   messageSticker:(nullable MessageSticker *)messageSticker
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
     storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
+              wasRemotelyDeleted:(BOOL)wasRemotelyDeleted
                        errorType:(TSErrorMessageType)errorType
                             read:(BOOL)read
                 recipientAddress:(nullable SignalServiceAddress *)recipientAddress
@@ -86,6 +87,7 @@ NSString *TSInvalidRecipientKey = @"TSInvalidRecipientKey";
                     messageSticker:messageSticker
                      quotedMessage:quotedMessage
       storedShouldStartExpireTimer:storedShouldStartExpireTimer
+                wasRemotelyDeleted:wasRemotelyDeleted
                          errorType:errorType
                               read:read
                   recipientAddress:recipientAddress];

@@ -54,6 +54,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 @property (nonatomic) BOOL isViewOnceMessage;
 @property (nonatomic) BOOL isViewOnceComplete;
+@property (nonatomic) BOOL wasRemotelyDeleted;
 
 // This property is only intended to be used by GRDB queries.
 @property (nonatomic, readonly) BOOL storedShouldStartExpireTimer;
@@ -127,6 +128,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                   messageSticker:(nullable MessageSticker *)messageSticker
                    quotedMessage:(nullable TSQuotedMessage *)quotedMessage
     storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
+              wasRemotelyDeleted:(BOOL)wasRemotelyDeleted
 {
     self = [super initWithGrdbId:grdbId
                         uniqueId:uniqueId
@@ -151,6 +153,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     _messageSticker = messageSticker;
     _quotedMessage = quotedMessage;
     _storedShouldStartExpireTimer = storedShouldStartExpireTimer;
+    _wasRemotelyDeleted = wasRemotelyDeleted;
 
     [self sdsFinalizeMessage];
 
@@ -458,6 +461,10 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 // TODO: This method contains view-specific logic and probably belongs in NotificationsManager, not in SSK.
 - (NSString *)previewTextWithTransaction:(SDSAnyReadTransaction *)transaction
 {
+    if (self.wasRemotelyDeleted) {
+        return NSLocalizedString(@"THIS_MESSAGE_WAS_DELETED", "text indicating the message was remotely deleted");
+    }
+
     NSString *_Nullable bodyDescription = nil;
 
     if (self.body.length > 0) {
@@ -612,12 +619,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     [super anyDidRemoveWithTransaction:transaction];
 
     [self removeAllAttachmentsWithTransaction:transaction];
-    
-    NSError *error;
-    [self removeAllReactionsWithTransaction:transaction error:&error];
-    if (error) {
-        OWSFailDebug(@"Failed to remove all reactions: %@", error.localizedDescription);
-    }
+
+    [self removeAllReactionsWithTransaction:transaction];
 }
 
 - (void)removeAllAttachmentsWithTransaction:(SDSAnyWriteTransaction *)transaction
@@ -744,6 +747,30 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     OWSAssertDebug(self.isViewOnceMessage);
     OWSAssertDebug(!self.isViewOnceComplete);
 
+    [self removeAllRenderableContentWithTransaction:transaction
+                                              block:^(TSMessage *message) {
+                                                  message.isViewOnceComplete = YES;
+                                              }];
+}
+
+#pragma mark - Remote Delete
+
+- (void)updateWithRemotelyDeletedAndRemoveRenderableContentWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(transaction);
+    OWSAssertDebug(!self.wasRemotelyDeleted);
+
+    [self removeAllReactionsWithTransaction:transaction];
+
+    [self removeAllRenderableContentWithTransaction:transaction
+                                              block:^(TSMessage *message) {
+                                                  message.wasRemotelyDeleted = YES;
+                                              }];
+}
+
+- (void)removeAllRenderableContentWithTransaction:(SDSAnyWriteTransaction *)transaction
+                                            block:(void (^)(TSMessage *message))block
+{
     // We call removeAllAttachmentsWithTransaction() before
     // anyUpdateWithTransaction, because anyUpdateWithTransaction's
     // block can be called twice, once on this instance and once
@@ -754,8 +781,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
     [self anyUpdateMessageWithTransaction:transaction
                                     block:^(TSMessage *message) {
-                                        message.isViewOnceComplete = YES;
-
                                         // Remove renderable content.
                                         message.body = nil;
                                         message.contactShare = nil;
@@ -764,6 +789,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                                         message.messageSticker = nil;
                                         message.attachmentIds = [NSMutableArray new];
                                         OWSAssertDebug(!message.hasRenderableContent);
+
+                                        block(message);
                                     }];
 }
 

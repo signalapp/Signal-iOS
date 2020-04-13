@@ -41,6 +41,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)clearAllNotifications;
 
+- (void)cancelNotificationsForMessageId:(NSString *)uniqueMessageId NS_SWIFT_NAME(cancelNotifications(messageId:));
+
 - (void)notifyUserForGRDBMigration;
 
 @end

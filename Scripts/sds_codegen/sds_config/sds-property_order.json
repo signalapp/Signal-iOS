@@ -97,6 +97,7 @@
     "InteractionRecord.unregisteredAddress": 47, 
     "InteractionRecord.verificationState": 48, 
     "InteractionRecord.wasReceivedByUD": 49, 
+    "InteractionRecord.wasRemotelyDeleted": 51, 
     "JobRecordRecord.attachmentId": 11, 
     "JobRecordRecord.attachmentIdMap": 4, 
     "JobRecordRecord.contactThreadId": 5, 

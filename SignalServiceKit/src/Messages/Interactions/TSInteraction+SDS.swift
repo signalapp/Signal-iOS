@@ -78,6 +78,7 @@ public struct InteractionRecord: SDSRecord {
     public let verificationState: OWSVerificationState?
     public let wasReceivedByUD: Bool?
     public let infoMessageUserInfo: Data?
+    public let wasRemotelyDeleted: Bool?
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -133,6 +134,7 @@ public struct InteractionRecord: SDSRecord {
         case verificationState
         case wasReceivedByUD
         case infoMessageUserInfo
+        case wasRemotelyDeleted
     }
 
     public static func columnName(_ column: InteractionRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -209,6 +211,7 @@ public extension InteractionRecord {
         verificationState = row[50]
         wasReceivedByUD = row[51]
         infoMessageUserInfo = row[52]
+        wasRemotelyDeleted = row[53]
     }
 }
 
@@ -261,6 +264,7 @@ extension TSInteraction {
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
+            let wasRemotelyDeleted: Bool = try SDSDeserialization.required(record.wasRemotelyDeleted, name: "wasRemotelyDeleted")
             let customMessage: String? = record.customMessage
             let infoMessageUserInfoSerialized: Data? = record.infoMessageUserInfo
             let infoMessageUserInfo: [InfoMessageUserInfoKey: AnyObject]? = try SDSDeserialization.optionalUnarchive(infoMessageUserInfoSerialized, name: "infoMessageUserInfo")
@@ -289,6 +293,7 @@ extension TSInteraction {
                                                 messageSticker: messageSticker,
                                                 quotedMessage: quotedMessage,
                                                 storedShouldStartExpireTimer: storedShouldStartExpireTimer,
+                                                wasRemotelyDeleted: wasRemotelyDeleted,
                                                 customMessage: customMessage,
                                                 infoMessageUserInfo: infoMessageUserInfo,
                                                 messageType: messageType,
@@ -319,6 +324,7 @@ extension TSInteraction {
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
+            let wasRemotelyDeleted: Bool = try SDSDeserialization.required(record.wasRemotelyDeleted, name: "wasRemotelyDeleted")
             let customMessage: String? = record.customMessage
             let infoMessageUserInfoSerialized: Data? = record.infoMessageUserInfo
             let infoMessageUserInfo: [InfoMessageUserInfoKey: AnyObject]? = try SDSDeserialization.optionalUnarchive(infoMessageUserInfoSerialized, name: "infoMessageUserInfo")
@@ -347,6 +353,7 @@ extension TSInteraction {
                                                         messageSticker: messageSticker,
                                                         quotedMessage: quotedMessage,
                                                         storedShouldStartExpireTimer: storedShouldStartExpireTimer,
+                                                        wasRemotelyDeleted: wasRemotelyDeleted,
                                                         customMessage: customMessage,
                                                         infoMessageUserInfo: infoMessageUserInfo,
                                                         messageType: messageType,
@@ -377,6 +384,7 @@ extension TSInteraction {
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
+            let wasRemotelyDeleted: Bool = try SDSDeserialization.required(record.wasRemotelyDeleted, name: "wasRemotelyDeleted")
             let customMessage: String? = record.customMessage
             let infoMessageUserInfoSerialized: Data? = record.infoMessageUserInfo
             let infoMessageUserInfo: [InfoMessageUserInfoKey: AnyObject]? = try SDSDeserialization.optionalUnarchive(infoMessageUserInfoSerialized, name: "infoMessageUserInfo")
@@ -409,6 +417,7 @@ extension TSInteraction {
                                                                  messageSticker: messageSticker,
                                                                  quotedMessage: quotedMessage,
                                                                  storedShouldStartExpireTimer: storedShouldStartExpireTimer,
+                                                                 wasRemotelyDeleted: wasRemotelyDeleted,
                                                                  customMessage: customMessage,
                                                                  infoMessageUserInfo: infoMessageUserInfo,
                                                                  messageType: messageType,
@@ -443,6 +452,7 @@ extension TSInteraction {
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
+            let wasRemotelyDeleted: Bool = try SDSDeserialization.required(record.wasRemotelyDeleted, name: "wasRemotelyDeleted")
             guard let errorType: TSErrorMessageType = record.errorType else {
                throw SDSError.missingRequiredField
             }
@@ -468,6 +478,7 @@ extension TSInteraction {
                                                       messageSticker: messageSticker,
                                                       quotedMessage: quotedMessage,
                                                       storedShouldStartExpireTimer: storedShouldStartExpireTimer,
+                                                      wasRemotelyDeleted: wasRemotelyDeleted,
                                                       errorType: errorType,
                                                       read: read,
                                                       recipientAddress: recipientAddress)
@@ -496,6 +507,7 @@ extension TSInteraction {
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
+            let wasRemotelyDeleted: Bool = try SDSDeserialization.required(record.wasRemotelyDeleted, name: "wasRemotelyDeleted")
             let customMessage: String? = record.customMessage
             let infoMessageUserInfoSerialized: Data? = record.infoMessageUserInfo
             let infoMessageUserInfo: [InfoMessageUserInfoKey: AnyObject]? = try SDSDeserialization.optionalUnarchive(infoMessageUserInfoSerialized, name: "infoMessageUserInfo")
@@ -527,6 +539,7 @@ extension TSInteraction {
                                                     messageSticker: messageSticker,
                                                     quotedMessage: quotedMessage,
                                                     storedShouldStartExpireTimer: storedShouldStartExpireTimer,
+                                                    wasRemotelyDeleted: wasRemotelyDeleted,
                                                     customMessage: customMessage,
                                                     infoMessageUserInfo: infoMessageUserInfo,
                                                     messageType: messageType,
@@ -559,6 +572,7 @@ extension TSInteraction {
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
+            let wasRemotelyDeleted: Bool = try SDSDeserialization.required(record.wasRemotelyDeleted, name: "wasRemotelyDeleted")
             let customMessage: String? = record.customMessage
             let infoMessageUserInfoSerialized: Data? = record.infoMessageUserInfo
             let infoMessageUserInfo: [InfoMessageUserInfoKey: AnyObject]? = try SDSDeserialization.optionalUnarchive(infoMessageUserInfoSerialized, name: "infoMessageUserInfo")
@@ -593,6 +607,7 @@ extension TSInteraction {
                                                      messageSticker: messageSticker,
                                                      quotedMessage: quotedMessage,
                                                      storedShouldStartExpireTimer: storedShouldStartExpireTimer,
+                                                     wasRemotelyDeleted: wasRemotelyDeleted,
                                                      customMessage: customMessage,
                                                      infoMessageUserInfo: infoMessageUserInfo,
                                                      messageType: messageType,
@@ -647,6 +662,7 @@ extension TSInteraction {
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
+            let wasRemotelyDeleted: Bool = try SDSDeserialization.required(record.wasRemotelyDeleted, name: "wasRemotelyDeleted")
             guard let errorType: TSErrorMessageType = record.errorType else {
                throw SDSError.missingRequiredField
             }
@@ -672,6 +688,7 @@ extension TSInteraction {
                                   messageSticker: messageSticker,
                                   quotedMessage: quotedMessage,
                                   storedShouldStartExpireTimer: storedShouldStartExpireTimer,
+                                  wasRemotelyDeleted: wasRemotelyDeleted,
                                   errorType: errorType,
                                   read: read,
                                   recipientAddress: recipientAddress)
@@ -700,6 +717,7 @@ extension TSInteraction {
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
+            let wasRemotelyDeleted: Bool = try SDSDeserialization.required(record.wasRemotelyDeleted, name: "wasRemotelyDeleted")
             let authorPhoneNumber: String? = record.authorPhoneNumber
             let authorUUID: String? = record.authorUUID
             let read: Bool = try SDSDeserialization.required(record.read, name: "read")
@@ -725,6 +743,7 @@ extension TSInteraction {
                                      messageSticker: messageSticker,
                                      quotedMessage: quotedMessage,
                                      storedShouldStartExpireTimer: storedShouldStartExpireTimer,
+                                     wasRemotelyDeleted: wasRemotelyDeleted,
                                      authorPhoneNumber: authorPhoneNumber,
                                      authorUUID: authorUUID,
                                      read: read,
@@ -756,6 +775,7 @@ extension TSInteraction {
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
+            let wasRemotelyDeleted: Bool = try SDSDeserialization.required(record.wasRemotelyDeleted, name: "wasRemotelyDeleted")
             let customMessage: String? = record.customMessage
             let infoMessageUserInfoSerialized: Data? = record.infoMessageUserInfo
             let infoMessageUserInfo: [InfoMessageUserInfoKey: AnyObject]? = try SDSDeserialization.optionalUnarchive(infoMessageUserInfoSerialized, name: "infoMessageUserInfo")
@@ -784,6 +804,7 @@ extension TSInteraction {
                                  messageSticker: messageSticker,
                                  quotedMessage: quotedMessage,
                                  storedShouldStartExpireTimer: storedShouldStartExpireTimer,
+                                 wasRemotelyDeleted: wasRemotelyDeleted,
                                  customMessage: customMessage,
                                  infoMessageUserInfo: infoMessageUserInfo,
                                  messageType: messageType,
@@ -829,6 +850,7 @@ extension TSInteraction {
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
+            let wasRemotelyDeleted: Bool = try SDSDeserialization.required(record.wasRemotelyDeleted, name: "wasRemotelyDeleted")
             guard let errorType: TSErrorMessageType = record.errorType else {
                throw SDSError.missingRequiredField
             }
@@ -854,6 +876,7 @@ extension TSInteraction {
                                                     messageSticker: messageSticker,
                                                     quotedMessage: quotedMessage,
                                                     storedShouldStartExpireTimer: storedShouldStartExpireTimer,
+                                                    wasRemotelyDeleted: wasRemotelyDeleted,
                                                     errorType: errorType,
                                                     read: read,
                                                     recipientAddress: recipientAddress)
@@ -882,6 +905,7 @@ extension TSInteraction {
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
+            let wasRemotelyDeleted: Bool = try SDSDeserialization.required(record.wasRemotelyDeleted, name: "wasRemotelyDeleted")
             guard let errorType: TSErrorMessageType = record.errorType else {
                throw SDSError.missingRequiredField
             }
@@ -909,6 +933,7 @@ extension TSInteraction {
                                                              messageSticker: messageSticker,
                                                              quotedMessage: quotedMessage,
                                                              storedShouldStartExpireTimer: storedShouldStartExpireTimer,
+                                                             wasRemotelyDeleted: wasRemotelyDeleted,
                                                              errorType: errorType,
                                                              read: read,
                                                              recipientAddress: recipientAddress,
@@ -939,6 +964,7 @@ extension TSInteraction {
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
+            let wasRemotelyDeleted: Bool = try SDSDeserialization.required(record.wasRemotelyDeleted, name: "wasRemotelyDeleted")
             guard let errorType: TSErrorMessageType = record.errorType else {
                throw SDSError.missingRequiredField
             }
@@ -967,6 +993,7 @@ extension TSInteraction {
                                                            messageSticker: messageSticker,
                                                            quotedMessage: quotedMessage,
                                                            storedShouldStartExpireTimer: storedShouldStartExpireTimer,
+                                                           wasRemotelyDeleted: wasRemotelyDeleted,
                                                            errorType: errorType,
                                                            read: read,
                                                            recipientAddress: recipientAddress,
@@ -997,6 +1024,7 @@ extension TSInteraction {
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
+            let wasRemotelyDeleted: Bool = try SDSDeserialization.required(record.wasRemotelyDeleted, name: "wasRemotelyDeleted")
 
             return TSMessage(grdbId: recordId,
                              uniqueId: uniqueId,
@@ -1015,7 +1043,8 @@ extension TSInteraction {
                              linkPreview: linkPreview,
                              messageSticker: messageSticker,
                              quotedMessage: quotedMessage,
-                             storedShouldStartExpireTimer: storedShouldStartExpireTimer)
+                             storedShouldStartExpireTimer: storedShouldStartExpireTimer,
+                             wasRemotelyDeleted: wasRemotelyDeleted)
 
         case .outgoingMessage:
 
@@ -1041,6 +1070,7 @@ extension TSInteraction {
             let quotedMessageSerialized: Data? = record.quotedMessage
             let quotedMessage: TSQuotedMessage? = try SDSDeserialization.optionalUnarchive(quotedMessageSerialized, name: "quotedMessage")
             let storedShouldStartExpireTimer: Bool = try SDSDeserialization.required(record.storedShouldStartExpireTimer, name: "storedShouldStartExpireTimer")
+            let wasRemotelyDeleted: Bool = try SDSDeserialization.required(record.wasRemotelyDeleted, name: "wasRemotelyDeleted")
             let customMessage: String? = record.customMessage
             guard let groupMetaMessage: TSGroupMetaMessage = record.groupMetaMessage else {
                throw SDSError.missingRequiredField
@@ -1078,6 +1108,7 @@ extension TSInteraction {
                                      messageSticker: messageSticker,
                                      quotedMessage: quotedMessage,
                                      storedShouldStartExpireTimer: storedShouldStartExpireTimer,
+                                     wasRemotelyDeleted: wasRemotelyDeleted,
                                      customMessage: customMessage,
                                      groupMetaMessage: groupMetaMessage,
                                      hasLegacyMessageState: hasLegacyMessageState,
@@ -1246,6 +1277,7 @@ extension TSInteractionSerializer {
     static let verificationStateColumn = SDSColumnMetadata(columnName: "verificationState", columnType: .int, isOptional: true)
     static let wasReceivedByUDColumn = SDSColumnMetadata(columnName: "wasReceivedByUD", columnType: .int, isOptional: true)
     static let infoMessageUserInfoColumn = SDSColumnMetadata(columnName: "infoMessageUserInfo", columnType: .blob, isOptional: true)
+    static let wasRemotelyDeletedColumn = SDSColumnMetadata(columnName: "wasRemotelyDeleted", columnType: .int, isOptional: true)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -1304,7 +1336,8 @@ extension TSInteractionSerializer {
         unregisteredAddressColumn,
         verificationStateColumn,
         wasReceivedByUDColumn,
-        infoMessageUserInfoColumn
+        infoMessageUserInfoColumn,
+        wasRemotelyDeletedColumn
         ])
 }
 
@@ -1764,7 +1797,8 @@ class TSInteractionSerializer: SDSSerializer {
         let verificationState: OWSVerificationState? = nil
         let wasReceivedByUD: Bool? = nil
         let infoMessageUserInfo: Data? = nil
+        let wasRemotelyDeleted: Bool? = nil
 
-        return InteractionRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, receivedAtTimestamp: receivedAtTimestamp, timestamp: timestamp, threadUniqueId: threadUniqueId, attachmentIds: attachmentIds, authorId: authorId, authorPhoneNumber: authorPhoneNumber, authorUUID: authorUUID, body: body, callType: callType, configurationDurationSeconds: configurationDurationSeconds, configurationIsEnabled: configurationIsEnabled, contactShare: contactShare, createdByRemoteName: createdByRemoteName, createdInExistingGroup: createdInExistingGroup, customMessage: customMessage, envelopeData: envelopeData, errorType: errorType, expireStartedAt: expireStartedAt, expiresAt: expiresAt, expiresInSeconds: expiresInSeconds, groupMetaMessage: groupMetaMessage, hasLegacyMessageState: hasLegacyMessageState, hasSyncedTranscript: hasSyncedTranscript, isFromLinkedDevice: isFromLinkedDevice, isLocalChange: isLocalChange, isViewOnceComplete: isViewOnceComplete, isViewOnceMessage: isViewOnceMessage, isVoiceMessage: isVoiceMessage, legacyMessageState: legacyMessageState, legacyWasDelivered: legacyWasDelivered, linkPreview: linkPreview, messageId: messageId, messageSticker: messageSticker, messageType: messageType, mostRecentFailureText: mostRecentFailureText, preKeyBundle: preKeyBundle, protocolVersion: protocolVersion, quotedMessage: quotedMessage, read: read, recipientAddress: recipientAddress, recipientAddressStates: recipientAddressStates, sender: sender, serverTimestamp: serverTimestamp, sourceDeviceId: sourceDeviceId, storedMessageState: storedMessageState, storedShouldStartExpireTimer: storedShouldStartExpireTimer, unregisteredAddress: unregisteredAddress, verificationState: verificationState, wasReceivedByUD: wasReceivedByUD, infoMessageUserInfo: infoMessageUserInfo)
+        return InteractionRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, receivedAtTimestamp: receivedAtTimestamp, timestamp: timestamp, threadUniqueId: threadUniqueId, attachmentIds: attachmentIds, authorId: authorId, authorPhoneNumber: authorPhoneNumber, authorUUID: authorUUID, body: body, callType: callType, configurationDurationSeconds: configurationDurationSeconds, configurationIsEnabled: configurationIsEnabled, contactShare: contactShare, createdByRemoteName: createdByRemoteName, createdInExistingGroup: createdInExistingGroup, customMessage: customMessage, envelopeData: envelopeData, errorType: errorType, expireStartedAt: expireStartedAt, expiresAt: expiresAt, expiresInSeconds: expiresInSeconds, groupMetaMessage: groupMetaMessage, hasLegacyMessageState: hasLegacyMessageState, hasSyncedTranscript: hasSyncedTranscript, isFromLinkedDevice: isFromLinkedDevice, isLocalChange: isLocalChange, isViewOnceComplete: isViewOnceComplete, isViewOnceMessage: isViewOnceMessage, isVoiceMessage: isVoiceMessage, legacyMessageState: legacyMessageState, legacyWasDelivered: legacyWasDelivered, linkPreview: linkPreview, messageId: messageId, messageSticker: messageSticker, messageType: messageType, mostRecentFailureText: mostRecentFailureText, preKeyBundle: preKeyBundle, protocolVersion: protocolVersion, quotedMessage: quotedMessage, read: read, recipientAddress: recipientAddress, recipientAddressStates: recipientAddressStates, sender: sender, serverTimestamp: serverTimestamp, sourceDeviceId: sourceDeviceId, storedMessageState: storedMessageState, storedShouldStartExpireTimer: storedShouldStartExpireTimer, unregisteredAddress: unregisteredAddress, verificationState: verificationState, wasReceivedByUD: wasReceivedByUD, infoMessageUserInfo: infoMessageUserInfo, wasRemotelyDeleted: wasRemotelyDeleted)
     }
 }
