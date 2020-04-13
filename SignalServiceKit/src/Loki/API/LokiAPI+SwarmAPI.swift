@@ -55,21 +55,22 @@ public extension LokiAPI {
             ]
             print("[Loki] Populating snode pool using: \(target).")
             let (promise, seal) = Promise<LokiAPITarget>.pending()
-            let queue = workQueue
-            HTTP.execute(.post, url, parameters: parameters).map(on: queue) { json in
-                guard let intermediate = json["result"] as? JSON, let rawTargets = intermediate["service_node_states"] as? [JSON] else { throw LokiAPIError.randomSnodePoolUpdatingFailed }
-                randomSnodePool = try Set(rawTargets.flatMap { rawTarget in
-                    guard let address = rawTarget["public_ip"] as? String, let port = rawTarget["storage_port"] as? Int, let ed25519PublicKey = rawTarget["pubkey_ed25519"] as? String, let x25519PublicKey = rawTarget["pubkey_x25519"] as? String, address != "0.0.0.0" else {
-                        print("[Loki] Failed to parse target from: \(rawTarget).")
-                        return nil
-                    }
-                    return LokiAPITarget(address: "https://\(address)", port: UInt16(port), publicKeySet: LokiAPITarget.KeySet(ed25519Key: ed25519PublicKey, x25519Key: x25519PublicKey))
-                })
-                // randomElement() uses the system's default random generator, which is cryptographically secure
-                return randomSnodePool.randomElement()!
-            }.retryingIfNeeded(maxRetryCount: 4).done(on: queue) { snode in
+            attempt(maxRetryCount: 4, recoveringOn: workQueue) {
+                HTTP.execute(.post, url, parameters: parameters).map(on: workQueue) { json in
+                    guard let intermediate = json["result"] as? JSON, let rawTargets = intermediate["service_node_states"] as? [JSON] else { throw LokiAPIError.randomSnodePoolUpdatingFailed }
+                    randomSnodePool = try Set(rawTargets.flatMap { rawTarget in
+                        guard let address = rawTarget["public_ip"] as? String, let port = rawTarget["storage_port"] as? Int, let ed25519PublicKey = rawTarget["pubkey_ed25519"] as? String, let x25519PublicKey = rawTarget["pubkey_x25519"] as? String, address != "0.0.0.0" else {
+                            print("[Loki] Failed to parse target from: \(rawTarget).")
+                            return nil
+                        }
+                        return LokiAPITarget(address: "https://\(address)", port: UInt16(port), publicKeySet: LokiAPITarget.KeySet(ed25519Key: ed25519PublicKey, x25519Key: x25519PublicKey))
+                    })
+                    // randomElement() uses the system's default random generator, which is cryptographically secure
+                    return randomSnodePool.randomElement()!
+                }
+            }.done(on: workQueue) { snode in
                 seal.fulfill(snode)
-            }.catch(on: queue) { error in
+            }.catch(on: workQueue) { error in
                 print("[Loki] Failed to contact seed node at: \(target).")
                 seal.reject(error)
             }

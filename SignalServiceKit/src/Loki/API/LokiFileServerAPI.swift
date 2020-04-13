@@ -101,7 +101,9 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
             let url = URL(string: "\(server)/users/me")!
             let request = TSRequest(url: url, method: "PATCH", parameters: parameters)
             request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
-            return LokiFileServerProxy(for: server).perform(request).map { _ in }.retryingIfNeeded(maxRetryCount: 8).recover { error in
+            return attempt(maxRetryCount: 8, recoveringOn: LokiAPI.workQueue) {
+                LokiFileServerProxy(for: server).perform(request).map { _ in }
+            }.recover { error in
                 print("Couldn't update device links due to error: \(error).")
                 throw error
             }
