@@ -400,9 +400,7 @@ public class SystemContactsFetcher: NSObject {
 
                 guard shouldNotifyDelegate else {
                     Logger.info("no reason to notify delegate.")
-
                     completion(nil)
-
                     return
                 }
 
