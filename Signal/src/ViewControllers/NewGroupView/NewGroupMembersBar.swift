@@ -89,6 +89,15 @@ public class NewGroupMembersBar: UIView {
         return collectionViewLayout.collectionViewContentSize.height
     }
 
+    func scrollToRecipient(_ recipient: PickedRecipient) {
+        guard let index = members.firstIndex(where: { $0.recipient == recipient }) else {
+            owsFailDebug("Missing member.")
+            return
+        }
+        collectionView.scrollToItem(at: IndexPath(item: index, section: 0),
+                                    at: .centeredHorizontally,
+                                    animated: true)
+    }
 }
 
 // MARK: -

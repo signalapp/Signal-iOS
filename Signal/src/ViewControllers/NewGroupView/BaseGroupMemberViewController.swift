@@ -188,6 +188,8 @@ public class BaseGroupMemberViewController: OWSViewController {
         recipientPicker.pickedRecipients = recipientSet.orderedMembers
         updateMemberBar()
         updateMemberCount()
+
+        memberBar.scrollToRecipient(recipient)
     }
 
     private func updateMemberBar() {

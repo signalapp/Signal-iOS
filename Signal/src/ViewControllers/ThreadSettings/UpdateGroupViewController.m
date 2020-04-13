@@ -204,8 +204,8 @@ NS_ASSUME_NONNULL_BEGIN
     [threadInfoView addSubview:avatarView];
     [avatarView autoVCenterInSuperview];
     [avatarView autoPinLeadingToSuperviewMargin];
-    [avatarView autoSetDimension:ALDimensionWidth toSize:kLargeAvatarSize];
-    [avatarView autoSetDimension:ALDimensionHeight toSize:kLargeAvatarSize];
+    [avatarView autoSetDimension:ALDimensionWidth toSize:kMediumAvatarSize];
+    [avatarView autoSetDimension:ALDimensionHeight toSize:kMediumAvatarSize];
     _groupAvatarData = self.thread.groupModel.groupAvatarData;
 
     UIImageView *cameraImageView = [UIImageView new];
@@ -333,7 +333,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.cameraImageView.hidden = groupAvatar != nil;
 
     if (!groupAvatar) {
-        groupAvatar = [[[OWSGroupAvatarBuilder alloc] initWithThread:self.thread diameter:kLargeAvatarSize] build];
+        groupAvatar = [[[OWSGroupAvatarBuilder alloc] initWithThread:self.thread diameter:kMediumAvatarSize] build];
     }
 
     self.avatarView.image = groupAvatar;
