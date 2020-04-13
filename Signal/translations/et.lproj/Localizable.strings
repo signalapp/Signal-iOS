@@ -45,22 +45,22 @@
 "ADD_GROUP_MEMBERS_ACTION_TITLE_1" = "Lisa liige";
 
 /* Label for the 'add group members' button. */
-"ADD_GROUP_MEMBERS_ACTION_TITLE_N" = "Add Members";
+"ADD_GROUP_MEMBERS_ACTION_TITLE_N" = "Lisa liikmeid";
 
 /* Format for the message for the 'add group member' confirmation alert.  Embeds {{ the name of the group. }}. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_1_FORMAT" = "Add member to “%2$@”?";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_1_FORMAT" = "Kas lisada liige vestlusse “%2$@”?";
 
 /* Format for the message for the 'add group members' confirmation alert.  Embeds {{ %1$@ number of new members, %2$@ name of the group. }}. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "Add %1$@ members to “%2$@”?";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "Kas lisada %1$@ liiget vestlusse “%2$@”?";
 
 /* Title for the 'add group member' confirmation alert. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1" = "Add New Member";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1" = "Lisa uus liige";
 
 /* Title for the 'add group members' confirmation alert. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_N" = "Add New Members";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_N" = "Lisa uusi liikmeid";
 
 /* The title for the 'add group members' view. */
-"ADD_GROUP_MEMBERS_VIEW_TITLE" = "Add Members";
+"ADD_GROUP_MEMBERS_VIEW_TITLE" = "Lisa liikmeid";
 
 /* Message shown in conversation view that offers to share your profile with a group. */
 "ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Kas sa soovid jagada oma profiili selle grupiga?";
@@ -165,7 +165,7 @@
 "ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "Salvestatud";
 
 /* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
-"ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "Message to %@";
+"ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "Sõnum kasutajale %@";
 
 /* Label for 'send' button in the 'attachment approval' dialog. */
 "ATTACHMENT_APPROVAL_SEND_BUTTON" = "Saada";
@@ -333,13 +333,13 @@
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Eemalda blokeering";
 
 /* An explanation of what unblocking a contact means. */
-"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "You will be able to message and call each other.";
+"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "Teil on võimalik üksteisele sõnumeid saata ja helistada.";
 
 /* Action sheet body when confirming you want to unblock a group */
 "BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Grupi liikmetel on võimalik sind uuesti gruppi lisada.";
 
 /* An explanation of what unblocking a group means. */
-"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Group members will be able to add you to this group again.";
+"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Grupi liikmetel on võimalik sind sellesse gruppi uuesti lisada.";
 
 /* Action sheet title when confirming you want to unblock a group. */
 "BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Kas eemaldada grupi blokeering?";
@@ -669,7 +669,7 @@
 "CONTACT_SUPPORT" = "Võta ühendust kasutajatoega";
 
 /* Alert body */
-"CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal was unable to complete your support request.";
+"CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal-il ei õnnestunud su kasutajatoesoovi täita.";
 
 /* button text */
 "CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "Proovi uuesti";
@@ -741,19 +741,19 @@
 "CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Lisa süsteemi kontaktidesse";
 
 /* Label indicating that only administrators can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "Admins";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "Administraatorid";
 
 /* Label indicating that all group members can update the group's attributes: name, avatar, etc. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "Kõik";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Choose who can edit the group name, avatar and disappearing messages timer.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Vali, kes saavad muuta grupi nime, avatari ja kaduvate sõnumite kestust.";
 
 /* Footer text for the 'block and leave' section of conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER" = "Sa ei saa sellest grupist rohkem sõnumeid ja uuendusi.";
 
 /* Label for 'block group' action in conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_GROUP" = "Block Group";
+"CONVERSATION_SETTINGS_BLOCK_GROUP" = "Blokeeri grupp";
 
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "Blokeeri see grupp";
@@ -762,7 +762,7 @@
 "CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Blokeeri see kasutaja";
 
 /* Label for 'block user' action in conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_USER" = "Block User";
+"CONVERSATION_SETTINGS_BLOCK_USER" = "Blokeeri kasutaja";
 
 /* Navbar title when viewing settings for a 1-on-1 thread */
 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Kontakti info";
@@ -771,16 +771,16 @@
 "CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Vestluse värv";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Who Can Edit Group Info";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Kes saavad muuta grupi infot";
 
 /* Label for button that sets 'group attributes access' to 'administrators-only'. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Only Admins";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Ainult administraatorid";
 
 /* Description for the 'edit group attributes access' alert. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Choose who can change the group name, avatar and disappearing messages:";
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "All Members";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "Kõik liikmed";
 
 /* Label for the 'edit group' button in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_GROUP" = "Muuda";
@@ -789,7 +789,7 @@
 "CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "Grupi info";
 
 /* Format for the 'group member count' indicator in conversation settings view. Embeds {the number of group members}. */
-"CONVERSATION_SETTINGS_GROUP_MEMBER_COUNT_FORMAT" = "%@ members";
+"CONVERSATION_SETTINGS_GROUP_MEMBER_COUNT_FORMAT" = "%@ liiget";
 
 /* Label for 'make group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Make Admin";
@@ -831,7 +831,7 @@
 "CONVERSATION_SETTINGS_PENDING_MEMBER_INVITES_NONE" = "Puudub";
 
 /* Label for 'remove from group' button in conversation settings view. */
-"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "Remove From Group";
+"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "Eemalda grupist";
 
 /* Format for title for 'remove from group' confirmation alert. Embeds {user to remove from the group}. */
 "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "Remove %@ from the group?";
@@ -858,7 +858,7 @@
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Eemalda vaigistus";
 
 /* Label for 'view all members' button in conversation settings view. */
-"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "View all members";
+"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "Näita kõiki liikmeid";
 
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "See kasutaja on sinu kontaktides";
@@ -888,7 +888,7 @@
 "CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "See kasutaja ei ole sinu kontaktides.";
 
 /* button text to delete all items in the current conversation */
-"CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Delete All";
+"CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Kustuta kõik";
 
 /* Indicates that the app is loading more messages in this conversation. */
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Rohkem sõnumite laadimine...";
@@ -972,10 +972,10 @@
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "Ümbersuunamine GitHubi";
 
 /* action sheet body */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Delete all messages in the conversation?";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Kas kustutada kõik sõnumid sellest vestlusest?";
 
 /* button text */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Delete All Messages";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Kustuta kõik sõnumid";
 
 /* action sheet body. Embeds {{number of selected messages}} which will be deleted. */
 "DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Delete %ld Messages?";
@@ -1040,11 +1040,17 @@
 /* Error message indicating the a user can't be added to a group. */
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "This user can't be added to the group until they upgrade Signal.";
 
+/* Message for 'group full' error alert when a user can't be added to a group. */
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "Maximum group size of 100 members reached.";
+
+/* Label for 'learn more' button when a user can't be added to a group. */
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_LEARN_MORE" = "Learn More";
+
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "Invalid avatar.";
 
 /* Label for the group name in the 'edit group' view. */
-"EDIT_GROUP_GROUP_NAME" = "Group Name";
+"EDIT_GROUP_GROUP_NAME" = "Grupi nimi";
 
 /* An indicator that a user is a new member of the group. */
 "EDIT_GROUP_NEW_MEMBER_LABEL" = "Lisatud";
@@ -1197,7 +1203,7 @@
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Turvanumber on muutunud.";
 
 /* Error indicating network connectivity problems. */
-"ERROR_NETWORK_FAILURE" = "Network Error";
+"ERROR_NETWORK_FAILURE" = "Võrgutõrge";
 
 /* Error indicating a send failure due to a delinked application. */
 "ERROR_SENDING_DELINKED" = "Su seade pole enam ühendatud. Sõnumite saatmise jätkamiseks ühenda palun uuesti.";
@@ -1299,10 +1305,10 @@
 "GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "Admins Only";
 
 /* Description of the 'all users' access level. */
-"GROUP_ACCESS_LEVEL_ANY" = "Any User";
+"GROUP_ACCESS_LEVEL_ANY" = "Iga kasutaja";
 
 /* Description of the 'all members' access level. */
-"GROUP_ACCESS_LEVEL_MEMBER" = "All Members";
+"GROUP_ACCESS_LEVEL_MEMBER" = "Kõik liikmed";
 
 /* Description of the 'unknown' access level. */
 "GROUP_ACCESS_LEVEL_UNKNOWN" = "Tundmatu";
@@ -1344,10 +1350,10 @@
 "GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "These users can’t be automatically added to this group by you. They’ve been invited to join, and won’t see any group messages until they accept.";
 
 /* Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%@ added you.";
+"GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%@ lisas sind.";
 
 /* Message indicating that the local user was granted administrator role. */
-"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR" = "You are now an admin.";
+"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR" = "Sa oled nüüd administraator.";
 
 /* Message indicating that the local user was granted administrator role by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ made you an admin.";
@@ -1569,7 +1575,7 @@
 "GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "Could not accept invite.";
 
 /* Label for 'block group' button in group invite view. */
-"GROUPS_INVITE_BLOCK_GROUP" = "Block Group";
+"GROUPS_INVITE_BLOCK_GROUP" = "Blokeeri grupp";
 
 /* Label for 'block group and inviter' button in group invite view. Embeds {{name of user who invited you}}. */
 "GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT" = "Block Group and %@";
@@ -1596,7 +1602,7 @@
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Otsi";
 
 /* A prefix indicating that a message preview is a draft */
-"HOME_VIEW_DRAFT_PREFIX" = "Draft: ";
+"HOME_VIEW_DRAFT_PREFIX" = "Mustand:";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds {{The name of 1 of your Signal contacts}}. */
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Mõned su kontaktidest kasutavad juba Signalit, kaasaarvatud %@.";

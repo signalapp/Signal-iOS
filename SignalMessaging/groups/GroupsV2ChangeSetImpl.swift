@@ -362,6 +362,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         actionsBuilder.setVersion(newVersion)
 
         var nonPendingAdministratorCount: Int = currentGroupModel.groupMembership.nonPendingAdministrators.count
+        var allMemberCount = currentGroupModel.groupMembership.pendingAndNonPendingMemberCount
 
         var didChange = false
 
@@ -416,22 +417,6 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
             }
         }
 
-        for (uuid, role) in self.pendingMembersToAdd {
-            guard !currentGroupMembership.isPendingOrNonPendingMember(uuid) else {
-                // Another user has already added or invited this member.
-                // They may have been added with a different role.
-                // We don't treat that as a conflict.
-                continue
-            }
-            let actionBuilder = GroupsProtoGroupChangeActionsAddPendingMemberAction.builder()
-            actionBuilder.setAdded(try GroupsV2Protos.buildPendingMemberProto(uuid: uuid,
-                                                                              role: role.asProtoRole,
-                                                                              localUuid: localUuid,
-                                                                              groupV2Params: groupV2Params))
-            actionsBuilder.addAddPendingMembers(try actionBuilder.build())
-            didChange = true
-        }
-
         for uuid in self.membersToRemove {
             if currentGroupMembership.isNonPendingMember(uuid) {
                 let actionBuilder = GroupsProtoGroupChangeActionsDeleteMemberAction.builder()
@@ -443,18 +428,42 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
                 if currentGroupMembership.isAdministrator(SignalServiceAddress(uuid: uuid)) {
                     nonPendingAdministratorCount -= 1
                 }
+                allMemberCount -= 1
             } else if currentGroupMembership.isPendingMember(uuid) {
                 let actionBuilder = GroupsProtoGroupChangeActionsDeletePendingMemberAction.builder()
                 let userId = try groupV2Params.userId(forUuid: uuid)
                 actionBuilder.setDeletedUserID(userId)
                 actionsBuilder.addDeletePendingMembers(try actionBuilder.build())
                 didChange = true
+                allMemberCount -= 1
             } else {
                 // Another user has already removed this member or revoked their
                 // invitation.
                 // Redundant change, not a conflict.
                 continue
             }
+        }
+
+        for (uuid, role) in self.pendingMembersToAdd {
+            guard !currentGroupMembership.isPendingOrNonPendingMember(uuid) else {
+                // Another user has already added or invited this member.
+                // They may have been added with a different role.
+                // We don't treat that as a conflict.
+                continue
+            }
+
+            guard allMemberCount <= GroupManager.maxGroupMemberCount else {
+                throw GroupsV2Error.tooManyMembers
+            }
+
+            let actionBuilder = GroupsProtoGroupChangeActionsAddPendingMemberAction.builder()
+            actionBuilder.setAdded(try GroupsV2Protos.buildPendingMemberProto(uuid: uuid,
+                                                                              role: role.asProtoRole,
+                                                                              localUuid: localUuid,
+                                                                              groupV2Params: groupV2Params))
+            actionsBuilder.addAddPendingMembers(try actionBuilder.build())
+            didChange = true
+            allMemberCount += 1
         }
 
         for (uuid, newRole) in self.membersToChangeRole {

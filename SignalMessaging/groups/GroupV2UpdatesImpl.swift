@@ -451,6 +451,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
             }
 
             var shouldUpdateProfileKeyInGroup = false
+            var profileKeysByUuid = [UUID: Data]()
             for groupChange in groupChanges {
                 let changeRevision = groupChange.snapshot.revision
                 if let upToRevision = upToRevision {
@@ -460,7 +461,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                         // Enqueue an update to latest.
                         self.tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithThrottling(groupThread)
 
-                        return groupThread
+                        break
                     }
                 }
                 guard let oldGroupModel = groupThread.groupModel as? TSGroupModelV2 else {
@@ -502,11 +503,16 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                     profileKey != localProfileKey.keyData {
                     shouldUpdateProfileKeyInGroup = true
                 }
+
+                // Merge known profile keys, always taking latest.
+                profileKeysByUuid = profileKeysByUuid.merging(groupChange.snapshot.profileKeys) { (_, latest) in latest }
             }
 
             if shouldUpdateProfileKeyInGroup {
                 self.groupsV2.updateLocalProfileKeyInGroup(groupId: groupId, transaction: transaction)
             }
+
+            GroupManager.storeProfileKeysFromGroupProtos(profileKeysByUuid)
 
             return groupThread
         }

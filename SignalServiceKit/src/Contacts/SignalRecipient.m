@@ -290,9 +290,61 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
     OWSAssertDebug(address.isValid);
     OWSAssertDebug(transaction);
 
-    SignalRecipient *_Nullable existingInstance = [self registeredRecipientForAddress:address
-                                                                      mustHaveDevices:NO
-                                                                          transaction:transaction];
+    OWSLogVerbose(@"address: %@", address);
+    OWSLogFlush();
+
+    SignalRecipient *_Nullable phoneNumberInstance = nil;
+    SignalRecipient *_Nullable uuidInstance = nil;
+    if (address.phoneNumber != nil) {
+        phoneNumberInstance = [self.recipientFinder signalRecipientForPhoneNumber:address.phoneNumber
+                                                                      transaction:transaction];
+    }
+    if (address.uuid != nil) {
+        uuidInstance = [self.recipientFinder signalRecipientForUUID:address.uuid transaction:transaction];
+    }
+
+    BOOL shouldUpdate = NO;
+    SignalRecipient *_Nullable existingInstance = nil;
+
+    if (phoneNumberInstance != nil && uuidInstance != nil) {
+        if ([NSObject isNullableObject:phoneNumberInstance.recipientPhoneNumber
+                               equalTo:uuidInstance.recipientPhoneNumber]
+            && [NSObject isNullableObject:phoneNumberInstance.recipientUUID equalTo:uuidInstance.recipientUUID]) {
+            existingInstance = phoneNumberInstance;
+        } else {
+            // We have separate recipients in the db for the uuid and phone number.
+            // There isn't an ideal way to do this, but we need to converge on one
+            // recipient and discard the other.
+            //
+            // TODO: Should we clean up any state related to the discarded recipient?
+
+            // We try to preserve the recipient that has a contact thread.
+            BOOL hasThreadForUUID =
+                [[AnyContactThreadFinder new] contactThreadForUUID:address.uuid transaction:transaction] != nil;
+            BOOL hasThreadForPhoneNumber = [[AnyContactThreadFinder new] contactThreadForPhoneNumber:address.phoneNumber
+                                                                                         transaction:transaction]
+                != nil;
+            OWSLogWarn(@"phoneNumberInstance: %@", phoneNumberInstance);
+            OWSLogWarn(@"uuidInstance: %@", uuidInstance);
+            OWSLogWarn(@"hasThreadForUUID: %d", hasThreadForUUID);
+            OWSLogWarn(@"hasThreadForPhoneNumber: %d", hasThreadForPhoneNumber);
+            if (hasThreadForPhoneNumber && !hasThreadForUUID) {
+                OWSFailDebug(@"Discarding phone number recipient in favor of uuid recipient.");
+                existingInstance = uuidInstance;
+                [phoneNumberInstance anyRemoveWithTransaction:transaction];
+            } else {
+                OWSFailDebug(@"Discarding uuid recipient in favor of phone number recipient.");
+                existingInstance = phoneNumberInstance;
+                [uuidInstance anyRemoveWithTransaction:transaction];
+            }
+            shouldUpdate = YES;
+        }
+    } else if (phoneNumberInstance != nil) {
+        existingInstance = phoneNumberInstance;
+    } else if (uuidInstance != nil) {
+        existingInstance = uuidInstance;
+    }
+
     if (existingInstance == nil) {
         OWSLogDebug(@"creating recipient: %@", address);
 
@@ -305,10 +357,8 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
         return newInstance;
     }
 
-    BOOL hasChanged = NO;
-
     if (existingInstance.devices.count == 0) {
-        hasChanged = YES;
+        shouldUpdate = YES;
 
         // We know they're registered, so make sure they have at least one device.
         // We assume it's the default device. If we're wrong, the service will correct us when we
@@ -318,21 +368,21 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
 
     // If we've learned a users UUID, record it.
     if (existingInstance.recipientUUID == nil && address.uuid != nil) {
-        hasChanged = YES;
+        shouldUpdate = YES;
 
         existingInstance.recipientUUID = address.uuidString;
     }
 
     // If we've learned a users phone number, record it.
     if (existingInstance.recipientPhoneNumber == nil && address.phoneNumber != nil) {
-        hasChanged = YES;
+        shouldUpdate = YES;
 
         OWSFailDebug(@"unexpectedly learned about a users phone number");
         existingInstance.recipientPhoneNumber = address.phoneNumber;
     }
 
     // Record the updated contact in the social graph
-    if (hasChanged) {
+    if (shouldUpdate) {
         [existingInstance anyOverwritingUpdateWithTransaction:transaction];
         [self.storageServiceManager recordPendingUpdatesWithUpdatedAccountIds:@[ existingInstance.accountId ]];
     }

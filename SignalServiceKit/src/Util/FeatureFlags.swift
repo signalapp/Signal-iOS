@@ -302,4 +302,7 @@ public class DebugFlags: NSObject {
     // bug we want to be able to test them using the debug UI.
     @objc
     public static let permissiveGroupUpdateInfoMessages = build.includes(.dev)
+
+    @objc
+    public static let showProfileKeyIndicator = build.includes(.qa)
 }

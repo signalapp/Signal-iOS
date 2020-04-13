@@ -39,28 +39,28 @@
 "ACTION_SHARE_CONTACT" = "Del kontakt";
 
 /* Label for 'video call' button in contact view. */
-"ACTION_VIDEO_CALL" = "Videoopkald";
+"ACTION_VIDEO_CALL" = "Video opkald";
 
 /* Label for the 'add group member' button. */
 "ADD_GROUP_MEMBERS_ACTION_TITLE_1" = "Tilføj medlem";
 
 /* Label for the 'add group members' button. */
-"ADD_GROUP_MEMBERS_ACTION_TITLE_N" = "Add Members";
+"ADD_GROUP_MEMBERS_ACTION_TITLE_N" = "Tilføj medlemmer";
 
 /* Format for the message for the 'add group member' confirmation alert.  Embeds {{ the name of the group. }}. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_1_FORMAT" = "Add member to “%2$@”?";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_1_FORMAT" = "Tilføj medlem til \"%2$@\"?";
 
 /* Format for the message for the 'add group members' confirmation alert.  Embeds {{ %1$@ number of new members, %2$@ name of the group. }}. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "Add %1$@ members to “%2$@”?";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "Tilføj %1$@ medlemmer til \"%2$@\"?";
 
 /* Title for the 'add group member' confirmation alert. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1" = "Add New Member";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1" = "Tilføj nyt medlem";
 
 /* Title for the 'add group members' confirmation alert. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_N" = "Add New Members";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_N" = "Tilføj nyt medlem";
 
 /* The title for the 'add group members' view. */
-"ADD_GROUP_MEMBERS_VIEW_TITLE" = "Add Members";
+"ADD_GROUP_MEMBERS_VIEW_TITLE" = "Tilføj medlemmer";
 
 /* Message shown in conversation view that offers to share your profile with a group. */
 "ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Vil du dele din profil med denne gruppe?";
@@ -75,7 +75,7 @@
 "ALERT_ACTION_ACKNOWLEDGE" = "Modtaget";
 
 /* The label for the 'discard' button in alerts and action sheets. */
-"ALERT_DISCARD_BUTTON" = "Kasser";
+"ALERT_DISCARD_BUTTON" = "Kassér";
 
 /* The label for the 'don't save' button in action sheets. */
 "ALERT_DONT_SAVE" = "Gem ikke";
@@ -108,7 +108,7 @@
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Ukendt version af database";
 
 /* Text prompting user to edit their profile name. */
-"APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Skriv dit navn";
+"APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Skriv dit navn ";
 
 /* Label for the 'dismiss' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "Ikke nu";
@@ -120,7 +120,7 @@
 "APP_UPDATE_NAG_ALERT_TITLE" = "En ny version af Signal er tilgængelig";
 
 /* Label for the 'update' button in the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Opdater";
+"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Opdatér";
 
 /* Name indicating that the dark theme is enabled. */
 "APPEARANCE_SETTINGS_DARK_THEME_NAME" = "Mørkt";
@@ -138,7 +138,7 @@
 "ARCHIVE_ACTION" = "Arkivér";
 
 /* No comment provided by engineer. */
-"ATTACHMENT" = "Vedhæftning";
+"ATTACHMENT" = "Vedhæftning ";
 
 /* One-line label indicating the user can add no more text to the attachment caption. */
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Grænse for billedtekst nået";
@@ -171,16 +171,16 @@
 "ATTACHMENT_APPROVAL_SEND_BUTTON" = "Send";
 
 /* Generic filename for an attachment with no known name */
-"ATTACHMENT_DEFAULT_FILENAME" = "Vedhæftning";
+"ATTACHMENT_DEFAULT_FILENAME" = "Vedhæftning ";
 
 /* Status label when an attachment download has failed. */
 "ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Fejl ved download. Tap for at prøve igen";
 
 /* The title of the 'attachment error' alert. */
-"ATTACHMENT_ERROR_ALERT_TITLE" = " Kunne ikke sende fil";
+"ATTACHMENT_ERROR_ALERT_TITLE" = " Kan ikke sende vedhæftning";
 
 /* Attachment error message for image attachments which could not be converted to JPEG */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Kunne ikke konvertere billede";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Kan ikke konvertere billede";
 
 /* Attachment error message for video attachments which could not be converted to MP4 */
 "ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "Kan ikke processere videoen";
@@ -231,13 +231,13 @@
 "ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Når du har taget billeder, vil de seneste blive tilgængelige her";
 
 /* Accessibility label for attaching photos */
-"ATTACHMENT_LABEL" = "Vedhæftede fil";
+"ATTACHMENT_LABEL" = "Vedhæftning";
 
 /* Alert title when picking a document fails for an unknown reason */
 "ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Dokumentet kunne ikke vælges";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Opret et komprimeret arkiv af denne fil eller mappe, og prøv at sende det i stedet";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Opret et komprimeret arkiv af filen eller mappen, og prøv at sende det i stedet";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Filen understøttes ikke";
@@ -285,10 +285,10 @@
 "BACKUP_IMPORT_PHASE_DOWNLOAD" = "Downloader backup data";
 
 /* Indicates that the backup import data is being finalized. */
-"BACKUP_IMPORT_PHASE_FINALIZING" = "Færdiggører sikkerhedskopi";
+"BACKUP_IMPORT_PHASE_FINALIZING" = "Færdiggør backup";
 
 /* Indicates that the backup import data is being imported. */
-"BACKUP_IMPORT_PHASE_IMPORT" = "Importerer sikkerhedskopi.";
+"BACKUP_IMPORT_PHASE_IMPORT" = "Importerer backup";
 
 /* Indicates that the backup database is being restored. */
 "BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "Gendanner databasen";
@@ -297,10 +297,10 @@
 "BACKUP_IMPORT_PHASE_RESTORING_FILES" = "Gendanner filer";
 
 /* Label for the backup restore decision section. */
-"BACKUP_RESTORE_DECISION_TITLE" = "Sikkerhedskopi tilgængelig";
+"BACKUP_RESTORE_DECISION_TITLE" = "Backup tilgængelig";
 
 /* Label for the backup restore description. */
-"BACKUP_RESTORE_DESCRIPTION" = "Gendanner sikkerhedskopi";
+"BACKUP_RESTORE_DESCRIPTION" = "Gendanner backup";
 
 /* Label for the backup restore progress. */
 "BACKUP_RESTORE_PROGRESS" = "Forløb";
@@ -309,13 +309,13 @@
 "BACKUP_RESTORE_STATUS" = "Status";
 
 /* Error shown when backup fails due to an unexpected error. */
-"BACKUP_UNEXPECTED_ERROR" = "Uventet sikkerhedskopieringsfejl";
+"BACKUP_UNEXPECTED_ERROR" = "Uventet backup fejl";
 
 /* An explanation of the consequences of blocking a group. */
 "BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Du vil ikke længere modtage beskeder eller opdateringer fra gruppen";
 
 /* Button label for the 'block' button */
-"BLOCK_LIST_BLOCK_BUTTON" = "Bloker";
+"BLOCK_LIST_BLOCK_BUTTON" = "Blokér";
 
 /* A format for the 'block group' action sheet title. Embeds the {{group name}}. */
 "BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "Blokér og forlad \"%@\" gruppen?";
@@ -429,13 +429,13 @@
 "CALL_STATUS_FORMAT" = "Signal %@";
 
 /* Label for call button for alert offering to call a user. */
-"CALL_USER_ALERT_CALL_BUTTON" = "Ring op";
+"CALL_USER_ALERT_CALL_BUTTON" = "Ring op ";
 
 /* Message format for alert offering to call a user. Embeds {{the user's display name or phone number}}. */
-"CALL_USER_ALERT_MESSAGE_FORMAT" = "Vil du ringe til %@?";
+"CALL_USER_ALERT_MESSAGE_FORMAT" = "Vil du ringe til %@? ";
 
 /* Title for alert offering to call a user. */
-"CALL_USER_ALERT_TITLE" = "Ring op?";
+"CALL_USER_ALERT_TITLE" = "Ring op? ";
 
 /* Accessibility label for accepting incoming calls */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "Acceptér opkald";
@@ -471,19 +471,19 @@
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Skift kamera retning";
 
 /* Accessibility label to switch to audio only */
-"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Skift til lydopkald";
+"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Skift til lydopkald ";
 
 /* Accessibility label to switch to video call */
-"CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Skift til videoopkald";
+"CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Skift til videoopkald ";
 
 /* Label for the 'return to call' banner. */
-"CALL_WINDOW_RETURN_TO_CALL" = "Tryk for at vende tilbage til opkald";
+"CALL_WINDOW_RETURN_TO_CALL" = "Tap for at vende tilbage til opkald";
 
 /* notification action */
-"CALLBACK_BUTTON_TITLE" = "Ring tilbage";
+"CALLBACK_BUTTON_TITLE" = "Ring tilbage ";
 
 /* The generic name used for calls if CallKit privacy is enabled */
-"CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal-bruger";
+"CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal bruger";
 
 /* Accessibility hint describing what you can do with the camera button */
 "CAMERA_BUTTON_HINT" = "Tag et billed og send det";
@@ -696,7 +696,7 @@
 "CONTACT_WITHOUT_NAME" = "Unavngivet kontakt";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "This conversation will be deleted from this device.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Samtalen bliver slettet fra enheden";
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Slet samtale?";
@@ -747,7 +747,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "Alle";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Choose who can edit the group name, avatar and disappearing messages timer.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Vælg hvem som kan redigere gruppens navn, avatar og timer for beskeder med tidsudløb";
 
 /* Footer text for the 'block and leave' section of conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER" = "Du vil ikke længere modtage beskeder eller opdateringer fra gruppen";
@@ -762,7 +762,7 @@
 "CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Blokér denne bruger";
 
 /* Label for 'block user' action in conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_USER" = "Block User";
+"CONVERSATION_SETTINGS_BLOCK_USER" = "Blokér bruger";
 
 /* Navbar title when viewing settings for a 1-on-1 thread */
 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Kontaktinformation";
@@ -777,7 +777,7 @@
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Kun administratorer";
 
 /* Description for the 'edit group attributes access' alert. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Choose who can change the group name, avatar and disappearing messages:";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Vælg hvem som kan ændre gruppens navn, avatar og timer for beskeder med tidsudløb";
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "Alle deltagere";
@@ -849,10 +849,10 @@
 "CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Tap for at ændre";
 
 /* Label for 'unblock group' action in conversation settings view. */
-"CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Unblock Group";
+"CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Fjern blokering af gruppe";
 
 /* Label for 'unblock user' action in conversation settings view. */
-"CONVERSATION_SETTINGS_UNBLOCK_USER" = "Unblock User";
+"CONVERSATION_SETTINGS_UNBLOCK_USER" = "Fjern blokering af bruger";
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Aktivér lyd";
@@ -1038,7 +1038,13 @@
 "EDIT_GROUP_DEFAULT_TITLE" = "Rediger gruppe";
 
 /* Error message indicating the a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "This user can't be added to the group until they upgrade Signal.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Brugeren kan ikke tilføjes gruppen, før Signal opdateres";
+
+/* Message for 'group full' error alert when a user can't be added to a group. */
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "Maximum group size of 100 members reached.";
+
+/* Label for 'learn more' button when a user can't be added to a group. */
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_LEARN_MORE" = "Learn More";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "Ugyldig avatar";
@@ -1197,7 +1203,7 @@
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Sikkerhedsnummer er ændret";
 
 /* Error indicating network connectivity problems. */
-"ERROR_NETWORK_FAILURE" = "Network Error";
+"ERROR_NETWORK_FAILURE" = "Netværksfejl";
 
 /* Error indicating a send failure due to a delinked application. */
 "ERROR_SENDING_DELINKED" = "Din enhed er ikke længere linket. Link venligst på ny for at sende beskeder";
@@ -1290,7 +1296,7 @@
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "Du ændrede hvem som kan redigere gruppe info til \"%@\"";
 
 /* Message indicating that the access to the group's attributes was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed who can edit group info to “%2$@“.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ ændrede så \"%2$@\" kan redigere info for gruppen";
 
 /* Message indicating that the access to the group's attributes was changed. Embeds {{new access level}}. */
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "Gruppe info kan redigeres af \"%@\"";
@@ -1311,7 +1317,7 @@
 "GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "Du ændrede hvem som kan redigere medlemskab af gruppen til \"%@\"";
 
 /* Message indicating that the access to the group's members was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed who can edit group membership to “%2$@“.";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ ændrede så \"%2$@\" kan redigere medlemskaber for gruppen";
 
 /* Message indicating that the access to the group's members was changed. Embeds {{new access level}}. */
 "GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Medlemskab af gruppen kan ændres af \"%@\"";
@@ -1332,16 +1338,16 @@
 "GROUP_CREATION_FAILED" = "Ikke alle medlemmer kunne blive tilføjet gruppen. Tap for at prøve igen";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
-"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@ can’t be automatically added to this group by you. They’ve been invited to join, and won’t see any group messages until they accept.";
+"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@ kan ikke automatisk blive tilføjet gruppen af dig. Brugeren er blevet inviteret til at deltage, og vil ingen beskeder se fra gruppen, før invitationen accepteres";
 
 /* Title for an alert indicating that a member was invited to a group. */
-"GROUP_INVITES_SENT_ALERT_TITLE_1" = "Invitation Sent";
+"GROUP_INVITES_SENT_ALERT_TITLE_1" = "Invitation sendt";
 
 /* Format for the title for an alert indicating that some members were invited to a group. Embeds: {{ the number of invites sent. }} */
-"GROUP_INVITES_SENT_ALERT_TITLE_N_FORMAT" = "%@ Invitations Sent";
+"GROUP_INVITES_SENT_ALERT_TITLE_N_FORMAT" = "%@ invitationer sendt";
 
 /* Message for an alert indicating that some members were invited to a group. */
-"GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "These users can’t be automatically added to this group by you. They’ve been invited to join, and won’t see any group messages until they accept.";
+"GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "Disse brugere kan ikke automatisk blive tilføjet gruppe af dig. De er blevet inviteret til at deltage, og vil ingen beskeder se fra gruppen, før invitationen accepteres";
 
 /* Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%@ tilføjede dig";
@@ -1407,7 +1413,7 @@
 "GROUP_MEMBERS_CALL" = "Ring op";
 
 /* Label indicating that a group has no other members. */
-"GROUP_MEMBERS_NO_OTHER_MEMBERS" = "No members.";
+"GROUP_MEMBERS_NO_OTHER_MEMBERS" = "Ingen medlemmer";
 
 /* Label for the button that clears all verification errors in the 'group members' view. */
 "GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "Ryd verificering for alle";
@@ -1425,7 +1431,7 @@
 "GROUP_MEMBERS_SEND_MESSAGE" = "Besked";
 
 /* Placeholder text for 'group name' field. */
-"GROUP_NAME_PLACEHOLDER" = "Group name (required)";
+"GROUP_NAME_PLACEHOLDER" = "Gruppenavn (påkrævet)";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "%@ accepterede en invitation til gruppen";
@@ -1563,7 +1569,7 @@
 "GROUP_YOU_LEFT" = "Du har forladt gruppen.";
 
 /* Message for the 'can't replace group admin' alert. */
-"GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Choose a new admin for this group before you leave.";
+"GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Vælg en ny administrator for gruppen, inden du forlader den";
 
 /* Error indicating that an error occurred while accepting an invite. */
 "GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "Invitationen kunne ikke accepteres";
@@ -1578,13 +1584,13 @@
 "GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "Blokér %@";
 
 /* Message for the 'replace group admin' alert. */
-"GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "Before you leave, choose a new admin for this group.";
+"GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "Før du forlader gruppen, skal du vælge en ny administrator for den";
 
 /* Title for the 'replace group admin' alert. */
-"GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "Choose New Admin";
+"GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "Vælg ny administrator";
 
 /* Label for the 'replace group admin' button. */
-"GROUPS_REPLACE_ADMIN_BUTTON" = "Choose new admin";
+"GROUPS_REPLACE_ADMIN_BUTTON" = "Vælg ny administrator";
 
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Arkiveret samtaler";
@@ -2118,10 +2124,10 @@
 "NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "Ny gruppe kunne ikke oprettes. Tjek din internetforbindelse og prøv igen";
 
 /* Message for error alert indicating that a group name is required. */
-"NEW_GROUP_CREATION_MISSING_NAME_ALERT_MESSAGE" = "A group name is required.";
+"NEW_GROUP_CREATION_MISSING_NAME_ALERT_MESSAGE" = "Et gruppenavn er påkrævet";
 
 /* Title for error alert indicating that a group name is required. */
-"NEW_GROUP_CREATION_MISSING_NAME_ALERT_TITLE" = "Missing Group Name";
+"NEW_GROUP_CREATION_MISSING_NAME_ALERT_TITLE" = "Der mangler et gruppenavn";
 
 /* Used in place of the group name when a group has not yet been named. */
 "NEW_GROUP_DEFAULT_TITLE" = "Ny gruppe";
@@ -2133,7 +2139,7 @@
 "NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ til %@";
 
 /* The title for the 'name new group' view. */
-"NEW_GROUP_NAME_GROUP_VIEW_TITLE" = "Name Group";
+"NEW_GROUP_NAME_GROUP_VIEW_TITLE" = "Gruppenavn";
 
 /* Placeholder text for group name field */
 "NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Navngiv gruppesamtalen";
@@ -2142,7 +2148,7 @@
 "NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Andre Brugere";
 
 /* The title for the 'select members for new group' view. */
-"NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "Select Members";
+"NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "Vælg medlemmer";
 
 /* The alert message if user tries to exit the new group view without saving changes. */
 "NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Vil du kassere disse ændringer?";
@@ -2376,37 +2382,37 @@
 "PDF_VIEW_TITLE" = "PDF";
 
 /* Format for label indicating the a group member has invited 1 other user to the group. Embeds {{ the name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_MEMBER_INVITED_1_USER_FORMAT" = "%@ invited 1 person";
+"PENDING_GROUP_MEMBERS_MEMBER_INVITED_1_USER_FORMAT" = "%@ inviterede 1 person";
 
 /* Format for label indicating the a group member has invited N other users to the group. Embeds {{ %1$@ name of the inviting group member, %2$@ the number of users they have invited. }}. */
-"PENDING_GROUP_MEMBERS_MEMBER_INVITED_N_USERS_FORMAT" = "%1$@ invited %2$@ people";
+"PENDING_GROUP_MEMBERS_MEMBER_INVITED_N_USERS_FORMAT" = "%1$@ inviterede %2$@ personer";
 
 /* Label indicating that a group has no pending members. */
-"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "No invites to show.";
+"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "Ingen invitationer ";
 
 /* Title of 'revoke invite' button. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "Revoke Invite";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "Tilbagekald invitation";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the invited group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revoke group invite for “%@“?";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Tilbagekald invitation til gruppen for \"%@\"?";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Revoke %1$@ invites sent by “%2$@“?";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Tilbagekald %1$@ invitationer sendt af \"%2$@\"?";
 
 /* Title of 'revoke invites' button. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_N_BUTTON" = "Revoke Invites";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_N_BUTTON" = "Tilbagekald invitationer";
 
 /* Footer for the 'invites by other group members' section of the 'pending group members' view. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Details of people invited by other group members are not shown. If invitees choose to join, their information will be shared with the group at that time. They will not see any messages in the group until they join.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Detaljer om personer inviteret af andre medlemmer af gruppen, vises ikke. Hvis de inviterede accepterer at deltage, vil deres information blive delt med gruppen derefter. De vil ingen beskeder se fra gruppen, før de deltager";
 
 /* Title for the 'invites by other group members' section of the 'pending group members' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "Invites by other group members";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "Invitationer fra andre medlemmer af gruppen";
 
 /* Title for the 'people you invited' section of the 'pending group members' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "People you invited";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "Personer du har inviteret";
 
 /* The title for the 'pending group members' view. */
-"PENDING_GROUP_MEMBERS_VIEW_TITLE" = "Pending Group Invites";
+"PENDING_GROUP_MEMBERS_VIEW_TITLE" = "Verserende gruppe invitationer";
 
 /* Label for view-once messages that have invalid content. */
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "Fejl i forbindelse med indgående besked";
@@ -2925,7 +2931,7 @@
 "REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "Det er ikke den rigtige PIN";
 
 /* The title for the 'replace group admin' view. */
-"REPLACE_ADMIN_VIEW_TITLE" = "Choose New Admin";
+"REPLACE_ADMIN_VIEW_TITLE" = "Vælg ny administrator";
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "Genaktiver push-meddelelser";

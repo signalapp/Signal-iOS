@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -9,6 +9,8 @@ public class AnyContactThreadFinder: NSObject {
     let grdbAdapter = GRDBContactThreadFinder()
     let yapdbAdapter = YAPDBSignalServiceAddressIndex()
 }
+
+// MARK: -
 
 public extension AnyContactThreadFinder {
     @objc(contactThreadForAddress:transaction:)
@@ -20,7 +22,29 @@ public extension AnyContactThreadFinder {
             return yapdbAdapter.fetchOne(for: address, transaction: transaction)
         }
     }
+
+    @objc(contactThreadForUUID:transaction:)
+    func contactThreadForUUID(_ uuid: UUID?, transaction: SDSAnyReadTransaction) -> TSContactThread? {
+        switch transaction.readTransaction {
+        case .grdbRead(let transaction):
+            return grdbAdapter.contactThreadForUUID(uuid, transaction: transaction)
+        case .yapRead(let transaction):
+            return yapdbAdapter.fetchOneForUUID(uuid, transaction: transaction)
+        }
+    }
+
+    @objc(contactThreadForPhoneNumber:transaction:)
+    func contactThreadForPhoneNumber(_ phoneNumber: String?, transaction: SDSAnyReadTransaction) -> TSContactThread? {
+        switch transaction.readTransaction {
+        case .grdbRead(let transaction):
+            return grdbAdapter.contactThreadForPhoneNumber(phoneNumber, transaction: transaction)
+        case .yapRead(let transaction):
+            return yapdbAdapter.fetchOneForPhoneNumber(phoneNumber, transaction: transaction)
+        }
+    }
 }
+
+// MARK: -
 
 @objc
 class GRDBContactThreadFinder: NSObject {
@@ -34,13 +58,13 @@ class GRDBContactThreadFinder: NSObject {
         }
     }
 
-    private func contactThreadForUUID(_ uuid: UUID?, transaction: GRDBReadTransaction) -> TSContactThread? {
+    fileprivate func contactThreadForUUID(_ uuid: UUID?, transaction: GRDBReadTransaction) -> TSContactThread? {
         guard let uuidString = uuid?.uuidString else { return nil }
         let sql = "SELECT * FROM \(ThreadRecord.databaseTableName) WHERE \(threadColumn: .contactUUID) = ?"
         return TSContactThread.grdbFetchOne(sql: sql, arguments: [uuidString], transaction: transaction) as? TSContactThread
     }
 
-    private func contactThreadForPhoneNumber(_ phoneNumber: String?, transaction: GRDBReadTransaction) -> TSContactThread? {
+    fileprivate func contactThreadForPhoneNumber(_ phoneNumber: String?, transaction: GRDBReadTransaction) -> TSContactThread? {
         guard let phoneNumber = phoneNumber else { return nil }
         let sql = "SELECT * FROM \(ThreadRecord.databaseTableName) WHERE \(threadColumn: .contactPhoneNumber) = ?"
         return TSContactThread.grdbFetchOne(sql: sql, arguments: [phoneNumber], transaction: transaction) as? TSContactThread

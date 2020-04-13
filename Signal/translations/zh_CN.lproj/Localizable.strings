@@ -333,7 +333,7 @@
 "BLOCK_LIST_UNBLOCK_BUTTON" = "从黑名单中移除";
 
 /* An explanation of what unblocking a contact means. */
-"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "You will be able to message and call each other.";
+"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "将可再次接收该联系人的消息和呼叫。";
 
 /* Action sheet body when confirming you want to unblock a group */
 "BLOCK_LIST_UNBLOCK_GROUP_BODY" = "现有成员可再次将您加入群组。";
@@ -1039,6 +1039,12 @@
 
 /* Error message indicating the a user can't be added to a group. */
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "This user can't be added to the group until they upgrade Signal.";
+
+/* Message for 'group full' error alert when a user can't be added to a group. */
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "Maximum group size of 100 members reached.";
+
+/* Label for 'learn more' button when a user can't be added to a group. */
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_LEARN_MORE" = "Learn More";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "Invalid avatar.";

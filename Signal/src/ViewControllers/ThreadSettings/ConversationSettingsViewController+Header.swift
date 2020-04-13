@@ -146,7 +146,7 @@ extension ConversationSettingsViewController {
 
         let header = builder.build()
 
-        // This will only appear in internal, qa & dev builds.
+        // This will not appear in public builds.
         if DebugFlags.groupsV2showV2Indicator {
             let indicatorLabel = UILabel()
             indicatorLabel.text = thread.isGroupV2Thread ? "v2" : "v1"
@@ -206,6 +206,16 @@ extension ConversationSettingsViewController {
             subtitle.append(NSLocalizedString("PRIVACY_IDENTITY_IS_VERIFIED_BADGE",
                                               comment: "Badge indicating that the user is verified."))
             builder.addSubtitleLabel(attributedText: subtitle)
+        }
+
+        // This will not appear in public builds.
+        if DebugFlags.showProfileKeyIndicator {
+            let hasProfileKey = self.databaseStorage.uiRead { transaction in
+                self.profileManager.profileKeyData(for: recipientAddress, transaction: transaction) != nil
+            }
+
+            let subtitle = "Has Profile Key: \(hasProfileKey)"
+            builder.addSubtitleLabel(attributedText: subtitle.asAttributedString)
         }
 
         builder.addLastSubviews()

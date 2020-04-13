@@ -1040,6 +1040,12 @@
 /* Error message indicating the a user can't be added to a group. */
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "這個使用者無法被新增到此群組直到他們升級 Signal。";
 
+/* Message for 'group full' error alert when a user can't be added to a group. */
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "Maximum group size of 100 members reached.";
+
+/* Label for 'learn more' button when a user can't be added to a group. */
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_LEARN_MORE" = "Learn More";
+
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "無效的頭像。";
 
@@ -1563,7 +1569,7 @@
 "GROUP_YOU_LEFT" = "你已退出了群組。";
 
 /* Message for the 'can't replace group admin' alert. */
-"GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Choose a new admin for this group before you leave.";
+"GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "在離開此群組前請選擇一位新的系統管理者。";
 
 /* Error indicating that an error occurred while accepting an invite. */
 "GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "無法接受邀請。";
@@ -1578,13 +1584,13 @@
 "GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "封鎖%@";
 
 /* Message for the 'replace group admin' alert. */
-"GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "Before you leave, choose a new admin for this group.";
+"GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "在你離開之前，為此群組選擇一位新的系統管理者。";
 
 /* Title for the 'replace group admin' alert. */
-"GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "Choose New Admin";
+"GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "選擇新的系統管理者";
 
 /* Label for the 'replace group admin' button. */
-"GROUPS_REPLACE_ADMIN_BUTTON" = "Choose new admin";
+"GROUPS_REPLACE_ADMIN_BUTTON" = "選擇新的系統管理者";
 
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "封存對話";
@@ -2925,7 +2931,7 @@
 "REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "這不是正確的 PIN 碼。";
 
 /* The title for the 'replace group admin' view. */
-"REPLACE_ADMIN_VIEW_TITLE" = "Choose New Admin";
+"REPLACE_ADMIN_VIEW_TITLE" = "選擇新的系統管理者";
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "重新註冊推播通知";
