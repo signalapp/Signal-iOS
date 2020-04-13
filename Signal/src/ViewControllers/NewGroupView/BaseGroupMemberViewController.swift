@@ -4,6 +4,7 @@
 
 import Foundation
 import SafariServices
+import PromiseKit
 
 protocol GroupMemberViewDelegate: class {
     var groupMemberViewRecipientSet: OrderedSet<PickedRecipient> { get }
@@ -21,6 +22,8 @@ protocol GroupMemberViewDelegate: class {
     func groupMemberViewIsGroupFull() -> Bool
 
     func groupMemberViewIsPreExistingMember(_ recipient: PickedRecipient) -> Bool
+
+    func groupMemberViewIsGroupsV2Required() -> Bool
 
     func groupMemberViewDismiss()
 }
@@ -109,6 +112,7 @@ public class BaseGroupMemberViewController: OWSViewController {
         recipientPicker.shouldShowGroups = false
         recipientPicker.allowsSelectingUnregisteredPhoneNumbers = false
         recipientPicker.shouldShowSearchBar = false
+        recipientPicker.showUseAsyncSelection = true
         recipientPicker.delegate = self
         addChild(recipientPicker)
         view.addSubview(recipientPicker.view)
@@ -312,6 +316,12 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
             owsFailDebug("Missing groupMemberViewDelegate.")
             return false
         }
+
+//        guard groupMemberViewDelegate.groupMemberViewCanAddRecipient(recipient) else {
+//            showInvalidGroupMemberAlert(recipient: recipient)
+//            return
+//        }
+
         return !groupMemberViewDelegate.groupMemberViewIsPreExistingMember(recipient)
     }
 
@@ -372,6 +382,91 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
             }
 
             addRecipientCompletion()
+        }
+    }
+
+    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
+                         willRenderRecipient recipient: PickedRecipient) {
+        guard let address = recipient.address else {
+            owsFailDebug("Invalid recipient.")
+            return
+        }
+        // GroupsV2 TODO: We could debounce this effort.
+        if !doesRecipientSupportGroupsV2(recipient) {
+            firstly {
+                tryToEnableGroupsV2ForAddress(address)
+            }.done { _ in
+                // Do nothing.
+            }.catch { error in
+                // This isn't an error; some users don't support groups v2.
+                Logger.warn("Error: \(error)")
+            }.retainUntilComplete()
+        }
+    }
+
+    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
+                         prepareToSelectRecipient recipient: PickedRecipient) -> AnyPromise {
+        guard let address = recipient.address else {
+            owsFailDebug("Invalid recipient.")
+            return AnyPromise(Promise.value(()))
+        }
+        guard let groupMemberViewDelegate = groupMemberViewDelegate else {
+            owsFailDebug("Missing delegate.")
+            return AnyPromise(Promise.value(()))
+        }
+        guard !doesRecipientSupportGroupsV2(recipient) else {
+            // Recipient already supports groups v2.
+            return AnyPromise(Promise.value(()))
+        }
+        let promise = tryToEnableGroupsV2ForAddress(address)
+        if groupMemberViewDelegate.groupMemberViewIsGroupsV2Required() {
+            return AnyPromise(promise)
+        } else {
+            return AnyPromise(promise.recover { error -> Guarantee<Void> in
+                Logger.warn("Error: \(error).")
+                return Guarantee.value(())
+            })
+        }
+    }
+
+    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
+                         showInvalidRecipientAlert recipient: PickedRecipient) {
+        AssertIsOnMainThread()
+        showInvalidGroupMemberAlert(recipient: recipient)
+    }
+
+    private func doesRecipientSupportGroupsV2(_ recipient: PickedRecipient) -> Bool {
+        guard let address = recipient.address else {
+            owsFailDebug("Invalid recipient.")
+            return false
+        }
+        return databaseStorage.read { transaction in
+            return GroupManager.doesUserSupportGroupsV2(address: address, transaction: transaction)
+        }
+    }
+
+    private func tryToEnableGroupsV2ForAddress(_ address: SignalServiceAddress) -> Promise<Void> {
+        return firstly { () -> Promise<Void> in
+            guard address.isValid else {
+                throw OWSAssertionError("Invalid address: \(address).")
+            }
+            return Promise.value(())
+        }.then(on: .global()) { _ -> Promise<Void> in
+            // Try to ensure UUID.
+            guard address.uuid != nil else {
+                return GroupManager.tryToEnsureUuids(for: [address])
+            }
+            return Promise.value(())
+        }.then(on: .global()) { _ -> Promise<Void> in
+            let hasCapability = self.databaseStorage.read { transaction in
+                GroupManager.doesUserHaveGroupsV2Capability(address: address, transaction: transaction)
+            }
+            guard hasCapability else {
+                return ProfileFetcherJob.fetchAndUpdateProfilePromise(address: address,
+                                                                      mainAppOnly: false,
+                                                                      ignoreThrottling: true).asVoid()
+            }
+            return Promise.value(())
         }
     }
 

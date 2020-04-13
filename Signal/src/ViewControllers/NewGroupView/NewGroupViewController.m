@@ -7,6 +7,7 @@
 #import "OWSNavigationController.h"
 #import "Signal-Swift.h"
 #import "SignalApp.h"
+#import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/NSString+OWS.h>
 #import <SignalCoreKit/Randomness.h>
@@ -433,6 +434,24 @@ NS_ASSUME_NONNULL_BEGIN
      canSelectRecipient:(PickedRecipient *)recipient
 {
     return YES;
+}
+
+- (void)recipientPicker:(RecipientPickerViewController *)recipientPickerViewController
+    willRenderRecipient:(PickedRecipient *)recipient
+{
+    // Do nothing.
+}
+
+- (AnyPromise *)recipientPicker:(RecipientPickerViewController *)recipientPickerViewController
+       prepareToSelectRecipient:(PickedRecipient *)recipient
+{
+    return [AnyPromise promiseWithValue:@(1)];
+}
+
+- (void)recipientPicker:(RecipientPickerViewController *)recipientPickerViewController
+    showInvalidRecipientAlert:(PickedRecipient *)recipient
+{
+    OWSFailDebug(@"Unexpected error.");
 }
 
 - (nullable NSString *)recipientPicker:(RecipientPickerViewController *)recipientPickerViewController

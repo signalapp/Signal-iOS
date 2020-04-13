@@ -31,6 +31,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) BOOL shouldShowSearchBar;
 /// Defaults to `NO`
 @property (nonatomic) BOOL shouldShowNewGroup;
+/// Defaults to `NO`
+@property (nonatomic) BOOL showUseAsyncSelection;
 
 @property (nonatomic, nullable) NSString *findByPhoneNumberButtonTitle;
 

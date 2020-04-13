@@ -1187,6 +1187,12 @@ public class GroupManager: NSObject {
         }
     }
 
+    // MARK: - UUIDs
+
+    public static func tryToEnsureUuids(for addresses: [SignalServiceAddress]) -> Promise<Void> {
+        return groupsV2.tryToEnsureUuidsForGroupMembers(for: addresses)
+    }
+
     // MARK: - Messages
 
     @objc
