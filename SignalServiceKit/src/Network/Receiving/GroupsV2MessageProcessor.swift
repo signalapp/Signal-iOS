@@ -325,10 +325,15 @@ class IncomingGroupsV2MessageQueue: NSObject {
                                                             return true
             }
             guard groupThread.groupModel.groupMembership.isNonPendingMember(localAddress) else {
-                // * The user might have just left the group.
-                // * We may have just learned that we were removed from the group.
-                // * We might be a pending member with an invite.
-                Logger.warn("Discarding envelope; not an active group member.")
+                // * Local user might have just left the group.
+                // * Local user may have just learned that we were removed from the group.
+                // * Local user might be a pending member with an invite.
+                Logger.warn("Discarding envelope; local user is not an active group member.")
+                return true
+            }
+            guard groupThread.groupModel.groupMembership.isNonPendingMember(sourceAddress) else {
+                // * The sender might have just left the group.
+                Logger.warn("Discarding envelope; sender is not an active group member.")
                 return true
             }
         }
