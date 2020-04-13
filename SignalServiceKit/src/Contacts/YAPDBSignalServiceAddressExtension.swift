@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -54,7 +54,7 @@ class YAPDBSignalServiceAddressIndex: NSObject {
         }
     }
 
-    private func fetchOneForUUID<T: YAPDBSignalServiceAddressIndexable>(_ uuid: UUID?, transaction: YapDatabaseReadTransaction) -> T? {
+    func fetchOneForUUID<T: YAPDBSignalServiceAddressIndexable>(_ uuid: UUID?, transaction: YapDatabaseReadTransaction) -> T? {
         guard let uuidString = uuid?.uuidString else { return nil }
 
         guard let ext = transaction.ext(YAPDBSignalServiceAddressIndex.uuidIndexName) as? YapDatabaseSecondaryIndexTransaction else {
@@ -84,7 +84,7 @@ class YAPDBSignalServiceAddressIndex: NSObject {
         return matchedAccount
     }
 
-    private func fetchOneForPhoneNumber<T: YAPDBSignalServiceAddressIndexable>(_ phoneNumber: String?, transaction: YapDatabaseReadTransaction) -> T? {
+    func fetchOneForPhoneNumber<T: YAPDBSignalServiceAddressIndexable>(_ phoneNumber: String?, transaction: YapDatabaseReadTransaction) -> T? {
         guard let phoneNumber = phoneNumber else { return nil }
 
         guard let ext = transaction.ext(YAPDBSignalServiceAddressIndex.phoneNumberIndexName) as? YapDatabaseSecondaryIndexTransaction else {
