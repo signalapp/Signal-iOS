@@ -1498,11 +1498,14 @@ NS_ASSUME_NONNULL_BEGIN
                 newGroupModel.removedMembers = removedMemberIds;
                 NSString *updateGroupInfo = [newGroupThread.groupModel getInfoStringAboutUpdateTo:newGroupModel
                                                                                   contactsManager:self.contactsManager];
-                newGroupThread.groupModel = newGroupModel;
-                [newGroupThread saveWithTransaction:transaction];
-                
-                // Loki: Try to establish sessions with all members when a group is created or updated
-                [self establishSessionsWithMembersIfNeeded: newMemberIds.allObjects forThread:newGroupThread transaction:transaction];
+
+                [newGroupThread updateGroupModel:newGroupModel withTransaction:transaction];
+
+                BOOL removedFromGroup = [removedMemberIds containsObject:ourHexEncodedPublicKey];
+                if (!removedFromGroup) {
+                    // Loki: Try to establish sessions with all members when a group is created or updated
+                    [self establishSessionsWithMembersIfNeeded: newMemberIds.allObjects forThread:newGroupThread transaction:transaction];
+                }
 
                 [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithDisappearingDuration:dataMessage.expireTimer
                                                                                           thread:newGroupThread
@@ -1518,7 +1521,7 @@ NS_ASSUME_NONNULL_BEGIN
                 [infoMessage saveWithTransaction:transaction];
 
                 // If we were the one that was removed then we need to leave the group
-                if ([removedMemberIds containsObject:ourHexEncodedPublicKey]) {
+                if (removedFromGroup) {
                     [newGroupThread leaveGroupWithTransaction:transaction];
                 }
 

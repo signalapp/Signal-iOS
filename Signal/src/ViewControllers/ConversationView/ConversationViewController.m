@@ -425,8 +425,8 @@ typedef enum : NSUInteger {
                                                  name:NSNotification.threadSessionRestoreDevicesChanged
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                              selector:@selector(handleGroupThreadLeftNotification:)
-                                                  name:NSNotification.groupThreadLeft
+                                              selector:@selector(handleGroupThreadUpdated:)
+                                                  name:NSNotification.groupThreadUpdated
                                                 object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleCalculatingPoWNotification:)
@@ -511,7 +511,7 @@ typedef enum : NSUInteger {
     [self ensureBannerState];
 }
 
-- (void)handleGroupThreadLeftNotification:(NSNotification *)notification
+- (void)handleGroupThreadUpdated:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
     
