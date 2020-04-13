@@ -193,7 +193,7 @@ CREATE
             ,"mediaSize" BLOB
             ,"pointerType" INTEGER
             ,"state" INTEGER
-            ,"uploadTimestamp" INTEGER
+            ,"uploadTimestamp" INTEGER NOT NULL DEFAULT 0
         )
 ;
 
