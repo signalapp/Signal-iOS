@@ -443,11 +443,9 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
         return firstly { () -> Promise<Void> in
             return GroupManager.tryToEnableGroupsV2(for: [address],
                                                     ignoreErrors: ignoreErrors)
-        }.map { [weak self] _ in
+        }.done { [weak self] _ in
             // Reload view content.
             self?.recipientPicker.reloadContent()
-
-            return ()
         }
     }
 
