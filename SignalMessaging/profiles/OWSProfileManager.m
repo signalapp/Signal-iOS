@@ -449,6 +449,15 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     return [ProfileFetcherJob fetchAndUpdateProfilePromiseObjcWithAddress:address mainAppOnly:NO ignoreThrottling:YES];
 }
 
+- (AnyPromise *)updateProfileForAddressPromise:(SignalServiceAddress *)address
+                                   mainAppOnly:(BOOL)mainAppOnly
+                              ignoreThrottling:(BOOL)ignoreThrottling
+{
+    return [ProfileFetcherJob fetchAndUpdateProfilePromiseObjcWithAddress:address
+                                                              mainAppOnly:mainAppOnly
+                                                         ignoreThrottling:ignoreThrottling];
+}
+
 - (void)fetchAndUpdateProfileForUsername:(NSString *)username
                                  success:(void (^)(SignalServiceAddress *))success
                                 notFound:(void (^)(void))notFound

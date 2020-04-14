@@ -216,6 +216,13 @@ NS_ASSUME_NONNULL_BEGIN
     return [AnyPromise promiseWithValue:@(1)];
 }
 
+- (AnyPromise *)updateProfileForAddressPromise:(SignalServiceAddress *)address
+                                   mainAppOnly:(BOOL)mainAppOnly
+                              ignoreThrottling:(BOOL)ignoreThrottling
+{
+    return [AnyPromise promiseWithValue:@(1)];
+}
+
 - (void)warmCaches
 {
     // Do nothing.

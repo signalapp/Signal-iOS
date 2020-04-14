@@ -45,10 +45,6 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         return SSKEnvironment.shared.contactsUpdater
     }
 
-    private var reachabilityManager: SSKReachabilityManager {
-        return SSKEnvironment.shared.reachabilityManager
-    }
-
     // MARK: -
 
     public typealias ProfileKeyCredentialMap = [UUID: ProfileKeyCredential]

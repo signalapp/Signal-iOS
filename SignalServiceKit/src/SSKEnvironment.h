@@ -5,6 +5,7 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class AccountServiceClient;
+@class BulkProfileFetch;
 @class ContactsUpdater;
 @class GroupsV2MessageProcessor;
 @class MessageFetcherJob;
@@ -98,7 +99,8 @@ NS_ASSUME_NONNULL_BEGIN
                                groupsV2:(id<GroupsV2>)groupsV2
                          groupV2Updates:(id<GroupV2Updates>)groupV2Updates
                       messageProcessing:(MessageProcessing *)messageProcessing
-                      messageFetcherJob:(MessageFetcherJob *)messageFetcherJob NS_DESIGNATED_INITIALIZER;
+                      messageFetcherJob:(MessageFetcherJob *)messageFetcherJob
+                       bulkProfileFetch:(BulkProfileFetch *)bulkProfileFetch NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic, readonly, class) SSKEnvironment *shared;
 
@@ -147,13 +149,13 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) id<StorageServiceManagerProtocol> storageServiceManager;
 @property (nonatomic, readonly) id<GroupsV2> groupsV2;
 @property (nonatomic, readonly) id<GroupV2Updates> groupV2Updates;
-
 @property (nonatomic, readonly) StickerManager *stickerManager;
 @property (nonatomic, readonly) SDSDatabaseStorage *databaseStorage;
 @property (nonatomic, readonly) StorageCoordinator *storageCoordinator;
 @property (nonatomic, readonly) SSKPreferences *sskPreferences;
 @property (nonatomic, readonly) MessageProcessing *messageProcessing;
 @property (nonatomic, readonly) MessageFetcherJob *messageFetcherJob;
+@property (nonatomic, readonly) BulkProfileFetch *bulkProfileFetch;
 
 @property (nonatomic, readonly, nullable) OWSPrimaryStorage *primaryStorage;
 

@@ -113,6 +113,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSWindowManager *windowManager = [[OWSWindowManager alloc] initDefault];
         MessageProcessing *messageProcessing = [MessageProcessing new];
         MessageFetcherJob *messageFetcherJob = [MessageFetcherJob new];
+        BulkProfileFetch *bulkProfileFetch = [BulkProfileFetch new];
 
         [Environment setShared:[[Environment alloc] initWithAudioSession:audioSession
                                              incomingContactSyncJobQueue:incomingContactSyncJobQueue
@@ -167,7 +168,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                          groupsV2:groupsV2
                                                                    groupV2Updates:groupV2Updates
                                                                 messageProcessing:messageProcessing
-                                                                messageFetcherJob:messageFetcherJob]];
+                                                                messageFetcherJob:messageFetcherJob
+                                                                 bulkProfileFetch:bulkProfileFetch]];
 
         appSpecificSingletonBlock();
 

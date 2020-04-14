@@ -395,9 +395,10 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
             RemoteConfig.groupsV2IncomingMessages else {
                 return
         }
-        // GroupsV2 TODO: We could debounce this effort.
         if !doesRecipientSupportGroupsV2(recipient) {
-            tryToEnableGroupsV2ForAddress(address, ignoreErrors: true).retainUntilComplete()
+            tryToEnableGroupsV2ForAddress(address,
+                                          isBlocking: false,
+                                          ignoreErrors: true).retainUntilComplete()
         }
     }
 
@@ -420,7 +421,9 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
             return AnyPromise(Promise.value(()))
         }
         let ignoreErrors = !groupMemberViewDelegate.groupMemberViewIsGroupsV2Required()
-        return AnyPromise(tryToEnableGroupsV2ForAddress(address, ignoreErrors: ignoreErrors))
+        return AnyPromise(tryToEnableGroupsV2ForAddress(address,
+                                                        isBlocking: true,
+                                                        ignoreErrors: ignoreErrors))
     }
 
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
@@ -440,9 +443,11 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
     }
 
     func tryToEnableGroupsV2ForAddress(_ address: SignalServiceAddress,
+                                       isBlocking: Bool,
                                        ignoreErrors: Bool) -> Promise<Void> {
         return firstly { () -> Promise<Void> in
             return GroupManager.tryToEnableGroupsV2(for: [address],
+                                                    isBlocking: isBlocking,
                                                     ignoreErrors: ignoreErrors)
         }.done { [weak self] _ in
             // Reload view content.

@@ -155,19 +155,6 @@ public class ProfileFetcherJob: NSObject {
         .retainUntilComplete()
     }
 
-    @objc(fetchAndUpdateProfilesWithThread:)
-    public class func fetchAndUpdateProfiles(thread: TSThread) {
-        let addresses = thread.recipientAddresses
-        let subjects = addresses.map { ProfileRequestSubject.address(address: $0) }
-        let options = ProfileFetchOptions()
-        var promises = [Promise<SignalServiceProfile>]()
-        for subject in subjects {
-            let job = ProfileFetcherJob(subject: subject, options: options)
-            promises.append(job.runAsPromise())
-        }
-        when(fulfilled: promises).retainUntilComplete()
-    }
-
     private init(subject: ProfileRequestSubject,
                  options: ProfileFetchOptions) {
         self.subject = subject
@@ -255,7 +242,7 @@ public class ProfileFetcherJob: NSObject {
         return requestProfileWithRetries()
     }
 
-    private func requestProfileWithRetries(remainingRetries: Int = 3) -> Promise<FetchedProfile> {
+    private func requestProfileWithRetries(retryCount: Int = 0) -> Promise<FetchedProfile> {
         let subject = self.subject
 
         let (promise, resolver) = Promise<FetchedProfile>.pending()
@@ -281,14 +268,22 @@ public class ProfileFetcherJob: NSObject {
                 resolver.reject(error)
                 return
             default:
-                guard remainingRetries > 0 else {
+                let maxRetries = 3
+                guard retryCount < maxRetries else {
                     Logger.warn("failed to get profile with error: \(error)")
                     resolver.reject(error)
                     return
                 }
 
-                firstly {
-                    self.requestProfileWithRetries(remainingRetries: remainingRetries - 1)
+                firstly { () -> Guarantee<Void> in
+                    // Backoff if we've hit a rate limit.
+                    if error.httpStatusCode == 413 {
+                        let backoffDelay = TimeInterval(retryCount + 1) * 30
+                        return after(seconds: backoffDelay)
+                    }
+                    return Guarantee.value(())
+                }.then(on: DispatchQueue.global()) { _ in
+                    self.requestProfileWithRetries(retryCount: retryCount + 1)
                 }.done(on: DispatchQueue.global()) { fetchedProfile in
                     resolver.fulfill(fetchedProfile)
                 }.catch(on: DispatchQueue.global()) { error in

@@ -49,6 +49,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) id<GroupV2Updates> groupV2Updates;
 @property (nonatomic) MessageProcessing *messageProcessing;
 @property (nonatomic) MessageFetcherJob *messageFetcherJob;
+@property (nonatomic) BulkProfileFetch *bulkProfileFetch;
 
 @end
 
@@ -103,6 +104,7 @@ static SSKEnvironment *sharedSSKEnvironment;
                          groupV2Updates:(id<GroupV2Updates>)groupV2Updates
                       messageProcessing:(MessageProcessing *)messageProcessing
                       messageFetcherJob:(MessageFetcherJob *)messageFetcherJob
+                       bulkProfileFetch:(BulkProfileFetch *)bulkProfileFetch
 {
     self = [super init];
     if (!self) {
@@ -150,7 +152,8 @@ static SSKEnvironment *sharedSSKEnvironment;
     OWSAssertDebug(groupsV2);
     OWSAssertDebug(groupV2Updates);
     OWSAssertDebug(messageProcessing);
-    OWSCAssertDebug(messageFetcherJob);
+    OWSAssertDebug(messageFetcherJob);
+    OWSAssertDebug(bulkProfileFetch);
 
     _contactsManager = contactsManager;
     _linkPreviewManager = linkPreviewManager;
@@ -195,6 +198,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     _groupV2Updates = groupV2Updates;
     _messageProcessing = messageProcessing;
     _messageFetcherJob = messageFetcherJob;
+    _bulkProfileFetch = bulkProfileFetch;
 
     return self;
 }
