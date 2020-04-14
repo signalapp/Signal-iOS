@@ -2809,3 +2809,7 @@
 "Join Public Chat" = "Join Public Chat";
 "No, thank you" = "No, thank you";
 "Report" = "Report";
+"Please Pick an Option" = "Please Pick an Option";
+"Notification Strategy" = "Notification Strategy";
+"Use APNs" = "Use APNs";
+"The app will use the Apple Push Notification Service. You'll be notified of new messages immediately. This mode entails a slight privacy sacrifice as Apple will know your IP. The contents of your messages will still be fully encrypted, your data will still be stored in a decentralized manner and your messages will still be onion routed." = "The app will use the Apple Push Notification Service. You'll be notified of new messages immediately. This mode entails a slight privacy sacrifice as Apple will know your IP. The contents of your messages will still be fully encrypted, your data will still be stored in a decentralized manner and your messages will still be onion routed.";

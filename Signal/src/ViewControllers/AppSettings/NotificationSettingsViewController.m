@@ -62,6 +62,21 @@
 
     OWSPreferences *prefs = Environment.shared.preferences;
 
+    OWSTableSection *strategySection = [OWSTableSection new];
+    strategySection.headerTitle = NSLocalizedString(@"Notification Strategy", @"");
+    [strategySection addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"Use APNs", @"")
+                               accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"notification_strategy")
+                               isOnBlock:^{
+                                   return [NSUserDefaults.standardUserDefaults boolForKey:@"isUsingFullAPNs"];
+                               }
+                               isEnabledBlock:^{
+                                   return YES;
+                               }
+                               target:weakSelf
+                               selector:@selector(didToggleAPNsSwitch:)]];
+    strategySection.footerTitle = NSLocalizedString(@"The app will use the Apple Push Notification Service. You'll be notified of new messages immediately. This mode entails a slight privacy sacrifice as Apple will know your IP. The contents of your messages will still be fully encrypted, your data will still be stored in a decentralized manner and your messages will still be onion routed.", @"");
+    [contents addSection:strategySection];
+
     // Sounds section.
 
     OWSTableSection *soundsSection = [OWSTableSection new];
@@ -117,6 +132,11 @@
 - (void)didToggleSoundNotificationsSwitch:(UISwitch *)sender
 {
     [Environment.shared.preferences setSoundInForeground:sender.on];
+}
+
+- (void)didToggleAPNsSwitch:(UISwitch *)sender
+{
+    [NSUserDefaults.standardUserDefaults setBool:sender.on forKey:@"isUsingFullAPNs"];
 }
 
 @end

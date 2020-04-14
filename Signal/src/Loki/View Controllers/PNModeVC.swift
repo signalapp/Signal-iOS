@@ -87,6 +87,12 @@ final class PNModeVC : BaseVC, OptionViewDelegate {
     }
 
     @objc private func register() {
+        guard selectedOptionView != nil else {
+            let title = NSLocalizedString("Please Pick an Option", comment: "")
+            let alert = UIAlertController(title: title, message: nil, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
+            return present(alert, animated: true, completion: nil)
+        }
         UserDefaults.standard[.isUsingFullAPNs] = (selectedOptionView == apnsOptionView)
         TSAccountManager.sharedInstance().didRegister()
         let homeVC = HomeVC()
