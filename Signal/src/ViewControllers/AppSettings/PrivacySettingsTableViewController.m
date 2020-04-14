@@ -19,8 +19,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-sender/";
-
 @implementation PrivacySettingsTableViewController
 
 - (void)viewDidLoad
@@ -151,8 +149,25 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
         OWSTableSection *pinsSection = [OWSTableSection new];
         pinsSection.headerTitle
             = NSLocalizedString(@"SETTINGS_PINS_TITLE", @"Title for the 'PINs' section of the privacy settings.");
-        pinsSection.footerTitle
-            = NSLocalizedString(@"SETTINGS_PINS_FOOTER", @"Footer for the 'PINs' section of the privacy settings.");
+
+        NSMutableAttributedString *attributedFooter = [[NSMutableAttributedString alloc]
+            initWithString:NSLocalizedString(
+                               @"SETTINGS_PINS_FOOTER", @"Footer for the 'PINs' section of the privacy settings.")
+                attributes:@{
+                    NSForegroundColorAttributeName : UIColor.ows_gray45Color,
+                    NSFontAttributeName : UIFont.ows_dynamicTypeCaption1Font
+                }];
+        [attributedFooter appendAttributedString:[[NSAttributedString alloc] initWithString:@" " attributes:@{}]];
+        [attributedFooter appendAttributedString:
+                              [[NSAttributedString alloc]
+                                  initWithString:CommonStrings.learnMore
+                                      attributes:@{
+                                          NSLinkAttributeName : [NSURL
+                                              URLWithString:@"https://support.signal.org/hc/articles/360007059792"],
+                                          NSFontAttributeName : UIFont.ows_dynamicTypeCaption1Font
+                                      }]];
+        pinsSection.footerAttributedTitle = attributedFooter;
+
         [pinsSection
             addItem:[OWSTableItem disclosureItemWithText:([OWS2FAManager.sharedManager is2FAEnabled]
                                                                  ? NSLocalizedString(@"SETTINGS_PINS_ITEM",
@@ -174,8 +189,8 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
         OWSTableSection *registrationLockSection = [OWSTableSection new];
         registrationLockSection.headerTitle = NSLocalizedString(
             @"SETTINGS_TWO_FACTOR_AUTH_TITLE", @"Title for the 'two factor auth' section of the privacy settings.");
-        registrationLockSection.footerTitle = NSLocalizedString(
-            @"SETTINGS_TWO_FACTOR_AUTH_FOOTER", @"Footer for the 'two factor auth' section of the privacy settings.");
+        registrationLockSection.footerTitle = NSLocalizedString(@"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER",
+            @"Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available.");
         [registrationLockSection
             addItem:[OWSTableItem switchItemWithText:
                                       NSLocalizedString(@"SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL",
@@ -409,16 +424,28 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
 
                         return cell;
                     }
-                    customRowHeight:UITableViewAutomaticDimension
-                    actionBlock:^{
-                        NSURL *url = [NSURL URLWithString:kSealedSenderInfoURL];
-                        OWSCAssertDebug(url);
-                        SFSafariViewController *safariVC = [[SFSafariViewController alloc] initWithURL:url];
-                        [weakSelf presentViewController:safariVC animated:YES completion:nil];
-                    }]];
+                            customRowHeight:UITableViewAutomaticDimension
+                                actionBlock:nil]];
 
-    unidentifiedDeliveryIndicatorsSection.footerTitle
-        = NSLocalizedString(@"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER", @"table section footer");
+    NSMutableAttributedString *unidentifiedDeliveryFooterText = [[NSMutableAttributedString alloc]
+        initWithString:NSLocalizedString(
+                           @"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER", @"table section footer")
+            attributes:@{
+                NSForegroundColorAttributeName : UIColor.ows_gray45Color,
+                NSFontAttributeName : UIFont.ows_dynamicTypeCaption1Font
+            }];
+    [unidentifiedDeliveryFooterText appendAttributedString:[[NSAttributedString alloc] initWithString:@" "
+                                                                                           attributes:@{}]];
+    [unidentifiedDeliveryFooterText
+        appendAttributedString:[[NSAttributedString alloc]
+                                   initWithString:CommonStrings.learnMore
+                                       attributes:@{
+                                           NSLinkAttributeName :
+                                               [NSURL URLWithString:@"https://signal.org/blog/sealed-sender/"],
+                                           NSFontAttributeName : UIFont.ows_dynamicTypeCaption1Font
+                                       }]];
+
+    unidentifiedDeliveryIndicatorsSection.footerAttributedTitle = unidentifiedDeliveryFooterText;
     [contents addSection:unidentifiedDeliveryIndicatorsSection];
 
     // Only the primary device can adjust the unrestricted UD setting. We don't sync this setting.
@@ -440,21 +467,6 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
             = NSLocalizedString(@"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER", @"table section footer");
         [contents addSection:unidentifiedDeliveryUnrestrictedSection];
     }
-
-    OWSTableSection *unidentifiedDeliveryLearnMoreSection = [OWSTableSection new];
-    [unidentifiedDeliveryLearnMoreSection
-        addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_UNIDENTIFIED_DELIVERY_LEARN_MORE",
-                                                         @"Label for a link to more info about unidentified delivery.")
-                             accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@",
-                                                               @"sealed_sender_learn_more"]
-                                         actionBlock:^{
-                                             NSURL *url = [NSURL URLWithString:kSealedSenderInfoURL];
-                                             OWSCAssertDebug(url);
-                                             SFSafariViewController *safariVC =
-                                                 [[SFSafariViewController alloc] initWithURL:url];
-                                             [weakSelf presentViewController:safariVC animated:YES completion:nil];
-                                         }]];
-    [contents addSection:unidentifiedDeliveryLearnMoreSection];
 
     OWSTableSection *linkPreviewsSection = [OWSTableSection new];
     [linkPreviewsSection
@@ -642,25 +654,62 @@ static NSString *const kSealedSenderInfoURL = @"https://signal.org/blog/sealed-s
         return;
     }
 
+    ActionSheetController *actionSheet;
+
     if (shouldBeEnabled) {
-        // If we don't have a PIN yet, we need to create one.
-        if (!OWS2FAManager.sharedManager.is2FAEnabled) {
-            __weak PrivacySettingsTableViewController *weakSelf = self;
-            OWSPinSetupViewController *vc = [OWSPinSetupViewController creatingRegistrationLockWithCompletionHandler:^(
-                OWSPinSetupViewController *pinSetupVC, NSError *_Nullable error) {
-                [weakSelf.navigationController popToViewController:weakSelf animated:YES];
-            }];
-            [self.navigationController pushViewController:vc animated:YES];
-        } else {
-            [[OWS2FAManager.sharedManager enableRegistrationLockV2].then(^{
-                [self updateTableContents];
-            }) retainUntilComplete];
-        }
+        actionSheet = [[ActionSheetController alloc]
+            initWithTitle:NSLocalizedString(@"SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE",
+                              @"Title for the alert confirming that the user wants to turn on registration lock.")
+                  message:NSLocalizedString(@"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE",
+                              @"Body for the alert confirming that the user wants to turn on registration lock.")];
+
+        ActionSheetAction *turnOnAction = [[ActionSheetAction alloc]
+            initWithTitle:NSLocalizedString(
+                              @"SETTINGS_REGISTRATION_LOCK_TURN_ON", @"Action to turn on registration lock")
+                    style:ActionSheetActionStyleDefault
+                  handler:^(ActionSheetAction *action) {
+                      // If we don't have a PIN yet, we need to create one.
+                      if (!OWS2FAManager.sharedManager.is2FAEnabled) {
+                          __weak PrivacySettingsTableViewController *weakSelf = self;
+                          OWSPinSetupViewController *vc =
+                              [OWSPinSetupViewController creatingRegistrationLockWithCompletionHandler:^(
+                                  OWSPinSetupViewController *pinSetupVC, NSError *_Nullable error) {
+                                  [weakSelf.navigationController popToViewController:weakSelf animated:YES];
+                              }];
+                          [self.navigationController pushViewController:vc animated:YES];
+                      } else {
+                          [[OWS2FAManager.sharedManager enableRegistrationLockV2].then(^{
+                              [self updateTableContents];
+                          }) retainUntilComplete];
+                      }
+                  }];
+        [actionSheet addAction:turnOnAction];
     } else {
-        [[OWS2FAManager.sharedManager disableRegistrationLockV2].then(^{
-            [self updateTableContents];
-        }) retainUntilComplete];
+        actionSheet = [[ActionSheetController alloc]
+            initWithTitle:NSLocalizedString(@"SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE",
+                              @"Title for the alert confirming that the user wants to turn off registration lock.")
+                  message:nil];
+
+        ActionSheetAction *turnOffAction =
+            [[ActionSheetAction alloc] initWithTitle:NSLocalizedString(@"SETTINGS_REGISTRATION_LOCK_TURN_OFF",
+                                                         @"Action to turn off registration lock")
+                                               style:ActionSheetActionStyleDefault
+                                             handler:^(ActionSheetAction *action) {
+                                                 [[OWS2FAManager.sharedManager disableRegistrationLockV2].then(^{
+                                                     [self updateTableContents];
+                                                 }) retainUntilComplete];
+                                             }];
+        [actionSheet addAction:turnOffAction];
     }
+
+    ActionSheetAction *cancelAction = [[ActionSheetAction alloc] initWithTitle:CommonStrings.cancelButton
+                                                                         style:ActionSheetActionStyleCancel
+                                                                       handler:^(ActionSheetAction *action) {
+                                                                           [sender setOn:!shouldBeEnabled animated:YES];
+                                                                       }];
+
+    [actionSheet addAction:cancelAction];
+    [self presentActionSheet:actionSheet];
 }
 
 - (void)isScreenLockEnabledDidChange:(UISwitch *)sender

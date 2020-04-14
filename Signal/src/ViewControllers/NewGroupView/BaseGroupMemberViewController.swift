@@ -238,8 +238,7 @@ public class BaseGroupMemberViewController: OWSViewController {
                                                 message: NSLocalizedString("EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER",
                                                                            comment: "Error message indicating the a user can't be added to a group."))
 
-        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_LEARN_MORE",
-                                                                         comment: "Label for 'learn more' button when a user can't be added to a group."),
+        actionSheet.addAction(ActionSheetAction(title: CommonStrings.learnMore,
                                                 style: .default) { _ in
                                                     self.showCantAddMemberView()
         })
