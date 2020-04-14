@@ -33,3 +33,5 @@ Index/
 *.sdsjson
 Scripts/sds_codegen/sds_intermediates/*
 Scripts/sds_codegen/sds-includes/*
+
+/.idea

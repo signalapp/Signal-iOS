@@ -533,6 +533,8 @@ NS_ASSUME_NONNULL_BEGIN
 
         // TSAttachment
         [[[TSAttachmentPointer alloc] initWithServerId:12345
+                                                cdnKey:@""
+                                             cdnNumber:0
                                                    key:[Randomness generateRandomBytes:16]
                                                 digest:nil
                                              byteCount:1024

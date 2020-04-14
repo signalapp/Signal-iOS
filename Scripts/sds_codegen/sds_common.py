@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python2.7
 # -*- coding: utf-8 -*-
 
 import os
@@ -46,12 +46,12 @@ def clean_up_generated_swift(text):
 
 def clean_up_generated_objc(text):
     return clean_up_generated_code(text)
-        
-    
+
+
 def pretty_module_path(path):
     path = os.path.abspath(path)
     if path.startswith(git_repo_path):
-       path = path[len(git_repo_path):] 
+       path = path[len(git_repo_path):]
     return path
 
 def write_text_file_if_changed(file_path, text):
@@ -60,6 +60,6 @@ def write_text_file_if_changed(file_path, text):
             oldText = f.read()
             if oldText == text:
                 return
-        
+
     with open(file_path, 'wt') as f:
         f.write(text)

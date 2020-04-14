@@ -10,7 +10,7 @@ open class CDNDownloadOperation: OWSOperation {
     // MARK: - Dependencies
 
     private var cdnSessionManager: AFHTTPSessionManager {
-        return OWSSignalService.sharedInstance().cdnSessionManager
+        return OWSSignalService.sharedInstance().cdnSessionManager(forCdnNumber: 0)
     }
 
     // MARK: -

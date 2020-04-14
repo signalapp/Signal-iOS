@@ -149,6 +149,8 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
                         blurHash:(nullable NSString *)blurHash
                        byteCount:(unsigned int)byteCount
                          caption:(nullable NSString *)caption
+                          cdnKey:(NSString *)cdnKey
+                       cdnNumber:(unsigned int)cdnNumber
                      contentType:(NSString *)contentType
                    encryptionKey:(nullable NSData *)encryptionKey
                         serverId:(unsigned long long)serverId
@@ -171,6 +173,8 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
                           blurHash:blurHash
                          byteCount:byteCount
                            caption:caption
+                            cdnKey:cdnKey
+                         cdnNumber:cdnNumber
                        contentType:contentType
                      encryptionKey:encryptionKey
                           serverId:serverId
@@ -1074,12 +1078,14 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 - (void)updateAsUploadedWithEncryptionKey:(NSData *)encryptionKey
                                    digest:(NSData *)digest
                                  serverId:(UInt64)serverId
+                                   cdnKey:(NSString *)cdnKey
+                                cdnNumber:(UInt32)cdnNumber
                           uploadTimestamp:(unsigned long long)uploadTimestamp
                               transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(encryptionKey.length > 0);
     OWSAssertDebug(digest.length > 0);
-    OWSAssertDebug(serverId > 0);
+    OWSAssertDebug(serverId > 0 || cdnKey.length > 0);
     OWSAssertDebug(uploadTimestamp > 0);
 
     [self anyUpdateAttachmentStreamWithTransaction:transaction
@@ -1087,6 +1093,8 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
                                                  [attachment setEncryptionKey:encryptionKey];
                                                  [attachment setDigest:digest];
                                                  [attachment setServerId:serverId];
+                                                 [attachment setCdnKey:cdnKey];
+                                                 [attachment setCdnNumber:cdnNumber];
                                                  [attachment setUploadTimestamp:uploadTimestamp];
                                                  [attachment setIsUploaded:YES];
                                              }];
@@ -1147,6 +1155,8 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
     SSKProtoAttachmentPointerBuilder *builder = [SSKProtoAttachmentPointer builder];
     builder.cdnID = self.serverId;
+    builder.cdnKey = self.cdnKey;
+    builder.cdnNumber = self.cdnNumber;
 
     OWSAssertDebug(self.contentType.length > 0);
     builder.contentType = self.contentType;

@@ -51,6 +51,8 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (instancetype)initWithServerId:(UInt64)serverId
+                          cdnKey:(NSString *)cdnKey
+                       cdnNumber:(UInt32)cdnNumber
                              key:(NSData *)key
                           digest:(nullable NSData *)digest
                        byteCount:(UInt32)byteCount
@@ -64,6 +66,8 @@ NS_ASSUME_NONNULL_BEGIN
                  uploadTimestamp:(unsigned long long)uploadTimestamp
 {
     self = [super initWithServerId:serverId
+                            cdnKey:cdnKey
+                         cdnNumber:cdnNumber
                      encryptionKey:key
                          byteCount:byteCount
                        contentType:contentType
@@ -119,6 +123,8 @@ NS_ASSUME_NONNULL_BEGIN
                         blurHash:(nullable NSString *)blurHash
                        byteCount:(unsigned int)byteCount
                          caption:(nullable NSString *)caption
+                          cdnKey:(NSString *)cdnKey
+                       cdnNumber:(unsigned int)cdnNumber
                      contentType:(NSString *)contentType
                    encryptionKey:(nullable NSData *)encryptionKey
                         serverId:(unsigned long long)serverId
@@ -137,6 +143,8 @@ NS_ASSUME_NONNULL_BEGIN
                           blurHash:blurHash
                          byteCount:byteCount
                            caption:caption
+                            cdnKey:cdnKey
+                         cdnNumber:cdnNumber
                        contentType:contentType
                      encryptionKey:encryptionKey
                           serverId:serverId
@@ -164,7 +172,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                 albumMessage:(nullable TSMessage *)albumMessage
 {
     // TODO: Use the cdnKey and cdnNumber to fetch the attachment
-    if (attachmentProto.cdnID < 1) {
+    if (attachmentProto.cdnID < 1 && attachmentProto.cdnKey.length < 1) {
         OWSFailDebug(@"Invalid attachment id.");
         return nil;
     }
@@ -233,6 +241,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     TSAttachmentPointer *pointer = [[TSAttachmentPointer alloc] initWithServerId:serverId
+                                                                          cdnKey:attachmentProto.cdnKey
+                                                                       cdnNumber:attachmentProto.cdnNumber
                                                                              key:attachmentProto.key
                                                                           digest:digest
                                                                        byteCount:attachmentProto.size

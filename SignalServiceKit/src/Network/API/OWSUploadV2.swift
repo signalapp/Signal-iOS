@@ -26,7 +26,7 @@ public extension OWSUploadV2 {
     // MARK: - Dependencies
 
     private class var uploadSessionManager: AFHTTPSessionManager {
-        return OWSSignalService.sharedInstance().cdnSessionManager
+        OWSSignalService.sharedInstance().cdnSessionManager(forCdnNumber: 0)
     }
 
     // MARK: -

@@ -219,7 +219,7 @@ void AssertIsOnSendingQueue()
 
                 TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
                 OWSAssertDebug(attachmentStream);
-                OWSAssertDebug(attachmentStream.serverId);
+                OWSAssertDebug(attachmentStream.serverId || attachmentStream.cdnKey.length > 0);
                 OWSAssertDebug(attachmentStream.isUploaded);
             }
         }];

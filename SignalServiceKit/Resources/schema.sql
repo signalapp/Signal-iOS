@@ -195,6 +195,8 @@ CREATE
             ,"pointerType" INTEGER
             ,"state" INTEGER
             ,"uploadTimestamp" INTEGER
+            ,"cdnKey" TEXT NOT NULL DEFAULT ''
+            ,"cdnNumber" INTEGER NOT NULL DEFAULT 0
         )
 ;
 

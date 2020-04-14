@@ -43,6 +43,8 @@ typedef NS_ENUM(NSUInteger, TSAttachmentPointerState) {
 - (nullable OWSBackupFragment *)lazyRestoreFragmentWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 - (instancetype)initWithServerId:(UInt64)serverId
+                          cdnKey:(NSString *)cdnKey
+                       cdnNumber:(UInt32)cdnNumber
                    encryptionKey:(NSData *)encryptionKey
                        byteCount:(UInt32)byteCount
                      contentType:(NSString *)contentType
@@ -73,12 +75,16 @@ typedef NS_ENUM(NSUInteger, TSAttachmentPointerState) {
                    contentType:(NSString *)contentType
                  encryptionKey:(nullable NSData *)encryptionKey
                       serverId:(unsigned long long)serverId
+                        cdnKey:(NSString *)cdnKey
+                     cdnNumber:(unsigned int)cdnNumber
                 sourceFilename:(nullable NSString *)sourceFilename
                uploadTimestamp:(unsigned long long)uploadTimestamp NS_UNAVAILABLE;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithServerId:(UInt64)serverId
+                          cdnKey:(NSString *)cdnKey
+                       cdnNumber:(UInt32)cdnNumber
                              key:(NSData *)key
                           digest:(nullable NSData *)digest
                        byteCount:(UInt32)byteCount
@@ -106,6 +112,8 @@ typedef NS_ENUM(NSUInteger, TSAttachmentPointerState) {
                         blurHash:(nullable NSString *)blurHash
                        byteCount:(unsigned int)byteCount
                          caption:(nullable NSString *)caption
+                          cdnKey:(NSString *)cdnKey
+                       cdnNumber:(unsigned int)cdnNumber
                      contentType:(NSString *)contentType
                    encryptionKey:(nullable NSData *)encryptionKey
                         serverId:(unsigned long long)serverId
@@ -116,7 +124,7 @@ typedef NS_ENUM(NSUInteger, TSAttachmentPointerState) {
                        mediaSize:(CGSize)mediaSize
                      pointerType:(TSAttachmentPointerType)pointerType
                            state:(TSAttachmentPointerState)state
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:attachmentType:blurHash:byteCount:caption:contentType:encryptionKey:serverId:sourceFilename:uploadTimestamp:digest:lazyRestoreFragmentId:mediaSize:pointerType:state:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:attachmentType:blurHash:byteCount:caption:cdnKey:cdnNumber:contentType:encryptionKey:serverId:sourceFilename:uploadTimestamp:digest:lazyRestoreFragmentId:mediaSize:pointerType:state:));
 
 // clang-format on
 

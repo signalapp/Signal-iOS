@@ -118,10 +118,12 @@ public class BroadcastMediaMessageOperation: OWSOperation, DurableOperation {
                 }
 
                 let serverId = uploadedAttachment.serverId
+                let cdnKey = uploadedAttachment.cdnKey
+                let cdnNumber = uploadedAttachment.cdnNumber
                 let uploadTimestamp = uploadedAttachment.uploadTimestamp
                 guard let encryptionKey = uploadedAttachment.encryptionKey,
                     let digest = uploadedAttachment.digest,
-                    serverId > 0 else {
+                    (serverId > 0 || !cdnKey.isEmpty) else {
                         owsFailDebug("uploaded attachment was incomplete")
                         continue
                 }
@@ -138,6 +140,8 @@ public class BroadcastMediaMessageOperation: OWSOperation, DurableOperation {
                     correspondingAttachment.updateAsUploaded(withEncryptionKey: encryptionKey,
                                                              digest: digest,
                                                              serverId: serverId,
+                                                             cdnKey: cdnKey,
+                                                             cdnNumber: cdnNumber,
                                                              uploadTimestamp: uploadTimestamp,
                                                              transaction: transaction)
 

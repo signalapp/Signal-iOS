@@ -51,6 +51,8 @@ public struct AttachmentRecord: SDSRecord {
     public let pointerType: TSAttachmentPointerType?
     public let state: TSAttachmentPointerState?
     public let uploadTimestamp: UInt64
+    public let cdnKey: String
+    public let cdnNumber: UInt32
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -79,6 +81,8 @@ public struct AttachmentRecord: SDSRecord {
         case pointerType
         case state
         case uploadTimestamp
+        case cdnKey
+        case cdnNumber
     }
 
     public static func columnName(_ column: AttachmentRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -128,6 +132,8 @@ public extension AttachmentRecord {
         pointerType = row[23]
         state = row[24]
         uploadTimestamp = row[25]
+        cdnKey = row[26]
+        cdnNumber = row[27]
     }
 }
 
@@ -164,6 +170,8 @@ extension TSAttachment {
             let blurHash: String? = record.blurHash
             let byteCount: UInt32 = record.byteCount
             let caption: String? = record.caption
+            let cdnKey: String = record.cdnKey
+            let cdnNumber: UInt32 = record.cdnNumber
             let contentType: String = record.contentType
             let encryptionKey: Data? = SDSDeserialization.optionalData(record.encryptionKey, name: "encryptionKey")
             let serverId: UInt64 = record.serverId
@@ -177,6 +185,8 @@ extension TSAttachment {
                                 blurHash: blurHash,
                                 byteCount: byteCount,
                                 caption: caption,
+                                cdnKey: cdnKey,
+                                cdnNumber: cdnNumber,
                                 contentType: contentType,
                                 encryptionKey: encryptionKey,
                                 serverId: serverId,
@@ -191,6 +201,8 @@ extension TSAttachment {
             let blurHash: String? = record.blurHash
             let byteCount: UInt32 = record.byteCount
             let caption: String? = record.caption
+            let cdnKey: String = record.cdnKey
+            let cdnNumber: UInt32 = record.cdnNumber
             let contentType: String = record.contentType
             let encryptionKey: Data? = SDSDeserialization.optionalData(record.encryptionKey, name: "encryptionKey")
             let serverId: UInt64 = record.serverId
@@ -214,6 +226,8 @@ extension TSAttachment {
                                        blurHash: blurHash,
                                        byteCount: byteCount,
                                        caption: caption,
+                                       cdnKey: cdnKey,
+                                       cdnNumber: cdnNumber,
                                        contentType: contentType,
                                        encryptionKey: encryptionKey,
                                        serverId: serverId,
@@ -233,6 +247,8 @@ extension TSAttachment {
             let blurHash: String? = record.blurHash
             let byteCount: UInt32 = record.byteCount
             let caption: String? = record.caption
+            let cdnKey: String = record.cdnKey
+            let cdnNumber: UInt32 = record.cdnNumber
             let contentType: String = record.contentType
             let encryptionKey: Data? = SDSDeserialization.optionalData(record.encryptionKey, name: "encryptionKey")
             let serverId: UInt64 = record.serverId
@@ -258,6 +274,8 @@ extension TSAttachment {
                                       blurHash: blurHash,
                                       byteCount: byteCount,
                                       caption: caption,
+                                      cdnKey: cdnKey,
+                                      cdnNumber: cdnNumber,
                                       contentType: contentType,
                                       encryptionKey: encryptionKey,
                                       serverId: serverId,
@@ -345,6 +363,8 @@ extension TSAttachmentSerializer {
     static let pointerTypeColumn = SDSColumnMetadata(columnName: "pointerType", columnType: .int, isOptional: true)
     static let stateColumn = SDSColumnMetadata(columnName: "state", columnType: .int, isOptional: true)
     static let uploadTimestampColumn = SDSColumnMetadata(columnName: "uploadTimestamp", columnType: .int64)
+    static let cdnKeyColumn = SDSColumnMetadata(columnName: "cdnKey", columnType: .unicodeString)
+    static let cdnNumberColumn = SDSColumnMetadata(columnName: "cdnNumber", columnType: .int64)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -376,7 +396,9 @@ extension TSAttachmentSerializer {
         mediaSizeColumn,
         pointerTypeColumn,
         stateColumn,
-        uploadTimestampColumn
+        uploadTimestampColumn,
+        cdnKeyColumn,
+        cdnNumberColumn
         ])
 }
 
@@ -809,7 +831,9 @@ class TSAttachmentSerializer: SDSSerializer {
         let pointerType: TSAttachmentPointerType? = nil
         let state: TSAttachmentPointerState? = nil
         let uploadTimestamp: UInt64 = model.uploadTimestamp
+        let cdnKey: String = model.cdnKey
+        let cdnNumber: UInt32 = model.cdnNumber
 
-        return AttachmentRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, albumMessageId: albumMessageId, attachmentType: attachmentType, blurHash: blurHash, byteCount: byteCount, caption: caption, contentType: contentType, encryptionKey: encryptionKey, serverId: serverId, sourceFilename: sourceFilename, cachedAudioDurationSeconds: cachedAudioDurationSeconds, cachedImageHeight: cachedImageHeight, cachedImageWidth: cachedImageWidth, creationTimestamp: creationTimestamp, digest: digest, isUploaded: isUploaded, isValidImageCached: isValidImageCached, isValidVideoCached: isValidVideoCached, lazyRestoreFragmentId: lazyRestoreFragmentId, localRelativeFilePath: localRelativeFilePath, mediaSize: mediaSize, pointerType: pointerType, state: state, uploadTimestamp: uploadTimestamp)
+        return AttachmentRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, albumMessageId: albumMessageId, attachmentType: attachmentType, blurHash: blurHash, byteCount: byteCount, caption: caption, contentType: contentType, encryptionKey: encryptionKey, serverId: serverId, sourceFilename: sourceFilename, cachedAudioDurationSeconds: cachedAudioDurationSeconds, cachedImageHeight: cachedImageHeight, cachedImageWidth: cachedImageWidth, creationTimestamp: creationTimestamp, digest: digest, isUploaded: isUploaded, isValidImageCached: isValidImageCached, isValidVideoCached: isValidVideoCached, lazyRestoreFragmentId: lazyRestoreFragmentId, localRelativeFilePath: localRelativeFilePath, mediaSize: mediaSize, pointerType: pointerType, state: state, uploadTimestamp: uploadTimestamp, cdnKey: cdnKey, cdnNumber: cdnNumber)
     }
 }

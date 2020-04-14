@@ -113,6 +113,7 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
     
     [self fireNotificationWithProgress:0];
 
+    // TODO: Use attachment v3 if enabled by feature flag and fill in cdnKey and cdnNumber below.
     OWSAttachmentUploadV2 *upload = [OWSAttachmentUploadV2 new];
     [[BlurHash ensureBlurHashForAttachmentStream:attachmentStream]
             .catchInBackground(^{
@@ -130,6 +131,8 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
                     [attachmentStream updateAsUploadedWithEncryptionKey:upload.encryptionKey
                                                                  digest:upload.digest
                                                                serverId:upload.serverId
+                                                                 cdnKey:@""
+                                                              cdnNumber:0
                                                         uploadTimestamp:upload.uploadTimestamp
                                                             transaction:transaction];
                 }];
