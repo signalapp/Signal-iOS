@@ -6,7 +6,6 @@
 #import "BlockListUIUtils.h"
 #import "ContactsViewHelper.h"
 #import "FingerprintViewController.h"
-#import "OWSAddToContactViewController.h"
 #import "OWSBlockingManager.h"
 #import "OWSSoundSettingsViewController.h"
 #import "PhoneNumber.h"

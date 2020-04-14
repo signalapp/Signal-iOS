@@ -27,7 +27,6 @@
 #import "MediaDetailViewController.h"
 #import "NewGroupViewController.h"
 #import "NotificationSettingsViewController.h"
-#import "OWSAddToContactViewController.h"
 #import "OWSAnyTouchGestureRecognizer.h"
 #import "OWSAudioPlayer.h"
 #import "OWSBackup.h"
