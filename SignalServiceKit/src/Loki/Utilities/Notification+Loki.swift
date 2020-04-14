@@ -4,7 +4,7 @@ public extension Notification.Name {
     // State changes
     public static let contactOnlineStatusChanged = Notification.Name("contactOnlineStatusChanged")
     public static let threadFriendRequestStatusChanged = Notification.Name("threadFriendRequestStatusChanged")
-    public static let groupThreadUpdated = Notification.Name("groupThreadLeft")
+    public static let groupThreadUpdated = Notification.Name("groupThreadUpdated")
     public static let messageFriendRequestStatusChanged = Notification.Name("messageFriendRequestStatusChanged")
     public static let threadDeleted = Notification.Name("threadDeleted")
     public static let threadSessionRestoreDevicesChanged = Notification.Name("threadSessionRestoreDevicesChanged")
