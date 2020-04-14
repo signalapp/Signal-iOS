@@ -120,7 +120,7 @@ extension OWSAddToContactViewController: UITableViewDataSource {
             return UITableViewCell()
         }
 
-        let dataSource = contactsManager.allContacts
+        let dataSource = contacts
         let contact = dataSource[indexPath.row]
 
         cell.configure(contact: contact, subtitleType: .none, showsWhenSelected: false, contactsManager: self.contactsManager)
