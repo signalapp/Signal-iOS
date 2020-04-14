@@ -1,5 +1,10 @@
 import PromiseKit
 
+// TODO: A lot of the API relies on things happening serially and state being maintained correctly (i.e. without
+// race conditions). To this end we should just have one high quality serial queue and do everything on there, except
+// for things that explicitly *can* be done in parallel and don't modify state, any which should then happen
+// on a global queue.
+
 @objc(LKAPI)
 public final class LokiAPI : NSObject {
     private static let stateQueue = DispatchQueue(label: "LokiAPI.stateQueue")
