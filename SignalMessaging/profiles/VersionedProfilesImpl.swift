@@ -58,23 +58,25 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift {
     public func updateProfileOnService(profileGivenName: String?,
                                        profileFamilyName: String?,
                                        profileAvatarData: Data?) {
-        updateProfilePromise(profileGivenName: profileGivenName,
-                             profileFamilyName: profileFamilyName,
-                             profileAvatarData: profileAvatarData)
-            .done { _ in
-                Logger.verbose("success")
+        firstly {
+            updateProfilePromise(profileGivenName: profileGivenName,
+                                 profileFamilyName: profileFamilyName,
+                                 profileAvatarData: profileAvatarData)
+        }.done { _ in
+            Logger.verbose("success")
 
-                // TODO: This is temporary for testing.
-                let localAddress = TSAccountManager.sharedInstance().localAddress!
+            // TODO: This is temporary for testing.
+            let localAddress = TSAccountManager.sharedInstance().localAddress!
+            firstly {
                 ProfileFetcherJob.fetchAndUpdateProfilePromise(address: localAddress,
                                                                mainAppOnly: false,
                                                                ignoreThrottling: true,
                                                                fetchType: .versioned)
-                    .done { _ in
-                        Logger.verbose("success")
-                }.catch { error in
-                    owsFailDebug("error: \(error)")
-                }.retainUntilComplete()
+            }.done { _ in
+                    Logger.verbose("success")
+            }.catch { error in
+                owsFailDebug("error: \(error)")
+            }.retainUntilComplete()
         }.catch { error in
             owsFailDebug("error: \(error)")
         }.retainUntilComplete()

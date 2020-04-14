@@ -117,10 +117,11 @@ extension OWSProfileManager {
         guard let update = pendingUpdate else {
             return
         }
-        attemptToUpdateProfileOnService(update: update,
-                                        retryDelay: retryDelay)
-            .done { _ in
-                Logger.info("Update succeeded.")
+        firstly {
+            attemptToUpdateProfileOnService(update: update,
+                                            retryDelay: retryDelay)
+        }.done { _ in
+            Logger.info("Update succeeded.")
         }.catch { error in
             Logger.error("Update failed: \(error)")
         }.retainUntilComplete()
@@ -141,18 +142,19 @@ extension OWSProfileManager {
         let attempt = ProfileUpdateAttempt(update: update,
                                            userProfile: userProfile)
 
-        let promise = writeProfileAvatarToDisk(attempt: attempt)
-            .then(on: DispatchQueue.global()) { () -> Promise<Void> in
-                // Optimistically update local profile state.
-                databaseStorage.write { transaction in
-                    self.updateLocalProfile(with: attempt, transaction: transaction)
-                }
+        let promise = firstly {
+            writeProfileAvatarToDisk(attempt: attempt)
+        }.then(on: DispatchQueue.global()) { () -> Promise<Void> in
+            // Optimistically update local profile state.
+            databaseStorage.write { transaction in
+                self.updateLocalProfile(with: attempt, transaction: transaction)
+            }
 
-                if FeatureFlags.versionedProfiledUpdate {
-                    return updateProfileOnServiceVersioned(attempt: attempt)
-                } else {
-                    return updateProfileOnServiceUnversioned(attempt: attempt)
-                }
+            if FeatureFlags.versionedProfiledUpdate {
+                return updateProfileOnServiceVersioned(attempt: attempt)
+            } else {
+                return updateProfileOnServiceUnversioned(attempt: attempt)
+            }
         }.done(on: DispatchQueue.global()) { _ in
             _ = self.databaseStorage.write { (transaction: SDSAnyWriteTransaction) -> Void in
                 guard tryToDequeueProfileUpdate(update: attempt.update, transaction: transaction) else {
