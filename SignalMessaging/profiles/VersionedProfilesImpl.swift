@@ -8,44 +8,37 @@ import SignalServiceKit
 import SignalMetadataKit
 import ZKGroup
 
-@objc
-public class VersionedProfileUpdate: NSObject {
-    // This will only be set if there is a profile avatar.
-    @objc
-    public let avatarUrlPath: String?
+public class VersionedProfileRequestImpl: NSObject, VersionedProfileRequest {
+    public let request: TSRequest
+    public let requestContext: ProfileKeyCredentialRequestContext?
 
-    required init(avatarUrlPath: String? = nil) {
-        self.avatarUrlPath = avatarUrlPath
+    public required init(request: TSRequest,
+                         requestContext: ProfileKeyCredentialRequestContext?) {
+        self.request = request
+        self.requestContext = requestContext
     }
 }
 
 // MARK: -
 
-public struct VersionedProfileRequest {
-    public let request: TSRequest
-    public let requestContext: ProfileKeyCredentialRequestContext?
-}
-
-// MARK: -
-
 @objc
-public class VersionedProfiles: NSObject {
+public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift {
 
     // MARK: - Dependencies
 
-    private class var profileManager: OWSProfileManager {
+    private var profileManager: OWSProfileManager {
         return OWSProfileManager.shared()
     }
 
-    private class var networkManager: TSNetworkManager {
+    private var networkManager: TSNetworkManager {
         return SSKEnvironment.shared.networkManager
     }
 
-    private class var databaseStorage: SDSDatabaseStorage {
+    private var databaseStorage: SDSDatabaseStorage {
         return SDSDatabaseStorage.shared
     }
 
-    private class var tsAccountManager: TSAccountManager {
+    private var tsAccountManager: TSAccountManager {
         return .sharedInstance()
     }
 
@@ -53,21 +46,18 @@ public class VersionedProfiles: NSObject {
 
     public static let credentialStore = SDSKeyValueStore(collection: "VersionedProfiles.credentialStore")
 
-    // Never instantiate this class.
-    private override init() {}
-
     // MARK: -
 
-    public class func clientZkProfileOperations() throws -> ClientZkProfileOperations {
+    public func clientZkProfileOperations() throws -> ClientZkProfileOperations {
         return ClientZkProfileOperations(serverPublicParams: try GroupsV2Protos.serverPublicParams())
     }
 
     // MARK: - Update
 
     @objc
-    public class func updateProfileOnService(profileGivenName: String?,
-                                             profileFamilyName: String?,
-                                             profileAvatarData: Data?) {
+    public func updateProfileOnService(profileGivenName: String?,
+                                       profileFamilyName: String?,
+                                       profileAvatarData: Data?) {
         updateProfilePromise(profileGivenName: profileGivenName,
                              profileFamilyName: profileFamilyName,
                              profileAvatarData: profileAvatarData)
@@ -82,17 +72,17 @@ public class VersionedProfiles: NSObject {
                                                                fetchType: .versioned)
                     .done { _ in
                         Logger.verbose("success")
-                    }.catch { error in
-                        owsFailDebug("error: \(error)")
-                    }.retainUntilComplete()
-            }.catch { error in
-                owsFailDebug("error: \(error)")
-            }.retainUntilComplete()
+                }.catch { error in
+                    owsFailDebug("error: \(error)")
+                }.retainUntilComplete()
+        }.catch { error in
+            owsFailDebug("error: \(error)")
+        }.retainUntilComplete()
     }
 
-    public class func updateProfilePromise(profileGivenName: String?,
-                                           profileFamilyName: String?,
-                                           profileAvatarData: Data?) -> Promise<VersionedProfileUpdate> {
+    public func updateProfilePromise(profileGivenName: String?,
+                                     profileFamilyName: String?,
+                                     profileAvatarData: Data?) -> Promise<VersionedProfileUpdate> {
 
         return DispatchQueue.global().async(.promise) {
             guard let localUuid = self.tsAccountManager.localUuid else {
@@ -114,7 +104,7 @@ public class VersionedProfiles: NSObject {
 
                 guard let encryptedPaddedProfileName = self.profileManager.encrypt(profileNameComponents: nameComponents,
                                                                                    profileKey: profileKey) else {
-                    throw OWSAssertionError("Could not encrypt profile name.")
+                                                                                    throw OWSAssertionError("Could not encrypt profile name.")
                 }
                 nameData = encryptedPaddedProfileName
             }
@@ -128,7 +118,7 @@ public class VersionedProfiles: NSObject {
                 let profileKey: OWSAES256Key = self.profileManager.localProfileKey()
                 guard let encryptedProfileAvatarData = self.profileManager.encrypt(profileData: profileAvatarData,
                                                                                    profileKey: profileKey) else {
-                    throw OWSAssertionError("Could not encrypt profile avatar.")
+                                                                                    throw OWSAssertionError("Could not encrypt profile avatar.")
                 }
                 return self.parseFormAndUpload(formResponseObject: responseObject,
                                                profileAvatarData: encryptedProfileAvatarData)
@@ -137,8 +127,8 @@ public class VersionedProfiles: NSObject {
         }
     }
 
-    private class func parseFormAndUpload(formResponseObject: Any?,
-                                          profileAvatarData: Data) -> Promise<VersionedProfileUpdate> {
+    private func parseFormAndUpload(formResponseObject: Any?,
+                                    profileAvatarData: Data) -> Promise<VersionedProfileUpdate> {
         return firstly { () throws -> Promise<OWSUploadForm> in
             guard let response = formResponseObject as? [AnyHashable: Any] else {
                 throw OWSAssertionError("Unexpected response.")
@@ -156,8 +146,8 @@ public class VersionedProfiles: NSObject {
 
     // MARK: - Get
 
-    public class func versionedProfileRequest(address: SignalServiceAddress,
-                                              udAccessKey: SMKUDAccessKey?) throws -> VersionedProfileRequest {
+    public func versionedProfileRequest(address: SignalServiceAddress,
+                                        udAccessKey: SMKUDAccessKey?) throws -> VersionedProfileRequest {
         guard address.isValid,
             let uuid: UUID = address.uuid else {
                 throw OWSAssertionError("Invalid address: \(address)")
@@ -193,20 +183,23 @@ public class VersionedProfiles: NSObject {
                                                                    credentialRequest: credentialRequestArg,
                                                                    udAccessKey: udAccessKey)
 
-        return VersionedProfileRequest(request: request, requestContext: requestContext)
+        return VersionedProfileRequestImpl(request: request, requestContext: requestContext)
     }
 
     // MARK: -
 
-    public class func parseProfileKey(profileKey: OWSAES256Key) throws -> ProfileKey {
+    public func parseProfileKey(profileKey: OWSAES256Key) throws -> ProfileKey {
         let profileKeyData: Data = profileKey.keyData
         let profileKeyDataBytes = [UInt8](profileKeyData)
         return try ProfileKey(contents: profileKeyDataBytes)
     }
 
-    public class func didFetchProfile(profile: SignalServiceProfile,
-                                      profileRequest: VersionedProfileRequest) {
+    public func didFetchProfile(profile: SignalServiceProfile,
+                                profileRequest: VersionedProfileRequest) {
         do {
+            guard let profileRequest = profileRequest as? VersionedProfileRequestImpl else {
+                return
+            }
             guard let credentialResponseData = profile.credential else {
                 return
             }
@@ -233,7 +226,7 @@ public class VersionedProfiles: NSObject {
 
             Logger.verbose("Updating credential for: \(uuid)")
             databaseStorage.write { transaction in
-                credentialStore.setData(credentialData, key: uuid.uuidString, transaction: transaction)
+                Self.credentialStore.setData(credentialData, key: uuid.uuidString, transaction: transaction)
             }
         } catch {
             owsFailDebug("Invalid credential: \(error).")
@@ -243,17 +236,17 @@ public class VersionedProfiles: NSObject {
 
     // MARK: - Credentials
 
-    public class func profileKeyCredentialData(for address: SignalServiceAddress,
-                                                transaction: SDSAnyReadTransaction) throws -> Data? {
+    public func profileKeyCredentialData(for address: SignalServiceAddress,
+                                         transaction: SDSAnyReadTransaction) throws -> Data? {
         guard address.isValid,
             let uuid = address.uuid else {
                 throw OWSAssertionError("Invalid address: \(address)")
         }
-        return credentialStore.getData(uuid.uuidString, transaction: transaction)
+        return Self.credentialStore.getData(uuid.uuidString, transaction: transaction)
     }
 
-    public class func profileKeyCredential(for address: SignalServiceAddress,
-                                           transaction: SDSAnyReadTransaction) throws -> ProfileKeyCredential? {
+    public func profileKeyCredential(for address: SignalServiceAddress,
+                                     transaction: SDSAnyReadTransaction) throws -> ProfileKeyCredential? {
         guard let data = try profileKeyCredentialData(for: address, transaction: transaction) else {
             return nil
         }
@@ -263,8 +256,8 @@ public class VersionedProfiles: NSObject {
     }
 
     @objc(clearProfileKeyCredentialForAddress:transaction:)
-    public class func clearProfileKeyCredential(for address: SignalServiceAddress,
-                                                transaction: SDSAnyWriteTransaction) {
+    public func clearProfileKeyCredential(for address: SignalServiceAddress,
+                                          transaction: SDSAnyWriteTransaction) {
         guard address.isValid else {
             owsFailDebug("Invalid address: \(address)")
             return
@@ -272,11 +265,11 @@ public class VersionedProfiles: NSObject {
         guard let uuid = address.uuid else {
             return
         }
-        credentialStore.removeValue(forKey: uuid.uuidString, transaction: transaction)
+        Self.credentialStore.removeValue(forKey: uuid.uuidString, transaction: transaction)
     }
 
-    public class func clearProfileKeyCredentials(transaction: SDSAnyWriteTransaction) {
-        credentialStore.removeAll(transaction: transaction)
+    public func clearProfileKeyCredentials(transaction: SDSAnyWriteTransaction) {
+        Self.credentialStore.removeAll(transaction: transaction)
     }
 }
 

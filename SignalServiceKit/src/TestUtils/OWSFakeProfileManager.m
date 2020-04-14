@@ -264,6 +264,15 @@ NS_ASSUME_NONNULL_BEGIN
     return self.hasLocalProfile;
 }
 
+- (void)updateProfileForAddress:(SignalServiceAddress *)address
+           profileNameEncrypted:(nullable NSData *)profileNameEncrypted
+                       username:(nullable NSString *)username
+                  isUuidCapable:(BOOL)isUuidCapable
+                  avatarUrlPath:(nullable NSString *)avatarUrlPath
+{
+    // Do nothing.
+}
+
 @end
 
 #endif

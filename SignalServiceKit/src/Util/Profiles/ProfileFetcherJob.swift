@@ -4,7 +4,6 @@
 
 import Foundation
 import PromiseKit
-import SignalServiceKit
 import SignalMetadataKit
 
 @objc
@@ -13,6 +12,26 @@ public enum ProfileFetchError: Int, Error {
     case throttled
     case notMainApp
     case cantRequestVersionedProfile
+    case rateLimit
+}
+
+// MARK: -
+
+extension ProfileFetchError: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .missing:
+            return "ProfileFetchError.missing"
+        case .throttled:
+            return "ProfileFetchError.throttled"
+        case .notMainApp:
+            return "ProfileFetchError.notMainApp"
+        case .cantRequestVersionedProfile:
+            return "ProfileFetchError.cantRequestVersionedProfile"
+        case .rateLimit:
+            return "ProfileFetchError.rateLimit"
+        }
+    }
 }
 
 // MARK: -
@@ -175,8 +194,8 @@ public class ProfileFetcherJob: NSObject {
         return SSKEnvironment.shared.udManager
     }
 
-    private var profileManager: OWSProfileManager {
-        return OWSProfileManager.shared()
+    private var profileManager: ProfileManagerProtocol {
+        return SSKEnvironment.shared.profileManager
     }
 
     private var identityManager: OWSIdentityManager {
@@ -200,6 +219,10 @@ public class ProfileFetcherJob: NSObject {
         return SDSDatabaseStorage.shared
     }
 
+    private var versionedProfiles: VersionedProfiles {
+        return SSKEnvironment.shared.versionedProfiles
+    }
+
     // MARK: -
 
     private func runAsPromise() -> Promise<SignalServiceProfile> {
@@ -207,9 +230,12 @@ public class ProfileFetcherJob: NSObject {
             self.addBackgroundTask()
         }.then(on: DispatchQueue.global()) { _ in
             return self.requestProfile()
-        }.map(on: DispatchQueue.global()) { fetchedProfile in
-            self.updateProfile(fetchedProfile: fetchedProfile)
-            return fetchedProfile.profile
+        }.then(on: DispatchQueue.global()) { fetchedProfile in
+            return firstly {
+                self.updateProfile(fetchedProfile: fetchedProfile)
+            }.map(on: DispatchQueue.global()) { _ in
+                return fetchedProfile.profile
+            }
         }
     }
 
@@ -276,10 +302,8 @@ public class ProfileFetcherJob: NSObject {
                 }
 
                 firstly { () -> Guarantee<Void> in
-                    // Backoff if we've hit a rate limit.
                     if error.httpStatusCode == 413 {
-                        let backoffDelay = TimeInterval(retryCount + 1) * 30
-                        return after(seconds: backoffDelay)
+                        return resolver.reject(ProfileFetchError.rateLimit)
                     }
                     return Guarantee.value(())
                 }.then(on: DispatchQueue.global()) { _ in
@@ -357,7 +381,7 @@ public class ProfileFetcherJob: NSObject {
 
                                             if shouldUseVersionedFetch {
                                                 do {
-                                                    let request = try VersionedProfiles.versionedProfileRequest(address: address, udAccessKey: udAccessKeyForRequest)
+                                                    let request = try self.versionedProfiles.versionedProfileRequest(address: address, udAccessKey: udAccessKeyForRequest)
                                                     currentVersionedProfileRequest = request
                                                     return request.request
                                                 } catch {
@@ -390,7 +414,7 @@ public class ProfileFetcherJob: NSObject {
         let address = profile.address
 
         if let profileRequest = fetchedProfile.versionedProfileRequest {
-            VersionedProfiles.didFetchProfile(profile: profile, profileRequest: profileRequest)
+            self.versionedProfiles.didFetchProfile(profile: profile, profileRequest: profileRequest)
         }
 
         profileManager.updateProfile(for: address,

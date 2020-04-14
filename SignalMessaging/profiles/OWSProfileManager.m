@@ -77,6 +77,11 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     return SSKEnvironment.shared.storageServiceManager;
 }
 
+- (id<VersionedProfiles>)versionedProfiles
+{
+    return SSKEnvironment.shared.versionedProfiles;
+}
+
 #pragma mark -
 
 @synthesize localUserProfile = _localUserProfile;
@@ -665,7 +670,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 
                 // Whenever a user's profile key changes, we need to fetch a new
                 // profile key credential for them.
-                [VersionedProfiles clearProfileKeyCredentialForAddress:localAddress transaction:transaction];
+                [self.versionedProfiles clearProfileKeyCredentialForAddress:localAddress transaction:transaction];
 
                 // We schedule the updates here but process them below using processProfileKeyUpdates.
                 // It's more efficient to process them after the intermediary steps are done.
@@ -1391,7 +1396,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 
     // Whenever a user's profile key changes, we need to fetch a new
     // profile key credential for them.
-    [VersionedProfiles clearProfileKeyCredentialForAddress:address transaction:transaction];
+    [self.versionedProfiles clearProfileKeyCredentialForAddress:address transaction:transaction];
 
     [userProfile clearWithProfileKey:profileKey
                  wasLocallyInitiated:wasLocallyInitiated

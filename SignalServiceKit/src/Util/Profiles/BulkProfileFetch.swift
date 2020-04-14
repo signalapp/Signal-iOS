@@ -37,6 +37,7 @@ public class BulkProfileFetch: NSObject {
         case noProfile(date: Date)
         case serviceError(date: Date)
         case success(date: Date)
+        case throttled(date: Date)
     }
 
     // This property should only be accessed on serialQueue.
@@ -159,6 +160,15 @@ public class BulkProfileFetch: NSObject {
                 self.isUpdateInFlight = false
                 let now = Date()
                 switch error {
+                case ProfileFetchError.missing:
+                    Logger.error("Error: \(error)")
+                    self.lastOutcomeMap[address] = .noProfile(date: now)
+                case ProfileFetchError.throttled:
+                    self.lastOutcomeMap[address] = .throttled(date: now)
+                case ProfileFetchError.rateLimit:
+                    Logger.error("Error: \(error)")
+                    self.lastOutcomeMap[address] = .retryLimit(date: now)
+                    self.lastRateLimitErrorDate = now
                 default:
                     if IsNetworkConnectivityFailure(error) {
                         Logger.warn("Error: \(error)")
@@ -176,12 +186,6 @@ public class BulkProfileFetch: NSObject {
                         self.lastOutcomeMap[address] = .serviceError(date: now)
                     }
                 }
-//                public enum ProfileFetchError: Int, Error {
-//                    case missing
-//                    case throttled
-//                    case notMainApp
-//                    case cantRequestVersionedProfile
-//                }
 
                 self.process()
             }
@@ -212,6 +216,9 @@ public class BulkProfileFetch: NSObject {
             minElapsedSeconds = 1 * kMinuteInterval
             elapsedSeconds = date.timeIntervalSinceNow
         case .retryLimit(let date):
+            minElapsedSeconds = 5 * kMinuteInterval
+            elapsedSeconds = date.timeIntervalSinceNow
+        case .throttled(let date):
             minElapsedSeconds = 5 * kMinuteInterval
             elapsedSeconds = date.timeIntervalSinceNow
         case .noProfile(let date):

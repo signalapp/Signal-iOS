@@ -89,6 +89,12 @@ NS_ASSUME_NONNULL_BEGIN
                                    mainAppOnly:(BOOL)mainAppOnly
                               ignoreThrottling:(BOOL)ignoreThrottling;
 
+- (void)updateProfileForAddress:(SignalServiceAddress *)address
+           profileNameEncrypted:(nullable NSData *)profileNameEncrypted
+                       username:(nullable NSString *)username
+                  isUuidCapable:(BOOL)isUuidCapable
+                  avatarUrlPath:(nullable NSString *)avatarUrlPath;
+
 - (BOOL)recipientAddressIsUuidCapable:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
 
 - (void)warmCaches;

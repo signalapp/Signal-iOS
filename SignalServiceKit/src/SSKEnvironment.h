@@ -52,6 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol GroupsV2;
 @protocol GroupV2Updates;
 @protocol PendingReadReceiptRecorder;
+@protocol VersionedProfiles;
 
 @interface SSKEnvironment : NSObject
 
@@ -100,7 +101,8 @@ NS_ASSUME_NONNULL_BEGIN
                          groupV2Updates:(id<GroupV2Updates>)groupV2Updates
                       messageProcessing:(MessageProcessing *)messageProcessing
                       messageFetcherJob:(MessageFetcherJob *)messageFetcherJob
-                       bulkProfileFetch:(BulkProfileFetch *)bulkProfileFetch NS_DESIGNATED_INITIALIZER;
+                       bulkProfileFetch:(BulkProfileFetch *)bulkProfileFetch
+                      versionedProfiles:(id<VersionedProfiles>)versionedProfiles NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic, readonly, class) SSKEnvironment *shared;
 
@@ -156,6 +158,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) MessageProcessing *messageProcessing;
 @property (nonatomic, readonly) MessageFetcherJob *messageFetcherJob;
 @property (nonatomic, readonly) BulkProfileFetch *bulkProfileFetch;
+@property (nonatomic, readonly) id<VersionedProfiles> versionedProfiles;
 
 @property (nonatomic, readonly, nullable) OWSPrimaryStorage *primaryStorage;
 

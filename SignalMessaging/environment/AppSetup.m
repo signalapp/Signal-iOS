@@ -114,6 +114,7 @@ NS_ASSUME_NONNULL_BEGIN
         MessageProcessing *messageProcessing = [MessageProcessing new];
         MessageFetcherJob *messageFetcherJob = [MessageFetcherJob new];
         BulkProfileFetch *bulkProfileFetch = [BulkProfileFetch new];
+        id<VersionedProfiles> versionedProfiles = [VersionedProfilesImpl new];
 
         [Environment setShared:[[Environment alloc] initWithAudioSession:audioSession
                                              incomingContactSyncJobQueue:incomingContactSyncJobQueue
@@ -169,7 +170,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                    groupV2Updates:groupV2Updates
                                                                 messageProcessing:messageProcessing
                                                                 messageFetcherJob:messageFetcherJob
-                                                                 bulkProfileFetch:bulkProfileFetch]];
+                                                                 bulkProfileFetch:bulkProfileFetch
+                                                                versionedProfiles:versionedProfiles]];
 
         appSpecificSingletonBlock();
 

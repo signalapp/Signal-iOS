@@ -50,6 +50,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) MessageProcessing *messageProcessing;
 @property (nonatomic) MessageFetcherJob *messageFetcherJob;
 @property (nonatomic) BulkProfileFetch *bulkProfileFetch;
+@property (nonatomic) id<VersionedProfiles> versionedProfiles;
 
 @end
 
@@ -105,6 +106,7 @@ static SSKEnvironment *sharedSSKEnvironment;
                       messageProcessing:(MessageProcessing *)messageProcessing
                       messageFetcherJob:(MessageFetcherJob *)messageFetcherJob
                        bulkProfileFetch:(BulkProfileFetch *)bulkProfileFetch
+                      versionedProfiles:(id<VersionedProfiles>)versionedProfiles
 {
     self = [super init];
     if (!self) {
@@ -154,6 +156,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     OWSAssertDebug(messageProcessing);
     OWSAssertDebug(messageFetcherJob);
     OWSAssertDebug(bulkProfileFetch);
+    OWSAssertDebug(versionedProfiles);
 
     _contactsManager = contactsManager;
     _linkPreviewManager = linkPreviewManager;
@@ -199,6 +202,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     _messageProcessing = messageProcessing;
     _messageFetcherJob = messageFetcherJob;
     _bulkProfileFetch = bulkProfileFetch;
+    _versionedProfiles = versionedProfiles;
 
     return self;
 }

@@ -45,6 +45,10 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         return SSKEnvironment.shared.contactsUpdater
     }
 
+    private var versionedProfiles: VersionedProfilesImpl {
+        return SSKEnvironment.shared.versionedProfiles as! VersionedProfilesImpl
+    }
+
     // MARK: -
 
     public typealias ProfileKeyCredentialMap = [UUID: ProfileKeyCredential]
@@ -110,7 +114,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
         databaseStorage.write { transaction in
             self.clearTemporalCredentials(transaction: transaction)
-            VersionedProfiles.clearProfileKeyCredentials(transaction: transaction)
+            self.versionedProfiles.clearProfileKeyCredentials(transaction: transaction)
             self.serviceStore.setString(serverPublicParamsBase64, key: lastServerPublicParamsKey, transaction: transaction)
             self.serviceStore.setInt(zkgroupVersionCounter, key: lastZKgroupVersionCounterKey, transaction: transaction)
         }
@@ -929,8 +933,8 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             for uuid in Set(uuids) {
                 do {
                     let address = SignalServiceAddress(uuid: uuid)
-                    if let credential = try VersionedProfiles.profileKeyCredential(for: address,
-                                                                                   transaction: transaction) {
+                    if let credential = try self.versionedProfiles.profileKeyCredential(for: address,
+                                                                                        transaction: transaction) {
                         credentialMap[uuid] = credential
                         continue
                     }
@@ -973,9 +977,9 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                 try self.databaseStorage.read { transaction in
                     for uuid in uuids {
                         let address = SignalServiceAddress(uuid: uuid)
-                        guard let credential = try VersionedProfiles.profileKeyCredential(for: address,
-                                                                                          transaction: transaction) else {
-                                                                                            throw OWSAssertionError("Could load credential.")
+                        guard let credential = try self.versionedProfiles.profileKeyCredential(for: address,
+                                                                                               transaction: transaction) else {
+                                                                                                throw OWSAssertionError("Could load credential.")
                         }
                         credentialMap[uuid] = credential
                     }
@@ -988,8 +992,8 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
     public func hasProfileKeyCredential(for address: SignalServiceAddress,
                                         transaction: SDSAnyReadTransaction) -> Bool {
         do {
-            return try VersionedProfiles.profileKeyCredential(for: address,
-                                                              transaction: transaction) != nil
+            return try self.versionedProfiles.profileKeyCredential(for: address,
+                                                                   transaction: transaction) != nil
         } catch {
             owsFailDebug("Error: \(error)")
             return false
