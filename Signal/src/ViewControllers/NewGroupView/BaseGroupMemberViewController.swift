@@ -395,10 +395,12 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
             RemoteConfig.groupsV2IncomingMessages else {
                 return
         }
-        if !doesRecipientSupportGroupsV2(recipient) {
-            tryToEnableGroupsV2ForAddress(address,
-                                          isBlocking: false,
-                                          ignoreErrors: true).retainUntilComplete()
+        DispatchQueue.global().async {
+            if !self.doesRecipientSupportGroupsV2(recipient) {
+                self.tryToEnableGroupsV2ForAddress(address,
+                                                   isBlocking: false,
+                                                   ignoreErrors: true).retainUntilComplete()
+            }
         }
     }
 
@@ -437,6 +439,10 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
             owsFailDebug("Invalid recipient.")
             return false
         }
+        return doesRecipientSupportGroupsV2(address)
+    }
+
+    private func doesRecipientSupportGroupsV2(_ address: SignalServiceAddress) -> Bool {
         return databaseStorage.read { transaction in
             return GroupManager.doesUserSupportGroupsV2(address: address, transaction: transaction)
         }
@@ -449,9 +455,15 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
             return GroupManager.tryToEnableGroupsV2(for: [address],
                                                     isBlocking: isBlocking,
                                                     ignoreErrors: ignoreErrors)
-        }.done { [weak self] _ in
-            // Reload view content.
-            self?.recipientPicker.reloadContent()
+        }.done(on: .global() ) { [weak self] _ in
+            // If we succeeded in enable groups v2 for this address,
+            // reload the recipient picker to reflect that.
+            if self?.doesRecipientSupportGroupsV2(address) ?? false {
+                DispatchQueue.main.async {
+                    // Reload view content.
+                    self?.recipientPicker.reloadContent()
+                }
+            }
         }
     }
 

@@ -278,8 +278,10 @@ public class ProfileFetcherJob: NSObject {
             resolver.fulfill(fetchedProfile)
         }.catch(on: DispatchQueue.global()) { error in
             if error.httpStatusCode == 404 {
-                resolver.reject(ProfileFetchError.missing)
-                return
+                return resolver.reject(ProfileFetchError.missing)
+            }
+            if error.httpStatusCode == 413 {
+                return resolver.reject(ProfileFetchError.rateLimit)
             }
 
             switch error {
@@ -301,12 +303,7 @@ public class ProfileFetcherJob: NSObject {
                     return
                 }
 
-                firstly { () -> Guarantee<Void> in
-                    if error.httpStatusCode == 413 {
-                        return resolver.reject(ProfileFetchError.rateLimit)
-                    }
-                    return Guarantee.value(())
-                }.then(on: DispatchQueue.global()) { _ in
+                firstly {
                     self.requestProfileWithRetries(retryCount: retryCount + 1)
                 }.done(on: DispatchQueue.global()) { fetchedProfile in
                     resolver.fulfill(fetchedProfile)
