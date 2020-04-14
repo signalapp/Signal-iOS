@@ -235,8 +235,7 @@ typedef void (^CustomLayoutBlock)(void);
 
     UILabel *learnMoreLabel = [UILabel new];
     learnMoreLabel.attributedText = [[NSAttributedString alloc]
-        initWithString:NSLocalizedString(@"PRIVACY_SAFETY_NUMBERS_LEARN_MORE",
-                           @"Label for a link to more information about safety numbers and verification.")
+        initWithString:CommonStrings.learnMore
             attributes:@{
                 NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid),
             }];

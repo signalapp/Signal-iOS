@@ -182,8 +182,7 @@ class MessageRequestView: UIStackView {
                 }]
         } else if hasSentMessages {
             buttons = [
-                prepareButton(title: NSLocalizedString("MESSAGE_REQUEST_VIEW_LEARN_MORE_BUTTON",
-                                                       comment: "A button used to learn more about why you must share your profile."),
+                prepareButton(title: CommonStrings.learnMore,
                               titleColor: Theme.secondaryTextAndIconColor) { [weak self] in
                                 self?.delegate?.messageRequestViewDidTapLearnMore()
                 },

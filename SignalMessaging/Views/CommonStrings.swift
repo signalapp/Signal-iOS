@@ -50,6 +50,9 @@ import Foundation
 
     @objc
     static public let contactSupport = NSLocalizedString("CONTACT_SUPPORT", comment: "Button text to initiate an email to signal support staff")
+
+    @objc
+    static public let learnMore = NSLocalizedString("LEARN_MORE", comment: "Label for the 'learn more' button.")
 }
 
 @objc

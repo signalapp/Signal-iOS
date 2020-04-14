@@ -371,8 +371,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
                                          attributes:@{}]];
     [text appendAttributedString:[[NSAttributedString alloc] initWithString:@" " attributes:@{}]];
     [text appendAttributedString:[[NSAttributedString alloc]
-                                     initWithString:NSLocalizedString(@"PROFILE_VIEW_PROFILE_DESCRIPTION_LINK",
-                                                        @"Link to more information about the user profile.")
+                                     initWithString:CommonStrings.learnMore
                                          attributes:@{
                                              NSUnderlineStyleAttributeName : @(NSUnderlineStyleNone),
                                              NSForegroundColorAttributeName : UIColor.ows_accentBlueColor,

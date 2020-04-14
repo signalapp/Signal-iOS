@@ -29,6 +29,9 @@ extern const CGFloat kOWSTable_DefaultCellHeight;
 @property (nonatomic, nullable) NSString *headerTitle;
 @property (nonatomic, nullable) NSString *footerTitle;
 
+@property (nonatomic, nullable) NSAttributedString *headerAttributedTitle;
+@property (nonatomic, nullable) NSAttributedString *footerAttributedTitle;
+
 @property (nonatomic, nullable) UIView *customHeaderView;
 @property (nonatomic, nullable) UIView *customFooterView;
 @property (nonatomic, nullable) NSNumber *customHeaderHeight;
