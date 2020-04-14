@@ -157,8 +157,8 @@ NS_ASSUME_NONNULL_BEGIN
     [threadInfoView addSubview:avatarView];
     [avatarView autoVCenterInSuperview];
     [avatarView autoPinLeadingToSuperviewMargin];
-    [avatarView autoSetDimension:ALDimensionWidth toSize:kLargeAvatarSize];
-    [avatarView autoSetDimension:ALDimensionHeight toSize:kLargeAvatarSize];
+    [avatarView autoSetDimension:ALDimensionWidth toSize:kMediumAvatarSize];
+    [avatarView autoSetDimension:ALDimensionHeight toSize:kMediumAvatarSize];
 
     UIImageView *cameraImageView = [UIImageView new];
     [cameraImageView setTemplateImageName:@"camera-outline-24" tintColor:Theme.secondaryTextAndIconColor];
@@ -323,7 +323,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSString *conversationColorName = [TSGroupThread defaultConversationColorNameForGroupId:groupId];
         groupAvatar = [OWSGroupAvatarBuilder defaultAvatarForGroupId:groupId
                                                conversationColorName:conversationColorName
-                                                            diameter:kLargeAvatarSize];
+                                                            diameter:kMediumAvatarSize];
     }
 
     self.avatarView.image = groupAvatar;

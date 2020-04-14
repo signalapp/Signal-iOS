@@ -939,7 +939,7 @@ const CGFloat kIconViewLength = 24;
     [threadInfoView autoPinWidthToSuperviewWithMargin:16.f];
     [threadInfoView autoPinHeightToSuperviewWithMargin:16.f];
 
-    UIImage *avatarImage = [OWSAvatarBuilder buildImageForThread:self.thread diameter:kLargeAvatarSize];
+    UIImage *avatarImage = [OWSAvatarBuilder buildImageForThread:self.thread diameter:kMediumAvatarSize];
     OWSAssertDebug(avatarImage);
 
     AvatarImageView *avatarView = [[AvatarImageView alloc] initWithImage:avatarImage];
@@ -947,8 +947,8 @@ const CGFloat kIconViewLength = 24;
     [threadInfoView addSubview:avatarView];
     [avatarView autoVCenterInSuperview];
     [avatarView autoPinLeadingToSuperviewMargin];
-    [avatarView autoSetDimension:ALDimensionWidth toSize:kLargeAvatarSize];
-    [avatarView autoSetDimension:ALDimensionHeight toSize:kLargeAvatarSize];
+    [avatarView autoSetDimension:ALDimensionWidth toSize:kMediumAvatarSize];
+    [avatarView autoSetDimension:ALDimensionHeight toSize:kMediumAvatarSize];
 
     if (self.isGroupThread && !self.hasSavedGroupIcon && self.canEditSharedConversationSettings) {
         UIImageView *cameraImageView = [UIImageView new];
