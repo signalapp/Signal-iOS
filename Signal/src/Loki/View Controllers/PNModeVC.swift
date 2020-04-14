@@ -87,7 +87,9 @@ final class PNModeVC : BaseVC, OptionViewDelegate {
     }
 
     @objc private func register() {
-        // TODO: Implement
+        TSAccountManager.sharedInstance().didRegister()
+        let homeVC = HomeVC()
+        navigationController!.setViewControllers([ homeVC ], animated: true)
     }
 }
 
@@ -162,9 +164,15 @@ private extension PNModeVC {
 
         private func handleIsSelectedChanged() {
             let animationDuration: TimeInterval = 0.25
-            UIView.animate(withDuration: animationDuration) {
-                self.backgroundColor = self.isSelected ? Colors.accent : Colors.buttonBackground
-            }
+            // Animate border color
+            let newBorderColor = isSelected ? Colors.accent.cgColor : Colors.pnOptionBorder.cgColor
+            let borderAnimation = CABasicAnimation(keyPath: "borderColor")
+            borderAnimation.fromValue = layer.shadowColor
+            borderAnimation.toValue = newBorderColor
+            borderAnimation.duration = animationDuration
+            layer.add(borderAnimation, forKey: borderAnimation.keyPath)
+            layer.borderColor = newBorderColor
+            // Animate shadow color
             let newShadowColor = isSelected ? Colors.newConversationButtonShadow.cgColor : UIColor.black.cgColor
             let shadowAnimation = CABasicAnimation(keyPath: "shadowColor")
             shadowAnimation.fromValue = layer.shadowColor
@@ -172,6 +180,7 @@ private extension PNModeVC {
             shadowAnimation.duration = animationDuration
             layer.add(shadowAnimation, forKey: shadowAnimation.keyPath)
             layer.shadowColor = newShadowColor
+            // Notify delegate
             if isSelected { delegate.optionViewDidActivate(self) }
         }
     }

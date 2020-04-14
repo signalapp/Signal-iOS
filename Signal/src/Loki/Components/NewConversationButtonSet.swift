@@ -158,7 +158,7 @@ final class NewConversationButtonSet : UIView {
             self.layoutIfNeeded()
             button.frame = frame
             button.layer.cornerRadius = size / 2
-            button.setGlow(to: size, with: Colors.newConversationButtonShadow)
+            button.setGlow(to: size, with: Colors.newConversationButtonShadow, animated: true)
             button.backgroundColor = Colors.accent
         }
     }
@@ -183,7 +183,7 @@ final class NewConversationButtonSet : UIView {
             button.frame = frame
             button.layer.cornerRadius = size / 2
             let glowColor = isLightMode ? UIColor.black.withAlphaComponent(0.4) : UIColor.black
-            button.setGlow(to: size, with: glowColor)
+            button.setGlow(to: size, with: glowColor, animated: true)
             button.backgroundColor = Colors.newConversationButtonCollapsedBackground
         }
     }
@@ -230,7 +230,7 @@ private final class NewConversationButton : UIImageView {
         let size = Values.newConversationButtonCollapsedSize
         layer.cornerRadius = size / 2
         let glowColor = isMainButton ? Colors.newConversationButtonShadow : (isLightMode ? UIColor.black.withAlphaComponent(0.4) : UIColor.black)
-        setGlow(to: size, with: glowColor)
+        setGlow(to: size, with: glowColor, animated: false)
         layer.masksToBounds = false
         let iconColor = (isMainButton && isLightMode) ? UIColor.white : Colors.text
         image = icon.asTintedImage(color: iconColor)!
@@ -240,9 +240,25 @@ private final class NewConversationButton : UIImageView {
     }
     
     // General
-    func setGlow(to size: CGFloat, with color: UIColor) {
-        layer.shadowPath = UIBezierPath(ovalIn: CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: size, height: size))).cgPath
-        layer.shadowColor = color.cgColor
+    func setGlow(to size: CGFloat, with color: UIColor, animated isAnimated: Bool) {
+        let newPath = UIBezierPath(ovalIn: CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: size, height: size))).cgPath
+        if isAnimated {
+            let pathAnimation = CABasicAnimation(keyPath: "shadowPath")
+            pathAnimation.fromValue = layer.shadowPath
+            pathAnimation.toValue = newPath
+            pathAnimation.duration = 0.25
+            layer.add(pathAnimation, forKey: pathAnimation.keyPath)
+        }
+        layer.shadowPath = newPath
+        let newColor = color.cgColor
+        if isAnimated {
+            let colorAnimation = CABasicAnimation(keyPath: "shadowColor")
+            colorAnimation.fromValue = layer.shadowColor
+            colorAnimation.toValue = newColor
+            colorAnimation.duration = 0.25
+            layer.add(colorAnimation, forKey: colorAnimation.keyPath)
+        }
+        layer.shadowColor = newColor
         layer.shadowOffset = CGSize(width: 0, height: 0.8)
         layer.shadowOpacity = isLightMode ? 0.4 : 1
         layer.shadowRadius = isLightMode ? 4 : 6
