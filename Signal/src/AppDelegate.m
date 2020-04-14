@@ -61,7 +61,6 @@ static NSTimeInterval launchStartedAt;
 
 // Debug settings
 static BOOL isInternalTestVersion = NO;
-static BOOL isUsingFullAPNs = YES;
 
 @interface AppDelegate () <UNUserNotificationCenterDelegate>
 
@@ -589,12 +588,10 @@ static BOOL isUsingFullAPNs = YES;
     }
 
     OWSLogInfo(@"Registered for push notifications with token: %@.", deviceToken);
+    BOOL isUsingFullAPNs = [NSUserDefaults.standardUserDefaults boolForKey:@"isUsingFullAPNs"];
     if (isUsingFullAPNs) {
         [LKPushNotificationManager registerWithToken:deviceToken hexEncodedPublicKey:self.tsAccountManager.localNumber];
-    } else {
-        [LKPushNotificationManager registerWithToken:deviceToken];
     }
-//    [self.pushRegistrationManager didReceiveVanillaPushToken:deviceToken];
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
@@ -709,6 +706,7 @@ static BOOL isUsingFullAPNs = YES;
 
 - (void)enableBackgroundRefreshIfNecessary
 {
+    BOOL isUsingFullAPNs = [NSUserDefaults.standardUserDefaults boolForKey:@"isUsingFullAPNs"];
     if (isUsingFullAPNs) { return; }
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
         [UIApplication.sharedApplication setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];

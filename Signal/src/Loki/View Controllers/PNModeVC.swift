@@ -87,6 +87,7 @@ final class PNModeVC : BaseVC, OptionViewDelegate {
     }
 
     @objc private func register() {
+        UserDefaults.standard[.isUsingFullAPNs] = (selectedOptionView == apnsOptionView)
         TSAccountManager.sharedInstance().didRegister()
         let homeVC = HomeVC()
         navigationController!.setViewControllers([ homeVC ], animated: true)
