@@ -1272,8 +1272,7 @@ const CGFloat kIconViewLength = 24;
         return;
     }
 
-    OWSAddToContactViewController *viewController = [OWSAddToContactViewController new];
-    [viewController configureWithAddress:address];
+    OWSAddToContactViewController *viewController = [[OWSAddToContactViewController alloc] initWithAddress:address];
     [self.navigationController pushViewController:viewController animated:YES];
 }
 
