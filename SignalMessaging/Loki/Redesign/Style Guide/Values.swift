@@ -46,6 +46,7 @@ public final class Values : NSObject {
     @objc public static let composeViewTextFieldBorderThickness = 1 / UIScreen.main.scale
     @objc public static let messageBubbleCornerRadius: CGFloat = 10
     @objc public static let progressBarThickness: CGFloat = 2
+    @objc public static let pnOptionCornerRadius = CGFloat(8)
     
     // MARK: - Distances
     @objc public static let verySmallSpacing = CGFloat(4)

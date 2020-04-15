@@ -152,9 +152,8 @@ final class DisplayNameVC : BaseVC {
         guard !OWSProfileManager.shared().isProfileNameTooLong(displayName) else {
             return showError(title: NSLocalizedString("Please pick a shorter display name", comment: ""))
         }
-        TSAccountManager.sharedInstance().didRegister()
         OWSProfileManager.shared().updateLocalProfileName(displayName, avatarImage: nil, success: { }, failure: { _ in }, requiresSync: false) // Try to save the user name but ignore the result
-        let homeVC = HomeVC()
-        navigationController!.setViewControllers([ homeVC ], animated: true)
+        let pnModeVC = PNModeVC()
+        navigationController!.pushViewController(pnModeVC, animated: true)
     }
 }

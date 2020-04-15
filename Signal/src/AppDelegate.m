@@ -54,14 +54,13 @@
 NSString *const AppDelegateStoryboardMain = @"Main";
 
 static NSString *const kInitialViewControllerIdentifier = @"UserInitialViewController";
-static NSString *const kURLSchemeSGNLKey                = @"sgnl";
-static NSString *const kURLHostVerifyPrefix             = @"verify";
+static NSString *const kURLSchemeSGNLKey = @"sgnl";
+static NSString *const kURLHostVerifyPrefix = @"verify";
 
 static NSTimeInterval launchStartedAt;
 
 // Debug settings
 static BOOL isInternalTestVersion = NO;
-static BOOL isUsingFullAPNs = YES;
 
 @interface AppDelegate () <UNUserNotificationCenterDelegate>
 
@@ -178,7 +177,7 @@ static BOOL isUsingFullAPNs = YES;
 
 - (void)applicationDidEnterBackground:(UIApplication *)application
 {
-    OWSLogInfo(@"applicationDidEnterBackground.");
+    OWSLogInfo(@"applicationDidEnterBackground");
 
     [DDLog flushLog];
 
@@ -189,17 +188,17 @@ static BOOL isUsingFullAPNs = YES;
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
 {
-    OWSLogInfo(@"applicationWillEnterForeground.");
+    OWSLogInfo(@"applicationWillEnterForeground");
 }
 
 - (void)applicationDidReceiveMemoryWarning:(UIApplication *)application
 {
-    OWSLogInfo(@"applicationDidReceiveMemoryWarning.");
+    OWSLogInfo(@"applicationDidReceiveMemoryWarning");
 }
 
 - (void)applicationWillTerminate:(UIApplication *)application
 {
-    OWSLogInfo(@"applicationWillTerminate.");
+    OWSLogInfo(@"applicationWillTerminate");
 
     [DDLog flushLog];
 
@@ -230,7 +229,7 @@ static BOOL isUsingFullAPNs = YES;
         [DebugLogger.sharedLogger enableFileLogging];
     }
 
-    OWSLogWarn(@"application: didFinishLaunchingWithOptions.");
+    OWSLogWarn(@"application:didFinishLaunchingWithOptions");
     [Cryptography seedRandom];
 
     // XXX - careful when moving this. It must happen before we initialize OWSPrimaryStorage.
@@ -252,7 +251,7 @@ static BOOL isUsingFullAPNs = YES;
         //
         // ensureIsReadyForAppExtensions will show a failure mode UI that
         // lets users report this error.
-        OWSLogInfo(@"application: didFinishLaunchingWithOptions failed.");
+        OWSLogInfo(@"application:didFinishLaunchingWithOptions failed");
 
         return YES;
     }
@@ -376,7 +375,7 @@ static BOOL isUsingFullAPNs = YES;
     }
 
     if (![OWSPrimaryStorage isDatabasePasswordAccessible]) {
-        OWSLogInfo(@"exiting because we are in the background and the database password is not accessible.");
+        OWSLogInfo(@"Exiting because we are in the background and the database password is not accessible.");
 
         UILocalNotification *notification = [UILocalNotification new];
         NSString *messageFormat = NSLocalizedString(@"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT",
@@ -452,7 +451,7 @@ static BOOL isUsingFullAPNs = YES;
     }
 
     if (error) {
-        OWSFailDebug(@"database conversion failed: %@", error);
+        OWSFailDebug(@"Database conversion failed: %@", error);
         [self showLaunchFailureUI:error];
         return NO;
     }
@@ -491,7 +490,7 @@ static BOOL isUsingFullAPNs = YES;
                                               style:UIAlertActionStyleDefault
                                             handler:^(UIAlertAction *_Nonnull action) {
                                                 [Pastelog submitLogsWithCompletion:^{
-                                                    OWSFail(@"exiting after sharing debug logs.");
+                                                    OWSFail(@"Exiting after sharing debug logs.");
                                                 }];
                                             }]];
     UIViewController *fromViewController = [[UIApplication sharedApplication] frontmostViewController];
@@ -504,7 +503,7 @@ static BOOL isUsingFullAPNs = YES;
 
     NSString *databaseFilePath = [OWSPrimaryStorage legacyDatabaseFilePath];
     if (![[NSFileManager defaultManager] fileExistsAtPath:databaseFilePath]) {
-        OWSLogVerbose(@"no legacy database file found");
+        OWSLogVerbose(@"No legacy database file found");
         return nil;
     }
 
@@ -584,17 +583,15 @@ static BOOL isUsingFullAPNs = YES;
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
-        OWSFailDebug(@"app launch failed");
+        OWSFailDebug(@"App launch failed");
         return;
     }
 
-    OWSLogInfo(@"Registered for push notifications with token: %@.", deviceToken);
+    OWSLogInfo(@"Registering for push notifications with token: %@.", deviceToken);
+    BOOL isUsingFullAPNs = [NSUserDefaults.standardUserDefaults boolForKey:@"isUsingFullAPNs"];
     if (isUsingFullAPNs) {
         [LKPushNotificationManager registerWithToken:deviceToken hexEncodedPublicKey:self.tsAccountManager.localNumber];
-    } else {
-        [LKPushNotificationManager registerWithToken:deviceToken];
     }
-//    [self.pushRegistrationManager didReceiveVanillaPushToken:deviceToken];
 }
 
 - (void)application:(UIApplication *)application didFailToRegisterForRemoteNotificationsWithError:(NSError *)error
@@ -602,13 +599,13 @@ static BOOL isUsingFullAPNs = YES;
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
-        OWSFailDebug(@"app launch failed");
+        OWSFailDebug(@"App launch failed");
         return;
     }
 
-    OWSLogError(@"failed to register vanilla push token with error: %@", error);
+    OWSLogError(@"Failed to register push token with error: %@.", error);
 #ifdef DEBUG
-    OWSLogWarn(@"We're in debug mode. Faking success for remote registration with a fake push identifier");
+    OWSLogWarn(@"We're in debug mode. Faking success for remote registration with a fake push identifier.");
     [self.pushRegistrationManager didReceiveVanillaPushToken:[[NSMutableData dataWithLength:32] copy]];
 #else
     OWSProdError([OWSAnalyticsEvents appDelegateErrorFailedToRegisterForRemoteNotifications]);
@@ -622,11 +619,11 @@ static BOOL isUsingFullAPNs = YES;
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
-        OWSFailDebug(@"app launch failed");
+        OWSFailDebug(@"App launch failed");
         return;
     }
 
-    OWSLogInfo(@"registered legacy notification settings");
+    OWSLogInfo(@"Registered legacy notification settings.");
     [self.notificationPresenter didRegisterLegacyNotificationSettings];
 }
 
@@ -638,7 +635,7 @@ static BOOL isUsingFullAPNs = YES;
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
-        OWSFailDebug(@"app launch failed");
+        OWSFailDebug(@"App launch failed");
         return NO;
     }
 
@@ -663,7 +660,7 @@ static BOOL isUsingFullAPNs = YES;
                     [verificationView setVerificationCodeAndTryToVerify:verificationCode];
                     return YES;
                 } else {
-                    OWSLogWarn(@"Not the verification view controller we expected. Got %@ instead",
+                    OWSLogWarn(@"Not the verification view controller we expected. Got %@ instead.",
                         NSStringFromClass(controller.class));
                 }
             }
@@ -680,11 +677,11 @@ static BOOL isUsingFullAPNs = YES;
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
-        OWSFailDebug(@"app launch failed");
+        OWSFailDebug(@"App launch failed");
         return;
     }
 
-    OWSLogWarn(@"applicationDidBecomeActive.");
+    OWSLogWarn(@"applicationDidBecomeActive");
     if (CurrentAppContext().isRunningTests) {
         return;
     }
@@ -704,11 +701,12 @@ static BOOL isUsingFullAPNs = YES;
     // On every activation, clear old temp directories.
     ClearOldTemporaryDirectories();
 
-    OWSLogInfo(@"applicationDidBecomeActive completed.");
+    OWSLogInfo(@"applicationDidBecomeActive completed");
 }
 
 - (void)enableBackgroundRefreshIfNecessary
 {
+    BOOL isUsingFullAPNs = [NSUserDefaults.standardUserDefaults boolForKey:@"isUsingFullAPNs"];
     if (isUsingFullAPNs) { return; }
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
         [UIApplication.sharedApplication setMinimumBackgroundFetchInterval:UIApplicationBackgroundFetchIntervalMinimum];
@@ -730,7 +728,7 @@ static BOOL isUsingFullAPNs = YES;
 {
     OWSAssertIsOnMainThread();
 
-    OWSLogWarn(@"handleActivation.");
+    OWSLogWarn(@"handleActivation");
 
     // Always check prekeys after app launches, and sometimes check on app activation.
     [TSPreKeyManager checkPreKeysIfNecessary];
@@ -743,7 +741,7 @@ static BOOL isUsingFullAPNs = YES;
             // At this point, potentially lengthy DB locking migrations could be running.
             // Avoid blocking app launch by putting all further possible DB access in async block
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                OWSLogInfo(@"running post launch block for registered user: %@", [self.tsAccountManager localNumber]);
+                OWSLogInfo(@"Running post launch block for registered user: %@.", [self.tsAccountManager localNumber]);
 
                 // Clean up any messages that expired since last launch immediately
                 // and continue cleaning in the background.
@@ -763,7 +761,7 @@ static BOOL isUsingFullAPNs = YES;
                 [[[OWSFailedAttachmentDownloadsJob alloc] initWithPrimaryStorage:self.primaryStorage] run];
             });
         } else {
-            OWSLogInfo(@"running post launch block for unregistered user.");
+            OWSLogInfo(@"Running post launch block for unregistered user.");
 
             // Unregistered user should have no unread messages. e.g. if you delete your account.
             [AppEnvironment.shared.notificationPresenter clearAllNotifications];
@@ -813,7 +811,7 @@ static BOOL isUsingFullAPNs = YES;
             }
             
             if (![UIApplication sharedApplication].isRegisteredForRemoteNotifications) {
-                OWSLogInfo(@"Retrying to register for remote notifications since user hasn't registered yet.");
+                OWSLogInfo(@"Retrying remote notification registration since user hasn't registered yet.");
                 // Push tokens don't normally change while the app is launched, so checking once during launch is
                 // usually sufficient, but e.g. on iOS11, users who have disabled "Allow Notifications" and disabled
                 // "Background App Refresh" will not be able to obtain an APN token. Enabling those settings does not
@@ -825,7 +823,7 @@ static BOOL isUsingFullAPNs = YES;
 
             if ([OWS2FAManager sharedManager].isDueForReminder) {
                 if (!self.hasInitialRootViewController || self.window.rootViewController == nil) {
-                    OWSLogDebug(@"Skipping 2FA reminder since there isn't yet an initial view controller");
+                    OWSLogDebug(@"Skipping 2FA reminder since there isn't yet an initial view controller.");
                 } else {
                     UIViewController *rootViewController = self.window.rootViewController;
                     OWSNavigationController *reminderNavController =
@@ -837,7 +835,7 @@ static BOOL isUsingFullAPNs = YES;
         });
     }
 
-    OWSLogInfo(@"handleActivation completed.");
+    OWSLogInfo(@"handleActivation completed");
 }
 
 - (void)applicationWillResignActive:(UIApplication *)application
@@ -845,11 +843,11 @@ static BOOL isUsingFullAPNs = YES;
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
-        OWSFailDebug(@"app launch failed");
+        OWSFailDebug(@"App launch failed");
         return;
     }
 
-    OWSLogWarn(@"applicationWillResignActive.");
+    OWSLogWarn(@"applicationWillResignActive");
 
     [self clearAllNotificationsAndRestoreBadgeCount];
 
@@ -872,7 +870,7 @@ static BOOL isUsingFullAPNs = YES;
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
-        OWSFailDebug(@"app launch failed");
+        OWSFailDebug(@"App launch failed");
         completionHandler(NO);
         return;
     }
@@ -904,197 +902,13 @@ static BOOL isUsingFullAPNs = YES;
     }];
 }
 
-/**
- * Among other things, this is used by "call back" callkit dialog and calling from native contacts app.
- *
- * We always return YES if we are going to try to handle the user activity since
- * we never want iOS to contact us again using a URL.
- *
- * From https://developer.apple.com/documentation/uikit/uiapplicationdelegate/1623072-application?language=objc:
- *
- * If you do not implement this method or if your implementation returns NO, iOS tries to
- * create a document for your app to open using a URL.
- */
-- (BOOL)application:(UIApplication *)application
-    continueUserActivity:(nonnull NSUserActivity *)userActivity
-      restorationHandler:(nonnull void (^)(NSArray *_Nullable))restorationHandler
-{
-    OWSAssertIsOnMainThread();
-
-    if (self.didAppLaunchFail) {
-        OWSFailDebug(@"app launch failed");
-        return NO;
-    }
-
-    if ([userActivity.activityType isEqualToString:@"INStartVideoCallIntent"]) {
-        if (!SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(10, 0)) {
-            OWSLogError(@"unexpectedly received INStartVideoCallIntent pre iOS10");
-            return NO;
-        }
-
-        OWSLogInfo(@"got start video call intent");
-
-        INInteraction *interaction = [userActivity interaction];
-        INIntent *intent = interaction.intent;
-
-        if (![intent isKindOfClass:[INStartVideoCallIntent class]]) {
-            OWSLogError(@"unexpected class for start call video: %@", intent);
-            return NO;
-        }
-        INStartVideoCallIntent *startCallIntent = (INStartVideoCallIntent *)intent;
-        NSString *_Nullable handle = startCallIntent.contacts.firstObject.personHandle.value;
-        if (!handle) {
-            OWSLogWarn(@"unable to find handle in startCallIntent: %@", startCallIntent);
-            return NO;
-        }
-
-        [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-            if (![self.tsAccountManager isRegisteredAndReady]) {
-                OWSLogInfo(@"Ignoring user activity; app not ready.");
-                return;
-            }
-
-            NSString *_Nullable phoneNumber = [self phoneNumberForIntentHandle:handle];
-            if (phoneNumber.length < 1) {
-                OWSLogWarn(@"ignoring attempt to initiate video call to unknown user.");
-                return;
-            }
-
-            // This intent can be received from more than one user interaction.
-            //
-            // * It can be received if the user taps the "video" button in the CallKit UI for an
-            //   an ongoing call.  If so, the correct response is to try to activate the local
-            //   video for that call.
-            // * It can be received if the user taps the "video" button for a contact in the
-            //   contacts app.  If so, the correct response is to try to initiate a new call
-            //   to that user - unless there already is another call in progress.
-//            if (AppEnvironment.shared.callService.call != nil) {
-//                if ([phoneNumber isEqualToString:AppEnvironment.shared.callService.call.remotePhoneNumber]) {
-//                    OWSLogWarn(@"trying to upgrade ongoing call to video.");
-//                    [AppEnvironment.shared.callService handleCallKitStartVideo];
-//                    return;
-//                } else {
-//                    OWSLogWarn(@"ignoring INStartVideoCallIntent due to ongoing WebRTC call with another party.");
-//                    return;
-//                }
-//            }
-//
-//            OutboundCallInitiator *outboundCallInitiator = AppEnvironment.shared.outboundCallInitiator;
-//            OWSAssertDebug(outboundCallInitiator);
-//            [outboundCallInitiator initiateCallWithHandle:phoneNumber];
-        }];
-        return YES;
-    } else if ([userActivity.activityType isEqualToString:@"INStartAudioCallIntent"]) {
-
-        if (!SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(10, 0)) {
-            OWSLogError(@"unexpectedly received INStartAudioCallIntent pre iOS10");
-            return NO;
-        }
-
-        OWSLogInfo(@"got start audio call intent");
-
-        INInteraction *interaction = [userActivity interaction];
-        INIntent *intent = interaction.intent;
-
-        if (![intent isKindOfClass:[INStartAudioCallIntent class]]) {
-            OWSLogError(@"unexpected class for start call audio: %@", intent);
-            return NO;
-        }
-        INStartAudioCallIntent *startCallIntent = (INStartAudioCallIntent *)intent;
-        NSString *_Nullable handle = startCallIntent.contacts.firstObject.personHandle.value;
-        if (!handle) {
-            OWSLogWarn(@"unable to find handle in startCallIntent: %@", startCallIntent);
-            return NO;
-        }
-
-        [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-            if (![self.tsAccountManager isRegisteredAndReady]) {
-                OWSLogInfo(@"Ignoring user activity; app not ready.");
-                return;
-            }
-
-            NSString *_Nullable phoneNumber = [self phoneNumberForIntentHandle:handle];
-            if (phoneNumber.length < 1) {
-                OWSLogWarn(@"ignoring attempt to initiate audio call to unknown user.");
-                return;
-            }
-
-//            if (AppEnvironment.shared.callService.call != nil) {
-//                OWSLogWarn(@"ignoring INStartAudioCallIntent due to ongoing WebRTC call.");
-//                return;
-//            }
-//
-//            OutboundCallInitiator *outboundCallInitiator = AppEnvironment.shared.outboundCallInitiator;
-//            OWSAssertDebug(outboundCallInitiator);
-//            [outboundCallInitiator initiateCallWithHandle:phoneNumber];
-        }];
-        return YES;
-    } else {
-        OWSLogWarn(@"userActivity: %@, but not yet supported.", userActivity.activityType);
-    }
-
-    // TODO Something like...
-    // *phoneNumber = [[[[[[userActivity interaction] intent] contacts] firstObject] personHandle] value]
-    // thread = blah
-    // [callUIAdapter startCall:thread]
-    //
-    // Here's the Speakerbox Example for intent / NSUserActivity handling:
-    //
-    //    func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([Any]?) -> Void) -> Bool {
-    //        guard let handle = userActivity.startCallHandle else {
-    //            print("Could not determine start call handle from user activity: \(userActivity)")
-    //            return false
-    //        }
-    //
-    //        guard let video = userActivity.video else {
-    //            print("Could not determine video from user activity: \(userActivity)")
-    //            return false
-    //        }
-    //
-    //        callManager.startCall(handle: handle, video: video)
-    //        return true
-    //    }
-
-    return NO;
-}
-
-- (nullable NSString *)phoneNumberForIntentHandle:(NSString *)handle
-{
-//    OWSAssertDebug(handle.length > 0);
-//
-//    if ([handle hasPrefix:CallKitCallManager.kAnonymousCallHandlePrefix]) {
-//        NSString *_Nullable phoneNumber = [self.primaryStorage phoneNumberForCallKitId:handle];
-//        if (phoneNumber.length < 1) {
-//            OWSLogWarn(@"ignoring attempt to initiate audio call to unknown anonymous signal user.");
-//            return nil;
-//        }
-//        return phoneNumber;
-//    }
-//
-//    for (PhoneNumber *phoneNumber in
-//        [PhoneNumber tryParsePhoneNumbersFromsUserSpecifiedText:handle
-//                                              clientPhoneNumber:[TSAccountManager localNumber]]) {
-//        return phoneNumber.toE164;
-//    }
-    return nil;
-}
 
 #pragma mark - Orientation
 
 - (UIInterfaceOrientationMask)application:(UIApplication *)application
     supportedInterfaceOrientationsForWindow:(nullable UIWindow *)window
 {
-    if (self.hasCall) {
-        OWSLogInfo(@"has call");
-        // The call-banner window is only suitable for portrait display
-        return UIInterfaceOrientationMaskPortrait;
-    }
-
-    UIViewController *_Nullable rootViewController = self.window.rootViewController;
-    if (!rootViewController) {
-        return UIInterfaceOrientationMaskAllButUpsideDown;
-    }
-    return rootViewController.supportedInterfaceOrientations;
+    return UIInterfaceOrientationMaskPortrait;
 }
 
 - (BOOL)hasCall
@@ -1108,7 +922,7 @@ static BOOL isUsingFullAPNs = YES;
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
-        OWSFailDebug(@"app launch failed");
+        OWSFailDebug(@"App launch failed");
         return;
     }
     if (!(AppReadiness.isAppReady && [self.tsAccountManager isRegisteredAndReady])) {
@@ -1130,7 +944,7 @@ static BOOL isUsingFullAPNs = YES;
         publicChats = [LKDatabaseUtilities getAllPublicChats:transaction];
     }];
     for (LKPublicChat *publicChat in publicChats) {
-        if (![publicChat isKindOfClass:LKPublicChat.class]) { continue; } // For some reason publicChat is sometimes a base 64 encoded string...
+        if (![publicChat isKindOfClass:LKPublicChat.class]) { continue; }
         LKPublicChatPoller *poller = [[LKPublicChatPoller alloc] initForPublicChat:publicChat];
         [poller stop];
         AnyPromise *fetchGroupMessagesPromise = [poller pollForNewMessages];
@@ -1144,7 +958,7 @@ static BOOL isUsingFullAPNs = YES;
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
-        OWSFailDebug(@"app launch failed");
+        OWSFailDebug(@"App launch failed");
         return;
     }
     if (!(AppReadiness.isAppReady && [self.tsAccountManager isRegisteredAndReady])) {
@@ -1192,7 +1006,7 @@ static BOOL isUsingFullAPNs = YES;
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
-        OWSFailDebug(@"app launch failed");
+        OWSFailDebug(@"App launch failed");
         return;
     }
 
@@ -1220,7 +1034,7 @@ static BOOL isUsingFullAPNs = YES;
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
-        OWSFailDebug(@"app launch failed");
+        OWSFailDebug(@"App launch failed");
         completionHandler();
         return;
     }
@@ -1251,12 +1065,12 @@ static BOOL isUsingFullAPNs = YES;
               withResponseInfo:(NSDictionary *)responseInfo
              completionHandler:(void (^)())completionHandler
 {
-    OWSLogInfo(@"handling action with identifier: %@", identifier);
+    OWSLogInfo(@"Handling action with identifier: %@", identifier);
 
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
-        OWSFailDebug(@"app launch failed");
+        OWSFailDebug(@"App launch failed");
         completionHandler();
         return;
     }
@@ -1369,7 +1183,7 @@ static BOOL isUsingFullAPNs = YES;
     if ([self.tsAccountManager isRegistered]) {
         OWSLogInfo(@"localNumber: %@", [TSAccountManager localNumber]);
 
-        // This should happen at any launch, background or foreground.
+        // This should happen at any launch, background or foreground
         __unused AnyPromise *pushTokenpromise =
             [OWSSyncPushTokensJob runWithAccountManager:AppEnvironment.shared.accountManager
                                             preferences:Environment.shared.preferences];
@@ -1470,6 +1284,7 @@ static BOOL isUsingFullAPNs = YES;
             readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
                 [ExperienceUpgradeFinder.sharedManager markAllAsSeenWithTransaction:transaction];
             }];
+
         // Start running the disappearing messages job in case the newly registered user
         // enables this feature
         [self.disappearingMessagesJob startIfNecessary];

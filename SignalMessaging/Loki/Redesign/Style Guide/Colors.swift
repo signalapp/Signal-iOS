@@ -36,4 +36,6 @@ public final class Colors : NSObject {
     @objc public static var receivedMessageBackground = isLightMode ? UIColor(hex: 0xF5F5F5) : UIColor(hex: 0x222325)
     @objc public static var sentMessageBackground = isLightMode ? UIColor(hex: 0x00E97B) : UIColor(hex: 0x3F4146)
     @objc public static var newConversationButtonCollapsedBackground = isLightMode ? UIColor(hex: 0xF5F5F5) : UIColor(hex: 0x1F1F1F)
+    @objc public static var pnOptionBackground = isLightMode ? UIColor(hex: 0xFCFCFC) : UIColor(hex: 0x1B1B1B)
+    @objc public static var pnOptionBorder = UIColor(hex: 0x212121)
 }
