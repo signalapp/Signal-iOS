@@ -160,6 +160,7 @@ private extension PNModeVC {
             // Set up stack view
             let stackView = UIStackView(arrangedSubviews: [ titleLabel, explanationLabel ])
             stackView.axis = .vertical
+            stackView.spacing = 4
             stackView.alignment = .fill
             addSubview(stackView)
             stackView.pin(.leading, to: .leading, of: self, withInset: 12)
