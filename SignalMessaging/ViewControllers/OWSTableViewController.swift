@@ -16,7 +16,7 @@ public extension OWSTableItem {
     }
 
     static var iconSpacing: CGFloat {
-        return 12
+        return 16
     }
 
     static func buildCell(name: String, iconView: UIView) -> UITableViewCell {
