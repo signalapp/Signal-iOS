@@ -1049,25 +1049,6 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         return when(fulfilled: promises).asVoid()
     }
 
-    // MARK: - UUIDs
-
-    public func tryToEnsureUuidsForGroupMembers(for addresses: [SignalServiceAddress]) -> Promise<Void> {
-        guard FeatureFlags.useOnlyModernContactDiscovery else {
-            // Can't fill in UUIDs using legacy contact intersections.
-            return Promise.value(())
-        }
-
-        let phoneNumbersWithoutUuids = addresses.filter { $0.uuid == nil }.compactMap { $0.phoneNumber }
-        guard phoneNumbersWithoutUuids.count > 0 else {
-            return Promise.value(())
-        }
-
-        return firstly {
-            contactsUpdater.lookupIdentifiersPromise(phoneNumbers:
-                phoneNumbersWithoutUuids)
-        }.asVoid()
-    }
-
     // MARK: - Auth Credentials
 
     private let authCredentialStore = SDSKeyValueStore(collection: "GroupsV2Impl.authCredentialStoreStore")

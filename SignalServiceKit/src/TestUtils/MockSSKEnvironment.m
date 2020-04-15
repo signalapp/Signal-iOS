@@ -105,6 +105,7 @@ NS_ASSUME_NONNULL_BEGIN
     MessageProcessing *messageProcessing = [MessageProcessing new];
     MessageFetcherJob *messageFetcherJob = [MessageFetcherJob new];
     BulkProfileFetch *bulkProfileFetch = [BulkProfileFetch new];
+    BulkUUIDLookup *bulkUUIDLookup = [BulkUUIDLookup new];
     id<VersionedProfiles> versionedProfiles = [MockVersionedProfiles new];
 
     self = [super initWithContactsManager:contactsManager
@@ -151,6 +152,7 @@ NS_ASSUME_NONNULL_BEGIN
                         messageProcessing:messageProcessing
                         messageFetcherJob:messageFetcherJob
                          bulkProfileFetch:bulkProfileFetch
+                           bulkUUIDLookup:bulkUUIDLookup
                         versionedProfiles:versionedProfiles];
 
     if (!self) {

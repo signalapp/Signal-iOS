@@ -217,7 +217,7 @@ public class BulkProfileFetch: NSObject {
         }
 
         let minElapsedSeconds: TimeInterval
-        let elapsedSeconds: TimeInterval = lastOutcome.date.timeIntervalSinceNow
+        let elapsedSeconds = lastOutcome.date.timeIntervalSinceNow
 
         switch lastOutcome.outcome {
         case .networkFailure:
