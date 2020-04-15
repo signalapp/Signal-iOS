@@ -4,6 +4,7 @@ public extension Notification.Name {
     // State changes
     public static let contactOnlineStatusChanged = Notification.Name("contactOnlineStatusChanged")
     public static let threadFriendRequestStatusChanged = Notification.Name("threadFriendRequestStatusChanged")
+    public static let groupThreadUpdated = Notification.Name("groupThreadUpdated")
     public static let messageFriendRequestStatusChanged = Notification.Name("messageFriendRequestStatusChanged")
     public static let threadDeleted = Notification.Name("threadDeleted")
     public static let threadSessionRestoreDevicesChanged = Notification.Name("threadSessionRestoreDevicesChanged")
@@ -26,6 +27,7 @@ public extension Notification.Name {
     // State changes
     @objc public static let contactOnlineStatusChanged = Notification.Name.contactOnlineStatusChanged.rawValue as NSString
     @objc public static let threadFriendRequestStatusChanged = Notification.Name.threadFriendRequestStatusChanged.rawValue as NSString
+    @objc public static let groupThreadUpdated = Notification.Name.groupThreadUpdated.rawValue as NSString
     @objc public static let messageFriendRequestStatusChanged = Notification.Name.messageFriendRequestStatusChanged.rawValue as NSString
     @objc public static let threadDeleted = Notification.Name.threadDeleted.rawValue as NSString
     @objc public static let threadSessionRestoreDevicesChanged = Notification.Name.threadSessionRestoreDevicesChanged.rawValue as NSString

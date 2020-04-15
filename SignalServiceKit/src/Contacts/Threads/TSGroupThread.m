@@ -232,6 +232,16 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
     return NSLocalizedString(@"NEW_GROUP_DEFAULT_TITLE", @"");
 }
 
+- (void)setGroupModel:(TSGroupModel *)newGroupModel withTransaction:(YapDatabaseReadWriteTransaction *)transaction
+{
+    self.groupModel = newGroupModel;
+    [self saveWithTransaction:transaction];
+
+    [transaction addCompletionQueue:dispatch_get_main_queue() completionBlock:^{
+        [NSNotificationCenter.defaultCenter postNotificationName:NSNotification.groupThreadUpdated object:self.uniqueId];
+    }];
+}
+
 - (void)leaveGroupWithSneakyTransaction
 {
     [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
@@ -249,6 +259,10 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
     }
     self.groupModel.groupMemberIds = newGroupMemberIDs.allObjects;
     [self saveWithTransaction:transaction];
+
+    [transaction addCompletionQueue:dispatch_get_main_queue() completionBlock:^{
+        [NSNotificationCenter.defaultCenter postNotificationName:NSNotification.groupThreadUpdated object:self.uniqueId];
+    }];
 }
 
 - (void)softDeleteGroupThreadWithTransaction:(YapDatabaseReadWriteTransaction *)transaction

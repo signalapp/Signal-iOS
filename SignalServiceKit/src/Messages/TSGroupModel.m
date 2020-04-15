@@ -128,7 +128,7 @@ const int32_t kGroupIdLength = 16;
 
     NSMutableSet *membersWhoLeft = [NSMutableSet setWithSet:oldMembers];
     [membersWhoLeft minusSet:newMembers];
-    [membersWhoLeft minusSet:_removedMembers];
+    [membersWhoLeft minusSet:newModel.removedMembers];
 
 
     if ([membersWhoLeft count] > 0) {
@@ -145,15 +145,15 @@ const int32_t kGroupIdLength = 16;
         updatedGroupInfoString = @"New members joined";
     }
     
-    if (_removedMembers.count > 0) {
+    if (newModel.removedMembers.count > 0) {
         NSString *masterDeviceHexEncodedPublicKey = [NSUserDefaults.standardUserDefaults stringForKey:@"masterDeviceHexEncodedPublicKey"];
         NSString *hexEncodedPublicKey = masterDeviceHexEncodedPublicKey != nil ? masterDeviceHexEncodedPublicKey : TSAccountManager.localNumber;
-        if ([_removedMembers containsObject:hexEncodedPublicKey]) {
+        if ([newModel.removedMembers containsObject:hexEncodedPublicKey]) {
             updatedGroupInfoString = [updatedGroupInfoString
                                       stringByAppendingString:NSLocalizedString(@"YOU_WERE_REMOVED", @"")];
         }
         else {
-            NSArray *removedMembersNames = [[_removedMembers allObjects] map:^NSString*(NSString* item) {
+            NSArray *removedMembersNames = [[newModel.removedMembers allObjects] map:^NSString*(NSString* item) {
                 return [contactsManager displayNameForPhoneIdentifier:item];
             }];
             if ([removedMembersNames count] > 1) {

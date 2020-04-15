@@ -589,6 +589,12 @@ NS_ASSUME_NONNULL_BEGIN
             [TSGroupThread threadWithGroupId:dataMessage.group.id transaction:transaction];
 
         if (groupThread) {
+            BOOL isClosedGroup = (groupThread.groupModel.groupType == closedGroup);
+            if (isClosedGroup && dataMessage.group.type == SSKProtoGroupContextTypeDeliver) {
+                // Only allow messages from group members
+                if (![groupThread isUserInGroup:envelope.source transaction:transaction]) { return; }
+            }
+
             if (dataMessage.group.type != SSKProtoGroupContextTypeUpdate) {
                 if (![groupThread isLocalUserInGroupWithTransaction:transaction]) {
                     OWSLogInfo(@"Ignoring messages for left group.");
@@ -1455,6 +1461,8 @@ NS_ASSUME_NONNULL_BEGIN
         }
         
         NSString *hexEncodedPublicKey = ([LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:envelope.source in:transaction] ?: envelope.source);
+        NSString *localHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+        NSString *ourHexEncodedPublicKey = ([LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:localHexEncodedPublicKey in:transaction] ?: localHexEncodedPublicKey);
 
         // Group messages create the group if it doesn't already exist.
         //
@@ -1464,7 +1472,6 @@ NS_ASSUME_NONNULL_BEGIN
             // Loki: Determine removed members
             removedMemberIds = [NSMutableSet setWithArray:oldGroupThread.groupModel.groupMemberIds];
             [removedMemberIds minusSet:newMemberIds];
-            [removedMemberIds removeObject:hexEncodedPublicKey];
         }
 
         // Only set the display name here, the logic for updating profile pictures is handled when we're setting profile key
@@ -1489,11 +1496,14 @@ NS_ASSUME_NONNULL_BEGIN
                 newGroupModel.removedMembers = removedMemberIds;
                 NSString *updateGroupInfo = [newGroupThread.groupModel getInfoStringAboutUpdateTo:newGroupModel
                                                                                   contactsManager:self.contactsManager];
-                newGroupThread.groupModel = newGroupModel;
-                [newGroupThread saveWithTransaction:transaction];
-                
-                // Loki: Try to establish sessions with all members when a group is created or updated
-                [self establishSessionsWithMembersIfNeeded: newMemberIds.allObjects forThread:newGroupThread transaction:transaction];
+
+                [newGroupThread setGroupModel:newGroupModel withTransaction:transaction];
+
+                BOOL wasCurrentUserRemovedFromGroup = [removedMemberIds containsObject:ourHexEncodedPublicKey];
+                if (!wasCurrentUserRemovedFromGroup) {
+                    // Loki: Try to establish sessions with all members when a group is created or updated
+                    [self establishSessionsWithMembersIfNeeded: newMemberIds.allObjects forThread:newGroupThread transaction:transaction];
+                }
 
                 [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithDisappearingDuration:dataMessage.expireTimer
                                                                                           thread:newGroupThread
@@ -1508,11 +1518,16 @@ NS_ASSUME_NONNULL_BEGIN
                                                                         customMessage:updateGroupInfo];
                 [infoMessage saveWithTransaction:transaction];
 
+                // If we were the one that was removed then we need to leave the group
+                if (wasCurrentUserRemovedFromGroup) {
+                    [newGroupThread leaveGroupWithTransaction:transaction];
+                }
+
                 return nil;
             }
             case SSKProtoGroupContextTypeQuit: {
                 if (!oldGroupThread) {
-                    OWSLogWarn(@"ignoring quit group message from unknown group.");
+                    OWSLogWarn(@"Ignoring quit group message from unknown group.");
                     return nil;
                 }
                 newMemberIds = [NSMutableSet setWithArray:oldGroupThread.groupModel.groupMemberIds];
@@ -1529,6 +1544,13 @@ NS_ASSUME_NONNULL_BEGIN
                                                  inThread:oldGroupThread
                                               messageType:TSInfoMessageTypeGroupUpdate
                                             customMessage:updateGroupInfo] saveWithTransaction:transaction];
+
+                // If we were the one that quit then we need to leave the group (only relevant for slave
+                // devices in a multi device context)
+                if ([newMemberIds containsObject:ourHexEncodedPublicKey]) {
+                    [oldGroupThread leaveGroupWithTransaction:transaction];
+                }
+                
                 return nil;
             }
             case SSKProtoGroupContextTypeDeliver: {
