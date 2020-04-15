@@ -136,8 +136,9 @@ public extension OWSTableItem {
         return cell
     }
 
-    static func buildIconInCircleView(icon: ThemeIcon) -> UIView {
-        let iconView = OWSTableItem.imageView(forIcon: icon)
+    static func buildIconInCircleView(icon: ThemeIcon,
+                                      innerIconSize: CGFloat = 24) -> UIView {
+        let iconView = OWSTableItem.imageView(forIcon: icon, iconSize: innerIconSize)
         iconView.tintColor = .ows_accentBlue
         let iconWrapper = UIView.container()
         iconWrapper.addSubview(iconView)

@@ -588,7 +588,7 @@ extension ConversationSettingsViewController {
             cell.preservesSuperviewLayoutMargins = true
             cell.contentView.preservesSuperviewLayoutMargins = true
 
-            let iconView = OWSTableItem.buildIconInCircleView(icon: .settingsAddMembers)
+            let iconView = OWSTableItem.buildIconInCircleView(icon: .settingsAddMembers, innerIconSize: 24)
 
             let rowLabel = UILabel()
             rowLabel.text = NSLocalizedString("CONVERSATION_SETTINGS_ADD_MEMBERS",
