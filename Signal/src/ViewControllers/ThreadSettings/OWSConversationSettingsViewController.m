@@ -507,7 +507,7 @@ const CGFloat kIconViewLength = 24;
                                      rowLabel.text = NSLocalizedString(
                                          @"DISAPPEARING_MESSAGES", @"table cell label in conversation settings");
                                      rowLabel.textColor = Theme.primaryTextColor;
-                                     rowLabel.font = [UIFont ows_dynamicTypeBodyFont];
+                                     rowLabel.font = OWSTableItem.primaryLabelFont;
                                      rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
 
                                      UISwitch *switchView = [UISwitch new];
@@ -564,7 +564,7 @@ const CGFloat kIconViewLength = 24;
                                          UILabel *rowLabel = strongSelf.disappearingMessagesDurationLabel;
                                          [strongSelf updateDisappearingMessagesDurationLabel];
                                          rowLabel.textColor = Theme.primaryTextColor;
-                                         rowLabel.font = [UIFont ows_dynamicTypeBodyFont];
+                                         rowLabel.font = OWSTableItem.primaryLabelFont;
                                          // don't truncate useful duration info which is in the tail
                                          rowLabel.lineBreakMode = NSLineBreakByTruncatingHead;
 
@@ -713,7 +713,7 @@ const CGFloat kIconViewLength = 24;
                             rowLabel.text = NSLocalizedString(@"SETTINGS_ITEM_NOTIFICATION_SOUND",
                                 @"Label for settings view that allows user to change the notification sound.");
                             rowLabel.textColor = Theme.primaryTextColor;
-                            rowLabel.font = [UIFont ows_dynamicTypeBodyFont];
+                            rowLabel.font = OWSTableItem.primaryLabelFont;
                             rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
 
                             UIStackView *contentRow =
@@ -757,7 +757,7 @@ const CGFloat kIconViewLength = 24;
                         rowLabel.text = NSLocalizedString(@"CONVERSATION_SETTINGS_MUTE_LABEL",
                             @"label for 'mute thread' cell in conversation settings");
                         rowLabel.textColor = Theme.primaryTextColor;
-                        rowLabel.font = [UIFont ows_dynamicTypeBodyFont];
+                        rowLabel.font = OWSTableItem.primaryLabelFont;
                         rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
 
                         NSString *muteStatus = NSLocalizedString(@"CONVERSATION_SETTINGS_MUTE_NOT_MUTED",
@@ -899,7 +899,7 @@ const CGFloat kIconViewLength = 24;
     UILabel *rowLabel = [UILabel new];
     rowLabel.text = name;
     rowLabel.textColor = Theme.primaryTextColor;
-    rowLabel.font = [UIFont ows_dynamicTypeBodyFont];
+    rowLabel.font = OWSTableItem.primaryLabelFont;
     rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
 
     UIStackView *contentRow = [[UIStackView alloc] initWithArrangedSubviews:@[ iconView, rowLabel ]];
