@@ -1,3 +1,4 @@
+import PromiseKit
 
 final class PNModeVC : BaseVC, OptionViewDelegate {
 
@@ -10,7 +11,7 @@ final class PNModeVC : BaseVC, OptionViewDelegate {
     }
 
     // MARK: Components
-    private lazy var apnsOptionView = OptionView(title: "Apple Push Notification Service", explanation: "The app will use the Apple Push Notification Service. You'll be notified of new messages immediately. This mode entails a slight privacy sacrifice as Apple will know your IP. The contents of your messages will still be fully encrypted, your data will still be stored in a decentralized manner and your messages will still be onion routed.", delegate: self)
+    private lazy var apnsOptionView = OptionView(title: "Apple Push Notification Service", explanation: "The app will use the Apple Push Notification Service. You'll be notified of new messages immediately. This mode entails a slight privacy sacrifice as Apple will know your IP. The contents of your messages will still be fully encrypted, your data will still be stored in a decentralized manner and your messages will still be onion routed.", delegate: self, isRecommended: true)
     private lazy var backgroundPollingOptionView = OptionView(title: "Background Polling", explanation: "The app will occassionally check for new messages when it's in the background. This provides full privacy but notifications may be significantly delayed.", delegate: self)
     private lazy var noPNsOptionView = OptionView(title: "No Push Notifications", explanation: "You will not be notified of new messages when the app is closed. This provides full privacy.", delegate: self)
 
@@ -97,6 +98,9 @@ final class PNModeVC : BaseVC, OptionViewDelegate {
         TSAccountManager.sharedInstance().didRegister()
         let homeVC = HomeVC()
         navigationController!.setViewControllers([ homeVC ], animated: true)
+        if (selectedOptionView == apnsOptionView || selectedOptionView == backgroundPollingOptionView) {
+            let _: Promise<Void> = SyncPushTokensJob.run(accountManager: AppEnvironment.shared.accountManager, preferences: Environment.shared.preferences)
+        }
     }
 }
 
@@ -107,12 +111,14 @@ private extension PNModeVC {
         private let title: String
         private let explanation: String
         private let delegate: OptionViewDelegate
+        private let isRecommended: Bool
         var isSelected = false { didSet { handleIsSelectedChanged() } }
 
-        init(title: String, explanation: String, delegate: OptionViewDelegate) {
+        init(title: String, explanation: String, delegate: OptionViewDelegate, isRecommended: Bool = false) {
             self.title = title
             self.explanation = explanation
             self.delegate = delegate
+            self.isRecommended = isRecommended
             super.init(frame: CGRect.zero)
             setUpViewHierarchy()
         }
@@ -160,6 +166,14 @@ private extension PNModeVC {
             stackView.pin(.top, to: .top, of: self, withInset: 12)
             self.pin(.trailing, to: .trailing, of: stackView, withInset: 12)
             self.pin(.bottom, to: .bottom, of: stackView, withInset: 12)
+            // Set up recommended label if needed
+            if isRecommended {
+                let recommendedLabel = UILabel()
+                recommendedLabel.textColor = Colors.accent
+                recommendedLabel.font = .boldSystemFont(ofSize: Values.verySmallFontSize)
+                recommendedLabel.text = "*Recommended"
+                stackView.addArrangedSubview(recommendedLabel)
+            }
             // Set up tap gesture recognizer
             let tapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(handleTap))
             addGestureRecognizer(tapGestureRecognizer)

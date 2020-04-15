@@ -296,13 +296,13 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
                                           failure:(void (^)(NSError *))failureHandler
                                  remainingRetries:(int)remainingRetries
 {
-    TSRequest *request =
-        [OWSRequestFactory registerForPushRequestWithPushIdentifier:pushToken voipIdentifier:voipToken];
-    [self.networkManager makeRequest:request
-        success:^(NSURLSessionDataTask *task, id responseObject) {
+    BOOL isUsingFullAPNs = [NSUserDefaults.standardUserDefaults boolForKey:@"isUsingFullAPNs"];
+    if (isUsingFullAPNs) {
+        [LKPushNotificationManager registerWithToken:pushToken hexEncodedPublicKey:self.localNumber]
+        .then(^() {
             successHandler();
-        }
-        failure:^(NSURLSessionDataTask *task, NSError *error) {
+        })
+        .catch(^(NSError *error) {
             if (remainingRetries > 0) {
                 [self registerForPushNotificationsWithPushToken:pushToken
                                                       voipToken:voipToken
@@ -315,7 +315,8 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
                 }
                 failureHandler(error);
             }
-        }];
+        });
+    }
 }
 
 - (void)registerWithPhoneNumber:(NSString *)phoneNumber

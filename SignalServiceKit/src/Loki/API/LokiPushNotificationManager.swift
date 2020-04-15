@@ -1,3 +1,4 @@
+import PromiseKit
 
 @objc(LKPushNotificationManager)
 final class LokiPushNotificationManager : NSObject {
@@ -51,8 +52,7 @@ final class LokiPushNotificationManager : NSObject {
 
     /// Registers the user for normal push notifications. Requires the user's device
     /// token and their Session ID.
-    @objc(registerWithToken:hexEncodedPublicKey:)
-    static func register(with token: Data, hexEncodedPublicKey: String) {
+    static func register(with token: Data, hexEncodedPublicKey: String) -> Promise<Void> {
         let hexEncodedToken = token.toHexString()
         let userDefaults = UserDefaults.standard
         let now = Date().timeIntervalSince1970
@@ -60,7 +60,7 @@ final class LokiPushNotificationManager : NSObject {
         let url = URL(string: server + "register")!
         let request = TSRequest(url: url, method: "POST", parameters: parameters)
         request.allHTTPHeaderFields = [ "Content-Type" : "application/json" ]
-        TSNetworkManager.shared().makeRequest(request, success: { _, response in
+        let promise = TSNetworkManager.shared().makePromise(request: request).map { _, response in
             guard let json = response as? JSON else {
                 return print("[Loki] Couldn't register device token.")
             }
@@ -70,9 +70,17 @@ final class LokiPushNotificationManager : NSObject {
             userDefaults[.deviceToken] = hexEncodedToken
             userDefaults[.lastDeviceTokenUpload] = now
             userDefaults[.isUsingFullAPNs] = true
-        }, failure: { _, error in
+            return
+        }
+        promise.catch { error in
             print("[Loki] Couldn't register device token.")
-        })
+        }
+        return promise
+    }
+
+    @objc(registerWithToken:hexEncodedPublicKey:)
+    static func objc_register(with token: Data, hexEncodedPublicKey: String) -> AnyPromise {
+        return AnyPromise.from(register(with: token, hexEncodedPublicKey: hexEncodedPublicKey))
     }
     
     @objc(acknowledgeDeliveryForMessageWithHash:expiration:hexEncodedPublicKey:)
