@@ -48,6 +48,10 @@ public enum ThemeIcon: UInt {
     case messageActionSelect
 
     case compose
+    case composeNewGroup
+    case composeFindByPhoneNumber
+    case composeInvite
+
     case phone
     case checkCircle
     case message
@@ -172,6 +176,13 @@ public extension Theme {
 
         case .compose:
             return isDarkThemeEnabled ? "compose-solid-24" : "compose-outline-24"
+        case .composeNewGroup:
+            return "group-outline-32"
+        case .composeFindByPhoneNumber:
+            return "phone-number-32"
+        case .composeInvite:
+            return "invite-outline-32"
+
         case .phone:
             return isDarkThemeEnabled ? "button_phone_white" : "phone-right-outline-24"
         case .checkCircle:

@@ -588,14 +588,7 @@ extension ConversationSettingsViewController {
             cell.preservesSuperviewLayoutMargins = true
             cell.contentView.preservesSuperviewLayoutMargins = true
 
-            let iconView = OWSTableItem.imageView(forIcon: .settingsAddMembers)
-            iconView.tintColor = .ows_accentBlue
-            let iconWrapper = UIView.container()
-            iconWrapper.addSubview(iconView)
-            iconView.autoCenterInSuperview()
-            iconWrapper.backgroundColor = Theme.washColor
-            iconWrapper.layer.cornerRadius = CGFloat(kStandardAvatarSize) * 0.5
-            iconWrapper.autoSetDimensions(to: CGSize(square: CGFloat(kStandardAvatarSize)))
+            let iconView = OWSTableItem.buildIconInCircleView(icon: .settingsAddMembers)
 
             let rowLabel = UILabel()
             rowLabel.text = NSLocalizedString("CONVERSATION_SETTINGS_ADD_MEMBERS",
@@ -604,7 +597,7 @@ extension ConversationSettingsViewController {
             rowLabel.font = .ows_dynamicTypeBody
             rowLabel.lineBreakMode = .byTruncatingTail
 
-            let contentRow = UIStackView(arrangedSubviews: [ iconWrapper, rowLabel ])
+            let contentRow = UIStackView(arrangedSubviews: [ iconView, rowLabel ])
             contentRow.spacing = self.iconSpacing
 
             cell.contentView.addSubview(contentRow)

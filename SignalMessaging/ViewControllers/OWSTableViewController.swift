@@ -135,4 +135,16 @@ public extension OWSTableItem {
 
         return cell
     }
+
+    static func buildIconInCircleView(icon: ThemeIcon) -> UIView {
+        let iconView = OWSTableItem.imageView(forIcon: icon)
+        iconView.tintColor = .ows_accentBlue
+        let iconWrapper = UIView.container()
+        iconWrapper.addSubview(iconView)
+        iconView.autoCenterInSuperview()
+        iconWrapper.backgroundColor = Theme.washColor
+        iconWrapper.layer.cornerRadius = CGFloat(kStandardAvatarSize) * 0.5
+        iconWrapper.autoSetDimensions(to: CGSize(square: CGFloat(kStandardAvatarSize)))
+        return iconWrapper
+    }
 }
