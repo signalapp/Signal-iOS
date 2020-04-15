@@ -283,7 +283,7 @@ extension ConversationSettingsViewController {
             rowLabel.text = NSLocalizedString(
                 "DISAPPEARING_MESSAGES", comment: "table cell label in conversation settings")
             rowLabel.textColor = Theme.primaryTextColor
-            rowLabel.font = .ows_dynamicTypeBody
+            rowLabel.font = OWSTableItem.primaryLabelFont
             rowLabel.lineBreakMode = .byTruncatingTail
 
             let switchView = UISwitch()
@@ -321,7 +321,7 @@ extension ConversationSettingsViewController {
                 let rowLabel = self.disappearingMessagesDurationLabel
                 self.updateDisappearingMessagesDurationLabel()
                 rowLabel.textColor = Theme.primaryTextColor
-                rowLabel.font = .ows_dynamicTypeBody
+                rowLabel.font = OWSTableItem.primaryLabelFont
                 // don't truncate useful duration info which is in the tail
                 rowLabel.lineBreakMode = .byTruncatingHead
 
@@ -589,7 +589,7 @@ extension ConversationSettingsViewController {
             rowLabel.text = NSLocalizedString("CONVERSATION_SETTINGS_ADD_MEMBERS",
                                               comment: "Label for 'add members' button in conversation settings view.")
             rowLabel.textColor = .ows_accentBlue
-            rowLabel.font = .ows_dynamicTypeBody
+            rowLabel.font = OWSTableItem.primaryLabelFont
             rowLabel.lineBreakMode = .byTruncatingTail
 
             let contentRow = UIStackView(arrangedSubviews: [ iconView, rowLabel ])
@@ -683,7 +683,7 @@ extension ConversationSettingsViewController {
                     let subtitle = NSAttributedString(string: NSLocalizedString("GROUP_MEMBER_ADMIN_INDICATOR",
                                                                                 comment: "Label indicating that a group member is an admin."),
                                                       attributes: [
-                                                        .font: UIFont.ows_dynamicTypeBody.ows_semibold(),
+                                                        .font: UIFont.ows_dynamicTypeSubheadline.ows_semibold(),
                                                         .foregroundColor: Theme.primaryTextColor
                     ])
                     cell.setAttributedSubtitle(subtitle)
@@ -721,7 +721,7 @@ extension ConversationSettingsViewController {
                 rowLabel.text = NSLocalizedString("CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS",
                                                   comment: "Label for 'view all members' button in conversation settings view.")
                 rowLabel.textColor = Theme.primaryTextColor
-                rowLabel.font = .ows_dynamicTypeBody
+                rowLabel.font = OWSTableItem.primaryLabelFont
                 rowLabel.lineBreakMode = .byTruncatingTail
 
                 let contentRow = UIStackView(arrangedSubviews: [ iconView, rowLabel ])

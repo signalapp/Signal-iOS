@@ -7,6 +7,14 @@ import Foundation
 @objc
 public extension OWSTableItem {
 
+    static var primaryLabelFont: UIFont {
+        return UIFont.ows_regularFont(withSize: 15)
+    }
+
+    static var accessoryLabelFont: UIFont {
+        return UIFont.ows_regularFont(withSize: 15)
+    }
+
     private static var iconSpacing: CGFloat {
         return 12
     }
@@ -21,7 +29,7 @@ public extension OWSTableItem {
         let rowLabel = UILabel()
         rowLabel.text = name
         rowLabel.textColor = Theme.primaryTextColor
-        rowLabel.font = .ows_dynamicTypeBody
+        rowLabel.font = OWSTableItem.primaryLabelFont
         rowLabel.lineBreakMode = .byTruncatingTail
 
         let contentRow = UIStackView(arrangedSubviews: [ iconView, rowLabel ])
@@ -105,7 +113,7 @@ public extension OWSTableItem {
         let nameLabel = UILabel()
         nameLabel.text = itemName
         nameLabel.textColor = Theme.primaryTextColor
-        nameLabel.font = .ows_dynamicTypeBody
+        nameLabel.font = OWSTableItem.primaryLabelFont
         nameLabel.lineBreakMode = .byTruncatingTail
         nameLabel.setCompressionResistanceHorizontalLow()
 
@@ -120,7 +128,7 @@ public extension OWSTableItem {
             let accessoryLabel = UILabel()
             accessoryLabel.text = accessoryText
             accessoryLabel.textColor = Theme.secondaryTextAndIconColor
-            accessoryLabel.font = .ows_dynamicTypeBody
+            accessoryLabel.font = OWSTableItem.accessoryLabelFont
             accessoryLabel.lineBreakMode = .byTruncatingTail
             arrangedSubviews += [ UIView.hStretchingSpacer(), accessoryLabel ]
         }
