@@ -31,12 +31,21 @@ public class BulkUUIDLookup: NSObject {
     // This property should only be accessed on serialQueue.
     private var isUpdateInFlight = false
 
-    private enum UpdateOutcome {
-        case networkFailure(date: Date)
-        case retryLimit(date: Date)
-        case serviceError(date: Date)
-        case unknownError(date: Date)
-        case success(date: Date)
+    struct UpdateOutcome {
+        let outcome: Outcome
+        enum Outcome {
+            case networkFailure
+            case retryLimit
+            case serviceError
+            case success
+            case unknownError
+        }
+        let date: Date
+
+        init(_ outcome: Outcome) {
+            self.outcome = outcome
+            self.date = Date()
+        }
     }
 
     // This property should only be accessed on serialQueue.
@@ -117,50 +126,49 @@ public class BulkUUIDLookup: NSObject {
         }.done {
             self.serialQueue.async {
                 self.isUpdateInFlight = false
-                let now = Date()
+                let outcome = UpdateOutcome(.success)
                 for phoneNumber in phoneNumbers {
-                    self.lastOutcomeMap[phoneNumber] = .success(date: now)
+                    self.lastOutcomeMap[phoneNumber] = outcome
                 }
                 self.process()
             }
         }.catch { error in
             self.serialQueue.async {
                 self.isUpdateInFlight = false
-                let now = Date()
 
                 let outcome: UpdateOutcome
                 let nsError = error as NSError
                 if nsError.domain == OWSSignalServiceKitErrorDomain &&
                     nsError.code == OWSErrorCode.contactsUpdaterRateLimit.rawValue {
                     Logger.error("Error: \(error)")
-                    outcome = .retryLimit(date: now)
-                    self.lastRateLimitErrorDate = now
+                    outcome = UpdateOutcome(.retryLimit)
+                    self.lastRateLimitErrorDate = Date()
                 } else {
                     switch error {
                     case ContactDiscoveryService.ServiceError.error4xx,
                          ContactDiscoveryService.ServiceError.error5xx:
                         owsFailDebug("Error: \(error)")
-                        outcome = .serviceError(date: now)
+                        outcome = UpdateOutcome(.serviceError)
                     case ContactDiscoveryService.ServiceError.tooManyRequests:
                         Logger.error("Error: \(error)")
-                        outcome = .retryLimit(date: now)
-                        self.lastRateLimitErrorDate = now
+                        outcome = UpdateOutcome(.retryLimit)
+                        self.lastRateLimitErrorDate = Date()
                     default:
                         if IsNetworkConnectivityFailure(error) {
                             Logger.warn("Error: \(error)")
-                            outcome = .networkFailure(date: now)
+                            outcome = UpdateOutcome(.networkFailure)
                         } else if error.httpStatusCode == 413 {
                             Logger.error("Error: \(error)")
-                            outcome = .retryLimit(date: now)
-                            self.lastRateLimitErrorDate = now
+                            outcome = UpdateOutcome(.retryLimit)
+                            self.lastRateLimitErrorDate = Date()
                         } else if let httpStatusCode = error.httpStatusCode,
                             httpStatusCode >= 400,
                             httpStatusCode <= 599 {
                             owsFailDebug("Error: \(error)")
-                            outcome = .serviceError(date: now)
+                            outcome = UpdateOutcome(.serviceError)
                         } else {
                             owsFailDebug("Error: \(error)")
-                            outcome = .unknownError(date: now)
+                            outcome = UpdateOutcome(.unknownError)
                         }
                     }
                 }
@@ -195,24 +203,19 @@ public class BulkUUIDLookup: NSObject {
         }
 
         let minElapsedSeconds: TimeInterval
-        let elapsedSeconds: TimeInterval
+        let elapsedSeconds = lastOutcome.date.timeIntervalSinceNow
 
-        switch lastOutcome {
-        case .networkFailure(let date):
+        switch lastOutcome.outcome {
+        case .networkFailure:
             minElapsedSeconds = 1 * kMinuteInterval
-            elapsedSeconds = date.timeIntervalSinceNow
-        case .retryLimit(let date):
+        case .retryLimit:
             minElapsedSeconds = 15 * kMinuteInterval
-            elapsedSeconds = date.timeIntervalSinceNow
-        case .serviceError(let date):
+        case .serviceError:
             minElapsedSeconds = 30 * kMinuteInterval
-            elapsedSeconds = date.timeIntervalSinceNow
-        case .unknownError(let date):
+        case .unknownError:
             minElapsedSeconds = 60 * kMinuteInterval
-            elapsedSeconds = date.timeIntervalSinceNow
-        case .success(let date):
+        case .success:
             minElapsedSeconds = 60 * kMinuteInterval
-            elapsedSeconds = date.timeIntervalSinceNow
         }
 
         return elapsedSeconds >= minElapsedSeconds
