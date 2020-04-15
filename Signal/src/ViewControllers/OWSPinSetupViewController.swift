@@ -136,12 +136,16 @@ public class PinSetupViewController: OWSViewController {
         let topRow: UIView?
         let titleLabel: UILabel?
 
+        let confirmationTitle = NSLocalizedString("PIN_CREATION_CONFIRM_TITLE", comment: "Title of the 'pin creation' confirmation view.")
+
         // We have a nav bar and use the nav bar back button + title
         if initialMode.isChanging {
             topRow = nil
             titleLabel = nil
 
-            title = NSLocalizedString("PIN_CREATION_CHANGING_TITLE", comment: "Title of the 'pin creation' recreation view.")
+            title = mode.isConfirming
+                ? confirmationTitle
+                : NSLocalizedString("PIN_CREATION_CHANGING_TITLE", comment: "Title of the 'pin creation' recreation view.")
 
         // We have no nav bar and build our own back button + title label
         } else {
@@ -178,34 +182,59 @@ public class PinSetupViewController: OWSViewController {
             topRow = row
         }
 
-        switch initialMode {
-        case .recreating:
-            titleLabel?.text = NSLocalizedString("PIN_CREATION_RECREATION_TITLE", comment: "Title of the 'pin creation' recreation view.")
-        default:
-            titleLabel?.text = NSLocalizedString("PIN_CREATION_TITLE", comment: "Title of the 'pin creation' view.")
+        if mode.isConfirming {
+            titleLabel?.text = confirmationTitle
+        } else {
+            switch initialMode {
+            case .recreating:
+                titleLabel?.text = NSLocalizedString("PIN_CREATION_RECREATION_TITLE", comment: "Title of the 'pin creation' recreation view.")
+            default:
+                titleLabel?.text = NSLocalizedString("PIN_CREATION_TITLE", comment: "Title of the 'pin creation' view.")
+            }
         }
 
         // Explanation
 
-        let explanationLabel = UILabel()
+        let explanationLabel = LinkingTextView()
         explanationLabel.textColor = Theme.secondaryTextAndIconColor
         explanationLabel.font = .systemFont(ofSize: 15)
 
+        let explanationText: String
+
         switch mode {
         case .creating, .changing:
-            explanationLabel.text = NSLocalizedString("PIN_CREATION_EXPLANATION",
-                                                      comment: "The explanation in the 'pin creation' view.")
+            explanationText = NSLocalizedString("PIN_CREATION_EXPLANATION",
+                                                comment: "The explanation in the 'pin creation' view.")
         case .recreating:
-            explanationLabel.text = NSLocalizedString("PIN_CREATION_RECREATION_EXPLANATION",
-                                                      comment: "The re-creation explanation in the 'pin creation' view.")
+            explanationText = NSLocalizedString("PIN_CREATION_RECREATION_EXPLANATION",
+                                                comment: "The re-creation explanation in the 'pin creation' view.")
         case .confirming:
-            explanationLabel.text = NSLocalizedString("PIN_CREATION_CONFIRMATION_EXPLANATION",
-                                                      comment: "The explanation of confirmation in the 'pin creation' view.")
+            explanationText = NSLocalizedString("PIN_CREATION_CONFIRMATION_EXPLANATION",
+                                                comment: "The explanation of confirmation in the 'pin creation' view.")
         }
 
-        explanationLabel.numberOfLines = 0
+        if mode.isConfirming {
+            explanationLabel.text = explanationText
+        } else {
+            let attributedString = NSMutableAttributedString(
+                string: explanationText,
+                attributes: [
+                    .font: UIFont.systemFont(ofSize: 15),
+                    .foregroundColor: Theme.secondaryTextAndIconColor
+                ]
+            )
+            attributedString.append("  ")
+            attributedString.append(CommonStrings.learnMore,
+                                    attributes: [
+                                        .link: URL(string: "https://support.signal.org/hc/articles/360007059792")!,
+                                        .font: UIFont.systemFont(ofSize: 15)
+                ]
+            )
+            explanationLabel.attributedText = attributedString
+            explanationLabel.isUserInteractionEnabled = true
+        }
+
         explanationLabel.textAlignment = .center
-        explanationLabel.lineBreakMode = .byWordWrapping
         explanationLabel.accessibilityIdentifier = "pinCreation.explanationLabel"
 
         // Pin text field
@@ -366,8 +395,14 @@ public class PinSetupViewController: OWSViewController {
 
         switch validationState {
         case .tooShort:
-            validationWarningLabel.text = NSLocalizedString("PIN_CREATION_TOO_SHORT_ERROR",
-                                                            comment: "Label indicating that the attempted PIN is too short")
+            switch pinType {
+            case .numeric:
+                validationWarningLabel.text = NSLocalizedString("PIN_CREATION_NUMERIC_HINT",
+                                                                comment: "Label indicating the user must use at least 4 digits")
+            case .alphanumeric:
+                validationWarningLabel.text = NSLocalizedString("PIN_CREATION_ALPHANUMERIC_HINT",
+                                                                comment: "Label indicating the user must use at least 4 characters")
+            }
         case .mismatch:
             validationWarningLabel.text = NSLocalizedString("PIN_CREATION_MISMATCH_ERROR",
                                                             comment: "Label indicating that the attempted PIN does not match the first PIN")
@@ -390,13 +425,13 @@ public class PinSetupViewController: OWSViewController {
                                                      comment: "Button asking if the user would like to create an alphanumeric PIN"), for: .normal)
             pinTextField.keyboardType = .asciiCapableNumberPad
             recommendationLabelText = NSLocalizedString("PIN_CREATION_NUMERIC_HINT",
-                                                         comment: "Label indicating the user must use at least 6 digits")
+                                                         comment: "Label indicating the user must use at least 4 digits")
         case .alphanumeric:
             pinTypeToggle.setTitle(NSLocalizedString("PIN_CREATION_CREATE_NUMERIC",
                                                      comment: "Button asking if the user would like to create an numeric PIN"), for: .normal)
             pinTextField.keyboardType = .default
             recommendationLabelText = NSLocalizedString("PIN_CREATION_ALPHANUMERIC_HINT",
-                                                         comment: "Label indicating the user must use at least 6 characters")
+                                                         comment: "Label indicating the user must use at least 4 characters")
         }
 
         pinTextField.reloadInputViews()

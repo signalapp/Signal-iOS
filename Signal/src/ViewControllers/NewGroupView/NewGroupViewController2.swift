@@ -88,6 +88,11 @@ extension NewGroupViewController2: GroupMemberViewDelegate {
         return false
     }
 
+    func groupMemberViewIsGroupsV2Required() -> Bool {
+        // No, we can fail over to creating v1 groups.
+        return false
+    }
+
     func groupMemberViewDismiss() {
         dismiss(animated: true)
     }

@@ -7,6 +7,7 @@
 #import "OWSNavigationController.h"
 #import "Signal-Swift.h"
 #import "ViewControllerUtils.h"
+#import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/NSString+OWS.h>
 #import <SignalMessaging/BlockListUIUtils.h>
@@ -203,8 +204,8 @@ NS_ASSUME_NONNULL_BEGIN
     [threadInfoView addSubview:avatarView];
     [avatarView autoVCenterInSuperview];
     [avatarView autoPinLeadingToSuperviewMargin];
-    [avatarView autoSetDimension:ALDimensionWidth toSize:kLargeAvatarSize];
-    [avatarView autoSetDimension:ALDimensionHeight toSize:kLargeAvatarSize];
+    [avatarView autoSetDimension:ALDimensionWidth toSize:kMediumAvatarSize];
+    [avatarView autoSetDimension:ALDimensionHeight toSize:kMediumAvatarSize];
     _groupAvatarData = self.thread.groupModel.groupAvatarData;
 
     UIImageView *cameraImageView = [UIImageView new];
@@ -332,7 +333,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.cameraImageView.hidden = groupAvatar != nil;
 
     if (!groupAvatar) {
-        groupAvatar = [[[OWSGroupAvatarBuilder alloc] initWithThread:self.thread diameter:kLargeAvatarSize] build];
+        groupAvatar = [[[OWSGroupAvatarBuilder alloc] initWithThread:self.thread diameter:kMediumAvatarSize] build];
     }
 
     self.avatarView.image = groupAvatar;
@@ -509,6 +510,24 @@ NS_ASSUME_NONNULL_BEGIN
      canSelectRecipient:(PickedRecipient *)recipient
 {
     return YES;
+}
+
+- (void)recipientPicker:(RecipientPickerViewController *)recipientPickerViewController
+    willRenderRecipient:(PickedRecipient *)recipient
+{
+    // Do nothing.
+}
+
+- (AnyPromise *)recipientPicker:(RecipientPickerViewController *)recipientPickerViewController
+       prepareToSelectRecipient:(PickedRecipient *)recipient
+{
+    return [AnyPromise promiseWithValue:@(1)];
+}
+
+- (void)recipientPicker:(RecipientPickerViewController *)recipientPickerViewController
+    showInvalidRecipientAlert:(PickedRecipient *)recipient
+{
+    OWSFailDebug(@"Unexpected error.");
 }
 
 - (nullable NSString *)recipientPicker:(RecipientPickerViewController *)recipientPickerViewController

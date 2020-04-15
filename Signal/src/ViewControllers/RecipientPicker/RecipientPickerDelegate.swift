@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import PromiseKit
 
 @objc
 protocol RecipientPickerDelegate: AnyObject {
@@ -11,6 +12,17 @@ protocol RecipientPickerDelegate: AnyObject {
 
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          didSelectRecipient recipient: PickedRecipient)
+
+    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
+                         willRenderRecipient recipient: PickedRecipient)
+
+    // This delegate method is only used if showUseAsyncSelection is set.
+    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
+                         prepareToSelectRecipient recipient: PickedRecipient) -> AnyPromise
+
+    // This delegate method is only used if showUseAsyncSelection is set.
+    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
+                         showInvalidRecipientAlert recipient: PickedRecipient)
 
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          accessoryMessageForRecipient recipient: PickedRecipient) -> String?
@@ -70,6 +82,36 @@ public class PickedRecipient: NSObject {
 @objc
 extension RecipientPickerViewController {
 
+    func tryToSelectRecipient(_ recipient: PickedRecipient) {
+        guard let delegate = delegate else { return }
+        guard showUseAsyncSelection else {
+            guard delegate.recipientPicker(self, canSelectRecipient: recipient) else { return }
+            delegate.recipientPicker(self, didSelectRecipient: recipient)
+            return
+        }
+        let fromViewController = self
+        ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { [weak self] modalActivityIndicator in
+            guard let self = self else { return }
+
+            firstly {
+                delegate.recipientPicker(fromViewController,
+                                         prepareToSelectRecipient: recipient)
+            }.done { _ in
+                AssertIsOnMainThread()
+                modalActivityIndicator.dismiss {
+                    guard delegate.recipientPicker(self, canSelectRecipient: recipient) else { return }
+                    delegate.recipientPicker(self, didSelectRecipient: recipient)
+                }
+            }.catch { error in
+                AssertIsOnMainThread()
+                owsFailDebug("Error: \(error)")
+                modalActivityIndicator.dismiss {
+                    delegate.recipientPicker(self, showInvalidRecipientAlert: recipient)
+                }
+            }.retainUntilComplete()
+        }
+    }
+
     func item(forRecipient recipient: PickedRecipient) -> OWSTableItem {
         switch recipient.identifier {
         case .address(let address):
@@ -93,13 +135,13 @@ extension RecipientPickerViewController {
 
                     cell.configure(withRecipientAddress: address)
 
+                    self.delegate?.recipientPicker(self, willRenderRecipient: recipient)
+
                     return cell
                 },
                 customRowHeight: UITableView.automaticDimension,
                 actionBlock: { [weak self] in
-                    guard let self = self, let delegate = self.delegate else { return }
-                    guard delegate.recipientPicker(self, canSelectRecipient: recipient) else { return }
-                    delegate.recipientPicker(self, didSelectRecipient: recipient)
+                    self?.tryToSelectRecipient(recipient)
                 }
             )
         case .group(let groupThread):
@@ -122,9 +164,7 @@ extension RecipientPickerViewController {
                 },
                 customRowHeight: UITableView.automaticDimension,
                 actionBlock: { [weak self] in
-                    guard let self = self, let delegate = self.delegate else { return }
-                    guard delegate.recipientPicker(self, canSelectRecipient: recipient) else { return }
-                    delegate.recipientPicker(self, didSelectRecipient: recipient)
+                    self?.tryToSelectRecipient(recipient)
                 }
             )
         }

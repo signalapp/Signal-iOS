@@ -4,6 +4,7 @@
 
 import Foundation
 import SafariServices
+import PromiseKit
 
 protocol GroupMemberViewDelegate: class {
     var groupMemberViewRecipientSet: OrderedSet<PickedRecipient> { get }
@@ -21,6 +22,8 @@ protocol GroupMemberViewDelegate: class {
     func groupMemberViewIsGroupFull() -> Bool
 
     func groupMemberViewIsPreExistingMember(_ recipient: PickedRecipient) -> Bool
+
+    func groupMemberViewIsGroupsV2Required() -> Bool
 
     func groupMemberViewDismiss()
 }
@@ -42,6 +45,10 @@ public class BaseGroupMemberViewController: OWSViewController {
 
     private class var contactsManager: OWSContactsManager {
         return Environment.shared.contactsManager
+    }
+
+    private var tsAccountManager: TSAccountManager {
+        return .sharedInstance()
     }
 
     // MARK: -
@@ -109,6 +116,7 @@ public class BaseGroupMemberViewController: OWSViewController {
         recipientPicker.shouldShowGroups = false
         recipientPicker.allowsSelectingUnregisteredPhoneNumbers = false
         recipientPicker.shouldShowSearchBar = false
+        recipientPicker.showUseAsyncSelection = true
         recipientPicker.delegate = self
         addChild(recipientPicker)
         view.addSubview(recipientPicker.view)
@@ -180,6 +188,8 @@ public class BaseGroupMemberViewController: OWSViewController {
         recipientPicker.pickedRecipients = recipientSet.orderedMembers
         updateMemberBar()
         updateMemberCount()
+
+        memberBar.scrollToRecipient(recipient)
     }
 
     private func updateMemberBar() {
@@ -228,8 +238,7 @@ public class BaseGroupMemberViewController: OWSViewController {
                                                 message: NSLocalizedString("EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER",
                                                                            comment: "Error message indicating the a user can't be added to a group."))
 
-        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_LEARN_MORE",
-                                                                         comment: "Label for 'learn more' button when a user can't be added to a group."),
+        actionSheet.addAction(ActionSheetAction(title: CommonStrings.learnMore,
                                                 style: .default) { _ in
                                                     self.showCantAddMemberView()
         })
@@ -312,6 +321,7 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
             owsFailDebug("Missing groupMemberViewDelegate.")
             return false
         }
+
         return !groupMemberViewDelegate.groupMemberViewIsPreExistingMember(recipient)
     }
 
@@ -372,6 +382,71 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
             }
 
             addRecipientCompletion()
+        }
+    }
+
+    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
+                         willRenderRecipient recipient: PickedRecipient) {
+        guard let address = recipient.address else {
+            owsFailDebug("Invalid recipient.")
+            return
+        }
+        guard RemoteConfig.groupsV2CreateGroups ||
+            RemoteConfig.groupsV2IncomingMessages else {
+                return
+        }
+        // GroupsV2 TODO: We could debounce this effort.
+        if !doesRecipientSupportGroupsV2(recipient) {
+            tryToEnableGroupsV2ForAddress(address, ignoreErrors: true).retainUntilComplete()
+        }
+    }
+
+    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
+                         prepareToSelectRecipient recipient: PickedRecipient) -> AnyPromise {
+        guard let address = recipient.address else {
+            owsFailDebug("Invalid recipient.")
+            return AnyPromise(Promise.value(()))
+        }
+        guard let groupMemberViewDelegate = groupMemberViewDelegate else {
+            owsFailDebug("Missing delegate.")
+            return AnyPromise(Promise.value(()))
+        }
+        guard RemoteConfig.groupsV2CreateGroups ||
+            RemoteConfig.groupsV2IncomingMessages else {
+                return AnyPromise(Promise.value(()))
+        }
+        guard !doesRecipientSupportGroupsV2(recipient) else {
+            // Recipient already supports groups v2.
+            return AnyPromise(Promise.value(()))
+        }
+        let ignoreErrors = !groupMemberViewDelegate.groupMemberViewIsGroupsV2Required()
+        return AnyPromise(tryToEnableGroupsV2ForAddress(address, ignoreErrors: ignoreErrors))
+    }
+
+    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
+                         showInvalidRecipientAlert recipient: PickedRecipient) {
+        AssertIsOnMainThread()
+        showInvalidGroupMemberAlert(recipient: recipient)
+    }
+
+    private func doesRecipientSupportGroupsV2(_ recipient: PickedRecipient) -> Bool {
+        guard let address = recipient.address else {
+            owsFailDebug("Invalid recipient.")
+            return false
+        }
+        return databaseStorage.read { transaction in
+            return GroupManager.doesUserSupportGroupsV2(address: address, transaction: transaction)
+        }
+    }
+
+    func tryToEnableGroupsV2ForAddress(_ address: SignalServiceAddress,
+                                       ignoreErrors: Bool) -> Promise<Void> {
+        return firstly { () -> Promise<Void> in
+            return GroupManager.tryToEnableGroupsV2(for: [address],
+                                                    ignoreErrors: ignoreErrors)
+        }.done { [weak self] _ in
+            // Reload view content.
+            self?.recipientPicker.reloadContent()
         }
     }
 

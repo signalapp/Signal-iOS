@@ -9,19 +9,11 @@ class IntroducingPinsMegaphone: MegaphoneView {
     init(experienceUpgrade: ExperienceUpgrade, fromViewController: UIViewController) {
         super.init(experienceUpgrade: experienceUpgrade)
 
-        let hasPinAlready = OWS2FAManager.shared().is2FAEnabled()
-
-        titleText = hasPinAlready
-            ? NSLocalizedString("PINS_MEGAPHONE_HAS_PIN_TITLE", comment: "Title for PIN megaphone when user already has a PIN")
-            : NSLocalizedString("PINS_MEGAPHONE_NO_PIN_TITLE", comment: "Title for PIN megaphone when user doesn't have a PIN")
-        bodyText = hasPinAlready
-            ? NSLocalizedString("PINS_MEGAPHONE_HAS_PIN_BODY", comment: "Body for PIN megaphone when user already has a PIN")
-            : NSLocalizedString("PINS_MEGAPHONE_NO_PIN_BODY", comment: "Body for PIN megaphone when user doesn't have a PIN")
+        titleText = NSLocalizedString("PINS_MEGAPHONE_TITLE", comment: "Title for PIN megaphone when user doesn't have a PIN")
+        bodyText = NSLocalizedString("PINS_MEGAPHONE_BODY", comment: "Body for PIN megaphone when user doesn't have a PIN")
         imageName = "PIN_megaphone"
 
-        let primaryButtonTitle = hasPinAlready
-            ? NSLocalizedString("PINS_MEGAPHONE_HAS_PIN_ACTION", comment: "Action text for PIN megaphone when user already has a PIN")
-            : NSLocalizedString("PINS_MEGAPHONE_NO_PIN_ACTION", comment: "Action text for PIN megaphone when user doesn't have a PIN")
+        let primaryButtonTitle = NSLocalizedString("PINS_MEGAPHONE_ACTION", comment: "Action text for PIN megaphone when user doesn't have a PIN")
 
         let primaryButton = MegaphoneView.Button(title: primaryButtonTitle) { [weak self] in
             let vc = PinSetupViewController.creating { _, error in
@@ -50,10 +42,7 @@ class IntroducingPinsMegaphone: MegaphoneView {
             let daysRemaining = ExperienceUpgradeManager.splashStartDay - experienceUpgrade.daysSinceFirstViewed
             assert(daysRemaining > 0)
 
-            let toastFormat = hasPinAlready
-                ? NSLocalizedString("PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT",
-                                    comment: "Toast indication that the user will be reminded later to update their PIN. Embeds {{time until mandatory}}")
-                : NSLocalizedString("PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT",
+            let toastFormat = NSLocalizedString("PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT",
                                     comment: "Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}}")
 
             return String(format: toastFormat, daysRemaining)
@@ -72,12 +61,6 @@ class IntroducingPinsSplash: SplashViewController {
 
     var ows2FAManager: OWS2FAManager {
         return .shared()
-    }
-
-    var hasPinAlready: Bool {
-        // Treat users with legacy pins as not having a pin at all, so we
-        // can migrate them off of their old, possibly truncated pins.
-        return ows2FAManager.is2FAEnabled() && !ows2FAManager.needsLegacyPinMigration()
     }
 
     override var canDismissWithGesture: Bool { return false }
@@ -112,16 +95,8 @@ class IntroducingPinsSplash: SplashViewController {
         heroImageView.setContentHuggingLow()
         heroImageView.setCompressionResistanceLow()
 
-        let title: String
-        let body: String
-
-        if hasPinAlready {
-            title = NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE", comment: "Header for PINs migration splash screen")
-            body = NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION", comment: "Body text for PINs migration splash screen")
-        } else {
-            title = NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE", comment: "Header for PINs splash screen")
-            body = NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION", comment: "Body text for PINs splash screen")
-        }
+        let title = NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE", comment: "Header for PINs splash screen")
+        let body = NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION", comment: "Body text for PINs splash screen")
 
         let hMargin: CGFloat = ScaleFromIPhone5To7Plus(16, 24)
 
@@ -191,7 +166,6 @@ class IntroducingPinsSplash: SplashViewController {
 
     @objc
     func didTapSecondaryButton(_ sender: UIButton) {
-        // TODO PINs: Open the right support center URL
         let vc = SFSafariViewController(url: URL(string: "https://support.signal.org/hc/articles/360007059792")!)
         present(vc, animated: true, completion: nil)
     }
@@ -202,13 +176,7 @@ class IntroducingPinsSplash: SplashViewController {
     }
 
     func secondaryButtonTitle() -> String {
-        if hasPinAlready {
-            return NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON",
-                                     comment: "Button to open a help document explaining more about why a PIN is required")
-        } else {
-            return NSLocalizedString("UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON",
-                                     comment: "Button to open a help document explaining more about why a PIN is required")
-        }
+        return CommonStrings.learnMore
     }
 
     override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {

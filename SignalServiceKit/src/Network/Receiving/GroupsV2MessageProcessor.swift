@@ -127,11 +127,16 @@ class IncomingGroupsV2MessageQueue: NSObject {
 
     fileprivate func enqueue(envelopeData: Data,
                              plaintextData: Data?,
+                             groupId: Data,
                              wasReceivedByUD: Bool,
                              transaction: SDSAnyWriteTransaction) {
 
         // We need to persist the decrypted envelope data ASAP to prevent data loss.
-        finder.addJob(envelopeData: envelopeData, plaintextData: plaintextData, wasReceivedByUD: wasReceivedByUD, transaction: transaction.unwrapGrdbWrite)
+        finder.addJob(envelopeData: envelopeData,
+                      plaintextData: plaintextData,
+                      groupId: groupId,
+                      wasReceivedByUD: wasReceivedByUD,
+                      transaction: transaction.unwrapGrdbWrite)
     }
 
     fileprivate func drainQueueWhenReady() {
@@ -325,10 +330,15 @@ class IncomingGroupsV2MessageQueue: NSObject {
                                                             return true
             }
             guard groupThread.groupModel.groupMembership.isNonPendingMember(localAddress) else {
-                // * The user might have just left the group.
-                // * We may have just learned that we were removed from the group.
-                // * We might be a pending member with an invite.
-                Logger.warn("Discarding envelope; not an active group member.")
+                // * Local user might have just left the group.
+                // * Local user may have just learned that we were removed from the group.
+                // * Local user might be a pending member with an invite.
+                Logger.warn("Discarding envelope; local user is not an active group member.")
+                return true
+            }
+            guard groupThread.groupModel.groupMembership.isNonPendingMember(sourceAddress) else {
+                // * The sender might have just left the group.
+                Logger.warn("Discarding envelope; sender is not an active group member.")
                 return true
             }
         }
@@ -708,6 +718,14 @@ class IncomingGroupsV2MessageQueue: NSObject {
 @objc
 public class GroupsV2MessageProcessor: NSObject {
 
+    // MARK: - Dependencies
+
+    private var groupsV2: GroupsV2Swift {
+        return SSKEnvironment.shared.groupsV2 as! GroupsV2Swift
+    }
+
+    // MARK: - 
+
     @objc
     public static let didFlushGroupsV2MessageQueue = Notification.Name("didFlushGroupsV2MessageQueue")
 
@@ -727,6 +745,7 @@ public class GroupsV2MessageProcessor: NSObject {
     @objc
     public func enqueue(envelopeData: Data,
                         plaintextData: Data?,
+                        envelope: SSKProtoEnvelope,
                         wasReceivedByUD: Bool,
                         transaction: SDSAnyWriteTransaction) {
         guard envelopeData.count > 0 else {
@@ -739,9 +758,15 @@ public class GroupsV2MessageProcessor: NSObject {
             return
         }
 
+        guard let groupId = groupId(forEnvelope: envelope, plaintextData: plaintextData) else {
+            owsFailDebug("Missing or invalid group id")
+            return
+        }
+
         // We need to persist the decrypted envelope data ASAP to prevent data loss.
         processingQueue.enqueue(envelopeData: envelopeData,
                                 plaintextData: plaintextData,
+                                groupId: groupId,
                                 wasReceivedByUD: wasReceivedByUD,
                                 transaction: transaction)
 
@@ -749,6 +774,22 @@ public class GroupsV2MessageProcessor: NSObject {
         // so drainQueue in the transaction completion.
         transaction.addAsyncCompletion {
             self.processingQueue.drainQueueWhenReady()
+        }
+    }
+
+    private func groupId(forEnvelope envelope: SSKProtoEnvelope,
+                         plaintextData: Data?) -> Data? {
+        guard let groupContext = GroupsV2MessageProcessor.groupContextV2(forEnvelope: envelope,
+                                                                         plaintextData: plaintextData) else {
+                                                                            owsFailDebug("Invalid envelope.")
+                                                                            return nil
+        }
+        do {
+            let groupContextInfo = try groupsV2.groupV2ContextInfo(forMasterKeyData: groupContext.masterKey)
+            return groupContextInfo.groupId
+        } catch {
+            owsFailDebug("Invalid group context: \(error).")
+            return nil
         }
     }
 

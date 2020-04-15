@@ -260,8 +260,7 @@ public class NewGroupConfirmViewController: OWSViewController {
 
         let actionSheet = ActionSheetController(title: alertTitle, message: alertMessage)
 
-        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("MESSAGE_REQUEST_VIEW_LEARN_MORE_BUTTON",
-                                                                         comment: "A button used to learn more about why you must share your profile."),
+        actionSheet.addAction(ActionSheetAction(title: CommonStrings.learnMore,
                                                 style: .default) { _ in
                                                     // GroupsV2 TODO:
                                                     navigateToNewGroup()

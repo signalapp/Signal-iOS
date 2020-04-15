@@ -746,6 +746,20 @@ NS_ASSUME_NONNULL_BEGIN
             OWSLogInfo(@"Ignoring messages for left group.");
             return nil;
         }
+        if (!envelope.sourceAddress) {
+            OWSFailDebug(@"Missing sender address.");
+            return nil;
+        }
+        if (!groupThread.isLocalUserInGroup) {
+            // We don't want to process messages for groups in which we are a pending member.
+            OWSLogInfo(@"Ignoring messages for left group.");
+            return nil;
+        }
+        if (![groupModel.groupMembership isNonPendingMember:envelope.sourceAddress]) {
+            // We don't want to process group messages for non-members.
+            OWSLogInfo(@"Ignoring messages for user not in group: %@.", envelope.sourceAddress);
+            return nil;
+        }
 
         return groupThread;
     } else {

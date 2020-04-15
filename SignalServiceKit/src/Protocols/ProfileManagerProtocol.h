@@ -84,6 +84,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updateProfileForAddress:(SignalServiceAddress *)address;
 
+- (AnyPromise *)updateProfileForAddressPromise:(SignalServiceAddress *)address;
+
 - (BOOL)recipientAddressIsUuidCapable:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
 
 - (void)warmCaches;

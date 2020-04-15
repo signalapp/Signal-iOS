@@ -119,7 +119,8 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             self.serviceStore.setInt(zkgroupVersionCounter, key: lastZKgroupVersionCounterKey, transaction: transaction)
         }
         AppReadiness.runNowOrWhenAppDidBecomeReady {
-            if FeatureFlags.versionedProfiledUpdate {
+            if FeatureFlags.versionedProfiledUpdate,
+                self.tsAccountManager.isRegisteredAndReady {
                 self.reuploadLocalProfilePromise().retainUntilComplete()
             }
         }

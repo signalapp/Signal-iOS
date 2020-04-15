@@ -11,9 +11,31 @@ public class GRDBGroupsV2MessageJobFinder: NSObject {
     typealias WriteTransaction = GRDBWriteTransaction
 
     @objc
-    public func addJob(envelopeData: Data, plaintextData: Data?, wasReceivedByUD: Bool, transaction: GRDBWriteTransaction) {
-        let job = IncomingGroupsV2MessageJob(envelopeData: envelopeData, plaintextData: plaintextData, wasReceivedByUD: wasReceivedByUD)
+    public func addJob(envelopeData: Data,
+                       plaintextData: Data?,
+                       groupId: Data,
+                       wasReceivedByUD: Bool,
+                       transaction: GRDBWriteTransaction) {
+        let job = IncomingGroupsV2MessageJob(envelopeData: envelopeData,
+                                             plaintextData: plaintextData,
+                                             groupId: groupId,
+                                             wasReceivedByUD: wasReceivedByUD)
         job.anyInsert(transaction: transaction.asAnyWrite)
+    }
+
+    @objc
+    public func allEnqueuedGroupIds(transaction: GRDBReadTransaction) -> [String] {
+        let sql = """
+            SELECT UNIQUE(\(incomingGroupsV2MessageJobColumn: .groupId))
+            FROM \(IncomingGroupsV2MessageJobRecord.databaseTableName)
+        """
+        var result = [String]()
+        do {
+            result = try String.fetchAll(transaction.database, sql: sql)
+        } catch {
+            owsFailDebug("error: \(error)")
+        }
+        return result
     }
 
     @objc

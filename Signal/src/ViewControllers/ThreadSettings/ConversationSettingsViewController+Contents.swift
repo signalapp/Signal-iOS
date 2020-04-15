@@ -89,6 +89,10 @@ extension ConversationSettingsViewController {
             contents.addSection(buildBlockAndLeaveSection())
         }
 
+        let emptySection = OWSTableSection()
+        emptySection.customFooterHeight = 24
+        contents.addSection(emptySection)
+
         self.contents = contents
 
         updateNavigationBar()
@@ -563,7 +567,6 @@ extension ConversationSettingsViewController {
 
     private func buildGroupMembershipSection(groupModel: TSGroupModel) -> OWSTableSection {
         let section = OWSTableSection()
-        section.customHeaderHeight = 10
         section.customFooterHeight = 10
 
         guard let localAddress = tsAccountManager.localAddress else {
@@ -637,6 +640,16 @@ extension ConversationSettingsViewController {
         // Non-admin users are third.
         let nonAdminMembers = allMembersSorted.filter { $0 != localAddress && !groupMembership.isAdministrator($0) }
         membersToRender += nonAdminMembers
+
+        if membersToRender.count > 1 {
+            let headerFormat = NSLocalizedString("CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT",
+                                                 comment: "Format for the section title of the 'members' section in conversation settings view. Embeds: {{ the number of group members }}.")
+            section.headerTitle = String(format: headerFormat,
+                                         OWSFormat.formatInt(membersToRender.count))
+        } else {
+            section.headerTitle = NSLocalizedString("CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE",
+                                                    comment: "Section title of the 'members' section in conversation settings view.")
+        }
 
         // TODO: Do we show pending members here? How?
         var hasMoreMembers = false

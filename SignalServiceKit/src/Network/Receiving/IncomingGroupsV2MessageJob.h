@@ -16,6 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSData *envelopeData;
 @property (nonatomic, readonly, nullable) NSData *plaintextData;
 @property (nonatomic, readonly) BOOL wasReceivedByUD;
+@property (nonatomic, readonly, nullable) NSData *groupId;
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
@@ -25,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithEnvelopeData:(NSData *)envelopeData
                        plaintextData:(NSData *_Nullable)plaintextData
+                             groupId:(NSData *_Nullable)groupId
                      wasReceivedByUD:(BOOL)wasReceivedByUD NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
@@ -38,9 +40,10 @@ NS_ASSUME_NONNULL_BEGIN
                       uniqueId:(NSString *)uniqueId
                        createdAt:(NSDate *)createdAt
                     envelopeData:(NSData *)envelopeData
+                         groupId:(nullable NSData *)groupId
                    plaintextData:(nullable NSData *)plaintextData
                  wasReceivedByUD:(BOOL)wasReceivedByUD
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:createdAt:envelopeData:plaintextData:wasReceivedByUD:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:createdAt:envelopeData:groupId:plaintextData:wasReceivedByUD:));
 
 // clang-format on
 

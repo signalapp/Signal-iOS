@@ -211,6 +211,11 @@ NS_ASSUME_NONNULL_BEGIN
     // Do nothing.
 }
 
+- (AnyPromise *)updateProfileForAddressPromise:(SignalServiceAddress *)address
+{
+    return [AnyPromise promiseWithValue:@(1)];
+}
+
 - (void)warmCaches
 {
     // Do nothing.

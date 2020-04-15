@@ -230,7 +230,7 @@ public class FeatureFlags: NSObject {
     public static let notificationServiceExtension = build.includes(.dev)
 
     @objc
-    public static let pinsForNewUsers = true
+    public static let pinsForNewUsers = false
 
     @objc
     public static let deleteForEveryone = build.includes(.dev)

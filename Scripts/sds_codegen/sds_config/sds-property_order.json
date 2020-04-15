@@ -45,6 +45,7 @@
     "ExperienceUpgradeRecord.lastSnoozedTimestamp": 2, 
     "IncomingGroupsV2MessageJobRecord.createdAt": 1, 
     "IncomingGroupsV2MessageJobRecord.envelopeData": 2, 
+    "IncomingGroupsV2MessageJobRecord.groupId": 5, 
     "IncomingGroupsV2MessageJobRecord.plaintextData": 3, 
     "IncomingGroupsV2MessageJobRecord.wasReceivedByUD": 4, 
     "InstalledStickerRecord.emojiString": 1, 

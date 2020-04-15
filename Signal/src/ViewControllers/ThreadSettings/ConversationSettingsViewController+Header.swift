@@ -58,12 +58,11 @@ extension ConversationSettingsViewController {
         }
 
         func buildAvatarView() -> UIView {
+            let avatarSize: UInt = kLargeAvatarSize
             let avatarImage = OWSAvatarBuilder.buildImage(thread: viewController.thread,
-                                                          diameter: kLargeAvatarSize)
+                                                          diameter: avatarSize)
             let avatarView = AvatarImageView(image: avatarImage)
-            let avatarSize = CGFloat(kLargeAvatarSize)
-            avatarView.autoSetDimension(.width, toSize: avatarSize)
-            avatarView.autoSetDimension(.height, toSize: avatarSize)
+            avatarView.autoSetDimensions(to: CGSize(square: CGFloat(avatarSize)))
             // Track the most recent avatar view.
             viewController.avatarView = avatarView
             return avatarView
@@ -73,7 +72,7 @@ extension ConversationSettingsViewController {
             let label = UILabel()
             label.text = viewController.threadName
             label.textColor = Theme.primaryTextColor
-            label.font = .ows_dynamicTypeTitle2
+            label.font = UIFont.ows_dynamicTypeTitle2.ows_semibold()
             label.lineBreakMode = .byTruncatingTail
             return label
         }

@@ -1041,8 +1041,8 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         username = [CommonFormats formatUsername:username];
     }
 
-    // else fall back to phone number or UUID
-    return phoneNumber ?: username ?: address.stringForDisplay;
+    // else fall back to phone number, username, profile name, etc.
+    return phoneNumber ?: username ?: self.unknownUserLabel;
 }
 
 - (NSString *)displayNameForAddress:(SignalServiceAddress *)address
@@ -1058,6 +1058,10 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     return displayName;
 }
 
+- (NSString *)unknownUserLabel
+{
+    return NSLocalizedString(@"UNKNOWN_USER", @"Label indicating an unknown user.");
+}
 - (NSString *_Nonnull)displayNameForSignalAccount:(SignalAccount *)signalAccount
 {
     OWSAssertDebug(signalAccount);
@@ -1346,11 +1350,19 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     }];
 
     if (profileName.length > 0) {
-        return [[address.stringForDisplay stringByAppendingString:@" ~"] stringByAppendingString:profileName];
+        if (address.phoneNumber != nil) {
+            return [[address.stringForDisplay stringByAppendingString:@" ~"] stringByAppendingString:profileName];
+        } else {
+            return profileName;
+        }
     }
 
-    // else fall back to phone number / uuid
-    return address.stringForDisplay;
+    // else fall back to phone number
+    if (address.phoneNumber != nil) {
+        return address.stringForDisplay;
+    } else {
+        return self.unknownUserLabel;
+    }
 }
 
 - (NSAttributedString *)attributedLegacyDisplayNameForAddress:(SignalServiceAddress *)address
@@ -1389,18 +1401,22 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     }];
 
     if (profileName.length > 0) {
-        NSAttributedString *result = [[NSAttributedString alloc] initWithString:address.stringForDisplay
-                                                                     attributes:primaryAttributes];
-        result = [result stringByAppendingString:[[NSAttributedString alloc] initWithString:@" "]];
-        result = [result stringByAppendingString:[[NSAttributedString alloc] initWithString:@"~"
-                                                                                 attributes:secondaryAttributes]];
-        result = [result stringByAppendingString:[[NSAttributedString alloc] initWithString:profileName
-                                                                                 attributes:secondaryAttributes]];
+        NSMutableAttributedString *result = [NSMutableAttributedString new];
+        if (address.phoneNumber != nil) {
+            [result append:address.stringForDisplay attributes:primaryAttributes];
+            [result append:@" " attributes:primaryAttributes];
+        }
+        [result append:@"~" attributes:secondaryAttributes];
+        [result append:profileName attributes:secondaryAttributes];
         return [result copy];
     }
 
-    // else fall back to phone number / uuid
-    return [[NSAttributedString alloc] initWithString:address.stringForDisplay attributes:primaryAttributes];
+    // else fall back to phone number
+    if (address.phoneNumber != nil) {
+        return [[NSAttributedString alloc] initWithString:address.stringForDisplay attributes:primaryAttributes];
+    } else {
+        return [[NSAttributedString alloc] initWithString:self.unknownUserLabel attributes:primaryAttributes];
+    }
 }
 
 - (nullable NSString *)formattedProfileNameForAddress:(SignalServiceAddress *)address

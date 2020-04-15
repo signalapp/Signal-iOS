@@ -7,6 +7,7 @@
 #import "OWSNavigationController.h"
 #import "Signal-Swift.h"
 #import "SignalApp.h"
+#import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/NSString+OWS.h>
 #import <SignalCoreKit/Randomness.h>
@@ -156,8 +157,8 @@ NS_ASSUME_NONNULL_BEGIN
     [threadInfoView addSubview:avatarView];
     [avatarView autoVCenterInSuperview];
     [avatarView autoPinLeadingToSuperviewMargin];
-    [avatarView autoSetDimension:ALDimensionWidth toSize:kLargeAvatarSize];
-    [avatarView autoSetDimension:ALDimensionHeight toSize:kLargeAvatarSize];
+    [avatarView autoSetDimension:ALDimensionWidth toSize:kMediumAvatarSize];
+    [avatarView autoSetDimension:ALDimensionHeight toSize:kMediumAvatarSize];
 
     UIImageView *cameraImageView = [UIImageView new];
     [cameraImageView setTemplateImageName:@"camera-outline-24" tintColor:Theme.secondaryTextAndIconColor];
@@ -322,7 +323,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSString *conversationColorName = [TSGroupThread defaultConversationColorNameForGroupId:groupId];
         groupAvatar = [OWSGroupAvatarBuilder defaultAvatarForGroupId:groupId
                                                conversationColorName:conversationColorName
-                                                            diameter:kLargeAvatarSize];
+                                                            diameter:kMediumAvatarSize];
     }
 
     self.avatarView.image = groupAvatar;
@@ -433,6 +434,24 @@ NS_ASSUME_NONNULL_BEGIN
      canSelectRecipient:(PickedRecipient *)recipient
 {
     return YES;
+}
+
+- (void)recipientPicker:(RecipientPickerViewController *)recipientPickerViewController
+    willRenderRecipient:(PickedRecipient *)recipient
+{
+    // Do nothing.
+}
+
+- (AnyPromise *)recipientPicker:(RecipientPickerViewController *)recipientPickerViewController
+       prepareToSelectRecipient:(PickedRecipient *)recipient
+{
+    return [AnyPromise promiseWithValue:@(1)];
+}
+
+- (void)recipientPicker:(RecipientPickerViewController *)recipientPickerViewController
+    showInvalidRecipientAlert:(PickedRecipient *)recipient
+{
+    OWSFailDebug(@"Unexpected error.");
 }
 
 - (nullable NSString *)recipientPicker:(RecipientPickerViewController *)recipientPickerViewController
