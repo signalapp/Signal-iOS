@@ -362,6 +362,11 @@ typedef enum : NSUInteger {
     return SSKEnvironment.shared.syncManager;
 }
 
+- (BulkProfileFetch *)bulkProfileFetch
+{
+    return SSKEnvironment.shared.bulkProfileFetch;
+}
+
 #pragma mark -
 
 - (void)addNotificationListeners
@@ -1202,7 +1207,7 @@ typedef enum : NSUInteger {
     // recover status bar when returning from PhotoPicker, which is dark (uses light status bar)
     [self setNeedsStatusBarAppearanceUpdate];
 
-    [ProfileFetcherJob fetchAndUpdateProfilesWithThread:self.thread];
+    [self.bulkProfileFetch fetchAndUpdateProfilesWithThread:self.thread];
     [self markVisibleMessagesAsRead];
     [self startReadTimer];
     [self updateNavigationBarSubtitleLabel];

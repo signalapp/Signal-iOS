@@ -216,6 +216,13 @@ NS_ASSUME_NONNULL_BEGIN
     return [AnyPromise promiseWithValue:@(1)];
 }
 
+- (AnyPromise *)updateProfileForAddressPromise:(SignalServiceAddress *)address
+                                   mainAppOnly:(BOOL)mainAppOnly
+                              ignoreThrottling:(BOOL)ignoreThrottling
+{
+    return [AnyPromise promiseWithValue:@(1)];
+}
+
 - (void)warmCaches
 {
     // Do nothing.
@@ -255,6 +262,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)localProfileExistsWithTransaction:(nonnull SDSAnyReadTransaction *)transaction
 {
     return self.hasLocalProfile;
+}
+
+- (void)updateProfileForAddress:(SignalServiceAddress *)address
+           profileNameEncrypted:(nullable NSData *)profileNameEncrypted
+                       username:(nullable NSString *)username
+                  isUuidCapable:(BOOL)isUuidCapable
+                  avatarUrlPath:(nullable NSString *)avatarUrlPath
+{
+    // Do nothing.
 }
 
 @end

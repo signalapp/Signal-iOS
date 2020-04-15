@@ -86,6 +86,7 @@ extension ComposeViewController: RecipientPickerDelegate {
 
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          prepareToSelectRecipient recipient: PickedRecipient) -> AnyPromise {
+        owsFailDebug("This method should not called.")
         return AnyPromise(Promise.value(()))
     }
 

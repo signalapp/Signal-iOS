@@ -58,7 +58,7 @@ public extension UIDevice {
             return false
         case 1792:
             // iPhone XR
-            return false
+            return true
         case 1920, 2208:
             // iPhone 6+/6S+/7+/8+//
             return true

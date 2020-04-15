@@ -521,6 +521,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (AnyPromise *)recipientPicker:(RecipientPickerViewController *)recipientPickerViewController
        prepareToSelectRecipient:(PickedRecipient *)recipient
 {
+    OWSFailDebug(@"This method should not called.");
     return [AnyPromise promiseWithValue:@(1)];
 }
 

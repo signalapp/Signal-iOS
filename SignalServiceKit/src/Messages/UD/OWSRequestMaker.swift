@@ -145,6 +145,11 @@ public class RequestMaker: NSObject {
                                     resolver.reject(RequestMakerError.websocketRequestError(statusCode: statusCode, responseData: responseData, underlyingError: error))
                     })
                 }.recover { (error: Error) -> Promise<RequestMakerResult> in
+                    if error.httpStatusCode == 413 {
+                        // We've hit rate limit; don't retry.
+                        throw error
+                    }
+
                     switch error {
                     case RequestMakerError.websocketRequestError(let statusCode, _, _):
                         if isUDRequest && (statusCode == 401 || statusCode == 403) {
@@ -193,6 +198,11 @@ public class RequestMaker: NSObject {
                                               wasSentByUD: isUDRequest,
                                               wasSentByWebsocket: false)
                 }.recover { (error: Error) -> Promise<RequestMakerResult> in
+                    if error.httpStatusCode == 413 {
+                        // We've hit rate limit; don't retry.
+                        throw error
+                    }
+
                     if isUDRequest,
                         let statusCode = error.httpStatusCode,
                         statusCode == 401 || statusCode == 403 {

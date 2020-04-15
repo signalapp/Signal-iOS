@@ -4,7 +4,6 @@
 
 import Foundation
 import PromiseKit
-import SignalServiceKit
 import SignalMetadataKit
 
 @objc
@@ -13,6 +12,26 @@ public enum ProfileFetchError: Int, Error {
     case throttled
     case notMainApp
     case cantRequestVersionedProfile
+    case rateLimit
+}
+
+// MARK: -
+
+extension ProfileFetchError: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .missing:
+            return "ProfileFetchError.missing"
+        case .throttled:
+            return "ProfileFetchError.throttled"
+        case .notMainApp:
+            return "ProfileFetchError.notMainApp"
+        case .cantRequestVersionedProfile:
+            return "ProfileFetchError.cantRequestVersionedProfile"
+        case .rateLimit:
+            return "ProfileFetchError.rateLimit"
+        }
+    }
 }
 
 // MARK: -
@@ -155,19 +174,6 @@ public class ProfileFetcherJob: NSObject {
         .retainUntilComplete()
     }
 
-    @objc(fetchAndUpdateProfilesWithThread:)
-    public class func fetchAndUpdateProfiles(thread: TSThread) {
-        let addresses = thread.recipientAddresses
-        let subjects = addresses.map { ProfileRequestSubject.address(address: $0) }
-        let options = ProfileFetchOptions()
-        var promises = [Promise<SignalServiceProfile>]()
-        for subject in subjects {
-            let job = ProfileFetcherJob(subject: subject, options: options)
-            promises.append(job.runAsPromise())
-        }
-        when(fulfilled: promises).retainUntilComplete()
-    }
-
     private init(subject: ProfileRequestSubject,
                  options: ProfileFetchOptions) {
         self.subject = subject
@@ -188,8 +194,8 @@ public class ProfileFetcherJob: NSObject {
         return SSKEnvironment.shared.udManager
     }
 
-    private var profileManager: OWSProfileManager {
-        return OWSProfileManager.shared()
+    private var profileManager: ProfileManagerProtocol {
+        return SSKEnvironment.shared.profileManager
     }
 
     private var identityManager: OWSIdentityManager {
@@ -213,6 +219,10 @@ public class ProfileFetcherJob: NSObject {
         return SDSDatabaseStorage.shared
     }
 
+    private var versionedProfiles: VersionedProfiles {
+        return SSKEnvironment.shared.versionedProfiles
+    }
+
     // MARK: -
 
     private func runAsPromise() -> Promise<SignalServiceProfile> {
@@ -220,9 +230,12 @@ public class ProfileFetcherJob: NSObject {
             self.addBackgroundTask()
         }.then(on: DispatchQueue.global()) { _ in
             return self.requestProfile()
-        }.map(on: DispatchQueue.global()) { fetchedProfile in
-            self.updateProfile(fetchedProfile: fetchedProfile)
-            return fetchedProfile.profile
+        }.then(on: DispatchQueue.global()) { fetchedProfile in
+            return firstly {
+                self.updateProfile(fetchedProfile: fetchedProfile)
+            }.map(on: DispatchQueue.global()) { _ in
+                return fetchedProfile.profile
+            }
         }
     }
 
@@ -255,7 +268,7 @@ public class ProfileFetcherJob: NSObject {
         return requestProfileWithRetries()
     }
 
-    private func requestProfileWithRetries(remainingRetries: Int = 3) -> Promise<FetchedProfile> {
+    private func requestProfileWithRetries(retryCount: Int = 0) -> Promise<FetchedProfile> {
         let subject = self.subject
 
         let (promise, resolver) = Promise<FetchedProfile>.pending()
@@ -265,8 +278,10 @@ public class ProfileFetcherJob: NSObject {
             resolver.fulfill(fetchedProfile)
         }.catch(on: DispatchQueue.global()) { error in
             if error.httpStatusCode == 404 {
-                resolver.reject(ProfileFetchError.missing)
-                return
+                return resolver.reject(ProfileFetchError.missing)
+            }
+            if error.httpStatusCode == 413 {
+                return resolver.reject(ProfileFetchError.rateLimit)
             }
 
             switch error {
@@ -281,14 +296,15 @@ public class ProfileFetcherJob: NSObject {
                 resolver.reject(error)
                 return
             default:
-                guard remainingRetries > 0 else {
+                let maxRetries = 3
+                guard retryCount < maxRetries else {
                     Logger.warn("failed to get profile with error: \(error)")
                     resolver.reject(error)
                     return
                 }
 
                 firstly {
-                    self.requestProfileWithRetries(remainingRetries: remainingRetries - 1)
+                    self.requestProfileWithRetries(retryCount: retryCount + 1)
                 }.done(on: DispatchQueue.global()) { fetchedProfile in
                     resolver.fulfill(fetchedProfile)
                 }.catch(on: DispatchQueue.global()) { error in
@@ -362,7 +378,7 @@ public class ProfileFetcherJob: NSObject {
 
                                             if shouldUseVersionedFetch {
                                                 do {
-                                                    let request = try VersionedProfiles.versionedProfileRequest(address: address, udAccessKey: udAccessKeyForRequest)
+                                                    let request = try self.versionedProfiles.versionedProfileRequest(address: address, udAccessKey: udAccessKeyForRequest)
                                                     currentVersionedProfileRequest = request
                                                     return request.request
                                                 } catch {
@@ -395,7 +411,7 @@ public class ProfileFetcherJob: NSObject {
         let address = profile.address
 
         if let profileRequest = fetchedProfile.versionedProfileRequest {
-            VersionedProfiles.didFetchProfile(profile: profile, profileRequest: profileRequest)
+            self.versionedProfiles.didFetchProfile(profile: profile, profileRequest: profileRequest)
         }
 
         profileManager.updateProfile(for: address,
