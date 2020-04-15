@@ -748,13 +748,10 @@ extension ConversationSettingsViewController {
                                                                 itemName: cellName,
                                                                 accessoryText: accessoryText)
             cell.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "pending.members")
-            cell.accessoryType = hasPendingMembers ? .disclosureIndicator : .none
+            cell.accessoryType = .disclosureIndicator
             return cell
             },
                                  customRowHeight: UITableView.automaticDimension) { [weak self] in
-                                    guard hasPendingMembers else {
-                                        return
-                                    }
                                     self?.showPendingMembersView()
         })
 
