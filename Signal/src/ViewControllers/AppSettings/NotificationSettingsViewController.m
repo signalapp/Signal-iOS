@@ -137,6 +137,7 @@
 - (void)didToggleAPNsSwitch:(UISwitch *)sender
 {
     [NSUserDefaults.standardUserDefaults setBool:sender.on forKey:@"isUsingFullAPNs"];
+    __unused AnyPromise *promise = [OWSSyncPushTokensJob runWithAccountManager:AppEnvironment.shared.accountManager preferences:Environment.shared.preferences];
 }
 
 @end
