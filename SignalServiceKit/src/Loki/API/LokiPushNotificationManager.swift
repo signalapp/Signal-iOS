@@ -1,6 +1,6 @@
 
 @objc(LKPushNotificationManager)
-final class LokiPushNotificationManager : NSObject {
+public final class LokiPushNotificationManager : NSObject {
 
     // MARK: Settings
     #if DEBUG
