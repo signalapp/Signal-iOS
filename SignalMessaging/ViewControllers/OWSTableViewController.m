@@ -112,6 +112,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     cell.textLabel.font = OWSTableItem.primaryLabelFont;
     cell.textLabel.textColor = Theme.primaryTextColor;
     cell.detailTextLabel.textColor = Theme.secondaryTextAndIconColor;
+    cell.detailTextLabel.font = OWSTableItem.accessoryLabelFont;
 
     UIView *selectedBackgroundView = [UIView new];
     selectedBackgroundView.backgroundColor = Theme.cellSelectedColor;

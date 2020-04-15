@@ -10,7 +10,7 @@ extension ConversationSettingsViewController {
     // MARK: - Helpers
 
     private var iconSpacingSmall: CGFloat {
-        return 8
+        return kContactCellAvatarTextMargin
     }
 
     private var iconSpacingLarge: CGFloat {

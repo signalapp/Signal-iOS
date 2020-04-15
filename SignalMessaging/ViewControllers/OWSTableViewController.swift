@@ -20,6 +20,10 @@ public extension OWSTableItem {
     }
 
     static func buildCell(name: String, iconView: UIView) -> UITableViewCell {
+        return buildCell(name: name, iconView: iconView, iconSpacing: self.iconSpacing)
+    }
+
+    static func buildCell(name: String, iconView: UIView, iconSpacing: CGFloat) -> UITableViewCell {
         assert(name.count > 0)
 
         let cell = OWSTableItem.newCell()
@@ -33,7 +37,7 @@ public extension OWSTableItem {
         rowLabel.lineBreakMode = .byTruncatingTail
 
         let contentRow = UIStackView(arrangedSubviews: [ iconView, rowLabel ])
-        contentRow.spacing = self.iconSpacing
+        contentRow.spacing = iconSpacing
 
         cell.contentView.addSubview(contentRow)
         contentRow.autoPinEdgesToSuperviewMargins()

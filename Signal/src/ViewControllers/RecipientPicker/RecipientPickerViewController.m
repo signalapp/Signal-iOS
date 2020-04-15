@@ -262,7 +262,7 @@ const NSUInteger kMinimumSearchLength = 2;
               button.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, accessibilityIdentifierName);
               [buttonStack addArrangedSubview:button];
 
-              UIView *iconView = [OWSTableItem buildIconInCircleViewWithIcon:icon innerIconSize:32];
+              UIView *iconView = [OWSTableItem buildIconInCircleViewWithIcon:icon innerIconSize:24];
 
               UILabel *label = [UILabel new];
               label.text = title;
@@ -414,8 +414,10 @@ const NSUInteger kMinimumSearchLength = 2;
                             NSString *cellName = NSLocalizedString(@"NEW_GROUP_BUTTON", comment
                                                                    : @"Label for the 'create new group' button.");
                             UIView *iconView = [OWSTableItem buildIconInCircleViewWithIcon:ThemeIconComposeNewGroup
-                                                                             innerIconSize:32];
-                            UITableViewCell *cell = [OWSTableItem buildCellWithName:cellName iconView:iconView];
+                                                                             innerIconSize:24];
+                            UITableViewCell *cell = [OWSTableItem buildCellWithName:cellName
+                                                                           iconView:iconView
+                                                                        iconSpacing:kContactCellAvatarTextMargin];
 
                             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                             cell.accessibilityIdentifier
@@ -438,8 +440,10 @@ const NSUInteger kMinimumSearchLength = 2;
                                 @"A label the cell that lets you add a new member to a group.");
                             UIView *iconView =
                                 [OWSTableItem buildIconInCircleViewWithIcon:ThemeIconComposeFindByPhoneNumber
-                                                              innerIconSize:32];
-                            UITableViewCell *cell = [OWSTableItem buildCellWithName:cellName iconView:iconView];
+                                                              innerIconSize:24];
+                            UITableViewCell *cell = [OWSTableItem buildCellWithName:cellName
+                                                                           iconView:iconView
+                                                                        iconSpacing:kContactCellAvatarTextMargin];
                             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                             cell.accessibilityIdentifier
                                 = ACCESSIBILITY_IDENTIFIER_WITH_NAME(RecipientPickerViewController, @"find_by_phone");
@@ -464,8 +468,10 @@ const NSUInteger kMinimumSearchLength = 2;
                             NSString *cellName = NSLocalizedString(@"INVITE_FRIENDS_CONTACT_TABLE_BUTTON",
                                 @"Label for the cell that presents the 'invite contacts' workflow.");
                             UIView *iconView = [OWSTableItem buildIconInCircleViewWithIcon:ThemeIconComposeInvite
-                                                                             innerIconSize:32];
-                            UITableViewCell *cell = [OWSTableItem buildCellWithName:cellName iconView:iconView];
+                                                                             innerIconSize:24];
+                            UITableViewCell *cell = [OWSTableItem buildCellWithName:cellName
+                                                                           iconView:iconView
+                                                                        iconSpacing:kContactCellAvatarTextMargin];
                             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                             cell.accessibilityIdentifier
                                 = ACCESSIBILITY_IDENTIFIER_WITH_NAME(RecipientPickerViewController, @"invite_contacts");
