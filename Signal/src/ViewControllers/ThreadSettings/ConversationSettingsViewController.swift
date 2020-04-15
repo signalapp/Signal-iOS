@@ -166,13 +166,16 @@ class ConversationSettingsViewController: OWSTableViewController {
             self.colorPicker = colorPicker
         }
 
+        updateNavigationBar()
         updateTableContents()
 
         observeNotifications()
     }
 
     func updateNavigationBar() {
-        if canEditConversationAttributes {
+        navigationItem.leftBarButtonItem = createOWSBackButton()
+
+        if isGroupThread, canEditConversationAttributes {
             navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("CONVERSATION_SETTINGS_EDIT_GROUP",
                                                                                          comment: "Label for the 'edit group' button in conversation settings view."),
                                                                 style: .plain, target: self, action: #selector(editGroupButtonWasPressed))
