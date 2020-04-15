@@ -153,6 +153,18 @@ class ConversationSettingsViewController: OWSTableViewController {
 
         tableView.estimatedRowHeight = 45
         tableView.rowHeight = UITableView.automaticDimension
+        tableView.backgroundColor = Theme.secondaryBackgroundColor
+
+        // The header should "extend" offscreen so that we
+        // don't see the root view's background color if we scroll down.
+        let backgroundTopView = UIView()
+        backgroundTopView.backgroundColor = Theme.backgroundColor
+        tableView.addSubview(backgroundTopView)
+        backgroundTopView.autoPinEdge(.leading, to: .leading, of: view, withOffset: 0)
+        backgroundTopView.autoPinEdge(.trailing, to: .trailing, of: view, withOffset: 0)
+        let backgroundTopSize: CGFloat = 300
+        backgroundTopView.autoSetDimension(.height, toSize: backgroundTopSize)
+        backgroundTopView.autoPinEdge(.bottom, to: .top, of: tableView, withOffset: 0)
 
         disappearingMessagesDurationLabel.setAccessibilityIdentifier(in: self, name: "disappearingMessagesDurationLabel")
 
