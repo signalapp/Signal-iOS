@@ -76,6 +76,14 @@ public class GroupManager: NSObject {
         return SSKEnvironment.shared.bulkProfileFetch
     }
 
+    private class var bulkUUIDLookup: BulkUUIDLookup {
+        return SSKEnvironment.shared.bulkUUIDLookup
+    }
+
+    private class var contactsUpdater: ContactsUpdater {
+        return SSKEnvironment.shared.contactsUpdater
+    }
+
     // MARK: -
 
     // Never instantiate this class.
@@ -1224,9 +1232,45 @@ public class GroupManager: NSObject {
             }
             return Promise.value(())
         }.then(on: .global()) { _ -> Promise<Void> in
-            // Try to ensure UUIDs.
-            return self.groupsV2.tryToEnsureUuidsForGroupMembers(for: addresses)
+            return self.tryToFillInMissingUuuids(for: addresses, isBlocking: isBlocking)
         }.then(on: .global()) { _ -> Promise<Void> in
+            return self.tryToEnableGroupsV2Capability(for: addresses, isBlocking: isBlocking)
+        }
+    }
+
+    public static func tryToFillInMissingUuuids(for addresses: [SignalServiceAddress],
+                                                isBlocking: Bool) -> Promise<Void> {
+        guard FeatureFlags.useOnlyModernContactDiscovery ||
+            FeatureFlags.compareLegacyContactDiscoveryAgainstModern else {
+                // Can't fill in UUIDs using legacy contact intersections.
+                return Promise.value(())
+        }
+
+        let phoneNumbersWithoutUuids = addresses.filter { $0.uuid == nil }.compactMap { $0.phoneNumber }
+        guard phoneNumbersWithoutUuids.count > 0 else {
+            return Promise.value(())
+        }
+
+        if isBlocking {
+            // Block on the outcome.
+            return contactsUpdater.lookupIdentifiersPromise(phoneNumbers:
+                phoneNumbersWithoutUuids).asVoid()
+        } else {
+            // This will throttle, de-bounce, etc.
+            self.bulkUUIDLookup.lookupUuids(phoneNumbers: phoneNumbersWithoutUuids)
+            return Promise.value(())
+        }
+    }
+
+    private static func tryToEnableGroupsV2Capability(for addresses: [SignalServiceAddress],
+                                                      isBlocking: Bool) -> Promise<Void> {
+        return firstly { () -> Promise<[SignalServiceAddress]> in
+            let validAddresses = addresses.filter { $0.isValid }
+            if validAddresses.count < addresses.count {
+                owsFailDebug("Invalid addresses.")
+            }
+            return Promise.value(validAddresses)
+        }.then(on: .global()) { (addresses: [SignalServiceAddress]) -> Promise<Void> in
             // Try to ensure groups v2 capability.
             var addressesWithoutCapability = [SignalServiceAddress]()
             self.databaseStorage.read { transaction in

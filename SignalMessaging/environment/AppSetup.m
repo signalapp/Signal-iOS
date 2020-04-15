@@ -114,6 +114,7 @@ NS_ASSUME_NONNULL_BEGIN
         MessageProcessing *messageProcessing = [MessageProcessing new];
         MessageFetcherJob *messageFetcherJob = [MessageFetcherJob new];
         BulkProfileFetch *bulkProfileFetch = [BulkProfileFetch new];
+        BulkUUIDLookup *bulkUUIDLookup = [BulkUUIDLookup new];
         id<VersionedProfiles> versionedProfiles = [VersionedProfilesImpl new];
 
         [Environment setShared:[[Environment alloc] initWithAudioSession:audioSession
@@ -171,6 +172,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                 messageProcessing:messageProcessing
                                                                 messageFetcherJob:messageFetcherJob
                                                                  bulkProfileFetch:bulkProfileFetch
+                                                                   bulkUUIDLookup:bulkUUIDLookup
                                                                 versionedProfiles:versionedProfiles]];
 
         appSpecificSingletonBlock();

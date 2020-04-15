@@ -127,6 +127,16 @@ public class BaseGroupMemberViewController: OWSViewController {
         autoPinView(toBottomOfViewControllerOrKeyboard: recipientPicker.view, avoidNotch: false)
 
         updateMemberCount()
+        tryToFillInMissingUuuids()
+    }
+
+    private func tryToFillInMissingUuuids() {
+        let addresses = recipientPicker.contactsViewHelper.signalAccounts.map { $0.recipientAddress }
+        firstly {
+            GroupManager.tryToFillInMissingUuuids(for: addresses, isBlocking: false)
+        }.catch { error in
+            owsFailDebug("Error: \(error)")
+        }.retainUntilComplete()
     }
 
     @objc
