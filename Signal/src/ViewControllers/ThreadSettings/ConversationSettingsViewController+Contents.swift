@@ -709,11 +709,34 @@ extension ConversationSettingsViewController {
         }
 
         if hasMoreMembers {
-            section.add(OWSTableItem(customCellBlock: {
-                return OWSTableItem.buildCell(name: NSLocalizedString("CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS",
-                                                                      comment: "Label for 'view all members' button in conversation settings view."),
-                                              icon: .settingsShowAllMembers)
-            },
+            section.add(OWSTableItem(customCellBlock: { [weak self] in
+                guard let self = self else {
+                    owsFailDebug("Missing self")
+                    return OWSTableItem.newCell()
+                }
+                let cell = OWSTableItem.newCell()
+                cell.preservesSuperviewLayoutMargins = true
+                cell.contentView.preservesSuperviewLayoutMargins = true
+
+                let iconView = OWSTableItem.buildIconInCircleView(icon: .settingsShowAllMembers,
+                                                                  innerIconSize: 24,
+                                                                  iconTintColor: Theme.secondaryTextAndIconColor)
+
+                let rowLabel = UILabel()
+                rowLabel.text = NSLocalizedString("CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS",
+                                                  comment: "Label for 'view all members' button in conversation settings view.")
+                rowLabel.textColor = Theme.primaryTextColor
+                rowLabel.font = .ows_dynamicTypeBody
+                rowLabel.lineBreakMode = .byTruncatingTail
+
+                let contentRow = UIStackView(arrangedSubviews: [ iconView, rowLabel ])
+                contentRow.spacing = self.iconSpacing
+
+                cell.contentView.addSubview(contentRow)
+                contentRow.autoPinEdgesToSuperviewMargins()
+
+                return cell
+                },
                                      customRowHeight: UITableView.automaticDimension) { [weak self] in
                                         self?.showAllGroupMembers()
             })
