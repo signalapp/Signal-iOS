@@ -589,12 +589,10 @@ NS_ASSUME_NONNULL_BEGIN
             [TSGroupThread threadWithGroupId:dataMessage.group.id transaction:transaction];
 
         if (groupThread) {
-            BOOL isClosedGroup = groupThread.groupModel.groupType == closedGroup;
+            BOOL isClosedGroup = (groupThread.groupModel.groupType == closedGroup);
             if (isClosedGroup && dataMessage.group.type == SSKProtoGroupContextTypeDeliver) {
-                // Only allow messages from members of the group
-                if (![groupThread isUserInGroup:envelope.source transaction:transaction]) {
-                    return;
-                }
+                // Only allow messages from group members
+                if (![groupThread isUserInGroup:envelope.source transaction:transaction]) { return; }
             }
 
             if (dataMessage.group.type != SSKProtoGroupContextTypeUpdate) {
@@ -1499,10 +1497,10 @@ NS_ASSUME_NONNULL_BEGIN
                 NSString *updateGroupInfo = [newGroupThread.groupModel getInfoStringAboutUpdateTo:newGroupModel
                                                                                   contactsManager:self.contactsManager];
 
-                [newGroupThread updateGroupModel:newGroupModel withTransaction:transaction];
+                [newGroupThread setGroupModel:newGroupModel withTransaction:transaction];
 
-                BOOL removedFromGroup = [removedMemberIds containsObject:ourHexEncodedPublicKey];
-                if (!removedFromGroup) {
+                BOOL wasCurrentUserRemovedFromGroup = [removedMemberIds containsObject:ourHexEncodedPublicKey];
+                if (!wasCurrentUserRemovedFromGroup) {
                     // Loki: Try to establish sessions with all members when a group is created or updated
                     [self establishSessionsWithMembersIfNeeded: newMemberIds.allObjects forThread:newGroupThread transaction:transaction];
                 }
@@ -1521,7 +1519,7 @@ NS_ASSUME_NONNULL_BEGIN
                 [infoMessage saveWithTransaction:transaction];
 
                 // If we were the one that was removed then we need to leave the group
-                if (removedFromGroup) {
+                if (wasCurrentUserRemovedFromGroup) {
                     [newGroupThread leaveGroupWithTransaction:transaction];
                 }
 
@@ -1529,7 +1527,7 @@ NS_ASSUME_NONNULL_BEGIN
             }
             case SSKProtoGroupContextTypeQuit: {
                 if (!oldGroupThread) {
-                    OWSLogWarn(@"ignoring quit group message from unknown group.");
+                    OWSLogWarn(@"Ignoring quit group message from unknown group.");
                     return nil;
                 }
                 newMemberIds = [NSMutableSet setWithArray:oldGroupThread.groupModel.groupMemberIds];
@@ -1547,7 +1545,8 @@ NS_ASSUME_NONNULL_BEGIN
                                               messageType:TSInfoMessageTypeGroupUpdate
                                             customMessage:updateGroupInfo] saveWithTransaction:transaction];
 
-                // If we were the one that quit then we need to leave the group
+                // If we were the one that quit then we need to leave the group (only relevant for slave
+                // devices in a multi device context)
                 if ([newMemberIds containsObject:ourHexEncodedPublicKey]) {
                     [oldGroupThread leaveGroupWithTransaction:transaction];
                 }
