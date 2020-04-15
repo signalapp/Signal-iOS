@@ -9,8 +9,12 @@ extension ConversationSettingsViewController {
 
     // MARK: - Helpers
 
-    private var iconSpacing: CGFloat {
-        return 12
+    private var iconSpacingSmall: CGFloat {
+        return 8
+    }
+
+    private var iconSpacingLarge: CGFloat {
+        return OWSTableItem.iconSpacing
     }
 
     private var isContactThread: Bool {
@@ -292,7 +296,7 @@ extension ConversationSettingsViewController {
             switchView.isEnabled = canEditConversationAttributes
 
             let topRow = UIStackView(arrangedSubviews: [ iconView, rowLabel, switchView ])
-            topRow.spacing = self.iconSpacing
+            topRow.spacing = self.iconSpacingLarge
             topRow.alignment = .center
             cell.contentView.addSubview(topRow)
             topRow.autoPinEdgesToSuperviewMargins()
@@ -326,7 +330,7 @@ extension ConversationSettingsViewController {
                 rowLabel.lineBreakMode = .byTruncatingHead
 
                 let topRow = UIStackView(arrangedSubviews: [ iconView, rowLabel ])
-                topRow.spacing = self.iconSpacing
+                topRow.spacing = self.iconSpacingLarge
                 topRow.alignment = .center
                 cell.contentView.addSubview(topRow)
                 topRow.autoPinEdges(toSuperviewMarginsExcludingEdge: .bottom)
@@ -593,7 +597,7 @@ extension ConversationSettingsViewController {
             rowLabel.lineBreakMode = .byTruncatingTail
 
             let contentRow = UIStackView(arrangedSubviews: [ iconView, rowLabel ])
-            contentRow.spacing = self.iconSpacing
+            contentRow.spacing = self.iconSpacingSmall
 
             cell.contentView.addSubview(contentRow)
             contentRow.autoPinEdgesToSuperviewMargins()
@@ -725,7 +729,7 @@ extension ConversationSettingsViewController {
                 rowLabel.lineBreakMode = .byTruncatingTail
 
                 let contentRow = UIStackView(arrangedSubviews: [ iconView, rowLabel ])
-                contentRow.spacing = self.iconSpacing
+                contentRow.spacing = self.iconSpacingSmall
 
                 cell.contentView.addSubview(contentRow)
                 contentRow.autoPinEdgesToSuperviewMargins()

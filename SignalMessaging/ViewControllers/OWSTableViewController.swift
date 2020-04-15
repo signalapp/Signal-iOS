@@ -15,7 +15,7 @@ public extension OWSTableItem {
         return UIFont.ows_regularFont(withSize: 15)
     }
 
-    private static var iconSpacing: CGFloat {
+    static var iconSpacing: CGFloat {
         return 12
     }
 
