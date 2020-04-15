@@ -11,8 +11,8 @@ final class PNModeVC : BaseVC, OptionViewDelegate {
     }
 
     // MARK: Components
-    private lazy var apnsOptionView = OptionView(title: "Apple Push Notification Service", explanation: "The app will use the Apple Push Notification Service. You'll be notified of new messages immediately. This mode entails a slight privacy sacrifice as Apple will know your IP. The contents of your messages will still be fully encrypted, your data will still be stored in a decentralized manner and your messages will still be onion routed.", delegate: self, isRecommended: true)
-    private lazy var backgroundPollingOptionView = OptionView(title: "Background Polling", explanation: "The app will occassionally check for new messages when it's in the background. This provides full privacy but notifications may be significantly delayed.", delegate: self)
+    private lazy var apnsOptionView = OptionView(title: NSLocalizedString("Apple Push Notification Service", comment: ""), explanation: NSLocalizedString("Session will use the Apple Push Notification Service to receive push notifications. You’ll be notified of new messages reliably and immediately. Using APNs means that this device will communicate directly with Apple’s servers to retrieve push notifications, which will expose your IP address to Apple. Your messages will still be onion-routed and end-to-end encrypted, so the contents of your messages will remain completely private.", comment: ""), delegate: self, isRecommended: true)
+    private lazy var backgroundPollingOptionView = OptionView(title: NSLocalizedString("Background Polling", comment: ""), explanation: NSLocalizedString("Session will occasionally check for new messages in the background. This guarantees full privacy protection, but message notifications may be significantly delayed.", comment: ""), delegate: self)
 
     // MARK: Lifecycle
     override func viewDidLoad() {
@@ -38,14 +38,14 @@ final class PNModeVC : BaseVC, OptionViewDelegate {
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: isSmallScreen ? Values.largeFontSize : Values.veryLargeFontSize)
-        titleLabel.text = "Push Notifications"
+        titleLabel.text = NSLocalizedString("Push Notifications", comment: "")
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
         // Set up explanation label
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat."
+        explanationLabel.text = NSLocalizedString("There are two ways Session can handle push notifications. Make sure to read the descriptions carefully before you choose.", comment: "")
         explanationLabel.numberOfLines = 0
         explanationLabel.lineBreakMode = .byWordWrapping
         // Set up spacers
@@ -169,7 +169,7 @@ private extension PNModeVC {
                 let recommendedLabel = UILabel()
                 recommendedLabel.textColor = Colors.accent
                 recommendedLabel.font = .boldSystemFont(ofSize: Values.verySmallFontSize)
-                recommendedLabel.text = "*Recommended"
+                recommendedLabel.text = NSLocalizedString("Recommended", comment: "")
                 stackView.addArrangedSubview(recommendedLabel)
             }
             // Set up tap gesture recognizer

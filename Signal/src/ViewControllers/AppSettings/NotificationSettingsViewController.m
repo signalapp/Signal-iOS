@@ -65,7 +65,7 @@
     OWSTableSection *strategySection = [OWSTableSection new];
     strategySection.headerTitle = NSLocalizedString(@"Notification Strategy", @"");
     [strategySection addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"Use APNs", @"")
-                               accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"notification_strategy")
+                               accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"push_notification_strategy")
                                isOnBlock:^{
                                    return [NSUserDefaults.standardUserDefaults boolForKey:@"isUsingFullAPNs"];
                                }
@@ -74,7 +74,7 @@
                                }
                                target:weakSelf
                                selector:@selector(didToggleAPNsSwitch:)]];
-    strategySection.footerTitle = NSLocalizedString(@"The app will use the Apple Push Notification Service. You'll be notified of new messages immediately. This mode entails a slight privacy sacrifice as Apple will know your IP. The contents of your messages will still be fully encrypted, your data will still be stored in a decentralized manner and your messages will still be onion routed.", @"");
+    strategySection.footerTitle = NSLocalizedString(@"Session will use the Apple Push Notification Service to receive push notifications. You’ll be notified of new messages reliably and immediately. Using APNs means that this device will communicate directly with Apple’s servers to retrieve push notifications, which will expose your IP address to Apple. Your messages will still be onion-routed and end-to-end encrypted, so the contents of your messages will remain completely private.", @"");
     [contents addSection:strategySection];
 
     // Sounds section.
