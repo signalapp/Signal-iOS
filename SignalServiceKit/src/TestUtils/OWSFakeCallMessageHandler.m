@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
            fromCaller:(SignalServiceAddress *)caller
          sourceDevice:(uint32_t)device
       sentAtTimestamp:(uint64_t)sentAtTimestamp
-     fromLegacyDevice:(BOOL)fromLegacyDevice
+    supportsMultiRing:(BOOL)supportsMultiRing
 {
     OWSLogInfo(@"");
 }
@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)receivedAnswer:(SSKProtoCallMessageAnswer *)answer
             fromCaller:(SignalServiceAddress *)caller
           sourceDevice:(uint32_t)device
-      fromLegacyDevice:(BOOL)fromLegacyDevice
+     supportsMultiRing:(BOOL)supportsMultiRing
 {
     OWSLogInfo(@"");
 }

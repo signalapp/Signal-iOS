@@ -17,12 +17,12 @@ NS_ASSUME_NONNULL_BEGIN
            fromCaller:(SignalServiceAddress *)caller
          sourceDevice:(uint32_t)device
       sentAtTimestamp:(uint64_t)sentAtTimestamp
-     fromLegacyDevice:(BOOL)fromLegacyDevice NS_SWIFT_NAME(receivedOffer(_:from:sourceDevice:sentAtTimestamp:fromLegacyDevice:));
+    supportsMultiRing:(BOOL)supportsMultiRing NS_SWIFT_NAME(receivedOffer(_:from:sourceDevice:sentAtTimestamp:supportsMultiRing:));
 
 - (void)receivedAnswer:(SSKProtoCallMessageAnswer *)answer
             fromCaller:(SignalServiceAddress *)caller
           sourceDevice:(uint32_t)device
-      fromLegacyDevice:(BOOL)fromLegacyDevice NS_SWIFT_NAME(receivedAnswer(_:from:sourceDevice:fromLegacyDevice:));
+     supportsMultiRing:(BOOL)supportsMultiRing NS_SWIFT_NAME(receivedAnswer(_:from:sourceDevice:supportsMultiRing:));
 
 - (void)receivedIceUpdate:(NSArray<SSKProtoCallMessageIceUpdate *> *)iceUpdate
                fromCaller:(SignalServiceAddress *)caller

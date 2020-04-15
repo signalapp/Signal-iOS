@@ -973,6 +973,14 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
+    // If destinationDevice is defined, ignore messages not addressed to this device.
+    if ([callMessage hasDestinationDeviceID]) {
+        if ([callMessage destinationDeviceID] != self.tsAccountManager.storedDeviceId) {
+            OWSLogInfo(@"Ignoring call message that is not for this device! intended: %u this: %u", [callMessage destinationDeviceID], self.tsAccountManager.storedDeviceId);
+            return;
+        }
+    }
+
     if ([callMessage hasProfileKey]) {
         NSData *profileKey = [callMessage profileKey];
         SignalServiceAddress *address = envelope.sourceAddress;
@@ -982,14 +990,9 @@ NS_ASSUME_NONNULL_BEGIN
                                    transaction:transaction];
     }
 
-    BOOL fromLegacyDevice = false;
-    if ([callMessage hasFeatureLevel]) {
-        if (callMessage.unwrappedFeatureLevel == SSKProtoCallMessageFeatureLevelUnspecified) {
-            fromLegacyDevice = true;
-        }
-    } else {
-        // The featureLevel is not defined so assume the default, unspecified (hence legacy).
-        fromLegacyDevice = true;
+    BOOL supportsMultiRing = false;
+    if ([callMessage hasMultiRing]) {
+        supportsMultiRing = callMessage.multiRing;
     }
 
     // By dispatching async, we introduce the possibility that these messages might be lost
@@ -1001,12 +1004,12 @@ NS_ASSUME_NONNULL_BEGIN
                                         fromCaller:envelope.sourceAddress
                                       sourceDevice:envelope.sourceDevice
                                    sentAtTimestamp:envelope.timestamp
-                                  fromLegacyDevice:fromLegacyDevice];
+                                 supportsMultiRing:supportsMultiRing];
         } else if (callMessage.answer) {
             [self.callMessageHandler receivedAnswer:callMessage.answer
                                          fromCaller:envelope.sourceAddress
                                        sourceDevice:envelope.sourceDevice
-                                   fromLegacyDevice:fromLegacyDevice];
+                                  supportsMultiRing:supportsMultiRing];
         } else if (callMessage.iceUpdate.count > 0) {
             [self.callMessageHandler receivedIceUpdate:callMessage.iceUpdate
                                             fromCaller:envelope.sourceAddress

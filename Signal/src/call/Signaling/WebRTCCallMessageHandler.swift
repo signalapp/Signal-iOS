@@ -34,7 +34,7 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
 
     // MARK: - Call Handlers
 
-    public func receivedOffer(_ offer: SSKProtoCallMessageOffer, from caller: SignalServiceAddress, sourceDevice: UInt32, sentAtTimestamp: UInt64, fromLegacyDevice: Bool) {
+    public func receivedOffer(_ offer: SSKProtoCallMessageOffer, from caller: SignalServiceAddress, sourceDevice: UInt32, sentAtTimestamp: UInt64, supportsMultiRing: Bool) {
         AssertIsOnMainThread()
 
         let callType: SSKProtoCallMessageOfferType
@@ -42,18 +42,18 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
             callType = offer.unwrappedType
         } else {
             // The type is not defined so assume the default, audio.
-            callType = .audioCall
+            callType = .offerAudioCall
         }
 
         let thread = TSContactThread.getOrCreateThread(contactAddress: caller)
-        self.callService.handleReceivedOffer(thread: thread, callId: offer.id, sourceDevice: sourceDevice, sessionDescription: offer.sessionDescription, sentAtTimestamp: sentAtTimestamp, callType: callType, fromLegacyDevice: fromLegacyDevice)
+        self.callService.handleReceivedOffer(thread: thread, callId: offer.id, sourceDevice: sourceDevice, sessionDescription: offer.sessionDescription, sentAtTimestamp: sentAtTimestamp, callType: callType, supportsMultiRing: supportsMultiRing)
     }
 
-    public func receivedAnswer(_ answer: SSKProtoCallMessageAnswer, from caller: SignalServiceAddress, sourceDevice: UInt32, fromLegacyDevice: Bool) {
+    public func receivedAnswer(_ answer: SSKProtoCallMessageAnswer, from caller: SignalServiceAddress, sourceDevice: UInt32, supportsMultiRing: Bool) {
         AssertIsOnMainThread()
 
         let thread = TSContactThread.getOrCreateThread(contactAddress: caller)
-        self.callService.handleReceivedAnswer(thread: thread, callId: answer.id, sourceDevice: sourceDevice, sessionDescription: answer.sessionDescription, fromLegacyDevice: fromLegacyDevice)
+        self.callService.handleReceivedAnswer(thread: thread, callId: answer.id, sourceDevice: sourceDevice, sessionDescription: answer.sessionDescription, supportsMultiRing: supportsMultiRing)
     }
 
     public func receivedIceUpdate(_ iceUpdate: [SSKProtoCallMessageIceUpdate], from caller: SignalServiceAddress, sourceDevice: UInt32) {
@@ -78,7 +78,7 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
             }
         } else {
             // The type is not defined so assume the default, normal.
-            type = .normal
+            type = .hangupNormal
         }
 
         let thread = TSContactThread.getOrCreateThread(contactAddress: caller)

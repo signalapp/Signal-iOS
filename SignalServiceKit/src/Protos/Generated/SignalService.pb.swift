@@ -357,8 +357,6 @@ struct SignalServiceProtos_CallMessage {
 
   var iceUpdate: [SignalServiceProtos_CallMessage.IceUpdate] = []
 
-  /// This legacy hangup attribute will be retired
-  /// once all clients support multi-ring
   var legacyHangup: SignalServiceProtos_CallMessage.Hangup {
     get {return _legacyHangup ?? SignalServiceProtos_CallMessage.Hangup()}
     set {_legacyHangup = newValue}
@@ -397,42 +395,25 @@ struct SignalServiceProtos_CallMessage {
   /// Clears the value of `hangup`. Subsequent reads from it will return its default value.
   mutating func clearHangup() {self._hangup = nil}
 
-  var featureLevel: SignalServiceProtos_CallMessage.FeatureLevel {
-    get {return _featureLevel ?? .unspecified}
-    set {_featureLevel = newValue}
+  var multiRing: Bool {
+    get {return _multiRing ?? false}
+    set {_multiRing = newValue}
   }
-  /// Returns true if `featureLevel` has been explicitly set.
-  var hasFeatureLevel: Bool {return self._featureLevel != nil}
-  /// Clears the value of `featureLevel`. Subsequent reads from it will return its default value.
-  mutating func clearFeatureLevel() {self._featureLevel = nil}
+  /// Returns true if `multiRing` has been explicitly set.
+  var hasMultiRing: Bool {return self._multiRing != nil}
+  /// Clears the value of `multiRing`. Subsequent reads from it will return its default value.
+  mutating func clearMultiRing() {self._multiRing = nil}
+
+  var destinationDeviceID: UInt32 {
+    get {return _destinationDeviceID ?? 0}
+    set {_destinationDeviceID = newValue}
+  }
+  /// Returns true if `destinationDeviceID` has been explicitly set.
+  var hasDestinationDeviceID: Bool {return self._destinationDeviceID != nil}
+  /// Clears the value of `destinationDeviceID`. Subsequent reads from it will return its default value.
+  mutating func clearDestinationDeviceID() {self._destinationDeviceID = nil}
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
-
-  enum FeatureLevel: SwiftProtobuf.Enum {
-    typealias RawValue = Int
-    case unspecified // = 0
-    case multiring // = 1
-
-    init() {
-      self = .unspecified
-    }
-
-    init?(rawValue: Int) {
-      switch rawValue {
-      case 0: self = .unspecified
-      case 1: self = .multiring
-      default: return nil
-      }
-    }
-
-    var rawValue: Int {
-      switch self {
-      case .unspecified: return 0
-      case .multiring: return 1
-      }
-    }
-
-  }
 
   struct Offer {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
@@ -462,7 +443,7 @@ struct SignalServiceProtos_CallMessage {
     mutating func clearSessionDescription() {self._sessionDescription = nil}
 
     var type: SignalServiceProtos_CallMessage.Offer.TypeEnum {
-      get {return _type ?? .audioCall}
+      get {return _type ?? .offerAudioCall}
       set {_type = newValue}
     }
     /// Returns true if `type` has been explicitly set.
@@ -474,25 +455,25 @@ struct SignalServiceProtos_CallMessage {
 
     enum TypeEnum: SwiftProtobuf.Enum {
       typealias RawValue = Int
-      case audioCall // = 0
-      case videoCall // = 1
+      case offerAudioCall // = 0
+      case offerVideoCall // = 1
 
       init() {
-        self = .audioCall
+        self = .offerAudioCall
       }
 
       init?(rawValue: Int) {
         switch rawValue {
-        case 0: self = .audioCall
-        case 1: self = .videoCall
+        case 0: self = .offerAudioCall
+        case 1: self = .offerVideoCall
         default: return nil
         }
       }
 
       var rawValue: Int {
         switch self {
-        case .audioCall: return 0
-        case .videoCall: return 1
+        case .offerAudioCall: return 0
+        case .offerVideoCall: return 1
         }
       }
 
@@ -633,7 +614,7 @@ struct SignalServiceProtos_CallMessage {
     mutating func clearID() {self._id = nil}
 
     var type: SignalServiceProtos_CallMessage.Hangup.TypeEnum {
-      get {return _type ?? .normal}
+      get {return _type ?? .hangupNormal}
       set {_type = newValue}
     }
     /// Returns true if `type` has been explicitly set.
@@ -654,31 +635,31 @@ struct SignalServiceProtos_CallMessage {
 
     enum TypeEnum: SwiftProtobuf.Enum {
       typealias RawValue = Int
-      case normal // = 0
-      case accepted // = 1
-      case declined // = 2
-      case busy // = 3
+      case hangupNormal // = 0
+      case hangupAccepted // = 1
+      case hangupDeclined // = 2
+      case hangupBusy // = 3
 
       init() {
-        self = .normal
+        self = .hangupNormal
       }
 
       init?(rawValue: Int) {
         switch rawValue {
-        case 0: self = .normal
-        case 1: self = .accepted
-        case 2: self = .declined
-        case 3: self = .busy
+        case 0: self = .hangupNormal
+        case 1: self = .hangupAccepted
+        case 2: self = .hangupDeclined
+        case 3: self = .hangupBusy
         default: return nil
         }
       }
 
       var rawValue: Int {
         switch self {
-        case .normal: return 0
-        case .accepted: return 1
-        case .declined: return 2
-        case .busy: return 3
+        case .hangupNormal: return 0
+        case .hangupAccepted: return 1
+        case .hangupDeclined: return 2
+        case .hangupBusy: return 3
         }
       }
 
@@ -699,14 +680,11 @@ struct SignalServiceProtos_CallMessage {
   fileprivate var _busy: SignalServiceProtos_CallMessage.Busy?
   fileprivate var _profileKey: Data?
   fileprivate var _hangup: SignalServiceProtos_CallMessage.Hangup?
-  fileprivate var _featureLevel: SignalServiceProtos_CallMessage.FeatureLevel?
+  fileprivate var _multiRing: Bool?
+  fileprivate var _destinationDeviceID: UInt32?
 }
 
 #if swift(>=4.2)
-
-extension SignalServiceProtos_CallMessage.FeatureLevel: CaseIterable {
-  // Support synthesized by the compiler.
-}
 
 extension SignalServiceProtos_CallMessage.Offer.TypeEnum: CaseIterable {
   // Support synthesized by the compiler.
@@ -3627,7 +3605,8 @@ extension SignalServiceProtos_CallMessage: SwiftProtobuf.Message, SwiftProtobuf.
     5: .same(proto: "busy"),
     6: .same(proto: "profileKey"),
     7: .same(proto: "hangup"),
-    8: .same(proto: "featureLevel")
+    8: .same(proto: "multiRing"),
+    9: .same(proto: "destinationDeviceId")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -3640,7 +3619,8 @@ extension SignalServiceProtos_CallMessage: SwiftProtobuf.Message, SwiftProtobuf.
       case 5: try decoder.decodeSingularMessageField(value: &self._busy)
       case 6: try decoder.decodeSingularBytesField(value: &self._profileKey)
       case 7: try decoder.decodeSingularMessageField(value: &self._hangup)
-      case 8: try decoder.decodeSingularEnumField(value: &self._featureLevel)
+      case 8: try decoder.decodeSingularBoolField(value: &self._multiRing)
+      case 9: try decoder.decodeSingularUInt32Field(value: &self._destinationDeviceID)
       default: break
       }
     }
@@ -3668,8 +3648,11 @@ extension SignalServiceProtos_CallMessage: SwiftProtobuf.Message, SwiftProtobuf.
     if let v = self._hangup {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 7)
     }
-    if let v = self._featureLevel {
-      try visitor.visitSingularEnumField(value: v, fieldNumber: 8)
+    if let v = self._multiRing {
+      try visitor.visitSingularBoolField(value: v, fieldNumber: 8)
+    }
+    if let v = self._destinationDeviceID {
+      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 9)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -3682,17 +3665,11 @@ extension SignalServiceProtos_CallMessage: SwiftProtobuf.Message, SwiftProtobuf.
     if lhs._busy != rhs._busy {return false}
     if lhs._profileKey != rhs._profileKey {return false}
     if lhs._hangup != rhs._hangup {return false}
-    if lhs._featureLevel != rhs._featureLevel {return false}
+    if lhs._multiRing != rhs._multiRing {return false}
+    if lhs._destinationDeviceID != rhs._destinationDeviceID {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
-}
-
-extension SignalServiceProtos_CallMessage.FeatureLevel: SwiftProtobuf._ProtoNameProviding {
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "UNSPECIFIED"),
-    1: .same(proto: "MULTIRING")
-  ]
 }
 
 extension SignalServiceProtos_CallMessage.Offer: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
@@ -3738,8 +3715,8 @@ extension SignalServiceProtos_CallMessage.Offer: SwiftProtobuf.Message, SwiftPro
 
 extension SignalServiceProtos_CallMessage.Offer.TypeEnum: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "AUDIO_CALL"),
-    1: .same(proto: "VIDEO_CALL")
+    0: .same(proto: "OFFER_AUDIO_CALL"),
+    1: .same(proto: "OFFER_VIDEO_CALL")
   ]
 }
 
@@ -3897,10 +3874,10 @@ extension SignalServiceProtos_CallMessage.Hangup: SwiftProtobuf.Message, SwiftPr
 
 extension SignalServiceProtos_CallMessage.Hangup.TypeEnum: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    0: .same(proto: "NORMAL"),
-    1: .same(proto: "ACCEPTED"),
-    2: .same(proto: "DECLINED"),
-    3: .same(proto: "BUSY")
+    0: .same(proto: "HANGUP_NORMAL"),
+    1: .same(proto: "HANGUP_ACCEPTED"),
+    2: .same(proto: "HANGUP_DECLINED"),
+    3: .same(proto: "HANGUP_BUSY")
   ]
 }
 
