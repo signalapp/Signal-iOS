@@ -31,13 +31,22 @@ public class BulkProfileFetch: NSObject {
     // This property should only be accessed on serialQueue.
     private var isUpdateInFlight = false
 
-    private enum UpdateOutcome {
-        case networkFailure(date: Date)
-        case retryLimit(date: Date)
-        case noProfile(date: Date)
-        case serviceError(date: Date)
-        case success(date: Date)
-        case throttled(date: Date)
+    struct UpdateOutcome {
+        let outcome: Outcome
+        enum Outcome {
+            case networkFailure
+            case retryLimit
+            case noProfile
+            case serviceError
+            case success
+            case throttled
+        }
+        let date: Date
+
+        init(_ outcome: Outcome) {
+            self.outcome = outcome
+            self.date = Date()
+        }
     }
 
     // This property should only be accessed on serialQueue.
@@ -152,38 +161,37 @@ public class BulkProfileFetch: NSObject {
         }.done {
             self.serialQueue.asyncAfter(deadline: DispatchTime.now() + updateDelaySeconds) {
                 self.isUpdateInFlight = false
-                self.lastOutcomeMap[address] = .success(date: Date())
+                self.lastOutcomeMap[address] = UpdateOutcome(.success)
                 self.process()
             }
         }.catch { error in
             self.serialQueue.asyncAfter(deadline: DispatchTime.now() + updateDelaySeconds) {
                 self.isUpdateInFlight = false
-                let now = Date()
                 switch error {
                 case ProfileFetchError.missing:
                     Logger.error("Error: \(error)")
-                    self.lastOutcomeMap[address] = .noProfile(date: now)
+                    self.lastOutcomeMap[address] = UpdateOutcome(.noProfile)
                 case ProfileFetchError.throttled:
-                    self.lastOutcomeMap[address] = .throttled(date: now)
+                    self.lastOutcomeMap[address] = UpdateOutcome(.throttled)
                 case ProfileFetchError.rateLimit:
                     Logger.error("Error: \(error)")
-                    self.lastOutcomeMap[address] = .retryLimit(date: now)
-                    self.lastRateLimitErrorDate = now
+                    self.lastOutcomeMap[address] = UpdateOutcome(.retryLimit)
+                    self.lastRateLimitErrorDate = Date()
                 default:
                     if IsNetworkConnectivityFailure(error) {
                         Logger.warn("Error: \(error)")
-                        self.lastOutcomeMap[address] = .networkFailure(date: now)
+                        self.lastOutcomeMap[address] = UpdateOutcome(.networkFailure)
                     } else if error.httpStatusCode == 413 {
                         Logger.error("Error: \(error)")
-                        self.lastOutcomeMap[address] = .retryLimit(date: now)
-                        self.lastRateLimitErrorDate = now
+                        self.lastOutcomeMap[address] = UpdateOutcome(.retryLimit)
+                        self.lastRateLimitErrorDate = Date()
                     } else if error.httpStatusCode == 404 {
                         Logger.error("Error: \(error)")
-                        self.lastOutcomeMap[address] = .noProfile(date: now)
+                        self.lastOutcomeMap[address] = UpdateOutcome(.noProfile)
                     } else {
                         // TODO: We may need to handle more status codes.
                         owsFailDebug("Error: \(error)")
-                        self.lastOutcomeMap[address] = .serviceError(date: now)
+                        self.lastOutcomeMap[address] = UpdateOutcome(.serviceError)
                     }
                 }
 
@@ -209,27 +217,21 @@ public class BulkProfileFetch: NSObject {
         }
 
         let minElapsedSeconds: TimeInterval
-        let elapsedSeconds: TimeInterval
+        let elapsedSeconds: TimeInterval = lastOutcome.date.timeIntervalSinceNow
 
-        switch lastOutcome {
-        case .networkFailure(let date):
+        switch lastOutcome.outcome {
+        case .networkFailure:
             minElapsedSeconds = 1 * kMinuteInterval
-            elapsedSeconds = date.timeIntervalSinceNow
-        case .retryLimit(let date):
+        case .retryLimit:
             minElapsedSeconds = 5 * kMinuteInterval
-            elapsedSeconds = date.timeIntervalSinceNow
-        case .throttled(let date):
+        case .throttled:
             minElapsedSeconds = 5 * kMinuteInterval
-            elapsedSeconds = date.timeIntervalSinceNow
-        case .noProfile(let date):
+        case .noProfile:
             minElapsedSeconds = 6 * kHourInterval
-            elapsedSeconds = date.timeIntervalSinceNow
-        case .serviceError(let date):
+        case .serviceError:
             minElapsedSeconds = 30 * kMinuteInterval
-            elapsedSeconds = date.timeIntervalSinceNow
-        case .success(let date):
+        case .success:
             minElapsedSeconds = 15 * kMinuteInterval
-            elapsedSeconds = date.timeIntervalSinceNow
         }
 
         return elapsedSeconds >= minElapsedSeconds
