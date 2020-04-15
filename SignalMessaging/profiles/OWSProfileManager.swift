@@ -8,6 +8,14 @@ import SignalServiceKit
 
 public extension OWSProfileManager {
 
+    // MARK: - Dependencies
+
+    private class var versionedProfiles: VersionedProfilesSwift {
+        return SSKEnvironment.shared.versionedProfiles as! VersionedProfilesSwift
+    }
+
+    // MARK: -
+
     // The main entry point for updating the local profile. It will:
     //
     // * Update local state optimistically.
@@ -22,15 +30,15 @@ public extension OWSProfileManager {
 
         return DispatchQueue.global().async(.promise) {
             return enqueueProfileUpdate(profileGivenName: profileGivenName, profileFamilyName: profileFamilyName, profileAvatarData: profileAvatarData)
-            }.then { update in
-                return self.attemptToUpdateProfileOnService(update: update)
-            }.then { (_) throws -> Promise<Void> in
-                guard let localAddress = TSAccountManager.sharedInstance().localAddress else {
-                    throw OWSAssertionError("missing local address")
-                }
-                return ProfileFetcherJob.fetchAndUpdateProfilePromise(address: localAddress, mainAppOnly: false, ignoreThrottling: true, fetchType: .default).asVoid()
-            }.done(on: .global()) { () -> Void in
-                Logger.verbose("Profile update did complete.")
+        }.then { update in
+            return self.attemptToUpdateProfileOnService(update: update)
+        }.then { (_) throws -> Promise<Void> in
+            guard let localAddress = TSAccountManager.sharedInstance().localAddress else {
+                throw OWSAssertionError("missing local address")
+            }
+            return ProfileFetcherJob.fetchAndUpdateProfilePromise(address: localAddress, mainAppOnly: false, ignoreThrottling: true, fetchType: .default).asVoid()
+        }.done(on: .global()) { () -> Void in
+            Logger.verbose("Profile update did complete.")
         }
     }
 
@@ -109,13 +117,14 @@ extension OWSProfileManager {
         guard let update = pendingUpdate else {
             return
         }
-        attemptToUpdateProfileOnService(update: update,
-                                        retryDelay: retryDelay)
-            .done { _ in
-                Logger.info("Update succeeded.")
-            }.catch { error in
-                Logger.error("Update failed: \(error)")
-            }.retainUntilComplete()
+        firstly {
+            attemptToUpdateProfileOnService(update: update,
+                                            retryDelay: retryDelay)
+        }.done { _ in
+            Logger.info("Update succeeded.")
+        }.catch { error in
+            Logger.error("Update failed: \(error)")
+        }.retainUntilComplete()
     }
 
     fileprivate class func attemptToUpdateProfileOnService(update: PendingProfileUpdate,
@@ -133,59 +142,60 @@ extension OWSProfileManager {
         let attempt = ProfileUpdateAttempt(update: update,
                                            userProfile: userProfile)
 
-        let promise = writeProfileAvatarToDisk(attempt: attempt)
-            .then(on: DispatchQueue.global()) { () -> Promise<Void> in
-                // Optimistically update local profile state.
-                databaseStorage.write { transaction in
-                    self.updateLocalProfile(with: attempt, transaction: transaction)
-                }
-
-                if FeatureFlags.versionedProfiledUpdate {
-                    return updateProfileOnServiceVersioned(attempt: attempt)
-                } else {
-                    return updateProfileOnServiceUnversioned(attempt: attempt)
-                }
-            }.done(on: DispatchQueue.global()) { _ in
-                _ = self.databaseStorage.write { (transaction: SDSAnyWriteTransaction) -> Void in
-                    guard tryToDequeueProfileUpdate(update: attempt.update, transaction: transaction) else {
-                        return
-                    }
-
-                    if attempt.update.profileAvatarData != nil {
-                        if attempt.avatarFilename == nil {
-                            owsFailDebug("Missing avatarFilename.")
-                        }
-                        if attempt.avatarUrlPath == nil {
-                            owsFailDebug("Missing avatarUrlPath.")
-                        }
-                    }
-
-                    self.updateLocalProfile(with: attempt, transaction: transaction)
-                }
-
-                self.attemptDidComplete(retryDelay: retryDelay, didSucceed: true)
-            }.recover(on: .global()) { error in
-                // We retry network errors forever (with exponential backoff).
-                // Other errors cause us to give up immediately.
-                // Note that we only ever retry the latest profile update.
-                if IsNetworkConnectivityFailure(error) {
-                    Logger.warn("Retrying after error: \(error)")
-                } else {
-                    owsFailDebug("Error: \(error)")
-
-                    // Dequeue to avoid getting stuck in retry loop.
-                    self.databaseStorage.write { transaction in
-                        _ = tryToDequeueProfileUpdate(update: attempt.update, transaction: transaction)
-                    }
-                }
-                self.attemptDidComplete(retryDelay: retryDelay, didSucceed: false)
-
-                // We don't actually want to recover; in this block we
-                // handle the business logic consequences of the error,
-                // but we re-throw so that the UI can distinguish
-                // success and failure.
-                throw error
+        let promise = firstly {
+            writeProfileAvatarToDisk(attempt: attempt)
+        }.then(on: DispatchQueue.global()) { () -> Promise<Void> in
+            // Optimistically update local profile state.
+            databaseStorage.write { transaction in
+                self.updateLocalProfile(with: attempt, transaction: transaction)
             }
+
+            if FeatureFlags.versionedProfiledUpdate {
+                return updateProfileOnServiceVersioned(attempt: attempt)
+            } else {
+                return updateProfileOnServiceUnversioned(attempt: attempt)
+            }
+        }.done(on: DispatchQueue.global()) { _ in
+            _ = self.databaseStorage.write { (transaction: SDSAnyWriteTransaction) -> Void in
+                guard tryToDequeueProfileUpdate(update: attempt.update, transaction: transaction) else {
+                    return
+                }
+
+                if attempt.update.profileAvatarData != nil {
+                    if attempt.avatarFilename == nil {
+                        owsFailDebug("Missing avatarFilename.")
+                    }
+                    if attempt.avatarUrlPath == nil {
+                        owsFailDebug("Missing avatarUrlPath.")
+                    }
+                }
+
+                self.updateLocalProfile(with: attempt, transaction: transaction)
+            }
+
+            self.attemptDidComplete(retryDelay: retryDelay, didSucceed: true)
+        }.recover(on: .global()) { error in
+            // We retry network errors forever (with exponential backoff).
+            // Other errors cause us to give up immediately.
+            // Note that we only ever retry the latest profile update.
+            if IsNetworkConnectivityFailure(error) {
+                Logger.warn("Retrying after error: \(error)")
+            } else {
+                owsFailDebug("Error: \(error)")
+
+                // Dequeue to avoid getting stuck in retry loop.
+                self.databaseStorage.write { transaction in
+                    _ = tryToDequeueProfileUpdate(update: attempt.update, transaction: transaction)
+                }
+            }
+            self.attemptDidComplete(retryDelay: retryDelay, didSucceed: false)
+
+            // We don't actually want to recover; in this block we
+            // handle the business logic consequences of the error,
+            // but we re-throw so that the UI can distinguish
+            // success and failure.
+            throw error
+        }
 
         return promise
     }
@@ -277,9 +287,9 @@ extension OWSProfileManager {
     }
 
     private class func updateProfileOnServiceVersioned(attempt: ProfileUpdateAttempt) -> Promise<Void> {
-        return VersionedProfiles.updateProfilePromise(profileGivenName: attempt.update.profileGivenName,
-                                                      profileFamilyName: attempt.update.profileFamilyName,
-                                                      profileAvatarData: attempt.update.profileAvatarData)
+        return self.versionedProfiles.updateProfilePromise(profileGivenName: attempt.update.profileGivenName,
+                                                           profileFamilyName: attempt.update.profileFamilyName,
+                                                           profileAvatarData: attempt.update.profileAvatarData)
             .map(on: .global()) { versionedUpdate in
                 attempt.avatarUrlPath = versionedUpdate.avatarUrlPath
         }
@@ -290,11 +300,11 @@ extension OWSProfileManager {
         Logger.verbose("profile givenName: \(attempt.update.profileGivenName), familyName: \(attempt.update.profileFamilyName), avatarFilename: \(attempt.avatarFilename)")
 
         attempt.userProfile.updateWith(givenName: attempt.update.profileGivenName,
-                                   familyName: attempt.update.profileFamilyName,
-                                   avatarUrlPath: attempt.avatarUrlPath,
-                                   avatarFileName: attempt.avatarFilename,
-                                   transaction: transaction,
-                                   completion: nil)
+                                       familyName: attempt.update.profileFamilyName,
+                                       avatarUrlPath: attempt.avatarUrlPath,
+                                       avatarFileName: attempt.avatarFilename,
+                                       transaction: transaction,
+                                       completion: nil)
     }
 
     // MARK: - Update Queue
@@ -383,8 +393,8 @@ class PendingProfileUpdate: NSObject, NSCoding {
     public required init?(coder aDecoder: NSCoder) {
         guard let idString = aDecoder.decodeObject(forKey: "id") as? String,
             let id = UUID(uuidString: idString) else {
-            owsFailDebug("Missing id")
-            return nil
+                owsFailDebug("Missing id")
+                return nil
         }
         self.id = id
         self.profileGivenName = aDecoder.decodeObject(forKey: "profileGivenName") as? String
@@ -442,8 +452,8 @@ public extension OWSProfileManager {
         // Given name is required
         guard let givenNameData = nameSegments[safe: 0],
             let givenName = String(data: givenNameData, encoding: .utf8), !givenName.isEmpty else {
-            owsFailDebug("unexpectedly missing first name")
-            return nil
+                owsFailDebug("unexpectedly missing first name")
+                return nil
         }
 
         // Family name is optional

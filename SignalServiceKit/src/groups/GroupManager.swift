@@ -72,6 +72,10 @@ public class GroupManager: NSObject {
         return SSKEnvironment.shared.messageProcessing
     }
 
+    private class var bulkProfileFetch: BulkProfileFetch {
+        return SSKEnvironment.shared.bulkProfileFetch
+    }
+
     // MARK: -
 
     // Never instantiate this class.
@@ -222,7 +226,7 @@ public class GroupManager: NSObject {
         }.then(on: .global()) { () -> Promise<Void> in
             var memberSet = Set(membersParam)
             memberSet.insert(localAddress)
-            return self.tryToEnableGroupsV2(for: Array(memberSet), ignoreErrors: true)
+            return self.tryToEnableGroupsV2(for: Array(memberSet), isBlocking: true, ignoreErrors: true)
         }.map(on: .global()) { () throws -> GroupMembership in
             // Build member list.
             //
@@ -719,7 +723,7 @@ public class GroupManager: NSObject {
             guard RemoteConfig.groupsV2CreateGroups else {
                 return Promise.value(())
             }
-            return self.tryToEnableGroupsV2(for: Array(proposedGroupModel.groupMembership.allUsers), ignoreErrors: true)
+            return self.tryToEnableGroupsV2(for: Array(proposedGroupModel.groupMembership.allUsers), isBlocking: true, ignoreErrors: true)
         }.then(on: .global()) { () -> Promise<Void> in
             return self.ensureLocalProfileHasCommitmentIfNecessary()
         }.then(on: DispatchQueue.global()) { () -> Promise<String?> in
@@ -1197,8 +1201,9 @@ public class GroupManager: NSObject {
     // MARK: - UUIDs
 
     public static func tryToEnableGroupsV2(for addresses: [SignalServiceAddress],
+                                           isBlocking: Bool,
                                            ignoreErrors: Bool) -> Promise<Void> {
-        let promise = tryToEnableGroupsV2(for: addresses)
+        let promise = tryToEnableGroupsV2(for: addresses, isBlocking: isBlocking)
         if ignoreErrors {
             return promise.recover { error -> Guarantee<Void> in
                 Logger.warn("Error: \(error).")
@@ -1209,7 +1214,8 @@ public class GroupManager: NSObject {
         }
     }
 
-    private static func tryToEnableGroupsV2(for addresses: [SignalServiceAddress]) -> Promise<Void> {
+    private static func tryToEnableGroupsV2(for addresses: [SignalServiceAddress],
+                                            isBlocking: Bool) -> Promise<Void> {
         return firstly { () -> Promise<Void> in
             for address in addresses {
                 guard address.isValid else {
@@ -1233,11 +1239,18 @@ public class GroupManager: NSObject {
             guard !addressesWithoutCapability.isEmpty else {
                 return Promise.value(())
             }
-            var promises = [Promise<Void>]()
-            for address in addressesWithoutCapability {
-                promises.append(self.profileManager.updateProfile(forAddressPromise: address).asVoid())
+            if isBlocking {
+                // Block on the outcome of the profile updates.
+                var promises = [Promise<Void>]()
+                for address in addressesWithoutCapability {
+                    promises.append(self.profileManager.updateProfile(forAddressPromise: address).asVoid())
+                }
+                return when(fulfilled: promises)
+            } else {
+                // This will throttle, de-bounce, etc.
+                self.bulkProfileFetch.fetchAndUpdateProfiles(addresses: addressesWithoutCapability)
+                return Promise.value(())
             }
-            return when(fulfilled: promises)
         }
     }
 

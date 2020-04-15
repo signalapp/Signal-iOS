@@ -104,6 +104,8 @@ NS_ASSUME_NONNULL_BEGIN
     id<GroupV2Updates> groupV2Updates = [[MockGroupV2Updates alloc] init];
     MessageProcessing *messageProcessing = [MessageProcessing new];
     MessageFetcherJob *messageFetcherJob = [MessageFetcherJob new];
+    BulkProfileFetch *bulkProfileFetch = [BulkProfileFetch new];
+    id<VersionedProfiles> versionedProfiles = [MockVersionedProfiles new];
 
     self = [super initWithContactsManager:contactsManager
                        linkPreviewManager:linkPreviewManager
@@ -147,7 +149,9 @@ NS_ASSUME_NONNULL_BEGIN
                                  groupsV2:groupsV2
                            groupV2Updates:groupV2Updates
                         messageProcessing:messageProcessing
-                        messageFetcherJob:messageFetcherJob];
+                        messageFetcherJob:messageFetcherJob
+                         bulkProfileFetch:bulkProfileFetch
+                        versionedProfiles:versionedProfiles];
 
     if (!self) {
         return nil;

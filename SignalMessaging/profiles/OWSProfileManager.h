@@ -139,12 +139,6 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 - (nullable NSString *)usernameForAddress:(SignalServiceAddress *)address
                               transaction:(SDSAnyReadTransaction *)transaction;
 
-- (void)updateProfileForAddress:(SignalServiceAddress *)address
-           profileNameEncrypted:(nullable NSData *)profileNameEncrypted
-                       username:(nullable NSString *)username
-                  isUuidCapable:(BOOL)isUuidCapable
-                  avatarUrlPath:(nullable NSString *)avatarUrlPath;
-
 #pragma mark - Clean Up
 
 + (NSSet<NSString *> *)allProfileAvatarFilePathsWithTransaction:(SDSAnyReadTransaction *)transaction;

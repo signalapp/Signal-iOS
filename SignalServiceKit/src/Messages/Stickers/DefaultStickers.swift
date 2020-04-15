@@ -19,6 +19,9 @@ class DefaultStickerPack {
     }
 
     private class func parseAll() -> [StickerPackInfo: DefaultStickerPack] {
+        guard FeatureFlags.isUsingProductionService else {
+            return [:]
+        }
         let packs = [
             // Bandit the Cat
             DefaultStickerPack(packIdHex: "9acc9e8aba563d26a4994e69263e3b25", packKeyHex: "5a6dff3948c28efb9b7aaf93ecc375c69fc316e78077ed26867a14d10a0f6a12", shouldAutoInstall: false)!,
