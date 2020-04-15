@@ -145,6 +145,8 @@ public extension OWSTableItem {
         iconWrapper.backgroundColor = Theme.washColor
         iconWrapper.layer.cornerRadius = CGFloat(kStandardAvatarSize) * 0.5
         iconWrapper.autoSetDimensions(to: CGSize(square: CGFloat(kStandardAvatarSize)))
+        iconWrapper.setCompressionResistanceHigh()
+        iconWrapper.setContentHuggingHigh()
         return iconWrapper
     }
 }

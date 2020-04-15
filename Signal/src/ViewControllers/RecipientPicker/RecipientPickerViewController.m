@@ -263,8 +263,6 @@ const NSUInteger kMinimumSearchLength = 2;
               [buttonStack addArrangedSubview:button];
 
               UIView *iconView = [OWSTableItem buildIconInCircleViewWithIcon:icon];
-              [iconView setCompressionResistanceHigh];
-              [iconView setContentHuggingHigh];
 
               UILabel *label = [UILabel new];
               label.text = title;
@@ -409,64 +407,14 @@ const NSUInteger kMinimumSearchLength = 2;
 
     OWSTableSection *staticSection = [OWSTableSection new];
 
-    // Find Non-Contacts by Phone Number
-    if (self.allowsAddByPhoneNumber) {
-        [staticSection
-            addItem:[OWSTableItem
-                         disclosureItemWithText:NSLocalizedString(@"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER",
-                                                    @"A label the cell that lets you add a new member to a group.")
-                        accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
-                                                    RecipientPickerViewController, @"find_by_phone")
-                                customRowHeight:UITableViewAutomaticDimension
-                                    actionBlock:^{
-                                        FindByPhoneNumberViewController *viewController =
-                                            [[FindByPhoneNumberViewController alloc]
-                                                        initWithDelegate:self
-                                                              buttonText:self.findByPhoneNumberButtonTitle
-                                                requiresRegisteredNumber:!self.allowsSelectingUnregisteredPhoneNumbers];
-                                        [weakSelf.navigationController pushViewController:viewController animated:YES];
-                                    }]];
-    }
-
-    if (self.contactsManager.isSystemContactsAuthorized && self.shouldShowInvites) {
-        // Invite Contacts
-        [staticSection
-            addItem:[OWSTableItem
-                         disclosureItemWithText:NSLocalizedString(@"INVITE_FRIENDS_CONTACT_TABLE_BUTTON",
-                                                    @"Label for the cell that presents the 'invite contacts' workflow.")
-                        accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(
-                                                    RecipientPickerViewController, @"invite_contacts")
-                                customRowHeight:UITableViewAutomaticDimension
-                                    actionBlock:^{
-                                        [weakSelf presentInviteFlow];
-                                    }]];
-    }
-
     if (self.shouldShowNewGroup) {
         [staticSection
             addItem:[OWSTableItem
                         itemWithCustomCellBlock:^{
                             NSString *cellName = NSLocalizedString(@"NEW_GROUP_BUTTON", comment
                                                                    : @"Label for the 'create new group' button.");
-                            UIImage *iconBackgroundImage = [UIImage imageWithColor:Theme.washColor];
-                            UIImageView *iconBackgroundImageView =
-                                [[AvatarImageView alloc] initWithImage:iconBackgroundImage];
-                            UIImageView *iconForegroundImageView =
-                                [UIImageView withTemplateImageName:@"group-outline-40"
-                                                         tintColor:Theme.primaryIconColor];
-                            [iconBackgroundImageView addSubview:iconForegroundImageView];
-                            [iconForegroundImageView autoCenterInSuperview];
-                            [iconBackgroundImageView
-                                autoSetDimensionsToSize:CGSizeMake(kStandardAvatarSize, kStandardAvatarSize)];
-                            [iconForegroundImageView autoSetDimensionsToSize:CGSizeMake(32, 32)];
-                            [iconBackgroundImageView setContentHuggingHorizontalHigh];
-                            UITableViewCell *cell = [OWSTableItem buildCellWithName:cellName
-                                                                           iconView:iconBackgroundImageView];
-
-                            __strong typeof(self) strongSelf = weakSelf;
-                            if (!strongSelf) {
-                                return cell;
-                            }
+                            UIView *iconView = [OWSTableItem buildIconInCircleViewWithIcon:ThemeIconComposeNewGroup];
+                            UITableViewCell *cell = [OWSTableItem buildCellWithName:cellName iconView:iconView];
 
                             cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
                             cell.accessibilityIdentifier
@@ -477,6 +425,53 @@ const NSUInteger kMinimumSearchLength = 2;
                         customRowHeight:UITableViewAutomaticDimension
                         actionBlock:^{
                             [weakSelf newGroupButtonPressed];
+                        }]];
+    }
+
+    // Find Non-Contacts by Phone Number
+    if (self.allowsAddByPhoneNumber) {
+        [staticSection
+            addItem:[OWSTableItem
+                        itemWithCustomCellBlock:^{
+                            NSString *cellName = NSLocalizedString(@"NEW_CONVERSATION_FIND_BY_PHONE_NUMBER",
+                                @"A label the cell that lets you add a new member to a group.");
+                            UIView *iconView =
+                                [OWSTableItem buildIconInCircleViewWithIcon:ThemeIconComposeFindByPhoneNumber];
+                            UITableViewCell *cell = [OWSTableItem buildCellWithName:cellName iconView:iconView];
+                            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+                            cell.accessibilityIdentifier
+                                = ACCESSIBILITY_IDENTIFIER_WITH_NAME(RecipientPickerViewController, @"find_by_phone");
+
+                            return cell;
+                        }
+                        customRowHeight:UITableViewAutomaticDimension
+                        actionBlock:^{
+                            FindByPhoneNumberViewController *viewController = [[FindByPhoneNumberViewController alloc]
+                                        initWithDelegate:self
+                                              buttonText:self.findByPhoneNumberButtonTitle
+                                requiresRegisteredNumber:!self.allowsSelectingUnregisteredPhoneNumbers];
+                            [weakSelf.navigationController pushViewController:viewController animated:YES];
+                        }]];
+    }
+
+    if (self.contactsManager.isSystemContactsAuthorized && self.shouldShowInvites) {
+        // Invite Contacts
+        [staticSection
+            addItem:[OWSTableItem
+                        itemWithCustomCellBlock:^{
+                            NSString *cellName = NSLocalizedString(@"INVITE_FRIENDS_CONTACT_TABLE_BUTTON",
+                                @"Label for the cell that presents the 'invite contacts' workflow.");
+                            UIView *iconView = [OWSTableItem buildIconInCircleViewWithIcon:ThemeIconComposeInvite];
+                            UITableViewCell *cell = [OWSTableItem buildCellWithName:cellName iconView:iconView];
+                            cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+                            cell.accessibilityIdentifier
+                                = ACCESSIBILITY_IDENTIFIER_WITH_NAME(RecipientPickerViewController, @"invite_contacts");
+
+                            return cell;
+                        }
+                        customRowHeight:UITableViewAutomaticDimension
+                        actionBlock:^{
+                            [weakSelf presentInviteFlow];
                         }]];
     }
 
