@@ -53,7 +53,6 @@ extension ConversationSettingsViewController {
         let headerHeight = header.systemLayoutSizeFitting(view.frame.size).height
         mainSection.customHeaderView = header
         mainSection.customHeaderHeight = NSNumber(value: Float(headerHeight))
-        mainSection.customFooterHeight = 10
 
         addBasicItems(to: mainSection)
 
@@ -66,7 +65,7 @@ extension ConversationSettingsViewController {
 
         contents.addSection(mainSection)
 
-        contents.addSection(buildDisappearingMessagesSection())
+        buildDisappearingMessagesSection(to: mainSection)
 
         if !isNoteToSelf {
             contents.addSection(buildNotificationsSection())
@@ -259,9 +258,7 @@ extension ConversationSettingsViewController {
         }
     }
 
-    private func buildDisappearingMessagesSection() -> OWSTableSection {
-        let section = OWSTableSection()
-        section.customHeaderHeight = 10
+    private func buildDisappearingMessagesSection(to section: OWSTableSection) {
 
         let canEditConversationAttributes = self.canEditConversationAttributes
 
@@ -359,8 +356,6 @@ extension ConversationSettingsViewController {
 
         section.footerTitle = NSLocalizedString(
             "DISAPPEARING_MESSAGES_DESCRIPTION", comment: "subheading in conversation settings")
-
-        return section
     }
 
     private func addColorPickerItems(to section: OWSTableSection) {
@@ -386,8 +381,8 @@ extension ConversationSettingsViewController {
 
     private func buildNotificationsSection() -> OWSTableSection {
         let section = OWSTableSection()
-        section.customHeaderHeight = 10
-        section.customFooterHeight = 10
+        section.customHeaderHeight = 14
+        section.customFooterHeight = 14
 
         section.add(OWSTableItem(customCellBlock: { [weak self] in
             guard let self = self else {
@@ -460,7 +455,7 @@ extension ConversationSettingsViewController {
 
     private func buildBlockAndLeaveSection() -> OWSTableSection {
         let section = OWSTableSection()
-        section.customHeaderHeight = 10
+        section.customHeaderHeight = 14
 
         section.footerTitle = NSLocalizedString("CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER",
                                                 comment: "Footer text for the 'block and leave' section of conversation settings view.")
@@ -528,7 +523,7 @@ extension ConversationSettingsViewController {
 
     private func buildGroupAccessSection(groupModelV2: TSGroupModelV2) -> OWSTableSection {
         let section = OWSTableSection()
-        section.customHeaderHeight = 10
+        section.customHeaderHeight = 14
 
         section.footerTitle = NSLocalizedString("CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER",
                                                 comment: "Footer for the 'attributes access' section in conversation settings view.")
@@ -567,7 +562,7 @@ extension ConversationSettingsViewController {
 
     private func buildGroupMembershipSection(groupModel: TSGroupModel) -> OWSTableSection {
         let section = OWSTableSection()
-        section.customFooterHeight = 10
+        section.customFooterHeight = 14
 
         guard let localAddress = tsAccountManager.localAddress else {
             owsFailDebug("Missing localAddress.")
@@ -747,8 +742,8 @@ extension ConversationSettingsViewController {
 
     private func buildPendingMembersSection(groupModel: TSGroupModel) -> OWSTableSection {
         let section = OWSTableSection()
-        section.customHeaderHeight = 10
-        section.customFooterHeight = 10
+        section.customHeaderHeight = 14
+        section.customFooterHeight = 14
 
         let pendingMembers = groupModel.groupMembership.pendingMembers
         let accessoryText: String
