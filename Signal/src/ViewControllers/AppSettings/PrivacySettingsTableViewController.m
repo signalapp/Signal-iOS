@@ -697,7 +697,7 @@ NS_ASSUME_NONNULL_BEGIN
         ActionSheetAction *turnOffAction =
             [[ActionSheetAction alloc] initWithTitle:NSLocalizedString(@"SETTINGS_REGISTRATION_LOCK_TURN_OFF",
                                                          @"Action to turn off registration lock")
-                                               style:ActionSheetActionStyleDefault
+                                               style:ActionSheetActionStyleDestructive
                                              handler:^(ActionSheetAction *action) {
                                                  [[OWS2FAManager.sharedManager disableRegistrationLockV2].then(^{
                                                      [self updateTableContents];
