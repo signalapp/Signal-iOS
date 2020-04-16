@@ -654,7 +654,6 @@ class IncomingGroupsV2MessageQueue: NSObject {
                     return resolver.fulfill(.failureShouldRetry)
                 } else {
                     owsFailDebug("Error: \(error)")
-                    // GroupsV2 TODO: Make sure this is still correct behavior.
                     return resolver.fulfill(.failureShouldFailoverToService)
                 }
             }.retainUntilComplete()

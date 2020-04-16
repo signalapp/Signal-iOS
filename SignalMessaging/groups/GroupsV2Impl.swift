@@ -1248,10 +1248,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
     }
 
     public func isValidGroupV2MasterKey(_ masterKeyData: Data) -> Bool {
-        // GroupsV2 TODO: Use constant from zkgroup once the
-        // production version of the library is available.
-        // return masterKeyData.count == GroupMasterKey.SIZE
-        return masterKeyData.count == 32
+        return masterKeyData.count == GroupMasterKey.SIZE
     }
 
     // MARK: - Utils
