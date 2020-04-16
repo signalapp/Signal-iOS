@@ -56,7 +56,7 @@ public class OnboardingBaseViewController: OWSViewController {
     }
 
     func primaryButton(title: String, selector: Selector) -> OWSFlatButton {
-        return button(title: title, selector: selector, titleColor: .white, backgroundColor: Theme.accentBlueColor)
+        return button(title: title, selector: selector, titleColor: .white, backgroundColor: .ows_accentBlue)
     }
 
     func linkButton(title: String, selector: Selector) -> OWSFlatButton {

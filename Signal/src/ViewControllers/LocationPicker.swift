@@ -351,7 +351,7 @@ extension LocationPicker: MKMapViewDelegate {
 
     func sendLocationButton() -> UIButton {
         let button = UIButton(frame: CGRect(x: 0, y: 0, width: 24, height: 24))
-        button.setTemplateImageName("send-solid-24", tintColor: Theme.accentBlueColor)
+        button.setTemplateImageName("send-solid-24", tintColor: .ows_accentBlue)
         return button
     }
 
