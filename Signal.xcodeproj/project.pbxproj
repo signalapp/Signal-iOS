@@ -217,7 +217,7 @@
 		3496957421A301A100DCFE74 /* OWSBackupAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3496956B21A301A100DCFE74 /* OWSBackupAPI.swift */; };
 		34995F182411838D00C70546 /* NewGroupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34995F142411838C00C70546 /* NewGroupViewController.swift */; };
 		34995F1A2411838D00C70546 /* NewGroupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34995F162411838C00C70546 /* NewGroupViewController.m */; };
-		34995F1B2411838D00C70546 /* NewGroupViewController2.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34995F172411838C00C70546 /* NewGroupViewController2.swift */; };
+		34995F1B2411838D00C70546 /* NewGroupMembersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34995F172411838C00C70546 /* NewGroupMembersViewController.swift */; };
 		3499998122EF1E2100654932 /* SearcherTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3499997E22EF1E2100654932 /* SearcherTest.swift */; };
 		3499998222EF1E2100654932 /* GRDBFullTextSearcherTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3499997F22EF1E2100654932 /* GRDBFullTextSearcherTest.swift */; };
 		349C3637233D198300D52012 /* LaunchJobs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 349C3636233D198300D52012 /* LaunchJobs.swift */; };
@@ -1107,7 +1107,7 @@
 		34995F132411838C00C70546 /* NewGroupViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewGroupViewController.h; sourceTree = "<group>"; };
 		34995F142411838C00C70546 /* NewGroupViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewGroupViewController.swift; sourceTree = "<group>"; };
 		34995F162411838C00C70546 /* NewGroupViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewGroupViewController.m; sourceTree = "<group>"; };
-		34995F172411838C00C70546 /* NewGroupViewController2.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewGroupViewController2.swift; sourceTree = "<group>"; };
+		34995F172411838C00C70546 /* NewGroupMembersViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewGroupMembersViewController.swift; sourceTree = "<group>"; };
 		3499997E22EF1E2100654932 /* SearcherTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearcherTest.swift; sourceTree = "<group>"; };
 		3499997F22EF1E2100654932 /* GRDBFullTextSearcherTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GRDBFullTextSearcherTest.swift; sourceTree = "<group>"; };
 		349C3636233D198300D52012 /* LaunchJobs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = LaunchJobs.swift; sourceTree = "<group>"; };
@@ -2342,11 +2342,11 @@
 				349439D724360D63001045F7 /* BaseGroupMemberViewController.swift */,
 				3465947D2434CCC100E5C510 /* NewGroupConfirmViewController.swift */,
 				3465947B2433B77700E5C510 /* NewGroupMembersBar.swift */,
+				34995F172411838C00C70546 /* NewGroupMembersViewController.swift */,
 				3465947F2434D49F00E5C510 /* NewGroupState.swift */,
 				34995F132411838C00C70546 /* NewGroupViewController.h */,
 				34995F162411838C00C70546 /* NewGroupViewController.m */,
 				34995F142411838C00C70546 /* NewGroupViewController.swift */,
-				34995F172411838C00C70546 /* NewGroupViewController2.swift */,
 			);
 			path = NewGroupView;
 			sourceTree = "<group>";
@@ -4635,7 +4635,7 @@
 				4CFF115323A9C2130007F9D7 /* UnreadIndicatorInteraction.swift in Sources */,
 				34E20D4C24256563002C011E /* ConversationSettingsViewController+Header.swift in Sources */,
 				34D1F0521F7E8EA30066283D /* GiphyDownloader.swift in Sources */,
-				34995F1B2411838D00C70546 /* NewGroupViewController2.swift in Sources */,
+				34995F1B2411838D00C70546 /* NewGroupMembersViewController.swift in Sources */,
 				340FC8BC204DAC8D007AEB0F /* FingerprintViewController.m in Sources */,
 				34A4C61E221613D00042EF2E /* OnboardingVerificationViewController.swift in Sources */,
 				4CC613362227A00400E21A3A /* ConversationSearch.swift in Sources */,
