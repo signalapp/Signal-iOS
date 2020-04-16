@@ -136,6 +136,10 @@ class ConversationSettingsViewController: OWSTableViewController {
         return false
     }
 
+    class var headerBackgroundColor: UIColor {
+        return (Theme.isDarkThemeEnabled ? Theme.tableViewBackgroundColor : Theme.tableCellBackgroundColor)
+    }
+
     // MARK: - View Lifecycle
 
     @objc
@@ -157,7 +161,7 @@ class ConversationSettingsViewController: OWSTableViewController {
         // The header should "extend" offscreen so that we
         // don't see the root view's background color if we scroll down.
         let backgroundTopView = UIView()
-        backgroundTopView.backgroundColor = Theme.tableCellBackgroundColor
+        backgroundTopView.backgroundColor = Self.headerBackgroundColor
         tableView.addSubview(backgroundTopView)
         backgroundTopView.autoPinEdge(.leading, to: .leading, of: view, withOffset: 0)
         backgroundTopView.autoPinEdge(.trailing, to: .trailing, of: view, withOffset: 0)

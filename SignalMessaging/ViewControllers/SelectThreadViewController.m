@@ -63,7 +63,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                       target:self
                                                       action:@selector(dismissPressed:)];
 
-    self.view.backgroundColor = Theme.tableViewBackgroundColor;
+    self.view.backgroundColor = Theme.backgroundColor;
 
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
     _fullTextSearcher = FullTextSearcher.shared;

@@ -69,7 +69,7 @@ public class NewGroupConfirmViewController: OWSViewController {
         title = NSLocalizedString("NEW_GROUP_NAME_GROUP_VIEW_TITLE",
                                   comment: "The title for the 'name new group' view.")
 
-        view.backgroundColor = Theme.tableViewBackgroundColor
+        view.backgroundColor = Theme.backgroundColor
 
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("NEW_GROUP_CREATE_BUTTON",
                                                                                      comment: "The title for the 'create group' button."),
@@ -96,7 +96,7 @@ public class NewGroupConfirmViewController: OWSViewController {
         firstSection.preservesSuperviewLayoutMargins = true
         view.addSubview(firstSection)
         firstSection.autoPinWidthToSuperview()
-        firstSection.autoPin(toTopLayoutGuideOf: self, withInset: 8)
+        firstSection.autoPin(toTopLayoutGuideOf: self, withInset: 0)
 
         addChild(recipientTableView)
         view.addSubview(recipientTableView.view)
