@@ -25,6 +25,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setCustomName:(nullable NSString *)customName;
 - (void)setCustomNameAttributed:(nullable NSAttributedString *)customName;
 
+- (void)setCustomAvatar:(nullable UIImage *)customAvatar;
+
 - (NSAttributedString *)verifiedSubtitle;
 
 - (BOOL)hasAccessoryText;

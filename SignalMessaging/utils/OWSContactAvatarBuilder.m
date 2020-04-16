@@ -150,6 +150,14 @@ NS_ASSUME_NONNULL_BEGIN
         return cachedAvatar;
     }
 
+    UIImage *_Nullable image = [self buildImageWithInitials];
+
+    [OWSContactAvatarBuilder.contactsManager.avatarCache setImage:image forKey:self.cacheKey diameter:self.diameter];
+    return image;
+}
+
+- (nullable UIImage *)buildImageWithInitials
+{
     UIColor *color = [OWSConversationColor conversationColorOrDefaultForColorName:self.colorName].themeColor;
     OWSAssertDebug(color);
 
@@ -183,7 +191,6 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    [OWSContactAvatarBuilder.contactsManager.avatarCache setImage:image forKey:self.cacheKey diameter:self.diameter];
     return image;
 }
 

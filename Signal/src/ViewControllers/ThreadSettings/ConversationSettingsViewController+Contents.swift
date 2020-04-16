@@ -677,6 +677,14 @@ extension ConversationSettingsViewController {
                 }
 
                 if isLocalUser {
+                    // Use a custom avatar to avoid using the "note to self" icon.
+                    if let customAvatar = self.contactsManager.imageForAddress(withSneakyTransaction: localAddress) {
+                        cell.setCustomAvatar(customAvatar)
+                    } else {
+                        let avatarBuilder = OWSContactAvatarBuilder(forLocalUserWithDiameter: kStandardAvatarSize)
+                        let customAvatar = avatarBuilder.buildImageWithInitials()
+                        cell.setCustomAvatar(customAvatar)
+                    }
                     cell.setCustomName(NSLocalizedString("GROUP_MEMBER_LOCAL_USER",
                                                          comment: "Label indicating the local user."))
                 }
