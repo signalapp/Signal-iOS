@@ -62,6 +62,11 @@ extern NSString *const ThemeDidChangeNotification;
 
 @property (class, readonly, nonatomic) UIColor *cursorColor;
 
+// For accessibility:
+//
+// * Flat areas (e.g. button backgrounds) should use UIColor.ows_accentBlueColor.
+// * Fine detail (e.g., text, non-filled icons) should use Theme.accentBlueColor.
+//   It is brighter in dark mode, improving legibility.
 @property (class, readonly, nonatomic) UIColor *accentBlueColor;
 
 // In some contexts, e.g. media viewing/sending, we always use "dark theme" UI regardless of the
