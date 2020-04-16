@@ -152,7 +152,7 @@ public extension OWSTableItem {
                                       innerIconSize: CGFloat = 24) -> UIView {
         return buildIconInCircleView(icon: icon,
                                      innerIconSize: innerIconSize,
-                                     iconTintColor: Theme.accentBlueColor)
+                                     iconTintColor: .ows_accentBlue)
     }
 
     static func buildIconInCircleView(icon: ThemeIcon,
@@ -162,7 +162,7 @@ public extension OWSTableItem {
         if let iconTintColor = iconTintColor {
             iconView.tintColor = iconTintColor
         } else {
-            iconView.tintColor = Theme.accentBlueColor
+            iconView.tintColor = .ows_accentBlue
         }
         let iconWrapper = UIView.container()
         iconWrapper.addSubview(iconView)

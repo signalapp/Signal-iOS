@@ -206,7 +206,7 @@ typedef void (^CustomLayoutBlock)(void);
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, verifyUnverifyButton);
 
     UIView *verifyUnverifyPillbox = [UIView new];
-    verifyUnverifyPillbox.backgroundColor = Theme.accentBlueColor;
+    verifyUnverifyPillbox.backgroundColor = UIColor.ows_accentBlueColor;
     verifyUnverifyPillbox.layer.cornerRadius = 3.f;
     verifyUnverifyPillbox.clipsToBounds = YES;
     [verifyUnverifyButton addSubview:verifyUnverifyPillbox];

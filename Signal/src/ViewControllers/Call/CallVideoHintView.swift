@@ -25,7 +25,7 @@ class CallVideoHintView: UIView {
 
         let layerView = OWSLayerView()
         let shapeLayer = CAShapeLayer()
-        shapeLayer.fillColor = Theme.accentBlueColor.cgColor
+        shapeLayer.fillColor = UIColor.ows_accentBlue.cgColor
         layerView.layer.addSublayer(shapeLayer)
         addSubview(layerView)
         layerView.autoPinEdgesToSuperviewEdges()

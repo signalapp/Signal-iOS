@@ -155,13 +155,13 @@ public class ConversationStyle: NSObject {
     }
 
     @objc
-    public let bubbleColorOutgoingFailed = Theme.accentBlueColor
+    public let bubbleColorOutgoingFailed = UIColor.ows_accentBlue
 
     @objc
-    public let bubbleColorOutgoingSending = Theme.accentBlueColor
+    public let bubbleColorOutgoingSending = UIColor.ows_accentBlue
 
     @objc
-    public let bubbleColorOutgoingSent = Theme.accentBlueColor
+    public let bubbleColorOutgoingSent = UIColor.ows_accentBlue
 
     @objc
     public let dateBreakTextColor = UIColor.ows_gray60
@@ -249,7 +249,7 @@ public class ConversationStyle: NSObject {
         if Theme.isDarkThemeEnabled {
             return .ows_signalBlueDark
         } else {
-            return UIColor.ows_accentBlueTint
+            return .ows_accentBlueTint
         }
     }
 
@@ -257,12 +257,12 @@ public class ConversationStyle: NSObject {
     public func quotedReplyStripeColor(isIncoming: Bool) -> UIColor {
         if Theme.isDarkThemeEnabled {
             if isIncoming {
-                return UIColor.ows_accentBlueTint
+                return .ows_accentBlueTint
             } else {
                 return .ows_black
             }
         } else if isIncoming {
-            return Theme.accentBlueColor
+            return .ows_accentBlue
         } else {
             return .ows_white
         }

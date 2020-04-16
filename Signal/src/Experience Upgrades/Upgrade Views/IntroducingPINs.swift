@@ -132,7 +132,7 @@ class IntroducingPinsSplash: SplashViewController {
         let primaryButton = OWSFlatButton.button(title: primaryButtonTitle(),
                                                  font: UIFont.ows_dynamicTypeBody.ows_semibold(),
                                                  titleColor: .white,
-                                                 backgroundColor: Theme.accentBlueColor,
+                                                 backgroundColor: .ows_accentBlue,
                                                  target: self,
                                                  selector: #selector(didTapPrimaryButton))
         primaryButton.autoSetHeightUsingFont()

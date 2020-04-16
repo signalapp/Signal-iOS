@@ -107,7 +107,7 @@ NS_ASSUME_NONNULL_BEGIN
                                            @"Label for 'submit' button in the 2FA registration view.")
                                   font:[OWSFlatButton fontForHeight:kSubmitButtonHeight]
                             titleColor:[UIColor whiteColor]
-                       backgroundColor:Theme.accentBlueColor
+                       backgroundColor:UIColor.ows_accentBlueColor
                                 target:self
                               selector:@selector(submitButtonWasPressed)];
     self.submitButton = submitButton;

@@ -848,7 +848,7 @@ private class DoneButton: UIView {
     private lazy var badge: UIView = {
         let badge = PillView()
         badge.layoutMargins = UIEdgeInsets(top: 4, leading: 4, bottom: 4, trailing: 4)
-        badge.backgroundColor = Theme.accentBlueColor
+        badge.backgroundColor = .ows_accentBlue
         badge.addSubview(badgeLabel)
         badgeLabel.autoPinEdgesToSuperviewMargins()
 

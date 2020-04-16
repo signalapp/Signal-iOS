@@ -397,7 +397,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
                                                    @"Button to save the profile view in the profile view.")
                                           font:[OWSFlatButton fontForHeight:kButtonHeight]
                                     titleColor:[UIColor whiteColor]
-                               backgroundColor:Theme.accentBlueColor
+                               backgroundColor:UIColor.ows_accentBlueColor
                                         target:self
                                       selector:@selector(saveButtonPressed)];
             SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, saveButton);
@@ -506,11 +506,12 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
     if (self.hasUnsavedChanges || forceSaveButtonEnabled) {
         self.saveButton.enabled = YES;
-        [self.saveButton setBackgroundColorsWithUpColor:Theme.accentBlueColor];
+        [self.saveButton setBackgroundColorsWithUpColor:UIColor.ows_accentBlueColor];
     } else {
         self.saveButton.enabled = NO;
-        [self.saveButton setBackgroundColorsWithUpColor:[Theme.accentBlueColor blendedWithColor:Theme.backgroundColor
-                                                                                          alpha:0.5f]];
+        [self.saveButton
+            setBackgroundColorsWithUpColor:[UIColor.ows_accentBlueColor blendedWithColor:Theme.backgroundColor
+                                                                                   alpha:0.5f]];
     }
 }
 
