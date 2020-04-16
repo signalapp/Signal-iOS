@@ -4,6 +4,7 @@
 
 import Foundation
 import PromiseKit
+import SafariServices
 
 @objc
 public class NewGroupConfirmViewController: OWSViewController {
@@ -228,17 +229,17 @@ public class NewGroupConfirmViewController: OWSViewController {
                          modalActivityIndicator: ModalActivityIndicatorViewController) {
         AssertIsOnMainThread()
 
-        let navigateToNewGroup = {
+        let navigateToNewGroup = { (completion: (() -> Void)?) in
             SignalApp.shared().presentConversation(for: groupThread,
                                                    action: .compose,
                                                    animated: false)
-            self.presentingViewController?.dismiss(animated: true)
+            self.presentingViewController?.dismiss(animated: true, completion: completion)
         }
 
         let pendingMembers = groupThread.groupModel.groupMembership.pendingMembers
         guard let firstPendingMember = pendingMembers.first else {
             // No pending members.
-            return navigateToNewGroup()
+            return navigateToNewGroup(nil)
         }
 
         let alertTitle: String
@@ -262,17 +263,34 @@ public class NewGroupConfirmViewController: OWSViewController {
 
         actionSheet.addAction(ActionSheetAction(title: CommonStrings.learnMore,
                                                 style: .default) { _ in
-                                                    // GroupsV2 TODO:
-                                                    navigateToNewGroup()
+                                                    // We present the "learn more" view atop the
+                                                    // new conversation view to avoid users getting
+                                                    // stucks in the "create group" view.
+                                                    navigateToNewGroup {
+                                                        Self.showLearnMoreView()
+                                                    }
         })
         actionSheet.addAction(ActionSheetAction(title: CommonStrings.okayButton,
                                                 style: .default) { _ in
-                                                    navigateToNewGroup()
+                                                    navigateToNewGroup(nil)
         })
 
         modalActivityIndicator.dismiss {
             self.presentActionSheet(actionSheet)
         }
+    }
+
+    private class func showLearnMoreView() {
+        guard let url = URL(string: "https://support.signal.org/hc/articles/360007319331") else {
+            owsFailDebug("Invalid url.")
+            return
+        }
+        guard let fromViewController = CurrentAppContext().frontmostViewController() else {
+            owsFailDebug("Missing fromViewController.")
+            return
+        }
+        let vc = SFSafariViewController(url: url)
+        fromViewController.present(vc, animated: true, completion: nil)
     }
 }
 

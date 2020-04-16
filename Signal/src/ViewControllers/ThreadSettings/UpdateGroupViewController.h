@@ -15,6 +15,7 @@ typedef NS_ENUM(NSUInteger, UpdateGroupMode) {
     UpdateGroupModeEditGroupAvatar,
 };
 
+// GroupsV2 TODO: Remove this VC.
 @interface UpdateGroupViewController : OWSViewController
 
 @property (nonatomic, weak) id<OWSConversationSettingsViewDelegate> conversationSettingsViewDelegate;
