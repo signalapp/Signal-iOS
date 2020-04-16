@@ -39,7 +39,7 @@ public class TooltipView: UIView {
 
     public var bubbleColor: UIColor {
         owsFailDebug("Not implemented.")
-        return UIColor.ows_accentBlue
+        return Theme.accentBlueColor
     }
 
     public var bubbleInsets: UIEdgeInsets {

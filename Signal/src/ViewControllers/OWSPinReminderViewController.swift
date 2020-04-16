@@ -157,7 +157,7 @@ public class PinReminderViewController: OWSViewController {
                                      comment: "Label for the 'submit' button."),
             font: font,
             titleColor: .white,
-            backgroundColor: .ows_accentBlue,
+            backgroundColor: Theme.accentBlueColor,
             target: self,
             selector: #selector(submitPressed)
         )

@@ -523,7 +523,7 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
         if isPreExistingMember {
             imageView.setTemplateImageName("check-circle-solid-24", tintColor: Theme.washColor)
         } else if isCurrentMember {
-            imageView.setTemplateImageName("check-circle-solid-24", tintColor: .ows_accentBlue)
+            imageView.setTemplateImageName("check-circle-solid-24", tintColor: Theme.accentBlueColor)
         } else if isBlocked {
             // Use accessoryMessageForRecipient: to show blocked indicator.
             return nil

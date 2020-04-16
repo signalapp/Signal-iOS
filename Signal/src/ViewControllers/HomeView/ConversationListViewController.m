@@ -462,7 +462,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     OWSLayerView *layerView = [OWSLayerView new];
     layerView.layoutMargins = UIEdgeInsetsMake(11 + kTailHeight, 16, 11, 16);
     CAShapeLayer *shapeLayer = [CAShapeLayer new];
-    shapeLayer.fillColor = UIColor.ows_accentBlueColor.CGColor;
+    shapeLayer.fillColor = Theme.accentBlueColor.CGColor;
     [layerView.layer addSublayer:shapeLayer];
     layerView.layoutCallback = ^(UIView *view) {
         UIBezierPath *bezierPath = [UIBezierPath new];

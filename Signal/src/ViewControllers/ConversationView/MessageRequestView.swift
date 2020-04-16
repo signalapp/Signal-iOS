@@ -177,7 +177,7 @@ class MessageRequestView: UIStackView {
                 },
                 prepareButton(title: NSLocalizedString("MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON",
                                                        comment: "A button used to unlock a blocked conversation."),
-                              titleColor: .ows_accentBlue) { [weak self] in
+                              titleColor: Theme.accentBlueColor) { [weak self] in
                                 self?.delegate?.messageRequestViewDidTapUnblock(mode: mode)
                 }]
         } else if hasSentMessages {
@@ -188,7 +188,7 @@ class MessageRequestView: UIStackView {
                 },
                 prepareButton(title: NSLocalizedString("MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON",
                                                        comment: "A button used to share your profile with an existing thread."),
-                              titleColor: .ows_accentBlue) { [weak self] in
+                              titleColor: Theme.accentBlueColor) { [weak self] in
                                 // This is the same action as accepting the message request, but displays
                                 // with slightly different visuals if the user has already been messaging
                                 // this user in the past but didn't share their profile.
@@ -208,7 +208,7 @@ class MessageRequestView: UIStackView {
                 },
                 prepareButton(title: NSLocalizedString("MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON",
                                                        comment: "A button used to accept a user on an incoming message request."),
-                              titleColor: .ows_accentBlue) { [weak self] in
+                              titleColor: Theme.accentBlueColor) { [weak self] in
                                 self?.delegate?.messageRequestViewDidTapAccept(mode: mode)
                 }]
         }
@@ -257,7 +257,7 @@ class MessageRequestView: UIStackView {
             },
             prepareButton(title: NSLocalizedString("MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON",
                                                    comment: "A button used to accept a user on an incoming message request."),
-                          titleColor: .ows_accentBlue) { [weak self] in
+                          titleColor: Theme.accentBlueColor) { [weak self] in
                             self?.delegate?.messageRequestViewDidTapAccept(mode: mode)
             }]
         return prepareButtonStack(buttons)

@@ -62,7 +62,7 @@ public class StickerTooltip: TooltipView {
 
     public override var bubbleColor: UIColor {
         return (Theme.isDarkThemeEnabled
-            ? UIColor.ows_accentBlue
+            ? Theme.accentBlueColor
             : Theme.backgroundColor)
     }
 

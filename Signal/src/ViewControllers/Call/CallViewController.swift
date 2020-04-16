@@ -335,7 +335,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
                                                                               comment: "Label for button that shows the privacy settings."),
                                                       font: OWSFlatButton.fontForHeight(buttonHeight),
                                                       titleColor: UIColor.white,
-                                                      backgroundColor: UIColor.ows_accentBlue,
+                                                      backgroundColor: Theme.accentBlueColor,
                                                       target: self,
                                                       selector: #selector(didPressShowCallSettings))
         viewStack.addSubview(callSettingsButton)
@@ -347,7 +347,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
                                                                         comment: "Label for button that dismiss the call view's settings nag."),
                                                 font: OWSFlatButton.fontForHeight(buttonHeight),
                                                 titleColor: UIColor.white,
-                                                backgroundColor: UIColor.ows_accentBlue,
+                                                backgroundColor: Theme.accentBlueColor,
                                                 target: self,
                                                 selector: #selector(didPressDismissNag))
         viewStack.addSubview(notNowButton)

@@ -47,7 +47,7 @@ public class MessageSelectionView: UIView {
 
         let image = #imageLiteral(resourceName: "check-circle-solid-24").withRenderingMode(.alwaysTemplate)
         let imageView = UIImageView(image: image)
-        imageView.tintColor = .ows_accentBlue
+        imageView.tintColor = Theme.accentBlueColor
         wrapper.addSubview(imageView)
         imageView.autoPinEdgesToSuperviewEdges()
 

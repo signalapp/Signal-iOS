@@ -77,13 +77,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (UILabel *)createForgotLink
 {
     UILabel *label = [UILabel new];
-    label.textColor = UIColor.ows_accentBlueColor;
+    label.textColor = Theme.accentBlueColor;
     NSString *text = NSLocalizedString(
         @"REGISTER_2FA_FORGOT_PIN", @"Label for 'I forgot my PIN' link in the 2FA registration view.");
     label.attributedText = [[NSAttributedString alloc]
         initWithString:text
             attributes:@{
-                NSForegroundColorAttributeName : UIColor.ows_accentBlueColor,
+                NSForegroundColorAttributeName : Theme.accentBlueColor,
                 NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid)
             }];
     label.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(14.f, 16.f)];
@@ -107,7 +107,7 @@ NS_ASSUME_NONNULL_BEGIN
                                            @"Label for 'submit' button in the 2FA registration view.")
                                   font:[OWSFlatButton fontForHeight:kSubmitButtonHeight]
                             titleColor:[UIColor whiteColor]
-                       backgroundColor:UIColor.ows_accentBlueColor
+                       backgroundColor:Theme.accentBlueColor
                                 target:self
                               selector:@selector(submitButtonWasPressed)];
     self.submitButton = submitButton;
