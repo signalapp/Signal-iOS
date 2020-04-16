@@ -297,26 +297,23 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
                                  remainingRetries:(int)remainingRetries
 {
     BOOL isUsingFullAPNs = [NSUserDefaults.standardUserDefaults boolForKey:@"isUsingFullAPNs"];
-    if (isUsingFullAPNs) {
-        [LKPushNotificationManager registerWithToken:pushToken hexEncodedPublicKey:self.localNumber]
-        .then(^() {
-            successHandler();
-        })
-        .catch(^(NSError *error) {
-            if (remainingRetries > 0) {
-                [self registerForPushNotificationsWithPushToken:pushToken
-                                                      voipToken:voipToken
-                                                        success:successHandler
-                                                        failure:failureHandler
-                                               remainingRetries:remainingRetries - 1];
-            } else {
-                if (!IsNSErrorNetworkFailure(error)) {
-                    OWSProdError([OWSAnalyticsEvents accountsErrorRegisterPushTokensFailed]);
-                }
-                failureHandler(error);
+    AnyPromise *promise = isUsingFullAPNs ? [LKPushNotificationManager registerWithToken:pushToken hexEncodedPublicKey:self.localNumber]
+        : [LKPushNotificationManager registerWithToken:pushToken];
+    promise
+    .then(^() {
+        successHandler();
+    })
+    .catch(^(NSError *error) {
+        if (remainingRetries > 0) {
+            [self registerForPushNotificationsWithPushToken:pushToken voipToken:voipToken success:successHandler failure:failureHandler
+                remainingRetries:remainingRetries - 1];
+        } else {
+            if (!IsNSErrorNetworkFailure(error)) {
+                OWSProdError([OWSAnalyticsEvents accountsErrorRegisterPushTokensFailed]);
             }
-        });
-    }
+            failureHandler(error);
+        }
+    });
 }
 
 - (void)registerWithPhoneNumber:(NSString *)phoneNumber

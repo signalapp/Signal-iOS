@@ -143,13 +143,13 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         isViewVisible = true
-//        let hasSeenOpenGroupSuggestionSheet = UserDefaults.standard[.hasSeenOpenGroupSuggestionSheet]
-//        if !hasSeenOpenGroupSuggestionSheet {
-//            let openGroupSuggestionSheet = OpenGroupSuggestionSheet()
-//            openGroupSuggestionSheet.modalPresentationStyle = .overFullScreen
-//            openGroupSuggestionSheet.modalTransitionStyle = .crossDissolve
-//            present(openGroupSuggestionSheet, animated: true, completion: nil)
-//        }
+        let hasSeenPNModeSheet = UserDefaults.standard[.hasSeenPNModeSheet]
+        if !hasSeenPNModeSheet {
+            let pnModeSheet = PNModeSheet()
+            pnModeSheet.modalPresentationStyle = .overFullScreen
+            pnModeSheet.modalTransitionStyle = .crossDissolve
+            present(pnModeSheet, animated: true, completion: nil)
+        }
         UserDefaults.standard[.hasLaunchedOnce] = true
     }
     
