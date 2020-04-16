@@ -710,14 +710,22 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 {
     OWSAssertIsOnMainThread();
 
+    BOOL hadLoadedContacts = self.hasLoadedContacts;
+    if (shouldSetHasLoadedContacts) {
+        _hasLoadedContacts = YES;
+    }
+
     if ([signalAccounts isEqual:self.signalAccounts]) {
         OWSLogDebug(@"SignalAccounts unchanged.");
         self.isSetup = YES;
-        return;
-    }
 
-    if (shouldSetHasLoadedContacts) {
-        _hasLoadedContacts = YES;
+        if (hadLoadedContacts != self.hasLoadedContacts) {
+            [[NSNotificationCenter defaultCenter]
+                postNotificationNameAsync:OWSContactsManagerSignalAccountsDidChangeNotification
+                                   object:nil];
+        }
+
+        return;
     }
 
     NSMutableArray<SignalServiceAddress *> *allAddresses = [NSMutableArray new];

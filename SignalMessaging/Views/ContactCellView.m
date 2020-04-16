@@ -16,7 +16,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-const CGFloat kContactCellAvatarTextMargin = 12;
+const CGFloat kContactCellAvatarTextMargin = 8;
 
 @interface ContactCellView ()
 
@@ -118,10 +118,10 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 
 - (void)configureFontsAndColors
 {
-    self.nameLabel.font = [UIFont ows_dynamicTypeBodyFont];
+    self.nameLabel.font = OWSTableItem.primaryLabelFont;
     self.profileNameLabel.font = [UIFont ows_regularFontWithSize:11.f];
     self.subtitleLabel.font = [UIFont ows_regularFontWithSize:11.f];
-    self.accessoryLabel.font = [UIFont ows_semiboldFontWithSize:13.f];
+    self.accessoryLabel.font = [UIFont ows_semiboldFontWithSize:12.f];
 
     self.nameLabel.textColor = Theme.primaryTextColor;
     self.profileNameLabel.textColor = Theme.secondaryTextAndIconColor;

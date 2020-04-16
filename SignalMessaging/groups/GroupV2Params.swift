@@ -63,7 +63,7 @@ public extension GroupV2Params {
         let clientZkGroupCipher = ClientZkGroupCipher(groupSecretParams: groupSecretParams)
         let plaintext = try clientZkGroupCipher.decryptBlob(blobCiphertext: [UInt8](ciphertext)).asData
         assert(ciphertext != plaintext)
-        return ciphertext
+        return plaintext
     }
 
     func uuid(forUserId userId: Data) throws -> UUID {

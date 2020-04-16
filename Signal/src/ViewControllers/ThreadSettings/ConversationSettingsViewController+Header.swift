@@ -127,6 +127,7 @@ extension ConversationSettingsViewController {
             }
             header.isUserInteractionEnabled = true
             header.accessibilityIdentifier = UIView.accessibilityIdentifier(in: viewController, name: "mainSectionHeader")
+            header.addBackgroundView(withBackgroundColor: Theme.backgroundColor)
 
             return header
         }
@@ -139,7 +140,7 @@ extension ConversationSettingsViewController {
                                                                 comment: "Format for the 'group member count' indicator in conversation settings view. Embeds {the number of group members}."),
                                       OWSFormat.formatInt(groupThread.groupModel.groupMembership.nonPendingMembers.count))
         builder.addSubtitleLabel(text: groupMembersText,
-                                 font: .ows_dynamicTypeBody)
+                                 font: .ows_dynamicTypeSubheadline)
 
         builder.addLastSubviews()
 

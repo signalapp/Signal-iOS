@@ -240,6 +240,9 @@ extension GroupAttributesEditorHelper: UITextFieldDelegate {
         let maxReplacementLength = GroupManager.maxGroupNameLength - Int(left.count + right.count)
         let center = replacementString.substring(to: maxReplacementLength)
         textField.text = (left + center + right)
+
+        delegate?.groupAttributesEditorContentsDidChange()
+
         // Place the cursor after the truncated replacement.
         let positionAfterChange = left.count + center.count
         guard let position = textField.position(from: textField.beginningOfDocument, offset: positionAfterChange) else {

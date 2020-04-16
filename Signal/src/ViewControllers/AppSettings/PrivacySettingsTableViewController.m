@@ -391,7 +391,7 @@ NS_ASSUME_NONNULL_BEGIN
                         UILabel *label = [UILabel new];
                         label.text
                             = NSLocalizedString(@"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS", @"switch label");
-                        label.font = [UIFont ows_regularFontWithSize:18.f];
+                        label.font = OWSTableItem.primaryLabelFont;
                         label.textColor = Theme.primaryTextColor;
                         [label setContentHuggingHorizontalHigh];
 
