@@ -32,6 +32,8 @@ NS_ASSUME_NONNULL_BEGIN
         @"CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE", @"Title for the 'censorship circumvention country' view.");
 
     self.view.backgroundColor = Theme.tableViewBackgroundColor;
+    self.tableViewController.tableView.backgroundColor = Theme.tableViewBackgroundColor;
+    self.tableViewController.customCellBackgroundColor = Theme.tableCellBackgroundColor;
 
     [self createViews];
 }

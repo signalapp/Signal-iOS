@@ -108,7 +108,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 
 + (void)configureCell:(UITableViewCell *)cell
 {
-    cell.backgroundColor = Theme.tableCellBackgroundColor;
+    cell.backgroundColor = Theme.backgroundColor;
     cell.textLabel.font = OWSTableItem.primaryLabelFont;
     cell.textLabel.textColor = Theme.primaryTextColor;
     cell.detailTextLabel.textColor = Theme.secondaryTextAndIconColor;
@@ -634,8 +634,11 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 
     item.tableViewController = self;
 
-    UITableViewCell *customCell = [item customCell];
-    if (customCell) {
+    UITableViewCell *_Nullable customCell = [item customCell];
+    if (customCell != nil) {
+        if (self.customCellBackgroundColor != nil) {
+            customCell.backgroundColor = self.customCellBackgroundColor;
+        }
         return customCell;
     }
 
@@ -644,6 +647,10 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
     [OWSTableItem configureCell:cell];
 
     cell.textLabel.text = item.title;
+
+    if (self.customCellBackgroundColor != nil) {
+        cell.backgroundColor = self.customCellBackgroundColor;
+    }
 
     return cell;
 }

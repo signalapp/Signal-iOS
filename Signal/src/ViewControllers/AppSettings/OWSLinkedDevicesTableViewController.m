@@ -305,12 +305,14 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
             = NSLocalizedString(@"LINK_NEW_DEVICE_SUBTITLE", @"Subheading for 'Link New Device' navigation");
         cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
         cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(OWSLinkedDevicesTableViewController, @"add");
+        cell.backgroundColor = Theme.tableCellBackgroundColor;
         return cell;
     } else if (indexPath.section == OWSLinkedDevicesTableViewControllerSectionExistingDevices) {
         OWSDeviceTableViewCell *cell =
             [tableView dequeueReusableCellWithIdentifier:@"ExistingDevice" forIndexPath:indexPath];
         OWSDevice *device = [self deviceForRowAtIndexPath:indexPath];
         [cell configureWithDevice:device];
+        cell.backgroundColor = Theme.tableCellBackgroundColor;
         return cell;
     } else {
         OWSLogError(@"Unknown section: %@", indexPath);

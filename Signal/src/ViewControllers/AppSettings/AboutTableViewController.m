@@ -35,6 +35,7 @@
 
     self.view.backgroundColor = Theme.tableViewBackgroundColor;
     self.tableView.backgroundColor = Theme.tableViewBackgroundColor;
+    self.customCellBackgroundColor = Theme.tableCellBackgroundColor;
 
     [self updateTableContents];
 

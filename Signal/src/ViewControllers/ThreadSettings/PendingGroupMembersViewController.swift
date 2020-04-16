@@ -54,6 +54,7 @@ public class PendingGroupMembersViewController: OWSTableViewController {
 
         view.backgroundColor = Theme.tableViewBackgroundColor
         tableView.backgroundColor = Theme.tableViewBackgroundColor
+        self.customCellBackgroundColor = Theme.tableCellBackgroundColor
 
         updateTableContents()
     }
