@@ -149,6 +149,8 @@ class ConversationSettingsViewController: OWSTableViewController {
                 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE", comment: "Navbar title when viewing settings for a 1-on-1 thread")
         }
 
+        view.backgroundColor = Theme.tableViewBackgroundColor
+        tableView.backgroundColor = Theme.tableViewBackgroundColor
         tableView.estimatedRowHeight = 45
         tableView.rowHeight = UITableView.automaticDimension
 
@@ -199,7 +201,7 @@ class ConversationSettingsViewController: OWSTableViewController {
         if showVerificationOnAppear {
             showVerificationOnAppear = false
             if isGroupThread {
-                showGroupMembersView()
+                showAllGroupMembers()
             } else {
                 showVerificationView()
             }
@@ -353,16 +355,6 @@ class ConversationSettingsViewController: OWSTableViewController {
         let contactAddress = contactThread.contactAddress
         assert(contactAddress.isValid)
         FingerprintViewController.present(from: self, address: contactAddress)
-    }
-
-    func showGroupMembersView() {
-        guard let groupThread = thread as? TSGroupThread else {
-            owsFailDebug("Invalid thread.")
-            return
-        }
-        let showGroupMembersViewController = ShowGroupMembersViewController()
-        showGroupMembersViewController.config(with: groupThread)
-        navigationController?.pushViewController(showGroupMembersViewController, animated: true)
     }
 
     func showSoundSettingsView() {

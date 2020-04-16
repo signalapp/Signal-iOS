@@ -127,7 +127,7 @@ extension ConversationSettingsViewController {
             }
             header.isUserInteractionEnabled = true
             header.accessibilityIdentifier = UIView.accessibilityIdentifier(in: viewController, name: "mainSectionHeader")
-            header.addBackgroundView(withBackgroundColor: Theme.tableCellBackgroundColor)
+            header.addBackgroundView(withBackgroundColor: Theme.tableViewBackgroundColor)
 
             return header
         }

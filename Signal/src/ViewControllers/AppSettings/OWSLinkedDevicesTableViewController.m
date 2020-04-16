@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSLinkedDevicesTableViewController.h"
@@ -50,6 +50,9 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
     [super viewDidLoad];
 
     self.title = NSLocalizedString(@"LINKED_DEVICES_TITLE", @"Menu item and navbar title for the device manager");
+
+    self.view.backgroundColor = Theme.tableViewBackgroundColor;
+    self.tableView.backgroundColor = Theme.tableViewBackgroundColor;
 
     self.isExpectingMoreDevices = NO;
     self.tableView.rowHeight = UITableViewAutomaticDimension;

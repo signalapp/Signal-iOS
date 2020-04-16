@@ -52,6 +52,9 @@ public class PendingGroupMembersViewController: OWSTableViewController {
         title = NSLocalizedString("PENDING_GROUP_MEMBERS_VIEW_TITLE",
                                   comment: "The title for the 'pending group members' view.")
 
+        view.backgroundColor = Theme.tableViewBackgroundColor
+        tableView.backgroundColor = Theme.tableViewBackgroundColor
+
         updateTableContents()
     }
 

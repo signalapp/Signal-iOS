@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "NotificationSettingsViewController.h"
@@ -8,6 +8,7 @@
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSPreferences.h>
 #import <SignalMessaging/OWSSounds.h>
+#import <SignalMessaging/Theme.h>
 #import <SignalMessaging/UIUtil.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
@@ -18,6 +19,9 @@
     [super viewDidLoad];
 
     [self setTitle:NSLocalizedString(@"SETTINGS_NOTIFICATIONS", nil)];
+
+    self.view.backgroundColor = Theme.tableViewBackgroundColor;
+    self.tableView.backgroundColor = Theme.tableViewBackgroundColor;
 
     [self updateTableContents];
 }
