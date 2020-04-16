@@ -56,6 +56,9 @@ NS_ASSUME_NONNULL_BEGIN
 {
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
 
+    self.view.backgroundColor = Theme.tableViewBackgroundColor;
+    self.tableView.backgroundColor = Theme.tableViewBackgroundColor;
+    self.useThemeCellBackgroundColor = YES;
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableView.estimatedRowHeight = 60;
 

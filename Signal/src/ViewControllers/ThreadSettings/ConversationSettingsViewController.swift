@@ -136,13 +136,15 @@ class ConversationSettingsViewController: OWSTableViewController {
         return false
     }
 
+    class var headerBackgroundColor: UIColor {
+        return (Theme.isDarkThemeEnabled ? Theme.tableViewBackgroundColor : Theme.tableCellBackgroundColor)
+    }
+
     // MARK: - View Lifecycle
 
     @objc
     public override func viewDidLoad() {
         super.viewDidLoad()
-
-        view.backgroundColor = Theme.backgroundColor
 
         if isGroupThread {
             updateNavigationBar()
@@ -151,14 +153,16 @@ class ConversationSettingsViewController: OWSTableViewController {
                 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE", comment: "Navbar title when viewing settings for a 1-on-1 thread")
         }
 
+        view.backgroundColor = Theme.tableViewBackgroundColor
+        tableView.backgroundColor = Theme.tableViewBackgroundColor
+        self.useThemeCellBackgroundColor = true
         tableView.estimatedRowHeight = 45
         tableView.rowHeight = UITableView.automaticDimension
-        tableView.backgroundColor = Theme.secondaryBackgroundColor
 
         // The header should "extend" offscreen so that we
         // don't see the root view's background color if we scroll down.
         let backgroundTopView = UIView()
-        backgroundTopView.backgroundColor = Theme.backgroundColor
+        backgroundTopView.backgroundColor = Self.headerBackgroundColor
         tableView.addSubview(backgroundTopView)
         backgroundTopView.autoPinEdge(.leading, to: .leading, of: view, withOffset: 0)
         backgroundTopView.autoPinEdge(.trailing, to: .trailing, of: view, withOffset: 0)
@@ -202,7 +206,7 @@ class ConversationSettingsViewController: OWSTableViewController {
         if showVerificationOnAppear {
             showVerificationOnAppear = false
             if isGroupThread {
-                showGroupMembersView()
+                showAllGroupMembers()
             } else {
                 showVerificationView()
             }
@@ -356,16 +360,6 @@ class ConversationSettingsViewController: OWSTableViewController {
         let contactAddress = contactThread.contactAddress
         assert(contactAddress.isValid)
         FingerprintViewController.present(from: self, address: contactAddress)
-    }
-
-    func showGroupMembersView() {
-        guard let groupThread = thread as? TSGroupThread else {
-            owsFailDebug("Invalid thread.")
-            return
-        }
-        let showGroupMembersViewController = ShowGroupMembersViewController()
-        showGroupMembersViewController.config(with: groupThread)
-        navigationController?.pushViewController(showGroupMembersViewController, animated: true)
     }
 
     func showSoundSettingsView() {

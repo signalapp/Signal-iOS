@@ -374,7 +374,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
                                      initWithString:CommonStrings.learnMore
                                          attributes:@{
                                              NSUnderlineStyleAttributeName : @(NSUnderlineStyleNone),
-                                             NSForegroundColorAttributeName : UIColor.ows_accentBlueColor,
+                                             NSForegroundColorAttributeName : Theme.accentBlueColor,
                                          }]];
     infoLabel.attributedText = text;
     infoLabel.numberOfLines = 0;
@@ -716,7 +716,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     } else {
         self.usernameLabel.text = NSLocalizedString(@"PROFILE_VIEW_CREATE_USERNAME",
             @"A string indicating that the user can create a username on the profile view.");
-        self.usernameLabel.textColor = UIColor.ows_accentBlueColor;
+        self.usernameLabel.textColor = Theme.accentBlueColor;
     }
 }
 

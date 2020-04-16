@@ -167,7 +167,7 @@ public extension OWSTableItem {
         let iconWrapper = UIView.container()
         iconWrapper.addSubview(iconView)
         iconView.autoCenterInSuperview()
-        iconWrapper.backgroundColor = Theme.washColor
+        iconWrapper.backgroundColor = Theme.isDarkThemeEnabled ? UIColor.ows_gray80 : Theme.washColor
         iconWrapper.layer.cornerRadius = CGFloat(kStandardAvatarSize) * 0.5
         iconWrapper.autoSetDimensions(to: CGSize(square: CGFloat(kStandardAvatarSize)))
         iconWrapper.setCompressionResistanceHigh()

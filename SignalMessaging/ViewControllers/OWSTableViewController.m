@@ -108,7 +108,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 
 + (void)configureCell:(UITableViewCell *)cell
 {
-    cell.backgroundColor = [Theme backgroundColor];
+    cell.backgroundColor = Theme.backgroundColor;
     cell.textLabel.font = OWSTableItem.primaryLabelFont;
     cell.textLabel.textColor = Theme.primaryTextColor;
     cell.detailTextLabel.textColor = Theme.secondaryTextAndIconColor;
@@ -634,8 +634,11 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 
     item.tableViewController = self;
 
-    UITableViewCell *customCell = [item customCell];
-    if (customCell) {
+    UITableViewCell *_Nullable customCell = [item customCell];
+    if (customCell != nil) {
+        if (self.useThemeCellBackgroundColor) {
+            customCell.backgroundColor = Theme.tableCellBackgroundColor;
+        }
         return customCell;
     }
 
@@ -644,6 +647,10 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
     [OWSTableItem configureCell:cell];
 
     cell.textLabel.text = item.title;
+
+    if (self.useThemeCellBackgroundColor) {
+        customCell.backgroundColor = Theme.tableCellBackgroundColor;
+    }
 
     return cell;
 }
@@ -698,7 +705,7 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
         textView.textContainerInset = UIEdgeInsetsMake(6, tableEdgeInsets, 12, tableEdgeInsets);
 
         textView.linkTextAttributes = @{
-            NSForegroundColorAttributeName : UIColor.ows_accentBlueColor,
+            NSForegroundColorAttributeName : Theme.accentBlueColor,
             NSUnderlineStyleAttributeName : @(NSUnderlineStyleNone),
             NSFontAttributeName : UIFont.ows_dynamicTypeCaption1Font,
         };

@@ -60,7 +60,7 @@ public class OnboardingBaseViewController: OWSViewController {
     }
 
     func linkButton(title: String, selector: Selector) -> OWSFlatButton {
-        return button(title: title, selector: selector, titleColor: .ows_accentBlue, backgroundColor: .clear)
+        return button(title: title, selector: selector, titleColor: Theme.accentBlueColor, backgroundColor: .clear)
     }
 
     func shouldShowBackButton() -> Bool {

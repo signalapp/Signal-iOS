@@ -71,6 +71,12 @@ public extension UIColor {
         return UIColor(rgbHex: 0x2C6BED)
     }
 
+    @objc(ows_accentBlueDarkColor)
+    class var ows_accentBlueDark: UIColor {
+        // Ultramarine UI Light
+        return UIColor(rgbHex: 0x6191F3)
+    }
+
     @objc(ows_accentBlueTintColor)
     class var ows_accentBlueTint: UIColor {
         return UIColor(rgbHex: 0xB0C8F9)

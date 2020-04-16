@@ -119,7 +119,7 @@ extension ConversationSettingsViewController {
             let header = UIStackView(arrangedSubviews: subviews)
             header.axis = .vertical
             header.alignment = .center
-            header.layoutMargins = UIEdgeInsets(top: 0, leading: 18, bottom: 16, trailing: 18)
+            header.layoutMargins = UIEdgeInsets(top: 8, leading: 18, bottom: 16, trailing: 18)
             header.isLayoutMarginsRelativeArrangement = true
 
             if viewController.canEditConversationAttributes {
@@ -127,7 +127,7 @@ extension ConversationSettingsViewController {
             }
             header.isUserInteractionEnabled = true
             header.accessibilityIdentifier = UIView.accessibilityIdentifier(in: viewController, name: "mainSectionHeader")
-            header.addBackgroundView(withBackgroundColor: Theme.backgroundColor)
+            header.addBackgroundView(withBackgroundColor: ConversationSettingsViewController.headerBackgroundColor)
 
             return header
         }

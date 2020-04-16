@@ -249,6 +249,9 @@ const CGFloat kIconViewLength = 24;
 {
     [super viewDidLoad];
 
+    self.view.backgroundColor = Theme.tableViewBackgroundColor;
+    self.tableView.backgroundColor = Theme.tableViewBackgroundColor;
+    self.useThemeCellBackgroundColor = YES;
     self.tableView.estimatedRowHeight = 45;
     self.tableView.rowHeight = UITableViewAutomaticDimension;
 
@@ -934,6 +937,7 @@ const CGFloat kIconViewLength = 24;
 - (UIView *)mainSectionHeader
 {
     UIView *mainSectionHeader = [UIView new];
+    mainSectionHeader.backgroundColor = Theme.tableViewBackgroundColor;
     UIView *threadInfoView = [UIView containerView];
     [mainSectionHeader addSubview:threadInfoView];
     [threadInfoView autoPinWidthToSuperviewWithMargin:16.f];
