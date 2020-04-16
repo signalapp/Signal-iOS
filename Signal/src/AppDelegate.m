@@ -590,7 +590,9 @@ static BOOL isInternalTestVersion = NO;
     OWSLogInfo(@"Registering for push notifications with token: %@.", deviceToken);
     BOOL isUsingFullAPNs = [NSUserDefaults.standardUserDefaults boolForKey:@"isUsingFullAPNs"];
     if (isUsingFullAPNs) {
-        [LKPushNotificationManager registerWithToken:deviceToken hexEncodedPublicKey:self.tsAccountManager.localNumber];
+        __unused AnyPromise *promise = [LKPushNotificationManager registerWithToken:deviceToken hexEncodedPublicKey:self.tsAccountManager.localNumber];
+    } else {
+        __unused AnyPromise *promise = [LKPushNotificationManager registerWithToken:deviceToken];
     }
 }
 
