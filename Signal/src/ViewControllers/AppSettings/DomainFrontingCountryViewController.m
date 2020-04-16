@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.view.backgroundColor = Theme.tableViewBackgroundColor;
     self.tableViewController.tableView.backgroundColor = Theme.tableViewBackgroundColor;
-    self.tableViewController.customCellBackgroundColor = Theme.tableCellBackgroundColor;
+    self.tableViewController.useCustomCellBackgroundColor = YES;
 
     [self createViews];
 }

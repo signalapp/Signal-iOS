@@ -171,7 +171,7 @@ typedef BOOL (^OWSTableSwitchBlock)(void);
 
 @property (nonatomic) UITableViewStyle tableViewStyle;
 
-@property (nonatomic, nullable) UIColor *customCellBackgroundColor;
+@property (nonatomic) BOOL useCustomCellBackgroundColor;
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 

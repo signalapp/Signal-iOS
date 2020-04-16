@@ -155,7 +155,7 @@ class ConversationSettingsViewController: OWSTableViewController {
 
         view.backgroundColor = Theme.tableViewBackgroundColor
         tableView.backgroundColor = Theme.tableViewBackgroundColor
-        self.customCellBackgroundColor = Theme.tableCellBackgroundColor
+        self.useCustomCellBackgroundColor = true
         tableView.estimatedRowHeight = 45
         tableView.rowHeight = UITableView.automaticDimension
 

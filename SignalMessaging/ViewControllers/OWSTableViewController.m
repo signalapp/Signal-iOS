@@ -636,8 +636,8 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 
     UITableViewCell *_Nullable customCell = [item customCell];
     if (customCell != nil) {
-        if (self.customCellBackgroundColor != nil) {
-            customCell.backgroundColor = self.customCellBackgroundColor;
+        if (self.useCustomCellBackgroundColor) {
+            customCell.backgroundColor = Theme.tableCellBackgroundColor;
         }
         return customCell;
     }
@@ -648,8 +648,8 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 
     cell.textLabel.text = item.title;
 
-    if (self.customCellBackgroundColor != nil) {
-        cell.backgroundColor = self.customCellBackgroundColor;
+    if (self.useCustomCellBackgroundColor) {
+        customCell.backgroundColor = Theme.tableCellBackgroundColor;
     }
 
     return cell;
