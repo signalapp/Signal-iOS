@@ -317,7 +317,7 @@ const NSUInteger kMinimumSearchLength = 2;
     stackView.layoutMargins = UIEdgeInsetsMake(20, 20, 20, 20);
 
     UIView *view = [UIView new];
-    view.backgroundColor = Theme.backgroundColor;
+    view.backgroundColor = Theme.tableViewBackgroundColor;
     [view addSubview:stackView];
     [stackView autoPinWidthToSuperview];
     [stackView autoVCenterInSuperview];
@@ -1307,7 +1307,7 @@ const NSUInteger kMinimumSearchLength = 2;
 {
     OWSAssertIsOnMainThread();
 
-    self.view.backgroundColor = Theme.backgroundColor;
+    self.view.backgroundColor = Theme.tableViewBackgroundColor;
 }
 
 @end

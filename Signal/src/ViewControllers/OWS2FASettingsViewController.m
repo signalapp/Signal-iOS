@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super viewDidLoad];
 
-    self.view.backgroundColor = [Theme backgroundColor];
+    self.view.backgroundColor = Theme.tableViewBackgroundColor;
 
     self.title = NSLocalizedString(@"ENABLE_2FA_VIEW_TITLE", @"Title for the 'enable two factor auth PIN' views.");
 

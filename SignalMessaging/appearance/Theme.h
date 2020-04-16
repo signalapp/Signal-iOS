@@ -70,6 +70,7 @@ extern NSString *const ThemeDidChangeNotification;
 @property (class, readonly, nonatomic) UIColor *accentBlueColor;
 
 @property (class, readonly, nonatomic) UIColor *tableCellBackgroundColor;
+@property (class, readonly, nonatomic) UIColor *tableViewBackgroundColor;
 
 // In some contexts, e.g. media viewing/sending, we always use "dark theme" UI regardless of the
 // users chosen theme.

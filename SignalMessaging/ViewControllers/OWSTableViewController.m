@@ -848,8 +848,8 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 {
     OWSAssertIsOnMainThread();
 
-    self.view.backgroundColor = Theme.backgroundColor;
-    self.tableView.backgroundColor = Theme.backgroundColor;
+    self.view.backgroundColor = Theme.tableViewBackgroundColor;
+    self.tableView.backgroundColor = Theme.tableViewBackgroundColor;
     self.tableView.separatorColor = Theme.cellSeparatorColor;
 }
 

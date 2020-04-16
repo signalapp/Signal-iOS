@@ -104,7 +104,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super loadView];
 
-    self.view.backgroundColor = Theme.backgroundColor;
+    self.view.backgroundColor = Theme.tableViewBackgroundColor;
 
     [self.memberRecipients
         addObjectsFromArray:[self.thread.groupModel.groupMembers map:^(SignalServiceAddress *address) {
@@ -192,7 +192,7 @@ NS_ASSUME_NONNULL_BEGIN
     firstSectionHeader.userInteractionEnabled = YES;
     [firstSectionHeader
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(headerWasTapped:)]];
-    firstSectionHeader.backgroundColor = [Theme backgroundColor];
+    firstSectionHeader.backgroundColor = Theme.tableCellBackgroundColor;
     UIView *threadInfoView = [UIView new];
     [firstSectionHeader addSubview:threadInfoView];
     [threadInfoView autoPinWidthToSuperviewWithMargin:16.f];

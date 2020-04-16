@@ -104,7 +104,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.title = [MessageStrings newGroupDefaultTitle];
 
-    self.view.backgroundColor = Theme.backgroundColor;
+    self.view.backgroundColor = Theme.tableViewBackgroundColor;
 
     self.navigationItem.rightBarButtonItem =
         [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"NEW_GROUP_CREATE_BUTTON",
@@ -145,7 +145,7 @@ NS_ASSUME_NONNULL_BEGIN
     firstSectionHeader.userInteractionEnabled = YES;
     [firstSectionHeader
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(headerWasTapped:)]];
-    firstSectionHeader.backgroundColor = [Theme backgroundColor];
+    firstSectionHeader.backgroundColor = Theme.tableCellBackgroundColor;
     UIView *threadInfoView = [UIView new];
     [firstSectionHeader addSubview:threadInfoView];
     [threadInfoView autoPinWidthToSuperviewWithMargin:16.f];

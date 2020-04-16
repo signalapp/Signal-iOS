@@ -69,7 +69,7 @@ public class NewGroupConfirmViewController: OWSViewController {
         title = NSLocalizedString("NEW_GROUP_NAME_GROUP_VIEW_TITLE",
                                   comment: "The title for the 'name new group' view.")
 
-        view.backgroundColor = Theme.backgroundColor
+        view.backgroundColor = Theme.tableViewBackgroundColor
 
         navigationItem.rightBarButtonItem = UIBarButtonItem(title: NSLocalizedString("NEW_GROUP_CREATE_BUTTON",
                                                                                      comment: "The title for the 'create group' button."),
