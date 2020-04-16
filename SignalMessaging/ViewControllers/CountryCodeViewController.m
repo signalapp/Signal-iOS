@@ -34,7 +34,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.view.backgroundColor = Theme.tableViewBackgroundColor;
     self.tableView.backgroundColor = Theme.tableViewBackgroundColor;
-    self.useCustomCellBackgroundColor = YES;
+    self.useThemeCellBackgroundColor = YES;
     self.title = NSLocalizedString(@"COUNTRYCODE_SELECT_TITLE", @"");
 
     self.countryCodes = [PhoneNumberUtil countryCodesForSearchTerm:nil];

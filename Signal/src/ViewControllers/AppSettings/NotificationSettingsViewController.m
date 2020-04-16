@@ -22,7 +22,7 @@
 
     self.view.backgroundColor = Theme.tableViewBackgroundColor;
     self.tableView.backgroundColor = Theme.tableViewBackgroundColor;
-    self.useCustomCellBackgroundColor = YES;
+    self.useThemeCellBackgroundColor = YES;
 
     [self updateTableContents];
 }

@@ -51,7 +51,7 @@ class ReplaceAdminViewController: OWSTableViewController {
         view.backgroundColor = Theme.tableViewBackgroundColor
         tableView.backgroundColor = Theme.tableViewBackgroundColor
         tableView.separatorColor = .clear
-        self.useCustomCellBackgroundColor = true
+        self.useThemeCellBackgroundColor = true
 
         updateTableContents()
     }
