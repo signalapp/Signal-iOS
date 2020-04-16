@@ -10,6 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class ThreadViewModel;
 
+// GroupsV2 TODO: Remove this VC.
 @interface OWSConversationSettingsViewController : OWSTableViewController
 
 @property (nonatomic, weak) id<OWSConversationSettingsViewDelegate> conversationSettingsViewDelegate;

@@ -888,7 +888,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self.conversationSplitViewController.selectedConversationViewController dismissMessageActionsAnimated:YES];
 
     UIViewController *newGroupViewController
-        = (RemoteConfig.groupsV2CreateGroups ? [NewGroupViewController2 new] : [NewGroupViewController new]);
+        = (RemoteConfig.groupsV2CreateGroups ? [NewGroupMembersViewController new] : [NewGroupViewController new]);
 
     [self.contactsManager requestSystemContactsOnceWithCompletion:^(NSError *_Nullable error) {
         if (error) {
@@ -1566,7 +1566,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         [self.conversationSplitViewController closeSelectedConversationAnimated:YES];
     }
 
-    // GroupsV2 TODO: Should we leave v2 groups here?
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         if ([thread isKindOfClass:[TSGroupThread class]]) {
             TSGroupThread *groupThread = (TSGroupThread *)thread;

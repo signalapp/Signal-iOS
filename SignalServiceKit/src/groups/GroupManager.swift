@@ -238,7 +238,8 @@ public class GroupManager: NSObject {
         }.map(on: .global()) { () throws -> GroupMembership in
             // Build member list.
             //
-            // GroupsV2 TODO: Handle roles, etc.
+            // The group creator is an administrator;
+            // the other members are normal users.
             var builder = GroupMembership.Builder()
             builder.addNonPendingMembers(Set(membersParam), role: .normal)
             builder.remove(localAddress)
@@ -257,7 +258,6 @@ public class GroupManager: NSObject {
                 return groupMembership
             }
         }.map(on: .global()) { (proposedGroupMembership: GroupMembership) throws -> TSGroupModel in
-            // GroupsV2 TODO: Let users specify access levels in the "new group" view.
             let groupAccess = GroupAccess.defaultForV2
             let groupModel = try self.databaseStorage.read { (transaction) throws -> TSGroupModel in
                 // Before we create a v2 group, we need to separate out the
@@ -409,8 +409,8 @@ public class GroupManager: NSObject {
                 // canUseV2(...).  We will prevent this when
                 // updating existing groups in the UI.
                 //
-                // GroupsV2 TODO: This should probably throw after we rework
-                // the create and update group views.
+                // GroupsV2 TODO: This should throw after we require
+                // all new groups to be v2 groups.
                 owsFailDebug("Invalid address: \(address)")
                 continue
             }
@@ -790,7 +790,6 @@ public class GroupManager: NSObject {
                   description: "Update existing group") {
             GroupsV2Error.timeout
         }
-        // GroupsV2 TODO: Handle redundant change error.
     }
 
     // If dmConfiguration is nil, don't change the disappearing messages configuration.

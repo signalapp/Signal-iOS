@@ -6,6 +6,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+// GroupsV2 TODO: Remove this VC.
 @interface NewGroupViewController : OWSViewController
 
 - (void)generateNewSeed;

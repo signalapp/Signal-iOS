@@ -1781,7 +1781,6 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    // GroupsV2 TODO: We could move this into preprocessDataMessage.
     [self updateDisappearingMessageConfigurationWithEnvelope:envelope
                                                  dataMessage:dataMessage
                                                       thread:thread
