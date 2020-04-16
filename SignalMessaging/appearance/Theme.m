@@ -387,6 +387,11 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
     return Theme.isDarkThemeEnabled ? UIColor.ows_accentBlueDarkColor : UIColor.ows_accentBlueColor;
 }
 
++ (UIColor *)tableCellBackgroundColor
+{
+    return Theme.isDarkThemeEnabled ? UIColor.ows_gray90Color : Theme.backgroundColor;
+}
+
 + (UIColor *)darkThemeBackgroundColor
 {
     return UIColor.ows_gray95Color;

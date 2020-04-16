@@ -934,6 +934,7 @@ const CGFloat kIconViewLength = 24;
 - (UIView *)mainSectionHeader
 {
     UIView *mainSectionHeader = [UIView new];
+    mainSectionHeader.backgroundColor = Theme.tableCellBackgroundColor;
     UIView *threadInfoView = [UIView containerView];
     [mainSectionHeader addSubview:threadInfoView];
     [threadInfoView autoPinWidthToSuperviewWithMargin:16.f];

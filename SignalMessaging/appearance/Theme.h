@@ -69,6 +69,8 @@ extern NSString *const ThemeDidChangeNotification;
 //   It is brighter in dark mode, improving legibility.
 @property (class, readonly, nonatomic) UIColor *accentBlueColor;
 
+@property (class, readonly, nonatomic) UIColor *tableCellBackgroundColor;
+
 // In some contexts, e.g. media viewing/sending, we always use "dark theme" UI regardless of the
 // users chosen theme.
 @property (class, readonly, nonatomic) UIColor *darkThemeNavbarIconColor;

@@ -108,7 +108,7 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
 
 + (void)configureCell:(UITableViewCell *)cell
 {
-    cell.backgroundColor = [Theme backgroundColor];
+    cell.backgroundColor = Theme.tableCellBackgroundColor;
     cell.textLabel.font = OWSTableItem.primaryLabelFont;
     cell.textLabel.textColor = Theme.primaryTextColor;
     cell.detailTextLabel.textColor = Theme.secondaryTextAndIconColor;
