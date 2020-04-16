@@ -44,6 +44,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)reloadContent;
 
+- (void)clearSearchText;
+
 @end
 
 NS_ASSUME_NONNULL_END

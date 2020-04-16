@@ -687,6 +687,9 @@ extension ConversationSettingsViewController {
                     }
                     cell.setCustomName(NSLocalizedString("GROUP_MEMBER_LOCAL_USER",
                                                          comment: "Label indicating the local user."))
+                    cell.selectionStyle = .none
+                } else {
+                    cell.selectionStyle = .default
                 }
 
                 cell.configure(withRecipientAddress: memberAddress)
@@ -711,7 +714,10 @@ extension ConversationSettingsViewController {
                 return cell
                 },
                                      customRowHeight: UITableView.automaticDimension) { [weak self] in
-                                        self?.didSelectGroupMember(memberAddress)
+                                        let isLocalUser = memberAddress == localAddress
+                                        if !isLocalUser {
+                                            self?.didSelectGroupMember(memberAddress)
+                                        }
             })
         }
 

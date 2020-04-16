@@ -185,7 +185,7 @@ extension GroupAttributesViewController: AvatarViewHelperDelegate {
     }
 
     func hasClearAvatarAction() -> Bool {
-        return true
+        return helper.avatarCurrent != nil
     }
 
     func clearAvatar() {
