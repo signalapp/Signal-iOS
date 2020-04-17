@@ -604,7 +604,8 @@ class ConversationSettingsViewController: OWSTableViewController {
         }
         let groupMembership = groupModelV2.groupMembership
         guard groupMembership.isNonPendingMember(localAddress),
-            groupMembership.isAdministrator(localAddress) else {
+            groupMembership.isAdministrator(localAddress),
+            groupMembership.nonPendingAdministrators.count == 1 else {
                 return false
         }
         return true
