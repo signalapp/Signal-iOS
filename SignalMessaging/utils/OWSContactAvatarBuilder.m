@@ -150,14 +150,6 @@ NS_ASSUME_NONNULL_BEGIN
         return cachedAvatar;
     }
 
-    UIImage *_Nullable image = [self buildImageWithInitials];
-
-    [OWSContactAvatarBuilder.contactsManager.avatarCache setImage:image forKey:self.cacheKey diameter:self.diameter];
-    return image;
-}
-
-- (nullable UIImage *)buildImageWithInitials
-{
     UIColor *color = [OWSConversationColor conversationColorOrDefaultForColorName:self.colorName].themeColor;
     OWSAssertDebug(color);
 
@@ -178,8 +170,10 @@ NS_ASSUME_NONNULL_BEGIN
         CGFloat scaling = (self.diameter / (CGFloat)kStandardAvatarSize) * (28 / assetWidthPixels);
 
         CGSize iconSize = CGSizeScale(icon.size, scaling);
-        image =
-            [OWSAvatarBuilder avatarImageWithIcon:icon iconSize:iconSize backgroundColor:color diameter:self.diameter];
+        image = [OWSAvatarBuilder avatarImageWithIcon:icon
+                                             iconSize:iconSize
+                                      backgroundColor:color
+                                             diameter:self.diameter];
     } else {
         image = [OWSAvatarBuilder avatarImageWithInitials:self.contactInitials
                                           backgroundColor:color
@@ -191,6 +185,7 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
+    [OWSContactAvatarBuilder.contactsManager.avatarCache setImage:image forKey:self.cacheKey diameter:self.diameter];
     return image;
 }
 

@@ -680,13 +680,8 @@ extension ConversationSettingsViewController {
 
                 if isLocalUser {
                     // Use a custom avatar to avoid using the "note to self" icon.
-                    if let customAvatar = self.contactsManager.imageForAddress(withSneakyTransaction: localAddress) {
-                        cell.setCustomAvatar(customAvatar)
-                    } else {
-                        let avatarBuilder = OWSContactAvatarBuilder(forLocalUserWithDiameter: kStandardAvatarSize)
-                        let customAvatar = avatarBuilder.buildImageWithInitials()
-                        cell.setCustomAvatar(customAvatar)
-                    }
+                    let customAvatar = OWSProfileManager.shared().localProfileAvatarImage() ?? OWSContactAvatarBuilder(forLocalUserWithDiameter: kStandardAvatarSize).buildDefaultImage()
+                    cell.setCustomAvatar(customAvatar)
                     cell.setCustomName(NSLocalizedString("GROUP_MEMBER_LOCAL_USER",
                                                          comment: "Label indicating the local user."))
                     cell.selectionStyle = .none
@@ -785,7 +780,7 @@ extension ConversationSettingsViewController {
                                                                 itemName: cellName,
                                                                 accessoryText: accessoryText)
             cell.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "pending.members")
-            cell.accessoryType = .disclosureIndicator
+            cell.accessoryType = isLocalUserFullMember ? .disclosureIndicator : .none
             cell.selectionStyle = isLocalUserFullMember ? .default : .none
 
             return cell

@@ -29,8 +29,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initForLocalUserWithDiameter:(NSUInteger)diameter;
 
-- (nullable UIImage *)buildImageWithInitials;
-
 @end
 
 NS_ASSUME_NONNULL_END
