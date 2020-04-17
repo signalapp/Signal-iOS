@@ -27,10 +27,13 @@ NSString *const kAliceRecipientId = @"+13213214321";
 // private method we are testing
 - (void)throws_handleIncomingEnvelope:(SSKProtoEnvelope *)envelope
                       withSyncMessage:(SSKProtoSyncMessage *)syncMessage
+                        plaintextData:(NSData *)plaintextData
+                      wasReceivedByUD:(BOOL)wasReceivedByUD
                           transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)handleIncomingEnvelope:(SSKProtoEnvelope *)envelope
                withDataMessage:(SSKProtoDataMessage *)dataMessage
+                 plaintextData:(NSData *)plaintextData
                wasReceivedByUD:(BOOL)wasReceivedByUD
                    transaction:(SDSAnyWriteTransaction *)transaction;
 
@@ -100,6 +103,8 @@ NSString *const kAliceRecipientId = @"+13213214321";
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [self.messagesManager throws_handleIncomingEnvelope:[envelopeBuilder buildIgnoringErrors]
                                             withSyncMessage:[messageBuilder buildIgnoringErrors]
+                                              plaintextData:nil
+                                            wasReceivedByUD:NO
                                                 transaction:transaction];
     }];
 
@@ -135,6 +140,7 @@ NSString *const kAliceRecipientId = @"+13213214321";
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [self.messagesManager handleIncomingEnvelope:[envelopeBuilder buildIgnoringErrors]
                                      withDataMessage:[messageBuilder buildIgnoringErrors]
+                                       plaintextData:nil
                                      wasReceivedByUD:NO
                                          transaction:transaction];
     }];
@@ -179,6 +185,7 @@ NSString *const kAliceRecipientId = @"+13213214321";
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [self.messagesManager handleIncomingEnvelope:[envelopeBuilder buildIgnoringErrors]
                                      withDataMessage:[messageBuilder buildIgnoringErrors]
+                                       plaintextData:nil
                                      wasReceivedByUD:NO
                                          transaction:transaction];
     }];

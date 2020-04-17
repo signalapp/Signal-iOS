@@ -338,44 +338,6 @@ CREATE
 
 CREATE
     TABLE
-        IF NOT EXISTS "model_TSRecipientReadReceipt" (
-            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
-            ,"recordType" INTEGER NOT NULL
-            ,"uniqueId" TEXT NOT NULL UNIQUE
-                ON CONFLICT FAIL
-            ,"recipientMap" BLOB NOT NULL
-            ,"sentTimestamp" INTEGER NOT NULL
-        )
-;
-
-CREATE
-    INDEX "index_model_TSRecipientReadReceipt_on_uniqueId"
-        ON "model_TSRecipientReadReceipt"("uniqueId"
-)
-;
-
-CREATE
-    TABLE
-        IF NOT EXISTS "model_OWSLinkedDeviceReadReceipt" (
-            "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
-            ,"recordType" INTEGER NOT NULL
-            ,"uniqueId" TEXT NOT NULL UNIQUE
-                ON CONFLICT FAIL
-            ,"messageIdTimestamp" INTEGER NOT NULL
-            ,"readTimestamp" INTEGER NOT NULL
-            ,"senderPhoneNumber" TEXT
-            ,"senderUUID" TEXT
-        )
-;
-
-CREATE
-    INDEX "index_model_OWSLinkedDeviceReadReceipt_on_uniqueId"
-        ON "model_OWSLinkedDeviceReadReceipt"("uniqueId"
-)
-;
-
-CREATE
-    TABLE
         IF NOT EXISTS "model_OWSDevice" (
             "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
             ,"recordType" INTEGER NOT NULL
@@ -512,20 +474,6 @@ CREATE
 CREATE
     INDEX "index_user_profiles_on_username"
         ON "model_OWSUserProfile"("username"
-)
-;
-
-CREATE
-    INDEX "index_linkedDeviceReadReceipt_on_senderPhoneNumberAndTimestamp"
-        ON "model_OWSLinkedDeviceReadReceipt"("senderPhoneNumber"
-    ,"messageIdTimestamp"
-)
-;
-
-CREATE
-    INDEX "index_linkedDeviceReadReceipt_on_senderUUIDAndTimestamp"
-        ON "model_OWSLinkedDeviceReadReceipt"("senderUUID"
-    ,"messageIdTimestamp"
 )
 ;
 
@@ -852,13 +800,6 @@ CREATE
 ;
 
 CREATE
-    INDEX "index_model_IncomingGroupsV2MessageJob_on_groupId_and_id"
-        ON "model_IncomingGroupsV2MessageJob"("groupId"
-    ,"id"
-)
-;
-
-CREATE
     TABLE
         IF NOT EXISTS "model_ExperienceUpgrade" (
             "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
@@ -906,5 +847,12 @@ CREATE
     INDEX "index_model_TSInteraction_on_threadUniqueId_and_attachmentIds"
         ON "model_TSInteraction"("threadUniqueId"
     ,"attachmentIds"
+)
+;
+
+CREATE
+    INDEX "index_model_IncomingGroupsV2MessageJob_on_groupId_and_id"
+        ON "model_IncomingGroupsV2MessageJob"("groupId"
+    ,"id"
 )
 ;

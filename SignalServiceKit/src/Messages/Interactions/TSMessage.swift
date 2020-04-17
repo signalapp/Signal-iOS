@@ -71,6 +71,13 @@ public extension TSMessage {
 
     // MARK: - Remote Delete
 
+    @objc(OWSRemoteDeleteProcessingResult)
+    enum RemoteDeleteProcessingResult: Int, Error {
+        case deletedMessageMissing
+        case invalidDelete
+        case success
+    }
+
     @objc
     class func tryToRemotelyDeleteMessage(
         fromAddress authorAddress: SignalServiceAddress,
@@ -78,7 +85,7 @@ public extension TSMessage {
         threadUniqueId: String,
         serverTimestamp: UInt64,
         transaction: SDSAnyWriteTransaction
-    ) -> Bool {
+    ) -> RemoteDeleteProcessingResult {
         guard let messageToDelete = InteractionFinder.findMessage(
             withTimestamp: sentAtTimestamp,
             threadId: threadUniqueId,
@@ -87,29 +94,29 @@ public extension TSMessage {
         ) else {
             // The message doesn't exist locally, so nothing to do.
             Logger.info("Attempted to remotely delete a message that doesn't exist \(sentAtTimestamp)")
-            return false
+            return .deletedMessageMissing
         }
 
         guard let incomingMessageToDelete = messageToDelete as? TSIncomingMessage else {
             owsFailDebug("Only incoming messages can be deleted remotely")
-            return false
+            return .invalidDelete
         }
 
         guard let messageToDeleteServerTimestamp = incomingMessageToDelete.serverTimestamp?.uint64Value else {
             // Older messages might be missing this, but since we only allow deleting for a small
             // window after you send a message we should generally never hit this path.
             owsFailDebug("can't delete a message without a serverTimestamp")
-            return false
+            return .invalidDelete
         }
 
         guard messageToDeleteServerTimestamp < serverTimestamp else {
             owsFailDebug("Can't delete a message from the future.")
-            return false
+            return .invalidDelete
         }
 
         guard serverTimestamp - messageToDeleteServerTimestamp < kDayInMs else {
             owsFailDebug("Ignoring message delete sent more than a day after the original message")
-            return false
+            return .invalidDelete
         }
 
         incomingMessageToDelete.updateWithRemotelyDeletedAndRemoveRenderableContent(with: transaction)
@@ -118,6 +125,6 @@ public extension TSMessage {
             SSKEnvironment.shared.notificationsManager.cancelNotifications(messageId: incomingMessageToDelete.uniqueId)
         }
 
-        return true
+        return .success
     }
 }

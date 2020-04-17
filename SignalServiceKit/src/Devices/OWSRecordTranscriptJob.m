@@ -234,8 +234,9 @@ NS_ASSUME_NONNULL_BEGIN
     [[OWSDisappearingMessagesJob sharedJob] startAnyExpirationForMessage:outgoingMessage
                                                      expirationStartedAt:transcript.expirationStartedAt
                                                              transaction:transaction];
-    [self.readReceiptManager applyEarlyReadReceiptsForOutgoingMessageFromLinkedDevice:outgoingMessage
-                                                                          transaction:transaction];
+
+    [OWSEarlyMessageManager applyPendingMessagesFor:outgoingMessage transaction:transaction];
+
     if (outgoingMessage.isViewOnceMessage) {
         // To be extra-conservative, always mark
         [ViewOnceMessages markAsCompleteWithMessage:outgoingMessage sendSyncMessages:NO transaction:transaction];

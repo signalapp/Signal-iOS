@@ -93,8 +93,6 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         SignalRecipient.table,
         SignalAccount.table,
         OWSUserProfile.table,
-        TSRecipientReadReceipt.table,
-        OWSLinkedDeviceReadReceipt.table,
         OWSDevice.table,
         TestModel.table,
         OWSReaction.table,

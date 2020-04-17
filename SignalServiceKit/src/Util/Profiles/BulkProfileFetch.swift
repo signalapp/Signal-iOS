@@ -121,6 +121,8 @@ public class BulkProfileFetch: NSObject {
     private func process() {
         assertOnQueue(serialQueue)
 
+        guard !CurrentAppContext().isRunningTests else {  return }
+
         guard CurrentAppContext().isMainApp else {
             return
         }
