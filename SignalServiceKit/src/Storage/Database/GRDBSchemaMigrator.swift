@@ -66,6 +66,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addRemoteDeleteToInteractions
         case cdnKeyAndCdnNumber
         case addGroupIdToGroupsV2IncomingMessageJobs
+        case removeEarlyReceiptTables
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -94,7 +95,7 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 6
+    public static let grdbSchemaVersionLatest: UInt = 7
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -468,6 +469,15 @@ public class GRDBSchemaMigrator: NSObject {
             try db.create(index: "index_model_IncomingGroupsV2MessageJob_on_groupId_and_id",
                           on: "model_IncomingGroupsV2MessageJob",
                           columns: ["groupId", "id"])
+        }
+
+        migrator.registerMigration(MigrationId.removeEarlyReceiptTables.rawValue) { db in
+            try db.drop(table: "model_TSRecipientReadReceipt")
+            try db.drop(table: "model_OWSLinkedDeviceReadReceipt")
+
+            let transaction = GRDBWriteTransaction(database: db).asAnyWrite
+            let viewOnceStore = SDSKeyValueStore(collection: "viewOnceMessages")
+            viewOnceStore.removeAll(transaction: transaction)
         }
 
         // MARK: - Schema Migration Insertion Point
@@ -1064,19 +1074,6 @@ private func createV1Schema(db: Database) throws {
         index: "index_user_profiles_on_username",
         on: UserProfileRecord.databaseTableName,
         columns: [UserProfileRecord.columnName(.username)]
-    )
-
-    // Linked Device Read Receipts
-    try db.create(
-        index: "index_linkedDeviceReadReceipt_on_senderPhoneNumberAndTimestamp",
-        on: LinkedDeviceReadReceiptRecord.databaseTableName,
-        columns: [LinkedDeviceReadReceiptRecord.columnName(.senderPhoneNumber), LinkedDeviceReadReceiptRecord.columnName(.messageIdTimestamp)]
-    )
-
-    try db.create(
-        index: "index_linkedDeviceReadReceipt_on_senderUUIDAndTimestamp",
-        on: LinkedDeviceReadReceiptRecord.databaseTableName,
-        columns: [LinkedDeviceReadReceiptRecord.columnName(.senderUUID), LinkedDeviceReadReceiptRecord.columnName(.messageIdTimestamp)]
     )
 
     // Interaction Finder

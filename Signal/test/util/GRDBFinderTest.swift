@@ -192,57 +192,6 @@ class GRDBFinderTest: SignalBaseTest {
         }
     }
 
-    func testAnyLinkedDeviceReadReceiptFinder() {
-        let messageIdTimestamp: UInt64 = 123456
-        let readTimestamp: UInt64 = 234567
-
-        // We'll create OWSLinkedDeviceReadReceipt for these...
-        let address1 = SignalServiceAddress(phoneNumber: "+13213334444")
-        let address2 = SignalServiceAddress(uuid: UUID(), phoneNumber: "+13213334445")
-        let address3 = SignalServiceAddress(uuid: UUID(), phoneNumber: "+13213334446")
-        let address4 = SignalServiceAddress(uuid: UUID())
-        // ...but not these.
-        let address5 = SignalServiceAddress(phoneNumber: "+13213334447")
-        let address6 = SignalServiceAddress(uuid: UUID(), phoneNumber: "+13213334448")
-        let address7 = SignalServiceAddress(uuid: UUID())
-
-        self.write { transaction in
-            OWSLinkedDeviceReadReceipt(senderAddress: address1, messageIdTimestamp: messageIdTimestamp, readTimestamp: readTimestamp).anyInsert(transaction: transaction)
-            OWSLinkedDeviceReadReceipt(senderAddress: address2, messageIdTimestamp: messageIdTimestamp, readTimestamp: readTimestamp).anyInsert(transaction: transaction)
-            OWSLinkedDeviceReadReceipt(senderAddress: address3, messageIdTimestamp: messageIdTimestamp, readTimestamp: readTimestamp).anyInsert(transaction: transaction)
-            OWSLinkedDeviceReadReceipt(senderAddress: address4, messageIdTimestamp: messageIdTimestamp, readTimestamp: readTimestamp).anyInsert(transaction: transaction)
-        }
-
-        self.read { transaction in
-            // These should exist...
-            XCTAssertNotNil(AnyLinkedDeviceReadReceiptFinder().linkedDeviceReadReceipt(for: address1, andMessageIdTimestamp: messageIdTimestamp, transaction: transaction))
-            // If we save a OWSLinkedDeviceReadReceipt with just a phone number,
-            // we should later be able to look it up using a UUID & phone number,
-            XCTAssertNotNil(AnyLinkedDeviceReadReceiptFinder().linkedDeviceReadReceipt(for: SignalServiceAddress(uuid: UUID(), phoneNumber: address1.phoneNumber!), andMessageIdTimestamp: messageIdTimestamp, transaction: transaction))
-            XCTAssertNotNil(AnyLinkedDeviceReadReceiptFinder().linkedDeviceReadReceipt(for: address2, andMessageIdTimestamp: messageIdTimestamp, transaction: transaction))
-            // If we save a OWSLinkedDeviceReadReceipt with just a phone number and UUID,
-            // we should later be able to look it up using just a UUID.
-            XCTAssertNotNil(AnyLinkedDeviceReadReceiptFinder().linkedDeviceReadReceipt(for: SignalServiceAddress(uuid: address2.uuid!), andMessageIdTimestamp: messageIdTimestamp, transaction: transaction))
-            // If we save a OWSLinkedDeviceReadReceipt with just a phone number and UUID,
-            // we should later be able to look it up using just a phone number.
-            XCTAssertNotNil(AnyLinkedDeviceReadReceiptFinder().linkedDeviceReadReceipt(for: SignalServiceAddress(phoneNumber: address2.phoneNumber!), andMessageIdTimestamp: messageIdTimestamp, transaction: transaction))
-            XCTAssertNotNil(AnyLinkedDeviceReadReceiptFinder().linkedDeviceReadReceipt(for: address3, andMessageIdTimestamp: messageIdTimestamp, transaction: transaction))
-            XCTAssertNotNil(AnyLinkedDeviceReadReceiptFinder().linkedDeviceReadReceipt(for: SignalServiceAddress(uuid: address3.uuid!), andMessageIdTimestamp: messageIdTimestamp, transaction: transaction))
-            XCTAssertNotNil(AnyLinkedDeviceReadReceiptFinder().linkedDeviceReadReceipt(for: SignalServiceAddress(phoneNumber: address3.phoneNumber!), andMessageIdTimestamp: messageIdTimestamp, transaction: transaction))
-            XCTAssertNotNil(AnyLinkedDeviceReadReceiptFinder().linkedDeviceReadReceipt(for: address4, andMessageIdTimestamp: messageIdTimestamp, transaction: transaction))
-            // If we save a OWSLinkedDeviceReadReceipt with just a UUID,
-            // we should later be able to look it up using a UUID & phone number,
-            XCTAssertNotNil(AnyLinkedDeviceReadReceiptFinder().linkedDeviceReadReceipt(for: SignalServiceAddress(uuid: address4.uuid!, phoneNumber: "+1666777888"), andMessageIdTimestamp: messageIdTimestamp, transaction: transaction))
-
-            // ...these don't.
-            XCTAssertNil(AnyLinkedDeviceReadReceiptFinder().linkedDeviceReadReceipt(for: address5, andMessageIdTimestamp: messageIdTimestamp, transaction: transaction))
-            XCTAssertNil(AnyLinkedDeviceReadReceiptFinder().linkedDeviceReadReceipt(for: address6, andMessageIdTimestamp: messageIdTimestamp, transaction: transaction))
-            XCTAssertNil(AnyLinkedDeviceReadReceiptFinder().linkedDeviceReadReceipt(for: SignalServiceAddress(uuid: address6.uuid!), andMessageIdTimestamp: messageIdTimestamp, transaction: transaction))
-            XCTAssertNil(AnyLinkedDeviceReadReceiptFinder().linkedDeviceReadReceipt(for: SignalServiceAddress(phoneNumber: address6.phoneNumber!), andMessageIdTimestamp: messageIdTimestamp, transaction: transaction))
-            XCTAssertNil(AnyLinkedDeviceReadReceiptFinder().linkedDeviceReadReceipt(for: address7, andMessageIdTimestamp: messageIdTimestamp, transaction: transaction))
-        }
-    }
-
     func testAnyMessageContentJobFinder() {
 
         let finder = AnyMessageContentJobFinder()

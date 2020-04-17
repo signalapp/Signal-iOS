@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -147,50 +147,23 @@ public class ViewOnceMessages: NSObject {
         messageSenderJobQueue.add(message: syncMessage.asPreparer, transaction: transaction)
     }
 
+    @objc(OWSViewOnceSyncMessageProcessingResult)
+    public enum ViewOnceSyncMessageProcessingResult: Int, Error {
+        case associatedMessageMissing
+        case invalidSyncMessage
+        case success
+    }
+
     @objc
     public class func processIncomingSyncMessage(_ message: SSKProtoSyncMessageViewOnceOpen,
                                                  envelope: SSKProtoEnvelope,
-                                                 transaction: SDSAnyWriteTransaction) {
-
-        if tryToApplyIncomingSyncMessage(message,
-                                         envelope: envelope,
-                                         transaction: transaction) {
-            return
-        }
-
-        // Unpack and verify the proto & envelope contents.
-        guard let senderAddress = message.senderAddress, senderAddress.isValid else {
-            owsFailDebug("Invalid senderAddress.")
-            return
-        }
-        let messageIdTimestamp: UInt64 = message.timestamp
-        guard messageIdTimestamp > 0,
-        SDS.fitsInInt64(messageIdTimestamp) else {
-            owsFailDebug("Invalid messageIdTimestamp.")
-            return
-        }
-        let readTimestamp: UInt64 = envelope.timestamp
-        guard readTimestamp > 0,
-            SDS.fitsInInt64(readTimestamp) else {
-            owsFailDebug("Invalid readTimestamp.")
-            return
-        }
-
-        // Persist this "view-once read receipt".
-        let key = readReceiptKey(senderAddress: senderAddress, messageIdTimestamp: messageIdTimestamp)
-        store.setUInt64(readTimestamp, key: key, transaction: transaction)
-    }
-
-    // Returns true IFF the read receipt is applied to an existing message.
-    private class func tryToApplyIncomingSyncMessage(_ message: SSKProtoSyncMessageViewOnceOpen,
-                                                     envelope: SSKProtoEnvelope,
-                                                     transaction: SDSAnyWriteTransaction) -> Bool {
+                                                 transaction: SDSAnyWriteTransaction) -> ViewOnceSyncMessageProcessingResult {
         let messageSenderAddress = message.senderAddress
         let messageIdTimestamp: UInt64 = message.timestamp
         guard messageIdTimestamp > 0,
             SDS.fitsInInt64(messageIdTimestamp) else {
                 owsFailDebug("Invalid messageIdTimestamp.")
-                return false
+                return .invalidSyncMessage
         }
 
         let filter = { (interaction: TSInteraction) -> Bool in
@@ -218,10 +191,10 @@ public class ViewOnceMessages: NSObject {
             interactions = try InteractionFinder.interactions(withTimestamp: messageIdTimestamp, filter: filter, transaction: transaction)
         } catch {
             owsFailDebug("Couldn't find interactions: \(error)")
-            return false
+            return .invalidSyncMessage
         }
         guard interactions.count > 0 else {
-            return false
+            return .associatedMessageMissing
         }
         if interactions.count > 1 {
             owsFailDebug("More than one message from the same sender with the same timestamp found.")
@@ -236,35 +209,7 @@ public class ViewOnceMessages: NSObject {
                            sendSyncMessages: false,
                            transaction: transaction)
         }
-        return true
-    }
-
-    @objc
-    public class func applyEarlyReadReceipts(forIncomingMessage message: TSIncomingMessage,
-                                             transaction: SDSAnyWriteTransaction) {
-        guard message.isViewOnceMessage else {
-            return
-        }
-        guard let senderAddress = senderAddress(forMessage: message) else {
-            owsFailDebug("Could not apply early read receipts; no local number.")
-            return
-        }
-        let messageIdTimestamp: UInt64 = message.timestamp
-
-        // Check for persisted "view-once read receipt".
-        let key = readReceiptKey(senderAddress: senderAddress, messageIdTimestamp: messageIdTimestamp)
-        guard store.hasValue(forKey: key, transaction: transaction) else {
-            // No early read receipt applies, abort.
-            return
-        }
-
-        // Remove persisted "view-once read receipt".
-        store.removeValue(forKey: key, transaction: transaction)
-
-        // Mark as complete.
-        markAsComplete(message: message,
-                       sendSyncMessages: false,
-                       transaction: transaction)
+        return .success
     }
 
     private class func senderAddress(forMessage message: TSMessage) -> SignalServiceAddress? {
@@ -283,13 +228,6 @@ public class ViewOnceMessages: NSObject {
             owsFailDebug("Unexpected message type.")
             return nil
         }
-    }
-
-    private static let store = SDSKeyValueStore(collection: "viewOnceMessages")
-
-    private class func readReceiptKey(senderAddress: SignalServiceAddress,
-                                      messageIdTimestamp: UInt64) -> String {
-        return "\(senderAddress.stringForDisplay).\(messageIdTimestamp)"
     }
 }
 

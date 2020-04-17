@@ -520,10 +520,6 @@ NS_ASSUME_NONNULL_BEGIN
                 anyInsertWithTransaction:transaction];
         }
 
-        // TSRecipientReadReceipt
-        [[[TSRecipientReadReceipt alloc] initWithSentTimestamp:[NSDate ows_millisecondTimeStamp]]
-            anyInsertWithTransaction:transaction];
-
         // OWSMessageContentJob
         //
         // TODO: Generate real envelope data.
@@ -597,12 +593,6 @@ NS_ASSUME_NONNULL_BEGIN
                                     deviceId:1
                                   lastSeenAt:[NSDate new]
                                         name:nil] anyInsertWithTransaction:transaction];
-
-        // OWSLinkedDeviceReadReceipt
-        [[[OWSLinkedDeviceReadReceipt alloc] initWithSenderAddress:address1
-                                                messageIdTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                     readTimestamp:[NSDate ows_millisecondTimeStamp]]
-            anyInsertWithTransaction:transaction];
 
         // SSKJobRecord
         //

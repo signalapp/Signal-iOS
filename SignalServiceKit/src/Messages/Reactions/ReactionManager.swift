@@ -65,6 +65,13 @@ public class ReactionManager: NSObject {
         SSKEnvironment.shared.messageSenderJobQueue.add(message: outgoingMessage.asPreparer, transaction: transaction)
     }
 
+    @objc(OWSReactionProcessingResult)
+    public enum ReactionProcessingResult: Int, Error {
+        case associatedMessageMissing
+        case invalidReaction
+        case success
+    }
+
     @objc
     class func processIncomingReaction(
         _ reaction: SSKProtoDataMessageReaction,
@@ -72,14 +79,15 @@ public class ReactionManager: NSObject {
         reactor: SignalServiceAddress,
         timestamp: UInt64,
         transaction: SDSAnyWriteTransaction
-    ) {
+    ) -> ReactionProcessingResult {
         guard reaction.emoji.isSingleEmoji else {
             owsFailDebug("Received invalid emoji")
-            return
+            return .invalidReaction
         }
 
         guard let messageAuthor = reaction.authorAddress else {
-            return owsFailDebug("reaction missing author address")
+            owsFailDebug("reaction missing author address")
+            return .invalidReaction
         }
 
         guard let message = InteractionFinder.findMessage(
@@ -90,12 +98,12 @@ public class ReactionManager: NSObject {
         ) else {
             // This is potentially normal. For example, we could've deleted the message locally.
             Logger.info("Received reaction for a message that doesn't exist \(timestamp)")
-            return
+            return .associatedMessageMissing
         }
 
         guard !message.wasRemotelyDeleted else {
             Logger.info("Ignoring reaction for a message that was remotely deleted")
-            return
+            return .invalidReaction
         }
 
         // If this is a reaction removal, we want to remove *any* reaction from this author
@@ -114,11 +122,14 @@ public class ReactionManager: NSObject {
             // If this is a reaction to a message we sent, notify the user.
             if let reaction = reaction, let message = message as? TSOutgoingMessage, !reactor.isLocalAddress {
                 guard let thread = TSThread.anyFetch(uniqueId: threadId, transaction: transaction) else {
-                    return owsFailDebug("Failed to lookup thread for reaction notification.")
+                    owsFailDebug("Failed to lookup thread for reaction notification.")
+                    return .success
                 }
 
                 SSKEnvironment.shared.notificationsManager.notifyUser(for: reaction, on: message, in: thread, transaction: transaction)
             }
         }
+
+        return .success
     }
 }

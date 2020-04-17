@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "MockEnvironment.h"
@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (MockEnvironment *)activate
 {
-    MockEnvironment *instance = [MockEnvironment new];
+    MockEnvironment *instance = [[MockEnvironment alloc] init];
     [self setShared:instance];
     return instance;
 }

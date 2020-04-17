@@ -343,6 +343,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
     // Old-style delivery notices don't include a "delivery timestamp".
+    // TODO: do we need to preserve early old-style delivery receipts?
     [self processDeliveryReceiptsFromRecipient:envelope.sourceAddress
                                 sentTimestamps:@[
                                     @(envelope.timestamp),
@@ -355,27 +356,29 @@ NS_ASSUME_NONNULL_BEGIN
 // delivery receipts don't have a "delivery timestamp".  Those
 // messages repurpose the "timestamp" field to indicate when the
 // corresponding message was originally sent.
-- (void)processDeliveryReceiptsFromRecipient:(SignalServiceAddress *)address
-                              sentTimestamps:(NSArray<NSNumber *> *)sentTimestamps
-                           deliveryTimestamp:(NSNumber *_Nullable)deliveryTimestamp
-                                 transaction:(SDSAnyWriteTransaction *)transaction
+- (NSArray<NSNumber *> *)processDeliveryReceiptsFromRecipient:(SignalServiceAddress *)address
+                                               sentTimestamps:(NSArray<NSNumber *> *)sentTimestamps
+                                            deliveryTimestamp:(NSNumber *_Nullable)deliveryTimestamp
+                                                  transaction:(SDSAnyWriteTransaction *)transaction
 {
     if (!address.isValid) {
         OWSFailDebug(@"invalid recipient.");
-        return;
+        return @[];
     }
     if (sentTimestamps.count < 1) {
         OWSFailDebug(@"Missing sentTimestamps.");
-        return;
+        return @[];
     }
     if (!transaction) {
         OWSFail(@"Missing transaction.");
-        return;
+        return @[];
     }
     if (deliveryTimestamp != nil && ![SDS fitsInInt64WithNSNumber:deliveryTimestamp]) {
         OWSFailDebug(@"Invalid timestamp.");
-        return;
+        return @[];
     }
+
+    NSMutableArray<NSNumber *> *earlyTimestamps = [NSMutableArray new];
 
     for (NSNumber *nsTimestamp in sentTimestamps) {
         uint64_t timestamp = [nsTimestamp unsignedLongLongValue];
@@ -397,11 +400,8 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         if (messages.count < 1) {
-            // The service sends delivery receipts for "unpersisted" messages
-            // like group updates, so these errors are expected to a certain extent.
-            //
-            // TODO: persist "early" delivery receipts.
             OWSLogInfo(@"Missing message for delivery receipt: %llu", timestamp);
+            [earlyTimestamps addObject:@(timestamp)];
         } else {
             if (messages.count > 1) {
                 OWSLogInfo(@"More than one message (%lu) for delivery receipt: %llu",
@@ -415,6 +415,8 @@ NS_ASSUME_NONNULL_BEGIN
             }
         }
     }
+
+    return earlyTimestamps;
 }
 
 - (void)throws_handleEnvelope:(SSKProtoEnvelope *)envelope
@@ -475,12 +477,15 @@ NS_ASSUME_NONNULL_BEGIN
         if (contentProto.syncMessage) {
             [self throws_handleIncomingEnvelope:envelope
                                 withSyncMessage:contentProto.syncMessage
+                                  plaintextData:plaintextData
+                                wasReceivedByUD:wasReceivedByUD
                                     transaction:transaction];
 
             [[OWSDeviceManager sharedManager] setHasReceivedSyncMessage];
         } else if (contentProto.dataMessage) {
             [self handleIncomingEnvelope:envelope
                          withDataMessage:contentProto.dataMessage
+                           plaintextData:plaintextData
                          wasReceivedByUD:wasReceivedByUD
                              transaction:transaction];
         } else if (contentProto.callMessage) {
@@ -507,6 +512,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         [self handleIncomingEnvelope:envelope
                      withDataMessage:dataMessageProto
+                       plaintextData:plaintextData
                      wasReceivedByUD:wasReceivedByUD
                          transaction:transaction];
     } else {
@@ -516,6 +522,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)handleIncomingEnvelope:(SSKProtoEnvelope *)envelope
                withDataMessage:(SSKProtoDataMessage *)dataMessage
+                 plaintextData:(NSData *)plaintextData
                wasReceivedByUD:(BOOL)wasReceivedByUD
                    transaction:(SDSAnyWriteTransaction *)transaction
 {
@@ -600,12 +607,14 @@ NS_ASSUME_NONNULL_BEGIN
         [self handleReceivedMediaWithEnvelope:envelope
                                   dataMessage:dataMessage
                                        thread:thread
+                                plaintextData:plaintextData
                               wasReceivedByUD:wasReceivedByUD
                                   transaction:transaction];
     } else {
         [self handleReceivedTextMessageWithEnvelope:envelope
                                         dataMessage:dataMessage
                                              thread:thread
+                                      plaintextData:plaintextData
                                     wasReceivedByUD:wasReceivedByUD
                                         transaction:transaction];
     }
@@ -907,23 +916,35 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
+    NSArray<NSNumber *> *earlyTimestamps;
+
     switch (receiptMessage.unwrappedType) {
         case SSKProtoReceiptMessageTypeDelivery:
             OWSLogVerbose(@"Processing receipt message with delivery receipts.");
-            [self processDeliveryReceiptsFromRecipient:envelope.sourceAddress
-                                        sentTimestamps:sentTimestamps
-                                     deliveryTimestamp:@(envelope.timestamp)
-                                           transaction:transaction];
+            earlyTimestamps = [self processDeliveryReceiptsFromRecipient:envelope.sourceAddress
+                                                          sentTimestamps:sentTimestamps
+                                                       deliveryTimestamp:@(envelope.timestamp)
+                                                             transaction:transaction];
             return;
         case SSKProtoReceiptMessageTypeRead:
             OWSLogVerbose(@"Processing receipt message with read receipts.");
-            [OWSReadReceiptManager.sharedManager processReadReceiptsFromRecipient:envelope.sourceAddress
-                                                                   sentTimestamps:sentTimestamps
-                                                                    readTimestamp:envelope.timestamp];
+            earlyTimestamps =
+                [OWSReadReceiptManager.sharedManager processReadReceiptsFromRecipient:envelope.sourceAddress
+                                                                       sentTimestamps:sentTimestamps
+                                                                        readTimestamp:envelope.timestamp
+                                                                          transaction:transaction];
             break;
         default:
             OWSLogInfo(@"Ignoring receipt message of unknown type: %d.", (int)receiptMessage.unwrappedType);
             return;
+    }
+
+    for (NSNumber *nsEarlyTimestamp in earlyTimestamps) {
+        UInt64 earlyTimestamp = [nsEarlyTimestamp unsignedLongLongValue];
+        [OWSEarlyMessageManager recordEarlyReceiptForOutgoingMessageWithType:receiptMessage.unwrappedType
+                                                                      sender:envelope.sourceAddress
+                                                                   timestamp:envelope.timestamp
+                                                  associatedMessageTimestamp:earlyTimestamp];
     }
 }
 
@@ -1287,6 +1308,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)handleReceivedMediaWithEnvelope:(SSKProtoEnvelope *)envelope
                             dataMessage:(SSKProtoDataMessage *)dataMessage
                                  thread:(TSThread *)thread
+                          plaintextData:(NSData *)plaintextData
                         wasReceivedByUD:(BOOL)wasReceivedByUD
                             transaction:(SDSAnyWriteTransaction *)transaction
 {
@@ -1310,6 +1332,7 @@ NS_ASSUME_NONNULL_BEGIN
     TSIncomingMessage *_Nullable message = [self handleReceivedEnvelope:envelope
                                                         withDataMessage:dataMessage
                                                                  thread:thread
+                                                          plaintextData:plaintextData
                                                         wasReceivedByUD:wasReceivedByUD
                                                             transaction:transaction];
 
@@ -1336,6 +1359,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)throws_handleIncomingEnvelope:(SSKProtoEnvelope *)envelope
                       withSyncMessage:(SSKProtoSyncMessage *)syncMessage
+                        plaintextData:(NSData *)plaintextData
+                      wasReceivedByUD:(BOOL)wasReceivedByUD
                           transaction:(SDSAnyWriteTransaction *)transaction
 {
     if (!envelope) {
@@ -1415,11 +1440,23 @@ NS_ASSUME_NONNULL_BEGIN
                 OWSFailDebug(@"Could not process reaction from sync transcript.");
                 return;
             }
-            [OWSReactionManager processIncomingReaction:dataMessage.reaction
-                                               threadId:thread.uniqueId
-                                                reactor:envelope.sourceAddress
-                                              timestamp:syncMessage.sent.timestamp
-                                            transaction:transaction];
+            OWSReactionProcessingResult result = [OWSReactionManager processIncomingReaction:dataMessage.reaction
+                                                                                    threadId:thread.uniqueId
+                                                                                     reactor:envelope.sourceAddress
+                                                                                   timestamp:syncMessage.sent.timestamp
+                                                                                 transaction:transaction];
+            switch (result) {
+                case OWSReactionProcessingResultSuccess:
+                case OWSReactionProcessingResultInvalidReaction:
+                    break;
+                case OWSReactionProcessingResultAssociatedMessageMissing:
+                    [OWSEarlyMessageManager recordEarlyEnvelope:envelope
+                                                  plainTextData:plaintextData
+                                                wasReceivedByUD:wasReceivedByUD
+                                     associatedMessageTimestamp:dataMessage.reaction.timestamp
+                                        associatedMessageAuthor:dataMessage.reaction.authorAddress];
+                    break;
+            }
         } else if (dataMessage.delete != nil) {
             TSThread *_Nullable thread = nil;
 
@@ -1434,13 +1471,26 @@ NS_ASSUME_NONNULL_BEGIN
                 OWSFailDebug(@"Could not process delete from sync transcript.");
                 return;
             }
-            BOOL deleted = [TSMessage tryToRemotelyDeleteMessageFromAddress:envelope.sourceAddress
-                                                            sentAtTimestamp:dataMessage.delete.targetSentTimestamp
-                                                             threadUniqueId:thread.uniqueId
-                                                            serverTimestamp:envelope.serverTimestamp
-                                                                transaction:transaction];
-            if (!deleted) {
-                OWSLogError(@"Failed to remotely delete message: %llu", dataMessage.delete.targetSentTimestamp);
+            OWSRemoteDeleteProcessingResult result =
+                [TSMessage tryToRemotelyDeleteMessageFromAddress:envelope.sourceAddress
+                                                 sentAtTimestamp:dataMessage.delete.targetSentTimestamp
+                                                  threadUniqueId:thread.uniqueId
+                                                 serverTimestamp:envelope.serverTimestamp
+                                                     transaction:transaction];
+
+            switch (result) {
+                case OWSRemoteDeleteProcessingResultSuccess:
+                    break;
+                case OWSRemoteDeleteProcessingResultInvalidDelete:
+                    OWSLogError(@"Failed to remotely delete message: %llu", dataMessage.delete.targetSentTimestamp);
+                    break;
+                case OWSRemoteDeleteProcessingResultDeletedMessageMissing:
+                    [OWSEarlyMessageManager recordEarlyEnvelope:envelope
+                                                  plainTextData:plaintextData
+                                                wasReceivedByUD:wasReceivedByUD
+                                     associatedMessageTimestamp:dataMessage.delete.targetSentTimestamp
+                                        associatedMessageAuthor:envelope.sourceAddress];
+                    break;
             }
         } else {
             [OWSRecordTranscriptJob
@@ -1490,9 +1540,15 @@ NS_ASSUME_NONNULL_BEGIN
         [self handleSyncedBlockList:syncMessage.blocked transaction:transaction];
     } else if (syncMessage.read.count > 0) {
         OWSLogInfo(@"Received %lu read receipt(s)", (unsigned long)syncMessage.read.count);
-        [OWSReadReceiptManager.sharedManager processReadReceiptsFromLinkedDevice:syncMessage.read
-                                                                   readTimestamp:envelope.timestamp
-                                                                     transaction:transaction];
+        NSArray<SSKProtoSyncMessageRead *> *earlyReceipts =
+            [OWSReadReceiptManager.sharedManager processReadReceiptsFromLinkedDevice:syncMessage.read
+                                                                       readTimestamp:envelope.timestamp
+                                                                         transaction:transaction];
+        for (SSKProtoSyncMessageRead *readReceiptProto in earlyReceipts) {
+            [OWSEarlyMessageManager recordEarlyReadReceiptFromLinkedDeviceWithTimestamp:envelope.timestamp
+                                                             associatedMessageTimestamp:readReceiptProto.timestamp
+                                                                associatedMessageAuthor:readReceiptProto.senderAddress];
+        }
     } else if (syncMessage.verified) {
         OWSLogInfo(@"Received verification state for %@", syncMessage.verified.destinationAddress);
         [self.identityManager throws_processIncomingVerifiedProto:syncMessage.verified transaction:transaction];
@@ -1504,9 +1560,24 @@ NS_ASSUME_NONNULL_BEGIN
         }
     } else if (syncMessage.viewOnceOpen != nil) {
         OWSLogInfo(@"Received view-once read receipt sync message");
-        [ViewOnceMessages processIncomingSyncMessage:syncMessage.viewOnceOpen
-                                            envelope:envelope
-                                         transaction:transaction];
+
+        OWSViewOnceSyncMessageProcessingResult result =
+            [ViewOnceMessages processIncomingSyncMessage:syncMessage.viewOnceOpen
+                                                envelope:envelope
+                                             transaction:transaction];
+
+        switch (result) {
+            case OWSViewOnceSyncMessageProcessingResultSuccess:
+            case OWSViewOnceSyncMessageProcessingResultInvalidSyncMessage:
+                break;
+            case OWSViewOnceSyncMessageProcessingResultAssociatedMessageMissing:
+                [OWSEarlyMessageManager recordEarlyEnvelope:envelope
+                                              plainTextData:plaintextData
+                                            wasReceivedByUD:wasReceivedByUD
+                                 associatedMessageTimestamp:syncMessage.viewOnceOpen.timestamp
+                                    associatedMessageAuthor:syncMessage.viewOnceOpen.senderAddress];
+                break;
+        }
     } else if (syncMessage.configuration) {
         OWSLogInfo(@"Received configuration sync message.");
         [self.syncManager processIncomingConfigurationSyncMessage:syncMessage.configuration transaction:transaction];
@@ -1620,6 +1691,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)handleReceivedTextMessageWithEnvelope:(SSKProtoEnvelope *)envelope
                                   dataMessage:(SSKProtoDataMessage *)dataMessage
                                        thread:(TSThread *)thread
+                                plaintextData:(NSData *)plaintextData
                               wasReceivedByUD:(BOOL)wasReceivedByUD
                                   transaction:(SDSAnyWriteTransaction *)transaction
 {
@@ -1643,6 +1715,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self handleReceivedEnvelope:envelope
                  withDataMessage:dataMessage
                           thread:thread
+                   plaintextData:plaintextData
                  wasReceivedByUD:wasReceivedByUD
                      transaction:transaction];
 }
@@ -1737,6 +1810,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (TSIncomingMessage *_Nullable)handleReceivedEnvelope:(SSKProtoEnvelope *)envelope
                                        withDataMessage:(SSKProtoDataMessage *)dataMessage
                                                 thread:(TSThread *)thread
+                                         plaintextData:(NSData *)plaintextData
                                        wasReceivedByUD:(BOOL)wasReceivedByUD
                                            transaction:(SDSAnyWriteTransaction *)transaction
 {
@@ -1788,22 +1862,49 @@ NS_ASSUME_NONNULL_BEGIN
     OWSLogDebug(@"%@", messageDescription);
 
     if (dataMessage.reaction) {
-        [OWSReactionManager processIncomingReaction:dataMessage.reaction
-                                           threadId:thread.uniqueId
-                                            reactor:envelope.sourceAddress
-                                          timestamp:timestamp
-                                        transaction:transaction];
+        OWSReactionProcessingResult result = [OWSReactionManager processIncomingReaction:dataMessage.reaction
+                                                                                threadId:thread.uniqueId
+                                                                                 reactor:envelope.sourceAddress
+                                                                               timestamp:timestamp
+                                                                             transaction:transaction];
+
+        switch (result) {
+            case OWSReactionProcessingResultSuccess:
+            case OWSReactionProcessingResultInvalidReaction:
+                break;
+            case OWSReactionProcessingResultAssociatedMessageMissing:
+                [OWSEarlyMessageManager recordEarlyEnvelope:envelope
+                                              plainTextData:plaintextData
+                                            wasReceivedByUD:wasReceivedByUD
+                                 associatedMessageTimestamp:dataMessage.reaction.timestamp
+                                    associatedMessageAuthor:dataMessage.reaction.authorAddress];
+                break;
+        }
+
         return nil;
     }
 
     if (dataMessage.delete) {
-        BOOL deleted = [TSMessage tryToRemotelyDeleteMessageFromAddress:envelope.sourceAddress
-                                                        sentAtTimestamp:dataMessage.delete.targetSentTimestamp
-                                                         threadUniqueId:thread.uniqueId
-                                                        serverTimestamp:envelope.serverTimestamp
-                                                            transaction:transaction];
-        if (!deleted) {
-            OWSLogError(@"Failed to remotely delete message: %llu", dataMessage.delete.targetSentTimestamp);
+        OWSRemoteDeleteProcessingResult result =
+            [TSMessage tryToRemotelyDeleteMessageFromAddress:envelope.sourceAddress
+                                             sentAtTimestamp:dataMessage.delete.targetSentTimestamp
+                                              threadUniqueId:thread.uniqueId
+                                             serverTimestamp:envelope.serverTimestamp
+                                                 transaction:transaction];
+
+        switch (result) {
+            case OWSRemoteDeleteProcessingResultSuccess:
+                break;
+            case OWSRemoteDeleteProcessingResultInvalidDelete:
+                OWSLogError(@"Failed to remotely delete message: %llu", dataMessage.delete.targetSentTimestamp);
+                break;
+            case OWSRemoteDeleteProcessingResultDeletedMessageMissing:
+                [OWSEarlyMessageManager recordEarlyEnvelope:envelope
+                                              plainTextData:plaintextData
+                                            wasReceivedByUD:wasReceivedByUD
+                                 associatedMessageTimestamp:dataMessage.delete.targetSentTimestamp
+                                    associatedMessageAuthor:envelope.sourceAddress];
+                break;
         }
         return nil;
     }
@@ -1888,6 +1989,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     [incomingMessage anyInsertWithTransaction:transaction];
 
+    [OWSEarlyMessageManager applyPendingMessagesFor:incomingMessage transaction:transaction];
+
     // Any messages sent from the current user - from this device or another - should be automatically marked as read.
     if (envelope.sourceAddress.isLocalAddress) {
         BOOL hasPendingMessageRequest = [thread hasPendingMessageRequestWithTransaction:transaction.unwrapGrdbRead];
@@ -1954,15 +2057,8 @@ NS_ASSUME_NONNULL_BEGIN
             }];
     }
 
-    // In case we already have a read receipt for this new message (this happens sometimes).
-    [OWSReadReceiptManager.sharedManager applyEarlyReadReceiptsForIncomingMessage:incomingMessage
-                                                                           thread:thread
-                                                                      transaction:transaction];
-
     // TODO: Is this still necessary?
     [self.databaseStorage touchThread:thread transaction:transaction];
-
-    [ViewOnceMessages applyEarlyReadReceiptsForIncomingMessage:incomingMessage transaction:transaction];
 
     [SSKEnvironment.shared.notificationsManager notifyUserForIncomingMessage:incomingMessage
                                                                     inThread:thread
