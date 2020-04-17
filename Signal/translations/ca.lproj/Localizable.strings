@@ -797,6 +797,12 @@
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ podrà suprimir membres del grup i fer-ne administradors/es.";
 
+/* Section title of the 'members' section in conversation settings view. */
+"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "Members";
+
+/* Format for the section title of the 'members' section in conversation settings view. Embeds: {{ the number of group members }}. */
+"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ Members";
+
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Silenci";
 
@@ -1041,10 +1047,7 @@
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Aquest usuari no es pot afegir al grup fins que no actualitzin el Signal.";
 
 /* Message for 'group full' error alert when a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "Maximum group size of 100 members reached.";
-
-/* Label for 'learn more' button when a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_LEARN_MORE" = "Learn More";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "S'ha assolit la mida màxima de grup de 100 membres.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "Avatar no vàlid.";
@@ -1754,6 +1757,9 @@
 /* A keyboard command to unarchive the current coversation. */
 "KEY_COMMAND_UNARCHIVE" = "Restaura la conversa";
 
+/* Label for the 'learn more' button. */
+"LEARN_MORE" = "Learn More";
+
 /* Confirmation button within contextual alert */
 "LEAVE_BUTTON_TITLE" = "Surt";
 
@@ -1978,9 +1984,6 @@
 
 /* A prompt for the user to accept or decline an invite to a group. Embeds {{name of user who invited you}}. */
 "MESSAGE_REQUEST_VIEW_GROUP_INVITE_PROMPT_FORMAT" = "Heu estat convidat a aquest grup per %@. Voleu permetre que els membres del grup us enviïn missatges?";
-
-/* A button used to learn more about why you must share your profile. */
-"MESSAGE_REQUEST_VIEW_LEARN_MORE_BUTTON" = "Més informació";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Voleu permetre que %@ us enviï missatges? No sabrà que heu vist els seus missatges fins que no ho accepteu.";
@@ -2489,14 +2492,17 @@
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Àlbum sense nom";
 
-/* Label indicating the user must use at least 6 characters */
-"PIN_CREATION_ALPHANUMERIC_HINT" = "El PIN ha de tenir un mínim de 6 caràcters.";
+/* Label indicating the user must use at least 4 characters */
+"PIN_CREATION_ALPHANUMERIC_HINT" = "PIN must be at least 4 characters";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_CHANGING_TITLE" = "Canvieu el PIN";
 
+/* Title of the 'pin creation' confirmation view. */
+"PIN_CREATION_CONFIRM_TITLE" = "Confirm your PIN";
+
 /* The explanation of confirmation in the 'pin creation' view. */
-"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Confirmeu el PIN nou.";
+"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Re-enter your PIN.";
 
 /* Button asking if the user would like to create an alphanumeric PIN */
 "PIN_CREATION_CREATE_ALPHANUMERIC" = "Creeu un PIN alfanumèric";
@@ -2511,13 +2517,13 @@
 "PIN_CREATION_ERROR_TITLE" = "Ha fallat crear el PIN.";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "Els PIN afegeixen una capa de seguretat extra al compte. Preneu-ne nota i deseu-lo en un lloc segur. No es pot recuperar.";
+"PIN_CREATION_EXPLANATION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall Signal.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "Els PIN no coincideixen. Torneu-ho a provar.";
 
-/* Label indicating the user must use at least 6 digits */
-"PIN_CREATION_NUMERIC_HINT" = "El PIN ha de tenir un mínim de 6 dígits.";
+/* Label indicating the user must use at least 4 digits */
+"PIN_CREATION_NUMERIC_HINT" = "PIN must be at least 4 digits";
 
 /* Label indication the user must confirm their PIN. */
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "Torneu a marcar el PIN";
@@ -2526,16 +2532,13 @@
 "PIN_CREATION_PIN_PROGRESS" = "Es crea un PIN...";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "Podeu triar un PIN nou perquè aquest dispositiu està registrat. Si l'oblideu, pot ser que hàgiu d'esperar 7 dies per tornar-vos a registrar.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "You can change your PIN as long as this device is registered.";
 
 /* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_RECREATION_TITLE" = "Crea un PIN nou";
+"PIN_CREATION_RECREATION_TITLE" = "Change your PIN";
 
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "Creeu el PIN";
-
-/* Label indicating that the attempted PIN is too short */
-"PIN_CREATION_TOO_SHORT_ERROR" = "El PIN ha de tenir un mínim de 6 dígits.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Per ajudar-vos a recordar el PIN, us el demanarem periòdicament. Amb el temps, ho farem menys.";
@@ -2571,31 +2574,19 @@
 "PIN_REMINDER_TITLE" = "Marqueu el PIN del Signal";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_REMINDER_TOO_SHORT_ERROR" = "El PIN ha de tenir un mínim de 6 dígits.";
-
-/* Action text for PIN megaphone when user already has a PIN */
-"PINS_MEGAPHONE_HAS_PIN_ACTION" = "Actualitza el PIN";
-
-/* Body for PIN megaphone when user already has a PIN */
-"PINS_MEGAPHONE_HAS_PIN_BODY" = "El bloqueig de registre ara s'anomena PIN. Actualitzar-lo és cosa de segons.";
-
-/* Toast indication that the user will be reminded later to update their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "Us ho recordarem més tard. Actualitzar el PIN serà obligatori en %ld dies.";
-
-/* Title for PIN megaphone when user already has a PIN */
-"PINS_MEGAPHONE_HAS_PIN_TITLE" = "S'introdueixen els PIN";
+"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN must be at least 4 digits.";
 
 /* Action text for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_ACTION" = "Crea un PIN";
+"PINS_MEGAPHONE_ACTION" = "Create PIN";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_BODY" = "Els PIN afegeixen una altra capa de seguretat al compte del Signal.";
+"PINS_MEGAPHONE_BODY" = "PINs keep information that’s stored with Signal encrypted";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "Us ho recordarem més tard. Crear un PIN serà obligatori en %ld dies.";
+"PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Creating a PIN will become mandatory in %ld days.";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_TITLE" = "Crea un PIN";
+"PINS_MEGAPHONE_TITLE" = "Create a PIN";
 
 /* Toast indicating that a PIN has been created. */
 "PINS_MEGAPHONE_TOAST" = "S'ha creat el PIN. El podeu canviar des de la configuració.";
@@ -2611,9 +2602,6 @@
 
 /* Label indicating that the user is verified. Embeds {{the user's name or phone number}}. */
 "PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%@ es troba verificat.";
-
-/* Label for a link to more information about safety numbers and verification. */
-"PRIVACY_SAFETY_NUMBERS_LEARN_MORE" = "Més informació";
 
 /* Button that shows the 'scan with camera' view. */
 "PRIVACY_TAP_TO_SCAN" = "Toqueu per escanejar";
@@ -2707,9 +2695,6 @@
 
 /* Description of the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION" = "El perfil de Signal serà visible per a tots els contactes, quan inicieu converses noves i quan el compartiu amb altres usuaris i grups.";
-
-/* Link to more information about the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Toqueu aquí per saber-ne més.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Desa";
@@ -2820,7 +2805,7 @@
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Us cal ajuda?";
 
 /* Alert body for a forgotten SVR (V2) PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "El vostre PIN és un codi de 6 dígits que heu creat que pot ser numèric o alfanumèric. Si no recordeu el PIN, haureu d’esperar 7 dies per tornar a registrar el compte.";
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock */
 "REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "El PIN és un codi de 4 dígits que heu creat que pot ser numèric o alfanumèric. Si no recordeu el PIN, en podeu crear un de nou. Podeu registrar-vos i usar el vostre compte, però perdreu algunes configuracions desades, com ara la informació del perfil.";
@@ -3276,7 +3261,7 @@
 "SETTINGS_NOTIFICATIONS" = "Notificacions";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "El PIN fa una còpia de seguretat de les configuracions i preferències del perfil per estalviar temps a l'hora de tornar a registrar el compte.";
+"SETTINGS_PINS_FOOTER" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall Signal.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Canvieu el PIN";
@@ -3307,6 +3292,21 @@
 
 /* An explanation of the 'read receipts' setting. */
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Vegeu i compartiu quan els missatges s'han llegit. Aquest paràmetre és opcional i s'aplica a totes les converses.";
+
+/* Action to turn off registration lock */
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Turn Off";
+
+/* Title for the alert confirming that the user wants to turn off registration lock. */
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "Turn Off Registration Lock?";
+
+/* Action to turn on registration lock */
+"SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Turn On";
+
+/* Body for the alert confirming that the user wants to turn on registration lock. */
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "If you forget your Signal PIN when registering with Signal again, you’ll be locked out of your account for 7 days.";
+
+/* Title for the alert confirming that the user wants to turn on registration lock. */
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "Turn On Registration Lock?";
 
 /* Label for re-link button. */
 "SETTINGS_RELINK_BUTTON" = "Torna a enllaçar";
@@ -3356,9 +3356,6 @@
 /* Indicates that 'two factor auth' is enabled in the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_ENABLED" = "Activat";
 
-/* Footer for the 'two factor auth' section of the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_FOOTER" = "El bloqueig de registre afegeix una capa addicional de seguretat al compte. Se us demanarà el PIN del Signal quan hi registreu el número de telèfon. Si oblideu el PIN, se us blocarà el compte durant 7 dies.";
-
 /* Label for the 'two factor auth' item of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_ITEM" = "Pany de Registre";
 
@@ -3368,14 +3365,14 @@
 /* Title for the 'two factor auth' section of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Pany de Registre";
 
+/* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "For extra security, turn on registration lock, which will require your Signal PIN to register your phone number with Signal again.";
+
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Indicadors de tecleig";
 
 /* An explanation of the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS_FOOTER" = "Vegeu i compartiu quan s'escriuen els missatges. Aquest paràmetre és opcional i s'aplica a totes les converses.";
-
-/* Label for a link to more info about unidentified delivery. */
-"SETTINGS_UNIDENTIFIED_DELIVERY_LEARN_MORE" = "Més informació";
 
 /* table section label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Remitent segellat";
@@ -3605,6 +3602,9 @@
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. */
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "Podeu demanar al remitent que us torni a enviar aquest missatge ara que useu una versió actualitzada del Signal.";
 
+/* Label indicating an unknown user. */
+"UNKNOWN_USER" = "Unknown";
+
 /* Info Message when an unknown user disabled disappearing messages. */
 "UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "S'han desactivat els missatges efímers.";
 
@@ -3656,23 +3656,11 @@
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Creeu el PIN";
 
-/* Button to open a help document explaining more about why a PIN is required */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "Apreneu més coses sobre els PIN";
-
-/* Body text for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "El bloqueig de registre ara s'anomena PIN i serveix per a molt més. Actualitzeu-lo ara.";
-
-/* Header for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "Bloqueig de registre = PIN";
-
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Els PIN afegeixen una altra capa de seguretat al compte. Creeu el vostre ara.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall Signal.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "S'introdueixen els PIN";
-
-/* Button to open a help document explaining more about why a PIN is required */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON" = "He de crear un PIN?";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "El Signal necessitarà aviat l'iOS 10 o posterior. Actualitzeu-lo a la Configuració del sistema >> General >> Actualitzacions.";

@@ -333,13 +333,13 @@
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Κατάργηση Αποκλεισμού";
 
 /* An explanation of what unblocking a contact means. */
-"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "You will be able to message and call each other.";
+"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "Θα έχετε τη δυνατότητα να στέλνετε μηνύματα και να καλείτε ο ένας τον άλλον.";
 
 /* Action sheet body when confirming you want to unblock a group */
 "BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Τα υπάρχοντα μέλη θα μπορούν να σας προσθέσουν ξανά στην ομάδα.";
 
 /* An explanation of what unblocking a group means. */
-"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Group members will be able to add you to this group again.";
+"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Τα μέλη της ομάδας θα έχουν τη δυνατότητα να σας προσθέσουν ξανά στην ομάδα.";
 
 /* Action sheet title when confirming you want to unblock a group. */
 "BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Κατάργηση αποκλεισμού της ομάδας;";
@@ -797,6 +797,12 @@
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ will be able to remove group members and make other admins.";
 
+/* Section title of the 'members' section in conversation settings view. */
+"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "Members";
+
+/* Format for the section title of the 'members' section in conversation settings view. Embeds: {{ the number of group members }}. */
+"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ Members";
+
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Σίγαση";
 
@@ -1042,9 +1048,6 @@
 
 /* Message for 'group full' error alert when a user can't be added to a group. */
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "Maximum group size of 100 members reached.";
-
-/* Label for 'learn more' button when a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_LEARN_MORE" = "Learn More";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "Invalid avatar.";
@@ -1754,6 +1757,9 @@
 /* A keyboard command to unarchive the current coversation. */
 "KEY_COMMAND_UNARCHIVE" = "Αφαίρεση Αρχειοθετημένης Συνομιλίας";
 
+/* Label for the 'learn more' button. */
+"LEARN_MORE" = "Learn More";
+
 /* Confirmation button within contextual alert */
 "LEAVE_BUTTON_TITLE" = "Αποχώρηση";
 
@@ -1932,7 +1938,7 @@
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "Αποκλεισμός του/της %@;";
 
 /* Action sheet message to confirm blocking a group via a message request. */
-"MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "You will leave this group and no longer receive messages or updates.";
+"MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "Θα αποχωρήσετε από αυτήν την ομάδα και δεν θα έχετε πλέον τη δυνατότητα να λάβετε μηνύματα ή ενημερώσεις.";
 
 /* Action sheet title to confirm blocking a group via a message request. Embeds {{group name}} */
 "MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "Block and Leave %@?";
@@ -1941,7 +1947,7 @@
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "Διαγραφή";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "This conversation will be deleted from all of your devices.";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "Η συνομιλία θα διαγραφεί από όλες τις συσκευές σας.";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Διαγραφή συνομιλίας;";
@@ -1950,7 +1956,7 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Delete and Leave";
 
 /* Action sheet message to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "You will leave this group, and it will be deleted from all your devices.";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "Θα αποχωρήσετε από αυτήν την ομάδα, και θα διαγραφεί από όλες τις συσκευές σας.";
 
 /* Action sheet title to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Delete and Leave Group?";
@@ -1979,9 +1985,6 @@
 /* A prompt for the user to accept or decline an invite to a group. Embeds {{name of user who invited you}}. */
 "MESSAGE_REQUEST_VIEW_GROUP_INVITE_PROMPT_FORMAT" = "You were invited to this group by %@. Do you want to let members of this group message you?";
 
-/* A button used to learn more about why you must share your profile. */
-"MESSAGE_REQUEST_VIEW_LEARN_MORE_BUTTON" = "Μάθετε περισσότερα";
-
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Επιτρέπετε τον %@ να σας στείλει μήνυμα; Δεν θα γνωρίζει ότι διαβάσατε το μήνυμά του μέχρι να το αποδεχτείτε.";
 
@@ -2004,7 +2007,7 @@
 "MESSAGE_REQUESTS_SPLASH_BODY" = "You can now choose to ”Accept” or ”Delete“ a new conversation. Names let people know who’s messaging them.";
 
 /* Toast indicating that a profile name has been created. */
-"MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "Your profile name has been saved.";
+"MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "Το όνομα προφίλ σας έχει αποθηκευθεί.";
 
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "Παραδόθηκε";
@@ -2489,14 +2492,17 @@
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Ανώνυμο άλμπουμ";
 
-/* Label indicating the user must use at least 6 characters */
-"PIN_CREATION_ALPHANUMERIC_HINT" = "PIN must be at least 6 characters";
+/* Label indicating the user must use at least 4 characters */
+"PIN_CREATION_ALPHANUMERIC_HINT" = "PIN must be at least 4 characters";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_CHANGING_TITLE" = "Change your PIN";
 
+/* Title of the 'pin creation' confirmation view. */
+"PIN_CREATION_CONFIRM_TITLE" = "Confirm your PIN";
+
 /* The explanation of confirmation in the 'pin creation' view. */
-"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Confirm your new PIN.";
+"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Re-enter your PIN.";
 
 /* Button asking if the user would like to create an alphanumeric PIN */
 "PIN_CREATION_CREATE_ALPHANUMERIC" = "Create Alphanumeric PIN";
@@ -2511,13 +2517,13 @@
 "PIN_CREATION_ERROR_TITLE" = "PIN Creation Failed";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PINs add an extra layer of security to your account. Write your PIN down and keep it in a safe place. It can’t be recovered.";
+"PIN_CREATION_EXPLANATION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall Signal.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PINs don’t match. Try again.";
 
-/* Label indicating the user must use at least 6 digits */
-"PIN_CREATION_NUMERIC_HINT" = "PIN must be at least 6 digits";
+/* Label indicating the user must use at least 4 digits */
+"PIN_CREATION_NUMERIC_HINT" = "PIN must be at least 4 digits";
 
 /* Label indication the user must confirm their PIN. */
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "Ξαναγράψτε το PIN";
@@ -2526,16 +2532,13 @@
 "PIN_CREATION_PIN_PROGRESS" = "Δημιουργία PIN...";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "You can choose a new PIN because this device is registered. If you forget your PIN, you may need to wait 7 days to register again.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "You can change your PIN as long as this device is registered.";
 
 /* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_RECREATION_TITLE" = "Δημιουργία νέου PIN";
+"PIN_CREATION_RECREATION_TITLE" = "Change your PIN";
 
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "Δημιουργία του PIN σας";
-
-/* Label indicating that the attempted PIN is too short */
-"PIN_CREATION_TOO_SHORT_ERROR" = "PIN must be at least 6 digits.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "To help you memorize your PIN, we’ll ask you to enter it periodically. We’ll ask less over time.";
@@ -2571,31 +2574,19 @@
 "PIN_REMINDER_TITLE" = "Εισάγετε το PIN Signal σας";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN must be at least 6 digits.";
-
-/* Action text for PIN megaphone when user already has a PIN */
-"PINS_MEGAPHONE_HAS_PIN_ACTION" = "Αναβάθμιση PIN";
-
-/* Body for PIN megaphone when user already has a PIN */
-"PINS_MEGAPHONE_HAS_PIN_BODY" = "Το Κλείδωμα Εγγραφής πλέον ονομάζεται PIN. Η ανανέωση παίρνει μερικά δευτερόλεπτα.";
-
-/* Toast indication that the user will be reminded later to update their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Updating your PIN will become mandatory in %ld days.";
-
-/* Title for PIN megaphone when user already has a PIN */
-"PINS_MEGAPHONE_HAS_PIN_TITLE" = "Υποδεχθείτε τα PIN";
+"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN must be at least 4 digits.";
 
 /* Action text for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_ACTION" = "Δημιουργήστε PIN";
+"PINS_MEGAPHONE_ACTION" = "Create PIN";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_BODY" = "Τα PIN προσθέτουν ένα επιπλέον επίπεδο ασφαλείας στο λογαριασμό Signal σας.";
+"PINS_MEGAPHONE_BODY" = "PINs keep information that’s stored with Signal encrypted";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Creating a PIN will become mandatory in %ld days.";
+"PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Creating a PIN will become mandatory in %ld days.";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_TITLE" = "Δημιουργήστε ένα PIN";
+"PINS_MEGAPHONE_TITLE" = "Create a PIN";
 
 /* Toast indicating that a PIN has been created. */
 "PINS_MEGAPHONE_TOAST" = "PIN created. You can change it in settings.";
@@ -2611,9 +2602,6 @@
 
 /* Label indicating that the user is verified. Embeds {{the user's name or phone number}}. */
 "PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "Ο/Η %@ είναι επιβεβαιωμένος/η.";
-
-/* Label for a link to more information about safety numbers and verification. */
-"PRIVACY_SAFETY_NUMBERS_LEARN_MORE" = "Μάθετε περισσότερα";
 
 /* Button that shows the 'scan with camera' view. */
 "PRIVACY_TAP_TO_SCAN" = "Πατήστε για Σάρωση";
@@ -2670,7 +2658,7 @@
 "PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_TITLE" = "Add a Profile Name";
 
 /* Toast indicating that a PIN has been created. */
-"PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "Your profile name has been saved.";
+"PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "Το όνομα προφίλ σας έχει αποθηκευθεί.";
 
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Ορισμός Εικόνας Προφίλ";
@@ -2707,9 +2695,6 @@
 
 /* Description of the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION" = "Το προφίλ σας στο Signal θα είναι ορατό στις επαφές σας, όταν ξεκινάτε νέες συνομιλίες και όταν το μοιράζεστε με άλλους χρήστες και ομάδες.";
-
-/* Link to more information about the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Πατήστε εδώ για να μάθετε περισσότερα.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Αποθήκευση";
@@ -2820,7 +2805,7 @@
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Need Help?";
 
 /* Alert body for a forgotten SVR (V2) PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Your PIN is a 6+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock */
 "REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you can create a new one. You can register and use your account but you’ll lose some saved settings like your profile information.";
@@ -3276,7 +3261,7 @@
 "SETTINGS_NOTIFICATIONS" = "Ειδοποιήσεις";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "Your PIN backs up profile settings and preferences to save you time when re-registering your account.";
+"SETTINGS_PINS_FOOTER" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall Signal.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Change your PIN";
@@ -3307,6 +3292,21 @@
 
 /* An explanation of the 'read receipts' setting. */
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Δείτε και μοιραστείτε πότε τα μηνύματα έχουν διαβαστεί. Αυτή η ρύθμιση είναι προαιρετική και ισχύει για όλες τις συνομιλίες.";
+
+/* Action to turn off registration lock */
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Turn Off";
+
+/* Title for the alert confirming that the user wants to turn off registration lock. */
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "Turn Off Registration Lock?";
+
+/* Action to turn on registration lock */
+"SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Turn On";
+
+/* Body for the alert confirming that the user wants to turn on registration lock. */
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "If you forget your Signal PIN when registering with Signal again, you’ll be locked out of your account for 7 days.";
+
+/* Title for the alert confirming that the user wants to turn on registration lock. */
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "Turn On Registration Lock?";
 
 /* Label for re-link button. */
 "SETTINGS_RELINK_BUTTON" = "Re-link";
@@ -3356,9 +3356,6 @@
 /* Indicates that 'two factor auth' is enabled in the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_ENABLED" = "Ενεργοποιημένο";
 
-/* Footer for the 'two factor auth' section of the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_FOOTER" = "Registration Lock adds an extra layer of security to your account. You’ll be asked for your Signal PIN when you register your phone number with Signal. If you forget your PIN, you’ll be locked out of your account for 7 days.";
-
 /* Label for the 'two factor auth' item of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_ITEM" = "Κλείδωμα Εγγραφής";
 
@@ -3368,14 +3365,14 @@
 /* Title for the 'two factor auth' section of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Κλείδωμα Εγγραφής";
 
+/* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "For extra security, turn on registration lock, which will require your Signal PIN to register your phone number with Signal again.";
+
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Δείκτες πληκτρολόγησης";
 
 /* An explanation of the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS_FOOTER" = "See and share when messages are being typed. This setting is optional and applies to all conversations.";
-
-/* Label for a link to more info about unidentified delivery. */
-"SETTINGS_UNIDENTIFIED_DELIVERY_LEARN_MORE" = "Μάθετε περισσότερα";
 
 /* table section label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Προστατευμένος Αποστολέας";
@@ -3513,7 +3510,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Member of %@, %@, and %lu additional groups";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "You can add notes for yourself in this conversation. If your account has any linked devices, new notes will be synced.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Μπορείτε να προσθέσετε σημειώσεις για τον εαυτό σας σε αυτήν τη συνομιλία. Εάν ο λογαριασμός σας είναι συνδεδεμένος με άλλες συσκευές, οι νέες σημειώσεις θα συγχρονιστούν.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Member of %@";
@@ -3605,6 +3602,9 @@
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. */
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "You can ask the sender to re-send this message now that you are using an up-to-date version of Signal.";
 
+/* Label indicating an unknown user. */
+"UNKNOWN_USER" = "Unknown";
+
 /* Info Message when an unknown user disabled disappearing messages. */
 "UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Disappearing messages were disabled.";
 
@@ -3656,23 +3656,11 @@
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Δημιουργία του PIN σας";
 
-/* Button to open a help document explaining more about why a PIN is required */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "Learn more about PINs";
-
-/* Body text for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Το Κλείδωμα Εγγραφής πλέον ονομάζεται PIN, και κάνει περισσότερα. Αναβαθμίστε το τώρα.";
-
-/* Header for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "Κλείδωμα Εγγραφής = PIN";
-
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs add another level of security to your account. Create your PIN now.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall Signal.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Υποδεχθείτε τα PIN";
-
-/* Button to open a help document explaining more about why a PIN is required */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON" = "Do I have to create a PIN?";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal will soon require iOS 10 or later. Please upgrade in Settings app >> General >> Software Update.";

@@ -797,6 +797,12 @@
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ potrà rimuovere membri del gruppo e rendere altri amministratori.";
 
+/* Section title of the 'members' section in conversation settings view. */
+"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "Members";
+
+/* Format for the section title of the 'members' section in conversation settings view. Embeds: {{ the number of group members }}. */
+"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ Members";
+
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Silenzioso";
 
@@ -1041,10 +1047,7 @@
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Questo utente non può essere aggiunto al gruppo fino a quando non aggiorna Signal.";
 
 /* Message for 'group full' error alert when a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "Maximum group size of 100 members reached.";
-
-/* Label for 'learn more' button when a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_LEARN_MORE" = "Learn More";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "Massima dimensione di 100 membri raggiunta.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "Avatar non valido.";
@@ -1296,7 +1299,7 @@
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "Hai cambiato chi può modificare le informazioni del gruppo in “%@”.";
 
 /* Message indicating that the access to the group's attributes was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ ha cambiato chi può modificare le informazioni del gruppo in “%2$@“.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ ha cambiato chi può modificare le informazioni del gruppo in “%2$@”.";
 
 /* Message indicating that the access to the group's attributes was changed. Embeds {{new access level}}. */
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "Le informazioni del gruppo possono essere cambiate da “%@”.";
@@ -1317,7 +1320,7 @@
 "GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "Hai cambiato chi può modificare l'appartenenza al gruppo in “%@”.";
 
 /* Message indicating that the access to the group's members was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ ha cambiato chi può modificare l'appartenenza al gruppo in “%2$@“.";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ ha cambiato chi può modificare l'appartenenza al gruppo in “%2$@”.";
 
 /* Message indicating that the access to the group's members was changed. Embeds {{new access level}}. */
 "GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "L'appartenenza al gruppo può essere modificata da “%@”.";
@@ -1754,6 +1757,9 @@
 /* A keyboard command to unarchive the current coversation. */
 "KEY_COMMAND_UNARCHIVE" = "Estrai conversazione dall'archivio";
 
+/* Label for the 'learn more' button. */
+"LEARN_MORE" = "Learn More";
+
 /* Confirmation button within contextual alert */
 "LEAVE_BUTTON_TITLE" = "Abbandona";
 
@@ -1978,9 +1984,6 @@
 
 /* A prompt for the user to accept or decline an invite to a group. Embeds {{name of user who invited you}}. */
 "MESSAGE_REQUEST_VIEW_GROUP_INVITE_PROMPT_FORMAT" = "Sei stato invitato a questo gruppo da %@. Vuoi che i membri di questo gruppo possano mandarti messaggi?";
-
-/* A button used to learn more about why you must share your profile. */
-"MESSAGE_REQUEST_VIEW_LEARN_MORE_BUTTON" = "Scopri di più";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Vuoi permettere a %@ di inviarti messaggi? Non sapranno che hai visto i loro messaggi finché non accetti.";
@@ -2394,10 +2397,10 @@
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "Revoca invito";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the invited group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revocare l'invito al gruppo per “%@“?";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revocare l'invito al gruppo per “%@”?";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Revocare %1$@ inviti inviati da “%2$@“?";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Revocare %1$@ inviti inviati da “%2$@”?";
 
 /* Title of 'revoke invites' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_N_BUTTON" = "Revoca inviti";
@@ -2489,14 +2492,17 @@
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Album senza nome";
 
-/* Label indicating the user must use at least 6 characters */
-"PIN_CREATION_ALPHANUMERIC_HINT" = "Il PIN deve essere almeno di 6 caratteri";
+/* Label indicating the user must use at least 4 characters */
+"PIN_CREATION_ALPHANUMERIC_HINT" = "PIN must be at least 4 characters";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_CHANGING_TITLE" = "Cambia il tuo PIN";
 
+/* Title of the 'pin creation' confirmation view. */
+"PIN_CREATION_CONFIRM_TITLE" = "Confirm your PIN";
+
 /* The explanation of confirmation in the 'pin creation' view. */
-"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Conferma il tuo nuovo PIN.";
+"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Re-enter your PIN.";
 
 /* Button asking if the user would like to create an alphanumeric PIN */
 "PIN_CREATION_CREATE_ALPHANUMERIC" = "Crea PIN alfanumerico";
@@ -2511,13 +2517,13 @@
 "PIN_CREATION_ERROR_TITLE" = "Creazione PIN non riuscita";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "I PIN aggiungono un altro livello di sicurezza al tuo account. Scrivi il tuo PIN e conservalo in un luogo sicuro. Non può essere recuperato.";
+"PIN_CREATION_EXPLANATION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall Signal.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "I PIN non corrispondono. Riprova.";
 
-/* Label indicating the user must use at least 6 digits */
-"PIN_CREATION_NUMERIC_HINT" = "Il PIN deve essere almeno di 6 cifre";
+/* Label indicating the user must use at least 4 digits */
+"PIN_CREATION_NUMERIC_HINT" = "PIN must be at least 4 digits";
 
 /* Label indication the user must confirm their PIN. */
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "Reinserisci PIN";
@@ -2526,16 +2532,13 @@
 "PIN_CREATION_PIN_PROGRESS" = "Creazione PIN…";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "Puoi scegliere un nuovo PIN poiché questo dispositivo è registrato. Se ti dimentichi il tuo PIN, potresti dover attendere 7 giorni per registrarti di nuovo.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "You can change your PIN as long as this device is registered.";
 
 /* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_RECREATION_TITLE" = "Crea un nuovo PIN";
+"PIN_CREATION_RECREATION_TITLE" = "Change your PIN";
 
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "Crea il tuo PIN";
-
-/* Label indicating that the attempted PIN is too short */
-"PIN_CREATION_TOO_SHORT_ERROR" = "Il PIN deve essere almeno di 6 cifre.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Per aiutarti a memorizzare il tuo PIN, ti chiederemo di inserirlo periodicamente. Lo chiederemo di meno nel corso del tempo.";
@@ -2571,31 +2574,19 @@
 "PIN_REMINDER_TITLE" = "Inserisci il tuo PIN di Signal";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_REMINDER_TOO_SHORT_ERROR" = "Il PIN deve essere almeno di 6 cifre.";
-
-/* Action text for PIN megaphone when user already has a PIN */
-"PINS_MEGAPHONE_HAS_PIN_ACTION" = "Aggiorna PIN";
-
-/* Body for PIN megaphone when user already has a PIN */
-"PINS_MEGAPHONE_HAS_PIN_BODY" = "Il tuo blocco registrazione ora è chiamato PIN. Aggiornarlo richiede pochi secondi.";
-
-/* Toast indication that the user will be reminded later to update their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "Te lo ricorderemo più tardi. Aggiornare il tuo PIN diventerà obbligatorio tra %ld giorni.";
-
-/* Title for PIN megaphone when user already has a PIN */
-"PINS_MEGAPHONE_HAS_PIN_TITLE" = "Ti presentiamo i PIN";
+"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN must be at least 4 digits.";
 
 /* Action text for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_ACTION" = "Crea PIN";
+"PINS_MEGAPHONE_ACTION" = "Create PIN";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_BODY" = "I PIN aggiungono un altro livello di sicurezza al tuo account Signal.";
+"PINS_MEGAPHONE_BODY" = "PINs keep information that’s stored with Signal encrypted";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "Te lo ricorderemo più tardi. Creare un PIN diventerà obbligatorio tra %ld giorni.";
+"PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Creating a PIN will become mandatory in %ld days.";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_TITLE" = "Crea un PIN";
+"PINS_MEGAPHONE_TITLE" = "Create a PIN";
 
 /* Toast indicating that a PIN has been created. */
 "PINS_MEGAPHONE_TOAST" = "PIN creato. Puoi cambiarlo nelle impostazioni.";
@@ -2611,9 +2602,6 @@
 
 /* Label indicating that the user is verified. Embeds {{the user's name or phone number}}. */
 "PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%@ è verificato.";
-
-/* Label for a link to more information about safety numbers and verification. */
-"PRIVACY_SAFETY_NUMBERS_LEARN_MORE" = "Scopri di più";
 
 /* Button that shows the 'scan with camera' view. */
 "PRIVACY_TAP_TO_SCAN" = "Tocca per scansionare";
@@ -2707,9 +2695,6 @@
 
 /* Description of the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION" = "Il tuo profilo Signal sarà visibile ai tuoi contatti quando inizi una nuova conversazione e quando lo condividi con altri utenti e gruppi.";
-
-/* Link to more information about the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Tocca qui per scoprire di più.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Salva";
@@ -2820,7 +2805,7 @@
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Hai bisogno di aiuto?";
 
 /* Alert body for a forgotten SVR (V2) PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Il tuo PIN è un codice di minimo 6 cifre che hai creato e che può essere numerico o alfanumerico. Se non ti ricordi il tuo PIN, dovrai attendere 7 giorni per registrare nuovamente il tuo account.";
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock */
 "REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Il PIN è un codice di 4+ cifre creato da te che può essere numerico o alfanumerico. Se non riesci a ricordarti il tuo PIN, puoi crearne uno nuovo. Puoi registrarti e usare il tuo account ma perderai alcune impostazioni salvate come le informazioni del tuo profilo.";
@@ -3276,7 +3261,7 @@
 "SETTINGS_NOTIFICATIONS" = "Notifiche";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "Il tuo PIN esegue il backup delle impostazioni e delle preferenze del profilo per risparmiare tempo quando registri nuovamente il tuo account.";
+"SETTINGS_PINS_FOOTER" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall Signal.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Cambia il tuo PIN";
@@ -3307,6 +3292,21 @@
 
 /* An explanation of the 'read receipts' setting. */
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Vedi e condividi quando i messaggi vengono letti. Questa impostazione è opzionale e viene applicata a tutte le conversazioni.";
+
+/* Action to turn off registration lock */
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Turn Off";
+
+/* Title for the alert confirming that the user wants to turn off registration lock. */
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "Turn Off Registration Lock?";
+
+/* Action to turn on registration lock */
+"SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Turn On";
+
+/* Body for the alert confirming that the user wants to turn on registration lock. */
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "If you forget your Signal PIN when registering with Signal again, you’ll be locked out of your account for 7 days.";
+
+/* Title for the alert confirming that the user wants to turn on registration lock. */
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "Turn On Registration Lock?";
 
 /* Label for re-link button. */
 "SETTINGS_RELINK_BUTTON" = "Riassocia";
@@ -3356,9 +3356,6 @@
 /* Indicates that 'two factor auth' is enabled in the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_ENABLED" = "Attivo";
 
-/* Footer for the 'two factor auth' section of the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_FOOTER" = "Il blocco registrazione aggiunge un ulteriore strato di sicurezza al tuo account. Ti verrà chiesto il PIN di Signal quando registri il tuo numero di telefono con Signal. Se dimentichi il tuo PIN, non avrai accesso al tuo account per 7 giorni.";
-
 /* Label for the 'two factor auth' item of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_ITEM" = "Blocco registrazione";
 
@@ -3368,14 +3365,14 @@
 /* Title for the 'two factor auth' section of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Blocco registrazione";
 
+/* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "For extra security, turn on registration lock, which will require your Signal PIN to register your phone number with Signal again.";
+
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Indicatori di scrittura";
 
 /* An explanation of the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS_FOOTER" = "Vedi e condividi quando i messaggi vengono digitati. Questa impostazione è facoltativa e si applica a tutte le conversazioni.";
-
-/* Label for a link to more info about unidentified delivery. */
-"SETTINGS_UNIDENTIFIED_DELIVERY_LEARN_MORE" = "Scopri di più";
 
 /* table section label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Mittente sigillato";
@@ -3605,6 +3602,9 @@
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. */
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "Puoi chiedere al mittente di reinviarti questo messaggio, ora che stai usando una versione aggiornata di Signal.";
 
+/* Label indicating an unknown user. */
+"UNKNOWN_USER" = "Unknown";
+
 /* Info Message when an unknown user disabled disappearing messages. */
 "UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "I messaggi a scomparsa sono stati disabilitati.";
 
@@ -3656,23 +3656,11 @@
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Crea il tuo PIN";
 
-/* Button to open a help document explaining more about why a PIN is required */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "Scopri di più sui PIN";
-
-/* Body text for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Il tuo blocco registrazione ora è chiamato PIN e fa di più. Aggiornalo ora.";
-
-/* Header for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "Blocco registrazione = PIN";
-
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "I PIN aggiungono un altro livello di sicurezza al tuo account. Crea il tuo PIN ora.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall Signal.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Ti presentiamo i PIN";
-
-/* Button to open a help document explaining more about why a PIN is required */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON" = "Devo creare un PIN?";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal presto richiederà iOS 10 o successivo. Ti preghiamo di aggiornare andando nelle Impostazioni >> Generali >> Aggiornamento software.";

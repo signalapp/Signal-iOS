@@ -797,6 +797,12 @@
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ voi tulevaisuudessa poistaa ryhmän jäseniä ja nimittää muita ylläpitäjiä.";
 
+/* Section title of the 'members' section in conversation settings view. */
+"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "Members";
+
+/* Format for the section title of the 'members' section in conversation settings view. Embeds: {{ the number of group members }}. */
+"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ Members";
+
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Mykistä";
 
@@ -1041,10 +1047,7 @@
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Tätä käyttäjää ei voida lisätä ryhmään ennen kuin hän on päivittänyt Signalin.";
 
 /* Message for 'group full' error alert when a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "Maximum group size of 100 members reached.";
-
-/* Label for 'learn more' button when a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_LEARN_MORE" = "Learn More";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "Ryhmän enimmäiskoko 100 jäsentä saavutettu.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "Virheellinen kuvake.";
@@ -1754,6 +1757,9 @@
 /* A keyboard command to unarchive the current coversation. */
 "KEY_COMMAND_UNARCHIVE" = "Palauta keskustelu";
 
+/* Label for the 'learn more' button. */
+"LEARN_MORE" = "Learn More";
+
 /* Confirmation button within contextual alert */
 "LEAVE_BUTTON_TITLE" = "Poistu";
 
@@ -1978,9 +1984,6 @@
 
 /* A prompt for the user to accept or decline an invite to a group. Embeds {{name of user who invited you}}. */
 "MESSAGE_REQUEST_VIEW_GROUP_INVITE_PROMPT_FORMAT" = "%@ kutsui sinut mukaan tähän ryhmään. Haluatko antaa tämän ryhmän jäsenten lähettää sinulle viestejä?";
-
-/* A button used to learn more about why you must share your profile. */
-"MESSAGE_REQUEST_VIEW_LEARN_MORE_BUTTON" = "Lue lisää";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Haluatko antaa henkilön %@ viestiä sinulle? Hän ei tiedä, että olet nähnyt hänen viestinsä, ennen kuin hyväksyt.";
@@ -2489,14 +2492,17 @@
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = " Nimeämätön albumi";
 
-/* Label indicating the user must use at least 6 characters */
-"PIN_CREATION_ALPHANUMERIC_HINT" = "PIN-koodin on oltava vähintään 6 merkkiä";
+/* Label indicating the user must use at least 4 characters */
+"PIN_CREATION_ALPHANUMERIC_HINT" = "PIN must be at least 4 characters";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_CHANGING_TITLE" = "Vaihda PIN-koodi";
 
+/* Title of the 'pin creation' confirmation view. */
+"PIN_CREATION_CONFIRM_TITLE" = "Confirm your PIN";
+
 /* The explanation of confirmation in the 'pin creation' view. */
-"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Vahvista uusi PIN-koodi.";
+"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Re-enter your PIN.";
 
 /* Button asking if the user would like to create an alphanumeric PIN */
 "PIN_CREATION_CREATE_ALPHANUMERIC" = "Luo aakkosnumeerinen PIN-koodi";
@@ -2511,13 +2517,13 @@
 "PIN_CREATION_ERROR_TITLE" = "PIN-koodin luominen epäonnistui";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PIN-koodit lisäävät ylimääräisen suojaustason tilillesi. Kirjoita PIN-koodi muistiin ja säilytä sitä turvallisessa paikassa. Sitä ei voida palauttaa.";
+"PIN_CREATION_EXPLANATION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall Signal.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PIN-koodit eivät täsmää. Yritä uudelleen.";
 
-/* Label indicating the user must use at least 6 digits */
-"PIN_CREATION_NUMERIC_HINT" = "PIN-koodin on oltava vähintään 6 numeroa";
+/* Label indicating the user must use at least 4 digits */
+"PIN_CREATION_NUMERIC_HINT" = "PIN must be at least 4 digits";
 
 /* Label indication the user must confirm their PIN. */
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "Syötä PIN-koodi uudelleen";
@@ -2526,16 +2532,13 @@
 "PIN_CREATION_PIN_PROGRESS" = "Luodaan PIN-koodia…";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "Voit valita uuden PIN-koodin, koska tämä laite on rekisteröity. Jos unohdat PIN-koodisi, voit joutua odottamaan 7 päivää rekisteröityäksesi uudelleen.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "You can change your PIN as long as this device is registered.";
 
 /* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_RECREATION_TITLE" = "Luo uusi PIN-koodi";
+"PIN_CREATION_RECREATION_TITLE" = "Change your PIN";
 
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "Luo PIN-koodisi";
-
-/* Label indicating that the attempted PIN is too short */
-"PIN_CREATION_TOO_SHORT_ERROR" = "PIN-koodin on oltava vähintään 6 numeroa.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Pyydämme sinun PIN-koodia ajoittain sen muistamisen helpottamiseksi. Pyynnöt harvenevat ajan myötä.";
@@ -2571,31 +2574,19 @@
 "PIN_REMINDER_TITLE" = "Syötä Signal PIN-koodisi";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN-koodin on oltava vähintään 6 numeroa.";
-
-/* Action text for PIN megaphone when user already has a PIN */
-"PINS_MEGAPHONE_HAS_PIN_ACTION" = "Päivitä PIN";
-
-/* Body for PIN megaphone when user already has a PIN */
-"PINS_MEGAPHONE_HAS_PIN_BODY" = "Rekisteröinnin lukitusta kutsutaan nyt PIN-koodiksi. Päivittäminen kestää sekunteja.";
-
-/* Toast indication that the user will be reminded later to update their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "Muistutamme sinua myöhemmin. PIN-koodin päivittämisestä tulee pakollinen %ld päivän kuluttua.";
-
-/* Title for PIN megaphone when user already has a PIN */
-"PINS_MEGAPHONE_HAS_PIN_TITLE" = "Esittelemme PIN-koodit";
+"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN must be at least 4 digits.";
 
 /* Action text for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_ACTION" = "Luo PIN-koodi";
+"PINS_MEGAPHONE_ACTION" = "Create PIN";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_BODY" = "PIN-koodit lisäävät Signal-tilillesi toisen suojaustason.";
+"PINS_MEGAPHONE_BODY" = "PINs keep information that’s stored with Signal encrypted";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "Muistutamme sinua myöhemmin. PIN-koodin luomisesta tulee pakollinen %ld päivän kuluttua.";
+"PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Creating a PIN will become mandatory in %ld days.";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_TITLE" = "Luo PIN-koodi";
+"PINS_MEGAPHONE_TITLE" = "Create a PIN";
 
 /* Toast indicating that a PIN has been created. */
 "PINS_MEGAPHONE_TOAST" = "PIN-koodi luotu. Voit muuttaa sitä asetuksissa.";
@@ -2611,9 +2602,6 @@
 
 /* Label indicating that the user is verified. Embeds {{the user's name or phone number}}. */
 "PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%@ on varmennettu.";
-
-/* Label for a link to more information about safety numbers and verification. */
-"PRIVACY_SAFETY_NUMBERS_LEARN_MORE" = "Lue lisää";
 
 /* Button that shows the 'scan with camera' view. */
 "PRIVACY_TAP_TO_SCAN" = "Napauta skannataksesi";
@@ -2707,9 +2695,6 @@
 
 /* Description of the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION" = "Signal-profiilisi näkyy kaikille yhteystiedoillesi, kun aloitat uusia keskusteluja ja kun jaat sen muiden käyttäjien ja ryhmien kanssa.";
-
-/* Link to more information about the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Lisätietoja napauttamalla tästä";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Tallenna";
@@ -2820,7 +2805,7 @@
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Tarvitsetko apua?";
 
 /* Alert body for a forgotten SVR (V2) PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Luomasi PIN on yli 6-numeroinen koodi, joka voi olla numeerinen tai aakkosnumeerinen. Jos et muista PIN-koodiasi, joudut odottamaan 7 päivää ennen kuin voit rekisteröityä uudelleen.";
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock */
 "REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "PIN-koodi on sinun luoma 4+ numeroinen koodi, joka voi olla numeerinen tai aakkosnumeerinen. Jos et muista PIN-koodiasi, voit luoda uuden. Voit rekisteröidä ja käyttää tiliäsi, mutta menetät tallennetut asetukset, kuten profiilitietosi.";
@@ -3276,7 +3261,7 @@
 "SETTINGS_NOTIFICATIONS" = "Ilmoitukset";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "PIN-koodi varmuuskopioi profiilisi tiedot ja asetukset säästääksesi aikaa, kun rekisteröit tilisi uudelleen.";
+"SETTINGS_PINS_FOOTER" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall Signal.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Vaihda PIN-koodi";
@@ -3307,6 +3292,21 @@
 
 /* An explanation of the 'read receipts' setting. */
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Näe ja jaa milloin viestit on luettu. Tämä asetus on valinnainen ja koskee kaikkia keskusteluja.";
+
+/* Action to turn off registration lock */
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Turn Off";
+
+/* Title for the alert confirming that the user wants to turn off registration lock. */
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "Turn Off Registration Lock?";
+
+/* Action to turn on registration lock */
+"SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Turn On";
+
+/* Body for the alert confirming that the user wants to turn on registration lock. */
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "If you forget your Signal PIN when registering with Signal again, you’ll be locked out of your account for 7 days.";
+
+/* Title for the alert confirming that the user wants to turn on registration lock. */
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "Turn On Registration Lock?";
 
 /* Label for re-link button. */
 "SETTINGS_RELINK_BUTTON" = "Yhdistä uudelleen";
@@ -3356,9 +3356,6 @@
 /* Indicates that 'two factor auth' is enabled in the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_ENABLED" = "Päällä";
 
-/* Footer for the 'two factor auth' section of the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_FOOTER" = "Rekisteröinnin lukitus lisää ylimääräisen suojaustason tilillesi. Sinun Signal PIN-koodia kysytään silloin, kun rekisteröit puhelinnumerosi Signalin kanssa. Jos unohdat PIN-koodisi, sinut lukitaan tililtäsi 7 päiväksi.";
-
 /* Label for the 'two factor auth' item of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_ITEM" = "Rekisteröinnin lukitus";
 
@@ -3368,14 +3365,14 @@
 /* Title for the 'two factor auth' section of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Rekisteröinnin lukitus";
 
+/* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "For extra security, turn on registration lock, which will require your Signal PIN to register your phone number with Signal again.";
+
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Kirjoitustilaindikaattori";
 
 /* An explanation of the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS_FOOTER" = "Näe ja jaa milloin viestejä kirjoitetaan. Tämä asetus on vaihtoehtoinen ja koskee kaikkia keskusteluja.";
-
-/* Label for a link to more info about unidentified delivery. */
-"SETTINGS_UNIDENTIFIED_DELIVERY_LEARN_MORE" = "Lue lisää";
 
 /* table section label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Sinetöity lähettäjä";
@@ -3605,6 +3602,9 @@
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. */
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "Voit pyytää lähettäjää lähettämään tämän viestin uudelleen, nyt kun käytät ajan tasalla olevaa Signal-versiota.";
 
+/* Label indicating an unknown user. */
+"UNKNOWN_USER" = "Unknown";
+
 /* Info Message when an unknown user disabled disappearing messages. */
 "UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Katoavat viestit poistettiin käytöstä.";
 
@@ -3656,23 +3656,11 @@
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Luo PIN-koodisi";
 
-/* Button to open a help document explaining more about why a PIN is required */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "Lisätietoja PIN-koodeista";
-
-/* Body text for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Rekisteröinnin lukitusta kutsutaan nyt PIN-koodiksi, ja se tekee enemmän. Päivitä se nyt.";
-
-/* Header for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "Rekisteröinnin lukitus = PIN-koodi";
-
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PIN-koodit lisäävät tilillesi toisen suojaustason. Luo oma PIN nyt.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall Signal.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Esittelemme PIN-koodit";
-
-/* Button to open a help document explaining more about why a PIN is required */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON" = "Täytyykö minun luoda PIN-koodi?";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Lähitulevaisuudessa Signal tulee vaatimaan iOS 10:ä tai uudempaa. Voit päivittää käyttöjärjestelmäsi Asetukset ohjelmasta >> Yleiset >> Ohjelmistopäivitys";

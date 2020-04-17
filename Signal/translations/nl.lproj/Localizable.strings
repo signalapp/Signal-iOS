@@ -797,6 +797,12 @@
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ zal leden van de groep kunnen verwijderen en zal andere beheerders kunnen maken.";
 
+/* Section title of the 'members' section in conversation settings view. */
+"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "Members";
+
+/* Format for the section title of the 'members' section in conversation settings view. Embeds: {{ the number of group members }}. */
+"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ Members";
+
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Dempen";
 
@@ -1041,10 +1047,7 @@
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Deze persoon kan niet worden toegevoegd aan de groep voordat hij of zij Signal naar een nieuwe versie heeft opgewaardeerd.";
 
 /* Message for 'group full' error alert when a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "Maximum group size of 100 members reached.";
-
-/* Label for 'learn more' button when a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_LEARN_MORE" = "Learn More";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "Je hebt de maximale groepsomvang van honderd leden bereikt.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "Ongeldige groepsafbeelding.";
@@ -1419,7 +1422,7 @@
 "GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "Alle groepsleden als niet geverifieerd markeren";
 
 /* Label for the 'reset all no-longer-verified group members' confirmation alert. */
-"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE" = "Dit zal de verificatie wissen voor alle groepsleden wier veiligheidsnummers veranderd zijn sinds ze als geverifieerd zijn gemarkeerd.";
+"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE" = "Dit zal de verificatie opheffen voor alle groepsleden wier veiligheidsnummers zijn veranderd sinds ze als geverifieerd zijn gemarkeerd.";
 
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Leden";
@@ -1754,6 +1757,9 @@
 /* A keyboard command to unarchive the current coversation. */
 "KEY_COMMAND_UNARCHIVE" = "Gesprek dearchiveren";
 
+/* Label for the 'learn more' button. */
+"LEARN_MORE" = "Learn More";
+
 /* Confirmation button within contextual alert */
 "LEAVE_BUTTON_TITLE" = "Verlaten";
 
@@ -1978,9 +1984,6 @@
 
 /* A prompt for the user to accept or decline an invite to a group. Embeds {{name of user who invited you}}. */
 "MESSAGE_REQUEST_VIEW_GROUP_INVITE_PROMPT_FORMAT" = "Je bent door %@ uitgenodigd om lid te worden van deze groep. Wil je leden van deze groep toestaan om berichten naar je te zenden?";
-
-/* A button used to learn more about why you must share your profile. */
-"MESSAGE_REQUEST_VIEW_LEARN_MORE_BUTTON" = "Lees meer";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Wil je %@ toestaan om een gesprek met je te beginnen? Hij/Zij zal niet kunnen zien dat je zijn/haar berichten gelezen hebt zolang je nog geen gesprek hebt toegestaan. ";
@@ -2340,7 +2343,7 @@
 "ONBOARDING_VERIFICATION_RESEND_CODE_BY_SMS_BUTTON" = "Stuur code opnieuw";
 
 /* Label for the 'resend code by voice' button in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_BY_VOICE_BUTTON" = "Bel mij";
+"ONBOARDING_VERIFICATION_RESEND_CODE_BY_VOICE_BUTTON" = "Bel me";
 
 /* Label for link that can be used when the resent code did not arrive. */
 "ONBOARDING_VERIFICATION_RESENT_CODE_MISSING_LINK" = "Nog steeds geen code?";
@@ -2489,14 +2492,17 @@
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Naamloos album";
 
-/* Label indicating the user must use at least 6 characters */
-"PIN_CREATION_ALPHANUMERIC_HINT" = "Je pincode moet uit ten minste 6 karakters bestaan";
+/* Label indicating the user must use at least 4 characters */
+"PIN_CREATION_ALPHANUMERIC_HINT" = "PIN must be at least 4 characters";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_CHANGING_TITLE" = "Wijzig je pincode";
 
+/* Title of the 'pin creation' confirmation view. */
+"PIN_CREATION_CONFIRM_TITLE" = "Confirm your PIN";
+
 /* The explanation of confirmation in the 'pin creation' view. */
-"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Bevestig je nieuwe pincode";
+"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Re-enter your PIN.";
 
 /* Button asking if the user would like to create an alphanumeric PIN */
 "PIN_CREATION_CREATE_ALPHANUMERIC" = "Maak een alfanumerieke pincode aan";
@@ -2511,13 +2517,13 @@
 "PIN_CREATION_ERROR_TITLE" = "Pincode aanmaken mislukt";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "Pincodes voegen een extra niveau van beveiliging toe. Je moet je pincode onthouden want je kunt hem niet terugzien. Je hebt je pincode nodig als je je telefoonnummer in de toekomst opnieuw bij Signal wilt registreren.";
+"PIN_CREATION_EXPLANATION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall Signal.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "De pincodes komen niet overeen. Probeer het opnieuw.";
 
-/* Label indicating the user must use at least 6 digits */
-"PIN_CREATION_NUMERIC_HINT" = "Je pincode moet uit ten minste 6 getallen bestaan";
+/* Label indicating the user must use at least 4 digits */
+"PIN_CREATION_NUMERIC_HINT" = "PIN must be at least 4 digits";
 
 /* Label indication the user must confirm their PIN. */
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "Voer pincode opnieuw in";
@@ -2526,16 +2532,13 @@
 "PIN_CREATION_PIN_PROGRESS" = "Pincode aan het aanmaken…";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "Je kunt een nieuwe pincode kiezen omdat dit apparaat al is geregistreerd. Als je je pincode vergeet dan zul je misschien 7 dagen moeten wachten voor je opnieuw kunt registreren.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "You can change your PIN as long as this device is registered.";
 
 /* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_RECREATION_TITLE" = "Nieuwe pincode aanmaken";
+"PIN_CREATION_RECREATION_TITLE" = "Change your PIN";
 
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "Maak pincode aan";
-
-/* Label indicating that the attempted PIN is too short */
-"PIN_CREATION_TOO_SHORT_ERROR" = "Je pincode moet uit ten minste 6 getallen bestaan.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Om je te helpen je pincode te onthouden, vragen we je periodiek om je pincode in te voeren. Na verloop van tijd zullen we je minder vaak vragen om dat te doen.";
@@ -2571,31 +2574,19 @@
 "PIN_REMINDER_TITLE" = "Voer je Signal-pincode in";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_REMINDER_TOO_SHORT_ERROR" = "Je pincode moet uit ten minste 6 getallen bestaan.";
-
-/* Action text for PIN megaphone when user already has a PIN */
-"PINS_MEGAPHONE_HAS_PIN_ACTION" = "Pincode bijwerken";
-
-/* Body for PIN megaphone when user already has a PIN */
-"PINS_MEGAPHONE_HAS_PIN_BODY" = "Registratievergrendeling heet vanaf nu ‘pincode’. Je zult de pincode die je tot nu toe gebruikte moeten bijwerken, maar dat kost slechts enkele seconden.";
-
-/* Toast indication that the user will be reminded later to update their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "We zullen je er later aan herinneren dat je je pincode nog moet bijwerken. Dit wordt binnen %ld dagen verplicht.";
-
-/* Title for PIN megaphone when user already has a PIN */
-"PINS_MEGAPHONE_HAS_PIN_TITLE" = "We introduceren pincodes";
+"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN must be at least 4 digits.";
 
 /* Action text for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_ACTION" = "Pincode aanmaken";
+"PINS_MEGAPHONE_ACTION" = "Create PIN";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_BODY" = "Pincodes voegen een extra niveau van beveiliging toe, hiermee voorkom je dat anderen Signal kunnen registreren voor jouw telefoonnummer.";
+"PINS_MEGAPHONE_BODY" = "PINs keep information that’s stored with Signal encrypted";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "We zullen je er later aan herinneren dat je nog een pincode moet aanmaken. Dit wordt binnen %ld dagen verplicht.";
+"PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Creating a PIN will become mandatory in %ld days.";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_TITLE" = "Een pincode aanmaken";
+"PINS_MEGAPHONE_TITLE" = "Create a PIN";
 
 /* Toast indicating that a PIN has been created. */
 "PINS_MEGAPHONE_TOAST" = "Pincode aangemaakt. Je kunt deze wijzigen in de instellingen.";
@@ -2612,14 +2603,11 @@
 /* Label indicating that the user is verified. Embeds {{the user's name or phone number}}. */
 "PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%@ is geverifieerd.";
 
-/* Label for a link to more information about safety numbers and verification. */
-"PRIVACY_SAFETY_NUMBERS_LEARN_MORE" = "Lees meer";
-
 /* Button that shows the 'scan with camera' view. */
 "PRIVACY_TAP_TO_SCAN" = "Tik om te scannen";
 
 /* Button that lets user mark another user's identity as unverified. */
-"PRIVACY_UNVERIFY_BUTTON" = "Verificatie wissen";
+"PRIVACY_UNVERIFY_BUTTON" = "Verificatie ongedaan maken";
 
 /* Alert body when verifying with {{contact name}} */
 "PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Dit lijkt niet op je veiligheidsnummer met %@. Verifieer je wel de juiste contactpersoon?";
@@ -2707,9 +2695,6 @@
 
 /* Description of the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION" = "Signal-profielen worden eind-tot-eind-versleuteld uitgewisseld, dus zelfs de Signal-dienst heeft nooit toegang tot je profielfoto en naam. Deze gegevens zijn alleen zichtbaar voor personen wie zijn opgeslagen in jouw contactenlijst, personen naar wie je zelf een nieuwe gesprek initieert, en voor personen voor wie je expliciet toestemming hebt gegeven door op “Profielfoto en naam zichtbaar maken” te tikken.";
-
-/* Link to more information about the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Tik hier voor meer informatie.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Opslaan";
@@ -2820,7 +2805,7 @@
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Hulp nodig?";
 
 /* Alert body for a forgotten SVR (V2) PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Je pincode is een wachtoord welke je zelf hebt aangemaakt bestaande uit 6 of meer cijfers of karakters. Als je je pincode niet hebt onthouden, dan zul je 7 dagen moeten wachten voor je je telefoonnummer opnieuw kunt registreren.";
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock */
 "REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Je pincode is een code welke je zelf hebt aangemaakt en welke bestaat uit vier of meer cijfers of een combinatie van cijfers en letters. Als je je je pincode niet kunt herinneren, dan kun je een nieuwe pincode aanmaken. Je kunt Signal dan wel weer registreren met dit telefoonnummer, maar sommige instellingen zoals je profielnaam en -afbeelding zullen dan verloren gaan.";
@@ -3276,7 +3261,7 @@
 "SETTINGS_NOTIFICATIONS" = "Meldingen";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "Met je Signal-pincode kun je je profielinstellingen en voorkeuren terug zetten als je Signal in de toekomst opnieuw registreert. Dit bespaart je tijd en moeite.";
+"SETTINGS_PINS_FOOTER" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall Signal.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Wijzig je pincode";
@@ -3307,6 +3292,21 @@
 
 /* An explanation of the 'read receipts' setting. */
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Als leesbevestigingen zijn uitgeschakeld kunnen anderen niet zien of je hun berichten hebt gelezen, maar je zult ook niet kunnen zien of anderen jouw berichten hebben gelezen.";
+
+/* Action to turn off registration lock */
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Turn Off";
+
+/* Title for the alert confirming that the user wants to turn off registration lock. */
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "Turn Off Registration Lock?";
+
+/* Action to turn on registration lock */
+"SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Turn On";
+
+/* Body for the alert confirming that the user wants to turn on registration lock. */
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "If you forget your Signal PIN when registering with Signal again, you’ll be locked out of your account for 7 days.";
+
+/* Title for the alert confirming that the user wants to turn on registration lock. */
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "Turn On Registration Lock?";
 
 /* Label for re-link button. */
 "SETTINGS_RELINK_BUTTON" = "Opnieuw koppelen";
@@ -3356,9 +3356,6 @@
 /* Indicates that 'two factor auth' is enabled in the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_ENABLED" = "Ingeschakeld";
 
-/* Footer for the 'two factor auth' section of the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_FOOTER" = "Registratievergrendeling beschermt je telefoonnummer tegen niet-geautoriseerde registratiepogingen. Signal zal je vragen om deze pincode in te voeren als je in de toekomst Signal opnieuw probeert te registreren met je huidige telefoonnummer. Als je je pincode vergeet, dan kun je voor 7 dagen Signal niet gebruiken met dit telefoonnummer.";
-
 /* Label for the 'two factor auth' item of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_ITEM" = "Registratievergrendeling";
 
@@ -3368,14 +3365,14 @@
 /* Title for the 'two factor auth' section of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Registratievergrendeling";
 
+/* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "For extra security, turn on registration lock, which will require your Signal PIN to register your phone number with Signal again.";
+
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Typindicatoren";
 
 /* An explanation of the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS_FOOTER" = "Als typindicatoren zijn uitgeschakeld kunnen anderen niet zien of je aan het typen bent, maar je zult ook niet kunnen zien wanneer anderen aan het typen zijn.";
-
-/* Label for a link to more info about unidentified delivery. */
-"SETTINGS_UNIDENTIFIED_DELIVERY_LEARN_MORE" = "Lees meer";
 
 /* table section label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Verzegelde afzender";
@@ -3605,6 +3602,9 @@
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. */
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "Je kunt de verzender vragen om dit bericht nu opnieuw te verzenden omdat je nu de meest recente versie van Signal gebruikt.";
 
+/* Label indicating an unknown user. */
+"UNKNOWN_USER" = "Unknown";
+
 /* Info Message when an unknown user disabled disappearing messages. */
 "UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Zelf-wissende berichten zijn uitgeschakeld.";
 
@@ -3656,23 +3656,11 @@
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Pincode aanmaken";
 
-/* Button to open a help document explaining more about why a PIN is required */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "Lees meer over pincodes";
-
-/* Body text for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Registratievergrendeling heet vanaf nu ‘pincode’, en je kunt er meer mee doen. Je moet de pincode welke je tot nog toe gebruikte bijwerken.";
-
-/* Header for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "Registratievergrendeling = Pincode";
-
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Pincodes voegen een extra niveau van beveiliging toe. Het wordt aanbevolen nu een pincode aan te maken.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall Signal.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "We introduceren pincodes";
-
-/* Button to open a help document explaining more about why a PIN is required */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON" = "Moet ik een pincode aanmaken?";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Binnenkort vereist Signal dat je iOS 10 of een latere versie gebruikt. Werk je besturingssysteem bij via Instellingen >> Algemeen >> Software-update.";

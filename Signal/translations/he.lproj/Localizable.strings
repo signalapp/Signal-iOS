@@ -45,22 +45,22 @@
 "ADD_GROUP_MEMBERS_ACTION_TITLE_1" = "הוסף חבר קבוצה";
 
 /* Label for the 'add group members' button. */
-"ADD_GROUP_MEMBERS_ACTION_TITLE_N" = "Add Members";
+"ADD_GROUP_MEMBERS_ACTION_TITLE_N" = "הוסף חברי קבוצה";
 
 /* Format for the message for the 'add group member' confirmation alert.  Embeds {{ the name of the group. }}. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_1_FORMAT" = "Add member to “%2$@”?";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_1_FORMAT" = "להוסיף חבר קבוצה אל “%2$@”?";
 
 /* Format for the message for the 'add group members' confirmation alert.  Embeds {{ %1$@ number of new members, %2$@ name of the group. }}. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "Add %1$@ members to “%2$@”?";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "להוסיף %1$@ חברי קבוצה אל “%2$@”?";
 
 /* Title for the 'add group member' confirmation alert. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1" = "Add New Member";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1" = "הוסף חבר קבוצה חדש";
 
 /* Title for the 'add group members' confirmation alert. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_N" = "Add New Members";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_N" = "הוסף חברי קבוצה חדשים";
 
 /* The title for the 'add group members' view. */
-"ADD_GROUP_MEMBERS_VIEW_TITLE" = "Add Members";
+"ADD_GROUP_MEMBERS_VIEW_TITLE" = "הוסף חברי קבוצה";
 
 /* Message shown in conversation view that offers to share your profile with a group. */
 "ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "האם תרצה לשתף את הפרופיל שלך עם קבוצה זו?";
@@ -696,7 +696,7 @@
 "CONTACT_WITHOUT_NAME" = "איש קשר ללא שם";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "This conversation will be deleted from this device.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "שיחה זו תימחק ממכשיר זה.";
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "למחוק שיחה?";
@@ -747,7 +747,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "הכל";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Choose who can edit the group name, avatar and disappearing messages timer.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "בחר מי יכול לערוך את השם, היצגן וקוצב זמן ההודעות הנעלמות של הקבוצה.";
 
 /* Footer text for the 'block and leave' section of conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER" = "לא תקבל יותר הודעות או עדכונים מקבוצה זו.";
@@ -762,7 +762,7 @@
 "CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "חסום משתמש זה";
 
 /* Label for 'block user' action in conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_USER" = "Block User";
+"CONVERSATION_SETTINGS_BLOCK_USER" = "חסום משתמש";
 
 /* Navbar title when viewing settings for a 1-on-1 thread */
 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "פרטי איש קשר";
@@ -777,7 +777,7 @@
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "רק מינהלנים";
 
 /* Description for the 'edit group attributes access' alert. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Choose who can change the group name, avatar and disappearing messages:";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "בחר מי יכול לשנות את השם, היצגן וההודעות הנעלמות של הקבוצה:";
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "כל חברי הקבוצה";
@@ -796,6 +796,12 @@
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ יוכל להסיר חברי קבוצה ולעשות אחרים מינהלנים.";
+
+/* Section title of the 'members' section in conversation settings view. */
+"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "Members";
+
+/* Format for the section title of the 'members' section in conversation settings view. Embeds: {{ the number of group members }}. */
+"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ Members";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "השתק";
@@ -849,10 +855,10 @@
 "CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "הקש כדי לשנות";
 
 /* Label for 'unblock group' action in conversation settings view. */
-"CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Unblock Group";
+"CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "בטל חסימת קבוצה";
 
 /* Label for 'unblock user' action in conversation settings view. */
-"CONVERSATION_SETTINGS_UNBLOCK_USER" = "Unblock User";
+"CONVERSATION_SETTINGS_UNBLOCK_USER" = "בטל חסימת משתמש";
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "בטל השתקה";
@@ -1038,13 +1044,10 @@
 "EDIT_GROUP_DEFAULT_TITLE" = "ערוך קבוצה";
 
 /* Error message indicating the a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "This user can't be added to the group until they upgrade Signal.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "משתמש זה אינו יכול להתווסף אל הקבוצה עד שהוא ישדרג את Signal.";
 
 /* Message for 'group full' error alert when a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "Maximum group size of 100 members reached.";
-
-/* Label for 'learn more' button when a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_LEARN_MORE" = "Learn More";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "גודל קבוצה מרבי של 100 חברי קבוצה הושג.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "יצגן בלתי תקף.";
@@ -1203,7 +1206,7 @@
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "מספר ביטחון השתנה.";
 
 /* Error indicating network connectivity problems. */
-"ERROR_NETWORK_FAILURE" = "Network Error";
+"ERROR_NETWORK_FAILURE" = "שגיאת רשת";
 
 /* Error indicating a send failure due to a delinked application. */
 "ERROR_SENDING_DELINKED" = "המכשיר שלך אינו מקושר יותר. אנא קשר מחדש כדי לשלוח הודעות נוספות.";
@@ -1296,7 +1299,7 @@
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "שינית מי יכול לערוך מידע קבוצה אל “%@“.";
 
 /* Message indicating that the access to the group's attributes was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed who can edit group info to “%2$@“.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ שינה מי יכול לערוך מידע קבוצה אל “%2$@“.";
 
 /* Message indicating that the access to the group's attributes was changed. Embeds {{new access level}}. */
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "מידע קבוצה יכול להשתנות על ידי “%@“.";
@@ -1317,7 +1320,7 @@
 "GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "שינית מי יכול לערוך חברות קבוצה אל “%@“.";
 
 /* Message indicating that the access to the group's members was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed who can edit group membership to “%2$@“.";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ שינה מי יכול לערוך חברות קבוצה אל “%2$@“.";
 
 /* Message indicating that the access to the group's members was changed. Embeds {{new access level}}. */
 "GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "חברות קבוצה יכולה להשתנות על ידי “%@“.";
@@ -1338,16 +1341,16 @@
 "GROUP_CREATION_FAILED" = "לא כל חברי הקבוצה צורפו אל הקבוצה. הקש כדי לנסות מחדש.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
-"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@ can’t be automatically added to this group by you. They’ve been invited to join, and won’t see any group messages until they accept.";
+"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@ אינו יכול להתווסף באופן אוטומטי אל קבוצה זו על ידך. הוא הוזמן להצטרף, ולא יראה הודעות קבוצה כלשהן עד שהוא יסכים.";
 
 /* Title for an alert indicating that a member was invited to a group. */
-"GROUP_INVITES_SENT_ALERT_TITLE_1" = "Invitation Sent";
+"GROUP_INVITES_SENT_ALERT_TITLE_1" = "הזמנה נשלחה";
 
 /* Format for the title for an alert indicating that some members were invited to a group. Embeds: {{ the number of invites sent. }} */
-"GROUP_INVITES_SENT_ALERT_TITLE_N_FORMAT" = "%@ Invitations Sent";
+"GROUP_INVITES_SENT_ALERT_TITLE_N_FORMAT" = "%@ הזמנות נשלחו";
 
 /* Message for an alert indicating that some members were invited to a group. */
-"GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "These users can’t be automatically added to this group by you. They’ve been invited to join, and won’t see any group messages until they accept.";
+"GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "משתמשים אלו אינם יכולים להתווסף באופן אוטומטי אל קבוצה זו על ידך. הם הוזמנו להצטרף, ולא יראו הודעות קבוצה כלשהן עד שהם יסכימו.";
 
 /* Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%@ הוסיף אותך.";
@@ -1413,7 +1416,7 @@
 "GROUP_MEMBERS_CALL" = "חייג";
 
 /* Label indicating that a group has no other members. */
-"GROUP_MEMBERS_NO_OTHER_MEMBERS" = "No members.";
+"GROUP_MEMBERS_NO_OTHER_MEMBERS" = "אין חברי קבוצה.";
 
 /* Label for the button that clears all verification errors in the 'group members' view. */
 "GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "נקה וידואים עבור כולם";
@@ -1431,7 +1434,7 @@
 "GROUP_MEMBERS_SEND_MESSAGE" = "הודעה";
 
 /* Placeholder text for 'group name' field. */
-"GROUP_NAME_PLACEHOLDER" = "Group name (required)";
+"GROUP_NAME_PLACEHOLDER" = "שם קבוצה (דרוש)";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "%@ הסכים להזמנה אל הקבוצה.";
@@ -1569,7 +1572,7 @@
 "GROUP_YOU_LEFT" = "עזבת את הקבוצה.";
 
 /* Message for the 'can't replace group admin' alert. */
-"GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Choose a new admin for this group before you leave.";
+"GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "בחר מינהלן חדש עבור קבוצה זו לפני שאתה עוזב.";
 
 /* Error indicating that an error occurred while accepting an invite. */
 "GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "לא היה ניתן להסכים להזמנה.";
@@ -1584,13 +1587,13 @@
 "GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "חסום את %@";
 
 /* Message for the 'replace group admin' alert. */
-"GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "Before you leave, choose a new admin for this group.";
+"GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "לפני שאתה עוזב, בחר מינהלן חדש עבור קבוצה זו.";
 
 /* Title for the 'replace group admin' alert. */
-"GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "Choose New Admin";
+"GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "בחר מינהלן חדש";
 
 /* Label for the 'replace group admin' button. */
-"GROUPS_REPLACE_ADMIN_BUTTON" = "Choose new admin";
+"GROUPS_REPLACE_ADMIN_BUTTON" = "בחר מינהלן חדש";
 
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "שיחות מאורכבות";
@@ -1753,6 +1756,9 @@
 
 /* A keyboard command to unarchive the current coversation. */
 "KEY_COMMAND_UNARCHIVE" = "בטל ארכוב שיחה";
+
+/* Label for the 'learn more' button. */
+"LEARN_MORE" = "Learn More";
 
 /* Confirmation button within contextual alert */
 "LEAVE_BUTTON_TITLE" = "עזוב";
@@ -1979,9 +1985,6 @@
 /* A prompt for the user to accept or decline an invite to a group. Embeds {{name of user who invited you}}. */
 "MESSAGE_REQUEST_VIEW_GROUP_INVITE_PROMPT_FORMAT" = "הוזמנת אל קבוצה זאת על ידי %@. האם אתה רוצה לאפשר לחברים של קבוצה זו לשלוח לך הודעות?";
 
-/* A button used to learn more about why you must share your profile. */
-"MESSAGE_REQUEST_VIEW_LEARN_MORE_BUTTON" = "למד עוד";
-
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "האם אתה רוצה להרשות אל %@ לשלוח אליך הודעות? הוא לא יידע שראית את ההודעות שלו עד שלא תסכים.";
 
@@ -2124,10 +2127,10 @@
 "NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "קבוצה חדשה לא יכלה להיווצר. בדוק את חיבור האינטרנט שלך ונסה שוב.";
 
 /* Message for error alert indicating that a group name is required. */
-"NEW_GROUP_CREATION_MISSING_NAME_ALERT_MESSAGE" = "A group name is required.";
+"NEW_GROUP_CREATION_MISSING_NAME_ALERT_MESSAGE" = "שם קבוצה דרוש.";
 
 /* Title for error alert indicating that a group name is required. */
-"NEW_GROUP_CREATION_MISSING_NAME_ALERT_TITLE" = "Missing Group Name";
+"NEW_GROUP_CREATION_MISSING_NAME_ALERT_TITLE" = "שם קבוצה חסר";
 
 /* Used in place of the group name when a group has not yet been named. */
 "NEW_GROUP_DEFAULT_TITLE" = "קבוצה חדשה";
@@ -2139,7 +2142,7 @@
 "NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ אל %@";
 
 /* The title for the 'name new group' view. */
-"NEW_GROUP_NAME_GROUP_VIEW_TITLE" = "Name Group";
+"NEW_GROUP_NAME_GROUP_VIEW_TITLE" = "שם קבוצה";
 
 /* Placeholder text for group name field */
 "NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "תן שם לשיחת קבוצה זו";
@@ -2148,7 +2151,7 @@
 "NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "משתמשים אחרים";
 
 /* The title for the 'select members for new group' view. */
-"NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "Select Members";
+"NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "בחר חברי קבוצה";
 
 /* The alert message if user tries to exit the new group view without saving changes. */
 "NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "האם תרצה להשליך שינויים אלו?";
@@ -2382,37 +2385,37 @@
 "PDF_VIEW_TITLE" = "PDF";
 
 /* Format for label indicating the a group member has invited 1 other user to the group. Embeds {{ the name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_MEMBER_INVITED_1_USER_FORMAT" = "%@ invited 1 person";
+"PENDING_GROUP_MEMBERS_MEMBER_INVITED_1_USER_FORMAT" = "%@ הזמין איש 1";
 
 /* Format for label indicating the a group member has invited N other users to the group. Embeds {{ %1$@ name of the inviting group member, %2$@ the number of users they have invited. }}. */
-"PENDING_GROUP_MEMBERS_MEMBER_INVITED_N_USERS_FORMAT" = "%1$@ invited %2$@ people";
+"PENDING_GROUP_MEMBERS_MEMBER_INVITED_N_USERS_FORMAT" = "%1$@ הזמין %2$@ אנשים";
 
 /* Label indicating that a group has no pending members. */
-"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "No invites to show.";
+"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "אין הזמנות להראות.";
 
 /* Title of 'revoke invite' button. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "Revoke Invite";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "שלול הזמנה";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the invited group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revoke group invite for “%@“?";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "לשלול הזמנה אל קבוצה עבור “%@“?";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Revoke %1$@ invites sent by “%2$@“?";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "לשלול %1$@ הזמנות שנשלחו על ידי “%2$@“?";
 
 /* Title of 'revoke invites' button. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_N_BUTTON" = "Revoke Invites";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_N_BUTTON" = "שלול הזמנות";
 
 /* Footer for the 'invites by other group members' section of the 'pending group members' view. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Details of people invited by other group members are not shown. If invitees choose to join, their information will be shared with the group at that time. They will not see any messages in the group until they join.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "פרטים של אנשים שהוזמנו על ידי חברי קבוצה אחרים אינם נראים. אם מוזמנים בוחרים להצטרף, המידע שלהם ישותף עם הקבוצה בזמן הזה. הם לא יראו הודעות כלשהן בקבוצה עד שהם יצטרפו.";
 
 /* Title for the 'invites by other group members' section of the 'pending group members' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "Invites by other group members";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "הזמנות ע״י חברי קבוצה אחרים";
 
 /* Title for the 'people you invited' section of the 'pending group members' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "People you invited";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "אנשים שהזמנת";
 
 /* The title for the 'pending group members' view. */
-"PENDING_GROUP_MEMBERS_VIEW_TITLE" = "Pending Group Invites";
+"PENDING_GROUP_MEMBERS_VIEW_TITLE" = "הזמנות קבוצה ממתינות";
 
 /* Label for view-once messages that have invalid content. */
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "שגיאה בטיפול בהודעה נכנסת";
@@ -2489,14 +2492,17 @@
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "אלבום ללא שם";
 
-/* Label indicating the user must use at least 6 characters */
-"PIN_CREATION_ALPHANUMERIC_HINT" = "PIN חייב להיות לפחות 6 תווים";
+/* Label indicating the user must use at least 4 characters */
+"PIN_CREATION_ALPHANUMERIC_HINT" = "PIN must be at least 4 characters";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_CHANGING_TITLE" = "שנה את ה־PIN שלך";
 
+/* Title of the 'pin creation' confirmation view. */
+"PIN_CREATION_CONFIRM_TITLE" = "Confirm your PIN";
+
 /* The explanation of confirmation in the 'pin creation' view. */
-"PIN_CREATION_CONFIRMATION_EXPLANATION" = "אשר את ה־PIN החדש שלך.";
+"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Re-enter your PIN.";
 
 /* Button asking if the user would like to create an alphanumeric PIN */
 "PIN_CREATION_CREATE_ALPHANUMERIC" = "צור PIN אלפאנומרי";
@@ -2511,13 +2517,13 @@
 "PIN_CREATION_ERROR_TITLE" = "יצירת PIN נכשלה";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "קודי PIN מוספים שכבת אקסטרה של אבטחה אל החשבון שלך. כתוב את ה־PIN שלך ושמור אותו במקום בטוח. הוא בלתי ניתן להשבה.";
+"PIN_CREATION_EXPLANATION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall Signal.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "מספרי PIN אינם תואמים. נסה שוב.";
 
-/* Label indicating the user must use at least 6 digits */
-"PIN_CREATION_NUMERIC_HINT" = "PIN חייב להיות לפחות 6 ספרות";
+/* Label indicating the user must use at least 4 digits */
+"PIN_CREATION_NUMERIC_HINT" = "PIN must be at least 4 digits";
 
 /* Label indication the user must confirm their PIN. */
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "הכנס מחדש PIN";
@@ -2526,16 +2532,13 @@
 "PIN_CREATION_PIN_PROGRESS" = "יוצר PIN…";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "אתה יכול לבחור PIN חדש מאחר שמכשיר זה רשום. אם תשכח את ה־PIN שלך, תצטרך להמתין 7 ימים כדי להירשם שוב.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "You can change your PIN as long as this device is registered.";
 
 /* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_RECREATION_TITLE" = "צור PIN חדש";
+"PIN_CREATION_RECREATION_TITLE" = "Change your PIN";
 
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "צור את ה־PIN שלך";
-
-/* Label indicating that the attempted PIN is too short */
-"PIN_CREATION_TOO_SHORT_ERROR" = "PIN חייב להיות לפחות 6 ספרות.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "כדי לעזור לך לשנן את ה־PIN שלך, נבקש ממך להכניס אותו מעת לעת. נבקש פחות עם הזמן.";
@@ -2571,31 +2574,19 @@
 "PIN_REMINDER_TITLE" = "הכנס את Signal PIN שלך";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN חייב להיות לפחות 6 ספרות.";
-
-/* Action text for PIN megaphone when user already has a PIN */
-"PINS_MEGAPHONE_HAS_PIN_ACTION" = "עדכן PIN";
-
-/* Body for PIN megaphone when user already has a PIN */
-"PINS_MEGAPHONE_HAS_PIN_BODY" = "נעילת ההרשמה שלך נקראת כעת PIN. עדכון שלה לוקח שניות.";
-
-/* Toast indication that the user will be reminded later to update their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "נזכיר לך מאוחר יותר. עדכון PIN יהיה חובה עוד %ld ימים.";
-
-/* Title for PIN megaphone when user already has a PIN */
-"PINS_MEGAPHONE_HAS_PIN_TITLE" = "היכרות עם PIN";
+"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN must be at least 4 digits.";
 
 /* Action text for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_ACTION" = "צור PIN";
+"PINS_MEGAPHONE_ACTION" = "Create PIN";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_BODY" = "קודי PIN מוסיפים שכבה נוספת של אבטחה אל חשבון Signal שלך.";
+"PINS_MEGAPHONE_BODY" = "PINs keep information that’s stored with Signal encrypted";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "נזכיר לך מאוחר יותר. יצירת PIN תהיה חובה עוד %ld ימים.";
+"PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Creating a PIN will become mandatory in %ld days.";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_TITLE" = "צור PIN";
+"PINS_MEGAPHONE_TITLE" = "Create a PIN";
 
 /* Toast indicating that a PIN has been created. */
 "PINS_MEGAPHONE_TOAST" = "PIN נוצר. אתה יכול לשנות אותו בהגדרות.";
@@ -2611,9 +2602,6 @@
 
 /* Label indicating that the user is verified. Embeds {{the user's name or phone number}}. */
 "PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%@ מוודא.";
-
-/* Label for a link to more information about safety numbers and verification. */
-"PRIVACY_SAFETY_NUMBERS_LEARN_MORE" = "למד עוד";
 
 /* Button that shows the 'scan with camera' view. */
 "PRIVACY_TAP_TO_SCAN" = "הקש כדי לסרוק";
@@ -2707,9 +2695,6 @@
 
 /* Description of the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION" = "הפרופיל שלך יהיה גלוי לאנשי הקשר שלך, כאשר תיזום שיחות חדשות, וכאשר תשתף אותו עם משתמשים אחרים וקבוצות אחרות.";
-
-/* Link to more information about the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "הקש כאן כדי ללמוד עוד.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "שמור";
@@ -2820,7 +2805,7 @@
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "צריך עזרה?";
 
 /* Alert body for a forgotten SVR (V2) PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "ה־PIN שלך הוא קוד בן 6+ תווים שיכולים להיות מספריים או אלפאנומריים. אם אינך זוכר את ה־PIN שלך, תהיה חייב להמתין 7 ימים כדי לרשום שוב את החשבון שלך.";
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock */
 "REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "ה־PIN שלך הוא קוד בן 4+ ספרות שיצרת שיכול להיות מספרי או אלפאנומרי. אם אתה לא זוכר את ה־PIN שלך, אתה יכול ליצור אחד חדש. אתה יכול להירשם ולהשתמש בחשבון שלך אבל תאבד מספר הגדרות מסוימות כמו מידע הפרופיל שלך.";
@@ -2931,7 +2916,7 @@
 "REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "זה לא ה־PIN הנכון.";
 
 /* The title for the 'replace group admin' view. */
-"REPLACE_ADMIN_VIEW_TITLE" = "Choose New Admin";
+"REPLACE_ADMIN_VIEW_TITLE" = "בחר מינהלן חדש";
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "הירשם מחדש עבור התראות דחיפה";
@@ -3276,7 +3261,7 @@
 "SETTINGS_NOTIFICATIONS" = "התראות";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "ה־PIN שלך מגבה הגדרות פרופיל והעדפות כדי לחסוך לך זמן כאשר תרשום מחדש את החשבון שלך.";
+"SETTINGS_PINS_FOOTER" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall Signal.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "שנה את ה־PIN שלך";
@@ -3307,6 +3292,21 @@
 
 /* An explanation of the 'read receipts' setting. */
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "ראה ושתף מתי הודעות נקראו. הגדרה זו רשותית וחלה על כל השיחות.";
+
+/* Action to turn off registration lock */
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Turn Off";
+
+/* Title for the alert confirming that the user wants to turn off registration lock. */
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "Turn Off Registration Lock?";
+
+/* Action to turn on registration lock */
+"SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Turn On";
+
+/* Body for the alert confirming that the user wants to turn on registration lock. */
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "If you forget your Signal PIN when registering with Signal again, you’ll be locked out of your account for 7 days.";
+
+/* Title for the alert confirming that the user wants to turn on registration lock. */
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "Turn On Registration Lock?";
 
 /* Label for re-link button. */
 "SETTINGS_RELINK_BUTTON" = "קשר מחדש";
@@ -3356,9 +3356,6 @@
 /* Indicates that 'two factor auth' is enabled in the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_ENABLED" = "מאופשר";
 
-/* Footer for the 'two factor auth' section of the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_FOOTER" = "נעילת הרשמה מוסיפה שכבת אקסטרה של אבטחה אל חשבונך. תישאל לגבי PIN של Signal שלך כאשר תירשם עם מספר הטלפון שלך אל Signal. אם תשכח את ה־PIN שלך, תינעל מחוץ אל חשבונך למשך 7 ימים.";
-
 /* Label for the 'two factor auth' item of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_ITEM" = "נעילת הרשמה";
 
@@ -3368,14 +3365,14 @@
 /* Title for the 'two factor auth' section of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_TITLE" = "נעילת הרשמה";
 
+/* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "For extra security, turn on registration lock, which will require your Signal PIN to register your phone number with Signal again.";
+
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "מחווני הקלדה";
 
 /* An explanation of the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS_FOOTER" = "ראה ושתף מתי הודעות מוקלדות. הגדרה זו רשותית וחלה על כל השיחות.";
-
-/* Label for a link to more info about unidentified delivery. */
-"SETTINGS_UNIDENTIFIED_DELIVERY_LEARN_MORE" = "למד עוד";
 
 /* table section label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "שולח אטום";
@@ -3605,6 +3602,9 @@
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. */
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "אתה יכול לבקש מן השולח לשלוח מחדש הודעה זו כעת כשאתה משתמש בגרסה מעודכנת של Signal.";
 
+/* Label indicating an unknown user. */
+"UNKNOWN_USER" = "Unknown";
+
 /* Info Message when an unknown user disabled disappearing messages. */
 "UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "הודעות נעלמות הושבתו.";
 
@@ -3656,23 +3656,11 @@
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "צור את ה־PIN שלך";
 
-/* Button to open a help document explaining more about why a PIN is required */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "למד עוד אודות קודי PIN";
-
-/* Body text for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "נעילת ההרשמה שלך נקראת כעת PIN, והיא עושה יותר. עדכן אותה כעת.";
-
-/* Header for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "נעילת הרשמה = PIN";
-
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "קודי PIN מוסיפים שכבה נוספת של אבטחה אל החשבון שלך. צור את ה־PIN שלך עכשיו.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall Signal.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "היכרות עם PIN";
-
-/* Button to open a help document explaining more about why a PIN is required */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON" = "האם אני חייב ליצור PIN?";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal ידרוש בקרוב iOS 10 ומעלה. אנא שדרג דרך יישום הגדרות >> כללי >> עדכוני תוכנה.";
