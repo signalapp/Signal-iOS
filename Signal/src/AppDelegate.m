@@ -587,6 +587,8 @@ static BOOL isInternalTestVersion = NO;
         return;
     }
 
+    [self.pushRegistrationManager didReceiveVanillaPushToken:deviceToken];
+
     OWSLogInfo(@"Registering for push notifications with token: %@.", deviceToken);
     BOOL isUsingFullAPNs = [NSUserDefaults.standardUserDefaults boolForKey:@"isUsingFullAPNs"];
     if (isUsingFullAPNs) {

@@ -2,6 +2,8 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
+@import PromiseKit;
+
 #import "NotificationSettingsViewController.h"
 #import "NotificationSettingsOptionsViewController.h"
 #import "OWSSoundSettingsViewController.h"
@@ -139,7 +141,7 @@
     [NSUserDefaults.standardUserDefaults setBool:sender.on forKey:@"isUsingFullAPNs"];
     OWSSyncPushTokensJob *syncTokensJob = [[OWSSyncPushTokensJob alloc] initWithAccountManager:AppEnvironment.shared.accountManager preferences:Environment.shared.preferences];
     syncTokensJob.uploadOnlyIfStale = NO;
-    __unused AnyPromise *promise = [syncTokensJob run];
+    [[syncTokensJob run] retainUntilComplete];
 }
 
 @end

@@ -300,8 +300,9 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
                                  remainingRetries:(int)remainingRetries
 {
     BOOL isUsingFullAPNs = [NSUserDefaults.standardUserDefaults boolForKey:@"isUsingFullAPNs"];
-    AnyPromise *promise = isUsingFullAPNs ? [LKPushNotificationManager registerWithToken:pushToken hexEncodedPublicKey:self.localNumber isForcedUpdate:isForcedUpdate]
-        : [LKPushNotificationManager registerWithToken:pushToken isForcedUpdate:isForcedUpdate];
+    NSData *pushTokenAsData = [NSData dataFromHexString:pushToken];
+    AnyPromise *promise = isUsingFullAPNs ? [LKPushNotificationManager registerWithToken:pushTokenAsData hexEncodedPublicKey:self.localNumber isForcedUpdate:isForcedUpdate]
+        : [LKPushNotificationManager registerWithToken:pushTokenAsData isForcedUpdate:isForcedUpdate];
     promise
     .then(^() {
         successHandler();
