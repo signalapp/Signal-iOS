@@ -180,7 +180,11 @@ public class BulkProfileFetch: NSObject {
                     self.lastRateLimitErrorDate = Date()
                 case SignalServiceProfile.ValidationError.invalidIdentityKey:
                     // There will be invalid identity keys on staging that can be safely ignored.
-                    Logger.warn("Error: \(error)")
+                    if FeatureFlags.isUsingProductionService {
+                        owsFailDebug("Error: \(error)")
+                    } else {
+                        Logger.warn("Error: \(error)")
+                    }
                     self.lastOutcomeMap[address] = UpdateOutcome(.invalid)
                 default:
                     if IsNetworkConnectivityFailure(error) {
