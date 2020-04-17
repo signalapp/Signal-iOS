@@ -67,6 +67,10 @@ public extension TSMessage {
 
         reaction.anyRemove(transaction: transaction)
         databaseStorage.touch(interaction: self, transaction: transaction)
+
+        DispatchQueue.main.async {
+            SSKEnvironment.shared.notificationsManager.cancelNotifications(reactionId: reaction.uniqueId)
+        }
     }
 
     // MARK: - Remote Delete

@@ -223,6 +223,21 @@ extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
         }
     }
 
+    func cancelNotifications(reactionId: String) {
+        AssertIsOnMainThread()
+        for notification in notifications.values {
+            guard let notificationReactionId = notification.content.userInfo[AppNotificationUserInfoKey.reactionId] as? String else {
+                continue
+            }
+
+            guard notificationReactionId == reactionId else {
+                continue
+            }
+
+            cancelNotification(notification)
+        }
+    }
+
     func clearAllNotifications() {
         AssertIsOnMainThread()
 

@@ -45,6 +45,7 @@ public enum AppNotificationAction: CaseIterable {
 public struct AppNotificationUserInfoKey {
     public static let threadId = "Signal.AppNotificationsUserInfoKey.threadId"
     public static let messageId = "Signal.AppNotificationsUserInfoKey.messageId"
+    public static let reactionId = "Signal.AppNotificationsUserInfoKey.reactionId"
     public static let callBackUuid = "Signal.AppNotificationsUserInfoKey.callBackUuid"
     public static let callBackPhoneNumber = "Signal.AppNotificationsUserInfoKey.callBackPhoneNumber"
     public static let localCallId = "Signal.AppNotificationsUserInfoKey.localCallId"
@@ -138,6 +139,7 @@ protocol NotificationPresenterAdaptee: class {
 
     func cancelNotifications(threadId: String)
     func cancelNotifications(messageId: String)
+    func cancelNotifications(reactionId: String)
     func clearAllNotifications()
 
     func notifyUserForGRDBMigration()
@@ -517,7 +519,9 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
             category = .incomingMessageWithActions
         }
         let userInfo = [
-            AppNotificationUserInfoKey.threadId: thread.uniqueId
+            AppNotificationUserInfoKey.threadId: thread.uniqueId,
+            AppNotificationUserInfoKey.messageId: message.uniqueId,
+            AppNotificationUserInfoKey.reactionId: reaction.uniqueId
         ]
 
         DispatchQueue.main.async {
@@ -627,6 +631,11 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
     @objc
     public func cancelNotifications(messageId: String) {
         adaptee.cancelNotifications(messageId: messageId)
+    }
+
+    @objc
+    public func cancelNotifications(reactionId: String) {
+        adaptee.cancelNotifications(reactionId: reactionId)
     }
 
     @objc
