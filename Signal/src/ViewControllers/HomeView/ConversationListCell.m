@@ -476,7 +476,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSUInteger)avatarSize
 {
-    return kStandardAvatarSize;
+    // This value is now larger than kStandardAvatarSize.
+    return 48;
 }
 
 - (NSUInteger)avatarHSpacing
