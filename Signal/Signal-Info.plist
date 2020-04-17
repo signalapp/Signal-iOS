@@ -7,7 +7,7 @@
 		<key>OSXVersion</key>
 		<string>10.15.4</string>
 		<key>WebRTCCommit</key>
-		<string>e8eb473c416b5b5095159475dbf1b7f495083575 Production build of RingRTC v1.2.0</string>
+		<string>b1264f1eb4dd268bda87f535f6479bddeb4adaec Production build of v1.3.1</string>
 	</dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
