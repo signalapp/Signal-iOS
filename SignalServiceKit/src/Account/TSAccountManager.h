@@ -120,9 +120,10 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
  */
 - (void)registerForPushNotificationsWithPushToken:(NSString *)pushToken
                                         voipToken:(NSString *)voipToken
+                                   isForcedUpdate:(BOOL)isForcedUpdate
                                           success:(void (^)(void))successHandler
                                           failure:(void (^)(NSError *error))failureHandler
-    NS_SWIFT_NAME(registerForPushNotifications(pushToken:voipToken:success:failure:));
+    NS_SWIFT_NAME(registerForPushNotifications(pushToken:voipToken:isForcedUpdate:success:failure:));
 
 #endif
 

@@ -76,7 +76,9 @@ final class PNModeSheet : Sheet, OptionViewDelegate {
             return present(alert, animated: true, completion: nil)
         }
         UserDefaults.standard[.isUsingFullAPNs] = (selectedOptionView == apnsOptionView)
-        let _: Promise<Void> = SyncPushTokensJob.run(accountManager: AppEnvironment.shared.accountManager, preferences: Environment.shared.preferences)
+        let syncTokensJob = SyncPushTokensJob(accountManager: AppEnvironment.shared.accountManager, preferences: Environment.shared.preferences)
+        syncTokensJob.uploadOnlyIfStale = false
+        let _: Promise<Void> = syncTokensJob.run()
         close()
     }
 

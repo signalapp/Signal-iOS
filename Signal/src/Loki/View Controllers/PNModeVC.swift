@@ -98,6 +98,8 @@ final class PNModeVC : BaseVC, OptionViewDelegate {
         TSAccountManager.sharedInstance().didRegister()
         let homeVC = HomeVC()
         navigationController!.setViewControllers([ homeVC ], animated: true)
-        let _: Promise<Void> = SyncPushTokensJob.run(accountManager: AppEnvironment.shared.accountManager, preferences: Environment.shared.preferences)
+        let syncTokensJob = SyncPushTokensJob(accountManager: AppEnvironment.shared.accountManager, preferences: Environment.shared.preferences)
+        syncTokensJob.uploadOnlyIfStale = false
+        let _: Promise<Void> = syncTokensJob.run()
     }
 }

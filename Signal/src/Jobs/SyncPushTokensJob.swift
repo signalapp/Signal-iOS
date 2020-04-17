@@ -59,7 +59,7 @@ class SyncPushTokensJob: NSObject {
 
             Logger.warn("uploading tokens to account servers. pushToken: \(redact(pushToken)), voipToken: \(redact(voipToken))")
             return firstly {
-                self.accountManager.updatePushTokens(pushToken: pushToken, voipToken: voipToken)
+                self.accountManager.updatePushTokens(pushToken: pushToken, voipToken: voipToken, isForcedUpdate: shouldUploadTokens)
             }.done { _ in
                 self.recordPushTokensLocally(pushToken: pushToken, voipToken: voipToken)
             }

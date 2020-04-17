@@ -137,7 +137,9 @@
 - (void)didToggleAPNsSwitch:(UISwitch *)sender
 {
     [NSUserDefaults.standardUserDefaults setBool:sender.on forKey:@"isUsingFullAPNs"];
-    __unused AnyPromise *promise = [OWSSyncPushTokensJob runWithAccountManager:AppEnvironment.shared.accountManager preferences:Environment.shared.preferences];
+    OWSSyncPushTokensJob *syncTokensJob = [[OWSSyncPushTokensJob alloc] initWithAccountManager:AppEnvironment.shared.accountManager preferences:Environment.shared.preferences];
+    syncTokensJob.uploadOnlyIfStale = NO;
+    __unused AnyPromise *promise = [syncTokensJob run];
 }
 
 @end

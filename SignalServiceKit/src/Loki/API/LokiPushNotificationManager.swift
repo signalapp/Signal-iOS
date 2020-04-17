@@ -17,14 +17,14 @@ public final class LokiPushNotificationManager : NSObject {
     // MARK: Registration
     /// Registers the user for silent push notifications (that then trigger the app
     /// into fetching messages). Only the user's device token is needed for this.
-    static func register(with token: Data) -> Promise<Void> {
+    static func register(with token: Data, isForcedUpdate: Bool) -> Promise<Void> {
         let hexEncodedToken = token.toHexString()
         let userDefaults = UserDefaults.standard
         let oldToken = userDefaults[.deviceToken]
         let lastUploadTime = userDefaults[.lastDeviceTokenUpload]
         let isUsingFullAPNs = userDefaults[.isUsingFullAPNs]
         let now = Date().timeIntervalSince1970
-        guard hexEncodedToken != oldToken || now - lastUploadTime < tokenExpirationInterval else {
+        guard isForcedUpdate || hexEncodedToken != oldToken || now - lastUploadTime < tokenExpirationInterval else {
             print("[Loki] Device token hasn't changed; no need to re-upload.")
             return Promise<Void> { $0.fulfill(()) }
         }
@@ -56,14 +56,14 @@ public final class LokiPushNotificationManager : NSObject {
 
     /// Registers the user for silent push notifications (that then trigger the app
     /// into fetching messages). Only the user's device token is needed for this.
-    @objc(registerWithToken:)
-    static func objc_register(with token: Data) -> AnyPromise {
-        return AnyPromise.from(register(with: token))
+    @objc(registerWithToken:isForcedUpdate:)
+    static func objc_register(with token: Data, isForcedUpdate: Bool) -> AnyPromise {
+        return AnyPromise.from(register(with: token, isForcedUpdate: isForcedUpdate))
     }
 
     /// Registers the user for normal push notifications. Requires the user's device
     /// token and their Session ID.
-    static func register(with token: Data, hexEncodedPublicKey: String) -> Promise<Void> {
+    static func register(with token: Data, hexEncodedPublicKey: String, isForcedUpdate: Bool) -> Promise<Void> {
         let hexEncodedToken = token.toHexString()
         let userDefaults = UserDefaults.standard
         let now = Date().timeIntervalSince1970
@@ -91,9 +91,9 @@ public final class LokiPushNotificationManager : NSObject {
 
     /// Registers the user for normal push notifications. Requires the user's device
     /// token and their Session ID.
-    @objc(registerWithToken:hexEncodedPublicKey:)
-    static func objc_register(with token: Data, hexEncodedPublicKey: String) -> AnyPromise {
-        return AnyPromise.from(register(with: token, hexEncodedPublicKey: hexEncodedPublicKey))
+    @objc(registerWithToken:hexEncodedPublicKey:isForcedUpdate:)
+    static func objc_register(with token: Data, hexEncodedPublicKey: String, isForcedUpdate: Bool) -> AnyPromise {
+        return AnyPromise.from(register(with: token, hexEncodedPublicKey: hexEncodedPublicKey, isForcedUpdate: isForcedUpdate))
     }
     
     @objc(acknowledgeDeliveryForMessageWithHash:expiration:hexEncodedPublicKey:)

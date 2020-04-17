@@ -105,12 +105,13 @@ public class AccountManager: NSObject {
 
     // MARK: Message Delivery
 
-    func updatePushTokens(pushToken: String, voipToken: String) -> Promise<Void> {
+    func updatePushTokens(pushToken: String, voipToken: String, isForcedUpdate: Bool) -> Promise<Void> {
         return Promise { resolver in
             tsAccountManager.registerForPushNotifications(pushToken: pushToken,
                                                           voipToken: voipToken,
-                                                          success: { resolver.fulfill(()) },
-                                                          failure: resolver.reject)
+                                                     isForcedUpdate: isForcedUpdate,
+                                                            success: { resolver.fulfill(()) },
+                                                            failure: resolver.reject)
         }
     }
 

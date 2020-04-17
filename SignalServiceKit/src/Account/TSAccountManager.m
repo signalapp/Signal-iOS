@@ -280,11 +280,13 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 
 - (void)registerForPushNotificationsWithPushToken:(NSString *)pushToken
                                         voipToken:(NSString *)voipToken
+                                   isForcedUpdate:(BOOL)isForcedUpdate
                                           success:(void (^)(void))successHandler
                                           failure:(void (^)(NSError *))failureHandler
 {
     [self registerForPushNotificationsWithPushToken:pushToken
                                           voipToken:voipToken
+                                     isForcedUpdate:isForcedUpdate
                                             success:successHandler
                                             failure:failureHandler
                                    remainingRetries:3];
@@ -292,20 +294,21 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 
 - (void)registerForPushNotificationsWithPushToken:(NSString *)pushToken
                                         voipToken:(NSString *)voipToken
+                                   isForcedUpdate:(BOOL)isForcedUpdate
                                           success:(void (^)(void))successHandler
                                           failure:(void (^)(NSError *))failureHandler
                                  remainingRetries:(int)remainingRetries
 {
     BOOL isUsingFullAPNs = [NSUserDefaults.standardUserDefaults boolForKey:@"isUsingFullAPNs"];
-    AnyPromise *promise = isUsingFullAPNs ? [LKPushNotificationManager registerWithToken:pushToken hexEncodedPublicKey:self.localNumber]
-        : [LKPushNotificationManager registerWithToken:pushToken];
+    AnyPromise *promise = isUsingFullAPNs ? [LKPushNotificationManager registerWithToken:pushToken hexEncodedPublicKey:self.localNumber isForcedUpdate:isForcedUpdate]
+        : [LKPushNotificationManager registerWithToken:pushToken isForcedUpdate:isForcedUpdate];
     promise
     .then(^() {
         successHandler();
     })
     .catch(^(NSError *error) {
         if (remainingRetries > 0) {
-            [self registerForPushNotificationsWithPushToken:pushToken voipToken:voipToken success:successHandler failure:failureHandler
+            [self registerForPushNotificationsWithPushToken:pushToken voipToken:voipToken isForcedUpdate:isForcedUpdate success:successHandler failure:failureHandler
                 remainingRetries:remainingRetries - 1];
         } else {
             if (!IsNSErrorNetworkFailure(error)) {
