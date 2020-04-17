@@ -196,6 +196,8 @@ public class BaseGroupMemberViewController: OWSViewController {
 
         groupMemberViewDelegate.groupMemberViewAddRecipient(recipient)
         recipientPicker.pickedRecipients = recipientSet.orderedMembers
+        self.searchBar.text = ""
+        recipientPicker.clearSearchText()
         updateMemberBar()
         updateMemberCount()
 

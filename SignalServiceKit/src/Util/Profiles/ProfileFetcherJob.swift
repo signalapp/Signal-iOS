@@ -290,6 +290,16 @@ public class ProfileFetcherJob: NSObject {
                 owsFailDebug("Unexpected error: \(error)")
                 resolver.reject(error)
                 return
+            case SignalServiceProfile.ValidationError.invalidIdentityKey:
+                // There will be invalid identity keys on staging that can be safely ignored.
+                // This should not be retried.
+                if FeatureFlags.isUsingProductionService {
+                    owsFailDebug("skipping updateProfile retry. Invalid profile for: \(subject) error: \(error)")
+                } else {
+                    Logger.warn("skipping updateProfile retry. Invalid profile for: \(subject) error: \(error)")
+                }
+                resolver.reject(error)
+                return
             case let error as SignalServiceProfile.ValidationError:
                 // This should not be retried.
                 owsFailDebug("skipping updateProfile retry. Invalid profile for: \(subject) error: \(error)")

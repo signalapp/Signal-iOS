@@ -912,6 +912,13 @@ const NSUInteger kMinimumSearchLength = 2;
     [self updateTableContents];
 }
 
+- (void)clearSearchText
+{
+    self.customSearchQuery = nil;
+    self.searchBar.text = @"";
+    [self searchTextDidChange];
+}
+
 #pragma mark - Send Invite By SMS
 
 - (void)sendTextToPhoneNumber:(NSString *)phoneNumber
@@ -946,8 +953,7 @@ const NSUInteger kMinimumSearchLength = 2;
 
     [alert addAction:[OWSActionSheets cancelAction]];
     [alert addAction:okAction];
-    self.searchBar.text = @"";
-    [self searchTextDidChange];
+    [self clearSearchText];
 
     // must dismiss search controller before presenting alert.
     if ([self presentedViewController]) {

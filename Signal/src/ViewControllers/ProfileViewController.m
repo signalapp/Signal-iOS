@@ -823,7 +823,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
 - (BOOL)hasClearAvatarAction
 {
-    return YES;
+    return self.avatarData != nil;
 }
 
 - (NSString *)clearAvatarActionLabel

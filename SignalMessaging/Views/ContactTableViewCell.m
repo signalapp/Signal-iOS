@@ -102,6 +102,11 @@ NS_ASSUME_NONNULL_BEGIN
     [self.cellView setCustomName:customName];
 }
 
+- (void)setCustomAvatar:(nullable UIImage *)customAvatar
+{
+    [self.cellView setCustomAvatar:customAvatar];
+}
+
 - (void)prepareForReuse
 {
     [super prepareForReuse];

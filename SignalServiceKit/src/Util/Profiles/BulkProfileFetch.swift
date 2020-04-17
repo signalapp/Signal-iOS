@@ -40,6 +40,7 @@ public class BulkProfileFetch: NSObject {
             case serviceError
             case success
             case throttled
+            case invalid
         }
         let date: Date
 
@@ -177,6 +178,14 @@ public class BulkProfileFetch: NSObject {
                     Logger.error("Error: \(error)")
                     self.lastOutcomeMap[address] = UpdateOutcome(.retryLimit)
                     self.lastRateLimitErrorDate = Date()
+                case SignalServiceProfile.ValidationError.invalidIdentityKey:
+                    // There will be invalid identity keys on staging that can be safely ignored.
+                    if FeatureFlags.isUsingProductionService {
+                        owsFailDebug("Error: \(error)")
+                    } else {
+                        Logger.warn("Error: \(error)")
+                    }
+                    self.lastOutcomeMap[address] = UpdateOutcome(.invalid)
                 default:
                     if IsNetworkConnectivityFailure(error) {
                         Logger.warn("Error: \(error)")
@@ -232,6 +241,8 @@ public class BulkProfileFetch: NSObject {
             minElapsedSeconds = 30 * kMinuteInterval
         case .success:
             minElapsedSeconds = 15 * kMinuteInterval
+        case .invalid:
+            minElapsedSeconds = 6 * kHourInterval
         }
 
         return elapsedSeconds >= minElapsedSeconds

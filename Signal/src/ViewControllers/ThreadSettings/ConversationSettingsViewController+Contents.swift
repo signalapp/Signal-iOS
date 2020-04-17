@@ -83,8 +83,10 @@ extension ConversationSettingsViewController {
 
             contents.addSection(buildGroupMembershipSection(groupModel: groupModel))
 
-            if thread.isGroupV2Thread {
-                contents.addSection(buildPendingMembersSection(groupModel: groupModel))
+            if thread.isGroupV2Thread,
+                let localAddress = tsAccountManager.localAddress {
+                contents.addSection(buildPendingMembersSection(groupModel: groupModel,
+                                                               localAddress: localAddress))
             }
         }
 
@@ -677,8 +679,14 @@ extension ConversationSettingsViewController {
                 }
 
                 if isLocalUser {
+                    // Use a custom avatar to avoid using the "note to self" icon.
+                    let customAvatar = OWSProfileManager.shared().localProfileAvatarImage() ?? OWSContactAvatarBuilder(forLocalUserWithDiameter: kStandardAvatarSize).buildDefaultImage()
+                    cell.setCustomAvatar(customAvatar)
                     cell.setCustomName(NSLocalizedString("GROUP_MEMBER_LOCAL_USER",
                                                          comment: "Label indicating the local user."))
+                    cell.selectionStyle = .none
+                } else {
+                    cell.selectionStyle = .default
                 }
 
                 cell.configure(withRecipientAddress: memberAddress)
@@ -744,7 +752,8 @@ extension ConversationSettingsViewController {
         return section
     }
 
-    private func buildPendingMembersSection(groupModel: TSGroupModel) -> OWSTableSection {
+    private func buildPendingMembersSection(groupModel: TSGroupModel,
+                                            localAddress: SignalServiceAddress) -> OWSTableSection {
         let section = OWSTableSection()
         section.customHeaderHeight = 14
         section.customFooterHeight = 14
@@ -758,6 +767,7 @@ extension ConversationSettingsViewController {
             accessoryText = NSLocalizedString("CONVERSATION_SETTINGS_PENDING_MEMBER_INVITES_NONE",
                                               comment: "Indicates that there are no pending member invites in the group.")
         }
+        let isLocalUserFullMember = groupModel.groupMembership.isNonPendingMember(localAddress)
 
         section.add(OWSTableItem(customCellBlock: { [weak self] in
             guard let self = self else {
@@ -770,11 +780,15 @@ extension ConversationSettingsViewController {
                                                                 itemName: cellName,
                                                                 accessoryText: accessoryText)
             cell.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "pending.members")
-            cell.accessoryType = .disclosureIndicator
+            cell.accessoryType = isLocalUserFullMember ? .disclosureIndicator : .none
+            cell.selectionStyle = isLocalUserFullMember ? .default : .none
+
             return cell
             },
                                  customRowHeight: UITableView.automaticDimension) { [weak self] in
-                                    self?.showPendingMembersView()
+                                    if isLocalUserFullMember {
+                                        self?.showPendingMembersView()
+                                    }
         })
 
         return section

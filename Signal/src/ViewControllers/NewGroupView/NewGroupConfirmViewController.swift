@@ -310,7 +310,7 @@ extension NewGroupConfirmViewController: AvatarViewHelperDelegate {
     }
 
     public func hasClearAvatarAction() -> Bool {
-        return true
+        return newGroupState.avatarData != nil
     }
 
     public func clearAvatar() {

@@ -203,6 +203,11 @@ const CGFloat kContactCellAvatarTextMargin = 8;
 
 - (void)updateAvatar
 {
+    if (self.customAvatar != nil) {
+        self.avatarView.image = self.customAvatar;
+        return;
+    }
+
     SignalServiceAddress *address = self.address;
     if (!address.isValid) {
         OWSFailDebug(@"address should not be invalid");
@@ -265,6 +270,7 @@ const CGFloat kContactCellAvatarTextMargin = 8;
     self.profileNameLabel.text = nil;
     self.accessoryLabel.text = nil;
     self.customName = nil;
+    self.customAvatar = nil;
     for (UIView *subview in self.accessoryViewContainer.subviews) {
         [subview removeFromSuperview];
     }
