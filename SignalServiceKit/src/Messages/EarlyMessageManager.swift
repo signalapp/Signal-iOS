@@ -17,15 +17,26 @@ public class EarlyMessageManager: NSObject {
         let wasReceivedByUD: Bool
     }
 
-    private struct EarlyReceipt {
-        let type: SSKProtoReceiptMessageType
-        let sender: SignalServiceAddress
-        let timestamp: UInt64
+    private enum EarlyReceipt {
+        case outgoingMessageRead(sender: SignalServiceAddress, timestamp: UInt64)
+        case outgoingMessageDelivered(sender: SignalServiceAddress, timestamp: UInt64)
+        case incomingMessageReadOnLinkedDevice(timestamp: UInt64)
+
+        init(receiptType: SSKProtoReceiptMessageType, sender: SignalServiceAddress, timestamp: UInt64) {
+            switch (receiptType) {
+            case .delivery: self = .outgoingMessageDelivered(sender: sender, timestamp: timestamp)
+            case .read: self = .outgoingMessageRead(sender: sender, timestamp: timestamp)
+            }
+        }
     }
 
+    private static let maxQueuedPerMessage = 5
+    private static let maxQueuedMessages = 100
+    private static let maxEarlyEnvelopeSize = 1024
+
     private static let serialQueue = DispatchQueue(label: "EarlyMessageManager")
-    private static var pendingEnvelopes = [MessageIdentifier: [EarlyEnvelope]]()
-    private static var pendingReceipts =  [MessageIdentifier: [EarlyReceipt]]()
+    private static var pendingEnvelopes = OrderedDictionary<MessageIdentifier, [EarlyEnvelope]>()
+    private static var pendingReceipts =  OrderedDictionary<MessageIdentifier, [EarlyReceipt]>()
 
     @objc
     public static func recordEarlyEnvelope(
@@ -35,11 +46,26 @@ public class EarlyMessageManager: NSObject {
         associatedMessageTimestamp: UInt64,
         associatedMessageAuthor: SignalServiceAddress
     ) {
+        guard plainTextData?.count ?? 0 <= maxEarlyEnvelopeSize else {
+            return owsFailDebug("unexpectedly tried to record an excessively large early envelope")
+        }
+
         let identifier = MessageIdentifier(timestamp: associatedMessageTimestamp, author: associatedMessageAuthor)
         serialQueue.sync {
             var envelopes = pendingEnvelopes[identifier] ?? []
+
+            while envelopes.count >= maxQueuedPerMessage, let droppedEarlyEnvelope = envelopes.first {
+                envelopes.remove(at: 0)
+                owsFailDebug("Dropping early envelope \(droppedEarlyEnvelope.envelope.timestamp) for message \(identifier) due to excessive early envelopes.")
+            }
+
             envelopes.append(EarlyEnvelope(envelope: envelope, plainTextData: plainTextData, wasReceivedByUD: wasReceivedByUD))
             pendingEnvelopes[identifier] = envelopes
+
+            while pendingEnvelopes.count >= maxQueuedMessages, let droppedEarlyIdentifier = pendingEnvelopes.orderedKeys.first {
+                pendingEnvelopes.remove(key: droppedEarlyIdentifier)
+                owsFailDebug("Dropping all early envelopes for message \(droppedEarlyIdentifier) due to excessive early messages.")
+            }
         }
     }
 
@@ -55,9 +81,7 @@ public class EarlyMessageManager: NSObject {
         }
 
         recordEarlyReceipt(
-            type: type,
-            sender: sender,
-            timestamp: timestamp,
+            .init(receiptType: type, sender: sender, timestamp: timestamp),
             associatedMessageTimestamp: associatedMessageTimestamp,
             associatedMessageAuthor: localAddress
         )
@@ -69,31 +93,34 @@ public class EarlyMessageManager: NSObject {
         associatedMessageTimestamp: UInt64,
         associatedMessageAuthor: SignalServiceAddress
     ) {
-        guard let localAddress = TSAccountManager.localAddress else {
-            return owsFailDebug("missing local address")
-        }
-
         recordEarlyReceipt(
-            type: .read,
-            sender: localAddress,
-            timestamp: timestamp,
+            .incomingMessageReadOnLinkedDevice(timestamp: timestamp),
             associatedMessageTimestamp: associatedMessageTimestamp,
             associatedMessageAuthor: associatedMessageAuthor
         )
     }
 
     private static func recordEarlyReceipt(
-        type: SSKProtoReceiptMessageType,
-        sender: SignalServiceAddress,
-        timestamp: UInt64,
+        _ earlyReceipt: EarlyReceipt,
         associatedMessageTimestamp: UInt64,
         associatedMessageAuthor: SignalServiceAddress
     ) {
         let identifier = MessageIdentifier(timestamp: associatedMessageTimestamp, author: associatedMessageAuthor)
         serialQueue.sync {
             var receipts = pendingReceipts[identifier] ?? []
-            receipts.append(EarlyReceipt(type: type, sender: sender, timestamp: timestamp))
+
+            while receipts.count >= maxQueuedPerMessage, let droppedEarlyReceipt = receipts.first {
+                receipts.remove(at: 0)
+                owsFailDebug("Dropping early receipt \(droppedEarlyReceipt) for message \(identifier) due to excessive early receipts.")
+            }
+
+            receipts.append(earlyReceipt)
             pendingReceipts[identifier] = receipts
+
+            while pendingReceipts.count >= maxQueuedMessages, let droppedEarlyIdentifier = pendingReceipts.orderedKeys.first {
+                pendingReceipts.remove(key: droppedEarlyIdentifier)
+                owsFailDebug("Dropping all early envelopes for message \(droppedEarlyIdentifier) due to excessive early messages.")
+            }
         }
     }
 
@@ -125,34 +152,38 @@ public class EarlyMessageManager: NSObject {
 
         // Apply any early receipts for this message
         for earlyReceipt in earlyReceipts ?? [] {
-            switch earlyReceipt.type {
-            case .read:
-                if let message = message as? TSOutgoingMessage {
-                    message.update(
-                        withReadRecipient: earlyReceipt.sender,
-                        readTimestamp: earlyReceipt.timestamp,
-                        transaction: transaction
-                    )
-                } else if let message = message as? TSIncomingMessage {
-                    OWSReadReceiptManager.shared().markAsRead(
-                        onLinkedDevice: message,
-                        thread: message.thread(transaction: transaction),
-                        readTimestamp: earlyReceipt.timestamp,
-                        transaction: transaction
-                    )
-                } else {
-                    owsFailDebug("Unexpected message type for early read receipt.")
+            switch earlyReceipt {
+            case .outgoingMessageRead(let sender, let timestamp):
+                guard let message = message as? TSOutgoingMessage else {
+                    owsFailDebug("Unexpected message type for early read receipt for outgoing message.")
+                    continue
                 }
-            case .delivery:
-                if let message = message as? TSOutgoingMessage {
-                    message.update(
-                        withDeliveredRecipient: earlyReceipt.sender,
-                        deliveryTimestamp: NSNumber(value: earlyReceipt.timestamp),
-                        transaction: transaction
-                    )
-                } else {
-                    owsFailDebug("Unexpected message type for early delivery receipt.")
+                message.update(
+                    withReadRecipient: sender,
+                    readTimestamp: timestamp,
+                    transaction: transaction
+                )
+            case .outgoingMessageDelivered(let sender, let timestamp):
+                guard let message = message as? TSOutgoingMessage else {
+                    owsFailDebug("Unexpected message type for early delivery receipt for outgoing message.")
+                    continue
                 }
+                message.update(
+                    withDeliveredRecipient: sender,
+                    deliveryTimestamp: NSNumber(value: timestamp),
+                    transaction: transaction
+                )
+            case .incomingMessageReadOnLinkedDevice(let timestamp):
+                guard let message = message as? TSIncomingMessage else {
+                    owsFailDebug("Unexpected message type for early read receipt from linked device.")
+                    continue
+                }
+                OWSReadReceiptManager.shared().markAsRead(
+                    onLinkedDevice: message,
+                    thread: message.thread(transaction: transaction),
+                    readTimestamp: timestamp,
+                    transaction: transaction
+                )
             }
         }
 
@@ -165,5 +196,16 @@ public class EarlyMessageManager: NSObject {
                 transaction: transaction
             )
         }
+    }
+}
+
+extension OrderedDictionary {
+    subscript(_ key: KeyType) -> ValueType? {
+        set {
+            if hasValue(forKey: key) { remove(key: key) }
+            guard let newValue = newValue else { return }
+            append(key: key, value: newValue)
+        }
+        get { value(forKey: key) }
     }
 }
