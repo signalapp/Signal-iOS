@@ -452,7 +452,7 @@ public class GRDBSchemaMigrator: NSObject {
 
         migrator.registerMigration(MigrationId.addRemoteDeleteToInteractions.rawValue) { db in
             try db.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
-                table.add(column: "wasRemotelyDeleted", .boolean).notNull().defaults(to: 0)
+                table.add(column: "wasRemotelyDeleted", .boolean)
             }
         }
 

@@ -95,7 +95,7 @@ CREATE
             ,"verificationState" INTEGER
             ,"wasReceivedByUD" INTEGER
             ,"infoMessageUserInfo" BLOB
-            ,"wasRemotelyDeleted" BOOLEAN NOT NULL DEFAULT 0
+            ,"wasRemotelyDeleted" BOOLEAN
         )
 ;
 
