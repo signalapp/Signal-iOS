@@ -594,6 +594,7 @@ CREATE
             ,"receivedAtTimestamp" INTEGER NOT NULL
             ,"sentAtTimestamp" INTEGER NOT NULL
             ,"uniqueMessageId" TEXT NOT NULL
+            ,"read" BOOLEAN NOT NULL DEFAULT 0
         )
 ;
 
@@ -854,5 +855,12 @@ CREATE
     INDEX "index_model_IncomingGroupsV2MessageJob_on_groupId_and_id"
         ON "model_IncomingGroupsV2MessageJob"("groupId"
     ,"id"
+)
+;
+
+CREATE
+    INDEX "index_model_OWSReaction_on_uniqueMessageId_and_read"
+        ON "model_OWSReaction"("uniqueMessageId"
+    ,"read"
 )
 ;

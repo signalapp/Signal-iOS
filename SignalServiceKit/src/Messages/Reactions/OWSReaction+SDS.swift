@@ -34,6 +34,7 @@ public struct ReactionRecord: SDSRecord {
     public let receivedAtTimestamp: UInt64
     public let sentAtTimestamp: UInt64
     public let uniqueMessageId: String
+    public let read: Bool
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -45,6 +46,7 @@ public struct ReactionRecord: SDSRecord {
         case receivedAtTimestamp
         case sentAtTimestamp
         case uniqueMessageId
+        case read
     }
 
     public static func columnName(_ column: ReactionRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -77,6 +79,7 @@ public extension ReactionRecord {
         receivedAtTimestamp = row[6]
         sentAtTimestamp = row[7]
         uniqueMessageId = row[8]
+        read = row[9]
     }
 }
 
@@ -111,6 +114,7 @@ extension OWSReaction {
             let emoji: String = record.emoji
             let reactorE164: String? = record.reactorE164
             let reactorUUID: String? = record.reactorUUID
+            let read: Bool = record.read
             let receivedAtTimestamp: UInt64 = record.receivedAtTimestamp
             let sentAtTimestamp: UInt64 = record.sentAtTimestamp
             let uniqueMessageId: String = record.uniqueMessageId
@@ -120,6 +124,7 @@ extension OWSReaction {
                                emoji: emoji,
                                reactorE164: reactorE164,
                                reactorUUID: reactorUUID,
+                               read: read,
                                receivedAtTimestamp: receivedAtTimestamp,
                                sentAtTimestamp: sentAtTimestamp,
                                uniqueMessageId: uniqueMessageId)
@@ -173,6 +178,7 @@ extension OWSReactionSerializer {
     static let receivedAtTimestampColumn = SDSColumnMetadata(columnName: "receivedAtTimestamp", columnType: .int64)
     static let sentAtTimestampColumn = SDSColumnMetadata(columnName: "sentAtTimestamp", columnType: .int64)
     static let uniqueMessageIdColumn = SDSColumnMetadata(columnName: "uniqueMessageId", columnType: .unicodeString)
+    static let readColumn = SDSColumnMetadata(columnName: "read", columnType: .int)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -187,7 +193,8 @@ extension OWSReactionSerializer {
         reactorUUIDColumn,
         receivedAtTimestampColumn,
         sentAtTimestampColumn,
-        uniqueMessageIdColumn
+        uniqueMessageIdColumn,
+        readColumn
         ])
 }
 
@@ -603,7 +610,8 @@ class OWSReactionSerializer: SDSSerializer {
         let receivedAtTimestamp: UInt64 = model.receivedAtTimestamp
         let sentAtTimestamp: UInt64 = model.sentAtTimestamp
         let uniqueMessageId: String = model.uniqueMessageId
+        let read: Bool = model.read
 
-        return ReactionRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, emoji: emoji, reactorE164: reactorE164, reactorUUID: reactorUUID, receivedAtTimestamp: receivedAtTimestamp, sentAtTimestamp: sentAtTimestamp, uniqueMessageId: uniqueMessageId)
+        return ReactionRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, emoji: emoji, reactorE164: reactorE164, reactorUUID: reactorUUID, receivedAtTimestamp: receivedAtTimestamp, sentAtTimestamp: sentAtTimestamp, uniqueMessageId: uniqueMessageId, read: read)
     }
 }

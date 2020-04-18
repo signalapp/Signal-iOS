@@ -50,7 +50,7 @@ public class ThreadViewModel: NSObject {
             self.contactAddress = nil
         }
 
-        self.unreadCount = InteractionFinder(threadUniqueId: thread.uniqueId).unreadCount(transaction: transaction)
+        self.unreadCount = InteractionFinder(threadUniqueId: thread.uniqueId).unreadCount(transaction: transaction.unwrapGrdbRead)
         self.hasUnreadMessages = unreadCount > 0
         self.hasPendingMessageRequest = thread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead)
 

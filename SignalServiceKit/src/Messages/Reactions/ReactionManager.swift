@@ -60,6 +60,9 @@ public class ReactionManager: NSObject {
                 receivedAtTimestamp: outgoingMessage.timestamp,
                 transaction: transaction
             )
+
+            // Always immediately mark outgoing reactions as read.
+            outgoingMessage.createdReaction?.markAsRead(transaction: transaction)
         }
 
         SSKEnvironment.shared.messageSenderJobQueue.add(message: outgoingMessage.asPreparer, transaction: transaction)

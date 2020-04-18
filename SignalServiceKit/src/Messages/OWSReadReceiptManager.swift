@@ -85,6 +85,25 @@ public extension OWSReadReceiptManager {
         }
     }
 
+    func sendLinkedDeviceReadReceipt(forMessages messages: [TSOutgoingMessage],
+                                     inThread thread: TSThread,
+                                     transaction: SDSAnyWriteTransaction) {
+        assert(messages.count > 0)
+        guard let localAddress = TSAccountManager.localAddress else {
+            return owsFailDebug("missing local address")
+        }
+        let readTimestamp = Date.ows_millisecondTimestamp()
+        let receiptsForMessage = messages.map {
+            OWSLinkedDeviceReadReceipt(
+                senderAddress: localAddress,
+                messageIdTimestamp: $0.timestamp,
+                readTimestamp: readTimestamp
+            )
+        }
+        let message = OWSReadReceiptsForLinkedDevicesMessage(thread: thread, readReceipts: receiptsForMessage)
+        self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+    }
+
     func enqueueLinkedDeviceReadReceipt(forMessage message: TSIncomingMessage,
                                         transaction: SDSAnyWriteTransaction) {
         let threadUniqueId = message.uniqueThreadId
