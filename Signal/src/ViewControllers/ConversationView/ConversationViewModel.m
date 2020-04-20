@@ -1564,7 +1564,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)shouldShowThreadDetails
 {
-    return !self.canLoadOlderItems && RemoteConfig.messageRequests;
+    return (!self.canLoadOlderItems && (RemoteConfig.messageRequests || self.thread.isGroupV2Thread));
 }
 
 @end

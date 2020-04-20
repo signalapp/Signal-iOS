@@ -142,7 +142,7 @@ class GroupAttributesEditorHelper: NSObject {
 
     public static func buildCameraButtonForCenter() -> UIView {
         let cameraImageView = UIImageView()
-        cameraImageView.setTemplateImageName("camera-outline-24", tintColor: .ows_accentBlue)
+        cameraImageView.setTemplateImageName("camera-outline-24", tintColor: Theme.accentBlueColor)
         let iconSize: CGFloat = 32
         cameraImageView.autoSetDimensions(to: CGSize(square: iconSize))
         return cameraImageView
@@ -240,6 +240,9 @@ extension GroupAttributesEditorHelper: UITextFieldDelegate {
         let maxReplacementLength = GroupManager.maxGroupNameLength - Int(left.count + right.count)
         let center = replacementString.substring(to: maxReplacementLength)
         textField.text = (left + center + right)
+
+        delegate?.groupAttributesEditorContentsDidChange()
+
         // Place the cursor after the truncated replacement.
         let positionAfterChange = left.count + center.count
         guard let position = textField.position(from: textField.beginningOfDocument, offset: positionAfterChange) else {

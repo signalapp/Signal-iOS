@@ -99,7 +99,7 @@
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "Fejl";
 
 /* Error indicating that the app could not launch because the database could not be loaded. */
-"APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "Kunne ikke hente database";
+"APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "Indlæsning af database mislykkedes";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "Opgrader venligst til den nyeste version af Signal";
@@ -156,7 +156,7 @@
 "ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "Kunne ikke gemmes";
 
 /* Format string for file extension label in call interstitial view */
-"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Fil type: %@";
+"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Filtype: %@";
 
 /* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
 "ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Størrelse: %@";
@@ -177,13 +177,13 @@
 "ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Fejl ved download. Tap for at prøve igen";
 
 /* The title of the 'attachment error' alert. */
-"ATTACHMENT_ERROR_ALERT_TITLE" = " Kan ikke sende vedhæftning";
+"ATTACHMENT_ERROR_ALERT_TITLE" = "Fejl ved afsendelse af vedhæftet fil";
 
 /* Attachment error message for image attachments which could not be converted to JPEG */
 "ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Kan ikke konvertere billede";
 
 /* Attachment error message for video attachments which could not be converted to MP4 */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "Kan ikke processere videoen";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "Videobehandlingen er ikke muligt.";
 
 /* Attachment error message for image attachments which cannot be parsed */
 "ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Kan ikke analysere billede";
@@ -201,7 +201,7 @@
 "ATTACHMENT_ERROR_INVALID_DATA" = "Vedhæftet fil indeholder ugyldigt indhold";
 
 /* Attachment error message for attachments with an invalid file format */
-"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Vedhæftet fil er et ugyldigt filformat";
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Vedhæftet fil har et ugyldigt filformat";
 
 /* Attachment error message for attachments without any data */
 "ATTACHMENT_ERROR_MISSING_DATA" = "Vedhæftning er tom";
@@ -222,7 +222,7 @@
 "ATTACHMENT_KEYBOARD_GIF" = "GIF";
 
 /* A button to select a location from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_LOCATION" = "Lokation";
+"ATTACHMENT_KEYBOARD_LOCATION" = "Placering";
 
 /* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
 "ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Giv adgang til dine billeder i Indstillinger, for at sende dem";
@@ -258,25 +258,25 @@
 "BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "Data til sikkerhedskopi kunne ikke eksporteres";
 
 /* Error indicating that the app received an invalid response from CloudKit. */
-"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Ugyldig service svar";
+"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Ugyldig serviceaktion";
 
 /* Indicates that the cloud is being cleaned up. */
-"BACKUP_EXPORT_PHASE_CLEAN_UP" = "Rydder op i backup";
+"BACKUP_EXPORT_PHASE_CLEAN_UP" = "Rydder op i sikkerhedskopiering";
 
 /* Indicates that the backup export is being configured. */
-"BACKUP_EXPORT_PHASE_CONFIGURATION" = "Initialisere backup";
+"BACKUP_EXPORT_PHASE_CONFIGURATION" = "Igangsætter sikkerhedskopi";
 
 /* Indicates that the database data is being exported. */
 "BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "Eksporterer data";
 
 /* Indicates that the backup export data is being exported. */
-"BACKUP_EXPORT_PHASE_EXPORT" = "Eksporterer backup";
+"BACKUP_EXPORT_PHASE_EXPORT" = "Eksporterer sikkerhedskopi";
 
 /* Indicates that the backup export data is being uploaded. */
 "BACKUP_EXPORT_PHASE_UPLOAD" = "Uploader backup";
 
 /* Error indicating the backup import could not import the user's data. */
-"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "Backup kunne ikke importeres";
+"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "Sikkerhedskopi kunne ikke importeres";
 
 /* Indicates that the backup import is being configured. */
 "BACKUP_IMPORT_PHASE_CONFIGURATION" = "Konfigurerer backup";
@@ -285,10 +285,10 @@
 "BACKUP_IMPORT_PHASE_DOWNLOAD" = "Downloader backup data";
 
 /* Indicates that the backup import data is being finalized. */
-"BACKUP_IMPORT_PHASE_FINALIZING" = "Færdiggør backup";
+"BACKUP_IMPORT_PHASE_FINALIZING" = "Færdiggør sikkerhedskopi";
 
 /* Indicates that the backup import data is being imported. */
-"BACKUP_IMPORT_PHASE_IMPORT" = "Importerer backup";
+"BACKUP_IMPORT_PHASE_IMPORT" = "Importerer sikkerhedskopi";
 
 /* Indicates that the backup database is being restored. */
 "BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "Gendanner databasen";
@@ -297,10 +297,10 @@
 "BACKUP_IMPORT_PHASE_RESTORING_FILES" = "Gendanner filer";
 
 /* Label for the backup restore decision section. */
-"BACKUP_RESTORE_DECISION_TITLE" = "Backup tilgængelig";
+"BACKUP_RESTORE_DECISION_TITLE" = "Sikkerhedskopi er tilgængelig";
 
 /* Label for the backup restore description. */
-"BACKUP_RESTORE_DESCRIPTION" = "Gendanner backup";
+"BACKUP_RESTORE_DESCRIPTION" = "Gendanner sikkerhedskopi";
 
 /* Label for the backup restore progress. */
 "BACKUP_RESTORE_PROGRESS" = "Forløb";
@@ -309,10 +309,10 @@
 "BACKUP_RESTORE_STATUS" = "Status";
 
 /* Error shown when backup fails due to an unexpected error. */
-"BACKUP_UNEXPECTED_ERROR" = "Uventet backup fejl";
+"BACKUP_UNEXPECTED_ERROR" = "Uventet sikkerhedskopieringsfejl";
 
 /* An explanation of the consequences of blocking a group. */
-"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Du vil ikke længere modtage beskeder eller opdateringer fra gruppen";
+"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Du vil ikke længere modtage beskeder eller opdateringer fra gruppen.";
 
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "Blokér";
@@ -330,7 +330,7 @@
 "BLOCK_LIST_BLOCKED_USERS_SECTION" = "Blokerede brugere";
 
 /* Button label for the 'unblock' button */
-"BLOCK_LIST_UNBLOCK_BUTTON" = "Ophæv blokade";
+"BLOCK_LIST_UNBLOCK_BUTTON" = "Fjern blokering";
 
 /* An explanation of what unblocking a contact means. */
 "BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "I vil være i stand til at sende beskeder og ringe til hinanden";
@@ -339,13 +339,13 @@
 "BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Eksisterende medlemmer vil kunne tilføje dig til gruppen igen";
 
 /* An explanation of what unblocking a group means. */
-"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Medlemmer af gruppen kan tilføje dig til gruppen igen";
+"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Gruppemedlemmer vil kunne tilføje dig til gruppen igen.";
 
 /* Action sheet title when confirming you want to unblock a group. */
 "BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Fjern blokering af gruppen?";
 
 /* A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}. */
-"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Ophæv blokade for %@?";
+"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Fjern blokering for %@?";
 
 /* A label for the block button in the block list view */
 "BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Blokér";
@@ -360,7 +360,7 @@
 "BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "Gruppe blokeret";
 
 /* The message of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "Du kan ikke blokére dig selv";
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "Du kan ikke blokere dig selv.";
 
 /* The title of the 'You can't block yourself' alert. */
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Fejl";
@@ -378,7 +378,7 @@
 "BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "Bloker %@?";
 
 /* An explanation of the consequences of blocking another user. */
-"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Blokerede brugere vil ikke kunne ringe eller sende dig beskeder";
+"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Blokerede brugere vil ikke kunne ringe eller sende beskeder til dig";
 
 /* browse files option from file sharing menu */
 "BROWSE_FILES_BUTTON" = "Browse";
@@ -405,7 +405,7 @@
 "CALL_AGAIN_BUTTON_TITLE" = "Ring igen";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "Du kan aktivere mikrofonadgang i Indstillinger-appen for at foretage opkald og optage talemeddelelser i Signal";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "Du kan aktivere mikrofonadgang i iOS Indstillinger-appen for at foretage opkald og optage talebeskeder i Signal.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Adgang til mikrofonen er påkrævet";
@@ -504,7 +504,7 @@
 "CHECK_FOR_BACKUP_DO_NOT_RESTORE" = "Gendan ikke";
 
 /* Message for alert shown when the app failed to check for an existing backup. */
-"CHECK_FOR_BACKUP_FAILED_MESSAGE" = "Kunne ikke afgøre, om der er en Backup der kan gendannes";
+"CHECK_FOR_BACKUP_FAILED_MESSAGE" = "Det kunne ikke afgøres, om der er en sikkerhedskopi der kan gendannes.";
 
 /* Title for alert shown when the app failed to check for an existing backup. */
 "CHECK_FOR_BACKUP_FAILED_TITLE" = "Fejl";
@@ -528,7 +528,7 @@
 "COLOR_PICKER_DEMO_MESSAGE_2" = "Farvevalget er kun synligt for dig";
 
 /* Modal Sheet title when picking a conversation color. */
-"COLOR_PICKER_SHEET_TITLE" = "Samtale farve";
+"COLOR_PICKER_SHEET_TITLE" = "Samtale-farve";
 
 /* Activity Sheet label */
 "COMPARE_SAFETY_NUMBER_ACTION" = "Sammenlign med udklipsholder";
@@ -552,7 +552,7 @@
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Søg brugernavn";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Du kan aktivere kontaktadgang i Indstillinger-appen for at se, hvilke af dine kontakter der er Signal-brugere";
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Du kan aktivere kontaktadgang i iOS indstillinger-appen for at se, hvilke af dine kontakter der er Signal-brugere";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Dette vil nulstille app´en ved at slette dine meddelelser og afregistrere dig med serveren. App´en lukkes, efter at denne proces er afsluttet";
@@ -576,7 +576,7 @@
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Tilknyt ny enhed";
 
 /* Action sheet body presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
-"CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@ kan have geninstalleret eller skiftet enhed. Verificer dit sikkerhedsnummer med dem for at sikre privatlivet";
+"CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@ kan have geninstalleret eller skiftet enhed. Bekræft dit sikkerhedsnummer med dem for at sikre privatlivet";
 
 /* Action sheet title presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
 "CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT" = "Sikkerhedsnummer med %@ er ændret";
@@ -591,7 +591,7 @@
 "CONTACT_CELL_IS_BLOCKED" = "Blokeret";
 
 /* An indicator that a contact is no longer verified. */
-"CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "Ikke verificeret";
+"CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "Ikke bekræftet";
 
 /* No comment provided by engineer. */
 "CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Ikke-registreret nummer";
@@ -663,7 +663,7 @@
 "CONTACT_SHARE_INVALID_CONTACT" = "Ugyldig kontakt";
 
 /* Error indicating that at least one contact field must be selected before sharing a contact. */
-"CONTACT_SHARE_NO_FIELDS_SELECTED" = "Ingen kontakt felter valgt";
+"CONTACT_SHARE_NO_FIELDS_SELECTED" = "Ingen kontaktfelter blev valgt";
 
 /* Button text to initiate an email to signal support staff */
 "CONTACT_SUPPORT" = "Kontakt Support";
@@ -675,34 +675,34 @@
 "CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "Prøv igen";
 
 /* Alert body */
-"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Dine fejllogs vil hjælpe os med at fejlsøge hurtigere. Det er frivilligt om du ønsker at vedhæfte dem";
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Dine fejlsøgningslogfiler hjælper os med at fejlfinde dit problem hurtigere. Indsendelse af dine logfiler er valgfri.";
 
 /* Alert title */
-"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Vedhæft Fejllog?";
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Vedhæft fejllog?";
 
 /* Button text */
-"CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "Send med Fejllog";
+"CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "Indsend med fejlsøgningslogfil";
 
 /* Button text */
-"CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "Send uden Fejllog";
+"CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "Indsend uden fejlsøgningslogfil";
 
 /* Label for 'open address in maps app' button in contact view. */
 "CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Åbn i Maps";
 
 /* Label for 'open email in email app' button in contact view. */
-"CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "Send email";
+"CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "Send e-mail";
 
 /* Indicates that a contact has no name. */
 "CONTACT_WITHOUT_NAME" = "Unavngivet kontakt";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Samtalen bliver slettet fra enheden";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Samtalen vil blive slettet fra enheden";
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Slet samtale?";
 
 /* Indicates that the user can tap to download this image. */
-"CONVERSATION_MEDIA_VIEW_DOWNLOAD_IMAGE" = "Download";
+"CONVERSATION_MEDIA_VIEW_DOWNLOAD_IMAGE" = "Hent";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
 "CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "Du kan ikke vælge flere end %@ samtaler";
@@ -729,7 +729,7 @@
 "CONVERSATION_SEARCH_RESULTS_FORMAT" = "%daf %d matcher";
 
 /* title for conversation settings screen */
-"CONVERSATION_SETTINGS" = "Samtale indstillinger";
+"CONVERSATION_SETTINGS" = "Samtaleindstillinger";
 
 /* Label for 'add members' button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_MEMBERS" = "Tilføj medlemmer";
@@ -738,7 +738,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Tilføj til eksisterende kontakt";
 
 /* button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Tilføj til system kontakter";
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Tilføj til systemets kontakter";
 
 /* Label indicating that only administrators can update the group's attributes: name, avatar, etc. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "Administratorer";
@@ -768,10 +768,10 @@
 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Kontaktinformation";
 
 /* Label for table cell which leads to picking a new conversation color */
-"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Samtale farve";
+"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Samtale-farve";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Hvem kan redigere info for gruppe";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Hvem kan redigere gruppeinformation";
 
 /* Label for button that sets 'group attributes access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Kun administratorer";
@@ -780,7 +780,7 @@
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Vælg hvem som kan ændre gruppens navn, avatar og timer for beskeder med tidsudløb";
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "Alle deltagere";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "Alle medlemmer";
 
 /* Label for the 'edit group' button in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_GROUP" = "Redigér";
@@ -796,6 +796,12 @@
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ vil være i stand til at fjerne medlemmer af gruppen og gøre andre til administratorer";
+
+/* Section title of the 'members' section in conversation settings view. */
+"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "Medlemmer";
+
+/* Format for the section title of the 'members' section in conversation settings view. Embeds: {{ the number of group members }}. */
+"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ medlemmer";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Udsæt";
@@ -1041,10 +1047,7 @@
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Brugeren kan ikke tilføjes gruppen, før Signal opdateres";
 
 /* Message for 'group full' error alert when a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "Maximum group size of 100 members reached.";
-
-/* Label for 'learn more' button when a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_LEARN_MORE" = "Learn More";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "Maksimal gruppestørrelse på 100 medlemmer er nået.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "Ugyldig avatar";
@@ -1623,7 +1626,7 @@
 "HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Rediger forespørgsel";
 
 /* Format string when search returns no results. Embeds {{search term}} */
-"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "Ingen resultater fundet for '%@'";
+"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "Ingen fundne resultater for '%@'";
 
 /* Title for the conversation list's 'archive' mode. */
 "HOME_VIEW_TITLE_ARCHIVE" = "Arkiv";
@@ -1753,6 +1756,9 @@
 
 /* A keyboard command to unarchive the current coversation. */
 "KEY_COMMAND_UNARCHIVE" = "Fjern samtale fra arkiv";
+
+/* Label for the 'learn more' button. */
+"LEARN_MORE" = "Lær mere";
 
 /* Confirmation button within contextual alert */
 "LEAVE_BUTTON_TITLE" = "Forlad";
@@ -1978,9 +1984,6 @@
 
 /* A prompt for the user to accept or decline an invite to a group. Embeds {{name of user who invited you}}. */
 "MESSAGE_REQUEST_VIEW_GROUP_INVITE_PROMPT_FORMAT" = "Du blev inviteret til gruppen af %@. Vil du tillade medlemmer af gruppen at sende beskeder til dig?";
-
-/* A button used to learn more about why you must share your profile. */
-"MESSAGE_REQUEST_VIEW_LEARN_MORE_BUTTON" = "Lær mere";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Vil du lade %@ sende beskeder til dig? De vil ikke vide du har læst deres beskeder, før du accepterer";
@@ -2489,14 +2492,17 @@
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Unavngivet album";
 
-/* Label indicating the user must use at least 6 characters */
-"PIN_CREATION_ALPHANUMERIC_HINT" = "PIN skal være på mindst 6 karakterer";
+/* Label indicating the user must use at least 4 characters */
+"PIN_CREATION_ALPHANUMERIC_HINT" = "PIN-koden skal være mindst 4 tegn";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_CHANGING_TITLE" = "Skift din PIN";
 
+/* Title of the 'pin creation' confirmation view. */
+"PIN_CREATION_CONFIRM_TITLE" = "Bekræft din PIN-kode";
+
 /* The explanation of confirmation in the 'pin creation' view. */
-"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Bekræft din nye PIN";
+"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Genindtast din PIN-kode";
 
 /* Button asking if the user would like to create an alphanumeric PIN */
 "PIN_CREATION_CREATE_ALPHANUMERIC" = "Opret alfanumerisk PIN";
@@ -2511,13 +2517,13 @@
 "PIN_CREATION_ERROR_TITLE" = "Oprettelse af PIN fejlede";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PIN tilføjer et ekstra lag af sikkerhed til din konto. Skriv din PIN ned og gemt den et sikkert sted. Den kan ikke gendannes";
+"PIN_CREATION_EXPLANATION" = "PIN-koder opbevarer krypteret information, lagret med Signal, så kun du kan få adgang til den. Din profil, indstillinger og kontakter gendannes, når du geninstallerer Signal.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PIN´s matcher ikke. Prøv igen";
 
-/* Label indicating the user must use at least 6 digits */
-"PIN_CREATION_NUMERIC_HINT" = "PIN´s skal være på mindst 6 cifre";
+/* Label indicating the user must use at least 4 digits */
+"PIN_CREATION_NUMERIC_HINT" = "PIN-koden skal være mindst 4 cifre";
 
 /* Label indication the user must confirm their PIN. */
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "Skriv PIN igen";
@@ -2526,16 +2532,13 @@
 "PIN_CREATION_PIN_PROGRESS" = "Opretter PIN...";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "Du kan vælge en ny PIN da enheden allerede er registreret. Hvis du glemmer din PIN, vil du skulle vente i 7 dage før du kan registrere dig igen";
+"PIN_CREATION_RECREATION_EXPLANATION" = "Du kan ændre din PIN-kode, så længe denne enhed er registreret.";
 
 /* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_RECREATION_TITLE" = "Opret en ny PIN";
+"PIN_CREATION_RECREATION_TITLE" = "Skift din PIN-kode";
 
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "Opret din PIN";
-
-/* Label indicating that the attempted PIN is too short */
-"PIN_CREATION_TOO_SHORT_ERROR" = "PIN´s skal være på mindst 6 cifre";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "For at hjælpe dig med at huske din PIN, vil du blive bedt om at indtaste den periodisk. Det vil ske sjældnere over tid";
@@ -2547,7 +2550,7 @@
 "PIN_REMINDER_MEGAPHONE_ACTION" = "Verificer PIN";
 
 /* Body for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_BODY" = "Du vil indimellem blive bedt om at verificere din PIN, for at husker den";
+"PIN_REMINDER_MEGAPHONE_BODY" = "Du vil indimellem blive bedt om at verificere din PIN, så du husker den";
 
 /* Toast indicating that we'll ask you for your PIN again in 3 days. */
 "PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "Du vil blive mindet om det igen om nogle dage";
@@ -2571,31 +2574,19 @@
 "PIN_REMINDER_TITLE" = "Skriv din Signal PIN";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN´s skal være på mindst 6 cifre";
-
-/* Action text for PIN megaphone when user already has a PIN */
-"PINS_MEGAPHONE_HAS_PIN_ACTION" = "Opdatér PIN";
-
-/* Body for PIN megaphone when user already has a PIN */
-"PINS_MEGAPHONE_HAS_PIN_BODY" = "Din registreringskode kaldes nu en PIN. Opdater den på få sekunder";
-
-/* Toast indication that the user will be reminded later to update their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "Du bliver mindet om det senere. Opdatering af din PIN vil blive påkrævet om nogle dage";
-
-/* Title for PIN megaphone when user already has a PIN */
-"PINS_MEGAPHONE_HAS_PIN_TITLE" = "Introducerer PIN´s";
+"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN-koden skal være mindst 4 cifre.";
 
 /* Action text for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_ACTION" = "Opret PIN";
+"PINS_MEGAPHONE_ACTION" = "Opret PIN-kode";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_BODY" = "PINs tilføjer et ekstra lag af sikkerhed til din Signal konto";
+"PINS_MEGAPHONE_BODY" = "PIN-koder opbevarer oplysninger, der er gemt med Signal krypteret";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "Du bliver mindet om det senere. Oprettelse af en PIN vil blive påkrævet om nogle dage";
+"PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Du vil blive påmindet senere. Oprettelse af PIN-kode vil blive obligatorisk om %ld dage";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_TITLE" = "Opret en PIN";
+"PINS_MEGAPHONE_TITLE" = "Opret PIN-kode";
 
 /* Toast indicating that a PIN has been created. */
 "PINS_MEGAPHONE_TOAST" = "PIN oprettet. Du kan ændre din i Indstillinger";
@@ -2611,9 +2602,6 @@
 
 /* Label indicating that the user is verified. Embeds {{the user's name or phone number}}. */
 "PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%@ er verificeret";
-
-/* Label for a link to more information about safety numbers and verification. */
-"PRIVACY_SAFETY_NUMBERS_LEARN_MORE" = "Lær mere";
 
 /* Button that shows the 'scan with camera' view. */
 "PRIVACY_TAP_TO_SCAN" = "Tap for at skanne";
@@ -2707,9 +2695,6 @@
 
 /* Description of the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION" = "Din Signal profil vil være synlig for dine kontakter når du starter nye samtaler og når du deler den med andre brugere og grupper";
-
-/* Link to more information about the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Tap her for at lære mere";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Gem";
@@ -2820,7 +2805,7 @@
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Brug for hjælp?";
 
 /* Alert body for a forgotten SVR (V2) PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Din PIN er en 6+ cifret kode du opretter som enten numerisk eller alfanumerisk format. Hvis du glemmer din PIN, skal du vente 7 dage før du kan genregistrere din konto";
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Din PIN-kode er en 4+ cifret kode, du oprettede, som kan være numerisk eller alfanumerisk. Hvis du ikke kan huske din PIN-kode, bliver du nødt til at vente 7 dage på at omregistrere din konto.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock */
 "REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Din PIN er en 4+ cifret kode du opretter som enten numerisk eller alfanumerisk format. Hvis du glemmer din PIN, kan du oprette en ny. Du kan registrere og bruge din konto, men du vil miste nogle gemte indstillinger, såsom din profil information";
@@ -3276,7 +3261,7 @@
 "SETTINGS_NOTIFICATIONS" = "Notifikationer";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "Din PIN laver backup af dine profiloplysninger og indstillinger, for at gøre det nemt at genregistrere din konto";
+"SETTINGS_PINS_FOOTER" = "PIN-koder holder krypteret lagrede oplysninger, lagret med Signal, så kun du har adgang til den. Din profil, indstillinger og kontakter gendannes, når du geninstallerer Signal.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Skift din PIN";
@@ -3307,6 +3292,21 @@
 
 /* An explanation of the 'read receipts' setting. */
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Se og del når meddelelser er blevet læst. Denne indstilling er valgfri og gælder for alle samtaler";
+
+/* Action to turn off registration lock */
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Deaktivér";
+
+/* Title for the alert confirming that the user wants to turn off registration lock. */
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "Deaktiver registreringslås?";
+
+/* Action to turn on registration lock */
+"SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Aktivér";
+
+/* Body for the alert confirming that the user wants to turn on registration lock. */
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Hvis du glemmer din PIN-kode til Signal under genregistrering af Signal, vil du blive låst ude af din konto i 7 dage.";
+
+/* Title for the alert confirming that the user wants to turn on registration lock. */
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "Aktiver registreringslås?";
 
 /* Label for re-link button. */
 "SETTINGS_RELINK_BUTTON" = "Re-link";
@@ -3356,9 +3356,6 @@
 /* Indicates that 'two factor auth' is enabled in the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_ENABLED" = "Aktivéret";
 
-/* Footer for the 'two factor auth' section of the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_FOOTER" = "Registreringslås tilføjer et ekstra lag af sikkerhed til din konto. Du vil blive bedt om din Signal PIN når du registrerer dit mobilnummer ved Signal. Hvis du glemmer din PIN, vil du blive låst ude af din konto i 7 dage";
-
 /* Label for the 'two factor auth' item of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_ITEM" = "Registreringslås";
 
@@ -3368,14 +3365,14 @@
 /* Title for the 'two factor auth' section of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Registreringslås";
 
+/* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "For ekstra sikkerhed skal du aktivere registreringslåsen, som kræver din PIN-kode til Signal for at genregistrere dit telefonnummer hos Signal.";
+
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Skriveindikatorer";
 
 /* An explanation of the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS_FOOTER" = "Se og del, når der skrives meddelelser. Denne indstilling er valgfri og gælder for alle samtaler";
-
-/* Label for a link to more info about unidentified delivery. */
-"SETTINGS_UNIDENTIFIED_DELIVERY_LEARN_MORE" = "Lær mere";
 
 /* table section label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Forseglet afsender";
@@ -3605,6 +3602,9 @@
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. */
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "Du kan bede afsenderen om at sende beskeden igen, nu da du har en opdateret version af Signal installeret";
 
+/* Label indicating an unknown user. */
+"UNKNOWN_USER" = "Ukendt";
+
 /* Info Message when an unknown user disabled disappearing messages. */
 "UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Beskeder med tidsudløb er deaktiveret";
 
@@ -3656,23 +3656,11 @@
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Opret din PIN";
 
-/* Button to open a help document explaining more about why a PIN is required */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "Lær mere om PIN´s";
-
-/* Body text for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Din registreringskode kaldes nu en PIN, og den gør mere. Opdater den nu";
-
-/* Header for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "Registreringsnøgle = PIN";
-
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PIN´s tilføjer et ekstra lag at sikkerhed til din konto. Opret din PIN nu";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PIN-koder opbevarer krypteret information, lagret med Signal, så kun du kan få adgang til den. Din profil, indstillinger og kontakter gendannes, når du geninstallerer Signal.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Introducerer PIN´s";
-
-/* Button to open a help document explaining more about why a PIN is required */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON" = "Skal jeg oprette en PIN?";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal vil snart kræve IOS 10 eller nyere. Opdater venligst i Indstillinger -> Generelt -> Software opdatering";

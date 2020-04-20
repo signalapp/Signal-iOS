@@ -797,6 +797,12 @@
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ kommer att kunna ta bort gruppmedlemmar och göra andra till administratörer.";
 
+/* Section title of the 'members' section in conversation settings view. */
+"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "Medlemmar";
+
+/* Format for the section title of the 'members' section in conversation settings view. Embeds: {{ the number of group members }}. */
+"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ medlemmar";
+
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Tysta";
 
@@ -1041,10 +1047,7 @@
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Den här användaren kan inte läggas till i gruppen förrän de uppgraderar Signal.";
 
 /* Message for 'group full' error alert when a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "Maximum group size of 100 members reached.";
-
-/* Label for 'learn more' button when a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_LEARN_MORE" = "Learn More";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "Maximal gruppstorlek på 100 medlemmar uppnådd.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "Ogiltig avatar.";
@@ -1083,10 +1086,10 @@
 "ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "Bekräfta din PIN-kod.";
 
 /* Error indicating that attempt to disable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "Kunde inte inaktivera registreringslås.";
+"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "Det gick inte att inaktivera registreringslåset.";
 
 /* Error indicating that attempt to enable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "Kunde inte aktivera registreringslås.";
+"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "Det gick inte att aktivera registreringslåset.";
 
 /* Label for the 'enable two-factor auth' item in the settings view */
 "ENABLE_2FA_VIEW_DISABLE_2FA" = "Inaktivera";
@@ -1107,13 +1110,13 @@
 "ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "PIN-koden måste vara minst 4 siffror.";
 
 /* Indicates that user should select a 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Ange en registreringslås-PIN. Du kommer att behöva ange denna PIN nästa gång du registrerar detta telefonnummer med Signal.";
+"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Ange en registreringslås-PIN-kod. Du kommer att behöva ange denna PIN-kod nästa gång du registrerar detta telefonnummer med Signal.";
 
 /* Indicates that user has 'two factor auth pin' disabled. */
-"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "För ökad säkerhet kan du aktivera en registreringslås-PIN som kommer att krävas för att registrera detta telefonnummer med Signal igen.";
+"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "För ökad säkerhet kan du aktivera en registreringslås-PIN-kod som kommer att krävas för att registrera detta telefonnummer med Signal igen.";
 
 /* Indicates that user has 'two factor auth pin' enabled. */
-"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Registreringslås är aktiverat. Du kommer att behöva ange din PIN när du registrerar ditt telefonnummer med Signal igen.";
+"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Registreringslås är aktiverat. Du kommer att behöva ange din PIN-kod när du registrerar ditt telefonnummer med Signal igen.";
 
 /* Title for the 'enable two factor auth PIN' views. */
 "ENABLE_2FA_VIEW_TITLE" = "Registeringslås";
@@ -1623,7 +1626,7 @@
 "HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Meddelandebegäran";
 
 /* Format string when search returns no results. Embeds {{search term}} */
-"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "Inga träffar för '%@'";
+"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "Inga resultat för \"%@\"";
 
 /* Title for the conversation list's 'archive' mode. */
 "HOME_VIEW_TITLE_ARCHIVE" = "Arkiv";
@@ -1753,6 +1756,9 @@
 
 /* A keyboard command to unarchive the current coversation. */
 "KEY_COMMAND_UNARCHIVE" = "Avarkivera konversation";
+
+/* Label for the 'learn more' button. */
+"LEARN_MORE" = "Läs mer";
 
 /* Confirmation button within contextual alert */
 "LEAVE_BUTTON_TITLE" = "Lämna";
@@ -1978,9 +1984,6 @@
 
 /* A prompt for the user to accept or decline an invite to a group. Embeds {{name of user who invited you}}. */
 "MESSAGE_REQUEST_VIEW_GROUP_INVITE_PROMPT_FORMAT" = "Du blev inbjuden till denna grupp av %@. Vill du låta medlemmar i denna grupp skicka meddelanden till dig?";
-
-/* A button used to learn more about why you must share your profile. */
-"MESSAGE_REQUEST_VIEW_LEARN_MORE_BUTTON" = "Läs mer";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Vill du låta %@ skicka meddelanden till dig? De vet inte att du har sett deras meddelanden förrän du accepterar.";
@@ -2274,7 +2277,7 @@
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Aktivera behörigheter";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Meddelanden låter dig se när meddelanden kommer fram och får uppdateringar om ny konversationsaktivitet.";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "Notiser låter dig se när meddelanden kommer fram och får uppdateringar om ny konversationsaktivitet.";
 
 /* Title of the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_TITLE" = "Få meddelandet";
@@ -2489,14 +2492,17 @@
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Namnlösa album";
 
-/* Label indicating the user must use at least 6 characters */
-"PIN_CREATION_ALPHANUMERIC_HINT" = "PIN-kod måste vara minst 6 tecken";
+/* Label indicating the user must use at least 4 characters */
+"PIN_CREATION_ALPHANUMERIC_HINT" = "PIN-koden måste vara minst fyra tecken";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_CHANGING_TITLE" = "Ändra din PIN-kod";
 
+/* Title of the 'pin creation' confirmation view. */
+"PIN_CREATION_CONFIRM_TITLE" = "Bekräfta din PIN-kod";
+
 /* The explanation of confirmation in the 'pin creation' view. */
-"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Bekräfta din nya PIN-kod.";
+"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Ange PIN-kod igen";
 
 /* Button asking if the user would like to create an alphanumeric PIN */
 "PIN_CREATION_CREATE_ALPHANUMERIC" = "Skapa alfanumerisk PIN-kod";
@@ -2511,13 +2517,13 @@
 "PIN_CREATION_ERROR_TITLE" = "Det gick inte att skapa PIN-kod";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PIN-koder lägger till ett extra lager av säkerhet till ditt konto. Skriv ner din PIN-kod och förvara den på ett säkert ställe. Den kan inte återvinnas.";
+"PIN_CREATION_EXPLANATION" = "PIN-koder håller information lagrad med Signal krypterad så bara du kan komma åt den. Din profil, inställningar och kontakter återställs när du installerar om Signal.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PIN-koder matchar inte. Försök igen.";
 
-/* Label indicating the user must use at least 6 digits */
-"PIN_CREATION_NUMERIC_HINT" = "PIN-koden måste vara minst 6 siffror";
+/* Label indicating the user must use at least 4 digits */
+"PIN_CREATION_NUMERIC_HINT" = "PIN-koden måste vara minst 4 siffror";
 
 /* Label indication the user must confirm their PIN. */
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "Ange PIN-kod igen";
@@ -2526,16 +2532,13 @@
 "PIN_CREATION_PIN_PROGRESS" = "Skapar PIN-kod…";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "Du kan välja en ny PIN-kod eftersom den här enheten är registrerad. Om du glömmer din PIN-kod kan du behöva vänta 7 dagar för att registrera dig igen.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "Du kan ändra din PIN-kod så länge den här enheten är registrerad.";
 
 /* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_RECREATION_TITLE" = "Skapa en ny PIN-kod";
+"PIN_CREATION_RECREATION_TITLE" = "Ändra din PIN-kod";
 
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "Skapa din PIN-kod";
-
-/* Label indicating that the attempted PIN is too short */
-"PIN_CREATION_TOO_SHORT_ERROR" = "PIN-koden måste vara minst 6 siffror.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "För att hjälpa dig att memorera din PIN-kod ber vi dig att skriva in den regelbundet. Vi frågar mindre med tiden.";
@@ -2571,31 +2574,19 @@
 "PIN_REMINDER_TITLE" = "Ange din Signal PIN-kod";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN-koden måste vara minst 6 siffror.";
-
-/* Action text for PIN megaphone when user already has a PIN */
-"PINS_MEGAPHONE_HAS_PIN_ACTION" = "Uppdatera PIN-kod";
-
-/* Body for PIN megaphone when user already has a PIN */
-"PINS_MEGAPHONE_HAS_PIN_BODY" = "Ditt registreringslås kallas nu en PIN-kod. Uppdatera det tar några sekunder.";
-
-/* Toast indication that the user will be reminded later to update their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "Vi påminner dig senare. Uppdatera din PIN-kod blir obligatorisk om %ld dagar.";
-
-/* Title for PIN megaphone when user already has a PIN */
-"PINS_MEGAPHONE_HAS_PIN_TITLE" = "Introducerar PIN-koder";
+"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN-koden måste vara minst 4 siffror.";
 
 /* Action text for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_ACTION" = "Skapa PIN-kod";
+"PINS_MEGAPHONE_ACTION" = "Skapa PIN-kod";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_BODY" = "PIN-koder lägga till ett annat lager av säkerhet till ditt Signal-konto.";
+"PINS_MEGAPHONE_BODY" = "PIN-koder håller information som lagras med Signal krypterad";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "Vi påminner dig senare. Att skapa en PIN-kod blir obligatorisk om %ld dagar.";
+"PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Vi påminner dig senare. Att skapa en PIN-kod blir obligatorisk om %ld dagar.";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_TITLE" = "Skapa en PIN-kod";
+"PINS_MEGAPHONE_TITLE" = "Skapa en PIN-kod";
 
 /* Toast indicating that a PIN has been created. */
 "PINS_MEGAPHONE_TOAST" = "PIN-kod skapad. Du kan ändra den i inställningar.";
@@ -2611,9 +2602,6 @@
 
 /* Label indicating that the user is verified. Embeds {{the user's name or phone number}}. */
 "PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%@ är verifierad.";
-
-/* Label for a link to more information about safety numbers and verification. */
-"PRIVACY_SAFETY_NUMBERS_LEARN_MORE" = "Läs mer";
 
 /* Button that shows the 'scan with camera' view. */
 "PRIVACY_TAP_TO_SCAN" = "Tryck för att skanna";
@@ -2708,9 +2696,6 @@
 /* Description of the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION" = "Dina kontakter kommer att kunna se din Signal-profil när du startar nya konversationer och när du delar den med andra användare eller grupper.";
 
-/* Link to more information about the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Tryck här för att läsa mer. ";
-
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Spara";
 
@@ -2727,7 +2712,7 @@
 "PUSH_MANAGER_REPLY" = "Svara";
 
 /* Title of alert shown when push tokens sync job succeeds. */
-"PUSH_REGISTER_SUCCESS" = "Lyckades med omregistrering för push-notiser.";
+"PUSH_REGISTER_SUCCESS" = "Det gick att omregistrera för pushnotiser.";
 
 /* Used in table section header and alert view title contexts */
 "PUSH_REGISTER_TITLE" = "Pushnotiser";
@@ -2820,7 +2805,7 @@
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Behöver du hjälp?";
 
 /* Alert body for a forgotten SVR (V2) PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Din PIN-kod är en 6+ siffrig kod du skapade som kan vara numerisk eller alfanumerisk. Om du inte kan komma ihåg din PIN-kod måste du vänta 7 dagar för att registrera ditt konto igen.";
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Din PIN-kod är en 4+ siffrig kod du skapade som kan vara numerisk eller alfanumerisk. Om du inte kan komma ihåg din PIN-kod måste du vänta 7 dagar för att registrera ditt konto igen.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock */
 "REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Din PIN-kod är en 4+-siffrig kod du skapade som kan vara numerisk eller alfanumerisk. Om du inte kommer ihåg din PIN-kod kan du skapa en ny. Du kan registrera och använda ditt konto men du kommer att förlora några sparade inställningar som din profilinformation.";
@@ -2862,7 +2847,7 @@
 "REGISTER_RATE_LIMITING_ERROR" = "Du har provat för ofta. Vänligen vänta en minut innan du provar igen.";
 
 /* Title of alert shown when push tokens sync job fails. */
-"REGISTRATION_BODY" = "Det gick inte att registrera om för push-meddelanden.";
+"REGISTRATION_BODY" = "Det gick inte att omregistrera för pushnotiser.";
 
 /* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Landskod";
@@ -2892,7 +2877,7 @@
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Siffrorna du skrev stämmer inte med de vi skickade. Kan du dubbelkolla?";
 
 /* Error message indicating that registration failed due to a missing or incorrect 2FA PIN. */
-"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Fel PIN-kod för registreringslås";
+"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Felaktig PIN-kod för registreringslåset.";
 
 /* Message of alert indicating that users needs to enter a valid phone number to register. */
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Vänligen ange ett giltigt telefonnummer för att registrera dig.";
@@ -2922,7 +2907,7 @@
 "REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Registreringslås skyddar ditt telefonnummer ifall andra personer försöker registrera sig. Funktionen kan inaktiveras när som helst i Signal under Inställningar - Integritetsskydd.";
 
 /* Navbar title for when user is periodically prompted to enter their registration lock PIN */
-"REMINDER_2FA_NAV_TITLE" = "Ange PIN-koden till registreringslås";
+"REMINDER_2FA_NAV_TITLE" = "Ange din PIN-kod för registreringslåset";
 
 /* Alert body after wrong guess for 'two-factor auth pin' reminder activity */
 "REMINDER_2FA_WRONG_PIN_ALERT_BODY" = "Du kan ställa in en ny PIN-kod i inställningarna för Integritetsskydd.";
@@ -3276,7 +3261,7 @@
 "SETTINGS_NOTIFICATIONS" = "Notiser";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "Din PIN-kod säkerhetskopierar profilinställningar och inställningar för att spara tid när du registrerar ditt konto igen.";
+"SETTINGS_PINS_FOOTER" = "PIN-koder håller information lagrad med Signal krypterad så bara du kan komma åt den. Din profil, inställningar och kontakter återställs när du installerar om Signal.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Ändra din PIN-kod";
@@ -3308,6 +3293,21 @@
 /* An explanation of the 'read receipts' setting. */
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Visa och dela när meddelanden har lästs. Inställningen är valfri och påverkar alla konversationer.";
 
+/* Action to turn off registration lock */
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Slå av";
+
+/* Title for the alert confirming that the user wants to turn off registration lock. */
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "Slå av registreringslås?";
+
+/* Action to turn on registration lock */
+"SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Slå på";
+
+/* Body for the alert confirming that the user wants to turn on registration lock. */
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Om du glömmer din PIN-kod när du registrerar dig med Signal igen, kommer du att vara låst från ditt konto i 7 dagar. ";
+
+/* Title for the alert confirming that the user wants to turn on registration lock. */
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "Slå på registreringslås?";
+
 /* Label for re-link button. */
 "SETTINGS_RELINK_BUTTON" = "Länka igen";
 
@@ -3318,7 +3318,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Timeout för skärmlås";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Lås upp Signals skärm med Touch ID, Face ID eller din iOS-enhets lösenord. Du kan fortfarande svara på inkommande samtal och ta emot meddelanden om samtal och meddelanden medan skärmlåset är aktiverat. Med Signals aviseringsinställningar kan du anpassa informationen som visas.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Lås upp Signals skärm med Touch ID, Face ID eller din iOS-enhets lösenord. Du kan fortfarande svara på inkommande samtal och ta emot notiser om samtal och meddelanden medan skärmlåset är aktiverat. Signals inställningar för notiser låter dig anpassa informationen som visas.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Skärmlås";
@@ -3356,9 +3356,6 @@
 /* Indicates that 'two factor auth' is enabled in the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_ENABLED" = "Aktiverad";
 
-/* Footer for the 'two factor auth' section of the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_FOOTER" = "Registreringslås lägger till ett extra lager av säkerhet till ditt konto. Du kommer att bli ombedd för din Signal PIN-kod när du registrerar ditt telefonnummer med Signal. Om du glömmer din PIN-kod kommer du att vara låst från ditt konto i 7 dagar.";
-
 /* Label for the 'two factor auth' item of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_ITEM" = "Registreringslås";
 
@@ -3368,14 +3365,14 @@
 /* Title for the 'two factor auth' section of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Registreringslås";
 
+/* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "För extra säkerhet, slå på registreringslåset, vilket kräver din PIN-kod för Signal för att registrera ditt telefonnummer med Signal igen.";
+
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Skrivindikatorer";
 
 /* An explanation of the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS_FOOTER" = "Visa och dela när meddelanden skrivs. Inställningen är valfri och påverkar alla konversationer.";
-
-/* Label for a link to more info about unidentified delivery. */
-"SETTINGS_UNIDENTIFIED_DELIVERY_LEARN_MORE" = "Läs mer";
 
 /* table section label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Dold avsändare";
@@ -3605,6 +3602,9 @@
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. */
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "Du kan be avsändaren att skicka det här meddelandet igen nu när du använder en aktuell version av Signal.";
 
+/* Label indicating an unknown user. */
+"UNKNOWN_USER" = "Okänd";
+
 /* Info Message when an unknown user disabled disappearing messages. */
 "UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Försvinnande meddelanden inaktiverades.";
 
@@ -3656,23 +3656,11 @@
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Skapa din PIN-kod";
 
-/* Button to open a help document explaining more about why a PIN is required */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "Läs mer om PIN-koder";
-
-/* Body text for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Ditt registreringslås kallas nu en PIN-kod, och det gör mer. Uppdatera nu.";
-
-/* Header for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "Registreringslås = PIN-kod";
-
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PIN-koder lägger till en annan säkerhetsnivå till ditt konto. Skapa din PIN-kod nu.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PIN-koder håller information lagrad med Signal krypterad så bara du kan komma åt den. Din profil, inställningar och kontakter återställs när du installerar om Signal.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Introducerar PIN-koder";
-
-/* Button to open a help document explaining more about why a PIN is required */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON" = "Måste jag skapa en PIN-kod?";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal kommer snart att kräva iOS 10 eller senare. Vänligen uppgradera i appen Inställningar >> Allmänt >> Programuppdatering.";

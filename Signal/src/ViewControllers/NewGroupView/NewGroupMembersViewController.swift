@@ -6,7 +6,7 @@ import Foundation
 
 // TODO: Rename to NewGroupViewController; remove old view.
 @objc
-public class NewGroupViewController2: BaseGroupMemberViewController {
+public class NewGroupMembersViewController: BaseGroupMemberViewController {
 
     private var newGroupState = NewGroupState()
 
@@ -49,7 +49,7 @@ public class NewGroupViewController2: BaseGroupMemberViewController {
 
 // MARK: -
 
-extension NewGroupViewController2: GroupMemberViewDelegate {
+extension NewGroupMembersViewController: GroupMemberViewDelegate {
 
     var groupMemberViewRecipientSet: OrderedSet<PickedRecipient> {
         return newGroupState.recipientSet

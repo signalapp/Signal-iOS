@@ -368,14 +368,12 @@ NS_ASSUME_NONNULL_BEGIN
     NSMutableAttributedString *snippetText = [NSMutableAttributedString new];
     if (isBlocked) {
         // If thread is blocked, don't show a snippet or mute status.
-        [snippetText appendAttributedString:
-                         [[NSAttributedString alloc]
-                             initWithString:NSLocalizedString(@"HOME_VIEW_BLOCKED_CONVERSATION",
-                                                @"Table cell subtitle label for a conversation the user has blocked.")
-                                 attributes:@{
-                                     NSFontAttributeName : self.snippetFont.ows_semibold,
-                                     NSForegroundColorAttributeName : Theme.primaryTextColor,
-                                 }]];
+        [snippetText append:NSLocalizedString(@"HOME_VIEW_BLOCKED_CONVERSATION",
+                                @"Table cell subtitle label for a conversation the user has blocked.")
+                 attributes:@{
+                     NSFontAttributeName : self.snippetFont.ows_semibold,
+                     NSForegroundColorAttributeName : Theme.primaryTextColor,
+                 }];
     } else if (thread.hasPendingMessageRequest) {
         // If you haven't accepted the message request for this thread, don't show the latest message
 
@@ -383,63 +381,50 @@ NS_ASSUME_NONNULL_BEGIN
         if (thread.addedToGroupByName != nil) {
             NSString *addedToGroupFormat = NSLocalizedString(@"HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT",
                 @"Table cell subtitle label for a group the user has been added to. {Embeds inviter name}");
-            [snippetText appendAttributedString:[[NSAttributedString alloc]
-                                                    initWithString:[NSString stringWithFormat:addedToGroupFormat,
-                                                                             thread.addedToGroupByName]
-                                                        attributes:@{
-                                                            NSFontAttributeName : self.snippetFont.ows_semibold,
-                                                            NSForegroundColorAttributeName : Theme.primaryTextColor,
-                                                        }]];
+            [snippetText append:[NSString stringWithFormat:addedToGroupFormat, thread.addedToGroupByName]
+                     attributes:@{
+                         NSFontAttributeName : self.snippetFont.ows_semibold,
+                         NSForegroundColorAttributeName : Theme.primaryTextColor,
+                     }];
 
             // Otherwise just show a generic "message request" message
         } else {
-            [snippetText
-                appendAttributedString:
-                    [[NSAttributedString alloc]
-                        initWithString:NSLocalizedString(@"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION",
-                                           @"Table cell subtitle label for a conversation the user has not accepted.")
-                            attributes:@{
-                                NSFontAttributeName : self.snippetFont.ows_semibold,
-                                NSForegroundColorAttributeName : Theme.primaryTextColor,
-                            }]];
+            [snippetText append:NSLocalizedString(@"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION",
+                                    @"Table cell subtitle label for a conversation the user has not accepted.")
+                     attributes:@{
+                         NSFontAttributeName : self.snippetFont.ows_semibold,
+                         NSForegroundColorAttributeName : Theme.primaryTextColor,
+                     }];
         }
     } else {
         if ([thread isMuted]) {
-            [snippetText appendAttributedString:[[NSAttributedString alloc]
-                                                    initWithString:LocalizationNotNeeded(@"\ue067  ")
-                                                        attributes:@{
-                                                            NSFontAttributeName : [UIFont ows_elegantIconsFont:9.f],
-                                                            NSForegroundColorAttributeName :
-                                                                (hasUnreadMessages ? Theme.primaryTextColor
-                                                                                   : Theme.secondaryTextAndIconColor),
-                                                        }]];
+            [snippetText append:LocalizationNotNeeded(@"\ue067  ")
+                     attributes:@{
+                         NSFontAttributeName : [UIFont ows_elegantIconsFont:9.f],
+                         NSForegroundColorAttributeName :
+                             (hasUnreadMessages ? Theme.primaryTextColor : Theme.secondaryTextAndIconColor),
+                     }];
         }
         NSString *displayableText = thread.lastMessageText;
 
         if (thread.draftText.length > 0 && !hasUnreadMessages) {
             displayableText = thread.draftText;
 
-            [snippetText
-                appendAttributedString:[[NSAttributedString alloc]
-                                           initWithString:NSLocalizedString(@"HOME_VIEW_DRAFT_PREFIX",
-                                                              @"A prefix indicating that a message preview is a draft")
-                                               attributes:@{
-                                                   NSFontAttributeName : self.snippetFont.ows_italic,
-                                                   NSForegroundColorAttributeName : Theme.secondaryTextAndIconColor,
-                                               }]];
+            [snippetText append:NSLocalizedString(
+                                    @"HOME_VIEW_DRAFT_PREFIX", @"A prefix indicating that a message preview is a draft")
+                     attributes:@{
+                         NSFontAttributeName : self.snippetFont.ows_italic,
+                         NSForegroundColorAttributeName : Theme.secondaryTextAndIconColor,
+                     }];
         }
 
         if (displayableText) {
-            [snippetText appendAttributedString:[[NSAttributedString alloc]
-                                                    initWithString:displayableText
-                                                        attributes:@{
-                                                            NSFontAttributeName :
-                                                                (hasUnreadMessages ? self.snippetFont.ows_semibold
-                                                                                   : self.snippetFont),
-                                                            NSForegroundColorAttributeName :
-                                                                (hasUnreadMessages ? Theme.primaryTextColor
-                                                                                   : Theme.secondaryTextAndIconColor),
-                                                        }]];
+            [snippetText append:displayableText
+                     attributes:@{
+                         NSFontAttributeName : (hasUnreadMessages ? self.snippetFont.ows_semibold : self.snippetFont),
+                         NSForegroundColorAttributeName :
+                             (hasUnreadMessages ? Theme.primaryTextColor : Theme.secondaryTextAndIconColor),
+                     }];
         }
     }
 
@@ -476,7 +461,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSUInteger)avatarSize
 {
-    return kStandardAvatarSize;
+    // This value is now larger than kStandardAvatarSize.
+    return 48;
 }
 
 - (NSUInteger)avatarHSpacing
@@ -569,6 +555,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)updatePreview
 {
+    OWSAssertIsOnMainThread();
+
     // We use "override snippets" to show "message" search results.
     // We don't want to show typing indicators in that case.
     BOOL isShowingOverrideSnippet = self.overrideSnippet != nil;
@@ -598,7 +586,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
     OWSAssertDebug(self.thread);
 
-    if (notification.object && ![notification.object isEqual:self.thread.threadRecord.uniqueId]) {
+    if (!notification.object || ![notification.object isEqual:self.thread.threadRecord.uniqueId]) {
         return;
     }
 

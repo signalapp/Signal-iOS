@@ -27,6 +27,10 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.title = NSLocalizedString(@"SETTINGS_PRIVACY_TITLE", @"");
 
+    self.view.backgroundColor = Theme.tableViewBackgroundColor;
+    self.tableView.backgroundColor = Theme.tableViewBackgroundColor;
+    self.useThemeCellBackgroundColor = YES;
+
     [self observeNotifications];
 
     [self updateTableContents];
@@ -391,7 +395,7 @@ NS_ASSUME_NONNULL_BEGIN
                         UILabel *label = [UILabel new];
                         label.text
                             = NSLocalizedString(@"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS", @"switch label");
-                        label.font = [UIFont ows_regularFontWithSize:18.f];
+                        label.font = OWSTableItem.primaryLabelFont;
                         label.textColor = Theme.primaryTextColor;
                         [label setContentHuggingHorizontalHigh];
 
@@ -693,7 +697,7 @@ NS_ASSUME_NONNULL_BEGIN
         ActionSheetAction *turnOffAction =
             [[ActionSheetAction alloc] initWithTitle:NSLocalizedString(@"SETTINGS_REGISTRATION_LOCK_TURN_OFF",
                                                          @"Action to turn off registration lock")
-                                               style:ActionSheetActionStyleDefault
+                                               style:ActionSheetActionStyleDestructive
                                              handler:^(ActionSheetAction *action) {
                                                  [[OWS2FAManager.sharedManager disableRegistrationLockV2].then(^{
                                                      [self updateTableContents];

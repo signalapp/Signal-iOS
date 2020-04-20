@@ -555,13 +555,13 @@
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "V aplikácii Nastavenia iOS môžete povoliť prístup ku kontaktom, aby ste videli, kto z vašich kontaktov používa Signal.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Toto zresetuje aplikáciu prostredníctvom vymazania vašich správ a zrušenia vašej registrácie na serveri. Po dokončení tohoto procesu sa aplikácia zatvorí.";
+"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Toto zresetuje aplikáciu prostredníctvom vymazania vašich správ a zrušenia vašej registrácie na serveri. Po dokončení tohto procesu sa aplikácia zatvorí.";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Naozaj chcete vymazať svoj účet?";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TEXT" = "Toto zresetuje aplikáciu prostredníctvom vymazania všetkých vašich správ z tohoto zariadenia. Stále budete môcť váš telefón pripojiť, ale vymazané správy to neobnoví. Po dokončení tohoto procesu sa aplikácia zatvorí. ";
+"CONFIRM_DELETE_LINKED_DATA_TEXT" = "Toto zresetuje aplikáciu prostredníctvom vymazania všetkých vašich správ z tohto zariadenia. Stále budete môcť váš telefón pripojiť, ale vymazané správy to neobnoví. Po dokončení tohto procesu sa aplikácia zatvorí. ";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_LINKED_DATA_TITLE" = "Ste si istý/á, že chcete vymazať všetky dáta?";
@@ -796,6 +796,12 @@
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ bude môcť odstraňovať členov zo skupiny a vytvárať ďalších adminov.";
+
+/* Section title of the 'members' section in conversation settings view. */
+"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "Členovia";
+
+/* Format for the section title of the 'members' section in conversation settings view. Embeds: {{ the number of group members }}. */
+"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ členov";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Stlmiť";
@@ -1041,10 +1047,7 @@
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Tohto používateľa nie je možné pridať do skupiny, kým si neaktualizuje Signal.";
 
 /* Message for 'group full' error alert when a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "Maximum group size of 100 members reached.";
-
-/* Label for 'learn more' button when a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_LEARN_MORE" = "Learn More";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "Skupina už dosiahla maximálne možný počet 100 členov.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "Neplatný avatar.";
@@ -1677,7 +1680,7 @@
 "INFO_MESSAGE_SYNCED_THREAD" = "Môžete prijímať alebo odosielať synchronizované správy zo svojho telefónu alebo iPadu. Kvôli vašej bezpečnosti sa história konverzácii do nových pripojených zariadení neprenáša.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
-"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ je na Signale!";
+"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ používa Signal!";
 
 /* accessibility label for the button which shows the sticker picker */
 "INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "Nálepky";
@@ -1753,6 +1756,9 @@
 
 /* A keyboard command to unarchive the current coversation. */
 "KEY_COMMAND_UNARCHIVE" = "Vybrať konverzáciu z archívu";
+
+/* Label for the 'learn more' button. */
+"LEARN_MORE" = "Dozvedieť sa viac";
 
 /* Confirmation button within contextual alert */
 "LEAVE_BUTTON_TITLE" = "Opustiť";
@@ -1978,9 +1984,6 @@
 
 /* A prompt for the user to accept or decline an invite to a group. Embeds {{name of user who invited you}}. */
 "MESSAGE_REQUEST_VIEW_GROUP_INVITE_PROMPT_FORMAT" = "Do tejto skupiny vás pozval(a) %@. Chcete povoliť, aby vám členovia tejto skupiny posielali správy?";
-
-/* A button used to learn more about why you must share your profile. */
-"MESSAGE_REQUEST_VIEW_LEARN_MORE_BUTTON" = "Dozvedieť sa viac";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Chcete prijímať správy od %@? Kým s tým nebudete súhlasiť, nebude vedieť, že ste jeho/jej správy videli.";
@@ -2253,7 +2256,7 @@
 "ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Pripojiť iPhone";
 
 /* explanation to the user they're switching from linking to registering flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Ťuknutím na  “Registrovať iPad” budete môcť vytvoriť čisto nový Signal účet, alebo presunúť existujúci účet na tento iPad. Toto vypne Signal na akomkoľvek inom zariadení, ktoré je momentálne registrované prostredníctvom tohoto istého telefónneho čísla.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Ťuknutím na  “Registrovať iPad” budete môcť vytvoriť čisto nový Signal účet, alebo presunúť existujúci účet na tento iPad. Toto vypne Signal na akomkoľvek inom zariadení, ktoré je momentálne registrované prostredníctvom tohto istého telefónneho čísla.";
 
 /* explanation to the user they're switching from registering to linking flow */
 "ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Ťuknutím na “Pripojiť iPhone” budete môcť spojiť váš telefón s existujúcim účtom. Vo všeobecnosti sa to neodporúča a obmedzí to niektoré funkcie, ako uskutočňovanie hovorov.";
@@ -2265,7 +2268,7 @@
 "ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Pripojiť tento iPhone";
 
 /* warning to the user that registering an ipad is not recommended */
-"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Registrácia tohoto iPadu vypne Signal na akomkoľvek inom zariadení, ktoré je momentálne registrované prostredníctvom tohoto istého telefónneho čísla.";
+"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Registrácia tohto iPadu vypne Signal na akomkoľvek inom zariadení, ktoré je momentálne registrované prostredníctvom tohto istého telefónneho čísla.";
 
 /* warning to the user that linking a phone is not recommended */
 "ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "Pripojenie vášho iPhonu sa neodporúča a obmedzí to základnú funkcionalitu.";
@@ -2489,14 +2492,17 @@
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Nepomenovaný album";
 
-/* Label indicating the user must use at least 6 characters */
-"PIN_CREATION_ALPHANUMERIC_HINT" = "PIN musí mať aspoň 6 znakov";
+/* Label indicating the user must use at least 4 characters */
+"PIN_CREATION_ALPHANUMERIC_HINT" = "PIN musí mať aspoň 4 znaky";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_CHANGING_TITLE" = "Zmente si PIN";
 
+/* Title of the 'pin creation' confirmation view. */
+"PIN_CREATION_CONFIRM_TITLE" = "Potvrďte svoj PIN";
+
 /* The explanation of confirmation in the 'pin creation' view. */
-"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Potvrďte váš nový PIN.";
+"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Znovu zadajte svoj PIN.";
 
 /* Button asking if the user would like to create an alphanumeric PIN */
 "PIN_CREATION_CREATE_ALPHANUMERIC" = "Vytvoriť alfanumerický PIN";
@@ -2511,13 +2517,13 @@
 "PIN_CREATION_ERROR_TITLE" = "Vytvorenie PINu zlyhalo";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PIN kódy pridávajú k vášmu účtu ďalšiu vrstvu zabezpečenia. Zapíšte si svoj PIN kód a uchovávajte ho na bezpečnom mieste. Nie je totiž možné ho obnoviť.";
+"PIN_CREATION_EXPLANATION" = "PIN kódy udržiavajú informácie uložené v Signale zašifrované, aby ste k nim mali prístup iba vy. Váš profil, vaše nastavenia a kontakty sa po opätovnej inštalácii Signalu obnovia.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PINy sa nezhodujú. Skúste to znovu.";
 
-/* Label indicating the user must use at least 6 digits */
-"PIN_CREATION_NUMERIC_HINT" = "PIN musí mať aspoň 6 číslic";
+/* Label indicating the user must use at least 4 digits */
+"PIN_CREATION_NUMERIC_HINT" = "PIN musí mať aspoň 4 číslice";
 
 /* Label indication the user must confirm their PIN. */
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "Znovu zadajte PIN";
@@ -2526,16 +2532,13 @@
 "PIN_CREATION_PIN_PROGRESS" = "Vytvára sa PIN kód...";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "Môžete si zvoliť nový PIN, pretože toto zariadenie je zaregistrované. Ak svoj PIN zabudnete, budete možno musieť čakať 7 dní na opätovnú registráciu.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "PIN si môžete zmeniť, pokiaľ je toto zariadenie registrované.";
 
 /* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_RECREATION_TITLE" = "Vytvoriť nový PIN";
+"PIN_CREATION_RECREATION_TITLE" = "Zmente si PIN";
 
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "Vytvorte si PIN";
-
-/* Label indicating that the attempted PIN is too short */
-"PIN_CREATION_TOO_SHORT_ERROR" = "PIN musí mať aspoň 6 číslic.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Aby sme vám pomohli zapamätať si váš PIN, pravidelne vás budeme žiadať o jeho zadanie. Postupom času budeme o to žiadať menej.";
@@ -2571,31 +2574,19 @@
 "PIN_REMINDER_TITLE" = "Zadajte svoj PIN pre Signal";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN musí mať aspoň 6 číslic.";
-
-/* Action text for PIN megaphone when user already has a PIN */
-"PINS_MEGAPHONE_HAS_PIN_ACTION" = "Aktualizovať PIN kód";
-
-/* Body for PIN megaphone when user already has a PIN */
-"PINS_MEGAPHONE_HAS_PIN_BODY" = "Váš Registračný zámok sa teraz volá PIN kód. Jeho aktualizácia vám zaberie pár sekúnd.";
-
-/* Toast indication that the user will be reminded later to update their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "Pripomenieme vám to neskôr. Svoj PIN si budete musieť povinne aktualizovať o %ld dní.";
-
-/* Title for PIN megaphone when user already has a PIN */
-"PINS_MEGAPHONE_HAS_PIN_TITLE" = "Predstavujeme PINy";
+"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN musí mať aspoň 4 číslice.";
 
 /* Action text for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_ACTION" = "Vytvoriť PIN";
+"PINS_MEGAPHONE_ACTION" = "Vytvoriť PIN";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_BODY" = "PIN kódy pridajú k vášmu účtu Signal ďalšiu vrstvu zabezpečenia.";
+"PINS_MEGAPHONE_BODY" = "PIN kódy udržiavajú informácie uložené v Signale zašifrované";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "Pripomenieme vám to neskôr. PIN si budete musieť povinne vytvoriť o %ld dní.";
+"PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Pripomenieme vám to neskôr. PIN si budete musieť povinne vytvoriť o %ld dní.";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_TITLE" = "Vytvoriť PIN";
+"PINS_MEGAPHONE_TITLE" = "Vytvoriť si PIN";
 
 /* Toast indicating that a PIN has been created. */
 "PINS_MEGAPHONE_TOAST" = "PIN kód sa vytvoril. Môžete ho zmeniť v nastaveniach.";
@@ -2611,9 +2602,6 @@
 
 /* Label indicating that the user is verified. Embeds {{the user's name or phone number}}. */
 "PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%@ je overený/á.";
-
-/* Label for a link to more information about safety numbers and verification. */
-"PRIVACY_SAFETY_NUMBERS_LEARN_MORE" = "Dozvedieť sa viac";
 
 /* Button that shows the 'scan with camera' view. */
 "PRIVACY_TAP_TO_SCAN" = "Ťuknite pre skenovanie";
@@ -2707,9 +2695,6 @@
 
 /* Description of the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION" = "Váš profil Signal budú vidieť vaše kontakty, keď začnete nové konverzácie a keď ho budete zdieľať s inými používateľmi a skupinami.";
-
-/* Link to more information about the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Ťuknite pre viac informácii.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Uložiť";
@@ -2820,7 +2805,7 @@
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Potrebujete pomoc?";
 
 /* Alert body for a forgotten SVR (V2) PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Váš PIN je 6 alebo viacmiestny kód, ktorý ste si vytvorili a môže pozostávať z číselných alebo alfanumerických znakov. Ak si naň nespomeniete, budete musieť počkať 7 dní na opätovnú registráciu vášho účtu.";
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Váš PIN je 4 alebo viacmiestny kód, ktorý ste si vytvorili a môže pozostávať z číselných alebo alfanumerických znakov. Ak si naň nespomeniete, budete musieť počkať 7 dní na opätovnú registráciu vášho účtu.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock */
 "REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Váš PIN je 4 alebo viacmiestny kód, ktorý ste si vytvorili a môže pozostávať z číselných alebo alfanumerických znakov. Ak si na svoj PIN nedokážete spomenúť, môžete si vytvoriť nový. Môžete sa zaregistrovať a používať svoj účet, ale prídete o niektoré uložené nastavenia, ako sú informácie o vašom profile.";
@@ -3033,7 +3018,7 @@
 "SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "Dokončiť pripájanie";
 
 /* header text before the user can link this device */
-"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Pre pripojenie tohoto iPadu k vášmu účtu spustite Signal na vašom telefóne.";
+"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Pre pripojenie tohto iPadu k vášmu účtu spustite Signal na vašom telefóne.";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
 "SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "Nemám Signal na svojom telefóne…";
@@ -3045,7 +3030,7 @@
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Inštalovať Signal na váš telefón";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Ťuknite na váš profilový obrázok, aby ste otvorili nastavenia Signal vo vašom telefóne. Potom na \"Pripojené zariadenia\" a \"Pripojiť nové zariadenie\", pre naskenovanie tohoto kódu pomocou vášho telefónu:";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Ťuknite na váš profilový obrázok, aby ste otvorili nastavenia Signal vo vašom telefóne. Potom na \"Pripojené zariadenia\" a \"Pripojiť nové zariadenie\", pre naskenovanie tohto kódu pomocou vášho telefónu:";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
 "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Získajte tu pomoc s pripojením vášho iPadu";
@@ -3276,7 +3261,7 @@
 "SETTINGS_NOTIFICATIONS" = "Upozornenia";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "PIN kód vám zálohuje nastavenia profilu a predvoľby, aby ste pri opätovnej registrácii vášho účtu ušetrili čas.";
+"SETTINGS_PINS_FOOTER" = "PIN kódy udržiavajú informácie uložené v Signale zašifrované, aby ste k nim mali prístup iba vy. Váš profil, vaše nastavenia a kontakty sa po opätovnej inštalácii Signalu obnovia.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Zmente si PIN";
@@ -3307,6 +3292,21 @@
 
 /* An explanation of the 'read receipts' setting. */
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Zistite a zdieľajte, keď si niekto prečíta správu. Toto nastavenie je voliteľné a vzťahuje sa na všetky konverzácie.";
+
+/* Action to turn off registration lock */
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Vypnúť";
+
+/* Title for the alert confirming that the user wants to turn off registration lock. */
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "Vypnúť registračný zámok?";
+
+/* Action to turn on registration lock */
+"SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Zapnúť";
+
+/* Body for the alert confirming that the user wants to turn on registration lock. */
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Ak svoj PIN pri opätovnej registrácii do Signalu zabudnete, váš účet sa na 7 dní uzamkne.";
+
+/* Title for the alert confirming that the user wants to turn on registration lock. */
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "Zapnúť registračný zámok?";
 
 /* Label for re-link button. */
 "SETTINGS_RELINK_BUTTON" = "Opätovne pripojiť";
@@ -3356,9 +3356,6 @@
 /* Indicates that 'two factor auth' is enabled in the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_ENABLED" = "Povolené";
 
-/* Footer for the 'two factor auth' section of the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_FOOTER" = "Registračný zámok pridáva k vášmu účtu ďalšiu vrstvu zabezpečenia. Budete oň požiadaný/á, keď si v Signale zaregistrujete svoje telefónne číslo. Ak svoj PIN zabudnete, váš účet sa na 7 dní uzamkne.";
-
 /* Label for the 'two factor auth' item of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_ITEM" = "Registračný zámok";
 
@@ -3368,14 +3365,14 @@
 /* Title for the 'two factor auth' section of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Registračný zámok";
 
+/* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Pre zvýšenú bezpečnosť povoľte registračný zámok, ktorý vás pri opätovnej registrácii tohto telefónneho čísla do Signalu požiada o váš PIN.";
+
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Indikátory písania";
 
 /* An explanation of the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS_FOOTER" = "Zistite a zdieľajte, keď niekto píše správu. Toto nastavenie je voliteľné a vzťahuje sa na všetky konverzácie.";
-
-/* Label for a link to more info about unidentified delivery. */
-"SETTINGS_UNIDENTIFIED_DELIVERY_LEARN_MORE" = "Dozvedieť sa viac";
 
 /* table section label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Šifrovaný odosielateľ";
@@ -3576,7 +3573,7 @@
 "UNARCHIVE_ACTION" = "Vybrať z archívu";
 
 /* Message shown in conversation view that offers to block an unknown user. */
-"UNKNOWN_CONTACT_BLOCK_OFFER" = "Používateľ nie je vo vašich kontaktoch. Chcete tohoto používateľa blokovať?";
+"UNKNOWN_CONTACT_BLOCK_OFFER" = "Používateľ nie je vo vašich kontaktoch. Chcete tohto používateľa blokovať?";
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
 "UNKNOWN_CONTACT_NAME" = "Neznámy kontakt";
@@ -3604,6 +3601,9 @@
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. */
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "Teraz môžete požiadať odosielateľa, aby znovu odoslal túto správu, keďže používate aktuálnu verziu Signalu.";
+
+/* Label indicating an unknown user. */
+"UNKNOWN_USER" = "Neznámy";
 
 /* Info Message when an unknown user disabled disappearing messages. */
 "UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Miznúce správy boli vypnuté.";
@@ -3656,23 +3656,11 @@
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Vytvorte si PIN";
 
-/* Button to open a help document explaining more about why a PIN is required */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "Dozvedieť sa viac o PINoch";
-
-/* Body text for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Váš Registračný zámok sa teraz volá PIN kód a dokáže viac. Aktualizujte ho teraz.";
-
-/* Header for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "Registračný zámok = PIN";
-
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PIN kódy pridávajú k vášmu účtu ďalšiu vrstvu zabezpečenia. Vytvorte si PIN teraz.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PIN kódy udržiavajú informácie uložené v Signale zašifrované, aby ste k nim mali prístup iba vy. Váš profil, vaše nastavenia a kontakty sa po opätovnej inštalácii Signalu obnovia.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Predstavujeme PINy";
-
-/* Button to open a help document explaining more about why a PIN is required */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON" = "Musím si vytvoriť PIN?";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal si čoskoro bude vyžadovať iOS 10 alebo novší. Prosím, vykonajte aktualizáciu v aplikácia Nastavenia >> Všeobecné >> Aktualizácia softvéru.";

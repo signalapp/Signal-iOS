@@ -170,8 +170,10 @@ NS_ASSUME_NONNULL_BEGIN
         CGFloat scaling = (self.diameter / (CGFloat)kStandardAvatarSize) * (28 / assetWidthPixels);
 
         CGSize iconSize = CGSizeScale(icon.size, scaling);
-        image =
-            [OWSAvatarBuilder avatarImageWithIcon:icon iconSize:iconSize backgroundColor:color diameter:self.diameter];
+        image = [OWSAvatarBuilder avatarImageWithIcon:icon
+                                             iconSize:iconSize
+                                      backgroundColor:color
+                                             diameter:self.diameter];
     } else {
         image = [OWSAvatarBuilder avatarImageWithInitials:self.contactInitials
                                           backgroundColor:color

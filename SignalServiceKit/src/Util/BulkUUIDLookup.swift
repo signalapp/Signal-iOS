@@ -117,6 +117,10 @@ public class BulkUUIDLookup: NSObject {
         let phoneNumbers = phoneNumberQueue.filter { self.shouldUpdatePhoneNumber($0) }
         phoneNumberQueue.removeAll()
 
+        guard !phoneNumbers.isEmpty else {
+            return
+        }
+
         // De-bounce.
 
         Logger.verbose("Updating: \(phoneNumbers)")

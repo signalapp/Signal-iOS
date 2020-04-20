@@ -202,10 +202,10 @@ public class PinSetupViewController: OWSViewController {
         let explanationText: String
 
         switch mode {
-        case .creating, .changing:
+        case .creating:
             explanationText = NSLocalizedString("PIN_CREATION_EXPLANATION",
                                                 comment: "The explanation in the 'pin creation' view.")
-        case .recreating:
+        case .recreating, .changing:
             explanationText = NSLocalizedString("PIN_CREATION_RECREATION_EXPLANATION",
                                                 comment: "The re-creation explanation in the 'pin creation' view.")
         case .confirming:

@@ -53,7 +53,7 @@ class ComposeViewController: OWSViewController {
 
     func showNewGroupUI() {
         let newGroupView: UIViewController = (RemoteConfig.groupsV2CreateGroups
-            ? NewGroupViewController2()
+            ? NewGroupMembersViewController()
             : NewGroupViewController())
         navigationController?.pushViewController(newGroupView, animated: true)
     }

@@ -126,11 +126,6 @@ public class ConversationStyle: NSObject {
         // negative value.
         textInsetBottom = max(0, round(baseFontOffset - abs(messageTextFont.descender)))
 
-        if _isDebugAssertConfiguration(), UIFont.ows_dynamicTypeBody.pointSize == 17 {
-            assert(textInsetTop == 7)
-            assert(textInsetBottom == 7)
-        }
-
         textInsetHorizontal = 12
 
         lastTextLineAxis = CGFloat(round(baseFontOffset + messageTextFont.capHeight * 0.5))

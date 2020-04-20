@@ -145,7 +145,7 @@ NS_ASSUME_NONNULL_BEGIN
     firstSectionHeader.userInteractionEnabled = YES;
     [firstSectionHeader
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(headerWasTapped:)]];
-    firstSectionHeader.backgroundColor = [Theme backgroundColor];
+    firstSectionHeader.backgroundColor = Theme.backgroundColor;
     UIView *threadInfoView = [UIView new];
     [firstSectionHeader addSubview:threadInfoView];
     [threadInfoView autoPinWidthToSuperviewWithMargin:16.f];

@@ -797,6 +797,12 @@
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ do të jetë në gjendje të heqë anëtarë grupi dhe të bëjë të tjerë përgjegjës.";
 
+/* Section title of the 'members' section in conversation settings view. */
+"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "Anëtarë";
+
+/* Format for the section title of the 'members' section in conversation settings view. Embeds: {{ the number of group members }}. */
+"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "Anëtarë të %@";
+
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Heshtim";
 
@@ -1041,10 +1047,7 @@
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Ky përdorues s’mund të shtohet te grupi, para se të përmirësojë Signal-in.";
 
 /* Message for 'group full' error alert when a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "Maximum group size of 100 members reached.";
-
-/* Label for 'learn more' button when a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_LEARN_MORE" = "Learn More";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "U mbërrit në madhësinë maksimum 100 anëtarë për grup.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "Avatar i pavlefshëm.";
@@ -1754,6 +1757,9 @@
 /* A keyboard command to unarchive the current coversation. */
 "KEY_COMMAND_UNARCHIVE" = "Çarkivoje Bisedën";
 
+/* Label for the 'learn more' button. */
+"LEARN_MORE" = "Mësoni Më Tepër";
+
 /* Confirmation button within contextual alert */
 "LEAVE_BUTTON_TITLE" = "Braktise";
 
@@ -1978,9 +1984,6 @@
 
 /* A prompt for the user to accept or decline an invite to a group. Embeds {{name of user who invited you}}. */
 "MESSAGE_REQUEST_VIEW_GROUP_INVITE_PROMPT_FORMAT" = "Qetë ftuar në këtë grup nga %@. Doni t’i lini anëtarët e këtij grupi t’ju dërgojnë mesazhe?";
-
-/* A button used to learn more about why you must share your profile. */
-"MESSAGE_REQUEST_VIEW_LEARN_MORE_BUTTON" = "Mësoni Më Tepër";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Doni të lejohet %@ t’ju dërgojë mesazh? S’do ta dijë se e keni parë mesazhin e tij, deri sa të pranoni.";
@@ -2489,14 +2492,17 @@
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Album Pa Emër";
 
-/* Label indicating the user must use at least 6 characters */
-"PIN_CREATION_ALPHANUMERIC_HINT" = "PIN-i duhet të jetë të paktën 6 shenja";
+/* Label indicating the user must use at least 4 characters */
+"PIN_CREATION_ALPHANUMERIC_HINT" = "PIN-i duhet të jetë të paktën 4 shenja";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_CHANGING_TITLE" = "Ndryshoni PIN-in tuaj";
 
+/* Title of the 'pin creation' confirmation view. */
+"PIN_CREATION_CONFIRM_TITLE" = "Ripohoni PIN-in tuaj";
+
 /* The explanation of confirmation in the 'pin creation' view. */
-"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Ripohoni PIN-in tuaj të ri.";
+"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Rijepni PIN-in tuaj.";
 
 /* Button asking if the user would like to create an alphanumeric PIN */
 "PIN_CREATION_CREATE_ALPHANUMERIC" = "Krijoni PIN Alfanumerik";
@@ -2511,13 +2517,13 @@
 "PIN_CREATION_ERROR_TITLE" = "Krijimi i PIN-it Dështoi";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PIN-et i shtojnë llogarisë tuaj një shtresë ekstra sigure. Shkruajeni PIN-in tuaj diku dhe mbajeni në një vend të sigurt. S’mund ta rimerrni.";
+"PIN_CREATION_EXPLANATION" = "PIN-et i mbajnë të fshehtëzuara të dhëna e depozituara me Signal, që kështu të mund t’i përdorni. Profili, rregullimet dhe kontaktet tuaja do të rikthehen, kur të riinstaloni Signal-in.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PIN-et s’përputhen. Riprovoni.";
 
-/* Label indicating the user must use at least 6 digits */
-"PIN_CREATION_NUMERIC_HINT" = "PIN-i duhet të jetë të paktën 6 shifra";
+/* Label indicating the user must use at least 4 digits */
+"PIN_CREATION_NUMERIC_HINT" = "PIN-i duhet të jetë të paktën 4 shifra";
 
 /* Label indication the user must confirm their PIN. */
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "Rijepeni PIN-in";
@@ -2526,16 +2532,13 @@
 "PIN_CREATION_PIN_PROGRESS" = "Po krijohet PIN-i…";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "Mund të zgjidhni një PIN të ri, ngaqë kjo pajisje është e regjistruar. Nëse harroni PIN-in tuaj, mund të duhet të prisni 7 ditë, para se ta regjistroni sërish.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "Mundeni ta ndryshoni PIN-in tuaj, sa kohë që kjo pajisje është e regjistruar.";
 
 /* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_RECREATION_TITLE" = "Krijoni një PIN të ri";
+"PIN_CREATION_RECREATION_TITLE" = "Ndryshoni PIN-in tuaj";
 
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "Krijoni PIN-in tuaj";
-
-/* Label indicating that the attempted PIN is too short */
-"PIN_CREATION_TOO_SHORT_ERROR" = "PIN-i duhet të jetë të paktën 6 shifra.";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Për t’ju ndihmuar ta mbani mend PIN-in tuaj, do t’ju kërkojmë periodikisht ta jepni. Me kalimin e kohës, do t’jua kërkojmë më rrallë.";
@@ -2571,31 +2574,19 @@
 "PIN_REMINDER_TITLE" = "Jepni PIN-in tuaj për Signal-in";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN-i duhet të jetë të paktën 6 shifra.";
-
-/* Action text for PIN megaphone when user already has a PIN */
-"PINS_MEGAPHONE_HAS_PIN_ACTION" = "Përditësoni PIN-in";
-
-/* Body for PIN megaphone when user already has a PIN */
-"PINS_MEGAPHONE_HAS_PIN_BODY" = "Kyçi juaj i Regjistrimit tani quhet PIN. Përditësimi ha vetëm pak sekonda.";
-
-/* Toast indication that the user will be reminded later to update their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_HAS_PIN_SNOOZE_TOAST_FORMAT" = "Do t’jua kujtojmë më vonë. Përditësimi i PIN-it tuaj do të jetë i detyrueshëm pas %ld ditësh.";
-
-/* Title for PIN megaphone when user already has a PIN */
-"PINS_MEGAPHONE_HAS_PIN_TITLE" = "Ju paraqesim PIN-et";
+"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN-i duhet të jetë të paktën 4 shifra.";
 
 /* Action text for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_ACTION" = "Krijoni PIN";
+"PINS_MEGAPHONE_ACTION" = "Krijoni PIN";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_BODY" = "PIN-et i shtojnë një tjetër shtresë sigurie llogarisë tuaj Signal.";
+"PINS_MEGAPHONE_BODY" = "PIN-et i mbajnë të fshehtëzuara të dhënat që depozitohen me Signal-in";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_NO_PIN_SNOOZE_TOAST_FORMAT" = "Do t’jua kujtojmë më vonë. Krijimi i një PIN-i do të jetë i detyrueshëm pas %ld ditësh.";
+"PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Do t’jua kujtojmë më vonë. Krijimi i një PIN-i do të jetë i detyrueshëm pas %ld ditësh.";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_NO_PIN_TITLE" = "Krijoni PIN";
+"PINS_MEGAPHONE_TITLE" = "Krijoni PIN";
 
 /* Toast indicating that a PIN has been created. */
 "PINS_MEGAPHONE_TOAST" = "PIN-i u krijua. Mund ta ndryshoni që nga rregullimet.";
@@ -2611,9 +2602,6 @@
 
 /* Label indicating that the user is verified. Embeds {{the user's name or phone number}}. */
 "PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%@ është i verifikuar.";
-
-/* Label for a link to more information about safety numbers and verification. */
-"PRIVACY_SAFETY_NUMBERS_LEARN_MORE" = "Mësoni Më Tepër";
 
 /* Button that shows the 'scan with camera' view. */
 "PRIVACY_TAP_TO_SCAN" = "Prekeni për Skanim";
@@ -2707,9 +2695,6 @@
 
 /* Description of the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION" = "Profili juaj për Signal-in do të jetë i dukshëm për kontaktet tuaj, kur filloni biseda të reja, dhe kur e jepni për përdorues dhe grupe të tjerë.";
-
-/* Link to more information about the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION_LINK" = "Prekni këtu që të mësoni më tepër.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Ruaje";
@@ -2820,7 +2805,7 @@
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Ju Duhet Ndihmë?";
 
 /* Alert body for a forgotten SVR (V2) PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "PIN-i juaj është një kod me 6 ose më shumë shifra që krijuat dhe që mund të jetë numerik ose alfanumerik. Nëse s’e mbani mend PIN-in tuaj, do t’ju duhet të prisni 7 ditë që të riregjistroni llogarinë tuaj.";
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "PIN-i juaj është një kod me 4 ose më shumë shifra, që mund të jetë numerik ose alfanumerik. Nëse s’e mbani mend PIN-in tuaj, do t’ju duhet të prisni 7 ditë që të riregjistroni llogarinë tuaj.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock */
 "REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "PIN-i juaj është një kod me 4 ose më tepër shifra që krijuat dhe që mund të jetë numerik ose alfanumerik. Nëse s’mbani mend PIN-in tuaj, mund të krijoni një të ri. Mund të regjistroni dhe përdorni llogarinë tuaj, por do të humbni disa nga rregullimet e ruajtura, bie fjala, të dhënat e profilit tuaj.";
@@ -3276,7 +3261,7 @@
 "SETTINGS_NOTIFICATIONS" = "Njoftime";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "PIN-i juaj shërben për kopjeruajtjen e rregullimeve dhe parapëlqimeve të profilit, për t’ju kursyer kohë, kur riregjistroni llogarinë tuaj.";
+"SETTINGS_PINS_FOOTER" = "PIN-et i mbajnë të fshehtëzuara të dhëna e depozituara me Signal, që kështu të mund t’i përdorni. Profili, rregullimet dhe kontaktet tuaja do të rikthehen, kur të riinstaloni Signal-in.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Ndryshoni PIN-in tuaj";
@@ -3307,6 +3292,21 @@
 
 /* An explanation of the 'read receipts' setting. */
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Shihni dhe ndajeni me të tjerët, pasi të jenë lexuar mesazhet. Ky rregullim është opsional dhe vlen për krejt bisedat.";
+
+/* Action to turn off registration lock */
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Çaktivizoje";
+
+/* Title for the alert confirming that the user wants to turn off registration lock. */
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "Të çaktivizohet Kyçja e Regjistrimeve?";
+
+/* Action to turn on registration lock */
+"SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Aktivizoje";
+
+/* Body for the alert confirming that the user wants to turn on registration lock. */
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Nëse harroni PIN-in tuaj të Signal-it, kur riregjistroheni në Signal, do të liheni jashtë llogarisë tuaj për 7 ditë.";
+
+/* Title for the alert confirming that the user wants to turn on registration lock. */
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "Të aktivizohet Kyçja e Regjistrimeve?";
 
 /* Label for re-link button. */
 "SETTINGS_RELINK_BUTTON" = "Rilidheni";
@@ -3356,9 +3356,6 @@
 /* Indicates that 'two factor auth' is enabled in the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_ENABLED" = "I aktivizuar";
 
-/* Footer for the 'two factor auth' section of the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_FOOTER" = "Kyçja e Regjistrimit shton te llogaria juaj një shtresë ekstra sigurie. Do t’ju kërkohet PIN-i juaj i Signal-it kur të regjistroni numrin tuaj të telefonit me Signal-in. Nëse harroni PIN-in tuaj, do të liheni jashtë llogarisë tuaj për 7 ditë.";
-
 /* Label for the 'two factor auth' item of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_ITEM" = "Kyçje Regjistrimesh";
 
@@ -3368,14 +3365,14 @@
 /* Title for the 'two factor auth' section of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Kyçje Regjistrimesh";
 
+/* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Për siguri më të madhe, aktivizoni kyçje regjistrimesh, çka do të kërkojë PIN-in tuaj Signal për të riregjistruar numrin tuaj të telefonit me Signal-in.";
+
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Indikatorë Shtypjeje ";
 
 /* An explanation of the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS_FOOTER" = "Shihni kur shtypen mesazhe. Ky rregullim është opsionale dhe vlen për krejt bisedat.";
-
-/* Label for a link to more info about unidentified delivery. */
-"SETTINGS_UNIDENTIFIED_DELIVERY_LEARN_MORE" = "Mësoni Më Tepër";
 
 /* table section label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Dërgues i Vulosur";
@@ -3605,6 +3602,9 @@
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. */
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "Mund t’i kërkoni dërguesit ta ridërgojë këtë mesazh tani që përdorni një version të përditësuar të Signal-it.";
 
+/* Label indicating an unknown user. */
+"UNKNOWN_USER" = "I panjohur";
+
 /* Info Message when an unknown user disabled disappearing messages. */
 "UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "U çaktivizuan mesazhe që zhduken.";
 
@@ -3656,23 +3656,11 @@
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Krijoni PIN-in tuaj";
 
-/* Button to open a help document explaining more about why a PIN is required */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_LEARN_MORE_BUTTON" = "Mësoni më tepër rreth PIN-ësh";
-
-/* Body text for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_DESCRIPTION" = "Kyçi juaj i Regjistrimit tani quhet PIN, dhe bën edhe më tepër se aq. Përditësojeni që tani.";
-
-/* Header for PINs migration splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_MIGRATION_TITLE" = "Kyçje Regjistrimi = PIN";
-
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PIN-et i shtojnë llogarisë tuaj një tjetër shtresë sigurie. Krijoni tani PIN-in tuaj.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PIN-et i mbajnë të fshehtëzuara të dhëna e depozituara me Signal, që kështu të mund t’i përdorni. Profili, rregullimet dhe kontaktet tuaja do të rikthehen, kur të riinstaloni Signal-in.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Ju paraqesim PIN-et";
-
-/* Button to open a help document explaining more about why a PIN is required */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_WHY_BUTTON" = "Më duhet të krijoj një PIN?";
 
 /* Message for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_MESSAGE" = "Signal-i së shpejti do të dojë iOS 10 ose të mëvonshëm. Ju lutemi, përmirësojeni që nga aplikacioni Rregullime >> Të përgjithshme >> Përditësim Software-i.";

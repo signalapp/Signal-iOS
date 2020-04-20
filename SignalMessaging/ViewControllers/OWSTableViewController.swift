@@ -7,11 +7,23 @@ import Foundation
 @objc
 public extension OWSTableItem {
 
-    private static var iconSpacing: CGFloat {
-        return 12
+    static var primaryLabelFont: UIFont {
+        return UIFont.ows_dynamicTypeCalloutClamped
+    }
+
+    static var accessoryLabelFont: UIFont {
+        return UIFont.ows_dynamicTypeCalloutClamped
+    }
+
+    static var iconSpacing: CGFloat {
+        return 16
     }
 
     static func buildCell(name: String, iconView: UIView) -> UITableViewCell {
+        return buildCell(name: name, iconView: iconView, iconSpacing: self.iconSpacing)
+    }
+
+    static func buildCell(name: String, iconView: UIView, iconSpacing: CGFloat) -> UITableViewCell {
         assert(name.count > 0)
 
         let cell = OWSTableItem.newCell()
@@ -21,11 +33,11 @@ public extension OWSTableItem {
         let rowLabel = UILabel()
         rowLabel.text = name
         rowLabel.textColor = Theme.primaryTextColor
-        rowLabel.font = .ows_dynamicTypeBody
+        rowLabel.font = OWSTableItem.primaryLabelFont
         rowLabel.lineBreakMode = .byTruncatingTail
 
         let contentRow = UIStackView(arrangedSubviews: [ iconView, rowLabel ])
-        contentRow.spacing = self.iconSpacing
+        contentRow.spacing = iconSpacing
 
         cell.contentView.addSubview(contentRow)
         contentRow.autoPinEdgesToSuperviewMargins()
@@ -105,7 +117,7 @@ public extension OWSTableItem {
         let nameLabel = UILabel()
         nameLabel.text = itemName
         nameLabel.textColor = Theme.primaryTextColor
-        nameLabel.font = .ows_dynamicTypeBody
+        nameLabel.font = OWSTableItem.primaryLabelFont
         nameLabel.lineBreakMode = .byTruncatingTail
         nameLabel.setCompressionResistanceHorizontalLow()
 
@@ -120,7 +132,7 @@ public extension OWSTableItem {
             let accessoryLabel = UILabel()
             accessoryLabel.text = accessoryText
             accessoryLabel.textColor = Theme.secondaryTextAndIconColor
-            accessoryLabel.font = .ows_dynamicTypeBody
+            accessoryLabel.font = OWSTableItem.accessoryLabelFont
             accessoryLabel.lineBreakMode = .byTruncatingTail
             arrangedSubviews += [ UIView.hStretchingSpacer(), accessoryLabel ]
         }
@@ -134,5 +146,32 @@ public extension OWSTableItem {
         cell.accessibilityIdentifier = accessibilityIdentifier
 
         return cell
+    }
+
+    static func buildIconInCircleView(icon: ThemeIcon,
+                                      innerIconSize: CGFloat = 24) -> UIView {
+        return buildIconInCircleView(icon: icon,
+                                     innerIconSize: innerIconSize,
+                                     iconTintColor: .ows_accentBlue)
+    }
+
+    static func buildIconInCircleView(icon: ThemeIcon,
+                                      innerIconSize: CGFloat = 24,
+                                      iconTintColor: UIColor? = nil) -> UIView {
+        let iconView = OWSTableItem.imageView(forIcon: icon, iconSize: innerIconSize)
+        if let iconTintColor = iconTintColor {
+            iconView.tintColor = iconTintColor
+        } else {
+            iconView.tintColor = .ows_accentBlue
+        }
+        let iconWrapper = UIView.container()
+        iconWrapper.addSubview(iconView)
+        iconView.autoCenterInSuperview()
+        iconWrapper.backgroundColor = Theme.isDarkThemeEnabled ? UIColor.ows_gray80 : Theme.washColor
+        iconWrapper.layer.cornerRadius = CGFloat(kStandardAvatarSize) * 0.5
+        iconWrapper.autoSetDimensions(to: CGSize(square: CGFloat(kStandardAvatarSize)))
+        iconWrapper.setCompressionResistanceHigh()
+        iconWrapper.setContentHuggingHigh()
+        return iconWrapper
     }
 }

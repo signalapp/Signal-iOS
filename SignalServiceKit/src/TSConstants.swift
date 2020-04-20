@@ -181,10 +181,8 @@ private class TSConstantsProduction: TSConstantsProtocol {
 
     public let applicationGroup = "group.org.whispersystems.signal.group"
 
-    // GroupsV2 TODO: This is for staging. We need the production values.
-    //
     // We need to discard all profile key credentials if these values ever change.
-    // See: VersionedProfiles.clearProfileKeyCredentials(...)
+    // See: GroupsV2Impl.verifyServerPublicParams(...)
     public let serverPublicParamsBase64 = "DDZM414H2QbA3brAa6NCMaZIN1ZRY+B46PWDvw4LmwrY6CEQArF4OF/yHdBL7HW/JPgjjauzJau+cpikvqH3dDZQ7KFKgx/MGsbw49ATUj6fhBXko9iyPwVwC3+kjNY6PGZuSoYpD4SJJIgzTJ8Gnuk23tSbX1aQWAWNlc8WiyWIHm/A+22w/D1zQmGuFCEGImU4blMK+HhNfC7jM5leBQ=="
 }
 
@@ -225,6 +223,6 @@ private class TSConstantsStaging: TSConstantsProtocol {
     public let applicationGroup = "group.org.whispersystems.signal.group.staging"
 
     // We need to discard all profile key credentials if these values ever change.
-    // See: VersionedProfiles.clearProfileKeyCredentials(...)
+    // See: GroupsV2Impl.verifyServerPublicParams(...)
     public let serverPublicParamsBase64 = "ZFt6K+dFE23BsKZMqTroFbbxOXDhDHXcIeCFlWeOIjXeNPrpm9pGwwcQ1AiENlEM1xOaQ2EW48s++quhVv1TEkKormac7WM6Z01kWn/FH2zVcXJxQmsKfYWmAa6lnLhIHO8MXCfllR9uDW2Jfj++8SEzn6oD3+wmzqOzPqiOPAtQxuqWsVTFk4bt7ChuiVWjF7PVZ37deUH/mKhV0flvFA=="
 }

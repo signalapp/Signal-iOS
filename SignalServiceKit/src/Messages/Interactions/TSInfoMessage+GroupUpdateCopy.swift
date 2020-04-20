@@ -1145,10 +1145,21 @@ extension GroupUpdateCopy {
                     copy: NSLocalizedString("GROUP_LOCAL_USER_JOINED_THE_GROUP",
                                             comment: "Message indicating that the local user has joined the group."))
         case .invited:
-            addItem(.userMembershipState,
-                    address: localAddress,
-                    copy: NSLocalizedString("GROUP_LOCAL_USER_INVITED_TO_THE_GROUP",
-                                            comment: "Message indicating that the local user was invited to the group."))
+            if let localAddress = Self.tsAccountManager.localAddress,
+                let inviterUuid = newGroupMembership.addedByUuid(forPendingMember: localAddress) {
+                let inviterAddress = SignalServiceAddress(uuid: inviterUuid)
+                let inviterName = contactsManager.displayName(for: inviterAddress, transaction: transaction)
+                let format = NSLocalizedString("GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT",
+                                               comment: "Message indicating that the local user was invited to the group by another user. Embeds {{remote user name}}.")
+                addItem(.userMembershipState,
+                        address: localAddress,
+                        format: format, inviterName)
+            } else {
+                addItem(.userMembershipState,
+                        address: localAddress,
+                        copy: NSLocalizedString("GROUP_LOCAL_USER_INVITED_TO_THE_GROUP",
+                                                comment: "Message indicating that the local user was invited to the group."))
+            }
         case .none:
             if !DebugFlags.permissiveGroupUpdateInfoMessages {
                 owsFailDebug("Learned of group without any membership status.")

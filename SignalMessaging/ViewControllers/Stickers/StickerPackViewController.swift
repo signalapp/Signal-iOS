@@ -163,7 +163,7 @@ public class StickerPackViewController: OWSViewController {
 
         let installButton = OWSFlatButton.button(title: NSLocalizedString("STICKERS_INSTALL_BUTTON", comment: "Label for the 'install sticker pack' button."),
                                              font: UIFont.ows_dynamicTypeBody.ows_semibold(),
-                                             titleColor: UIColor.ows_accentBlue,
+                                             titleColor: Theme.accentBlueColor,
                                              backgroundColor: UIColor.white,
                                              target: self,
                                              selector: #selector(didTapInstall))
@@ -171,7 +171,7 @@ public class StickerPackViewController: OWSViewController {
         installButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "installButton")
         let uninstallButton = OWSFlatButton.button(title: NSLocalizedString("STICKERS_UNINSTALL_BUTTON", comment: "Label for the 'uninstall sticker pack' button."),
                                              font: UIFont.ows_dynamicTypeBody.ows_semibold(),
-                                             titleColor: UIColor.ows_accentBlue,
+                                             titleColor: Theme.accentBlueColor,
                                              backgroundColor: UIColor.white,
                                              target: self,
                                              selector: #selector(didTapUninstall))
@@ -266,7 +266,7 @@ public class StickerPackViewController: OWSViewController {
         authorLabel.text = stickerPack.author?.filterForDisplay
 
         let isDefaultStickerPack = StickerManager.isDefaultStickerPack(stickerPack.info)
-        authorLabel.textColor = isDefaultStickerPack ? UIColor.ows_accentBlue : Theme.darkThemePrimaryColor
+        authorLabel.textColor = isDefaultStickerPack ? Theme.accentBlueColor : Theme.darkThemePrimaryColor
         defaultPackIconView.isHidden = !isDefaultStickerPack
 
         // We need to consult StickerManager for the latest "isInstalled"
