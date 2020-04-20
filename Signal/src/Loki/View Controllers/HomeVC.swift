@@ -18,6 +18,10 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
     }()
     
     private let editingDatabaseConnection = OWSPrimaryStorage.shared().newDatabaseConnection()
+
+    private var threadCount: UInt {
+        threads.numberOfItems(inGroup: TSInboxGroup)
+    }
     
     // MARK: Components
     private lazy var seedReminderView: SeedReminderView = {
@@ -53,6 +57,25 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         let gradient = Gradients.homeVCFade
         result.setGradient(gradient)
         result.isUserInteractionEnabled = false
+        return result
+    }()
+
+    private lazy var emptyStateView: UIView = {
+        let explanationLabel = UILabel()
+        explanationLabel.textColor = Colors.text
+        explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
+        explanationLabel.numberOfLines = 0
+        explanationLabel.lineBreakMode = .byWordWrapping
+        explanationLabel.textAlignment = .center
+        explanationLabel.text = NSLocalizedString("You don't have any contacts yet", comment: "")
+        let createNewPrivateChatButton = Button(style: .prominentOutline, size: .large)
+        createNewPrivateChatButton.setTitle(NSLocalizedString("Start a Session", comment: ""), for: UIControl.State.normal)
+        createNewPrivateChatButton.addTarget(self, action: #selector(createNewPrivateChat), for: UIControl.Event.touchUpInside)
+        createNewPrivateChatButton.set(.width, to: 180)
+        let result = UIStackView(arrangedSubviews: [ explanationLabel, createNewPrivateChatButton ])
+        result.axis = .vertical
+        result.spacing = Values.mediumSpacing
+        result.alignment = .center
         return result
     }()
     
@@ -107,6 +130,11 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         fadeView.pin(.top, to: .top, of: view, withInset: topInset)
         fadeView.pin(.trailing, to: .trailing, of: view)
         fadeView.pin(.bottom, to: .bottom, of: view)
+        // Set up empty state view
+        view.addSubview(emptyStateView)
+        emptyStateView.center(.horizontal, in: view)
+        let verticalCenteringConstraint = emptyStateView.center(.vertical, in: view)
+        verticalCenteringConstraint.constant = -16 // Makes things appear centered visually
         // Set up search bar
 //        tableView.tableHeaderView = searchBar
 //        searchBar.sizeToFit()
@@ -164,7 +192,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
     
     // MARK: Data
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return Int(threads.numberOfItems(inGroup: TSInboxGroup))
+        return Int(threadCount)
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
@@ -184,6 +212,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
             self.threads.update(with: transaction)
         }
         tableView.reloadData()
+        emptyStateView.isHidden = threadCount != 0
     }
     
     @objc private func handleYapDatabaseModifiedExternallyNotification(_ notification: Notification) {
@@ -222,6 +251,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
             }
         }
         tableView.endUpdates()
+        emptyStateView.isHidden = threadCount != 0
     }
     
     @objc private func handleApplicationDidBecomeActiveNotification(_ notification: Notification) {

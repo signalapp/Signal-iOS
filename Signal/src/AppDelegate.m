@@ -1486,7 +1486,9 @@ static BOOL isInternalTestVersion = NO;
 
 - (void)createRSSFeedsIfNeeded
 {
-    NSArray *feeds = @[ /*self.lokiNewsFeed,*/ self.lokiMessengerUpdatesFeed ];
+    return;
+    /*
+    NSArray *feeds = @[ self.lokiNewsFeed, self.lokiMessengerUpdatesFeed ];
     NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
     for (LKRSSFeed *feed in feeds) {
         NSString *userDefaultsKey = [@"isRSSFeedSetUp." stringByAppendingString:feed.id];
@@ -1501,10 +1503,13 @@ static BOOL isInternalTestVersion = NO;
             [NSUserDefaults.standardUserDefaults setBool:YES forKey:userDefaultsKey];
         }
     }
+     */
 }
 
 - (void)createRSSFeedPollersIfNeeded
 {
+    return;
+    /*
     // Only create the RSS feed pollers if their threads aren't deleted
     __block TSGroupThread *lokiNewsFeedThread;
     [OWSPrimaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -1517,13 +1522,17 @@ static BOOL isInternalTestVersion = NO;
     if (self.lokiMessengerUpdatesFeedPoller == nil) {
         self.lokiMessengerUpdatesFeedPoller = [[LKRSSFeedPoller alloc] initForFeed:self.lokiMessengerUpdatesFeed];
     }
+     */
 }
 
 - (void)startRSSFeedPollersIfNeeded
 {
+    return;
+    /*
     [self createRSSFeedPollersIfNeeded];
     if (self.lokiNewsFeedPoller != nil) { [self.lokiNewsFeedPoller startIfNeeded]; }
     if (self.lokiMessengerUpdatesFeedPoller != nil) { [self.lokiMessengerUpdatesFeedPoller startIfNeeded]; }
+     */
 }
 
 - (void)handleThreadDeleted:(NSNotification *)notification {
