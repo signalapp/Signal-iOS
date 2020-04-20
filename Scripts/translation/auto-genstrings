@@ -9,7 +9,7 @@ cd $REPO_ROOT
 SSK_DIR="./SignalServiceKit/src"
 SAE_DIR="./SignalShareExtension"
 SM_DIR="./SignalMessaging"
-SCK_DIR="../SignalCoreKit"
+SCK_DIR="./Pods/SignalCoreKit"
 
 TARGETS="Signal/src ${SSK_DIR} ${SAE_DIR} ${SM_DIR} ${SCK_DIR}"
 TMP="$(mktemp -d)"
