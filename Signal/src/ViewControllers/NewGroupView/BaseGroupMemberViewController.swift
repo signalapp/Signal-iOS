@@ -93,6 +93,18 @@ public class BaseGroupMemberViewController: OWSViewController {
 
         // First section.
 
+        if FeatureFlags.usernames {
+            searchBar.placeholder = NSLocalizedString("SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT",
+                                                      comment: "Placeholder text indicating the user can search for contacts by name, username, or phone number.")
+        } else {
+            searchBar.placeholder = NSLocalizedString("SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT",
+                                                      comment: "Placeholder text indicating the user can search for contacts by name or phone number.")
+        }
+        searchBar.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self,
+                                                                           name: "member_search_bar")
+        searchBar.textField?.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self,
+                                                                                      name: "member_search_field")
+
         searchBar.delegate = self
         memberBar.delegate = self
 
