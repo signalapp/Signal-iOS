@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSGroupAvatarBuilder.h"
@@ -58,7 +58,8 @@ NS_ASSUME_NONNULL_BEGIN
                         conversationColorName:(NSString *)conversationColorName
                                      diameter:(NSUInteger)diameter
 {
-    NSString *cacheKey = [NSString stringWithFormat:@"%@-%d", groupId.hexadecimalString, Theme.isDarkThemeEnabled];
+    NSString *cacheKey = [NSString
+        stringWithFormat:@"%@-%d-%lu", groupId.hexadecimalString, Theme.isDarkThemeEnabled, (unsigned long)diameter];
 
     UIImage *_Nullable cachedAvatar =
         [OWSGroupAvatarBuilder.contactsManager.avatarCache imageForKey:cacheKey diameter:(CGFloat)diameter];
@@ -85,9 +86,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (nullable UIImage *)groupAvatarImageWithBackgroundColor:(UIColor *)backgroundColor diameter:(NSUInteger)diameter
 {
-    UIImage *icon = [UIImage imageNamed:@"group-outline-40"];
+    UIImage *icon = [UIImage imageNamed:@"group-outline-256"];
     // Adjust asset size to reflect the output diameter.
-    CGFloat scaling = diameter / (CGFloat)52;
+    CGFloat scaling = diameter * 0.003f;
     CGSize iconSize = CGSizeScale(icon.size, scaling);
     return [OWSAvatarBuilder avatarImageWithIcon:icon
                                         iconSize:iconSize
