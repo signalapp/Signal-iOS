@@ -251,7 +251,7 @@ const CGFloat kIconViewLength = 24;
 
     self.view.backgroundColor = Theme.tableViewBackgroundColor;
     self.tableView.backgroundColor = Theme.tableViewBackgroundColor;
-    self.useThemeCellBackgroundColor = YES;
+    self.useThemeBackgroundColors = YES;
     self.tableView.estimatedRowHeight = 45;
     self.tableView.rowHeight = UITableViewAutomaticDimension;
 

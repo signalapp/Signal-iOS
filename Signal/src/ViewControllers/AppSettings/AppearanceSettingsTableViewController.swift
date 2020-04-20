@@ -13,7 +13,7 @@ class AppearanceSettingsTableViewController: OWSTableViewController {
 
         view.backgroundColor = Theme.tableViewBackgroundColor
         tableView.backgroundColor = Theme.tableViewBackgroundColor
-        self.useThemeCellBackgroundColor = true
+        self.useThemeBackgroundColors = true
 
         updateTableContents()
     }
