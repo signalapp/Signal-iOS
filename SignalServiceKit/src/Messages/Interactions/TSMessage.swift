@@ -11,6 +11,7 @@ public extension TSMessage {
 
     @objc
     func removeAllReactions(transaction: SDSAnyWriteTransaction) {
+        guard !CurrentAppContext().isRunningTests else { return }
         reactionFinder.deleteAllReactions(transaction: transaction.unwrapGrdbWrite)
     }
 
