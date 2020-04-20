@@ -2105,7 +2105,7 @@ typedef enum : NSUInteger {
     [alert addAction:[UIAlertAction actionWithTitle:@"OK" style:UIAlertActionStyleDefault handler:^(UIAlertAction * _Nonnull action) {
         uint64_t messageID = 0;
         if ([conversationViewItem.interaction isKindOfClass:TSMessage.class]) {
-            messageID = ((TSMessage *)conversationViewItem.interaction).groupChatServerID;
+            messageID = ((TSMessage *)conversationViewItem.interaction).openGroupServerMessageID;
         }
         [LKPublicChatAPI reportMessageWithID:messageID inChannel:1 onServer:@"https://chat.getsession.org"];
     }]];

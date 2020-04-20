@@ -14,7 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (OWSAES256Key *)localProfileKey;
 
 - (nullable NSString *)localProfileName;
-- (nullable NSString *)profileNameForRecipientId:(NSString *)recipientId;
+- (nullable NSString *)profileNameForRecipientWithID:(NSString *)recipientID;
 - (nullable NSString *)profilePictureURL;
 
 - (nullable NSData *)profileKeyDataForRecipientId:(NSString *)recipientId;
@@ -33,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)fetchProfileForRecipientId:(NSString *)recipientId;
 
 - (void)updateProfileForContactWithID:(NSString *)contactID displayName:(NSString *)displayName with:(YapDatabaseReadWriteTransaction *)transaction;
-- (void)updateServiceWithProfileName:(nullable NSString *)localProfileName avatarUrl:(nullable NSString *)avatarURL;
+- (void)updateServiceWithProfileName:(nullable NSString *)localProfileName avatarURL:(nullable NSString *)avatarURL;
 
 @end
 

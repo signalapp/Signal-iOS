@@ -360,7 +360,7 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
         location:(const char *)location
             line:(int)line
 {
-    // Loki: Do nothing
+    return; // Loki: Do nothing
     DDLogFlag logFlag;
     switch (severity) {
         case OWSAnalyticsSeverityInfo:

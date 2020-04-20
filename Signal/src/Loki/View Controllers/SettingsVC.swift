@@ -80,7 +80,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
         profilePictureView.hexEncodedPublicKey = userHexEncodedPublicKey
         profilePictureView.update()
         // Set up display name label
-        displayNameLabel.text = OWSProfileManager.shared().profileName(forRecipientId: userHexEncodedPublicKey)
+        displayNameLabel.text = OWSProfileManager.shared().profileNameForRecipient(withID: userHexEncodedPublicKey)
         // Set up display name container
         let displayNameContainer = UIView()
         displayNameContainer.addSubview(displayNameLabel)
@@ -259,7 +259,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
     }
     
     private func updateProfile(isUpdatingDisplayName: Bool, isUpdatingProfilePicture: Bool) {
-        let displayName = displayNameToBeUploaded ?? OWSProfileManager.shared().profileName(forRecipientId: userHexEncodedPublicKey)
+        let displayName = displayNameToBeUploaded ?? OWSProfileManager.shared().profileNameForRecipient(withID: userHexEncodedPublicKey)
         let profilePicture = profilePictureToBeUploaded ?? OWSProfileManager.shared().profileAvatar(forRecipientId: userHexEncodedPublicKey)
         ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self] modalActivityIndicator in
             OWSProfileManager.shared().updateLocalProfileName(displayName, avatarImage: profilePicture, success: {

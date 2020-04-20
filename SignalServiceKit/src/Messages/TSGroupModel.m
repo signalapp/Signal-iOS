@@ -151,22 +151,21 @@ const int32_t kGroupIdLength = 16;
         if ([newModel.removedMembers containsObject:hexEncodedPublicKey]) {
             updatedGroupInfoString = [updatedGroupInfoString
                                       stringByAppendingString:NSLocalizedString(@"YOU_WERE_REMOVED", @"")];
-        }
-        else {
-            NSArray *removedMembersNames = [[newModel.removedMembers allObjects] map:^NSString*(NSString* item) {
+        } else {
+            NSArray *removedMemberNames = [[newModel.removedMembers allObjects] map:^NSString*(NSString* item) {
                 return [contactsManager displayNameForPhoneIdentifier:item];
             }];
-            if ([removedMembersNames count] > 1) {
+            if ([removedMemberNames count] > 1) {
                 updatedGroupInfoString = [updatedGroupInfoString
                                           stringByAppendingString:[NSString
                                                                    stringWithFormat:NSLocalizedString(@"GROUP_MEMBERS_REMOVED", @""),
-                                                                   [removedMembersNames componentsJoinedByString:@", "]]];
+                                                                   [removedMemberNames componentsJoinedByString:@", "]]];
             }
             else {
                 updatedGroupInfoString = [updatedGroupInfoString
                                           stringByAppendingString:[NSString
                                                                    stringWithFormat:NSLocalizedString(@"GROUP_MEMBER_REMOVED", @""),
-                                                                   [removedMembersNames componentsJoinedByString:@", "]]];
+                                                                   removedMemberNames[0]]];
             }
         }
     }

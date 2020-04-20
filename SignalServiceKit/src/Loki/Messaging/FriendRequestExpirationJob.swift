@@ -5,7 +5,7 @@
 @objc(LKFriendRequestExpirationJob)
 public final class FriendRequestExpirationJob : NSObject {
     private let databaseConnection: YapDatabaseConnection
-    private let messageFinder = FriendRequestExpirationMessageFinder()
+    private let messageFinder = ExpiringFriendRequestFinder()
     
     // These properties should only be accessed on the main thread.
     private var hasStarted = false

@@ -384,7 +384,6 @@ dispatch_queue_t NetworkManagerQueue()
 {
     OWSAssertDebug(failureBlock);
     OWSAssertDebug(request);
-    // OWSAssertDebug(task);
     OWSAssertDebug(networkError);
 
     NSInteger statusCode = [task statusCode];
@@ -504,7 +503,7 @@ dispatch_queue_t NetworkManagerQueue()
                                     request:(TSRequest *)request
                                  statusCode:(NSInteger)statusCode {
     /* Loki: Original code
-     * We don't really care about invalid auth
+     * We don't care about invalid auth
      * ========
     
     OWSLogVerbose(@"Invalid auth: %@", task.originalRequest.allHTTPHeaderFields);

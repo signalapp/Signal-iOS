@@ -19,7 +19,7 @@ public final class UserDisplayNameUtilities : NSObject {
         if hexEncodedPublicKey == userHexEncodedPublicKey {
             return userDisplayName
         } else {
-            return SSKEnvironment.shared.profileManager.profileName(forRecipientId: hexEncodedPublicKey)
+            return SSKEnvironment.shared.profileManager.profileNameForRecipient(withID: hexEncodedPublicKey)
         }
     }
     

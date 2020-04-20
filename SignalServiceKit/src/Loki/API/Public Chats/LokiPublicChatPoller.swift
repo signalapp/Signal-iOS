@@ -172,7 +172,7 @@ public final class LokiPublicChatPoller : NSObject {
                             if (message.displayName.count > 0) {
                                 SSKEnvironment.shared.profileManager.updateProfileForContact(withID: masterHexEncodedPublicKey!, displayName: message.displayName, with: transaction)
                             }
-                            SSKEnvironment.shared.profileManager.updateService(withProfileName: message.displayName, avatarUrl: profilePicture.url)
+                            SSKEnvironment.shared.profileManager.updateService(withProfileName: message.displayName, avatarURL: profilePicture.url)
                             SSKEnvironment.shared.profileManager.setProfileKeyData(profilePicture.profileKey, forRecipientId: masterHexEncodedPublicKey!, avatarURL: profilePicture.url)
                         }
                     }

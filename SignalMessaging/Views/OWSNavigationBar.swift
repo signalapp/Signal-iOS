@@ -118,10 +118,6 @@ public class OWSNavigationBar: UINavigationBar {
 
             // remove hairline below bar.
             self.shadowImage = UIImage()
-
-            // On iOS11, despite inserting the blur at 0, other views are later inserted into the navbar behind the blur,
-            // so we have to set a zindex to avoid obscuring navbar title/buttons.
-//            blurEffectView.layer.zPosition = -1
         }
     }
 

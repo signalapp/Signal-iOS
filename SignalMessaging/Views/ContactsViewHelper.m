@@ -59,10 +59,7 @@ NS_ASSUME_NONNULL_BEGIN
     _contactsManager = Environment.shared.contactsManager;
     _profileManager = [OWSProfileManager sharedManager];
 
-    // We don't want to notify the delegate in the `updateContacts`.
-//    self.shouldNotifyDelegateOfUpdatedContacts = YES;
     [self updateContacts];
-    self.shouldNotifyDelegateOfUpdatedContacts = NO;
 
     [self observeNotifications];
 
@@ -432,7 +429,7 @@ NS_ASSUME_NONNULL_BEGIN
             [CNLabeledValue labeledValueWithLabel:CNLabelPhoneNumberMain value:phoneNumber];
         newContact.phoneNumbers = @[ labeledPhoneNumber ];
 
-        newContact.givenName = [self.profileManager profileNameForRecipientId:recipientId];
+        newContact.givenName = [self.profileManager profileNameForRecipientWithID:recipientId];
 
         contactViewController = [CNContactViewController viewControllerForNewContact:newContact];
     }

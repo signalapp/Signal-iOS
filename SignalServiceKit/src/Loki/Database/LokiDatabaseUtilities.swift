@@ -18,7 +18,7 @@ public final class LokiDatabaseUtilities : NSObject {
             }
             return (senderHexEncodedPublicKey == quoteeHexEncodedPublicKey) && (interaction.uniqueThreadId == threadID)
         }, with: transaction).first as! TSMessage? else { return 0 }
-        return message.groupChatServerID
+        return message.openGroupServerMessageID
     }
     
     // MARK: Device Links

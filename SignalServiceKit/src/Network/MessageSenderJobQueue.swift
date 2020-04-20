@@ -79,7 +79,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
 
     public typealias DurableOperationType = MessageSenderOperation
     public static let jobRecordLabel: String = "MessageSender"
-    public static let maxRetries: UInt = 1
+    public static let maxRetries: UInt = 1 // Loki: We have our own retrying
     public let requiresInternet: Bool = true
     public var runningOperations: [MessageSenderOperation] = []
 
@@ -94,9 +94,10 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
 
     public var isSetup: Bool = false
 
+    /// Used when the user clears their database to cancel any outstanding jobs.
     @objc public func clearAllJobs() {
         self.dbConnection.readWrite { transaction in
-            let statuses: [SSKJobRecordStatus] = [ .unknown, .ready, .running, .permanentlyFailed, .unknown ]
+            let statuses: [SSKJobRecordStatus] = [ .unknown, .ready, .running, .permanentlyFailed ]
             var records: [SSKJobRecord] = []
             statuses.forEach {
                 records += self.finder.allRecords(label: self.jobRecordLabel, status: $0, transaction: transaction)

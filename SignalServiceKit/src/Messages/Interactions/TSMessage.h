@@ -47,9 +47,9 @@ typedef NS_ENUM(NSInteger, LKMessageFriendRequestStatus) {
 @property BOOL skipSave;
 // P2P
 @property (nonatomic) BOOL isP2P;
-// Group chat
-@property (nonatomic) uint64_t groupChatServerID; // Should ideally be publicChatServerID
-@property (nonatomic, readonly) BOOL isGroupChatMessage; // Should ideally be isPublicChatMessage
+// Open groups
+@property (nonatomic) uint64_t openGroupServerMessageID;
+@property (nonatomic, readonly) BOOL isOpenGroupMessage;
 
 - (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread NS_UNAVAILABLE;
 
@@ -96,9 +96,9 @@ typedef NS_ENUM(NSInteger, LKMessageFriendRequestStatus) {
 - (void)saveFriendRequestStatus:(LKMessageFriendRequestStatus)friendRequestStatus withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction;
 - (void)saveFriendRequestExpiresAt:(u_int64_t)expiresAt withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction;
 
-#pragma mark - Group Chat
+#pragma mark - Open Groups
 
-- (void)saveGroupChatServerID:(uint64_t)serverMessageID in:(YapDatabaseReadWriteTransaction *_Nullable)transaction;
+- (void)saveOpenGroupServerMessageID:(uint64_t)serverMessageID in:(YapDatabaseReadWriteTransaction *_Nullable)transaction;
 
 #pragma mark - Link Preview
 

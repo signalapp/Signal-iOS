@@ -21,7 +21,7 @@ typedef NS_ENUM(NSInteger, TSWhisperMessageType) {
 
 #define textSecureHTTPTimeOut 10
 
-#define kLegalTermsUrlString @"https://github.com/loki-project/loki-messenger-ios/blob/master/privacy-policy.md"
+#define kLegalTermsUrlString @"https://getsession.org/legal/#privacy-policy"
 
 //#ifndef DEBUG
 

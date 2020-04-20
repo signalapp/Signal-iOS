@@ -347,7 +347,7 @@
     [nameView autoPinLeadingToTrailingEdgeOfView:avatarView offset:16.f];
 
     UILabel *titleLabel = [UILabel new];
-    NSString *_Nullable localProfileName = [OWSProfileManager.sharedManager profileNameForRecipientId:hexEncodedPublicKey];
+    NSString *_Nullable localProfileName = [OWSProfileManager.sharedManager profileNameForRecipientWithID:hexEncodedPublicKey];
     if (localProfileName.length > 0) {
         titleLabel.text = localProfileName;
         titleLabel.textColor = [Theme primaryColor];

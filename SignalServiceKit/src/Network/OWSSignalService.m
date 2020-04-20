@@ -188,6 +188,7 @@ NSString *const kNSNotificationName_IsCensorshipCircumventionActiveDidChange =
     NSURLSessionConfiguration *configuration = NSURLSessionConfiguration.ephemeralSessionConfiguration;
     AFHTTPSessionManager *sessionManager = [[AFHTTPSessionManager alloc] initWithSessionConfiguration:configuration];
     AFSecurityPolicy *securityPolicy = AFSecurityPolicy.defaultPolicy;
+    // Snode to snode communication uses self-signed certificates but clients can safely ignore this
     securityPolicy.allowInvalidCertificates = YES;
     securityPolicy.validatesDomainName = NO;
     sessionManager.securityPolicy = securityPolicy;

@@ -188,13 +188,6 @@ const CGFloat kContactCellAvatarTextMargin = 12;
         threadName = NSLocalizedString(@"NOTE_TO_SELF", @"Label for 1:1 conversation with yourself.");
     }
 
-//    NSAttributedString *attributedText =
-//        [[NSAttributedString alloc] initWithString:threadName
-//                                        attributes:@{
-//                                            NSForegroundColorAttributeName : [Theme primaryColor],
-//                                        }];
-//    self.nameLabel.attributedText = attributedText;
-
     if ([thread isKindOfClass:[TSContactThread class]]) {
         self.recipientId = thread.contactIdentifier;
 

@@ -21,7 +21,7 @@ public class OWSMessageSend: NSObject {
     @objc
     public let recipient: SignalRecipient
 
-    private static let kMaxRetriesPerRecipient: Int = 1
+    private static let kMaxRetriesPerRecipient: Int = 1 // Loki: We have our own retrying
 
     @objc
     public var remainingAttempts = OWSMessageSend.kMaxRetriesPerRecipient

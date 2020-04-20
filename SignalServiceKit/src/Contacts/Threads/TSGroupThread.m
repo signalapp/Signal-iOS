@@ -259,7 +259,6 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
     }
     self.groupModel.groupMemberIds = newGroupMemberIDs.allObjects;
     [self saveWithTransaction:transaction];
-
     [transaction addCompletionQueue:dispatch_get_main_queue() completionBlock:^{
         [NSNotificationCenter.defaultCenter postNotificationName:NSNotification.groupThreadUpdated object:self.uniqueId];
     }];

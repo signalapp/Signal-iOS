@@ -500,7 +500,7 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
     manager.completionQueue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
 
     // We want to avoid large downloads from a compromised or buggy service.
-    const long kMaxDownloadSize = 12 * 1024 * 1024;
+    const long kMaxDownloadSize = 10 * 1024 * 1024;
     __block BOOL hasCheckedContentLength = NO;
 
     NSString *tempFilePath =

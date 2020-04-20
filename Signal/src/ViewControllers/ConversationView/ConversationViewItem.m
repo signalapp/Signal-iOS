@@ -1185,7 +1185,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         
         // Make sure it's a public chat message
         TSMessage *message = (TSMessage *)self.interaction;
-        if (!message.isGroupChatMessage) return;
+        if (!message.isOpenGroupMessage) return;
         
         __block LKPublicChat *publicChat;
         [self.primaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -1195,7 +1195,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
         
         // Delete the message
         BOOL isSentByUser = (interationType == OWSInteractionType_OutgoingMessage);
-        [[LKPublicChatAPI deleteMessageWithID:message.groupChatServerID forGroup:publicChat.channel onServer:publicChat.server isSentByUser:isSentByUser].catch(^(NSError *error) {
+        [[LKPublicChatAPI deleteMessageWithID:message.openGroupServerMessageID forGroup:publicChat.channel onServer:publicChat.server isSentByUser:isSentByUser].catch(^(NSError *error) {
             // Roll back
             [self.interaction save];
         }) retainUntilComplete];
@@ -1260,7 +1260,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     
     // Make sure it's a public chat message
     TSMessage *message = (TSMessage *)self.interaction;
-    if (!message.isGroupChatMessage) return false;
+    if (!message.isOpenGroupMessage) return false;
     
     // Ensure we have the details needed to contact the server
     __block LKPublicChat *publicChat;

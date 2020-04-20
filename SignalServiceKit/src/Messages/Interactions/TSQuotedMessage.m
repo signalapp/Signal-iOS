@@ -157,8 +157,6 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    // OWSAssertDebug(bodySource != TSQuotedMessageContentSourceUnknown);
-
     NSMutableArray<OWSAttachmentInfo *> *attachmentInfos = [NSMutableArray new];
     for (SSKProtoDataMessageQuoteQuotedAttachment *quotedAttachment in quoteProto.attachments) {
         hasAttachment = YES;
@@ -208,7 +206,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if (body.length == 0 && !hasAttachment) {
-//        OWSFailDebug(@"quoted message has neither text nor attachment");
         return nil;
     }
 

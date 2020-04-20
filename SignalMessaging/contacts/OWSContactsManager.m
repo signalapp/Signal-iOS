@@ -726,7 +726,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
 - (nullable NSString *)formattedProfileNameForRecipientId:(NSString *)recipientId
 {
-    NSString *_Nullable profileName = [self.profileManager profileNameForRecipientId:recipientId];
+    NSString *_Nullable profileName = [self.profileManager profileNameForRecipientWithID:recipientId];
     if (profileName.length == 0) {
         return nil;
     }
@@ -739,7 +739,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
 - (nullable NSString *)profileNameForRecipientId:(NSString *)recipientId
 {
-    return [self.profileManager profileNameForRecipientId:recipientId];
+    return [self.profileManager profileNameForRecipientWithID:recipientId];
 }
 
 - (nullable NSString *)nameFromSystemContactsForRecipientId:(NSString *)recipientId
@@ -900,7 +900,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         return savedContactName;
     }
 
-    NSString *_Nullable profileName = [self.profileManager profileNameForRecipientId:recipientId];
+    NSString *_Nullable profileName = [self.profileManager profileNameForRecipientWithID:recipientId];
     if (profileName.length > 0) {
         NSString *numberAndProfileNameFormat = NSLocalizedString(@"PROFILE_NAME_AND_PHONE_NUMBER_LABEL_FORMAT",
             @"Label text combining the phone number and profile name separated by a simple demarcation character. "
@@ -950,7 +950,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         return [[NSAttributedString alloc] initWithString:savedContactName attributes:primaryAttributes];
     }
 
-    NSString *_Nullable profileName = [self.profileManager profileNameForRecipientId:recipientId];
+    NSString *_Nullable profileName = [self.profileManager profileNameForRecipientWithID:recipientId];
     if (profileName.length > 0) {
         return [[NSAttributedString alloc] initWithString:profileName];
         // Loki: Original code
@@ -980,7 +980,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
     NSString *formattedPhoneNumber =
         [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:recipientId];
-    NSString *_Nullable profileName = [self.profileManager profileNameForRecipientId:recipientId];
+    NSString *_Nullable profileName = [self.profileManager profileNameForRecipientWithID:recipientId];
     if (profileName.length > 0) {
         NSString *numberAndProfileNameFormat = NSLocalizedString(@"PROFILE_NAME_AND_PHONE_NUMBER_LABEL_FORMAT",
             @"Label text combining the phone number and profile name separated by a simple demarcation character. "

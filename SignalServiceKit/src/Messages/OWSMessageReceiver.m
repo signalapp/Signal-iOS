@@ -398,8 +398,8 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
             OWSAssertDebug(transaction);
 
             // Loki: Don't process any messages from ourself
-            ECKeyPair *_Nullable keyPair = OWSIdentityManager.sharedManager.identityKeyPair;
-            if (keyPair && [result.source isEqualToString:keyPair.hexEncodedPublicKey]) {
+            ECKeyPair *_Nullable userKeyPair = OWSIdentityManager.sharedManager.identityKeyPair;
+            if (userKeyPair && [result.source isEqualToString:userKeyPair.hexEncodedPublicKey]) {
                 dispatch_async(self.serialQueue, ^{
                     completion(YES);
                 });

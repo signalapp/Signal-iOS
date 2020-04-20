@@ -1,5 +1,5 @@
 
-// For some reason NSLog doesn't seem to work. This is a workaround to still allow debugging from Obj-C.
+// For some reason NSLog doesn't seem to work from SignalServiceKit. This is a workaround to still allow debugging from Obj-C.
 
 @objc(LKLogger)
 public final class ObjC_Logger : NSObject {

@@ -465,7 +465,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     successBlock();
 }
 
-- (void)updateServiceWithProfileName:(nullable NSString *)localProfileName avatarUrl:(nullable NSString *)avatarURL {
+- (void)updateServiceWithProfileName:(nullable NSString *)localProfileName avatarURL:(nullable NSString *)avatarURL {
     [self updateServiceWithProfileName:localProfileName avatarUrl:avatarURL success:^{} failure:^(NSError * _Nonnull error) {}];
 }
 
@@ -983,7 +983,6 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
                 [userProfile updateWithAvatarUrlPath:avatarURL avatarFileName:nil dbConnection:self.dbConnection completion:^{
                     [self downloadAvatarForUserProfile:userProfile];
                 }];
-                // [self fetchProfileForRecipientId:recipientId];
             });
         }];
     });
@@ -1012,14 +1011,14 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     return userProfile.profileKey;
 }
 
-- (nullable NSString *)profileNameForRecipientId:(NSString *)recipientId
+- (nullable NSString *)profileNameForRecipientWithID:(NSString *)recipientID
 {
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(recipientID.length > 0);
 
     // For "local reads", use the local user profile.
-    OWSUserProfile *userProfile = ([self.tsAccountManager.localNumber isEqualToString:recipientId]
+    OWSUserProfile *userProfile = ([self.tsAccountManager.localNumber isEqualToString:recipientID]
                                    ? self.localUserProfile
-                                   : [OWSUserProfile getOrBuildUserProfileForRecipientId:recipientId dbConnection:self.dbConnection]);
+                                   : [OWSUserProfile getOrBuildUserProfileForRecipientId:recipientID dbConnection:self.dbConnection]);
 
     return userProfile.profileName;
 }

@@ -805,7 +805,7 @@ static BOOL isInternalTestVersion = NO;
             NSDate *lastProfilePictureUpload = (NSDate *)[userDefaults objectForKey:@"lastProfilePictureUpload"];
             if (lastProfilePictureUpload != nil && [now timeIntervalSinceDate:lastProfilePictureUpload] > 14 * 24 * 60 * 60) {
                 OWSProfileManager *profileManager = OWSProfileManager.sharedManager;
-                NSString *displayName = [profileManager profileNameForRecipientId:userHexEncodedPublicKey];
+                NSString *displayName = [profileManager profileNameForRecipientWithID:userHexEncodedPublicKey];
                 UIImage *profilePicture = [profileManager profileAvatarForRecipientId:userHexEncodedPublicKey];
                 [profileManager updateLocalProfileName:displayName avatarImage:profilePicture success:^{
                     // Do nothing; the user defaults flag is updated in LokiFileServerAPI

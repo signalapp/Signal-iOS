@@ -105,7 +105,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                         linkPreview:transcript.linkPreview];
     
     if (serverID != 0) {
-        outgoingMessage.groupChatServerID = serverID;
+        outgoingMessage.openGroupServerMessageID = serverID;
     }
 
     NSArray<TSAttachmentPointer *> *attachmentPointers =

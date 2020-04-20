@@ -1601,7 +1601,7 @@ NS_ASSUME_NONNULL_BEGIN
                 
                 // Loki: Parse Loki specific properties if needed
                 if (envelope.isPtpMessage) { incomingMessage.isP2P = YES; }
-                if (dataMessage.publicChatInfo != nil && dataMessage.publicChatInfo.hasServerID) { incomingMessage.groupChatServerID = dataMessage.publicChatInfo.serverID; }
+                if (dataMessage.publicChatInfo != nil && dataMessage.publicChatInfo.hasServerID) { incomingMessage.openGroupServerMessageID = dataMessage.publicChatInfo.serverID; }
 
                 NSArray<TSAttachmentPointer *> *attachmentPointers =
                     [TSAttachmentPointer attachmentPointersFromProtos:dataMessage.attachments

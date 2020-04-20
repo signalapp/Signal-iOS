@@ -82,7 +82,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     _linkPreview = linkPreview;
     _friendRequestStatus = LKMessageFriendRequestStatusNone;
     _friendRequestExpiresAt = 0;
-    _groupChatServerID = -1;
+    _openGroupServerMessageID = -1;
 
     return self;
 }
@@ -350,23 +350,22 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
     if (attachmentDescription.length > 0 && bodyDescription.length > 0) {
         // Attachment with caption.
-//        if ([CurrentAppContext() isRTL]) {
-//            return [[bodyDescription stringByAppendingString:@": "] stringByAppendingString:attachmentDescription];
-//        } else {
+        if ([CurrentAppContext() isRTL]) {
+            return [[bodyDescription stringByAppendingString:@": "] stringByAppendingString:attachmentDescription];
+        } else {
             return [[attachmentDescription stringByAppendingString:@": "] stringByAppendingString:bodyDescription];
-//        }
+        }
     } else if (bodyDescription.length > 0) {
         return bodyDescription;
     } else if (attachmentDescription.length > 0) {
         return attachmentDescription;
     } else if (self.contactShare) {
-//        if (CurrentAppContext().isRTL) {
-//            return [self.contactShare.name.displayName stringByAppendingString:@" 👤"];
-//        } else {
+        if (CurrentAppContext().isRTL) {
+            return [self.contactShare.name.displayName stringByAppendingString:@" 👤"];
+        } else {
             return [@"👤 " stringByAppendingString:self.contactShare.name.displayName];
-//        }
+        }
     } else {
-//        OWSFailDebug(@"message has neither body nor attachment.");
         // TODO: We should do better here.
         return @"";
     }
@@ -495,14 +494,14 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     return self.isFriendRequest && self.friendRequestStatus != LKMessageFriendRequestStatusSendingOrFailed;
 }
 
-#pragma mark - Group Chat
+#pragma mark - Open Groups
 
-- (BOOL)isGroupChatMessage {
-    return self.groupChatServerID > 0;
+- (BOOL)isOpenGroupMessage {
+    return self.openGroupServerMessageID > 0;
 }
 
-- (void)saveGroupChatServerID:(uint64_t)serverMessageID in:(YapDatabaseReadWriteTransaction *_Nullable)transaction {
-    self.groupChatServerID = serverMessageID;
+- (void)saveOpenGroupServerMessageID:(uint64_t)serverMessageID in:(YapDatabaseReadWriteTransaction *_Nullable)transaction {
+    self.openGroupServerMessageID = serverMessageID;
     if (transaction == nil) {
         [self save];
         [self.dbReadWriteConnection flushTransactionsWithCompletionQueue:dispatch_get_main_queue() completionBlock:^{}];
@@ -512,7 +511,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     }
 }
 
-#pragma mark - Link Preview
+#pragma mark - Link Previews
 
 - (void)generateLinkPreviewIfNeededFromURL:(NSString *)url {
     [OWSLinkPreview tryToBuildPreviewInfoObjcWithPreviewUrl:url]

@@ -188,10 +188,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 {
     OWSAssertDebug(other);
 
-//    uint64_t sortId1 = self.sortId;
-//    uint64_t sortId2 = other.sortId;
-    
-    // Loki: Sort the messages by sender's timestamp
+    // Loki: Sort the messages by the sender's timestamp (Signal uses sortId)
     uint64_t sortId1 = self.timestamp;
     uint64_t sortId2 = other.timestamp;
 
