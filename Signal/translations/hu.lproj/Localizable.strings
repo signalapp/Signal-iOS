@@ -798,10 +798,10 @@
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ eltávolíthat vagy adminná tehet csoport tagokat.";
 
 /* Section title of the 'members' section in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "Members";
+"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "Tagok";
 
 /* Format for the section title of the 'members' section in conversation settings view. Embeds: {{ the number of group members }}. */
-"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ Members";
+"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ tag";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Elnémítás";
@@ -1758,7 +1758,7 @@
 "KEY_COMMAND_UNARCHIVE" = "Archivált állapot feloldása";
 
 /* Label for the 'learn more' button. */
-"LEARN_MORE" = "Learn More";
+"LEARN_MORE" = "Tudj meg többet";
 
 /* Confirmation button within contextual alert */
 "LEAVE_BUTTON_TITLE" = "Csoport elhagyása";
