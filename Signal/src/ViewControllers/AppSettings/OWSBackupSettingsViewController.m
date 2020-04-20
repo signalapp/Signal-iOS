@@ -43,8 +43,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.title = NSLocalizedString(@"SETTINGS_BACKUP", @"Label for the backup view in app settings.");
 
-    self.view.backgroundColor = Theme.tableViewBackgroundColor;
-    self.tableView.backgroundColor = Theme.tableViewBackgroundColor;
     self.useThemeBackgroundColors = YES;
 
     [[NSNotificationCenter defaultCenter] addObserver:self
