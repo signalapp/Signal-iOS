@@ -660,13 +660,13 @@ extension ConversationSettingsViewController {
                 continue
             }
 
+            let isLocalUser = memberAddress == localAddress
             section.add(OWSTableItem(customCellBlock: { [weak self] in
                 guard let self = self else {
                     owsFailDebug("Missing self")
                     return OWSTableItem.newCell()
                 }
                 let cell = ContactTableViewCell()
-                let isLocalUser = memberAddress == localAddress
                 let isGroupAdmin = groupMembership.isAdministrator(memberAddress)
                 let isVerified = verificationState == .verified
                 let isNoLongerVerified = verificationState == .noLongerVerified
@@ -711,6 +711,9 @@ extension ConversationSettingsViewController {
                 return cell
                 },
                                      customRowHeight: UITableView.automaticDimension) { [weak self] in
+                                        guard !isLocalUser else {
+                                            return
+                                        }
                                         self?.didSelectGroupMember(memberAddress)
             })
         }
