@@ -53,6 +53,7 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
 
     self.view.backgroundColor = Theme.tableViewBackgroundColor;
     self.tableView.backgroundColor = Theme.tableViewBackgroundColor;
+    self.tableView.separatorColor = Theme.cellSeparatorColor;
 
     self.isExpectingMoreDevices = NO;
     self.tableView.rowHeight = UITableViewAutomaticDimension;

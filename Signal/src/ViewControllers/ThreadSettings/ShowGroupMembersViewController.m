@@ -95,8 +95,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.title = _thread.groupModel.groupName;
 
-    self.view.backgroundColor = Theme.tableViewBackgroundColor;
-    self.tableView.backgroundColor = Theme.tableViewBackgroundColor;
     self.useThemeBackgroundColors = YES;
 
     self.tableView.rowHeight = UITableViewAutomaticDimension;

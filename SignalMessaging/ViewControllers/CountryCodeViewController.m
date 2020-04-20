@@ -32,8 +32,6 @@ NS_ASSUME_NONNULL_BEGIN
     self.shouldUseTheme = NO;
     self.interfaceOrientationMask = UIDevice.currentDevice.defaultSupportedOrienations;
 
-    self.view.backgroundColor = Theme.tableViewBackgroundColor;
-    self.tableView.backgroundColor = Theme.tableViewBackgroundColor;
     self.useThemeBackgroundColors = YES;
     self.title = NSLocalizedString(@"COUNTRYCODE_SELECT_TITLE", @"");
 
