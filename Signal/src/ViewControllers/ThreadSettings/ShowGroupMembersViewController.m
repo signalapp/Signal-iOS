@@ -56,9 +56,6 @@ NS_ASSUME_NONNULL_BEGIN
 {
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
 
-    self.view.backgroundColor = Theme.tableViewBackgroundColor;
-    self.tableView.backgroundColor = Theme.tableViewBackgroundColor;
-    self.useThemeCellBackgroundColor = YES;
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableView.estimatedRowHeight = 60;
 
@@ -97,6 +94,10 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug([self.navigationController isKindOfClass:[OWSNavigationController class]]);
 
     self.title = _thread.groupModel.groupName;
+
+    self.view.backgroundColor = Theme.tableViewBackgroundColor;
+    self.tableView.backgroundColor = Theme.tableViewBackgroundColor;
+    self.useThemeCellBackgroundColor = YES;
 
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableView.estimatedRowHeight = 45;

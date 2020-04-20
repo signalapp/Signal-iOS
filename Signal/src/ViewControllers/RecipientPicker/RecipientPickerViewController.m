@@ -407,7 +407,9 @@ const NSUInteger kMinimumSearchLength = 2;
 
     OWSTableSection *staticSection = [OWSTableSection new];
 
-    if (self.shouldShowNewGroup) {
+    BOOL isSearching = self.searchResults != nil;
+
+    if (self.shouldShowNewGroup && !isSearching) {
         [staticSection
             addItem:[OWSTableItem
                         itemWithCustomCellBlock:^{
@@ -432,7 +434,7 @@ const NSUInteger kMinimumSearchLength = 2;
     }
 
     // Find Non-Contacts by Phone Number
-    if (self.allowsAddByPhoneNumber) {
+    if (self.allowsAddByPhoneNumber && !isSearching) {
         [staticSection
             addItem:[OWSTableItem
                         itemWithCustomCellBlock:^{
@@ -460,7 +462,7 @@ const NSUInteger kMinimumSearchLength = 2;
                         }]];
     }
 
-    if (self.contactsManager.isSystemContactsAuthorized && self.shouldShowInvites) {
+    if (self.contactsManager.isSystemContactsAuthorized && self.shouldShowInvites && !isSearching) {
         // Invite Contacts
         [staticSection
             addItem:[OWSTableItem
