@@ -1316,6 +1316,7 @@ const NSUInteger kMinimumSearchLength = 2;
     OWSAssertIsOnMainThread();
 
     self.view.backgroundColor = Theme.backgroundColor;
+    self.view.backgroundColor = UIColor.redColor;
 }
 
 @end

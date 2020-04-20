@@ -32,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.view.backgroundColor = Theme.tableViewBackgroundColor;
     self.tableView.backgroundColor = Theme.tableViewBackgroundColor;
-    self.useThemeCellBackgroundColor = YES;
+    self.useThemeBackgroundColors = YES;
 
     [self setTitle:NSLocalizedString(@"SETTINGS_ITEM_NOTIFICATION_SOUND",
                        @"Label for settings view that allows user to change the notification sound.")];

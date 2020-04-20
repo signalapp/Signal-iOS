@@ -636,7 +636,7 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 
     UITableViewCell *_Nullable customCell = [item customCell];
     if (customCell != nil) {
-        if (self.useThemeCellBackgroundColor) {
+        if (self.useThemeBackgroundColors) {
             customCell.backgroundColor = Theme.tableCellBackgroundColor;
         }
         return customCell;
@@ -648,7 +648,7 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 
     cell.textLabel.text = item.title;
 
-    if (self.useThemeCellBackgroundColor) {
+    if (self.useThemeBackgroundColors) {
         customCell.backgroundColor = Theme.tableCellBackgroundColor;
     }
 
@@ -674,6 +674,7 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
         UITextView *textView = [LinkingTextView new];
         textView.textColor = Theme.secondaryTextAndIconColor;
         textView.font = UIFont.ows_dynamicTypeCaption1Font;
+        textView.backgroundColor = self.sectionHeaderAndFooterBackgroundColor;
 
         CGFloat tableEdgeInsets = UIDevice.currentDevice.isPlusSizePhone ? 20 : 16;
         textView.textContainerInset = UIEdgeInsetsMake(16, tableEdgeInsets, 6, tableEdgeInsets);
@@ -700,6 +701,7 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
         UITextView *textView = [LinkingTextView new];
         textView.textColor = UIColor.ows_gray45Color;
         textView.font = UIFont.ows_dynamicTypeCaption1Font;
+        textView.backgroundColor = self.sectionHeaderAndFooterBackgroundColor;
 
         CGFloat tableEdgeInsets = UIDevice.currentDevice.isPlusSizePhone ? 20 : 16;
         textView.textContainerInset = UIEdgeInsetsMake(6, tableEdgeInsets, 12, tableEdgeInsets);
@@ -851,13 +853,26 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
     [self.tableView reloadData];
 }
 
+- (void)setUseThemeBackgroundColors:(BOOL)useThemeBackgroundColors
+{
+    _useThemeBackgroundColors = useThemeBackgroundColors;
+
+    [self applyTheme];
+}
+
 - (void)applyTheme
 {
     OWSAssertIsOnMainThread();
 
-    self.view.backgroundColor = Theme.backgroundColor;
-    self.tableView.backgroundColor = Theme.backgroundColor;
+    UIColor *backgroundColor = (self.useThemeBackgroundColors ? Theme.tableViewBackgroundColor : Theme.backgroundColor);
+    self.view.backgroundColor = backgroundColor;
+    self.tableView.backgroundColor = backgroundColor;
     self.tableView.separatorColor = Theme.cellSeparatorColor;
+}
+
+- (nullable UIColor *)sectionHeaderAndFooterBackgroundColor
+{
+    return (self.useThemeBackgroundColors ? Theme.tableViewBackgroundColor : Theme.secondaryBackgroundColor);
 }
 
 @end
