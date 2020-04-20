@@ -38,7 +38,7 @@ class EmojiReactorsTableView: UITableView {
     }
 
     func configureForAll(transaction: SDSAnyReadTransaction) {
-        reactorItems = finder.allReactions(transaction: transaction).compactMap { reaction in
+        reactorItems = finder.allReactions(transaction: transaction.unwrapGrdbRead).compactMap { reaction in
             let thread = TSContactThread.getWithContactAddress(reaction.reactor, transaction: transaction)
             let displayName = contactsManager.displayName(for: reaction.reactor, transaction: transaction)
 
@@ -61,7 +61,7 @@ class EmojiReactorsTableView: UITableView {
 
     func configure(for emoji: String?, transaction: SDSAnyReadTransaction) {
         guard let emoji = emoji else { return configureForAll(transaction: transaction) }
-        reactorItems = finder.reactors(for: emoji, transaction: transaction).compactMap { address in
+        reactorItems = finder.reactors(for: emoji, transaction: transaction.unwrapGrdbRead).compactMap { address in
             let thread = TSContactThread.getWithContactAddress(address, transaction: transaction)
             let displayName = contactsManager.displayName(for: address, transaction: transaction)
 

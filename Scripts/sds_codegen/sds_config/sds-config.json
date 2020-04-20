@@ -53,7 +53,8 @@
 		"OWSOutgoingNullMessage",
 		"OWSOutgoingCallMessage",
 		"OWSReceiptsForSenderMessage",
-		"OWSUnknownDBObject"
+		"OWSUnknownDBObject",
+		"TSOutgoingDeleteMessage"
 	],
 	"manually_typed_fields": {
 		"TSThread.conversationColorName": {

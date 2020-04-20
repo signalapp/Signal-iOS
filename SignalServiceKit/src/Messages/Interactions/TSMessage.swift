@@ -11,17 +11,24 @@ public extension TSMessage {
 
     @objc
     func removeAllReactions(transaction: SDSAnyWriteTransaction) {
-        reactionFinder.deleteAllReactions(transaction: transaction)
+        guard !CurrentAppContext().isRunningTests else { return }
+        reactionFinder.deleteAllReactions(transaction: transaction.unwrapGrdbWrite)
     }
 
     @objc
     func allReactionIds(transaction: SDSAnyReadTransaction) -> [String]? {
-        return reactionFinder.allUniqueIds(transaction: transaction)
+        return reactionFinder.allUniqueIds(transaction: transaction.unwrapGrdbRead)
+    }
+
+    @objc
+    func markUnreadReactionsAsRead(transaction: SDSAnyWriteTransaction) {
+        let unreadReactions = reactionFinder.unreadReactions(transaction: transaction.unwrapGrdbWrite)
+        unreadReactions.forEach { $0.markAsRead(transaction: transaction) }
     }
 
     @objc(reactionForReactor:transaction:)
     func reaction(for reactor: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> OWSReaction? {
-        return reactionFinder.reaction(for: reactor, transaction: transaction)
+        return reactionFinder.reaction(for: reactor, transaction: transaction.unwrapGrdbRead)
     }
 
     @objc(recordReactionForReactor:emoji:sentAtTimestamp:receivedAtTimestamp:transaction:)
@@ -54,6 +61,12 @@ public extension TSMessage {
         )
 
         reaction.anyInsert(transaction: transaction)
+
+        // Reactions to messages we send need to be manually marked
+        // as read as they trigger notifications we need to clear
+        // out. Everything else can be automatically read.
+        if !(self is TSOutgoingMessage) { reaction.markAsRead(transaction: transaction) }
+
         databaseStorage.touch(interaction: self, transaction: transaction)
 
         return reaction
@@ -67,6 +80,10 @@ public extension TSMessage {
 
         reaction.anyRemove(transaction: transaction)
         databaseStorage.touch(interaction: self, transaction: transaction)
+
+        DispatchQueue.main.async {
+            SSKEnvironment.shared.notificationsManager.cancelNotifications(reactionId: reaction.uniqueId)
+        }
     }
 
     // MARK: - Remote Delete

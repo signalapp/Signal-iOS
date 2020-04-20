@@ -268,7 +268,7 @@ public class ConversationMessageMapping: NSObject {
     @objc
     var oldestUnreadInteraction: TSInteraction?
     private func updateOldestUnreadInteraction(transaction: SDSAnyReadTransaction) throws {
-        self.oldestUnreadInteraction = try interactionFinder.oldestUnseenInteraction(transaction: transaction)
+        self.oldestUnreadInteraction = try interactionFinder.oldestUnreadInteraction(transaction: transaction.unwrapGrdbRead)
     }
 
     private func reloadInteractions(transaction: SDSAnyReadTransaction) throws {

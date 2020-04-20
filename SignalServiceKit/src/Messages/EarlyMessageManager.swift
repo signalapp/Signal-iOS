@@ -20,7 +20,7 @@ public class EarlyMessageManager: NSObject {
     private enum EarlyReceipt {
         case outgoingMessageRead(sender: SignalServiceAddress, timestamp: UInt64)
         case outgoingMessageDelivered(sender: SignalServiceAddress, timestamp: UInt64)
-        case incomingMessageReadOnLinkedDevice(timestamp: UInt64)
+        case messageReadOnLinkedDevice(timestamp: UInt64)
 
         init(receiptType: SSKProtoReceiptMessageType, sender: SignalServiceAddress, timestamp: UInt64) {
             switch (receiptType) {
@@ -94,7 +94,7 @@ public class EarlyMessageManager: NSObject {
         associatedMessageAuthor: SignalServiceAddress
     ) {
         recordEarlyReceipt(
-            .incomingMessageReadOnLinkedDevice(timestamp: timestamp),
+            .messageReadOnLinkedDevice(timestamp: timestamp),
             associatedMessageTimestamp: associatedMessageTimestamp,
             associatedMessageAuthor: associatedMessageAuthor
         )
@@ -173,11 +173,7 @@ public class EarlyMessageManager: NSObject {
                     deliveryTimestamp: NSNumber(value: timestamp),
                     transaction: transaction
                 )
-            case .incomingMessageReadOnLinkedDevice(let timestamp):
-                guard let message = message as? TSIncomingMessage else {
-                    owsFailDebug("Unexpected message type for early read receipt from linked device.")
-                    continue
-                }
+            case .messageReadOnLinkedDevice(let timestamp):
                 OWSReadReceiptManager.shared().markAsRead(
                     onLinkedDevice: message,
                     thread: message.thread(transaction: transaction),

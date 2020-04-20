@@ -3747,14 +3747,13 @@ typedef enum : NSUInteger {
     }
 
     if (lastVisibleViewItem) {
-        uint64_t lastVisibleSortId = lastVisibleViewItem.interaction.sortId;
-        self.lastVisibleSortId = MAX(self.lastVisibleSortId, lastVisibleSortId);
+        self.lastVisibleSortId = lastVisibleViewItem.interaction.sortId;
     }
 
     [self ensureScrollDownButton];
 
     InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:self.thread.uniqueId];
-    NSUInteger unreadCount = [interactionFinder unreadCountWithTransaction:transaction];
+    NSUInteger unreadCount = [interactionFinder unreadCountWithTransaction:transaction.unwrapGrdbRead];
 
     [self setHasUnreadMessages:unreadCount > 0 transaction:transaction];
 }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -23,7 +23,7 @@ class InteractionReactionState: NSObject {
         }
 
         let finder = ReactionFinder(uniqueMessageId: message.uniqueId)
-        emojiCounts = finder.emojiCounts(transaction: transaction)
-        localUserEmoji = finder.reaction(for: localAddress, transaction: transaction)?.emoji
+        emojiCounts = finder.emojiCounts(transaction: transaction.unwrapGrdbRead)
+        localUserEmoji = finder.reaction(for: localAddress, transaction: transaction.unwrapGrdbRead)?.emoji
     }
 }

@@ -134,28 +134,45 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     OWSAssertDebug(thread);
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:thread.uniqueId];
+
         uint64_t readTimestamp = [NSDate ows_millisecondTimeStamp];
         __block NSArray<id<OWSReadTracking>> *unreadMessages;
+        __block NSArray<TSOutgoingMessage *> *messagesWithUnreadReactions;
         [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-            unreadMessages = [self unreadMessagesBeforeSortId:sortId
-                                                       thread:thread
-                                                readTimestamp:readTimestamp
-                                                  transaction:transaction];
+            unreadMessages = [interactionFinder unreadMessagesBeforeSortId:sortId
+                                                               transaction:transaction.unwrapGrdbRead];
+
+            messagesWithUnreadReactions =
+                [interactionFinder messagesWithUnreadReactionsBeforeSortId:sortId
+                                                               transaction:transaction.unwrapGrdbRead];
         }];
-        if (unreadMessages.count < 1) {
+        if (unreadMessages.count < 1 && messagesWithUnreadReactions.count < 1) {
             // Avoid unnecessary writes.
             dispatch_async(dispatch_get_main_queue(), completion);
             return;
         }
         [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-            OWSReadCircumstance circumstance = hasPendingMessageRequest
-                ? OWSReadCircumstanceReadOnThisDeviceWhilePendingMessageRequest
-                : OWSReadCircumstanceReadOnThisDevice;
-            [self markMessagesAsRead:unreadMessages
-                              thread:thread
-                       readTimestamp:readTimestamp
-                        circumstance:circumstance
-                         transaction:transaction];
+            if (unreadMessages.count > 0) {
+                OWSReadCircumstance circumstance = hasPendingMessageRequest
+                    ? OWSReadCircumstanceReadOnThisDeviceWhilePendingMessageRequest
+                    : OWSReadCircumstanceReadOnThisDevice;
+                [self markMessagesAsRead:unreadMessages
+                                  thread:thread
+                           readTimestamp:readTimestamp
+                            circumstance:circumstance
+                             transaction:transaction];
+            }
+
+            if (messagesWithUnreadReactions.count > 0) {
+                for (TSOutgoingMessage *message in messagesWithUnreadReactions) {
+                    [message markUnreadReactionsAsReadWithTransaction:transaction];
+                }
+
+                [self sendLinkedDeviceReadReceiptForMessages:messagesWithUnreadReactions
+                                                    inThread:thread
+                                                 transaction:transaction];
+            }
         }];
         dispatch_async(dispatch_get_main_queue(), completion);
     });
@@ -285,10 +302,10 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
         }
 
         NSError *error;
-        NSArray<TSIncomingMessage *> *messages = (NSArray<TSIncomingMessage *> *)[InteractionFinder
+        NSArray<TSMessage *> *messages = (NSArray<TSMessage *> *)[InteractionFinder
             interactionsWithTimestamp:messageIdTimestamp
                                filter:^(TSInteraction *interaction) {
-                                   return [interaction isKindOfClass:[TSIncomingMessage class]];
+                                   return [interaction isKindOfClass:[TSMessage class]];
                                }
                           transaction:transaction
                                 error:&error];
@@ -297,14 +314,14 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
         }
 
         if (messages.count > 0) {
-            for (TSIncomingMessage *message in messages) {
+            for (TSMessage *message in messages) {
                 TSThread *_Nullable thread = [message threadWithTransaction:transaction];
                 if (thread == nil) {
                     OWSFailDebug(@"thread was unexpectedly nil");
                     continue;
                 }
                 NSTimeInterval secondsSinceRead = [NSDate new].timeIntervalSince1970 - readTimestamp / 1000;
-                OWSAssertDebug([message isKindOfClass:[TSIncomingMessage class]]);
+                OWSAssertDebug([message isKindOfClass:[TSMessage class]]);
                 OWSLogDebug(@"read on linked device %f seconds ago", secondsSinceRead);
                 [self markAsReadOnLinkedDevice:message
                                         thread:thread
@@ -319,7 +336,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     return [receiptsMissingMessage copy];
 }
 
-- (void)markAsReadOnLinkedDevice:(TSIncomingMessage *)message
+- (void)markAsReadOnLinkedDevice:(TSMessage *)message
                           thread:(TSThread *)thread
                    readTimestamp:(uint64_t)readTimestamp
                      transaction:(SDSAnyWriteTransaction *)transaction
@@ -328,20 +345,31 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     OWSAssertDebug(thread);
     OWSAssertDebug(transaction);
 
-    BOOL hasPendingMessageRequest = [thread hasPendingMessageRequestWithTransaction:transaction.unwrapGrdbRead];
-    OWSReadCircumstance circumstance = hasPendingMessageRequest
-        ? OWSReadCircumstanceReadOnLinkedDeviceWhilePendingMessageRequest
-        : OWSReadCircumstanceReadOnLinkedDevice;
+    if ([message isKindOfClass:[TSIncomingMessage class]]) {
+        TSIncomingMessage *incomingMessage = (TSIncomingMessage *)message;
+        BOOL hasPendingMessageRequest = [thread hasPendingMessageRequestWithTransaction:transaction.unwrapGrdbRead];
+        OWSReadCircumstance circumstance = hasPendingMessageRequest
+            ? OWSReadCircumstanceReadOnLinkedDeviceWhilePendingMessageRequest
+            : OWSReadCircumstanceReadOnLinkedDevice;
 
-    // Always re-mark the message as read to ensure any earlier read time is applied to disappearing messages.
-    [message markAsReadAtTimestamp:readTimestamp thread:thread circumstance:circumstance transaction:transaction];
+        // Always re-mark the message as read to ensure any earlier read time is applied to disappearing messages.
+        [incomingMessage markAsReadAtTimestamp:readTimestamp
+                                        thread:thread
+                                  circumstance:circumstance
+                                   transaction:transaction];
 
-    // Also mark any unread messages appearing earlier in the thread as read as well.
-    [self markAsReadBeforeSortId:message.sortId
-                          thread:thread
-                   readTimestamp:readTimestamp
-                    circumstance:circumstance
-                     transaction:transaction];
+        // Also mark any unread messages appearing earlier in the thread as read as well.
+        [self markAsReadBeforeSortId:incomingMessage.sortId
+                              thread:thread
+                       readTimestamp:readTimestamp
+                        circumstance:circumstance
+                         transaction:transaction];
+    } else if ([message isKindOfClass:[TSOutgoingMessage class]]) {
+        // Outgoing messages are always "read", but if we get a receipt
+        // from our linked device about one that indicates that any reactions
+        // we received on this message should also be marked read.
+        [message markUnreadReactionsAsReadWithTransaction:transaction];
+    }
 }
 
 #pragma mark - Mark As Read
@@ -356,8 +384,9 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     OWSAssertDebug(thread);
     OWSAssertDebug(transaction);
 
+    InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:thread.uniqueId];
     NSArray<id<OWSReadTracking>> *unreadMessages =
-        [self unreadMessagesBeforeSortId:sortId thread:thread readTimestamp:readTimestamp transaction:transaction];
+        [interactionFinder unreadMessagesBeforeSortId:sortId transaction:transaction.unwrapGrdbRead];
     if (unreadMessages.count < 1) {
         // Avoid unnecessary writes.
         return;
@@ -396,50 +425,6 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
     for (id<OWSReadTracking> readItem in unreadMessages) {
         [readItem markAsReadAtTimestamp:readTimestamp thread:thread circumstance:circumstance transaction:transaction];
     }
-}
-
-- (NSArray<id<OWSReadTracking>> *)unreadMessagesBeforeSortId:(uint64_t)sortId
-                                                      thread:(TSThread *)thread
-                                               readTimestamp:(uint64_t)readTimestamp
-                                                 transaction:(SDSAnyReadTransaction *)transaction
-{
-    OWSAssertDebug(sortId > 0);
-    OWSAssertDebug(thread);
-    OWSAssertDebug(transaction);
-
-    // POST GRDB TODO: We could pass readTimestamp and sortId through to the GRDB query.
-    NSMutableArray<id<OWSReadTracking>> *newlyReadList = [NSMutableArray new];
-    InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:thread.uniqueId];
-    NSError *error;
-    [interactionFinder
-        enumerateUnseenInteractionsWithTransaction:transaction
-                                           error:&error
-                                           block:^(TSInteraction *interaction, BOOL *stop) {
-                                               if (![interaction conformsToProtocol:@protocol(OWSReadTracking)]) {
-                                                   OWSFailDebug(@"Expected to conform to OWSReadTracking: object "
-                                                                @"with class: %@ collection: %@ "
-                                                                @"key: %@",
-                                                       [interaction class],
-                                                       TSInteraction.collection,
-                                                       interaction.uniqueId);
-                                                   return;
-                                               }
-                                               id<OWSReadTracking> possiblyRead = (id<OWSReadTracking>)interaction;
-                                               if (possiblyRead.sortId > sortId) {
-                                                   *stop = YES;
-                                                   return;
-                                               }
-
-                                               OWSAssertDebug(!possiblyRead.read);
-                                               OWSAssertDebug(possiblyRead.expireStartedAt == 0);
-                                               if (!possiblyRead.read) {
-                                                   [newlyReadList addObject:possiblyRead];
-                                               }
-                                           }];
-    if (error != nil) {
-        OWSFailDebug(@"Error during enumeration: %@", error);
-    }
-    return [newlyReadList copy];
 }
 
 #pragma mark - Settings

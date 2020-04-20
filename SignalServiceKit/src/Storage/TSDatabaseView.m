@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSDatabaseView.h"
@@ -40,8 +40,6 @@ NSString *const TSMessageDatabaseViewExtensionName = @"TSMessageDatabaseViewExte
 NSString *const TSMessageDatabaseViewExtensionName_Legacy = @"TSMessageDatabaseViewExtensionName";
 
 NSString *const TSThreadOutgoingMessageDatabaseViewExtensionName = @"TSThreadOutgoingMessageDatabaseViewExtensionName";
-NSString *const TSUnreadDatabaseViewExtensionName = @"TSUnreadDatabaseViewExtensionName";
-NSString *const TSUnseenDatabaseViewExtensionName = @"TSUnseenDatabaseViewExtensionName";
 NSString *const TSThreadSpecialMessagesDatabaseViewExtensionName = @"TSThreadSpecialMessagesDatabaseViewExtensionName";
 NSString *const TSIncompleteViewOnceMessagesDatabaseViewExtensionName
     = @"TSIncompleteViewOnceMessagesDatabaseViewExtensionName";
@@ -101,44 +99,6 @@ NSString *const TSInteractionsBySortIdGroup = @"TSInteractionsBySortIdGroup";
                                                                versionTag:version
                                                                   options:options];
     [storage asyncRegisterExtension:view withName:viewName];
-}
-
-+ (void)asyncRegisterUnreadDatabaseView:(OWSStorage *)storage
-{
-    YapDatabaseViewGrouping *viewGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString *(
-        YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
-        if ([object conformsToProtocol:@protocol(OWSReadTracking)]) {
-            id<OWSReadTracking> possiblyRead = (id<OWSReadTracking>)object;
-            if (!possiblyRead.wasRead && possiblyRead.shouldAffectUnreadCounts) {
-                return possiblyRead.uniqueThreadId;
-            }
-        }
-        return nil;
-    }];
-
-    [self registerMessageDatabaseViewWithName:TSUnreadDatabaseViewExtensionName
-                                 viewGrouping:viewGrouping
-                                      version:@"2"
-                                      storage:storage];
-}
-
-+ (void)asyncRegisterUnseenDatabaseView:(OWSStorage *)storage
-{
-    YapDatabaseViewGrouping *viewGrouping = [YapDatabaseViewGrouping withObjectBlock:^NSString *(
-        YapDatabaseReadTransaction *transaction, NSString *collection, NSString *key, id object) {
-        if ([object conformsToProtocol:@protocol(OWSReadTracking)]) {
-            id<OWSReadTracking> possiblyRead = (id<OWSReadTracking>)object;
-            if (!possiblyRead.wasRead) {
-                return possiblyRead.uniqueThreadId;
-            }
-        }
-        return nil;
-    }];
-
-    [self registerMessageDatabaseViewWithName:TSUnseenDatabaseViewExtensionName
-                                 viewGrouping:viewGrouping
-                                      version:@"2"
-                                      storage:storage];
 }
 
 + (void)asyncRegisterThreadSpecialMessagesDatabaseView:(OWSStorage *)storage
@@ -524,15 +484,6 @@ NSString *const TSInteractionsBySortIdGroup = @"TSInteractionsBySortIdGroup";
     YapDatabaseView *view =
         [[YapDatabaseAutoView alloc] initWithGrouping:viewGrouping sorting:viewSorting versionTag:@"4" options:options];
     [storage asyncRegisterExtension:view withName:TSLazyRestoreAttachmentsDatabaseViewExtensionName];
-}
-
-+ (id)unseenDatabaseViewExtension:(YapDatabaseReadTransaction *)transaction
-{
-    OWSAssertDebug(transaction);
-
-    id _Nullable result = [transaction ext:TSUnseenDatabaseViewExtensionName];
-    OWSAssertDebug(result);
-    return result;
 }
 
 // MJK TODO - dynamic interactions

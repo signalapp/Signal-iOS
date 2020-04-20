@@ -138,7 +138,6 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage, dispatch_block_t 
                                       // registered above in asyncRegisterThreadInteractionsDatabaseView.
                                       [TSDatabaseView asyncRegisterThreadDatabaseView:self];
 
-                                      [TSDatabaseView asyncRegisterUnreadDatabaseView:self];
                                       [self asyncRegisterExtension:[TSDatabaseSecondaryIndexes registerTimeStampIndex]
                                                           withName:[TSDatabaseSecondaryIndexes
                                                                        registerTimeStampIndexExtensionName]];
@@ -146,7 +145,6 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage, dispatch_block_t 
                                       [OWSMessageReceiver asyncRegisterDatabaseExtension:self];
                                       [YAPDBMessageContentJobFinder asyncRegisterDatabaseExtension:self];
 
-                                      [TSDatabaseView asyncRegisterUnseenDatabaseView:self];
                                       [TSDatabaseView asyncRegisterThreadOutgoingMessagesDatabaseView:self];
                                       [TSDatabaseView asyncRegisterThreadSpecialMessagesDatabaseView:self];
                                       [TSDatabaseView asyncRegisterIncompleteViewOnceMessagesDatabaseView:self];
@@ -163,7 +161,6 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage, dispatch_block_t 
                                       [TSDatabaseView asyncRegisterLazyRestoreAttachmentsDatabaseView:self];
                                       [YAPDBJobRecordFinderSetup asyncRegisterDatabaseExtensionObjCWithStorage:self];
                                       [YAPDBUserProfileFinder asyncRegisterDatabaseExtensions:self];
-                                      [YAPDBReactionFinderAdapter asyncRegisterDatabaseExtensions:self];
 
                                       [self.database
                                           flushExtensionRequestsWithCompletionQueue:dispatch_get_global_queue(

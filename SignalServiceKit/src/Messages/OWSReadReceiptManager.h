@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class SSKProtoSyncMessageRead;
 @class SignalServiceAddress;
 @class TSIncomingMessage;
+@class TSMessage;
 @class TSOutgoingMessage;
 @class TSThread;
 
@@ -70,7 +71,7 @@ extern NSString *const kIncomingMessageMarkedAsReadNotification;
                                                               readTimestamp:(uint64_t)readTimestamp
                                                                 transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)markAsReadOnLinkedDevice:(TSIncomingMessage *)message
+- (void)markAsReadOnLinkedDevice:(TSMessage *)message
                           thread:(TSThread *)thread
                    readTimestamp:(uint64_t)readTimestamp
                      transaction:(SDSAnyWriteTransaction *)transaction;

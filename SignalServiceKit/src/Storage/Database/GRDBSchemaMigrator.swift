@@ -67,6 +67,7 @@ public class GRDBSchemaMigrator: NSObject {
         case cdnKeyAndCdnNumber
         case addGroupIdToGroupsV2IncomingMessageJobs
         case removeEarlyReceiptTables
+        case addReadToReactions
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -451,7 +452,7 @@ public class GRDBSchemaMigrator: NSObject {
 
         migrator.registerMigration(MigrationId.addRemoteDeleteToInteractions.rawValue) { db in
             try db.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
-                table.add(column: "wasRemotelyDeleted", .boolean).notNull().defaults(to: 0)
+                table.add(column: "wasRemotelyDeleted", .boolean)
             }
         }
 
@@ -478,6 +479,19 @@ public class GRDBSchemaMigrator: NSObject {
             let transaction = GRDBWriteTransaction(database: db).asAnyWrite
             let viewOnceStore = SDSKeyValueStore(collection: "viewOnceMessages")
             viewOnceStore.removeAll(transaction: transaction)
+        }
+
+        migrator.registerMigration(MigrationId.addReadToReactions.rawValue) { db in
+            try db.alter(table: "model_OWSReaction") { (table: TableAlteration) -> Void in
+                table.add(column: "read", .boolean).notNull().defaults(to: false)
+            }
+
+            try db.create(index: "index_model_OWSReaction_on_uniqueMessageId_and_read",
+                          on: "model_OWSReaction",
+                          columns: ["uniqueMessageId", "read"])
+
+            // Mark existing reactions as read
+            try db.execute(sql: "UPDATE model_OWSReaction SET read = 1")
         }
 
         // MARK: - Schema Migration Insertion Point

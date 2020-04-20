@@ -360,28 +360,6 @@ ConversationColorName const ConversationColorNameDefault = ConversationColorName
     return [[[InteractionFinder alloc] initWithThreadUniqueId:self.uniqueId] countWithTransaction:transaction];
 }
 
-- (NSArray<id<OWSReadTracking>> *)unseenMessagesWithTransaction:(SDSAnyReadTransaction *)transaction
-{
-    NSMutableArray<id<OWSReadTracking>> *messages = [NSMutableArray new];
-    NSError *error;
-    InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:self.uniqueId];
-    [interactionFinder
-        enumerateUnseenInteractionsWithTransaction:transaction
-                                           error:&error
-                                           block:^(TSInteraction *interaction, BOOL *stop) {
-                                               if (![interaction conformsToProtocol:@protocol(OWSReadTracking)]) {
-                                                   OWSFailDebug(
-                                                       @"Unexpected object in unseen messages: %@", interaction.class);
-                                                   return;
-                                               }
-                                               [messages addObject:(id<OWSReadTracking>)interaction];
-                                           }];
-    if (error != nil) {
-        OWSFailDebug(@"Error during enumeration: %@", error);
-    }
-    return [messages copy];
-}
-
 - (void)markAllAsReadWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     BOOL hasPendingMessageRequest = [self hasPendingMessageRequestWithTransaction:transaction.unwrapGrdbWrite];
@@ -389,7 +367,10 @@ ConversationColorName const ConversationColorNameDefault = ConversationColorName
         ? OWSReadCircumstanceReadOnThisDeviceWhilePendingMessageRequest
         : OWSReadCircumstanceReadOnThisDevice;
 
-    for (id<OWSReadTracking> message in [self unseenMessagesWithTransaction:transaction]) {
+    InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:self.uniqueId];
+
+    for (id<OWSReadTracking> message in
+        [interactionFinder allUnreadMessagesWithTransaction:transaction.unwrapGrdbRead]) {
         [message markAsReadAtTimestamp:[NSDate ows_millisecondTimeStamp]
                                 thread:self
                           circumstance:circumstance
@@ -397,7 +378,7 @@ ConversationColorName const ConversationColorNameDefault = ConversationColorName
     }
 
     // Just to be defensive, we'll also check for unread messages.
-    OWSAssertDebug([self unseenMessagesWithTransaction:transaction].count < 1);
+    OWSAssertDebug([interactionFinder allUnreadMessagesWithTransaction:transaction.unwrapGrdbRead].count < 1);
 }
 
 - (nullable TSInteraction *)lastInteractionForInboxWithTransaction:(SDSAnyReadTransaction *)transaction
