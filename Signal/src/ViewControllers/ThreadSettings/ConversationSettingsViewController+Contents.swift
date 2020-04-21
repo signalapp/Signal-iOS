@@ -589,7 +589,7 @@ extension ConversationSettingsViewController {
             cell.preservesSuperviewLayoutMargins = true
             cell.contentView.preservesSuperviewLayoutMargins = true
 
-            let iconView = OWSTableItem.buildIconInCircleView(icon: .settingsAddMembers, innerIconSize: 24)
+            let iconView = OWSTableItem.buildIconInCircleView(icon: .settingsAddMembers, iconSize: kSmallAvatarSize)
 
             let rowLabel = UILabel()
             rowLabel.text = NSLocalizedString("CONVERSATION_SETTINGS_ADD_MEMBERS",
@@ -667,6 +667,8 @@ extension ConversationSettingsViewController {
                     return OWSTableItem.newCell()
                 }
                 let cell = ContactTableViewCell()
+                cell.setUseSmallAvatars()
+
                 let isGroupAdmin = groupMembership.isAdministrator(memberAddress)
                 let isVerified = verificationState == .verified
                 let isNoLongerVerified = verificationState == .noLongerVerified
@@ -683,7 +685,7 @@ extension ConversationSettingsViewController {
 
                 if isLocalUser {
                     // Use a custom avatar to avoid using the "note to self" icon.
-                    let customAvatar = OWSProfileManager.shared().localProfileAvatarImage() ?? OWSContactAvatarBuilder(forLocalUserWithDiameter: kStandardAvatarSize).buildDefaultImage()
+                    let customAvatar = OWSProfileManager.shared().localProfileAvatarImage() ?? OWSContactAvatarBuilder(forLocalUserWithDiameter: kSmallAvatarSize).buildDefaultImage()
                     cell.setCustomAvatar(customAvatar)
                     cell.setCustomName(NSLocalizedString("GROUP_MEMBER_LOCAL_USER",
                                                          comment: "Label indicating the local user."))
@@ -726,7 +728,8 @@ extension ConversationSettingsViewController {
                 cell.contentView.preservesSuperviewLayoutMargins = true
 
                 let iconView = OWSTableItem.buildIconInCircleView(icon: .settingsShowAllMembers,
-                                                                  innerIconSize: 24,
+                                                                  iconSize: kSmallAvatarSize,
+                                                                  innerIconSize: 12,
                                                                   iconTintColor: Theme.secondaryTextAndIconColor)
 
                 let rowLabel = UILabel()

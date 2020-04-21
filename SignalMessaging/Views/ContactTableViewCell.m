@@ -107,6 +107,11 @@ NS_ASSUME_NONNULL_BEGIN
     [self.cellView setCustomAvatar:customAvatar];
 }
 
+- (void)setUseSmallAvatars
+{
+    self.cellView.useSmallAvatars = YES;
+}
+
 - (void)prepareForReuse
 {
     [super prepareForReuse];

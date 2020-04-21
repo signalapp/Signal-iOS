@@ -149,15 +149,37 @@ public extension OWSTableItem {
     }
 
     static func buildIconInCircleView(icon: ThemeIcon,
-                                      innerIconSize: CGFloat = 24) -> UIView {
+                                      innerIconSize: CGFloat) -> UIView {
         return buildIconInCircleView(icon: icon,
+                                     iconSize: nil,
                                      innerIconSize: innerIconSize,
-                                     iconTintColor: .ows_accentBlue)
+                                     iconTintColor: nil)
     }
 
     static func buildIconInCircleView(icon: ThemeIcon,
-                                      innerIconSize: CGFloat = 24,
+                                      innerIconSize: CGFloat,
+                                      iconTintColor: UIColor) -> UIView {
+        return buildIconInCircleView(icon: icon,
+                                     iconSize: nil,
+                                     innerIconSize: innerIconSize,
+                                     iconTintColor: iconTintColor)
+    }
+}
+
+// MARK: -
+
+public extension OWSTableItem {
+    static func buildIconInCircleView(icon: ThemeIcon,
+                                      iconSize iconSizeParam: UInt? = nil,
+                                      innerIconSize innerIconSizeParam: CGFloat? = nil,
                                       iconTintColor: UIColor? = nil) -> UIView {
+        let iconSize = CGFloat(iconSizeParam ?? kStandardAvatarSize)
+        let innerIconSize: CGFloat
+        if let innerIconSizeParam = innerIconSizeParam {
+            innerIconSize = innerIconSizeParam
+        } else {
+            innerIconSize = CGFloat(iconSize) * 0.6
+        }
         let iconView = OWSTableItem.imageView(forIcon: icon, iconSize: innerIconSize)
         if let iconTintColor = iconTintColor {
             iconView.tintColor = iconTintColor
@@ -168,8 +190,8 @@ public extension OWSTableItem {
         iconWrapper.addSubview(iconView)
         iconView.autoCenterInSuperview()
         iconWrapper.backgroundColor = Theme.isDarkThemeEnabled ? UIColor.ows_gray80 : Theme.washColor
-        iconWrapper.layer.cornerRadius = CGFloat(kStandardAvatarSize) * 0.5
-        iconWrapper.autoSetDimensions(to: CGSize(square: CGFloat(kStandardAvatarSize)))
+        iconWrapper.layer.cornerRadius = iconSize * 0.5
+        iconWrapper.autoSetDimensions(to: CGSize(square: iconSize))
         iconWrapper.setCompressionResistanceHigh()
         iconWrapper.setContentHuggingHigh()
         return iconWrapper

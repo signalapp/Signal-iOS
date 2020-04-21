@@ -27,6 +27,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setCustomAvatar:(nullable UIImage *)customAvatar;
 
+- (void)setUseSmallAvatars;
+
 - (NSAttributedString *)verifiedSubtitle;
 
 - (BOOL)hasAccessoryText;
