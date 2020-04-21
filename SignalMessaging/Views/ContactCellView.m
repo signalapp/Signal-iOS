@@ -30,6 +30,7 @@ const CGFloat kContactCellAvatarTextMargin = 8;
 
 @property (nonatomic, nullable) TSThread *thread;
 @property (nonatomic) SignalServiceAddress *address;
+@property (nonatomic, nullable) NSArray<NSLayoutConstraint *> *layoutConstraints;
 
 @end
 
@@ -80,8 +81,6 @@ const CGFloat kContactCellAvatarTextMargin = 8;
     self.layoutMargins = UIEdgeInsetsZero;
 
     _avatarView = [AvatarImageView new];
-    [_avatarView autoSetDimension:ALDimensionWidth toSize:kStandardAvatarSize];
-    [_avatarView autoSetDimension:ALDimensionHeight toSize:kStandardAvatarSize];
 
     self.nameLabel = [UILabel new];
     self.nameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
@@ -190,7 +189,8 @@ const CGFloat kContactCellAvatarTextMargin = 8;
         self.nameLabel.attributedText = attributedText;
     }
 
-    self.avatarView.image = [OWSAvatarBuilder buildImageForThread:thread diameter:kStandardAvatarSize];
+    self.layoutConstraints = [self.avatarView autoSetDimensionsToSize:CGSizeMake(self.avatarSize, self.avatarSize)];
+    self.avatarView.image = [OWSAvatarBuilder buildImageForThread:thread diameter:self.avatarSize];
 
     if (self.accessoryMessage) {
         self.accessoryLabel.text = self.accessoryMessage;
@@ -203,6 +203,8 @@ const CGFloat kContactCellAvatarTextMargin = 8;
 
 - (void)updateAvatar
 {
+    self.layoutConstraints = [self.avatarView autoSetDimensionsToSize:CGSizeMake(self.avatarSize, self.avatarSize)];
+
     if (self.customAvatar != nil) {
         self.avatarView.image = self.customAvatar;
         return;
@@ -225,9 +227,14 @@ const CGFloat kContactCellAvatarTextMargin = 8;
 
     OWSContactAvatarBuilder *avatarBuilder = [[OWSContactAvatarBuilder alloc] initWithAddress:address
                                                                                     colorName:colorName
-                                                                                     diameter:kStandardAvatarSize];
+                                                                                     diameter:self.avatarSize];
 
     self.avatarView.image = [avatarBuilder build];
+}
+
+- (NSUInteger)avatarSize
+{
+    return self.useSmallAvatars ? kSmallAvatarSize : kStandardAvatarSize;
 }
 
 - (void)updateNameLabels
@@ -274,6 +281,9 @@ const CGFloat kContactCellAvatarTextMargin = 8;
     for (UIView *subview in self.accessoryViewContainer.subviews) {
         [subview removeFromSuperview];
     }
+    [NSLayoutConstraint deactivateConstraints:self.layoutConstraints];
+    self.layoutConstraints = nil;
+    self.useSmallAvatars = NO;
 }
 
 - (void)otherUsersProfileDidChange:(NSNotification *)notification
