@@ -238,7 +238,7 @@ extension AddGroupMembersViewController: GroupMemberViewDelegate {
         }
     }
 
-    func groupMemberViewGroupMemberCount() -> Int {
+    func groupMemberViewGroupMemberCountForDisplay() -> Int {
         return (oldGroupModel.groupMembership.pendingAndNonPendingMemberCount +
                 newRecipientSet.count)
     }
@@ -247,7 +247,7 @@ extension AddGroupMembersViewController: GroupMemberViewDelegate {
         guard groupThread.isGroupV2Thread else {
             return false
         }
-        return groupMemberViewGroupMemberCount() >= GroupManager.maxGroupMemberCount
+        return groupMemberViewGroupMemberCountForDisplay() >= GroupManager.maxGroupMemberCount
     }
 
     func groupMemberViewMaxMemberCount() -> UInt? {
