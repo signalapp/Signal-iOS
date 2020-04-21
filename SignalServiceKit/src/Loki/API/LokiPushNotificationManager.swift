@@ -9,7 +9,7 @@ public final class LokiPushNotificationManager : NSObject {
     #else
     private static let server = "https://live.apns.getsession.org/"
     #endif
-    private static let tokenExpirationInterval: TimeInterval = 2 * 24 * 60 * 60
+    private static let tokenExpirationInterval: TimeInterval = 12 * 60 * 60
 
     // MARK: Initialization
     private override init() { }
@@ -24,7 +24,7 @@ public final class LokiPushNotificationManager : NSObject {
         let lastUploadTime = userDefaults[.lastDeviceTokenUpload]
         let isUsingFullAPNs = userDefaults[.isUsingFullAPNs]
         let now = Date().timeIntervalSince1970
-        guard isForcedUpdate || hexEncodedToken != oldToken || now - lastUploadTime < tokenExpirationInterval else {
+        guard isForcedUpdate || hexEncodedToken != oldToken || now - lastUploadTime > tokenExpirationInterval else {
             print("[Loki] Device token hasn't changed; no need to re-upload.")
             return Promise<Void> { $0.fulfill(()) }
         }
@@ -66,7 +66,13 @@ public final class LokiPushNotificationManager : NSObject {
     static func register(with token: Data, hexEncodedPublicKey: String, isForcedUpdate: Bool) -> Promise<Void> {
         let hexEncodedToken = token.toHexString()
         let userDefaults = UserDefaults.standard
+        let oldToken = userDefaults[.deviceToken]
+        let lastUploadTime = userDefaults[.lastDeviceTokenUpload]
         let now = Date().timeIntervalSince1970
+        guard isForcedUpdate || hexEncodedToken != oldToken || now - lastUploadTime > tokenExpirationInterval else {
+            print("[Loki] Device token hasn't changed; no need to re-upload.")
+            return Promise<Void> { $0.fulfill(()) }
+        }
         let parameters = [ "token" : hexEncodedToken, "pubKey" : hexEncodedPublicKey]
         let url = URL(string: server + "register")!
         let request = TSRequest(url: url, method: "POST", parameters: parameters)
