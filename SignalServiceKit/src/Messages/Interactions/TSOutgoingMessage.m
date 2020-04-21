@@ -1155,9 +1155,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     return [result copy];
 }
 
-- (uint)ttl {
-    return 1 * kDayInMs; // TODO: Change this to return a value that the user chose
-}
+- (uint)ttl { return (uint)[LKTTLUtilities getTTLFor:LKMessageTypeRegular]; }
 
 @end
 

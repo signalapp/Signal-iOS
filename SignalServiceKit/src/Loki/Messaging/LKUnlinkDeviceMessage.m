@@ -20,7 +20,7 @@
 }
 
 #pragma mark Settings
-- (uint)ttl { return 4 * kDayInMs; }
+- (uint)ttl { return (uint)[LKTTLUtilities getTTLFor:LKMessageTypeUnlinkDevice]; }
 - (BOOL)shouldSyncTranscript { return NO; }
 - (BOOL)shouldBeSaved { return NO; }
 

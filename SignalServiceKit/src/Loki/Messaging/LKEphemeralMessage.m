@@ -13,6 +13,6 @@
 #pragma mark Settings
 - (BOOL)shouldSyncTranscript { return NO; }
 - (BOOL)shouldBeSaved { return NO; }
-- (uint)ttl { return 23 * kHourInMs; }
+- (uint)ttl { return (uint)[LKTTLUtilities getTTLFor:LKMessageTypeEphemeral]; }
 
 @end

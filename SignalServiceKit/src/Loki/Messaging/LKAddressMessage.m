@@ -44,6 +44,6 @@
 }
 
 #pragma mark Settings
-- (uint)ttl { return 1 * kMinuteInMs; }
+- (uint)ttl { return (uint)[LKTTLUtilities getTTLFor:LKMessageTypeAddress]; }
 
 @end
