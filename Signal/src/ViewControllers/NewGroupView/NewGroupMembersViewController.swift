@@ -59,6 +59,10 @@ extension NewGroupMembersViewController: GroupMemberViewDelegate {
         return newGroupState.hasUnsavedChanges
     }
 
+    var shouldTryToEnableGroupsV2ForMembers: Bool {
+        return true
+    }
+
     func groupMemberViewRemoveRecipient(_ recipient: PickedRecipient) {
         newGroupState.recipientSet.remove(recipient)
     }
