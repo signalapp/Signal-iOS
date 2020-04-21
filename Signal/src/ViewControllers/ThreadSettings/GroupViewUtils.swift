@@ -8,6 +8,20 @@ import UIKit
 
 class GroupViewUtils {
 
+    public static func formatGroupMembersLabel(memberCount: Int) -> String {
+        guard memberCount > 0 else {
+            return NSLocalizedString("GROUP_MEMBER_COUNT_LABEL_0",
+                                     comment: "The 'group member count' indicator when there are no members in the group.")
+        }
+        guard memberCount != 1 else {
+            return NSLocalizedString("GROUP_MEMBER_COUNT_LABEL_1",
+                                     comment: "The 'group member count' indicator when there is 1 member in the group.")
+        }
+        let format = NSLocalizedString("GROUP_MEMBER_COUNT_LABEL_FORMAT",
+                                       comment: "Format for the 'group member count' indicator. Embeds {the number of group members}.")
+        return String(format: format, OWSFormat.formatInt(memberCount))
+    }
+
     public static func updateGroupWithActivityIndicator(fromViewController: UIViewController,
                                                         updatePromiseBlock: @escaping () -> Promise<Void>,
                                                         completion: @escaping () -> Void) {
