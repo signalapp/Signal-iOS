@@ -43,7 +43,6 @@ public final class LokiAPI : NSObject {
 
     internal static var powDifficulty: UInt = 2
 
-    public static let defaultMessageTTL: UInt64 = 24 * 60 * 60 * 1000
     public static let deviceLinkUpdateInterval: TimeInterval = 20
     
     // MARK: Nested Types

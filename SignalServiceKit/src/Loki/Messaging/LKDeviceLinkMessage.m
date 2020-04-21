@@ -79,7 +79,7 @@
 }
 
 #pragma mark Settings
-- (uint)ttl { return 4 * kMinuteInMs; }
+- (uint)ttl { return (uint)[LKTTLUtilities getTTLFor:LKMessageTypeLinkDevice]; }
 - (BOOL)shouldSyncTranscript { return NO; }
 - (BOOL)shouldBeSaved { return NO; }
 

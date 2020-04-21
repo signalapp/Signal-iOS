@@ -23,7 +23,7 @@
 }
 
 #pragma mark Settings
-- (uint)ttl { return 4 * kDayInMs; }
+- (uint)ttl { return (uint)[LKTTLUtilities getTTLFor:LKMessageTypeFriendRequest]; }
 - (BOOL)shouldSyncTranscript { return NO; }
 
 @end

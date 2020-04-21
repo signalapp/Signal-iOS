@@ -11,7 +11,7 @@
 }
 
 - (BOOL)shouldBeSaved { return NO; }
-- (uint)ttl { return 23 * kHourInMs; }
+- (uint)ttl { return (uint)[LKTTLUtilities getTTLFor:LKMessageTypeSessionRequest]; }
 
 #pragma mark Building
 - (nullable SSKProtoDataMessageBuilder *)dataMessageBuilder
