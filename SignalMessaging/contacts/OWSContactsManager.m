@@ -1265,9 +1265,27 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 - (NSComparisonResult (^)(SignalServiceAddress *left,
     SignalServiceAddress *right))signalServiceAddressComparatorWithTransaction:(SDSAnyReadTransaction *)transaction
 {
+    // We want to sort phone numbers _after_ names.
+    NSCharacterSet *numericSet = [NSCharacterSet characterSetWithCharactersInString:@"+0123456789"];
+    BOOL (^hasNumericPrefix)(NSString *) = ^(NSString *string) {
+        if (string.length < 1) {
+            return NO;
+        }
+        unichar firstChar = [string characterAtIndex:0];
+        return [numericSet characterIsMember:firstChar];
+    };
+
     return ^NSComparisonResult(SignalServiceAddress *left, SignalServiceAddress *right) {
         NSString *leftName = [self comparableNameForAddress:left transaction:transaction];
         NSString *rightName = [self comparableNameForAddress:right transaction:transaction];
+
+        BOOL leftHasNumericPrefix = hasNumericPrefix(leftName);
+        BOOL rightHasNumericPrefix = hasNumericPrefix(rightName);
+        if (leftHasNumericPrefix && !rightHasNumericPrefix) {
+            return NSOrderedDescending;
+        } else if (!leftHasNumericPrefix && rightHasNumericPrefix) {
+            return NSOrderedAscending;
+        }
 
         NSComparisonResult nameComparison = [leftName caseInsensitiveCompare:rightName];
         if (nameComparison == NSOrderedSame) {
