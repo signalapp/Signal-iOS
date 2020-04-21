@@ -16,7 +16,12 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
     // MARK: Database
     override internal class var authTokenCollection: String { return "LokiStorageAuthTokenCollection" }
     
-    // MARK: Device Links (Public API)
+    // MARK: Device Links
+    @objc(getDeviceLinksAssociatedWith:)
+    public static func objc_getDeviceLinks(associatedWith hexEncodedPublicKey: String) -> AnyPromise {
+        return AnyPromise.from(getDeviceLinks(associatedWith: hexEncodedPublicKey))
+    }
+
     /// Gets the device links associated with the given hex encoded public key from the
     /// server and stores and returns the valid ones.
     public static func getDeviceLinks(associatedWith hexEncodedPublicKey: String, in transaction: YapDatabaseReadWriteTransaction? = nil) -> Promise<Set<DeviceLink>> {
@@ -138,13 +143,12 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
         }
     }
     
-    // MARK: Device Links (Public Obj-C API)
-    @objc(getDeviceLinksAssociatedWith:)
-    public static func objc_getDeviceLinks(associatedWith hexEncodedPublicKey: String) -> AnyPromise {
-        return AnyPromise.from(getDeviceLinks(associatedWith: hexEncodedPublicKey))
+    // MARK: Profile Pictures
+    @objc(uploadProfilePicture:)
+    public static func objc_uploadProfilePicture(_ profilePicture: Data) -> AnyPromise {
+        return AnyPromise.from(uploadProfilePicture(profilePicture))
     }
-    
-    // MARK: Profile Pictures (Public API)
+
     public static func uploadProfilePicture(_ profilePicture: Data) -> Promise<String> {
         guard profilePicture.count < maxFileSize else { return Promise(error: LokiDotNetAPIError.maxFileSizeExceeded) }
         let url = "\(server)/files"
@@ -167,11 +171,5 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
             UserDefaults.standard[.lastProfilePictureUpload] = Date()
             return downloadURL
         }
-    }
-    
-    // MARK: Profile Pictures (Public Obj-C API)
-    @objc(uploadProfilePicture:)
-    public static func objc_uploadProfilePicture(_ profilePicture: Data) -> AnyPromise {
-        return AnyPromise.from(uploadProfilePicture(profilePicture))
     }
 }

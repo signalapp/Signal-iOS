@@ -3,20 +3,20 @@ import PromiseKit
 @objc(LKPublicChatAPI)
 public final class LokiPublicChatAPI : LokiDotNetAPI {
     private static var moderators: [String:[UInt64:Set<String>]] = [:] // Server URL to (channel ID to set of moderator IDs)
+
+    @objc public static let defaultChats: [LokiPublicChat] = [] // Currently unused
+
     public static var displayNameUpdatees: [String:Set<String>] = [:]
     
     // MARK: Settings
-    private static let fallbackBatchCount = 64
-    private static let maxRetryCount: UInt = 8
-    
-    // MARK: Public Chat
-    private static let channelInfoType = "net.patter-app.settings"
     private static let attachmentType = "net.app.core.oembed"
+    private static let channelInfoType = "net.patter-app.settings"
+    private static let fallbackBatchCount = 64
+    private static let maxRetryCount: UInt = 4
+
     public static let profilePictureType = "network.loki.messenger.avatar"
     @objc public static let publicChatMessageType = "network.loki.messenger.publicChat"
-    
-    @objc public static let defaultChats: [LokiPublicChat] = [] // Currently unused
-    
+
     // MARK: Convenience
     private static var userDisplayName: String {
         return SSKEnvironment.shared.contactsManager.displayName(forPhoneIdentifier: userHexEncodedPublicKey) ?? "Anonymous"
@@ -73,6 +73,11 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
     }
     
     // MARK: Public API
+    @objc(getMessagesForGroup:onServer:)
+    public static func objc_getMessages(for group: UInt64, on server: String) -> AnyPromise {
+        return AnyPromise.from(getMessages(for: group, on: server))
+    }
+
     public static func getMessages(for channel: UInt64, on server: String) -> Promise<[LokiPublicChatMessage]> {
         var queryParameters = "include_annotations=1"
         if let lastMessageServerID = getLastMessageServerID(for: channel, on: server) {
@@ -153,7 +158,12 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
             }.sorted { $0.timestamp < $1.timestamp }
         }
     }
-    
+
+    @objc(sendMessage:toGroup:onServer:)
+    public static func objc_sendMessage(_ message: LokiPublicChatMessage, to group: UInt64, on server: String) -> AnyPromise {
+        return AnyPromise.from(sendMessage(message, to: group, on: server))
+    }
+
     public static func sendMessage(_ message: LokiPublicChatMessage, to channel: UInt64, on server: String) -> Promise<LokiPublicChatMessage> {
         print("[Loki] Sending message to public chat channel with ID: \(channel) on server: \(server).")
         let (promise, seal) = Promise<LokiPublicChatMessage>.pending()
@@ -221,6 +231,11 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
             }
         }
     }
+
+    @objc(deleteMessageWithID:forGroup:onServer:isSentByUser:)
+    public static func objc_deleteMessage(with messageID: UInt, for group: UInt64, on server: String, isSentByUser: Bool) -> AnyPromise {
+        return AnyPromise.from(deleteMessage(with: messageID, for: group, on: server, isSentByUser: isSentByUser))
+    }
     
     public static func deleteMessage(with messageID: UInt, for channel: UInt64, on server: String, isSentByUser: Bool) -> Promise<Void> {
         return attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global()) {
@@ -281,7 +296,12 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
             }
         }
     }
-    
+
+    @objc(getUserCountForGroup:onServer:)
+    public static func objc_getUserCount(for group: UInt64, on server: String) -> AnyPromise {
+        return AnyPromise.from(getUserCount(for: group, on: server))
+    }
+
     public static func getUserCount(for channel: UInt64, on server: String) -> Promise<Int> {
         return getAuthToken(for: server).then { token -> Promise<Int> in
             let queryParameters = "count=200"
@@ -334,7 +354,12 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
     public static func isUserModerator(_ hexEncodedPublicString: String, for channel: UInt64, on server: String) -> Bool {
         return moderators[server]?[channel]?.contains(hexEncodedPublicString) ?? false
     }
-    
+
+    @objc(setDisplayName:on:)
+    public static func objc_setDisplayName(to newDisplayName: String?, on server: String) -> AnyPromise {
+        return AnyPromise.from(setDisplayName(to: newDisplayName, on: server))
+    }
+
     public static func setDisplayName(to newDisplayName: String?, on server: String) -> Promise<Void> {
         print("[Loki] Updating display name on server: \(server).")
         return attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global()) {
@@ -350,7 +375,12 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
             }
         }
     }
-    
+
+    @objc(setProfilePictureURL:usingProfileKey:on:)
+    public static func objc_setProfilePicture(to url: String?, using profileKey: Data, on server: String) -> AnyPromise {
+        return AnyPromise.from(setProfilePictureURL(to: url, using: profileKey, on: server))
+    }
+
     public static func setProfilePictureURL(to url: String?, using profileKey: Data, on server: String) -> Promise<Void> {
         print("[Loki] Updating profile picture on server: \(server).")
         return attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global()) {
@@ -387,46 +417,15 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
             return LokiPublicChatInfo(displayName: displayName)
         }
     }
-    
+
+    @objc(reportMessageWithID:inChannel:onServer:)
+    public static func objc_reportMessageWithID(_ messageID: UInt64, in channel: UInt64, on server: String) -> AnyPromise {
+        return AnyPromise.from(reportMessageWithID(messageID, in: channel, on: server))
+    }
+
     public static func reportMessageWithID(_ messageID: UInt64, in channel: UInt64, on server: String) -> Promise<Void> {
         let url = URL(string: "\(server)/loki/v1/channels/\(channel)/messages/\(messageID)/report")!
         let request = TSRequest(url: url, method: "POST", parameters: [:])
         return LokiFileServerProxy(for: server).perform(request).map { _ in }
-    }
-    
-    // MARK: Public API (Obj-C)
-    @objc(getMessagesForGroup:onServer:)
-    public static func objc_getMessages(for group: UInt64, on server: String) -> AnyPromise {
-        return AnyPromise.from(getMessages(for: group, on: server))
-    }
-    
-    @objc(sendMessage:toGroup:onServer:)
-    public static func objc_sendMessage(_ message: LokiPublicChatMessage, to group: UInt64, on server: String) -> AnyPromise {
-        return AnyPromise.from(sendMessage(message, to: group, on: server))
-    }
-    
-    @objc(deleteMessageWithID:forGroup:onServer:isSentByUser:)
-    public static func objc_deleteMessage(with messageID: UInt, for group: UInt64, on server: String, isSentByUser: Bool) -> AnyPromise {
-        return AnyPromise.from(deleteMessage(with: messageID, for: group, on: server, isSentByUser: isSentByUser))
-    }
-    
-    @objc(getUserCountForGroup:onServer:)
-    public static func objc_getUserCount(for group: UInt64, on server: String) -> AnyPromise {
-        return AnyPromise.from(getUserCount(for: group, on: server))
-    }
-    
-    @objc(setDisplayName:on:)
-    public static func objc_setDisplayName(to newDisplayName: String?, on server: String) -> AnyPromise {
-        return AnyPromise.from(setDisplayName(to: newDisplayName, on: server))
-    }
-    
-    @objc(setProfilePictureURL:usingProfileKey:on:)
-    public static func objc_setProfilePicture(to url: String?, using profileKey: Data, on server: String) -> AnyPromise {
-        return AnyPromise.from(setProfilePictureURL(to: url, using: profileKey, on: server))
-    }
-    
-    @objc(reportMessageWithID:inChannel:onServer:)
-    public static func objc_reportMessageWithID(_ messageID: UInt64, in channel: UInt64, on server: String) -> AnyPromise {
-        return AnyPromise.from(reportMessageWithID(messageID, in: channel, on: server))
     }
 }

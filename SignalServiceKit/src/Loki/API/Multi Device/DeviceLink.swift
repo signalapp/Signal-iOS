@@ -11,7 +11,7 @@ public final class DeviceLink : NSObject, NSCoding {
         return (userHexEncodedPublicKey == master.hexEncodedPublicKey) ? slave : master
     }
     
-    // MARK: Types
+    // MARK: Nested Types
     @objc(LKDevice)
     public final class Device : NSObject, NSCoding {
         @objc public let hexEncodedPublicKey: String

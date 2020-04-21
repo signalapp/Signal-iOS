@@ -4,7 +4,7 @@ internal final class LokiAPITarget : NSObject, NSCoding {
     internal let port: UInt16
     internal let publicKeySet: KeySet?
     
-    // MARK: Types
+    // MARK: Nested Types
     internal enum Method : String {
         /// Only supported by snode targets.
         case getSwarm = "get_snodes_for_pubkey"

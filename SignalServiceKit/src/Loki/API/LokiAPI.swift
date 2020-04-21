@@ -27,13 +27,12 @@ public final class LokiAPI : NSObject {
     }
 
     internal static let workQueue = DispatchQueue(label: "LokiAPI.workQueue", qos: .userInitiated)
-    
+
+    internal static var storage: OWSPrimaryStorage { OWSPrimaryStorage.shared() }
+    internal static var userHexEncodedPublicKey: String { getUserHexEncodedPublicKey() }
+
     /// All service node related errors must be handled on this queue to avoid race conditions maintaining e.g. failure counts.
     public static let errorHandlingQueue = DispatchQueue(label: "LokiAPI.errorHandlingQueue")
-    
-    // MARK: Convenience
-    internal static let storage = OWSPrimaryStorage.shared()
-    internal static let userHexEncodedPublicKey = getUserHexEncodedPublicKey()
     
     // MARK: Settings
     private static let useOnionRequests = true
@@ -47,7 +46,7 @@ public final class LokiAPI : NSObject {
     public static let defaultMessageTTL: UInt64 = 24 * 60 * 60 * 1000
     public static let deviceLinkUpdateInterval: TimeInterval = 20
     
-    // MARK: Types
+    // MARK: Nested Types
     public typealias RawResponse = Any
     
     @objc public class LokiAPIError : NSError { // Not called `Error` for Obj-C interoperablity
@@ -104,12 +103,12 @@ public final class LokiAPI : NSObject {
     internal static func invoke(_ method: LokiAPITarget.Method, on target: LokiAPITarget, associatedWith hexEncodedPublicKey: String,
         parameters: JSON, headers: [String:String]? = nil, timeout: TimeInterval? = nil) -> RawResponsePromise {
         let url = URL(string: "\(target.address):\(target.port)/storage_rpc/v1")!
-        let request = TSRequest(url: url, method: "POST", parameters: [ "method" : method.rawValue, "params" : parameters ])
-        if let headers = headers { request.allHTTPHeaderFields = headers }
-        request.timeoutInterval = timeout ?? defaultTimeout
         if useOnionRequests {
             return OnionRequestAPI.sendOnionRequest(invoking: method, on: target, with: parameters, associatedWith: hexEncodedPublicKey).map { $0 as Any }
         } else {
+            let request = TSRequest(url: url, method: "POST", parameters: [ "method" : method.rawValue, "params" : parameters ])
+            if let headers = headers { request.allHTTPHeaderFields = headers }
+            request.timeoutInterval = timeout ?? defaultTimeout
             return TSNetworkManager.shared().perform(request, withCompletionQueue: workQueue)
                 .map { $0.responseObject }
                 .handlingSnodeErrorsIfNeeded(for: target, associatedWith: hexEncodedPublicKey)
@@ -133,7 +132,13 @@ public final class LokiAPI : NSObject {
             }.map { Set($0) }
         }
     }
-    
+
+    @objc(getDestinationsFor:)
+    public static func objc_getDestinations(for hexEncodedPublicKey: String) -> AnyPromise {
+        let promise = getDestinations(for: hexEncodedPublicKey)
+        return AnyPromise.from(promise)
+    }
+
     public static func getDestinations(for hexEncodedPublicKey: String) -> Promise<[Destination]> {
         var result: Promise<[Destination]>!
         storage.dbReadWriteConnection.readWrite { transaction in
@@ -141,7 +146,13 @@ public final class LokiAPI : NSObject {
         }
         return result
     }
-    
+
+    @objc(getDestinationsFor:inTransaction:)
+    public static func objc_getDestinations(for hexEncodedPublicKey: String, in transaction: YapDatabaseReadWriteTransaction) -> AnyPromise {
+        let promise = getDestinations(for: hexEncodedPublicKey, in: transaction)
+        return AnyPromise.from(promise)
+    }
+
     public static func getDestinations(for hexEncodedPublicKey: String, in transaction: YapDatabaseReadWriteTransaction) -> Promise<[Destination]> {
         let (promise, seal) = Promise<[Destination]>.pending()
         func getDestinations(in transaction: YapDatabaseReadTransaction? = nil) {
@@ -189,7 +200,13 @@ public final class LokiAPI : NSObject {
         }
         return promise
     }
-    
+
+    @objc(sendSignalMessage:onP2PSuccess:)
+    public static func objc_sendSignalMessage(_ signalMessage: SignalMessage, onP2PSuccess: @escaping () -> Void) -> AnyPromise {
+        let promise = sendSignalMessage(signalMessage, onP2PSuccess: onP2PSuccess).mapValues { AnyPromise.from($0) }.map { Set($0) }
+        return AnyPromise.from(promise)
+    }
+
     public static func sendSignalMessage(_ signalMessage: SignalMessage, onP2PSuccess: @escaping () -> Void) -> Promise<Set<RawResponsePromise>> {
         guard let lokiMessage = LokiMessage.from(signalMessage: signalMessage) else { return Promise(error: LokiAPIError.messageConversionFailed) }
         let notificationCenter = NotificationCenter.default
@@ -243,25 +260,6 @@ public final class LokiAPI : NSObject {
         } else {
             return sendLokiMessageUsingSwarmAPI()
         }
-    }
-    
-    // MARK: Public API (Obj-C)
-    @objc(getDestinationsFor:)
-    public static func objc_getDestinations(for hexEncodedPublicKey: String) -> AnyPromise {
-        let promise = getDestinations(for: hexEncodedPublicKey)
-        return AnyPromise.from(promise)
-    }
-    
-    @objc(getDestinationsFor:inTransaction:)
-    public static func objc_getDestinations(for hexEncodedPublicKey: String, in transaction: YapDatabaseReadWriteTransaction) -> AnyPromise {
-        let promise = getDestinations(for: hexEncodedPublicKey, in: transaction)
-        return AnyPromise.from(promise)
-    }
-    
-    @objc(sendSignalMessage:onP2PSuccess:)
-    public static func objc_sendSignalMessage(_ signalMessage: SignalMessage, onP2PSuccess: @escaping () -> Void) -> AnyPromise {
-        let promise = sendSignalMessage(signalMessage, onP2PSuccess: onP2PSuccess).mapValues { AnyPromise.from($0) }.map { Set($0) }
-        return AnyPromise.from(promise)
     }
     
     // MARK: Parsing

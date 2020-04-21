@@ -3,11 +3,10 @@ import SignalMetadataKit
 
 /// Base class for `LokiFileServerAPI` and `LokiPublicChatAPI`.
 public class LokiDotNetAPI : NSObject {
-    
-    // MARK: Convenience
-    internal static let storage = OWSPrimaryStorage.shared()
-    internal static let userKeyPair = OWSIdentityManager.shared().identityKeyPair()!
-    internal static let userHexEncodedPublicKey = userKeyPair.hexEncodedPublicKey
+
+    internal static var storage: OWSPrimaryStorage { OWSPrimaryStorage.shared() }
+    internal static var userKeyPair: ECKeyPair { OWSIdentityManager.shared().identityKeyPair()! }
+    internal static var userHexEncodedPublicKey: String { userKeyPair.hexEncodedPublicKey }
 
     // MARK: Settings
     private static let attachmentType = "network.loki"
@@ -69,7 +68,45 @@ public class LokiDotNetAPI : NSObject {
     // MARK: Lifecycle
     override private init() { }
 
-    // MARK: Attachments (Public API)
+    // MARK: Private API
+    private static func requestNewAuthToken(for server: String) -> Promise<String> {
+        print("[Loki] Requesting auth token for server: \(server).")
+        let queryParameters = "pubKey=\(userHexEncodedPublicKey)"
+        let url = URL(string: "\(server)/loki/v1/get_challenge?\(queryParameters)")!
+        let request = TSRequest(url: url)
+        return LokiFileServerProxy(for: server).perform(request, withCompletionQueue: LokiAPI.workQueue).map(on: LokiAPI.workQueue) { rawResponse in
+            guard let json = rawResponse as? JSON, let base64EncodedChallenge = json["cipherText64"] as? String, let base64EncodedServerPublicKey = json["serverPubKey64"] as? String,
+                let challenge = Data(base64Encoded: base64EncodedChallenge), var serverPublicKey = Data(base64Encoded: base64EncodedServerPublicKey) else {
+                throw LokiDotNetAPIError.parsingFailed
+            }
+            // Discard the "05" prefix if needed
+            if serverPublicKey.count == 33 {
+                let hexEncodedServerPublicKey = serverPublicKey.toHexString()
+                serverPublicKey = Data.data(fromHex: hexEncodedServerPublicKey.substring(from: 2))!
+            }
+            // The challenge is prefixed by the 16 bit IV
+            guard let tokenAsData = try? DiffieHellman.decrypt(challenge, publicKey: serverPublicKey, privateKey: userKeyPair.privateKey),
+                let token = String(bytes: tokenAsData, encoding: .utf8) else {
+                throw LokiDotNetAPIError.decryptionFailed
+            }
+            return token
+        }
+    }
+
+    private static func submitAuthToken(_ token: String, for server: String) -> Promise<String> {
+        print("[Loki] Submitting auth token for server: \(server).")
+        let url = URL(string: "\(server)/loki/v1/submit_challenge")!
+        let parameters = [ "pubKey" : userHexEncodedPublicKey, "token" : token ]
+        let request = TSRequest(url: url, method: "POST", parameters: parameters)
+        return LokiFileServerProxy(for: server).perform(request, withCompletionQueue: LokiAPI.workQueue).map { _ in token }
+    }
+
+    // MARK: Public API
+    @objc(uploadAttachment:withID:toServer:)
+    public static func objc_uploadAttachment(_ attachment: TSAttachmentStream, with attachmentID: String, to server: String) -> AnyPromise {
+        return AnyPromise.from(uploadAttachment(attachment, with: attachmentID, to: server))
+    }
+
     public static func uploadAttachment(_ attachment: TSAttachmentStream, with attachmentID: String, to server: String) -> Promise<Void> {
         let isEncryptionRequired = (server == LokiFileServerAPI.server)
         return Promise<Void>() { seal in
@@ -171,44 +208,5 @@ public class LokiDotNetAPI : NSObject {
                 }
             }
         }
-    }
-
-    // MARK: Private API
-    private static func requestNewAuthToken(for server: String) -> Promise<String> {
-        print("[Loki] Requesting auth token for server: \(server).")
-        let queryParameters = "pubKey=\(userHexEncodedPublicKey)"
-        let url = URL(string: "\(server)/loki/v1/get_challenge?\(queryParameters)")!
-        let request = TSRequest(url: url)
-        return LokiFileServerProxy(for: server).perform(request, withCompletionQueue: LokiAPI.workQueue).map(on: LokiAPI.workQueue) { rawResponse in
-            guard let json = rawResponse as? JSON, let base64EncodedChallenge = json["cipherText64"] as? String, let base64EncodedServerPublicKey = json["serverPubKey64"] as? String,
-                let challenge = Data(base64Encoded: base64EncodedChallenge), var serverPublicKey = Data(base64Encoded: base64EncodedServerPublicKey) else {
-                throw LokiDotNetAPIError.parsingFailed
-            }
-            // Discard the "05" prefix if needed
-            if serverPublicKey.count == 33 {
-                let hexEncodedServerPublicKey = serverPublicKey.toHexString()
-                serverPublicKey = Data.data(fromHex: hexEncodedServerPublicKey.substring(from: 2))!
-            }
-            // The challenge is prefixed by the 16 bit IV
-            guard let tokenAsData = try? DiffieHellman.decrypt(challenge, publicKey: serverPublicKey, privateKey: userKeyPair.privateKey),
-                let token = String(bytes: tokenAsData, encoding: .utf8) else {
-                throw LokiDotNetAPIError.decryptionFailed
-            }
-            return token
-        }
-    }
-
-    private static func submitAuthToken(_ token: String, for server: String) -> Promise<String> {
-        print("[Loki] Submitting auth token for server: \(server).")
-        let url = URL(string: "\(server)/loki/v1/submit_challenge")!
-        let parameters = [ "pubKey" : userHexEncodedPublicKey, "token" : token ]
-        let request = TSRequest(url: url, method: "POST", parameters: parameters)
-        return LokiFileServerProxy(for: server).perform(request, withCompletionQueue: LokiAPI.workQueue).map { _ in token }
-    }
-    
-    // MARK: Attachments (Public Obj-C API)
-    @objc(uploadAttachment:withID:toServer:)
-    public static func objc_uploadAttachment(_ attachment: TSAttachmentStream, with attachmentID: String, to server: String) -> AnyPromise {
-        return AnyPromise.from(uploadAttachment(attachment, with: attachmentID, to: server))
     }
 }
