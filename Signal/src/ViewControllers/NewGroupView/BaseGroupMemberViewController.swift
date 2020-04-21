@@ -11,6 +11,8 @@ protocol GroupMemberViewDelegate: class {
 
     var groupMemberViewHasUnsavedChanges: Bool { get }
 
+    var shouldTryToEnableGroupsV2ForMembers: Bool { get }
+
     func groupMemberViewRemoveRecipient(_ recipient: PickedRecipient)
 
     func groupMemberViewAddRecipient(_ recipient: PickedRecipient)
@@ -415,9 +417,16 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
             owsFailDebug("Invalid recipient.")
             return
         }
+        guard let groupMemberViewDelegate = groupMemberViewDelegate else {
+            owsFailDebug("Missing delegate.")
+            return
+        }
         guard RemoteConfig.groupsV2CreateGroups ||
             RemoteConfig.groupsV2IncomingMessages else {
                 return
+        }
+        guard groupMemberViewDelegate.shouldTryToEnableGroupsV2ForMembers else {
+            return
         }
         DispatchQueue.global().async {
             if !self.doesRecipientSupportGroupsV2(recipient) {
@@ -441,6 +450,9 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
         guard RemoteConfig.groupsV2CreateGroups ||
             RemoteConfig.groupsV2IncomingMessages else {
                 return AnyPromise(Promise.value(()))
+        }
+        guard groupMemberViewDelegate.shouldTryToEnableGroupsV2ForMembers else {
+            return AnyPromise(Promise.value(()))
         }
         guard !doesRecipientSupportGroupsV2(recipient) else {
             // Recipient already supports groups v2.
