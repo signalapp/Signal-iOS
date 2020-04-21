@@ -46,7 +46,7 @@ public class LokiDotNetAPI : NSObject {
             return Promise.value(token)
         } else {
             return requestNewAuthToken(for: server).then(on: LokiAPI.workQueue) { submitAuthToken($0, for: server) }.map { token -> String in
-                setAuthToken(for: server, to: token, in: transaction)
+                setAuthToken(for: server, to: token, in: transaction) // TODO: Does keeping the transaction this long even make sense?
                 return token
             }
         }

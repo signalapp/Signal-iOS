@@ -83,7 +83,7 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
                 func setDeviceLinks(in transaction: YapDatabaseReadWriteTransaction) {
                     storage.setDeviceLinks(deviceLinks, in: transaction)
                 }
-                if let transaction = transaction, transaction.connection.pendingTransactionCount != 0 {
+                if let transaction = transaction, transaction.connection.pendingTransactionCount != 0 { // TODO: Does keeping the transaction this long even make sense?
                     setDeviceLinks(in: transaction)
                 } else {
                     storage.dbReadWriteConnection.readWrite { transaction in

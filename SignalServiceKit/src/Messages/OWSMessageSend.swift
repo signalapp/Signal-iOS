@@ -94,8 +94,7 @@ public class OWSMessageSend: NSObject {
         disableUD()
     }
     
-    @objc(copyWithDestination:)
-    public func copy(with destination: LokiAPI.Destination) -> OWSMessageSend {
+    public func copy(with destination: SessionProtocol.MultiDeviceDestination) -> OWSMessageSend {
         var recipient: SignalRecipient!
         OWSPrimaryStorage.shared().dbReadConnection.read { transaction in
             recipient = SignalRecipient.getOrBuildUnsavedRecipient(forRecipientId: destination.hexEncodedPublicKey, transaction: transaction)
