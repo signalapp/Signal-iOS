@@ -671,7 +671,10 @@ extension ConversationSettingsViewController {
                 let isVerified = verificationState == .verified
                 let isNoLongerVerified = verificationState == .noLongerVerified
                 let isBlocked = helper.isSignalServiceAddressBlocked(memberAddress)
-                if isNoLongerVerified {
+                if isGroupAdmin {
+                    cell.setAccessoryMessage(NSLocalizedString("GROUP_MEMBER_ADMIN_INDICATOR",
+                                                               comment: "Label indicating that a group member is an admin."))
+                } else if isNoLongerVerified {
                     cell.setAccessoryMessage(NSLocalizedString("CONTACT_CELL_IS_NO_LONGER_VERIFIED",
                                                                comment: "An indicator that a contact is no longer verified."))
                 } else if isBlocked {
@@ -692,13 +695,7 @@ extension ConversationSettingsViewController {
                 cell.configure(withRecipientAddress: memberAddress)
 
                 if isGroupAdmin {
-                    let subtitle = NSAttributedString(string: NSLocalizedString("GROUP_MEMBER_ADMIN_INDICATOR",
-                                                                                comment: "Label indicating that a group member is an admin."),
-                                                      attributes: [
-                                                        .font: UIFont.ows_dynamicTypeSubheadline.ows_semibold(),
-                                                        .foregroundColor: Theme.primaryTextColor
-                    ])
-                    cell.setAttributedSubtitle(subtitle)
+                    cell.setAttributedSubtitle(nil)
                 } else if isVerified {
                     cell.setAttributedSubtitle(cell.verifiedSubtitle())
                 } else {
