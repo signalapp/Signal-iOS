@@ -173,10 +173,6 @@ typedef BOOL (^OWSTableSwitchBlock)(void);
 
 @property (nonatomic) BOOL useThemeBackgroundColors;
 
-@property (nonatomic) BOOL useLargeHeaderFooterFonts;
-
-@property (nonatomic, nullable) UIColor *customSectionHeaderFooterBackgroundColor;
-
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 
 #pragma mark - Presentation

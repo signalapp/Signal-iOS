@@ -671,13 +671,10 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
     if (section.customHeaderView) {
         return section.customHeaderView;
     } else if (section.headerTitle.length > 0 || section.headerAttributedTitle.length > 0) {
-        UITextView *textView = [LinkingTextView new];
-        textView.textColor = Theme.secondaryTextAndIconColor;
-        textView.font = self.sectionHeaderAndFooterFont;
-        textView.backgroundColor = self.sectionHeaderAndFooterBackgroundColor;
-
-        CGFloat tableEdgeInsets = UIDevice.currentDevice.isPlusSizePhone ? 20 : 16;
-        textView.textContainerInset = UIEdgeInsetsMake(16, tableEdgeInsets, 6, tableEdgeInsets);
+        UITextView *textView = [self sectionHeaderAndFooterTextView];
+        textView.textColor = (self.useLargeHeaderFooterFonts
+                              ? Theme.primaryTextColor
+                              : Theme.secondaryTextAndIconColor);
 
         if (section.headerAttributedTitle.length > 0) {
             textView.attributedText = section.headerAttributedTitle;
@@ -698,13 +695,10 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
     if (section.customFooterView) {
         return section.customFooterView;
     } else if (section.footerTitle.length > 0 || section.footerAttributedTitle.length > 0) {
-        UITextView *textView = [LinkingTextView new];
-        textView.textColor = UIColor.ows_gray45Color;
-        textView.font = self.sectionHeaderAndFooterFont;
-        textView.backgroundColor = self.sectionHeaderAndFooterBackgroundColor;
-
-        CGFloat tableEdgeInsets = UIDevice.currentDevice.isPlusSizePhone ? 20 : 16;
-        textView.textContainerInset = UIEdgeInsetsMake(6, tableEdgeInsets, 12, tableEdgeInsets);
+        UITextView *textView = [self sectionHeaderAndFooterTextView];
+        textView.textColor = (self.useLargeHeaderFooterFonts
+                              ? Theme.primaryTextColor
+                              : UIColor.ows_gray45Color);
 
         textView.linkTextAttributes = @{
             NSForegroundColorAttributeName : Theme.accentBlueColor,
@@ -722,6 +716,24 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
     }
 
     return nil;
+}
+
+- (UITextView *)sectionHeaderAndFooterTextView
+{
+    UITextView *textView = [LinkingTextView new];
+    textView.textColor = (self.useLargeHeaderFooterFonts
+                          ? Theme.primaryTextColor
+                          : Theme.secondaryTextAndIconColor);
+    textView.font = (self.useLargeHeaderFooterFonts ? UIFont.ows_dynamicTypeBodyFont.ows_semibold : UIFont.ows_dynamicTypeCaption1Font);
+    textView.backgroundColor = self.sectionHeaderAndFooterBackgroundColor;
+    
+    CGFloat tableEdgeInsets = UIDevice.currentDevice.isPlusSizePhone ? 20 : 16;
+    if (self.useLargeHeaderFooterFonts) {
+        textView.textContainerInset = UIEdgeInsetsMake(5, tableEdgeInsets, 5, tableEdgeInsets);
+    } else {
+        textView.textContainerInset = UIEdgeInsetsMake(6, tableEdgeInsets, 12, tableEdgeInsets);
+    }
+    return textView;
 }
 
 - (CGFloat)tableView:(UITableView *)tableView heightForHeaderInSection:(NSInteger)sectionIndex
@@ -876,11 +888,6 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
         return self.customSectionHeaderFooterBackgroundColor;
     }
     return (self.useThemeBackgroundColors ? Theme.tableViewBackgroundColor : Theme.secondaryBackgroundColor);
-}
-
-- (UIFont *)sectionHeaderAndFooterFont
-{
-    return (self.useLargeHeaderFooterFonts ? UIFont.ows_dynamicTypeBody2Font : UIFont.ows_dynamicTypeCaption1Font);
 }
 
 @end
