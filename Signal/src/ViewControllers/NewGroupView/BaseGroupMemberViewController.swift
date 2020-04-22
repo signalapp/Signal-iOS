@@ -76,7 +76,6 @@ public class BaseGroupMemberViewController: OWSViewController {
 
     private let recipientPicker = RecipientPickerViewController()
 
-    private let searchBar = OWSSearchBar()
     private let memberBar = NewGroupMembersBar()
     private let memberCountLabel = UILabel()
     private let memberCountWrapper = UIView()
@@ -95,19 +94,6 @@ public class BaseGroupMemberViewController: OWSViewController {
 
         // First section.
 
-        if FeatureFlags.usernames {
-            searchBar.placeholder = NSLocalizedString("SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT",
-                                                      comment: "Placeholder text indicating the user can search for contacts by name, username, or phone number.")
-        } else {
-            searchBar.placeholder = NSLocalizedString("SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT",
-                                                      comment: "Placeholder text indicating the user can search for contacts by name or phone number.")
-        }
-        searchBar.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self,
-                                                                           name: "member_search_bar")
-        searchBar.textField?.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self,
-                                                                                      name: "member_search_field")
-
-        searchBar.delegate = self
         memberBar.delegate = self
 
         // Don't use dynamic type in this label.
@@ -202,7 +188,6 @@ public class BaseGroupMemberViewController: OWSViewController {
 
         groupMemberViewDelegate.groupMemberViewAddRecipient(recipient)
         recipientPicker.pickedRecipients = recipientSet.orderedMembers
-        self.searchBar.text = ""
         recipientPicker.clearSearchText()
         updateMemberBar()
         updateMemberCount()
@@ -551,9 +536,7 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
         return imageView
     }
 
-    func recipientPickerTableViewWillBeginDragging(_ recipientPickerViewController: RecipientPickerViewController) {
-        _ = searchBar.resignFirstResponder()
-    }
+    func recipientPickerTableViewWillBeginDragging(_ recipientPickerViewController: RecipientPickerViewController) {}
 
     func recipientPickerNewGroupButtonWasPressed() {}
 
