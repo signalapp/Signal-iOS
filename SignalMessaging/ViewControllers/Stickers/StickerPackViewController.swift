@@ -121,7 +121,7 @@ public class StickerPackViewController: OWSViewController {
 
         authorLabel.font = UIFont.ows_dynamicTypeBody
 
-        defaultPackIconView.setTemplateImageName("check-circle-filled-16", tintColor: UIColor.ows_accentBlue)
+        defaultPackIconView.setTemplateImageName("check-circle-filled-16", tintColor: Theme.accentBlueColor)
         defaultPackIconView.isHidden = true
 
         shareButton.setTemplateImageName("forward-solid-24", tintColor: Theme.darkThemePrimaryColor)

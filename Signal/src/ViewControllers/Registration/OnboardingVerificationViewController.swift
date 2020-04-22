@@ -437,12 +437,12 @@ public class OnboardingVerificationViewController: OnboardingBaseViewController 
             codeStateLink.setTitle(title: NSLocalizedString("ONBOARDING_VERIFICATION_ORIGINAL_CODE_MISSING_LINK",
                                                             comment: "Label for link that can be used when the original code did not arrive."),
                                    font: .ows_dynamicTypeBodyClamped,
-                                   titleColor: .ows_accentBlue)
+                                   titleColor: Theme.accentBlueColor)
         case .resent:
             codeStateLink.setTitle(title: NSLocalizedString("ONBOARDING_VERIFICATION_RESENT_CODE_MISSING_LINK",
                                                             comment: "Label for link that can be used when the resent code did not arrive."),
                                    font: .ows_dynamicTypeBodyClamped,
-                                   titleColor: .ows_accentBlue)
+                                   titleColor: Theme.accentBlueColor)
         }
     }
 

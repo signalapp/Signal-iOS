@@ -233,7 +233,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     _sendButton = [[UIButton alloc] init];
     self.sendButton.accessibilityLabel = MessageStrings.sendButton;
     [self.sendButton addTarget:self action:@selector(sendButtonPressed) forControlEvents:UIControlEventTouchUpInside];
-    [self.sendButton setTemplateImageName:@"send-solid-24" tintColor:UIColor.ows_accentBlueColor];
+    [self.sendButton setTemplateImageName:@"send-solid-24" tintColor:Theme.accentBlueColor];
     [self.sendButton autoSetDimensionsToSize:CGSizeMake(50, kMinToolbarItemHeight)];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _sendButton);
 
@@ -648,8 +648,7 @@ const CGFloat kMaxIPadTextViewHeight = 142;
         ensureViewHiddenState(self.stickerButton, hideStickerButton);
         if (!hideStickerButton) {
             self.stickerButton.imageView.tintColor
-                = (self.desiredKeyboardType == KeyboardType_Sticker ? UIColor.ows_accentBlueColor
-                                                                    : Theme.primaryIconColor);
+                = (self.desiredKeyboardType == KeyboardType_Sticker ? Theme.accentBlueColor : Theme.primaryIconColor);
         }
 
         [self.attachmentButton setSelected:self.desiredKeyboardType == KeyboardType_Attachment animated:isAnimated];

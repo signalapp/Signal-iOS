@@ -205,7 +205,7 @@
                               : NSLocalizedString(@"SETTINGS_RELINK_BUTTON", @"Label for re-link button.")
                                  accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"reregister")
                                                 selector:@selector(reregisterUser)
-                                                   color:UIColor.ows_accentBlueColor]];
+                                                   color:Theme.accentBlueColor]];
         [section addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"SETTINGS_DELETE_DATA_BUTTON",
                                                                   @"Label for 'delete data' button.")
                                       accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"delete_data")

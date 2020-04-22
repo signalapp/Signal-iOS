@@ -737,7 +737,7 @@ extension ConversationSettingsViewController {
                 let rowLabel = UILabel()
                 rowLabel.text = NSLocalizedString("CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS",
                                                   comment: "Label for 'view all members' button in conversation settings view.")
-                rowLabel.textColor = Theme.primaryTextColor
+                rowLabel.textColor = Theme.secondaryTextAndIconColor
                 rowLabel.font = OWSTableItem.primaryLabelFont
                 rowLabel.lineBreakMode = .byTruncatingTail
 
