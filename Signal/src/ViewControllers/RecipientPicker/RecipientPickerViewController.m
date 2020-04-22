@@ -261,15 +261,19 @@ const NSUInteger kMinimumSearchLength = 2;
     buttonStack.alignment = UIStackViewAlignmentFill;
     buttonStack.spacing = 16;
 
-    void (^addButton)(NSString *, SEL, NSString *, ThemeIcon)
-        = ^(NSString *title, SEL selector, NSString *accessibilityIdentifierName, ThemeIcon icon) {
+    void (^addButton)(NSString *, SEL, NSString *, ThemeIcon, NSUInteger)
+        = ^(NSString *title,
+            SEL selector,
+            NSString *accessibilityIdentifierName,
+            ThemeIcon icon,
+            NSUInteger innerIconSize) {
               UIButton *button = [UIButton buttonWithType:UIButtonTypeCustom];
               [button addTarget:self action:selector forControlEvents:UIControlEventTouchUpInside];
               SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, button);
               button.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, accessibilityIdentifierName);
               [buttonStack addArrangedSubview:button];
 
-              UIView *iconView = [OWSTableItem buildIconInCircleViewWithIcon:icon innerIconSize:40];
+              UIView *iconView = [OWSTableItem buildIconInCircleViewWithIcon:icon innerIconSize:innerIconSize];
 
               UILabel *label = [UILabel new];
               label.text = title;
@@ -294,7 +298,8 @@ const NSUInteger kMinimumSearchLength = 2;
                                     : @"Label for the 'create new group' button."),
             @selector(newGroupButtonPressed),
             @"newGroupButton",
-            ThemeIconComposeNewGroup);
+            ThemeIconComposeNewGroup,
+            35);
     }
 
     if (self.allowsAddByPhoneNumber) {
@@ -302,7 +307,8 @@ const NSUInteger kMinimumSearchLength = 2;
                       @"Label for a button that lets users search for contacts by phone number"),
             @selector(hideBackgroundView),
             @"searchByPhoneNumberButton",
-            ThemeIconComposeFindByPhoneNumber);
+            ThemeIconComposeFindByPhoneNumber,
+            42);
     }
 
     if (self.shouldShowInvites) {
@@ -310,7 +316,8 @@ const NSUInteger kMinimumSearchLength = 2;
                       "Label for the cell that presents the 'invite contacts' workflow."),
             @selector(presentInviteFlow),
             @"inviteContactsButton",
-            ThemeIconComposeInvite);
+            ThemeIconComposeInvite,
+            38);
     }
 
     UIStackView *stackView = [[UIStackView alloc] initWithArrangedSubviews:@[
@@ -419,7 +426,7 @@ const NSUInteger kMinimumSearchLength = 2;
                             NSString *cellName = NSLocalizedString(@"NEW_GROUP_BUTTON", comment
                                                                    : @"Label for the 'create new group' button.");
                             UIView *iconView = [OWSTableItem buildIconInCircleViewWithIcon:ThemeIconComposeNewGroup
-                                                                             innerIconSize:28];
+                                                                             innerIconSize:35];
                             UITableViewCell *cell = [OWSTableItem buildCellWithName:cellName
                                                                            iconView:iconView
                                                                         iconSpacing:kContactCellAvatarTextMargin];
@@ -445,7 +452,7 @@ const NSUInteger kMinimumSearchLength = 2;
                                 @"A label the cell that lets you add a new member to a group.");
                             UIView *iconView =
                                 [OWSTableItem buildIconInCircleViewWithIcon:ThemeIconComposeFindByPhoneNumber
-                                                              innerIconSize:28];
+                                                              innerIconSize:42];
                             UITableViewCell *cell = [OWSTableItem buildCellWithName:cellName
                                                                            iconView:iconView
                                                                         iconSpacing:kContactCellAvatarTextMargin];
@@ -473,7 +480,7 @@ const NSUInteger kMinimumSearchLength = 2;
                             NSString *cellName = NSLocalizedString(@"INVITE_FRIENDS_CONTACT_TABLE_BUTTON",
                                 @"Label for the cell that presents the 'invite contacts' workflow.");
                             UIView *iconView = [OWSTableItem buildIconInCircleViewWithIcon:ThemeIconComposeInvite
-                                                                             innerIconSize:28];
+                                                                             innerIconSize:38];
                             UITableViewCell *cell = [OWSTableItem buildCellWithName:cellName
                                                                            iconView:iconView
                                                                         iconSpacing:kContactCellAvatarTextMargin];
