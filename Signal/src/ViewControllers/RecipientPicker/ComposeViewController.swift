@@ -14,6 +14,8 @@ class ComposeViewController: OWSViewController {
 
         title = NSLocalizedString("MESSAGE_COMPOSEVIEW_TITLE", comment: "Title for the compose view.")
 
+        view.backgroundColor = Theme.backgroundColor
+
         let showNewGroupAsCell = RemoteConfig.groupsV2CreateGroups
 
         recipientPicker.allowsSelectingUnregisteredPhoneNumbers = false
@@ -22,6 +24,10 @@ class ComposeViewController: OWSViewController {
         recipientPicker.delegate = self
         addChild(recipientPicker)
         view.addSubview(recipientPicker.view)
+        recipientPicker.view.autoPin(toTopLayoutGuideOf: self, withInset: 0)
+        recipientPicker.view.autoPinEdge(toSuperviewEdge: .leading)
+        recipientPicker.view.autoPinEdge(toSuperviewEdge: .trailing)
+        recipientPicker.view.autoPinEdge(toSuperviewEdge: .bottom)
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(dismissPressed))
 

@@ -47,13 +47,15 @@ const NSUInteger kMinimumSearchLength = 2;
 
 @property (nonatomic, readonly) FullTextSearcher *fullTextSearcher;
 
+@property (nonatomic, readonly) UIStackView *signalContactsStackView;
+
 @property (nonatomic, readonly) UIView *noSignalContactsView;
 
 @property (nonatomic, readonly) OWSTableViewController *tableViewController;
 
 @property (nonatomic, readonly) UILocalizedIndexedCollation *collation;
 
-@property (nonatomic, readonly) UISearchBar *searchBar;
+@property (nonatomic, nullable, readonly) UISearchBar *searchBar;
 @property (nonatomic, nullable) ComposeScreenSearchResultSet *searchResults;
 @property (nonatomic, nullable) NSString *lastSearchText;
 @property (nonatomic, nullable) OWSInviteFlow *inviteFlow;
@@ -121,6 +123,12 @@ const NSUInteger kMinimumSearchLength = 2;
 - (void)loadView
 {
     [super loadView];
+    
+    _signalContactsStackView = [UIStackView new];
+    self.signalContactsStackView.axis = UILayoutConstraintAxisVertical;
+    self.signalContactsStackView.alignment = UIStackViewAlignmentFill;
+    [self.view addSubview:self.signalContactsStackView];
+    [self.signalContactsStackView autoPinEdgesToSuperviewEdges];
 
     _searchResults = nil;
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
@@ -128,41 +136,36 @@ const NSUInteger kMinimumSearchLength = 2;
     _collation = [UILocalizedIndexedCollation currentCollation];
 
     // Search
-    if (self.shouldShowSearchBar) {
-        UISearchBar *searchBar = [OWSSearchBar new];
-        _searchBar = searchBar;
-        searchBar.delegate = self;
-        if (SSKFeatureFlags.usernames) {
-            searchBar.placeholder = NSLocalizedString(@"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT",
-                @"Placeholder text indicating the user can search for contacts by name, username, or phone number.");
-        } else {
-            searchBar.placeholder = NSLocalizedString(@"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT",
-                @"Placeholder text indicating the user can search for contacts by name or phone number.");
-        }
-        [searchBar sizeToFit];
-        SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, searchBar);
-        searchBar.textField.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"contact_search");
+    UISearchBar *searchBar = [OWSSearchBar new];
+    _searchBar = searchBar;
+    searchBar.delegate = self;
+    if (SSKFeatureFlags.usernames) {
+        searchBar.placeholder = NSLocalizedString(@"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT",
+            @"Placeholder text indicating the user can search for contacts by name, username, or phone number.");
+    } else {
+        searchBar.placeholder = NSLocalizedString(@"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT",
+            @"Placeholder text indicating the user can search for contacts by name or phone number.");
     }
-
+    [searchBar sizeToFit];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, searchBar);
+    searchBar.textField.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"contact_search");
+    [self.signalContactsStackView addArrangedSubview:searchBar];
+    [searchBar setCompressionResistanceVerticalHigh];
+    [searchBar setContentHuggingVerticalHigh];
+    searchBar.hidden = !self.shouldShowSearchBar;
+        
     _tableViewController = [OWSTableViewController new];
     _tableViewController.delegate = self;
     _tableViewController.tableViewStyle = UITableViewStylePlain;
 
-    // To automatically adjust our content inset appropriately on iOS9/10
-    // 1. the tableViewController must be a childView
-    // 2. the scrollable view (tableView in this case) must be at index 0.
     [self addChildViewController:self.tableViewController];
-    [self.view insertSubview:self.tableViewController.view atIndex:0];
+    [self.signalContactsStackView addArrangedSubview:self.tableViewController.view];
+    [self.tableViewController.view setCompressionResistanceVerticalLow];
+    [self.tableViewController.view setContentHuggingVerticalLow];
     // separatorStyle must be set _after_ the table view is added to the view hierarchy.
     self.tableViewController.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
-    
-    [self.tableViewController.view autoPinEdgesToSuperviewEdges];
-
     self.tableViewController.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableViewController.tableView.estimatedRowHeight = 60;
-    if (self.shouldShowSearchBar) {
-        _tableViewController.tableView.tableHeaderView = self.searchBar;
-    }
 
     _noSignalContactsView = [self createNoSignalContactsView];
     self.noSignalContactsView.hidden = YES;
@@ -331,10 +334,6 @@ const NSUInteger kMinimumSearchLength = 2;
     [super viewDidLoad];
 
     [self.contactsViewHelper warmNonSignalContactsCacheAsync];
-
-    if (self.shouldShowSearchBar) {
-        self.tableViewController.tableView.tableHeaderView = self.searchBar;
-    }
 
     self.title = NSLocalizedString(@"MESSAGE_COMPOSEVIEW_TITLE", @"");
 }
@@ -895,6 +894,12 @@ const NSUInteger kMinimumSearchLength = 2;
     [self.delegate recipientPickerNewGroupButtonWasPressed];
 }
 
+- (void)setShouldShowSearchBar:(BOOL)shouldShowSearchBar {
+    _shouldShowSearchBar = shouldShowSearchBar;
+
+    self.searchBar.hidden = !self.shouldShowSearchBar;
+}
+
 - (void)setIsNoContactsModeActive:(BOOL)isNoContactsModeActive
 {
     if (isNoContactsModeActive == _isNoContactsModeActive) {
@@ -904,12 +909,10 @@ const NSUInteger kMinimumSearchLength = 2;
     _isNoContactsModeActive = isNoContactsModeActive;
 
     if (isNoContactsModeActive) {
-        self.tableViewController.tableView.hidden = YES;
-        self.searchBar.hidden = YES;
+        self.signalContactsStackView.hidden = YES;
         self.noSignalContactsView.hidden = NO;
     } else {
-        self.tableViewController.tableView.hidden = NO;
-        self.searchBar.hidden = NO;
+        self.signalContactsStackView.hidden = NO;
         self.noSignalContactsView.hidden = YES;
     }
 
