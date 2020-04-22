@@ -159,7 +159,6 @@ const NSUInteger kMinimumSearchLength = 2;
     _tableViewController = [OWSTableViewController new];
     _tableViewController.delegate = self;
     _tableViewController.tableViewStyle = UITableViewStylePlain;
-    _tableViewController.useLargeHeaderFooterFonts = YES;
 
     [self addChildViewController:self.tableViewController];
     [self.signalContactsStackView addArrangedSubview:self.tableViewController.view];
@@ -643,7 +642,7 @@ const NSUInteger kMinimumSearchLength = 2;
             // To accomplish this we add a section with a blank title rather than omitting the section altogether,
             // in order for section indexes to match up correctly
             NSString *sectionTitle = contactItems.count > 0 ? self.collation.sectionTitles[i] : nil;
-            [contactSections addObject:[OWSTableSection sectionWithTitle:sectionTitle items:contactItems]];
+            [contactSections addObject:[self collationSectionWithTitle:sectionTitle items:contactItems]];
         }
     } else {
         OWSTableSection *contactsSection = [OWSTableSection new];
@@ -659,6 +658,33 @@ const NSUInteger kMinimumSearchLength = 2;
     }
 
     return [contactSections copy];
+}
+
+- (OWSTableSection *)collationSectionWithTitle:(NSString *)sectionTitle items:(NSArray<OWSTableItem *> *)items
+{
+    OWSTableSection *section = [OWSTableSection new];
+    [section addItems:items];
+
+    if (sectionTitle != nil) {
+        UITextView *textView = [UITextView new];
+        textView.backgroundColor = UIColor.clearColor;
+        textView.opaque = NO;
+        textView.editable = NO;
+        textView.contentInset = UIEdgeInsetsZero;
+        textView.textContainer.lineFragmentPadding = 0;
+        textView.scrollEnabled = NO;
+        textView.textColor = Theme.primaryTextColor;
+        textView.font = UIFont.ows_dynamicTypeBodyFont.ows_semibold;
+        textView.backgroundColor = Theme.washColor;
+        CGFloat tableEdgeInsets = UIDevice.currentDevice.isPlusSizePhone ? 20 : 16;
+        textView.textContainerInset = UIEdgeInsetsMake(5, tableEdgeInsets, 5, tableEdgeInsets);
+        textView.text = sectionTitle.uppercaseString;
+        section.customHeaderView = textView;
+        section.customHeaderHeight =
+            @(ceil(textView.font.lineHeight + textView.textContainerInset.top + textView.textContainerInset.bottom));
+    }
+
+    return section;
 }
 
 - (NSArray<OWSTableSection *> *)contactsSectionsForSearchResults:(ComposeScreenSearchResultSet *)searchResults
