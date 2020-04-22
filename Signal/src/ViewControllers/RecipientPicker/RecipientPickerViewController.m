@@ -159,6 +159,7 @@ const NSUInteger kMinimumSearchLength = 2;
     _tableViewController = [OWSTableViewController new];
     _tableViewController.delegate = self;
     _tableViewController.tableViewStyle = UITableViewStylePlain;
+    _tableViewController.useLargeHeaderFooterFonts = YES;
 
     [self addChildViewController:self.tableViewController];
     [self.signalContactsStackView addArrangedSubview:self.tableViewController.view];
@@ -269,7 +270,7 @@ const NSUInteger kMinimumSearchLength = 2;
               button.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, accessibilityIdentifierName);
               [buttonStack addArrangedSubview:button];
 
-              UIView *iconView = [OWSTableItem buildIconInCircleViewWithIcon:icon innerIconSize:28];
+              UIView *iconView = [OWSTableItem buildIconInCircleViewWithIcon:icon innerIconSize:40];
 
               UILabel *label = [UILabel new];
               label.text = title;

@@ -8,11 +8,11 @@ import Foundation
 public extension OWSTableItem {
 
     static var primaryLabelFont: UIFont {
-        return UIFont.ows_dynamicTypeCalloutClamped
+        return UIFont.ows_dynamicTypeBodyClamped
     }
 
     static var accessoryLabelFont: UIFont {
-        return UIFont.ows_dynamicTypeCalloutClamped
+        return UIFont.ows_dynamicTypeBodyClamped
     }
 
     static var iconSpacing: CGFloat {

@@ -673,7 +673,7 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
     } else if (section.headerTitle.length > 0 || section.headerAttributedTitle.length > 0) {
         UITextView *textView = [LinkingTextView new];
         textView.textColor = Theme.secondaryTextAndIconColor;
-        textView.font = UIFont.ows_dynamicTypeCaption1Font;
+        textView.font = self.sectionHeaderAndFooterFont;
         textView.backgroundColor = self.sectionHeaderAndFooterBackgroundColor;
 
         CGFloat tableEdgeInsets = UIDevice.currentDevice.isPlusSizePhone ? 20 : 16;
@@ -700,7 +700,7 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
     } else if (section.footerTitle.length > 0 || section.footerAttributedTitle.length > 0) {
         UITextView *textView = [LinkingTextView new];
         textView.textColor = UIColor.ows_gray45Color;
-        textView.font = UIFont.ows_dynamicTypeCaption1Font;
+        textView.font = self.sectionHeaderAndFooterFont;
         textView.backgroundColor = self.sectionHeaderAndFooterBackgroundColor;
 
         CGFloat tableEdgeInsets = UIDevice.currentDevice.isPlusSizePhone ? 20 : 16;
@@ -872,7 +872,15 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 
 - (nullable UIColor *)sectionHeaderAndFooterBackgroundColor
 {
+    if (self.customSectionHeaderFooterBackgroundColor != nil) {
+        return self.customSectionHeaderFooterBackgroundColor;
+    }
     return (self.useThemeBackgroundColors ? Theme.tableViewBackgroundColor : Theme.secondaryBackgroundColor);
+}
+
+- (UIFont *)sectionHeaderAndFooterFont
+{
+    return (self.useLargeHeaderFooterFonts ? UIFont.ows_dynamicTypeBody2Font : UIFont.ows_dynamicTypeCaption1Font);
 }
 
 @end

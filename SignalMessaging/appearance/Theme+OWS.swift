@@ -177,11 +177,11 @@ public extension Theme {
         case .compose:
             return isDarkThemeEnabled ? "compose-solid-24" : "compose-outline-24"
         case .composeNewGroup:
-            return "group-outline-32"
+            return "group-outline-40"
         case .composeFindByPhoneNumber:
-            return "phone-number-32"
+            return "phone-number-40"
         case .composeInvite:
-            return "invite-outline-32"
+            return "invite-outline-40"
 
         case .phone:
             return isDarkThemeEnabled ? "button_phone_white" : "phone-right-outline-24"
