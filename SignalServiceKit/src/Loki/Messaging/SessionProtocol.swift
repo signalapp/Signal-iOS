@@ -9,7 +9,7 @@ import PromiseKit
 
 // TODO: Document the expected cases for everything and then express those cases in tests
 
-public final class SessionProtocol : NSObject {
+@objc public final class SessionProtocol : NSObject {
 
     private static var _lastDeviceLinkUpdate: [String:Date] = [:]
     /// A mapping from hex encoded public key to date updated.
