@@ -115,7 +115,6 @@ const NSUInteger kMinimumSearchLength = 2;
     _shouldShowGroups = YES;
     _shouldShowInvites = NO;
     _shouldShowAlphabetSlider = YES;
-    _shouldShowSearchBar = YES;
 
     return self;
 }
@@ -152,8 +151,11 @@ const NSUInteger kMinimumSearchLength = 2;
     [self.signalContactsStackView addArrangedSubview:searchBar];
     [searchBar setCompressionResistanceVerticalHigh];
     [searchBar setContentHuggingVerticalHigh];
-    searchBar.hidden = !self.shouldShowSearchBar;
-        
+
+    for (UIView *view in self.delegate.recipientPickerCustomHeaderViews) {
+        [self.signalContactsStackView addArrangedSubview:view];
+    }
+
     _tableViewController = [OWSTableViewController new];
     _tableViewController.delegate = self;
     _tableViewController.tableViewStyle = UITableViewStylePlain;
@@ -892,12 +894,6 @@ const NSUInteger kMinimumSearchLength = 2;
 - (void)newGroupButtonPressed
 {
     [self.delegate recipientPickerNewGroupButtonWasPressed];
-}
-
-- (void)setShouldShowSearchBar:(BOOL)shouldShowSearchBar {
-    _shouldShowSearchBar = shouldShowSearchBar;
-
-    self.searchBar.hidden = !self.shouldShowSearchBar;
 }
 
 - (void)setIsNoContactsModeActive:(BOOL)isNoContactsModeActive

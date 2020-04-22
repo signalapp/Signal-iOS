@@ -119,25 +119,17 @@ public class BaseGroupMemberViewController: OWSViewController {
         memberCountLabel.autoPinEdgesToSuperviewMargins()
         memberCountWrapper.layoutMargins = UIEdgeInsets(top: 0, leading: 12, bottom: 0, trailing: 12)
 
-        let firstSection = UIStackView(arrangedSubviews: [searchBar, memberBar, memberCountWrapper])
-        firstSection.axis = .vertical
-        firstSection.alignment = .fill
-        view.addSubview(firstSection)
-        firstSection.autoPinWidthToSuperview()
-        firstSection.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-
         recipientPicker.allowsSelectingUnregisteredPhoneNumbers = false
         recipientPicker.shouldShowGroups = false
         recipientPicker.allowsSelectingUnregisteredPhoneNumbers = false
-        recipientPicker.shouldShowSearchBar = false
         recipientPicker.showUseAsyncSelection = true
         recipientPicker.delegate = self
         addChild(recipientPicker)
         view.addSubview(recipientPicker.view)
 
+        recipientPicker.view.autoPin(toTopLayoutGuideOf: self, withInset: 0)
         recipientPicker.view.autoPinEdge(toSuperviewSafeArea: .leading)
         recipientPicker.view.autoPinEdge(toSuperviewSafeArea: .trailing)
-        recipientPicker.view.autoPinEdge(.top, to: .bottom, of: firstSection)
         autoPinView(toBottomOfViewControllerOrKeyboard: recipientPicker.view, avoidNotch: false)
 
         updateMemberCount()
@@ -564,6 +556,10 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
     }
 
     func recipientPickerNewGroupButtonWasPressed() {}
+
+    func recipientPickerCustomHeaderViews() -> [UIView] {
+        return [memberBar, memberCountWrapper]
+    }
 }
 
 // MARK: -

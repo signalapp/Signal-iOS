@@ -33,6 +33,8 @@ protocol RecipientPickerDelegate: AnyObject {
     func recipientPickerTableViewWillBeginDragging(_ recipientPickerViewController: RecipientPickerViewController)
 
     func recipientPickerNewGroupButtonWasPressed()
+
+    func recipientPickerCustomHeaderViews() -> [UIView]
 }
 
 @objc

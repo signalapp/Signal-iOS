@@ -130,4 +130,6 @@ extension ComposeViewController: RecipientPickerDelegate {
     func recipientPickerNewGroupButtonWasPressed() {
         showNewGroupUI()
     }
+
+    func recipientPickerCustomHeaderViews() -> [UIView] { return [] }
 }

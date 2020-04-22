@@ -568,6 +568,11 @@ NS_ASSUME_NONNULL_BEGIN
     OWSFailDebug(@"Invalid action.");
 }
 
+- (NSArray<UIView *> *)recipientPickerCustomHeaderViews
+{
+    return @[];
+}
+
 #pragma mark - OWSNavigationView
 
 - (BOOL)shouldCancelNavigationBack
