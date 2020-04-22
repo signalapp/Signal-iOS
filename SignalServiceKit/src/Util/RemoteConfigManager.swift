@@ -21,6 +21,8 @@ public class RemoteConfig: NSObject {
         // If we've turned off the KBS feature we don't want to present the
         // pins for everyone migration even if this user is in the bucket.
         guard kbs else { return false }
+        // If you've setup a PIN, you have a PIN, regardless of the FF status
+        if KeyBackupService.hasMasterKey { return true }
         return isEnabled(.pinsForEveryone) || isEnabled(.pinsForEveryoneV2)
     }
 
