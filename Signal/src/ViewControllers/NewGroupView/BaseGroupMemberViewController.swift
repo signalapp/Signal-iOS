@@ -579,24 +579,3 @@ extension BaseGroupMemberViewController: OWSNavigationView {
 
 extension BaseGroupMemberViewController: NewGroupMembersBarDelegate {
 }
-
-// MARK: -
-
-extension BaseGroupMemberViewController: UISearchBarDelegate {
-    public func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        recipientPicker.customSearchQuery = searchText
-    }
-
-    public func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-        searchBar.setShowsCancelButton(true, animated: true)
-    }
-
-    public func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-        searchBar.setShowsCancelButton(false, animated: true)
-    }
-
-    public func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        searchBar.text = nil
-        searchBar.resignFirstResponder()
-    }
-}

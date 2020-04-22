@@ -38,8 +38,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, nullable) NSArray<PickedRecipient *> *pickedRecipients;
 
-@property (nonatomic, nullable) NSString *customSearchQuery;
-
 - (void)reloadContent;
 
 - (void)clearSearchText;

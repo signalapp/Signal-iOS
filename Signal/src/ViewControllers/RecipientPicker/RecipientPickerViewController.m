@@ -918,7 +918,6 @@ const NSUInteger kMinimumSearchLength = 2;
 
 - (void)clearSearchText
 {
-    self.customSearchQuery = nil;
     self.searchBar.text = @"";
     [self searchTextDidChange];
 }
@@ -1216,16 +1215,9 @@ const NSUInteger kMinimumSearchLength = 2;
     return nil;
 }
 
-- (void)setCustomSearchQuery:(nullable NSString *)customSearchQuery
-{
-    _customSearchQuery = customSearchQuery;
-
-    [self searchTextDidChange];
-}
-
 - (NSString *)searchText
 {
-    NSString *rawText = (self.customSearchQuery.length > 0 ? self.customSearchQuery : self.searchBar.text);
+    NSString *rawText = self.searchBar.text;
     return rawText.ows_stripped ?: @"";
 }
 
