@@ -513,8 +513,9 @@ const NSUInteger kMinimumSearchLength = 2;
 
         // If we have non-contact selections, add a title to the static section
         if (hadNonContactRecipient) {
-            staticSection.headerTitle = NSLocalizedString(@"NEW_GROUP_NON_CONTACTS_SECTION_TITLE",
-                @"a title for the selected section of the 'recipient picker' view.");
+            staticSection.customHeaderView = [self
+                buildSectionHeaderWithTitle:NSLocalizedString(@"NEW_GROUP_NON_CONTACTS_SECTION_TITLE",
+                                                @"a title for the selected section of the 'recipient picker' view.")];
         }
     }
 
@@ -649,12 +650,12 @@ const NSUInteger kMinimumSearchLength = 2;
             // To accomplish this we add a section with a blank title rather than omitting the section altogether,
             // in order for section indexes to match up correctly
             NSString *sectionTitle = contactItems.count > 0 ? self.collation.sectionTitles[i] : nil;
-            [contactSections addObject:[self collationSectionWithTitle:sectionTitle items:contactItems]];
+            [contactSections addObject:[self buildSectionWithTitle:sectionTitle.uppercaseString items:contactItems]];
         }
     } else {
-        OWSTableSection *contactsSection = [OWSTableSection new];
-        contactsSection.headerTitle = NSLocalizedString(@"COMPOSE_MESSAGE_CONTACT_SECTION_TITLE",
-            @"Table section header for contact listing when composing a new message");
+        OWSTableSection *contactsSection =
+            [self buildSectionWithTitle:NSLocalizedString(@"COMPOSE_MESSAGE_CONTACT_SECTION_TITLE",
+                                            @"Table section header for contact listing when composing a new message")];
 
         for (SignalAccount *signalAccount in self.contactsViewHelper.signalAccounts) {
             [contactsSection
@@ -667,31 +668,39 @@ const NSUInteger kMinimumSearchLength = 2;
     return [contactSections copy];
 }
 
-- (OWSTableSection *)collationSectionWithTitle:(NSString *)sectionTitle items:(NSArray<OWSTableItem *> *)items
+- (OWSTableSection *)buildSectionWithTitle:(nullable NSString *)sectionTitle
+{
+    return [self buildSectionWithTitle:sectionTitle items:@[]];
+}
+
+- (OWSTableSection *)buildSectionWithTitle:(nullable NSString *)sectionTitle items:(NSArray<OWSTableItem *> *)items
 {
     OWSTableSection *section = [OWSTableSection new];
     [section addItems:items];
 
     if (sectionTitle != nil) {
-        UITextView *textView = [UITextView new];
-        textView.backgroundColor = UIColor.clearColor;
-        textView.opaque = NO;
-        textView.editable = NO;
-        textView.contentInset = UIEdgeInsetsZero;
-        textView.textContainer.lineFragmentPadding = 0;
-        textView.scrollEnabled = NO;
-        textView.textColor = Theme.primaryTextColor;
-        textView.font = UIFont.ows_dynamicTypeBodyFont.ows_semibold;
-        textView.backgroundColor = Theme.washColor;
-        CGFloat tableEdgeInsets = UIDevice.currentDevice.isPlusSizePhone ? 20 : 16;
-        textView.textContainerInset = UIEdgeInsetsMake(5, tableEdgeInsets, 5, tableEdgeInsets);
-        textView.text = sectionTitle.uppercaseString;
-        section.customHeaderView = textView;
-        section.customHeaderHeight =
-            @(ceil(textView.font.lineHeight + textView.textContainerInset.top + textView.textContainerInset.bottom));
+        section.customHeaderView = [self buildSectionHeaderWithTitle:sectionTitle];
     }
 
     return section;
+}
+
+- (UIView *)buildSectionHeaderWithTitle:(NSString *)sectionTitle
+{
+    UITextView *textView = [UITextView new];
+    textView.backgroundColor = UIColor.clearColor;
+    textView.opaque = NO;
+    textView.editable = NO;
+    textView.contentInset = UIEdgeInsetsZero;
+    textView.textContainer.lineFragmentPadding = 0;
+    textView.scrollEnabled = NO;
+    textView.textColor = Theme.primaryTextColor;
+    textView.font = UIFont.ows_dynamicTypeBodyFont.ows_semibold;
+    textView.backgroundColor = Theme.washColor;
+    CGFloat tableEdgeInsets = UIDevice.currentDevice.isPlusSizePhone ? 20 : 16;
+    textView.textContainerInset = UIEdgeInsetsMake(5, tableEdgeInsets, 5, tableEdgeInsets);
+    textView.text = sectionTitle;
+    return textView;
 }
 
 - (NSArray<OWSTableSection *> *)contactsSectionsForSearchResults:(ComposeScreenSearchResultSet *)searchResults
@@ -707,9 +716,9 @@ const NSUInteger kMinimumSearchLength = 2;
     NSMutableSet<NSString *> *matchedAccountPhoneNumbers = [NSMutableSet new];
     NSMutableSet<NSString *> *matchedAccountUsernames = [NSMutableSet new];
 
-    OWSTableSection *contactsSection = [OWSTableSection new];
-    contactsSection.headerTitle = NSLocalizedString(@"COMPOSE_MESSAGE_CONTACT_SECTION_TITLE",
-        @"Table section header for contact listing when composing a new message");
+    OWSTableSection *contactsSection =
+        [self buildSectionWithTitle:NSLocalizedString(@"COMPOSE_MESSAGE_CONTACT_SECTION_TITLE",
+                                        @"Table section header for contact listing when composing a new message")];
 
     OWSAssertIsOnMainThread();
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
@@ -737,9 +746,9 @@ const NSUInteger kMinimumSearchLength = 2;
 
     if (self.shouldShowGroups) {
         // When searching, we include matching groups
-        OWSTableSection *groupSection = [OWSTableSection new];
-        groupSection.headerTitle = NSLocalizedString(@"COMPOSE_MESSAGE_GROUP_SECTION_TITLE",
-            @"Table section header for group listing when composing a new message");
+        OWSTableSection *groupSection =
+            [self buildSectionWithTitle:NSLocalizedString(@"COMPOSE_MESSAGE_GROUP_SECTION_TITLE",
+                                            @"Table section header for group listing when composing a new message")];
         NSArray<TSGroupThread *> *filteredGroupThreads = searchResults.groupThreads;
         for (TSGroupThread *thread in filteredGroupThreads) {
             hasSearchResults = YES;
@@ -751,9 +760,9 @@ const NSUInteger kMinimumSearchLength = 2;
         }
     }
 
-    OWSTableSection *phoneNumbersSection = [OWSTableSection new];
-    phoneNumbersSection.headerTitle = NSLocalizedString(@"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE",
-        @"Table section header for phone number search when composing a new message");
+    OWSTableSection *phoneNumbersSection =
+        [self buildSectionWithTitle:NSLocalizedString(@"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE",
+                                        @"Table section header for phone number search when composing a new message")];
 
     NSArray<NSString *> *searchPhoneNumbers = [self parsePossibleSearchPhoneNumbers];
     for (NSString *phoneNumber in searchPhoneNumbers) {
@@ -831,9 +840,9 @@ const NSUInteger kMinimumSearchLength = 2;
             && ![matchedAccountUsernames containsObject:usernameMatch]) {
             hasSearchResults = YES;
 
-            OWSTableSection *usernameSection = [OWSTableSection new];
-            usernameSection.headerTitle = NSLocalizedString(@"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE",
-                @"Table section header for username search when composing a new message");
+            OWSTableSection *usernameSection = [self
+                buildSectionWithTitle:NSLocalizedString(@"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE",
+                                          @"Table section header for username search when composing a new message")];
 
             [usernameSection addItem:[OWSTableItem
                                          itemWithCustomCellBlock:^{
