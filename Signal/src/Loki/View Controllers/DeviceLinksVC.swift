@@ -25,7 +25,7 @@ final class DeviceLinksVC : BaseVC, UITableViewDataSource, UITableViewDelegate, 
         explanationLabel.textAlignment = .center
         explanationLabel.text = NSLocalizedString("You haven't linked any devices yet", comment: "")
         let linkNewDeviceButton = Button(style: .prominentOutline, size: .large)
-        linkNewDeviceButton.setTitle(NSLocalizedString("Link a Device", comment: ""), for: UIControl.State.normal)
+        linkNewDeviceButton.setTitle(NSLocalizedString("Link a Device (Beta)", comment: ""), for: UIControl.State.normal)
         linkNewDeviceButton.addTarget(self, action: #selector(linkNewDevice), for: UIControl.Event.touchUpInside)
         linkNewDeviceButton.set(.width, to: 180)
         let result = UIStackView(arrangedSubviews: [ explanationLabel, linkNewDeviceButton ])

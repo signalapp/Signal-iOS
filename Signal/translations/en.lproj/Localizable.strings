@@ -2665,7 +2665,7 @@
 "Please make sure the QR code you scanned is correct and try again." = "Please make sure the QR code you scanned is correct and try again.";
 "Devices" = "Devices";
 "You haven't linked any devices yet" = "You haven't linked any devices yet";
-"Link a Device" = "Link a Device";
+"Link a Device (Beta)" = "Link a Device (Beta)";
 "Unlink" = "Unlink";
 "Change Name" = "Change Name";
 "Change Device Name" = "Change Device Name";
@@ -2788,7 +2788,7 @@
 "Would you like to restore your session with %@?" = "Would you like to restore your session with %@?";
 "Restore" = "Restore";
 "Dismiss" = "Dismiss";
-"New Closed Group" = "New Closed Group";
+"New Closed Group (Beta)" = "New Closed Group (Beta)";
 "Group Members" = "Group Members";
 "You don't have any contacts yet" = "You don't have any contacts yet";
 "Start a Session" = "Start a Session";
