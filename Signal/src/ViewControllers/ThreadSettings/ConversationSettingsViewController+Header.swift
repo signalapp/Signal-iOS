@@ -136,9 +136,8 @@ extension ConversationSettingsViewController {
     private func buildHeaderForGroup(groupThread: TSGroupThread) -> UIView {
         var builder = HeaderBuilder(viewController: self)
 
-        let groupMembersText = String(format: NSLocalizedString("CONVERSATION_SETTINGS_GROUP_MEMBER_COUNT_FORMAT",
-                                                                comment: "Format for the 'group member count' indicator in conversation settings view. Embeds {the number of group members}."),
-                                      OWSFormat.formatInt(groupThread.groupModel.groupMembership.nonPendingMembers.count))
+        let memberCount = groupThread.groupModel.groupMembership.nonPendingMembers.count
+        let groupMembersText = GroupViewUtils.formatGroupMembersLabel(memberCount: memberCount)
         builder.addSubtitleLabel(text: groupMembersText,
                                  font: .ows_dynamicTypeSubheadline)
 
