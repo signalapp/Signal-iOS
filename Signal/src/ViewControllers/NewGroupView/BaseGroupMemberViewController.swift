@@ -76,7 +76,6 @@ public class BaseGroupMemberViewController: OWSViewController {
 
     private let recipientPicker = RecipientPickerViewController()
 
-    private let searchBar = OWSSearchBar()
     private let memberBar = NewGroupMembersBar()
     private let memberCountLabel = UILabel()
     private let memberCountWrapper = UIView()
@@ -95,19 +94,6 @@ public class BaseGroupMemberViewController: OWSViewController {
 
         // First section.
 
-        if FeatureFlags.usernames {
-            searchBar.placeholder = NSLocalizedString("SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT",
-                                                      comment: "Placeholder text indicating the user can search for contacts by name, username, or phone number.")
-        } else {
-            searchBar.placeholder = NSLocalizedString("SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT",
-                                                      comment: "Placeholder text indicating the user can search for contacts by name or phone number.")
-        }
-        searchBar.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self,
-                                                                           name: "member_search_bar")
-        searchBar.textField?.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self,
-                                                                                      name: "member_search_field")
-
-        searchBar.delegate = self
         memberBar.delegate = self
 
         // Don't use dynamic type in this label.
@@ -119,25 +105,17 @@ public class BaseGroupMemberViewController: OWSViewController {
         memberCountLabel.autoPinEdgesToSuperviewMargins()
         memberCountWrapper.layoutMargins = UIEdgeInsets(top: 0, leading: 12, bottom: 0, trailing: 12)
 
-        let firstSection = UIStackView(arrangedSubviews: [searchBar, memberBar, memberCountWrapper])
-        firstSection.axis = .vertical
-        firstSection.alignment = .fill
-        view.addSubview(firstSection)
-        firstSection.autoPinWidthToSuperview()
-        firstSection.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-
         recipientPicker.allowsSelectingUnregisteredPhoneNumbers = false
         recipientPicker.shouldShowGroups = false
         recipientPicker.allowsSelectingUnregisteredPhoneNumbers = false
-        recipientPicker.shouldShowSearchBar = false
         recipientPicker.showUseAsyncSelection = true
         recipientPicker.delegate = self
         addChild(recipientPicker)
         view.addSubview(recipientPicker.view)
 
+        recipientPicker.view.autoPin(toTopLayoutGuideOf: self, withInset: 0)
         recipientPicker.view.autoPinEdge(toSuperviewSafeArea: .leading)
         recipientPicker.view.autoPinEdge(toSuperviewSafeArea: .trailing)
-        recipientPicker.view.autoPinEdge(.top, to: .bottom, of: firstSection)
         autoPinView(toBottomOfViewControllerOrKeyboard: recipientPicker.view, avoidNotch: false)
 
         updateMemberCount()
@@ -210,7 +188,6 @@ public class BaseGroupMemberViewController: OWSViewController {
 
         groupMemberViewDelegate.groupMemberViewAddRecipient(recipient)
         recipientPicker.pickedRecipients = recipientSet.orderedMembers
-        self.searchBar.text = ""
         recipientPicker.clearSearchText()
         updateMemberBar()
         updateMemberCount()
@@ -549,7 +526,7 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
         if isPreExistingMember {
             imageView.setTemplateImageName("check-circle-solid-24", tintColor: Theme.washColor)
         } else if isCurrentMember {
-            imageView.setTemplateImageName("check-circle-solid-24", tintColor: .ows_accentBlue)
+            imageView.setTemplateImageName("check-circle-solid-24", tintColor: Theme.accentBlueColor)
         } else if isBlocked {
             // Use accessoryMessageForRecipient: to show blocked indicator.
             return nil
@@ -559,11 +536,13 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
         return imageView
     }
 
-    func recipientPickerTableViewWillBeginDragging(_ recipientPickerViewController: RecipientPickerViewController) {
-        _ = searchBar.resignFirstResponder()
-    }
+    func recipientPickerTableViewWillBeginDragging(_ recipientPickerViewController: RecipientPickerViewController) {}
 
     func recipientPickerNewGroupButtonWasPressed() {}
+
+    func recipientPickerCustomHeaderViews() -> [UIView] {
+        return [memberBar, memberCountWrapper]
+    }
 }
 
 // MARK: -
@@ -582,25 +561,4 @@ extension BaseGroupMemberViewController: OWSNavigationView {
 // MARK: -
 
 extension BaseGroupMemberViewController: NewGroupMembersBarDelegate {
-}
-
-// MARK: -
-
-extension BaseGroupMemberViewController: UISearchBarDelegate {
-    public func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        recipientPicker.customSearchQuery = searchText
-    }
-
-    public func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-        searchBar.setShowsCancelButton(true, animated: true)
-    }
-
-    public func searchBarTextDidEndEditing(_ searchBar: UISearchBar) {
-        searchBar.setShowsCancelButton(false, animated: true)
-    }
-
-    public func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        searchBar.text = nil
-        searchBar.resignFirstResponder()
-    }
 }

@@ -589,7 +589,9 @@ extension ConversationSettingsViewController {
             cell.preservesSuperviewLayoutMargins = true
             cell.contentView.preservesSuperviewLayoutMargins = true
 
-            let iconView = OWSTableItem.buildIconInCircleView(icon: .settingsAddMembers, iconSize: kSmallAvatarSize)
+            let iconView = OWSTableItem.buildIconInCircleView(icon: .settingsAddMembers,
+                                                              iconSize: kSmallAvatarSize,
+                                                              innerIconSize: 22)
 
             let rowLabel = UILabel()
             rowLabel.text = NSLocalizedString("CONVERSATION_SETTINGS_ADD_MEMBERS",
@@ -729,13 +731,13 @@ extension ConversationSettingsViewController {
 
                 let iconView = OWSTableItem.buildIconInCircleView(icon: .settingsShowAllMembers,
                                                                   iconSize: kSmallAvatarSize,
-                                                                  innerIconSize: 12,
+                                                                  innerIconSize: 19,
                                                                   iconTintColor: Theme.secondaryTextAndIconColor)
 
                 let rowLabel = UILabel()
                 rowLabel.text = NSLocalizedString("CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS",
                                                   comment: "Label for 'view all members' button in conversation settings view.")
-                rowLabel.textColor = Theme.primaryTextColor
+                rowLabel.textColor = Theme.secondaryTextAndIconColor
                 rowLabel.font = OWSTableItem.primaryLabelFont
                 rowLabel.lineBreakMode = .byTruncatingTail
 

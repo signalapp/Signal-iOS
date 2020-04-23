@@ -24,6 +24,10 @@ class AddToBlockListViewController: OWSViewController {
         recipientPicker.delegate = self
         addChild(recipientPicker)
         view.addSubview(recipientPicker.view)
+        recipientPicker.view.autoPin(toTopLayoutGuideOf: self, withInset: 0)
+        recipientPicker.view.autoPinEdge(toSuperviewEdge: .leading)
+        recipientPicker.view.autoPinEdge(toSuperviewEdge: .trailing)
+        recipientPicker.view.autoPinEdge(toSuperviewEdge: .bottom)
 
         recipientPicker.findByPhoneNumberButtonTitle = NSLocalizedString(
             "BLOCK_LIST_VIEW_BLOCK_BUTTON",
@@ -119,4 +123,6 @@ extension AddToBlockListViewController: RecipientPickerDelegate {
     func recipientPickerTableViewWillBeginDragging(_ recipientPickerViewController: RecipientPickerViewController) {}
 
     func recipientPickerNewGroupButtonWasPressed() {}
+
+    func recipientPickerCustomHeaderViews() -> [UIView] { return [] }
 }

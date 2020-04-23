@@ -8,11 +8,11 @@ import Foundation
 public extension OWSTableItem {
 
     static var primaryLabelFont: UIFont {
-        return UIFont.ows_dynamicTypeCalloutClamped
+        return UIFont.ows_dynamicTypeBodyClamped
     }
 
     static var accessoryLabelFont: UIFont {
-        return UIFont.ows_dynamicTypeCalloutClamped
+        return UIFont.ows_dynamicTypeBodyClamped
     }
 
     static var iconSpacing: CGFloat {
@@ -184,7 +184,7 @@ public extension OWSTableItem {
         if let iconTintColor = iconTintColor {
             iconView.tintColor = iconTintColor
         } else {
-            iconView.tintColor = .ows_accentBlue
+            iconView.tintColor = Theme.accentBlueColor
         }
         let iconWrapper = UIView.container()
         iconWrapper.addSubview(iconView)

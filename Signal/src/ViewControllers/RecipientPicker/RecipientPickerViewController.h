@@ -28,8 +28,6 @@ NS_ASSUME_NONNULL_BEGIN
 /// Defaults to `YES`
 @property (nonatomic) BOOL shouldShowAlphabetSlider;
 /// Defaults to `NO`
-@property (nonatomic) BOOL shouldShowSearchBar;
-/// Defaults to `NO`
 @property (nonatomic) BOOL shouldShowNewGroup;
 /// Defaults to `NO`
 @property (nonatomic) BOOL showUseAsyncSelection;
@@ -39,8 +37,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
 
 @property (nonatomic, nullable) NSArray<PickedRecipient *> *pickedRecipients;
-
-@property (nonatomic, nullable) NSString *customSearchQuery;
 
 - (void)reloadContent;
 

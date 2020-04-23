@@ -167,7 +167,7 @@ public class PinReminderViewController: OWSViewController {
         // Secondary button
         let forgotButton = UIButton()
         forgotButton.setTitle(NSLocalizedString("PIN_REMINDER_FORGOT_PIN", comment: "Text asking if the user forgot their pin for the 'pin reminder' dialog."), for: .normal)
-        forgotButton.setTitleColor(.ows_accentBlue, for: .normal)
+        forgotButton.setTitleColor(Theme.accentBlueColor, for: .normal)
         forgotButton.titleLabel?.font = .ows_dynamicTypeSubheadlineClamped
         forgotButton.addTarget(self, action: #selector(forgotPressed), for: .touchUpInside)
         forgotButton.accessibilityIdentifier = "pinReminder.forgotButton"
