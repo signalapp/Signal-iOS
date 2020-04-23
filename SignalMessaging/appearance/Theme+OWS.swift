@@ -194,7 +194,7 @@ public extension Theme {
         case .info:
             return isDarkThemeEnabled ? "info-solid-24" : "ic_info"
         case .groupMessage:
-            return "group-solid-24"
+            return "group-outline-20"
         }
     }
 }

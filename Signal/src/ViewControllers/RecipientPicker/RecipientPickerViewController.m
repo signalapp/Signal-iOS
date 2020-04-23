@@ -153,7 +153,9 @@ const NSUInteger kMinimumSearchLength = 2;
     // 2. the scrollable view (tableView in this case) must be at index 0.
     [self addChildViewController:self.tableViewController];
     [self.view insertSubview:self.tableViewController.view atIndex:0];
-
+    // separatorStyle must be set _after_ the table view is added to the view hierarchy.
+    self.tableViewController.tableView.separatorStyle = UITableViewCellSeparatorStyleNone;
+    
     [self.tableViewController.view autoPinEdgesToSuperviewEdges];
 
     self.tableViewController.tableView.rowHeight = UITableViewAutomaticDimension;

@@ -11,13 +11,15 @@ protocol GroupMemberViewDelegate: class {
 
     var groupMemberViewHasUnsavedChanges: Bool { get }
 
+    var shouldTryToEnableGroupsV2ForMembers: Bool { get }
+
     func groupMemberViewRemoveRecipient(_ recipient: PickedRecipient)
 
     func groupMemberViewAddRecipient(_ recipient: PickedRecipient)
 
     func groupMemberViewCanAddRecipient(_ recipient: PickedRecipient) -> Bool
 
-    func groupMemberViewGroupMemberCount() -> Int
+    func groupMemberViewGroupMemberCountForDisplay() -> Int
 
     func groupMemberViewIsGroupFull() -> Bool
 
@@ -170,7 +172,7 @@ public class BaseGroupMemberViewController: OWSViewController {
         memberCountWrapper.isHidden = false
         let format = NSLocalizedString("GROUP_MEMBER_COUNT_FORMAT",
                                        comment: "Format string for the group member count indicator. Embeds {{ %1$@ the number of members in the group, %2$@ the maximum number of members in the group. }}.")
-        let memberCount = groupMemberViewDelegate?.groupMemberViewGroupMemberCount() ?? 0
+        let memberCount = groupMemberViewDelegate?.groupMemberViewGroupMemberCountForDisplay() ?? 0
 
         memberCountLabel.text = String(format: format,
                                        OWSFormat.formatInt(memberCount),
@@ -415,9 +417,16 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
             owsFailDebug("Invalid recipient.")
             return
         }
+        guard let groupMemberViewDelegate = groupMemberViewDelegate else {
+            owsFailDebug("Missing delegate.")
+            return
+        }
         guard RemoteConfig.groupsV2CreateGroups ||
             RemoteConfig.groupsV2IncomingMessages else {
                 return
+        }
+        guard groupMemberViewDelegate.shouldTryToEnableGroupsV2ForMembers else {
+            return
         }
         DispatchQueue.global().async {
             if !self.doesRecipientSupportGroupsV2(recipient) {
@@ -441,6 +450,9 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
         guard RemoteConfig.groupsV2CreateGroups ||
             RemoteConfig.groupsV2IncomingMessages else {
                 return AnyPromise(Promise.value(()))
+        }
+        guard groupMemberViewDelegate.shouldTryToEnableGroupsV2ForMembers else {
+            return AnyPromise(Promise.value(()))
         }
         guard !doesRecipientSupportGroupsV2(recipient) else {
             // Recipient already supports groups v2.

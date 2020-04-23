@@ -32,9 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.shouldUseTheme = NO;
     self.interfaceOrientationMask = UIDevice.currentDevice.defaultSupportedOrienations;
 
-    self.view.backgroundColor = Theme.tableViewBackgroundColor;
-    self.tableView.backgroundColor = Theme.tableViewBackgroundColor;
-    self.useThemeCellBackgroundColor = YES;
+    self.useThemeBackgroundColors = YES;
     self.title = NSLocalizedString(@"COUNTRYCODE_SELECT_TITLE", @"");
 
     self.countryCodes = [PhoneNumberUtil countryCodesForSearchTerm:nil];

@@ -4,6 +4,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+extern const NSUInteger kSmallAvatarSize;
 extern const NSUInteger kStandardAvatarSize;
 extern const NSUInteger kMediumAvatarSize;
 extern const NSUInteger kLargeAvatarSize;

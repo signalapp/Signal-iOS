@@ -18,6 +18,8 @@ extern const CGFloat kContactCellAvatarTextMargin;
 
 @property (nonatomic, nullable) UIImage *customAvatar;
 
+@property (nonatomic) BOOL useSmallAvatars;
+
 - (void)configureWithRecipientAddress:(SignalServiceAddress *)address;
 
 - (void)configureWithThread:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction;

@@ -589,7 +589,7 @@ extension ConversationSettingsViewController {
             cell.preservesSuperviewLayoutMargins = true
             cell.contentView.preservesSuperviewLayoutMargins = true
 
-            let iconView = OWSTableItem.buildIconInCircleView(icon: .settingsAddMembers, innerIconSize: 24)
+            let iconView = OWSTableItem.buildIconInCircleView(icon: .settingsAddMembers, iconSize: kSmallAvatarSize)
 
             let rowLabel = UILabel()
             rowLabel.text = NSLocalizedString("CONVERSATION_SETTINGS_ADD_MEMBERS",
@@ -660,18 +660,23 @@ extension ConversationSettingsViewController {
                 continue
             }
 
+            let isLocalUser = memberAddress == localAddress
             section.add(OWSTableItem(customCellBlock: { [weak self] in
                 guard let self = self else {
                     owsFailDebug("Missing self")
                     return OWSTableItem.newCell()
                 }
                 let cell = ContactTableViewCell()
-                let isLocalUser = memberAddress == localAddress
+                cell.setUseSmallAvatars()
+
                 let isGroupAdmin = groupMembership.isAdministrator(memberAddress)
                 let isVerified = verificationState == .verified
                 let isNoLongerVerified = verificationState == .noLongerVerified
                 let isBlocked = helper.isSignalServiceAddressBlocked(memberAddress)
-                if isNoLongerVerified {
+                if isGroupAdmin {
+                    cell.setAccessoryMessage(NSLocalizedString("GROUP_MEMBER_ADMIN_INDICATOR",
+                                                               comment: "Label indicating that a group member is an admin."))
+                } else if isNoLongerVerified {
                     cell.setAccessoryMessage(NSLocalizedString("CONTACT_CELL_IS_NO_LONGER_VERIFIED",
                                                                comment: "An indicator that a contact is no longer verified."))
                 } else if isBlocked {
@@ -680,7 +685,7 @@ extension ConversationSettingsViewController {
 
                 if isLocalUser {
                     // Use a custom avatar to avoid using the "note to self" icon.
-                    let customAvatar = OWSProfileManager.shared().localProfileAvatarImage() ?? OWSContactAvatarBuilder(forLocalUserWithDiameter: kStandardAvatarSize).buildDefaultImage()
+                    let customAvatar = OWSProfileManager.shared().localProfileAvatarImage() ?? OWSContactAvatarBuilder(forLocalUserWithDiameter: kSmallAvatarSize).buildDefaultImage()
                     cell.setCustomAvatar(customAvatar)
                     cell.setCustomName(NSLocalizedString("GROUP_MEMBER_LOCAL_USER",
                                                          comment: "Label indicating the local user."))
@@ -692,13 +697,7 @@ extension ConversationSettingsViewController {
                 cell.configure(withRecipientAddress: memberAddress)
 
                 if isGroupAdmin {
-                    let subtitle = NSAttributedString(string: NSLocalizedString("GROUP_MEMBER_ADMIN_INDICATOR",
-                                                                                comment: "Label indicating that a group member is an admin."),
-                                                      attributes: [
-                                                        .font: UIFont.ows_dynamicTypeSubheadline.ows_semibold(),
-                                                        .foregroundColor: Theme.primaryTextColor
-                    ])
-                    cell.setAttributedSubtitle(subtitle)
+                    cell.setAttributedSubtitle(nil)
                 } else if isVerified {
                     cell.setAttributedSubtitle(cell.verifiedSubtitle())
                 } else {
@@ -711,6 +710,9 @@ extension ConversationSettingsViewController {
                 return cell
                 },
                                      customRowHeight: UITableView.automaticDimension) { [weak self] in
+                                        guard !isLocalUser else {
+                                            return
+                                        }
                                         self?.didSelectGroupMember(memberAddress)
             })
         }
@@ -726,7 +728,8 @@ extension ConversationSettingsViewController {
                 cell.contentView.preservesSuperviewLayoutMargins = true
 
                 let iconView = OWSTableItem.buildIconInCircleView(icon: .settingsShowAllMembers,
-                                                                  innerIconSize: 24,
+                                                                  iconSize: kSmallAvatarSize,
+                                                                  innerIconSize: 12,
                                                                   iconTintColor: Theme.secondaryTextAndIconColor)
 
                 let rowLabel = UILabel()

@@ -48,10 +48,8 @@ class ReplaceAdminViewController: OWSTableViewController {
         title = NSLocalizedString("REPLACE_ADMIN_VIEW_TITLE",
                                   comment: "The title for the 'replace group admin' view.")
 
-        view.backgroundColor = Theme.tableViewBackgroundColor
-        tableView.backgroundColor = Theme.tableViewBackgroundColor
+        self.useThemeBackgroundColors = true
         tableView.separatorColor = .clear
-        self.useThemeCellBackgroundColor = true
 
         updateTableContents()
     }

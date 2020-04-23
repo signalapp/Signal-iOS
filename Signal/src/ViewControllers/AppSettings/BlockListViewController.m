@@ -52,8 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.tableViewController.tableView.estimatedRowHeight = 60;
 
     self.view.backgroundColor = Theme.tableViewBackgroundColor;
-    self.tableViewController.tableView.backgroundColor = Theme.tableViewBackgroundColor;
-    self.tableViewController.useThemeCellBackgroundColor = YES;
+    self.tableViewController.useThemeBackgroundColors = YES;
 
     [self updateTableContents];
 }

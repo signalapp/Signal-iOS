@@ -59,6 +59,10 @@ extension NewGroupMembersViewController: GroupMemberViewDelegate {
         return newGroupState.hasUnsavedChanges
     }
 
+    var shouldTryToEnableGroupsV2ForMembers: Bool {
+        return true
+    }
+
     func groupMemberViewRemoveRecipient(_ recipient: PickedRecipient) {
         newGroupState.recipientSet.remove(recipient)
     }
@@ -75,13 +79,17 @@ extension NewGroupMembersViewController: GroupMemberViewDelegate {
         return true
     }
 
-    func groupMemberViewGroupMemberCount() -> Int {
-        // We add one for the local user.
-        return newGroupState.recipientSet.count + 1
+    func groupMemberViewGroupMemberCountForDisplay() -> Int {
+        return groupMemberViewGroupMemberCount(withSelf: false)
+    }
+
+    func groupMemberViewGroupMemberCount(withSelf: Bool) -> Int {
+        // We sometimes add one for the local user.
+        return newGroupState.recipientSet.count + (withSelf ? 1 : 0)
     }
 
     func groupMemberViewIsGroupFull() -> Bool {
-        return groupMemberViewGroupMemberCount() >= GroupManager.maxGroupMemberCount
+        return groupMemberViewGroupMemberCount(withSelf: true) >= GroupManager.maxGroupMemberCount
     }
 
     func groupMemberViewIsPreExistingMember(_ recipient: PickedRecipient) -> Bool {
