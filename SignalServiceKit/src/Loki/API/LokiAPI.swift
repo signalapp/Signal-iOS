@@ -27,13 +27,14 @@ public final class LokiAPI : NSObject {
     public static let errorHandlingQueue = DispatchQueue(label: "LokiAPI.errorHandlingQueue")
     
     // MARK: Settings
-    private static let useOnionRequests = true
     private static let maxRetryCount: UInt = 4
     private static let defaultTimeout: TimeInterval = 20
     private static let longPollingTimeout: TimeInterval = 40
     private static var userIDScanLimit: UInt = 4096
 
     internal static var powDifficulty: UInt = 1
+    /// - Note: Changing this on the fly is not recommended.
+    internal static var useOnionRequests = true
     
     // MARK: Nested Types
     public typealias RawResponse = Any
