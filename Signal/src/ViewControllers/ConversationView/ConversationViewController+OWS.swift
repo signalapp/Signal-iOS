@@ -112,19 +112,7 @@ extension ConversationViewController: MessageActionsDelegate {
             block: { [weak self] _ in self?.didTapDeleteSelectedItems() }
         )
 
-        let forwardSelectedMessage = MessageAction(
-            .forward,
-            accessibilityLabel: NSLocalizedString("MESSAGE_ACTION_FORWARD_SELECTED_MESSAGE", comment: "accessibility label"),
-            accessibilityIdentifier: UIView.accessibilityIdentifier(containerName: "message_action", name: "forward_message"),
-            block: { [weak self] _ in self?.forwardSelectedItem() }
-        )
-
-        let actions: [MessageAction] = [
-            deleteSelectedMessages,
-            forwardSelectedMessage
-        ].compactMap { $0 }
-
-        let toolbar = MessageActionsToolbar(actions: actions)
+        let toolbar = MessageActionsToolbar(actions: [deleteSelectedMessages])
         toolbar.actionDelegate = self
         return toolbar
     }
@@ -164,22 +152,6 @@ extension ConversationViewController: MessageActionsDelegate {
         present(alert, animated: true)
     }
 
-    func forwardSelectedItem() {
-        guard let selectedItem = self.selectedItems.first?.value else {
-            // empty
-            return
-        }
-
-        guard selectedItems.count == 1 else {
-            owsFailDebug("selectedItems.count != 1")
-            return
-        }
-
-        messageActionsForwardItem(selectedItem)
-        uiMode = .normal
-        clearSelection()
-    }
-
     @objc
     public func updateSelectionButtons() {
         guard let deleteButton = selectionToolbar.buttonItem(for: .delete) else {
@@ -187,17 +159,6 @@ extension ConversationViewController: MessageActionsDelegate {
             return
         }
         deleteButton.isEnabled = selectedItems.count > 0
-
-        guard let forwardButton = selectionToolbar.buttonItem(for: .forward) else {
-            owsFailDebug("forwardButton was unexpectedly nil")
-            return
-        }
-
-        if selectedItems.count == 1, let selectedItem = selectedItems.first {
-            forwardButton.isEnabled = selectedItem.value.canForwardMessage
-        } else {
-            forwardButton.isEnabled = false
-        }
     }
 
     @objc
