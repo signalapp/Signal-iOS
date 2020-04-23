@@ -7,9 +7,6 @@ import PromiseKit
 
 @objc(LKAPI)
 public final class LokiAPI : NSObject {
-
-    /// Only ever modified from the message processing queue (`OWSBatchMessageProcessor.processingQueue`).
-    private static var syncMessageTimestamps: [String:Set<UInt64>] = [:]
     
     private static var _userHexEncodedPublicKeyCache: [String:Set<String>] = [:]
     /// A mapping from thread ID to set of user hex encoded public keys.
@@ -34,7 +31,7 @@ public final class LokiAPI : NSObject {
     private static let longPollingTimeout: TimeInterval = 40
     private static var userIDScanLimit: UInt = 4096
 
-    internal static var powDifficulty: UInt = 2
+    internal static var powDifficulty: UInt = 1
     
     // MARK: Nested Types
     public typealias RawResponse = Any
@@ -202,16 +199,6 @@ public final class LokiAPI : NSObject {
             return envelope
         }
     }
-    
-    @objc public static func isDuplicateSyncMessage(_ syncMessage: SSKProtoSyncMessageSent, from hexEncodedPublicKey: String) -> Bool {
-        var timestamps: Set<UInt64> = syncMessageTimestamps[hexEncodedPublicKey] ?? []
-        let hasTimestamp = syncMessage.timestamp != 0
-        guard hasTimestamp else { return false }
-        let result = timestamps.contains(syncMessage.timestamp)
-        timestamps.insert(syncMessage.timestamp)
-        syncMessageTimestamps[hexEncodedPublicKey] = timestamps
-        return result
-    }
 
     // MARK: Message Hash Caching
     private static func getLastMessageHashValue(for target: LokiAPITarget) -> String? {
@@ -293,10 +280,10 @@ public final class LokiAPI : NSObject {
         return candidates
     }
     
-    @objc public static func populateUserHexEncodedPublicKeyCacheIfNeeded(for threadID: String, in transaction: YapDatabaseReadWriteTransaction? = nil) {
+    @objc public static func populateUserHexEncodedPublicKeyCacheIfNeeded(for threadID: String, in transaction: YapDatabaseReadTransaction? = nil) {
         guard userHexEncodedPublicKeyCache[threadID] == nil else { return }
         var result: Set<String> = []
-        func populate(in transaction: YapDatabaseReadWriteTransaction) {
+        func populate(in transaction: YapDatabaseReadTransaction) {
             guard let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) else { return }
             let interactions = transaction.ext(TSMessageDatabaseViewExtensionName) as! YapDatabaseViewTransaction
             interactions.enumerateKeysAndObjects(inGroup: threadID) { _, _, object, index, _ in

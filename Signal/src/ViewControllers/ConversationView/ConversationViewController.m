@@ -1238,7 +1238,7 @@ typedef enum : NSUInteger {
 
 - (void)restoreSession {
     [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [SessionProtocol startSessionResetInThread:self.thread using:transaction];
+        [SessionProtocol sending_startSessionResetInThread:self.thread using:transaction];
     }];
 }
 

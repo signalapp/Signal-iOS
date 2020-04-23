@@ -231,6 +231,10 @@ void AssertIsOnSendingQueue()
 
 - (void)didSucceed
 {
+    if (self.message.messageState != TSOutgoingMessageStateSent) {
+        OWSFailDebug(@"unexpected message status: %@", self.message.statusDescription);
+    }
+
     self.successHandler();
 }
 
@@ -357,7 +361,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     }
     
     if (!message.thread.isGroupThread) {
-        [NSNotificationCenter.defaultCenter postNotificationName:NSNotification.calculatingPoW object:[[NSNumber alloc] initWithUnsignedLongLong:message.timestamp]]; // Not really true but better from a UI point of view
+        // Not really true but better from a UI point of view
+        [NSNotificationCenter.defaultCenter postNotificationName:NSNotification.calculatingPoW object:[[NSNumber alloc] initWithUnsignedLongLong:message.timestamp]];
     }
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -660,6 +665,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     // Loki: Abort early and send a sync transcript if this is a note to self
     if ([SessionProtocol isMessageNoteToSelf:message inThread:thread]) {
+        // FIXME: I think this is where the duplicate sync messages might be coming from. Signal just invokes successHandler() here.
         [self sendSyncTranscriptForMessage:message isRecipientUpdate:NO success:^{ } failure:^(NSError *error) { }];
         successHandler();
         return;
@@ -904,6 +910,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     TSOutgoingMessage *message = messageSend.message;
     SignalRecipient *recipient = messageSend.recipient;
 
+    // Loki: Ignore messages addressed to self
+    // TODO: Why?
     NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
     if ([messageSend.recipient.recipientId isEqual:userHexEncodedPublicKey]) {
         [LKLogger print:[NSString stringWithFormat:@"[Loki] Ignoring %@ addressed to self.", message.class]];

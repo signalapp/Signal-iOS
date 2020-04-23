@@ -37,15 +37,15 @@ extern NSString *const TSGroupThread_NotificationKey_UniqueId;
 + (NSString *)defaultGroupName;
 
 - (BOOL)isLocalUserInGroup;
-- (BOOL)isLocalUserInGroupWithTransaction:(YapDatabaseReadTransaction *)transaction;
-- (BOOL)isUserInGroup:(NSString *)hexEncodedPublicKey transaction:(YapDatabaseReadWriteTransaction *)transaction;
-- (BOOL)isUserAdminInGroup:(NSString *)hexEncodedPublicKey transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (BOOL)isCurrentUserInGroupWithTransaction:(YapDatabaseReadTransaction *)transaction;
+- (BOOL)isUserInGroup:(NSString *)hexEncodedPublicKey transaction:(YapDatabaseReadTransaction *)transaction;
+- (BOOL)isUserAdminInGroup:(NSString *)hexEncodedPublicKey transaction:(YapDatabaseReadTransaction *)transaction;
 
 // all group threads containing recipient as a member
 + (NSArray<TSGroupThread *> *)groupThreadsWithRecipientId:(NSString *)recipientId
                                               transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
-- (void)setGroupModel:(TSGroupModel *)newGroupModel withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)setGroupModel:(TSGroupModel *)newGroupModel withTransaction:(YapDatabaseReadTransaction *)transaction;
 - (void)leaveGroupWithSneakyTransaction;
 - (void)leaveGroupWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
