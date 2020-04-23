@@ -27,24 +27,18 @@ public extension SessionProtocol {
     /// Only ever modified from the message processing queue (`OWSBatchMessageProcessor.processingQueue`).
     private static var syncMessageTimestamps: [String:Set<UInt64>] = [:]
 
-    @objc(isFriendRequestFromBeforeRestoration:)
-    public static func isFriendRequestFromBeforeRestoration(_ envelope: SSKProtoEnvelope) -> Bool {
-        // The envelope type is set during UD decryption
-        let restorationTimeInMs = UInt64(storage.getRestorationTime() * 1000)
-        return (envelope.type == .friendRequest && envelope.timestamp < restorationTimeInMs)
+    // MARK: - Session Handling
+    @objc(isSessionRestoreMessage:)
+    public static func isSessionRestoreMessage(_ dataMessage: SSKProtoDataMessage) -> Bool {
+        let sessionRestoreFlag = SSKProtoDataMessage.SSKProtoDataMessageFlags.sessionRestore
+        return dataMessage.flags & UInt32(sessionRestoreFlag.rawValue) != 0
     }
 
-    // TODO: We should probably look at why sync messages are being duplicated rather than doing this
-    @objc(isDuplicateSyncMessage:fromHexEncodedPublicKey:)
-    public static func isDuplicateSyncMessage(_ protoContent: SSKProtoContent, from hexEncodedPublicKey: String) -> Bool {
-        guard let syncMessage = protoContent.syncMessage?.sent else { return false }
-        var timestamps: Set<UInt64> = syncMessageTimestamps[hexEncodedPublicKey] ?? []
-        let hasTimestamp = syncMessage.timestamp != 0
-        guard hasTimestamp else { return false }
-        let result = timestamps.contains(syncMessage.timestamp)
-        timestamps.insert(syncMessage.timestamp)
-        syncMessageTimestamps[hexEncodedPublicKey] = timestamps
-        return result
+    // TODO: Is this only ever used for closed groups?
+    @objc(isSessionRequestMessage:)
+    public static func isSessionRequestMessage(_ dataMessage: SSKProtoDataMessage) -> Bool {
+        let sessionRequestFlag = SSKProtoDataMessage.SSKProtoDataMessageFlags.sessionRequest
+        return dataMessage.flags & UInt32(sessionRequestFlag.rawValue) != 0
     }
 
     // TODO: This seriously needs some explanation of when we expect pre key bundles to be attached
@@ -89,82 +83,28 @@ public extension SessionProtocol {
         messageSenderJobQueue.add(message: ephemeralMessage, transaction: transaction)
     }
 
-    @objc(handleP2PAddressMessageIfNeeded:wrappedIn:)
-    public static func handleP2PAddressMessageIfNeeded(_ protoContent: SSKProtoContent, wrappedIn envelope: SSKProtoEnvelope) {
-        // The envelope source is set during UD decryption
-        let hexEncodedPublicKey = envelope.source!
-        guard let addressMessage = protoContent.lokiAddressMessage, let address = addressMessage.ptpAddress else { return }
-        let portAsUInt32 = addressMessage.ptpPort
-        guard portAsUInt32 != 0, portAsUInt32 < UInt16.max else { return }
-        let port = UInt16(portAsUInt32)
-        LokiP2PAPI.didReceiveLokiAddressMessage(forContact: hexEncodedPublicKey, address: address, port: port, receivedThroughP2P: envelope.isPtpMessage)
-    }
 
-    @objc(handleDeviceLinkMessageIfNeeded:wrappedIn:using:)
-    public static func handleDeviceLinkMessageIfNeeded(_ protoContent: SSKProtoContent, wrappedIn envelope: SSKProtoEnvelope, using transaction: YapDatabaseReadWriteTransaction) {
-        // The envelope source is set during UD decryption
-        let hexEncodedPublicKey = envelope.source!
-        guard let deviceLinkMessage = protoContent.lokiDeviceLinkMessage, let master = deviceLinkMessage.masterHexEncodedPublicKey,
-            let slave = deviceLinkMessage.slaveHexEncodedPublicKey, let slaveSignature = deviceLinkMessage.slaveSignature else {
-            print("[Loki] Received an invalid device link message.")
-            return
-        }
-        let deviceLinkingSession = DeviceLinkingSession.current
-        if let masterSignature = deviceLinkMessage.masterSignature { // Authorization
-            print("[Loki] Received a device link authorization from: \(hexEncodedPublicKey).") // Intentionally not `master`
-            if let deviceLinkingSession = deviceLinkingSession {
-                deviceLinkingSession.processLinkingAuthorization(from: master, for: slave, masterSignature: masterSignature, slaveSignature: slaveSignature)
-            } else {
-                print("[Loki] Received a device link authorization without a session; ignoring.")
-            }
-            // Set any profile info (the device link authorization also includes the master device's profile info)
-            if let dataMessage = protoContent.dataMessage {
-                updateDisplayNameIfNeeded(for: master, using: dataMessage, appendingShortID: false, in: transaction)
-                updateProfileKeyIfNeeded(for: master, using: dataMessage)
-            }
-        } else { // Request
-            print("[Loki] Received a device link request from: \(hexEncodedPublicKey).") // Intentionally not `slave`
-            if let deviceLinkingSession = deviceLinkingSession {
-                deviceLinkingSession.processLinkingRequest(from: slave, to: master, with: slaveSignature)
-            } else {
-                NotificationCenter.default.post(name: .unexpectedDeviceLinkRequestReceived, object: nil)
-            }
-        }
-    }
 
-    @objc(isSessionRequestMessage:)
-    public static func isSessionRequestMessage(_ dataMessage: SSKProtoDataMessage) -> Bool {
-        let sessionRequestFlag = SSKProtoDataMessage.SSKProtoDataMessageFlags.sessionRequest
-        return dataMessage.flags & UInt32(sessionRequestFlag.rawValue) != 0
-    }
-
-    @objc(isSessionRestoreMessage:)
-    public static func isSessionRestoreMessage(_ dataMessage: SSKProtoDataMessage) -> Bool {
-        let sessionRestoreFlag = SSKProtoDataMessage.SSKProtoDataMessageFlags.sessionRestore
-        return dataMessage.flags & UInt32(sessionRestoreFlag.rawValue) != 0
-    }
-
-    @objc(isUnlinkDeviceMessage:)
-    public static func isUnlinkDeviceMessage(_ dataMessage: SSKProtoDataMessage) -> Bool {
-        let unlinkDeviceFlag = SSKProtoDataMessage.SSKProtoDataMessageFlags.unlinkDevice
-        return dataMessage.flags & UInt32(unlinkDeviceFlag.rawValue) != 0
-    }
-
-    @objc(shouldIgnoreClosedGroupMessage:inThread:wrappedIn:using:)
-    public static func shouldIgnoreClosedGroupMessage(_ dataMessage: SSKProtoDataMessage, in thread: TSThread, wrappedIn envelope: SSKProtoEnvelope, using transaction: YapDatabaseReadTransaction) -> Bool {
-        // The envelope source is set during UD decryption
-        let hexEncodedPublicKey = envelope.source!
-        guard let thread = thread as? TSGroupThread, thread.groupModel.groupType == .closedGroup,
-            dataMessage.group?.type == .deliver else { return false }
-        return thread.isUser(inGroup: hexEncodedPublicKey, transaction: transaction)
-    }
-
+    // MARK: - Sync Messages
     @objc(isValidSyncMessage:in:)
     public static func isValidSyncMessage(_ envelope: SSKProtoEnvelope, in transaction: YapDatabaseReadTransaction) -> Bool {
         // The envelope source is set during UD decryption
         let hexEncodedPublicKey = envelope.source!
         let linkedDeviceHexEncodedPublicKeys = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: getUserHexEncodedPublicKey(), in: transaction)
         return linkedDeviceHexEncodedPublicKeys.contains(hexEncodedPublicKey)
+    }
+
+    // TODO: We should probably look at why sync messages are being duplicated rather than doing this
+    @objc(isDuplicateSyncMessage:fromHexEncodedPublicKey:)
+    public static func isDuplicateSyncMessage(_ protoContent: SSKProtoContent, from hexEncodedPublicKey: String) -> Bool {
+        guard let syncMessage = protoContent.syncMessage?.sent else { return false }
+        var timestamps: Set<UInt64> = syncMessageTimestamps[hexEncodedPublicKey] ?? []
+        let hasTimestamp = syncMessage.timestamp != 0
+        guard hasTimestamp else { return false }
+        let result = timestamps.contains(syncMessage.timestamp)
+        timestamps.insert(syncMessage.timestamp)
+        syncMessageTimestamps[hexEncodedPublicKey] = timestamps
+        return result
     }
 
     @objc(updateProfileFromSyncMessageIfNeeded:wrappedIn:using:)
@@ -284,6 +224,47 @@ public extension SessionProtocol {
         }
     }
 
+
+
+    // MARK: Multi Device
+    @objc(handleDeviceLinkMessageIfNeeded:wrappedIn:using:)
+    public static func handleDeviceLinkMessageIfNeeded(_ protoContent: SSKProtoContent, wrappedIn envelope: SSKProtoEnvelope, using transaction: YapDatabaseReadWriteTransaction) {
+        // The envelope source is set during UD decryption
+        let hexEncodedPublicKey = envelope.source!
+        guard let deviceLinkMessage = protoContent.lokiDeviceLinkMessage, let master = deviceLinkMessage.masterHexEncodedPublicKey,
+            let slave = deviceLinkMessage.slaveHexEncodedPublicKey, let slaveSignature = deviceLinkMessage.slaveSignature else {
+            print("[Loki] Received an invalid device link message.")
+            return
+        }
+        let deviceLinkingSession = DeviceLinkingSession.current
+        if let masterSignature = deviceLinkMessage.masterSignature { // Authorization
+            print("[Loki] Received a device link authorization from: \(hexEncodedPublicKey).") // Intentionally not `master`
+            if let deviceLinkingSession = deviceLinkingSession {
+                deviceLinkingSession.processLinkingAuthorization(from: master, for: slave, masterSignature: masterSignature, slaveSignature: slaveSignature)
+            } else {
+                print("[Loki] Received a device link authorization without a session; ignoring.")
+            }
+            // Set any profile info (the device link authorization also includes the master device's profile info)
+            if let dataMessage = protoContent.dataMessage {
+                updateDisplayNameIfNeeded(for: master, using: dataMessage, appendingShortID: false, in: transaction)
+                updateProfileKeyIfNeeded(for: master, using: dataMessage)
+            }
+        } else { // Request
+            print("[Loki] Received a device link request from: \(hexEncodedPublicKey).") // Intentionally not `slave`
+            if let deviceLinkingSession = deviceLinkingSession {
+                deviceLinkingSession.processLinkingRequest(from: slave, to: master, with: slaveSignature)
+            } else {
+                NotificationCenter.default.post(name: .unexpectedDeviceLinkRequestReceived, object: nil)
+            }
+        }
+    }
+
+    @objc(isUnlinkDeviceMessage:)
+    public static func isUnlinkDeviceMessage(_ dataMessage: SSKProtoDataMessage) -> Bool {
+        let unlinkDeviceFlag = SSKProtoDataMessage.SSKProtoDataMessageFlags.unlinkDevice
+        return dataMessage.flags & UInt32(unlinkDeviceFlag.rawValue) != 0
+    }
+
     @objc(handleUnlinkDeviceMessage:wrappedIn:using:)
     public static func handleUnlinkDeviceMessage(_ dataMessage: SSKProtoDataMessage, wrappedIn envelope: SSKProtoEnvelope, using transaction: YapDatabaseReadWriteTransaction) {
         // The envelope source is set during UD decryption
@@ -301,6 +282,18 @@ public extension SessionProtocol {
                 NotificationCenter.default.post(name: .dataNukeRequested, object: nil)
             }
         }
+    }
+
+
+
+    // MARK: - Closed Groups
+    @objc(shouldIgnoreClosedGroupMessage:inThread:wrappedIn:using:)
+    public static func shouldIgnoreClosedGroupMessage(_ dataMessage: SSKProtoDataMessage, in thread: TSThread, wrappedIn envelope: SSKProtoEnvelope, using transaction: YapDatabaseReadTransaction) -> Bool {
+        // The envelope source is set during UD decryption
+        let hexEncodedPublicKey = envelope.source!
+        guard let thread = thread as? TSGroupThread, thread.groupModel.groupType == .closedGroup,
+            dataMessage.group?.type == .deliver else { return false }
+        return thread.isUser(inGroup: hexEncodedPublicKey, transaction: transaction)
     }
 
     @objc(shouldIgnoreClosedGroupUpdateMessage:in:using:)
@@ -324,6 +317,9 @@ public extension SessionProtocol {
         }
     }
 
+
+
+    // MARK: - Profile Updating
     @objc(updateDisplayNameIfNeededForHexEncodedPublicKey:using:appendingShortID:in:)
     public static func updateDisplayNameIfNeeded(for hexEncodedPublicKey: String, using dataMessage: SSKProtoDataMessage, appendingShortID appendShortID: Bool, in transaction: YapDatabaseReadWriteTransaction) {
         guard let profile = dataMessage.profile, let rawDisplayName = profile.displayName else { return }
@@ -349,6 +345,16 @@ public extension SessionProtocol {
         let profileManager = SSKEnvironment.shared.profileManager
         // This dispatches async on the main queue internally, where it starts a new write transaction. Apparently that's an okay thing to do in this case?
         profileManager.setProfileKeyData(profileKey, forRecipientId: hexEncodedPublicKey, avatarURL: profilePictureURL)
+    }
+
+
+
+    // MARK: - Friend Requests
+    @objc(isFriendRequestFromBeforeRestoration:)
+    public static func isFriendRequestFromBeforeRestoration(_ envelope: SSKProtoEnvelope) -> Bool {
+        // The envelope type is set during UD decryption
+        let restorationTimeInMs = UInt64(storage.getRestorationTime() * 1000)
+        return (envelope.type == .friendRequest && envelope.timestamp < restorationTimeInMs)
     }
 
     @objc(canFriendRequestBeAutoAcceptedForHexEncodedPublicKey:in:using:)
@@ -446,5 +452,19 @@ public extension SessionProtocol {
             message.friendRequestStatus = .pending
             // Don't save yet. This is done in finalizeIncomingMessage:thread:masterThread:envelope:transaction.
         }
+    }
+
+
+
+    // MARK: - P2P
+    @objc(handleP2PAddressMessageIfNeeded:wrappedIn:)
+    public static func handleP2PAddressMessageIfNeeded(_ protoContent: SSKProtoContent, wrappedIn envelope: SSKProtoEnvelope) {
+        // The envelope source is set during UD decryption
+        let hexEncodedPublicKey = envelope.source!
+        guard let addressMessage = protoContent.lokiAddressMessage, let address = addressMessage.ptpAddress else { return }
+        let portAsUInt32 = addressMessage.ptpPort
+        guard portAsUInt32 != 0, portAsUInt32 < UInt16.max else { return }
+        let port = UInt16(portAsUInt32)
+        LokiP2PAPI.didReceiveLokiAddressMessage(forContact: hexEncodedPublicKey, address: address, port: port, receivedThroughP2P: envelope.isPtpMessage)
     }
 }
