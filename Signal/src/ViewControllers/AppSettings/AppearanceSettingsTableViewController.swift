@@ -11,9 +11,7 @@ class AppearanceSettingsTableViewController: OWSTableViewController {
 
         title = NSLocalizedString("SETTINGS_APPEARANCE_TITLE", comment: "The title for the appearance settings.")
 
-        view.backgroundColor = Theme.tableViewBackgroundColor
-        tableView.backgroundColor = Theme.tableViewBackgroundColor
-        self.useThemeCellBackgroundColor = true
+        self.useThemeBackgroundColors = true
 
         updateTableContents()
     }

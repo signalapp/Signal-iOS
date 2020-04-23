@@ -278,7 +278,7 @@ public class PinSetupViewController: OWSViewController {
         pinStackRow.setContentHuggingVerticalHigh()
         pinStackRow.setCompressionResistanceVerticalHigh()
 
-        pinTypeToggle.setTitleColor(.ows_accentBlue, for: .normal)
+        pinTypeToggle.setTitleColor(Theme.accentBlueColor, for: .normal)
         pinTypeToggle.titleLabel?.font = .systemFont(ofSize: 15)
         pinTypeToggle.addTarget(self, action: #selector(togglePinType), for: .touchUpInside)
         pinTypeToggle.accessibilityIdentifier = "pinCreation.pinTypeToggle"

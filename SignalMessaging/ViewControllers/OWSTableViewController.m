@@ -75,6 +75,13 @@ const CGFloat kOWSTable_DefaultCellHeight = 45.f;
     [_items addObject:item];
 }
 
+- (void)addItems:(NSArray<OWSTableItem *> *)items
+{
+    for (OWSTableItem *item in items) {
+        [self addItem:item];
+    }
+}
+
 - (NSUInteger)itemCount
 {
     return _items.count;
@@ -636,7 +643,7 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 
     UITableViewCell *_Nullable customCell = [item customCell];
     if (customCell != nil) {
-        if (self.useThemeCellBackgroundColor) {
+        if (self.useThemeBackgroundColors) {
             customCell.backgroundColor = Theme.tableCellBackgroundColor;
         }
         return customCell;
@@ -648,7 +655,7 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
 
     cell.textLabel.text = item.title;
 
-    if (self.useThemeCellBackgroundColor) {
+    if (self.useThemeBackgroundColors) {
         customCell.backgroundColor = Theme.tableCellBackgroundColor;
     }
 
@@ -851,12 +858,20 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
     [self.tableView reloadData];
 }
 
+- (void)setUseThemeBackgroundColors:(BOOL)useThemeBackgroundColors
+{
+    _useThemeBackgroundColors = useThemeBackgroundColors;
+
+    [self applyTheme];
+}
+
 - (void)applyTheme
 {
     OWSAssertIsOnMainThread();
 
-    self.view.backgroundColor = Theme.backgroundColor;
-    self.tableView.backgroundColor = Theme.backgroundColor;
+    UIColor *backgroundColor = (self.useThemeBackgroundColors ? Theme.tableViewBackgroundColor : Theme.backgroundColor);
+    self.view.backgroundColor = backgroundColor;
+    self.tableView.backgroundColor = backgroundColor;
     self.tableView.separatorColor = Theme.cellSeparatorColor;
 }
 

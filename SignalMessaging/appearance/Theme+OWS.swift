@@ -135,9 +135,9 @@ public extension Theme {
         case .settingsSearch:
             return "search-24"
         case .settingsAddMembers:
-            return "plus-24"
+            return "plus-256"
         case .settingsShowAllMembers:
-            return "ic_chevron_down"
+            return "chevron-down-256"
 
         // Input Toolbar
         case .stickerButton:
@@ -177,11 +177,11 @@ public extension Theme {
         case .compose:
             return isDarkThemeEnabled ? "compose-solid-24" : "compose-outline-24"
         case .composeNewGroup:
-            return "group-outline-32"
+            return "group-outline-256"
         case .composeFindByPhoneNumber:
-            return "phone-number-32"
+            return "phone-number-256"
         case .composeInvite:
-            return "invite-outline-32"
+            return "invite-outline-256"
 
         case .phone:
             return isDarkThemeEnabled ? "button_phone_white" : "phone-right-outline-24"
@@ -194,7 +194,7 @@ public extension Theme {
         case .info:
             return isDarkThemeEnabled ? "info-solid-24" : "ic_info"
         case .groupMessage:
-            return "group-solid-24"
+            return "group-outline-20"
         }
     }
 }

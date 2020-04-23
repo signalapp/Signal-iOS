@@ -41,6 +41,8 @@ extern const CGFloat kOWSTable_DefaultCellHeight;
 
 - (void)addItem:(OWSTableItem *)item;
 
+- (void)addItems:(NSArray<OWSTableItem *> *)items;
+
 - (NSUInteger)itemCount;
 
 @end
@@ -171,7 +173,9 @@ typedef BOOL (^OWSTableSwitchBlock)(void);
 
 @property (nonatomic) UITableViewStyle tableViewStyle;
 
-@property (nonatomic) BOOL useThemeCellBackgroundColor;
+@property (nonatomic) BOOL useThemeBackgroundColors;
+
+@property (nonatomic, nullable) UIColor *customSectionHeaderFooterBackgroundColor;
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 

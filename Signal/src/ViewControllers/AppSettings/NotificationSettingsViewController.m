@@ -20,9 +20,7 @@
 
     [self setTitle:NSLocalizedString(@"SETTINGS_NOTIFICATIONS", nil)];
 
-    self.view.backgroundColor = Theme.tableViewBackgroundColor;
-    self.tableView.backgroundColor = Theme.tableViewBackgroundColor;
-    self.useThemeCellBackgroundColor = YES;
+    self.useThemeBackgroundColors = YES;
 
     [self updateTableContents];
 }

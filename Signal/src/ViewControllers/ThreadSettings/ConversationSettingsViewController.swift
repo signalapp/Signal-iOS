@@ -153,9 +153,7 @@ class ConversationSettingsViewController: OWSTableViewController {
                 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE", comment: "Navbar title when viewing settings for a 1-on-1 thread")
         }
 
-        view.backgroundColor = Theme.tableViewBackgroundColor
-        tableView.backgroundColor = Theme.tableViewBackgroundColor
-        self.useThemeCellBackgroundColor = true
+        self.useThemeBackgroundColors = true
         tableView.estimatedRowHeight = 45
         tableView.rowHeight = UITableView.automaticDimension
 

@@ -149,10 +149,17 @@ public struct TSGroupModelBuilder {
         }
 
         guard RemoteConfig.groupsV2CreateGroups else {
+            Logger.info("Creating v1 group due to feature flags.")
             return .V1
         }
         let canUseV2 = GroupManager.canUseV2(for: members, transaction: transaction)
-        return canUseV2 ? GroupManager.defaultGroupsVersion : .V1
+        if canUseV2 {
+            Logger.info("Creating v2 group.")
+            return GroupManager.defaultGroupsVersion
+        } else {
+            Logger.info("Creating v1 group due to members.")
+            return .V1
+        }
     }
 }
 

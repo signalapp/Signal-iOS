@@ -97,8 +97,9 @@ public class NewGroupConfirmViewController: OWSViewController {
         firstSection.preservesSuperviewLayoutMargins = true
         view.addSubview(firstSection)
         firstSection.autoPinWidthToSuperview()
-        firstSection.autoPin(toTopLayoutGuideOf: self, withInset: 0)
+        firstSection.autoPin(toTopLayoutGuideOf: self, withInset: 8)
 
+        recipientTableView.customSectionHeaderFooterBackgroundColor = Theme.backgroundColor
         addChild(recipientTableView)
         view.addSubview(recipientTableView.view)
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSStorage.h"
@@ -768,12 +768,12 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
 + (void)deleteDatabaseFiles
 {
-    [OWSFileSystem deleteFile:[OWSPrimaryStorage legacyDatabaseFilePath]];
-    [OWSFileSystem deleteFile:[OWSPrimaryStorage legacyDatabaseFilePath_SHM]];
-    [OWSFileSystem deleteFile:[OWSPrimaryStorage legacyDatabaseFilePath_WAL]];
-    [OWSFileSystem deleteFile:[OWSPrimaryStorage sharedDataDatabaseFilePath]];
-    [OWSFileSystem deleteFile:[OWSPrimaryStorage sharedDataDatabaseFilePath_SHM]];
-    [OWSFileSystem deleteFile:[OWSPrimaryStorage sharedDataDatabaseFilePath_WAL]];
+    [OWSFileSystem deleteFileIfExists:[OWSPrimaryStorage legacyDatabaseFilePath]];
+    [OWSFileSystem deleteFileIfExists:[OWSPrimaryStorage legacyDatabaseFilePath_SHM]];
+    [OWSFileSystem deleteFileIfExists:[OWSPrimaryStorage legacyDatabaseFilePath_WAL]];
+    [OWSFileSystem deleteFileIfExists:[OWSPrimaryStorage sharedDataDatabaseFilePath]];
+    [OWSFileSystem deleteFileIfExists:[OWSPrimaryStorage sharedDataDatabaseFilePath_SHM]];
+    [OWSFileSystem deleteFileIfExists:[OWSPrimaryStorage sharedDataDatabaseFilePath_WAL]];
     // NOTE: It's NOT safe to delete OWSPrimaryStorage.legacyDatabaseDirPath
     //       which is the app document dir.
     [OWSFileSystem deleteContentsOfDirectory:OWSPrimaryStorage.sharedDataDatabaseDirPath];

@@ -33,9 +33,7 @@
 
     self.title = NSLocalizedString(@"SETTINGS_ABOUT", @"Navbar title");
 
-    self.view.backgroundColor = Theme.tableViewBackgroundColor;
-    self.tableView.backgroundColor = Theme.tableViewBackgroundColor;
-    self.useThemeCellBackgroundColor = YES;
+    self.useThemeBackgroundColors = YES;
 
     [self updateTableContents];
 

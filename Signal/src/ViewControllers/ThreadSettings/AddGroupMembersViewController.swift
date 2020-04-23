@@ -211,6 +211,10 @@ extension AddGroupMembersViewController: GroupMemberViewDelegate {
         return !newRecipientSet.isEmpty
     }
 
+    var shouldTryToEnableGroupsV2ForMembers: Bool {
+        return groupThread.isGroupV2Thread
+    }
+
     func groupMemberViewRemoveRecipient(_ recipient: PickedRecipient) {
         newRecipientSet.remove(recipient)
         updateNavbar()
@@ -222,6 +226,9 @@ extension AddGroupMembersViewController: GroupMemberViewDelegate {
     }
 
     func groupMemberViewCanAddRecipient(_ recipient: PickedRecipient) -> Bool {
+        guard groupThread.isGroupV2Thread else {
+            return true
+        }
         guard let address = recipient.address else {
             owsFailDebug("Invalid recipient.")
             return false
@@ -231,7 +238,7 @@ extension AddGroupMembersViewController: GroupMemberViewDelegate {
         }
     }
 
-    func groupMemberViewGroupMemberCount() -> Int {
+    func groupMemberViewGroupMemberCountForDisplay() -> Int {
         return (oldGroupModel.groupMembership.pendingAndNonPendingMemberCount +
                 newRecipientSet.count)
     }
@@ -240,7 +247,7 @@ extension AddGroupMembersViewController: GroupMemberViewDelegate {
         guard groupThread.isGroupV2Thread else {
             return false
         }
-        return groupMemberViewGroupMemberCount() >= GroupManager.maxGroupMemberCount
+        return groupMemberViewGroupMemberCountForDisplay() >= GroupManager.maxGroupMemberCount
     }
 
     func groupMemberViewMaxMemberCount() -> UInt? {

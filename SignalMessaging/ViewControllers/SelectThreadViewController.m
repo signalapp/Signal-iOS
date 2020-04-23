@@ -101,6 +101,7 @@ NS_ASSUME_NONNULL_BEGIN
     // Table
     _tableViewController = [OWSTableViewController new];
     _tableViewController.delegate = self;
+    _tableViewController.customSectionHeaderFooterBackgroundColor = Theme.backgroundColor;
     [self.view addSubview:self.tableViewController.view];
     [self.tableViewController.view autoPinEdgeToSuperviewSafeArea:ALEdgeLeading];
     [self.tableViewController.view autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -168,9 +168,8 @@ public class ThreadDetailsCell: ConversationViewCell {
 
         switch viewItem.thread {
         case let groupThread as TSGroupThread:
-            let formatString = NSLocalizedString("THREAD_DETAILS_GROUP_MEMBER_COUNT_FORMAT",
-                                                 comment: "The number of members in a group. Embeds {{member count}}")
-            details = String(format: formatString, groupThread.groupModel.groupMembers.count)
+            let memberCount = groupThread.groupModel.groupMembers.count
+            details = GroupViewUtils.formatGroupMembersLabel(memberCount: memberCount)
         case let contactThread as TSContactThread where contactThread.isNoteToSelf:
             details = NSLocalizedString("THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION",
                                         comment: "Subtitle appearing at the top of the users 'note to self' conversation")
