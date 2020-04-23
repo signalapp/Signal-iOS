@@ -5,6 +5,8 @@ import PromiseKit
 // for things that explicitly *can* be done in parallel and don't modify state, any which should then happen
 // on a global queue.
 
+// TODO: Move mentions silliness out into its own file
+
 @objc(LKAPI)
 public final class LokiAPI : NSObject {
     

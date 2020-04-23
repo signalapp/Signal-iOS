@@ -500,7 +500,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     __block NSMutableSet<NSString *> *recipientIds = [NSMutableSet new];
     if ([message isKindOfClass:[OWSOutgoingSyncMessage class]]) {
-        recipientIds = [SessionProtocol getDestinationsForOutgoingSyncMessage:message];
+        recipientIds = [SessionProtocol getDestinationsForOutgoingSyncMessage];
     } else if (thread.isGroupThread) {
         TSGroupThread *groupThread = (TSGroupThread *)thread;
         recipientIds = [SessionProtocol getDestinationsForOutgoingGroupMessage:message inThread:thread];

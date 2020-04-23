@@ -9,7 +9,7 @@ import PromiseKit
 
 // TODO: Document the expected cases for everything and then express those cases in tests
 
-public extension SessionProtocol {
+@objc public extension SessionProtocol {
 
     // When a message comes in, OWSMessageManager does things in this order:
     // 1. Checks if the message is a friend request from before restoration and ignores it if so
