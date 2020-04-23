@@ -153,6 +153,7 @@ const int32_t kGroupIdLength = 16;
                                       stringByAppendingString:NSLocalizedString(@"YOU_WERE_REMOVED", @"")];
         } else {
             NSArray *removedMemberNames = [[newModel.removedMembers allObjects] map:^NSString*(NSString* item) {
+                // TODO: Shouldn't this use DisplayNameUtilities?
                 return [contactsManager displayNameForPhoneIdentifier:item];
             }];
             if ([removedMemberNames count] > 1) {

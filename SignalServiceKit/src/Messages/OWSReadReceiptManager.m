@@ -286,18 +286,9 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
                 self.toLinkedDevicesReadReceiptMap[threadUniqueId] = newReadReceipt;
             }
 
-            __block BOOL isNoteToSelf;
-            [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-                isNoteToSelf = [LKDatabaseUtilities isUserLinkedDevice:message.authorId in:transaction];
-            }];
-            
-            if (isNoteToSelf) {
-                OWSLogVerbose(@"Ignoring read receipt for self-sender.");
+            if (![SessionProtocol shouldSendReadReceiptForThread:message.thread]) {
                 return;
             }
-            
-            // Don't send any receipts for groups
-            if (message.thread.isGroupThread) { return; }
             
             if ([self areReadReceiptsEnabled]) {
                 OWSLogVerbose(@"Enqueuing read receipt for sender.");

@@ -27,7 +27,29 @@ public extension SessionProtocol {
     /// Only ever modified from the message processing queue (`OWSBatchMessageProcessor.processingQueue`).
     private static var syncMessageTimestamps: [String:Set<UInt64>] = [:]
 
+    // MARK: - General
+    @objc(shouldSkipMessageDecryptResult:)
+    public static func shouldSkipMessageDecryptResult(_ result: OWSMessageDecryptResult) -> Bool {
+        // Called from OWSMessageReceiver to prevent messages from even being added to the processing queue for some reason
+        return result.source == getUserHexEncodedPublicKey() // NOTE: This doesn't take into account multi device
+    }
+
     // MARK: - Session Handling
+    @objc(handleDecryptionError:forHexEncodedPublicKey:using:)
+    public static func handleDecryptionError(_ rawValue: Int32, for hexEncodedPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) {
+        let type = TSErrorMessageType(rawValue: rawValue)
+        let masterHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: hexEncodedPublicKey, in: transaction) ?? hexEncodedPublicKey
+        let thread = TSContactThread.getOrCreateThread(withContactId: masterHexEncodedPublicKey, transaction: transaction)
+        // Show the session reset prompt upon certain errors
+        switch type {
+        case .noSession, .invalidMessage, .invalidKeyException:
+            // Store the source device's public key in case it was a secondary device
+            thread.addSessionRestoreDevice(hexEncodedPublicKey, transaction: transaction)
+        default: break
+        }
+
+    }
+
     @objc(isSessionRestoreMessage:)
     public static func isSessionRestoreMessage(_ dataMessage: SSKProtoDataMessage) -> Bool {
         let sessionRestoreFlag = SSKProtoDataMessage.SSKProtoDataMessageFlags.sessionRestore

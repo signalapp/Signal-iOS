@@ -425,9 +425,9 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     
     private func generateSenderCertificate() -> Promise<(certificateData: Data, certificate: SMKSenderCertificate)> {
         return Promise<(certificateData: Data, certificate: SMKSenderCertificate)> { seal in
-            // Loki: Generate a sender certifate locally
-            let sender = OWSIdentityManager.shared().identityKeyPair()?.hexEncodedPublicKey
-            let certificate = SMKSenderCertificate(senderDeviceId: OWSDevicePrimaryDeviceId, senderRecipientId: sender!)
+            // Loki: Generate a sender certificate locally
+            let sender = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
+            let certificate = SMKSenderCertificate(senderDeviceId: OWSDevicePrimaryDeviceId, senderRecipientId: sender)
             let certificateAsData = try certificate.serialized()
             guard isValidCertificate(certificate) else {
                 throw OWSUDError.invalidData(description: "Invalid sender certificate.")
@@ -439,14 +439,14 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     @objc
     public func getSenderCertificate() -> SMKSenderCertificate? {
         do {
-            let sender = OWSIdentityManager.shared().identityKeyPair()?.hexEncodedPublicKey
-            let certificate = SMKSenderCertificate(senderDeviceId: OWSDevicePrimaryDeviceId, senderRecipientId: sender!)
+            let sender = OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
+            let certificate = SMKSenderCertificate(senderDeviceId: OWSDevicePrimaryDeviceId, senderRecipientId: sender)
             guard self.isValidCertificate(certificate) else {
                 throw OWSUDError.invalidData(description: "Invalid sender certificate returned by server")
             }
             return certificate
         } catch {
-            Logger.error("\(error)")
+            print("[Loki] Couldn't get UD sender certificate due to error: \(error).")
             return nil
         }
     }

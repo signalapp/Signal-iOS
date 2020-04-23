@@ -54,6 +54,16 @@ public extension SessionProtocol {
 
     // TODO: Check that the behaviors described above make sense
 
+    @objc(isMessageNoteToSelf:)
+    public static func isMessageNoteToSelf(_ thread: TSThread) -> Bool {
+        guard let thread = thread as? TSContactThread else { return false }
+        var isNoteToSelf = false
+        storage.dbReadConnection.read { transaction in
+            isNoteToSelf = LokiDatabaseUtilities.isUserLinkedDevice(thread.contactIdentifier(), transaction: transaction)
+        }
+        return isNoteToSelf
+    }
+
     @objc(isMessageNoteToSelf:inThread:)
     public static func isMessageNoteToSelf(_ message: TSOutgoingMessage, in thread: TSThread) -> Bool {
         guard let thread = thread as? TSContactThread, !(message is OWSOutgoingSyncMessage) && !(message is DeviceLinkMessage) else { return false }
@@ -314,12 +324,72 @@ public extension SessionProtocol {
 
 
 
+    // MARK: - Typing Indicators
+    public static func shouldSendTypingIndicator(for thread: TSThread) -> Bool {
+        return !thread.isGroupThread() && !isMessageNoteToSelf(thread)
+    }
+
+
+
+    // MARK: - Receipts
+    // Used from OWSReadReceiptManager
+    @objc(shouldSendReadReceiptForThread:)
+    public static func shouldSendReadReceipt(for thread: TSThread) -> Bool {
+        return !isMessageNoteToSelf(thread) && !thread.isGroupThread()
+    }
+
+    // TODO: Not sure how these two relate
+
+    // Used from OWSOutgoingReceiptManager
+    @objc(shouldSendReceiptForThread:)
+    public static func shouldSendReceipt(for thread: TSThread) -> Bool {
+        return thread.friendRequestStatus == .friends && !thread.isGroupThread()
+    }
+
+
+
     // MARK: - Sessions
     // BEHAVIOR NOTE: OWSMessageSender.throws_encryptedMessageForMessageSend:recipientId:plaintext:transaction: sets
     // isFriendRequest to true if the message in question is a friend request or a device linking request, but NOT if
     // it's a session request.
 
     // TODO: Does the above make sense?
+
+    public static func createPreKeys() {
+        // We don't generate PreKeyRecords here.
+        // This is because we need the records to be linked to a contact since we don't have a central server.
+        // It's done automatically when we generate a pre key bundle to send to a contact (`generatePreKeyBundleForContact:`).
+        // You can use `getOrCreatePreKeyForContact:` to generate one if needed.
+        let signedPreKeyRecord = storage.generateRandomSignedRecord()
+        signedPreKeyRecord.markAsAcceptedByService()
+        storage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
+        storage.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
+        print("[Loki] Pre keys created successfully.")
+    }
+
+    public static func refreshPreKeys() {
+        guard storage.currentSignedPrekeyId() == nil else {
+            print("[Loki] Skipping pre key refresh; using existing signed pre key.")
+            return
+        }
+        let signedPreKeyRecord = storage.generateRandomSignedRecord()
+        signedPreKeyRecord.markAsAcceptedByService()
+        storage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
+        storage.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
+        TSPreKeyManager.clearPreKeyUpdateFailureCount()
+        TSPreKeyManager.clearSignedPreKeyRecords()
+        print("[Loki] Pre keys refreshed successfully.")
+    }
+
+    public static func rotatePreKeys() {
+        let signedPreKeyRecord = storage.generateRandomSignedRecord()
+        signedPreKeyRecord.markAsAcceptedByService()
+        storage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
+        storage.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
+        TSPreKeyManager.clearPreKeyUpdateFailureCount()
+        TSPreKeyManager.clearSignedPreKeyRecords()
+        print("[Loki] Pre keys rotated successfully.")
+    }
 
     public static func shouldUseFallbackEncryption(_ message: TSOutgoingMessage) -> Bool {
         return !isSessionRequired(for: message)

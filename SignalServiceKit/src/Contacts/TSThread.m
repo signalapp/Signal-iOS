@@ -216,10 +216,7 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
     if (!IsNoteToSelfEnabled()) {
         return NO;
     }
-    NSString *localNumber = self.tsAccountManager.localNumber;
-    NSString *masterDeviceHexEncodedPublicKey = [NSUserDefaults.standardUserDefaults stringForKey:@"masterDeviceHexEncodedPublicKey"];
-    bool isOurNumber = [self.contactIdentifier isEqualToString:localNumber] || (masterDeviceHexEncodedPublicKey != nil && [self.contactIdentifier isEqualToString:masterDeviceHexEncodedPublicKey]);
-    return (!self.isGroupThread && self.contactIdentifier != nil && isOurNumber);
+    return [SessionProtocol isMessageNoteToSelf:self];
 }
 
 #pragma mark - To be subclassed.
