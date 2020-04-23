@@ -327,7 +327,7 @@
 "BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "Geblokkeerde groepen";
 
 /* Section header for users that have been blocked */
-"BLOCK_LIST_BLOCKED_USERS_SECTION" = "Geblokkeerde gebruikers";
+"BLOCK_LIST_BLOCKED_USERS_SECTION" = "Geblokkeerde personen";
 
 /* Button label for the 'unblock' button */
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Deblokkeren";
@@ -378,7 +378,7 @@
 "BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "%@ blokkeren?";
 
 /* An explanation of the consequences of blocking another user. */
-"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Geblokkeerde gebruikers kunnen jou nog steeds bellen of berichten sturen en weten dus niet dat ze geblokkeerd zijn, maar je zult die oproepen en berichten niet zien.";
+"BLOCK_USER_BEHAVIOR_EXPLANATION" = "Geblokkeerde personen kunnen jou nog steeds bellen of berichten sturen en weten dus niet dat ze geblokkeerd zijn, maar je zult die oproepen en berichten niet zien.";
 
 /* browse files option from file sharing menu */
 "BROWSE_FILES_BUTTON" = "Bladeren";
@@ -787,9 +787,6 @@
 
 /* Navbar title when viewing settings for a group thread */
 "CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "Groepsinformatie";
-
-/* Format for the 'group member count' indicator in conversation settings view. Embeds {the number of group members}. */
-"CONVERSATION_SETTINGS_GROUP_MEMBER_COUNT_FORMAT" = "%@ leden";
 
 /* Label for 'make group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Beheerder maken";
@@ -1296,7 +1293,7 @@
 "GRDB_MIGRATION_NOTIFICATION_TITLE" = "Databank aan het optimaliseren";
 
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "Je hebt de instelling voor wie de groepsinformatie kan wijzigen ingesteld op ‘%@’.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "Je hebt de instelling voor wie de groepsinformatie kan wijzigen op ‘%@’ ingesteld.";
 
 /* Message indicating that the access to the group's attributes was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ heeft aangepast wie de groepsinformatie mogen wijzigen. Vanaf nu mogen %2$@ de groepsinformatie wijzigen.";
@@ -1317,7 +1314,7 @@
 "GROUP_ACCESS_LEVEL_UNKNOWN" = "Onbekend";
 
 /* Message indicating that the access to the group's members was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "Je hebt de instelling voor wie de groepslidmaatschap kan aanpassen ingesteld op ‘%@’.";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "Je hebt de instelling voor wie de groepslidmaatschap kan aanpassen op ‘%@’ ingesteld.";
 
 /* Message indicating that the access to the group's members was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
 "GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ heeft aangepast wie personen aan de groep mag toevoegen en groepsleden mag verwijderen. Vanaf nu mogen %2$@ personen aan de groep toevoegen en groepsleden verwijderen.";
@@ -1408,6 +1405,15 @@
 
 /* Format string for the group member count indicator. Embeds {{ %1$@ the number of members in the group, %2$@ the maximum number of members in the group. }}. */
 "GROUP_MEMBER_COUNT_FORMAT" = "%1$@/%2$@";
+
+/* The 'group member count' indicator when there are no members in the group. */
+"GROUP_MEMBER_COUNT_LABEL_0" = "No members";
+
+/* The 'group member count' indicator when there is 1 member in the group. */
+"GROUP_MEMBER_COUNT_LABEL_1" = "1 lid";
+
+/* Format for the 'group member count' indicator. Embeds {the number of group members}. */
+"GROUP_MEMBER_COUNT_LABEL_FORMAT" = "%@ leden";
 
 /* Label indicating the local user. */
 "GROUP_MEMBER_LOCAL_USER" = "Jij";
@@ -2148,7 +2154,7 @@
 "NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Geef dit groepsgesprek een naam ";
 
 /* a title for the selected section of the 'recipient picker' view. */
-"NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Andere gebruikers";
+"NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Andere Signal-gebruikers";
 
 /* The title for the 'select members for new group' view. */
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "Leden selecteren";
@@ -2361,7 +2367,7 @@
 "OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ heeft zelf-wissende berichten uitgeschakeld.";
 
 /* Info Message when another user enabled disappearing messages. Embeds {{name of other user}} and {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ heeft de timer voor zelf-wissende berichten ingesteld op %@.";
+"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ heeft de timer voor zelf-wissende berichten op %@ ingesteld.";
 
 /* Label warning the user that the Signal service may be down. */
 "OUTAGE_WARNING" = "Signal ondervindt momenteel technische problemen. We zijn hard aan het werk om zo snel als mogelijk de dienst te hervatten.";
@@ -2982,7 +2988,7 @@
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Zoeken op naam of nummer";
 
 /* placeholder text in an empty search field */
-"SEARCH_FIELD_PLACE_HOLDER_TEXT" = "Zoek";
+"SEARCH_FIELD_PLACE_HOLDER_TEXT" = "Zoeken";
 
 /* section header for search results that match a contact who doesn't have an existing conversation */
 "SEARCH_SECTION_CONTACTS" = "Overige contactpersonen";
@@ -3503,9 +3509,6 @@
 /* Label for button to verify a user's safety number. */
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Veiligheidsnummer verifiëren";
 
-/* The number of members in a group. Embeds {{member count}} */
-"THREAD_DETAILS_GROUP_MEMBER_COUNT_FORMAT" = "%lu leden";
-
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Lid van %@, %@ en nog %lu andere groepen";
 
@@ -3609,7 +3612,7 @@
 "UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Zelf-wissende berichten zijn uitgeschakeld.";
 
 /* Info Message when an unknown user enabled disappearing messages. Embeds {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
-"UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "De timer voor zelf-wissende berichten is ingesteld op %@.";
+"UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "De timer voor zelf-wissende berichten is op %@ ingesteld.";
 
 /* Indicates an unknown or unrecognizable value. */
 "UNKNOWN_VALUE" = "Onbekend";
@@ -3744,7 +3747,7 @@
 "VIEW_ONCE_OUTGOING_TOAST" = "Uitgaande eenmaligeweergave-mediabestanden worden automatisch gewist zodra ze zijn verzonden. Je kunt ze dus niet terugzien.\n";
 
 /* Indicates how to cancel a voice message. */
-"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Annuleren";
+"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Veeg om te annuleren";
 
 /* Filename for voice messages. */
 "VOICE_MESSAGE_FILE_NAME" = "Audiobericht";
@@ -3765,4 +3768,4 @@
 "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "Je moet de configuratie voltooien voor je verder kunt gaan.";
 
 /* Info Message when you disabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
-"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Je hebt de timer voor zelf-wissende berichten ingesteld op %@.";
+"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Je hebt de timer voor zelf-wissende berichten op %@ ingesteld.";

@@ -788,9 +788,6 @@
 /* Navbar title when viewing settings for a group thread */
 "CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "Информация о группе";
 
-/* Format for the 'group member count' indicator in conversation settings view. Embeds {the number of group members}. */
-"CONVERSATION_SETTINGS_GROUP_MEMBER_COUNT_FORMAT" = "%@ участников";
-
 /* Label for 'make group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Сделать администратором";
 
@@ -1408,6 +1405,15 @@
 
 /* Format string for the group member count indicator. Embeds {{ %1$@ the number of members in the group, %2$@ the maximum number of members in the group. }}. */
 "GROUP_MEMBER_COUNT_FORMAT" = "%1$@/%2$@";
+
+/* The 'group member count' indicator when there are no members in the group. */
+"GROUP_MEMBER_COUNT_LABEL_0" = "No members";
+
+/* The 'group member count' indicator when there is 1 member in the group. */
+"GROUP_MEMBER_COUNT_LABEL_1" = "1 участник";
+
+/* Format for the 'group member count' indicator. Embeds {the number of group members}. */
+"GROUP_MEMBER_COUNT_LABEL_FORMAT" = "%@ участников";
 
 /* Label indicating the local user. */
 "GROUP_MEMBER_LOCAL_USER" = "Вы";
@@ -2289,7 +2295,7 @@
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Некорректный номер";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "У вас закончились попытки ввода PIN-кода, но вы всё равно можете получить доступ к вашей учётной записи Signal, создав новый PIN-код. Для вашей конфиденциальности и безопасности ваша учётная запись будет восстановлена без какой-либо сохранённой информации профиля или настроек.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "У вас закончились попытки ввода PIN-кода, но вы всё равно можете получить доступ к своей учётной записи Signal, создав новый PIN-код. Для вашей конфиденциальности и безопасности ваша учётная запись будет восстановлена без какой-либо сохранённой информации профиля или настроек.";
 
 /* Label for the 'learn more' link when reglock is disabled in the 'onboarding pin attempts exhausted' view. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "Узнать больше о PIN-кодах";
@@ -2517,7 +2523,7 @@
 "PIN_CREATION_ERROR_TITLE" = "Не удалось создать PIN-код";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PIN-коды шифруют информацию, хранящуюся в сервисе Signal, так что только вы можете получить к ней доступ. Ваши профиль, настройки и контакты будут восстановлены, если вы переустановите Signal.";
+"PIN_CREATION_EXPLANATION" = "PIN-коды хранят информацию в сервисе Signal зашифрованной, так что только вы можете получить к ней доступ. Ваши настройки, контакты и профиль будут восстановлены, если вы переустановите Signal.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PIN-коды не совпадают. Попробуйте ещё раз.";
@@ -3261,7 +3267,7 @@
 "SETTINGS_NOTIFICATIONS" = "Уведомления";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "PIN-коды шифруют информацию, хранящуюся в сервисе Signal, так что только вы можете получить к ней доступ. Ваши профиль, настройки и контакты будут восстановлены, если вы переустановите Signal.";
+"SETTINGS_PINS_FOOTER" = "PIN-коды хранят информацию в сервисе Signal зашифрованной, так что только вы можете получить к ней доступ. Ваши настройки, контакты и профиль будут восстановлены, если вы переустановите Signal.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Изменить свой PIN-код";
@@ -3294,10 +3300,10 @@
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Видеть и показывать другим, когда сообщения были прочитаны. Этот параметр является необязательным и применяется ко всем разговорам.";
 
 /* Action to turn off registration lock */
-"SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Выключить";
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Отключить";
 
 /* Title for the alert confirming that the user wants to turn off registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "Выключить блокировку регистрации?";
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "Отключить блокировку регистрации?";
 
 /* Action to turn on registration lock */
 "SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Включить";
@@ -3503,9 +3509,6 @@
 /* Label for button to verify a user's safety number. */
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Подтвердить код безопасности";
 
-/* The number of members in a group. Embeds {{member count}} */
-"THREAD_DETAILS_GROUP_MEMBER_COUNT_FORMAT" = "%lu участников";
-
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Состоит в %@, %@ и ещё %lu группах";
 
@@ -3657,7 +3660,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Создать PIN-код";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PIN-коды шифруют информацию, хранящуюся в сервисе Signal, так что только вы можете получить к ней доступ. Ваши профиль, настройки и контакты будут восстановлены, если вы переустановите Signal.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PIN-коды хранят информацию в сервисе Signal зашифрованной, так что только вы можете получить к ней доступ. Ваши настройки, контакты и профиль будут восстановлены, если вы переустановите Signal.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Представляем PIN-коды";

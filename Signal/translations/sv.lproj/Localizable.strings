@@ -788,9 +788,6 @@
 /* Navbar title when viewing settings for a group thread */
 "CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "Gruppinfo";
 
-/* Format for the 'group member count' indicator in conversation settings view. Embeds {the number of group members}. */
-"CONVERSATION_SETTINGS_GROUP_MEMBER_COUNT_FORMAT" = "%@ medlemmar";
-
 /* Label for 'make group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Gör till adminstratör";
 
@@ -1209,7 +1206,7 @@
 "ERROR_NETWORK_FAILURE" = "Nätverksfel";
 
 /* Error indicating a send failure due to a delinked application. */
-"ERROR_SENDING_DELINKED" = "Din enhet är inte längre länkad. Vänligen koppla igen för att skicka ytterligare meddelanden.";
+"ERROR_SENDING_DELINKED" = "Din enhet är inte längre länkad. Vänligen länka igen för att skicka ytterligare meddelanden.";
 
 /* Error indicating a send failure due to a deregistered application. */
 "ERROR_SENDING_DEREGISTERED" = "Din enhet är inte längre registrerad. Vänligen registrera dig för att skicka ytterligare meddelanden.";
@@ -1299,7 +1296,7 @@
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "Du ändrade vem som kan redigera gruppinformation till \"%@\".";
 
 /* Message indicating that the access to the group's attributes was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ ändrade vem som kan redigera gruppinformation i \"%2$@\".";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ ändrade vem som kan redigera gruppinformation till \"%2$@\".";
 
 /* Message indicating that the access to the group's attributes was changed. Embeds {{new access level}}. */
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "Gruppinformation kan ändras av \"%@\".";
@@ -1320,7 +1317,7 @@
 "GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "Du ändrade vem som kan redigera gruppmedlemskap till \"%@\".";
 
 /* Message indicating that the access to the group's members was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ ändrade vem som kan redigera gruppmedlemskap i \"%2$@\".";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ ändrade vem som kan redigera gruppmedlemskap till \"%2$@\".";
 
 /* Message indicating that the access to the group's members was changed. Embeds {{new access level}}. */
 "GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Gruppmedlemskap kan ändras av \"%@\".";
@@ -1398,7 +1395,7 @@
 "GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "Dina administratörsbehörigheter återkallades.";
 
 /* Message indicating that the local user had their administrator role revoked by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ återkallade din administratörsbehörighet.";
+"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ återkallade dina administratörsbehörigheter.";
 
 /* Conversation settings table section title */
 "GROUP_MANAGEMENT_SECTION" = "Hantera grupper";
@@ -1408,6 +1405,15 @@
 
 /* Format string for the group member count indicator. Embeds {{ %1$@ the number of members in the group, %2$@ the maximum number of members in the group. }}. */
 "GROUP_MEMBER_COUNT_FORMAT" = "%1$@/%2$@";
+
+/* The 'group member count' indicator when there are no members in the group. */
+"GROUP_MEMBER_COUNT_LABEL_0" = "No members";
+
+/* The 'group member count' indicator when there is 1 member in the group. */
+"GROUP_MEMBER_COUNT_LABEL_1" = "1 medlem";
+
+/* Format for the 'group member count' indicator. Embeds {the number of group members}. */
+"GROUP_MEMBER_COUNT_LABEL_FORMAT" = "%@ medlemmar";
 
 /* Label indicating the local user. */
 "GROUP_MEMBER_LOCAL_USER" = "Du";
@@ -1644,7 +1650,7 @@
 "IN_CALL_CONNECTING" = "Ansluter...";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "Kopplar upp igen...";
+"IN_CALL_RECONNECTING" = "Återansluter...";
 
 /* Call setup status label */
 "IN_CALL_RINGING" = "Ringer...";
@@ -2259,7 +2265,7 @@
 "ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Genom att trycka på \"Registrera iPad\" kan du skapa ett helt nytt Signal-konto eller flytta ett befintligt konto till denna iPad. Detta kommer att inaktivera Signal på alla andra enheter som för närvarande är registrerade med samma telefonnummer.";
 
 /* explanation to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Genom att trycka på \"Länka iPhone\" kan du ansluta din telefon till ett befintligt konto. Att koppla din telefon rekommenderas i allmänhet inte och kommer att begränsa vissa funktioner, såsom att ringa.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Genom att trycka på \"Länka iPhone\" kan du ansluta din telefon till ett befintligt konto. Att länka din telefon rekommenderas i allmänhet inte och kommer att begränsa vissa funktioner, såsom att ringa.";
 
 /* header text indicating to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "Registrera denna iPad";
@@ -2289,7 +2295,7 @@
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Ogiltigt nummer";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "Du har slut på gissningar av PIN-koden, men du kan fortfarande komma åt ditt Signal-konto genom att skapa en ny PIN-kod. För din integritet och säkerhet kommer ditt konto kommer att återställas utan några sparade profilinformation eller inställningar.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "Du har slut på gissningar av PIN-koden men du kan fortfarande komma åt ditt Signal-konto genom att skapa en ny PIN-kod. För din integritet och säkerhet kommer ditt konto kommer att återställas utan några sparade profilinformation eller inställningar.";
 
 /* Label for the 'learn more' link when reglock is disabled in the 'onboarding pin attempts exhausted' view. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "Läs mer om PIN-koder";
@@ -2994,7 +3000,7 @@
 "SEARCH_SECTION_MESSAGES" = "Meddelanden";
 
 /* alert title */
-"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Det går inte att hämta kopplingskod";
+"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Det går inte att hämta länkningskod";
 
 /* alert message for outdated linking device */
 "SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Din andra enhet kör en äldre version av Signal som inte stöder skanning av iPad-QR-koder. Vänligen installera den senaste utgåvan av Signal och försök igen.";
@@ -3015,7 +3021,7 @@
 "SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "Välj ett namn";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "Koppling klar";
+"SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "Klar med länkning";
 
 /* header text before the user can link this device */
 "SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Starta Signal på din telefon för att länka denna iPad till ditt konto";
@@ -3102,7 +3108,7 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "Kringgå censur kan bara aktiveras när då internet är tillgängligt";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Kringgå censur är inte nödvändigt; du är redan uppkopplad mot Signal-tjänsten.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Kringgå censur är inte nödvändigt; du är redan ansluten till Signal-tjänsten.";
 
 /* Table header for the 'censorship circumvention' section. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "Kringgå censur";
@@ -3502,9 +3508,6 @@
 
 /* Label for button to verify a user's safety number. */
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Verifiera säkerhetsnummer";
-
-/* The number of members in a group. Embeds {{member count}} */
-"THREAD_DETAILS_GROUP_MEMBER_COUNT_FORMAT" = "%lu medlemmar";
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Medlem av %@, %@, och %lu ytterligare grupper";

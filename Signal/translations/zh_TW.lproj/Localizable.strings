@@ -788,9 +788,6 @@
 /* Navbar title when viewing settings for a group thread */
 "CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "群組資訊";
 
-/* Format for the 'group member count' indicator in conversation settings view. Embeds {the number of group members}. */
-"CONVERSATION_SETTINGS_GROUP_MEMBER_COUNT_FORMAT" = "%@個成員";
-
 /* Label for 'make group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "成為系統管理員";
 
@@ -1408,6 +1405,15 @@
 
 /* Format string for the group member count indicator. Embeds {{ %1$@ the number of members in the group, %2$@ the maximum number of members in the group. }}. */
 "GROUP_MEMBER_COUNT_FORMAT" = "%1$@/%2$@";
+
+/* The 'group member count' indicator when there are no members in the group. */
+"GROUP_MEMBER_COUNT_LABEL_0" = "No members";
+
+/* The 'group member count' indicator when there is 1 member in the group. */
+"GROUP_MEMBER_COUNT_LABEL_1" = "有 1 名成員";
+
+/* Format for the 'group member count' indicator. Embeds {the number of group members}. */
+"GROUP_MEMBER_COUNT_LABEL_FORMAT" = "%@個成員";
 
 /* Label indicating the local user. */
 "GROUP_MEMBER_LOCAL_USER" = "您";
@@ -3502,9 +3508,6 @@
 
 /* Label for button to verify a user's safety number. */
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "驗證安全碼";
-
-/* The number of members in a group. Embeds {{member count}} */
-"THREAD_DETAILS_GROUP_MEMBER_COUNT_FORMAT" = "%lu 成員";
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "%@、%@的組員及 %lu 其他群組";

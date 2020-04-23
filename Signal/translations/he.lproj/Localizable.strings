@@ -788,9 +788,6 @@
 /* Navbar title when viewing settings for a group thread */
 "CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "פרטי קבוצה";
 
-/* Format for the 'group member count' indicator in conversation settings view. Embeds {the number of group members}. */
-"CONVERSATION_SETTINGS_GROUP_MEMBER_COUNT_FORMAT" = "%@ חברי קבוצה";
-
 /* Label for 'make group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "עשה מינהלן";
 
@@ -1408,6 +1405,15 @@
 
 /* Format string for the group member count indicator. Embeds {{ %1$@ the number of members in the group, %2$@ the maximum number of members in the group. }}. */
 "GROUP_MEMBER_COUNT_FORMAT" = "%1$@/%2$@";
+
+/* The 'group member count' indicator when there are no members in the group. */
+"GROUP_MEMBER_COUNT_LABEL_0" = "No members";
+
+/* The 'group member count' indicator when there is 1 member in the group. */
+"GROUP_MEMBER_COUNT_LABEL_1" = "חבר אחד";
+
+/* Format for the 'group member count' indicator. Embeds {the number of group members}. */
+"GROUP_MEMBER_COUNT_LABEL_FORMAT" = "%@ חברי קבוצה";
 
 /* Label indicating the local user. */
 "GROUP_MEMBER_LOCAL_USER" = "אתה";
@@ -3502,9 +3508,6 @@
 
 /* Label for button to verify a user's safety number. */
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "וודא מספר ביטחון";
-
-/* The number of members in a group. Embeds {{member count}} */
-"THREAD_DETAILS_GROUP_MEMBER_COUNT_FORMAT" = "%lu חברי קבוצה";
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "חבר קבוצה של %@, %@ ועוד %lu קבוצות נוספות";

@@ -788,9 +788,6 @@
 /* Navbar title when viewing settings for a group thread */
 "CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "Renseignements du groupe";
 
-/* Format for the 'group member count' indicator in conversation settings view. Embeds {the number of group members}. */
-"CONVERSATION_SETTINGS_GROUP_MEMBER_COUNT_FORMAT" = "%@ membres";
-
 /* Label for 'make group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Nommer admin";
 
@@ -1408,6 +1405,15 @@
 
 /* Format string for the group member count indicator. Embeds {{ %1$@ the number of members in the group, %2$@ the maximum number of members in the group. }}. */
 "GROUP_MEMBER_COUNT_FORMAT" = "%1$@/%2$@";
+
+/* The 'group member count' indicator when there are no members in the group. */
+"GROUP_MEMBER_COUNT_LABEL_0" = "No members";
+
+/* The 'group member count' indicator when there is 1 member in the group. */
+"GROUP_MEMBER_COUNT_LABEL_1" = "1 membre";
+
+/* Format for the 'group member count' indicator. Embeds {the number of group members}. */
+"GROUP_MEMBER_COUNT_LABEL_FORMAT" = "%@ membres";
 
 /* Label indicating the local user. */
 "GROUP_MEMBER_LOCAL_USER" = "Vous";
@@ -2517,7 +2523,7 @@
 "PIN_CREATION_ERROR_TITLE" = "Échec de la création du NIP";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall Signal.";
+"PIN_CREATION_EXPLANATION" = "Les codes PIN permettent à Signal d'en-crypté vos informations stoker afin que vous seul puissiez y accéder. Votre profil, vos paramètres et vos contacts seront restaurés lorsque vous réinstallez Signal.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "Les NIP ne correspondent pas. Veuillez ressayez.";
@@ -2580,10 +2586,10 @@
 "PINS_MEGAPHONE_ACTION" = "Créer un NIP";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "PINs keep information that’s stored with Signal encrypted";
+"PINS_MEGAPHONE_BODY" = "Les codes PIN gardent les informations stockées avec Signal cryptées";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Creating a PIN will become mandatory in %ld days.";
+"PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Nous vous le rappellerons ultérieurement. La création d’un PIN deviendra obligatoire dans %ld jours.";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_TITLE" = "Créer un NIP";
@@ -2805,7 +2811,7 @@
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Besoin d’aide ?";
 
 /* Alert body for a forgotten SVR (V2) PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Votre PIN est un code à plus de 4 chiffres que vous avez créé, qui peut être numérique ou alphanumérique. Si vous ne vous souvenez pas de votre code PIN, vous devrez attendre 7 jours pour réenregistrer votre compte.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock */
 "REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Votre code Pin est un code à 4 chiffres que vous avez créés il peut être numérique ou alphanumérique. Si vous ne vous souvenez pas de votre code, vous pouvez en créer un nouveau. Vous pouvez enregistrer et utiliser votre compte, mais vous perdrez vos paramètres tels que vos informations de profil.";
@@ -3261,7 +3267,7 @@
 "SETTINGS_NOTIFICATIONS" = "Notifications";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall Signal.";
+"SETTINGS_PINS_FOOTER" = "Les codes PIN permettent à Signal d'en-crypté vos informations stoker afin que vous seul puissiez y accéder. Votre profil, vos paramètres et vos contacts seront restaurés lorsque vous réinstallez Signal.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Changer votre NIP";
@@ -3294,19 +3300,19 @@
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Voyez et faites savoir que les messages ont été lus. Ce paramètre est facultatif et s’applique à toutes les conversations.";
 
 /* Action to turn off registration lock */
-"SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Turn Off";
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "désactiver";
 
 /* Title for the alert confirming that the user wants to turn off registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "Turn Off Registration Lock?";
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "Désactiver le verrouillage d'inscription";
 
 /* Action to turn on registration lock */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Turn On";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON" = "activer";
 
 /* Body for the alert confirming that the user wants to turn on registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "If you forget your Signal PIN when registering with Signal again, you’ll be locked out of your account for 7 days.";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Si vous oubliez votre PIN Signal lors de votre nouvelle inscription, Votre compte sera bloqué pendant 7 jour.";
 
 /* Title for the alert confirming that the user wants to turn on registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "Turn On Registration Lock?";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "activer le verrouillage d'inscription";
 
 /* Label for re-link button. */
 "SETTINGS_RELINK_BUTTON" = "Relier à nouveau";
@@ -3366,7 +3372,7 @@
 "SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Blocage de l’inscription";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "For extra security, turn on registration lock, which will require your Signal PIN to register your phone number with Signal again.";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Pour plus de sécurité, activez le verrouillage d'enregistrement, qui nécessitera votre code PIN Signal pour enregistrer à nouveau votre numéro de téléphone avec Signal.";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Indicateurs de saisie";
@@ -3502,9 +3508,6 @@
 
 /* Label for button to verify a user's safety number. */
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Confirmer le numéro de sécurité";
-
-/* The number of members in a group. Embeds {{member count}} */
-"THREAD_DETAILS_GROUP_MEMBER_COUNT_FORMAT" = "%lu membres";
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Membre de %@, %@ et %lu autres groupes.";
@@ -3657,7 +3660,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Créer votre NIP";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall Signal.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Les codes PIN permettent à Signal d'en-crypté vos informations stoker afin que vous seul puissiez y accéder. Votre profil, vos paramètres et vos contacts seront restaurés lorsque vous réinstallez Signal.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Nous présentons les NIP";

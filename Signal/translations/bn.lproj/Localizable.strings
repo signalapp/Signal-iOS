@@ -788,9 +788,6 @@
 /* Navbar title when viewing settings for a group thread */
 "CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "গ্রুপের তথ্য";
 
-/* Format for the 'group member count' indicator in conversation settings view. Embeds {the number of group members}. */
-"CONVERSATION_SETTINGS_GROUP_MEMBER_COUNT_FORMAT" = "%@ members";
-
 /* Label for 'make group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Make Admin";
 
@@ -798,7 +795,7 @@
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ will be able to remove group members and make other admins.";
 
 /* Section title of the 'members' section in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "Members";
+"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "সদস্যগণ";
 
 /* Format for the section title of the 'members' section in conversation settings view. Embeds: {{ the number of group members }}. */
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ Members";
@@ -1409,6 +1406,15 @@
 /* Format string for the group member count indicator. Embeds {{ %1$@ the number of members in the group, %2$@ the maximum number of members in the group. }}. */
 "GROUP_MEMBER_COUNT_FORMAT" = "%1$@/%2$@";
 
+/* The 'group member count' indicator when there are no members in the group. */
+"GROUP_MEMBER_COUNT_LABEL_0" = "No members";
+
+/* The 'group member count' indicator when there is 1 member in the group. */
+"GROUP_MEMBER_COUNT_LABEL_1" = "1 member";
+
+/* Format for the 'group member count' indicator. Embeds {the number of group members}. */
+"GROUP_MEMBER_COUNT_LABEL_FORMAT" = "%@ members";
+
 /* Label indicating the local user. */
 "GROUP_MEMBER_LOCAL_USER" = "আপনি";
 
@@ -1758,7 +1764,7 @@
 "KEY_COMMAND_UNARCHIVE" = "কথোপকথন সংরক্ষণাগারমুক্ত করুন";
 
 /* Label for the 'learn more' button. */
-"LEARN_MORE" = "Learn More";
+"LEARN_MORE" = "আরও জানুন";
 
 /* Confirmation button within contextual alert */
 "LEAVE_BUTTON_TITLE" = "ত্যাগ করুন";
@@ -2535,7 +2541,7 @@
 "PIN_CREATION_RECREATION_EXPLANATION" = "You can change your PIN as long as this device is registered.";
 
 /* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_RECREATION_TITLE" = "Change your PIN";
+"PIN_CREATION_RECREATION_TITLE" = "আপনার পিন পরিবর্তন করুন";
 
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "আপনার পিন তৈরি করুন";
@@ -2574,7 +2580,7 @@
 "PIN_REMINDER_TITLE" = "আপনার Signal পিন প্রবেশ করান";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN must be at least 4 digits.";
+"PIN_REMINDER_TOO_SHORT_ERROR" = "পিনটি কমপক্ষে 4 টি সংখ্যার হতে হবে।";
 
 /* Action text for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_ACTION" = "Create PIN";
@@ -3503,9 +3509,6 @@
 /* Label for button to verify a user's safety number. */
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "নিরাপত্তা নাম্বার যাচাই করুন";
 
-/* The number of members in a group. Embeds {{member count}} */
-"THREAD_DETAILS_GROUP_MEMBER_COUNT_FORMAT" = "%lu সদস্যগণ";
-
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "%@, %@, এবং %lu এর অতিরিক্ত সদস্য";
 
@@ -3603,7 +3606,7 @@
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "আপনি প্রেরককে এই বার্তাটি এখনই আবার পাঠাতে বলতে পারেন যে আপনি Signal এর একটি আধুনিক সংস্করণ ব্যবহার করছেন।";
 
 /* Label indicating an unknown user. */
-"UNKNOWN_USER" = "Unknown";
+"UNKNOWN_USER" = "অজানা";
 
 /* Info Message when an unknown user disabled disappearing messages. */
 "UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Disappearing messages were disabled.";

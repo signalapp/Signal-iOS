@@ -788,9 +788,6 @@
 /* Navbar title when viewing settings for a group thread */
 "CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "Info gruppo";
 
-/* Format for the 'group member count' indicator in conversation settings view. Embeds {the number of group members}. */
-"CONVERSATION_SETTINGS_GROUP_MEMBER_COUNT_FORMAT" = "%@ membri";
-
 /* Label for 'make group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Rendi amministratore";
 
@@ -1408,6 +1405,15 @@
 
 /* Format string for the group member count indicator. Embeds {{ %1$@ the number of members in the group, %2$@ the maximum number of members in the group. }}. */
 "GROUP_MEMBER_COUNT_FORMAT" = "%1$@/%2$@";
+
+/* The 'group member count' indicator when there are no members in the group. */
+"GROUP_MEMBER_COUNT_LABEL_0" = "No members";
+
+/* The 'group member count' indicator when there is 1 member in the group. */
+"GROUP_MEMBER_COUNT_LABEL_1" = "1 partecipante";
+
+/* Format for the 'group member count' indicator. Embeds {the number of group members}. */
+"GROUP_MEMBER_COUNT_LABEL_FORMAT" = "%@ membri";
 
 /* Label indicating the local user. */
 "GROUP_MEMBER_LOCAL_USER" = "Tu";
@@ -2808,7 +2814,7 @@
 "REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Il tuo PIN è un codice di minimo 4 cifre che hai creato e che può essere numerico o alfanumerico. Se non ti ricordi il tuo PIN, dovrai attendere 7 giorni per registrare nuovamente il tuo account.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Il PIN è un codice di 4+ cifre creato da te che può essere numerico o alfanumerico. Se non riesci a ricordarti il tuo PIN, puoi crearne uno nuovo. Puoi registrarti e usare il tuo account ma perderai alcune impostazioni salvate come le informazioni del tuo profilo.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Il tuo PIN è un codice di 4+ cifre creato da te che può essere numerico o alfanumerico. Se non riesci a ricordarti il tuo PIN, puoi crearne uno nuovo. Puoi registrarti e usare il tuo account ma perderai alcune impostazioni salvate come le informazioni del tuo profilo.";
 
 /* Alert body for a forgotten V1 PIN */
 "REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Il tuo PIN è un codice numerico di minimo 4 cifre che hai creato. Se non ti ricordi il tuo PIN, dovrai attendere 7 giorni per registrare nuovamente il tuo account.";
@@ -3502,9 +3508,6 @@
 
 /* Label for button to verify a user's safety number. */
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Verifica il codice di sicurezza";
-
-/* The number of members in a group. Embeds {{member count}} */
-"THREAD_DETAILS_GROUP_MEMBER_COUNT_FORMAT" = "%lu membri";
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Membro di %@, %@, e altri %lu gruppi";
