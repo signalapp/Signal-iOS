@@ -93,6 +93,7 @@ public class GRDBSchemaMigrator: NSObject {
         case dataMigration_clearLaunchScreenCache
         case dataMigration_enableV2RegistrationLockIfNecessary
         case dataMigration_resetStorageServiceData
+        case dataMigration_markAllInteractionsAsNotDeleted
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
@@ -523,6 +524,10 @@ public class GRDBSchemaMigrator: NSObject {
         migrator.registerMigration(MigrationId.dataMigration_resetStorageServiceData.rawValue) { db in
             let transaction = GRDBWriteTransaction(database: db).asAnyWrite
             SSKEnvironment.shared.storageServiceManager.resetLocalData(transaction: transaction)
+        }
+
+        migrator.registerMigration(MigrationId.dataMigration_markAllInteractionsAsNotDeleted.rawValue) { db in
+            try db.execute(sql: "UPDATE model_TSInteraction SET wasRemotelyDeleted = 0")
         }
     }
 }
