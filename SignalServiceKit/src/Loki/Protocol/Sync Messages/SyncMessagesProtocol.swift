@@ -17,6 +17,76 @@ public final class SyncMessagesProtocol : NSObject {
 
     internal static var storage: OWSPrimaryStorage { OWSPrimaryStorage.shared() }
 
+    // MARK: - Sending
+    @objc(shouldSkipConfigurationSyncMessage)
+    public static func shouldSkipConfigurationSyncMessage() -> Bool {
+        return !UserDefaults.standard[.hasLaunchedOnce]
+    }
+
+    @objc(syncContactWithHexEncodedPublicKey:in:)
+    public static func syncContact(_ hexEncodedPublicKey: String, in transaction: YapDatabaseReadTransaction) {
+        if let thread = TSContactThread.getWithContactId(hexEncodedPublicKey, transaction: transaction) { // TODO: Should this be getOrCreate?
+            let syncManager = SSKEnvironment.shared.syncManager
+            syncManager.syncContacts(for: [ SignalAccount(recipientId: hexEncodedPublicKey) ])
+        }
+    }
+
+    @objc(syncAllContacts)
+    public static func objc_syncAllContacts() -> AnyPromise {
+        return AnyPromise.from(syncAllContacts())
+    }
+
+    public static func syncAllContacts() -> Promise<Void> {
+        var friends: [SignalAccount] = []
+        TSContactThread.enumerateCollectionObjects { object, _ in
+            guard let thread = object as? TSContactThread else { return }
+            let hexEncodedPublicKey = thread.contactIdentifier()
+            guard thread.isContactFriend && thread.shouldThreadBeVisible && !thread.isForceHidden else { return }
+            friends.append(SignalAccount(recipientId: hexEncodedPublicKey))
+        }
+        friends.append(SignalAccount(recipientId: getUserHexEncodedPublicKey())) // TODO: We sure about this?
+        let syncManager = SSKEnvironment.shared.syncManager
+        let promises = friends.chunked(by: 3).map { friends -> Promise<Void> in
+            return Promise(syncManager.syncContacts(for: friends)).map { _ in }
+        }
+        return when(fulfilled: promises)
+    }
+
+    @objc(syncAllClosedGroups)
+    public static func objc_syncAllClosedGroups() -> AnyPromise {
+        return AnyPromise.from(syncAllClosedGroups())
+    }
+
+    public static func syncAllClosedGroups() -> Promise<Void> {
+        var groups: [TSGroupThread] = []
+        TSGroupThread.enumerateCollectionObjects { object, _ in
+            guard let group = object as? TSGroupThread, group.groupModel.groupType == .closedGroup, group.shouldThreadBeVisible, !group.isForceHidden else { return }
+            groups.append(group)
+        }
+        let syncManager = SSKEnvironment.shared.syncManager
+        let promises = groups.map { group -> Promise<Void> in
+            return Promise(syncManager.syncGroup(for: group)).map { _ in }
+        }
+        return when(fulfilled: promises)
+    }
+
+    @objc(syncAllOpenGroups)
+    public static func objc_syncAllOpenGroups() -> AnyPromise {
+        return AnyPromise.from(syncAllOpenGroups())
+    }
+
+    public static func syncAllOpenGroups() -> Promise<Void> {
+        let openGroupSyncMessage = LKSyncOpenGroupsMessage()
+        let (promise, seal) = Promise<Void>.pending()
+        let messageSender = SSKEnvironment.shared.messageSender
+        messageSender.send(openGroupSyncMessage, success: {
+            seal.fulfill(())
+        }) { error in
+            seal.reject(error)
+        }
+        return promise
+    }
+
     // MARK: - Receiving
     @objc(isValidSyncMessage:in:)
     public static func isValidSyncMessage(_ envelope: SSKProtoEnvelope, in transaction: YapDatabaseReadTransaction) -> Bool {

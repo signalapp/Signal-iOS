@@ -228,12 +228,9 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
         if (!self.tsAccountManager.isRegisteredAndReady) {
             return;
         }        
-        
-        NSUserDefaults *userDefaults = NSUserDefaults.standardUserDefaults;
-        BOOL hasLaunchedOnce = [userDefaults boolForKey:@"hasLaunchedOnce"];
-        if (hasLaunchedOnce) { // FIXME: Quick and dirty workaround to not do this on initial launch
-            [self sendConfigurationSyncMessage_AppReady];
-        }
+
+        if ([LKSyncMessagesProtocol shouldSkipConfigurationSyncMessage]) { return; }
+        [self sendConfigurationSyncMessage_AppReady];
     }];
 }
 
@@ -273,38 +270,13 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 
 - (AnyPromise *)syncContact:(NSString *)hexEncodedPubKey transaction:(YapDatabaseReadTransaction *)transaction
 {
-    TSContactThread *thread = [TSContactThread getThreadWithContactId:hexEncodedPubKey transaction:transaction];
-    if (thread != nil && thread.isContactFriend) {
-        return [self syncContactsForSignalAccounts:@[[[SignalAccount alloc] initWithRecipientId:hexEncodedPubKey]]];
-    }
+    [LKSyncMessagesProtocol syncContactWithHexEncodedPublicKey:hexEncodedPubKey in:transaction];
     return [AnyPromise promiseWithValue:@1];
 }
 
 - (AnyPromise *)syncAllContacts
 {
-    NSMutableArray<SignalAccount *> *friends = @[].mutableCopy;
-    NSMutableArray<AnyPromise *> *promises = @[].mutableCopy;
-    [TSContactThread enumerateCollectionObjectsUsingBlock:^(TSContactThread *thread, BOOL *stop) {
-        NSString *hexEncodedPublicKey = thread.contactIdentifier;
-        if (hexEncodedPublicKey != nil && thread.isContactFriend && thread.shouldThreadBeVisible && !thread.isForceHidden) {
-            [friends addObject:[[SignalAccount alloc] initWithRecipientId:hexEncodedPublicKey]];
-        }
-    }];
-    [friends addObject:[[SignalAccount alloc] initWithRecipientId:self.tsAccountManager.localNumber]];
-    NSMutableArray<SignalAccount *> *signalAccounts = @[].mutableCopy;
-    for (SignalAccount *contact in friends) {
-        [signalAccounts addObject:contact];
-        if (signalAccounts.count >= 3) {
-            [promises addObject:[self syncContactsForSignalAccounts:[signalAccounts copy]]];
-            [signalAccounts removeAllObjects];
-        }
-    }
-    if (signalAccounts.count > 0) {
-        [promises addObject:[self syncContactsForSignalAccounts:signalAccounts]];
-    }
-    AnyPromise *promise = PMKJoin(promises);
-    [promise retainUntilComplete];
-    return promise;
+    return [LKSyncMessagesProtocol syncAllContacts];
 }
 
 - (AnyPromise *)syncContactsForSignalAccounts:(NSArray<SignalAccount *> *)signalAccounts
@@ -327,26 +299,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 
 - (AnyPromise *)syncAllGroups
 {
-    NSMutableArray<TSGroupThread *> *groupThreads = @[].mutableCopy;
-    NSMutableArray<AnyPromise *> *promises = @[].mutableCopy;
-    [TSGroupThread enumerateCollectionObjectsUsingBlock:^(id obj, BOOL *stop) {
-        if (![obj isKindOfClass:[TSGroupThread class]]) {
-            if (![obj isKindOfClass:[TSContactThread class]]) { // FIXME: Isn't this redundant?
-                OWSLogWarn(@"Ignoring non-group thread in thread collection: %@.", obj);
-            }
-            return;
-        }
-        TSGroupThread *thread = (TSGroupThread *)obj;
-        if (thread.groupModel.groupType == closedGroup && thread.shouldThreadBeVisible && !thread.isForceHidden) {
-            [groupThreads addObject:thread];
-        }
-    }];
-    for (TSGroupThread *groupThread in groupThreads) {
-        [promises addObject:[self syncGroupForThread:groupThread]];
-    }
-    AnyPromise *promise = PMKJoin(promises);
-    [promise retainUntilComplete];
-    return promise;
+    return [LKSyncMessagesProtocol syncAllClosedGroups];
 }
 
 - (AnyPromise *)syncGroupForThread:(TSGroupThread *)thread
@@ -369,20 +322,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 
 - (AnyPromise *)syncAllOpenGroups
 {
-    LKSyncOpenGroupsMessage *syncOpenGroupsMessage = [[LKSyncOpenGroupsMessage alloc] init];
-    AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
-        [self.messageSender sendMessage:syncOpenGroupsMessage
-            success:^{
-                OWSLogInfo(@"Successfully sent open group sync message.");
-                resolve(@(1));
-            }
-            failure:^(NSError *error) {
-                OWSLogError(@"Failed to send open group sync message due to error: %@.", error);
-                resolve(error);
-            }];
-    }];
-    [promise retainUntilComplete];
-    return promise;
+    return [LKSyncMessagesProtocol syncAllOpenGroups];
 }
 
 @end

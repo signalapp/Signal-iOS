@@ -7,6 +7,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class AnyPromise;
 @class SignalAccount;
 @class YapDatabaseReadTransaction;
+@class TSGroupThread;
 
 @protocol OWSSyncManagerProtocol <NSObject>
 
@@ -21,6 +22,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (AnyPromise *)syncContactsForSignalAccounts:(NSArray<SignalAccount *> *)signalAccounts __attribute__((warn_unused_result));
 
 - (AnyPromise *)syncAllGroups __attribute__((warn_unused_result));
+
+- (AnyPromise *)syncGroupForThread:(TSGroupThread *)thread;
 
 - (AnyPromise *)syncAllOpenGroups __attribute__((warn_unused_result));
 

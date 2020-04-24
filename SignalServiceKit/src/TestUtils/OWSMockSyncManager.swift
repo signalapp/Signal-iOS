@@ -20,7 +20,12 @@ public class OWSMockSyncManager: NSObject, OWSSyncManagerProtocol {
 
         return AnyPromise()
     }
-    
+
+    public func syncGroup(for thread: TSGroupThread) -> AnyPromise {
+        Logger.info("")
+
+        return AnyPromise()
+    }
 
     @objc public func sendConfigurationSyncMessage() {
         Logger.info("")
