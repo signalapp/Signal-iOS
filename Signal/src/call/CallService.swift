@@ -375,7 +375,7 @@ extension SignalCall: CallManagerCallReference { }
     /**
      * Received an incoming call Offer from call initiator.
      */
-    public func handleReceivedOffer(thread: TSContactThread, callId: UInt64, sourceDevice: UInt32, sessionDescription callerSessionDescription: String, sentAtTimestamp: UInt64, callType: SSKProtoCallMessageOfferType, supportsMultiRing: Bool) {
+    public func handleReceivedOffer(thread: TSContactThread, callId: UInt64, sourceDevice: UInt32, sdp: String, sentAtTimestamp: UInt64, callType: SSKProtoCallMessageOfferType, supportsMultiRing: Bool) {
         AssertIsOnMainThread()
         Logger.info("callId: \(callId), thread: \(thread.contactAddress)")
 
@@ -456,12 +456,14 @@ extension SignalCall: CallManagerCallReference { }
         switch callType {
         case .offerAudioCall: callMediaType = .audioCall
         case .offerVideoCall: callMediaType = .videoCall
+        // TODO - hook up to request user to share profile key logic when ready
+        case .offerNeedPermission: callMediaType = .audioCall
         }
 
         let isPrimaryDevice = TSAccountManager.sharedInstance().isPrimaryDevice
 
         do {
-            try callManager.receivedOffer(call: newCall, sourceDevice: sourceDevice, callId: callId, sdp: callerSessionDescription, timestamp: timestamp, callMediaType: callMediaType, remoteSupportsMultiRing: supportsMultiRing, isLocalDevicePrimary: isPrimaryDevice)
+            try callManager.receivedOffer(call: newCall, sourceDevice: sourceDevice, callId: callId, sdp: sdp, timestamp: timestamp, callMediaType: callMediaType, remoteSupportsMultiRing: supportsMultiRing, isLocalDevicePrimary: isPrimaryDevice)
         } catch {
             handleFailedCall(failedCall: newCall, error: error)
         }
@@ -470,12 +472,12 @@ extension SignalCall: CallManagerCallReference { }
     /**
      * Called by the call initiator after receiving an Answer from the callee.
      */
-    public func handleReceivedAnswer(thread: TSContactThread, callId: UInt64, sourceDevice: UInt32, sessionDescription: String, supportsMultiRing: Bool) {
+    public func handleReceivedAnswer(thread: TSContactThread, callId: UInt64, sourceDevice: UInt32, sdp: String, supportsMultiRing: Bool) {
         AssertIsOnMainThread()
         Logger.info("callId: \(callId), thread: \(thread.contactAddress)")
 
         do {
-             try callManager.receivedAnswer(sourceDevice: sourceDevice, callId: callId, sdp: sessionDescription, remoteSupportsMultiRing: supportsMultiRing)
+             try callManager.receivedAnswer(sourceDevice: sourceDevice, callId: callId, sdp: sdp, remoteSupportsMultiRing: supportsMultiRing)
         } catch {
             owsFailDebug("error: \(error)")
             if let currentCall = currentCall, currentCall.callId == callId {
@@ -913,7 +915,7 @@ extension SignalCall: CallManagerCallReference { }
         Logger.info("shouldSendOffer")
 
         firstly { () throws -> Promise<Void> in
-            let offerBuilder = SSKProtoCallMessageOffer.builder(id: callId, sessionDescription: sdp)
+            let offerBuilder = SSKProtoCallMessageOffer.builder(id: callId, sdp: sdp)
             switch callMediaType {
             case .audioCall: offerBuilder.setType(.offerAudioCall)
             case .videoCall: offerBuilder.setType(.offerVideoCall)
@@ -934,7 +936,7 @@ extension SignalCall: CallManagerCallReference { }
         Logger.info("shouldSendAnswer")
 
         firstly { () throws -> Promise<Void> in
-            let answerBuilder = SSKProtoCallMessageAnswer.builder(id: callId, sessionDescription: sdp)
+            let answerBuilder = SSKProtoCallMessageAnswer.builder(id: callId, sdp: sdp)
             let callMessage = OWSOutgoingCallMessage(thread: call.thread, answerMessage: try answerBuilder.build(), destinationDeviceId: NSNumber(value: destinationDeviceId))
             return messageSender.sendMessage(.promise, callMessage.asPreparer)
         }.done {

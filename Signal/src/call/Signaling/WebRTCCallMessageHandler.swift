@@ -46,14 +46,14 @@ public class WebRTCCallMessageHandler: NSObject, OWSCallMessageHandler {
         }
 
         let thread = TSContactThread.getOrCreateThread(contactAddress: caller)
-        self.callService.handleReceivedOffer(thread: thread, callId: offer.id, sourceDevice: sourceDevice, sessionDescription: offer.sessionDescription, sentAtTimestamp: sentAtTimestamp, callType: callType, supportsMultiRing: supportsMultiRing)
+        self.callService.handleReceivedOffer(thread: thread, callId: offer.id, sourceDevice: sourceDevice, sdp: offer.sdp, sentAtTimestamp: sentAtTimestamp, callType: callType, supportsMultiRing: supportsMultiRing)
     }
 
     public func receivedAnswer(_ answer: SSKProtoCallMessageAnswer, from caller: SignalServiceAddress, sourceDevice: UInt32, supportsMultiRing: Bool) {
         AssertIsOnMainThread()
 
         let thread = TSContactThread.getOrCreateThread(contactAddress: caller)
-        self.callService.handleReceivedAnswer(thread: thread, callId: answer.id, sourceDevice: sourceDevice, sessionDescription: answer.sessionDescription, supportsMultiRing: supportsMultiRing)
+        self.callService.handleReceivedAnswer(thread: thread, callId: answer.id, sourceDevice: sourceDevice, sdp: answer.sdp, supportsMultiRing: supportsMultiRing)
     }
 
     public func receivedIceUpdate(_ iceUpdate: [SSKProtoCallMessageIceUpdate], from caller: SignalServiceAddress, sourceDevice: UInt32) {

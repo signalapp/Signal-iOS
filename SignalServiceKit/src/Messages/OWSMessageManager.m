@@ -991,8 +991,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     BOOL supportsMultiRing = false;
-    if ([callMessage hasMultiRing]) {
-        supportsMultiRing = callMessage.multiRing;
+    if ([callMessage hasSupportsMultiRing]) {
+        supportsMultiRing = callMessage.supportsMultiRing;
     }
 
     // By dispatching async, we introduce the possibility that these messages might be lost

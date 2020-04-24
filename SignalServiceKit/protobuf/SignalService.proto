@@ -63,26 +63,23 @@ message Content {
 message CallMessage {
   message Offer {
     enum Type {
-      OFFER_AUDIO_CALL = 0;
-      OFFER_VIDEO_CALL = 1;
+      OFFER_AUDIO_CALL      = 0;
+      OFFER_VIDEO_CALL      = 1;
+      OFFER_NEED_PERMISSION = 2;
     }
 
     // @required
-    optional uint64 id                 = 1;
-    // Signal-iOS renamed the description field to avoid
-    // conflicts with [NSObject description].
+    optional uint64 id   = 1;
     // @required
-    optional string sessionDescription = 2;
-    optional Type   type               = 3;
+    optional string sdp  = 2;
+    optional Type   type = 3;
   }
 
   message Answer {
     // @required
-    optional uint64 id                 = 1;
-    // Signal-iOS renamed the description field to avoid
-    // conflicts with [NSObject description].
+    optional uint64 id  = 1;
     // @required
-    optional string sessionDescription = 2;
+    optional string sdp = 2;
   }
 
   message IceUpdate {
@@ -121,10 +118,10 @@ message CallMessage {
   optional Hangup    legacyHangup        = 4;
   optional Busy      busy                = 5;
   // Signal-iOS sends profile key with call messages
-  // for earlier discovery
+  // for earlier discovery.
   optional bytes     profileKey          = 6;
   optional Hangup    hangup              = 7;
-  optional bool      multiRing           = 8;
+  optional bool      supportsMultiRing   = 8;
   optional uint32    destinationDeviceId = 9;
 }
 
