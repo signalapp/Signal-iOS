@@ -43,7 +43,7 @@ public final class MultiDeviceProtocol : NSObject {
         // TODO: I'm pretty sure there are quite a few holes in this logic
         let message = messageSend.message
         let recipientID = messageSend.recipient.recipientId()
-        let thread = messageSend.thread!
+        let thread = messageSend.thread ?? TSContactThread.getOrCreateThread(withContactId: recipientID, transaction: transaction) // TODO: Added this because I think we need it
         let isGroupMessage = thread.isGroupThread()
         let isOpenGroupMessage = (thread as? TSGroupThread)?.isPublicChat == true
         let isDeviceLinkMessage = message is DeviceLinkMessage

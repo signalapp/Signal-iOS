@@ -232,7 +232,7 @@ void AssertIsOnSendingQueue()
 - (void)didSucceed
 {
     if (self.message.messageState != TSOutgoingMessageStateSent) {
-        OWSFailDebug(@"unexpected message status: %@", self.message.statusDescription);
+        [LKLogger print:@"[Loki] Succeeded with sending a message, but the message state isn't TSOutgoingMessageStateSent."];
     }
 
     self.successHandler();
