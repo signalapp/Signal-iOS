@@ -14,13 +14,17 @@ public final class SessionProtocol : NSObject {
 
     internal static var storage: OWSPrimaryStorage { OWSPrimaryStorage.shared() }
 
-    // MARK: - Initialization
+    // MARK: Initialization
     private override init() { }
 
     // MARK: - Sending
 
     // MARK: Message Destination
     @objc(getDestinationsForOutgoingSyncMessage)
+    public static func objc_getDestinationsForOutgoingSyncMessage() -> NSMutableSet {
+        return NSMutableSet(set: getDestinationsForOutgoingSyncMessage())
+    }
+
     public static func getDestinationsForOutgoingSyncMessage() -> Set<String> {
         var result: Set<String> = []
         storage.dbReadConnection.read { transaction in
@@ -32,6 +36,10 @@ public final class SessionProtocol : NSObject {
     }
 
     @objc(getDestinationsForOutgoingGroupMessage:inThread:)
+    public static func objc_getDestinations(for outgoingGroupMessage: TSOutgoingMessage, in thread: TSThread) -> NSMutableSet {
+        return NSMutableSet(set: getDestinations(for: outgoingGroupMessage, in: thread))
+    }
+
     public static func getDestinations(for outgoingGroupMessage: TSOutgoingMessage, in thread: TSThread) -> Set<String> {
         guard let thread = thread as? TSGroupThread else { preconditionFailure("Can't get destinations for group message in non-group thread.") }
         var result: Set<String> = []
@@ -108,8 +116,6 @@ public final class SessionProtocol : NSObject {
     public static func shouldSendReceipt(for thread: TSThread) -> Bool {
         return thread.friendRequestStatus == .friends && !thread.isGroupThread()
     }
-
-
 
     // MARK: - Receiving
 
