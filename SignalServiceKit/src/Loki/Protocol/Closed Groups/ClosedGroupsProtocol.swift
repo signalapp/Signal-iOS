@@ -21,7 +21,7 @@ public final class ClosedGroupsProtocol : NSObject {
         let hexEncodedPublicKey = envelope.source!
         guard let thread = thread as? TSGroupThread, thread.groupModel.groupType == .closedGroup,
             dataMessage.group?.type == .deliver else { return false }
-        return thread.isUser(inGroup: hexEncodedPublicKey, transaction: transaction)
+        return !thread.isUser(inGroup: hexEncodedPublicKey, transaction: transaction)
     }
 
     @objc(shouldIgnoreClosedGroupUpdateMessage:in:using:)

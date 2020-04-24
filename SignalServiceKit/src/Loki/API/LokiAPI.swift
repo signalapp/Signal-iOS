@@ -8,14 +8,13 @@ import PromiseKit
 @objc(LKAPI)
 public final class LokiAPI : NSObject {
 
+    /// All service node related errors must be handled on this queue to avoid race conditions maintaining e.g. failure counts.
+    internal static let errorHandlingQueue = DispatchQueue(label: "LokiAPI.errorHandlingQueue")
     internal static let stateQueue = DispatchQueue(label: "LokiAPI.stateQueue")
     internal static let workQueue = DispatchQueue(label: "LokiAPI.workQueue", qos: .userInitiated)
 
     internal static var storage: OWSPrimaryStorage { OWSPrimaryStorage.shared() }
     internal static var userHexEncodedPublicKey: String { getUserHexEncodedPublicKey() }
-
-    /// All service node related errors must be handled on this queue to avoid race conditions maintaining e.g. failure counts.
-    public static let errorHandlingQueue = DispatchQueue(label: "LokiAPI.errorHandlingQueue")
     
     // MARK: Settings
     private static let maxRetryCount: UInt = 4
