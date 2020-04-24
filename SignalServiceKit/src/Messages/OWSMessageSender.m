@@ -500,10 +500,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     __block NSMutableSet<NSString *> *recipientIds = [NSMutableSet new];
     if ([message isKindOfClass:[OWSOutgoingSyncMessage class]]) {
-        recipientIds = [SessionProtocol getDestinationsForOutgoingSyncMessage];
+        recipientIds = [LKSessionProtocol getDestinationsForOutgoingSyncMessage];
     } else if (thread.isGroupThread) {
         TSGroupThread *groupThread = (TSGroupThread *)thread;
-        recipientIds = [SessionProtocol getDestinationsForOutgoingGroupMessage:message inThread:thread];
+        recipientIds = [LKSessionProtocol getDestinationsForOutgoingGroupMessage:message inThread:thread];
     } else if ([thread isKindOfClass:[TSContactThread class]]) {
         NSString *recipientContactId = ((TSContactThread *)thread).contactIdentifier;
 
@@ -592,7 +592,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     resolve(error);
                 }];
             [self.primaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                [SessionProtocol sendMessageToDestinationAndLinkedDevices:messageSend in:transaction];
+                [LKMultiDeviceProtocol sendMessageToDestinationAndLinkedDevices:messageSend in:transaction];
             }];
         }];
         [sendPromises addObject:sendPromise];
@@ -664,7 +664,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     }
 
     // Loki: Abort early and send a sync transcript if this is a note to self
-    if ([SessionProtocol isMessageNoteToSelf:message inThread:thread]) {
+    if ([LKSessionProtocol isMessageNoteToSelf:message inThread:thread]) {
         // FIXME: I think this is where the duplicate sync messages might be coming from. Signal just invokes successHandler() here.
         [self sendSyncTranscriptForMessage:message isRecipientUpdate:NO success:^{ } failure:^(NSError *error) { }];
         successHandler();
@@ -1482,7 +1482,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 {
     dispatch_block_t success = ^{
         // Loki: Handle note to self case
-        BOOL isNoteToSelf = [SessionProtocol isMessageNoteToSelf:message inThread:message.thread];
+        BOOL isNoteToSelf = [LKSessionProtocol isMessageNoteToSelf:message inThread:message.thread];
         if (isNoteToSelf) {
             [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                 for (NSString *recipientId in message.sendingRecipientIds) {
@@ -1504,7 +1504,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         return success();
     }
 
-    BOOL shouldSendTranscript = [SessionProtocol shouldSendTranscriptForMessage:message in:message.thread];
+    BOOL shouldSendTranscript = [LKSessionProtocol shouldSendTranscriptForMessage:message in:message.thread];
     if (!shouldSendTranscript) {
         return success();
     }
@@ -1560,7 +1560,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             failure(error);
         }];
     [self.primaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [SessionProtocol sendMessageToDestinationAndLinkedDevices:messageSend in:transaction];
+        [LKMultiDeviceProtocol sendMessageToDestinationAndLinkedDevices:messageSend in:transaction];
     }];
 }
 
@@ -1593,7 +1593,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             // This may involve blocking network requests, so we do it _before_
             // we open a transaction.
 
-            if ([SessionProtocol isSessionRequiredForMessage:messageSend.message]) {
+            if ([LKSessionManagementProtocol isSessionRequiredForMessage:messageSend.message]) {
                 [self throws_ensureRecipientHasSessionForMessageSend:messageSend recipientID:recipientID deviceId:@(OWSDevicePrimaryDeviceId)];
             }
 
@@ -1838,7 +1838,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     TSOutgoingMessage *message = messageSend.message;
 
     // This may throw an exception
-    if ([SessionProtocol isSessionRequiredForMessage:messageSend.message] && ![storage containsSession:recipientID deviceId:@(OWSDevicePrimaryDeviceId).intValue protocolContext:transaction]) {
+    if ([LKSessionManagementProtocol isSessionRequiredForMessage:messageSend.message] && ![storage containsSession:recipientID deviceId:@(OWSDevicePrimaryDeviceId).intValue protocolContext:transaction]) {
         NSString *missingSessionException = @"missingSessionException";
         OWSRaiseException(missingSessionException,
             @"Unexpectedly missing session for recipient: %@, device: %@.",

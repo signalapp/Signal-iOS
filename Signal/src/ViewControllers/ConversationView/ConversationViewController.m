@@ -588,7 +588,7 @@ typedef enum : NSUInteger {
                                                           userInfo:nil
                                                            repeats:YES];
 
-    [LKAPI populateUserHexEncodedPublicKeyCacheIfNeededFor:thread.uniqueId in:nil];
+    [LKMentionsManager populateUserHexEncodedPublicKeyCacheIfNeededFor:thread.uniqueId in:nil];
 }
 
 - (void)dealloc
@@ -1238,7 +1238,7 @@ typedef enum : NSUInteger {
 
 - (void)restoreSession {
     [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [SessionProtocol sending_startSessionResetInThread:self.thread using:transaction];
+        [LKSessionManagementProtocol sending_startSessionResetInThread:self.thread using:transaction];
     }];
 }
 
@@ -3849,7 +3849,7 @@ typedef enum : NSUInteger {
             secondToLastCharacter = [newText characterAtIndex:lastCharacterIndex - 1];
         }
         if (lastCharacter == '@' && [NSCharacterSet.whitespaceAndNewlineCharacterSet characterIsMember:secondToLastCharacter]) {
-            NSArray<LKMention *> *mentionCandidates = [LKAPI getMentionCandidatesFor:@"" in:self.thread.uniqueId];
+            NSArray<LKMention *> *mentionCandidates = [LKMentionsManager getMentionCandidatesFor:@"" in:self.thread.uniqueId];
             self.currentMentionStartIndex = (NSInteger)lastCharacterIndex;
             [self.inputToolbar showMentionCandidateSelectionViewFor:mentionCandidates in:self.thread];
         } else if ([NSCharacterSet.whitespaceAndNewlineCharacterSet characterIsMember:lastCharacter]) {
@@ -3858,7 +3858,7 @@ typedef enum : NSUInteger {
         } else {
             if (self.currentMentionStartIndex != -1) {
                 NSString *query = [newText substringFromIndex:(NSUInteger)self.currentMentionStartIndex + 1]; // + 1 to get rid of the @
-                NSArray<LKMention *> *mentionCandidates = [LKAPI getMentionCandidatesFor:query in:self.thread.uniqueId];
+                NSArray<LKMention *> *mentionCandidates = [LKMentionsManager getMentionCandidatesFor:query in:self.thread.uniqueId];
                 [self.inputToolbar showMentionCandidateSelectionViewFor:mentionCandidates in:self.thread];
             }
         }
@@ -4492,14 +4492,14 @@ typedef enum : NSUInteger {
 - (void)acceptFriendRequest:(TSIncomingMessage *)friendRequest
 {
     [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [SessionProtocol acceptFriendRequest:friendRequest in:self.thread using:transaction];
+        [LKFriendRequestProtocol acceptFriendRequest:friendRequest in:self.thread using:transaction];
     }];
 }
 
 - (void)declineFriendRequest:(TSIncomingMessage *)friendRequest
 {
     [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [SessionProtocol declineFriendRequest:friendRequest in:self.thread using:transaction];
+        [LKFriendRequestProtocol declineFriendRequest:friendRequest in:self.thread using:transaction];
     }];
 }
 

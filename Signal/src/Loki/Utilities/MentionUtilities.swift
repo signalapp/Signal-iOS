@@ -18,7 +18,7 @@ public final class MentionUtilities : NSObject {
         }
         var string = string
         let regex = try! NSRegularExpression(pattern: "@[0-9a-fA-F]*", options: [])
-        let knownHexEncodedPublicKeys = LokiAPI.userHexEncodedPublicKeyCache[threadID] ?? [] // Should always be populated at this point
+        let knownHexEncodedPublicKeys = MentionsManager.userHexEncodedPublicKeyCache[threadID] ?? [] // Should always be populated at this point
         var mentions: [(range: NSRange, hexEncodedPublicKey: String)] = []
         var outerMatch = regex.firstMatch(in: string, options: .withoutAnchoringBounds, range: NSRange(location: 0, length: string.count))
         while let match = outerMatch {

@@ -134,14 +134,14 @@ final class ConversationCell : UITableViewCell {
     
     // MARK: Updating
     private func update() {
-        LokiAPI.populateUserHexEncodedPublicKeyCacheIfNeeded(for: threadViewModel.threadRecord.uniqueId!) // FIXME: This is a terrible place to do this
+        MentionsManager.populateUserHexEncodedPublicKeyCacheIfNeeded(for: threadViewModel.threadRecord.uniqueId!) // FIXME: This is a terrible place to do this
         unreadMessagesIndicatorView.alpha = threadViewModel.hasUnreadMessages ? 1 : 0.0001 // Setting the alpha to exactly 0 causes an issue on iOS 12
         if threadViewModel.isGroupThread {
             if threadViewModel.name == "Session Public Chat" {
                 profilePictureView.hexEncodedPublicKey = ""
                 profilePictureView.isRSSFeed = true
             } else {
-                var users = LokiAPI.userHexEncodedPublicKeyCache[threadViewModel.threadRecord.uniqueId!] ?? []
+                var users = MentionsManager.userHexEncodedPublicKeyCache[threadViewModel.threadRecord.uniqueId!] ?? []
                 users.remove(getUserHexEncodedPublicKey())
                 let randomUsers = users.sorted().prefix(2) // Sort to provide a level of stability
                 if !randomUsers.isEmpty {

@@ -38,7 +38,7 @@ public class RefreshPreKeysOperation: OWSOperation {
         
         // Loki: Doing this on the global queue to match Signal
         DispatchQueue.global().async {
-            SessionProtocol.refreshPreKeys()
+            SessionManagementProtocol.refreshPreKeys()
             self.reportSuccess()
         }
         

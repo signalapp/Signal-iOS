@@ -398,7 +398,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
             OWSAssertDebug(transaction);
 
             // Loki: Don't process any messages from ourself
-            if ([SessionProtocol shouldSkipMessageDecryptResult:result]) {
+            if ([LKSessionProtocol shouldSkipMessageDecryptResult:result]) {
                 dispatch_async(self.serialQueue, ^{
                     completion(YES);
                 });

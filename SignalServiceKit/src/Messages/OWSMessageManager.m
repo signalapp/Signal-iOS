@@ -272,7 +272,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(![self isEnvelopeSenderBlocked:envelope]);
 
     // Loki: Ignore any friend requests from before restoration
-    if ([SessionProtocol isFriendRequestFromBeforeRestoration:envelope]) {
+    if ([LKFriendRequestProtocol isFriendRequestFromBeforeRestoration:envelope]) {
         [LKLogger print:@"[Loki] Ignoring friend request from before restoration."];
         return;
     }
@@ -424,7 +424,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     
     // Loki: Handle friend request acceptance if needed
-    [SessionProtocol handleFriendRequestAcceptanceIfNeeded:envelope in:transaction];
+    [LKFriendRequestProtocol handleFriendRequestAcceptanceIfNeeded:envelope in:transaction];
     
     if (envelope.content != nil) {
         NSError *error;
@@ -436,17 +436,17 @@ NS_ASSUME_NONNULL_BEGIN
         OWSLogInfo(@"Handling content: <Content: %@>.", [self descriptionForContent:contentProto]);
         
         // Loki: Workaround for duplicate sync transcript issue
-        if ([SessionProtocol isDuplicateSyncMessage:contentProto fromHexEncodedPublicKey:envelope.source]) { return; }
+        if ([LKSyncMessagesProtocol isDuplicateSyncMessage:contentProto fromHexEncodedPublicKey:envelope.source]) { return; }
 
         // Loki: Handle pre key bundle message if needed
-        [SessionProtocol handlePreKeyBundleMessageIfNeeded:contentProto wrappedIn:envelope using:transaction];
+        [LKSessionManagementProtocol handlePreKeyBundleMessageIfNeeded:contentProto wrappedIn:envelope using:transaction];
         
         // Loki: Handle address message if needed
-        [SessionProtocol handleP2PAddressMessageIfNeeded:contentProto wrappedIn:envelope];
+        [LKSessionProtocol handleP2PAddressMessageIfNeeded:contentProto wrappedIn:envelope];
 
         // Loki: Handle device linking message if needed
         if (contentProto.lokiDeviceLinkMessage != nil) {
-            [SessionProtocol handleDeviceLinkMessageIfNeeded:contentProto wrappedIn:envelope using:transaction];
+            [LKMultiDeviceProtocol handleDeviceLinkMessageIfNeeded:contentProto wrappedIn:envelope using:transaction];
         } else if (contentProto.syncMessage) {
             [self throws_handleIncomingEnvelope:envelope
                                 withSyncMessage:contentProto.syncMessage
@@ -509,9 +509,9 @@ NS_ASSUME_NONNULL_BEGIN
     }
     
     // Loki: Don't process session request messages any further
-    if ([SessionProtocol isSessionRequestMessage:dataMessage]) { return; }
+    if ([LKSessionManagementProtocol isSessionRequestMessage:dataMessage]) { return; }
     // Loki: Don't process session restore messages any further
-    if ([SessionProtocol isSessionRestoreMessage:dataMessage]) { return; }
+    if ([LKSessionManagementProtocol isSessionRestoreMessage:dataMessage]) { return; }
     
     if ([self isDataMessageBlocked:dataMessage envelope:envelope]) {
         NSString *logMessage = [NSString stringWithFormat:@"Ignoring blocked message from sender: %@.", envelope.source];
@@ -535,7 +535,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     // Loki: Handle profile key update if needed
-    [SessionProtocol updateProfileKeyIfNeededForHexEncodedPublicKey:envelope.source using:dataMessage];
+    [LKSessionProtocol updateProfileKeyIfNeededForHexEncodedPublicKey:envelope.source using:dataMessage];
 
     if (dataMessage.group) {
         TSGroupThread *_Nullable groupThread =
@@ -543,7 +543,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         if (groupThread) {
             // Loki: Ignore closed group message if needed
-            if ([SessionProtocol shouldIgnoreClosedGroupMessage:dataMessage inThread:groupThread wrappedIn:envelope using:transaction]) { return; }
+            if ([LKClosedGroupsProtocol shouldIgnoreClosedGroupMessage:dataMessage inThread:groupThread wrappedIn:envelope using:transaction]) { return; }
 
             if (dataMessage.group.type != SSKProtoGroupContextTypeUpdate) {
                 if (![groupThread isCurrentUserInGroupWithTransaction:transaction]) {
@@ -571,8 +571,8 @@ NS_ASSUME_NONNULL_BEGIN
         [self handleExpirationTimerUpdateMessageWithEnvelope:envelope dataMessage:dataMessage transaction:transaction];
     } else if ((dataMessage.flags & SSKProtoDataMessageFlagsProfileKeyUpdate) != 0) {
         [self handleProfileKeyMessageWithEnvelope:envelope dataMessage:dataMessage];
-    } else if ([SessionProtocol isUnlinkDeviceMessage:dataMessage]) {
-        [SessionProtocol handleUnlinkDeviceMessage:dataMessage wrappedIn:envelope using:transaction];
+    } else if ([LKMultiDeviceProtocol isUnlinkDeviceMessage:dataMessage]) {
+        [LKMultiDeviceProtocol handleUnlinkDeviceMessage:dataMessage wrappedIn:envelope using:transaction];
     } else if (dataMessage.attachments.count > 0) {
         [self handleReceivedMediaWithEnvelope:envelope
                                   dataMessage:dataMessage
@@ -890,7 +890,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     // Loki: Take into account multi device when checking sync message validity
-    if (![SessionProtocol isValidSyncMessage:envelope in:transaction]) {
+    if (![LKSyncMessagesProtocol isValidSyncMessage:envelope in:transaction]) {
         OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorSyncMessageFromUnknownSource], envelope);
         return;
     }
@@ -906,7 +906,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         // Loki: Update if the sync message came from the master device
-        [SessionProtocol updateProfileFromSyncMessageIfNeeded:dataMessage wrappedIn:envelope using:transaction];
+        [LKSyncMessagesProtocol updateProfileFromSyncMessageIfNeeded:dataMessage wrappedIn:envelope using:transaction];
         
         NSString *destination = syncMessage.sent.destination;
         if (dataMessage && destination.length > 0 && dataMessage.hasProfileKey) {
@@ -945,10 +945,10 @@ NS_ASSUME_NONNULL_BEGIN
         } else {
             if (transcript.isGroupUpdate) {
                 // Loki: Handle closed group updated sync message
-                [SessionProtocol handleClosedGroupUpdatedSyncMessageIfNeeded:transcript using:transaction];
+                [LKSyncMessagesProtocol handleClosedGroupUpdatedSyncMessageIfNeeded:transcript using:transaction];
             } else if (transcript.isGroupQuit) {
                 // Loki: Handle closed group quit sync message
-                [SessionProtocol handleClosedGroupQuitSyncMessageIfNeeded:transcript using:transaction];
+                [LKSyncMessagesProtocol handleClosedGroupQuitSyncMessageIfNeeded:transcript using:transaction];
             } else {
                 [OWSRecordTranscriptJob
                     processIncomingSentMessageTranscript:transcript
@@ -998,13 +998,13 @@ NS_ASSUME_NONNULL_BEGIN
         [self.identityManager throws_processIncomingSyncMessage:syncMessage.verified transaction:transaction];
     } else if (syncMessage.contacts != nil) {
         // Loki: Handle contact sync message
-        [SessionProtocol handleContactSyncMessageIfNeeded:syncMessage wrappedIn:envelope using:transaction];
+        [LKSyncMessagesProtocol handleContactSyncMessageIfNeeded:syncMessage wrappedIn:envelope using:transaction];
     } else if (syncMessage.groups != nil) {
         // Loki: Handle closed groups sync message
-        [SessionProtocol handleClosedGroupSyncMessageIfNeeded:syncMessage wrappedIn:envelope using:transaction];
+        [LKSyncMessagesProtocol handleClosedGroupSyncMessageIfNeeded:syncMessage wrappedIn:envelope using:transaction];
     } else if (syncMessage.openGroups != nil) {
         // Loki: Handle open groups sync message
-        [SessionProtocol handleOpenGroupSyncMessageIfNeeded:syncMessage wrappedIn:envelope using:transaction];
+        [LKSyncMessagesProtocol handleOpenGroupSyncMessageIfNeeded:syncMessage wrappedIn:envelope using:transaction];
     } else {
         OWSLogWarn(@"Ignoring unsupported sync message.");
     }
@@ -1030,7 +1030,7 @@ NS_ASSUME_NONNULL_BEGIN
     // Loki: Handle session reset
     NSString *hexEncodedPublicKey = envelope.source;
     TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:hexEncodedPublicKey transaction:transaction];
-    [SessionProtocol receiving_startSessionResetInThread:thread using:transaction];
+    [LKSessionManagementProtocol receiving_startSessionResetInThread:thread using:transaction];
 }
 
 - (void)handleExpirationTimerUpdateMessageWithEnvelope:(SSKProtoEnvelope *)envelope
@@ -1256,7 +1256,7 @@ NS_ASSUME_NONNULL_BEGIN
     // The envelope source is set during UD decryption.
     if ([ECKeyPair isValidHexEncodedPublicKeyWithCandidate:envelope.source] && dataMessage.publicChatInfo == nil) { // Handled in LokiPublicChatPoller for open group messages
         dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
-        [[SessionProtocol updateDeviceLinksIfNeededForHexEncodedPublicKey:envelope.source in:transaction].ensureOn(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^() {
+        [[LKMultiDeviceProtocol updateDeviceLinksIfNeededForHexEncodedPublicKey:envelope.source in:transaction].ensureOn(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^() {
             dispatch_semaphore_signal(semaphore);
         }).catchOn(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(NSError *error) {
             dispatch_semaphore_signal(semaphore);
@@ -1298,12 +1298,12 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         // Loki: Only set the display name here, the logic for updating profile pictures is handled when we're setting the profile key
-        [SessionProtocol updateDisplayNameIfNeededForHexEncodedPublicKey:hexEncodedPublicKey using:dataMessage appendingShortID:NO in:transaction];
+        [LKSessionProtocol updateDisplayNameIfNeededForHexEncodedPublicKey:hexEncodedPublicKey using:dataMessage appendingShortID:NO in:transaction];
 
         switch (dataMessage.group.type) {
             case SSKProtoGroupContextTypeUpdate: {
                 // Loki: Ignore updates from non-admins
-                if ([SessionProtocol shouldIgnoreClosedGroupUpdateMessage:envelope in:oldGroupThread using:transaction]) {
+                if ([LKClosedGroupsProtocol shouldIgnoreClosedGroupUpdateMessage:envelope in:oldGroupThread using:transaction]) {
                     return nil;
                 }
                 // Ensures that the thread exists but doesn't update it.
@@ -1325,7 +1325,7 @@ NS_ASSUME_NONNULL_BEGIN
                 BOOL wasCurrentUserRemovedFromGroup = [removedMemberIds containsObject:ourHexEncodedPublicKey];
                 if (!wasCurrentUserRemovedFromGroup) {
                     // Loki: Try to establish sessions with all members when a group is created or updated
-                    [SessionProtocol establishSessionsIfNeededWithClosedGroupMembers:newMemberIds.allObjects in:newGroupThread using:transaction];
+                    [LKClosedGroupsProtocol establishSessionsIfNeededWithClosedGroupMembers:newMemberIds.allObjects in:newGroupThread using:transaction];
                 }
 
                 [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithDisappearingDuration:dataMessage.expireTimer
@@ -1446,8 +1446,8 @@ NS_ASSUME_NONNULL_BEGIN
                 // Loki: Cache the user hex encoded public key (for mentions)
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-                        [LKAPI populateUserHexEncodedPublicKeyCacheIfNeededFor:oldGroupThread.uniqueId in:transaction];
-                        [LKAPI cache:incomingMessage.authorId for:oldGroupThread.uniqueId];
+                        [LKMentionsManager populateUserHexEncodedPublicKeyCacheIfNeededFor:oldGroupThread.uniqueId in:transaction];
+                        [LKMentionsManager cache:incomingMessage.authorId for:oldGroupThread.uniqueId];
                     }];
                 });
                 
@@ -1517,8 +1517,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                         wasReceivedByUD:wasReceivedByUD];
 
         // TODO: Are we sure this works correctly with multi device?
-        [SessionProtocol updateDisplayNameIfNeededForHexEncodedPublicKey:incomingMessage.authorId using:dataMessage appendingShortID:YES in:transaction];
-        [SessionProtocol updateProfileKeyIfNeededForHexEncodedPublicKey:thread.contactIdentifier using:dataMessage];
+        [LKSessionProtocol updateDisplayNameIfNeededForHexEncodedPublicKey:incomingMessage.authorId using:dataMessage appendingShortID:YES in:transaction];
+        [LKSessionProtocol updateProfileKeyIfNeededForHexEncodedPublicKey:thread.contactIdentifier using:dataMessage];
 
         // Loki: Parse Loki specific properties if needed
         if (envelope.isPtpMessage) { incomingMessage.isP2P = YES; }
@@ -1531,7 +1531,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         // Loki: Do this before the check below
-        [SessionProtocol handleFriendRequestMessageIfNeeded:dataMessage associatedWith:incomingMessage wrappedIn:envelope in:thread using:transaction];
+        [LKFriendRequestProtocol handleFriendRequestMessageIfNeeded:dataMessage associatedWith:incomingMessage wrappedIn:envelope in:thread using:transaction];
         
         if (body.length == 0 && attachmentPointers.count < 1 && !contact) {
             OWSLogWarn(@"Ignoring empty incoming message from: %@ with timestamp: %lu.",

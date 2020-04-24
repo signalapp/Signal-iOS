@@ -94,7 +94,7 @@ public class OWSMessageSend: NSObject {
         disableUD()
     }
     
-    public func copy(with destination: SessionProtocol.MultiDeviceDestination) -> OWSMessageSend {
+    public func copy(with destination: MultiDeviceProtocol.MultiDeviceDestination) -> OWSMessageSend {
         var recipient: SignalRecipient!
         OWSPrimaryStorage.shared().dbReadConnection.read { transaction in
             recipient = SignalRecipient.getOrBuildUnsavedRecipient(forRecipientId: destination.hexEncodedPublicKey, transaction: transaction)

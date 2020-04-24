@@ -216,7 +216,7 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
     if (!IsNoteToSelfEnabled()) {
         return NO;
     }
-    return [SessionProtocol isMessageNoteToSelf:self];
+    return [LKSessionProtocol isMessageNoteToSelf:self];
 }
 
 #pragma mark - To be subclassed.
