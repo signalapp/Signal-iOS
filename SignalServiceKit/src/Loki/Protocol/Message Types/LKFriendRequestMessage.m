@@ -6,7 +6,7 @@
 
 @implementation LKFriendRequestMessage
 
-#pragma mark Initialization
+#pragma mark Building
 - (SSKProtoContentBuilder *)prepareCustomContentBuilder:(SignalRecipient *)recipient {
     SSKProtoContentBuilder *contentBuilder = SSKProtoContent.builder;
     PreKeyBundle *preKeyBundle = [OWSPrimaryStorage.sharedManager generatePreKeyBundleForContact:recipient.recipientId];

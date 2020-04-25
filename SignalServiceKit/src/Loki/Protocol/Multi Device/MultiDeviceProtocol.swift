@@ -58,7 +58,7 @@ public final class MultiDeviceProtocol : NSObject {
         }
         let isSilentMessage = message.isSilent || message is EphemeralMessage || message is OWSOutgoingSyncMessage
         let isFriendRequestMessage = message is FriendRequestMessage
-        let isSessionRequestMessage = message is LKSessionRequestMessage
+        let isSessionRequestMessage = message is SessionRequestMessage
         getMultiDeviceDestinations(for: recipientID, in: transaction).done(on: OWSDispatch.sendingQueue()) { destinations in
             // Send to master destination
             if let masterDestination = destinations.first(where: { $0.kind == .master }) {

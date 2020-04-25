@@ -39,7 +39,7 @@ public final class ClosedGroupsProtocol : NSObject {
             let hasSession = storage.containsSession(member, deviceId: 1, protocolContext: transaction) // TODO: Instead of 1 we should use the primary device ID thingy
             if hasSession { continue }
             let thread = TSContactThread.getOrCreateThread(withContactId: member, transaction: transaction)
-            let sessionRequestMessage = LKSessionRequestMessage(thread: thread)
+            let sessionRequestMessage = SessionRequestMessage(thread: thread)
             let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
             messageSenderJobQueue.add(message: sessionRequestMessage, transaction: transaction)
         }

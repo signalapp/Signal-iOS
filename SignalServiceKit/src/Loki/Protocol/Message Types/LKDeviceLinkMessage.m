@@ -38,7 +38,8 @@
     SSKProtoContentBuilder *contentBuilder = SSKProtoContent.builder;
     NSError *error;
     if (self.kind == LKDeviceLinkMessageKindRequest) {
-        // Build the pre key bundle message
+        // The slave device attaches a pre key bundle with the request it sends, so that a
+        // session can be established with the master device.
         PreKeyBundle *preKeyBundle = [OWSPrimaryStorage.sharedManager generatePreKeyBundleForContact:recipient.recipientId];
         SSKProtoPrekeyBundleMessageBuilder *preKeyBundleMessageBuilder = [SSKProtoPrekeyBundleMessage builderFromPreKeyBundle:preKeyBundle];
         SSKProtoPrekeyBundleMessage *preKeyBundleMessage = [preKeyBundleMessageBuilder buildAndReturnError:&error];
@@ -49,7 +50,9 @@
             [contentBuilder setPrekeyBundleMessage:preKeyBundleMessage];
         }
     } else {
-        // Set display name & profile picture
+        // The master device attaches its display name and profile picture URL to the device link
+        // authorization message, so that the slave device is in sync with these things as soon
+        // as possible.
         id<ProfileManagerProtocol> profileManager = SSKEnvironment.shared.profileManager;
         NSString *displayName = profileManager.localProfileName;
         NSString *profilePictureURL = profileManager.profilePictureURL;

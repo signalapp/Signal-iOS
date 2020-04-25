@@ -19,24 +19,24 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilder
 {
     NSError *error;
-    NSMutableArray<SSKProtoSyncMessageOpenGroups *> *openGroups = @[].mutableCopy;
-    __block NSDictionary<NSString *, LKPublicChat *> *publicChats;
+    NSMutableArray<SSKProtoSyncMessageOpenGroups *> *openGroupSyncMessages = @[].mutableCopy;
+    __block NSDictionary<NSString *, LKPublicChat *> *openGroups;
     [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        publicChats = [LKDatabaseUtilities getAllPublicChats:transaction];
+        openGroups = [LKDatabaseUtilities getAllPublicChats:transaction];
     }];
-    for (LKPublicChat *openGroup in publicChats.allValues) {
-        SSKProtoSyncMessageOpenGroupsBuilder *openGroupMessageBuilder = [SSKProtoSyncMessageOpenGroups builder];
-        [openGroupMessageBuilder setUrl:openGroup.server];
-        [openGroupMessageBuilder setChannel:openGroup.channel];
-        SSKProtoSyncMessageOpenGroups *_Nullable openGroupMessageProto = [openGroupMessageBuilder buildAndReturnError:&error];
-        if (error || !openGroupMessageProto) {
-            OWSFailDebug(@"Couldn't build protobuf due to error: %@", error);
+    for (LKPublicChat *openGroup in openGroups.allValues) {
+        SSKProtoSyncMessageOpenGroupsBuilder *openGroupSyncMessageBuilder = [SSKProtoSyncMessageOpenGroups builder];
+        [openGroupSyncMessageBuilder setUrl:openGroup.server];
+        [openGroupSyncMessageBuilder setChannel:openGroup.channel];
+        SSKProtoSyncMessageOpenGroups *_Nullable openGroupSyncMessage = [openGroupSyncMessageBuilder buildAndReturnError:&error];
+        if (error || !openGroupSyncMessage) {
+            OWSFailDebug(@"Couldn't build protobuf due to error: %@.", error);
             return nil;
         }
-        [openGroups addObject:openGroupMessageProto];
+        [openGroupSyncMessages addObject:openGroupSyncMessage];
     }
     SSKProtoSyncMessageBuilder *syncMessageBuilder = [SSKProtoSyncMessage builder];
-    [syncMessageBuilder setOpenGroups:openGroups];
+    [syncMessageBuilder setOpenGroups:openGroupSyncMessages];
     return syncMessageBuilder;
 }
 

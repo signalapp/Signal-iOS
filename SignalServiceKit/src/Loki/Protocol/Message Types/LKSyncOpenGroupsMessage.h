@@ -2,8 +2,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class LKPublicChat;
-
+NS_SWIFT_NAME(SyncOpenGroupsMessage)
 @interface LKSyncOpenGroupsMessage : OWSOutgoingSyncMessage
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;

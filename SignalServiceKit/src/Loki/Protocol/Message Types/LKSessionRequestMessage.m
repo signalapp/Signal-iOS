@@ -10,9 +10,6 @@
         expiresInSeconds:0 expireStartedAt:0 isVoiceMessage:NO groupMetaMessage:TSGroupMetaMessageUnspecified quotedMessage:nil contactShare:nil linkPreview:nil];
 }
 
-- (BOOL)shouldBeSaved { return NO; }
-- (uint)ttl { return (uint)[LKTTLUtilities getTTLFor:LKMessageTypeSessionRequest]; }
-
 #pragma mark Building
 - (nullable SSKProtoDataMessageBuilder *)dataMessageBuilder
 {
@@ -21,5 +18,9 @@
     [builder setFlags:SSKProtoDataMessageFlagsSessionRequest];
     return builder;
 }
+
+#pragma mark Settings
+- (BOOL)shouldBeSaved { return NO; }
+- (uint)ttl { return (uint)[LKTTLUtilities getTTLFor:LKMessageTypeSessionRequest]; }
 
 @end

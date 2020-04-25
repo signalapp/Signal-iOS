@@ -76,7 +76,7 @@ public final class SyncMessagesProtocol : NSObject {
     }
 
     public static func syncAllOpenGroups() -> Promise<Void> {
-        let openGroupSyncMessage = LKSyncOpenGroupsMessage()
+        let openGroupSyncMessage = SyncOpenGroupsMessage()
         let (promise, seal) = Promise<Void>.pending()
         let messageSender = SSKEnvironment.shared.messageSender
         messageSender.send(openGroupSyncMessage, success: {
