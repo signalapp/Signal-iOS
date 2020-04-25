@@ -173,12 +173,10 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
         }
 
         TSThread *thread = [TSContactThread getOrCreateThreadWithContactId:recipientId];
-        
-        // If we aren't friends with the user then don't send out any receipts
-        if (thread.friendRequestStatus != LKThreadFriendRequestStatusFriends) { continue; }
-        
-        // Don't send any receipts for groups
-        if (thread.isGroupThread) { continue; }
+
+        if (![LKSessionProtocol shouldSendReceiptForThread:thread]) {
+            continue;
+        }
         
         OWSReceiptsForSenderMessage *message;
         NSString *receiptName;

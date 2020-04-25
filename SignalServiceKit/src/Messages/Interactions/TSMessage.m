@@ -511,44 +511,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     }
 }
 
-#pragma mark - Link Previews
-
-- (void)generateLinkPreviewIfNeededFromURL:(NSString *)url {
-    [OWSLinkPreview tryToBuildPreviewInfoObjcWithPreviewUrl:url]
-    .thenOn(dispatch_get_main_queue(), ^(OWSLinkPreviewDraft *linkPreviewDraft) {
-        [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            OWSLinkPreview *linkPreview = [OWSLinkPreview buildValidatedLinkPreviewFromInfo:linkPreviewDraft transaction:transaction error:nil];
-            self.linkPreview = linkPreview;
-            [self saveWithTransaction:transaction];
-        }];
-    })
-    .catchOn(dispatch_get_main_queue(), ^(NSError *error) {
-        // If we failed to get a link preview due to an invalid content type error then this could be a direct image link
-        if ([OWSLinkPreview isInvalidContentError:error]) {
-            __block AnyPromise *promise;
-            [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                promise = [OWSLinkPreview getImagePreviewWithURL:url transaction:transaction]
-                .thenOn(dispatch_get_main_queue(), ^(OWSLinkPreview *linkPreview) {
-                    // If we managed to get a direct image preview then render it
-                    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                        if (linkPreview.isDirectAttachment) {
-                            [self addAttachmentWithID:linkPreview.imageAttachmentId in:transaction];
-                            TSAttachmentStream *attachment = [TSAttachmentStream fetchObjectWithUniqueID:linkPreview.imageAttachmentId transaction:transaction];
-                            attachment.albumMessageId = self.uniqueId;
-                            attachment.isUploaded = true;
-                            [attachment saveWithTransaction:transaction];
-                        } else {
-                            // Do nothing
-                        }
-                    }];
-                });
-            }];
-            return promise;
-        }
-        @throw error;
-    });
-}
-
 @end
 
 NS_ASSUME_NONNULL_END

@@ -46,9 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Durable Message Enqueue
 
-+ (TSOutgoingMessage *)enqueueFriendRequestAcceptanceMessageInThread:(TSThread *)thread;
 + (void)enqueueDeviceLinkMessage:(LKDeviceLinkMessage *)message;
-+ (void)enqueueUnlinkDeviceMessage:(LKUnlinkDeviceMessage *)message;
 
 + (TSOutgoingMessage *)enqueueMessageWithText:(NSString *)fullMessageText
                                      inThread:(TSThread *)thread

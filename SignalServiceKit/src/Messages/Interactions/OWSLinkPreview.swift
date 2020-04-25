@@ -696,65 +696,6 @@ public class OWSLinkPreview: MTLModel {
         })
         return promise
     }
-    
-    public class func getImagePreview(from url: String, in transaction: YapDatabaseReadWriteTransaction) -> Promise<OWSLinkPreview> {
-        // Get the MIME type
-        guard let imageFileExtension = fileExtension(forImageUrl: url), let imageMIMEType = mimetype(forImageFileExtension: imageFileExtension) else {
-            return Promise(error: LinkPreviewError.invalidInput)
-        }
-        
-        return downloadImage(url: url).map { data in
-            // Make sure the downloaded image has the correct MIME type
-            guard let newImageMIMEType = NSData(data: data).ows_guessMimeType() else {
-                throw LinkPreviewError.invalidContent
-            }
-            
-            // Save the attachment
-            guard let attachmentId = saveAttachmentIfPossible(imageData: data, mimeType: newImageMIMEType, transaction: transaction) else {
-                Logger.verbose("Failed to save attachment for: \(url).")
-                throw LinkPreviewError.attachmentFailedToSave
-            }
-            
-            // If it's a GIF and the data we have is not a GIF then we need to render a link preview without attachments
-            if (imageMIMEType == OWSMimeTypeImageGif && newImageMIMEType != OWSMimeTypeImageGif) {
-                return OWSLinkPreview(urlString: url, title: nil, imageAttachmentId: attachmentId)
-            }
-            
-            return OWSLinkPreview(urlString: url, title: nil, imageAttachmentId: attachmentId, isDirectAttachment: true)
-        }
-    }
-    
-    @objc(getImagePreviewWithURL:transaction:)
-    public class func objc_getImagePreview(url: String, in transaction: YapDatabaseReadWriteTransaction) -> AnyPromise {
-        return AnyPromise.from(getImagePreview(from: url, in: transaction))
-    }
-    
-    public class func downloadImage(url imageUrl: String) -> Promise<Data> {
-        guard OWSLinkPreview.featureEnabled else {
-            return Promise(error: LinkPreviewError.featureDisabled)
-        }
-        
-        guard SSKPreferences.areLinkPreviewsEnabled else {
-            return Promise(error: LinkPreviewError.featureDisabled)
-        }
-
-        guard isValidMediaUrl(imageUrl) else {
-            Logger.error("Invalid image URL.")
-            return Promise.init(error: LinkPreviewError.invalidInput)
-        }
-        
-        guard let imageFileExtension = fileExtension(forImageUrl: imageUrl) else {
-            Logger.error("Image URL has unknown or invalid file extension: \(imageUrl).")
-            return Promise.init(error: LinkPreviewError.invalidInput)
-        }
-        
-        guard let imageMimeType = mimetype(forImageFileExtension: imageFileExtension) else {
-            Logger.error("Image URL has unknown or invalid content type: \(imageUrl).")
-            return Promise.init(error: LinkPreviewError.invalidInput)
-        }
-        
-        return downloadImage(url: imageUrl, imageMimeType: imageMimeType)
-    }
 
     private class func downloadImage(url urlString: String, imageMimeType: String) -> Promise<Data> {
 

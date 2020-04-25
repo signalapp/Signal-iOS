@@ -588,7 +588,7 @@ typedef enum : NSUInteger {
                                                           userInfo:nil
                                                            repeats:YES];
 
-    [LKAPI populateUserHexEncodedPublicKeyCacheIfNeededFor:thread.uniqueId in:nil];
+    [LKMentionsManager populateUserHexEncodedPublicKeyCacheIfNeededFor:thread.uniqueId in:nil];
 }
 
 - (void)dealloc
@@ -1237,24 +1237,9 @@ typedef enum : NSUInteger {
 }
 
 - (void)restoreSession {
-    if ([self.thread isKindOfClass:[TSContactThread class]]) {
-        OWSMessageSender *messageSender = SSKEnvironment.shared.messageSender;
-        TSContactThread *thread = (TSContactThread *)self.thread;
-        NSArray *devices = thread.sessionRestoreDevices;
-        for (NSString *device in devices) {
-            if (device.length == 0) { continue; }
-            OWSMessageSend *sessionRestoreMessage = [messageSender getSessionRestoreMessageForHexEncodedPublicKey:device];
-            if (sessionRestoreMessage) {
-                dispatch_async(OWSDispatch.sendingQueue, ^{
-                    [messageSender sendMessage:sessionRestoreMessage];
-                });
-            }
-        }
-        [[[TSInfoMessage alloc] initWithTimestamp:NSDate.ows_millisecondTimeStamp inThread:thread messageType:TSInfoMessageTypeLokiSessionResetInProgress] save];
-        thread.sessionResetStatus = LKSessionResetStatusRequestReceived;
-        [thread save];
-        [thread removeAllSessionRestoreDevicesWithTransaction:nil];
-    }
+    [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [LKSessionManagementProtocol sending_startSessionResetInThread:self.thread using:transaction];
+    }];
 }
 
 - (void)noLongerVerifiedBannerViewWasTapped:(UIGestureRecognizer *)sender
@@ -3864,7 +3849,7 @@ typedef enum : NSUInteger {
             secondToLastCharacter = [newText characterAtIndex:lastCharacterIndex - 1];
         }
         if (lastCharacter == '@' && [NSCharacterSet.whitespaceAndNewlineCharacterSet characterIsMember:secondToLastCharacter]) {
-            NSArray<LKMention *> *mentionCandidates = [LKAPI getMentionCandidatesFor:@"" in:self.thread.uniqueId];
+            NSArray<LKMention *> *mentionCandidates = [LKMentionsManager getMentionCandidatesFor:@"" in:self.thread.uniqueId];
             self.currentMentionStartIndex = (NSInteger)lastCharacterIndex;
             [self.inputToolbar showMentionCandidateSelectionViewFor:mentionCandidates in:self.thread];
         } else if ([NSCharacterSet.whitespaceAndNewlineCharacterSet characterIsMember:lastCharacter]) {
@@ -3873,7 +3858,7 @@ typedef enum : NSUInteger {
         } else {
             if (self.currentMentionStartIndex != -1) {
                 NSString *query = [newText substringFromIndex:(NSUInteger)self.currentMentionStartIndex + 1]; // + 1 to get rid of the @
-                NSArray<LKMention *> *mentionCandidates = [LKAPI getMentionCandidatesFor:query in:self.thread.uniqueId];
+                NSArray<LKMention *> *mentionCandidates = [LKMentionsManager getMentionCandidatesFor:query in:self.thread.uniqueId];
                 [self.inputToolbar showMentionCandidateSelectionViewFor:mentionCandidates in:self.thread];
             }
         }
@@ -4506,37 +4491,15 @@ typedef enum : NSUInteger {
 
 - (void)acceptFriendRequest:(TSIncomingMessage *)friendRequest
 {
-    // Accept all outstanding friend requests associated with this user and try to establish sessions with the
-    // subset of their devices that haven't sent a friend request.
-    NSString *senderID = friendRequest.authorId;
-    __block NSSet<TSContactThread *> *linkedDeviceThreads;
     [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        linkedDeviceThreads = [LKDatabaseUtilities getLinkedDeviceThreadsFor:senderID in:transaction];
+        [LKFriendRequestProtocol acceptFriendRequest:friendRequest in:self.thread using:transaction];
     }];
-    for (TSContactThread *thread in linkedDeviceThreads) {
-        if (thread.hasPendingFriendRequest) {
-            [ThreadUtil enqueueFriendRequestAcceptanceMessageInThread:self.thread];
-        } else {
-            OWSMessageSender *messageSender = SSKEnvironment.shared.messageSender;
-            OWSMessageSend *automatedFriendRequestMessage = [messageSender getMultiDeviceFriendRequestMessageForHexEncodedPublicKey:thread.contactIdentifier];
-            dispatch_async(OWSDispatch.sendingQueue, ^{
-                [messageSender sendMessage:automatedFriendRequestMessage];
-            });
-        }
-    }
-    // Update the thread's friend request status
-    [self.thread saveFriendRequestStatus:LKThreadFriendRequestStatusFriends withTransaction:nil];
 }
 
 - (void)declineFriendRequest:(TSIncomingMessage *)friendRequest
 {
-    // Reset the thread's friend request status
-    [self.thread saveFriendRequestStatus:LKThreadFriendRequestStatusNone withTransaction:nil];
-    // Delete prekeys
-    NSString *contactID = friendRequest.authorId;
-    OWSPrimaryStorage *primaryStorage = SSKEnvironment.shared.primaryStorage;
-    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [primaryStorage removePreKeyBundleForContact:contactID transaction:transaction];
+    [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [LKFriendRequestProtocol declineFriendRequest:friendRequest in:self.thread using:transaction];
     }];
 }
 

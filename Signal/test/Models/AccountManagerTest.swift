@@ -32,7 +32,7 @@ class FailingTSAccountManager: TSAccountManager {
         failure(VerificationFailedError())
     }
 
-    override func registerForPushNotifications(pushToken: String, voipToken: String, success successHandler: @escaping () -> Void, failure failureHandler: @escaping (Error) -> Void) {
+    override func registerForPushNotifications(pushToken: String, voipToken: String, isForcedUpdate: Bool, success successHandler: @escaping () -> Void, failure failureHandler: @escaping (Error) -> Void) {
         if pushToken == PushNotificationRequestResult.FailTSOnly.rawValue || pushToken == PushNotificationRequestResult.FailBoth.rawValue {
             failureHandler(OWSErrorMakeUnableToProcessServerResponseError())
         } else {
@@ -145,7 +145,7 @@ class AccountManagerTest: SignalBaseTest {
         let expectation = self.expectation(description: "should fail")
 
         firstly {
-            accountManager.updatePushTokens(pushToken: PushNotificationRequestResult.FailTSOnly.rawValue, voipToken: "whatever")
+            accountManager.updatePushTokens(pushToken: PushNotificationRequestResult.FailTSOnly.rawValue, voipToken: "whatever", isForcedUpdate: false)
         }.done {
             XCTFail("Expected to fail.")
         }.catch { _ in

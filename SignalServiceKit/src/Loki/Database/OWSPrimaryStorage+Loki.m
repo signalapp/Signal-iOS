@@ -59,13 +59,13 @@
     @try {
         return [self throws_loadPreKey:preKeyId];
     } @catch (NSException *exception) {
-        [LKLogger print:[NSString stringWithFormat:@"[Loki] New pre key generated for %@.", pubKey]];
         return [self generateAndStorePreKeyForContact:pubKey];
     }
 }
 
 /// Generate prekey for a contact and store it
 - (PreKeyRecord *)generateAndStorePreKeyForContact:(NSString *)pubKey {
+    [LKLogger print:[NSString stringWithFormat:@"[Loki] Generating new pre key for: %@.", pubKey]];
     OWSAssertDebug(pubKey.length > 0);
     
     NSArray<PreKeyRecord *> *records = [self generatePreKeyRecords:1];

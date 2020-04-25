@@ -324,15 +324,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
             }
             
             // Loki: Don't send typing indicators in group or note to self threads
-            if (thread.isGroupThread()) {
-                return
-            } else {
-                var isNoteToSelf = false
-                OWSPrimaryStorage.shared().dbReadConnection.read { transaction in
-                    isNoteToSelf = LokiDatabaseUtilities.isUserLinkedDevice(thread.contactIdentifier()!, transaction: transaction)
-                }
-                if isNoteToSelf { return }
-            }
+            if !SessionProtocol.shouldSendTypingIndicator(for: thread) { return }
 
             let message = TypingIndicatorMessage(thread: thread, action: action)
             messageSender.sendPromise(message: message).retainUntilComplete()

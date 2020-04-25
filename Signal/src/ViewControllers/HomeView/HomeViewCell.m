@@ -395,7 +395,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
         NSString *displayableText = thread.lastMessageText;
         if (displayableText) {
-            [LKAPI populateUserHexEncodedPublicKeyCacheIfNeededFor:thread.threadRecord.uniqueId in:nil]; // TODO: Terrible place to do this, but okay for now
+            [LKMentionsManager populateUserHexEncodedPublicKeyCacheIfNeededFor:thread.threadRecord.uniqueId in:nil]; // TODO: Terrible place to do this, but okay for now
             displayableText = [LKMentionUtilities highlightMentionsIn:displayableText threadID:thread.threadRecord.uniqueId];
             [snippetText appendAttributedString:[[NSAttributedString alloc]
                                                     initWithString:displayableText

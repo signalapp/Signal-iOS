@@ -180,30 +180,27 @@ public final class LokiPublicChatPoller : NSObject {
             }
             let hexEncodedPublicKeysToUpdate = uniqueHexEncodedPublicKeys.filter { hexEncodedPublicKey in
                 let timeSinceLastUpdate: TimeInterval
-                if let lastDeviceLinkUpdate = LokiAPI.lastDeviceLinkUpdate[hexEncodedPublicKey] {
+                if let lastDeviceLinkUpdate = MultiDeviceProtocol.lastDeviceLinkUpdate[hexEncodedPublicKey] {
                     timeSinceLastUpdate = Date().timeIntervalSince(lastDeviceLinkUpdate)
                 } else {
                     timeSinceLastUpdate = .infinity
                 }
-                return timeSinceLastUpdate > LokiAPI.deviceLinkUpdateInterval
+                return timeSinceLastUpdate > MultiDeviceProtocol.deviceLinkUpdateInterval
             }
             if !hexEncodedPublicKeysToUpdate.isEmpty {
-                let storage = OWSPrimaryStorage.shared()
-                storage.dbReadConnection.read { transaction in
-                    LokiFileServerAPI.getDeviceLinks(associatedWith: hexEncodedPublicKeysToUpdate).done(on: DispatchQueue.global()) { _ in
-                        proceed()
-                        hexEncodedPublicKeysToUpdate.forEach {
-                            LokiAPI.lastDeviceLinkUpdate[$0] = Date()
-                        }
-                    }.catch(on: DispatchQueue.global()) { error in
-                        if (error as? LokiDotNetAPI.LokiDotNetAPIError) == LokiDotNetAPI.LokiDotNetAPIError.parsingFailed {
-                            // Don't immediately re-fetch in case of failure due to a parsing error
-                            hexEncodedPublicKeysToUpdate.forEach {
-                                LokiAPI.lastDeviceLinkUpdate[$0] = Date()
-                            }
-                        }
-                        proceed()
+                LokiFileServerAPI.getDeviceLinks(associatedWith: hexEncodedPublicKeysToUpdate).done(on: DispatchQueue.global()) { _ in
+                    proceed()
+                    hexEncodedPublicKeysToUpdate.forEach {
+                        MultiDeviceProtocol.lastDeviceLinkUpdate[$0] = Date() // TODO: Doing this from a global queue seems a bit iffy
                     }
+                }.catch(on: DispatchQueue.global()) { error in
+                    if (error as? LokiDotNetAPI.LokiDotNetAPIError) == LokiDotNetAPI.LokiDotNetAPIError.parsingFailed {
+                        // Don't immediately re-fetch in case of failure due to a parsing error
+                        hexEncodedPublicKeysToUpdate.forEach {
+                            MultiDeviceProtocol.lastDeviceLinkUpdate[$0] = Date() // TODO: Doing this from a global queue seems a bit iffy
+                        }
+                    }
+                    proceed()
                 }
             } else {
                 DispatchQueue.global().async {

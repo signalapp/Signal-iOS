@@ -1,4 +1,5 @@
 
+/// Either a service node or another client if P2P is enabled.
 internal final class LokiAPITarget : NSObject, NSCoding {
     internal let address: String
     internal let port: UInt16

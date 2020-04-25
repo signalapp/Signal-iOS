@@ -100,10 +100,6 @@ typedef NS_ENUM(NSInteger, LKMessageFriendRequestStatus) {
 
 - (void)saveOpenGroupServerMessageID:(uint64_t)serverMessageID in:(YapDatabaseReadWriteTransaction *_Nullable)transaction;
 
-#pragma mark - Link Preview
-
-- (void)generateLinkPreviewIfNeededFromURL:(NSString *)url;
-
 @end
 
 NS_ASSUME_NONNULL_END
