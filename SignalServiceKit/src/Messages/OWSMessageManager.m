@@ -1584,7 +1584,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [incomingMessage saveWithTransaction:transaction];
     
-    // Loki: Remove any old incoming messages
+    // Loki: Remove any old incoming friend requests
     if (incomingMessage.isFriendRequest) {
         [thread removeOldIncomingFriendRequestMessagesIfNeededWithTransaction:transaction];
     }

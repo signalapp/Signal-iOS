@@ -21,7 +21,7 @@ static void *kNSError_MessageSender_IsFatal = &kNSError_MessageSender_IsFatal;
 {
     NSNumber *value = objc_getAssociatedObject(self, kNSError_MessageSender_IsRetryable);
     // This value should always be set for all errors by the time OWSSendMessageOperation
-    // queries it's value.  If not, default to retrying in production.
+    // queries it's value. If not, default to retrying in production.
     return value ? [value boolValue] : YES;
 }
 

@@ -1254,7 +1254,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 }) retainUntilComplete];
             }
         })
-        .catchOn(OWSDispatch.sendingQueue, ^(NSError *error) { // The snode is unreachable
+        .catchOn(OWSDispatch.sendingQueue, ^(NSError *error) {
             handleError(error);
         }) retainUntilComplete];
     }

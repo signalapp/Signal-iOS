@@ -23,10 +23,10 @@ public final class SessionManagementProtocol : NSObject {
 
     @objc(createPreKeys)
     public static func createPreKeys() {
-        // We don't generate PreKeyRecords here.
+        // We don't generate new pre keys here like Signal does.
         // This is because we need the records to be linked to a contact since we don't have a central server.
-        // It's done automatically when we generate a pre key bundle to send to a contact (`generatePreKeyBundleForContact:`).
-        // You can use `getOrCreatePreKeyForContact:` to generate one if needed.
+        // It's done automatically when we generate a pre key bundle to send to a contact (generatePreKeyBundleForContact:).
+        // You can use getOrCreatePreKeyForContact: to generate one if needed.
         let signedPreKeyRecord = storage.generateRandomSignedRecord()
         signedPreKeyRecord.markAsAcceptedByService()
         storage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
@@ -36,6 +36,10 @@ public final class SessionManagementProtocol : NSObject {
 
     @objc(refreshSignedPreKey)
     public static func refreshSignedPreKey() {
+        // We don't generate new pre keys here like Signal does.
+        // This is because we need the records to be linked to a contact since we don't have a central server.
+        // It's done automatically when we generate a pre key bundle to send to a contact (generatePreKeyBundleForContact:).
+        // You can use getOrCreatePreKeyForContact: to generate one if needed.
         guard storage.currentSignedPrekeyId() == nil else {
             print("[Loki] Skipping pre key refresh; using existing signed pre key.")
             return
@@ -51,6 +55,8 @@ public final class SessionManagementProtocol : NSObject {
 
     @objc(rotateSignedPreKey)
     public static func rotateSignedPreKey() {
+        // This is identical to what Signal does, except that it doesn't upload the signed pre key
+        // to a server.
         let signedPreKeyRecord = storage.generateRandomSignedRecord()
         signedPreKeyRecord.markAsAcceptedByService()
         storage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)

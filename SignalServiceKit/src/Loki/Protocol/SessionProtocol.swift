@@ -97,6 +97,8 @@ public final class SessionProtocol : NSObject {
     }
 
     // MARK: Typing Indicators
+    /// Invoked only if typing indicators are enabled. Provides an opportunity to not
+    /// send them if certain conditions are met.
     @objc(shouldSendTypingIndicatorForThread:)
     public static func shouldSendTypingIndicator(for thread: TSThread) -> Bool {
         return !thread.isGroupThread() && !isMessageNoteToSelf(thread)
@@ -109,7 +111,9 @@ public final class SessionProtocol : NSObject {
         return !isMessageNoteToSelf(thread) && !thread.isGroupThread()
     }
 
-    // TODO: Not sure how these two relate
+    // TODO: Not sure how these two relate. EDIT: I think the one below is used to block delivery receipts. That means that
+    // right now we do send delivery receipts in note to self, but not read receipts. Other than that their behavior should
+    // be identical. Should we just not send any kind of receipt in note to self?
 
     // Used from OWSOutgoingReceiptManager
     @objc(shouldSendReceiptForThread:)

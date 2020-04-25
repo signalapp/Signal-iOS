@@ -322,8 +322,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
             guard delegate.areTypingIndicatorsEnabled() else {
                 return
             }
-            
-            // Loki: Don't send typing indicators in group or note to self threads
+
             if !SessionProtocol.shouldSendTypingIndicator(for: thread) { return }
 
             let message = TypingIndicatorMessage(thread: thread, action: action)
