@@ -38,12 +38,17 @@ public final class MultiDeviceProtocol : NSObject {
     private override init() { }
 
     // MARK: - Sending (Part 1)
+    @objc(isMultiDeviceRequiredForMessage:)
+    public static func isMultiDeviceRequired(for message: TSOutgoingMessage) -> Bool {
+        return !(message is DeviceLinkMessage)
+    }
+
     @objc(sendMessageToDestinationAndLinkedDevices:in:)
     public static func sendMessageToDestinationAndLinkedDevices(_ messageSend: OWSMessageSend, in transaction: YapDatabaseReadWriteTransaction) {
         // TODO: I'm pretty sure there are quite a few holes in this logic
         let message = messageSend.message
         let recipientID = messageSend.recipient.recipientId()
-        let thread = messageSend.thread ?? TSContactThread.getOrCreateThread(withContactId: recipientID, transaction: transaction) // TODO: Added this because I think we need it
+        let thread = messageSend.thread ?? TSContactThread.getOrCreateThread(withContactId: recipientID, transaction: transaction) // TODO: This seems really iffy
         let isGroupMessage = thread.isGroupThread()
         let isOpenGroupMessage = (thread as? TSGroupThread)?.isPublicChat == true
         let isDeviceLinkMessage = message is DeviceLinkMessage

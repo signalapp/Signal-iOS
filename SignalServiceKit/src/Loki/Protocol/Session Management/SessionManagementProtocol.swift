@@ -34,8 +34,8 @@ public final class SessionManagementProtocol : NSObject {
         print("[Loki] Pre keys created successfully.")
     }
 
-    @objc(refreshPreKeys)
-    public static func refreshPreKeys() {
+    @objc(refreshSignedPreKey)
+    public static func refreshSignedPreKey() {
         guard storage.currentSignedPrekeyId() == nil else {
             print("[Loki] Skipping pre key refresh; using existing signed pre key.")
             return
@@ -49,15 +49,15 @@ public final class SessionManagementProtocol : NSObject {
         print("[Loki] Pre keys refreshed successfully.")
     }
 
-    @objc(rotatePreKeys)
-    public static func rotatePreKeys() {
+    @objc(rotateSignedPreKey)
+    public static func rotateSignedPreKey() {
         let signedPreKeyRecord = storage.generateRandomSignedRecord()
         signedPreKeyRecord.markAsAcceptedByService()
         storage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
         storage.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
         TSPreKeyManager.clearPreKeyUpdateFailureCount()
         TSPreKeyManager.clearSignedPreKeyRecords()
-        print("[Loki] Pre keys rotated successfully.")
+        print("[Loki] Signed pre key rotated successfully.")
     }
 
     @objc(shouldUseFallbackEncryptionForMessage:)

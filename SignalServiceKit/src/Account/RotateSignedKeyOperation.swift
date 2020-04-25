@@ -29,7 +29,7 @@ public class RotateSignedPreKeyOperation: OWSOperation {
         
         // Loki: Doing this on the global queue to match Signal
         DispatchQueue.global().async {
-            SessionManagementProtocol.rotatePreKeys()
+            SessionManagementProtocol.rotateSignedPreKey()
             self.reportSuccess()
         }
 

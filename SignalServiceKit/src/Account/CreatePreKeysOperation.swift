@@ -26,17 +26,8 @@ public class CreatePreKeysOperation: OWSOperation {
         if identityKeyManager.identityKeyPair() == nil {
             identityKeyManager.generateNewIdentityKeyPair()
         }
-        
-        // Loki: We don't generate PreKeyRecords here.
-        // This is because we need the records to be linked to a contact since we don't have a central server.
-        // It's done automatically when we generate a pre key bundle to send to a contact (`generatePreKeyBundleForContact:`).
-        // You can use `getOrCreatePreKeyForContact:` to generate one if needed.
-        let signedPreKeyRecord = primaryStorage.generateRandomSignedRecord()
-        signedPreKeyRecord.markAsAcceptedByService()
-        primaryStorage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
-        primaryStorage.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
 
-        print("[Loki] Pre keys created successfully.")
+        SessionManagementProtocol.createPreKeys()
         reportSuccess()
         
         /* Loki: Original code

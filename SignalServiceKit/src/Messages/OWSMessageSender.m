@@ -591,9 +591,14 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     }
                     resolve(error);
                 }];
-            [self.primaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                [LKMultiDeviceProtocol sendMessageToDestinationAndLinkedDevices:messageSend in:transaction];
-            }];
+
+            if ([LKMultiDeviceProtocol isMultiDeviceRequiredForMessage:message]) { // Avoid the write transaction if possible
+                [self.primaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                    [LKMultiDeviceProtocol sendMessageToDestinationAndLinkedDevices:messageSend in:transaction];
+                }];
+            } else {
+                [self sendMessage:messageSend];
+            }
         }];
         [sendPromises addObject:sendPromise];
     }
@@ -1559,9 +1564,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
             failure(error);
         }];
-    [self.primaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [LKMultiDeviceProtocol sendMessageToDestinationAndLinkedDevices:messageSend in:transaction];
-    }];
+    if ([LKMultiDeviceProtocol isMultiDeviceRequiredForMessage:message]) { // Avoid the write transaction if possible
+        [self.primaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [LKMultiDeviceProtocol sendMessageToDestinationAndLinkedDevices:messageSend in:transaction];
+        }];
+    } else {
+        [self sendMessage:messageSend];
+    }
 }
 
 - (NSArray<NSDictionary *> *)throws_deviceMessagesForMessageSend:(OWSMessageSend *)messageSend
