@@ -23,10 +23,11 @@ def shared_pods
   # pod 'Curve25519Kit', path: '../Curve25519Kit', testspecs: ["Tests"]
 
   # Don't update SignalMetadataKit. There's some Loki specific stuff in there that gets overwritten otherwise.
+  # FIXME: We should fork this, make it work with Cocoapods, and keep it up to date with Signal's repo.
   # pod 'SignalMetadataKit', git: 'https://github.com/signalapp/SignalMetadataKit', testspecs: ["Tests"]
   # pod 'SignalMetadataKit', path: '../SignalMetadataKit', testspecs: ["Tests"]
 
-  pod 'SignalServiceKit', path: '.', testspecs: ["Tests"]
+  pod 'SignalServiceKit', path: '.', testspecs: ["Tests"] # TODO: Signal moved this into the main repo. We should probably do the same eventually.
 
   # Project does not compile with PromiseKit 6.7.1
   # see: https://github.com/mxcl/PromiseKit/issues/990
@@ -57,7 +58,7 @@ def shared_pods
 
   ###
   # third party pods
-  ####
+  ###
 
   pod 'AFNetworking', inhibit_warnings: true
   pod 'PureLayout', :inhibit_warnings => true
@@ -70,8 +71,11 @@ target 'Signal' do
   shared_pods
   pod 'SSZipArchive', :inhibit_warnings => true
 
-  # Loki
-  pod 'GCDWebServer', '~> 3.0', :inhibit_warnings => true
+  ###
+  # Loki third party pods
+  ###
+
+  pod 'GCDWebServer', '~> 3.0', :inhibit_warnings => true # TODO: We can probably ditch this as we're not doing P2P anymore
   pod 'FeedKit', '~> 8.1', :inhibit_warnings => true
   pod 'CryptoSwift', '~> 1.0', :inhibit_warnings => true
   pod 'FirebaseCore', '~> 6.0', :inhibit_warnings => true # Used for internal testing
@@ -91,8 +95,13 @@ end
 
 target 'LokiPushNotificationService' do
   project 'Signal'
-  pod 'CryptoSwift', '~> 1.0', :inhibit_warnings => true
   shared_pods
+
+  ###
+  # Loki third party pods
+  ###
+
+  pod 'CryptoSwift', '~> 1.0', :inhibit_warnings => true
 end
 
 target 'SignalMessaging' do

@@ -15,15 +15,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (PreKeyRecord *_Nullable)getPreKeyForContact:(NSString *)pubKey transaction:(YapDatabaseReadTransaction *)transaction;
 - (PreKeyRecord *)getOrCreatePreKeyForContact:(NSString *)pubKey;
 
-# pragma mark - Pre Key Bundle
+# pragma mark - Pre Key Management
 
 /**
- * Generates a pre key bundle but doesn't store it as pre key bundles are supposed to be sent to other users without ever being stored.
+ * Generates a pre key bundle for the given contact. Doesn't store the pre key bundle (pre key bundles are supposed to be sent without ever being stored).
  */
-- (PreKeyBundle *)generatePreKeyBundleForContact:(NSString *)pubKey;
-- (PreKeyBundle *_Nullable)getPreKeyBundleForContact:(NSString *)pubKey;
-- (void)setPreKeyBundle:(PreKeyBundle *)bundle forContact:(NSString *)pubKey transaction:(YapDatabaseReadWriteTransaction *)transaction;
-- (void)removePreKeyBundleForContact:(NSString *)pubKey transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (PreKeyBundle *)generatePreKeyBundleForContact:(NSString *)hexEncodedPublicKey;
+- (PreKeyBundle *_Nullable)getPreKeyBundleForContact:(NSString *)hexEncodedPublicKey;
+- (void)setPreKeyBundle:(PreKeyBundle *)bundle forContact:(NSString *)hexEncodedPublicKey transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)removePreKeyBundleForContact:(NSString *)hexEncodedPublicKey transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 # pragma mark - Last Message Hash
 

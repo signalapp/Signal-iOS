@@ -198,13 +198,8 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
 
 + (void)checkPreKeys
 {
-    if (!CurrentAppContext().isMainApp) {
-        return;
-    }
-    if (!self.tsAccountManager.isRegisteredAndReady) {
-        return;
-    }
-
+    if (!CurrentAppContext().isMainApp) { return; }
+    if (!self.tsAccountManager.isRegisteredAndReady) { return; }
     SSKRefreshPreKeysOperation *operation = [SSKRefreshPreKeysOperation new];
     [self.operationQueue addOperation:operation];
 }

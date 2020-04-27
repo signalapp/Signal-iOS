@@ -19,6 +19,11 @@ This document outlines the main abstractions (layers) in the Session app. These 
 * Customized sync messages protocol on top of Signal's implementation
 * Customized transcripts, receipts & typing indicators protocol on top of Signal's implementation
 
+
+# Signal Protocol Layer
+
+Don't touch this. Ever.
+
 # Push Notifications Layer
 
 Only applicable to mobile. Speaks for itself.
