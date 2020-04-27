@@ -4466,7 +4466,7 @@ typedef enum : NSUInteger {
 - (void)acceptFriendRequest:(TSIncomingMessage *)friendRequest
 {
     [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [LKFriendRequestProtocol acceptFriendRequest:friendRequest in:self.thread using:transaction];
+        [LKFriendRequestProtocol acceptFriendRequestFrom:friendRequest.authorId in:self.thread using:transaction];
     }];
 }
 

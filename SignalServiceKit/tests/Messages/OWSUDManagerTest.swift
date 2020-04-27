@@ -40,6 +40,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
     let aliceRecipientId = "+13213214321"
 
     override func setUp() {
+        /*
         super.setUp()
 
         tsAccountManager.registerForTests(withLocalNumber: aliceRecipientId)
@@ -60,6 +61,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
                                                      signatureData: Randomness.generateRandomBytes(ECCSignatureLength))
 
         udManager.setSenderCertificate(try! senderCertificate.serialized())
+         */
     }
 
     override func tearDown() {
