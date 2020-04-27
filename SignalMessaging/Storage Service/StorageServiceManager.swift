@@ -704,13 +704,10 @@ class StorageServiceOperation: OWSOperation {
         // Bump the manifest version
         state.manifestVersion += 1
 
-        let manifestBuilder = StorageServiceProtoManifestRecord.builder(version: state.manifestVersion)
-
         let manifest: StorageServiceProtoManifestRecord
         do {
-            manifestBuilder.setKeys(try state.allIdentifiers.map { try $0.buildRecord() })
-
-            manifest = try manifestBuilder.build()
+            manifest = try buildManifestRecord(manifestVersion: state.manifestVersion,
+                                               identifiers: state.allIdentifiers)
         } catch {
             return reportError(OWSAssertionError("failed to build proto with error: \(error)"))
         }
@@ -741,6 +738,14 @@ class StorageServiceOperation: OWSOperation {
         }.catch { error in
             self.reportError(withUndefinedRetry: error)
         }.retainUntilComplete()
+    }
+
+    private func buildManifestRecord(manifestVersion: UInt64,
+                                     identifiers identifiersParam: [StorageService.StorageIdentifier]) throws -> StorageServiceProtoManifestRecord {
+        let identifiers = StorageService.StorageIdentifier.deduplicate(identifiersParam)
+        let manifestBuilder = StorageServiceProtoManifestRecord.builder(version: manifestVersion)
+        manifestBuilder.setKeys(try identifiers.map { try $0.buildRecord() })
+        return try manifestBuilder.build()
     }
 
     // MARK: - Restore
@@ -875,12 +880,11 @@ class StorageServiceOperation: OWSOperation {
             }
         }
 
-        let manifestBuilder = StorageServiceProtoManifestRecord.builder(version: state.manifestVersion)
-
         let manifest: StorageServiceProtoManifestRecord
         do {
-            manifestBuilder.setKeys(try allItems.map { try $0.identifier.buildRecord() })
-            manifest = try manifestBuilder.build()
+            let identifiers = allItems.map { $0.identifier }
+            manifest = try buildManifestRecord(manifestVersion: state.manifestVersion,
+                                               identifiers: identifiers)
         } catch {
             return reportError(OWSAssertionError("failed to build proto with error: \(error)"))
         }
