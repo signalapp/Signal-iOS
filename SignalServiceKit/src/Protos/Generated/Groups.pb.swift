@@ -597,10 +597,10 @@ struct GroupsProtos_GroupAttributeBlob {
     set {content = .title(newValue)}
   }
 
-  var avatar: String {
+  var avatar: Data {
     get {
       if case .avatar(let v)? = content {return v}
-      return String()
+      return SwiftProtobuf.Internal.emptyData
     }
     set {content = .avatar(newValue)}
   }
@@ -617,7 +617,7 @@ struct GroupsProtos_GroupAttributeBlob {
 
   enum OneOf_Content: Equatable {
     case title(String)
-    case avatar(String)
+    case avatar(Data)
     case disappearingMessagesDuration(UInt32)
 
   #if !swift(>=4.1)
@@ -1528,8 +1528,8 @@ extension GroupsProtos_GroupAttributeBlob: SwiftProtobuf.Message, SwiftProtobuf.
         if let v = v {self.content = .title(v)}
       case 2:
         if self.content != nil {try decoder.handleConflictingOneOf()}
-        var v: String?
-        try decoder.decodeSingularStringField(value: &v)
+        var v: Data?
+        try decoder.decodeSingularBytesField(value: &v)
         if let v = v {self.content = .avatar(v)}
       case 3:
         if self.content != nil {try decoder.handleConflictingOneOf()}
@@ -1546,7 +1546,7 @@ extension GroupsProtos_GroupAttributeBlob: SwiftProtobuf.Message, SwiftProtobuf.
     case .title(let v)?:
       try visitor.visitSingularStringField(value: v, fieldNumber: 1)
     case .avatar(let v)?:
-      try visitor.visitSingularStringField(value: v, fieldNumber: 2)
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 2)
     case .disappearingMessagesDuration(let v)?:
       try visitor.visitSingularUInt32Field(value: v, fieldNumber: 3)
     case nil: break

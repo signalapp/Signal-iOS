@@ -253,17 +253,8 @@ public class GroupsV2Changes {
         }
 
         if let action = changeActionsProto.modifyTitle {
-            if let titleData = action.title {
-                do {
-                    newGroupName = try groupV2Params.decryptString(titleData)
-                } catch {
-                    owsFailDebug("Invalid title: \(error)")
-                    newGroupName = nil
-                }
-            } else {
-                // Change clears the group title.
-                newGroupName = nil
-            }
+            // Change clears or updates the group title.
+            newGroupName = groupV2Params.decryptGroupName(action.title)
         }
 
         if let action = changeActionsProto.modifyAvatar {
@@ -288,7 +279,7 @@ public class GroupsV2Changes {
         if let action = changeActionsProto.modifyDisappearingMessagesTimer {
             // If the timer blob is not populated or has zero duration,
             // disappearing messages should be disabled.
-            newDisappearingMessageToken = groupV2Params.decryptDisappearingMessagesTimerBlob(action.timer)
+            newDisappearingMessageToken = groupV2Params.decryptDisappearingMessagesTimer(action.timer)
         }
 
         if let action = changeActionsProto.modifyAttributesAccess {

@@ -85,7 +85,7 @@ public class GroupsV2Protos {
         groupBuilder.setVersion(initialRevision)
         groupBuilder.setPublicKey(groupV2Params.groupPublicParamsData)
         // GroupsV2 TODO: Will production implementation of encryptString() pad?
-        groupBuilder.setTitle(try groupV2Params.encryptString(groupModel.groupName?.stripped ?? " "))
+        groupBuilder.setTitle(try groupV2Params.encryptGroupName(groupModel.groupName?.stripped ?? " "))
 
         let hasAvatarUrl = groupModel.avatarUrlPath != nil
         let hasAvatarData = groupModel.groupAvatarData != nil
@@ -205,14 +205,7 @@ public class GroupsV2Protos {
                             downloadedAvatars: GroupV2DownloadedAvatars,
                             groupV2Params: GroupV2Params) throws -> GroupV2Snapshot {
 
-        var title = ""
-        if let titleData = groupProto.title {
-            do {
-                title = try groupV2Params.decryptString(titleData)
-            } catch {
-                owsFailDebug("Could not decrypt title: \(error).")
-            }
-        }
+        let title = groupV2Params.decryptGroupName(groupProto.title) ?? ""
 
         var avatarUrlPath: String?
         var avatarData: Data?
@@ -305,7 +298,7 @@ public class GroupsV2Protos {
 
         // If the timer blob is not populated or has zero duration,
         // disappearing messages should be disabled.
-        let disappearingMessageToken = groupV2Params.decryptDisappearingMessagesTimerBlob(groupProto.disappearingMessagesTimer)
+        let disappearingMessageToken = groupV2Params.decryptDisappearingMessagesTimer(groupProto.disappearingMessagesTimer)
 
         let revision = groupProto.version
         let groupSecretParamsData = groupV2Params.groupSecretParamsData

@@ -395,7 +395,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         }.map(on: DispatchQueue.global()) { (avatarUploadAttributes: GroupsProtoAvatarUploadAttributes) throws -> OWSUploadForm in
             try OWSUploadForm.parse(proto: avatarUploadAttributes)
         }.then(on: DispatchQueue.global()) { (uploadForm: OWSUploadForm) -> Promise<String> in
-            let encryptedData = try groupV2Params.encryptBlob(avatarData)
+            let encryptedData = try groupV2Params.encryptGroupAvatar(avatarData)
             return OWSUploadV2.upload(data: encryptedData, uploadForm: uploadForm, uploadUrlPath: "")
         }
     }
@@ -622,7 +622,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                         return avatarData
                     }
                     do {
-                        return try groupV2Params.decryptBlob(avatarData)
+                        return try groupV2Params.decryptGroupAvatar(avatarData) ?? Data()
                     } catch {
                         owsFailDebug("Invalid avatar data: \(error)")
                         // Empty avatar data will be discarded below.

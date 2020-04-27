@@ -3087,7 +3087,7 @@ extension GroupsProtoGroupChanges.GroupsProtoGroupChangesBuilder {
 
 public enum GroupsProtoGroupAttributeBlobOneOfContent: Equatable {
     case title(String)
-    case avatar(String)
+    case avatar(Data)
     case disappearingMessagesDuration(UInt32)
 }
 

@@ -153,7 +153,7 @@ message GroupChanges {
 message GroupAttributeBlob {
   oneof content {
     string title                        = 1;
-    string avatar                       = 2;
+    bytes  avatar                       = 2;
     uint32 disappearingMessagesDuration = 3;
   }
 }
