@@ -92,3 +92,40 @@ public extension GroupV2Params {
         return profileKey.serialize().asData
     }
 }
+
+// MARK: -
+
+public extension GroupV2Params {
+    func decryptDisappearingMessagesTimerBlob(_ ciphertext: Data?) -> DisappearingMessageToken {
+        guard let ciphertext = ciphertext else {
+            // Treat a missing value as disabled.
+            return DisappearingMessageToken.disabledToken
+        }
+        do {
+            let blobProtoData = try decryptBlob(ciphertext)
+            let blobProto = try GroupsProtoGroupAttributeBlob.parseData(blobProtoData)
+            if let blobContent = blobProto.content {
+                switch blobContent {
+                case .disappearingMessagesDuration(let value):
+                    return DisappearingMessageToken.token(forProtoExpireTimer: value)
+                default:
+                    owsFailDebug("Invalid disappearing messages value.")
+                }
+            }
+        } catch {
+            owsFailDebug("Could not decrypt and parse disappearing messages state: \(error).")
+        }
+        return DisappearingMessageToken.disabledToken
+    }
+
+    func encryptDisappearingMessagesTimerBlob(_ token: DisappearingMessageToken) throws -> Data {
+        let duration = (token.isEnabled
+            ? token.durationSeconds
+            : 0)
+        let blobBuilder = GroupsProtoGroupAttributeBlob.builder()
+        blobBuilder.setContent(GroupsProtoGroupAttributeBlobOneOfContent.disappearingMessagesDuration(duration))
+        let blobData = try blobBuilder.buildSerializedData()
+        let encryptedTimerData = try encryptBlob(blobData)
+        return encryptedTimerData
+    }
+}

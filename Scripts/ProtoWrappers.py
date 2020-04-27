@@ -61,6 +61,26 @@ def supress_adjacent_capital_letters(name):
         result = result[:-3] + 'URL'
     return result
 
+
+def swift_type_for_proto_primitive_type(proto_type):
+    if proto_type == 'string':
+        return 'String'
+    elif proto_type == 'uint64':
+        return 'UInt64'
+    elif proto_type == 'uint32':
+        return 'UInt32'
+    elif proto_type == 'fixed64':
+        return 'UInt64'
+    elif proto_type == 'bool':
+        return 'Bool'
+    elif proto_type == 'bytes':
+        return 'Data'
+    else:
+        return None
+
+def is_swift_primitive_type(proto_type):
+    return proto_type in ('String', 'UInt64', 'UInt32', 'UInt64', 'Bool', 'Data')
+
 # Provides conext for writing an indented block surrounded by braces.
 #
 # e.g.
@@ -239,19 +259,9 @@ class BaseContext(object):
 
 
     def base_swift_type_for_field(self, field):
-
-        if field.proto_type == 'string':
-            return 'String'
-        elif field.proto_type == 'uint64':
-            return 'UInt64'
-        elif field.proto_type == 'uint32':
-            return 'UInt32'
-        elif field.proto_type == 'fixed64':
-            return 'UInt64'
-        elif field.proto_type == 'bool':
-            return 'Bool'
-        elif field.proto_type == 'bytes':
-            return 'Data'
+        swift_type = swift_type_for_proto_primitive_type(field.proto_type)
+        if swift_type is not None:
+            return swift_type
         else:
             matching_context = self.context_for_proto_type(field)
             if matching_context is not None:
@@ -1331,7 +1341,10 @@ class OneOfContext(BaseContext):
             item_name = self.item_index_map[index_str]
             item_type = self.item_type_map[item_name]
             case_name = lower_camel_case(item_name)
-            result.append( (case_name, self.context_for_proto_type(item_type).swift_name,) )
+            case_type = swift_type_for_proto_primitive_type(item_type)
+            if case_type is None:
+                case_type = self.context_for_proto_type(item_type).swift_name
+            result.append( (case_name, case_type,) )
         return result
 
     def generate(self, writer):
@@ -1360,7 +1373,10 @@ class OneOfContext(BaseContext):
         writer.push_indent()
         writer.add('switch value {')
         for case_name, case_type in self.case_pairs():
-            writer.add('case .%s(let value): return .%s(try %s.parseProto(value))' % (case_name, case_name, case_type, ) )
+            if is_swift_primitive_type(case_type):
+                writer.add('case .%s(let value): return .%s(value)' % (case_name, case_name, ) )
+            else:
+                writer.add('case .%s(let value): return .%s(try %s.parseProto(value))' % (case_name, case_name, case_type, ) )
             
         writer.add('}')
         writer.pop_indent()
@@ -1371,7 +1387,10 @@ class OneOfContext(BaseContext):
         writer.push_indent()
         writer.add('switch value {')
         for case_name, case_type in self.case_pairs():
-            writer.add('case .%s(let value): return .%s(value.proto)' % (case_name, case_name,))
+            if is_swift_primitive_type(case_type):
+                writer.add('case .%s(let value): return .%s(value)' % (case_name, case_name,))
+            else:
+                writer.add('case .%s(let value): return .%s(value.proto)' % (case_name, case_name,))
         writer.add('}')
         writer.pop_indent()
         writer.add('}')

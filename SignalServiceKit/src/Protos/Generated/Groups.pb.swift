@@ -582,14 +582,55 @@ struct GroupsProtos_GroupChanges {
   init() {}
 }
 
-struct GroupsProtos_DisappearingMessagesTimer {
+struct GroupsProtos_GroupAttributeBlob {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
   // methods supported on all messages.
 
-  var duration: UInt32 = 0
+  var content: GroupsProtos_GroupAttributeBlob.OneOf_Content?
+
+  var title: String {
+    get {
+      if case .title(let v)? = content {return v}
+      return String()
+    }
+    set {content = .title(newValue)}
+  }
+
+  var avatar: String {
+    get {
+      if case .avatar(let v)? = content {return v}
+      return String()
+    }
+    set {content = .avatar(newValue)}
+  }
+
+  var disappearingMessagesDuration: UInt32 {
+    get {
+      if case .disappearingMessagesDuration(let v)? = content {return v}
+      return 0
+    }
+    set {content = .disappearingMessagesDuration(newValue)}
+  }
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  enum OneOf_Content: Equatable {
+    case title(String)
+    case avatar(String)
+    case disappearingMessagesDuration(UInt32)
+
+  #if !swift(>=4.1)
+    static func ==(lhs: GroupsProtos_GroupAttributeBlob.OneOf_Content, rhs: GroupsProtos_GroupAttributeBlob.OneOf_Content) -> Bool {
+      switch (lhs, rhs) {
+      case (.title(let l), .title(let r)): return l == r
+      case (.avatar(let l), .avatar(let r)): return l == r
+      case (.disappearingMessagesDuration(let l), .disappearingMessagesDuration(let r)): return l == r
+      default: return false
+      }
+    }
+  #endif
+  }
 
   init() {}
 }
@@ -1469,30 +1510,52 @@ extension GroupsProtos_GroupChanges.GroupChangeState: SwiftProtobuf.Message, Swi
   }
 }
 
-extension GroupsProtos_DisappearingMessagesTimer: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".DisappearingMessagesTimer"
+extension GroupsProtos_GroupAttributeBlob: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".GroupAttributeBlob"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "duration")
+    1: .same(proto: "title"),
+    2: .same(proto: "avatar"),
+    3: .same(proto: "disappearingMessagesDuration")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       switch fieldNumber {
-      case 1: try decoder.decodeSingularUInt32Field(value: &self.duration)
+      case 1:
+        if self.content != nil {try decoder.handleConflictingOneOf()}
+        var v: String?
+        try decoder.decodeSingularStringField(value: &v)
+        if let v = v {self.content = .title(v)}
+      case 2:
+        if self.content != nil {try decoder.handleConflictingOneOf()}
+        var v: String?
+        try decoder.decodeSingularStringField(value: &v)
+        if let v = v {self.content = .avatar(v)}
+      case 3:
+        if self.content != nil {try decoder.handleConflictingOneOf()}
+        var v: UInt32?
+        try decoder.decodeSingularUInt32Field(value: &v)
+        if let v = v {self.content = .disappearingMessagesDuration(v)}
       default: break
       }
     }
   }
 
   func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if self.duration != 0 {
-      try visitor.visitSingularUInt32Field(value: self.duration, fieldNumber: 1)
+    switch self.content {
+    case .title(let v)?:
+      try visitor.visitSingularStringField(value: v, fieldNumber: 1)
+    case .avatar(let v)?:
+      try visitor.visitSingularStringField(value: v, fieldNumber: 2)
+    case .disappearingMessagesDuration(let v)?:
+      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 3)
+    case nil: break
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
-  static func ==(lhs: GroupsProtos_DisappearingMessagesTimer, rhs: GroupsProtos_DisappearingMessagesTimer) -> Bool {
-    if lhs.duration != rhs.duration {return false}
+  static func ==(lhs: GroupsProtos_GroupAttributeBlob, rhs: GroupsProtos_GroupAttributeBlob) -> Bool {
+    if lhs.content != rhs.content {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

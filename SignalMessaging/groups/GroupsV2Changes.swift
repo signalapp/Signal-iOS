@@ -288,17 +288,7 @@ public class GroupsV2Changes {
         if let action = changeActionsProto.modifyDisappearingMessagesTimer {
             // If the timer blob is not populated or has zero duration,
             // disappearing messages should be disabled.
-            newDisappearingMessageToken = DisappearingMessageToken.disabledToken
-
-            if let disappearingMessagesTimerEncrypted = action.timer {
-                do {
-                    let disappearingMessagesTimerDecrypted = try groupV2Params.decryptBlob(disappearingMessagesTimerEncrypted)
-                    let disappearingMessagesProto = try GroupsProtoDisappearingMessagesTimer.parseData(disappearingMessagesTimerDecrypted)
-                    newDisappearingMessageToken = DisappearingMessageToken.token(forProtoExpireTimer: disappearingMessagesProto.duration)
-                } catch {
-                    owsFailDebug("Could not decrypt and parse disappearing messages state: \(error).")
-                }
-            }
+            newDisappearingMessageToken = groupV2Params.decryptDisappearingMessagesTimerBlob(action.timer)
         }
 
         if let action = changeActionsProto.modifyAttributesAccess {

@@ -562,15 +562,8 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
             if newDisappearingMessageToken == currentDisappearingMessageToken {
                 // Redundant change, not a conflict.
             } else {
+                let encryptedTimerData = try groupV2Params.encryptDisappearingMessagesTimerBlob(newDisappearingMessageToken)
                 let actionBuilder = GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction.builder()
-                let timerBuilder = GroupsProtoDisappearingMessagesTimer.builder()
-                if newDisappearingMessageToken.isEnabled {
-                    timerBuilder.setDuration(newDisappearingMessageToken.durationSeconds)
-                } else {
-                    timerBuilder.setDuration(0)
-                }
-                let timerData = try timerBuilder.buildSerializedData()
-                let encryptedTimerData = try groupV2Params.encryptBlob(timerData)
                 actionBuilder.setTimer(encryptedTimerData)
                 actionsBuilder.setModifyDisappearingMessagesTimer(try actionBuilder.build())
                 didChange = true

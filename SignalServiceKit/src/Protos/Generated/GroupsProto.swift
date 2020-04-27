@@ -3083,54 +3083,95 @@ extension GroupsProtoGroupChanges.GroupsProtoGroupChangesBuilder {
 
 #endif
 
-// MARK: - GroupsProtoDisappearingMessagesTimer
+// MARK: - GroupsProtoGroupAttributeBlobOneOfContent
 
-public class GroupsProtoDisappearingMessagesTimer: NSObject {
+public enum GroupsProtoGroupAttributeBlobOneOfContent: Equatable {
+    case title(String)
+    case avatar(String)
+    case disappearingMessagesDuration(UInt32)
+}
 
-    // MARK: - GroupsProtoDisappearingMessagesTimerBuilder
+private func GroupsProtoGroupAttributeBlobOneOfContentWrap(_ value: GroupsProtos_GroupAttributeBlob.OneOf_Content) throws -> GroupsProtoGroupAttributeBlobOneOfContent {
+    switch value {
+    case .title(let value): return .title(value)
+    case .avatar(let value): return .avatar(value)
+    case .disappearingMessagesDuration(let value): return .disappearingMessagesDuration(value)
+    }
+}
 
-    public class func builder() -> GroupsProtoDisappearingMessagesTimerBuilder {
-        return GroupsProtoDisappearingMessagesTimerBuilder()
+private func GroupsProtoGroupAttributeBlobOneOfContentUnwrap(_ value: GroupsProtoGroupAttributeBlobOneOfContent) -> GroupsProtos_GroupAttributeBlob.OneOf_Content {
+    switch value {
+    case .title(let value): return .title(value)
+    case .avatar(let value): return .avatar(value)
+    case .disappearingMessagesDuration(let value): return .disappearingMessagesDuration(value)
+    }
+}
+
+// MARK: - GroupsProtoGroupAttributeBlob
+
+public class GroupsProtoGroupAttributeBlob: NSObject {
+
+    // MARK: - GroupsProtoGroupAttributeBlobBuilder
+
+    public class func builder() -> GroupsProtoGroupAttributeBlobBuilder {
+        return GroupsProtoGroupAttributeBlobBuilder()
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
-    public func asBuilder() -> GroupsProtoDisappearingMessagesTimerBuilder {
-        let builder = GroupsProtoDisappearingMessagesTimerBuilder()
-        if hasDuration {
-            builder.setDuration(duration)
+    public func asBuilder() -> GroupsProtoGroupAttributeBlobBuilder {
+        let builder = GroupsProtoGroupAttributeBlobBuilder()
+        if let _value = content {
+            builder.setContent(_value)
         }
         return builder
     }
 
-    public class GroupsProtoDisappearingMessagesTimerBuilder: NSObject {
+    public class GroupsProtoGroupAttributeBlobBuilder: NSObject {
 
-        private var proto = GroupsProtos_DisappearingMessagesTimer()
+        private var proto = GroupsProtos_GroupAttributeBlob()
 
         fileprivate override init() {}
 
-        public func setDuration(_ valueParam: UInt32) {
-            proto.duration = valueParam
+        @available(swift, obsoleted: 1.0)
+        public func setContent(_ valueParam: GroupsProtoGroupAttributeBlobOneOfContent?) {
+            guard let valueParam = valueParam else { return }
+            proto.content = GroupsProtoGroupAttributeBlobOneOfContentUnwrap(valueParam)
         }
 
-        public func build() throws -> GroupsProtoDisappearingMessagesTimer {
-            return try GroupsProtoDisappearingMessagesTimer.parseProto(proto)
+        public func setContent(_ valueParam: GroupsProtoGroupAttributeBlobOneOfContent) {
+            proto.content = GroupsProtoGroupAttributeBlobOneOfContentUnwrap(valueParam)
+        }
+
+        public func build() throws -> GroupsProtoGroupAttributeBlob {
+            return try GroupsProtoGroupAttributeBlob.parseProto(proto)
         }
 
         public func buildSerializedData() throws -> Data {
-            return try GroupsProtoDisappearingMessagesTimer.parseProto(proto).serializedData()
+            return try GroupsProtoGroupAttributeBlob.parseProto(proto).serializedData()
         }
     }
 
-    fileprivate let proto: GroupsProtos_DisappearingMessagesTimer
+    fileprivate let proto: GroupsProtos_GroupAttributeBlob
 
-    public var duration: UInt32 {
-        return proto.duration
+    public var content: GroupsProtoGroupAttributeBlobOneOfContent? {
+        guard hasContent else {
+            return nil
+        }
+        guard let content = proto.content else {
+            owsFailDebug("content was unexpectedly nil")
+            return nil
+        }
+        guard let unwrappedContent = try? GroupsProtoGroupAttributeBlobOneOfContentWrap(content) else {
+            owsFailDebug("failed to unwrap content")
+            return nil
+        }
+        return unwrappedContent
     }
-    public var hasDuration: Bool {
+    public var hasContent: Bool {
         return true
     }
 
-    private init(proto: GroupsProtos_DisappearingMessagesTimer) {
+    private init(proto: GroupsProtos_GroupAttributeBlob) {
         self.proto = proto
     }
 
@@ -3139,17 +3180,17 @@ public class GroupsProtoDisappearingMessagesTimer: NSObject {
         return try self.proto.serializedData()
     }
 
-    public class func parseData(_ serializedData: Data) throws -> GroupsProtoDisappearingMessagesTimer {
-        let proto = try GroupsProtos_DisappearingMessagesTimer(serializedData: serializedData)
+    public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroupAttributeBlob {
+        let proto = try GroupsProtos_GroupAttributeBlob(serializedData: serializedData)
         return try parseProto(proto)
     }
 
-    fileprivate class func parseProto(_ proto: GroupsProtos_DisappearingMessagesTimer) throws -> GroupsProtoDisappearingMessagesTimer {
-        // MARK: - Begin Validation Logic for GroupsProtoDisappearingMessagesTimer -
+    fileprivate class func parseProto(_ proto: GroupsProtos_GroupAttributeBlob) throws -> GroupsProtoGroupAttributeBlob {
+        // MARK: - Begin Validation Logic for GroupsProtoGroupAttributeBlob -
 
-        // MARK: - End Validation Logic for GroupsProtoDisappearingMessagesTimer -
+        // MARK: - End Validation Logic for GroupsProtoGroupAttributeBlob -
 
-        let result = GroupsProtoDisappearingMessagesTimer(proto: proto)
+        let result = GroupsProtoGroupAttributeBlob(proto: proto)
         return result
     }
 
@@ -3160,14 +3201,14 @@ public class GroupsProtoDisappearingMessagesTimer: NSObject {
 
 #if DEBUG
 
-extension GroupsProtoDisappearingMessagesTimer {
+extension GroupsProtoGroupAttributeBlob {
     public func serializedDataIgnoringErrors() -> Data? {
         return try! self.serializedData()
     }
 }
 
-extension GroupsProtoDisappearingMessagesTimer.GroupsProtoDisappearingMessagesTimerBuilder {
-    public func buildIgnoringErrors() -> GroupsProtoDisappearingMessagesTimer? {
+extension GroupsProtoGroupAttributeBlob.GroupsProtoGroupAttributeBlobBuilder {
+    public func buildIgnoringErrors() -> GroupsProtoGroupAttributeBlob? {
         return try! self.build()
     }
 }

@@ -303,18 +303,9 @@ public class GroupsV2Protos {
             throw OWSAssertionError("Missing accessControl.members.")
         }
 
-        var disappearingMessageToken = DisappearingMessageToken.disabledToken
-        if let disappearingMessagesTimerEncrypted = groupProto.disappearingMessagesTimer {
-            // If the timer blob is not populated or has zero duration,
-            // disappearing messages should be disabled.
-            do {
-                let disappearingMessagesTimerDecrypted = try groupV2Params.decryptBlob(disappearingMessagesTimerEncrypted)
-                let disappearingMessagesProto = try GroupsProtoDisappearingMessagesTimer.parseData(disappearingMessagesTimerDecrypted)
-                disappearingMessageToken = DisappearingMessageToken.token(forProtoExpireTimer: disappearingMessagesProto.duration)
-            } catch {
-                owsFailDebug("Could not decrypt and parse disappearing messages state: \(error).")
-            }
-        }
+        // If the timer blob is not populated or has zero duration,
+        // disappearing messages should be disabled.
+        let disappearingMessageToken = groupV2Params.decryptDisappearingMessagesTimerBlob(groupProto.disappearingMessagesTimer)
 
         let revision = groupProto.version
         let groupSecretParamsData = groupV2Params.groupSecretParamsData
