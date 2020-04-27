@@ -1705,8 +1705,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     if (!bundle) {
         NSString *missingPrekeyBundleException = @"missingPrekeyBundleException";
-        OWSRaiseException(
-            missingPrekeyBundleException, @"Can't get a prekey bundle from the server with required information");
+        OWSRaiseException(missingPrekeyBundleException, @"Missing pre key bundle for: %@.", recipientID);
     } else {
         SessionBuilder *builder = [[SessionBuilder alloc] initWithSessionStore:storage
                                                                    preKeyStore:storage
@@ -1718,7 +1717,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             @try {
                 [builder throws_processPrekeyBundle:bundle protocolContext:transaction];
                 
-                // Loki: Discard the pre key bundle here since the session has been established
+                // Loki: Discard the pre key bundle as the session has now been established
                 [storage removePreKeyBundleForContact:recipientID transaction:transaction];
             } @catch (NSException *caughtException) {
                 exception = caughtException;

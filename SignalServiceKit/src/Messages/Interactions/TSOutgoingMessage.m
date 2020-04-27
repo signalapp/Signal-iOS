@@ -1087,27 +1087,30 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 {
     OWSAssertDebug(self.thread);
     SSKProtoDataMessageBuilder *_Nullable builder = [self dataMessageBuilder];
-    if (!builder) {
-        OWSFailDebug(@"could not build protobuf.");
+    if (builder == nil) {
+        OWSFailDebug(@"Couldn't build protobuf.");
         return nil;
     }
 
     [ProtoUtils addLocalProfileKeyIfNecessary:self.thread recipientId:recipientId dataMessageBuilder:builder];
 
-    // Loki: Set display name & profile picture
+    // Loki: Set display name & profile picture (exclude the profile picture if this is a friend request
+    // to prevent unsolicited content from being sent)
     id<ProfileManagerProtocol> profileManager = SSKEnvironment.shared.profileManager;
     NSString *displayName = profileManager.localProfileName;
     NSString *profilePictureURL = profileManager.profilePictureURL;
     SSKProtoDataMessageLokiProfileBuilder *profileBuilder = [SSKProtoDataMessageLokiProfile builder];
     [profileBuilder setDisplayName:displayName];
-    [profileBuilder setProfilePicture:profilePictureURL ?: @""];
+    if (![self isKindOfClass:LKFriendRequestMessage.class]) {
+        [profileBuilder setProfilePicture:profilePictureURL ?: @""];
+    }
     SSKProtoDataMessageLokiProfile *profile = [profileBuilder buildAndReturnError:nil];
     [builder setProfile:profile];
     
     NSError *error;
     SSKProtoDataMessage *_Nullable dataProto = [builder buildAndReturnError:&error];
-    if (error || !dataProto) {
-        OWSFailDebug(@"could not build protobuf: %@", error);
+    if (error || dataProto == nil) {
+        OWSFailDebug(@"Couldn't build protobuf due to error: %@.", error);
         return nil;
     }
     return dataProto;

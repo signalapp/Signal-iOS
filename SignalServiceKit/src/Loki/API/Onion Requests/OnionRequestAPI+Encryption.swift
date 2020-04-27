@@ -7,19 +7,10 @@ extension OnionRequestAPI {
 
     internal typealias EncryptionResult = (ciphertext: Data, symmetricKey: Data, ephemeralPublicKey: Data)
 
-    /// Returns `size` bytes of random data generated using the default secure random number generator. See
-    /// [SecRandomCopyBytes](https://developer.apple.com/documentation/security/1399291-secrandomcopybytes) for more information.
-    private static func getSecureRandomData(ofSize size: UInt) throws -> Data {
-        var data = Data(count: Int(size))
-        let result = data.withUnsafeMutableBytes { SecRandomCopyBytes(kSecRandomDefault, Int(size), $0.baseAddress!) }
-        guard result == errSecSuccess else { throw Error.randomDataGenerationFailed }
-        return data
-    }
-
     /// - Note: Sync. Don't call from the main thread.
     private static func encrypt(_ plaintext: Data, usingAESGCMWithSymmetricKey symmetricKey: Data) throws -> Data {
         guard !Thread.isMainThread else { preconditionFailure("It's illegal to call encrypt(_:usingAESGCMWithSymmetricKey:) from the main thread.") }
-        let iv = try getSecureRandomData(ofSize: ivSize)
+        guard let iv = Data.getSecureRandomData(ofSize: ivSize) else { throw Error.randomDataGenerationFailed }
         let gcm = GCM(iv: iv.bytes, tagLength: Int(gcmTagSize), mode: .combined)
         let aes = try AES(key: symmetricKey.bytes, blockMode: gcm, padding: .noPadding)
         let ciphertext = try aes.encrypt(plaintext.bytes)

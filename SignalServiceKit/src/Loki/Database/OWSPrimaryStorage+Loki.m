@@ -78,36 +78,35 @@
     return record;
 }
 
-# pragma mark - Pre Key Bundle
+# pragma mark - Pre Key Management
 
 #define LKPreKeyBundleCollection @"LKPreKeyBundleCollection"
 
-- (PreKeyBundle *)generatePreKeyBundleForContact:(NSString *)pubKey forceClean:(BOOL)forceClean {
-    // Check pre keys to make sure we have them
+- (PreKeyBundle *)generatePreKeyBundleForContact:(NSString *)hexEncodedPublicKey forceClean:(BOOL)forceClean {
+    // Refresh signed pre key if needed
     [TSPreKeyManager checkPreKeys];
     
     ECKeyPair *_Nullable keyPair = self.identityManager.identityKeyPair;
     OWSAssertDebug(keyPair);
-    
 
-    // Refresh the signed pre key if needed
-    if (self.currentSignedPreKey == nil || forceClean) {
+    // Refresh signed pre key if needed
+    if (self.currentSignedPreKey == nil || forceClean) { // TODO: Is the self.currentSignedPreKey == nil check needed?
         SignedPreKeyRecord *signedPreKeyRecord = [self generateRandomSignedRecord];
         [signedPreKeyRecord markAsAcceptedByService];
         [self storeSignedPreKey:signedPreKeyRecord.Id signedPreKeyRecord:signedPreKeyRecord];
         [self setCurrentSignedPrekeyId:signedPreKeyRecord.Id];
-        [LKLogger print:@"[Loki] Pre keys refreshed successfully."];
+        [LKLogger print:@"[Loki] Signed pre key refreshed successfully."];
     }
 
     SignedPreKeyRecord *_Nullable signedPreKey = self.currentSignedPreKey;
-    if (!signedPreKey) {
-        OWSFailDebug(@"Signed pre key is null.");
+    if (signedPreKey == nil) {
+        OWSFailDebug(@"Signed pre key is nil.");
     }
     
-    PreKeyRecord *preKey = [self getOrCreatePreKeyForContact:pubKey];
-    uint32_t registrationId = [self.accountManager getOrGenerateRegistrationId];
+    PreKeyRecord *preKey = [self getOrCreatePreKeyForContact:hexEncodedPublicKey];
+    uint32_t registrationID = [self.accountManager getOrGenerateRegistrationId];
     
-    PreKeyBundle *bundle = [[PreKeyBundle alloc] initWithRegistrationId:registrationId
+    PreKeyBundle *bundle = [[PreKeyBundle alloc] initWithRegistrationId:registrationID
                                                                deviceId:OWSDevicePrimaryDeviceId
                                                                preKeyId:preKey.Id
                                                            preKeyPublic:preKey.keyPair.publicKey.prependKeyType
@@ -118,38 +117,42 @@
     return bundle;
 }
 
-- (PreKeyBundle *)generatePreKeyBundleForContact:(NSString *)pubKey {
+- (PreKeyBundle *)generatePreKeyBundleForContact:(NSString *)hexEncodedPublicKey {
     NSInteger failureCount = 0;
     BOOL forceClean = NO;
     while (failureCount < 3) {
         @try {
-            PreKeyBundle *preKeyBundle = [self generatePreKeyBundleForContact:pubKey forceClean:forceClean];
+            PreKeyBundle *preKeyBundle = [self generatePreKeyBundleForContact:hexEncodedPublicKey forceClean:forceClean];
             if (![Ed25519 throws_verifySignature:preKeyBundle.signedPreKeySignature
                                        publicKey:preKeyBundle.identityKey.throws_removeKeyType
                                             data:preKeyBundle.signedPreKeyPublic]) {
                 @throw [NSException exceptionWithName:InvalidKeyException reason:@"KeyIsNotValidlySigned" userInfo:nil];
             }
+            [LKLogger print:[NSString stringWithFormat:@"[Loki] Generated a new pre key bundle for: %@.", hexEncodedPublicKey]];
             return preKeyBundle;
         } @catch (NSException *exception) {
-            failureCount++;
+            failureCount += 1;
             forceClean = YES;
         }
     }
-    [LKLogger print:[NSString stringWithFormat:@"[Loki] Failed to generate a valid pre key bundle for: %@.", pubKey]];
+    [LKLogger print:[NSString stringWithFormat:@"[Loki] Failed to generate a valid pre key bundle for: %@.", hexEncodedPublicKey]];
     return nil;
 }
 
-- (PreKeyBundle *_Nullable)getPreKeyBundleForContact:(NSString *)pubKey {
-    return [self.dbReadConnection preKeyBundleForKey:pubKey inCollection:LKPreKeyBundleCollection];
+- (PreKeyBundle *_Nullable)getPreKeyBundleForContact:(NSString *)hexEncodedPublicKey {
+    return [self.dbReadConnection preKeyBundleForKey:hexEncodedPublicKey inCollection:LKPreKeyBundleCollection];
 }
 
-- (void)setPreKeyBundle:(PreKeyBundle *)bundle forContact:(NSString *)pubKey transaction:(YapDatabaseReadWriteTransaction *)transaction {
-    [transaction setObject:bundle forKey:pubKey inCollection:LKPreKeyBundleCollection];
+- (void)setPreKeyBundle:(PreKeyBundle *)bundle forContact:(NSString *)hexEncodedPublicKey transaction:(YapDatabaseReadWriteTransaction *)transaction {
+    [transaction setObject:bundle forKey:hexEncodedPublicKey inCollection:LKPreKeyBundleCollection];
+    [LKLogger print:[NSString stringWithFormat:@"[Loki] Stored pre key bundle for: %@.", hexEncodedPublicKey]];
+    // FIXME: I don't think the line below is good for anything
     [transaction.connection flushTransactionsWithCompletionQueue:dispatch_get_main_queue() completionBlock:^{ }];
 }
 
-- (void)removePreKeyBundleForContact:(NSString *)pubKey transaction:(YapDatabaseReadWriteTransaction *)transaction {
-    [transaction removeObjectForKey:pubKey inCollection:LKPreKeyBundleCollection];
+- (void)removePreKeyBundleForContact:(NSString *)hexEncodedPublicKey transaction:(YapDatabaseReadWriteTransaction *)transaction {
+    [transaction removeObjectForKey:hexEncodedPublicKey inCollection:LKPreKeyBundleCollection];
+    [LKLogger print:[NSString stringWithFormat:@"[Loki] Removed pre key bundle for: %@.", hexEncodedPublicKey]];
 }
 
 # pragma mark - Last Message Hash

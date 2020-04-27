@@ -41,7 +41,7 @@ public final class SessionManagementProtocol : NSObject {
         // It's done automatically when we generate a pre key bundle to send to a contact (generatePreKeyBundleForContact:).
         // You can use getOrCreatePreKeyForContact: to generate one if needed.
         guard storage.currentSignedPrekeyId() == nil else {
-            print("[Loki] Skipping pre key refresh; using existing signed pre key.")
+            print("[Loki] Skipping signed pre key refresh; using existing signed pre key.")
             return
         }
         let signedPreKeyRecord = storage.generateRandomSignedRecord()
@@ -50,7 +50,7 @@ public final class SessionManagementProtocol : NSObject {
         storage.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
         TSPreKeyManager.clearPreKeyUpdateFailureCount()
         TSPreKeyManager.clearSignedPreKeyRecords()
-        print("[Loki] Pre keys refreshed successfully.")
+        print("[Loki] Signed pre key refreshed successfully.")
     }
 
     @objc(rotateSignedPreKey)

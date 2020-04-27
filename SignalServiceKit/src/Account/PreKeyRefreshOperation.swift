@@ -32,7 +32,7 @@ public class RefreshPreKeysOperation: OWSOperation {
         Logger.debug("")
 
         guard tsAccountManager.isRegistered() else {
-            Logger.debug("skipping - not registered")
+            Logger.debug("Skipping pre key refresh; user isn't registered.")
             return
         }
         
@@ -88,18 +88,18 @@ public class RefreshPreKeysOperation: OWSOperation {
         switch error {
         case let networkManagerError as NetworkManagerError:
             guard !networkManagerError.isNetworkError else {
-                Logger.debug("don't report SPK rotation failure w/ network error")
+                Logger.debug("Don't report SPK rotation failure w/ network error")
                 return
             }
 
             guard networkManagerError.statusCode >= 400 && networkManagerError.statusCode <= 599 else {
-                Logger.debug("don't report SPK rotation failure w/ non application error")
+                Logger.debug("Don't report SPK rotation failure w/ non application error")
                 return
             }
 
             TSPreKeyManager.incrementPreKeyUpdateFailureCount()
         default:
-            Logger.debug("don't report SPK rotation failure w/ non NetworkManager error: \(error)")
+            Logger.debug("Don't report SPK rotation failure w/ non NetworkManager error: \(error)")
         }
     }
 }
