@@ -15,6 +15,45 @@ public final class FriendRequestProtocol : NSObject {
 
     internal static var storage: OWSPrimaryStorage { OWSPrimaryStorage.shared() }
 
+    // MARK: - General
+    @objc(shouldInputBarBeEnabledForThread:)
+    public static func shouldInputBarBeEnabled(for thread: TSThread) -> Bool {
+        // Friend requests have nothing to do with groups, so if this isn't a contact thread the input bar should be enabled
+        guard let thread = thread as? TSContactThread else { return true }
+        // If this is a note to self, the input bar should be enabled
+        if SessionProtocol.isMessageNoteToSelf(thread) { return true }
+        let contactID = thread.contactIdentifier()
+        var linkedDeviceThreads: Set<TSContactThread> = []
+        storage.dbReadConnection.read { transaction in
+            linkedDeviceThreads = LokiDatabaseUtilities.getLinkedDeviceThreads(for: contactID, in: transaction)
+        }
+        // If the current user is friends with any of the other user's devices, the input bar should be enabled
+        if linkedDeviceThreads.contains(where: { $0.isContactFriend }) { return true }
+        // If no friend request has been sent, the input bar should be enabled
+        if !linkedDeviceThreads.contains(where: { $0.hasPendingFriendRequest }) { return true }
+        // There must be a pending friend request
+        return false
+    }
+
+    @objc(shouldAttachmentButtonBeEnabledForThread:)
+    public static func shouldAttachmentButtonBeEnabled(for thread: TSThread) -> Bool {
+        // Friend requests have nothing to do with groups, so if this isn't a contact thread the attachment button should be enabled
+        guard let thread = thread as? TSContactThread else { return true }
+        // If this is a note to self, the attachment button should be enabled
+        if SessionProtocol.isMessageNoteToSelf(thread) { return true }
+        let contactID = thread.contactIdentifier()
+        var linkedDeviceThreads: Set<TSContactThread> = []
+        storage.dbReadConnection.read { transaction in
+            linkedDeviceThreads = LokiDatabaseUtilities.getLinkedDeviceThreads(for: contactID, in: transaction)
+        }
+        // If the current user is friends with any of the other user's devices, the attachment button should be enabled
+        if linkedDeviceThreads.contains(where: { $0.isContactFriend }) { return true }
+        // If no friend request has been sent, the attachment button should be disabled
+        if !linkedDeviceThreads.contains(where: { $0.hasPendingFriendRequest }) { return false }
+        // There must be a pending friend request
+        return false
+    }
+
     // MARK: - Sending
     @objc(acceptFriendRequest:in:using:)
     public static func acceptFriendRequest(_ friendRequest: TSIncomingMessage, in thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) {

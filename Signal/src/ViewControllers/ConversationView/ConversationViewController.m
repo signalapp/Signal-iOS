@@ -1654,38 +1654,12 @@ typedef enum : NSUInteger {
 #pragma mark - Updating
 
 - (void)updateInputToolbar {
-    BOOL isEnabled;
-    BOOL isAttachmentButtonHidden;
-    if ([self.thread isKindOfClass:TSContactThread.class]) {
-        NSString *senderID = ((TSContactThread *)self.thread).contactIdentifier;
-        __block NSSet<TSContactThread *> *linkedDeviceThreads;
-        __block BOOL isNoteToSelf;
-        [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            linkedDeviceThreads = [LKDatabaseUtilities getLinkedDeviceThreadsFor:senderID in:transaction];
-            isNoteToSelf = [LKDatabaseUtilities isUserLinkedDevice:senderID in:transaction];
-        }];
-        if ([linkedDeviceThreads contains:^BOOL(TSContactThread *thread) {
-            return thread.isContactFriend;
-        }] || isNoteToSelf) {
-            isEnabled = true;
-            isAttachmentButtonHidden = false;
-        } else if (![linkedDeviceThreads contains:^BOOL(TSContactThread *thread) {
-            return thread.hasPendingFriendRequest;
-        }]) {
-            isEnabled = true;
-            isAttachmentButtonHidden = true;
-        } else {
-            isEnabled = false;
-            isAttachmentButtonHidden = true;
-        }
-    } else {
-        isEnabled = true;
-        isAttachmentButtonHidden = false;
-    }
-    [self.inputToolbar setUserInteractionEnabled:isEnabled];
-    NSString *placeholderText = isEnabled ? NSLocalizedString(@"Message", "") : NSLocalizedString(@"Pending session request", "");
+    BOOL shouldInputBarBeEnabled = [LKFriendRequestProtocol shouldInputBarBeEnabledForThread:self.thread];
+    [self.inputToolbar setUserInteractionEnabled:shouldInputBarBeEnabled];
+    NSString *placeholderText = shouldInputBarBeEnabled ? NSLocalizedString(@"Message", "") : NSLocalizedString(@"Pending session request", "");
     [self.inputToolbar setPlaceholderText:placeholderText];
-    [self.inputToolbar setAttachmentButtonHidden:isAttachmentButtonHidden];
+    BOOL shouldAttachmentButtonBeEnabled = [LKFriendRequestProtocol shouldAttachmentButtonBeEnabledForThread:self.thread];
+    [self.inputToolbar setAttachmentButtonHidden:!shouldAttachmentButtonBeEnabled];
 }
 
 #pragma mark - Identity
