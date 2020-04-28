@@ -242,18 +242,13 @@ public class GroupsV2Protos {
                                                     role: role)
             members.append(member)
 
-            do {
-                let uuid = try groupV2Params.uuid(forUserId: userID)
-                guard let profileKeyCiphertextData = memberProto.profileKey else {
-                    throw OWSAssertionError("Group member missing profileKeyCiphertextData.")
-                }
-                let profileKeyCiphertext = try ProfileKeyCiphertext(contents: [UInt8](profileKeyCiphertextData))
-                let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext,
-                                                              uuid: uuid)
-                profileKeys[uuid] = profileKey
-            } catch {
-                owsFailDebug("Error parsing profile key: \(error)")
+            guard let profileKeyCiphertextData = memberProto.profileKey else {
+                throw OWSAssertionError("Group member missing profileKeyCiphertextData.")
             }
+            let profileKeyCiphertext = try ProfileKeyCiphertext(contents: [UInt8](profileKeyCiphertextData))
+            let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext,
+                                                          uuid: uuid)
+            profileKeys[uuid] = profileKey
         }
 
         var pendingMembers = [GroupV2SnapshotImpl.PendingMember]()
@@ -271,12 +266,18 @@ public class GroupsV2Protos {
                 throw OWSAssertionError("Group pending member missing addedByUserID.")
             }
             let timestamp = pendingMemberProto.timestamp
-
-            let uuid = try groupV2Params.uuid(forUserId: userId)
-            let addedByUuid = try groupV2Params.uuid(forUserId: addedByUserId)
-
             guard memberProto.hasRole, let role = memberProto.role else {
                 throw OWSAssertionError("Group member missing role.")
+            }
+
+            let uuid: UUID
+            let addedByUuid: UUID
+            do {
+                uuid = try groupV2Params.uuid(forUserId: userId)
+                addedByUuid = try groupV2Params.uuid(forUserId: addedByUserId)
+            } catch {
+                owsFailDebug("Error parsing uuid: \(error)")
+                continue
             }
             let pendingMember = GroupV2SnapshotImpl.PendingMember(userID: userId,
                                                                   uuid: uuid,

@@ -53,7 +53,7 @@ typedef NS_CLOSED_ENUM(
                         members:(NSArray<SignalServiceAddress *> *)members NS_DESIGNATED_INITIALIZER;
 
 - (BOOL)isEqual:(id)other;
-- (BOOL)isEqualToGroupModel:(TSGroupModel *)model;
+- (BOOL)isEqualToGroupModel:(TSGroupModel *)model ignoreRevision:(BOOL)ignoreRevision;
 #endif
 
 @property (nonatomic, readonly) NSString *groupNameOrDefault;
