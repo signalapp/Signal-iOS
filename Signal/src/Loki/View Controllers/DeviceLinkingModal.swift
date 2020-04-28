@@ -5,6 +5,7 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
     private let mode: Mode
     private let delegate: DeviceLinkingModalDelegate?
     private var deviceLink: DeviceLink?
+    private var hasAuthorizedDeviceLink = false
     
     // MARK: Types
     enum Mode : String { case master, slave }
@@ -78,6 +79,13 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
         result.setTitle(NSLocalizedString("Authorize", comment: ""), for: UIControl.State.normal)
         return result
     }()
+
+    private lazy var mainStackView: UIStackView = {
+        let result = UIStackView(arrangedSubviews: [ titleLabel, subtitleLabel, mnemonicLabel, buttonStackView ])
+        result.spacing = Values.largeSpacing
+        result.axis = .vertical
+        return result
+    }()
     
     // MARK: Lifecycle
     init(mode: Mode, delegate: DeviceLinkingModalDelegate?) {
@@ -107,14 +115,11 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
     }
     
     override func populateContentView() {
-        let stackView = UIStackView(arrangedSubviews: [ titleLabel, subtitleLabel, mnemonicLabel, buttonStackView ])
         switch mode {
-        case .master: stackView.insertArrangedSubview(qrCodeImageViewContainer, at: 0)
-        case .slave: stackView.insertArrangedSubview(spinner, at: 0)
+        case .master: mainStackView.insertArrangedSubview(qrCodeImageViewContainer, at: 0)
+        case .slave: mainStackView.insertArrangedSubview(spinner, at: 0)
         }
-        contentView.addSubview(stackView)
-        stackView.spacing = Values.largeSpacing
-        stackView.axis = .vertical
+        contentView.addSubview(mainStackView)
         switch mode {
         case .master:
             let hexEncodedPublicKey = getUserHexEncodedPublicKey()
@@ -142,10 +147,10 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
         }
         authorizeButton.addTarget(self, action: #selector(authorizeDeviceLink), for: UIControl.Event.touchUpInside)
         authorizeButton.isHidden = true
-        stackView.pin(.leading, to: .leading, of: contentView, withInset: Values.largeSpacing)
-        stackView.pin(.top, to: .top, of: contentView, withInset: Values.largeSpacing)
-        contentView.pin(.trailing, to: .trailing, of: stackView, withInset: Values.largeSpacing)
-        contentView.pin(.bottom, to: .bottom, of: stackView, withInset: Values.largeSpacing)
+        mainStackView.pin(.leading, to: .leading, of: contentView, withInset: Values.largeSpacing)
+        mainStackView.pin(.top, to: .top, of: contentView, withInset: Values.largeSpacing)
+        contentView.pin(.trailing, to: .trailing, of: mainStackView, withInset: Values.largeSpacing)
+        contentView.pin(.bottom, to: .bottom, of: mainStackView, withInset: Values.largeSpacing)
     }
     
     // MARK: Device Linking
@@ -161,13 +166,23 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
     }
     
     @objc private func authorizeDeviceLink() {
+        guard !hasAuthorizedDeviceLink else { return }
+        hasAuthorizedDeviceLink = true
+        mainStackView.removeArrangedSubview(qrCodeImageViewContainer)
+        mainStackView.insertArrangedSubview(spinner, at: 0)
+        spinner.set(.height, to: 64)
+        spinner.startAnimating()
+        titleLabel.text = NSLocalizedString("Authorizing Device Link", comment: "")
+        subtitleLabel.text = NSLocalizedString("Please wait while the device link is created. This can take up to a minute.", comment: "")
+        mnemonicLabel.isHidden = true
+        buttonStackView.isHidden = true
         let deviceLink = self.deviceLink!
         DeviceLinkingSession.current!.markLinkingRequestAsProcessed()
         DeviceLinkingSession.current!.stopListeningForLinkingRequests()
         let linkingAuthorizationMessage = DeviceLinkingUtilities.getLinkingAuthorizationMessage(for: deviceLink)
         let master = DeviceLink.Device(hexEncodedPublicKey: deviceLink.master.hexEncodedPublicKey, signature: linkingAuthorizationMessage.masterSignature)
         let signedDeviceLink = DeviceLink(between: master, and: deviceLink.slave)
-        LokiFileServerAPI.addDeviceLink(signedDeviceLink).done { [weak self] in
+        LokiFileServerAPI.addDeviceLink(signedDeviceLink).done(on: DispatchQueue.main) { [weak self] in
             SSKEnvironment.shared.messageSender.send(linkingAuthorizationMessage, success: {
                 let thread = TSContactThread.getOrCreateThread(contactId: deviceLink.slave.hexEncodedPublicKey)
                 thread.save()
@@ -176,16 +191,28 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
                 let _ = SSKEnvironment.shared.syncManager.syncAllOpenGroups()
                 thread.friendRequestStatus = .friends
                 thread.save()
-                self?.delegate?.handleDeviceLinkAuthorized(signedDeviceLink) // Intentionally capture self strongly
-                self?.dismiss(animated: true, completion: nil)
+                DispatchQueue.main.async {
+                    self?.dismiss(animated: true, completion: nil)
+                    self?.delegate?.handleDeviceLinkAuthorized(signedDeviceLink)
+                }
             }, failure: { error in
                 print("[Loki] Failed to send device link authorization message.")
                 let _ = LokiFileServerAPI.removeDeviceLink(signedDeviceLink) // Attempt to roll back
-                self?.close()
+                DispatchQueue.main.async {
+                    self?.close()
+                    let alert = UIAlertController(title: NSLocalizedString("Device Linking Failed", comment: ""), message: NSLocalizedString("Please check your internet connection and try again", comment: ""), preferredStyle: .alert)
+                    alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
+                    self?.presentingViewController?.present(alert, animated: true, completion: nil)
+                }
             })
         }.catch { [weak self] error in
             print("[Loki] Failed to add device link due to error: \(error).")
-            self?.close() // TODO: Show a message to the user
+            DispatchQueue.main.async {
+                self?.close() // TODO: Show a message to the user
+                let alert = UIAlertController(title: NSLocalizedString("Device Linking Failed", comment: ""), message: NSLocalizedString("Please check your internet connection and try again", comment: ""), preferredStyle: .alert)
+                alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
+                self?.presentingViewController?.present(alert, animated: true, completion: nil)
+            }
         }
     }
     
