@@ -13,7 +13,7 @@ public enum GroupUtilities {
         let storage = OWSPrimaryStorage.shared()
         let userHexEncodedPublicKey = getUserHexEncodedPublicKey()
         return closedGroup.groupModel.groupMemberIds.filter { member in
-            // Don't show any slave devices
+            // Don't show slave devices
             return storage.getMasterHexEncodedPublicKey(for: member, in: transaction) == nil
         }
     }

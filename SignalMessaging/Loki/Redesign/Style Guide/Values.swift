@@ -42,7 +42,7 @@ public final class Values : NSObject {
     @objc public static let modalButtonCornerRadius = CGFloat(5)
     @objc public static let fakeChatBubbleWidth = CGFloat(224)
     @objc public static let fakeChatBubbleCornerRadius = CGFloat(10)
-    @objc public static let fakeChatViewHeight = CGFloat(234)
+    @objc public static let fakeChatViewHeight = isSmallScreen ? CGFloat(234) : CGFloat(260)
     @objc public static let composeViewTextFieldBorderThickness = 1 / UIScreen.main.scale
     @objc public static let messageBubbleCornerRadius: CGFloat = 10
     @objc public static let progressBarThickness: CGFloat = 2
