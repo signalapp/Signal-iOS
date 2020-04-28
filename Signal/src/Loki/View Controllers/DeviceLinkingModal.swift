@@ -162,28 +162,30 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
     
     @objc private func authorizeDeviceLink() {
         let deviceLink = self.deviceLink!
+        DeviceLinkingSession.current!.markLinkingRequestAsProcessed()
+        DeviceLinkingSession.current!.stopListeningForLinkingRequests()
         let linkingAuthorizationMessage = DeviceLinkingUtilities.getLinkingAuthorizationMessage(for: deviceLink)
-        ThreadUtil.enqueue(linkingAuthorizationMessage)
-        SSKEnvironment.shared.messageSender.send(linkingAuthorizationMessage, success: {
-            let _ = SSKEnvironment.shared.syncManager.syncAllContacts()
-            let _ = SSKEnvironment.shared.syncManager.syncAllGroups()
-            let _ = SSKEnvironment.shared.syncManager.syncAllOpenGroups()
-            let thread = TSContactThread.getOrCreateThread(contactId: deviceLink.slave.hexEncodedPublicKey)
-            thread.friendRequestStatus = .friends
-            thread.save()
-        }) { _ in
-            print("[Loki] Failed to send device link authorization message.")
-        }
-        let session = DeviceLinkingSession.current!
-        session.stopListeningForLinkingRequests()
-        session.markLinkingRequestAsProcessed()
-        dismiss(animated: true, completion: nil)
         let master = DeviceLink.Device(hexEncodedPublicKey: deviceLink.master.hexEncodedPublicKey, signature: linkingAuthorizationMessage.masterSignature)
         let signedDeviceLink = DeviceLink(between: master, and: deviceLink.slave)
-        LokiFileServerAPI.addDeviceLink(signedDeviceLink).done {
-            self.delegate?.handleDeviceLinkAuthorized(signedDeviceLink) // Intentionally capture self strongly
-        }.catch { error in
+        LokiFileServerAPI.addDeviceLink(signedDeviceLink).done { [weak self] in
+            SSKEnvironment.shared.messageSender.send(linkingAuthorizationMessage, success: {
+                let thread = TSContactThread.getOrCreateThread(contactId: deviceLink.slave.hexEncodedPublicKey)
+                thread.save()
+                let _ = SSKEnvironment.shared.syncManager.syncAllContacts()
+                let _ = SSKEnvironment.shared.syncManager.syncAllGroups()
+                let _ = SSKEnvironment.shared.syncManager.syncAllOpenGroups()
+                thread.friendRequestStatus = .friends
+                thread.save()
+                self?.delegate?.handleDeviceLinkAuthorized(signedDeviceLink) // Intentionally capture self strongly
+                self?.dismiss(animated: true, completion: nil)
+            }, failure: { error in
+                print("[Loki] Failed to send device link authorization message.")
+                let _ = LokiFileServerAPI.removeDeviceLink(signedDeviceLink) // Attempt to roll back
+                self?.close()
+            })
+        }.catch { [weak self] error in
             print("[Loki] Failed to add device link due to error: \(error).")
+            self?.close() // TODO: Show a message to the user
         }
     }
     
@@ -214,8 +216,9 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
         session.markLinkingRequestAsProcessed() // Only relevant in master mode
         delegate?.handleDeviceLinkingModalDismissed() // Only relevant in slave mode
         if let deviceLink = deviceLink {
-            OWSPrimaryStorage.shared().dbReadWriteConnection.readWrite { transaction in
-                OWSPrimaryStorage.shared().removePreKeyBundle(forContact: deviceLink.slave.hexEncodedPublicKey, transaction: transaction)
+            let storage = OWSPrimaryStorage.shared()
+            storage.dbReadWriteConnection.readWrite { transaction in
+                storage.removePreKeyBundle(forContact: deviceLink.slave.hexEncodedPublicKey, transaction: transaction)
             }
         }
         dismiss(animated: true, completion: nil)

@@ -142,7 +142,7 @@ final class LandingVC : BaseVC, LinkDeviceVCDelegate, DeviceLinkingModalDelegate
     // MARK: Device Linking
     func requestDeviceLink(with hexEncodedPublicKey: String) {
         guard ECKeyPair.isValidHexEncodedPublicKey(candidate: hexEncodedPublicKey) else {
-            let alert = UIAlertController(title: NSLocalizedString("Invalid Public Key", comment: ""), message: NSLocalizedString("Please make sure the public key you entered is correct and try again.", comment: ""), preferredStyle: .alert)
+            let alert = UIAlertController(title: NSLocalizedString("Invalid Session ID", comment: ""), message: NSLocalizedString("Please make sure the Session ID you entered is correct and try again.", comment: ""), preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), accessibilityIdentifier: nil, style: .default, handler: nil))
             return present(alert, animated: true, completion: nil)
         }
