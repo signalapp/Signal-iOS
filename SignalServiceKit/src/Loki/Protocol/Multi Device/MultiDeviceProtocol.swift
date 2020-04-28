@@ -135,7 +135,7 @@ public final class MultiDeviceProtocol : NSObject {
         return OWSMessageSend(message: message, thread: thread, recipient: recipient, senderCertificate: senderCertificate,
             udAccess: recipientUDAccess, localNumber: getUserHexEncodedPublicKey(), success: {
 
-        }, failure: { error in
+        }, failure: { _ in
 
         })
     }

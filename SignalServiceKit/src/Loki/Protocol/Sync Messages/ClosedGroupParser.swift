@@ -1,5 +1,5 @@
 
-@objc public final class GroupParser : NSObject {
+@objc public final class ClosedGroupParser : NSObject {
     private let data: Data
     
     @objc public init(data: Data) {

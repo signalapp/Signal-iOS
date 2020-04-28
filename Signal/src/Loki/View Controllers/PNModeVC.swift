@@ -68,7 +68,8 @@ final class PNModeVC : BaseVC, OptionViewDelegate {
         // Set up top stack view
         let topStackView = UIStackView(arrangedSubviews: [ titleLabel, explanationLabel, optionsStackView ])
         topStackView.axis = .vertical
-        topStackView.spacing = isSmallScreen ? Values.smallSpacing : Values.veryLargeSpacing
+        let isMediumScreen = (UIScreen.main.bounds.height - 667) < 1
+        topStackView.spacing = isSmallScreen ? Values.smallSpacing : (isMediumScreen ? Values.mediumSpacing : Values.veryLargeSpacing)
         topStackView.alignment = .fill
         // Set up top stack view container
         let topStackViewContainer = UIView(wrapping: topStackView, withInsets: UIEdgeInsets(top: 0, leading: Values.veryLargeSpacing, bottom: 0, trailing: Values.veryLargeSpacing))
