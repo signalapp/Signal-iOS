@@ -50,6 +50,7 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
     [[transaction ext:OWSFailedMessagesJobMessageStateIndex]
         enumerateKeysMatchingQuery:query
                         usingBlock:^void(NSString *collection, NSString *key, BOOL *stop) {
+                            if (key == nil) { return; }
                             [messageIds addObject:key];
                         }];
 
