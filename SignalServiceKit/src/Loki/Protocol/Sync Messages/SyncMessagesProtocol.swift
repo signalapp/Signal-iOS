@@ -159,7 +159,11 @@ public final class SyncMessagesProtocol : NSObject {
         let wasSentByMasterDevice = (masterHexEncodedPublicKey == hexEncodedPublicKey)
         guard wasSentByMasterDevice, let contacts = syncMessage.contacts, let contactsAsData = contacts.data, contactsAsData.count > 0 else { return }
         print("[Loki] Contact sync message received.")
-        let parser = ContactParser(data: contactsAsData)
+        handleContactSyncMessageData(contactsAsData, using: transaction)
+    }
+
+    public static func handleContactSyncMessageData(_ data: Data, using transaction: YapDatabaseReadWriteTransaction) {
+        let parser = ContactParser(data: data)
         let hexEncodedPublicKeys = parser.parseHexEncodedPublicKeys()
         // Try to establish sessions
         for hexEncodedPublicKey in hexEncodedPublicKeys {
@@ -199,17 +203,17 @@ public final class SyncMessagesProtocol : NSObject {
         let wasSentByMasterDevice = (masterHexEncodedPublicKey == hexEncodedPublicKey)
         guard wasSentByMasterDevice, let groups = syncMessage.groups, let groupsAsData = groups.data, groupsAsData.count > 0 else { return }
         print("[Loki] Closed group sync message received.")
-        let parser = GroupParser(data: groupsAsData)
+        let parser = ClosedGroupParser(data: groupsAsData)
         let groupModels = parser.parseGroupModels()
         for groupModel in groupModels {
             var thread: TSGroupThread! = TSGroupThread(groupId: groupModel.groupId, transaction: transaction)
             if thread == nil {
                 thread = TSGroupThread.getOrCreateThread(with: groupModel, transaction: transaction)
                 thread.save(with: transaction)
-                ClosedGroupsProtocol.establishSessionsIfNeeded(with: groupModel.groupMemberIds, in: thread, using: transaction)
-                let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .typeGroupUpdate, customMessage: "You have joined the group.")
-                infoMessage.save(with: transaction)
             }
+            ClosedGroupsProtocol.establishSessionsIfNeeded(with: groupModel.groupMemberIds, in: thread, using: transaction)
+            let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .typeGroupUpdate, customMessage: "You have joined the group.")
+            infoMessage.save(with: transaction)
         }
     }
 
