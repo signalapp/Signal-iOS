@@ -20,15 +20,15 @@ public final class SyncMessagesProtocol : NSObject {
     // MARK: - Sending
     @objc(shouldSkipConfigurationSyncMessage)
     public static func shouldSkipConfigurationSyncMessage() -> Bool {
+        // FIXME: We added this check to avoid a crash, but we should really figure out why that crash was happening in the first place
         return !UserDefaults.standard[.hasLaunchedOnce]
     }
 
     @objc(syncContactWithHexEncodedPublicKey:in:)
     public static func syncContact(_ hexEncodedPublicKey: String, in transaction: YapDatabaseReadTransaction) {
-        if let thread = TSContactThread.getWithContactId(hexEncodedPublicKey, transaction: transaction) { // TODO: Should this be getOrCreate?
-            let syncManager = SSKEnvironment.shared.syncManager
-            syncManager.syncContacts(for: [ SignalAccount(recipientId: hexEncodedPublicKey) ])
-        }
+        guard TSContactThread.getWithContactId(hexEncodedPublicKey, transaction: transaction) != nil else { return }
+        let syncManager = SSKEnvironment.shared.syncManager
+        syncManager.syncContacts(for: [ SignalAccount(recipientId: hexEncodedPublicKey) ])
     }
 
     @objc(syncAllContacts)
@@ -46,7 +46,7 @@ public final class SyncMessagesProtocol : NSObject {
         }
         friends.append(SignalAccount(recipientId: getUserHexEncodedPublicKey())) // TODO: We sure about this?
         let syncManager = SSKEnvironment.shared.syncManager
-        let promises = friends.chunked(by: 3).map { friends -> Promise<Void> in
+        let promises = friends.chunked(by: 3).map { friends -> Promise<Void> in // TODO: Does this always fit?
             return Promise(syncManager.syncContacts(for: friends)).map { _ in }
         }
         return when(fulfilled: promises)
@@ -60,7 +60,8 @@ public final class SyncMessagesProtocol : NSObject {
     public static func syncAllClosedGroups() -> Promise<Void> {
         var groups: [TSGroupThread] = []
         TSGroupThread.enumerateCollectionObjects { object, _ in
-            guard let group = object as? TSGroupThread, group.groupModel.groupType == .closedGroup, group.shouldThreadBeVisible, !group.isForceHidden else { return }
+            guard let group = object as? TSGroupThread, group.groupModel.groupType == .closedGroup,
+                group.shouldThreadBeVisible, !group.isForceHidden else { return }
             groups.append(group)
         }
         let syncManager = SSKEnvironment.shared.syncManager
@@ -81,9 +82,9 @@ public final class SyncMessagesProtocol : NSObject {
         let messageSender = SSKEnvironment.shared.messageSender
         messageSender.send(openGroupSyncMessage, success: {
             seal.fulfill(())
-        }) { error in
+        }, failure: { error in
             seal.reject(error)
-        }
+        })
         return promise
     }
 
