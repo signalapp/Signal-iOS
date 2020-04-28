@@ -214,5 +214,5 @@ private class TSConstantsStaging: TSConstantsProtocol {
 
     // We need to discard all profile key credentials if these values ever change.
     // See: GroupsV2Impl.verifyServerPublicParams(...)
-    public let serverPublicParamsBase64 = "5Eng41NE+ClLn5MDjfb8ahw/SgmYPXw6wafMsH5hJVeSY3+Hlqz+DCbtcv4y9HHQwP0VA131bvqnBp7psSJZLlpANq5RA7NLMvE7ox17oiCvEKnHKoccrxqLDYNfbsgGmNYOaedYZ+/mTzsx+ndnQmOnGerWYCzeKJiRTTBD5TRWb/rqCsmb0RnqkWTIqxYUR4tLgIKkS1MfduVJmAYPGQ=="
+    public let serverPublicParamsBase64 = "ABSY21VckQcbSXVNCGRYJcfWHiAMZmpTtTELcDmxgdFbtp/bWsSxZdMKzfCp8rvIs8ocCU3B37fT3r4Mi5qAemeGeR2X+/YmOGR5ofui7tD5mDQfstAI9i+4WpMtIe8KC3wU5w3Inq3uNWVmoGtpKndsNfwJrCg0Hd9zmObhypUnSkfYn2ooMOOnBpfdanRtrvetZUayDMSC5iSRcXKpdls=="
 }

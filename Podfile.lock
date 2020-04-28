@@ -222,8 +222,8 @@ PODS:
   - YYImage/Core (1.0.4)
   - YYImage/WebP (1.0.4):
     - YYImage/Core
-  - ZKGroup (0.6.0)
-  - ZKGroup/Tests (0.6.0)
+  - ZKGroup (0.7.0)
+  - ZKGroup/Tests (0.7.0)
   - ZXingObjC (3.6.5):
     - ZXingObjC/All (= 3.6.5)
   - ZXingObjC/All (3.6.5)
@@ -361,7 +361,7 @@ CHECKOUT OPTIONS:
     :commit: e43ab163b2dcb4c817339c819b07dac545f05fea
     :git: https://github.com/signalapp/YapDatabase.git
   ZKGroup:
-    :commit: d3b36dbf7d08d922b3081818883945fef9cc2e3d
+    :commit: 78e7b2e081e2b44b7451a6b156c02ee518ba310b
     :git: https://github.com/signalapp/signal-zkgroup-swift
   ZXingObjC:
     :commit: fce3786177fd7032c62b230df8beeb206722d38e
@@ -395,7 +395,7 @@ SPEC CHECKSUMS:
   SwiftProtobuf: 4fd9645e69b72cbae6ec8da5be0cdd20ca6565dd
   YapDatabase: b418a4baa6906e8028748938f9159807fd039af4
   YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54
-  ZKGroup: 30fc5406dba3aef20d36d9a38a86c1d775b6d64d
+  ZKGroup: 126835c7fe565afb02d457d2f18cee14e72b1090
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
 PODFILE CHECKSUM: 6ac96ed037cb6453c2c66281ff1ffbbfefe565dd
