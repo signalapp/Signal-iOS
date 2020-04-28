@@ -225,7 +225,7 @@
 "ATTACHMENT_KEYBOARD_LOCATION" = "Asukoht";
 
 /* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
-"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Luba sätetes ligipääs enda fotodele, et saaksid neid siit saata.";
+"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Luba sätetes juurdepääs enda fotodele, et saaksid neid siit saata.";
 
 /* A string indicating to the user that once they take photos, they'll be able to send them from this view. */
 "ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Kui oled fotod pildistanud, siis saad neid siit saata.";
@@ -405,10 +405,10 @@
 "CALL_AGAIN_BUTTON_TITLE" = "Helista uuesti";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "Kõnede ja häälsõnumite tegemiseks on vaja anda rakenduses Settings anda Signal-ile ligipääs mikrofonile.";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "Kõnede ja häälsõnumite tegemiseks on vaja anda rakenduses Settings anda Signal-ile juurdepääs mikrofonile.";
 
 /* Alert title when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_TITLE" = "Ligipääs mikrofonile on vajalik";
+"CALL_AUDIO_PERMISSION_TITLE" = "Juurdepääs mikrofonile on vajalik";
 
 /* notification body */
 "CALL_INCOMING_NOTIFICATION_BODY" = "Sissetulev kõne";
@@ -552,7 +552,7 @@
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Kasutajanime otsing";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Sul on võimalik iOSi sätetes lubada ligipääs kontaktidele, et näha, kes sinu kontaktidest on Signal-i kasutajad.";
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "iOS-i sätetes on võimalik lubada juurdepääs kontaktidele, et näha, kes sinu kontaktidest on Signal-i kasutajad.";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "See toiming lähtestab rakenduse, kustutades kõik sõnumid ja eemaldades serverist sinu registreerimise. Rakendus sulgub pärast andmete kustutamist.";
@@ -1023,10 +1023,10 @@
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Tsenseerimisest möödahiilimise asukoht";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Ligipääsu on võimalik anda rakenduses Settings.";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Juurdepääsu on võimalik anda rakenduses Settings.";
 
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Kontakti info muutmiseks vajab Signal ligipääsu kontaktidele";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Kontakti info muutmiseks vajab Signal juurdepääsu kontaktidele";
 
 /* table cell label in conversation settings */
 "EDIT_GROUP_ACTION" = "Muuda gruppi";
@@ -1080,7 +1080,7 @@
 "EMPTY_CONTACTS_LABEL_LINE2" = "Miks mitte kutsuda keegi?";
 
 /* Indicates that user should confirm their 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "Kinnita enda PIN-kood.";
+"ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "Kinnita PIN-kood.";
 
 /* Error indicating that attempt to disable 'two-factor auth' failed. */
 "ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "Registreerimisluku keelamine ei õnnestunud.";
@@ -1314,13 +1314,13 @@
 "GROUP_ACCESS_LEVEL_UNKNOWN" = "Tundmatu";
 
 /* Message indicating that the access to the group's members was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed who can edit group membership to “%@“.";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "Sa muutsid grupi liikmete muutmise tasemeks “%@“.";
 
 /* Message indicating that the access to the group's members was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed who can edit group membership to “%2$@“.";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ muutis grupi liikmete muutmise tasemeks “%2$@“.";
 
 /* Message indicating that the access to the group's members was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Group membership can be changed by “%@“.";
+"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Grupi liikmeid saavad muuta “%@“.";
 
 /* Error indicating that a member cannot be added to a group. */
 "GROUP_CANNOT_ADD_INVALID_MEMBER" = "Seda kasutajat pole võimalik gruppi lisada.";
@@ -1359,7 +1359,7 @@
 "GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ tegi sind administraatoriks.";
 
 /* Message indicating that the local user accepted an invite to the group. */
-"GROUP_LOCAL_USER_INVITE_ACCEPTED" = "Sa aktsepteerisid grupiga liitumise kutset.";
+"GROUP_LOCAL_USER_INVITE_ACCEPTED" = "Sa nõustusid grupiga liitumise kutsega.";
 
 /* Message indicating that the local user accepted an invite to the group. Embeds {{user who invited the local user}}. */
 "GROUP_LOCAL_USER_INVITE_ACCEPTED_FORMAT" = "Sa nõustusid grupiga liitumise kutsega kasutajalt %@.";
@@ -1371,10 +1371,10 @@
 "GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT" = "Sa keeldusid grupiga liitumise kutsest kasutajalt %@.";
 
 /* Message indicating that the local user's invite was revoked by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_INVITE_REVOKED_BY_REMOTE_USER_FORMAT" = "%@ võttis tagasi sinu grupiga liitumise kutse.";
+"GROUP_LOCAL_USER_INVITE_REVOKED_BY_REMOTE_USER_FORMAT" = "%@ tühistas sinu grupiga liitumise kutse.";
 
 /* Message indicating that the local user's invite was revoked by an unknown user. */
-"GROUP_LOCAL_USER_INVITE_REVOKED_BY_UNKNOWN_USER" = "Sinu grupiga liitumise kutse võeti tagasi.";
+"GROUP_LOCAL_USER_INVITE_REVOKED_BY_UNKNOWN_USER" = "Sinu grupiga liitumise kutse tühistati.";
 
 /* Message indicating that the local user was invited to the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT" = "%@ kutsus sind.";
@@ -1392,10 +1392,10 @@
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "Sind eemaldati grupist.";
 
 /* Message indicating that the local user had their administrator role revoked. */
-"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "Sinu administraatoriõigused eemaldati.";
+"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "Sinu administraatoriõigused tühistati.";
 
 /* Message indicating that the local user had their administrator role revoked by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ eemaldas sinu administraatoriõigused.";
+"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ tühistas sinu administraatoriõigused.";
 
 /* Conversation settings table section title */
 "GROUP_MANAGEMENT_SECTION" = "Grupi haldamine";
@@ -1407,10 +1407,10 @@
 "GROUP_MEMBER_COUNT_FORMAT" = "%1$@/%2$@";
 
 /* The 'group member count' indicator when there are no members in the group. */
-"GROUP_MEMBER_COUNT_LABEL_0" = "No members";
+"GROUP_MEMBER_COUNT_LABEL_0" = "Liikmeid pole";
 
 /* The 'group member count' indicator when there is 1 member in the group. */
-"GROUP_MEMBER_COUNT_LABEL_1" = "1 member";
+"GROUP_MEMBER_COUNT_LABEL_1" = "1 liige";
 
 /* Format for the 'group member count' indicator. Embeds {the number of group members}. */
 "GROUP_MEMBER_COUNT_LABEL_FORMAT" = "%@ liiget";
@@ -1443,13 +1443,13 @@
 "GROUP_NAME_PLACEHOLDER" = "Grupi nimi (kohustuslik)";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "%@ aktsepteeris grupiga liitumise kutse.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "%@ nõustus grupiga liitumise kutsega.";
 
 /* Message indicating that a remote user has accepted an invite from the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ aktsepteeris sinu grupiga liitumise kutse.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ nõustus sinu grupiga liitumise kutsega.";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{ %1$@ user who accepted their invite, %2$@ user who invited the user}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_REMOTE_USER_FORMAT" = "%1$@ aktsepteeris grupiga liitumise kutse kasutajalt %2$@.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_REMOTE_USER_FORMAT" = "%1$@ nõustus grupiga liitumise kutsega kasutajalt %2$@.";
 
 /* Message indicating that a remote user was added to the group by the local user. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_LOCAL_USER_FORMAT" = "Sa lisasid kasutaja %@.";
@@ -1479,19 +1479,19 @@
 "GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ tegi kasutaja %2$@ administraatoriks.";
 
 /* Message indicating that a single remote user's invite was revoked. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_1" = "Kutse grupiga liitumiseks lükati 1 isiku poolt tagasi.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_1" = "1 isiku grupiga liitumise kutse tühistati.";
 
 /* Message indicating that a remote user's invite was revoked by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_BY_LOCAL_USER_FORMAT" = "Grupiga liitumise kutse võeti tagasi %@ poolt.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_LOCAL_USER_FORMAT" = "Kasutaja %@ grupiga liitumise kutse tühistati.";
 
 /* Message indicating that a single remote user's invite was revoked by a remote user. Embeds {{ user who revoked the invite }}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_1_FORMAT" = "%@ revoked an invitation to the group for 1 person.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_1_FORMAT" = "%@ tühistas 1 isiku grupiga liitumise kutse.";
 
 /* Message indicating that a group of remote users' invites were revoked by a remote user. Embeds {{ %1$@ user who revoked the invite, %2$@ number of users }}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_N_FORMAT" = "%1$@ revoked an invitation to the group for %2$@ people.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_N_FORMAT" = "%1$@ tühistas %2$@ isiku grupiga liitumise kutse.";
 
 /* Message indicating that a group of remote users' invites were revoked. Embeds {{ number of users }}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_N_FORMAT" = "Invitations to the group were revoked for %@ people.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_N_FORMAT" = " %@ isiku grupiga liitumise kutsed tühistati.";
 
 /* Message indicating that a single remote user was invited to the group. */
 "GROUP_REMOTE_USER_INVITED_1" = "1 isik kutsuti gruppi.";
@@ -1521,13 +1521,13 @@
 "GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ eemaldas kasutaja %2$@.";
 
 /* Message indicating that a remote user had their administrator role revoked. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "%@ had their admin privileges revoked.";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "Kasutaja %@ administraatoriõigused tühistati.";
 
 /* Message indicating that a remote user had their administrator role revoked by local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_LOCAL_USER" = "Sa võtsid tagasi administraatori õigused kasutajalt %@.";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_LOCAL_USER" = "Sa tühistasid kasutaja %@ administraatoriõigused.";
 
 /* Message indicating that a remote user had their administrator role revoked by another user. Embeds {{ %1$@ user who revoked, %2$@ user who was granted administrator role}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ revoked admin privileges from %2$@.";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ tühistas kasutaja %2$@ administraatoriõigused.";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Grupp uuendatud.";
@@ -1629,7 +1629,7 @@
 "HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%@ lisas sind gruppi";
 
 /* Table cell subtitle label for a conversation the user has not accepted. */
-"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Sõnumipäring";
+"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Sõnumisoov";
 
 /* Format string when search returns no results. Embeds {{search term}} */
 "HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "Otsingule '%@' ei leitud vasteid";
@@ -1668,7 +1668,7 @@
 "INBOX_VIEW_EMPTY_INBOX" = "Lisa oma postkasti midagi, näiteks alusta sõbraga sõnumite vahetamist.";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
-"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Sul on võimalik iOSi sätetes lubada juurdepääs kontaktidele, et näha Signal-i vestluste nimekirjas kontaktide nimesid.";
+"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "iOS-i sätetes on võimalik lubada juurdepääs kontaktidele, et näha kontaktide nimesid Signal-i vestluste nimekirjas.";
 
 /* info message text in conversation view */
 "INCOMING_CALL" = "Sissetulev kõne";
@@ -1698,10 +1698,10 @@
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Vigane audiofail.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Sul on võimalik iOSi sätetes lubada juurdepääs kontaktidele, et saaksid kutsuda sõpru Signal-it kasutama.";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "iOS-i sätetes on võimalik lubada juurdepääs kontaktidele, et saaksid kutsuda sõpru Signal-it kasutama.";
 
 /* Alert title when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Ligipääs kontaktidele";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Juurdepääs kontaktidele";
 
 /* Label for the cell that presents the 'invite contacts' workflow. */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Kutsu sõpru Signalisse";
@@ -1868,9 +1868,6 @@
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "Edasta see sõnum";
 
-/* accessibility label */
-"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGE" = "Edasta valitud sõnum";
-
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "Vasta sellele sõnumile";
 
@@ -1938,7 +1935,7 @@
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Blokeeri ja kustuta";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Blokeeritud kasutajatel pole võimalik sulle helistada ega sõnumeid saata.";
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Blokeeritud isikutel pole võimalik sulle helistada ega sõnumeid saata.";
 
 /* Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}} */
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "Kas blokeerida %@?";
@@ -1974,10 +1971,10 @@
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "Blokeeri";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Do you want to let %@ message you? You won't receive any messages until you unblock them.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Kas sa lubad kasutajal %@ sulle sõnumeid saata? Sa ei saa enne sõnumeid kui oled blokeeringu eemaldanud.";
 
 /* A prompt notifying that the user must unblock this group to continue. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_FORMAT" = "Do you want to let the group %@ message you? You won't receive any messages until you unblock them.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_FORMAT" = "Kas sa lubad grupil %@ sulle sõnumeid saata? Sa ei saa enne sõnumeid kui oled blokeeringu eemaldanud.";
 
 /* incoming message request button text which deletes a conversation */
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Kustuta";
@@ -1989,7 +1986,7 @@
 "MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT_FORMAT" = "Vestluse jätkamiseks kontaktiga %@ pead enda profiili jagama.";
 
 /* A prompt for the user to accept or decline an invite to a group. Embeds {{name of user who invited you}}. */
-"MESSAGE_REQUEST_VIEW_GROUP_INVITE_PROMPT_FORMAT" = "You were invited to this group by %@. Do you want to let members of this group message you?";
+"MESSAGE_REQUEST_VIEW_GROUP_INVITE_PROMPT_FORMAT" = "Sind kutsuti kasutaja %@ poolt sellesse gruppi . Kas sa lubad selle grupi liikmetel sulle sõnumeid saata?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Kas sa lubad kasutajal %@ sulle sõnumeid saata? Nad ei saa teada, et sa oled nende sõnumeid näinud, kuni sa nõustud.";
@@ -2010,7 +2007,7 @@
 "MESSAGE_REQUESTS_SPLASH_ADD_PROFILE_NAME_BUTTON" = "Lisa profiilinimi";
 
 /* Body text for message requests splash screen */
-"MESSAGE_REQUESTS_SPLASH_BODY" = "You can now choose to ”Accept” or ”Delete“ a new conversation. Names let people know who’s messaging them.";
+"MESSAGE_REQUESTS_SPLASH_BODY" = "Nüüd saad valida, kas ”Nõustun” või ”Kustutan“ uue vestluse. Nimed võimaldavad inimestel teada saada, kes neile sõnumeid saadab.";
 
 /* Toast indicating that a profile name has been created. */
 "MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "Sinu profiilinimi on salvestatud.";
@@ -2082,19 +2079,19 @@
 "MISSING_CAMERA_PERMISSION_MESSAGE" = "Sul on võimalik iOSi sätetes lubada juurdepääs kaamerale, et teha Signal-iga videokõnesid.";
 
 /* Alert title */
-"MISSING_CAMERA_PERMISSION_TITLE" = "Signal vajab ligipääsu sinu kaamerale.";
+"MISSING_CAMERA_PERMISSION_TITLE" = "Signal vajab juurdepääsu sinu kaamerale.";
 
 /* Alert body indicating the user has denied location permissios */
 "MISSING_LOCATION_PERMISSION_MESSAGE" = "Sul on võimalik lubada see õigus iOSi sätete rakenduses.";
 
 /* Alert title indicating the user has denied location permissios */
-"MISSING_LOCATION_PERMISSION_TITLE" = "Selle funktsionaalsuse kasutamiseks vajab Signal ligipääsu su asukohale.";
+"MISSING_LOCATION_PERMISSION_TITLE" = "Selle funktsionaalsuse kasutamiseks vajab Signal juurdepääsu su asukohale.";
 
 /* Alert body when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Sul on võimalik lubada see õigus iOSi sätete rakenduses.";
 
 /* Alert title when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Selle funktsionaalsuse kasutamiseks vajab Signal ligipääsu sinu fotodele.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Selle funktsionaalsuse kasutamiseks vajab Signal juurdepääsu sinu fotodele.";
 
 /* alert title: cannot link - reached max linked devices */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Rohkem seadmeid pole võimalik ühendada.";
@@ -2130,7 +2127,7 @@
 "NEW_GROUP_CREATION_FAILED" = "Uue grupi loomine ei õnnestunud.";
 
 /* Error indicating that a new group could not be created due to network connectivity problems. */
-"NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "New group could not be created. Check your internet connection and try again.";
+"NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "Uue grupi loomine ei õnnestunud. Kontrolli internetiühendust ja proovi uuesti.";
 
 /* Message for error alert indicating that a group name is required. */
 "NEW_GROUP_CREATION_MISSING_NAME_ALERT_MESSAGE" = "Grupi nimi on kohustuslik.";
@@ -2226,10 +2223,10 @@
 "ONBOARDING_2FA_CREATE_NEW_PIN" = "Loo uus PIN-kood";
 
 /* Button asking if the user would like to enter an alphanumeric PIN */
-"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "Sisesta tähtnumbriline PIN";
+"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "Sisesta tähtnumbriline PIN-kood";
 
 /* Button asking if the user would like to enter an numeric PIN */
-"ONBOARDING_2FA_ENTER_NUMERIC" = "Sisesta numbriline PIN";
+"ONBOARDING_2FA_ENTER_NUMERIC" = "Sisesta numbriline PIN-kood";
 
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
 "ONBOARDING_2FA_FORGOT_PIN_LINK" = "Kas vajad abi?";
@@ -2247,7 +2244,7 @@
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Jäta vahele ja loo uus PIN-kood";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
-"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "If you can’t remember your PIN, you can create a new one. You can register and use your account but you’ll lose some saved settings like your profile information.";
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Kui sa ei mäleta oma PIN-koodi, saad luua uue. Saad oma kontot registreerida ja kasutada, kuid kaotad mõned salvestatud seaded, näiteks oma profiiliteabe.";
 
 /* Title for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "Kas jätta PIN-koodi sisestamine vahele?";
@@ -2295,13 +2292,13 @@
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Vigane number";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "You’ve run out of PIN guesses, but you can still access your Signal account by creating a new PIN. For your privacy and security your account will be restored without any saved profile information or settings.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "PIN-koodi proovimised on otsa saanud, kuid pääsed siiski uue PIN-koodi loomisega oma Signal-i konto juurde. Privaatsuse ja turvalisuse huvides taastatakse sinu konto ilma salvestatud profiiliteabe või säteteta.";
 
 /* Label for the 'learn more' link when reglock is disabled in the 'onboarding pin attempts exhausted' view. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "Uuri lähemalt PIN-koodide kohta";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is enabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_EXPLANATION" = "Sinu privaatsuse kaitseks ja sinu konto turvalisuse nimel oleme selle lukustanud 7 päevaks.\n\n7 päeva pärast on sul võimalik see telefoninumber uuesti registreerida ilma PIN-koodi vajamata. Kogu sisu eemaldatakse.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_EXPLANATION" = "Sinu privaatsuse kaitseks ja konto turvalisuse nimel oleme selle lukustanud 7 päevaks.\n\n7 päeva pärast on sul võimalik see telefoninumber uuesti registreerida ilma PIN-koodi vajamata. Kogu sisu eemaldatakse.";
 
 /* Label for the 'learn more' link when reglock is enabled in the 'onboarding pin attempts exhausted' view. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_LEARN_MORE" = "Uuri lähemalt lukustatud kontode kohta.";
@@ -2313,10 +2310,10 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "Sobimatu PIN-kood";
 
 /* Title of the 'onboarding PIN' view. */
-"ONBOARDING_PIN_EXPLANATION" = "Sisesta PIN-kood, mille tegid enda konto jaoks. See erineb SMS-kontrollkoodist.";
+"ONBOARDING_PIN_EXPLANATION" = "Sisesta oma konto jaoks loodud PIN-kood. See erineb teie SMS-i kinnituskoodist.";
 
 /* Title of the 'onboarding PIN' view. */
-"ONBOARDING_PIN_TITLE" = "Sisesta enda PIN-kood";
+"ONBOARDING_PIN_TITLE" = "Sisesta oma PIN-kood";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Tingimused ja privaatsuspoliitika";
@@ -2400,19 +2397,19 @@
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "Kutseid pole.";
 
 /* Title of 'revoke invite' button. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "Võta kutse tagasi";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "Tühista kutse";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the invited group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Kas võtta grupiga liitumise kutse kasutajale “%@“ tagasi?";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Kas tühistada kasutaja “%@“  grupiga liitumise kutse?";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Kas võtta tagasi %1$@ “%2$@“ poolt saadetud grupiga liitumise kutset?";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Kas tühistada kasutaja  “%2$@“ poolt saadetud %1$@ grupiga liitumise kutset?";
 
 /* Title of 'revoke invites' button. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_N_BUTTON" = "Võta kutsed tagasi";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_N_BUTTON" = "Tühista kutsed";
 
 /* Footer for the 'invites by other group members' section of the 'pending group members' view. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Details of people invited by other group members are not shown. If invitees choose to join, their information will be shared with the group at that time. They will not see any messages in the group until they join.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Teiste grupiliikmete kutsutud inimeste üksikasju ei kuvata. Kui kutsutud soovivad liituda, jagatakse nende kohta grupile teavet pärast seda. Enne liitumist ei näe nad grupis ühtegi sõnumit.";
 
 /* Title for the 'invites by other group members' section of the 'pending group members' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "Kutsed teiste grupi liikmete poolt";
@@ -2427,16 +2424,16 @@
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "Sissetuleva sõnumi käsitlemisel tekkis tõrge.";
 
 /* inbox cell and notification text for an already viewed view-once media message. */
-"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "Korra vaatamise meedia";
+"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "Ühekordne meedia";
 
 /* Label for outgoing view-once messages. */
 "PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "Meedia";
 
 /* inbox cell and notification text for a view-once photo. */
-"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "Korra vaatamise foto";
+"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "Ühekordne foto";
 
 /* inbox cell and notification text for a view-once video. */
-"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "Korra vaatamise video";
+"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "Ühekordne video";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
 "PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "Vaata pilti";
@@ -2502,7 +2499,7 @@
 "PIN_CREATION_ALPHANUMERIC_HINT" = "PIN-kood peab olema vähemalt 4 märgi pikkune";
 
 /* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_CHANGING_TITLE" = "Muuda enda PIN-koodi";
+"PIN_CREATION_CHANGING_TITLE" = "Muuda oma PIN-koodi";
 
 /* Title of the 'pin creation' confirmation view. */
 "PIN_CREATION_CONFIRM_TITLE" = "Kinnita PIN-kood";
@@ -2511,19 +2508,19 @@
 "PIN_CREATION_CONFIRMATION_EXPLANATION" = "Sisesta PIN-kood uuesti";
 
 /* Button asking if the user would like to create an alphanumeric PIN */
-"PIN_CREATION_CREATE_ALPHANUMERIC" = "Loo tähtnumbriline PIN";
+"PIN_CREATION_CREATE_ALPHANUMERIC" = "Loo tähtnumbriline PIN-kood";
 
 /* Button asking if the user would like to create an numeric PIN */
-"PIN_CREATION_CREATE_NUMERIC" = "Loo numbriline PIN";
+"PIN_CREATION_CREATE_NUMERIC" = "Loo numbriline PIN-kood";
 
 /* Error body indicating that the attempt to create a PIN failed. */
-"PIN_CREATION_ERROR_MESSAGE" = "Your PIN was not saved. We’ll prompt you to create a PIN later.";
+"PIN_CREATION_ERROR_MESSAGE" = "PIN-koodi ei salvestatud. Pakume sulle PIN-koodi loomist hiljem uuesti.";
 
 /* Error title indicating that the attempt to create a PIN failed. */
 "PIN_CREATION_ERROR_TITLE" = "PIN-koodi loomine ei õnnestunud";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall Signal.";
+"PIN_CREATION_EXPLANATION" = "PIN-koodid hoiavad Signal-is salvestatud teabe krüptituna, et ainult sinul on sellele juurdepääs. Kui paigaldad Signal-i uuesti, sii sinu profiil, sätted ja kontaktid taastatakse.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PIN-koodid pole samad. Proovi uuesti.";
@@ -2535,10 +2532,10 @@
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "Sisesta PIN-kood uuesti";
 
 /* Indicates the work we are doing while creating the user's pin */
-"PIN_CREATION_PIN_PROGRESS" = "PINi loomine...";
+"PIN_CREATION_PIN_PROGRESS" = "PIN-koodi loomine...";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "You can change your PIN as long as this device is registered.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "PIN-koodi saab muuta senikaua kuni see seade on registreeritud.";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_RECREATION_TITLE" = "Muuda enda PIN-koodi";
@@ -2553,16 +2550,16 @@
 "PIN_REMINDER_FORGOT_PIN" = "Kas unustasid PIN-koodi?";
 
 /* Action text for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_ACTION" = "Kinnita PIN";
+"PIN_REMINDER_MEGAPHONE_ACTION" = "Kinnita PIN-kood";
 
 /* Body for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_BODY" = "We’ll occasionally ask you to verify your PIN so that you remember it.";
+"PIN_REMINDER_MEGAPHONE_BODY" = "Aeg-ajalt palume sul PIN-koodi kinnitada, et see sulle meelde jääks.";
 
 /* Toast indicating that we'll ask you for your PIN again in 3 days. */
 "PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "Tuletame paari päeva pärast uuesti meelde.";
 
 /* Title for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_TITLE" = "Kinnita oma Signal-i PIN";
+"PIN_REMINDER_MEGAPHONE_TITLE" = "Kinnita oma Signal-i PIN-kood";
 
 /* Toast indicating that we'll ask you for your PIN again tomorrow. */
 "PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "Tuletame homme jälle meelde.";
@@ -2583,16 +2580,16 @@
 "PIN_REMINDER_TOO_SHORT_ERROR" = "PIN-kood peab olema vähemalt 4 numbri pikkune.";
 
 /* Action text for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_ACTION" = "Loo PIN";
+"PINS_MEGAPHONE_ACTION" = "Loo PIN-kood";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "PINs keep information that’s stored with Signal encrypted";
+"PINS_MEGAPHONE_BODY" = "PIN-koodid hoiavad Signal-is salvestatud teabe krüptituna";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Creating a PIN will become mandatory in %ld days.";
+"PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Tuletame sulle hiljem meelde. PIN-koodi loomine muutub %ld päeva pärast kohustuslikuks.";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_TITLE" = "Loo PIN";
+"PINS_MEGAPHONE_TITLE" = "Loo PIN-kood";
 
 /* Toast indicating that a PIN has been created. */
 "PINS_MEGAPHONE_TOAST" = "PIN-kood loodud. Saad seda sätetes muuta.";
@@ -2637,7 +2634,7 @@
 "PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Skannitud kood ei paista olema turvanumber. Kas te mõlemad kasutate uusimat Signal-i versiooni?";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
-"PRIVACY_VERIFICATION_INSTRUCTIONS" = "Kui soovid kinnitada otspunktkrüpteerimist kasutajaga %@, siis võrdle ülalolevaid numbreid numbritega nende seadmes.\n\nTeise võimalusena saad skannida koodi tema telefonist või paluda tal sinu koodi skannida..";
+"PRIVACY_VERIFICATION_INSTRUCTIONS" = "Kui soovid kontrollida otspunktkrüptimise turvalisust kasutajaga %@, siis võrdle ülaltoodud numbreid nende seadme numbritega.\n\nTeise võimalusena saad skannida koodi tema telefonist või paluda tal sinu koodi skannida.";
 
 /* Navbar title */
 "PRIVACY_VERIFICATION_TITLE" = "Kinnita turvanumber";
@@ -2652,13 +2649,13 @@
 "PROFILE_NAME_REMINDER_MEGAPHONE_ACTION" = "Alustame";
 
 /* Body for profile name reminder megaphone when user already has a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_BODY" = "Your profile can now include an optional last name.";
+"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_BODY" = "Nüüd saad lisada oma profiilie lisa-perekonnanime.";
 
 /* Title for profile name reminder megaphone when user already has a profile name */
 "PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_TITLE" = "Kinnita enda profiilinimi";
 
 /* Body for profile name reminder megaphone when user doesn't have a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "This will be displayed when you start a new conversation or share it.";
+"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "Seda kuvatakse, kui alustad uut vestlust või jagad seda.";
 
 /* Title for profile name reminder megaphone when user doesn't have a profile name */
 "PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_TITLE" = "Lisa profiilinimi";
@@ -2811,16 +2808,16 @@
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Kas vajad abi?";
 
 /* Alert body for a forgotten SVR (V2) PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Sinu PIN-kood on sinu loodud 4-kohaline numbriline kood, mis võib olla numbriline või tähtnumbriline. Kui sa ei mäleta oma PIN-koodi, siis pead oma konto uuesti registreerimiseks 7 päeva ootama.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you can create a new one. You can register and use your account but you’ll lose some saved settings like your profile information.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Sinu PIN-kood on sinu loodud 4-kohaline kood, mis võib olla numbriline või tähtnumbriline. Kui sa ei mäleta oma PIN-koodi, saad luua uue. Saad oma kontot registreerida ja kasutada, kuid kaotad mõned salvestatud sätted, näiteks oma profiiliteabe.";
 
 /* Alert body for a forgotten V1 PIN */
-"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit numeric code you created. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
+"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Sinu PIN-kood on sinu loodud 4-kohaline arvkood. Kui sa ei mäleta oma PIN-koodi, pead oma konto uuesti registreerimiseks ootama 7 päeva.";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock disabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "You have %lu attempts remaining. If you run out of attempts, you can create a new PIN. You can register and use your account but you’ll lose some saved settings like your profile information.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "Sul on jäänud %lu katsetust. Kui katsed otsa saavad, saad luua uue PIN-koodi. Saad oma kontot registreerida ja kasutada, kuid kaotad mõned salvestatud seaded, näiteks oma profiiliteabe.";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock enabled. */
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_PLURAL_FORMAT" = "Sul on %lu katset jäänud. Kui katsete arv saab otsa, siis su konto blokeeritakse. 7 päeva pärast on sul võimalik konto uuesti registreerida ilma PIN-koodita, aga eelnevalt konto tühjendatakse ja sisu kustutatakse.";
@@ -2829,10 +2826,10 @@
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_SINGLE" = "Sul on 1 katse jäänud. 7 päeva pärast on sul võimalik konto uuesti registreerida ilma PIN-koodita, aga eelnevalt konto tühjendatakse ja sisu kustutatakse.";
 
 /* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock disabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "You have 1 attempt remaining. If you run out of attempts, you can create a new PIN. You can register and use your account but you’ll lose some saved settings like your profile information.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "Sul on jäänud 1 katsetus. Kui katsed otsa saavad, saad luua uue PIN-koodi. Saad oma kontot registreerida ja kasutada, kuid kaotad mõned salvestatud seaded, näiteks oma profiiliteabe.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Sobimatu PIN";
+"REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Sobimatu PIN-kood";
 
 /* Indicates the work we are doing while verifying the user's pin */
 "REGISTER_2FA_PIN_PROGRESS" = "PIN-koodi kontrollimine...";
@@ -2955,7 +2952,7 @@
 "SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "Kohe";
 
 /* Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode. */
-"SCREEN_LOCK_ENABLE_UNKNOWN_ERROR" = "Autentimisele ligipääsemine ei õnnestunud.";
+"SCREEN_LOCK_ENABLE_UNKNOWN_ERROR" = "Autentimisele juurdepääs ei õnnestunud.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode authentication failed. */
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Autentimine ei õnnestunud.";
@@ -3267,16 +3264,16 @@
 "SETTINGS_NOTIFICATIONS" = "Teavitused";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall Signal.";
+"SETTINGS_PINS_FOOTER" = "PIN-koodid hoiavad Signal-is salvestatud teabe krüptituna, et ainult sinul on sellele juurdepääs. Kui paigaldad Signal-i uuesti, sii sinu profiil, sätted ja kontaktid taastatakse.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Muuda enda PIN-koodi";
 
 /* Label for the 'pins' item of the privacy settings when the user doesn't have a pin. */
-"SETTINGS_PINS_ITEM_CREATE" = "Loo PIN";
+"SETTINGS_PINS_ITEM_CREATE" = "Loo PIN-kood";
 
 /* Title for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_TITLE" = "SIGNAL PIN";
+"SETTINGS_PINS_TITLE" = "SIGNAL PIN-kood";
 
 /* Label for 'CallKit privacy' preference */
 "SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Näita helistaja nime ja numbrit";
@@ -3309,7 +3306,7 @@
 "SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Lülita sisse";
 
 /* Body for the alert confirming that the user wants to turn on registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "If you forget your Signal PIN when registering with Signal again, you’ll be locked out of your account for 7 days.";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Kui unustad Signal-iga uuesti registreerumisel oma Signal PIN-koodi, lukustatakse sind 7 päevaks oma kontolt.";
 
 /* Title for the alert confirming that the user wants to turn on registration lock. */
 "SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "Kas lülitada registreerimislukk sisse?";
@@ -3372,7 +3369,7 @@
 "SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Registreerimislukk";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "For extra security, turn on registration lock, which will require your Signal PIN to register your phone number with Signal again.";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Lisaturvalisuse huvides lülita sisse registreerimislukk, mis nõuab sinu telefoninumbri Signal-isse uuesti registreerimiseks Signal-i PIN-koodi .";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Sisestamisindikaatorid";
@@ -3513,7 +3510,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Gruppide %@, %@ ja %lu muu grupi liige";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "You can add notes for yourself in this conversation. If your account has any linked devices, new notes will be synced.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Selles vestluses saate enda jaoks märkmeid lisada. Kui su kontol on lingitud seadmeid, sünkroonitakse uued märkmed.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Grupi %@ liige";
@@ -3654,13 +3651,13 @@
 "UPDATE_GROUP_FAILED" = "Grupi uuendamine ei õnnestunud.";
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
-"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "This action couldn’t be completed. Check your internet connection and try again.";
+"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "See tegevus ei õnnestunud. Kontrolli internetiühendust ja proovi uuesti.";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Loo enda PIN-kood";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall Signal.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PIN-koodid hoiavad Signal-is salvestatud teabe krüptituna, et ainult sinul on sellele juurdepääs. Kui paigaldad Signal-i uuesti, sii sinu profiil, sätted ja kontaktid taastatakse.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Tutvustame PIN-koode";
@@ -3681,7 +3678,7 @@
 "USERNAME_INVALID_CHARACTERS_ERROR" = "Kasutajanimed võivad sisaldada a-z, 0-9 ja _";
 
 /* A message indicating that username lookup failed. */
-"USERNAME_LOOKUP_ERROR" = "An error occurred while looking up the username. Please try again later.";
+"USERNAME_LOOKUP_ERROR" = "Kasutajanime otsimisel tekkis tõrge. Palun proovi hiljem uuesti.";
 
 /* A message indicating that the given username is not a registered signal account. Embeds {{username}} */
 "USERNAME_NOT_FOUND_FORMAT" = "%@ ei ole Signal-i kasutaja. Tee kindlaks, et sisestasid kasutajanime õigesti.";
@@ -3744,7 +3741,7 @@
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "Koputa siia, et muuta see sõnum haihtuvaks pärast selle vaatamist.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
-"VIEW_ONCE_OUTGOING_TOAST" = "Outgoing view-once media files are automatically removed after they are sent.";
+"VIEW_ONCE_OUTGOING_TOAST" = "Väljuvad ühekordsed meediafailid kustutatakse automaatselt pärast nende saatmist.";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Loobumiseks libista";

@@ -1868,9 +1868,6 @@
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "இந்த செய்தியை முன்னோக்கு ";
 
-/* accessibility label */
-"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGE" = "Forward Selected Message";
-
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "இந்த செய்திக்கு பதில்";
 

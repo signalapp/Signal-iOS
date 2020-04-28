@@ -747,7 +747,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "Alles";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Kies wie de groepsnaam, groepsafbeelding en zelf-wissende-berichten-timer mag aanpassen.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Kies wie de groepsnaam, groepsafbeelding en de timer voor zelfwissende berichten mag aanpassen.";
 
 /* Footer text for the 'block and leave' section of conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER" = "Je zult niet langer berichten of meldingen van deze groep ontvangen.";
@@ -777,7 +777,7 @@
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Uitsluitend beheerders";
 
 /* Description for the 'edit group attributes access' alert. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Kies wie de groepsnaam, groepsafbeelding en zelf-wissende-berichten-timer mag aanpassen:";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Kies wie de groepsnaam, groepsafbeelding en de timer voor zelfwissende berichten mag aanpassen:";
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "Alle groepsleden";
@@ -849,7 +849,7 @@
 "CONVERSATION_SETTINGS_SEARCH" = "Zoek gesprek";
 
 /* Label for button that opens conversation settings. */
-"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Tik om te wijzigen";
+"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Tik hier om te wijzigen";
 
 /* Label for 'unblock group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Groep deblokkeren";
@@ -1002,19 +1002,19 @@
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "Het bijwerken van de lijst met apparaten is mislukt.";
 
 /* table cell label in conversation settings */
-"DISAPPEARING_MESSAGES" = "Zelf-wissende berichten";
+"DISAPPEARING_MESSAGES" = "Zelfwissende berichten";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Berichten in dit gesprek zullen na %@ zichzelf wissen.";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "Indien ingeschakeld zullen nieuwe verzonden en ontvangen berichten in dit gesprek zichzelf wissen nadat ze zijn gelezen.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "Indien ingeschakeld zal elk nieuwe bericht zichzelf wissen nadat de ingestelde tijd is verlopen. Voor iedere deelnemer aan het gesprek begint de tijd pas te lopen als hij het bericht heeft gezien. – Gebruik zelfwissende berichten niet ter beveiliging, want Signal kan niet garanderen dat een bericht op het apparaat van een ander daadwerkelijk wordt gewist.";
 
 /* Accessibility hint that contains current timeout information */
-"DISAPPEARING_MESSAGES_HINT" = "Momenteel wissen berichten zichzelf na %@";
+"DISAPPEARING_MESSAGES_HINT" = "Momenteel wissen nieuwe berichten zichzelf na %@";
 
 /* Accessibility label for disappearing messages */
-"DISAPPEARING_MESSAGES_LABEL" = "Instellingen voor zelf-wissende berichten";
+"DISAPPEARING_MESSAGES_LABEL" = "Instellingen voor zelfwissende berichten";
 
 /* Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "Sluiten";
@@ -1104,16 +1104,16 @@
 "ENABLE_2FA_VIEW_PIN_TOO_LONG" = "Pincode kan niet langer zijn dan 20 cijfers.";
 
 /* Error indicating that the entered 'two-factor auth PIN' is too short. */
-"ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "Je pincode moet ten minste 4 getallen lang zijn.";
+"ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "Je pincode moet ten minste 4 cijfers lang zijn.";
 
 /* Indicates that user should select a 'two factor auth pin'. */
 "ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Voer een pincode in voor de registratievergrendeling. De volgende keer dat je dit telefoonnummer probeert te registreren bij Signal, zal je gevraagd worden deze pincode in te voeren.";
 
 /* Indicates that user has 'two factor auth pin' disabled. */
-"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "Schakel voor verhoogde veiligheid een registratievergrendeling in. Door dit in te schakelen kan niemand Signal met jouw telefoonnummer registreren zonder eerst een pincode in te voeren.";
+"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "Schakel voor verhoogde veiligheid een registratievergrendeling in. Door dit in te schakelen kan niemand met jouw telefoonnummer Signal registreren zonder eerst je Signal-pincode in te voeren.";
 
 /* Indicates that user has 'two factor auth pin' enabled. */
-"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Registratievergrendeling is ingeschakeld. Je zult je registratievergrendelingspincode moeten invoeren als je je nummer opnieuw registreert bij Signal. Dit voorkomt dat een ander jouw nummer kan registreren.";
+"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Registratievergrendeling is ingeschakeld. Je zult je pincode moeten invoeren als je je nummer opnieuw registreert bij Signal. Dit voorkomt dat een ander jouw telefoonnummer kan registreren.";
 
 /* Title for the 'enable two factor auth PIN' views. */
 "ENABLE_2FA_VIEW_TITLE" = "Registratievergrendeling";
@@ -1296,7 +1296,7 @@
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "Je hebt de instelling voor wie de groepsinformatie kan wijzigen op ‘%@’ ingesteld.";
 
 /* Message indicating that the access to the group's attributes was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ heeft aangepast wie de groepsinformatie mogen wijzigen. Vanaf nu mogen %2$@ de groepsinformatie wijzigen.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ heeft de instelling voor wie de groepsinformatie kan wijzigen op ‘%2$@’ ingesteld.";
 
 /* Message indicating that the access to the group's attributes was changed. Embeds {{new access level}}. */
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "De groepsinformatie kan vanaf nu door %@ worden gewijzigd.";
@@ -1407,7 +1407,7 @@
 "GROUP_MEMBER_COUNT_FORMAT" = "%1$@/%2$@";
 
 /* The 'group member count' indicator when there are no members in the group. */
-"GROUP_MEMBER_COUNT_LABEL_0" = "No members";
+"GROUP_MEMBER_COUNT_LABEL_0" = "Er zijn geen leden in deze groep";
 
 /* The 'group member count' indicator when there is 1 member in the group. */
 "GROUP_MEMBER_COUNT_LABEL_1" = "1 lid";
@@ -1867,9 +1867,6 @@
 
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "Dit bericht doorsturen";
-
-/* accessibility label */
-"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGE" = "Geselecteerde bericht doorsturen";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "Op dit bericht reageren";
@@ -2364,10 +2361,10 @@
 "OPEN_SETTINGS_BUTTON" = "Instellingen";
 
 /* Info Message when another user disabled disappearing messages. Embeds {{name of other user}}. */
-"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ heeft zelf-wissende berichten uitgeschakeld.";
+"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ heeft zelfwissende berichten uitgeschakeld.";
 
 /* Info Message when another user enabled disappearing messages. Embeds {{name of other user}} and {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ heeft de timer voor zelf-wissende berichten op %@ ingesteld.";
+"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ heeft de timer voor zelfwissende berichten op %@ ingesteld.";
 
 /* Label warning the user that the Signal service may be down. */
 "OUTAGE_WARNING" = "Signal ondervindt momenteel technische problemen. We zijn hard aan het werk om zo snel als mogelijk de dienst te hervatten.";
@@ -2529,7 +2526,7 @@
 "PIN_CREATION_MISMATCH_ERROR" = "De pincodes komen niet overeen. Probeer het opnieuw.";
 
 /* Label indicating the user must use at least 4 digits */
-"PIN_CREATION_NUMERIC_HINT" = "Je pincode moet uit ten minste 4 getallen bestaan";
+"PIN_CREATION_NUMERIC_HINT" = "Je pincode moet uit ten minste 4 cijfers bestaan";
 
 /* Label indication the user must confirm their PIN. */
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "Voer pincode opnieuw in";
@@ -2580,7 +2577,7 @@
 "PIN_REMINDER_TITLE" = "Voer je Signal-pincode in";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_REMINDER_TOO_SHORT_ERROR" = "Je pincode moet uit ten minste 4 getallen bestaan.";
+"PIN_REMINDER_TOO_SHORT_ERROR" = "Je pincode moet uit ten minste 4 cijfers bestaan.";
 
 /* Action text for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_ACTION" = "Pincode aanmaken";
@@ -2817,7 +2814,7 @@
 "REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Je pincode is een code welke je zelf hebt aangemaakt en welke bestaat uit vier of meer cijfers of een combinatie van cijfers en letters. Als je je je pincode niet kunt herinneren, dan kun je een nieuwe pincode aanmaken. Je kunt Signal dan wel weer registreren met dit telefoonnummer, maar sommige instellingen zoals je profielnaam en -afbeelding zullen dan verloren gaan.";
 
 /* Alert body for a forgotten V1 PIN */
-"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Je pincode is een getal welke je zelf hebt aangemaakt bestaande uit 4 of meer cijfers. Als je je pincode niet hebt onthouden, dan zul je 7 dagen moeten wachten voor je je telefoonnummer opnieuw kunt registreren.";
+"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Je pincode is een code welke je zelf hebt aangemaakt bestaande uit 4 of meer cijfers. Als je je pincode niet hebt onthouden, dan zul je 7 dagen moeten wachten voor je je telefoonnummer opnieuw kunt registreren.";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock disabled. */
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "Je hebt nog %lu pogingen resterend. Als je geen pogingen meer over hebt, dan kun je nog wel een nieuwe pincode aanmaken. Je kunt Signal dan wel weer registreren met dit telefoonnummer, maar sommige instellingen zoals je profielnaam en -afbeelding zullen dan verloren gaan.";
@@ -3372,7 +3369,7 @@
 "SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Registratievergrendeling";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Schakel registratievergrendeling in voor extra beveiliging. Als je dat doet zal vanaf dan een je Signal-pincode worden nodig zijn om dit telefoonnummer opnieuw te registreren bij Signal. Hiermee voorkom je dat iemand wie je telefoonnummer kaapt ook onder jouw naam Signal kan gebruiken.";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Door registratievergrendeling in te schakelen voeg je extra beveiliging toe. Je zult dan wanneer je je huidige telefoonnummer opnieuw probeert te registreren pas na 7 dagen het invoeren van je pincode kunnen overslaan. Hierdoor kan niemand behalve jij Signal registreren met je huidige telefoonnummer.";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Typindicatoren";
@@ -3609,10 +3606,10 @@
 "UNKNOWN_USER" = "Gebruiker niet bekend";
 
 /* Info Message when an unknown user disabled disappearing messages. */
-"UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Zelf-wissende berichten zijn uitgeschakeld.";
+"UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Zelfwissende berichten zijn uitgeschakeld.";
 
 /* Info Message when an unknown user enabled disappearing messages. Embeds {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
-"UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "De timer voor zelf-wissende berichten is op %@ ingesteld.";
+"UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "De timer voor zelfwissende berichten is op %@ ingesteld.";
 
 /* Indicates an unknown or unrecognizable value. */
 "UNKNOWN_VALUE" = "Onbekend";
@@ -3696,7 +3693,7 @@
 "USERNAME_PREFIX" = "@";
 
 /* An error indicating that the supplied username cannot start with a number. */
-"USERNAME_STARTS_WITH_NUMBER_ERROR" = "Gebruikersnamen mogen niet met een getal beginnen.";
+"USERNAME_STARTS_WITH_NUMBER_ERROR" = "Gebruikersnamen mogen niet met een cijfer beginnen.";
 
 /* The title for the username view. */
 "USERNAME_TITLE" = "Gebruikersnaam";
@@ -3744,7 +3741,7 @@
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "Tik hier om er voor te zorgen dat dit bericht wordt gewist nadat het is gezien.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
-"VIEW_ONCE_OUTGOING_TOAST" = "Uitgaande eenmaligeweergave-mediabestanden worden automatisch gewist zodra ze zijn verzonden. Je kunt ze dus niet terugzien.\n";
+"VIEW_ONCE_OUTGOING_TOAST" = "Uitgaande eenmaligeweergave-media worden onmiddellijk gewist zodra ze zijn verzonden. Je kunt je eigen media dus niet terugzien. – Gebruik eenmaligeweergave-berichten niet ter beveiliging, want Signal kan niet garanderen dat een bericht op het apparaat van een ander daadwerkelijk wordt gewist.";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Veeg om te annuleren";
@@ -3762,10 +3759,10 @@
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Vervolledig de installatie op Signal Desktop.";
 
 /* Info Message when you disabled disappearing messages. */
-"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Je hebt zelf-wissende berichten uitgeschakeld.";
+"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Je hebt zelfwissende berichten uitgeschakeld.";
 
 /* alert body shown when trying to use features in the app before completing registration-related setup. */
 "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "Je moet de configuratie voltooien voor je verder kunt gaan.";
 
 /* Info Message when you disabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
-"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Je hebt de timer voor zelf-wissende berichten op %@ ingesteld.";
+"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Je hebt de timer voor zelfwissende berichten op %@ ingesteld.";

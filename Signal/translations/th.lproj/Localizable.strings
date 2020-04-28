@@ -1868,9 +1868,6 @@
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "ส่งต่อข้อความนี้";
 
-/* accessibility label */
-"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGE" = "ส่งต่อข้อความที่เลือก";
-
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "ตอบกลับข้อความนี้";
 

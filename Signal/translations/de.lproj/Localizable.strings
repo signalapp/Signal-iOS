@@ -228,7 +228,7 @@
 "ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Erlaube in den Einstellungen Zugriff auf deine Fotos, um sie hier versenden zu können.";
 
 /* A string indicating to the user that once they take photos, they'll be able to send them from this view. */
-"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Sobald du Fotos aufgenommen hast, kannst du diese hier versenden.";
+"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Sobald du Fotos aufgenommen hast, kannst du sie hier versenden.";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Anhang";
@@ -336,7 +336,7 @@
 "BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "Ihr werdet einander schreiben und euch anrufen können.";
 
 /* Action sheet body when confirming you want to unblock a group */
-"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Vorhandene Mitglieder werden dich wieder zur Gruppe hinzufügen können.";
+"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Bestehende Mitglieder werden dich wieder zur Gruppe hinzufügen können.";
 
 /* An explanation of what unblocking a group means. */
 "BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Gruppenmitglieder werden dich wieder zu dieser Gruppe hinzufügen können.";
@@ -369,7 +369,7 @@
 "BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ wurde freigegeben.";
 
 /* Alert body after unblocking a group. */
-"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Vorhandene Mitglieder können dich jetzt wieder zur Gruppe hinzufügen.";
+"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Bestehende Mitglieder können dich jetzt wieder zur Gruppe hinzufügen.";
 
 /* Action sheet that will block an unknown user. */
 "BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION" = "Blockieren";
@@ -735,7 +735,7 @@
 "CONVERSATION_SETTINGS_ADD_MEMBERS" = "Mitglieder hinzufügen";
 
 /* Label for 'new contact' button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Zu vorhandenem Kontakt hinzufügen";
+"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Zu bestehendem Kontakt hinzufügen";
 
 /* button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Zu Systemkontakten hinzufügen";
@@ -801,10 +801,10 @@
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ Mitglieder";
 
 /* Title of the 'mute this thread' action sheet. */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Stumm";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Stummschalten";
 
 /* label for 'mute thread' cell in conversation settings */
-"CONVERSATION_SETTINGS_MUTE_LABEL" = "Stumm";
+"CONVERSATION_SETTINGS_MUTE_LABEL" = "Stummschalten";
 
 /* Indicates that the current thread is not muted. */
 "CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Nicht stummgeschaltet";
@@ -915,7 +915,7 @@
 "DATABASE_VIEW_OVERLAY_SUBTITLE" = "Dies kann einige Minuten dauern.";
 
 /* Title shown while the app is updating its database. */
-"DATABASE_VIEW_OVERLAY_TITLE" = "Datenbankoptimierung";
+"DATABASE_VIEW_OVERLAY_TITLE" = "Datenbank wird optimiert";
 
 /* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
 "DATE_HOURS_AGO_FORMAT" = "Vor %@ h";
@@ -1290,7 +1290,7 @@
 "GRDB_MIGRATION_NOTIFICATION_BODY" = "Diese Signal-Version beinhaltet Datenbankoptimierungen und Leistungsverbesserungen. Möglicherweise musst du die App öffnen, um den Vorgang abzuschließen.";
 
 /* Title of notification shown during GRDB migration indicating that user may need to open app to view their content. */
-"GRDB_MIGRATION_NOTIFICATION_TITLE" = "Optimieren der Datenbank";
+"GRDB_MIGRATION_NOTIFICATION_TITLE" = "Datenbank wird optimiert";
 
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "Du hast die Bearbeitungsberechtigten für Gruppendetails auf »%@« geändert.";
@@ -1407,10 +1407,10 @@
 "GROUP_MEMBER_COUNT_FORMAT" = "%1$@/%2$@";
 
 /* The 'group member count' indicator when there are no members in the group. */
-"GROUP_MEMBER_COUNT_LABEL_0" = "No members";
+"GROUP_MEMBER_COUNT_LABEL_0" = "Keine Mitglieder";
 
 /* The 'group member count' indicator when there is 1 member in the group. */
-"GROUP_MEMBER_COUNT_LABEL_1" = "1 member";
+"GROUP_MEMBER_COUNT_LABEL_1" = "1 Mitglied";
 
 /* Format for the 'group member count' indicator. Embeds {the number of group members}. */
 "GROUP_MEMBER_COUNT_LABEL_FORMAT" = "%@ Mitglieder";
@@ -1867,9 +1867,6 @@
 
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "Diese Nachricht weiterleiten";
-
-/* accessibility label */
-"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGE" = "Ausgewählte Nachricht weiterleiten";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "Diese Nachricht beantworten";

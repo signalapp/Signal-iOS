@@ -1407,13 +1407,13 @@
 "GROUP_MEMBER_COUNT_FORMAT" = "%1$@/%2$@";
 
 /* The 'group member count' indicator when there are no members in the group. */
-"GROUP_MEMBER_COUNT_LABEL_0" = "No members";
+"GROUP_MEMBER_COUNT_LABEL_0" = "Brak członków";
 
 /* The 'group member count' indicator when there is 1 member in the group. */
-"GROUP_MEMBER_COUNT_LABEL_1" = "1 uczestnik";
+"GROUP_MEMBER_COUNT_LABEL_1" = "1 członek";
 
 /* Format for the 'group member count' indicator. Embeds {the number of group members}. */
-"GROUP_MEMBER_COUNT_LABEL_FORMAT" = "%@ członek(ów)";
+"GROUP_MEMBER_COUNT_LABEL_FORMAT" = "%@ członków";
 
 /* Label indicating the local user. */
 "GROUP_MEMBER_LOCAL_USER" = "Ty";
@@ -1867,9 +1867,6 @@
 
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "Przekaż tą wiadomość";
-
-/* accessibility label */
-"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGE" = "Przekaż wybraną wiadomość";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "Odpowiedz na wiadomość";
@@ -2796,7 +2793,7 @@
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Zareagował(a) w ten sposób %@ na Twoją wiadomość";
 
 /* Body for the megaphone introducing reactions */
-"REACTION_MEGAPHONE_BODY" = "Stuknij i przytrzymaj wiadomość, aby szybko pokazać jak się czujesz. ";
+"REACTION_MEGAPHONE_BODY" = "Stuknij i przytrzymaj wiadomość, aby szybko pokazać co czujesz. ";
 
 /* Title for the megaphone introducing reactions */
 "REACTION_MEGAPHONE_TITLE" = "Przedstawiamy reakcje";
@@ -3465,7 +3462,7 @@
 "STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE" = "Seria Artystów Signal";
 
 /* Title for the 'available known stickers' section of the 'manage stickers' view. */
-"STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "Naklejki, które odebrano";
+"STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "Odebrane naklejki";
 
 /* Label indicating that one or more known sticker packs failed to load. */
 "STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Niektóre pakiety naklejek nie zostały pobrane";

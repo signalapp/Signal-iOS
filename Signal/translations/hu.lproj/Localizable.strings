@@ -1407,7 +1407,7 @@
 "GROUP_MEMBER_COUNT_FORMAT" = "%1$@/%2$@";
 
 /* The 'group member count' indicator when there are no members in the group. */
-"GROUP_MEMBER_COUNT_LABEL_0" = "No members";
+"GROUP_MEMBER_COUNT_LABEL_0" = "Nincsenek tagok";
 
 /* The 'group member count' indicator when there is 1 member in the group. */
 "GROUP_MEMBER_COUNT_LABEL_1" = "1 tag";
@@ -1868,9 +1868,6 @@
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "Üzenet továbbítása";
 
-/* accessibility label */
-"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGE" = "Továbbítod a kiválasztott üzeneteket?";
-
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "Válasz";
 
@@ -2250,7 +2247,7 @@
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Ha nem emlékszel PIN kódodra, készíthetsz újat. Regisztrálhatsz, majd használhatod a fiókodat, de mentett beállításaid egy része, mint profil információid elvesznek.";
 
 /* Title for the skip pin entry action sheet during onboarding. */
-"ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "Skip PIN Entry?";
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "Kihagyod a PIN bevitelét?";
 
 /* Title of the 'onboarding Captcha' view. */
 "ONBOARDING_CAPTCHA_TITLE" = "Most bizonyíthatod emberi mivoltodat";
@@ -2295,7 +2292,7 @@
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Érvénytelen telefonszám";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "You’ve run out of PIN guesses, but you can still access your Signal account by creating a new PIN. For your privacy and security your account will be restored without any saved profile information or settings.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "Kifogytál a PIN megadási lehetőségekből, de továbbra is hozzáférhetsz Signal fiókodhoz, amennyiben létrehozol egy új PIN-t. A magánszférád védelmének és saját biztonságod érdekében fiókod csak a mentett profilbeállítások nélkül állítható vissza.";
 
 /* Label for the 'learn more' link when reglock is disabled in the 'onboarding pin attempts exhausted' view. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "Bővebben a PIN kódokról";
@@ -2499,16 +2496,16 @@
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Névtelen album";
 
 /* Label indicating the user must use at least 4 characters */
-"PIN_CREATION_ALPHANUMERIC_HINT" = "PIN must be at least 4 characters";
+"PIN_CREATION_ALPHANUMERIC_HINT" = "A PIN kód hossza minimum 4 karakter";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_CHANGING_TITLE" = "Adj meg egy új PIN kódot";
 
 /* Title of the 'pin creation' confirmation view. */
-"PIN_CREATION_CONFIRM_TITLE" = "Confirm your PIN";
+"PIN_CREATION_CONFIRM_TITLE" = "PIN megerősítése";
 
 /* The explanation of confirmation in the 'pin creation' view. */
-"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Re-enter your PIN.";
+"PIN_CREATION_CONFIRMATION_EXPLANATION" = "PIN újraellenőrzése";
 
 /* Button asking if the user would like to create an alphanumeric PIN */
 "PIN_CREATION_CREATE_ALPHANUMERIC" = "Hozz létre alfanumerikus PIN kódot";
@@ -2529,7 +2526,7 @@
 "PIN_CREATION_MISMATCH_ERROR" = "PIN kódok nem egyeznek. Próbáld újra.";
 
 /* Label indicating the user must use at least 4 digits */
-"PIN_CREATION_NUMERIC_HINT" = "PIN must be at least 4 digits";
+"PIN_CREATION_NUMERIC_HINT" = "A PIN kód hossza minimum 4 számjegy";
 
 /* Label indication the user must confirm their PIN. */
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "PIN újraellenőrzése";
@@ -2586,7 +2583,7 @@
 "PINS_MEGAPHONE_ACTION" = "PIN létrehozása";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "PINs keep information that’s stored with Signal encrypted";
+"PINS_MEGAPHONE_BODY" = "A PIN-nek köszönhetően a Signal által tárolt információk titkosítva vannak.";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
 "PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Később újra emlékeztetünk. PIN kódod létrehozása %ld nap múlva kötelezővé válik.";
@@ -2811,16 +2808,16 @@
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Segítség?";
 
 /* Alert body for a forgotten SVR (V2) PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Signal PIN kódod 4+ karakter hosszú és szám, vagy alfanumerikus formátumú. Ha nem emlékszel rá, sajnos 7 napot várnod kell, míg újraregisztrálhatod a fiókodat.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you can create a new one. You can register and use your account but you’ll lose some saved settings like your profile information.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Signal PIN kódod egy általad létrehozott 4+ jegyű kód, amely lehet numerikus és alfanumerikus is. Amennyiben nem emlékszel PIN kódodra, lehetőséged van létrehozni egy újat. Ezután regisztrálhatsz, majd használhatod a fiókodat, de mentett beállításaid egy része, mint például a profilinformációid elvesznek.";
 
 /* Alert body for a forgotten V1 PIN */
 "REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Létrehozott PIN kódod egy 4+ karakter hosszú számsor. Ha nem emlékszel rá, sajnos 7 napot várnod kell, míg újraregisztrálhatod a fiókodat.";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock disabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "You have %lu attempts remaining. If you run out of attempts, you can create a new PIN. You can register and use your account but you’ll lose some saved settings like your profile information.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "Még %lu próbálkozásod maradt. Ha kifogysz belőlük, lehetőséged lesz új PIN létrehozására.  Regisztrálhatsz újra, majd használatba veheted a fiókodat, de mentett beállításaid egy része, mint például a profilinformációid elvesznek. ";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock enabled. */
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_PLURAL_FORMAT" = "%lu próbálkozásod maradt. Ha mindet elrontod, a fiókot zárolásra kerül. 7 inaktív nap után újraregisztrálhatsz - immár PIN kód nélkül. A fiókod mindenestül törlésre kerül.";
@@ -2829,7 +2826,7 @@
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_SINGLE" = "1 próbálkozásod maradt. Ha elrontod, a fiókot zárolásra kerül. 7 inaktív nap után újraregisztrálhatsz - immár PIN kód nélkül. A fiókod mindenestül törlésre kerül.";
 
 /* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock disabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "You have 1 attempt remaining. If you run out of attempts, you can create a new PIN. You can register and use your account but you’ll lose some saved settings like your profile information.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "Még 1 próbálkozásod maradt. Ha elrontod, lehetőséged lesz új PIN létrehozására.  Regisztrálhatsz újra, majd használatba veheted a fiókodat, de mentett beállításaid egy része, mint például a profilinformációid elvesznek. ";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Hibás PIN";
@@ -3300,19 +3297,19 @@
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Bekapcsolt állapotban ismerőseid értesítést kapnak, amint elolvastad az üzenetüket. Ez a beállítás opcionális és minden beszélgetésre vonatkozik.";
 
 /* Action to turn off registration lock */
-"SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Turn Off";
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Kikapcsolás";
 
 /* Title for the alert confirming that the user wants to turn off registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "Turn Off Registration Lock?";
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "Kikapcsolod a regisztrációs zárat?";
 
 /* Action to turn on registration lock */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Turn On";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Bekapcsolás";
 
 /* Body for the alert confirming that the user wants to turn on registration lock. */
 "SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Amennyiben elfelejted Signal PIN kódodat a következő Signal regisztáció alkalmával, 7 napra ki leszel zárva a fiókodból.";
 
 /* Title for the alert confirming that the user wants to turn on registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "Turn On Registration Lock?";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "Bekapcsolod a regisztrációs zárat?";
 
 /* Label for re-link button. */
 "SETTINGS_RELINK_BUTTON" = "Újratársítás";
@@ -3372,7 +3369,7 @@
 "SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Regisztrációs zár";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "For extra security, turn on registration lock, which will require your Signal PIN to register your phone number with Signal again.";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Növeld a biztonságot azáltal, hogy a telefonszámod regisztrációját Signal PIN kódod megadásához kötöd.";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Gépelés mutatása";

@@ -330,7 +330,7 @@
 "BLOCK_LIST_BLOCKED_USERS_SECTION" = "Blockerade användare";
 
 /* Button label for the 'unblock' button */
-"BLOCK_LIST_UNBLOCK_BUTTON" = "Avblockera";
+"BLOCK_LIST_UNBLOCK_BUTTON" = "Sluta blockera";
 
 /* An explanation of what unblocking a contact means. */
 "BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "Ni kommer att kunna meddela och ringa varandra.";
@@ -342,10 +342,10 @@
 "BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Gruppmedlemmar kommer att kunna lägga till dig i denna grupp igen.";
 
 /* Action sheet title when confirming you want to unblock a group. */
-"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Avblockera denna grupp?";
+"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Sluta blockera denna grupp?";
 
 /* A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}. */
-"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Avblockera %@?";
+"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Sluta blockera %@?";
 
 /* A label for the block button in the block list view */
 "BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Blockera";
@@ -366,7 +366,7 @@
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Fel";
 
 /* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@har blivit avblockerad.";
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ har blivit avblockerad.";
 
 /* Alert body after unblocking a group. */
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Befintliga medlemmar kan nu lägga dig till gruppen igen.";
@@ -852,10 +852,10 @@
 "CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Tryck för att ändra";
 
 /* Label for 'unblock group' action in conversation settings view. */
-"CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Avblockera grupp";
+"CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Sluta blockera grupp";
 
 /* Label for 'unblock user' action in conversation settings view. */
-"CONVERSATION_SETTINGS_UNBLOCK_USER" = "Avblockera användare";
+"CONVERSATION_SETTINGS_UNBLOCK_USER" = "Sluta blockera användare";
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Ljud på";
@@ -1407,7 +1407,7 @@
 "GROUP_MEMBER_COUNT_FORMAT" = "%1$@/%2$@";
 
 /* The 'group member count' indicator when there are no members in the group. */
-"GROUP_MEMBER_COUNT_LABEL_0" = "No members";
+"GROUP_MEMBER_COUNT_LABEL_0" = "Inga medlemmar";
 
 /* The 'group member count' indicator when there is 1 member in the group. */
 "GROUP_MEMBER_COUNT_LABEL_1" = "1 medlem";
@@ -1868,9 +1868,6 @@
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "Vidarebefordra detta meddelande";
 
-/* accessibility label */
-"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGE" = "Vidarebefordra valt meddelande";
-
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "Svara på detta meddelande";
 
@@ -1974,10 +1971,10 @@
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "Blockera";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Vill du låta %@ skicka meddelanden dig? Du kommer inte att få några meddelanden förrän du avblockerar dem.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Vill du låta %@ skicka meddelanden dig? Du kommer inte att få några meddelanden förrän du slutar blockera dem.";
 
 /* A prompt notifying that the user must unblock this group to continue. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_FORMAT" = "Vill du låta gruppen %@ skicka meddelanden till dig? Du kommer inte att få några meddelanden förrän du avblockerar den.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_FORMAT" = "Vill du låta gruppen %@ skicka meddelanden till dig? Du kommer inte att få några meddelanden förrän du slutar blockera den.";
 
 /* incoming message request button text which deletes a conversation */
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Ta bort";
@@ -2001,7 +1998,7 @@
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Dela profil";
 
 /* A button used to unlock a blocked conversation. */
-"MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Avblockera";
+"MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Sluta blockera";
 
 /* Header for message requests splash screen */
 "MESSAGE_REQUESTS_NAMES_SPLASH_TITLE" = "Introducerar Meddelandeförfrågningar";

@@ -1868,9 +1868,6 @@
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "Persiųsti šią žinutę";
 
-/* accessibility label */
-"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGE" = "Persiųsti pažymėtą žinutę";
-
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "Atsakyti į šią žinutę";
 
