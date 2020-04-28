@@ -6,7 +6,7 @@ public extension OWSPrimaryStorage {
     }
 
     public func setDeviceLinks(_ deviceLinks: Set<DeviceLink>, in transaction: YapDatabaseReadWriteTransaction) {
-        // FIXME: Clear collections first?
+        // TODO: Clear collections first?
         deviceLinks.forEach { addDeviceLink($0, in: transaction) } // TODO: Check the performance impact of this
     }
 
