@@ -17,9 +17,6 @@
 
 # pragma mark - Convenience
 
-#define OWSPrimaryStoragePreKeyStoreCollection @"TSStorageManagerPreKeyStoreCollection"
-#define LKPreKeyContactCollection @"LKPreKeyContactCollection"
-
 - (OWSIdentityManager *)identityManager {
     return OWSIdentityManager.sharedManager;
 }
@@ -28,57 +25,59 @@
     return TSAccountManager.sharedInstance;
 }
 
-# pragma mark - Pre Key for Contact
+# pragma mark - Pre Key Record Management
 
-- (BOOL)hasPreKeyForContact:(NSString *)pubKey {
-    int preKeyId = [self.dbReadWriteConnection intForKey:pubKey inCollection:LKPreKeyContactCollection];
+#define LKPreKeyContactCollection @"LKPreKeyContactCollection"
+#define OWSPrimaryStoragePreKeyStoreCollection @"TSStorageManagerPreKeyStoreCollection"
+
+- (BOOL)hasPreKeyRecordForContact:(NSString *)hexEncodedPublicKey {
+    int preKeyId = [self.dbReadWriteConnection intForKey:hexEncodedPublicKey inCollection:LKPreKeyContactCollection];
     return preKeyId > 0;
 }
 
-- (PreKeyRecord *_Nullable)getPreKeyForContact:(NSString *)pubKey transaction:(YapDatabaseReadTransaction *)transaction {
-    OWSAssertDebug(pubKey.length > 0);
-    int preKeyId = [transaction intForKey:pubKey inCollection:LKPreKeyContactCollection];
+- (PreKeyRecord *_Nullable)getPreKeyRecordForContact:(NSString *)hexEncodedPublicKey transaction:(YapDatabaseReadTransaction *)transaction {
+    OWSAssertDebug(hexEncodedPublicKey.length > 0);
+    int preKeyID = [transaction intForKey:hexEncodedPublicKey inCollection:LKPreKeyContactCollection];
+
+    if (preKeyID <= 0) { return nil; }
     
-    // If we don't have an id then return nil
-    if (preKeyId <= 0) { return nil; }
-    
-    /// throws_loadPreKey doesn't allow us to pass transaction ;(
-    return [transaction preKeyRecordForKey:[self keyFromInt:preKeyId] inCollection:OWSPrimaryStoragePreKeyStoreCollection];
+    // throws_loadPreKey doesn't allow us to pass transaction
+    // FIXME: This seems like it could be a pretty big issue?
+    return [transaction preKeyRecordForKey:[self keyFromInt:preKeyID] inCollection:OWSPrimaryStoragePreKeyStoreCollection];
 }
 
-- (PreKeyRecord *)getOrCreatePreKeyForContact:(NSString *)pubKey {
-    OWSAssertDebug(pubKey.length > 0);
-    int preKeyId = [self.dbReadWriteConnection intForKey:pubKey inCollection:LKPreKeyContactCollection];
+- (PreKeyRecord *)getOrCreatePreKeyRecordForContact:(NSString *)hexEncodedPublicKey {
+    OWSAssertDebug(hexEncodedPublicKey.length > 0);
+    int preKeyID = [self.dbReadWriteConnection intForKey:hexEncodedPublicKey inCollection:LKPreKeyContactCollection];
     
-    // If we don't have an id then generate and store a new one
-    if (preKeyId <= 0) {
-        return [self generateAndStorePreKeyForContact:pubKey];
+    // If we don't have an ID then generate and store a new one
+    if (preKeyID <= 0) {
+        return [self generateAndStorePreKeyRecordForContact:hexEncodedPublicKey];
     }
     
-    // Load the prekey otherwise just generate a new one
+    // Load existing pre key record if possible; generate a new one otherwise
     @try {
-        return [self throws_loadPreKey:preKeyId];
+        return [self throws_loadPreKey:preKeyID];
     } @catch (NSException *exception) {
-        return [self generateAndStorePreKeyForContact:pubKey];
+        return [self generateAndStorePreKeyRecordForContact:hexEncodedPublicKey];
     }
 }
 
-/// Generate prekey for a contact and store it
-- (PreKeyRecord *)generateAndStorePreKeyForContact:(NSString *)pubKey {
-    [LKLogger print:[NSString stringWithFormat:@"[Loki] Generating new pre key for: %@.", pubKey]];
-    OWSAssertDebug(pubKey.length > 0);
+- (PreKeyRecord *)generateAndStorePreKeyRecordForContact:(NSString *)hexEncodedPublicKey {
+    [LKLogger print:[NSString stringWithFormat:@"[Loki] Generating new pre key record for: %@.", hexEncodedPublicKey]];
+    OWSAssertDebug(hexEncodedPublicKey.length > 0);
     
     NSArray<PreKeyRecord *> *records = [self generatePreKeyRecords:1];
-    [self storePreKeyRecords:records];
-    
     OWSAssertDebug(records.count > 0);
+    [self storePreKeyRecords:records];
+
     PreKeyRecord *record = records.firstObject;
-    [self.dbReadWriteConnection setInt:record.Id forKey:pubKey inCollection:LKPreKeyContactCollection];
+    [self.dbReadWriteConnection setInt:record.Id forKey:hexEncodedPublicKey inCollection:LKPreKeyContactCollection];
     
     return record;
 }
 
-# pragma mark - Pre Key Management
+# pragma mark - Pre Key Bundle Management
 
 #define LKPreKeyBundleCollection @"LKPreKeyBundleCollection"
 
@@ -103,7 +102,7 @@
         OWSFailDebug(@"Signed pre key is nil.");
     }
     
-    PreKeyRecord *preKey = [self getOrCreatePreKeyForContact:hexEncodedPublicKey];
+    PreKeyRecord *preKey = [self getOrCreatePreKeyRecordForContact:hexEncodedPublicKey];
     uint32_t registrationID = [self.accountManager getOrGenerateRegistrationId];
     
     PreKeyBundle *bundle = [[PreKeyBundle alloc] initWithRegistrationId:registrationID
@@ -159,35 +158,34 @@
 
 #define LKLastMessageHashCollection @"LKLastMessageHashCollection"
 
-- (NSString *_Nullable)getLastMessageHashForServiceNode:(NSString *)serviceNode transaction:(YapDatabaseReadWriteTransaction *)transaction {
-    NSDictionary *_Nullable dict = [transaction objectForKey:serviceNode inCollection:LKLastMessageHashCollection];
-    if (!dict) { return nil; }
+- (NSString *_Nullable)getLastMessageHashForSnode:(NSString *)snode transaction:(YapDatabaseReadWriteTransaction *)transaction {
+    NSDictionary *_Nullable dict = [transaction objectForKey:snode inCollection:LKLastMessageHashCollection];
+    if (dict == nil) { return nil; }
     
     NSString *_Nullable hash = dict[@"hash"];
-    if (!hash) { return nil; }
+    if (hash == nil) { return nil; }
     
-    // Check if the hash isn't expired
+    // Check if the hash has expired
     uint64_t now = NSDate.ows_millisecondTimeStamp;
     NSNumber *_Nullable expiresAt = dict[@"expiresAt"];
     if (expiresAt && expiresAt.unsignedLongLongValue <= now) {
-        // The last message has expired from the storage server
-        [self removeLastMessageHashForServiceNode:serviceNode transaction:transaction];
+        [self removeLastMessageHashForSnode:snode transaction:transaction];
         return nil;
     }
     
     return hash;
 }
 
-- (void)setLastMessageHashForServiceNode:(NSString *)serviceNode hash:(NSString *)hash expiresAt:(u_int64_t)expiresAt transaction:(YapDatabaseReadWriteTransaction *)transaction {
+- (void)setLastMessageHashForSnode:(NSString *)snode hash:(NSString *)hash expiresAt:(u_int64_t)expiresAt transaction:(YapDatabaseReadWriteTransaction *)transaction {
     NSDictionary *dict = @{ @"hash" : hash, @"expiresAt": @(expiresAt) };
-    [transaction setObject:dict forKey:serviceNode inCollection:LKLastMessageHashCollection];
+    [transaction setObject:dict forKey:snode inCollection:LKLastMessageHashCollection];
 }
 
-- (void)removeLastMessageHashForServiceNode:(NSString *)serviceNode transaction:(YapDatabaseReadWriteTransaction *)transaction {
-    [transaction removeObjectForKey:serviceNode inCollection:LKLastMessageHashCollection];
+- (void)removeLastMessageHashForSnode:(NSString *)snode transaction:(YapDatabaseReadWriteTransaction *)transaction {
+    [transaction removeObjectForKey:snode inCollection:LKLastMessageHashCollection];
 }
 
-# pragma mark - Group Chat
+# pragma mark - Open Groups
 
 #define LKMessageIDCollection @"LKMessageIDCollection"
 
@@ -212,7 +210,7 @@
     [transaction removeObjectsForKeys:serverIDs inCollection:LKMessageIDCollection];
 }
 
-# pragma mark - Restoration
+# pragma mark - Restoration from Seed
 
 #define LKGeneralCollection @"Loki"
 
