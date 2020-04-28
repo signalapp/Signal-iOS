@@ -183,7 +183,8 @@ public final class SyncMessagesProtocol : NSObject {
                 })
             case .requestReceived:
                 thread.saveFriendRequestStatus(.friends, with: transaction)
-                FriendRequestProtocol.sendFriendRequestAcceptanceMessage(to: hexEncodedPublicKey, in: thread, using: transaction) // TODO: Shouldn't this be acceptFriendRequest so it takes into account multi device?
+                // Not sendFriendRequestAcceptanceMessage(to:in:using:) to take into account multi device
+                FriendRequestProtocol.acceptFriendRequest(from: hexEncodedPublicKey, in: thread, using: transaction)
             default: break
             }
         }
