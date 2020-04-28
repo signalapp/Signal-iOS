@@ -30,8 +30,8 @@
 #define LKPreKeyContactCollection @"LKPreKeyContactCollection"
 #define OWSPrimaryStoragePreKeyStoreCollection @"TSStorageManagerPreKeyStoreCollection"
 
-- (BOOL)hasPreKeyRecordForContact:(NSString *)pubKey {
-    int preKeyId = [self.dbReadWriteConnection intForKey:pubKey inCollection:LKPreKeyContactCollection];
+- (BOOL)hasPreKeyRecordForContact:(NSString *)hexEncodedPublicKey {
+    int preKeyId = [self.dbReadWriteConnection intForKey:hexEncodedPublicKey inCollection:LKPreKeyContactCollection];
     return preKeyId > 0;
 }
 
@@ -63,16 +63,16 @@
     }
 }
 
-- (PreKeyRecord *)generateAndStorePreKeyRecordForContact:(NSString *)pubKey {
-    [LKLogger print:[NSString stringWithFormat:@"[Loki] Generating new pre key record for: %@.", pubKey]];
-    OWSAssertDebug(pubKey.length > 0);
+- (PreKeyRecord *)generateAndStorePreKeyRecordForContact:(NSString *)hexEncodedPublicKey {
+    [LKLogger print:[NSString stringWithFormat:@"[Loki] Generating new pre key record for: %@.", hexEncodedPublicKey]];
+    OWSAssertDebug(hexEncodedPublicKey.length > 0);
     
     NSArray<PreKeyRecord *> *records = [self generatePreKeyRecords:1];
     OWSAssertDebug(records.count > 0);
     [self storePreKeyRecords:records];
 
     PreKeyRecord *record = records.firstObject;
-    [self.dbReadWriteConnection setInt:record.Id forKey:pubKey inCollection:LKPreKeyContactCollection];
+    [self.dbReadWriteConnection setInt:record.Id forKey:hexEncodedPublicKey inCollection:LKPreKeyContactCollection];
     
     return record;
 }
