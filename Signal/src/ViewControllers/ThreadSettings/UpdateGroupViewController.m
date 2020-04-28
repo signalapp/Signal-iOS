@@ -357,7 +357,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                    newTitle:newTitle
                                                               newAvatarData:newAvatarData
                                                                   v1Members:memberSet];
-    if ([self.oldGroupModel isEqualToGroupModel:newGroupModel]) {
+    if ([self.oldGroupModel isEqualToGroupModel:newGroupModel ignoreRevision:YES]) {
         return nil;
     }
     return newGroupModel;

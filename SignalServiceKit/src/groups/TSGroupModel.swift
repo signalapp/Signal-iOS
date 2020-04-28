@@ -77,8 +77,9 @@ public class TSGroupModelV2: TSGroupModel {
         return Array(groupMembership.nonPendingMembers)
     }
 
-    public override func isEqual(to model: TSGroupModel) -> Bool {
-        guard super.isEqual(to: model) else {
+    public override func isEqual(to model: TSGroupModel,
+                                 ignoreRevision: Bool) -> Bool {
+        guard super.isEqual(to: model, ignoreRevision: ignoreRevision) else {
             return false
         }
         guard let other = model as? TSGroupModelV2 else {
@@ -93,7 +94,7 @@ public class TSGroupModelV2: TSGroupModel {
         guard other.secretParamsData == secretParamsData else {
             return false
         }
-        guard other.revision == revision else {
+        guard ignoreRevision || other.revision == revision else {
             return false
         }
         guard other.avatarUrlPath == avatarUrlPath else {

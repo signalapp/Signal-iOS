@@ -362,10 +362,10 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
             throw OWSAssertionError("Invalid group model.")
         }
         guard updatedGroupModel.revision > changedGroupModel.oldGroupModel.revision else {
-            throw OWSAssertionError("Invalid groupV2Revision: \(changedGroupModel.newGroupModel.revision).")
+            throw OWSAssertionError("Invalid groupV2Revision: \(updatedGroupModel.revision) <= \(changedGroupModel.oldGroupModel.revision).")
         }
         guard updatedGroupModel.revision >= changedGroupModel.newGroupModel.revision else {
-            throw OWSAssertionError("Invalid groupV2Revision: \(changedGroupModel.newGroupModel.revision).")
+            throw OWSAssertionError("Invalid groupV2Revision: \(updatedGroupModel.revision) < \(changedGroupModel.newGroupModel.revision).")
         }
         return updatedGroupThread
     }
@@ -471,11 +471,11 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                 let newGroupModel = try builder.build(transaction: transaction)
 
                 if changeRevision == oldGroupModel.revision {
-                    if !oldGroupModel.isEqual(to: newGroupModel) {
+                    if !oldGroupModel.isEqual(to: newGroupModel, ignoreRevision: false) {
                         // Sometimes we re-apply the snapshot corresponding to the
                         // current revision when refreshing the group from the service.
                         // This should match the state in the database.  If it doesn't,
-                        // this reflects a bug, perhaps\ a deviation in how the service
+                        // this reflects a bug, perhaps a deviation in how the service
                         // and client apply the "group changes" to the local model.
                         Logger.verbose("oldGroupModel: \(oldGroupModel.debugDescription)")
                         Logger.verbose("newGroupModel: \(newGroupModel.debugDescription)")
