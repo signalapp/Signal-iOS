@@ -370,7 +370,7 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
             if title == currentGroupModel.groupName {
                 // Redundant change, not a conflict.
             } else {
-                let encryptedData = try groupV2Params.encryptString(title)
+                let encryptedData = try groupV2Params.encryptGroupName(title)
                 let actionBuilder = GroupsProtoGroupChangeActionsModifyTitleAction.builder()
                 actionBuilder.setTitle(encryptedData)
                 actionsBuilder.setModifyTitle(try actionBuilder.build())
@@ -562,15 +562,8 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
             if newDisappearingMessageToken == currentDisappearingMessageToken {
                 // Redundant change, not a conflict.
             } else {
+                let encryptedTimerData = try groupV2Params.encryptDisappearingMessagesTimer(newDisappearingMessageToken)
                 let actionBuilder = GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction.builder()
-                let timerBuilder = GroupsProtoDisappearingMessagesTimer.builder()
-                if newDisappearingMessageToken.isEnabled {
-                    timerBuilder.setDuration(newDisappearingMessageToken.durationSeconds)
-                } else {
-                    timerBuilder.setDuration(0)
-                }
-                let timerData = try timerBuilder.buildSerializedData()
-                let encryptedTimerData = try groupV2Params.encryptBlob(timerData)
                 actionBuilder.setTimer(encryptedTimerData)
                 actionsBuilder.setModifyDisappearingMessagesTimer(try actionBuilder.build())
                 didChange = true

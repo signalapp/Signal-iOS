@@ -104,6 +104,10 @@ class ConversationViewItemActions: NSObject {
             actions.append(replyAction)
         }
 
+        if conversationViewItem.canForwardMessage {
+            actions.append(MessageActionBuilder.forwardMessage(conversationViewItem: conversationViewItem, delegate: delegate))
+        }
+
         let selectAction = MessageActionBuilder.selectMessage(conversationViewItem: conversationViewItem, delegate: delegate)
         actions.append(selectAction)
 
@@ -132,6 +136,10 @@ class ConversationViewItemActions: NSObject {
             actions.append(replyAction)
         }
 
+        if conversationViewItem.canForwardMessage {
+            actions.append(MessageActionBuilder.forwardMessage(conversationViewItem: conversationViewItem, delegate: delegate))
+        }
+
         let selectAction = MessageActionBuilder.selectMessage(conversationViewItem: conversationViewItem, delegate: delegate)
         actions.append(selectAction)
 
@@ -151,6 +159,10 @@ class ConversationViewItemActions: NSObject {
         if shouldAllowReply {
             let replyAction = MessageActionBuilder.reply(conversationViewItem: conversationViewItem, delegate: delegate)
             actions.append(replyAction)
+        }
+
+        if conversationViewItem.canForwardMessage {
+            actions.append(MessageActionBuilder.forwardMessage(conversationViewItem: conversationViewItem, delegate: delegate))
         }
 
         let selectAction = MessageActionBuilder.selectMessage(conversationViewItem: conversationViewItem, delegate: delegate)

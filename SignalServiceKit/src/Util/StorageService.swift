@@ -91,6 +91,19 @@ public struct StorageService {
             let builder = StorageServiceProtoManifestRecordKey.builder(data: data, type: type)
             return try builder.build()
         }
+
+        public static func deduplicate(_ identifiers: [StorageIdentifier]) -> [StorageIdentifier] {
+            var identifierTypeMap = [Data: StorageIdentifier]()
+            for identifier in identifiers {
+                if let existingIdentifier = identifierTypeMap[identifier.data] {
+                    Logger.verbose("identifier.data: \(identifier.data.hexadecimalString)")
+                    owsFailDebug("Duplicate identifiers in manifest with types: \(identifier.type), \(existingIdentifier.type)")
+                } else {
+                    identifierTypeMap[identifier.data] = identifier
+                }
+            }
+            return Array(identifierTypeMap.values)
+        }
     }
 
     public struct StorageItem {
@@ -294,8 +307,11 @@ public struct StorageService {
     /// Fetch a list of item records from the service
     ///
     /// The response will include only the items that could be found on the service
-    public static func fetchItems(for keys: [StorageIdentifier]) -> Promise<[StorageItem]> {
+    public static func fetchItems(for identifiers: [StorageIdentifier]) -> Promise<[StorageItem]> {
         Logger.info("")
+
+        let keys = StorageIdentifier.deduplicate(identifiers)
+
         guard !keys.isEmpty else { return Promise.value([]) }
 
         return DispatchQueue.global().async(.promise) {
@@ -644,4 +660,25 @@ public extension StorageService {
 
 #endif
 
+// MARK: -
+
 extension StorageServiceProtoManifestRecordKeyType: Codable {}
+
+extension StorageServiceProtoManifestRecordKeyType: CustomStringConvertible {
+    public var description: String {
+        switch self {
+        case .unknown:
+            return ".unknown"
+        case .contact:
+            return ".contact"
+        case .groupv1:
+            return ".groupv1"
+        case .groupv2:
+            return ".groupv2"
+        case .account:
+            return ".account"
+        case .UNRECOGNIZED:
+            return ".UNRECOGNIZED"
+        }
+    }
+}

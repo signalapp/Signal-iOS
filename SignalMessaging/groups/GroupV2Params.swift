@@ -33,14 +33,14 @@ public extension TSGroupModelV2 {
 // MARK: -
 
 public extension GroupV2Params {
-    func encryptString(_ value: String) throws -> Data {
+    fileprivate func encryptString(_ value: String) throws -> Data {
         guard let plaintext: Data = value.data(using: .utf8) else {
             throw OWSAssertionError("Could not encrypt value.")
         }
         return try encryptBlob(plaintext)
     }
 
-    func decryptString(_ data: Data) throws -> String {
+    fileprivate func decryptString(_ data: Data) throws -> String {
         let plaintext = try decryptBlob(data)
         guard let string = String(bytes: plaintext, encoding: .utf8) else {
             throw OWSAssertionError("Could not decrypt value.")
@@ -48,7 +48,7 @@ public extension GroupV2Params {
         return string
     }
 
-    func encryptBlob(_ plaintext: Data) throws -> Data {
+    fileprivate func encryptBlob(_ plaintext: Data) throws -> Data {
         guard !DebugFlags.groupsV2corruptBlobEncryption else {
             return Randomness.generateRandomBytes(Int32(plaintext.count))
         }
@@ -59,7 +59,7 @@ public extension GroupV2Params {
         return ciphertext
     }
 
-    func decryptBlob(_ ciphertext: Data) throws -> Data {
+    fileprivate func decryptBlob(_ ciphertext: Data) throws -> Data {
         let clientZkGroupCipher = ClientZkGroupCipher(groupSecretParams: groupSecretParams)
         let plaintext = try clientZkGroupCipher.decryptBlob(blobCiphertext: [UInt8](ciphertext)).asData
         assert(ciphertext != plaintext)
@@ -90,5 +90,94 @@ public extension GroupV2Params {
         let profileKey = try clientZkGroupCipher.decryptProfileKey(profileKeyCiphertext: profileKeyCiphertext,
                                                                    uuid: zkgUuid)
         return profileKey.serialize().asData
+    }
+}
+
+// MARK: -
+
+public extension GroupV2Params {
+    func decryptDisappearingMessagesTimer(_ ciphertext: Data?) -> DisappearingMessageToken {
+        guard let ciphertext = ciphertext else {
+            // Treat a missing value as disabled.
+            return DisappearingMessageToken.disabledToken
+        }
+        do {
+            let blobProtoData = try decryptBlob(ciphertext)
+            let blobProto = try GroupsProtoGroupAttributeBlob.parseData(blobProtoData)
+            if let blobContent = blobProto.content {
+                switch blobContent {
+                case .disappearingMessagesDuration(let value):
+                    return DisappearingMessageToken.token(forProtoExpireTimer: value)
+                default:
+                    owsFailDebug("Invalid disappearing messages value.")
+                }
+            }
+        } catch {
+            owsFailDebug("Could not decrypt and parse disappearing messages state: \(error).")
+        }
+        return DisappearingMessageToken.disabledToken
+    }
+
+    func encryptDisappearingMessagesTimer(_ token: DisappearingMessageToken) throws -> Data {
+        let duration = (token.isEnabled
+            ? token.durationSeconds
+            : 0)
+        let blobBuilder = GroupsProtoGroupAttributeBlob.builder()
+        blobBuilder.setContent(GroupsProtoGroupAttributeBlobOneOfContent.disappearingMessagesDuration(duration))
+        let blobData = try blobBuilder.buildSerializedData()
+        let encryptedTimerData = try encryptBlob(blobData)
+        return encryptedTimerData
+    }
+
+    func decryptGroupName(_ ciphertext: Data?) -> String? {
+        guard let ciphertext = ciphertext else {
+            // Treat a missing value as no value.
+            return nil
+        }
+        do {
+            let blobProtoData = try decryptBlob(ciphertext)
+            let blobProto = try GroupsProtoGroupAttributeBlob.parseData(blobProtoData)
+            if let blobContent = blobProto.content {
+                switch blobContent {
+                case .title(let value):
+                    return value
+                default:
+                    owsFailDebug("Invalid group name value.")
+                }
+            }
+        } catch {
+            owsFailDebug("Could not decrypt group name: \(error).")
+        }
+        return nil
+    }
+
+    func encryptGroupName(_ value: String) throws -> Data {
+        let blobBuilder = GroupsProtoGroupAttributeBlob.builder()
+        blobBuilder.setContent(GroupsProtoGroupAttributeBlobOneOfContent.title(value))
+        let blobData = try blobBuilder.buildSerializedData()
+        let encryptedTimerData = try encryptBlob(blobData)
+        return encryptedTimerData
+    }
+
+    func decryptGroupAvatar(_ ciphertext: Data) throws -> Data? {
+        let blobProtoData = try decryptBlob(ciphertext)
+        let blobProto = try GroupsProtoGroupAttributeBlob.parseData(blobProtoData)
+        if let blobContent = blobProto.content {
+            switch blobContent {
+            case .avatar(let value):
+                return value
+            default:
+                owsFailDebug("Invalid group avatar value.")
+            }
+        }
+        return nil
+    }
+
+    func encryptGroupAvatar(_ value: Data) throws -> Data {
+        let blobBuilder = GroupsProtoGroupAttributeBlob.builder()
+        blobBuilder.setContent(GroupsProtoGroupAttributeBlobOneOfContent.avatar(value))
+        let blobData = try blobBuilder.buildSerializedData()
+        let encryptedTimerData = try encryptBlob(blobData)
+        return encryptedTimerData
     }
 }
