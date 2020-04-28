@@ -457,9 +457,9 @@ NS_ASSUME_NONNULL_BEGIN
         } else if (contentProto.dataMessage) {
 
             // Loki: Don't process session request messages any further
-            if ([LKSessionManagementProtocol isSessionRequestMessage:dataMessage]) { return; }
+            if ([LKSessionManagementProtocol isSessionRequestMessage:contentProto.dataMessage]) { return; }
             // Loki: Don't process session restore messages any further
-            if ([LKSessionManagementProtocol isSessionRestoreMessage:dataMessage]) { return; }
+            if ([LKSessionManagementProtocol isSessionRestoreMessage:contentProto.dataMessage]) { return; }
 
             [self handleIncomingEnvelope:envelope
                          withDataMessage:contentProto.dataMessage
