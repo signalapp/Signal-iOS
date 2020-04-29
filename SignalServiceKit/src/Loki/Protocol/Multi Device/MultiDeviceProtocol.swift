@@ -49,7 +49,7 @@ public final class MultiDeviceProtocol : NSObject {
         // TODO: Apparently it's okay that the thread, sender certificate, etc. don't get changed?
         return OWSMessageSend(message: messageSend.message, thread: messageSend.thread, recipient: recipient,
             senderCertificate: messageSend.senderCertificate, udAccess: messageSend.udAccess, localNumber: messageSend.localNumber, success: {
-            seal.fulfill(messageSend.thread as! TSContactThread)
+            seal.fulfill(messageSend.message.thread as! TSContactThread)
         }, failure: { error in
             seal.reject(error)
         })
