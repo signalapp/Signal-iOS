@@ -176,6 +176,7 @@ public final class MultiDeviceProtocol : NSObject {
         let udManager = SSKEnvironment.shared.udManager
         let senderCertificate = udManager.getSenderCertificate()
         let (promise, seal) = Promise<OWSMessageSend>.pending()
+        // Dispatch async on the main queue to avoid nested write transactions
         DispatchQueue.main.async {
             var recipientUDAccess: OWSUDAccess?
             if let senderCertificate = senderCertificate {

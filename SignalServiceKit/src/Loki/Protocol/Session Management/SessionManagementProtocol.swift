@@ -91,8 +91,7 @@ public final class SessionManagementProtocol : NSObject {
         let devices = thread.sessionRestoreDevices // TODO: Rename this
         for device in devices {
             guard device.count != 0 else { continue }
-            let sessionResetMessageSend = getSessionResetMessageSend(for: device, in: transaction)
-            OWSDispatch.sendingQueue().async {
+            getSessionResetMessageSend(for: device, in: transaction).done(on: OWSDispatch.sendingQueue()) { sessionResetMessageSend in
                 messageSender.sendMessage(sessionResetMessageSend)
             }
         }
@@ -112,7 +111,11 @@ public final class SessionManagementProtocol : NSObject {
     }
 
     @objc(getSessionResetMessageSendForHexEncodedPublicKey:in:)
-    public static func getSessionResetMessageSend(for hexEncodedPublicKey: String, in transaction: YapDatabaseReadWriteTransaction) -> OWSMessageSend {
+    public static func objc_getSessionResetMessageSend(for hexEncodedPublicKey: String, in transaction: YapDatabaseReadWriteTransaction) -> AnyPromise {
+        return AnyPromise.from(getSessionResetMessageSend(for: hexEncodedPublicKey, in: transaction))
+    }
+
+    public static func getSessionResetMessageSend(for hexEncodedPublicKey: String, in transaction: YapDatabaseReadWriteTransaction) -> Promise<OWSMessageSend> {
         let thread = TSContactThread.getOrCreateThread(withContactId: hexEncodedPublicKey, transaction: transaction)
         let masterHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: hexEncodedPublicKey, in: transaction)
         let isSlaveDeviceThread = masterHexEncodedPublicKey != hexEncodedPublicKey
@@ -122,16 +125,22 @@ public final class SessionManagementProtocol : NSObject {
         let recipient = SignalRecipient.getOrBuildUnsavedRecipient(forRecipientId: hexEncodedPublicKey, transaction: transaction)
         let udManager = SSKEnvironment.shared.udManager
         let senderCertificate = udManager.getSenderCertificate()
-        var recipientUDAccess: OWSUDAccess?
-        if let senderCertificate = senderCertificate {
-            recipientUDAccess = udManager.udAccess(forRecipientId: hexEncodedPublicKey, requireSyncAccess: true)
+        let (promise, seal) = Promise<OWSMessageSend>.pending()
+        // Dispatch async on the main queue to avoid nested write transactions
+        DispatchQueue.main.async {
+            var recipientUDAccess: OWSUDAccess?
+            if let senderCertificate = senderCertificate {
+                recipientUDAccess = udManager.udAccess(forRecipientId: hexEncodedPublicKey, requireSyncAccess: true) // Starts a new write transaction internally
+            }
+            let messageSend = OWSMessageSend(message: message, thread: thread, recipient: recipient, senderCertificate: senderCertificate,
+                udAccess: recipientUDAccess, localNumber: getUserHexEncodedPublicKey(), success: {
+
+            }, failure: { error in
+
+            })
+            seal.fulfill(messageSend)
         }
-        return OWSMessageSend(message: message, thread: thread, recipient: recipient, senderCertificate: senderCertificate,
-            udAccess: recipientUDAccess, localNumber: getUserHexEncodedPublicKey(), success: {
-
-        }, failure: { error in
-
-        })
+        return promise
     }
 
     // MARK: - Receiving
