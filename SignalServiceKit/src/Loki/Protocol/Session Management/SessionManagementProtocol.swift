@@ -80,7 +80,7 @@ public final class SessionManagementProtocol : NSObject {
     }
 
     // MARK: - Sending
-    // TODO: Confusing that we have this but also the receiving version
+    // TODO: Confusing that we have this but also a receiving version
     @objc(sending_startSessionResetInThread:using:)
     public static func sending_startSessionReset(in thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) {
         guard let thread = thread as? TSContactThread else {
@@ -155,14 +155,13 @@ public final class SessionManagementProtocol : NSObject {
         return dataMessage.flags & UInt32(sessionRestoreFlag.rawValue) != 0
     }
 
-    // TODO: Is this only ever used for closed groups?
     @objc(isSessionRequestMessage:)
     public static func isSessionRequestMessage(_ dataMessage: SSKProtoDataMessage) -> Bool {
         let sessionRequestFlag = SSKProtoDataMessage.SSKProtoDataMessageFlags.sessionRequest
         return dataMessage.flags & UInt32(sessionRequestFlag.rawValue) != 0
     }
 
-    // TODO: This seriously needs some explanation of when we expect pre key bundles to be attached
+    // TODO: This needs an explanation of when we expect pre key bundles to be attached
     @objc(handlePreKeyBundleMessageIfNeeded:wrappedIn:using:)
     public static func handlePreKeyBundleMessageIfNeeded(_ protoContent: SSKProtoContent, wrappedIn envelope: SSKProtoEnvelope, using transaction: YapDatabaseReadWriteTransaction) {
         // The envelope source is set during UD decryption
@@ -177,7 +176,7 @@ public final class SessionManagementProtocol : NSObject {
         // If we received a friend request (i.e. also a new pre key bundle), but we were already friends with the other user, reset the session.
         // The envelope type is set during UD decryption.
         if envelope.type == .friendRequest,
-            let thread = TSContactThread.getWithContactId(hexEncodedPublicKey, transaction: transaction), // TODO: Maybe this should be getOrCreate?
+            let thread = TSContactThread.getWithContactId(hexEncodedPublicKey, transaction: transaction), // TODO: Should this be getOrCreate?
             thread.isContactFriend {
             receiving_startSessionReset(in: thread, using: transaction)
             // Notify our other devices that we've started a session reset
@@ -186,7 +185,7 @@ public final class SessionManagementProtocol : NSObject {
         }
     }
 
-    // TODO: Confusing that we have this but also the sending version
+    // TODO: Confusing that we have this but also a sending version
     @objc(receiving_startSessionResetInThread:using:)
     public static func receiving_startSessionReset(in thread: TSContactThread, using transaction: YapDatabaseReadWriteTransaction) {
         let hexEncodedPublicKey = thread.contactIdentifier()

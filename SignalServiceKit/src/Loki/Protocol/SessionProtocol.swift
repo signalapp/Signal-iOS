@@ -48,7 +48,7 @@ public final class SessionProtocol : NSObject {
                 if let openGroup = LokiDatabaseUtilities.getPublicChat(for: thread.uniqueId!, in: transaction) {
                     result = [ openGroup.server ] // Aim the message at the open group server
                 } else {
-                    // TODO: Handle
+                    // TODO: Handle?
                 }
             }
         } else {
@@ -111,7 +111,8 @@ public final class SessionProtocol : NSObject {
         return !isMessageNoteToSelf(thread) && !thread.isGroupThread()
     }
 
-    // TODO: Not sure how these two relate. EDIT: I think the one below is used to block delivery receipts. That means that
+    // TODO: Not sure how these two relate
+    // EDIT: I think the one below is used to block delivery receipts. That means that
     // right now we do send delivery receipts in note to self, but not read receipts. Other than that their behavior should
     // be identical. Should we just not send any kind of receipt in note to self?
 
@@ -139,8 +140,9 @@ public final class SessionProtocol : NSObject {
     // MARK: - Decryption
     @objc(shouldSkipMessageDecryptResult:)
     public static func shouldSkipMessageDecryptResult(_ result: OWSMessageDecryptResult) -> Bool {
-        // Called from OWSMessageReceiver to prevent messages from even being added to the processing queue for some reason
-        return result.source == getUserHexEncodedPublicKey() // NOTE: This doesn't take into account multi device
+        // Called from OWSMessageReceiver to prevent messages from even being added to the processing queue
+        // TODO: Why is this function needed at all?
+        return result.source == getUserHexEncodedPublicKey() // This intentionally doesn't take into account multi device
     }
 
     // MARK: Profile Updating
@@ -167,7 +169,7 @@ public final class SessionProtocol : NSObject {
             return
         }
         let profileManager = SSKEnvironment.shared.profileManager
-        // This dispatches async on the main queue internally, where it starts a new write transaction. Apparently that's an okay thing to do in this case?
+        // This dispatches async on the main queue internally where it starts a new write transaction
         profileManager.setProfileKeyData(profileKey, forRecipientId: hexEncodedPublicKey, avatarURL: profilePictureURL)
     }
 

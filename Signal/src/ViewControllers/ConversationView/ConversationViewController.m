@@ -1237,9 +1237,11 @@ typedef enum : NSUInteger {
 }
 
 - (void)restoreSession {
-    [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [LKSessionManagementProtocol sending_startSessionResetInThread:self.thread using:transaction];
-    }];
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [LKSessionManagementProtocol sending_startSessionResetInThread:self.thread using:transaction];
+        }];
+    });
 }
 
 - (void)noLongerVerifiedBannerViewWasTapped:(UIGestureRecognizer *)sender

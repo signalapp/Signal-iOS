@@ -86,6 +86,7 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
                 })
             }.then(on: LokiAPI.workQueue) { deviceLinks -> Promise<Set<DeviceLink>> in
                 let (promise, seal) = Promise<Set<DeviceLink>>.pending()
+                // Dispatch async on the main queue to avoid nested write transactions
                 DispatchQueue.main.async {
                     storage.dbReadWriteConnection.readWrite { transaction in
                         storage.setDeviceLinks(deviceLinks, in: transaction)
@@ -126,6 +127,7 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
         deviceLinks.insert(deviceLink)
         return setDeviceLinks(deviceLinks).then(on: LokiAPI.workQueue) { _ -> Promise<Void> in
             let (promise, seal) = Promise<Void>.pending()
+            // Dispatch async on the main queue to avoid nested write transactions
             DispatchQueue.main.async {
                 storage.dbReadWriteConnection.readWrite { transaction in
                     storage.addDeviceLink(deviceLink, in: transaction)
@@ -145,6 +147,7 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
         deviceLinks.remove(deviceLink)
         return setDeviceLinks(deviceLinks).then(on: LokiAPI.workQueue) { _ -> Promise<Void> in
             let (promise, seal) = Promise<Void>.pending()
+            // Dispatch async on the main queue to avoid nested write transactions
             DispatchQueue.main.async {
                 storage.dbReadWriteConnection.readWrite { transaction in
                     storage.removeDeviceLink(deviceLink, in: transaction)
