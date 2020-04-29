@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSRequest.h"
@@ -111,6 +111,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     @synchronized(self) {
         NSString *_Nullable result = (_authUsername ?: self.tsAccountManager.storedServerUsername);
+        if (result.length < 1) {
+            OWSLogVerbose(@"%@", self.debugDescription);
+        }
         OWSAssertDebug(result.length > 0);
         return result;
     }
@@ -122,6 +125,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     @synchronized(self) {
         NSString *_Nullable result = (_authPassword ?: self.tsAccountManager.storedServerAuthToken);
+        if (result.length < 1) {
+            OWSLogVerbose(@"%@", self.debugDescription);
+        }
         OWSAssertDebug(result.length > 0);
         return result;
     }
