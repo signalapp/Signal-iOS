@@ -346,6 +346,8 @@
 		34D2CCDA2062E7D000CB1A14 /* OWSScreenLockUI.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D2CCD92062E7D000CB1A14 /* OWSScreenLockUI.m */; };
 		34D2CCDF206939B400CB1A14 /* DebugUIMessagesAction.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D2CCDB206939B100CB1A14 /* DebugUIMessagesAction.m */; };
 		34D2CCE0206939B400CB1A14 /* DebugUIMessagesAssetLoader.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D2CCDC206939B200CB1A14 /* DebugUIMessagesAssetLoader.m */; };
+		34D3E57B245A189D00F5E4A1 /* DebugUIScreenshots.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34D3E579245A189D00F5E4A1 /* DebugUIScreenshots.swift */; };
+		34D3E57C245A189D00F5E4A1 /* DebugUIScreenshots.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D3E57A245A189D00F5E4A1 /* DebugUIScreenshots.m */; };
 		34D5872F208E2C4200D2255A /* OWS109OutgoingMessageState.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D5872D208E2C4100D2255A /* OWS109OutgoingMessageState.m */; };
 		34D58730208E2C4200D2255A /* OWS109OutgoingMessageState.h in Headers */ = {isa = PBXBuildFile; fileRef = 34D5872E208E2C4100D2255A /* OWS109OutgoingMessageState.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		34D5CCA91EAE3D30005515DB /* AvatarViewHelper.m in Sources */ = {isa = PBXBuildFile; fileRef = 34D5CCA81EAE3D30005515DB /* AvatarViewHelper.m */; };
@@ -1261,6 +1263,9 @@
 		34D2CCDD206939B200CB1A14 /* DebugUIMessagesAction.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUIMessagesAction.h; sourceTree = "<group>"; };
 		34D2CCDE206939B400CB1A14 /* DebugUIMessagesAssetLoader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUIMessagesAssetLoader.h; sourceTree = "<group>"; };
 		34D2CCE220693A1700CB1A14 /* DebugUIMessagesUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUIMessagesUtils.h; sourceTree = "<group>"; };
+		34D3E578245A189D00F5E4A1 /* DebugUIScreenshots.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DebugUIScreenshots.h; sourceTree = "<group>"; };
+		34D3E579245A189D00F5E4A1 /* DebugUIScreenshots.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebugUIScreenshots.swift; sourceTree = "<group>"; };
+		34D3E57A245A189D00F5E4A1 /* DebugUIScreenshots.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = DebugUIScreenshots.m; sourceTree = "<group>"; };
 		34D5872D208E2C4100D2255A /* OWS109OutgoingMessageState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWS109OutgoingMessageState.m; sourceTree = "<group>"; };
 		34D5872E208E2C4100D2255A /* OWS109OutgoingMessageState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWS109OutgoingMessageState.h; sourceTree = "<group>"; };
 		34D5CCA71EAE3D30005515DB /* AvatarViewHelper.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = AvatarViewHelper.h; sourceTree = "<group>"; };
@@ -2621,6 +2626,9 @@
 				34E3EF0E1EFC2684007F6822 /* DebugUIPage.h */,
 				34E3EF0F1EFC2684007F6822 /* DebugUIPage.m */,
 				4556FA671F54AA9500AF40DD /* DebugUIProfile.swift */,
+				34D3E578245A189D00F5E4A1 /* DebugUIScreenshots.h */,
+				34D3E57A245A189D00F5E4A1 /* DebugUIScreenshots.m */,
+				34D3E579245A189D00F5E4A1 /* DebugUIScreenshots.swift */,
 				452037CF1EE84975004E4CDF /* DebugUISessionState.h */,
 				452037D01EE84975004E4CDF /* DebugUISessionState.m */,
 				34BECE291F74C12700D7438D /* DebugUIStress.h */,
@@ -4546,6 +4554,7 @@
 				348433DF243CA94600C7F64A /* ReplaceAdminViewController.swift in Sources */,
 				34E3EF0D1EFC235B007F6822 /* DebugUIDiskUsage.m in Sources */,
 				887EEC1F23F0B20600F8C26D /* PinReminderMegaphone.swift in Sources */,
+				34D3E57B245A189D00F5E4A1 /* DebugUIScreenshots.swift in Sources */,
 				454A84042059C787008B8C75 /* MediaTileViewController.swift in Sources */,
 				340FC8B4204DAC8D007AEB0F /* OWSBackupSettingsViewController.m in Sources */,
 				34995F1A2411838D00C70546 /* NewGroupViewController.m in Sources */,
@@ -4571,6 +4580,7 @@
 				88905E9E229CCA96004E4234 /* ExpirationNagView.swift in Sources */,
 				881D85B822D92C2B00E118DF /* OWSPinSetupViewController.swift in Sources */,
 				340FC8BA204DAC8D007AEB0F /* FingerprintViewScanController.m in Sources */,
+				34D3E57C245A189D00F5E4A1 /* DebugUIScreenshots.m in Sources */,
 				8835DDF9230CEDC300DC6B66 /* RecipientPickerViewController.m in Sources */,
 				4585C4681ED8F8D200896AEA /* SafetyNumberConfirmationAlert.swift in Sources */,
 				4C20B2B920CA10DE001BAC90 /* ConversationSearchViewController.swift in Sources */,
