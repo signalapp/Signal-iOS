@@ -29,6 +29,7 @@ extern ConversationColorName const ConversationColorNameSteel;
 
 extern ConversationColorName const kConversationColorName_Default;
 
+// TODO: Remove this once we don't use it
 typedef NS_ENUM(NSInteger, LKThreadFriendRequestStatus) {
     /// New conversation; no messages sent or received.
     LKThreadFriendRequestStatusNone,
@@ -42,7 +43,7 @@ typedef NS_ENUM(NSInteger, LKThreadFriendRequestStatus) {
     LKThreadFriendRequestStatusFriends,
     /// A friend request was sent, but it timed out (i.e. the other user didn't accept within the allocated time).
     LKThreadFriendRequestStatusRequestExpired
-};
+} __deprecated_enum_msg("Use LKFriendRequestStatus instead");
 
 /**
  *  TSThread is the superclass of TSContactThread and TSGroupThread
@@ -55,7 +56,7 @@ typedef NS_ENUM(NSInteger, LKThreadFriendRequestStatus) {
 @property (nonatomic, readonly) TSInteraction *lastInteraction;
 // Loki friend request handling
 // ========
-@property (nonatomic) LKThreadFriendRequestStatus friendRequestStatus;
+@property (nonatomic) NSInteger friendRequestStatus __deprecated_msg("use OWSPrimaryStorage.getFriendReeuqstStatusForContact instead");
 @property (nonatomic, readonly) NSString *friendRequestStatusDescription;
 /// Shorthand for checking that `friendRequestStatus` is `LKThreadFriendRequestStatusRequestSending`, `LKThreadFriendRequestStatusRequestSent`
 /// or `LKThreadFriendRequestStatusRequestReceived`.
@@ -204,7 +205,7 @@ typedef NS_ENUM(NSInteger, LKThreadFriendRequestStatus) {
 
 #pragma mark - Loki Friend Request Handling
 
-- (void)saveFriendRequestStatus:(LKThreadFriendRequestStatus)friendRequestStatus withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction;
+- (void)saveFriendRequestStatus:(LKThreadFriendRequestStatus)friendRequestStatus withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction __deprecated_msg("use OWSPrimaryStorate.setFriendRequestStatus instead");
 
 /**
  Remove any outgoing friend request message which failed to send

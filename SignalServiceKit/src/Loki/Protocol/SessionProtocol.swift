@@ -118,7 +118,14 @@ public final class SessionProtocol : NSObject {
     // Used from OWSOutgoingReceiptManager
     @objc(shouldSendReceiptForThread:)
     public static func shouldSendReceipt(for thread: TSThread) -> Bool {
-        return thread.friendRequestStatus == .friends && !thread.isGroupThread()
+        guard !thread.isGroupThread(), let contact = thread.contactIdentifier() else { return false }
+
+        var shouldSendReceipt = false;
+        storage.dbReadConnection.read { transaction in
+            shouldSendReceipt = storage.getFriendRequestStatus(forContact: contact, transaction: transaction) == .friends
+        }
+
+        return shouldSendReceipt
     }
 
     // MARK: - Receiving

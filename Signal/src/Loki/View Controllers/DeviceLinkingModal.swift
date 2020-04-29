@@ -184,13 +184,16 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
         let signedDeviceLink = DeviceLink(between: master, and: deviceLink.slave)
         LokiFileServerAPI.addDeviceLink(signedDeviceLink).done(on: DispatchQueue.main) { [weak self] in
             SSKEnvironment.shared.messageSender.send(linkingAuthorizationMessage, success: {
-                let thread = TSContactThread.getOrCreateThread(contactId: deviceLink.slave.hexEncodedPublicKey)
+                let hexEncodedPublicKey = deviceLink.slave.hexEncodedPublicKey
+                let thread = TSContactThread.getOrCreateThread(contactId: hexEncodedPublicKey)
                 thread.save()
                 let _ = SSKEnvironment.shared.syncManager.syncAllContacts()
                 let _ = SSKEnvironment.shared.syncManager.syncAllGroups()
                 let _ = SSKEnvironment.shared.syncManager.syncAllOpenGroups()
-                thread.friendRequestStatus = .friends
-                thread.save()
+                let storage = OWSPrimaryStorage.shared()
+                storage.dbReadWriteConnection.readWrite { transaction in
+                    storage.setFriendRequestStatus(.friends, forContact: hexEncodedPublicKey, transaction: transaction)
+                }
                 DispatchQueue.main.async {
                     self?.dismiss(animated: true, completion: nil)
                     self?.delegate?.handleDeviceLinkAuthorized(signedDeviceLink)

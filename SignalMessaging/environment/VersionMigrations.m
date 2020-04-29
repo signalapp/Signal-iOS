@@ -10,10 +10,12 @@
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/AppVersion.h>
 #import <SignalServiceKit/NSUserDefaults+OWS.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
+#import <SignalServiceKit/OWSPrimaryStorage+Loki.h>
 #import <SignalServiceKit/OWSRequestFactory.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSNetworkManager.h>
+#import <SignalServiceKit/TSThread.h>
+#import <SignalServiceKit/TSGroupThread.h>
 #import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -100,7 +102,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if ([self isVersion:previousVersion lessThan:@"1.1.2"] && [self.tsAccountManager isRegistered]) {
-        // TODO: Migrate Friend Request Status
+        [self moveFriendRequestStatusFromThread];
     }
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -203,6 +205,24 @@ NS_ASSUME_NONNULL_BEGIN
                 thread.groupModel.groupType = rssFeed;
                 [thread.groupModel updateGroupId:[LKGroupUtilities getEncodedRSSFeedIDAsData:feed.id]];
                 [thread saveWithTransaction:transaction];
+            }
+        }
+    }];
+}
+
+# pragma mark Loki - Upgrading Friend Request Status
+
+
+// Versions less than or equal to 1.1.1 stored friend request status on the thread
++ (void)moveFriendRequestStatusFromThread
+{
+    OWSPrimaryStorage *storage = OWSPrimaryStorage.sharedManager;
+    [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
+        NSArray *threads = [TSThread allObjectsInCollection];
+        for (TSThread *thread in threads) {
+            if (!thread.isGroupThread) {
+                NSString *hexEncodedPublicKey = thread.contactIdentifier;
+                [storage setFriendRequestStatus:thread.friendRequestStatus forContact:hexEncodedPublicKey transaction:transaction];
             }
         }
     }];

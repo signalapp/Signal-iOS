@@ -211,11 +211,15 @@ public class LokiP2PAPI : NSObject {
     
     private static func getAllFriendThreads() -> [TSContactThread] {
         var friendThreadIds = [String]()
-        TSContactThread.enumerateCollectionObjects { (object, _) in
-            guard let thread = object as? TSContactThread, let uniqueId = thread.uniqueId else { return }
-            
-            if thread.friendRequestStatus == .friends && thread.contactIdentifier() != ourHexEncodedPubKey {
-                friendThreadIds.append(thread.uniqueId!)
+
+        storage.dbReadConnection.read { transaction in
+            TSContactThread.enumerateCollectionObjects(with: transaction) { (object, _) in
+                guard let thread = object as? TSContactThread, let uniqueId = thread.uniqueId, thread.contactIdentifier() == ourHexEncodedPubKey else { return }
+
+                let status = storage.getFriendRequestStatus(forContact: thread.contactIdentifier(), transaction: transaction)
+                if (status == .friends) {
+                    friendThreadIds.append(uniqueId)
+                }
             }
         }
         

@@ -132,10 +132,11 @@ public final class FriendRequestProtocol : NSObject {
         // If we get an envelope that isn't a friend request, then we can infer that we had to use
         // Signal cipher decryption and thus that we have a session with the other person.
         let thread = TSContactThread.getOrCreateThread(withContactId: hexEncodedPublicKey, transaction: transaction)
+        let friendRequestStatus = storage.getFriendRequestStatus(forContact: hexEncodedPublicKey, transaction: transaction);
         // We shouldn't be able to skip from none to friends
-        guard thread.friendRequestStatus != .none else { return }
+        guard friendRequestStatus != .none else { return }
         // Become friends
-        thread.saveFriendRequestStatus(.friends, with: transaction)
+        storage.setFriendRequestStatus(.friends, forContact: hexEncodedPublicKey, transaction: transaction)
         if let existingFriendRequestMessage = thread.getLastInteraction(with: transaction) as? TSOutgoingMessage,
             existingFriendRequestMessage.isFriendRequest {
             existingFriendRequestMessage.saveFriendRequestStatus(.accepted, with: transaction)

@@ -168,7 +168,7 @@ public final class SyncMessagesProtocol : NSObject {
         // Try to establish sessions
         for hexEncodedPublicKey in hexEncodedPublicKeys {
             let thread = TSContactThread.getOrCreateThread(withContactId: hexEncodedPublicKey, transaction: transaction)
-            let friendRequestStatus = thread.friendRequestStatus
+            let friendRequestStatus = storage.getFriendRequestStatus(forContact: hexEncodedPublicKey, transaction: transaction)
             switch friendRequestStatus {
             case .none:
                 let messageSender = SSKEnvironment.shared.messageSender
@@ -194,7 +194,7 @@ public final class SyncMessagesProtocol : NSObject {
                     }
                 })
             case .requestReceived:
-                thread.saveFriendRequestStatus(.friends, with: transaction)
+                storage.setFriendRequestStatus(.friends, forContact: hexEncodedPublicKey, transaction: transaction)
                 // Not sendFriendRequestAcceptanceMessage(to:in:using:) to take into account multi device
                 FriendRequestProtocol.acceptFriendRequest(from: hexEncodedPublicKey, in: thread, using: transaction)
             default: break

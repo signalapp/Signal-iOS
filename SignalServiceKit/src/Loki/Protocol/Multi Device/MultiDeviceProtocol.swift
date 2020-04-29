@@ -109,10 +109,13 @@ public final class MultiDeviceProtocol : NSObject {
         let masterHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: hexEncodedPublicKey, in: transaction)
         let isSlaveDeviceThread = masterHexEncodedPublicKey != hexEncodedPublicKey
         thread.isForceHidden = isSlaveDeviceThread // TODO: Could we make this computed?
-        if thread.friendRequestStatus == .none || thread.friendRequestStatus == .requestExpired {
-            thread.saveFriendRequestStatus(.requestSent, with: transaction) // TODO: Should we always immediately mark the slave device as a friend?
-        }
         thread.save(with: transaction)
+
+        // FIXME: I don't think this should be here, the function itself should just return a message
+        let friendRequestStatus = storage.getFriendRequestStatus(forContact: hexEncodedPublicKey, transaction: transaction)
+        if friendRequestStatus == .none || friendRequestStatus == .requestExpired {
+            storage.setFriendRequestStatus(.requestSent, forContact: hexEncodedPublicKey, transaction: transaction)
+        }
         let result = FriendRequestMessage(outgoingMessageWithTimestamp: NSDate.ows_millisecondTimeStamp(), in: thread,
             messageBody: "Please accept to enable messages to be synced across devices",
             attachmentIds: [], expiresInSeconds: 0, expireStartedAt: 0, isVoiceMessage: false,
