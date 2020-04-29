@@ -5413,8 +5413,7 @@ typedef enum : NSUInteger {
             targetInteraction = interaction;
         }
     }];
-    if (targetInteraction == nil || targetInteraction.interactionType != OWSInteractionType_OutgoingMessage
-        || [LKSessionProtocol isMessageNoteToSelf:self.thread]) { return; }
+    if (targetInteraction == nil || targetInteraction.interactionType != OWSInteractionType_OutgoingMessage) { return; }
     dispatch_async(dispatch_get_main_queue(), ^{
         if (progress <= self.progressIndicatorView.progress) { return; }
         self.progressIndicatorView.alpha = 1;
