@@ -26,7 +26,7 @@ public final class TTLUtilities : NSObject {
         case .sessionRequest: return 4 * kDayInMs - 1 * kHourInMs
         case .regular: return 2 * kDayInMs
         case .typingIndicator: return 1 * kMinuteInMs
-        case .unlinkDevice: return 4 * kDayInMs
+        case .unlinkDevice: return 4 * kDayInMs - 1 * kHourInMs
         }
     }
 }

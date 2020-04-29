@@ -17,23 +17,28 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
     override internal class var authTokenCollection: String { return "LokiStorageAuthTokenCollection" }
     
     // MARK: Device Links
-    @objc(getDeviceLinksAssociatedWith:)
+    @objc(getDeviceLinksAssociatedWithHexEncodedPublicKey:)
     public static func objc_getDeviceLinks(associatedWith hexEncodedPublicKey: String) -> AnyPromise {
         return AnyPromise.from(getDeviceLinks(associatedWith: hexEncodedPublicKey))
     }
 
     /// Gets the device links associated with the given hex encoded public key from the
     /// server and stores and returns the valid ones.
-    public static func getDeviceLinks(associatedWith hexEncodedPublicKey: String, in transaction: YapDatabaseReadWriteTransaction? = nil) -> Promise<Set<DeviceLink>> {
-        return getDeviceLinks(associatedWith: [ hexEncodedPublicKey ], in: transaction)
+    public static func getDeviceLinks(associatedWith hexEncodedPublicKey: String) -> Promise<Set<DeviceLink>> {
+        return getDeviceLinks(associatedWith: [ hexEncodedPublicKey ])
+    }
+
+    @objc(getDeviceLinksAssociatedWithHexEncodedPublicKeys:)
+    public static func objc_getDeviceLinks(associatedWith hexEncodedPublicKeys: Set<String>) -> AnyPromise {
+        return AnyPromise.from(getDeviceLinks(associatedWith: hexEncodedPublicKeys))
     }
     
     /// Gets the device links associated with the given hex encoded public keys from the
     /// server and stores and returns the valid ones.
-    public static func getDeviceLinks(associatedWith hexEncodedPublicKeys: Set<String>, in transaction: YapDatabaseReadWriteTransaction? = nil) -> Promise<Set<DeviceLink>> {
+    public static func getDeviceLinks(associatedWith hexEncodedPublicKeys: Set<String>) -> Promise<Set<DeviceLink>> {
         let hexEncodedPublicKeysDescription = "[ \(hexEncodedPublicKeys.joined(separator: ", ")) ]"
         print("[Loki] Getting device links for: \(hexEncodedPublicKeysDescription).")
-        return getAuthToken(for: server, in: transaction).then(on: LokiAPI.workQueue) { token -> Promise<Set<DeviceLink>> in
+        return getAuthToken(for: server).then(on: LokiAPI.workQueue) { token -> Promise<Set<DeviceLink>> in
             let queryParameters = "ids=\(hexEncodedPublicKeys.map { "@\($0)" }.joined(separator: ","))&include_user_annotations=1"
             let url = URL(string: "\(server)/users?\(queryParameters)")!
             let request = TSRequest(url: url)
@@ -79,11 +84,15 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
                         return deviceLink
                     }
                 })
-            }.map(on: LokiAPI.workQueue) { deviceLinks -> Set<DeviceLink> in
-                storage.dbReadWriteConnection.readWrite { transaction in
-                    storage.setDeviceLinks(deviceLinks, in: transaction)
+            }.then(on: LokiAPI.workQueue) { deviceLinks -> Promise<Set<DeviceLink>> in
+                let (promise, seal) = Promise<Set<DeviceLink>>.pending()
+                DispatchQueue.main.async {
+                    storage.dbReadWriteConnection.readWrite { transaction in
+                        storage.setDeviceLinks(deviceLinks, in: transaction)
+                    }
+                    seal.fulfill(deviceLinks)
                 }
-                return deviceLinks
+                return promise
             }
         }
     }
@@ -115,10 +124,15 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
             deviceLinks = storage.getDeviceLinks(for: userHexEncodedPublicKey, in: transaction)
         }
         deviceLinks.insert(deviceLink)
-        return setDeviceLinks(deviceLinks).map {
-            storage.dbReadWriteConnection.readWrite { transaction in
-                storage.addDeviceLink(deviceLink, in: transaction)
+        return setDeviceLinks(deviceLinks).then(on: LokiAPI.workQueue) { _ -> Promise<Void> in
+            let (promise, seal) = Promise<Void>.pending()
+            DispatchQueue.main.async {
+                storage.dbReadWriteConnection.readWrite { transaction in
+                    storage.addDeviceLink(deviceLink, in: transaction)
+                }
+                seal.fulfill(())
             }
+            return promise
         }
     }
 
@@ -129,10 +143,15 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
             deviceLinks = storage.getDeviceLinks(for: userHexEncodedPublicKey, in: transaction)
         }
         deviceLinks.remove(deviceLink)
-        return setDeviceLinks(deviceLinks).map {
-            storage.dbReadWriteConnection.readWrite { transaction in
-                storage.removeDeviceLink(deviceLink, in: transaction)
+        return setDeviceLinks(deviceLinks).then(on: LokiAPI.workQueue) { _ -> Promise<Void> in
+            let (promise, seal) = Promise<Void>.pending()
+            DispatchQueue.main.async {
+                storage.dbReadWriteConnection.readWrite { transaction in
+                    storage.removeDeviceLink(deviceLink, in: transaction)
+                }
+                seal.fulfill(())
             }
+            return promise
         }
     }
     

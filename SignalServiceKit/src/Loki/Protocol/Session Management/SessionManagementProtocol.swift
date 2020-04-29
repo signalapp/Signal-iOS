@@ -147,7 +147,6 @@ public final class SessionManagementProtocol : NSObject {
             thread.addSessionRestoreDevice(hexEncodedPublicKey, transaction: transaction)
         default: break
         }
-
     }
 
     @objc(isSessionRestoreMessage:)
@@ -175,11 +174,11 @@ public final class SessionManagementProtocol : NSObject {
             return
         }
         storage.setPreKeyBundle(preKeyBundle, forContact: hexEncodedPublicKey, transaction: transaction)
-        // If we received a friend request (i.e. also a new pre key bundle), but we were already friends with the other user, reset the session
-        // The envelope type is set during UD decryption
+        // If we received a friend request (i.e. also a new pre key bundle), but we were already friends with the other user, reset the session.
+        // The envelope type is set during UD decryption.
         if envelope.type == .friendRequest,
-            let thread = TSContactThread.getWithContactId(hexEncodedPublicKey, transaction: transaction),
-            thread.isContactFriend { // TODO: Maybe this should be getOrCreate?
+            let thread = TSContactThread.getWithContactId(hexEncodedPublicKey, transaction: transaction), // TODO: Maybe this should be getOrCreate?
+            thread.isContactFriend {
             receiving_startSessionReset(in: thread, using: transaction)
             // Notify our other devices that we've started a session reset
             let syncManager = SSKEnvironment.shared.syncManager
