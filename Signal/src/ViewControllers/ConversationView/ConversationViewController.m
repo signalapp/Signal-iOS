@@ -2277,6 +2277,9 @@ typedef enum : NSUInteger {
     if (self.threadViewModel.hasPendingMessageRequest) {
         return NO;
     }
+    if (viewItem.isViewOnceMessage) {
+        return NO;
+    }
 
     if (viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)viewItem.interaction;
