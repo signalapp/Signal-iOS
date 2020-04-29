@@ -128,7 +128,15 @@ final class ConversationTitleView : UIView {
             guard interaction.timestamp == timestamp.uint64Value else { return }
             uncheckedTargetInteraction = interaction
         }
-        guard let targetInteraction = uncheckedTargetInteraction, targetInteraction.interactionType() == .outgoingMessage, status.rawValue > (currentStatus?.rawValue ?? 0) else { return }
+        guard let targetInteraction = uncheckedTargetInteraction, targetInteraction.interactionType() == .outgoingMessage,
+            status.rawValue > (currentStatus?.rawValue ?? 0), let hexEncodedPublicKey = targetInteraction.thread.contactIdentifier() else { return }
+        var masterHexEncodedPublicKey: String!
+        let storage = OWSPrimaryStorage.shared()
+        storage.dbReadConnection.read { transaction in
+            masterHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: hexEncodedPublicKey, in: transaction) ?? hexEncodedPublicKey
+        }
+        let isSlaveDevice = masterHexEncodedPublicKey != hexEncodedPublicKey
+        guard !isSlaveDevice else { return }
         currentStatus = status
     }
     

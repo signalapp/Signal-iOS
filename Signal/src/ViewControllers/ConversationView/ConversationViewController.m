@@ -5416,6 +5416,14 @@ typedef enum : NSUInteger {
         }
     }];
     if (targetInteraction == nil || targetInteraction.interactionType != OWSInteractionType_OutgoingMessage) { return; }
+    NSString *hexEncodedPublicKey = targetInteraction.thread.contactIdentifier;
+    if (hexEncodedPublicKey == nil) { return; }
+    __block NSString *masterHexEncodedPublicKey;
+    [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        masterHexEncodedPublicKey = [LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:hexEncodedPublicKey in:transaction] ?: hexEncodedPublicKey;
+    }];
+    BOOL isSlaveDevice = ![masterHexEncodedPublicKey isEqual:hexEncodedPublicKey];
+    if (isSlaveDevice) { return; }
     dispatch_async(dispatch_get_main_queue(), ^{
         if (progress <= self.progressIndicatorView.progress) { return; }
         self.progressIndicatorView.alpha = 1;
