@@ -4466,14 +4466,14 @@ typedef enum : NSUInteger {
 - (void)acceptFriendRequest:(TSIncomingMessage *)friendRequest
 {
     [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [LKFriendRequestProtocol acceptFriendRequestFrom:friendRequest.authorId in:self.thread using:transaction];
+        [LKFriendRequestProtocol acceptFriendRequestInThread:self.thread using:transaction];
     }];
 }
 
 - (void)declineFriendRequest:(TSIncomingMessage *)friendRequest
 {
     [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [LKFriendRequestProtocol declineFriendRequest:friendRequest in:self.thread using:transaction];
+        [LKFriendRequestProtocol declineFriendRequestInThread:self.thread using:transaction];
     }];
 }
 
