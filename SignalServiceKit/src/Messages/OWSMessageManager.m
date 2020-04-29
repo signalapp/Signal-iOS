@@ -1326,7 +1326,7 @@ NS_ASSUME_NONNULL_BEGIN
                 BOOL wasCurrentUserRemovedFromGroup = [removedMemberIds containsObject:userMasterHexEncodedPublicKey];
                 if (!wasCurrentUserRemovedFromGroup) {
                     // Loki: Try to establish sessions with all members when a group is created or updated
-                    [LKClosedGroupsProtocol establishSessionsIfNeededWithClosedGroupMembers:newMemberIds.allObjects in:newGroupThread using:transaction];
+                    [LKClosedGroupsProtocol establishSessionsIfNeededWithClosedGroupMembers:newMemberIds.allObjects in:newGroupThread];
                 }
 
                 [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithDisappearingDuration:dataMessage.expireTimer

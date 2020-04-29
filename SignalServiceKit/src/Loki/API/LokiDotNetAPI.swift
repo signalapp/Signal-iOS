@@ -26,43 +26,33 @@ public class LokiDotNetAPI : NSObject {
     /// To be overridden by subclasses.
     internal class var authTokenCollection: String { preconditionFailure("authTokenCollection is abstract and must be overridden.") }
 
-    private static func getAuthTokenFromDatabase(for server: String, in transaction: YapDatabaseReadTransaction? = nil) -> String? {
-        func getAuthTokenInternal(in transaction: YapDatabaseReadTransaction) -> String? {
-            return transaction.object(forKey: server, inCollection: authTokenCollection) as! String?
+    private static func getAuthTokenFromDatabase(for server: String) -> String? {
+        var result: String? = nil
+        storage.dbReadConnection.read { transaction in
+            result = transaction.object(forKey: server, inCollection: authTokenCollection) as! String?
         }
-        if let transaction = transaction {
-            return getAuthTokenInternal(in: transaction)
-        } else {
-            var result: String? = nil
-            storage.dbReadConnection.read { transaction in
-                result = getAuthTokenInternal(in: transaction)
-            }
-            return result
-        }
+        return result
     }
     
-    internal static func getAuthToken(for server: String, in transaction: YapDatabaseReadWriteTransaction? = nil) -> Promise<String> {
-        if let token = getAuthTokenFromDatabase(for: server, in: transaction) {
+    internal static func getAuthToken(for server: String) -> Promise<String> {
+        if let token = getAuthTokenFromDatabase(for: server) {
             return Promise.value(token)
         } else {
-            return requestNewAuthToken(for: server).then(on: LokiAPI.workQueue) { submitAuthToken($0, for: server) }.map { token -> String in
-                setAuthToken(for: server, to: token, in: transaction) // TODO: Does keeping the transaction this long even make sense?
-                return token
+            return requestNewAuthToken(for: server).then(on: LokiAPI.workQueue) { submitAuthToken($0, for: server) }.then(on: LokiAPI.workQueue) { token -> Promise<String> in
+                let (promise, seal) = Promise<String>.pending()
+                DispatchQueue.main.async {
+                    storage.dbReadWriteConnection.readWrite { transaction in
+                        setAuthToken(for: server, to: token, in: transaction)
+                    }
+                    seal.fulfill(token)
+                }
+                return promise
             }
         }
     }
 
-    private static func setAuthToken(for server: String, to newValue: String, in transaction: YapDatabaseReadWriteTransaction? = nil) {
-        func setAuthTokenInternal(in transaction: YapDatabaseReadWriteTransaction) {
-            transaction.setObject(newValue, forKey: server, inCollection: authTokenCollection)
-        }
-        if let transaction = transaction, transaction.connection.pendingTransactionCount != 0 {
-            setAuthTokenInternal(in: transaction)
-        } else {
-            storage.dbReadWriteConnection.readWrite { transaction in
-                setAuthTokenInternal(in: transaction)
-            }
-        }
+    private static func setAuthToken(for server: String, to newValue: String, in transaction: YapDatabaseReadWriteTransaction) {
+        transaction.setObject(newValue, forKey: server, inCollection: authTokenCollection)
     }
 
     // MARK: Lifecycle

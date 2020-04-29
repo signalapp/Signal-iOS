@@ -99,8 +99,8 @@ public class OWSMessageSend: NSObject {
         OWSPrimaryStorage.shared().dbReadConnection.read { transaction in
             recipient = SignalRecipient.getOrBuildUnsavedRecipient(forRecipientId: destination.hexEncodedPublicKey, transaction: transaction)
         }
-        let success = (destination.kind == .master) ? self.success : { }
-        let failure = (destination.kind == .master) ? self.failure : { _ in }
+        let success = destination.isMaster ? self.success : { }
+        let failure = destination.isMaster ? self.failure : { _ in }
         return OWSMessageSend(message: message, thread: thread, recipient: recipient, senderCertificate: senderCertificate, udAccess: udAccess, localNumber: localNumber, success: success, failure: failure)
     }
 }

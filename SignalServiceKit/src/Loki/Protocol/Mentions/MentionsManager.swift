@@ -79,7 +79,7 @@ public final class MentionsManager : NSObject {
         if let transaction = transaction {
             populate(in: transaction)
         } else {
-            storage.dbReadWriteConnection.readWrite { transaction in
+            storage.dbReadConnection.read { transaction in
                 populate(in: transaction)
             }
         }
