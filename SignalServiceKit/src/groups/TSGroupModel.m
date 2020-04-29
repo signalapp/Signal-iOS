@@ -153,10 +153,11 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
     if (!other || ![other isKindOfClass:[self class]]) {
         return NO;
     }
-    return [self isEqualToGroupModel:other];
+    return [self isEqualToGroupModel:other ignoreRevision:NO];
 }
 
-- (BOOL)isEqualToGroupModel:(TSGroupModel *)other {
+- (BOOL)isEqualToGroupModel:(TSGroupModel *)other ignoreRevision:(BOOL)ignoreRevision
+{
     if (self == other) {
         return YES;
     }
@@ -174,7 +175,6 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
     if (![myGroupMembersSet isEqualToSet:otherGroupMembersSet]) {
         return NO;
     }
-
     if (self.groupsVersion != other.groupsVersion) {
         return NO;
     }

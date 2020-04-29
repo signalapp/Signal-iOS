@@ -72,7 +72,7 @@
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Deseja partilhar o seu perfil com este utilizador?";
 
 /* generic button text to acknowledge that the corresponding text was read. */
-"ALERT_ACTION_ACKNOWLEDGE" = "Percebido";
+"ALERT_ACTION_ACKNOWLEDGE" = "Entendido";
 
 /* The label for the 'discard' button in alerts and action sheets. */
 "ALERT_DISCARD_BUTTON" = "Descartar";
@@ -303,7 +303,7 @@
 "BACKUP_RESTORE_DESCRIPTION" = "A restaurar cópia de segurança";
 
 /* Label for the backup restore progress. */
-"BACKUP_RESTORE_PROGRESS" = "Progresso";
+"BACKUP_RESTORE_PROGRESS" = "Evolução";
 
 /* Label for the backup restore status. */
 "BACKUP_RESTORE_STATUS" = "Estado";
@@ -336,7 +336,7 @@
 "BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "Poderá enviar mensagens e ligar um para o outro.";
 
 /* Action sheet body when confirming you want to unblock a group */
-"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Os membros actuais poderão voltar a adicionar o seu contacto ao grupo.";
+"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Os membros atuais poderão voltar a adicionar o seu contacto ao grupo.";
 
 /* An explanation of what unblocking a group means. */
 "BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Os membros do grupo serão capazes de o adicionar novamente a este grupo.";
@@ -360,7 +360,7 @@
 "BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "Grupo bloqueado";
 
 /* The message of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "Não se pode bloquear a si mesmo(a).";
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "Não se pode bloquear-se a si mesmo(a).";
 
 /* The title of the 'You can't block yourself' alert. */
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Erro";
@@ -402,7 +402,7 @@
 "BUTTON_SUBMIT" = "Submeter";
 
 /* Label for button that lets users call a contact again. */
-"CALL_AGAIN_BUTTON_TITLE" = "Chamar novamente";
+"CALL_AGAIN_BUTTON_TITLE" = "Ligar novamente";
 
 /* Alert message when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_MESSAGE" = "Pode dar ao Signal acesso ao seu microfone na aplicação de Definições para poder realizar chamadas e gravar mensagens de voz.";
@@ -414,7 +414,7 @@
 "CALL_INCOMING_NOTIFICATION_BODY" = "☎️ A receber chamada";
 
 /* Accessibility label for placing call button */
-"CALL_LABEL" = "Chamar";
+"CALL_LABEL" = "Ligar";
 
 /* notification body */
 "CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Chamada perdida porque o número de segurança do contacto mudou.";
@@ -429,13 +429,13 @@
 "CALL_STATUS_FORMAT" = "Signal %@";
 
 /* Label for call button for alert offering to call a user. */
-"CALL_USER_ALERT_CALL_BUTTON" = "Chamar";
+"CALL_USER_ALERT_CALL_BUTTON" = "Ligar";
 
 /* Message format for alert offering to call a user. Embeds {{the user's display name or phone number}}. */
-"CALL_USER_ALERT_MESSAGE_FORMAT" = "Deseja chamar %@?";
+"CALL_USER_ALERT_MESSAGE_FORMAT" = "Deseja ligar a %@?";
 
 /* Title for alert offering to call a user. */
-"CALL_USER_ALERT_TITLE" = "Chamar?";
+"CALL_USER_ALERT_TITLE" = "Ligar?";
 
 /* Accessibility label for accepting incoming calls */
 "CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "Aceitar chamada";
@@ -447,7 +447,7 @@
 "CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Rejeitar chamada";
 
 /* tooltip label when remote party has enabled their video */
-"CALL_VIEW_ENABLE_VIDEO_HINT" = "Toque aqui para activar a sua câmara";
+"CALL_VIEW_ENABLE_VIDEO_HINT" = "Toque aqui para ativar a sua câmara";
 
 /* Accessibility label for hang up call */
 "CALL_VIEW_HANGUP_LABEL" = "Terminar chamada";
@@ -492,7 +492,7 @@
 "CAMERA_BUTTON_LABEL" = "Câmara";
 
 /* Message for alert explaining that a user cannot be verified. */
-"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Este utilizador não pode ser verificado antes de terem trocado mensagens.";
+"CANT_VERIFY_IDENTITY_ALERT_MESSAGE" = "Este utilizador não pode ser verificado antes de ter trocado mensagens com ele.";
 
 /* Title for alert explaining that a user cannot be verified. */
 "CANT_VERIFY_IDENTITY_ALERT_TITLE" = "Erro";
@@ -642,13 +642,13 @@
 "CONTACT_FIELD_ORGANIZATION" = "Organização";
 
 /* Label for a contact's phone number. */
-"CONTACT_PHONE" = "Telefone";
+"CONTACT_PHONE" = "Telemóvel";
 
 /* table cell subtitle when contact card has no email */
-"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "Nenhum e-mail disponível.";
+"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "Sem e-mails disponíveis.";
 
 /* table cell subtitle when contact card has no known phone number */
-"CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "Sem número de telefone disponível.";
+"CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "Nenhum número de telefone disponível.";
 
 /* navbar title for contact picker when sharing a contact */
 "CONTACT_PICKER_TITLE" = "Selecionar contacto";
@@ -669,7 +669,7 @@
 "CONTACT_SUPPORT" = "Contactar o Suporte";
 
 /* Alert body */
-"CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "O Signal não conseguiu completar o seu pedido de suporte.";
+"CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "O Signal não conseguiu completar o seu pedido de apoio.";
 
 /* button text */
 "CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "Tentar novamente";
@@ -798,7 +798,7 @@
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "Membros";
 
 /* Format for the section title of the 'members' section in conversation settings view. Embeds: {{ the number of group members }}. */
-"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ Members";
+"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ membros";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Silenciar";
@@ -846,7 +846,7 @@
 "CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Remover %@ de administrador do grupo?";
 
 /* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
-"CONVERSATION_SETTINGS_SEARCH" = "Procurar conversa";
+"CONVERSATION_SETTINGS_SEARCH" = "Pesquisar conversa";
 
 /* Label for button that opens conversation settings. */
 "CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Tocar para alterar";
@@ -897,7 +897,7 @@
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "A carregar mais mensagens...";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Toque para mais";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Tocar para mais";
 
 /* Message shown in conversation view that offers to block an unknown user. */
 "CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "Bloquear este utilizador";
@@ -969,10 +969,10 @@
 "DEBUG_LOG_COULD_NOT_EMAIL" = "Não foi possível abrir a aplicação de e-mail.";
 
 /* Message of the alert before redirecting to GitHub Issues. */
-"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "O link para o \"gist\" foi copiado para a sua área de transferência. Vai ser redireccionado para a lista de problemas no GitHub. ";
+"DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "O link para o \"gist\" foi copiado para a sua área de transferência. Vai ser redirecionado para a lista de problemas no GitHub. ";
 
 /* Title of the alert before redirecting to GitHub Issues. */
-"DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "Redireccionar para GitHub";
+"DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "Redirecionar para GitHub";
 
 /* action sheet body */
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Eliminar todas as mensagens na conversa?";
@@ -1005,7 +1005,7 @@
 "DISAPPEARING_MESSAGES" = "Destruição de mensagens";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "As mensagens nesta conversa irão ser destruídas depois de %@.";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "As mensagens nesta conversa irão ser destruídas após %@.";
 
 /* subheading in conversation settings */
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "Quando ativado, as mensagens enviadas e recebidas nesta conversa irão ser destruídas após terem sido lidas.";
@@ -1068,7 +1068,7 @@
 "EDIT_ITEM_COPY_ACTION" = "Copiar";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Olá,\n\nUltimamente tenho usado o Signal para manter as minhas conversas do meu iPhone privadas. Gostaria que tu também o instalasses, para podermos estar confiantes que mais ninguém pode ler as nossas mensagens nem ouvir as nossas chamadas.\n\nO Signal está disponível para iPhone e Android. Faz download aqui: %@\n\nO Signal funciona como qualquer outra aplicação de mensagens, podes enviar fotos e video, fazer chamadas e criar mensagens de grupo. A melhor parte é que mais ninguém as poderá ver, nem os criadores do Signal!\n\nPodes ler mais sobre a Open Whisper Systems, as pessoas por detrás do Signal aqui: %@";
+"EMAIL_INVITE_BODY" = "Olá,\n\nUltimamente tenho utilizado o Signal para manter as conversas do meu iPhone privadas. Gostaria que tu também o instalasses, para podermos estar confiantes que mais ninguém pode ler as nossas mensagens nem ouvir as nossas chamadas.\n\nO Signal está disponível para iPhone e Android. Faz download aqui: %@\n\nO Signal funciona como qualquer outra aplicação de mensagens, podes enviar fotografias e video, fazer chamadas e criar mensagens de grupo. A melhor parte é que mais ninguém as poderá ver, nem os criadores do Signal!\n\nPodes ler mais sobre a Open Whisper Systems, as pessoas por detrás do Signal aqui: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Vamos mudar para o Signal";
@@ -1104,7 +1104,7 @@
 "ENABLE_2FA_VIEW_PIN_TOO_LONG" = "O PIN não deverá ser superior a 20 digítos.";
 
 /* Error indicating that the entered 'two-factor auth PIN' is too short. */
-"ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "O PIN deverá ter pelo menos 4 dígitos.";
+"ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "O PIN deverá conter pelo menos 4 dígitos.";
 
 /* Indicates that user should select a 'two factor auth pin'. */
 "ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Introduza um PIN para bloqueio de registo. Este PIN ser-lhe-á pedido da próxima vez que registe este número de telefone com o Signal.";
@@ -1122,7 +1122,7 @@
 "END_CALL_RESPONDER_IS_BUSY" = "Ocupado";
 
 /* Call setup status label */
-"END_CALL_UNCATEGORIZED_FAILURE" = "Chamada falhou.";
+"END_CALL_UNCATEGORIZED_FAILURE" = "Falha ao tentar ligar.";
 
 /* Label indicating that this OS version is no longer supported. */
 "END_OF_LIFE_OS_WARNING" = "As funcionalidades mais recentes do Signal não irão funcionar nesta versão do iOS. Por favor, faça o upgrade deste dispositivo para poder receber atualizações futuras do Signal.";
@@ -1134,7 +1134,7 @@
 "ERROR_COULD_NOT_SAVE_VIDEO" = "Não é possível guardar o vídeo.";
 
 /* Generic notice when message failed to send. */
-"ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Falha a enviar mensagem.";
+"ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Falha ao enviar mensagem.";
 
 /* Error message indicating that message send is disabled due to prekey update failures */
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Incapaz de enviar.";
@@ -1215,7 +1215,7 @@
 "ERROR_SENDING_EXPIRED" = "A sua versão do Signal expirou. Por favor, atualize para poder enviar mais mensagens.";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
-"ERROR_UNREGISTERED_USER_FORMAT" = "Remover registo do utilizador: %@";
+"ERROR_UNREGISTERED_USER_FORMAT" = "Utilizador não registado: %@";
 
 /* Label notifying the user that the app has expired. */
 "EXPIRATION_ERROR" = "A sua versão do Signal expirou! Deixará de poder enviar mensagens. Toque para atualizar para a versão mais recente.";
@@ -1242,7 +1242,7 @@
 "FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Reiniciar sessão";
 
 /* Accessibility label for finishing new group */
-"FINISH_GROUP_CREATION_LABEL" = "Finalizar criação do grupo";
+"FINISH_GROUP_CREATION_LABEL" = "Terminar a criação do grupo";
 
 /* Label and title for 'contact forwarding' views. */
 "FORWARD_CONTACT" = "Reencaminhar contacto";
@@ -1407,7 +1407,7 @@
 "GROUP_MEMBER_COUNT_FORMAT" = "%1$@/%2$@";
 
 /* The 'group member count' indicator when there are no members in the group. */
-"GROUP_MEMBER_COUNT_LABEL_0" = "No members";
+"GROUP_MEMBER_COUNT_LABEL_0" = "Sem membros";
 
 /* The 'group member count' indicator when there is 1 member in the group. */
 "GROUP_MEMBER_COUNT_LABEL_1" = "1 membro";
@@ -1419,7 +1419,7 @@
 "GROUP_MEMBER_LOCAL_USER" = "Você";
 
 /* Button label for the 'call group member' button */
-"GROUP_MEMBERS_CALL" = "Telefonar";
+"GROUP_MEMBERS_CALL" = "Ligar";
 
 /* Label indicating that a group has no other members. */
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "Sem membros.";
@@ -1473,10 +1473,10 @@
 "GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR" = "%@ é agora um administrador";
 
 /* Message indicating that a remote user was granted administrator role by local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_LOCAL_USER" = "Você fez %@ um administrador";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_LOCAL_USER" = "Você tornou %@ num administrador.";
 
 /* Message indicating that a remote user was granted administrator role by another user. Embeds {{ %1$@ user who granted, %2$@ user who was granted administrator role}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ fez %2$@ um administrador.";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ tornou %2$@ num administrador.";
 
 /* Message indicating that a single remote user's invite was revoked. */
 "GROUP_REMOTE_USER_INVITE_REVOKED_1" = "O convite para o grupo foi revogado por 1 pessoa.";
@@ -1533,7 +1533,7 @@
 "GROUP_UPDATED" = "Grupo atualizado.";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED" = "O avatar do grupo foi removido.";
+"GROUP_UPDATED_AVATAR_REMOVED" = "Foi removido o avatar do grupo.";
 
 /* Message indicating that the group's avatar was removed. */
 "GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "Você removeu o avatar.";
@@ -1608,7 +1608,7 @@
 "HOME_VIEW_BLOCKED_CONVERSATION" = "Bloqueado";
 
 /* Placeholder text for search bar which filters conversations. */
-"HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Procurar";
+"HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Pesquisar";
 
 /* A prefix indicating that a message preview is a draft */
 "HOME_VIEW_DRAFT_PREFIX" = "Rascunho: ";
@@ -1707,7 +1707,7 @@
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Convidar amigos para o Signal";
 
 /* Search */
-"INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Procurar";
+"INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Pesquisar";
 
 /* Navbar title */
 "INVITE_FRIENDS_PICKER_TITLE" = "Convidar amigos";
@@ -1752,7 +1752,7 @@
 "KEY_COMMAND_PREVIOUS_CONVERSATION" = "Ir para a conversa anterior";
 
 /* A keyboard command to begin a search on the conversation list. */
-"KEY_COMMAND_SEARCH" = "Procurar";
+"KEY_COMMAND_SEARCH" = "Pesquisar";
 
 /* A keyboard command to present the application settings dialog. */
 "KEY_COMMAND_SETTINGS" = "Definições";
@@ -1812,7 +1812,7 @@
 "LIST_GROUP_MEMBERS_ACTION" = "Membros do grupo";
 
 /* A string indicating that the user can search for a location */
-"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Procurar por nome ou endereço";
+"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Pesquisar por nome ou endereço";
 
 /* The title for the location picker view */
 "LOCATION_PICKER_TITLE" = "Selecionar localização";
@@ -1868,9 +1868,6 @@
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "Reencaminhar esta mensagem";
 
-/* accessibility label */
-"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGE" = "Reencaminhar a mensagem selecionada";
-
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "Responder a esta mensagem";
 
@@ -1905,10 +1902,10 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "A enviar";
 
 /* Status label for messages which are sent. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "Enviado";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "Enviada";
 
 /* Status label for messages which were skipped. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Ignorado";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SKIPPED" = "Ignorada";
 
 /* Status label for messages which are uploading. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "A carregar";
@@ -1917,13 +1914,13 @@
 "MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY" = "Mensagem sem conteúdo nem anexo.";
 
 /* Label for the 'received date & time' field of the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "Recebido";
+"MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "Recebida";
 
 /* Label for the 'sender' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_SENDER" = "Remetente";
 
 /* Label for the 'sent date & time' field of the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_SENT_DATE_TIME" = "Enviado";
+"MESSAGE_METADATA_VIEW_SENT_DATE_TIME" = "Enviada";
 
 /* Label for the original filename of any attachment in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_SOURCE_FILENAME" = "Nome do ficheiro";
@@ -2022,7 +2019,7 @@
 "MESSAGE_STATUS_DOWNLOADING" = "A descarregar";
 
 /* status message for failed messages */
-"MESSAGE_STATUS_FAILED" = "Falha no envio.";
+"MESSAGE_STATUS_FAILED" = "Falha ao enviar.";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED_SHORT" = "Falhou";
@@ -2040,7 +2037,7 @@
 "MESSAGE_STATUS_SENDING" = "A enviar...";
 
 /* status message for sent messages */
-"MESSAGE_STATUS_SENT" = "Enviado";
+"MESSAGE_STATUS_SENT" = "Enviada";
 
 /* status message while attachment is uploading */
 "MESSAGE_STATUS_UPLOADING" = "A carregar...";
@@ -2106,7 +2103,7 @@
 "MUTE_BEHAVIOR_EXPLANATION" = "Não receberá notificações de conversas silenciadas.";
 
 /* A button to skip a view. */
-"NAVIGATION_ITEM_SKIP_BUTTON" = "Saltar";
+"NAVIGATION_ITEM_SKIP_BUTTON" = "Ignorar";
 
 /* No comment provided by engineer. */
 "NETWORK_ERROR_RECOVERY" = "Por favor, confirme que está on-line e tente novamente.";
@@ -2169,7 +2166,7 @@
 "new_message" = " Nova mensagem ";
 
 /* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
-"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Procurar";
+"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Pesquisar";
 
 /* Title for the 'new non-contact conversation' view. */
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Procurar utilizador";
@@ -2238,10 +2235,10 @@
 "ONBOARDING_2FA_INVALID_PIN" = "PIN incorreto";
 
 /* Label indicating that the 2fa pin is invalid with a retry count other than one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "PIN incorreto. Restam %lu tentativas.";
+"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "PIN incorreto. Restam-lhe %lu tentativas.";
 
 /* Label indicating that the 2fa pin is invalid with a retry count of one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_SINGLE" = "PIN incorreto. Resta 1 tentativa.";
+"ONBOARDING_2FA_INVALID_PIN_SINGLE" = "PIN incorreto. Resta-lhe 1 tentativa.";
 
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Ignorar e criar novo PIN";
@@ -2265,7 +2262,7 @@
 "ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Ao tocar em \"Registar iPad\" irá criar uma novíssima conta do Signal ou mover uma conta existente para este iPad. Isto irá desativar o Signal em qualquer outro dispositivo atualmente registado com o mesmo número de telemóvel.";
 
 /* explanation to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Ao tocar em 'Ligar iPhone' irá permitir que associe o seu telemóvel a uma conta já existente. Associar o seu telemóvel geralmente não é recomendado e irá limitar algumas funções como telefonar.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Ao tocar em \"Ligar iPhone\" irá permitir que associe o seu telemóvel a uma conta já existente. Associar o seu telemóvel geralmente não é recomendado e irá limitar algumas funções como telefonar.";
 
 /* header text indicating to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "Registar este iPad";
@@ -2364,7 +2361,7 @@
 "OPEN_SETTINGS_BUTTON" = "Definições";
 
 /* Info Message when another user disabled disappearing messages. Embeds {{name of other user}}. */
-"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ desactivou a destruição de mensagens.";
+"OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ desativou a destruição de mensagens.";
 
 /* Info Message when another user enabled disappearing messages. Embeds {{name of other user}} and {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
 "OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ definiu o tempo da destruição de mensagens para %@.";
@@ -2499,16 +2496,16 @@
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Álbum sem nome";
 
 /* Label indicating the user must use at least 4 characters */
-"PIN_CREATION_ALPHANUMERIC_HINT" = "PIN must be at least 4 characters";
+"PIN_CREATION_ALPHANUMERIC_HINT" = "O PIN deverá conter pelo menos 4 caracteres";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_CHANGING_TITLE" = "Alterar o seu PIN";
 
 /* Title of the 'pin creation' confirmation view. */
-"PIN_CREATION_CONFIRM_TITLE" = "Confirm your PIN";
+"PIN_CREATION_CONFIRM_TITLE" = "Confirme o seu PIN";
 
 /* The explanation of confirmation in the 'pin creation' view. */
-"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Re-enter your PIN.";
+"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Reintroduza o seu PIN.";
 
 /* Button asking if the user would like to create an alphanumeric PIN */
 "PIN_CREATION_CREATE_ALPHANUMERIC" = "Criar um PIN alfanumérico";
@@ -2523,13 +2520,13 @@
 "PIN_CREATION_ERROR_TITLE" = "Falha ao criar PIN";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall Signal.";
+"PIN_CREATION_EXPLANATION" = "Os PINs mantém encriptada a informação guardada no Signal de forma a que apenas você lhe possa aceder. O seu perfil, definições e contactos serão restaurados quando reinstalar o Signal.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "Os PINs não coincidem. Tente novamente.";
 
 /* Label indicating the user must use at least 4 digits */
-"PIN_CREATION_NUMERIC_HINT" = "PIN must be at least 4 digits";
+"PIN_CREATION_NUMERIC_HINT" = "O PIN deverá conter pelo menos 4 dígitos";
 
 /* Label indication the user must confirm their PIN. */
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "Reintroduza o PIN";
@@ -2538,7 +2535,7 @@
 "PIN_CREATION_PIN_PROGRESS" = "A criar PIN...";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "You can change your PIN as long as this device is registered.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "Poderá alterar o seu PIN enquanto o seu dispositivo se encontrar registado.";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_RECREATION_TITLE" = "Alterar o seu PIN";
@@ -2586,7 +2583,7 @@
 "PINS_MEGAPHONE_ACTION" = "Criar PIN";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "PINs keep information that’s stored with Signal encrypted";
+"PINS_MEGAPHONE_BODY" = "Os PINs guardam encriptada a informação que está guardada no Signal.";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
 "PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Iremos lembrá-lo(a) mais tarde. Criar um PIN será obrigatório dentro de %ld dias.";
@@ -2811,7 +2808,7 @@
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Necessita de ajuda?";
 
 /* Alert body for a forgotten SVR (V2) PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "O seu PIN é um código de 4 ou mais dígitos que você criou e pode ser numérico ou alfanumérico. Se não se recorda do seu PIN, necessita de esperar 7 dias até poder voltar a registar-se na sua conta.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock */
 "REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "O seu PIN é um código de mais de 4 dígitos que você criou e pode ser numérico ou alfanumérico. Se não se conseguir lembrar do seu PIN, você poderá criar um novo. Poderá registar e utilizar a sua conta mas irá perder algumas das definições guardadas como a sua informação de perfil.";
@@ -2820,7 +2817,7 @@
 "REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "O seu PIN é um código numérico de 4 ou mais dígitos que você criou. Se não se recorda do seu PIN, necessita de esperar 7 dias até poder voltar a registar-se na sua conta.";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock disabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "Restam-lhe %lu tentativas. Quando não restarem mais tentativas, a sua conta será bloqueada. Após 7 dias de inatividade, poderá voltar a registar-se sem ser necessário o seu PIN. Você poderá registar-se e utilizar a sua conta mas irá perder algumas definições guardadas como a sua informação do perfil.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "Restam-lhe %lu tentativas Quando terminarem as tentativas poderá criar um novo PIN. Poderá voltar a registar-se e utilizar a sua conta mas irá perder algumas definições guardadas como a sua informação do perfil.";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock enabled. */
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_PLURAL_FORMAT" = "Restam-lhe %lu tentativas. Quando não restarem mais tentativas, a sua conta será bloqueada. Após 7 dias de inatividade, poderá voltar a registar-se sem ser necessário o seu PIN. A sua conta será limpa e todo o conteúdo presente nela será eliminado.";
@@ -2829,7 +2826,7 @@
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_SINGLE" = "Resta-lhe 1 tentativa. Quando não restarem mais tentativas, a sua conta será bloqueada. Após 7 dias de inatividade, você poderá voltar a registar-se sem ser necessário o seu PIN. A sua conta será limpa e todo o conteúdo presente nela será eliminado.";
 
 /* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock disabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "Resta-lhe 1 tentativa. Quando não restarem mais tentativas, a sua conta será bloqueada. Após 7 dias de inatividade, poderá voltar a registar-se sem ser necessário o seu PIN. Você poderá registar-se e utilizar a sua conta mas irá perder algumas definições guardadas como a sua informação do perfil.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "Resta-lhe 1 tentativa Quando terminarem as tentativas poderá criar um novo PIN. Poderá voltar a registar-se e utilizar a sua conta mas irá perder algumas definições guardadas como a sua informação do perfil.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "PIN incorreto";
@@ -2919,7 +2916,7 @@
 "REMINDER_2FA_WRONG_PIN_ALERT_BODY" = "Pode alterar o PIN nas definições de privacidade.";
 
 /* Alert title after wrong guess for 'two-factor auth pin' reminder activity */
-"REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "PIN incorrecto.";
+"REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "PIN incorreto.";
 
 /* The title for the 'replace group admin' view. */
 "REPLACE_ADMIN_VIEW_TITLE" = "Escolha um administrador novo";
@@ -2934,7 +2931,7 @@
 "SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION" = "Mesmo assim, adicionar ao grupo";
 
 /* alert button text to confirm placing an outgoing call after the recipients Safety Number has changed. */
-"SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "Mesmo assim, telefonar";
+"SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION" = "Ligar mesmo assim";
 
 /* button title to confirm sending to a recipient whose safety number recently changed */
 "SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "Mesmo assim, enviar";
@@ -2985,10 +2982,10 @@
 "SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "Nome, utilizador ou número";
 
 /* Placeholder text indicating the user can search for contacts by name or phone number. */
-"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Procurar por nome ou número";
+"SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Pesquisar por nome ou número";
 
 /* placeholder text in an empty search field */
-"SEARCH_FIELD_PLACE_HOLDER_TEXT" = "Procurar";
+"SEARCH_FIELD_PLACE_HOLDER_TEXT" = "Pesquisar";
 
 /* section header for search results that match a contact who doesn't have an existing conversation */
 "SEARCH_SECTION_CONTACTS" = "Outros contactos";
@@ -3252,7 +3249,7 @@
 "SETTINGS_NAV_BAR_TITLE" = "Definições";
 
 /* table section footer */
-"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "As notificações de chamada e mensagem poderão aparecer enquanto o seu telefone está bloqueado. Poderá querer limitar o que é apresentado.";
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "As notificações de chamada e mensagem poderão aparecer enquanto o seu telemóvel está bloqueado. Poderá querer limitar o que é apresentado.";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Conteúdo das notificações";
@@ -3267,7 +3264,7 @@
 "SETTINGS_NOTIFICATIONS" = "Notificações";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall Signal.";
+"SETTINGS_PINS_FOOTER" = "Os PINs mantém encriptada a informação guardada no Signal de forma a que apenas você lhe possa aceder. O seu perfil, definições e contactos serão restaurados quando reinstalar o Signal.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Alterar o seu PIN";
@@ -3279,7 +3276,7 @@
 "SETTINGS_PINS_TITLE" = "PIN DO SIGNAL";
 
 /* Label for 'CallKit privacy' preference */
-"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Mostrar nome e número";
+"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Mostrar o nome e número";
 
 /* Settings table section footer. */
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "Mostrar chamadas na lista de \"Chamadas recentes\" na aplicação telefone do iOS.";
@@ -3300,19 +3297,19 @@
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Veja e partilhe quando as mensagens são lidas. Esta definição é opcional e aplica-se a todas as suas conversas.";
 
 /* Action to turn off registration lock */
-"SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Turn Off";
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Desativar";
 
 /* Title for the alert confirming that the user wants to turn off registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "Turn Off Registration Lock?";
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "Desativar o 'Bloqueio de registo'?";
 
 /* Action to turn on registration lock */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Turn On";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Ativar";
 
 /* Body for the alert confirming that the user wants to turn on registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "If you forget your Signal PIN when registering with Signal again, you’ll be locked out of your account for 7 days.";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Caso se esqueça do seu PIN (do Signal) quando se registar novamente no Signal, será bloqueado da sua conta durante 7 dias.";
 
 /* Title for the alert confirming that the user wants to turn on registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "Turn On Registration Lock?";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "Ativar o 'Bloqueio de registo'?";
 
 /* Label for re-link button. */
 "SETTINGS_RELINK_BUTTON" = "Re-associar";
@@ -3348,7 +3345,7 @@
 "SETTINGS_SECTION_SOUNDS" = "Sons";
 
 /* settings topic header for table section */
-"SETTINGS_SECTION_TITLE_CALLING" = "A chamar";
+"SETTINGS_SECTION_TITLE_CALLING" = "A ligar";
 
 /* Section header */
 "SETTINGS_SECURITY_TITLE" = "Segurança de ecrã";
@@ -3372,7 +3369,7 @@
 "SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Bloqueio de registo";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "For extra security, turn on registration lock, which will require your Signal PIN to register your phone number with Signal again.";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Para uma segurança extra, ative o bloqueio de registo, que irá pedir o seu PIN do Signal de forma a poder registar novamente o número do seu telemóvel no Signal.";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Indicadores de escrita";
@@ -3636,7 +3633,7 @@
 "UNNAMED_DEVICE" = "Dispositivo sem nome";
 
 /* No comment provided by engineer. */
-"UNREGISTER_SIGNAL_FAIL" = "Falha a desregistar-se ";
+"UNREGISTER_SIGNAL_FAIL" = "Falha ao remover o seu registo do Signal.";
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_ATTACHMENT" = "Recebeu um ficheiro de um tipo não suportado.";
@@ -3660,7 +3657,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Crie o seu PIN";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall Signal.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Os PINs mantém encriptada a informação guardada no Signal de forma a que apenas você lhe possa aceder. O seu perfil, definições e contactos serão restaurados quando reinstalar o Signal.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Introdução os PINs";
@@ -3768,4 +3765,4 @@
 "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "Deverá terminar a configuração antes de continuar.";
 
 /* Info Message when you disabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
-"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Definiu o tempo para a destruição de mensagens para %@.";
+"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Você definiu %@ como o tempo a decorrer até as mensagens serem destruídas.";

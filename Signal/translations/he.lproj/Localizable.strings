@@ -1371,10 +1371,10 @@
 "GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT" = "סירבת הזמנה אל הקבוצה מן %@.";
 
 /* Message indicating that the local user's invite was revoked by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_INVITE_REVOKED_BY_REMOTE_USER_FORMAT" = "%@ פסל את ההזמנה שלך אל הקבוצה.";
+"GROUP_LOCAL_USER_INVITE_REVOKED_BY_REMOTE_USER_FORMAT" = "%@ שלל את ההזמנה שלך אל הקבוצה.";
 
 /* Message indicating that the local user's invite was revoked by an unknown user. */
-"GROUP_LOCAL_USER_INVITE_REVOKED_BY_UNKNOWN_USER" = "ההזמנה שלך אל הקבוצה נפסלה.";
+"GROUP_LOCAL_USER_INVITE_REVOKED_BY_UNKNOWN_USER" = "ההזמנה שלך אל הקבוצה נשללה.";
 
 /* Message indicating that the local user was invited to the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT" = "%@ הזמין אותך.";
@@ -1392,10 +1392,10 @@
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "הוסרת מהקבוצה.";
 
 /* Message indicating that the local user had their administrator role revoked. */
-"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "זכויות המינהל שלך נפסלו.";
+"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "זכויות המינהל שלך נשללו.";
 
 /* Message indicating that the local user had their administrator role revoked by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ פסל את זכויות המינהל שלך.";
+"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ שלל את זכויות המינהל שלך.";
 
 /* Conversation settings table section title */
 "GROUP_MANAGEMENT_SECTION" = "פרטי קבוצה";
@@ -1407,7 +1407,7 @@
 "GROUP_MEMBER_COUNT_FORMAT" = "%1$@/%2$@";
 
 /* The 'group member count' indicator when there are no members in the group. */
-"GROUP_MEMBER_COUNT_LABEL_0" = "No members";
+"GROUP_MEMBER_COUNT_LABEL_0" = "אין חברי קבוצה";
 
 /* The 'group member count' indicator when there is 1 member in the group. */
 "GROUP_MEMBER_COUNT_LABEL_1" = "חבר אחד";
@@ -1461,10 +1461,10 @@
 "GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT" = "%@ התווסף אל הקבוצה.";
 
 /* Message indicating that a remote user has declined their invite. */
-"GROUP_REMOTE_USER_DECLINED_INVITE" = "איש 1 סירב להזמנה אל הקבוצה.";
+"GROUP_REMOTE_USER_DECLINED_INVITE" = "איש 1 סירב הזמנה אל הקבוצה.";
 
 /* Message indicating that a remote user has declined their invite. Embeds {{ user who invited them }}. */
-"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "איש 1 שהוזמן על ידי %@ סירב להזמנה אל הקבוצה.";
+"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "איש 1 שהוזמן על ידי %@ סירב הזמנה אל הקבוצה.";
 
 /* Message indicating that a remote user has declined an invite to the group from the local user. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ סירב להזמנה שלך אל הקבוצה.";
@@ -1479,19 +1479,19 @@
 "GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ עשה את %2$@ מינהלן.";
 
 /* Message indicating that a single remote user's invite was revoked. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_1" = "הזמנה אל הקבוצה נפסלה עבור איש 1.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_1" = "הזמנה אל הקבוצה נשללה עבור איש 1.";
 
 /* Message indicating that a remote user's invite was revoked by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_BY_LOCAL_USER_FORMAT" = "הזמנה אל הקבוצה נפסלה עבור %@.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_LOCAL_USER_FORMAT" = "הזמנה אל הקבוצה נשללה עבור %@.";
 
 /* Message indicating that a single remote user's invite was revoked by a remote user. Embeds {{ user who revoked the invite }}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_1_FORMAT" = "%@ פסל הזמנה אל הקבוצה עבור איש 1.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_1_FORMAT" = "%@ שלל הזמנה אל הקבוצה עבור איש 1.";
 
 /* Message indicating that a group of remote users' invites were revoked by a remote user. Embeds {{ %1$@ user who revoked the invite, %2$@ number of users }}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_N_FORMAT" = "%1$@ פסל הזמנה אל הקבוצה עבור %2$@ אנשים.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_N_FORMAT" = "%1$@ שלל הזמנה אל הקבוצה עבור %2$@ אנשים.";
 
 /* Message indicating that a group of remote users' invites were revoked. Embeds {{ number of users }}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_N_FORMAT" = "הזמנות אל הקבוצה נפסלו עבור %@ אנשים.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_N_FORMAT" = "הזמנות אל הקבוצה נשללו עבור %@ אנשים.";
 
 /* Message indicating that a single remote user was invited to the group. */
 "GROUP_REMOTE_USER_INVITED_1" = "איש 1 הוזמן אל הקבוצה.";
@@ -1521,13 +1521,13 @@
 "GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ הסיר את %2$@.";
 
 /* Message indicating that a remote user had their administrator role revoked. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "זכויות מינהל של %@ נפסלו.";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "זכויות מינהל של %@ נשללו.";
 
 /* Message indicating that a remote user had their administrator role revoked by local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_LOCAL_USER" = "פסלת זכויות מינהל מן %@.";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_LOCAL_USER" = "שללת זכויות מינהל מן %@.";
 
 /* Message indicating that a remote user had their administrator role revoked by another user. Embeds {{ %1$@ user who revoked, %2$@ user who was granted administrator role}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ פסל זכויות מינהל מן %2$@.";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ שלל זכויות מינהל מן %2$@.";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "קבוצה עודכנה.";
@@ -1867,9 +1867,6 @@
 
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "העבר הלאה הודעה זו";
-
-/* accessibility label */
-"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGE" = "העבר הלאה הודעות נבחרות";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "השב להודעה זו";

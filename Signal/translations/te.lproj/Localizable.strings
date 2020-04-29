@@ -1868,9 +1868,6 @@
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "ఈ సందేశాన్ని ఫార్వార్డ్ చేయండి";
 
-/* accessibility label */
-"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGE" = "Forward Selected Message";
-
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "ఈ సందేశానికి ప్రత్యుత్తరం ఇవ్వండి";
 

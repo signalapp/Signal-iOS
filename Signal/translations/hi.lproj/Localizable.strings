@@ -1868,9 +1868,6 @@
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "इस मेसेज को आगे भेजें";
 
-/* accessibility label */
-"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGE" = "Forward Selected Message";
-
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "इस मेसेज का जवाब दें";
 

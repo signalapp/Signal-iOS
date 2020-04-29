@@ -1868,9 +1868,6 @@
 /* Action sheet button title */
 "MESSAGE_ACTION_FORWARD_MESSAGE" = "Forward This Message";
 
-/* accessibility label */
-"MESSAGE_ACTION_FORWARD_SELECTED_MESSAGE" = "Forward Selected Message";
-
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "Bu Mesajı Cavabla";
 

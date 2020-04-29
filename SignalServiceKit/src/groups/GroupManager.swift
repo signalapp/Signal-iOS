@@ -10,7 +10,8 @@ public class UpsertGroupResult: NSObject {
     @objc
     public enum Action: UInt {
         case inserted
-        case updated
+        case updatedWithUserFacingChanges
+        case updatedWithoutUserFacingChanges
         case unchanged
     }
 
@@ -821,7 +822,7 @@ public class GroupManager: NSObject {
         groupModelBuilder.groupMembership = groupMembership
         let newGroupModel = try groupModelBuilder.build(transaction: transaction)
 
-        if oldGroupModel.isEqual(to: newGroupModel) {
+        if oldGroupModel.isEqual(to: newGroupModel, ignoreRevision: false) {
             // Skip redundant update.
             throw GroupsV2Error.redundantChange
         }
@@ -891,7 +892,7 @@ public class GroupManager: NSObject {
         builder.groupV2Revision = newRevision
         let newGroupModel = try builder.build(transaction: transaction)
 
-        if oldGroupModel.isEqual(to: newGroupModel) {
+        if oldGroupModel.isEqual(to: newGroupModel, ignoreRevision: false) {
             // Skip redundant update.
             throw GroupsV2Error.redundantChange
         }
@@ -1544,11 +1545,6 @@ public class GroupManager: NSObject {
         // Step 3: Update group in database, if necessary.
         let oldGroupModel = groupThread.groupModel
         let updateThreadResult: UpsertGroupResult = {
-            guard !oldGroupModel.isEqual(to: newGroupModel) else {
-                // Skip redundant update.
-                return UpsertGroupResult(action: .unchanged, groupThread: groupThread)
-            }
-
             if let newGroupModelV2 = newGroupModel as? TSGroupModelV2,
                 let oldGroupModelV2 = oldGroupModel as? TSGroupModelV2 {
                 guard newGroupModelV2.revision >= oldGroupModelV2.revision else {
@@ -1566,14 +1562,25 @@ public class GroupManager: NSObject {
                 }
             }
 
+            guard !oldGroupModel.isEqual(to: newGroupModel, ignoreRevision: false) else {
+                // Skip redundant update.
+                return UpsertGroupResult(action: .unchanged, groupThread: groupThread)
+            }
+
+            let hasUserFacingChange = !oldGroupModel.isEqual(to: newGroupModel, ignoreRevision: true)
+
             groupThread.update(with: newGroupModel, transaction: transaction)
 
-            return UpsertGroupResult(action: .updated, groupThread: groupThread)
+            let action: UpsertGroupResult.Action = (hasUserFacingChange
+                ? .updatedWithUserFacingChanges
+                : .updatedWithoutUserFacingChanges)
+            return UpsertGroupResult(action: action, groupThread: groupThread)
         }()
 
         if updateDMResult.action == .unchanged &&
-            updateThreadResult.action == .unchanged {
-            // Neither DM config nor thread model changed.
+            (updateThreadResult.action == .unchanged ||
+                updateThreadResult.action == .updatedWithoutUserFacingChanges) {
+            // Neither DM config nor thread model had user-facing changes.
             return updateThreadResult
         }
 
@@ -1590,7 +1597,7 @@ public class GroupManager: NSObject {
             break
         }
 
-        return UpsertGroupResult(action: .updated, groupThread: groupThread)
+        return UpsertGroupResult(action: .updatedWithUserFacingChanges, groupThread: groupThread)
     }
 
     // MARK: - Storage Service
