@@ -912,7 +912,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 - (nullable TSThread *)threadForMessage:(TSMessage *)message transaction:(SDSAnyWriteTransaction *)transaction
 {
     TSThread *_Nullable thread = [message threadWithTransaction:transaction];
-    OWSAssertDebug(thread != nil);
+    //    OWSAssertDebug(thread != nil);
 
     // For some legacy sync messages, thread may be nil.
     // In this case, we should try to use the "local" thread.
