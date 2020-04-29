@@ -64,19 +64,21 @@ public final class FriendRequestProtocol : NSObject {
     }
 
     // MARK: - Sending
-    @objc(acceptFriendRequestInThread:using:)
-    public static func acceptFriendRequest(in thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) {
+    @objc(acceptFriendRequestFromHexEncodedPublicKey:using:)
+    public static func acceptFriendRequest(from hexEncodedPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) {
         // Accept all outstanding friend requests associated with this user and try to establish sessions with the
         // subset of their devices that haven't sent a friend request.
-         guard let thread = thread as? TSContactThread else { return }
+         guard ECKeyPair.isValidHexEncodedPublicKey(candidate: hexEncodedPublicKey) else {
+             assertionFailure("Invalid session ID \(hexEncodedPublicKey)")
+             return;
+         }
 
-        let linkedDevices = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: thread.contactIdentifier(), in: transaction)
+        let linkedDevices = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: hexEncodedPublicKey, in: transaction)
         for device in linkedDevices {
             let friendRequestStatus = storage.getFriendRequestStatus(forContact: device, transaction: transaction)
             if friendRequestStatus == .requestReceived {
                 storage.setFriendRequestStatus(.friends, forContact: device, transaction: transaction)
-                // TODO: Do we need to pass in `thread` here? If not then we can restructure this whole function to take in a hex encoded public key instead
-                sendFriendRequestAcceptanceMessage(to: device, in: thread, using: transaction)
+                sendFriendRequestAcceptanceMessage(to: device, using: transaction)
             } else if friendRequestStatus == .requestSent {
                 // We sent a friend request to this device before, how can we be sure that it hasn't expired?
             } else if friendRequestStatus == .none || friendRequestStatus == .requestExpired {
@@ -90,23 +92,36 @@ public final class FriendRequestProtocol : NSObject {
         }
     }
 
-    @objc(sendFriendRequestAcceptanceMessageToHexEncodedPublicKey:in:using:)
-    public static func sendFriendRequestAcceptanceMessage(to hexEncodedPublicKey: String, in thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) {
-        guard let thread = thread as? TSContactThread else { return }
+    @objc(sendFriendRequestAcceptanceMessageToHexEncodedPublicKey:using:)
+    public static func sendFriendRequestAcceptanceMessage(to hexEncodedPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) {
+        guard ECKeyPair.isValidHexEncodedPublicKey(candidate: hexEncodedPublicKey) else {
+            assertionFailure("Invalid session ID \(hexEncodedPublicKey)")
+            return;
+        }
+
+        // TODO: Should we create the threads here??
+        guard let thread = TSContactThread.getWithContactId(hexEncodedPublicKey, transaction: transaction) else {
+            print("[Loki] Not going to send friend request acceptance message because thread does not exist for \(hexEncodedPublicKey)")
+            return
+        }
 
         let ephemeralMessage = EphemeralMessage(in: thread)
         let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
         messageSenderJobQueue.add(message: ephemeralMessage, transaction: transaction)
     }
 
-    @objc(declineFriendRequestInThread:using:)
-    public static func declineFriendRequest(in thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) {
-        guard let thread = thread as? TSContactThread else { return }
-        let linkedDevices = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: thread.contactIdentifier(), in: transaction)
+    @objc(declineFriendRequestFromHexEncodedPublicKey:using:)
+    public static func declineFriendRequest(from hexEncodedPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) {
+        guard ECKeyPair.isValidHexEncodedPublicKey(candidate: hexEncodedPublicKey) else {
+            assertionFailure("Invalid session ID \(hexEncodedPublicKey)")
+            return;
+        }
+
+        let linkedDevices = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: hexEncodedPublicKey, in: transaction)
         for device in linkedDevices {
             let friendRequestStatus = storage.getFriendRequestStatus(forContact: device, transaction: transaction)
+            assert(friendRequestStatus != .friends, "Invalid state transition. Cannot decline a friend request from a device we're already friends with. hexEncodedPublicKey: \(device)")
             // We only want to decline any incoming requests
-            assert(friendRequestStatus != .friends, "Invalid state transition. Cannot decline a friend request from a device we're already friends with. Thread: \(thread.uniqueId) - \(thread.contactIdentifier())")
             if (friendRequestStatus == .requestReceived) {
                 // Delete the pre key bundle for the given contact. This ensures that if we send a
                 // new message after this, it restarts the friend request process from scratch.
@@ -202,7 +217,7 @@ public final class FriendRequestProtocol : NSObject {
             if let existingFriendRequestMessage = existingFriendRequestMessage {
                 existingFriendRequestMessage.saveFriendRequestStatus(.accepted, with: transaction)
             }
-            sendFriendRequestAcceptanceMessage(to: hexEncodedPublicKey, in: thread, using: transaction)
+            sendFriendRequestAcceptanceMessage(to: hexEncodedPublicKey, using: transaction)
         } else if storage.getFriendRequestStatus(forContact: hexEncodedPublicKey, transaction: transaction) != .friends {
             // Checking that the sender of the message isn't already a friend is necessary because otherwise
             // the following situation can occur: Alice and Bob are friends. Bob loses his database and his

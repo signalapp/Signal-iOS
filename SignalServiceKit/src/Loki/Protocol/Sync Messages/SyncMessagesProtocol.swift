@@ -195,8 +195,8 @@ public final class SyncMessagesProtocol : NSObject {
                 })
             case .requestReceived:
                 storage.setFriendRequestStatus(.friends, forContact: hexEncodedPublicKey, transaction: transaction)
-                // Not sendFriendRequestAcceptanceMessage(to:in:using:) to take into account multi device
-                FriendRequestProtocol.acceptFriendRequest(in: thread, using: transaction)
+                // Not sendFriendRequestAcceptanceMessage(to:using:) to take into account multi device
+                FriendRequestProtocol.acceptFriendRequest(from: hexEncodedPublicKey, using: transaction)
             default: break
             }
         }

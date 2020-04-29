@@ -4465,15 +4465,17 @@ typedef enum : NSUInteger {
 
 - (void)acceptFriendRequest:(TSIncomingMessage *)friendRequest
 {
+    if (self.thread.isGroupThread || self.thread.contactIdentifier == nil) { return; }
     [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [LKFriendRequestProtocol acceptFriendRequestInThread:self.thread using:transaction];
+        [LKFriendRequestProtocol acceptFriendRequestFromHexEncodedPublicKey:self.thread.contactIdentifier using:transaction];
     }];
 }
 
 - (void)declineFriendRequest:(TSIncomingMessage *)friendRequest
 {
+    if (self.thread.isGroupThread || self.thread.contactIdentifier == nil) { return; }
     [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [LKFriendRequestProtocol declineFriendRequestInThread:self.thread using:transaction];
+        [LKFriendRequestProtocol declineFriendRequestFromHexEncodedPublicKey:self.thread.contactIdentifier using:transaction];
     }];
 }
 
