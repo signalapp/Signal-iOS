@@ -8,6 +8,21 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef NS_ENUM(NSInteger, LKFriendRequestStatus) {
+    /// New conversation; no messages sent or received.
+    LKFriendRequestStatusNone,
+    /// This state is used to lock the input early while sending.
+    LKFriendRequestStatusRequestSending,
+    /// Friend request sent; awaiting response.
+    LKFriendRequestStatusRequestSent,
+    /// Friend request received; awaiting user input.
+    LKFriendRequestStatusRequestReceived,
+    /// We are friends with the other user.
+    LKFriendRequestStatusFriends,
+    /// A friend request was sent, but it timed out (i.e. the other user didn't accept within the allocated time).
+    LKFriendRequestStatusRequestExpired
+};
+
 @interface OWSPrimaryStorage (Loki)
 
 # pragma mark - Pre Key Record Management
@@ -44,6 +59,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setRestorationTime:(NSTimeInterval)time;
 - (NSTimeInterval)getRestorationTime;
+
+# pragma mark - Friend Request
+
+- (LKFriendRequestStatus)getFriendRequestStatusForContact:(NSString *)hexEncodedPublicKey transaction:(YapDatabaseReadTransaction *)transaction;
+    NS_SWIFT_NAME(getFriendRequestStatus(forContact:in:));
+- (void)setFriendRequestStatus:(LKFriendRequestStatus)friendRequestStatus forContact:(NSString *)hexEncodedPublicKey transaction:(YapDatabaseReadWriteTransaction *)transaction;
+
 
 @end
 

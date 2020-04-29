@@ -99,6 +99,10 @@ NS_ASSUME_NONNULL_BEGIN
         [self updatePublicChatMapping];
     }
 
+    if ([self isVersion:previousVersion lessThan:@"1.1.2"] && [self.tsAccountManager isRegistered]) {
+        // TODO: Migrate Friend Request Status
+    }
+
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         [[[OWSDatabaseMigrationRunner alloc] init] runAllOutstandingWithCompletion:completion];
     });
