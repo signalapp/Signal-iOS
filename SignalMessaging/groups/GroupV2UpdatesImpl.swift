@@ -144,13 +144,31 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
         }.catch(on: .global()) { error in
             Logger.verbose("Group refresh failed: \(error).")
         }.retainUntilComplete()
+        let operationQueue = self.operationQueue(forGroupUpdateMode: groupUpdateMode)
         operationQueue.addOperation(operation)
         return operation.promise
     }
 
-    let operationQueue: OperationQueue = {
+    public func operationQueue(forGroupUpdateMode groupUpdateMode: GroupUpdateMode) -> OperationQueue {
+        switch groupUpdateMode {
+        case .upToCurrentRevisionImmediately,
+             .upToSpecificRevisionImmediately:
+            return immediateOperationQueue
+        case .upToCurrentRevisionAfterMessageProcessWithThrottling:
+            return afterMessageProcessingOperationQueue
+        }
+    }
+
+    let immediateOperationQueue: OperationQueue = {
         let operationQueue = OperationQueue()
-        operationQueue.name = "GroupV2UpdatesImpl"
+        operationQueue.name = "GroupV2UpdatesImpl.immediateOperationQueue"
+        operationQueue.maxConcurrentOperationCount = 1
+        return operationQueue
+    }()
+
+    let afterMessageProcessingOperationQueue: OperationQueue = {
+        let operationQueue = OperationQueue()
+        operationQueue.name = "GroupV2UpdatesImpl.afterMessageProcessingOperationQueue"
         operationQueue.maxConcurrentOperationCount = 1
         return operationQueue
     }()
