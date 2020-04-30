@@ -19,7 +19,7 @@ public final class MultiDeviceProtocol : NSObject {
         set { LokiAPI.stateQueue.sync { _lastDeviceLinkUpdate = newValue } }
     }
 
-    // TODO: I don't think this stateQueue stuff actually helps avoid race conditions
+    // TODO: I don't think stateQueue actually helps avoid race conditions
 
     internal static var storage: OWSPrimaryStorage { OWSPrimaryStorage.shared() }
 
@@ -46,7 +46,7 @@ public final class MultiDeviceProtocol : NSObject {
         storage.dbReadConnection.read { transaction in
             recipient = SignalRecipient.getOrBuildUnsavedRecipient(forRecipientId: destination.hexEncodedPublicKey, transaction: transaction)
         }
-        // TODO: Apparently it's okay that the thread, sender certificate, etc. don't get changed?
+        // TODO: Why is it okay that the thread, sender certificate, etc. don't get changed?
         return OWSMessageSend(message: messageSend.message, thread: messageSend.thread, recipient: recipient,
             senderCertificate: messageSend.senderCertificate, udAccess: messageSend.udAccess, localNumber: messageSend.localNumber, success: {
             seal.fulfill(messageSend.message.thread as! TSContactThread)
@@ -176,10 +176,11 @@ public final class MultiDeviceProtocol : NSObject {
         let udManager = SSKEnvironment.shared.udManager
         let senderCertificate = udManager.getSenderCertificate()
         let (promise, seal) = Promise<OWSMessageSend>.pending()
+        // Dispatch async on the main queue to avoid nested write transactions
         DispatchQueue.main.async {
             var recipientUDAccess: OWSUDAccess?
             if let senderCertificate = senderCertificate {
-                recipientUDAccess = udManager.udAccess(forRecipientId: hexEncodedPublicKey, requireSyncAccess: true)
+                recipientUDAccess = udManager.udAccess(forRecipientId: hexEncodedPublicKey, requireSyncAccess: true) // Starts a new write transaction internally
             }
             let messageSend = OWSMessageSend(message: message, thread: thread, recipient: recipient, senderCertificate: senderCertificate,
                 udAccess: recipientUDAccess, localNumber: getUserHexEncodedPublicKey(), success: {

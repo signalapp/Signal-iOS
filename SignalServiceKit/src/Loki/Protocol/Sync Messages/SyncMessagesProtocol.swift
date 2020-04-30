@@ -44,7 +44,7 @@ public final class SyncMessagesProtocol : NSObject {
             guard thread.isContactFriend && thread.shouldThreadBeVisible && !thread.isForceHidden else { return }
             friends.append(SignalAccount(recipientId: hexEncodedPublicKey))
         }
-        friends.append(SignalAccount(recipientId: getUserHexEncodedPublicKey())) // TODO: We sure about this?
+        friends.append(SignalAccount(recipientId: getUserHexEncodedPublicKey())) // TODO: Are we sure about this?
         let syncManager = SSKEnvironment.shared.syncManager
         let promises = friends.chunked(by: 3).map { friends -> Promise<Void> in // TODO: Does this always fit?
             return Promise(syncManager.syncContacts(for: friends)).map { _ in }

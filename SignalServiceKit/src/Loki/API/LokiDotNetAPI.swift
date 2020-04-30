@@ -40,6 +40,7 @@ public class LokiDotNetAPI : NSObject {
         } else {
             return requestNewAuthToken(for: server).then(on: LokiAPI.workQueue) { submitAuthToken($0, for: server) }.then(on: LokiAPI.workQueue) { token -> Promise<String> in
                 let (promise, seal) = Promise<String>.pending()
+                // Dispatch async on the main queue to avoid nested write transactions
                 DispatchQueue.main.async {
                     storage.dbReadWriteConnection.readWrite { transaction in
                         setAuthToken(for: server, to: token, in: transaction)
