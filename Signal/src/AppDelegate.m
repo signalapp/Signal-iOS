@@ -1225,9 +1225,9 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
     // * Sync configuration to linked devices.
     if ([self.tsAccountManager isRegistered]) {
         AppVersion *appVersion = AppVersion.sharedInstance;
-        if (appVersion.lastAppVersion.length > 0
-            && ![appVersion.lastAppVersion isEqualToString:appVersion.currentAppVersion]) {
-
+        BOOL hasAppVersionChanged = (appVersion.lastAppVersion.length > 0
+                                     && ![appVersion.lastAppVersion isEqualToString:appVersion.currentAppVersion]);
+        if (hasAppVersionChanged || SSKDebugFlags.groupsV2alwaysUpdateAttributes) {
             if (self.tsAccountManager.isRegisteredPrimaryDevice) {
                 [[self.tsAccountManager updateAccountAttributes] retainUntilComplete];
                 [self.syncManager sendConfigurationSyncMessage];
