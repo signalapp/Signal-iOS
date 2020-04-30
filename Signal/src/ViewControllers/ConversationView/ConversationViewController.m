@@ -5419,22 +5419,24 @@ typedef enum : NSUInteger {
     }]) {
         return;
     }
-    __block TSInteraction *targetInteraction;
-    [self.thread enumerateInteractionsUsingBlock:^(TSInteraction *interaction) {
-        if (interaction.timestamp == timestamp.unsignedLongLongValue) {
-            targetInteraction = interaction;
-        }
-    }];
-    if (targetInteraction == nil || targetInteraction.interactionType != OWSInteractionType_OutgoingMessage) { return; }
-    NSString *hexEncodedPublicKey = targetInteraction.thread.contactIdentifier;
-    if (hexEncodedPublicKey == nil) { return; }
-    __block NSString *masterHexEncodedPublicKey;
-    [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        masterHexEncodedPublicKey = [LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:hexEncodedPublicKey in:transaction] ?: hexEncodedPublicKey;
-    }];
-    BOOL isSlaveDevice = ![masterHexEncodedPublicKey isEqual:hexEncodedPublicKey];
-    if (isSlaveDevice) { return; }
     dispatch_async(dispatch_get_main_queue(), ^{
+        __block TSInteraction *targetInteraction;
+        [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [self.thread enumerateInteractionsWithTransaction:transaction usingBlock:^(TSInteraction *interaction, YapDatabaseReadTransaction *t) {
+                if (interaction.timestamp == timestamp.unsignedLongLongValue) {
+                    targetInteraction = interaction;
+                }
+            }];
+        }];
+        if (targetInteraction == nil || targetInteraction.interactionType != OWSInteractionType_OutgoingMessage) { return; }
+        NSString *hexEncodedPublicKey = targetInteraction.thread.contactIdentifier;
+        if (hexEncodedPublicKey == nil) { return; }
+        __block NSString *masterHexEncodedPublicKey;
+        [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            masterHexEncodedPublicKey = [LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:hexEncodedPublicKey in:transaction] ?: hexEncodedPublicKey;
+        }];
+        BOOL isSlaveDevice = ![masterHexEncodedPublicKey isEqual:hexEncodedPublicKey];
+        if (isSlaveDevice) { return; }
         if (progress <= self.progressIndicatorView.progress) { return; }
         self.progressIndicatorView.alpha = 1;
         [self.progressIndicatorView setProgress:progress animated:YES];
