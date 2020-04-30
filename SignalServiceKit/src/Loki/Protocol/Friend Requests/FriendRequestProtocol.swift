@@ -21,7 +21,7 @@ public final class FriendRequestProtocol : NSObject {
         // Friend requests have nothing to do with groups, so if this isn't a contact thread the input bar should be enabled
         guard let thread = thread as? TSContactThread else { return true }
         // If this is a note to self, the input bar should be enabled
-        if SessionProtocol.isMessageNoteToSelf(thread) { return true }
+        if SessionMetaProtocol.isMessageNoteToSelf(thread) { return true }
         let contactID = thread.contactIdentifier()
         var linkedDeviceThreads: Set<TSContactThread> = []
         storage.dbReadConnection.read { transaction in
@@ -40,7 +40,7 @@ public final class FriendRequestProtocol : NSObject {
         // Friend requests have nothing to do with groups, so if this isn't a contact thread the attachment button should be enabled
         guard let thread = thread as? TSContactThread else { return true }
         // If this is a note to self, the attachment button should be enabled
-        if SessionProtocol.isMessageNoteToSelf(thread) { return true }
+        if SessionMetaProtocol.isMessageNoteToSelf(thread) { return true }
         let contactID = thread.contactIdentifier()
         var linkedDeviceThreads: Set<TSContactThread> = []
         storage.dbReadConnection.read { transaction in
