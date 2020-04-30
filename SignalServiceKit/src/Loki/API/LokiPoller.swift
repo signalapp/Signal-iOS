@@ -81,7 +81,6 @@ public final class LokiPoller : NSObject {
                 seal.fulfill(())
             }.catch(on: LokiAPI.errorHandlingQueue) { [weak self] error in
                 if let error = error as? Error, error == .pollLimitReached {
-                    print("[Loki] Polling limit for \(nextSnode) reached; switching to next snode.")
                     self?.pollCount = 0
                 } else {
                     print("[Loki] Polling \(nextSnode) failed; dropping it and switching to next snode.")
