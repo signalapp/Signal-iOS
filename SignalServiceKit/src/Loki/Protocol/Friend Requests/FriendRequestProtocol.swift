@@ -31,14 +31,14 @@ public final class FriendRequestProtocol : NSObject {
         var friendRequestStatuses: [LKFriendRequestStatus] = []
         storage.dbReadConnection.read { transaction in
             let linkedDeviceThreads = LokiDatabaseUtilities.getLinkedDeviceThreads(for: contactID, in: transaction)
-            friendRequestStatuses = linkedDeviceThreads.map { thread in
-                storage.getFriendRequestStatus(forContact: thread.contactIdentifier(), transaction: transaction)
+            friendRequestStatuses = linkedDeviceThreads.map { device in
+                return storage.getFriendRequestStatus(forContact: device.contactIdentifier(), transaction: transaction)
             }
         }
         // If the current user is friends with any of the other user's devices, the input bar should be enabled
         if friendRequestStatuses.contains(where: { $0 == .friends }) { return true }
         // If no friend request has been sent, the input bar should be enabled
-        if !friendRequestStatuses.contains(where: { isPendingFriendRequest($0) }) { return true }
+        if friendRequestStatuses.allSatisfy({ $0 == .none || $0 == .requestExpired }) { return true }
         // There must be a pending friend request
         return false
     }

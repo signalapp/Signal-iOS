@@ -38,11 +38,11 @@ class SyncMessagesProtocolTests : XCTestCase {
             SyncMessagesProtocol.handleContactSyncMessageData(contactData, using: transaction)
         }
         hexEncodedPublicKeys.forEach { hexEncodedPublicKey in
-            var thread: TSContactThread!
+            var friendRequestStatus: LKFriendRequestStatus!
             storage.dbReadWriteConnection.readWrite { transaction in
-                thread = TSContactThread.getOrCreateThread(withContactId: hexEncodedPublicKey, transaction: transaction)
+                friendRequestStatus = self.storage.getFriendRequestStatus(forContact: hexEncodedPublicKey, transaction: transaction)
             }
-            XCTAssert(thread.friendRequestStatus == .requestSent)
+            XCTAssert(friendRequestStatus == .requestSent)
         }
         // TODO: Test the case where Bob has multiple devices
     }
