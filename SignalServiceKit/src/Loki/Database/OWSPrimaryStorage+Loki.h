@@ -62,9 +62,8 @@ typedef NS_ENUM(NSInteger, LKFriendRequestStatus) {
 
 # pragma mark - Friend Request
 
-- (LKFriendRequestStatus)getFriendRequestStatusForContact:(NSString *)hexEncodedPublicKey transaction:(YapDatabaseReadTransaction *)transaction;
-    NS_SWIFT_NAME(getFriendRequestStatus(forContact:in:));
-- (void)setFriendRequestStatus:(LKFriendRequestStatus)friendRequestStatus forContact:(NSString *)hexEncodedPublicKey transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (LKFriendRequestStatus)getFriendRequestStatusForContact:(NSString *)hexEncodedPublicKey transaction:(YapDatabaseReadTransaction *)transaction NS_SWIFT_NAME(getFriendRequestStatus(for:transaction:));
+- (void)setFriendRequestStatus:(LKFriendRequestStatus)friendRequestStatus forContact:(NSString *)hexEncodedPublicKey transaction:(YapDatabaseReadWriteTransaction *)transaction NS_SWIFT_NAME(setFriendRequestStatus(_:for:transaction:));
 
 
 @end

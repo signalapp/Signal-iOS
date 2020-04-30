@@ -192,7 +192,7 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
                 let _ = SSKEnvironment.shared.syncManager.syncAllOpenGroups()
                 let storage = OWSPrimaryStorage.shared()
                 storage.dbReadWriteConnection.readWrite { transaction in
-                    storage.setFriendRequestStatus(.friends, forContact: hexEncodedPublicKey, transaction: transaction)
+                    storage.setFriendRequestStatus(.friends, for: hexEncodedPublicKey, transaction: transaction)
                 }
                 DispatchQueue.main.async {
                     self?.dismiss(animated: true, completion: nil)

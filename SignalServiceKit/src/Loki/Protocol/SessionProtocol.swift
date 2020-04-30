@@ -122,7 +122,7 @@ public final class SessionProtocol : NSObject {
 
         var shouldSendReceipt = false;
         storage.dbReadConnection.read { transaction in
-            shouldSendReceipt = storage.getFriendRequestStatus(forContact: contact, transaction: transaction) == .friends
+            shouldSendReceipt = storage.getFriendRequestStatus(for: contact, transaction: transaction) == .friends
         }
 
         return shouldSendReceipt

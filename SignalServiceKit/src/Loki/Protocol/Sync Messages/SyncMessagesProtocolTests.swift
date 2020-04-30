@@ -40,7 +40,7 @@ class SyncMessagesProtocolTests : XCTestCase {
         hexEncodedPublicKeys.forEach { hexEncodedPublicKey in
             var friendRequestStatus: LKFriendRequestStatus!
             storage.dbReadWriteConnection.readWrite { transaction in
-                friendRequestStatus = self.storage.getFriendRequestStatus(forContact: hexEncodedPublicKey, transaction: transaction)
+                friendRequestStatus = self.storage.getFriendRequestStatus(for: hexEncodedPublicKey, transaction: transaction)
             }
             XCTAssert(friendRequestStatus == .requestSent)
         }

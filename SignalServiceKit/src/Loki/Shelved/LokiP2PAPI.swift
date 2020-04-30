@@ -216,7 +216,7 @@ public class LokiP2PAPI : NSObject {
             TSContactThread.enumerateCollectionObjects(with: transaction) { (object, _) in
                 guard let thread = object as? TSContactThread, let uniqueId = thread.uniqueId, thread.contactIdentifier() == ourHexEncodedPubKey else { return }
 
-                let status = storage.getFriendRequestStatus(forContact: thread.contactIdentifier(), transaction: transaction)
+                let status = storage.getFriendRequestStatus(for: thread.contactIdentifier(), transaction: transaction)
                 if (status == .friends) {
                     friendThreadIds.append(uniqueId)
                 }

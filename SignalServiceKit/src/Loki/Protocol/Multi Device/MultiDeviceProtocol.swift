@@ -131,27 +131,27 @@ public final class MultiDeviceProtocol : NSObject {
             recipientUDAccess = udManager.udAccess(forRecipientId: hexEncodedPublicKey, requireSyncAccess: true)
         }
 
-        let friendRequestStatus = storage.getFriendRequestStatus(forContact: hexEncodedPublicKey, transaction: transaction)
+        let friendRequestStatus = storage.getFriendRequestStatus(for: hexEncodedPublicKey, transaction: transaction)
         if (friendRequestStatus == .none || friendRequestStatus == .requestExpired) {
-            storage.setFriendRequestStatus(.requestSending, forContact: hexEncodedPublicKey, transaction: transaction)
+            storage.setFriendRequestStatus(.requestSending, for: hexEncodedPublicKey, transaction: transaction)
         }
 
         return OWSMessageSend(message: message, thread: thread, recipient: recipient, senderCertificate: senderCertificate,
             udAccess: recipientUDAccess, localNumber: getUserHexEncodedPublicKey(), success: {
                 DispatchQueue.main.async {
                     storage.dbReadWriteConnection.readWrite { transaction in
-                        let friendRequestStatus = storage.getFriendRequestStatus(forContact: hexEncodedPublicKey, transaction: transaction)
+                        let friendRequestStatus = storage.getFriendRequestStatus(for: hexEncodedPublicKey, transaction: transaction)
                         if (friendRequestStatus != .friends || friendRequestStatus != .requestReceived || friendRequestStatus != .requestSent) {
-                            storage.setFriendRequestStatus(.requestSent, forContact: hexEncodedPublicKey, transaction: transaction)
+                            storage.setFriendRequestStatus(.requestSent, for: hexEncodedPublicKey, transaction: transaction)
                         }
                     }
                 }
         }, failure: { _ in
             DispatchQueue.main.async {
                 storage.dbReadWriteConnection.readWrite { transaction in
-                    let friendRequestStatus = storage.getFriendRequestStatus(forContact: hexEncodedPublicKey, transaction: transaction)
+                    let friendRequestStatus = storage.getFriendRequestStatus(for: hexEncodedPublicKey, transaction: transaction)
                     if (friendRequestStatus != .friends || friendRequestStatus != .requestReceived || friendRequestStatus != .requestSent) {
-                        storage.setFriendRequestStatus(.none, forContact: hexEncodedPublicKey, transaction: transaction)
+                        storage.setFriendRequestStatus(.none, for: hexEncodedPublicKey, transaction: transaction)
                     }
                 }
             }

@@ -27,7 +27,7 @@ class FriendRequestProtocolTests : XCTestCase {
     // MARK: - Helpers
 
     func isFriendRequestStatus(_ values: [LKFriendRequestStatus], for hexEncodedPublicKey: String, transaction: YapDatabaseReadWriteTransaction) -> Bool {
-        let status = storage.getFriendRequestStatus(forContact: hexEncodedPublicKey, transaction: transaction)
+        let status = storage.getFriendRequestStatus(for: hexEncodedPublicKey, transaction: transaction)
         return values.contains(status)
     }
 
@@ -91,8 +91,8 @@ class FriendRequestProtocolTests : XCTestCase {
         let deviceLink = DeviceLink(between: masterDevice, and: slaveDevice)
         storage.dbReadWriteConnection.readWrite { transaction in
             self.storage.addDeviceLink(deviceLink, in: transaction)
-            self.storage.setFriendRequestStatus(.requestSent, forContact: master, transaction: transaction)
-            self.storage.setFriendRequestStatus(.requestSent, forContact: slave, transaction: transaction)
+            self.storage.setFriendRequestStatus(.requestSent, for: master, transaction: transaction)
+            self.storage.setFriendRequestStatus(.requestSent, for: slave, transaction: transaction)
         }
 
         let masterThread = createContactThread(for: master)
@@ -109,7 +109,7 @@ class FriendRequestProtocolTests : XCTestCase {
 
         for status in validStatuses {
             storage.dbReadWriteConnection.readWrite { transaction in
-                self.storage.setFriendRequestStatus(status, forContact: device, transaction: transaction)
+                self.storage.setFriendRequestStatus(status, for: device, transaction: transaction)
             }
             XCTAssertTrue(FriendRequestProtocol.shouldInputBarBeEnabled(for: thread))
         }
@@ -122,7 +122,7 @@ class FriendRequestProtocolTests : XCTestCase {
 
         for status in pendingStatuses {
             storage.dbReadWriteConnection.readWrite { transaction in
-                self.storage.setFriendRequestStatus(status, forContact: device, transaction: transaction)
+                self.storage.setFriendRequestStatus(status, for: device, transaction: transaction)
             }
             XCTAssertFalse(FriendRequestProtocol.shouldInputBarBeEnabled(for: thread))
         }
@@ -138,8 +138,8 @@ class FriendRequestProtocolTests : XCTestCase {
         let deviceLink = DeviceLink(between: masterDevice, and: slaveDevice)
         storage.dbReadWriteConnection.readWrite { transaction in
             self.storage.addDeviceLink(deviceLink, in: transaction)
-            self.storage.setFriendRequestStatus(.friends, forContact: master, transaction: transaction)
-            self.storage.setFriendRequestStatus(.requestSent, forContact: slave, transaction: transaction)
+            self.storage.setFriendRequestStatus(.friends, for: master, transaction: transaction)
+            self.storage.setFriendRequestStatus(.requestSent, for: slave, transaction: transaction)
         }
 
         let masterThread = createContactThread(for: master)
@@ -159,7 +159,7 @@ class FriendRequestProtocolTests : XCTestCase {
         let deviceLink = DeviceLink(between: masterDevice, and: slaveDevice)
         storage.dbReadWriteConnection.readWrite { transaction in
             self.storage.addDeviceLink(deviceLink, in: transaction)
-            self.storage.setFriendRequestStatus(.none, forContact: master, transaction: transaction)
+            self.storage.setFriendRequestStatus(.none, for: master, transaction: transaction)
         }
 
         let masterThread = createContactThread(for: master)
@@ -168,7 +168,7 @@ class FriendRequestProtocolTests : XCTestCase {
         let pendingStatuses: [LKFriendRequestStatus] = [.requestSending, .requestSent, .requestReceived]
         for status in pendingStatuses {
             storage.dbReadWriteConnection.readWrite { transaction in
-                self.storage.setFriendRequestStatus(status, forContact: slave, transaction: transaction)
+                self.storage.setFriendRequestStatus(status, for: slave, transaction: transaction)
             }
             XCTAssertFalse(FriendRequestProtocol.shouldInputBarBeEnabled(for: masterThread))
             XCTAssertFalse(FriendRequestProtocol.shouldInputBarBeEnabled(for: slaveThread))
@@ -185,8 +185,8 @@ class FriendRequestProtocolTests : XCTestCase {
         let deviceLink = DeviceLink(between: masterDevice, and: slaveDevice)
         storage.dbReadWriteConnection.readWrite { transaction in
             self.storage.addDeviceLink(deviceLink, in: transaction)
-            self.storage.setFriendRequestStatus(.none, forContact: master, transaction: transaction)
-            self.storage.setFriendRequestStatus(.none, forContact: slave, transaction: transaction)
+            self.storage.setFriendRequestStatus(.none, for: master, transaction: transaction)
+            self.storage.setFriendRequestStatus(.none, for: slave, transaction: transaction)
         }
 
         let masterThread = createContactThread(for: master)
@@ -195,7 +195,7 @@ class FriendRequestProtocolTests : XCTestCase {
         let safeStatuses: [LKFriendRequestStatus] = [.requestExpired, .none]
         for status in safeStatuses {
             storage.dbReadWriteConnection.readWrite { transaction in
-                self.storage.setFriendRequestStatus(status, forContact: slave, transaction: transaction)
+                self.storage.setFriendRequestStatus(status, for: slave, transaction: transaction)
             }
             XCTAssertTrue(FriendRequestProtocol.shouldInputBarBeEnabled(for: masterThread))
             XCTAssertTrue(FriendRequestProtocol.shouldInputBarBeEnabled(for: slaveThread))
@@ -222,8 +222,8 @@ class FriendRequestProtocolTests : XCTestCase {
         let deviceLink = DeviceLink(between: masterDevice, and: slaveDevice)
         storage.dbReadWriteConnection.readWrite { transaction in
             self.storage.addDeviceLink(deviceLink, in: transaction)
-            self.storage.setFriendRequestStatus(.requestSent, forContact: master, transaction: transaction)
-            self.storage.setFriendRequestStatus(.requestSent, forContact: slave, transaction: transaction)
+            self.storage.setFriendRequestStatus(.requestSent, for: master, transaction: transaction)
+            self.storage.setFriendRequestStatus(.requestSent, for: slave, transaction: transaction)
         }
 
         let masterThread = createContactThread(for: master)
@@ -238,7 +238,7 @@ class FriendRequestProtocolTests : XCTestCase {
         let thread = createContactThread(for: device)
 
         storage.dbReadWriteConnection.readWrite { transaction in
-            self.storage.setFriendRequestStatus(.friends, forContact: device, transaction: transaction)
+            self.storage.setFriendRequestStatus(.friends, for: device, transaction: transaction)
         }
         XCTAssertTrue(FriendRequestProtocol.shouldAttachmentButtonBeEnabled(for: thread))
     }
@@ -250,7 +250,7 @@ class FriendRequestProtocolTests : XCTestCase {
 
         for status in nonFriendStatuses {
             storage.dbReadWriteConnection.readWrite { transaction in
-                self.storage.setFriendRequestStatus(status, forContact: device, transaction: transaction)
+                self.storage.setFriendRequestStatus(status, for: device, transaction: transaction)
             }
             XCTAssertFalse(FriendRequestProtocol.shouldAttachmentButtonBeEnabled(for: thread))
         }
@@ -266,8 +266,8 @@ class FriendRequestProtocolTests : XCTestCase {
         let deviceLink = DeviceLink(between: masterDevice, and: slaveDevice)
         storage.dbReadWriteConnection.readWrite { transaction in
             self.storage.addDeviceLink(deviceLink, in: transaction)
-            self.storage.setFriendRequestStatus(.friends, forContact: master, transaction: transaction)
-            self.storage.setFriendRequestStatus(.requestSent, forContact: slave, transaction: transaction)
+            self.storage.setFriendRequestStatus(.friends, for: master, transaction: transaction)
+            self.storage.setFriendRequestStatus(.requestSent, for: slave, transaction: transaction)
         }
 
         let masterThread = createContactThread(for: master)
@@ -283,13 +283,13 @@ class FriendRequestProtocolTests : XCTestCase {
         // Case: Bob sent us a friend request, we should become friends with him on accepting
         let bob = Curve25519.generateKeyPair().hexEncodedPublicKey
         storage.dbReadWriteConnection.readWrite { transaction in
-            self.storage.setFriendRequestStatus(.requestReceived, forContact: bob, transaction: transaction)
+            self.storage.setFriendRequestStatus(.requestReceived, for: bob, transaction: transaction)
 
         }
 
         storage.dbReadWriteConnection.readWrite { transaction in
             FriendRequestProtocol.acceptFriendRequest(from: bob, using: transaction)
-            XCTAssertTrue(self.storage.getFriendRequestStatus(forContact: bob, transaction: transaction) == .friends)
+            XCTAssertTrue(self.storage.getFriendRequestStatus(for: bob, transaction: transaction) == .friends)
         }
     }
 
@@ -300,7 +300,7 @@ class FriendRequestProtocolTests : XCTestCase {
         for status in statuses {
             let bob = Curve25519.generateKeyPair().hexEncodedPublicKey
             storage.dbReadWriteConnection.readWrite { transaction in
-                self.storage.setFriendRequestStatus(status, forContact: bob, transaction: transaction)
+                self.storage.setFriendRequestStatus(status, for: bob, transaction: transaction)
             }
 
             storage.dbReadWriteConnection.readWrite { transaction in
@@ -315,7 +315,7 @@ class FriendRequestProtocolTests : XCTestCase {
         // We can't accept because we don't have keys to communicate with Bob.
         let bob = Curve25519.generateKeyPair().hexEncodedPublicKey
         storage.dbReadWriteConnection.readWrite { transaction in
-            self.storage.setFriendRequestStatus(.requestSent, forContact: bob, transaction: transaction)
+            self.storage.setFriendRequestStatus(.requestSent, for: bob, transaction: transaction)
 
         }
 
@@ -340,9 +340,9 @@ class FriendRequestProtocolTests : XCTestCase {
         storage.dbReadWriteConnection.readWrite { transaction in
             self.storage.addDeviceLink(DeviceLink(between: masterDevice, and: slaveDevice), in: transaction)
             self.storage.addDeviceLink(DeviceLink(between: masterDevice, and: otherSlaveDevice), in: transaction)
-            self.storage.setFriendRequestStatus(.none, forContact: master, transaction: transaction)
-            self.storage.setFriendRequestStatus(.requestReceived, forContact: slave, transaction: transaction)
-            self.storage.setFriendRequestStatus(.requestSent, forContact: otherSlave, transaction: transaction)
+            self.storage.setFriendRequestStatus(.none, for: master, transaction: transaction)
+            self.storage.setFriendRequestStatus(.requestReceived, for: slave, transaction: transaction)
+            self.storage.setFriendRequestStatus(.requestSent, for: otherSlave, transaction: transaction)
         }
 
         storage.dbReadWriteConnection.readWrite { transaction in
@@ -358,8 +358,8 @@ class FriendRequestProtocolTests : XCTestCase {
         let bob = generateHexEncodedPublicKey()
 
         storage.dbReadWriteConnection.readWrite { transaction in
-            self.storage.setFriendRequestStatus(.requestReceived, forContact: alice, transaction: transaction)
-            self.storage.setFriendRequestStatus(.requestReceived, forContact: bob, transaction: transaction)
+            self.storage.setFriendRequestStatus(.requestReceived, for: alice, transaction: transaction)
+            self.storage.setFriendRequestStatus(.requestReceived, for: bob, transaction: transaction)
         }
 
         storage.dbReadWriteConnection.readWrite { transaction in
