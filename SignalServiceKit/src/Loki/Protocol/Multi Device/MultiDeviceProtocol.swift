@@ -218,8 +218,8 @@ public final class MultiDeviceProtocol : NSObject {
             }
             // Set any profile info (the device link authorization also includes the master device's profile info)
             if let dataMessage = protoContent.dataMessage {
-                SessionProtocol.updateDisplayNameIfNeeded(for: master, using: dataMessage, appendingShortID: false, in: transaction)
-                SessionProtocol.updateProfileKeyIfNeeded(for: master, using: dataMessage)
+                SessionMetaProtocol.updateDisplayNameIfNeeded(for: master, using: dataMessage, appendingShortID: false, in: transaction)
+                SessionMetaProtocol.updateProfileKeyIfNeeded(for: master, using: dataMessage)
             }
         } else { // Request
             print("[Loki] Received a device link request from: \(hexEncodedPublicKey).") // Intentionally not `slave`
