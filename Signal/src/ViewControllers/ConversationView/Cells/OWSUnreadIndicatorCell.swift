@@ -67,6 +67,7 @@ public class UnreadIndicatorCell: ConversationViewCell {
 
         titleLabel.font = UIFont.ows_dynamicTypeBody2.ows_semibold()
         titleLabel.textColor = Theme.primaryTextColor
+        titleLabel.numberOfLines = 0
 
         let date = Date(millisecondsSince1970: viewItem.interaction.timestamp)
         let dateString = DateUtil.formatDate(forConversationDateBreaks: date)
