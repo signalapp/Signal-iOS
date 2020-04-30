@@ -120,11 +120,6 @@ extension AddToBlockListViewController: RecipientPickerDelegate {
         return nil
     }
 
-    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
-                         attributedSubtitleForRecipient recipient: PickedRecipient) -> NSAttributedString? {
-        return nil
-    }
-
     func recipientPickerTableViewWillBeginDragging(_ recipientPickerViewController: RecipientPickerViewController) {}
 
     func recipientPickerNewGroupButtonWasPressed() {}

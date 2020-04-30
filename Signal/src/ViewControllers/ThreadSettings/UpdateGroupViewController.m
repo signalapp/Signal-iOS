@@ -558,12 +558,6 @@ NS_ASSUME_NONNULL_BEGIN
     return nil;
 }
 
-- (nullable NSAttributedString *)recipientPicker:(RecipientPickerViewController *)recipientPickerViewController
-                  attributedSubtitleForRecipient:(PickedRecipient *)recipient
-{
-    return nil;
-}
-
 - (void)recipientPickerTableViewWillBeginDragging:(RecipientPickerViewController *)recipientPickerViewController
 {
     [self.groupNameTextField resignFirstResponder];
