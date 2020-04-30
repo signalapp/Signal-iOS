@@ -104,6 +104,7 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
                             defaultValue:1 // lazily migrate legacy primary devices
                              transaction:transaction];
     _isOnboarded = [keyValueStore getBool:TSAccountManager_IsOnboardedKey defaultValue:NO transaction:transaction];
+
     return self;
 }
 
@@ -178,6 +179,8 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
         if (!CurrentAppContext().isMainApp) {
             [self.databaseStorage addDatabaseStorageObserver:self];
         }
+
+        [self ensureAccountAttributes];
     }];
 
     [[NSNotificationCenter defaultCenter] addObserver:self

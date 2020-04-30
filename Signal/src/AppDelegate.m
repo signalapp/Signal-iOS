@@ -1219,24 +1219,6 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
 
     [self.udManager setup];
 
-    // Every time the user upgrades to a new version:
-    //
-    // * Update account attributes.
-    // * Sync configuration to linked devices.
-    if ([self.tsAccountManager isRegistered]) {
-        AppVersion *appVersion = AppVersion.sharedInstance;
-        BOOL hasAppVersionChanged = (appVersion.lastAppVersion.length > 0
-                                     && ![appVersion.lastAppVersion isEqualToString:appVersion.currentAppVersion]);
-        if (hasAppVersionChanged || SSKDebugFlags.groupsV2alwaysUpdateAttributes) {
-            if (self.tsAccountManager.isRegisteredPrimaryDevice) {
-                [[self.tsAccountManager updateAccountAttributes] retainUntilComplete];
-                [self.syncManager sendConfigurationSyncMessage];
-            } else {
-                [[self.deviceService updateCapabilities] retainUntilComplete];
-            }
-        }
-    }
-
     [ViewOnceMessages appDidBecomeReady];
 }
 

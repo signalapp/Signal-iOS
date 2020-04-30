@@ -17,6 +17,10 @@ public extension TSAccountManager {
         return SSKEnvironment.shared.profileManager
     }
 
+    private var syncManager: SyncManagerProtocol {
+        return SSKEnvironment.shared.syncManager
+    }
+
     // MARK: -
 
     @objc
@@ -101,5 +105,65 @@ public extension TSAccountManager {
             // messages.
             self.profileManager.fetchAndUpdateLocalUsersProfile()
         }
+    }
+
+    private static let accountStore = SDSKeyValueStore(collection: "TSAccountManager.accountStore")
+
+    // Every time the user upgrades to a new version:
+    //
+    // * Update account attributes.
+    // * Sync configuration to linked devices.
+    //
+    // We also do this work whenever the device capabilities change.
+    // This is useful during development and internal testing when
+    // moving between builds with different device capabilities.
+    @objc
+    func ensureAccountAttributes() {
+        guard isRegisteredAndReady else {
+            return
+        }
+        guard AppReadiness.isAppReady() else {
+            owsFailDebug("App is not ready.")
+            return
+        }
+
+        let deviceCapabilitiesKey = "deviceCapabilities"
+        let appVersionKey = "appVersion"
+
+        let currentDeviceCapabilities: [String: NSNumber] = OWSRequestFactory.deviceCapabilities()
+        let currentAppVersion = AppVersion.sharedInstance().currentAppVersion
+
+        let shouldUpdateAttributes = Self.databaseStorage.read { (transaction: SDSAnyReadTransaction) -> Bool in
+            let lastDeviceCapabilities = Self.accountStore.getObject(forKey: deviceCapabilitiesKey, transaction: transaction) as? [String: NSNumber]
+            guard lastDeviceCapabilities == currentDeviceCapabilities else {
+                return true
+            }
+            let lastAppVersion = Self.accountStore.getString(appVersionKey, transaction: transaction)
+            guard lastAppVersion == currentAppVersion else {
+                return true
+            }
+            return false
+        }
+        guard shouldUpdateAttributes else {
+            return
+        }
+        Logger.info("Updating account attributes.")
+        firstly { () -> Promise<Void> in
+            let client = SignalServiceRestClient()
+            return (self.isPrimaryDevice
+                ? client.updatePrimaryDeviceAccountAttributes()
+                : client.updateDeviceCapabilities())
+        }.then(on: DispatchQueue.global()) {
+            self.profileManager.fetchLocalUsersProfilePromise()
+        }.done(on: DispatchQueue.global()) { _ in
+            Logger.info("Success.")
+            Self.databaseStorage.write { transaction in
+                Self.accountStore.setObject(currentDeviceCapabilities, key: deviceCapabilitiesKey, transaction: transaction)
+                Self.accountStore.setString(currentAppVersion, key: appVersionKey, transaction: transaction)
+            }
+            self.syncManager.sendConfigurationSyncMessage()
+        }.catch(on: DispatchQueue.global()) { error in
+            Logger.warn("Error: \(error).")
+        }.retainUntilComplete()
     }
 }
