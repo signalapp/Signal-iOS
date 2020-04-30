@@ -103,6 +103,7 @@ public final class SessionMetaProtocol : NSObject {
     public static func updateDisplayNameIfNeeded(for hexEncodedPublicKey: String, using dataMessage: SSKProtoDataMessage, appendingShortID appendShortID: Bool, in transaction: YapDatabaseReadWriteTransaction) {
         guard let profile = dataMessage.profile, let rawDisplayName = profile.displayName else { return }
         let displayName: String
+        // TODO: Figure out why we sometimes don't append the short ID
         if appendShortID {
             let shortID = hexEncodedPublicKey.substring(from: hexEncodedPublicKey.index(hexEncodedPublicKey.endIndex, offsetBy: -8))
             displayName = "\(rawDisplayName) (...\(shortID))"
