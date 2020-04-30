@@ -60,6 +60,7 @@ public final class FriendRequestProtocol : NSObject {
         // Accept all outstanding friend requests associated with this user and try to establish sessions with the
         // subset of their devices that haven't sent a friend request.
         let linkedDeviceThreads = LokiDatabaseUtilities.getLinkedDeviceThreads(for: hexEncodedPublicKey, in: transaction) // This doesn't create new threads if they don't exist yet
+        // FIXME: Capture send failures
         for thread in linkedDeviceThreads {
             if thread.hasPendingFriendRequest {
                 sendFriendRequestAcceptanceMessage(to: thread.contactIdentifier(), in: thread, using: transaction) // NOT hexEncodedPublicKey
