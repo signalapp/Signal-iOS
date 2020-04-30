@@ -287,7 +287,7 @@ public class DebugFlags: NSObject {
     public static let groupsV2forceInvites = false
 
     @objc
-    public static var groupsV2memberStatusIndicators = FeatureFlags.groupsV2 && build.includes(.internalPreview)
+    public static var groupsV2memberStatusIndicators = FeatureFlags.groupsV2 && build.includes(.qa)
 
     @objc
     public static let isMessageProcessingVerbose = false
