@@ -552,12 +552,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (nullable UIView *)recipientPicker:(RecipientPickerViewController *)recipientPickerViewController
-           accessoryViewForRecipient:(PickedRecipient *)recipient
-{
-    return nil;
-}
-
 - (void)recipientPickerTableViewWillBeginDragging:(RecipientPickerViewController *)recipientPickerViewController
 {
     [self.groupNameTextField resignFirstResponder];

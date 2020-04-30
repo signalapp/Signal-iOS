@@ -27,8 +27,9 @@ protocol RecipientPickerDelegate: AnyObject {
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          accessoryMessageForRecipient recipient: PickedRecipient) -> String?
 
-    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
-                         accessoryViewForRecipient recipient: PickedRecipient) -> UIView?
+    @objc
+    optional func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
+                                  accessoryViewForRecipient recipient: PickedRecipient) -> UIView?
 
     @objc
     optional func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
@@ -131,7 +132,7 @@ extension RecipientPickerViewController {
                             cell.selectionStyle = .none
                         }
 
-                        if let accessoryView = delegate.recipientPicker(self, accessoryViewForRecipient: recipient) {
+                        if let accessoryView = delegate.recipientPicker?(self, accessoryViewForRecipient: recipient) {
                             cell.ows_setAccessoryView(accessoryView)
                         } else {
                             let accessoryMessage = delegate.recipientPicker(self, accessoryMessageForRecipient: recipient)
