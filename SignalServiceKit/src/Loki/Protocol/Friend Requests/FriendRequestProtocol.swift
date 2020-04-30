@@ -15,11 +15,6 @@ public final class FriendRequestProtocol : NSObject {
 
     internal static var storage: OWSPrimaryStorage { OWSPrimaryStorage.shared() }
 
-    // Mark: - Status
-    private static func isPendingFriendRequest(_ status: LKFriendRequestStatus) -> Bool {
-        return status == .requestSending || status == .requestSent || status == .requestReceived
-    }
-
     // MARK: - General
     @objc(shouldInputBarBeEnabledForThread:)
     public static func shouldInputBarBeEnabled(for thread: TSThread) -> Bool {
@@ -120,7 +115,6 @@ public final class FriendRequestProtocol : NSObject {
         let linkedDevices = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: hexEncodedPublicKey, in: transaction)
         for device in linkedDevices {
             let friendRequestStatus = storage.getFriendRequestStatus(for: device, transaction: transaction)
-            assert(friendRequestStatus != .friends, "Invalid state transition. Cannot decline a friend request from a device we're already friends with. hexEncodedPublicKey: \(device)")
             // We only want to decline any incoming requests
             if (friendRequestStatus == .requestReceived) {
                 // Delete the pre key bundle for the given contact. This ensures that if we send a
