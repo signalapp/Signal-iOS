@@ -174,7 +174,7 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
 
         TSThread *thread = [TSContactThread getOrCreateThreadWithContactId:recipientId];
 
-        if (![LKSessionProtocol shouldSendReceiptForThread:thread]) {
+        if (![LKSessionMetaProtocol shouldSendReceiptForThread:thread]) {
             continue;
         }
         

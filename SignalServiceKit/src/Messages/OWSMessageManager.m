@@ -441,7 +441,7 @@ NS_ASSUME_NONNULL_BEGIN
         
         // Loki: Handle address message if needed
         /*
-        [LKSessionProtocol handleP2PAddressMessageIfNeeded:contentProto wrappedIn:envelope];
+        [LKSessionMetaProtocol handleP2PAddressMessageIfNeeded:contentProto wrappedIn:envelope];
          */
 
         // Loki: Handle device linking message if needed
@@ -1296,10 +1296,10 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         // Loki: Handle profile key update if needed
-        [LKSessionProtocol updateProfileKeyIfNeededForHexEncodedPublicKey:senderMasterHexEncodedPublicKey using:dataMessage];
+        [LKSessionMetaProtocol updateProfileKeyIfNeededForHexEncodedPublicKey:senderMasterHexEncodedPublicKey using:dataMessage];
 
         // Loki: Handle display name update if needed
-        [LKSessionProtocol updateDisplayNameIfNeededForHexEncodedPublicKey:senderMasterHexEncodedPublicKey using:dataMessage appendingShortID:NO in:transaction];
+        [LKSessionMetaProtocol updateDisplayNameIfNeededForHexEncodedPublicKey:senderMasterHexEncodedPublicKey using:dataMessage appendingShortID:NO in:transaction];
 
         switch (dataMessage.group.type) {
             case SSKProtoGroupContextTypeUpdate: {
@@ -1520,8 +1520,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                         wasReceivedByUD:wasReceivedByUD];
 
         // TODO: Are we sure this works correctly with multi device?
-        [LKSessionProtocol updateDisplayNameIfNeededForHexEncodedPublicKey:incomingMessage.authorId using:dataMessage appendingShortID:YES in:transaction];
-        [LKSessionProtocol updateProfileKeyIfNeededForHexEncodedPublicKey:thread.contactIdentifier using:dataMessage];
+        [LKSessionMetaProtocol updateDisplayNameIfNeededForHexEncodedPublicKey:incomingMessage.authorId using:dataMessage appendingShortID:YES in:transaction];
+        [LKSessionMetaProtocol updateProfileKeyIfNeededForHexEncodedPublicKey:thread.contactIdentifier using:dataMessage];
 
         // Loki: Parse Loki specific properties if needed
         /*

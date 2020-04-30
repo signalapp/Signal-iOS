@@ -117,8 +117,8 @@ public final class SyncMessagesProtocol : NSObject {
         guard let masterHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: getUserHexEncodedPublicKey(), in: transaction) else { return }
         let wasSentByMasterDevice = (masterHexEncodedPublicKey == hexEncodedPublicKey)
         guard wasSentByMasterDevice else { return }
-        SessionProtocol.updateDisplayNameIfNeeded(for: masterHexEncodedPublicKey, using: dataMessage, appendingShortID: false, in: transaction)
-        SessionProtocol.updateProfileKeyIfNeeded(for: masterHexEncodedPublicKey, using: dataMessage)
+        SessionMetaProtocol.updateDisplayNameIfNeeded(for: masterHexEncodedPublicKey, using: dataMessage, appendingShortID: false, in: transaction)
+        SessionMetaProtocol.updateProfileKeyIfNeeded(for: masterHexEncodedPublicKey, using: dataMessage)
     }
 
     @objc(handleClosedGroupUpdatedSyncMessageIfNeeded:using:)

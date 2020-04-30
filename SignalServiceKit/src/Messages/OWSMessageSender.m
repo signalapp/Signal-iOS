@@ -500,10 +500,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     __block NSMutableSet<NSString *> *recipientIds = [NSMutableSet new];
     if ([message isKindOfClass:[OWSOutgoingSyncMessage class]]) {
-        recipientIds = [LKSessionProtocol getDestinationsForOutgoingSyncMessage];
+        recipientIds = [LKSessionMetaProtocol getDestinationsForOutgoingSyncMessage];
     } else if (thread.isGroupThread) {
         TSGroupThread *groupThread = (TSGroupThread *)thread;
-        recipientIds = [LKSessionProtocol getDestinationsForOutgoingGroupMessage:message inThread:thread];
+        recipientIds = [LKSessionMetaProtocol getDestinationsForOutgoingGroupMessage:message inThread:thread];
     } else if ([thread isKindOfClass:[TSContactThread class]]) {
         NSString *recipientContactId = ((TSContactThread *)thread).contactIdentifier;
 
@@ -670,10 +670,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         return failureHandler(error);
     }
 
-    // Loki: Abort early and send a sync transcript if this is a note to self
-    if ([LKSessionProtocol isMessageNoteToSelf:message inThread:thread]) {
-        // FIXME: I think this is where the duplicate sync messages might be coming from. Signal just invokes successHandler() here.
-        [self sendSyncTranscriptForMessage:message isRecipientUpdate:NO success:^{ } failure:^(NSError *error) { }];
+    // In the "self-send" special case, we ony need to send a sync message with a delivery receipt
+    // Loki: Take into account multi device
+    if ([LKSessionMetaProtocol isMessageNoteToSelf:thread] && !([message isKindOfClass:LKDeviceLinkMessage.class])) {
+        // Don't mark self-sent messages as read (or sent) until the sync transcript is sent
         successHandler();
         return;
     }
@@ -916,14 +916,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     TSOutgoingMessage *message = messageSend.message;
     SignalRecipient *recipient = messageSend.recipient;
-
-    // Loki: Ignore messages addressed to self
-    // TODO: Why?
-    NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
-    if ([messageSend.recipient.recipientId isEqual:userHexEncodedPublicKey]) {
-        [LKLogger print:[NSString stringWithFormat:@"[Loki] Ignoring %@ addressed to self.", message.class]];
-        return messageSend.success();
-    }
         
     OWSLogInfo(@"Attempting to send message: %@, timestamp: %llu, recipient: %@.",
         message.class,
@@ -1488,9 +1480,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                          failure:(RetryableFailureHandler)failure
 {
     dispatch_block_t success = ^{
-        // Loki: Handle note to self case
-        BOOL isNoteToSelf = [LKSessionProtocol isMessageNoteToSelf:message inThread:message.thread];
-        if (isNoteToSelf) {
+        // Don't mark self-sent messages as read (or sent) until the sync transcript is sent
+        // Loki: Take into account multi device
+        BOOL isNoteToSelf = [LKSessionMetaProtocol isMessageNoteToSelf:message.thread];
+        if (isNoteToSelf && !([message isKindOfClass:LKDeviceLinkMessage.class])) {
             [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                 for (NSString *recipientId in message.sendingRecipientIds) {
                     [message updateWithReadRecipientId:recipientId readTimestamp:message.timestamp transaction:transaction];
@@ -1511,7 +1504,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         return success();
     }
 
-    BOOL shouldSendTranscript = [LKSessionProtocol shouldSendTranscriptForMessage:message in:message.thread];
+    BOOL shouldSendTranscript = [LKSessionMetaProtocol shouldSendTranscriptForMessage:message in:message.thread];
     if (!shouldSendTranscript) {
         return success();
     }
