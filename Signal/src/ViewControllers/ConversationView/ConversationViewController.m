@@ -220,6 +220,10 @@ typedef enum : NSUInteger {
 @property (nonatomic) NSMutableArray<LKMention *> *mentions;
 @property (nonatomic) NSString *oldText;
 
+// Status bar updating
+/// Used to avoid duplicate status bar updates.
+@property (nonatomic) NSMutableSet<NSNumber *> *handledMessageTimestamps;
+
 @end
 
 #pragma mark -
@@ -5396,6 +5400,7 @@ typedef enum : NSUInteger {
 {
     NSNumber *timestamp = (NSNumber *)notification.object;
     [self setProgressIfNeededTo:1.0f forMessageWithTimestamp:timestamp];
+    [self.handledMessageTimestamps addObject:timestamp];
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^(void) {
         [self hideProgressIndicatorViewForMessageWithTimestamp:timestamp];
     });
@@ -5409,6 +5414,11 @@ typedef enum : NSUInteger {
 
 - (void)setProgressIfNeededTo:(float)progress forMessageWithTimestamp:(NSNumber *)timestamp
 {
+    if ([self.handledMessageTimestamps contains:^BOOL(NSNumber *t) {
+        return [t isEqual:timestamp];
+    }]) {
+        return;
+    }
     __block TSInteraction *targetInteraction;
     [self.thread enumerateInteractionsUsingBlock:^(TSInteraction *interaction) {
         if (interaction.timestamp == timestamp.unsignedLongLongValue) {
