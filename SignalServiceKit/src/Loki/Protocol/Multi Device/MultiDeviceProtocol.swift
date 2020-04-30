@@ -111,11 +111,6 @@ public final class MultiDeviceProtocol : NSObject {
         thread.isForceHidden = isSlaveDeviceThread // TODO: Could we make this computed?
         thread.save(with: transaction)
 
-        // FIXME: I don't think this should be here, the function itself should just return a message
-        let friendRequestStatus = storage.getFriendRequestStatus(forContact: hexEncodedPublicKey, transaction: transaction)
-        if friendRequestStatus == .none || friendRequestStatus == .requestExpired {
-            storage.setFriendRequestStatus(.requestSent, forContact: hexEncodedPublicKey, transaction: transaction)
-        }
         let result = FriendRequestMessage(outgoingMessageWithTimestamp: NSDate.ows_millisecondTimeStamp(), in: thread,
             messageBody: "Please accept to enable messages to be synced across devices",
             attachmentIds: [], expiresInSeconds: 0, expireStartedAt: 0, isVoiceMessage: false,
@@ -135,11 +130,31 @@ public final class MultiDeviceProtocol : NSObject {
         if let senderCertificate = senderCertificate {
             recipientUDAccess = udManager.udAccess(forRecipientId: hexEncodedPublicKey, requireSyncAccess: true)
         }
+
+        let friendRequestStatus = storage.getFriendRequestStatus(forContact: hexEncodedPublicKey, transaction: transaction)
+        if (friendRequestStatus == .none || friendRequestStatus == .requestExpired) {
+            storage.setFriendRequestStatus(.requestSending, forContact: hexEncodedPublicKey, transaction: transaction)
+        }
+
         return OWSMessageSend(message: message, thread: thread, recipient: recipient, senderCertificate: senderCertificate,
             udAccess: recipientUDAccess, localNumber: getUserHexEncodedPublicKey(), success: {
-
+                DispatchQueue.main.async {
+                    storage.dbReadWriteConnection.readWrite { transaction in
+                        let friendRequestStatus = storage.getFriendRequestStatus(forContact: hexEncodedPublicKey, transaction: transaction)
+                        if (friendRequestStatus != .friends || friendRequestStatus != .requestReceived || friendRequestStatus != .requestSent) {
+                            storage.setFriendRequestStatus(.requestSent, forContact: hexEncodedPublicKey, transaction: transaction)
+                        }
+                    }
+                }
         }, failure: { _ in
-
+            DispatchQueue.main.async {
+                storage.dbReadWriteConnection.readWrite { transaction in
+                    let friendRequestStatus = storage.getFriendRequestStatus(forContact: hexEncodedPublicKey, transaction: transaction)
+                    if (friendRequestStatus != .friends || friendRequestStatus != .requestReceived || friendRequestStatus != .requestSent) {
+                        storage.setFriendRequestStatus(.none, forContact: hexEncodedPublicKey, transaction: transaction)
+                    }
+                }
+            }
         })
     }
 
