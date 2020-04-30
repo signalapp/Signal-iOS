@@ -287,6 +287,9 @@ public class DebugFlags: NSObject {
     public static let groupsV2forceInvites = false
 
     @objc
+    public static var groupsV2memberStatusIndicators = FeatureFlags.groupsV2 && build.includes(.internalPreview)
+
+    @objc
     public static let isMessageProcessingVerbose = false
 
     // Currently this flag is only honored by TSNetworkManager,

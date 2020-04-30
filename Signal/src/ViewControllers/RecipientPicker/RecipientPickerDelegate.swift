@@ -30,6 +30,9 @@ protocol RecipientPickerDelegate: AnyObject {
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          accessoryViewForRecipient recipient: PickedRecipient) -> UIView?
 
+    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
+                         attributedSubtitleForRecipient recipient: PickedRecipient) -> NSAttributedString?
+
     func recipientPickerTableViewWillBeginDragging(_ recipientPickerViewController: RecipientPickerViewController)
 
     func recipientPickerNewGroupButtonWasPressed()
@@ -132,6 +135,10 @@ extension RecipientPickerViewController {
                         } else {
                             let accessoryMessage = delegate.recipientPicker(self, accessoryMessageForRecipient: recipient)
                             cell.setAccessoryMessage(accessoryMessage)
+                        }
+
+                        if let attributedSubtitle = delegate.recipientPicker(self, attributedSubtitleForRecipient: recipient) {
+                            cell.setAttributedSubtitle(attributedSubtitle)
                         }
                     }
 
