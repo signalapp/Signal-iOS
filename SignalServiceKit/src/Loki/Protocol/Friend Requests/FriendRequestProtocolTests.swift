@@ -25,8 +25,21 @@ class FriendRequestProtocolTests : XCTestCase {
     }
 
     // MARK: - Helpers
-    func getDevice(keyPair: ECKeyPair) -> DeviceLink.Device? {
-        let hexEncodedPublicKey = keyPair.hexEncodedPublicKey
+
+    func isFriendRequestStatus(_ values: [LKFriendRequestStatus], for hexEncodedPublicKey: String, transaction: YapDatabaseReadWriteTransaction) -> Bool {
+        let status = storage.getFriendRequestStatus(forContact: hexEncodedPublicKey, transaction: transaction)
+        return values.contains(status)
+    }
+
+    func isFriendRequestStatus(_ value: LKFriendRequestStatus, for hexEncodedPublicKey: String, transaction: YapDatabaseReadWriteTransaction) -> Bool {
+        return isFriendRequestStatus([value], for: hexEncodedPublicKey, transaction: transaction)
+    }
+
+    func generateHexEncodedPublicKey() -> String {
+        return Curve25519.generateKeyPair().hexEncodedPublicKey
+    }
+
+    func getDevice(for hexEncodedPublicKey: String) -> DeviceLink.Device? {
         guard let signature = Data.getSecureRandomData(ofSize: 64) else { return nil }
         return DeviceLink.Device(hexEncodedPublicKey: hexEncodedPublicKey, signature: signature)
     }
@@ -69,21 +82,21 @@ class FriendRequestProtocolTests : XCTestCase {
     }
 
     func test_shouldInputBarBeEnabledReturnsTrueOnNoteToSelf() {
-        guard let masterKeyPair = OWSIdentityManager.shared().identityKeyPair() else { return XCTFail() }
-        let slaveKeyPair = Curve25519.generateKeyPair()
+        guard let master = OWSIdentityManager.shared().identityKeyPair()?.hexEncodedPublicKey else { return XCTFail() }
+        let slave = generateHexEncodedPublicKey()
 
-        guard let masterDevice = getDevice(keyPair: masterKeyPair) else { return XCTFail() }
-        guard let slaveDevice = getDevice(keyPair: slaveKeyPair) else { return XCTFail() }
+        guard let masterDevice = getDevice(for: master) else { return XCTFail() }
+        guard let slaveDevice = getDevice(for: slave) else { return XCTFail() }
 
         let deviceLink = DeviceLink(between: masterDevice, and: slaveDevice)
         storage.dbReadWriteConnection.readWrite { transaction in
             self.storage.addDeviceLink(deviceLink, in: transaction)
-            self.storage.setFriendRequestStatus(.requestSent, forContact: masterKeyPair.hexEncodedPublicKey, transaction: transaction)
-            self.storage.setFriendRequestStatus(.requestSent, forContact: slaveKeyPair.hexEncodedPublicKey, transaction: transaction)
+            self.storage.setFriendRequestStatus(.requestSent, forContact: master, transaction: transaction)
+            self.storage.setFriendRequestStatus(.requestSent, forContact: slave, transaction: transaction)
         }
 
-        let masterThread = createContactThread(for: masterKeyPair.hexEncodedPublicKey)
-        let slaveThread = createContactThread(for: slaveKeyPair.hexEncodedPublicKey)
+        let masterThread = createContactThread(for: master)
+        let slaveThread = createContactThread(for: slave)
 
         XCTAssertTrue(FriendRequestProtocol.shouldInputBarBeEnabled(for: masterThread))
         XCTAssertTrue(FriendRequestProtocol.shouldInputBarBeEnabled(for: slaveThread))
@@ -103,86 +116,86 @@ class FriendRequestProtocolTests : XCTestCase {
     }
 
     func test_shouldInputBarBeEnabledReturnsFalseWhenStatusIsPending() {
-       let pendingStatuses: [LKFriendRequestStatus] = [.requestSending, .requestSent, .requestReceived]
-       let device = Curve25519.generateKeyPair().hexEncodedPublicKey
-       let thread = createContactThread(for: device)
+        let pendingStatuses: [LKFriendRequestStatus] = [.requestSending, .requestSent, .requestReceived]
+        let device = Curve25519.generateKeyPair().hexEncodedPublicKey
+        let thread = createContactThread(for: device)
 
-       for status in pendingStatuses {
-           storage.dbReadWriteConnection.readWrite { transaction in
-               self.storage.setFriendRequestStatus(status, forContact: device, transaction: transaction)
-           }
-           XCTAssertFalse(FriendRequestProtocol.shouldInputBarBeEnabled(for: thread))
-       }
+        for status in pendingStatuses {
+            storage.dbReadWriteConnection.readWrite { transaction in
+                self.storage.setFriendRequestStatus(status, forContact: device, transaction: transaction)
+            }
+            XCTAssertFalse(FriendRequestProtocol.shouldInputBarBeEnabled(for: thread))
+        }
     }
 
-    func test_shouldInputBarBeEnabledReturnsTrueWhenFriendsWithOneDevice() {
-        let masterKeyPair = Curve25519.generateKeyPair()
-        let slaveKeyPair = Curve25519.generateKeyPair()
+    func test_shouldInputBarBeEnabledReturnsTrueWhenFriendsWithOneLinkedDevice() {
+        let master = generateHexEncodedPublicKey()
+        let slave = generateHexEncodedPublicKey()
 
-        guard let masterDevice = getDevice(keyPair: masterKeyPair) else { return XCTFail() }
-        guard let slaveDevice = getDevice(keyPair: slaveKeyPair) else { return XCTFail() }
+        guard let masterDevice = getDevice(for: master) else { return XCTFail() }
+        guard let slaveDevice = getDevice(for: slave) else { return XCTFail() }
 
         let deviceLink = DeviceLink(between: masterDevice, and: slaveDevice)
         storage.dbReadWriteConnection.readWrite { transaction in
             self.storage.addDeviceLink(deviceLink, in: transaction)
-            self.storage.setFriendRequestStatus(.friends, forContact: masterKeyPair.hexEncodedPublicKey, transaction: transaction)
-            self.storage.setFriendRequestStatus(.requestSent, forContact: slaveKeyPair.hexEncodedPublicKey, transaction: transaction)
+            self.storage.setFriendRequestStatus(.friends, forContact: master, transaction: transaction)
+            self.storage.setFriendRequestStatus(.requestSent, forContact: slave, transaction: transaction)
         }
 
-        let masterThread = createContactThread(for: masterKeyPair.hexEncodedPublicKey)
-        let slaveThread = createContactThread(for: slaveKeyPair.hexEncodedPublicKey)
+        let masterThread = createContactThread(for: master)
+        let slaveThread = createContactThread(for: slave)
 
         XCTAssertTrue(FriendRequestProtocol.shouldInputBarBeEnabled(for: masterThread))
         XCTAssertTrue(FriendRequestProtocol.shouldInputBarBeEnabled(for: slaveThread))
     }
 
-    func test_shouldInputBarBeEnabledReturnsFalseWhenOneDeviceIsPending() {
-        let masterKeyPair = Curve25519.generateKeyPair()
-        let slaveKeyPair = Curve25519.generateKeyPair()
+    func test_shouldInputBarBeEnabledReturnsFalseWhenOneLinkedDeviceIsPending() {
+        let master = generateHexEncodedPublicKey()
+        let slave = generateHexEncodedPublicKey()
 
-        guard let masterDevice = getDevice(keyPair: masterKeyPair) else { return XCTFail() }
-        guard let slaveDevice = getDevice(keyPair: slaveKeyPair) else { return XCTFail() }
+        guard let masterDevice = getDevice(for: master) else { return XCTFail() }
+        guard let slaveDevice = getDevice(for: slave) else { return XCTFail() }
 
         let deviceLink = DeviceLink(between: masterDevice, and: slaveDevice)
         storage.dbReadWriteConnection.readWrite { transaction in
             self.storage.addDeviceLink(deviceLink, in: transaction)
-            self.storage.setFriendRequestStatus(.none, forContact: masterKeyPair.hexEncodedPublicKey, transaction: transaction)
+            self.storage.setFriendRequestStatus(.none, forContact: master, transaction: transaction)
         }
 
-        let masterThread = createContactThread(for: masterKeyPair.hexEncodedPublicKey)
-        let slaveThread = createContactThread(for: slaveKeyPair.hexEncodedPublicKey)
+        let masterThread = createContactThread(for: master)
+        let slaveThread = createContactThread(for: slave)
 
         let pendingStatuses: [LKFriendRequestStatus] = [.requestSending, .requestSent, .requestReceived]
         for status in pendingStatuses {
             storage.dbReadWriteConnection.readWrite { transaction in
-                self.storage.setFriendRequestStatus(status, forContact: slaveKeyPair.hexEncodedPublicKey, transaction: transaction)
+                self.storage.setFriendRequestStatus(status, forContact: slave, transaction: transaction)
             }
             XCTAssertFalse(FriendRequestProtocol.shouldInputBarBeEnabled(for: masterThread))
             XCTAssertFalse(FriendRequestProtocol.shouldInputBarBeEnabled(for: slaveThread))
         }
     }
 
-    func test_shouldInputBarBeEnabledReturnsTrueWhenAllDevicesAreNotPendingAndNotFriends() {
-        let masterKeyPair = Curve25519.generateKeyPair()
-        let slaveKeyPair = Curve25519.generateKeyPair()
+    func test_shouldInputBarBeEnabledReturnsTrueWhenAllLinkedDevicesAreNotPendingAndNotFriends() {
+        let master = generateHexEncodedPublicKey()
+        let slave = generateHexEncodedPublicKey()
 
-        guard let masterDevice = getDevice(keyPair: masterKeyPair) else { return XCTFail() }
-        guard let slaveDevice = getDevice(keyPair: slaveKeyPair) else { return XCTFail() }
+        guard let masterDevice = getDevice(for: master) else { return XCTFail() }
+        guard let slaveDevice = getDevice(for: slave) else { return XCTFail() }
 
         let deviceLink = DeviceLink(between: masterDevice, and: slaveDevice)
         storage.dbReadWriteConnection.readWrite { transaction in
             self.storage.addDeviceLink(deviceLink, in: transaction)
-            self.storage.setFriendRequestStatus(.none, forContact: masterKeyPair.hexEncodedPublicKey, transaction: transaction)
-            self.storage.setFriendRequestStatus(.none, forContact: slaveKeyPair.hexEncodedPublicKey, transaction: transaction)
+            self.storage.setFriendRequestStatus(.none, forContact: master, transaction: transaction)
+            self.storage.setFriendRequestStatus(.none, forContact: slave, transaction: transaction)
         }
 
-        let masterThread = createContactThread(for: masterKeyPair.hexEncodedPublicKey)
-        let slaveThread = createContactThread(for: slaveKeyPair.hexEncodedPublicKey)
+        let masterThread = createContactThread(for: master)
+        let slaveThread = createContactThread(for: slave)
 
         let safeStatuses: [LKFriendRequestStatus] = [.requestExpired, .none]
         for status in safeStatuses {
             storage.dbReadWriteConnection.readWrite { transaction in
-                self.storage.setFriendRequestStatus(status, forContact: slaveKeyPair.hexEncodedPublicKey, transaction: transaction)
+                self.storage.setFriendRequestStatus(status, forContact: slave, transaction: transaction)
             }
             XCTAssertTrue(FriendRequestProtocol.shouldInputBarBeEnabled(for: masterThread))
             XCTAssertTrue(FriendRequestProtocol.shouldInputBarBeEnabled(for: slaveThread))
@@ -200,24 +213,24 @@ class FriendRequestProtocolTests : XCTestCase {
     }
 
     func test_shouldAttachmentButtonBeEnabledReturnsTrueOnNoteToSelf() {
-       guard let masterKeyPair = OWSIdentityManager.shared().identityKeyPair() else { return XCTFail() }
-       let slaveKeyPair = Curve25519.generateKeyPair()
+        guard let master = OWSIdentityManager.shared().identityKeyPair()?.hexEncodedPublicKey else { return XCTFail() }
+        let slave = generateHexEncodedPublicKey()
 
-       guard let masterDevice = getDevice(keyPair: masterKeyPair) else { return XCTFail() }
-       guard let slaveDevice = getDevice(keyPair: slaveKeyPair) else { return XCTFail() }
+        guard let masterDevice = getDevice(for: master) else { return XCTFail() }
+        guard let slaveDevice = getDevice(for: slave) else { return XCTFail() }
 
-       let deviceLink = DeviceLink(between: masterDevice, and: slaveDevice)
-       storage.dbReadWriteConnection.readWrite { transaction in
-           self.storage.addDeviceLink(deviceLink, in: transaction)
-           self.storage.setFriendRequestStatus(.requestSent, forContact: masterKeyPair.hexEncodedPublicKey, transaction: transaction)
-           self.storage.setFriendRequestStatus(.requestSent, forContact: slaveKeyPair.hexEncodedPublicKey, transaction: transaction)
-       }
+        let deviceLink = DeviceLink(between: masterDevice, and: slaveDevice)
+        storage.dbReadWriteConnection.readWrite { transaction in
+            self.storage.addDeviceLink(deviceLink, in: transaction)
+            self.storage.setFriendRequestStatus(.requestSent, forContact: master, transaction: transaction)
+            self.storage.setFriendRequestStatus(.requestSent, forContact: slave, transaction: transaction)
+        }
 
-       let masterThread = createContactThread(for: masterKeyPair.hexEncodedPublicKey)
-       let slaveThread = createContactThread(for: slaveKeyPair.hexEncodedPublicKey)
+        let masterThread = createContactThread(for: master)
+        let slaveThread = createContactThread(for: slave)
 
-       XCTAssertTrue(FriendRequestProtocol.shouldAttachmentButtonBeEnabled(for: masterThread))
-       XCTAssertTrue(FriendRequestProtocol.shouldAttachmentButtonBeEnabled(for: slaveThread))
+        XCTAssertTrue(FriendRequestProtocol.shouldAttachmentButtonBeEnabled(for: masterThread))
+        XCTAssertTrue(FriendRequestProtocol.shouldAttachmentButtonBeEnabled(for: slaveThread))
     }
 
     func test_shouldAttachmentButtonBeEnabledReturnsTrueWhenFriends() {
@@ -243,67 +256,116 @@ class FriendRequestProtocolTests : XCTestCase {
         }
     }
 
-    func test_shouldAttachmentButtonBeEnabledReturnsTrueWhenFriendsWithOneDevice() {
-        let masterKeyPair = Curve25519.generateKeyPair()
-        let slaveKeyPair = Curve25519.generateKeyPair()
+    func test_shouldAttachmentButtonBeEnabledReturnsTrueWhenFriendsWithOneLinkedDevice() {
+        let master = generateHexEncodedPublicKey()
+        let slave = generateHexEncodedPublicKey()
 
-        guard let masterDevice = getDevice(keyPair: masterKeyPair) else { return XCTFail() }
-        guard let slaveDevice = getDevice(keyPair: slaveKeyPair) else { return XCTFail() }
+        guard let masterDevice = getDevice(for: master) else { return XCTFail() }
+        guard let slaveDevice = getDevice(for: slave) else { return XCTFail() }
 
         let deviceLink = DeviceLink(between: masterDevice, and: slaveDevice)
         storage.dbReadWriteConnection.readWrite { transaction in
             self.storage.addDeviceLink(deviceLink, in: transaction)
-            self.storage.setFriendRequestStatus(.friends, forContact: masterKeyPair.hexEncodedPublicKey, transaction: transaction)
-            self.storage.setFriendRequestStatus(.requestSent, forContact: slaveKeyPair.hexEncodedPublicKey, transaction: transaction)
+            self.storage.setFriendRequestStatus(.friends, forContact: master, transaction: transaction)
+            self.storage.setFriendRequestStatus(.requestSent, forContact: slave, transaction: transaction)
         }
 
-        let masterThread = createContactThread(for: masterKeyPair.hexEncodedPublicKey)
-        let slaveThread = createContactThread(for: slaveKeyPair.hexEncodedPublicKey)
+        let masterThread = createContactThread(for: master)
+        let slaveThread = createContactThread(for: slave)
 
         XCTAssertTrue(FriendRequestProtocol.shouldAttachmentButtonBeEnabled(for: masterThread))
         XCTAssertTrue(FriendRequestProtocol.shouldAttachmentButtonBeEnabled(for: slaveThread))
     }
 
+    // MARK: - acceptFriendRequest
 
-    // MARK: - Others
-
-    // TODO: Rewrite this
-    /*
-    func testMultiDeviceFriendRequestAcceptance() {
-        // When Alice accepts Bob's friend request, she should accept all outstanding friend requests with Bob's
-        // linked devices and try to establish sessions with the subset of Bob's devices that haven't sent a friend request.
-        func getDevice() -> DeviceLink.Device? {
-            guard let publicKey = Data.getSecureRandomData(ofSize: 64) else { return nil }
-            let hexEncodedPublicKey = "05" + publicKey.toHexString()
-            guard let signature = Data.getSecureRandomData(ofSize: 64) else { return nil }
-            return DeviceLink.Device(hexEncodedPublicKey: hexEncodedPublicKey, signature: signature)
-        }
-
-        // Get devices
-        guard let bobMasterDevice = getDevice() else { return XCTFail() }
-        guard let bobSlaveDevice = getDevice() else { return XCTFail() }
-        // Create device link
-        let bobDeviceLink = DeviceLink(between: bobMasterDevice, and: bobSlaveDevice)
+    func test_acceptFriendRequestShouldSetStatusToFriendsIfWeReceivedAFriendRequest() {
+        // Case: Bob sent us a friend request, we should become friends with him on accepting
+        let bob = Curve25519.generateKeyPair().hexEncodedPublicKey
         storage.dbReadWriteConnection.readWrite { transaction in
-            self.storage.addDeviceLink(bobDeviceLink, in: transaction)
+            self.storage.setFriendRequestStatus(.requestReceived, forContact: bob, transaction: transaction)
+
         }
-        // Create threads
-        let bobMasterThread = createContactThread(for: bobMasterDevice.hexEncodedPublicKey)
-        let bobSlaveThread = createContactThread(for: bobSlaveDevice.hexEncodedPublicKey)
-        // Scenario 1: Alice has a pending friend request from Bob's master device, and nothing
-        // from his slave device. After accepting the pending friend request we'd expect the
-        // friend request status for Bob's master thread to be `friends`, and that of Bob's
-        // slave thread to be `requestSent`.
+
         storage.dbReadWriteConnection.readWrite { transaction in
-            self.storage.setFriendRequestStatus(.requestReceived, forContact: bobMasterDevice.hexEncodedPublicKey, transaction: transaction)
-            self.storage.setFriendRequestStatus(.none, forContact: bobSlaveDevice.hexEncodedPublicKey, transaction: transaction)
+            FriendRequestProtocol.acceptFriendRequest(from: bob, using: transaction)
+            XCTAssertTrue(self.storage.getFriendRequestStatus(forContact: bob, transaction: transaction) == .friends)
         }
-//        storage.dbReadWriteConnection.readWrite { transaction in
-//            FriendRequestProtocol.acceptFriendRequest(from: bobMasterDevice.hexEncodedPublicKey, in: bobMasterThread, using: transaction)
-//        }
-//        XCTAssert(bobMasterThread.friendRequestStatus == .friends)
-//        XCTAssert(bobSlaveThread.friendRequestStatus == .requestSent)
-        // TODO: Add other scenarios
     }
- */
+
+    func test_acceptFriendRequestShouldSendAMessageIfStatusIsNoneOrExpired() {
+        // Case: Somehow our friend request status doesn't match the UI
+        // Since user accepted then we should send a friend request message
+        let statuses: [LKFriendRequestStatus] = [.none, .requestExpired]
+        for status in statuses {
+            let bob = Curve25519.generateKeyPair().hexEncodedPublicKey
+            storage.dbReadWriteConnection.readWrite { transaction in
+                self.storage.setFriendRequestStatus(status, forContact: bob, transaction: transaction)
+            }
+
+            storage.dbReadWriteConnection.readWrite { transaction in
+                FriendRequestProtocol.acceptFriendRequest(from: bob, using: transaction)
+                XCTAssertTrue(self.isFriendRequestStatus([.requestSending, .requestSent], for: bob, transaction: transaction))
+            }
+        }
+    }
+
+    func test_acceptFriendRequestShouldNotDoAnythingIfRequestHasBeenSent() {
+        // Case: We sent Bob a friend request.
+        // We can't accept because we don't have keys to communicate with Bob.
+        let bob = Curve25519.generateKeyPair().hexEncodedPublicKey
+        storage.dbReadWriteConnection.readWrite { transaction in
+            self.storage.setFriendRequestStatus(.requestSent, forContact: bob, transaction: transaction)
+
+        }
+
+        storage.dbReadWriteConnection.readWrite { transaction in
+            FriendRequestProtocol.acceptFriendRequest(from: bob, using: transaction)
+            XCTAssertTrue(self.isFriendRequestStatus(.requestSent, for: bob, transaction: transaction))
+        }
+    }
+
+    func test_acceptFriendRequestShouldWorkWithMultiDevice() {
+        // Case: Bob sent a friend request from his slave device.
+        // Accepting the friend request should set it to friends.
+        // We should also send out a friend request to Bob's other devices if possible.
+        let master = generateHexEncodedPublicKey()
+        let slave = generateHexEncodedPublicKey()
+        let otherSlave = generateHexEncodedPublicKey()
+
+        guard let masterDevice = getDevice(for: master) else { return XCTFail() }
+        guard let slaveDevice = getDevice(for: slave) else { return XCTFail() }
+        guard let otherSlaveDevice = getDevice(for: otherSlave) else { return XCTFail() }
+
+        storage.dbReadWriteConnection.readWrite { transaction in
+            self.storage.addDeviceLink(DeviceLink(between: masterDevice, and: slaveDevice), in: transaction)
+            self.storage.addDeviceLink(DeviceLink(between: masterDevice, and: otherSlaveDevice), in: transaction)
+            self.storage.setFriendRequestStatus(.none, forContact: master, transaction: transaction)
+            self.storage.setFriendRequestStatus(.requestReceived, forContact: slave, transaction: transaction)
+            self.storage.setFriendRequestStatus(.requestSent, forContact: otherSlave, transaction: transaction)
+        }
+
+        storage.dbReadWriteConnection.readWrite { transaction in
+            FriendRequestProtocol.acceptFriendRequest(from: master, using: transaction)
+            XCTAssertTrue(self.isFriendRequestStatus([.requestSending, .requestSent], for: master, transaction: transaction))
+            XCTAssertTrue(self.isFriendRequestStatus(.friends, for: slave, transaction: transaction))
+            XCTAssertTrue(self.isFriendRequestStatus(.requestSent, for: otherSlave, transaction: transaction))
+        }
+    }
+
+    func test_acceptFriendRequestShouldNotChangeStatusIfDevicesAreNotLinked() {
+        let alice = generateHexEncodedPublicKey()
+        let bob = generateHexEncodedPublicKey()
+
+        storage.dbReadWriteConnection.readWrite { transaction in
+            self.storage.setFriendRequestStatus(.requestReceived, forContact: alice, transaction: transaction)
+            self.storage.setFriendRequestStatus(.requestReceived, forContact: bob, transaction: transaction)
+        }
+
+        storage.dbReadWriteConnection.readWrite { transaction in
+            FriendRequestProtocol.acceptFriendRequest(from: alice, using: transaction)
+            XCTAssertTrue(self.isFriendRequestStatus(.friends, for: alice, transaction: transaction))
+            XCTAssertTrue(self.isFriendRequestStatus(.requestReceived, for: bob, transaction: transaction))
+        }
+    }
 }
