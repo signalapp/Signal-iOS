@@ -144,4 +144,11 @@ public class TSOutgoingMessageBuilder: NSObject {
         hasBuilt = true
         return TSOutgoingMessage(outgoingMessageWithBuilder: self)
     }
+
+    #if TESTABLE_BUILD
+    @objc
+    public func addAttachmentId(_ attachmentId: String) {
+        attachmentIds.add(attachmentId)
+    }
+    #endif
 }

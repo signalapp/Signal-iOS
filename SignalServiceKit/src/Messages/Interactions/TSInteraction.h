@@ -119,6 +119,10 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 // NOTE: This is only for use by the YDB-to-GRDB legacy migration.
 - (void)replaceSortId:(uint64_t)sortId;
 
+#if TESTABLE_BUILD
+- (void)replaceReceivedAtTimestamp:(uint64_t)receivedAtTimestamp;
+#endif
+
 @end
 
 NS_ASSUME_NONNULL_END

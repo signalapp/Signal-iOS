@@ -2978,6 +2978,141 @@
 /* Label for button on lock screen that lets users unlock Signal. */
 "SCREEN_LOCK_UNLOCK_SIGNAL" = "Розблокувати Signal";
 
+/* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This will have a female profile photo. */
+"SCREENSHOT_NAME_CONTACT_EIGHT" = "Tina Ukuku";
+
+/* This is a contact's name. Please keep the nick name Ali and change the last name to a popular lastname in your language. This will have male profile photo. */
+"SCREENSHOT_NAME_CONTACT_FIVE" = "Ali Smith";
+
+/* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This profile photo will be either male or female. Choose a unisex name if possible. */
+"SCREENSHOT_NAME_CONTACT_FOUR" = "Artemis Cheng";
+
+/* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. Include two last names if that is represented in your locale. This should be a unique non-public figure's name. This will have a female profile photo. */
+"SCREENSHOT_NAME_CONTACT_NINE" = "Zeus Lehtonen";
+
+/* This is a contact's name. A male leadership/presidential position + the sound a cat makes. This will have a cat profile photo. */
+"SCREENSHOT_NAME_CONTACT_ONE" = "Голова Няв";
+
+/* This is a contact's name. Please keep a similar unisex first name (Kai) if this name isn't common and only post the last initial. This will have a female profile photo. */
+"SCREENSHOT_NAME_CONTACT_SEVEN" = "Jordan B.";
+
+/* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This will have a male profile photo. */
+"SCREENSHOT_NAME_CONTACT_SIX" = "Michael Kirk";
+
+/* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This will have a female profile photo. */
+"SCREENSHOT_NAME_CONTACT_TEN" = "Maya Dorai";
+
+/* This is a contact's name. Please keep a similar nickname for Nikola/Nikita/etc in your language and only post the last initial. This profile photo will be either male or female but mostly female. */
+"SCREENSHOT_NAME_CONTACT_THREE" = "Nikki Romanov";
+
+/* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This profile photo will be either male or female. */
+"SCREENSHOT_NAME_CONTACT_TWO" = "Myles Larson";
+
+/* This is a group chat of family members. Please keep Kirk or replace with a common last name in your locale. Translate 'Family' */
+"SCREENSHOT_NAME_GROUP_FIVE" = "Kirk Family";
+
+/* Please include emoji. This is a group name/channel name for pictures of the sun in the sky. */
+"SCREENSHOT_NAME_GROUP_FOUR" = "Sunsets 🌅";
+
+/* This is for a group of people interested in discussing books they've read. */
+"SCREENSHOT_NAME_GROUP_ONE" = "Книжковий клуб";
+
+/* This is group chat name for members talking about cats. Please include the emoji. */
+"SCREENSHOT_NAME_GROUP_SIX" = "Cat Chat 🐈 🐱";
+
+/* Please include emoji. This is a group name for people who climb rocks/climb trees/hike mountains/outside mountaineering. */
+"SCREENSHOT_NAME_GROUP_THREE" = "🧗🏽‍♀️ Rock Climbers";
+
+/* This is for a group chat for people who want weather updates. */
+"SCREENSHOT_NAME_GROUP_TWO" = "Weather Forecasts";
+
+/* This appears in Signal > Settings. A female leadership/presidential/chairwoman position + female name Freyja or similar spelling. This will have a cat profile photo. */
+"SCREENSHOT_NAME_LOCAL_PROFILE" = "Chairwoman Freya";
+
+/* This is a message expressing support/happiness/awe/shock. */
+"SCREENSHOT_THREAD_DIRECT_FIVE_MESSAGE_ONE" = "Congrats! I can't believe it!";
+
+/* This is a message. */
+"SCREENSHOT_THREAD_DIRECT_FIVE_MESSAGE_THREE" = "See you tomorrow?";
+
+/* This is a message. Please include the emoji. */
+"SCREENSHOT_THREAD_DIRECT_FIVE_MESSAGE_TWO" = "Thank you ☺️";
+
+/* This is a message. */
+"SCREENSHOT_THREAD_DIRECT_FOUR_MESSAGE_ONE" = "Your wisdom has saved me.";
+
+/* This is a message. Include 'Thanks' + a similar phrase with the :) emoji. */
+"SCREENSHOT_THREAD_DIRECT_FOUR_MESSAGE_TWO" = "Thanks! What a wonderful message to read :)";
+
+/* This is a message. */
+"SCREENSHOT_THREAD_DIRECT_ONE_MESSAGE_ONE" = "The rain is pouring down and I'm sitting here just listening to it.";
+
+/* This is a message. */
+"SCREENSHOT_THREAD_DIRECT_ONE_MESSAGE_TWO" = "That's what I did this morning too.";
+
+/* This is a message before a call. */
+"SCREENSHOT_THREAD_DIRECT_SEVEN_MESSAGE_ONE" = "Free for a call?";
+
+/* This is a message. */
+"SCREENSHOT_THREAD_DIRECT_SIX_MESSAGE_ONE" = "Yes!";
+
+/* Replace crepes with similar item that you bake or cook i.e. bread, croissants, naan. */
+"SCREENSHOT_THREAD_DIRECT_THREE_MESSAGE_ONE" = "We're making crepes tomorrow";
+
+/* This is a message before an image of mountains + a lake. */
+"SCREENSHOT_THREAD_DIRECT_TWO_MESSAGE_ONE" = "Hey check this out!";
+
+/* This is a message. */
+"SCREENSHOT_THREAD_DIRECT_TWO_MESSAGE_THREE" = "New Zealand!";
+
+/* This is a message after an image of mountains + a lake. */
+"SCREENSHOT_THREAD_DIRECT_TWO_MESSAGE_TWO" = "Whoa where are you!?";
+
+/* This is a message in the group chat of family members. */
+"SCREENSHOT_THREAD_GROUP_FIVE_MESSAGE_ONE" = "Today is ...";
+
+/* This is a message in the group chat of family members. */
+"SCREENSHOT_THREAD_GROUP_FIVE_MESSAGE_TWO" = "Happy birthday to you. Happy birthday to you!";
+
+/* This is a message in the Sunsets group chat. */
+"SCREENSHOT_THREAD_GROUP_FOUR_MESSAGE_ONE" = "It's too cloudy here.";
+
+/* 1984 is the book title. The file extension is a text file. */
+"SCREENSHOT_THREAD_GROUP_ONE_FILE_NAME" = "1984.txt";
+
+/* This is for a message in the 'Book Club' group chat */
+"SCREENSHOT_THREAD_GROUP_ONE_MESSAGE_ONE" = "Did you read this yet?";
+
+/* This is a file name 'Instructions' for the cat chat group. */
+"SCREENSHOT_THREAD_GROUP_SIX_FILE_NAME" = "Instructions.PDF";
+
+/* This is a message in the cat chat group. */
+"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_FIVE" = "This is the instruction manual.";
+
+/* This is a message in the cat chat group. */
+"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_FOUR" = "Pictures, please!";
+
+/* This is a message after seeing a picture. */
+"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_ONE" = "This is peaceful.";
+
+/* This is a message in the cat chat group. */
+"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_THREE" = "She’s walking a cat on a leash...";
+
+/* This is a message. */
+"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_TWO" = "🌅 Good Morning!";
+
+/* This is a message in the 'Rock Climbers' group chat. Please translate to make sense for the translated group name. For example: Which way should we go? */
+"SCREENSHOT_THREAD_GROUP_THREE_MESSAGE_ONE" = "Which route should we take?";
+
+/* This is a message. Please include the emoji if possible. */
+"SCREENSHOT_THREAD_GROUP_TWO_MESSAGE_ONE" = "See you all there 🤗";
+
+/* This is a message sent with an attachment. */
+"SCREENSHOT_THREAD_GROUP_TWO_MESSAGE_TWO" = "Raining all day";
+
+/* An example name for a user we use in the screenshots. */
+"SCREENSHOT_USERNAME_1" = "SCREENSHOT_USERNAME_1";
+
 /* Placeholder text indicating the user can search for contacts by name, username, or phone number. */
 "SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "Ім'я, ім'я користувача або номер";
 

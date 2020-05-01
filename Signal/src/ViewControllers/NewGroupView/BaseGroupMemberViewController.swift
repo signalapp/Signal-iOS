@@ -536,6 +536,38 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
         return imageView
     }
 
+    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
+                         attributedSubtitleForRecipient recipient: PickedRecipient) -> NSAttributedString? {
+        guard DebugFlags.groupsV2memberStatusIndicators else {
+            return nil
+        }
+        guard let address = recipient.address else {
+            owsFailDebug("Recipient missing address.")
+            return nil
+        }
+        var items = [String]()
+        if address.uuid == nil {
+            // This is internal-only; we don't need to localize.
+            items.append("No UUID")
+        }
+        databaseStorage.read { transaction in
+            if !GroupManager.doesUserHaveGroupsV2Capability(address: address,
+                                                            transaction: transaction) {
+                // This is internal-only; we don't need to localize.
+                items.append("No capability")
+            }
+        }
+
+        guard !items.isEmpty else {
+            return nil
+        }
+        return NSAttributedString(string: items.joined(separator: ", "),
+                                  attributes: [
+                                    .font: UIFont.ows_dynamicTypeSubheadline.ows_semibold(),
+                                    .foregroundColor: Theme.secondaryTextAndIconColor
+        ])
+    }
+
     func recipientPickerTableViewWillBeginDragging(_ recipientPickerViewController: RecipientPickerViewController) {}
 
     func recipientPickerNewGroupButtonWasPressed() {}

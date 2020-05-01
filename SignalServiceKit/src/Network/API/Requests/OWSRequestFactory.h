@@ -63,8 +63,6 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
 
 + (TSRequest *)registerForPushRequestWithPushIdentifier:(NSString *)identifier voipIdentifier:(NSString *)voipId;
 
-+ (TSRequest *)updatePrimaryDeviceAttributesRequest;
-
 + (TSRequest *)accountWhoAmIRequest;
 
 + (TSRequest *)unregisterAccountRequest;
@@ -95,7 +93,13 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
                                             encryptedDeviceName:(NSData *)encryptedDeviceName
     NS_SWIFT_NAME(verifySecondaryDeviceRequest(verificationCode:phoneNumber:authKey:encryptedDeviceName:));
 
+#pragma mark - Attributes and Capabilities
+
++ (TSRequest *)updatePrimaryDeviceAttributesRequest;
+
 + (TSRequest *)updateSecondaryDeviceCapabilitiesRequest;
+
++ (NSDictionary<NSString *, NSNumber *> *)deviceCapabilities;
 
 #pragma mark - Prekeys
 

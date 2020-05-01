@@ -173,8 +173,6 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
 - (void)registerForTestsWithLocalNumber:(NSString *)localNumber uuid:(NSUUID *)uuid;
 #endif
 
-- (AnyPromise *)updateAccountAttributes __attribute__((warn_unused_result));
-
 @end
 
 NS_ASSUME_NONNULL_END

@@ -434,6 +434,11 @@ public class ProfileFetcherJob: NSObject {
                                  verifier: profile.unidentifiedAccessVerifier,
                                  hasUnrestrictedAccess: profile.hasUnrestrictedUnidentifiedAccess)
 
+        if address.isLocalAddress,
+            DebugFlags.groupsV2memberStatusIndicators {
+            Logger.info("supportsGroupsV2: \(profile.supportsGroupsV2)")
+        }
+
         return databaseStorage.write(.promise) { transaction in
             GroupManager.setUserHasGroupsV2Capability(address: address,
                                                       value: profile.supportsGroupsV2,

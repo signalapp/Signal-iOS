@@ -20,6 +20,13 @@
     return SDSDatabaseStorage.shared;
 }
 
+- (TSAccountManager *)tsAccountManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
+
+    return SSKEnvironment.shared.tsAccountManager;
+}
+
 #pragma mark -
 
 - (void)dealloc
@@ -107,6 +114,10 @@
         [self addVerboseContents:contents];
     }
 
+    if (SSKDebugFlags.groupsV2memberStatusIndicators) {
+        [self addGroupsV2memberStatusIndicators:contents];
+    }
+
     self.contents = contents;
 }
 
@@ -189,6 +200,23 @@
                                                                           withString:@""];
     [debugSection
         addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Audio Category: %@", audioCategory]]];
+}
+
+- (void)addGroupsV2memberStatusIndicators:(OWSTableContents *)contents
+{
+    SignalServiceAddress *localAddress = self.tsAccountManager.localAddress;
+    __block BOOL hasGroupsV2Capability;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        hasGroupsV2Capability = [GroupManager doesUserHaveGroupsV2CapabilityWithAddress:localAddress
+                                                                            transaction:transaction];
+    }];
+
+    OWSTableSection *section = [OWSTableSection new];
+    section.headerTitle = @"Groups v2";
+    [section addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Has Groups v2 capability: %@",
+                                                               @(hasGroupsV2Capability)]]];
+
+    [contents addSection:section];
 }
 
 - (void)crashApp

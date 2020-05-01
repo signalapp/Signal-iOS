@@ -275,7 +275,7 @@ public class AccountManager: NSObject {
                 }
             }
         }.then {
-            self.deviceService.updateCapabilities()
+            self.deviceService.updateSecondaryDeviceCapabilities()
         }.done {
             self.completeRegistration()
         }.then { _ -> Promise<Void> in
