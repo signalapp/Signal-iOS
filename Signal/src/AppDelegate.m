@@ -77,6 +77,7 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
 
 @property (nonatomic) BOOL areVersionMigrationsComplete;
 @property (nonatomic) BOOL didAppLaunchFail;
+@property (nonatomic) UIApplicationShortcutItem *shortcutItem;
 
 @end
 
@@ -354,6 +355,11 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
     OWSLogInfo(@"launchOptions: %@.", launchOptions);
 
     [OWSAnalytics appLaunchDidBegin];
+
+    self.shortcutItem = launchOptions[UIApplicationLaunchOptionsShortcutItemKey];
+    if (self.shortcutItem) {
+        return NO;
+    }
 
     return YES;
 }
@@ -1214,6 +1220,10 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
     [self.profileManager fetchAndUpdateLocalUsersProfile];
 
     [SignalApp.sharedApp ensureRootViewController:launchStartedAt];
+
+    if (self.shortcutItem) {
+        [SignalApp.sharedApp showNewConversationView];
+    }
 
     [self.messageManager startObserving];
 
