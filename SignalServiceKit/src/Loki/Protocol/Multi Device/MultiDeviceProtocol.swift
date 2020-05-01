@@ -249,15 +249,27 @@ public final class MultiDeviceProtocol : NSObject {
     public static func handleUnlinkDeviceMessage(_ dataMessage: SSKProtoDataMessage, wrappedIn envelope: SSKProtoEnvelope, using transaction: YapDatabaseReadWriteTransaction) {
         // The envelope source is set during UD decryption
         let hexEncodedPublicKey = envelope.source!
+        // Check that the request was sent by our master device
         guard let masterHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: getUserHexEncodedPublicKey(), in: transaction) else { return }
         let wasSentByMasterDevice = (masterHexEncodedPublicKey == hexEncodedPublicKey)
         guard wasSentByMasterDevice else { return }
-        let deviceLinks = storage.getDeviceLinks(for: hexEncodedPublicKey, in: transaction)
-        if !deviceLinks.contains(where: { $0.master.hexEncodedPublicKey == hexEncodedPublicKey && $0.slave.hexEncodedPublicKey == getUserHexEncodedPublicKey() }) {
+        // Ignore the request if we don't know about the device link in question
+        let masterDeviceLinks = storage.getDeviceLinks(for: masterHexEncodedPublicKey, in: transaction)
+        if !masterDeviceLinks.contains(where: {
+            $0.master.hexEncodedPublicKey == masterHexEncodedPublicKey && $0.slave.hexEncodedPublicKey == getUserHexEncodedPublicKey()
+        }) {
             return
         }
-        LokiFileServerAPI.getDeviceLinks(associatedWith: getUserHexEncodedPublicKey()).done(on: DispatchQueue.main) { deviceLinks in
-            if deviceLinks.contains(where: { $0.master.hexEncodedPublicKey == hexEncodedPublicKey && $0.slave.hexEncodedPublicKey == getUserHexEncodedPublicKey() }) {
+        LokiFileServerAPI.getDeviceLinks(associatedWith: getUserHexEncodedPublicKey()).done(on: DispatchQueue.main) { slaveDeviceLinks in
+            // Check that the device link IS present on the file server.
+            // Note that the device link as seen from the master device's perspective has been deleted at this point, but the
+            // device link as seen from the slave perspective hasn't.
+            if slaveDeviceLinks.contains(where: {
+                $0.master.hexEncodedPublicKey == masterHexEncodedPublicKey && $0.slave.hexEncodedPublicKey == getUserHexEncodedPublicKey()
+            }) {
+                for deviceLink in slaveDeviceLinks { // In theory there should only be one
+                    LokiFileServerAPI.removeDeviceLink(deviceLink) // Attempt to clean up on the file server
+                }
                 UserDefaults.standard[.wasUnlinked] = true
                 NotificationCenter.default.post(name: .dataNukeRequested, object: nil)
             }

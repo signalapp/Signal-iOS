@@ -162,13 +162,13 @@ final class DeviceLinksVC : BaseVC, UITableViewDataSource, UITableViewDelegate, 
                 storage.dbReadWriteConnection.readWrite { transaction in
                     storage.deleteAllSessions(forContact: linkedDeviceHexEncodedPublicKey, protocolContext: transaction)
                 }
-            }) { _ in
+            }, failure: { _ in
                 print("[Loki] Failed to send unlink device message.")
                 let storage = OWSPrimaryStorage.shared()
                 storage.dbReadWriteConnection.readWrite { transaction in
                     storage.deleteAllSessions(forContact: linkedDeviceHexEncodedPublicKey, protocolContext: transaction)
                 }
-            }
+            })
             self?.updateDeviceLinks()
         }.catch { [weak self] _ in
             let alert = UIAlertController(title: NSLocalizedString("Couldn't Unlink Device", comment: ""), message: NSLocalizedString("Please check your internet connection and try again", comment: ""), preferredStyle: .alert)
