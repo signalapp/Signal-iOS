@@ -1185,10 +1185,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 [message saveIsCalculatingProofOfWork:YES withTransaction:transaction];
                 // Update the message and thread if needed
                 if (signalMessage.isFriendRequest) {
-                    __block TSContactThread *thread;
-                    [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-                        thread = [TSContactThread getThreadWithContactId:recipientID transaction:transaction]; // Take into account multi device
-                    }];
+                    TSContactThread *thread = [TSContactThread getThreadWithContactId:recipientID transaction:transaction]; // Take into account multi device
                     [thread saveFriendRequestStatus:LKThreadFriendRequestStatusRequestSending withTransaction:transaction];
                     [message saveFriendRequestStatus:LKMessageFriendRequestStatusSendingOrFailed withTransaction:transaction];
                 }
@@ -1201,10 +1198,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                     // Update the message and thread if needed
                     if (signalMessage.isFriendRequest) {
-                        __block TSContactThread *thread;
-                        [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-                            thread = [TSContactThread getThreadWithContactId:recipientID transaction:transaction]; // Take into account multi device
-                        }];
+                        TSContactThread *thread = [TSContactThread getThreadWithContactId:recipientID transaction:transaction]; // Take into account multi device
                         [thread saveFriendRequestStatus:LKThreadFriendRequestStatusNone withTransaction:transaction];
                         [message saveFriendRequestStatus:LKMessageFriendRequestStatusSendingOrFailed withTransaction:transaction];
                     }
@@ -1232,10 +1226,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                         if (!message.skipSave) {
                             [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                                 // Update the thread
-                                __block TSContactThread *thread;
-                                [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-                                    thread = [TSContactThread getThreadWithContactId:recipientID transaction:transaction]; // Take into account multi device
-                                }];
+                                TSContactThread *thread = [TSContactThread getThreadWithContactId:recipientID transaction:transaction]; // Take into account multi device
                                 [thread saveFriendRequestStatus:LKThreadFriendRequestStatusRequestSent withTransaction:transaction];
                                 [message.thread removeOldOutgoingFriendRequestMessagesIfNeededWithTransaction:transaction];
                                 if ([message.thread isKindOfClass:[TSContactThread class]]) {
