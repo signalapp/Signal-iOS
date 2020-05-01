@@ -421,8 +421,8 @@ typedef enum : NSUInteger {
                                                  name:UIKeyboardDidChangeFrameNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(handleThreadFriendRequestStatusChangedNotification:)
-                                                 name:NSNotification.threadFriendRequestStatusChanged
+                                             selector:@selector(handleUserFriendRequestStatusChangedNotification:)
+                                                 name:NSNotification.userFriendRequestStatusChanged
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleThreadSessionRestoreDevicesChangedNotifiaction:)
@@ -529,17 +529,29 @@ typedef enum : NSUInteger {
     [self resetContentAndLayout];
 }
 
-- (void)handleThreadFriendRequestStatusChangedNotification:(NSNotification *)notification
+- (void)handleUserFriendRequestStatusChangedNotification:(NSNotification *)notification
 {
     // Check thread
-    NSString *threadID = (NSString *)notification.object;
-    if (![threadID isEqualToString:self.thread.uniqueId]) { return; }
-    // Ensure thread instance is up to date
-    [self.thread reload];
-    // Update UI
-    [self.viewItems.lastObject clearCachedLayoutState];
-    [self updateInputToolbar];
-    [self resetContentAndLayout];
+    NSString *hexEncodedPublicKey = (NSString *)notification.object;
+    if (self.thread.isGroupThread) { return; }
+
+    __block BOOL shouldReload = [self.thread.contactIdentifier isEqualToString:hexEncodedPublicKey];
+
+    // Check to see if this is a linked device
+    if (![self.thread.contactIdentifier isEqualToString:hexEncodedPublicKey]) {
+        [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            NSSet<NSString *> *linkedDevices = [LKDatabaseUtilities getLinkedDeviceHexEncodedPublicKeysFor:self.thread.contactIdentifier in:transaction];
+            shouldReload = [linkedDevices containsObject:hexEncodedPublicKey];
+        }];
+    }
+    if (shouldReload) {
+        // Ensure thread instance is up to date
+        [self.thread reload];
+        // Update UI
+        [self.viewItems.lastObject clearCachedLayoutState];
+        [self updateInputToolbar];
+        [self resetContentAndLayout];
+    }
 }
 
 - (void)handleThreadSessionRestoreDevicesChangedNotifiaction:(NSNotification *)notification

@@ -236,6 +236,9 @@
 
 - (void)setFriendRequestStatus:(LKFriendRequestStatus)friendRequestStatus forContact:(NSString *)hexEncodedPublicKey transaction:(YapDatabaseReadWriteTransaction *)transaction {
     [transaction setObject:@(friendRequestStatus) forKey:hexEncodedPublicKey inCollection:LKFriendRequestCollection];
+    [transaction addCompletionQueue:dispatch_get_main_queue() completionBlock:^{
+        [NSNotificationCenter.defaultCenter postNotificationName:NSNotification.userFriendRequestStatusChanged object:hexEncodedPublicKey];
+    }];
 }
 
 @end

@@ -19,7 +19,7 @@
 #import <SignalServiceKit/OWSBlockingManager.h>
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/OWSMessageSender.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
+#import <SignalServiceKit/OWSPrimaryStorage+Loki.h>
 #import <SignalServiceKit/OWSProfileKeyMessage.h>
 #import <SignalServiceKit/OWSRequestBuilder.h>
 #import <SignalServiceKit/OWSSignalService.h>
@@ -920,8 +920,8 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         TSGroupThread *groupThread = (TSGroupThread *)thread;
         NSData *groupId = groupThread.groupModel.groupId;
         return [self isGroupIdInProfileWhitelist:groupId];
-    } else if (thread.friendRequestStatus == LKThreadFriendRequestStatusFriends) {
-        return true;
+    } else if ([LKFriendRequestProtocol isFriendsWithLinkedDevicesOfHexEncodedPublicKey:thread.contactIdentifier]) {
+        return true
     } else {
         NSString *recipientId = thread.contactIdentifier;
         return [self isUserInProfileWhitelist:recipientId];

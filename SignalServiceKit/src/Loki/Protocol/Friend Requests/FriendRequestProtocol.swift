@@ -22,6 +22,19 @@ public final class FriendRequestProtocol : NSObject {
     }
 
     // MARK: - General
+    @objc(isFriendsWithLinkedDevicesOfHexEncodedPublicKey:)
+    public static func isFriendsWithLinkedDevices(of hexEncodedPublicKey: String) -> Bool {
+        var isFriends = false
+        storage.dbReadConnection.read { transaction in
+            let linkedDevices = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: hexEncodedPublicKey, in: transaction)
+            let friendRequestStatuses = linkedDevices.map { device in
+                return storage.getFriendRequestStatus(for: device, transaction: transaction)
+            }
+            isFriends = friendRequestStatuses.contains(where: { $0 == .friends })
+        }
+        return isFriends
+    }
+
     @objc(shouldInputBarBeEnabledForThread:)
     public static func shouldInputBarBeEnabled(for thread: TSThread) -> Bool {
         // Friend requests have nothing to do with groups, so if this isn't a contact thread the input bar should be enabled
