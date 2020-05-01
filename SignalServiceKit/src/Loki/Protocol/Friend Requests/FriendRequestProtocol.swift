@@ -227,27 +227,15 @@ public final class FriendRequestProtocol : NSObject {
         guard !envelope.isGroupChatMessage && envelope.type != .friendRequest else { return }
         // If we get an envelope that isn't a friend request, then we can infer that we had to use
         // Signal cipher decryption and thus that we have a session with the other person.
-        let thread = TSContactThread.getOrCreateThread(withContactId: hexEncodedPublicKey, transaction: transaction)
         let friendRequestStatus = storage.getFriendRequestStatus(for: hexEncodedPublicKey, transaction: transaction);
         // We shouldn't be able to skip from none to friends
         guard friendRequestStatus != .none else { return }
         // Become friends
         storage.setFriendRequestStatus(.friends, for: hexEncodedPublicKey, transaction: transaction)
-        if let existingFriendRequestMessage = thread.getLastInteraction(with: transaction) as? TSOutgoingMessage,
-            existingFriendRequestMessage.isFriendRequest {
-            existingFriendRequestMessage.saveFriendRequestStatus(.accepted, with: transaction)
-        }
-        /*
-        // Send our P2P details
-        if let addressMessage = LokiP2PAPI.onlineBroadcastMessage(forThread: thread) {
-            let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
-            messageSenderJobQueue.add(message: addressMessage, transaction: transaction)
-        }
-         */
     }
 
-    @objc(handleFriendRequestMessageIfNeeded:associatedWith:wrappedIn:in:using:)
-    public static func handleFriendRequestMessageIfNeeded(_ dataMessage: SSKProtoDataMessage, associatedWith message: TSIncomingMessage, wrappedIn envelope: SSKProtoEnvelope, in thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) {
+    @objc(handleFriendRequestMessageIfNeededFromEnvelope:using:)
+    public static func handleFriendRequestMessageIfNeeded(from envelope: SSKProtoEnvelope, using transaction: YapDatabaseReadWriteTransaction) {
         guard !envelope.isGroupChatMessage else {
             print("[Loki] Ignoring friend request in group chat.")
             return
@@ -261,15 +249,6 @@ public final class FriendRequestProtocol : NSObject {
         }
         if canFriendRequestBeAutoAccepted(for: hexEncodedPublicKey, using: transaction) {
             storage.setFriendRequestStatus(.friends, for: hexEncodedPublicKey, transaction: transaction)
-            var existingFriendRequestMessage: TSOutgoingMessage?
-            thread.enumerateInteractions(with: transaction) { interaction, _ in
-                if let outgoingMessage = interaction as? TSOutgoingMessage, outgoingMessage.isFriendRequest {
-                    existingFriendRequestMessage = outgoingMessage
-                }
-            }
-            if let existingFriendRequestMessage = existingFriendRequestMessage {
-                existingFriendRequestMessage.saveFriendRequestStatus(.accepted, with: transaction)
-            }
             sendFriendRequestAcceptanceMessage(to: hexEncodedPublicKey, using: transaction)
         } else if storage.getFriendRequestStatus(for: hexEncodedPublicKey, transaction: transaction) != .friends {
             // Checking that the sender of the message isn't already a friend is necessary because otherwise
@@ -278,18 +257,6 @@ public final class FriendRequestProtocol : NSObject {
             // request. Alice's thread's friend request status is reset to
             // LKThreadFriendRequestStatusRequestReceived.
             storage.setFriendRequestStatus(.requestReceived, for: hexEncodedPublicKey, transaction: transaction)
-            // Except for the message.friendRequestStatus = LKMessageFriendRequestStatusPending line below, all of this is to ensure that
-            // there's only ever one message with status LKMessageFriendRequestStatusPending in a thread (where a thread is the combination
-            // of all threads belonging to the linked devices of a user).
-            let linkedDeviceThreads = LokiDatabaseUtilities.getLinkedDeviceThreads(for: hexEncodedPublicKey, in: transaction)
-            for thread in linkedDeviceThreads {
-                thread.enumerateInteractions(with: transaction) { interaction, _ in
-                    guard let incomingMessage = interaction as? TSIncomingMessage, incomingMessage.friendRequestStatus != .none else { return }
-                    incomingMessage.saveFriendRequestStatus(.none, with: transaction)
-                }
-            }
-            message.friendRequestStatus = .pending
-            // Don't save yet. This is done in finalizeIncomingMessage:thread:masterThread:envelope:transaction.
         }
     }
 }

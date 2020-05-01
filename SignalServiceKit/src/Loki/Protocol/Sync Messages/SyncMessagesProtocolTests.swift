@@ -5,6 +5,7 @@ import XCTest
 class SyncMessagesProtocolTests : XCTestCase {
 
     private var storage: OWSPrimaryStorage { OWSPrimaryStorage.shared() }
+    private var messageSender: OWSFakeMessageSender { return MockSSKEnvironment.shared.messageSender as! OWSFakeMessageSender }
 
     override func setUp() {
         super.setUp()
@@ -34,9 +35,34 @@ class SyncMessagesProtocolTests : XCTestCase {
         let contactData = Data(base64Encoded: base64EncodedContactData)!
         let parser = ContactParser(data: contactData)
         let hexEncodedPublicKeys = parser.parseHexEncodedPublicKeys()
+
+        let expectation = self.expectation(description: "sent friend request messages")
+
+        var messageCount = 0;
+        messageSender.sendMessageWasCalledBlock = { [weak messageSender] sentMessage in
+            messageCount += 1;
+            guard sentMessage is FriendRequestMessage else {
+                XCTFail("unexpected sentMessage: \(sentMessage)")
+                return
+            }
+            if (messageCount == hexEncodedPublicKeys.count) {
+                expectation.fulfill()
+
+                guard let strongMessageSender = messageSender else {
+                    return
+                }
+                strongMessageSender.sendMessageWasCalledBlock = nil
+            }
+        }
+
         storage.dbReadWriteConnection.readWrite { transaction in
             SyncMessagesProtocol.handleContactSyncMessageData(contactData, using: transaction)
         }
+
+        self.wait(for: [expectation], timeout: 1.0)
+
+
+        /* TODO: Re-enable when we split friend request logic from OWSMessageSender
         hexEncodedPublicKeys.forEach { hexEncodedPublicKey in
             var friendRequestStatus: LKFriendRequestStatus!
             storage.dbReadWriteConnection.readWrite { transaction in
@@ -44,6 +70,7 @@ class SyncMessagesProtocolTests : XCTestCase {
             }
             XCTAssert(friendRequestStatus == .requestSent)
         }
+        */
         // TODO: Test the case where Bob has multiple devices
     }
 }

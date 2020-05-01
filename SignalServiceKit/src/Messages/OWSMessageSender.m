@@ -1229,7 +1229,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                     [((TSContactThread *) message.thread) removeAllSessionRestoreDevicesWithTransaction:transaction];
                                 }
                                 // Update the message
-                                [message saveFriendRequestStatus:LKMessageFriendRequestStatusPending withTransaction:transaction];
                                 NSTimeInterval expirationInterval = 72 * kHourInterval;
                                 NSDate *expirationDate = [[NSDate new] dateByAddingTimeInterval:expirationInterval];
                                 [message saveFriendRequestExpiresAt:[NSDate ows_millisecondsSince1970ForDate:expirationDate] withTransaction:transaction];

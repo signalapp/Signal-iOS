@@ -127,7 +127,6 @@ public final class FriendRequestExpirationJob : NSObject {
                     
                     // Loki: Expire the friend request message
                     strongSelf.storage.setFriendRequestStatus(.requestExpired, for: message.thread.contactIdentifier()!, transaction: transaction)
-                    message.saveFriendRequestStatus(.expired, with: transaction)
                     message.saveFriendRequestExpires(at: 0, with: transaction)
                 }, transaction: transaction)
             }

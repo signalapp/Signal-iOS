@@ -921,7 +921,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         NSData *groupId = groupThread.groupModel.groupId;
         return [self isGroupIdInProfileWhitelist:groupId];
     } else if ([LKFriendRequestProtocol isFriendsWithLinkedDevicesOfHexEncodedPublicKey:thread.contactIdentifier]) {
-        return true
+        return true;
     } else {
         NSString *recipientId = thread.contactIdentifier;
         return [self isUserInProfileWhitelist:recipientId];

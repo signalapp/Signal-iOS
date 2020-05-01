@@ -150,13 +150,11 @@ final class FriendRequestView : UIView {
     // MARK: Interaction
     @objc private func accept() {
         guard let message = message as? TSIncomingMessage else { preconditionFailure() }
-        message.saveFriendRequestStatus(.accepted, with: nil)
         delegate?.acceptFriendRequest(message)
     }
     
     @objc private func decline() {
         guard let message = message as? TSIncomingMessage else { preconditionFailure() }
-        message.saveFriendRequestStatus(.declined, with: nil)
         delegate?.declineFriendRequest(message)
     }
     
