@@ -29,20 +29,38 @@ public final class ClosedGroupsProtocol : NSObject {
         guard let thread = thread else { return false }
         // The envelope source is set during UD decryption
         let hexEncodedPublicKey = envelope.source!
-        return !thread.isUserAdmin(inGroup: hexEncodedPublicKey, transaction: transaction) // TODO: I wonder how this was happening in the first place?
+        return !thread.isUserAdmin(inGroup: hexEncodedPublicKey, transaction: transaction)
     }
 
-    @objc(establishSessionsIfNeededWithClosedGroupMembers:in:using:)
-    public static func establishSessionsIfNeeded(with closedGroupMembers: [String], in thread: TSGroupThread, using transaction: YapDatabaseReadWriteTransaction) {
-        closedGroupMembers.forEach { member in
-            guard member != getUserHexEncodedPublicKey() else { return }
-            let hasSession = storage.containsSession(member, deviceId: 1, protocolContext: transaction) // TODO: Instead of 1 we should use the primary device ID thingy
-            if hasSession { return }
-            let thread = TSContactThread.getOrCreateThread(withContactId: member, transaction: transaction)
-            let sessionRequestMessage = SessionRequestMessage(thread: thread)
-            // TODO: I don't think this works correctly with multi device
-            let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
-            messageSenderJobQueue.add(message: sessionRequestMessage, transaction: transaction)
+    @objc(establishSessionsIfNeededWithClosedGroupMembers:in:)
+    public static func establishSessionsIfNeeded(with closedGroupMembers: [String], in thread: TSGroupThread) {
+        func establishSessionsIfNeeded(with hexEncodedPublicKeys: Set<String>) {
+            storage.dbReadWriteConnection.readWrite { transaction in
+                hexEncodedPublicKeys.forEach { hexEncodedPublicKey in
+                    guard hexEncodedPublicKey != getUserHexEncodedPublicKey() else { return }
+                    let hasSession = storage.containsSession(hexEncodedPublicKey, deviceId: Int32(OWSDevicePrimaryDeviceId), protocolContext: transaction)
+                    guard !hasSession else { return }
+                    let thread = TSContactThread.getOrCreateThread(withContactId: hexEncodedPublicKey, transaction: transaction)
+                    let sessionRequestMessage = SessionRequestMessage(thread: thread)
+                    let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
+                    messageSenderJobQueue.add(message: sessionRequestMessage, transaction: transaction)
+                }
+            }
+        }
+        // We could just let the multi device message sending logic take care of slave devices, but that'd mean
+        // making a request to the file server for each member involved. With the line below we (hopefully) reduce
+        // that to one request.
+        LokiFileServerAPI.getDeviceLinks(associatedWith: Set(closedGroupMembers)).map {
+            Set($0.flatMap { [ $0.master.hexEncodedPublicKey, $0.slave.hexEncodedPublicKey ] }).union(closedGroupMembers)
+        }.done { hexEncodedPublicKeys in
+            DispatchQueue.main.async {
+                establishSessionsIfNeeded(with: hexEncodedPublicKeys)
+            }
+        }.catch { _ in
+            // Try the inefficient way if the file server failed
+            DispatchQueue.main.async {
+                establishSessionsIfNeeded(with: Set(closedGroupMembers))
+            }
         }
     }
 }

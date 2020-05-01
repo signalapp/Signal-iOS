@@ -797,7 +797,7 @@ static BOOL isInternalTestVersion = NO;
             [self startOpenGroupPollersIfNeeded];
 
             // Loki: Get device links
-            [[LKFileServerAPI getDeviceLinksAssociatedWith:userHexEncodedPublicKey] retainUntilComplete];
+            [[LKFileServerAPI getDeviceLinksAssociatedWithHexEncodedPublicKey:userHexEncodedPublicKey] retainUntilComplete];
 
             // Loki: Update profile picture if needed
             NSUserDefaults *userDefaults = NSUserDefaults.standardUserDefaults;
@@ -1305,7 +1305,7 @@ static BOOL isInternalTestVersion = NO;
         [self startOpenGroupPollersIfNeeded];
 
         // Loki: Get device links
-        [[LKFileServerAPI getDeviceLinksAssociatedWith:self.tsAccountManager.localNumber] retainUntilComplete]; // TODO: Is this even needed?
+        [[LKFileServerAPI getDeviceLinksAssociatedWithHexEncodedPublicKey:self.tsAccountManager.localNumber] retainUntilComplete]; // TODO: Is this even needed?
     }
 }
 

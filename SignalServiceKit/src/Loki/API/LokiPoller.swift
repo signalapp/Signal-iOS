@@ -7,9 +7,26 @@ public final class LokiPoller : NSObject {
     private var hasStarted = false
     private var hasStopped = false
     private var usedSnodes = Set<LokiAPITarget>()
+    private var pollCount = 0
 
     // MARK: Settings
-    private static let retryInterval: TimeInterval = 4
+    private static let retryInterval: TimeInterval = 1
+    /// After polling a given snode this many times we always switch to a new one.
+    ///
+    /// The reason for doing this is that sometimes a snode will be giving us successful responses while
+    /// it isn't actually getting messages from other snodes.
+    private static let maxPollCount: UInt = 6
+
+    // MARK: Error
+    private enum Error : LocalizedError {
+        case pollLimitReached
+
+        var localizedDescription: String {
+            switch self {
+            case .pollLimitReached: return "Poll limit reached for current snode."
+            }
+        }
+    }
 
     // MARK: Initialization
     @objc public init(onMessagesReceived: @escaping ([SSKProtoEnvelope]) -> Void) {
@@ -63,8 +80,12 @@ public final class LokiPoller : NSObject {
             poll(nextSnode, seal: seal).done(on: LokiAPI.workQueue) {
                 seal.fulfill(())
             }.catch(on: LokiAPI.errorHandlingQueue) { [weak self] error in
-                print("[Loki] Polling \(nextSnode) failed; dropping it and switching to next snode.")
-                LokiAPI.dropIfNeeded(nextSnode, hexEncodedPublicKey: userHexEncodedPublicKey)
+                if let error = error as? Error, error == .pollLimitReached {
+                    self?.pollCount = 0
+                } else {
+                    print("[Loki] Polling \(nextSnode) failed; dropping it and switching to next snode.")
+                    LokiAPI.dropIfNeeded(nextSnode, hexEncodedPublicKey: userHexEncodedPublicKey)
+                }
                 self?.pollNextSnode(seal: seal)
             }
         } else {
@@ -77,7 +98,12 @@ public final class LokiPoller : NSObject {
             guard let strongSelf = self, !strongSelf.hasStopped else { return Promise { $0.fulfill(()) } }
             let messages = LokiAPI.parseRawMessagesResponse(rawResponse, from: target)
             strongSelf.onMessagesReceived(messages)
-            return strongSelf.poll(target, seal: longTermSeal)
+            strongSelf.pollCount += 1
+            if strongSelf.pollCount == LokiPoller.maxPollCount {
+                throw Error.pollLimitReached
+            } else {
+                return strongSelf.poll(target, seal: longTermSeal)
+            }
         }
     }
 }

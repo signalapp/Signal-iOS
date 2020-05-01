@@ -9,7 +9,7 @@ public final class MentionsManager : NSObject {
         set { LokiAPI.stateQueue.sync { _userHexEncodedPublicKeyCache = newValue } }
     }
 
-    // TODO: I don't think this stateQueue stuff actually helps avoid race conditions
+    // TODO: I don't think stateQueue actually helps avoid race conditions
 
     internal static var storage: OWSPrimaryStorage { OWSPrimaryStorage.shared() }
 
@@ -79,7 +79,7 @@ public final class MentionsManager : NSObject {
         if let transaction = transaction {
             populate(in: transaction)
         } else {
-            storage.dbReadWriteConnection.readWrite { transaction in
+            storage.dbReadConnection.read { transaction in
                 populate(in: transaction)
             }
         }

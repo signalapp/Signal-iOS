@@ -22,5 +22,6 @@
 #pragma mark Settings
 - (BOOL)shouldBeSaved { return NO; }
 - (uint)ttl { return (uint)[LKTTLUtilities getTTLFor:LKMessageTypeSessionRequest]; }
+- (BOOL)shouldSyncTranscript { return NO; }
 
 @end

@@ -404,10 +404,21 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    BOOL duplicateEnvelope = [self.incomingMessageFinder existsMessageWithTimestamp:envelope.timestamp
-                                                                           sourceId:envelope.source
-                                                                     sourceDeviceId:envelope.sourceDevice
-                                                                        transaction:transaction];
+    OWSPrimaryStorage *storage = OWSPrimaryStorage.sharedManager;
+    __block NSSet<NSString *> *linkedDeviceHexEncodedPublicKeys;
+    [storage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        linkedDeviceHexEncodedPublicKeys = [LKDatabaseUtilities getLinkedDeviceHexEncodedPublicKeysFor:envelope.source in:transaction];
+    }];
+
+    BOOL duplicateEnvelope = NO;
+    for (NSString *hexEncodedPublicKey in linkedDeviceHexEncodedPublicKeys) {
+        duplicateEnvelope = duplicateEnvelope
+            || [self.incomingMessageFinder existsMessageWithTimestamp:envelope.timestamp
+                                                             sourceId:hexEncodedPublicKey
+                                                       sourceDeviceId:envelope.sourceDevice
+                                                          transaction:transaction];
+    }
+
     if (duplicateEnvelope) {
         OWSLogInfo(@"Ignoring previously received envelope from: %@ with timestamp: %llu.",
             envelopeAddress(envelope),
@@ -441,7 +452,7 @@ NS_ASSUME_NONNULL_BEGIN
         
         // Loki: Handle address message if needed
         /*
-        [LKSessionProtocol handleP2PAddressMessageIfNeeded:contentProto wrappedIn:envelope];
+        [LKSessionMetaProtocol handleP2PAddressMessageIfNeeded:contentProto wrappedIn:envelope];
          */
 
         // Loki: Handle device linking message if needed
@@ -1250,8 +1261,9 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     // Loki: Update device links in a blocking way
-    // TODO: This is pretty bad for performance...
-    // The envelope source is set during UD decryption.
+    // FIXME: This is horrible for performance
+    // FIXME: ========
+    // The envelope source is set during UD decryption
     if ([ECKeyPair isValidHexEncodedPublicKeyWithCandidate:envelope.source] && dataMessage.publicChatInfo == nil) { // Handled in LokiPublicChatPoller for open group messages
         dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
         [[LKMultiDeviceProtocol updateDeviceLinksIfNeededForHexEncodedPublicKey:envelope.source in:transaction].ensureOn(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^() {
@@ -1259,8 +1271,9 @@ NS_ASSUME_NONNULL_BEGIN
         }).catchOn(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(NSError *error) {
             dispatch_semaphore_signal(semaphore);
         }) retainUntilComplete];
-        dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC));
+        dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, 4 * NSEC_PER_SEC));
     }
+    // FIXME: ========
 
     if (groupId.length > 0) {
         NSMutableSet *newMemberIds = [NSMutableSet setWithArray:dataMessage.group.members];
@@ -1296,10 +1309,10 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         // Loki: Handle profile key update if needed
-        [LKSessionProtocol updateProfileKeyIfNeededForHexEncodedPublicKey:senderMasterHexEncodedPublicKey using:dataMessage];
+        [LKSessionMetaProtocol updateProfileKeyIfNeededForHexEncodedPublicKey:senderMasterHexEncodedPublicKey using:dataMessage];
 
         // Loki: Handle display name update if needed
-        [LKSessionProtocol updateDisplayNameIfNeededForHexEncodedPublicKey:senderMasterHexEncodedPublicKey using:dataMessage appendingShortID:NO in:transaction];
+        [LKSessionMetaProtocol updateDisplayNameIfNeededForHexEncodedPublicKey:senderMasterHexEncodedPublicKey using:dataMessage appendingShortID:NO in:transaction];
 
         switch (dataMessage.group.type) {
             case SSKProtoGroupContextTypeUpdate: {
@@ -1326,7 +1339,7 @@ NS_ASSUME_NONNULL_BEGIN
                 BOOL wasCurrentUserRemovedFromGroup = [removedMemberIds containsObject:userMasterHexEncodedPublicKey];
                 if (!wasCurrentUserRemovedFromGroup) {
                     // Loki: Try to establish sessions with all members when a group is created or updated
-                    [LKClosedGroupsProtocol establishSessionsIfNeededWithClosedGroupMembers:newMemberIds.allObjects in:newGroupThread using:transaction];
+                    [LKClosedGroupsProtocol establishSessionsIfNeededWithClosedGroupMembers:newMemberIds.allObjects in:newGroupThread];
                 }
 
                 [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithDisappearingDuration:dataMessage.expireTimer
@@ -1520,8 +1533,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                         wasReceivedByUD:wasReceivedByUD];
 
         // TODO: Are we sure this works correctly with multi device?
-        [LKSessionProtocol updateDisplayNameIfNeededForHexEncodedPublicKey:incomingMessage.authorId using:dataMessage appendingShortID:YES in:transaction];
-        [LKSessionProtocol updateProfileKeyIfNeededForHexEncodedPublicKey:thread.contactIdentifier using:dataMessage];
+        [LKSessionMetaProtocol updateDisplayNameIfNeededForHexEncodedPublicKey:incomingMessage.authorId using:dataMessage appendingShortID:YES in:transaction];
+        [LKSessionMetaProtocol updateProfileKeyIfNeededForHexEncodedPublicKey:thread.contactIdentifier using:dataMessage];
 
         // Loki: Parse Loki specific properties if needed
         /*

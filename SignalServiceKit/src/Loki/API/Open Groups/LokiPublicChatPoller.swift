@@ -12,7 +12,7 @@ public final class LokiPublicChatPoller : NSObject {
     
     // MARK: Settings
     private let pollForNewMessagesInterval: TimeInterval = 4
-    private let pollForDeletedMessagesInterval: TimeInterval = 20
+    private let pollForDeletedMessagesInterval: TimeInterval = 60
     private let pollForModeratorsInterval: TimeInterval = 10 * 60
     private let pollForDisplayNamesInterval: TimeInterval = 60
     

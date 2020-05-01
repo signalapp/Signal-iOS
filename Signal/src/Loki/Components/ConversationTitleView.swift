@@ -3,6 +3,7 @@
 final class ConversationTitleView : UIView {
     private let thread: TSThread
     private var currentStatus: Status? { didSet { updateSubtitleForCurrentStatus() } }
+    private var handledMessageTimestamps: Set<NSNumber> = []
     
     // MARK: Types
     private enum Status : Int {
@@ -112,6 +113,7 @@ final class ConversationTitleView : UIView {
     @objc private func handleMessageSentNotification(_ notification: Notification) {
         guard let timestamp = notification.object as? NSNumber else { return }
         setStatusIfNeeded(to: .messageSent, forMessageWithTimestamp: timestamp)
+        handledMessageTimestamps.insert(timestamp)
         DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
             self.clearStatusIfNeededForMessageWithTimestamp(timestamp)
         }
@@ -123,12 +125,21 @@ final class ConversationTitleView : UIView {
     }
     
     private func setStatusIfNeeded(to status: Status, forMessageWithTimestamp timestamp: NSNumber) {
+        guard !handledMessageTimestamps.contains(timestamp) else { return }
         var uncheckedTargetInteraction: TSInteraction? = nil
         thread.enumerateInteractions { interaction in
             guard interaction.timestamp == timestamp.uint64Value else { return }
             uncheckedTargetInteraction = interaction
         }
-        guard let targetInteraction = uncheckedTargetInteraction, targetInteraction.interactionType() == .outgoingMessage, status.rawValue > (currentStatus?.rawValue ?? 0) else { return }
+        guard let targetInteraction = uncheckedTargetInteraction, targetInteraction.interactionType() == .outgoingMessage,
+            status.rawValue > (currentStatus?.rawValue ?? 0), let hexEncodedPublicKey = targetInteraction.thread.contactIdentifier() else { return }
+        var masterHexEncodedPublicKey: String!
+        let storage = OWSPrimaryStorage.shared()
+        storage.dbReadConnection.read { transaction in
+            masterHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: hexEncodedPublicKey, in: transaction) ?? hexEncodedPublicKey
+        }
+        let isSlaveDevice = masterHexEncodedPublicKey != hexEncodedPublicKey
+        guard !isSlaveDevice else { return }
         currentStatus = status
     }
     
