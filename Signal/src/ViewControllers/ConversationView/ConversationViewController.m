@@ -531,27 +531,22 @@ typedef enum : NSUInteger {
 
 - (void)handleUserFriendRequestStatusChangedNotification:(NSNotification *)notification
 {
-    // Check thread
-    NSString *hexEncodedPublicKey = (NSString *)notification.object;
+    // Friend request status doesn't apply to group threads
     if (self.thread.isGroupThread) { return; }
-
-    __block BOOL shouldReload = [self.thread.contactIdentifier isEqualToString:hexEncodedPublicKey];
-
-    // Check to see if this is a linked device
-    if (![self.thread.contactIdentifier isEqualToString:hexEncodedPublicKey]) {
-        [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            NSSet<NSString *> *linkedDevices = [LKDatabaseUtilities getLinkedDeviceHexEncodedPublicKeysFor:self.thread.contactIdentifier in:transaction];
-            shouldReload = [linkedDevices containsObject:hexEncodedPublicKey];
-        }];
-    }
-    if (shouldReload) {
-        // Ensure thread instance is up to date
-        [self.thread reload];
-        // Update UI
-        [self.viewItems.lastObject clearCachedLayoutState];
-        [self updateInputToolbar];
-        [self resetContentAndLayout];
-    }
+    NSString *hexEncodedPublicKey = (NSString *)notification.object;
+    // Check if we should update the UI
+    __block BOOL needsUpdate;
+    [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        NSSet<NSString *> *linkedDevices = [LKDatabaseUtilities getLinkedDeviceHexEncodedPublicKeysFor:self.thread.contactIdentifier in:transaction];
+        needsUpdate = [linkedDevices containsObject:hexEncodedPublicKey];
+    }];
+    if (!needsUpdate) { return; }
+    // Ensure the thread instance is up to date
+    [self.thread reload];
+    // Update the UI
+    [self.viewItems.lastObject clearCachedLayoutState];
+    [self updateInputToolbar];
+    [self resetContentAndLayout];
 }
 
 - (void)handleThreadSessionRestoreDevicesChangedNotifiaction:(NSNotification *)notification
