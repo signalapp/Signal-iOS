@@ -404,10 +404,21 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    BOOL duplicateEnvelope = [self.incomingMessageFinder existsMessageWithTimestamp:envelope.timestamp
-                                                                           sourceId:envelope.source
-                                                                     sourceDeviceId:envelope.sourceDevice
-                                                                        transaction:transaction];
+    OWSPrimaryStorage *storage = OWSPrimaryStorage.sharedManager;
+    __block NSSet<NSString *> *linkedDeviceHexEncodedPublicKeys;
+    [storage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        linkedDeviceHexEncodedPublicKeys = [LKDatabaseUtilities getLinkedDeviceHexEncodedPublicKeysFor:envelope.source in:transaction];
+    }];
+
+    BOOL duplicateEnvelope = NO;
+    for (NSString *hexEncodedPublicKey in linkedDeviceHexEncodedPublicKeys) {
+        duplicateEnvelope = duplicateEnvelope
+            || [self.incomingMessageFinder existsMessageWithTimestamp:envelope.timestamp
+                                                             sourceId:hexEncodedPublicKey
+                                                       sourceDeviceId:envelope.sourceDevice
+                                                          transaction:transaction];
+    }
+
     if (duplicateEnvelope) {
         OWSLogInfo(@"Ignoring previously received envelope from: %@ with timestamp: %llu.",
             envelopeAddress(envelope),
