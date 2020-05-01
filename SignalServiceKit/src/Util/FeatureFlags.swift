@@ -140,6 +140,9 @@ public class FeatureFlags: NSObject {
     }
 
     @objc
+    public static var requireUUIDs = false
+
+    @objc
     public static let useOnlyModernContactDiscovery = false
 
     @objc
