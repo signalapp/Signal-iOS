@@ -41,7 +41,6 @@ NSString *const TSAccountManager_UserAccountCollection = @"TSStorageUserAccountC
 NSString *const TSAccountManager_ServerAuthToken = @"TSStorageServerAuthToken";
 NSString *const TSAccountManager_ServerSignalingKey = @"TSStorageServerSignalingKey";
 NSString *const TSAccountManager_ManualMessageFetchKey = @"TSAccountManager_ManualMessageFetchKey";
-NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountManager_NeedsAccountAttributesUpdateKey";
 
 NSString *const TSAccountManager_DeviceName = @"TSAccountManager_DeviceName";
 NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
@@ -104,6 +103,7 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
                             defaultValue:1 // lazily migrate legacy primary devices
                              transaction:transaction];
     _isOnboarded = [keyValueStore getBool:TSAccountManager_IsOnboardedKey defaultValue:NO transaction:transaction];
+
     return self;
 }
 
@@ -173,11 +173,8 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
         if (!CurrentAppContext().isMainApp) {
             [self.databaseStorage addDatabaseStorageObserver:self];
         }
-        [[self updateAccountAttributesIfNecessary] retainUntilComplete];
 
-        if (!CurrentAppContext().isMainApp) {
-            [self.databaseStorage addDatabaseStorageObserver:self];
-        }
+        [self updateAccountAttributesIfNecessary];
     }];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -889,57 +886,11 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
     }];
 }
 
-#pragma mark - Account Attributes
-
-- (AnyPromise *)updateAccountAttributes
-{
-    // Enqueue a "account attribute update", recording the "request time".
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [self.keyValueStore setObject:[NSDate new]
-                                  key:TSAccountManager_NeedsAccountAttributesUpdateKey
-                          transaction:transaction];
-    }];
-
-    return [self updateAccountAttributesIfNecessary];
-}
-
-- (AnyPromise *)updateAccountAttributesIfNecessary {
-    if (!self.isRegisteredPrimaryDevice) {
-        return [AnyPromise promiseWithValue:@(1)];
-    }
-
-    __block NSDate *_Nullable updateRequestDate;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        updateRequestDate = [self.keyValueStore getObjectForKey:TSAccountManager_NeedsAccountAttributesUpdateKey
-                                                    transaction:transaction];
-    }];
-
-    if (!updateRequestDate) {
-        return [AnyPromise promiseWithValue:@(1)];
-    }
-    AnyPromise *promise = [self performUpdateAccountAttributes];
-    promise = promise.thenInBackground(^(id value) {
-        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-            // Clear the update request unless a new update has been requested
-            // while this update was in flight.
-            NSDate *_Nullable latestUpdateRequestDate =
-                [self.keyValueStore getObjectForKey:TSAccountManager_NeedsAccountAttributesUpdateKey
-                                        transaction:transaction];
-
-            if (latestUpdateRequestDate && [latestUpdateRequestDate isEqual:updateRequestDate]) {
-                [self.keyValueStore removeValueForKey:TSAccountManager_NeedsAccountAttributesUpdateKey
-                                          transaction:transaction];
-            }
-        }];
-    });
-    return promise;
-}
-
 - (void)reachabilityChanged {
     OWSAssertIsOnMainThread();
 
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        [[self updateAccountAttributesIfNecessary] retainUntilComplete];
+        [self updateAccountAttributesIfNecessary];
     }];
 }
 

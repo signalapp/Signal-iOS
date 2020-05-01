@@ -21,7 +21,7 @@ public protocol SignalServiceClient {
 
     // MARK: - Secondary Devices
 
-    func updateDeviceCapabilities() -> Promise<Void>
+    func updateSecondaryDeviceCapabilities() -> Promise<Void>
 }
 
 /// Based on libsignal-service-java's PushServiceSocket class
@@ -188,7 +188,7 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
 
     // MARK: - Secondary Devices
 
-    public func updateDeviceCapabilities() -> Promise<Void> {
+    public func updateSecondaryDeviceCapabilities() -> Promise<Void> {
         let request = OWSRequestFactory.updateSecondaryDeviceCapabilitiesRequest()
         return self.networkManager.makePromise(request: request).asVoid()
     }
