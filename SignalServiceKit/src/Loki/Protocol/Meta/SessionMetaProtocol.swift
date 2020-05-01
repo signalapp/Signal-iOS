@@ -9,6 +9,7 @@ import PromiseKit
 // • Document the expected cases for everything.
 // • Express those cases in tests.
 
+/// See [Receipts, Transcripts & Typing Indicators](https://github.com/loki-project/session-protocol-docs/wiki/Receipts,-Transcripts-&-Typing-Indicators) for more information.
 @objc(LKSessionMetaProtocol)
 public final class SessionMetaProtocol : NSObject {
 
