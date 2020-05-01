@@ -7,6 +7,7 @@ import Curve25519Kit
 class FriendRequestProtocolTests : XCTestCase {
 
     private var storage: OWSPrimaryStorage { OWSPrimaryStorage.shared() }
+    private var messageSender: OWSFakeMessageSender { return MockSSKEnvironment.shared.messageSender as! OWSFakeMessageSender }
 
     override func setUp() {
         super.setUp()
@@ -445,8 +446,6 @@ class FriendRequestProtocolTests : XCTestCase {
 
     // MARK: - acceptFriendRequest
 
-    // TODO: Add test to see if message was sent?
-
     func test_acceptFriendRequestShouldSetStatusToFriendsIfWeReceivedAFriendRequest() {
         // Case: Bob sent us a friend request, we should become friends with him on accepting
         let bob = generateHexEncodedPublicKey()
@@ -460,7 +459,9 @@ class FriendRequestProtocolTests : XCTestCase {
         }
     }
 
-    func test_acceptFriendRequestShouldSendAMessageIfStatusIsNoneOrExpired() {
+    // TODO: Add test to see if an accept message is sent out
+
+    func test_acceptFriendRequestShouldSendAFriendRequestMessageIfStatusIsNoneOrExpired() {
         // Case: Somehow our friend request status doesn't match the UI
         // Since user accepted then we should send a friend request message
         let statuses: [LKFriendRequestStatus] = [.none, .requestExpired]
@@ -470,10 +471,25 @@ class FriendRequestProtocolTests : XCTestCase {
                 self.storage.setFriendRequestStatus(status, for: bob, transaction: transaction)
             }
 
+            let expectation = self.expectation(description: "sent message")
+
+            messageSender.sendMessageWasCalledBlock = { [weak messageSender] sentMessage in
+                guard sentMessage is FriendRequestMessage else {
+                    XCTFail("unexpected sentMessage: \(sentMessage)")
+                    return
+                }
+                expectation.fulfill()
+                guard let strongMessageSender = messageSender else {
+                    return
+                }
+                strongMessageSender.sendMessageWasCalledBlock = nil
+            }
+
             storage.dbReadWriteConnection.readWrite { transaction in
                 FriendRequestProtocol.acceptFriendRequest(from: bob, using: transaction)
-                XCTAssertTrue(self.isFriendRequestStatus([.requestSending, .requestSent], for: bob, transaction: transaction))
             }
+
+            self.wait(for: [expectation], timeout: 1.0)
         }
     }
 
@@ -514,9 +530,15 @@ class FriendRequestProtocolTests : XCTestCase {
 
         storage.dbReadWriteConnection.readWrite { transaction in
             FriendRequestProtocol.acceptFriendRequest(from: master, using: transaction)
-            XCTAssertTrue(self.isFriendRequestStatus([.requestSending, .requestSent], for: master, transaction: transaction))
-            XCTAssertTrue(self.isFriendRequestStatus(.friends, for: slave, transaction: transaction))
-            XCTAssertTrue(self.isFriendRequestStatus(.requestSent, for: otherSlave, transaction: transaction))
+        }
+
+        eventually {
+            self.storage.dbReadWriteConnection.readWrite { transaction in
+                // TODO: Re-enable this case when we split friend request logic from OWSMessageSender
+                // XCTAssertTrue(self.isFriendRequestStatus([.requestSending, .requestSent], for: master, transaction: transaction))
+                XCTAssertTrue(self.isFriendRequestStatus(.friends, for: slave, transaction: transaction))
+                XCTAssertTrue(self.isFriendRequestStatus(.requestSent, for: otherSlave, transaction: transaction))
+            }
         }
     }
 
