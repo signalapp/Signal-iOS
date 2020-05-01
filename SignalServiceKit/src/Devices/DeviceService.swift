@@ -12,12 +12,12 @@ public class DeviceService: NSObject {
     @objc
     public static let shared = DeviceService()
 
-    @objc(updateCapabilities)
-    public func objc_updateCapabilities() -> AnyPromise {
-        return AnyPromise(updateCapabilities())
+    @objc(updateSecondaryDeviceCapabilities)
+    public func objc_updateSecondaryDeviceCapabilities() -> AnyPromise {
+        return AnyPromise(updateSecondaryDeviceCapabilities())
     }
 
-    public func updateCapabilities() -> Promise<Void> {
-        return serviceClient.updateDeviceCapabilities()
+    public func updateSecondaryDeviceCapabilities() -> Promise<Void> {
+        return serviceClient.updateSecondaryDeviceCapabilities()
     }
 }
