@@ -25,7 +25,7 @@ typedef NS_ENUM(NSInteger, LKMessageFriendRequestStatus) {
     LKMessageFriendRequestStatusAccepted,
     LKMessageFriendRequestStatusDeclined,
     LKMessageFriendRequestStatusExpired
-} __deprecated_enum_msg("This is no longer used since v1.1.2.");
+} __deprecated_enum_msg("no longer used as of version 1.1.2");
 
 @interface TSMessage : TSInteraction <OWSPreviewText>
 
@@ -39,7 +39,7 @@ typedef NS_ENUM(NSInteger, LKMessageFriendRequestStatus) {
 @property (nonatomic, readonly, nullable) OWSContact *contactShare;
 @property (nonatomic, nullable) OWSLinkPreview *linkPreview;
 // Loki friend request handling
-@property (nonatomic) LKMessageFriendRequestStatus friendRequestStatus __deprecated_msg("Deprecated since v1.1.2. Please don't rely on this to show the friend request UI");
+@property (nonatomic) LKMessageFriendRequestStatus friendRequestStatus __deprecated_msg("no longer used as of version 1.1.2");
 @property (nonatomic, readonly) NSString *friendRequestStatusDescription;
 @property (nonatomic) uint64_t friendRequestExpiresAt;
 @property (nonatomic, readonly) BOOL isFriendRequest;

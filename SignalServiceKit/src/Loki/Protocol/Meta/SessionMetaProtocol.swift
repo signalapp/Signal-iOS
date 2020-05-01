@@ -83,27 +83,23 @@ public final class SessionMetaProtocol : NSObject {
     /// send them if certain conditions are met.
     @objc(shouldSendTypingIndicatorForThread:)
     public static func shouldSendTypingIndicator(for thread: TSThread) -> Bool {
-        guard !thread.isGroupThread(), let contact = thread.contactIdentifier() else { return false }
-
-        var isFriend = false;
+        guard !thread.isGroupThread(), let contactID = thread.contactIdentifier() else { return false }
+        var isContactFriend = false
         storage.dbReadConnection.read { transaction in
-            isFriend = storage.getFriendRequestStatus(for: contact, transaction: transaction) == .friends
+            isContactFriend = (storage.getFriendRequestStatus(for: contactID, transaction: transaction) == .friends)
         }
-
-        return isFriend
+        return isContactFriend
     }
 
     // MARK: Receipts
     @objc(shouldSendReceiptForThread:)
     public static func shouldSendReceipt(for thread: TSThread) -> Bool {
-        guard !thread.isGroupThread(), let contact = thread.contactIdentifier() else { return false }
-
-        var shouldSendReceipt = false;
+        guard !thread.isGroupThread(), let contactID = thread.contactIdentifier() else { return false }
+        var isContactFriend = false
         storage.dbReadConnection.read { transaction in
-            shouldSendReceipt = storage.getFriendRequestStatus(for: contact, transaction: transaction) == .friends
+            isContactFriend = (storage.getFriendRequestStatus(for: contactID, transaction: transaction) == .friends)
         }
-
-        return shouldSendReceipt
+        return isContactFriend
     }
 
     // MARK: - Receiving
