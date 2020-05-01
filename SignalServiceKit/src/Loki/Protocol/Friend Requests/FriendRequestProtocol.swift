@@ -15,19 +15,25 @@ public final class FriendRequestProtocol : NSObject {
 
     internal static var storage: OWSPrimaryStorage { OWSPrimaryStorage.shared() }
 
+    // MARK: - Enums
+    // FIXME: Better naming :(
+    @objc public enum FriendRequestUIState : Int {
+        case friends, received, sent, none
+    }
+
     // MARK: - General
     @objc(shouldInputBarBeEnabledForThread:)
     public static func shouldInputBarBeEnabled(for thread: TSThread) -> Bool {
         // Friend requests have nothing to do with groups, so if this isn't a contact thread the input bar should be enabled
         guard let thread = thread as? TSContactThread else { return true }
         // If this is a note to self, the input bar should be enabled
-        if SessionProtocol.isMessageNoteToSelf(thread) { return true }
+        if thread.isNoteToSelf() { return true }
         let contactID = thread.contactIdentifier()
         var friendRequestStatuses: [LKFriendRequestStatus] = []
         storage.dbReadConnection.read { transaction in
-            let linkedDeviceThreads = LokiDatabaseUtilities.getLinkedDeviceThreads(for: contactID, in: transaction)
-            friendRequestStatuses = linkedDeviceThreads.map { device in
-                return storage.getFriendRequestStatus(for: device.contactIdentifier(), transaction: transaction)
+            let linkedDevices = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: contactID, in: transaction)
+            friendRequestStatuses = linkedDevices.map { device in
+                return storage.getFriendRequestStatus(for: device, transaction: transaction)
             }
         }
         // If the current user is friends with any of the other user's devices, the input bar should be enabled
@@ -43,19 +49,40 @@ public final class FriendRequestProtocol : NSObject {
         // Friend requests have nothing to do with groups, so if this isn't a contact thread the attachment button should be enabled
         guard let thread = thread as? TSContactThread else { return true }
         // If this is a note to self, the attachment button should be enabled
-        if SessionProtocol.isMessageNoteToSelf(thread) { return true }
+        if thread.isNoteToSelf() { return true }
         let contactID = thread.contactIdentifier()
         var friendRequestStatuses: [LKFriendRequestStatus] = []
         storage.dbReadConnection.read { transaction in
-            let linkedDeviceThreads = LokiDatabaseUtilities.getLinkedDeviceThreads(for: contactID, in: transaction)
-            friendRequestStatuses = linkedDeviceThreads.map { thread in
-                storage.getFriendRequestStatus(for: thread.contactIdentifier(), transaction: transaction)
+            let linkedDevices = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: contactID, in: transaction)
+            friendRequestStatuses = linkedDevices.map { device in
+                storage.getFriendRequestStatus(for: device, transaction: transaction)
             }
         }
         // If the current user is friends with any of the other user's devices, the attachment button should be enabled
         if friendRequestStatuses.contains(where: { $0 == .friends }) { return true }
         // Otherwise don't allow attachments at all
         return false
+    }
+
+    @objc(getFriendRequestUIStateForThread:)
+    public static func getFriendRequestUIState(for thread: TSThread) -> FriendRequestUIState {
+        // Friend requests have nothing to do with groups
+        guard let thread = thread as? TSContactThread else { return .none }
+        // If this is a note to self then we don't want to show the friend request
+        if thread.isNoteToSelf() { return .none }
+        var friendRequestStatuses: [LKFriendRequestStatus] = []
+        storage.dbReadConnection.read { transaction in
+            let linkedDevices = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: thread.contactIdentifier(), in: transaction)
+            friendRequestStatuses = linkedDevices.map { device in
+                return storage.getFriendRequestStatus(for: device, transaction: transaction)
+            }
+        }
+
+        if friendRequestStatuses.contains(where: { $0 == .friends }) { return .friends }
+        if friendRequestStatuses.contains(where: { $0 == .requestReceived }) { return .received }
+        if friendRequestStatuses.contains(where: { $0 == .requestSent }) { return .sent }
+
+        return .none
     }
 
     // MARK: - Sending

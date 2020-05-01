@@ -67,8 +67,8 @@ public final class SessionProtocol : NSObject {
 
     // TODO: Check that the behaviors described above make sense
 
-    @objc(isMessageNoteToSelf:)
-    public static func isMessageNoteToSelf(_ thread: TSThread) -> Bool {
+    @objc(isThreadNoteToSelf:)
+    public static func isThreadNoteToSelf(_ thread: TSThread) -> Bool {
         guard let thread = thread as? TSContactThread else { return false }
         var isNoteToSelf = false
         storage.dbReadConnection.read { transaction in
@@ -101,14 +101,14 @@ public final class SessionProtocol : NSObject {
     /// send them if certain conditions are met.
     @objc(shouldSendTypingIndicatorForThread:)
     public static func shouldSendTypingIndicator(for thread: TSThread) -> Bool {
-        return !thread.isGroupThread() && !isMessageNoteToSelf(thread)
+        return !thread.isGroupThread() && !isThreadNoteToSelf(thread)
     }
 
     // MARK: Receipts
     // Used from OWSReadReceiptManager
     @objc(shouldSendReadReceiptForThread:)
     public static func shouldSendReadReceipt(for thread: TSThread) -> Bool {
-        return !isMessageNoteToSelf(thread) && !thread.isGroupThread()
+        return !isThreadNoteToSelf(thread) && !thread.isGroupThread()
     }
 
     // TODO: Not sure how these two relate. EDIT: I think the one below is used to block delivery receipts. That means that
