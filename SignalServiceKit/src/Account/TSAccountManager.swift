@@ -99,11 +99,6 @@ public extension TSAccountManager {
                                        key: Self.needsAccountAttributesUpdateKey,
                                        transaction: transaction)
         }
-        return updateAccountAttributesIfNecessaryPromise()
-    }
-
-    @objc
-    func updateAccountAttributesIfNecessaryPromise() -> AnyPromise {
         return AnyPromise(updateAccountAttributesIfNecessaryAttempt())
     }
 
