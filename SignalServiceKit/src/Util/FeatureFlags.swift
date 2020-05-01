@@ -18,7 +18,7 @@ extension FeatureBuild {
     }
 }
 
-let build: FeatureBuild = .internalPreview
+let build: FeatureBuild = .qa
 
 // MARK: -
 
