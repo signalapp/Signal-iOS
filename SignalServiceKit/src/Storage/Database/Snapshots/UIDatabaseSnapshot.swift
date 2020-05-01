@@ -202,10 +202,21 @@ extension UIDatabaseObserver: TransactionObserver {
         //
         //   We periodically try to perform a restart checkpoint which
         //   can limit WAL size when truncation isn't possible.
-        do {
-            try self.checkpoint()
-        } catch {
-            owsFailDebug("error \(error)")
+        //
+        // Run checkpoints after 1/3 of writes.
+        let checkpointFrequencyPercentage = 33
+        let checkpointRandom = arc4random_uniform(100)
+        let shouldTryToCheckpoint = checkpointRandom < checkpointFrequencyPercentage
+        if shouldTryToCheckpoint {
+            // Run restart checkpoints after 1/100 of writes.
+            let checkpointFrequencyPercentage = 1
+            let shouldDoRestartCheckpoint = checkpointRandom < checkpointFrequencyPercentage
+            do {
+                let mode: Database.CheckpointMode = shouldDoRestartCheckpoint ? .restart : .passive
+                try self.checkpoint(mode: mode)
+            } catch {
+                owsFailDebug("error \(error)")
+            }
         }
 
         // [3] open a new transaction from the current db state
@@ -217,7 +228,7 @@ extension UIDatabaseObserver: TransactionObserver {
 
     private static let isRunningCheckpoint = AtomicBool(false)
 
-    func checkpoint() throws {
+    func checkpoint(mode: Database.CheckpointMode) throws {
         do {
             try UIDatabaseObserver.isRunningCheckpoint.transition(from: false, to: true)
         } catch {
@@ -227,11 +238,6 @@ extension UIDatabaseObserver: TransactionObserver {
         defer {
             UIDatabaseObserver.isRunningCheckpoint.set(false)
         }
-
-        // Try to restart after every Nth write.
-        let restartFrequency: UInt32 = 100
-        let shouldTryToRestart = arc4random_uniform(restartFrequency) == 0
-        let mode: Database.CheckpointMode = shouldTryToRestart ? .restart : .passive
 
         let result = try GRDBDatabaseStorageAdapter.checkpoint(pool: pool, mode: mode)
 

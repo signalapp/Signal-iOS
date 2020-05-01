@@ -101,7 +101,7 @@ public class StickerManager: NSObject {
             // Warm the caches.
             StickerManager.shared.warmTooltipState()
         }
-        AppReadiness.runNowOrWhenAppDidBecomeReady {
+        AppReadiness.runNowOrWhenAppDidBecomeReadyPolite {
             StickerManager.cleanupOrphans()
 
             if TSAccountManager.sharedInstance().isRegisteredAndReady {

@@ -43,7 +43,9 @@ public class StorageServiceManager: NSObject, StorageServiceManagerProtocol {
                 name: .OWSApplicationWillResignActive,
                 object: nil
             )
+        }
 
+        AppReadiness.runNowOrWhenAppDidBecomeReadyPolite {
             guard self.tsAccountManager.isRegisteredAndReady else { return }
 
             // Schedule a restore. This will do nothing unless we've never

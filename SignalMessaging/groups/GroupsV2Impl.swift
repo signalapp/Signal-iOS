@@ -62,7 +62,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         AppReadiness.runNowOrWhenAppWillBecomeReady {
             self.verifyServerPublicParams()
         }
-        AppReadiness.runNowOrWhenAppDidBecomeReady {
+        AppReadiness.runNowOrWhenAppDidBecomeReadyPolite {
             guard self.tsAccountManager.isRegisteredAndReady else {
                 return
             }
@@ -118,7 +118,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             self.serviceStore.setString(serverPublicParamsBase64, key: lastServerPublicParamsKey, transaction: transaction)
             self.serviceStore.setInt(zkgroupVersionCounter, key: lastZKgroupVersionCounterKey, transaction: transaction)
         }
-        AppReadiness.runNowOrWhenAppDidBecomeReady {
+        AppReadiness.runNowOrWhenAppDidBecomeReadyPolite {
             if FeatureFlags.versionedProfiledUpdate,
                 self.tsAccountManager.isRegisteredAndReady {
                 self.reuploadLocalProfilePromise().retainUntilComplete()
@@ -143,7 +143,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
     func didBecomeActive() {
         AssertIsOnMainThread()
 
-        AppReadiness.runNowOrWhenAppDidBecomeReady {
+        AppReadiness.runNowOrWhenAppDidBecomeReadyPolite {
             GroupsV2Impl.enqueueRestoreGroupPass()
         }
     }

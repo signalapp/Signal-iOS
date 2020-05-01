@@ -173,7 +173,8 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
         if (!CurrentAppContext().isMainApp) {
             [self.databaseStorage addDatabaseStorageObserver:self];
         }
-
+    }];
+    [AppReadiness runNowOrWhenAppDidBecomeReadyPolite:^{
         [self updateAccountAttributesIfNecessary];
     }];
 
@@ -889,7 +890,7 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
 - (void)reachabilityChanged {
     OWSAssertIsOnMainThread();
 
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+    [AppReadiness runNowOrWhenAppDidBecomeReadyPolite:^{
         [self updateAccountAttributesIfNecessary];
     }];
 }
