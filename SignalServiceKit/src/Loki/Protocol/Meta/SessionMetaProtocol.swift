@@ -110,6 +110,7 @@ public final class SessionMetaProtocol : NSObject {
         } else {
             displayName = rawDisplayName
         }
+        guard !displayName.isEmpty else { return }
         let profileManager = SSKEnvironment.shared.profileManager
         profileManager.updateProfileForContact(withID: hexEncodedPublicKey, displayName: displayName, with: transaction)
     }
