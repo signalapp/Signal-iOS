@@ -40,7 +40,7 @@ extern ConversationColorName const kConversationColorName_Default;
 @property (nonatomic, readonly) TSInteraction *lastInteraction;
 // Loki friend request handling
 // ========
-@property (nonatomic) NSInteger friendRequestStatus __deprecated_msg("use OWSPrimaryStorage.getFriendReeuqstStatusForContact instead");
+@property (nonatomic) NSInteger friendRequestStatus __deprecated_msg("use OWSPrimaryStorage.getFriendRequestStatusForContact:transaction: instead");
 @property (nonatomic, readonly) NSString *friendRequestStatusDescription;
 /// Shorthand for checking that `friendRequestStatus` is `LKThreadFriendRequestStatusRequestSending`, `LKThreadFriendRequestStatusRequestSent`
 /// or `LKThreadFriendRequestStatusRequestReceived`.

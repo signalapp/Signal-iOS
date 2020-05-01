@@ -102,7 +102,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     if ([self isVersion:previousVersion lessThan:@"1.1.2"] && [self.tsAccountManager isRegistered]) {
-        [self moveFriendRequestStatusFromThread];
+        [self updateFriendRequestStatusStorage];
     }
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -212,18 +212,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 # pragma mark Loki - Upgrading Friend Request Status
 
-
-// Versions less than or equal to 1.1.1 stored friend request status on the thread
-+ (void)moveFriendRequestStatusFromThread
+// Versions less than or equal to 1.1.1 stored the friend request status on the thread
++ (void)updateFriendRequestStatusStorage
 {
     OWSPrimaryStorage *storage = OWSPrimaryStorage.sharedManager;
-    [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
+    [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         NSArray *threads = [TSThread allObjectsInCollection];
         for (TSThread *thread in threads) {
-            if (!thread.isGroupThread) {
-                NSString *hexEncodedPublicKey = thread.contactIdentifier;
-                [storage setFriendRequestStatus:thread.friendRequestStatus forContact:hexEncodedPublicKey transaction:transaction];
-            }
+            if (thread.isGroupThread) { return; }
+            NSString *hexEncodedPublicKey = thread.contactIdentifier;
+            [storage setFriendRequestStatus:thread.friendRequestStatus forContact:hexEncodedPublicKey transaction:transaction];
         }
     }];
 }

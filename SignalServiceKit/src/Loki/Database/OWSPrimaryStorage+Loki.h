@@ -17,7 +17,7 @@ typedef NS_ENUM(NSInteger, LKFriendRequestStatus) {
     LKFriendRequestStatusRequestSent,
     /// Friend request received; awaiting user input.
     LKFriendRequestStatusRequestReceived,
-    /// We are friends with the other user.
+    /// We're friends with the other user.
     LKFriendRequestStatusFriends,
     /// A friend request was sent, but it timed out (i.e. the other user didn't accept within the allocated time).
     LKFriendRequestStatusRequestExpired
@@ -60,7 +60,7 @@ typedef NS_ENUM(NSInteger, LKFriendRequestStatus) {
 - (void)setRestorationTime:(NSTimeInterval)time;
 - (NSTimeInterval)getRestorationTime;
 
-# pragma mark - Friend Request
+# pragma mark - Friend Requests
 
 - (LKFriendRequestStatus)getFriendRequestStatusForContact:(NSString *)hexEncodedPublicKey transaction:(YapDatabaseReadTransaction *)transaction NS_SWIFT_NAME(getFriendRequestStatus(for:transaction:));
 - (void)setFriendRequestStatus:(LKFriendRequestStatus)friendRequestStatus forContact:(NSString *)hexEncodedPublicKey transaction:(YapDatabaseReadWriteTransaction *)transaction NS_SWIFT_NAME(setFriendRequestStatus(_:for:transaction:));
