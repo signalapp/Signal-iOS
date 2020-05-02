@@ -97,17 +97,6 @@ public class UIDatabaseObserver: NSObject {
                                                selector: #selector(didReceiveCrossProcessNotification),
                                                name: SDSDatabaseStorage.didReceiveCrossProcessNotification,
                                                object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(didBecomeActive),
-                                               name: .OWSApplicationDidBecomeActive,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(willResignActive),
-                                               name: .OWSApplicationWillResignActive,
-                                               object: nil)
-        if CurrentAppContext().reportedApplicationState == .active {
-            lastAppActivationDate = Date()
-        }
     }
 
     @objc
@@ -118,22 +107,6 @@ public class UIDatabaseObserver: NSObject {
         for delegate in snapshotDelegates {
             delegate.databaseSnapshotDidUpdateExternally()
         }
-    }
-
-    fileprivate var lastAppActivationDate: Date?
-
-    @objc
-    func didBecomeActive() {
-        AssertIsOnMainThread()
-
-        lastAppActivationDate = Date()
-    }
-
-    @objc
-    func willResignActive() {
-        AssertIsOnMainThread()
-
-        lastAppActivationDate = nil
     }
 }
 
@@ -244,25 +217,7 @@ extension UIDatabaseObserver: TransactionObserver {
 
     private static let isRunningCheckpoint = AtomicBool(false)
 
-    private var canDoRestartCheckpoint: Bool {
-        AssertIsOnMainThread()
-
-        // To avoid 0x8badf00d crashes, don't perform restart checkpoints
-        // unless app has been active for N seconds.
-        guard CurrentAppContext().isMainAppAndActive else {
-            return false
-        }
-        guard let lastAppActivationDate = lastAppActivationDate else {
-            return false
-        }
-        let minTimeIntervalSinceActive: TimeInterval = 5
-        let timeIntervalSinceActive = lastAppActivationDate.timeIntervalSinceNow
-        return abs(timeIntervalSinceActive) >= minTimeIntervalSinceActive
-    }
-
     func checkpoint() throws {
-        AssertIsOnMainThread()
-
         do {
             try UIDatabaseObserver.isRunningCheckpoint.transition(from: false, to: true)
         } catch {
@@ -273,12 +228,9 @@ extension UIDatabaseObserver: TransactionObserver {
             UIDatabaseObserver.isRunningCheckpoint.set(false)
         }
 
-        var shouldTryToRestart = false
-        if canDoRestartCheckpoint {
-            // Try to restart after every Nth write.
-            let restartFrequency: UInt32 = 100
-            shouldTryToRestart = arc4random_uniform(restartFrequency) == 0
-        }
+        // Try to restart after every Nth write.
+        let restartFrequency: UInt32 = 100
+        let shouldTryToRestart = arc4random_uniform(restartFrequency) == 0
         let mode: Database.CheckpointMode = shouldTryToRestart ? .restart : .passive
 
         let result = try GRDBDatabaseStorageAdapter.checkpoint(pool: pool, mode: mode)
