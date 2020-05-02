@@ -351,7 +351,7 @@ class FriendRequestProtocolTests : XCTestCase {
         let bob = generateHexEncodedPublicKey()
         let bobThread = createContactThread(for: bob)
 
-        let expectedStates: [LKFriendRequestStatus : FriendRequestProtocol.FriendRequestUIState] = [
+        let expectedStates: [LKFriendRequestStatus : FriendRequestProtocol.FriendRequestUIStatus] = [
             .none: .none,
             .requestExpired: .none,
             .requestSending: .none,
@@ -384,7 +384,7 @@ class FriendRequestProtocolTests : XCTestCase {
         let masterThread = createContactThread(for: master)
         let slaveThread = createContactThread(for: slave)
 
-        let expectedStates: [LKFriendRequestStatus : FriendRequestProtocol.FriendRequestUIState] = [
+        let expectedStates: [LKFriendRequestStatus : FriendRequestProtocol.FriendRequestUIStatus] = [
             .none: .none,
             .requestExpired: .none,
             .requestSending: .none,

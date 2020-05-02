@@ -724,7 +724,7 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
 {
     // If we're friends with the person then we don't need to remove any friend request messages
     if (self.isGroupThread) { return; }
-    if ([LKFriendRequestProtocol isFriendsWithLinkedDevicesOfHexEncodedPublicKey:self.contactIdentifier]) { return; }
+    if ([LKFriendRequestProtocol isFriendsWithAnyLinkedDeviceOfHexEncodedPublicKey:self.contactIdentifier]) { return; }
     
     NSMutableArray<NSString *> *idsToRemove = [NSMutableArray new];
     __block TSMessage *_Nullable messageToKeep = nil; // We want to keep this interaction and not remove it
