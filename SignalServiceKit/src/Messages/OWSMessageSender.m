@@ -1187,7 +1187,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             }
 
             if (signalMessage.isFriendRequest) {
-                [LKFriendRequestProtocol failedToSendFriendRequestToHexEncodedPublicKey:recipientID transaction:transaction];
+                [LKFriendRequestProtocol setFriendRequestStatusToSendingIfNeededForHexEncodedPublicKey:recipientID transaction:transaction];
             }
         }];
 
@@ -1201,7 +1201,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 }
 
                 if (signalMessage.isFriendRequest) {
-                    [LKFriendRequestProtocol sentFriendRequestToHexEncodedPublicKey:recipientID transaction:transaction];
+                    [LKFriendRequestProtocol setFriendRequestStatusToFailedIfNeededForHexEncodedPublicKey:recipientID transaction:transaction];
                 }
             }];
             // Handle the error
@@ -1233,7 +1233,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                 NSDate *expirationDate = [[NSDate new] dateByAddingTimeInterval:expirationInterval];
                                 [message saveFriendRequestExpiresAt:[NSDate ows_millisecondsSince1970ForDate:expirationDate] withTransaction:transaction];
                             }
-                            [LKFriendRequestProtocol sentFriendRequestToHexEncodedPublicKey:recipientID transaction:transaction];
+                            [LKFriendRequestProtocol setFriendRequestStatusToSentIfNeededForHexEncodedPublicKey:recipientID transaction:transaction];
                         }];
                     }
                     // Invoke the completion handler
