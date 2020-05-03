@@ -322,7 +322,7 @@ class FriendRequestProtocolTests : XCTestCase {
         let allGroupTypes: [GroupType] = [.closedGroup, .openGroup, .rssFeed]
         for groupType in allGroupTypes {
             guard let groupThread = createGroupThread(groupType: groupType) else { return XCTFail() }
-            XCTAssertTrue(FriendRequestProtocol.getFriendRequestUIState(for: groupThread) == .none)
+            XCTAssertTrue(FriendRequestProtocol.getFriendRequestUIStatus(for: groupThread) == .none)
         }
     }
 
@@ -343,8 +343,8 @@ class FriendRequestProtocolTests : XCTestCase {
         let masterThread = createContactThread(for: master)
         let slaveThread = createContactThread(for: slave)
 
-        XCTAssertTrue(FriendRequestProtocol.getFriendRequestUIState(for: masterThread) == .none)
-        XCTAssertTrue(FriendRequestProtocol.getFriendRequestUIState(for: slaveThread) == .none )
+        XCTAssertTrue(FriendRequestProtocol.getFriendRequestUIStatus(for: masterThread) == .none)
+        XCTAssertTrue(FriendRequestProtocol.getFriendRequestUIStatus(for: slaveThread) == .none )
     }
 
     func test_getFriendRequestUIStateShouldReturnTheCorrectStates() {
@@ -364,7 +364,7 @@ class FriendRequestProtocolTests : XCTestCase {
             storage.dbReadWriteConnection.readWrite { transaction in
                 self.storage.setFriendRequestStatus(friendRequestStatus, for: bob, transaction: transaction)
             }
-            XCTAssertEqual(FriendRequestProtocol.getFriendRequestUIState(for: bobThread), uiState, "Expected FriendRequestUIState to be \(uiState)")
+            XCTAssertEqual(FriendRequestProtocol.getFriendRequestUIStatus(for: bobThread), uiState, "Expected FriendRequestUIState to be \(uiState)")
         }
     }
 
@@ -398,8 +398,8 @@ class FriendRequestProtocolTests : XCTestCase {
                 self.storage.setFriendRequestStatus(friendRequestStatus, for: slave, transaction: transaction)
             }
 
-            XCTAssertEqual(FriendRequestProtocol.getFriendRequestUIState(for: masterThread), uiState, "Expected FriendRequestUIState to be \(uiState.rawValue)")
-            XCTAssertEqual(FriendRequestProtocol.getFriendRequestUIState(for: slaveThread), uiState, "Expected FriendRequestUIState to be \(uiState.rawValue)")
+            XCTAssertEqual(FriendRequestProtocol.getFriendRequestUIStatus(for: masterThread), uiState, "Expected FriendRequestUIState to be \(uiState.rawValue)")
+            XCTAssertEqual(FriendRequestProtocol.getFriendRequestUIStatus(for: slaveThread), uiState, "Expected FriendRequestUIState to be \(uiState.rawValue)")
         }
     }
 
@@ -420,7 +420,7 @@ class FriendRequestProtocolTests : XCTestCase {
             self.storage.setFriendRequestStatus(.friends, for: slave, transaction: transaction)
         }
 
-        XCTAssertTrue(FriendRequestProtocol.getFriendRequestUIState(for: masterThread) == .friends)
+        XCTAssertTrue(FriendRequestProtocol.getFriendRequestUIStatus(for: masterThread) == .friends)
     }
 
     func test_getFriendRequestUIStateShouldPreferReceivedOverSent() {
@@ -441,7 +441,7 @@ class FriendRequestProtocolTests : XCTestCase {
             self.storage.setFriendRequestStatus(.requestReceived, for: slave, transaction: transaction)
         }
 
-        XCTAssertTrue(FriendRequestProtocol.getFriendRequestUIState(for: masterThread) == .received)
+        XCTAssertTrue(FriendRequestProtocol.getFriendRequestUIStatus(for: masterThread) == .received)
     }
 
     // MARK: - acceptFriendRequest
