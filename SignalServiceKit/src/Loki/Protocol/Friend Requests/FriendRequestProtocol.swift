@@ -16,7 +16,8 @@ public final class FriendRequestProtocol : NSObject {
     internal static var storage: OWSPrimaryStorage { OWSPrimaryStorage.shared() }
 
     // MARK: - Friend Request UI Status
-    @objc public enum FriendRequestUIStatus : Int {
+    @objc(LKFriendRequestUIStatus)
+    public enum FriendRequestUIStatus : Int {
         case friends, received, sent, none, expired
     }
 

@@ -544,7 +544,9 @@ typedef enum : NSUInteger {
     // Ensure the thread instance is up to date
     [self.thread reload];
     // Update the UI
-    [self.viewItems.lastObject clearCachedLayoutState];
+    for (id<ConversationViewItem> item in self.viewItems) {
+        [item clearCachedLayoutState];
+    }
     [self updateInputToolbar];
     [self resetContentAndLayout];
 }

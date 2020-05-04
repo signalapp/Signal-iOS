@@ -768,6 +768,11 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
     }
 }
 
+- (BOOL)isContactFriend
+{
+    return [LKFriendRequestProtocol getFriendRequestUIStatusForThread:self] == LKFriendRequestUIStatusFriends;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

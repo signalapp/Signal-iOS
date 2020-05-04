@@ -475,26 +475,13 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 - (BOOL)isFriendRequest
 {
-    NSString *contactID = self.thread.contactIdentifier;
-    if (contactID == nil) { return NO; }
-    OWSPrimaryStorage *storage = OWSPrimaryStorage.sharedManager;
-    __block LKFriendRequestStatus friendRequestStatus;
-    [storage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        friendRequestStatus = [storage getFriendRequestStatusForContact:contactID transaction:transaction];
-    }];
-    return friendRequestStatus != LKFriendRequestStatusFriends;
+    return [LKFriendRequestProtocol getFriendRequestUIStatusForThread:self.thread] != LKFriendRequestUIStatusFriends;
 }
 
 - (BOOL)hasFriendRequestStatusMessage
 {
-    NSString *contactID = self.thread.contactIdentifier;
-    if (contactID == nil) { return NO; }
-    OWSPrimaryStorage *storage = OWSPrimaryStorage.sharedManager;
-    __block LKFriendRequestStatus friendRequestStatus;
-    [storage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        friendRequestStatus = [storage getFriendRequestStatusForContact:contactID transaction:transaction];
-    }];
-    return self.isFriendRequest && friendRequestStatus != LKFriendRequestStatusNone;
+    LKFriendRequestUIStatus friendRequestStatus = [LKFriendRequestProtocol getFriendRequestUIStatusForThread:self.thread];
+    return friendRequestStatus != LKFriendRequestUIStatusNone && friendRequestStatus != LKFriendRequestUIStatusFriends;
 }
 
 #pragma mark - Open Groups

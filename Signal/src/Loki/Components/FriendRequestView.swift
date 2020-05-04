@@ -109,36 +109,34 @@ final class FriendRequestView : UIView {
     private func updateUI() {
         let thread = message.thread
         let friendRequestStatus = FriendRequestProtocol.getFriendRequestUIStatus(for: thread)
-        guard friendRequestStatus != .none, let contactID = thread.contactIdentifier() else { return }
+        guard let contactID = thread.contactIdentifier() else { return }
         let displayName = UserDisplayNameUtilities.getPrivateChatDisplayName(for: contactID) ?? contactID
+        let format: String?
         switch kind {
         case .incoming:
             buttonStackView.isHidden = friendRequestStatus != .received
             spacer2.isHidden = buttonStackView.isHidden
-            let format: String
             switch friendRequestStatus {
             case .none: format = NSLocalizedString("You've declined %@'s session request", comment: "")
-            case .friends: format = NSLocalizedString("You've accepted %@'s session request", comment: "")
+            case .friends: format = nil
             case .received: format = NSLocalizedString("%@ sent you a session request", comment: "")
             case .sent: return // Should never occur
             case .expired: format = NSLocalizedString("%@'s session request has expired", comment: "")
             }
-            label.text = String(format: format, displayName)
         case .outgoing:
-            let format: String?
             switch friendRequestStatus {
             case .none: format = nil // The message failed to send
-            case .friends: format = NSLocalizedString("%@ accepted your session request", comment: "")
-            case .received: return // Should never occur
+            case .friends: format = nil
+            case .received: return
             case .sent: format = NSLocalizedString("You've sent %@ a session request", comment: "")
             case .expired: format = NSLocalizedString("Your session request to %@ has expired", comment: "")
             }
-            if let format = format {
-                label.text = String(format: format, displayName)
-            }
-            label.isHidden = (format == nil)
-            spacer1.isHidden = label.isHidden
         }
+        if let format = format {
+            label.text = String(format: format, displayName)
+        }
+        label.isHidden = (format == nil)
+        spacer1.isHidden = label.isHidden
     }
     
     // MARK: Interaction

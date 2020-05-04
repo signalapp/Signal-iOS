@@ -41,13 +41,7 @@ extern ConversationColorName const kConversationColorName_Default;
 // Loki friend request handling
 // ========
 @property (nonatomic) NSInteger friendRequestStatus __deprecated_msg("use OWSPrimaryStorage.getFriendRequestStatusForContact:transaction: instead");
-@property (nonatomic, readonly) NSString *friendRequestStatusDescription;
-/// Shorthand for checking that `friendRequestStatus` is `LKThreadFriendRequestStatusRequestSending`, `LKThreadFriendRequestStatusRequestSent`
-/// or `LKThreadFriendRequestStatusRequestReceived`.
-@property (nonatomic, readonly) BOOL hasPendingFriendRequest;
 @property (nonatomic, readonly) BOOL isContactFriend;
-@property (nonatomic, readonly) BOOL hasCurrentUserSentFriendRequest;
-@property (nonatomic, readonly) BOOL hasCurrentUserReceivedFriendRequest;
 // ========
 @property (nonatomic) BOOL isForceHidden; // FIXME: Having both this and shouldThreadBeVisible is confusing
 
