@@ -40,7 +40,6 @@ extern const NSUInteger kOWSProfileManager_MaxAvatarDiameter;
 - (nullable UIImage *)localProfileAvatarImage;
 - (nullable NSData *)localProfileAvatarData;
 - (nullable NSString *)profilePictureURL;
-- (void)ensureLocalProfileCached;
 
 // This method is used to update the "local profile" state on the client
 // and the service.  Client state is only updated if service state is
