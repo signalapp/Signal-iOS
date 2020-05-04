@@ -59,8 +59,9 @@ public final class SessionMetaProtocol : NSObject {
     }
 
     // MARK: Note to Self
-    @objc(isMessageNoteToSelf:)
-    public static func isMessageNoteToSelf(_ thread: TSThread) -> Bool {
+
+    @objc(isThreadNoteToSelf:)
+    public static func isThreadNoteToSelf(_ thread: TSThread) -> Bool {
         guard let thread = thread as? TSContactThread else { return false }
         var isNoteToSelf = false
         storage.dbReadConnection.read { transaction in
@@ -82,13 +83,23 @@ public final class SessionMetaProtocol : NSObject {
     /// send them if certain conditions are met.
     @objc(shouldSendTypingIndicatorForThread:)
     public static func shouldSendTypingIndicator(for thread: TSThread) -> Bool {
-        return thread.friendRequestStatus == .friends && !thread.isGroupThread()
+        guard !thread.isGroupThread(), let contactID = thread.contactIdentifier() else { return false }
+        var isContactFriend = false
+        storage.dbReadConnection.read { transaction in
+            isContactFriend = (storage.getFriendRequestStatus(for: contactID, transaction: transaction) == .friends)
+        }
+        return isContactFriend
     }
 
     // MARK: Receipts
     @objc(shouldSendReceiptForThread:)
     public static func shouldSendReceipt(for thread: TSThread) -> Bool {
-        return thread.friendRequestStatus == .friends && !thread.isGroupThread()
+        guard !thread.isGroupThread(), let contactID = thread.contactIdentifier() else { return false }
+        var isContactFriend = false
+        storage.dbReadConnection.read { transaction in
+            isContactFriend = (storage.getFriendRequestStatus(for: contactID, transaction: transaction) == .friends)
+        }
+        return isContactFriend
     }
 
     // MARK: - Receiving

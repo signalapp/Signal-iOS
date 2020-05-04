@@ -360,7 +360,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         OWSAssertDebug([message.body lengthOfBytesUsingEncoding:NSUTF8StringEncoding] <= kOversizeTextMessageSizeThreshold);
     }
     
-    if (!message.thread.isGroupThread && ![LKSessionMetaProtocol isMessageNoteToSelf:message.thread]) {
+    if (!message.thread.isGroupThread && ![LKSessionMetaProtocol isThreadNoteToSelf:message.thread]) {
         // Not really true but better from a UI point of view
         [NSNotificationCenter.defaultCenter postNotificationName:NSNotification.calculatingPoW object:[[NSNumber alloc] initWithUnsignedLongLong:message.timestamp]];
     }
@@ -672,7 +672,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     // In the "self-send" special case, we ony need to send a sync message with a delivery receipt
     // Loki: Take into account multi device
-    if ([LKSessionMetaProtocol isMessageNoteToSelf:thread] && !([message isKindOfClass:LKDeviceLinkMessage.class])) {
+    if ([LKSessionMetaProtocol isThreadNoteToSelf:thread] && !([message isKindOfClass:LKDeviceLinkMessage.class])) {
         // Don't mark self-sent messages as read (or sent) until the sync transcript is sent
         successHandler();
         return;
@@ -1179,33 +1179,27 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         BOOL isPing = ((NSNumber *)signalMessageInfo[@"isPing"]).boolValue;
         BOOL isFriendRequest = ((NSNumber *)signalMessageInfo[@"isFriendRequest"]).boolValue;
         LKSignalMessage *signalMessage = [[LKSignalMessage alloc] initWithType:type timestamp:timestamp senderID:senderID senderDeviceID:senderDeviceID content:content recipientID:recipientID ttl:ttl isPing:isPing isFriendRequest:isFriendRequest];
-        if (!message.skipSave) {
-            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            if (!message.skipSave) {
                 // Update the PoW calculation status
                 [message saveIsCalculatingProofOfWork:YES withTransaction:transaction];
-                // Update the message and thread if needed
-                if (signalMessage.isFriendRequest) {
-                    TSContactThread *thread = [TSContactThread getThreadWithContactId:recipientID transaction:transaction]; // Take into account multi device
-                    [thread saveFriendRequestStatus:LKThreadFriendRequestStatusRequestSending withTransaction:transaction];
-                    [message saveFriendRequestStatus:LKMessageFriendRequestStatusSendingOrFailed withTransaction:transaction];
-                }
-            }];
-        }
+            }
+            if (signalMessage.isFriendRequest) {
+                [LKFriendRequestProtocol setFriendRequestStatusToSendingIfNeededForHexEncodedPublicKey:recipientID transaction:transaction];
+            }
+        }];
         // Convenience
         void (^onP2PSuccess)() = ^() { message.isP2P = YES; };
         void (^handleError)(NSError *error) = ^(NSError *error) {
-            if (!message.skipSave) {
-                [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                    // Update the message and thread if needed
-                    if (signalMessage.isFriendRequest) {
-                        TSContactThread *thread = [TSContactThread getThreadWithContactId:recipientID transaction:transaction]; // Take into account multi device
-                        [thread saveFriendRequestStatus:LKThreadFriendRequestStatusNone withTransaction:transaction];
-                        [message saveFriendRequestStatus:LKMessageFriendRequestStatusSendingOrFailed withTransaction:transaction];
-                    }
+            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                if (!message.skipSave) {
                     // Update the PoW calculation status
                     [message saveIsCalculatingProofOfWork:NO withTransaction:transaction];
-                }];
-            }
+                }
+                if (signalMessage.isFriendRequest) {
+                    [LKFriendRequestProtocol setFriendRequestStatusToFailedIfNeededForHexEncodedPublicKey:recipientID transaction:transaction];
+                }
+            }];
             // Handle the error
             failedMessageSend(error);
         };
@@ -1223,22 +1217,19 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     [NSNotificationCenter.defaultCenter postNotificationName:NSNotification.messageSent object:[[NSNumber alloc] initWithUnsignedLongLong:signalMessage.timestamp]];
                     isSuccess = YES;
                     if (signalMessage.isFriendRequest) {
-                        if (!message.skipSave) {
-                            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                                // Update the thread
-                                TSContactThread *thread = [TSContactThread getThreadWithContactId:recipientID transaction:transaction]; // Take into account multi device
-                                [thread saveFriendRequestStatus:LKThreadFriendRequestStatusRequestSent withTransaction:transaction];
+                        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                            if (!message.skipSave) {
                                 [message.thread removeOldOutgoingFriendRequestMessagesIfNeededWithTransaction:transaction];
                                 if ([message.thread isKindOfClass:[TSContactThread class]]) {
                                     [((TSContactThread *) message.thread) removeAllSessionRestoreDevicesWithTransaction:transaction];
                                 }
                                 // Update the message
-                                [message saveFriendRequestStatus:LKMessageFriendRequestStatusPending withTransaction:transaction];
                                 NSTimeInterval expirationInterval = 72 * kHourInterval;
                                 NSDate *expirationDate = [[NSDate new] dateByAddingTimeInterval:expirationInterval];
                                 [message saveFriendRequestExpiresAt:[NSDate ows_millisecondsSince1970ForDate:expirationDate] withTransaction:transaction];
-                            }];
-                        }
+                            }
+                            [LKFriendRequestProtocol setFriendRequestStatusToSentIfNeededForHexEncodedPublicKey:recipientID transaction:transaction];
+                        }];
                     }
                     // Invoke the completion handler
                     [self messageSendDidSucceed:messageSend deviceMessages:deviceMessages wasSentByUD:messageSend.isUDSend wasSentByWebsocket:false];
@@ -1485,7 +1476,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     dispatch_block_t success = ^{
         // Don't mark self-sent messages as read (or sent) until the sync transcript is sent
         // Loki: Take into account multi device
-        BOOL isNoteToSelf = [LKSessionMetaProtocol isMessageNoteToSelf:message.thread];
+        BOOL isNoteToSelf = [LKSessionMetaProtocol isThreadNoteToSelf:message.thread];
         if (isNoteToSelf && !([message isKindOfClass:LKDeviceLinkMessage.class])) {
             [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                 for (NSString *recipientId in message.sendingRecipientIds) {

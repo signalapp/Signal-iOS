@@ -6,6 +6,7 @@
 public final class FriendRequestExpirationJob : NSObject {
     private let databaseConnection: YapDatabaseConnection
     private let messageFinder = ExpiringFriendRequestFinder()
+    private let storage: OWSPrimaryStorage
     
     // These properties should only be accessed on the main thread.
     private var hasStarted = false
@@ -19,6 +20,7 @@ public final class FriendRequestExpirationJob : NSObject {
     /// Create a `FriendRequestExpireJob`.
     /// This will create an auto-running job which will set friend requests to expired.
     @objc public init(withPrimaryStorage primaryStorage: OWSPrimaryStorage) {
+        storage = primaryStorage
         databaseConnection = primaryStorage.newDatabaseConnection()
         super.init()
         
@@ -108,6 +110,7 @@ public final class FriendRequestExpirationJob : NSObject {
             
             strongSelf.databaseConnection.readWrite { transaction in
                 strongSelf.messageFinder.enumurateMessagesPendingExpiration(with: { message in
+                    guard message.thread is TSContactThread else { return }
                     
                     // Sanity check
                     guard message.friendRequestExpiresAt <= now else {
@@ -123,8 +126,7 @@ public final class FriendRequestExpirationJob : NSObject {
                     }
                     
                     // Loki: Expire the friend request message
-                    message.thread.saveFriendRequestStatus(.requestExpired, with: transaction)
-                    message.saveFriendRequestStatus(.expired, with: transaction)
+                    strongSelf.storage.setFriendRequestStatus(.requestExpired, for: message.thread.contactIdentifier()!, transaction: transaction)
                     message.saveFriendRequestExpires(at: 0, with: transaction)
                 }, transaction: transaction)
             }

@@ -222,4 +222,21 @@
     return [self.dbReadConnection doubleForKey:@"restoration_time" inCollection:LKGeneralCollection defaultValue:0];
 }
 
+# pragma mark - Friend Requests
+
+#define LKFriendRequestCollection @"LKFriendRequestCollection"
+
+- (LKFriendRequestStatus)getFriendRequestStatusForContact:(NSString *)hexEncodedPublicKey transaction:(YapDatabaseReadTransaction *)transaction {
+    NSNumber *_Nullable status = [transaction objectForKey:hexEncodedPublicKey inCollection:LKFriendRequestCollection];
+    if (status == nil) { return LKFriendRequestStatusNone; }
+    return [status integerValue];
+}
+
+- (void)setFriendRequestStatus:(LKFriendRequestStatus)friendRequestStatus forContact:(NSString *)hexEncodedPublicKey transaction:(YapDatabaseReadWriteTransaction *)transaction {
+    [transaction setObject:@(friendRequestStatus) forKey:hexEncodedPublicKey inCollection:LKFriendRequestCollection];
+    [transaction addCompletionQueue:dispatch_get_main_queue() completionBlock:^{
+        [NSNotificationCenter.defaultCenter postNotificationName:NSNotification.userFriendRequestStatusChanged object:hexEncodedPublicKey];
+    }];
+}
+
 @end

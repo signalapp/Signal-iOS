@@ -5,6 +5,7 @@ import XCTest
 class SyncMessagesProtocolTests : XCTestCase {
 
     private var storage: OWSPrimaryStorage { OWSPrimaryStorage.shared() }
+    private var messageSender: OWSFakeMessageSender { MockSSKEnvironment.shared.messageSender as! OWSFakeMessageSender }
 
     override func setUp() {
         super.setUp()
@@ -34,16 +35,31 @@ class SyncMessagesProtocolTests : XCTestCase {
         let contactData = Data(base64Encoded: base64EncodedContactData)!
         let parser = ContactParser(data: contactData)
         let hexEncodedPublicKeys = parser.parseHexEncodedPublicKeys()
+        let expectation = self.expectation(description: "Send friend request messages")
+        var messageCount = 0
+        let messageSender = self.messageSender
+        messageSender.sendMessageWasCalledBlock = { sentMessage in
+            messageCount += 1
+            guard sentMessage is FriendRequestMessage else {
+                return XCTFail("Expected a friend request to be sent, but found: \(sentMessage).")
+            }
+            guard messageCount == hexEncodedPublicKeys.count else { return }
+            expectation.fulfill()
+            messageSender.sendMessageWasCalledBlock = nil
+        }
         storage.dbReadWriteConnection.readWrite { transaction in
             SyncMessagesProtocol.handleContactSyncMessageData(contactData, using: transaction)
         }
+        wait(for: [ expectation ], timeout: 1)
+        /* TODO: Re-enable when we've split friend request logic from OWSMessageSender
         hexEncodedPublicKeys.forEach { hexEncodedPublicKey in
-            var thread: TSContactThread!
+            var friendRequestStatus: LKFriendRequestStatus!
             storage.dbReadWriteConnection.readWrite { transaction in
-                thread = TSContactThread.getOrCreateThread(withContactId: hexEncodedPublicKey, transaction: transaction)
+                friendRequestStatus = self.storage.getFriendRequestStatus(for: hexEncodedPublicKey, transaction: transaction)
             }
-            XCTAssert(thread.friendRequestStatus == .requestSent)
+            XCTAssert(friendRequestStatus == .requestSent)
         }
+        */
         // TODO: Test the case where Bob has multiple devices
     }
 }

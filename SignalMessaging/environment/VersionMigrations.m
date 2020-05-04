@@ -10,10 +10,12 @@
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/AppVersion.h>
 #import <SignalServiceKit/NSUserDefaults+OWS.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
+#import <SignalServiceKit/OWSPrimaryStorage+Loki.h>
 #import <SignalServiceKit/OWSRequestFactory.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSNetworkManager.h>
+#import <SignalServiceKit/TSThread.h>
+#import <SignalServiceKit/TSGroupThread.h>
 #import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN

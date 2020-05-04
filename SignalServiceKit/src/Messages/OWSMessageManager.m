@@ -1549,7 +1549,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         // Loki: Do this before the check below
-        [LKFriendRequestProtocol handleFriendRequestMessageIfNeeded:dataMessage associatedWith:incomingMessage wrappedIn:envelope in:thread using:transaction];
+        [LKFriendRequestProtocol handleFriendRequestMessageIfNeededFromEnvelope:envelope using:transaction];
         
         if (body.length == 0 && attachmentPointers.count < 1 && !contact) {
             OWSLogWarn(@"Ignoring empty incoming message from: %@ with timestamp: %lu.",

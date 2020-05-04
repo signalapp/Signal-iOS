@@ -3,6 +3,7 @@
 //
 
 #import "OWSFakeMessageSender.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -21,6 +22,18 @@ NS_ASSUME_NONNULL_BEGIN
     }
     if (self.sendMessageWasCalledBlock) {
         self.sendMessageWasCalledBlock(message);
+    }
+}
+
+- (void)sendMessage:(OWSMessageSend *)messageSend
+{
+    if (self.stubbedFailingError) {
+        messageSend.failure(self.stubbedFailingError);
+    } else {
+        messageSend.success();
+    }
+    if (self.sendMessageWasCalledBlock) {
+        self.sendMessageWasCalledBlock(messageSend.message);
     }
 }
 

@@ -421,8 +421,8 @@ typedef enum : NSUInteger {
                                                  name:UIKeyboardDidChangeFrameNotification
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(handleThreadFriendRequestStatusChangedNotification:)
-                                                 name:NSNotification.threadFriendRequestStatusChanged
+                                             selector:@selector(handleUserFriendRequestStatusChangedNotification:)
+                                                 name:NSNotification.userFriendRequestStatusChanged
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(handleThreadSessionRestoreDevicesChangedNotifiaction:)
@@ -529,14 +529,21 @@ typedef enum : NSUInteger {
     [self resetContentAndLayout];
 }
 
-- (void)handleThreadFriendRequestStatusChangedNotification:(NSNotification *)notification
+- (void)handleUserFriendRequestStatusChangedNotification:(NSNotification *)notification
 {
-    // Check thread
-    NSString *threadID = (NSString *)notification.object;
-    if (![threadID isEqualToString:self.thread.uniqueId]) { return; }
-    // Ensure thread instance is up to date
+    // Friend request status doesn't apply to group threads
+    if (self.thread.isGroupThread) { return; }
+    NSString *hexEncodedPublicKey = (NSString *)notification.object;
+    // Check if we should update the UI
+    __block BOOL needsUpdate;
+    [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        NSSet<NSString *> *linkedDevices = [LKDatabaseUtilities getLinkedDeviceHexEncodedPublicKeysFor:self.thread.contactIdentifier in:transaction];
+        needsUpdate = [linkedDevices containsObject:hexEncodedPublicKey];
+    }];
+    if (!needsUpdate) { return; }
+    // Ensure the thread instance is up to date
     [self.thread reload];
-    // Update UI
+    // Update the UI
     [self.viewItems.lastObject clearCachedLayoutState];
     [self updateInputToolbar];
     [self resetContentAndLayout];
@@ -4471,15 +4478,17 @@ typedef enum : NSUInteger {
 
 - (void)acceptFriendRequest:(TSIncomingMessage *)friendRequest
 {
+    if (self.thread.isGroupThread || self.thread.contactIdentifier == nil) { return; }
     [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [LKFriendRequestProtocol acceptFriendRequestFrom:friendRequest.authorId in:self.thread using:transaction];
+        [LKFriendRequestProtocol acceptFriendRequestFromHexEncodedPublicKey:self.thread.contactIdentifier using:transaction];
     }];
 }
 
 - (void)declineFriendRequest:(TSIncomingMessage *)friendRequest
 {
+    if (self.thread.isGroupThread || self.thread.contactIdentifier == nil) { return; }
     [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [LKFriendRequestProtocol declineFriendRequest:friendRequest in:self.thread using:transaction];
+        [LKFriendRequestProtocol declineFriendRequestFromHexEncodedPublicKey:self.thread.contactIdentifier using:transaction];
     }];
 }
 

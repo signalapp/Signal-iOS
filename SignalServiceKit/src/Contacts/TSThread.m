@@ -92,13 +92,6 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
         } else {
             _conversationColorName = [self.class stableColorNameForNewConversationWithString:self.uniqueId];
         }
-        
-        // Loki: Friend request logic doesn't apply to group chats
-        if (self.isGroupThread) {
-            _friendRequestStatus = LKThreadFriendRequestStatusFriends;
-        } else {
-            _friendRequestStatus = LKThreadFriendRequestStatusNone;
-        }
     }
 
     return self;
@@ -216,7 +209,7 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
     if (!IsNoteToSelfEnabled()) {
         return NO;
     }
-    return [LKSessionMetaProtocol isMessageNoteToSelf:self];
+    return [LKSessionMetaProtocol isThreadNoteToSelf:self];
 }
 
 #pragma mark - To be subclassed.
@@ -730,7 +723,8 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
 - (void)removeOldFriendRequestMessagesIfNeeded:(OWSInteractionType)interactionType withTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     // If we're friends with the person then we don't need to remove any friend request messages
-    if (self.friendRequestStatus == LKThreadFriendRequestStatusFriends) { return; }
+    if (self.isGroupThread) { return; }
+    if ([LKFriendRequestProtocol isFriendsWithAnyLinkedDeviceOfHexEncodedPublicKey:self.contactIdentifier]) { return; }
     
     NSMutableArray<NSString *> *idsToRemove = [NSMutableArray new];
     __block TSMessage *_Nullable messageToKeep = nil; // We want to keep this interaction and not remove it
@@ -772,55 +766,6 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
         }
         [interaction removeWithTransaction:transaction];
     }
-}
-
-- (void)saveFriendRequestStatus:(LKThreadFriendRequestStatus)friendRequestStatus withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction
-{
-    self.friendRequestStatus = friendRequestStatus;
-    [LKLogger print:[NSString stringWithFormat:@"[Loki] Setting thread friend request status to %@.", self.friendRequestStatusDescription]];
-    void (^postNotification)() = ^() {
-        [NSNotificationCenter.defaultCenter postNotificationName:NSNotification.threadFriendRequestStatusChanged object:self.uniqueId];
-    };
-    if (transaction == nil) {
-        [self save];
-        [self.dbReadWriteConnection flushTransactionsWithCompletionQueue:dispatch_get_main_queue() completionBlock:^{ postNotification(); }];
-    } else {
-        [self saveWithTransaction:transaction];
-        [transaction.connection flushTransactionsWithCompletionQueue:dispatch_get_main_queue() completionBlock:^{ postNotification(); }];
-    }
-}
-
-- (NSString *)friendRequestStatusDescription
-{
-    switch (self.friendRequestStatus) {
-        case LKThreadFriendRequestStatusNone: return @"none";
-        case LKThreadFriendRequestStatusRequestSending: return @"sending";
-        case LKThreadFriendRequestStatusRequestSent: return @"sent";
-        case LKThreadFriendRequestStatusRequestReceived: return @"received";
-        case LKThreadFriendRequestStatusFriends: return @"friends";
-        case LKThreadFriendRequestStatusRequestExpired: return @"expired";
-    }
-}
-
-- (BOOL)hasPendingFriendRequest
-{
-    return self.friendRequestStatus == LKThreadFriendRequestStatusRequestSending || self.friendRequestStatus == LKThreadFriendRequestStatusRequestSent
-        || self.friendRequestStatus == LKThreadFriendRequestStatusRequestReceived;
-}
-
-- (BOOL)isContactFriend
-{
-    return self.friendRequestStatus == LKThreadFriendRequestStatusFriends;
-}
-
-- (BOOL)hasCurrentUserSentFriendRequest
-{
-    return self.friendRequestStatus == LKThreadFriendRequestStatusRequestSent;
-}
-
-- (BOOL)hasCurrentUserReceivedFriendRequest
-{
-    return self.friendRequestStatus == LKThreadFriendRequestStatusRequestReceived;
 }
 
 @end

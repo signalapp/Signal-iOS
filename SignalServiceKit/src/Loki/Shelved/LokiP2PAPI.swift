@@ -210,16 +210,16 @@ public class LokiP2PAPI : NSObject {
     }
     
     private static func getAllFriendThreads() -> [TSContactThread] {
-        var friendThreadIds = [String]()
-        TSContactThread.enumerateCollectionObjects { (object, _) in
-            guard let thread = object as? TSContactThread, let uniqueId = thread.uniqueId else { return }
-            
-            if thread.friendRequestStatus == .friends && thread.contactIdentifier() != ourHexEncodedPubKey {
-                friendThreadIds.append(thread.uniqueId!)
+        var friendThreadIDs: [String] = []
+        storage.dbReadConnection.read { transaction in
+            TSContactThread.enumerateCollectionObjects(with: transaction) { object, _ in
+                guard let thread = object as? TSContactThread, let uniqueID = thread.uniqueId, thread.contactIdentifier() != ourHexEncodedPubKey else { return }
+                let status = storage.getFriendRequestStatus(for: thread.contactIdentifier(), transaction: transaction)
+                guard status == .friends else { return }
+                friendThreadIDs.append(uniqueID)
             }
         }
-        
-        return friendThreadIds.compactMap { TSContactThread.fetch(uniqueId: $0) }
+        return friendThreadIDs.compactMap { TSContactThread.fetch(uniqueId: $0) }
     }
     
     private static func createLokiAddressMessage(for thread: TSThread, isPing: Bool) -> LokiAddressMessage? {

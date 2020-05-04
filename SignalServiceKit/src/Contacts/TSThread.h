@@ -29,21 +29,6 @@ extern ConversationColorName const ConversationColorNameSteel;
 
 extern ConversationColorName const kConversationColorName_Default;
 
-typedef NS_ENUM(NSInteger, LKThreadFriendRequestStatus) {
-    /// New conversation; no messages sent or received.
-    LKThreadFriendRequestStatusNone,
-    /// This state is used to lock the input early while sending.
-    LKThreadFriendRequestStatusRequestSending,
-    /// Friend request sent; awaiting response.
-    LKThreadFriendRequestStatusRequestSent,
-    /// Friend request received; awaiting user input.
-    LKThreadFriendRequestStatusRequestReceived,
-    /// We are friends with the other user in this thread.
-    LKThreadFriendRequestStatusFriends,
-    /// A friend request was sent, but it timed out (i.e. the other user didn't accept within the allocated time).
-    LKThreadFriendRequestStatusRequestExpired
-};
-
 /**
  *  TSThread is the superclass of TSContactThread and TSGroupThread
  */
@@ -55,7 +40,7 @@ typedef NS_ENUM(NSInteger, LKThreadFriendRequestStatus) {
 @property (nonatomic, readonly) TSInteraction *lastInteraction;
 // Loki friend request handling
 // ========
-@property (nonatomic) LKThreadFriendRequestStatus friendRequestStatus;
+@property (nonatomic) NSInteger friendRequestStatus __deprecated_msg("use OWSPrimaryStorage.getFriendRequestStatusForContact:transaction: instead");
 @property (nonatomic, readonly) NSString *friendRequestStatusDescription;
 /// Shorthand for checking that `friendRequestStatus` is `LKThreadFriendRequestStatusRequestSending`, `LKThreadFriendRequestStatusRequestSent`
 /// or `LKThreadFriendRequestStatusRequestReceived`.
@@ -203,8 +188,6 @@ typedef NS_ENUM(NSInteger, LKThreadFriendRequestStatus) {
 - (void)updateWithMutedUntilDate:(NSDate *)mutedUntilDate transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 #pragma mark - Loki Friend Request Handling
-
-- (void)saveFriendRequestStatus:(LKThreadFriendRequestStatus)friendRequestStatus withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction;
 
 /**
  Remove any outgoing friend request message which failed to send
