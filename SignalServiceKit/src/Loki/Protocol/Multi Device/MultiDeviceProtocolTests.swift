@@ -4,6 +4,5 @@ import XCTest
 
 class MultiDeviceProtocolTests : XCTestCase {
 
-    // TODO: Add tests
 
 }

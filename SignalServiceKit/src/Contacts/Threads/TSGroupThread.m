@@ -316,7 +316,7 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
 
 - (BOOL)isContactFriend
 {
-    return true;
+    return false;
 }
 
 @end
