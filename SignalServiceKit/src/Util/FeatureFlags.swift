@@ -306,4 +306,7 @@ public class DebugFlags: NSObject {
 
     @objc
     public static let showProfileKeyIndicator = build.includes(.qa)
+
+    @objc
+    public static let verboseNotificationLogging = build.includes(.qa)
 }
