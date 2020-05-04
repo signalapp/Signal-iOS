@@ -7,15 +7,16 @@ import Curve25519Kit
 class FriendRequestProtocolTests : XCTestCase {
 
     private var storage: OWSPrimaryStorage { OWSPrimaryStorage.shared() }
-    private var messageSender: OWSFakeMessageSender { return MockSSKEnvironment.shared.messageSender as! OWSFakeMessageSender }
+    private var messageSender: OWSFakeMessageSender { MockSSKEnvironment.shared.messageSender as! OWSFakeMessageSender }
 
+    // MARK: - Setup
     override func setUp() {
         super.setUp()
-        // Activate the mock environment
+
         ClearCurrentAppContextForTests()
         SetCurrentAppContext(TestAppContext())
         MockSSKEnvironment.activate()
-        // Register a mock user
+
         let identityManager = OWSIdentityManager.shared()
         let seed = Randomness.generateRandomBytes(16)!
         let keyPair = Curve25519.generateKeyPair(fromSeed: seed + seed)
@@ -26,14 +27,13 @@ class FriendRequestProtocolTests : XCTestCase {
     }
 
     // MARK: - Helpers
-
-    func isFriendRequestStatus(_ values: [LKFriendRequestStatus], for hexEncodedPublicKey: String, transaction: YapDatabaseReadWriteTransaction) -> Bool {
+    func isFriendRequestStatus(oneOf values: [LKFriendRequestStatus], for hexEncodedPublicKey: String, transaction: YapDatabaseReadWriteTransaction) -> Bool {
         let status = storage.getFriendRequestStatus(for: hexEncodedPublicKey, transaction: transaction)
         return values.contains(status)
     }
 
     func isFriendRequestStatus(_ value: LKFriendRequestStatus, for hexEncodedPublicKey: String, transaction: YapDatabaseReadWriteTransaction) -> Bool {
-        return isFriendRequestStatus([value], for: hexEncodedPublicKey, transaction: transaction)
+        return isFriendRequestStatus(oneOf: [ value ], for: hexEncodedPublicKey, transaction: transaction)
     }
 
     func generateHexEncodedPublicKey() -> String {
@@ -54,28 +54,22 @@ class FriendRequestProtocolTests : XCTestCase {
     }
 
     func createGroupThread(groupType: GroupType) -> TSGroupThread? {
-        let stringId = Randomness.generateRandomBytes(kGroupIdLength)!.toHexString()
-        let groupId: Data!
+        let hexEncodedGroupID = Randomness.generateRandomBytes(kGroupIdLength)!.toHexString()
+
+        let groupID: Data
         switch groupType {
-        case .closedGroup:
-            groupId = LKGroupUtilities.getEncodedClosedGroupIDAsData(stringId)
-            break
-        case .openGroup:
-            groupId = LKGroupUtilities.getEncodedOpenGroupIDAsData(stringId)
-            break
-        case .rssFeed:
-            groupId = LKGroupUtilities.getEncodedRSSFeedIDAsData(stringId)
-        default:
-            return nil
+        case .closedGroup: groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(hexEncodedGroupID)
+        case .openGroup: groupID = LKGroupUtilities.getEncodedOpenGroupIDAsData(hexEncodedGroupID)
+        case .rssFeed: groupID = LKGroupUtilities.getEncodedRSSFeedIDAsData(hexEncodedGroupID)
+        default: return nil
         }
 
-        return TSGroupThread.getOrCreateThread(withGroupId: groupId, groupType: groupType)
+        return TSGroupThread.getOrCreateThread(withGroupId: groupID, groupType: groupType)
     }
 
     // MARK: - shouldInputBarBeEnabled
-
     func test_shouldInputBarBeEnabledReturnsTrueOnGroupThread() {
-        let allGroupTypes: [GroupType] = [.closedGroup, .openGroup, .rssFeed]
+        let allGroupTypes: [GroupType] = [ .closedGroup, .openGroup, .rssFeed ]
         for groupType in allGroupTypes {
             guard let groupThread = createGroupThread(groupType: groupType) else { return XCTFail() }
             XCTAssertTrue(FriendRequestProtocol.shouldInputBarBeEnabled(for: groupThread))
@@ -104,27 +98,29 @@ class FriendRequestProtocolTests : XCTestCase {
     }
 
     func test_shouldInputBarBeEnabledReturnsTrueWhenStatusIsNotPending() {
-        let validStatuses: [LKFriendRequestStatus] = [.none, .requestExpired, .friends]
+        let statuses: [LKFriendRequestStatus] = [ .none, .requestExpired, .friends ]
         let device = generateHexEncodedPublicKey()
         let thread = createContactThread(for: device)
 
-        for status in validStatuses {
+        for status in statuses {
             storage.dbReadWriteConnection.readWrite { transaction in
                 self.storage.setFriendRequestStatus(status, for: device, transaction: transaction)
             }
+
             XCTAssertTrue(FriendRequestProtocol.shouldInputBarBeEnabled(for: thread))
         }
     }
 
     func test_shouldInputBarBeEnabledReturnsFalseWhenStatusIsPending() {
-        let pendingStatuses: [LKFriendRequestStatus] = [.requestSending, .requestSent, .requestReceived]
+        let statuses: [LKFriendRequestStatus] = [ .requestSending, .requestSent, .requestReceived ]
         let device = generateHexEncodedPublicKey()
         let thread = createContactThread(for: device)
 
-        for status in pendingStatuses {
+        for status in statuses {
             storage.dbReadWriteConnection.readWrite { transaction in
                 self.storage.setFriendRequestStatus(status, for: device, transaction: transaction)
             }
+
             XCTAssertFalse(FriendRequestProtocol.shouldInputBarBeEnabled(for: thread))
         }
     }
@@ -166,11 +162,12 @@ class FriendRequestProtocolTests : XCTestCase {
         let masterThread = createContactThread(for: master)
         let slaveThread = createContactThread(for: slave)
 
-        let pendingStatuses: [LKFriendRequestStatus] = [.requestSending, .requestSent, .requestReceived]
-        for status in pendingStatuses {
+        let statuses: [LKFriendRequestStatus] = [ .requestSending, .requestSent, .requestReceived ]
+        for status in statuses {
             storage.dbReadWriteConnection.readWrite { transaction in
                 self.storage.setFriendRequestStatus(status, for: slave, transaction: transaction)
             }
+
             XCTAssertFalse(FriendRequestProtocol.shouldInputBarBeEnabled(for: masterThread))
             XCTAssertFalse(FriendRequestProtocol.shouldInputBarBeEnabled(for: slaveThread))
         }
@@ -193,11 +190,12 @@ class FriendRequestProtocolTests : XCTestCase {
         let masterThread = createContactThread(for: master)
         let slaveThread = createContactThread(for: slave)
 
-        let safeStatuses: [LKFriendRequestStatus] = [.requestExpired, .none]
-        for status in safeStatuses {
+        let statuses: [LKFriendRequestStatus] = [ .requestExpired, .none ]
+        for status in statuses {
             storage.dbReadWriteConnection.readWrite { transaction in
                 self.storage.setFriendRequestStatus(status, for: slave, transaction: transaction)
             }
+
             XCTAssertTrue(FriendRequestProtocol.shouldInputBarBeEnabled(for: masterThread))
             XCTAssertTrue(FriendRequestProtocol.shouldInputBarBeEnabled(for: slaveThread))
         }
@@ -223,9 +221,8 @@ class FriendRequestProtocolTests : XCTestCase {
     }
 
     // MARK: - shouldAttachmentButtonBeEnabled
-
     func test_shouldAttachmentButtonBeEnabledReturnsTrueOnGroupThread() {
-        let allGroupTypes: [GroupType] = [.closedGroup, .openGroup, .rssFeed]
+        let allGroupTypes: [GroupType] = [ .closedGroup, .openGroup, .rssFeed ]
         for groupType in allGroupTypes {
             guard let groupThread = createGroupThread(groupType: groupType) else { return XCTFail() }
             XCTAssertTrue(FriendRequestProtocol.shouldAttachmentButtonBeEnabled(for: groupThread))
@@ -260,18 +257,20 @@ class FriendRequestProtocolTests : XCTestCase {
         storage.dbReadWriteConnection.readWrite { transaction in
             self.storage.setFriendRequestStatus(.friends, for: device, transaction: transaction)
         }
+
         XCTAssertTrue(FriendRequestProtocol.shouldAttachmentButtonBeEnabled(for: thread))
     }
 
     func test_shouldAttachmentButtonBeEnabledReturnsFalseWhenNotFriends() {
-        let nonFriendStatuses: [LKFriendRequestStatus] = [.requestSending, .requestSent, .requestReceived, .none, .requestExpired]
+        let statuses: [LKFriendRequestStatus] = [ .requestSending, .requestSent, .requestReceived, .none, .requestExpired ]
         let device = generateHexEncodedPublicKey()
         let thread = createContactThread(for: device)
 
-        for status in nonFriendStatuses {
+        for status in statuses {
             storage.dbReadWriteConnection.readWrite { transaction in
                 self.storage.setFriendRequestStatus(status, for: device, transaction: transaction)
             }
+
             XCTAssertFalse(FriendRequestProtocol.shouldAttachmentButtonBeEnabled(for: thread))
         }
     }
@@ -317,9 +316,8 @@ class FriendRequestProtocolTests : XCTestCase {
     }
 
     // MARK: - getFriendRequestUIState
-
     func test_getFriendRequestUIStateShouldReturnNoneForGroupThreads() {
-        let allGroupTypes: [GroupType] = [.closedGroup, .openGroup, .rssFeed]
+        let allGroupTypes: [GroupType] = [ .closedGroup, .openGroup, .rssFeed ]
         for groupType in allGroupTypes {
             guard let groupThread = createGroupThread(groupType: groupType) else { return XCTFail() }
             XCTAssertTrue(FriendRequestProtocol.getFriendRequestUIStatus(for: groupThread) == .none)
@@ -351,20 +349,21 @@ class FriendRequestProtocolTests : XCTestCase {
         let bob = generateHexEncodedPublicKey()
         let bobThread = createContactThread(for: bob)
 
-        let expectedStates: [LKFriendRequestStatus : FriendRequestProtocol.FriendRequestUIStatus] = [
+        let expectedStatuses: [LKFriendRequestStatus:FriendRequestProtocol.FriendRequestUIStatus] = [
             .none: .none,
-            .requestExpired: .none,
-            .requestSending: .none,
+            .requestExpired: .expired,
+            .requestSending: .sent,
             .requestSent: .sent,
             .requestReceived: .received,
             .friends: .friends,
         ]
 
-        for (friendRequestStatus, uiState) in expectedStates {
+        for (friendRequestStatus, uiState) in expectedStatuses {
             storage.dbReadWriteConnection.readWrite { transaction in
                 self.storage.setFriendRequestStatus(friendRequestStatus, for: bob, transaction: transaction)
             }
-            XCTAssertEqual(FriendRequestProtocol.getFriendRequestUIStatus(for: bobThread), uiState, "Expected FriendRequestUIState to be \(uiState)")
+
+            XCTAssertEqual(FriendRequestProtocol.getFriendRequestUIStatus(for: bobThread), uiState, "Expected FriendRequestUIStatus to be \(uiState).")
         }
     }
 
@@ -384,27 +383,27 @@ class FriendRequestProtocolTests : XCTestCase {
         let masterThread = createContactThread(for: master)
         let slaveThread = createContactThread(for: slave)
 
-        let expectedStates: [LKFriendRequestStatus : FriendRequestProtocol.FriendRequestUIStatus] = [
+        let expectedStatuses: [LKFriendRequestStatus:FriendRequestProtocol.FriendRequestUIStatus] = [
             .none: .none,
-            .requestExpired: .none,
-            .requestSending: .none,
+            .requestExpired: .expired,
+            .requestSending: .sent,
             .requestSent: .sent,
             .requestReceived: .received,
             .friends: .friends,
         ]
 
-        for (friendRequestStatus, uiState) in expectedStates {
+        for (friendRequestStatus, uiState) in expectedStatuses {
             storage.dbReadWriteConnection.readWrite { transaction in
                 self.storage.setFriendRequestStatus(friendRequestStatus, for: slave, transaction: transaction)
             }
 
-            XCTAssertEqual(FriendRequestProtocol.getFriendRequestUIStatus(for: masterThread), uiState, "Expected FriendRequestUIState to be \(uiState.rawValue)")
-            XCTAssertEqual(FriendRequestProtocol.getFriendRequestUIStatus(for: slaveThread), uiState, "Expected FriendRequestUIState to be \(uiState.rawValue)")
+            XCTAssertEqual(FriendRequestProtocol.getFriendRequestUIStatus(for: masterThread), uiState, "Expected FriendRequestUIStatus to be \(uiState.rawValue).")
+            XCTAssertEqual(FriendRequestProtocol.getFriendRequestUIStatus(for: slaveThread), uiState, "Expected FriendRequestUIStatus to be \(uiState.rawValue).")
         }
     }
 
     func test_getFriendRequestUIStateShouldPreferFriendsOverRequestReceived() {
-        // Case: We don't want to confuse the user by showing a friend request box when they're already friends
+        // Case: We don't want to confuse the user by showing a friend request box when they're already friends.
         let master = generateHexEncodedPublicKey()
         let slave = generateHexEncodedPublicKey()
 
@@ -425,7 +424,7 @@ class FriendRequestProtocolTests : XCTestCase {
 
     func test_getFriendRequestUIStateShouldPreferReceivedOverSent() {
         // Case: We sent Bob a friend request and he sent one back to us through another device.
-        // If something went wrong then we should be able to fallback to manually accepting the friend request even if we sent one.
+        // If something went wrong then we should be able to fall back to manually accepting the friend request even if we sent one.
         let master = generateHexEncodedPublicKey()
         let slave = generateHexEncodedPublicKey()
 
@@ -445,9 +444,8 @@ class FriendRequestProtocolTests : XCTestCase {
     }
 
     // MARK: - acceptFriendRequest
-
     func test_acceptFriendRequestShouldSetStatusToFriendsIfWeReceivedAFriendRequest() {
-        // Case: Bob sent us a friend request, we should become friends with him on accepting
+        // Case: Bob sent us a friend request, we should become friends with him on accepting.
         let bob = generateHexEncodedPublicKey()
         storage.dbReadWriteConnection.readWrite { transaction in
             self.storage.setFriendRequestStatus(.requestReceived, for: bob, transaction: transaction)
@@ -462,9 +460,9 @@ class FriendRequestProtocolTests : XCTestCase {
     // TODO: Add test to see if an accept message is sent out
 
     func test_acceptFriendRequestShouldSendAFriendRequestMessageIfStatusIsNoneOrExpired() {
-        // Case: Somehow our friend request status doesn't match the UI
-        // Since user accepted then we should send a friend request message
-        let statuses: [LKFriendRequestStatus] = [.none, .requestExpired]
+        // Case: Somehow our friend request status doesn't match the UI.
+        // Since user accepted then we should send a friend request message.
+        let statuses: [LKFriendRequestStatus] = [ .none, .requestExpired ]
         for status in statuses {
             let bob = generateHexEncodedPublicKey()
             storage.dbReadWriteConnection.readWrite { transaction in
@@ -473,23 +471,20 @@ class FriendRequestProtocolTests : XCTestCase {
 
             let expectation = self.expectation(description: "sent message")
 
-            messageSender.sendMessageWasCalledBlock = { [weak messageSender] sentMessage in
+            let messageSender = self.messageSender
+            messageSender.sendMessageWasCalledBlock = { sentMessage in
                 guard sentMessage is FriendRequestMessage else {
-                    XCTFail("unexpected sentMessage: \(sentMessage)")
-                    return
+                    return XCTFail("Expected a friend request to be sent, but found: \(sentMessage).")
                 }
                 expectation.fulfill()
-                guard let strongMessageSender = messageSender else {
-                    return
-                }
-                strongMessageSender.sendMessageWasCalledBlock = nil
+                messageSender.sendMessageWasCalledBlock = nil
             }
 
             storage.dbReadWriteConnection.readWrite { transaction in
                 FriendRequestProtocol.acceptFriendRequest(from: bob, using: transaction)
             }
 
-            self.wait(for: [expectation], timeout: 1.0)
+            wait(for: [ expectation ], timeout: 1)
         }
     }
 
@@ -499,7 +494,6 @@ class FriendRequestProtocolTests : XCTestCase {
         let bob = generateHexEncodedPublicKey()
         storage.dbReadWriteConnection.readWrite { transaction in
             self.storage.setFriendRequestStatus(.requestSent, for: bob, transaction: transaction)
-
         }
 
         storage.dbReadWriteConnection.readWrite { transaction in
@@ -535,7 +529,7 @@ class FriendRequestProtocolTests : XCTestCase {
         eventually {
             self.storage.dbReadWriteConnection.readWrite { transaction in
                 // TODO: Re-enable this case when we split friend request logic from OWSMessageSender
-                // XCTAssertTrue(self.isFriendRequestStatus([.requestSending, .requestSent], for: master, transaction: transaction))
+                // XCTAssertTrue(self.isFriendRequestStatus([ .requestSending, .requestSent ], for: master, transaction: transaction))
                 XCTAssertTrue(self.isFriendRequestStatus(.friends, for: slave, transaction: transaction))
                 XCTAssertTrue(self.isFriendRequestStatus(.requestSent, for: otherSlave, transaction: transaction))
             }
@@ -559,9 +553,9 @@ class FriendRequestProtocolTests : XCTestCase {
     }
 
     // MARK: - declineFriendRequest
-
     func test_declineFriendRequestShouldChangeStatusFromReceivedToNone() {
         let bob = generateHexEncodedPublicKey()
+
         storage.dbReadWriteConnection.readWrite { transaction in
             self.storage.setFriendRequestStatus(.requestReceived, for: bob, transaction: transaction)
         }
@@ -573,9 +567,10 @@ class FriendRequestProtocolTests : XCTestCase {
     }
 
     func test_declineFriendRequestShouldNotChangeStatusToNoneFromOtherStatuses() {
-        let otherStatuses: [LKFriendRequestStatus] = [.none, .requestSending, .requestSent, .requestExpired, .friends]
+        let statuses: [LKFriendRequestStatus] = [ .none, .requestSending, .requestSent, .requestExpired, .friends ]
         let bob = generateHexEncodedPublicKey()
-        for status in otherStatuses {
+
+        for status in statuses {
             storage.dbReadWriteConnection.readWrite { transaction in
                 self.storage.setFriendRequestStatus(status, for: bob, transaction: transaction)
             }
@@ -588,11 +583,11 @@ class FriendRequestProtocolTests : XCTestCase {
     }
 
     func test_declineFriendRequestShouldDeletePreKeyBundleIfNeeded() {
-        let shouldExpectDeletedPreKeyBundle = { (status: LKFriendRequestStatus) -> Bool in
+        let shouldExpectDeletedPreKeyBundle: (LKFriendRequestStatus) -> Bool = { status in
             return status == .requestReceived
         }
 
-        let statuses: [LKFriendRequestStatus] = [.none, .requestSending, .requestSent, .requestReceived, .requestExpired, .friends]
+        let statuses: [LKFriendRequestStatus] = [ .none, .requestSending, .requestSent, .requestReceived, .requestExpired, .friends ]
         for status in statuses {
             let bob = generateHexEncodedPublicKey()
             let bundle = storage.generatePreKeyBundle(forContact: bob)
@@ -607,9 +602,9 @@ class FriendRequestProtocolTests : XCTestCase {
 
             let storedBundle = storage.getPreKeyBundle(forContact: bob)
             if (shouldExpectDeletedPreKeyBundle(status)) {
-                XCTAssertNil(storedBundle, "Was expecting PreKeyBundle to be deleted for friend request status \(status.rawValue)")
+                XCTAssertNil(storedBundle, "Expected PreKeyBundle to be deleted for friend request status \(status.rawValue).")
             } else {
-                XCTAssertNotNil(storedBundle, "Was expecting PreKeyBundle to not be deleted for friend request status \(status.rawValue)")
+                XCTAssertNotNil(storedBundle, "Expected PreKeyBundle to not be deleted for friend request status \(status.rawValue).")
             }
         }
     }
