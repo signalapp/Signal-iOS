@@ -125,15 +125,19 @@ final class FriendRequestView : UIView {
             }
             label.text = String(format: format, displayName)
         case .outgoing:
-            let format: String
+            let format: String?
             switch friendRequestStatus {
-            case .none: return // Should never occur
+            case .none: format = nil // The message failed to send
             case .friends: format = NSLocalizedString("%@ accepted your session request", comment: "")
             case .received: return // Should never occur
             case .sent: format = NSLocalizedString("You've sent %@ a session request", comment: "")
             case .expired: format = NSLocalizedString("Your session request to %@ has expired", comment: "")
             }
-            label.text = String(format: format, displayName)
+            if let format = format {
+                label.text = String(format: format, displayName)
+            }
+            label.isHidden = (format == nil)
+            spacer1.isHidden = label.isHidden
         }
     }
     

@@ -16,6 +16,7 @@
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
+#import "OWSPrimaryStorage+Loki.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -449,7 +450,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 - (void)saveFriendRequestStatus:(LKMessageFriendRequestStatus)friendRequestStatus withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction
 {
     self.friendRequestStatus = friendRequestStatus;
-    [LKLogger print:[NSString stringWithFormat:@"[Loki] Setting message friend request status to %@.", self.friendRequestStatusDescription]];
     void (^postNotification)() = ^() {
         [NSNotificationCenter.defaultCenter postNotificationName:NSNotification.messageFriendRequestStatusChanged object:self.uniqueId];
     };
@@ -459,18 +459,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     } else {
         [self saveWithTransaction:transaction];
         [transaction.connection flushTransactionsWithCompletionQueue:dispatch_get_main_queue() completionBlock:^{ postNotification(); }];
-    }
-}
-
-- (NSString *)friendRequestStatusDescription
-{
-    switch (self.friendRequestStatus) {
-        case LKMessageFriendRequestStatusNone: return @"none";
-        case LKMessageFriendRequestStatusSendingOrFailed: return @"sending or failed";
-        case LKMessageFriendRequestStatusPending: return @"pending";
-        case LKMessageFriendRequestStatusAccepted: return @"accepted";
-        case LKMessageFriendRequestStatusDeclined: return @"declined";
-        case LKMessageFriendRequestStatusExpired: return @"expired";
     }
 }
 
@@ -486,12 +474,19 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 - (BOOL)isFriendRequest
 {
-    return self.friendRequestStatus != LKMessageFriendRequestStatusNone;
+    return self.friendRequestExpiresAt != 0;
 }
 
 - (BOOL)hasFriendRequestStatusMessage
 {
-    return self.isFriendRequest && self.friendRequestStatus != LKMessageFriendRequestStatusSendingOrFailed;
+    NSString *contactID = self.thread.contactIdentifier;
+    if (contactID == nil) { return NO; }
+    OWSPrimaryStorage *storage = OWSPrimaryStorage.sharedManager;
+    __block LKFriendRequestStatus friendRequestStatus;
+    [storage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        friendRequestStatus = [storage getFriendRequestStatusForContact:contactID transaction:transaction];
+    }];
+    return self.isFriendRequest && friendRequestStatus != LKFriendRequestStatusNone;
 }
 
 #pragma mark - Open Groups
