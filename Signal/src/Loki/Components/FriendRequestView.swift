@@ -9,7 +9,7 @@ final class FriendRequestView : UIView {
         return isIncoming ? .incoming : .outgoing
     }
 
-    // MARK: Types
+    // MARK: Kind
     enum Kind : String { case incoming, outgoing }
     
     // MARK: Components
@@ -90,7 +90,7 @@ final class FriendRequestView : UIView {
         mainStackView.pin(to: self)
         updateUI()
         // Observe friend request status changes
-        NotificationCenter.default.addObserver(self, selector: #selector(handleFriendRequestStatusChangedNotification), name: .messageFriendRequestStatusChanged, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(handleFriendRequestStatusChangedNotification), name: .userFriendRequestStatusChanged, object: nil)
     }
     
     deinit {
@@ -100,50 +100,39 @@ final class FriendRequestView : UIView {
     // MARK: Updating
     @objc private func handleFriendRequestStatusChangedNotification(_ notification: Notification) {
         let messageID = notification.object as! String
-        guard messageID == message.uniqueId && TSMessage.fetch(uniqueId: messageID) != nil else { return } // It's possible for the message to be deleted at this point
+        // It's possible for the message to be deleted at this point
+        guard messageID == message.uniqueId && TSMessage.fetch(uniqueId: messageID) != nil else { return }
         message.reload()
         updateUI()
     }
     
     private func updateUI() {
+        // TODO: Expiration
+        let thread = message.thread
+        let friendRequestStatus = FriendRequestProtocol.getFriendRequestUIStatus(for: thread)
+        guard friendRequestStatus != .none, let contactID = thread.contactIdentifier() else { return }
+        let displayName = UserDisplayNameUtilities.getPrivateChatDisplayName(for: contactID) ?? contactID
         switch kind {
         case .incoming:
-            guard let message = message as? TSIncomingMessage else { preconditionFailure() }
-            buttonStackView.isHidden = message.friendRequestStatus != .pending
+            buttonStackView.isHidden = friendRequestStatus != .received
             spacer2.isHidden = buttonStackView.isHidden
-            let format: String = {
-                switch (message.friendRequestStatus) {
-                case .none, .sendingOrFailed: preconditionFailure()
-                case .pending: return NSLocalizedString("%@ sent you a session request", comment: "")
-                case .accepted: return NSLocalizedString("You've accepted %@'s session request", comment: "")
-                case .declined: return NSLocalizedString("You've declined %@'s session request", comment: "")
-                case .expired: return NSLocalizedString("%@'s session request has expired", comment: "")
-                default: preconditionFailure()
-                }
-            }()
-            let contactID = message.authorId
-            let displayName = UserDisplayNameUtilities.getPrivateChatDisplayName(for: contactID) ?? contactID
+            let format: String
+            switch friendRequestStatus {
+            case .none: format = NSLocalizedString("You've declined %@'s session request", comment: "")
+            case .friends: format = NSLocalizedString("You've accepted %@'s session request", comment: "")
+            case .received: format = NSLocalizedString("%@ sent you a session request", comment: "")
+            case .sent: return // Should never occur
+            }
             label.text = String(format: format, displayName)
         case .outgoing:
-            guard let message = message as? TSOutgoingMessage else { preconditionFailure() }
-            let format: String? = {
-                switch (message.friendRequestStatus) {
-                case .none: preconditionFailure()
-                case .sendingOrFailed: return nil
-                case .pending: return NSLocalizedString("You've sent %@ a session request", comment: "")
-                case .accepted: return NSLocalizedString("%@ accepted your session request", comment: "")
-                case .declined: preconditionFailure()
-                case .expired: return NSLocalizedString("Your session request to %@ has expired", comment: "")
-                default: preconditionFailure()
-                }
-            }()
-            if let format = format {
-                let contactID = message.thread.contactIdentifier()!
-                let displayName = UserDisplayNameUtilities.getPrivateChatDisplayName(for: contactID) ?? contactID
-                label.text = String(format: format, displayName)
+            let format: String
+            switch friendRequestStatus {
+            case .none: return // Should never occur
+            case .friends: format = NSLocalizedString("%@ accepted your session request", comment: "")
+            case .received: return // Should never occur
+            case .sent: format = NSLocalizedString("You've sent %@ a session request", comment: "")
             }
-            label.isHidden = (format == nil)
-            spacer1.isHidden = (label.isHidden)
+            label.text = String(format: format, displayName)
         }
     }
     

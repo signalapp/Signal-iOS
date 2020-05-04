@@ -82,6 +82,7 @@ public final class FriendRequestProtocol : NSObject {
         guard let thread = thread as? TSContactThread else { return .none }
         // If this is a note to self then we don't want to show the friend request
         guard !thread.isNoteToSelf() else { return .none }
+        // Gather friend request statuses for all linked devices
         var friendRequestStatuses: [LKFriendRequestStatus] = []
         storage.dbReadConnection.read { transaction in
             let linkedDevices = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: thread.contactIdentifier(), in: transaction)
@@ -89,9 +90,10 @@ public final class FriendRequestProtocol : NSObject {
                 storage.getFriendRequestStatus(for: $0, transaction: transaction)
             }
         }
+        // Return
         if friendRequestStatuses.contains(where: { $0 == .friends }) { return .friends }
         if friendRequestStatuses.contains(where: { $0 == .requestReceived }) { return .received }
-        if friendRequestStatuses.contains(where: { $0 == .requestSent }) { return .sent }
+        if friendRequestStatuses.contains(where: { $0 == .requestSent || $0 == .requestSending }) { return .sent }
         return .none
     }
 

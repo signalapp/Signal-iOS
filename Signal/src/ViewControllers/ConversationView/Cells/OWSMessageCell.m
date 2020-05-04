@@ -539,12 +539,12 @@ NS_ASSUME_NONNULL_BEGIN
             // Only show the first friend request that was received
             NSString *senderID = ((TSIncomingMessage *)message).authorId;
             __block NSMutableSet<TSContactThread *> *linkedDeviceThreads;
-            [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
                 linkedDeviceThreads = [LKDatabaseUtilities getLinkedDeviceThreadsFor:senderID in:transaction].mutableCopy;
             }];
             NSMutableArray<TSIncomingMessage *> *allFriendRequestMessages = @[].mutableCopy;
             for (TSContactThread *thread in linkedDeviceThreads) {
-                [thread enumerateInteractionsUsingBlock:^(TSInteraction *interaction) {
+                [thread enumerateInteractionsUsingBlock:^(TSInteraction *interaction) { // Starts a new write transaction internally
                     TSIncomingMessage *message = [interaction as:TSIncomingMessage.class];
                     if (message != nil && message.isFriendRequest) {
                         [allFriendRequestMessages addObject:message];
