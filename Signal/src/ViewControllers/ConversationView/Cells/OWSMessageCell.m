@@ -227,6 +227,7 @@ NS_ASSUME_NONNULL_BEGIN
         ]];
     } else {
         [self.friendRequestView removeFromSuperview];
+        [self.messageBubbleViewBottomConstraint setActive:YES];
     }
 
     if ([self updateAvatarView]) {
