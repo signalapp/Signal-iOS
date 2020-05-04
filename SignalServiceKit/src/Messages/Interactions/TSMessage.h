@@ -40,6 +40,7 @@ typedef NS_ENUM(NSInteger, LKMessageFriendRequestStatus) {
 @property (nonatomic, nullable) OWSLinkPreview *linkPreview;
 // Loki friend request handling
 @property (nonatomic) LKMessageFriendRequestStatus friendRequestStatus __deprecated_msg("no longer used as of version 1.1.2");
+/// Only relevant to outgoing messages.
 @property (nonatomic) uint64_t friendRequestExpiresAt;
 @property (nonatomic, readonly) BOOL isFriendRequest;
 @property (nonatomic, readonly) BOOL hasFriendRequestStatusMessage;

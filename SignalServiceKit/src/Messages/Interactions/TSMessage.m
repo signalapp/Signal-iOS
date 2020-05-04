@@ -475,13 +475,15 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 - (BOOL)isFriendRequest
 {
-    return [LKFriendRequestProtocol getFriendRequestUIStatusForThread:self.thread] != LKFriendRequestUIStatusFriends;
+    if (self.thread.isContactFriend) { return NO; }
+    return [self.uniqueId isEqual:self.thread.lastInteraction.uniqueId];
 }
 
 - (BOOL)hasFriendRequestStatusMessage
 {
     LKFriendRequestUIStatus friendRequestStatus = [LKFriendRequestProtocol getFriendRequestUIStatusForThread:self.thread];
-    return friendRequestStatus != LKFriendRequestUIStatusNone && friendRequestStatus != LKFriendRequestUIStatusFriends;
+    if (friendRequestStatus == LKFriendRequestUIStatusNone || friendRequestStatus == LKFriendRequestUIStatusFriends) { return NO; };
+    return [self.uniqueId isEqual:self.thread.lastInteraction.uniqueId];
 }
 
 #pragma mark - Open Groups
