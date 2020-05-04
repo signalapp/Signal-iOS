@@ -36,6 +36,8 @@ public class LK001UpdateFriendRequestStatusStorage: OWSDatabaseMigration {
                     OWSPrimaryStorage.shared().setFriendRequestStatus(friendRequestStatus, for: thread.contactIdentifier(), transaction: transaction)
                 }
             }
+
+            completion()
         }
     }
 
