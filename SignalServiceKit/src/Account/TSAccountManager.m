@@ -478,10 +478,12 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
 }
 
 - (void)storeLocalNumber:(NSString *)localNumber
-                    uuid:(NSUUID *)localUuid
+                    uuid:(nullable NSUUID *)localUuid
              transaction:(SDSAnyWriteTransaction *)transaction
 {
-    OWSAssertDebug(localUuid);
+    // TODO UUID: make uuid non-nullable when enabling SSKFeatureFlags.allowUUIDOnlyContacts in production
+    // canary assert for this TODO.
+    OWSAssertDebug(!TSConstants.isUsingProductionService || !SSKFeatureFlags.allowUUIDOnlyContacts);
 
     @synchronized (self) {
         [self.keyValueStore setString:localNumber key:TSAccountManager_RegisteredNumberKey transaction:transaction];
