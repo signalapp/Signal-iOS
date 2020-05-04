@@ -22,7 +22,10 @@ extension XCTestCase {
     /// - Parameters:
     ///   - timeout: number of seconds to wait before executing `closure`.
     ///   - closure: a closure to execute when `timeout` seconds have passed.
+    ///
+    /// - Note: `timeout` must be less than 60 seconds.
     func eventually(timeout: TimeInterval = 0.1, closure: @escaping () -> Void) {
+        assert(timeout < 60)
         let expectation = self.expectation(description: "")
         expectation.fulfillAfter(timeout)
         self.waitForExpectations(timeout: 60) { _ in
