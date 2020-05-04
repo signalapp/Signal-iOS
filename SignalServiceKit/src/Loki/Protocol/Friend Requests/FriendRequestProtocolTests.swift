@@ -13,7 +13,7 @@ class FriendRequestProtocolTests : XCTestCase {
     override func setUp() {
         super.setUp()
 
-        LokiTestUtilities.setupMockEnvironment()
+        LokiTestUtilities.setUpMockEnvironment()
     }
 
     // MARK: - Helpers

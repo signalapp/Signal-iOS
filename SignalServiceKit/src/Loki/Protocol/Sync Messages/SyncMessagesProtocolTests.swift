@@ -9,7 +9,7 @@ class SyncMessagesProtocolTests : XCTestCase {
 
     override func setUp() {
         super.setUp()
-        LokiTestUtilities.setupMockEnvironment()
+        LokiTestUtilities.setUpMockEnvironment()
     }
 
     func testContactSyncMessageHandling() {

@@ -261,8 +261,9 @@ public final class MultiDeviceProtocol : NSObject {
         }
     }
 
+    // MARK: - General
     @objc public static func isSlaveThread(_ thread: TSThread) -> Bool {
-        guard let thread = thread as? TSContactThread else { return false; }
+        guard let thread = thread as? TSContactThread else { return false }
         var isSlaveThread = false
         Storage.read { transaction in
             isSlaveThread = storage.getMasterHexEncodedPublicKey(for: thread.contactIdentifier(), in: transaction) != nil

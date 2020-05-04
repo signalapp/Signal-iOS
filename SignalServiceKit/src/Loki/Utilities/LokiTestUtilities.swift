@@ -2,14 +2,14 @@ import Foundation
 import SignalServiceKit
 import Curve25519Kit
 
-@objc(LKTestUtilities)
-class LokiTestUtilities : NSObject {
+enum LokiTestUtilities {
 
-    @objc public static func setupMockEnvironment() {
+    public static func setUpMockEnvironment() {
+        // Activate the mock Signal environment
         ClearCurrentAppContextForTests()
         SetCurrentAppContext(TestAppContext())
         MockSSKEnvironment.activate()
-
+        // Register a mock user
         let identityManager = OWSIdentityManager.shared()
         let seed = Randomness.generateRandomBytes(16)!
         let keyPair = Curve25519.generateKeyPair(fromSeed: seed + seed)
@@ -19,29 +19,25 @@ class LokiTestUtilities : NSObject {
         TSAccountManager.sharedInstance().didRegister()
     }
 
-    @objc public static func generateKeyPair() -> ECKeyPair {
+    public static func generateKeyPair() -> ECKeyPair {
         return Curve25519.generateKeyPair()
     }
 
-    @objc public static func generateHexEncodedPublicKey() -> String {
+    public static func generateHexEncodedPublicKey() -> String {
         return generateKeyPair().hexEncodedPublicKey
     }
 
-    @objc(getDeviceForHexEncodedPublicKey:)
     public static func getDevice(for hexEncodedPublicKey: String) -> DeviceLink.Device? {
         guard let signature = Data.getSecureRandomData(ofSize: 64) else { return nil }
         return DeviceLink.Device(hexEncodedPublicKey: hexEncodedPublicKey, signature: signature)
     }
 
-    @objc(createContactThreadForHexEncodedPublicKey:)
     public static func createContactThread(for hexEncodedPublicKey: String) -> TSContactThread {
         return TSContactThread.getOrCreateThread(contactId: hexEncodedPublicKey)
     }
 
-    @objc(createGroupThreadWithGroupType:)
     public static func createGroupThread(groupType: GroupType) -> TSGroupThread? {
         let hexEncodedGroupID = Randomness.generateRandomBytes(kGroupIdLength)!.toHexString()
-
         let groupID: Data
         switch groupType {
         case .closedGroup: groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(hexEncodedGroupID)
@@ -49,7 +45,6 @@ class LokiTestUtilities : NSObject {
         case .rssFeed: groupID = LKGroupUtilities.getEncodedRSSFeedIDAsData(hexEncodedGroupID)
         default: return nil
         }
-
         return TSGroupThread.getOrCreateThread(withGroupId: groupID, groupType: groupType)
     }
 }
