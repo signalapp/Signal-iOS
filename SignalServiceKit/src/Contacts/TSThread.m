@@ -249,7 +249,7 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
 /**
  * Iterate over this thread's interactions
  */
-- (void)enumerateInteractionsWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)enumerateInteractionsWithTransaction:(YapDatabaseReadTransaction *)transaction
                                   usingBlock:(void (^)(TSInteraction *interaction,
                                                  YapDatabaseReadTransaction *transaction))block
 {
@@ -268,7 +268,7 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
  */
 - (void)enumerateInteractionsUsingBlock:(void (^)(TSInteraction *interaction))block
 {
-    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [self.dbReadWriteConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         [self enumerateInteractionsWithTransaction:transaction
                                         usingBlock:^(
                                             TSInteraction *interaction, YapDatabaseReadTransaction *transaction) {

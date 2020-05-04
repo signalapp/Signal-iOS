@@ -447,6 +447,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 #pragma mark - Loki Friend Request Handling
 
+// Left here for migration purposes
 - (void)saveFriendRequestStatus:(LKMessageFriendRequestStatus)friendRequestStatus withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction
 {
     self.friendRequestStatus = friendRequestStatus;
@@ -474,7 +475,14 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 - (BOOL)isFriendRequest
 {
-    return self.friendRequestExpiresAt != 0;
+    NSString *contactID = self.thread.contactIdentifier;
+    if (contactID == nil) { return NO; }
+    OWSPrimaryStorage *storage = OWSPrimaryStorage.sharedManager;
+    __block LKFriendRequestStatus friendRequestStatus;
+    [storage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        friendRequestStatus = [storage getFriendRequestStatusForContact:contactID transaction:transaction];
+    }];
+    return friendRequestStatus != LKFriendRequestStatusFriends;
 }
 
 - (BOOL)hasFriendRequestStatusMessage

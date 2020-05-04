@@ -87,7 +87,7 @@ extern ConversationColorName const kConversationColorName_Default;
 
 #pragma mark Interactions
 
-- (void)enumerateInteractionsWithTransaction:(YapDatabaseReadWriteTransaction *)transaction usingBlock:(void (^)(TSInteraction *interaction, YapDatabaseReadTransaction *transaction))block;
+- (void)enumerateInteractionsWithTransaction:(YapDatabaseReadTransaction *)transaction usingBlock:(void (^)(TSInteraction *interaction, YapDatabaseReadTransaction *transaction))block;
 
 - (void)enumerateInteractionsUsingBlock:(void (^)(TSInteraction *interaction))block;
 
