@@ -107,7 +107,6 @@ final class FriendRequestView : UIView {
     }
     
     private func updateUI() {
-        // TODO: Expiration
         let thread = message.thread
         let friendRequestStatus = FriendRequestProtocol.getFriendRequestUIStatus(for: thread)
         guard friendRequestStatus != .none, let contactID = thread.contactIdentifier() else { return }
@@ -122,6 +121,7 @@ final class FriendRequestView : UIView {
             case .friends: format = NSLocalizedString("You've accepted %@'s session request", comment: "")
             case .received: format = NSLocalizedString("%@ sent you a session request", comment: "")
             case .sent: return // Should never occur
+            case .expired: format = NSLocalizedString("%@'s session request has expired", comment: "")
             }
             label.text = String(format: format, displayName)
         case .outgoing:
@@ -131,6 +131,7 @@ final class FriendRequestView : UIView {
             case .friends: format = NSLocalizedString("%@ accepted your session request", comment: "")
             case .received: return // Should never occur
             case .sent: format = NSLocalizedString("You've sent %@ a session request", comment: "")
+            case .expired: format = NSLocalizedString("Your session request to %@ has expired", comment: "")
             }
             label.text = String(format: format, displayName)
         }

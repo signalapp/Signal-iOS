@@ -17,7 +17,7 @@ public final class FriendRequestProtocol : NSObject {
 
     // MARK: - Friend Request UI Status
     @objc public enum FriendRequestUIStatus : Int {
-        case friends, received, sent, none
+        case friends, received, sent, none, expired
     }
 
     // MARK: - General
@@ -40,6 +40,7 @@ public final class FriendRequestProtocol : NSObject {
         guard let thread = thread as? TSContactThread else { return true }
         // If this is a note to self the input bar should be enabled
         if thread.isNoteToSelf() { return true }
+        // Gather friend request statuses
         let contactID = thread.contactIdentifier()
         var linkedDeviceFriendRequestStatuses: [LKFriendRequestStatus] = []
         storage.dbReadConnection.read { transaction in
@@ -62,6 +63,7 @@ public final class FriendRequestProtocol : NSObject {
         guard let thread = thread as? TSContactThread else { return true }
         // If this is a note to self, the attachment button should be enabled
         if thread.isNoteToSelf() { return true }
+        /// Gather friend request statuses
         let contactID = thread.contactIdentifier()
         var linkedDeviceFriendRequestStatuses: [LKFriendRequestStatus] = []
         storage.dbReadConnection.read { transaction in
@@ -80,7 +82,7 @@ public final class FriendRequestProtocol : NSObject {
     public static func getFriendRequestUIStatus(for thread: TSThread) -> FriendRequestUIStatus {
         // Friend requests have nothing to do with groups
         guard let thread = thread as? TSContactThread else { return .none }
-        // If this is a note to self then we don't want to show the friend request
+        // If this is a note to self then we don't want to show the friend request UI
         guard !thread.isNoteToSelf() else { return .none }
         // Gather friend request statuses for all linked devices
         var friendRequestStatuses: [LKFriendRequestStatus] = []
@@ -94,6 +96,7 @@ public final class FriendRequestProtocol : NSObject {
         if friendRequestStatuses.contains(where: { $0 == .friends }) { return .friends }
         if friendRequestStatuses.contains(where: { $0 == .requestReceived }) { return .received }
         if friendRequestStatuses.contains(where: { $0 == .requestSent || $0 == .requestSending }) { return .sent }
+        if friendRequestStatuses.contains(where: { $0 == .requestExpired }) { return .expired }
         return .none
     }
 
