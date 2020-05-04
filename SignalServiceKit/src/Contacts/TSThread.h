@@ -43,7 +43,7 @@ extern ConversationColorName const kConversationColorName_Default;
 @property (nonatomic) NSInteger friendRequestStatus __deprecated_msg("use OWSPrimaryStorage.getFriendRequestStatusForContact:transaction: instead");
 @property (nonatomic, readonly) BOOL isContactFriend;
 // ========
-@property (nonatomic) BOOL isForceHidden; // FIXME: Having both this and shouldThreadBeVisible is confusing
+@property (atomic, readonly) BOOL isSlaveThread;
 
 /**
  *  Whether the object is a group thread or not.

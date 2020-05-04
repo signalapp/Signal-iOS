@@ -314,6 +314,11 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
     return [self.class stableColorNameForNewConversationWithString:[self threadIdFromGroupId:groupId]];
 }
 
+- (BOOL)isContactFriend
+{
+    return true;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

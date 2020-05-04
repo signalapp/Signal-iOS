@@ -773,6 +773,11 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
     return [LKFriendRequestProtocol getFriendRequestUIStatusForThread:self] == LKFriendRequestUIStatusFriends;
 }
 
+- (BOOL)isSlaveThread
+{
+    return [LKMultiDeviceProtocol isSlaveThread:self];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END
