@@ -995,14 +995,37 @@ extension ConversationSettingsViewController: OWSNavigationView {
     public func shouldCancelNavigationBack() -> Bool {
         let result = hasUnsavedChangesToDisappearingMessagesConfiguration
         if result {
-            GroupAttributesViewController.showUnsavedGroupChangesActionSheet(from: self,
-                                                                             saveBlock: {
-                                                                                self.updateDisappearingMessagesConfigurationAndDismiss()
+            Self.showUnsavedChangesActionSheet(from: self,
+                                               saveBlock: {
+                                                self.updateDisappearingMessagesConfigurationAndDismiss()
             }, discardBlock: {
                 self.navigationController?.popViewController(animated: true)
             })
         }
         return result
+    }
+
+    @objc
+    public static func showUnsavedChangesActionSheet(from fromViewController: UIViewController,
+                                                     saveBlock: @escaping () -> Void,
+                                                     discardBlock: @escaping () -> Void) {
+        let actionSheet = ActionSheetController(title: NSLocalizedString("CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE",
+                                                                         comment: "The alert title if user tries to exit conversation settings view without saving changes."),
+                                                message: NSLocalizedString("CONVERSATION_SETTINGS_UNSAVED_CHANGES_MESSAGE",
+                                                                           comment: "The alert message if user tries to exit conversation settings view without saving changes."))
+        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("ALERT_SAVE",
+                                                                         comment: "The label for the 'save' button in action sheets."),
+                                                accessibilityIdentifier: UIView.accessibilityIdentifier(in: fromViewController, name: "save"),
+                                                style: .default) { _ in
+                                                    saveBlock()
+        })
+        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("ALERT_DONT_SAVE",
+                                                                         comment: "The label for the 'don't save' button in action sheets."),
+                                                accessibilityIdentifier: UIView.accessibilityIdentifier(in: fromViewController, name: "dont_save"),
+                                                style: .destructive) { _ in
+                                                    discardBlock()
+        })
+        fromViewController.presentActionSheet(actionSheet)
     }
 
     private func updateDisappearingMessagesConfigurationAndDismiss() {
