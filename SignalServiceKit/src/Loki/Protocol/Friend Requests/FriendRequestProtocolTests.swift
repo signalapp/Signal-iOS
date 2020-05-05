@@ -447,6 +447,31 @@ class FriendRequestProtocolTests : XCTestCase {
         }
     }
 
+    func test_acceptFriendRequestShouldNotSendAFriendRequestMessageToOurOwnDevice() {
+        let statuses: [LKFriendRequestStatus] = [ .none, .requestExpired ]
+        for status in statuses {
+            let ourDevice = LokiTestUtilities.getCurrentUserHexEncodedPublicKey()
+            storage.dbReadWriteConnection.readWrite { transaction in
+                self.storage.setFriendRequestStatus(status, for: ourDevice, transaction: transaction)
+            }
+
+            let expectation = self.expectation(description: "sent message")
+
+            let messageSender = self.messageSender
+            messageSender.sendMessageWasCalledBlock = { sentMessage in
+                XCTFail("Expected message to not be sent")
+            }
+
+            storage.dbReadWriteConnection.readWrite { transaction in
+                FriendRequestProtocol.acceptFriendRequest(from: ourDevice, using: transaction)
+            }
+
+            expectation.fulfillAfter(2)
+            wait(for: [ expectation ], timeout: 2)
+            messageSender.sendMessageWasCalledBlock = nil
+        }
+    }
+
     func test_acceptFriendRequestShouldNotDoAnythingIfRequestHasBeenSent() {
         // Case: We sent Bob a friend request.
         // We can't accept because we don't have keys to communicate with Bob.
