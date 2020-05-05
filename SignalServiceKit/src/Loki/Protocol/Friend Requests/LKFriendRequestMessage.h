@@ -4,8 +4,6 @@
 NS_SWIFT_NAME(FriendRequestMessage)
 @interface LKFriendRequestMessage : TSOutgoingMessage
 
-- (_Nonnull instancetype)initOutgoingMessageWithTimestamp:(uint64_t)timestamp
-                                        inThread:(nullable TSThread *)thread
-                                     messageBody:(nullable NSString *)body;
+- (_Nonnull instancetype)initWithTimestamp:(uint64_t)timestamp thread:(nullable TSThread *)thread body:(nullable NSString *)body;
 
 @end

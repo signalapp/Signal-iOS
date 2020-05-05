@@ -1178,13 +1178,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         uint64_t ttl = ((NSNumber *)signalMessageInfo[@"ttl"]).unsignedIntegerValue;
         BOOL isPing = ((NSNumber *)signalMessageInfo[@"isPing"]).boolValue;
         LKSignalMessage *signalMessage = [[LKSignalMessage alloc] initWithType:type timestamp:timestamp senderID:senderID senderDeviceID:senderDeviceID content:content recipientID:recipientID ttl:ttl isPing:isPing];
-        BOOL shouldUpdateFriendRequest = [LKFriendRequestProtocol shouldUpdateFriendRequestStatusFromMessage:message];
+        BOOL shouldUpdateFriendRequestStatus = [LKFriendRequestProtocol shouldUpdateFriendRequestStatusFromMessage:message];
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             if (!message.skipSave) {
                 // Update the PoW calculation status
                 [message saveIsCalculatingProofOfWork:YES withTransaction:transaction];
             }
-            if (shouldUpdateFriendRequest) {
+            if (shouldUpdateFriendRequestStatus) {
                 [LKFriendRequestProtocol setFriendRequestStatusToSendingIfNeededForHexEncodedPublicKey:recipientID transaction:transaction];
             }
         }];
@@ -1196,7 +1196,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     // Update the PoW calculation status
                     [message saveIsCalculatingProofOfWork:NO withTransaction:transaction];
                 }
-                if (shouldUpdateFriendRequest) {
+                if (shouldUpdateFriendRequestStatus) {
                     [LKFriendRequestProtocol setFriendRequestStatusToFailedIfNeededForHexEncodedPublicKey:recipientID transaction:transaction];
                 }
             }];
@@ -1216,7 +1216,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     if (isSuccess) { return; } // Succeed as soon as the first promise succeeds
                     [NSNotificationCenter.defaultCenter postNotificationName:NSNotification.messageSent object:[[NSNumber alloc] initWithUnsignedLongLong:signalMessage.timestamp]];
                     isSuccess = YES;
-                    if (shouldUpdateFriendRequest) {
+                    if (shouldUpdateFriendRequestStatus) {
                         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                             if (!message.skipSave) {
                                 // Update the message

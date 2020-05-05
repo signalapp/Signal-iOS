@@ -428,7 +428,7 @@ class FriendRequestProtocolTests : XCTestCase {
                 self.storage.setFriendRequestStatus(status, for: bob, transaction: transaction)
             }
 
-            let expectation = self.expectation(description: "sent message")
+            let expectation = self.expectation(description: "Send message")
 
             let messageSender = self.messageSender
             messageSender.sendMessageWasCalledBlock = { sentMessage in
@@ -451,15 +451,16 @@ class FriendRequestProtocolTests : XCTestCase {
         let statuses: [LKFriendRequestStatus] = [ .none, .requestExpired ]
         for status in statuses {
             let ourDevice = LokiTestUtilities.getCurrentUserHexEncodedPublicKey()
+
             storage.dbReadWriteConnection.readWrite { transaction in
                 self.storage.setFriendRequestStatus(status, for: ourDevice, transaction: transaction)
             }
 
-            let expectation = self.expectation(description: "sent message")
+            let expectation = self.expectation(description: "Send message")
 
             let messageSender = self.messageSender
             messageSender.sendMessageWasCalledBlock = { sentMessage in
-                XCTFail("Expected message to not be sent")
+                XCTFail("Expected message not to be sent.")
             }
 
             storage.dbReadWriteConnection.readWrite { transaction in
@@ -625,7 +626,7 @@ class FriendRequestProtocolTests : XCTestCase {
         let thread = LokiTestUtilities.createContactThread(for: LokiTestUtilities.generateHexEncodedPublicKey())
 
         let message = TSOutgoingMessage(in: thread, messageBody: nil, attachmentId: nil)
-        let friendRequest = FriendRequestMessage(outgoingMessageWithTimestamp: 1, in: thread, messageBody: "")
+        let friendRequest = FriendRequestMessage(timestamp: 1, thread: thread, body: "")
         let sessionRequest = SessionRequestMessage(thread: thread)
         guard let deviceLinkRequest = DeviceLinkMessage(in: thread, masterHexEncodedPublicKey: "", slaveHexEncodedPublicKey: "", masterSignature: nil, slaveSignature: Data(capacity: 0)),
             let deviceLinkAuthorisation = DeviceLinkMessage(in: thread, masterHexEncodedPublicKey: "", slaveHexEncodedPublicKey: "", masterSignature: Data(capacity: 0), slaveSignature: Data(capacity: 0)) else { return XCTFail() }

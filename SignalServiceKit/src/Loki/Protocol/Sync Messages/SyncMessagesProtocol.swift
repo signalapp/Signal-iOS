@@ -163,7 +163,6 @@ public final class SyncMessagesProtocol : NSObject {
     }
 
     public static func handleContactSyncMessageData(_ data: Data, using transaction: YapDatabaseReadWriteTransaction) {
-
         let parser = ContactParser(data: data)
         let hexEncodedPublicKeys = parser.parseHexEncodedPublicKeys()
         // Try to establish sessions
