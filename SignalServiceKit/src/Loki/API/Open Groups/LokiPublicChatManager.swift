@@ -125,7 +125,7 @@ public final class LokiPublicChatManager : NSObject {
         refreshChatsAndPollers()
     }
     
-    private func getChat(server: String, channel: UInt64) -> LokiPublicChat? {
+    public func getChat(server: String, channel: UInt64) -> LokiPublicChat? {
         return chats.values.first { chat in
             return chat.server == server && chat.channel == channel
         }

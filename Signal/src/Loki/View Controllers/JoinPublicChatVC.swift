@@ -152,6 +152,8 @@ final class JoinPublicChatVC : BaseVC, UIPageViewControllerDataSource, UIPageVie
             let _ = LokiPublicChatAPI.getMessages(for: channelID, on: urlAsString)
             let _ = LokiPublicChatAPI.setDisplayName(to: displayName, on: urlAsString)
             let _ = LokiPublicChatAPI.join(channelID, on: urlAsString)
+            let syncManager = SSKEnvironment.shared.syncManager
+            let _ = syncManager.syncAllOpenGroups()
             self?.presentingViewController!.dismiss(animated: true, completion: nil)
         }
         .catch(on: .main) { [weak self] _ in

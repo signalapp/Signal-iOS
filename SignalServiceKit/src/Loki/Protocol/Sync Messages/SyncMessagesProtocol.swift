@@ -223,14 +223,16 @@ public final class SyncMessagesProtocol : NSObject {
     public static func handleOpenGroupSyncMessageIfNeeded(_ syncMessage: SSKProtoSyncMessage, wrappedIn envelope: SSKProtoEnvelope, using transaction: YapDatabaseReadTransaction) {
         // The envelope source is set during UD decryption
         let hexEncodedPublicKey = envelope.source!
-        guard let masterHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: getUserHexEncodedPublicKey(), in: transaction) else { return }
-        let wasSentByMasterDevice = (masterHexEncodedPublicKey == hexEncodedPublicKey)
-        guard wasSentByMasterDevice else { return }
+        let linkedDevices = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: hexEncodedPublicKey, in: transaction)
+        let wasSentByLinkedDevice = linkedDevices.contains(hexEncodedPublicKey)
+        guard wasSentByLinkedDevice else { return }
         let groups = syncMessage.openGroups
         guard groups.count > 0 else { return }
         print("[Loki] Open group sync message received.")
         for openGroup in groups {
-            LokiPublicChatManager.shared.addChat(server: openGroup.url, channel: openGroup.channel)
+            let openGroupManager = LokiPublicChatManager.shared
+            guard openGroupManager.getChat(server: openGroup.url, channel: openGroup.channel) == nil else { return }
+            openGroupManager.addChat(server: openGroup.url, channel: openGroup.channel)
         }
     }
 }
