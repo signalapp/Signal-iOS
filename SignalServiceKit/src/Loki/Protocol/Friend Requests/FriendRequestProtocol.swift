@@ -116,6 +116,11 @@ public final class FriendRequestProtocol : NSObject {
             if friendRequestStatus == .requestReceived {
                 storage.setFriendRequestStatus(.friends, for: device, transaction: transaction)
                 sendFriendRequestAcceptanceMessage(to: device, using: transaction)
+                // Send a contact sync message if needed
+                guard !LokiDatabaseUtilities.isUserLinkedDevice(hexEncodedPublicKey, transaction: transaction) else { return }
+                let masterHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: hexEncodedPublicKey, in: transaction) ?? hexEncodedPublicKey
+                let syncManager = SSKEnvironment.shared.syncManager
+                syncManager.syncContact(masterHexEncodedPublicKey, transaction: transaction)
             } else if friendRequestStatus == .requestSent {
                 // We sent a friend request to this device before, how can we be sure that it hasn't expired?
             } else if friendRequestStatus == .none || friendRequestStatus == .requestExpired {
@@ -127,10 +132,6 @@ public final class FriendRequestProtocol : NSObject {
                 }
             }
         }
-        // Send a contact sync message
-        let masterHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: hexEncodedPublicKey, in: transaction) ?? hexEncodedPublicKey
-        let syncManager = SSKEnvironment.shared.syncManager
-        syncManager.syncContact(masterHexEncodedPublicKey, transaction: transaction)
     }
 
     @objc(sendFriendRequestAcceptanceMessageToHexEncodedPublicKey:using:)
@@ -235,7 +236,8 @@ public final class FriendRequestProtocol : NSObject {
         guard friendRequestStatus != .none else { return }
         // Become friends
         storage.setFriendRequestStatus(.friends, for: hexEncodedPublicKey, transaction: transaction)
-        // Send a contact sync message
+        // Send a contact sync message if needed
+        guard !LokiDatabaseUtilities.isUserLinkedDevice(hexEncodedPublicKey, transaction: transaction) else { return }
         let masterHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: hexEncodedPublicKey, in: transaction) ?? hexEncodedPublicKey
         let syncManager = SSKEnvironment.shared.syncManager
         syncManager.syncContact(masterHexEncodedPublicKey, transaction: transaction)
