@@ -1521,7 +1521,22 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     OWSOutgoingSentMessageTranscript *sentMessageTranscript =
         [[OWSOutgoingSentMessageTranscript alloc] initWithOutgoingMessage:message isRecipientUpdate:isRecipientUpdate];
 
-    NSString *recipientId = self.tsAccountManager.localNumber;
+    NSString *currentDevice = self.tsAccountManager.localNumber;
+
+    // Loki: Send to the other device, but not self
+    __block NSSet<NSString *> *linkedDevices;
+    [self.primaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        linkedDevices = [LKDatabaseUtilities getLinkedDeviceHexEncodedPublicKeysFor:currentDevice in:transaction];
+    }];
+    NSString *otherDevice;
+    for (NSString *device in linkedDevices) {
+        if (![device isEqual:currentDevice]) {
+            otherDevice = device;
+            break;
+        }
+    }
+
+    NSString *recipientId = otherDevice ?: currentDevice;
     __block SignalRecipient *recipient;
     [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         recipient = [SignalRecipient markRecipientAsRegisteredAndGet:recipientId transaction:transaction];
@@ -1550,15 +1565,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             failure(error);
         }];
 
-    if ([LKMultiDeviceProtocol isMultiDeviceRequiredForMessage:message]) { // Avoid the write transaction if possible
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.primaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                [LKMultiDeviceProtocol sendMessageToDestinationAndLinkedDevices:messageSend in:transaction];
-            }];
-        });
-    } else {
-        [self sendMessage:messageSend];
-    }
+    [self sendMessage:messageSend];
 }
 
 - (NSArray<NSDictionary *> *)throws_deviceMessagesForMessageSend:(OWSMessageSend *)messageSend

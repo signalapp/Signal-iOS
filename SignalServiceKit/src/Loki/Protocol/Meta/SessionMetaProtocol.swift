@@ -75,7 +75,13 @@ public final class SessionMetaProtocol : NSObject {
     public static func shouldSendTranscript(for message: TSOutgoingMessage, in thread: TSThread) -> Bool {
         let isOpenGroupMessage = (thread as? TSGroupThread)?.isPublicChat == true
         let wouldSignalRequireTranscript = (AreRecipientUpdatesEnabled() || !message.hasSyncedTranscript)
-        return wouldSignalRequireTranscript && !isOpenGroupMessage
+        guard wouldSignalRequireTranscript && !isOpenGroupMessage else { return false }
+        var usesMultiDevice = false
+        storage.dbReadConnection.read { transaction in
+            usesMultiDevice = !storage.getDeviceLinks(for: getUserHexEncodedPublicKey(), in: transaction).isEmpty
+                || UserDefaults.standard[.masterHexEncodedPublicKey] != nil
+        }
+        return usesMultiDevice && isThreadNoteToSelf(thread)
     }
 
     // MARK: Typing Indicators
