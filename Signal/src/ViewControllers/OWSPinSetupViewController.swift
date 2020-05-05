@@ -42,6 +42,7 @@ public class PinSetupViewController: OWSViewController {
         case valid
         case tooShort
         case mismatch
+        case weak
 
         var isInvalid: Bool {
             return self != .valid
@@ -370,6 +371,11 @@ public class PinSetupViewController: OWSViewController {
             return
         }
 
+        if isWeakPin(pin) {
+            validationState = .weak
+            return
+        }
+
         switch mode {
         case .creating, .changing, .recreating:
             let confirmingVC = PinSetupViewController(
@@ -383,6 +389,36 @@ public class PinSetupViewController: OWSViewController {
         case .confirming:
             enable2FAAndContinue(withPin: pin)
         }
+    }
+
+    private func isWeakPin(_ pin: String) -> Bool {
+        let normalizedPin = KeyBackupService.normalizePin(pin)
+
+        // We only check numeric pins for weakness
+        guard normalizedPin.digitsOnly() == normalizedPin else { return false }
+
+        var allTheSame = true
+        var forwardSequential = true
+        var reverseSequential = true
+
+        var previousWholeNumberValue: Int?
+        for character in normalizedPin {
+            guard let current = character.wholeNumberValue else {
+                owsFailDebug("numeric pin unexpectedly contatined non-numeric characters")
+                break
+            }
+
+            defer { previousWholeNumberValue = current }
+            guard let previous = previousWholeNumberValue else { continue }
+
+            if previous != current { allTheSame = false }
+            if previous + 1 != current { forwardSequential = false }
+            if previous - 1 != current { reverseSequential = false }
+
+            if !allTheSame && !forwardSequential && !reverseSequential { break }
+        }
+
+        return allTheSame || forwardSequential || reverseSequential
     }
 
     private func updateValidationWarnings() {
@@ -406,6 +442,9 @@ public class PinSetupViewController: OWSViewController {
         case .mismatch:
             validationWarningLabel.text = NSLocalizedString("PIN_CREATION_MISMATCH_ERROR",
                                                             comment: "Label indicating that the attempted PIN does not match the first PIN")
+        case .weak:
+            validationWarningLabel.text = NSLocalizedString("PIN_CREATION_WEAK_ERROR",
+                                                            comment: "Label indicating that the attempted PIN is too weak")
         default:
             break
         }
