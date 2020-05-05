@@ -447,22 +447,6 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 #pragma mark - Loki Friend Request Handling
 
-// Left here for migration purposes
-- (void)saveFriendRequestStatus:(LKMessageFriendRequestStatus)friendRequestStatus withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction
-{
-    self.friendRequestStatus = friendRequestStatus;
-    void (^postNotification)() = ^() {
-        [NSNotificationCenter.defaultCenter postNotificationName:NSNotification.messageFriendRequestStatusChanged object:self.uniqueId];
-    };
-    if (transaction == nil) {
-        [self save];
-        [self.dbReadWriteConnection flushTransactionsWithCompletionQueue:dispatch_get_main_queue() completionBlock:^{ postNotification(); }];
-    } else {
-        [self saveWithTransaction:transaction];
-        [transaction.connection flushTransactionsWithCompletionQueue:dispatch_get_main_queue() completionBlock:^{ postNotification(); }];
-    }
-}
-
 - (void)saveFriendRequestExpiresAt:(u_int64_t)expiresAt withTransaction:(YapDatabaseReadWriteTransaction *_Nullable)transaction
 {
     self.friendRequestExpiresAt = expiresAt;

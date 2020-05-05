@@ -148,6 +148,7 @@ extern ConversationColorName const kConversationColorName_Default;
 
 - (void)removeAllThreadInteractionsWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
+- (TSInteraction *)getLastInteractionWithTransaction:(YapDatabaseReadTransaction *)transaction;
 
 #pragma mark Disappearing Messages
 
@@ -192,8 +193,6 @@ extern ConversationColorName const kConversationColorName_Default;
  Remove any old incoming friend request messages that are pending.
  */
 - (void)removeOldIncomingFriendRequestMessagesIfNeededWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
-
-- (TSInteraction *)getLastInteractionWithTransaction:(YapDatabaseReadTransaction *)transaction;
 
 @end
 
