@@ -8,7 +8,6 @@ class MultiDeviceProtocolTests : XCTestCase {
 
     override func setUp() {
         super.setUp()
-
         LokiTestUtilities.setUpMockEnvironment()
     }
 
@@ -29,7 +28,9 @@ class MultiDeviceProtocolTests : XCTestCase {
 
         guard let masterDevice = LokiTestUtilities.getDevice(for: master) else { return XCTFail() }
         guard let slaveDevice = LokiTestUtilities.getDevice(for: slave) else { return XCTFail() }
+
         let deviceLink = DeviceLink(between: masterDevice, and: slaveDevice)
+
         storage.dbReadWriteConnection.readWrite { transaction in
             self.storage.addDeviceLink(deviceLink, in: transaction)
         }
@@ -38,7 +39,7 @@ class MultiDeviceProtocolTests : XCTestCase {
         let slaveThread = LokiTestUtilities.createContactThread(for: slave)
         let otherThread = LokiTestUtilities.createContactThread(for: other)
 
-        storage.dbReadWriteConnection.read { transaction in
+        storage.dbReadConnection.read { transaction in
             XCTAssertNotNil(self.storage.getMasterHexEncodedPublicKey(for: slaveThread.contactIdentifier(), in: transaction))
         }
 
@@ -57,5 +58,4 @@ class MultiDeviceProtocolTests : XCTestCase {
             XCTAssertNoThrow(MultiDeviceProtocol.isSlaveThread(thread))
         }
     }
-
 }
