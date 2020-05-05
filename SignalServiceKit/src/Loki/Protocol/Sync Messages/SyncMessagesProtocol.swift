@@ -155,9 +155,9 @@ public final class SyncMessagesProtocol : NSObject {
     public static func handleContactSyncMessageIfNeeded(_ syncMessage: SSKProtoSyncMessage, wrappedIn envelope: SSKProtoEnvelope, using transaction: YapDatabaseReadWriteTransaction) {
         // The envelope source is set during UD decryption
         let hexEncodedPublicKey = envelope.source!
-        guard let masterHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: getUserHexEncodedPublicKey(), in: transaction) else { return }
-        let wasSentByMasterDevice = (masterHexEncodedPublicKey == hexEncodedPublicKey)
-        guard wasSentByMasterDevice, let contacts = syncMessage.contacts, let contactsAsData = contacts.data, contactsAsData.count > 0 else { return }
+        let linkedDevices = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: hexEncodedPublicKey, in: transaction)
+        let wasSentByLinkedDevice = linkedDevices.contains(hexEncodedPublicKey)
+        guard wasSentByLinkedDevice, let contacts = syncMessage.contacts, let contactsAsData = contacts.data, contactsAsData.count > 0 else { return }
         print("[Loki] Contact sync message received.")
         handleContactSyncMessageData(contactsAsData, using: transaction)
     }
@@ -201,9 +201,9 @@ public final class SyncMessagesProtocol : NSObject {
     public static func handleClosedGroupSyncMessageIfNeeded(_ syncMessage: SSKProtoSyncMessage, wrappedIn envelope: SSKProtoEnvelope, using transaction: YapDatabaseReadWriteTransaction) {
         // The envelope source is set during UD decryption
         let hexEncodedPublicKey = envelope.source!
-        guard let masterHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: getUserHexEncodedPublicKey(), in: transaction) else { return }
-        let wasSentByMasterDevice = (masterHexEncodedPublicKey == hexEncodedPublicKey)
-        guard wasSentByMasterDevice, let groups = syncMessage.groups, let groupsAsData = groups.data, groupsAsData.count > 0 else { return }
+        let linkedDevices = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: hexEncodedPublicKey, in: transaction)
+        let wasSentByLinkedDevice = linkedDevices.contains(hexEncodedPublicKey)
+        guard wasSentByLinkedDevice, let groups = syncMessage.groups, let groupsAsData = groups.data, groupsAsData.count > 0 else { return }
         print("[Loki] Closed group sync message received.")
         let parser = ClosedGroupParser(data: groupsAsData)
         let groupModels = parser.parseGroupModels()
@@ -223,14 +223,16 @@ public final class SyncMessagesProtocol : NSObject {
     public static func handleOpenGroupSyncMessageIfNeeded(_ syncMessage: SSKProtoSyncMessage, wrappedIn envelope: SSKProtoEnvelope, using transaction: YapDatabaseReadTransaction) {
         // The envelope source is set during UD decryption
         let hexEncodedPublicKey = envelope.source!
-        guard let masterHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: getUserHexEncodedPublicKey(), in: transaction) else { return }
-        let wasSentByMasterDevice = (masterHexEncodedPublicKey == hexEncodedPublicKey)
-        guard wasSentByMasterDevice else { return }
+        let linkedDevices = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: hexEncodedPublicKey, in: transaction)
+        let wasSentByLinkedDevice = linkedDevices.contains(hexEncodedPublicKey)
+        guard wasSentByLinkedDevice else { return }
         let groups = syncMessage.openGroups
         guard groups.count > 0 else { return }
         print("[Loki] Open group sync message received.")
         for openGroup in groups {
-            LokiPublicChatManager.shared.addChat(server: openGroup.url, channel: openGroup.channel)
+            let openGroupManager = LokiPublicChatManager.shared
+            guard openGroupManager.getChat(server: openGroup.url, channel: openGroup.channel) == nil else { return }
+            openGroupManager.addChat(server: openGroup.url, channel: openGroup.channel)
         }
     }
 }

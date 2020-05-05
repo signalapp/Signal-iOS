@@ -127,6 +127,10 @@ public final class FriendRequestProtocol : NSObject {
                 }
             }
         }
+        // Send a contact sync message
+        let masterHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: hexEncodedPublicKey, in: transaction) ?? hexEncodedPublicKey
+        let syncManager = SSKEnvironment.shared.syncManager
+        syncManager.syncContact(masterHexEncodedPublicKey, transaction: transaction)
     }
 
     @objc(sendFriendRequestAcceptanceMessageToHexEncodedPublicKey:using:)
@@ -231,6 +235,10 @@ public final class FriendRequestProtocol : NSObject {
         guard friendRequestStatus != .none else { return }
         // Become friends
         storage.setFriendRequestStatus(.friends, for: hexEncodedPublicKey, transaction: transaction)
+        // Send a contact sync message
+        let masterHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: hexEncodedPublicKey, in: transaction) ?? hexEncodedPublicKey
+        let syncManager = SSKEnvironment.shared.syncManager
+        syncManager.syncContact(masterHexEncodedPublicKey, transaction: transaction)
     }
 
     @objc(handleFriendRequestMessageIfNeededFromEnvelope:using:)
