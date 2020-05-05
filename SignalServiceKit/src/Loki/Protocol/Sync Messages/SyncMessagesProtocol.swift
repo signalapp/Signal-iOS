@@ -201,9 +201,9 @@ public final class SyncMessagesProtocol : NSObject {
     public static func handleClosedGroupSyncMessageIfNeeded(_ syncMessage: SSKProtoSyncMessage, wrappedIn envelope: SSKProtoEnvelope, using transaction: YapDatabaseReadWriteTransaction) {
         // The envelope source is set during UD decryption
         let hexEncodedPublicKey = envelope.source!
-        guard let masterHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: getUserHexEncodedPublicKey(), in: transaction) else { return }
-        let wasSentByMasterDevice = (masterHexEncodedPublicKey == hexEncodedPublicKey)
-        guard wasSentByMasterDevice, let groups = syncMessage.groups, let groupsAsData = groups.data, groupsAsData.count > 0 else { return }
+        let linkedDevices = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: hexEncodedPublicKey, in: transaction)
+        let wasSentByLinkedDevice = linkedDevices.contains(hexEncodedPublicKey)
+        guard wasSentByLinkedDevice, let groups = syncMessage.groups, let groupsAsData = groups.data, groupsAsData.count > 0 else { return }
         print("[Loki] Closed group sync message received.")
         let parser = ClosedGroupParser(data: groupsAsData)
         let groupModels = parser.parseGroupModels()
