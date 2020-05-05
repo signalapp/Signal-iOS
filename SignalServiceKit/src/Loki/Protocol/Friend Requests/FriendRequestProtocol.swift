@@ -164,6 +164,14 @@ public final class FriendRequestProtocol : NSObject {
         }
     }
 
+    @objc(shouldUpdateFriendRequestStatusFromMessage:)
+    public static func shouldUpdateFriendRequestStatus(from message: TSOutgoingMessage) -> Bool {
+        let isFriendRequestMessage = message is FriendRequestMessage
+        let isSessionRequestMessage = message is SessionRequestMessage
+        let isDeviceLinkRequestMessage = message is DeviceLinkMessage && (message as! DeviceLinkMessage).kind == .request
+        return (isFriendRequestMessage && !isSessionRequestMessage) || isDeviceLinkRequestMessage;
+    }
+
     @objc(setFriendRequestStatusToSendingIfNeededForHexEncodedPublicKey:transaction:)
     public static func setFriendRequestStatusToSendingIfNeeded(for hexEncodedPublicKey: String, transaction: YapDatabaseReadWriteTransaction) {
         let friendRequestStatus = storage.getFriendRequestStatus(for: hexEncodedPublicKey, transaction: transaction)

@@ -1177,14 +1177,14 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         NSString *recipientID = signalMessageInfo[@"destination"];
         uint64_t ttl = ((NSNumber *)signalMessageInfo[@"ttl"]).unsignedIntegerValue;
         BOOL isPing = ((NSNumber *)signalMessageInfo[@"isPing"]).boolValue;
-        BOOL isFriendRequest = ((NSNumber *)signalMessageInfo[@"isFriendRequest"]).boolValue;
-        LKSignalMessage *signalMessage = [[LKSignalMessage alloc] initWithType:type timestamp:timestamp senderID:senderID senderDeviceID:senderDeviceID content:content recipientID:recipientID ttl:ttl isPing:isPing isFriendRequest:isFriendRequest];
+        LKSignalMessage *signalMessage = [[LKSignalMessage alloc] initWithType:type timestamp:timestamp senderID:senderID senderDeviceID:senderDeviceID content:content recipientID:recipientID ttl:ttl isPing:isPing];
+        BOOL shouldUpdateFriendRequest = [LKFriendRequestProtocol shouldUpdateFriendRequestStatusFromMessage:message];
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             if (!message.skipSave) {
                 // Update the PoW calculation status
                 [message saveIsCalculatingProofOfWork:YES withTransaction:transaction];
             }
-            if (signalMessage.isFriendRequest) {
+            if (shouldUpdateFriendRequest) {
                 [LKFriendRequestProtocol setFriendRequestStatusToSendingIfNeededForHexEncodedPublicKey:recipientID transaction:transaction];
             }
         }];
@@ -1196,7 +1196,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     // Update the PoW calculation status
                     [message saveIsCalculatingProofOfWork:NO withTransaction:transaction];
                 }
-                if (signalMessage.isFriendRequest) {
+                if (shouldUpdateFriendRequest) {
                     [LKFriendRequestProtocol setFriendRequestStatusToFailedIfNeededForHexEncodedPublicKey:recipientID transaction:transaction];
                 }
             }];
@@ -1216,7 +1216,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     if (isSuccess) { return; } // Succeed as soon as the first promise succeeds
                     [NSNotificationCenter.defaultCenter postNotificationName:NSNotification.messageSent object:[[NSNumber alloc] initWithUnsignedLongLong:signalMessage.timestamp]];
                     isSuccess = YES;
-                    if (signalMessage.isFriendRequest) {
+                    if (shouldUpdateFriendRequest) {
                         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                             if (!message.skipSave) {
                                 [message.thread removeOldOutgoingFriendRequestMessagesIfNeededWithTransaction:transaction];
@@ -1799,18 +1799,17 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         OWSFailDebug(@"Failed to encrypt friend request for: %@.", recipientId);
         return nil;
     }
-    
+
     OWSMessageServiceParams *messageParams =
-    [[OWSMessageServiceParams alloc] initWithType:TSFriendRequestMessageType
-                                      recipientId:recipientId
-                                           device:[deviceId intValue]
-                                          content:serializedMessage
-                                         isSilent:false
-                                         isOnline:false
-                                   registrationId:0
-                                              ttl:message.ttl
-                                           isPing:false
-                                  isFriendRequest:true];
+        [[OWSMessageServiceParams alloc] initWithType:TSFriendRequestMessageType
+                                          recipientId:recipientId
+                                               device:[deviceId intValue]
+                                              content:serializedMessage
+                                             isSilent:false
+                                             isOnline:false
+                                       registrationId:0
+                                                  ttl:message.ttl
+                                               isPing:false];
     
     NSError *error;
     NSDictionary *jsonDict = [MTLJSONAdapter JSONDictionaryFromModel:messageParams error:&error];
@@ -1845,7 +1844,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             @(OWSDevicePrimaryDeviceId));
     }
 
-    BOOL isFriendRequest = [messageSend.message isKindOfClass:LKFriendRequestMessage.class];
+    BOOL isFriendRequestMessage = [messageSend.message isKindOfClass:LKFriendRequestMessage.class];
     BOOL isDeviceLinkMessage = [messageSend.message isKindOfClass:LKDeviceLinkMessage.class]
         && ((LKDeviceLinkMessage *)messageSend.message).kind == LKDeviceLinkMessageKindRequest;
 
@@ -1875,7 +1874,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                                       paddedPlaintext:[plainText paddedMessageBody]
                                                                     senderCertificate:messageSend.senderCertificate
                                                                       protocolContext:transaction
-                                                                      isFriendRequest:isFriendRequest || isDeviceLinkMessage
+                                                             useFallbackSessionCipher:isFriendRequestMessage || isDeviceLinkMessage
                                                                                 error:&error];
 
         SCKRaiseIfExceptionWrapperError(error);
@@ -1906,8 +1905,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                              isOnline:isOnline
                                        registrationId:[cipher throws_remoteRegistrationId:transaction]
                                                   ttl:message.ttl
-                                               isPing:isPing
-                                      isFriendRequest:isFriendRequest || isDeviceLinkMessage];
+                                               isPing:isPing];
 
     NSError *error;
     NSDictionary *jsonDict = [MTLJSONAdapter JSONDictionaryFromModel:messageParams error:&error];

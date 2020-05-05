@@ -594,4 +594,21 @@ class FriendRequestProtocolTests : XCTestCase {
             XCTAssertTrue(self.isFriendRequestStatus(.none, for: otherSlave, transaction: transaction))
         }
     }
+
+    // MARK: - shouldUpdateFriendRequestStatus
+    func test_shouldUpdateFriendRequestStatusReturnsTheCorrectValue() {
+        let thread = LokiTestUtilities.createContactThread(for: LokiTestUtilities.generateHexEncodedPublicKey())
+
+        let message = TSOutgoingMessage(in: thread, messageBody: nil, attachmentId: nil)
+        let friendRequest = FriendRequestMessage(in: thread, messageBody: "message", attachmentId: nil)
+        let sessionRequest = SessionRequestMessage(in: thread, messageBody: nil, attachmentId: nil)
+        guard let deviceLinkRequest = DeviceLinkMessage(in: thread, masterHexEncodedPublicKey: "", slaveHexEncodedPublicKey: "", masterSignature: nil, slaveSignature: Data(capacity: 0)),
+            let deviceLinkAuthorisation = DeviceLinkMessage(in: thread, masterHexEncodedPublicKey: "", slaveHexEncodedPublicKey: "", masterSignature: Data(capacity: 0), slaveSignature: Data(capacity: 0)) else { return XCTFail() }
+
+        XCTAssertTrue(FriendRequestProtocol.shouldUpdateFriendRequestStatus(from: friendRequest))
+        XCTAssertTrue(FriendRequestProtocol.shouldUpdateFriendRequestStatus(from: deviceLinkRequest))
+        XCTAssertFalse(FriendRequestProtocol.shouldUpdateFriendRequestStatus(from: message))
+        XCTAssertFalse(FriendRequestProtocol.shouldUpdateFriendRequestStatus(from: sessionRequest))
+        XCTAssertFalse(FriendRequestProtocol.shouldUpdateFriendRequestStatus(from: deviceLinkAuthorisation))
+    }
 }

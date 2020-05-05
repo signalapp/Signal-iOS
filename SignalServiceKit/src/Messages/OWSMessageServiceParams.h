@@ -30,9 +30,6 @@ NS_ASSUME_NONNULL_BEGIN
 // Loki: Wether this message is a p2p ping
 @property (nonatomic, readonly) BOOL isPing;
 
-// Loki: Wether this message is a friend request
-@property (nonatomic, readonly) BOOL isFriendRequest;
-
 - (instancetype)initWithType:(TSWhisperMessageType)type
                  recipientId:(NSString *)destination
                       device:(int)deviceId
@@ -41,8 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
                     isOnline:(BOOL)isOnline
               registrationId:(int)registrationId
                          ttl:(uint)ttl
-                      isPing:(BOOL)isPing
-             isFriendRequest:(BOOL)isFriendRequest;
+                      isPing:(BOOL)isPing;
 
 @end
 
