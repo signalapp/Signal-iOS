@@ -184,9 +184,6 @@ public final class SessionManagementProtocol : NSObject {
             let thread = TSContactThread.getWithContactId(hexEncodedPublicKey, transaction: transaction), // TODO: Should this be getOrCreate?
             thread.isContactFriend {
             receiving_startSessionReset(in: thread, using: transaction)
-            // Notify our other devices that we've started a session reset
-            let syncManager = SSKEnvironment.shared.syncManager
-            syncManager.syncContact(hexEncodedPublicKey, transaction: transaction)
         }
     }
 
