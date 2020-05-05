@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -191,10 +191,12 @@ class PhotoCapture: NSObject {
             try self.updateCurrentInput(position: .back)
 
             guard let photoOutput = self.captureOutput.photoOutput else {
+                owsFailDebug("Missing photoOutput.")
                 throw PhotoCaptureError.initializationFailed
             }
 
             guard self.session.canAddOutput(photoOutput) else {
+                owsFailDebug("!canAddOutput(photoOutput).")
                 throw PhotoCaptureError.initializationFailed
             }
             self.session.addOutput(photoOutput)
@@ -207,10 +209,12 @@ class PhotoCapture: NSObject {
 
             let videoDataOutput = self.captureOutput.videoDataOutput
             guard self.session.canAddOutput(videoDataOutput) else {
+                owsFailDebug("!canAddOutput(videoDataOutput).")
                 throw PhotoCaptureError.initializationFailed
             }
             self.session.addOutput(videoDataOutput)
             guard let connection = videoDataOutput.connection(with: .video) else {
+                owsFailDebug("Missing videoDataOutput.connection.")
                 throw PhotoCaptureError.initializationFailed
             }
             if connection.isVideoStabilizationSupported {
