@@ -165,8 +165,10 @@ public final class SyncMessagesProtocol : NSObject {
     public static func handleContactSyncMessageData(_ data: Data, using transaction: YapDatabaseReadWriteTransaction) {
         let parser = ContactParser(data: data)
         let hexEncodedPublicKeys = parser.parseHexEncodedPublicKeys()
+        let linkedDevices = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: getUserHexEncodedPublicKey(), in: transaction)
         // Try to establish sessions
         for hexEncodedPublicKey in hexEncodedPublicKeys {
+            guard !linkedDevices.contains(hexEncodedPublicKey) else { continue } // Skip self
             // We don't update the friend request status; that's done in OWSMessageSender.sendMessage(_:)
             let friendRequestStatus = storage.getFriendRequestStatus(for: hexEncodedPublicKey, transaction: transaction)
             switch friendRequestStatus {
