@@ -2505,7 +2505,7 @@
 "PIN_CREATION_CONFIRM_TITLE" = "Bestätige deine PIN";
 
 /* The explanation of confirmation in the 'pin creation' view. */
-"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Wiederhole deine PIN.";
+"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Enter the PIN you just created.";
 
 /* Button asking if the user would like to create an alphanumeric PIN */
 "PIN_CREATION_CREATE_ALPHANUMERIC" = "Alphanumerische PIN erstellen";
@@ -2542,6 +2542,9 @@
 
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "Erstelle deine PIN";
+
+/* Label indicating that the attempted PIN is too weak */
+"PIN_CREATION_WEAK_ERROR" = "Choose a stronger PIN";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Damit du dir deine PIN besser merken kannst, werden wir gelegentlich nach ihr fragen. Mit der Zeit werden wir dies seltener tun.";
@@ -2979,10 +2982,10 @@
 "SCREEN_LOCK_UNLOCK_SIGNAL" = "Signal entsperren";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This will have a female profile photo. */
-"SCREENSHOT_NAME_CONTACT_EIGHT" = "Tina Laurent";
+"SCREENSHOT_NAME_CONTACT_EIGHT" = "Tina Ukuku";
 
 /* This is a contact's name. Please keep the nick name Ali and change the last name to a popular lastname in your language. This will have male profile photo. */
-"SCREENSHOT_NAME_CONTACT_FIVE" = "Tomasz Piotrowski";
+"SCREENSHOT_NAME_CONTACT_FIVE" = "Ali Smith";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This profile photo will be either male or female. Choose a unisex name if possible. */
 "SCREENSHOT_NAME_CONTACT_FOUR" = "Kim Hoffmann";
@@ -2994,22 +2997,22 @@
 "SCREENSHOT_NAME_CONTACT_ONE" = "Vorsitzender Miau";
 
 /* This is a contact's name. Please keep a similar unisex first name (Kai) if this name isn't common and only post the last initial. This will have a female profile photo. */
-"SCREENSHOT_NAME_CONTACT_SEVEN" = "Sascha B.";
+"SCREENSHOT_NAME_CONTACT_SEVEN" = "Jordan B.";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This will have a male profile photo. */
-"SCREENSHOT_NAME_CONTACT_SIX" = "Alexander Reiss";
+"SCREENSHOT_NAME_CONTACT_SIX" = "Michael Kirk";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This will have a female profile photo. */
-"SCREENSHOT_NAME_CONTACT_TEN" = "Maja Neudorf";
+"SCREENSHOT_NAME_CONTACT_TEN" = "Maya Dorai";
 
 /* This is a contact's name. Please keep a similar nickname for Nikola/Nikita/etc in your language and only post the last initial. This profile photo will be either male or female but mostly female. */
 "SCREENSHOT_NAME_CONTACT_THREE" = "Nikki Romanov";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This profile photo will be either male or female. */
-"SCREENSHOT_NAME_CONTACT_TWO" = "Jonas Larsson";
+"SCREENSHOT_NAME_CONTACT_TWO" = "Myles Larson";
 
 /* This is a group chat of family members. Please keep Kirk or replace with a common last name in your locale. Translate 'Family' */
-"SCREENSHOT_NAME_GROUP_FIVE" = "Familie Reiss";
+"SCREENSHOT_NAME_GROUP_FIVE" = "Familie Kirk";
 
 /* Please include emoji. This is a group name/channel name for pictures of the sun in the sky. */
 "SCREENSHOT_NAME_GROUP_FOUR" = "Sonnenuntergänge 🌅";
@@ -3045,7 +3048,7 @@
 "SCREENSHOT_THREAD_DIRECT_FOUR_MESSAGE_TWO" = "Danke! Was für eine großartige Nachricht :)";
 
 /* This is a message. */
-"SCREENSHOT_THREAD_DIRECT_ONE_MESSAGE_ONE" = "Es regnet in Strömen, und ich sitze hier und höre nur dabei zu.";
+"SCREENSHOT_THREAD_DIRECT_ONE_MESSAGE_ONE" = "Es regnet in Strömen, und ich sitze hier und hör‘ nur dabei zu.";
 
 /* This is a message. */
 "SCREENSHOT_THREAD_DIRECT_ONE_MESSAGE_TWO" = "Das hab ich heute morgen auch gemacht.";
