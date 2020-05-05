@@ -600,8 +600,8 @@ class FriendRequestProtocolTests : XCTestCase {
         let thread = LokiTestUtilities.createContactThread(for: LokiTestUtilities.generateHexEncodedPublicKey())
 
         let message = TSOutgoingMessage(in: thread, messageBody: nil, attachmentId: nil)
-        let friendRequest = FriendRequestMessage(in: thread, messageBody: "message", attachmentId: nil)
-        let sessionRequest = SessionRequestMessage(in: thread, messageBody: nil, attachmentId: nil)
+        let friendRequest = FriendRequestMessage(outgoingMessageWithTimestamp: 1, in: thread, messageBody: "")
+        let sessionRequest = SessionRequestMessage(thread: thread)
         guard let deviceLinkRequest = DeviceLinkMessage(in: thread, masterHexEncodedPublicKey: "", slaveHexEncodedPublicKey: "", masterSignature: nil, slaveSignature: Data(capacity: 0)),
             let deviceLinkAuthorisation = DeviceLinkMessage(in: thread, masterHexEncodedPublicKey: "", slaveHexEncodedPublicKey: "", masterSignature: Data(capacity: 0), slaveSignature: Data(capacity: 0)) else { return XCTFail() }
 

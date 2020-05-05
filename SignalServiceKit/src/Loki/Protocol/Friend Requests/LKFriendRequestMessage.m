@@ -8,6 +8,21 @@
 
 @implementation LKFriendRequestMessage
 
+- (instancetype)initOutgoingMessageWithTimestamp:(uint64_t)timestamp
+                                        inThread:(nullable TSThread *)thread
+                                     messageBody:(nullable NSString *)body {
+    return [self initOutgoingMessageWithTimestamp:timestamp
+                                         inThread:thread
+                                      messageBody:body
+                                    attachmentIds:@[]
+                                 expiresInSeconds:0 expireStartedAt:0
+                                   isVoiceMessage:false
+                                 groupMetaMessage:TSGroupMetaMessageUnspecified
+                                    quotedMessage:nil
+                                     contactShare:nil
+                                      linkPreview:nil];
+}
+
 #pragma mark Building
 - (SSKProtoContentBuilder *)prepareCustomContentBuilder:(SignalRecipient *)recipient {
     SSKProtoContentBuilder *contentBuilder = SSKProtoContent.builder;
