@@ -140,7 +140,7 @@ NSNotificationName const kNSNotificationNameMessageProcessingDidFlushQueue
                                                object:nil];
 
     // Start processing.
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+    [AppReadiness runNowOrWhenAppDidBecomeReadyPolite:^{
         [self drainQueue];
     }];
 
@@ -194,7 +194,7 @@ NSNotificationName const kNSNotificationNameMessageProcessingDidFlushQueue
 {
     OWSAssertIsOnMainThread();
 
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+    [AppReadiness runNowOrWhenAppDidBecomeReadyPolite:^{
         [self drainQueue];
     }];
 }
@@ -386,7 +386,7 @@ NSNotificationName const kNSNotificationNameMessageProcessingDidFlushQueue
 
     _processingQueue = [OWSMessageContentQueue new];
 
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
+    [AppReadiness runNowOrWhenAppDidBecomeReadyPolite:^{
         [self.processingQueue drainQueue];
     }];
 

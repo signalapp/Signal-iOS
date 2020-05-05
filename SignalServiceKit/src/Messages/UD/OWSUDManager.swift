@@ -175,6 +175,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     }
 
     @objc public func setup() {
+        // TODO: Should we use runNowOrWhenAppDidBecomeReadyPolite?
         AppReadiness.runNowOrWhenAppDidBecomeReady {
             guard self.tsAccountManager.isRegistered else {
                 return
@@ -208,6 +209,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     @objc func didBecomeActive() {
         AssertIsOnMainThread()
 
+        // TODO: Should we use runNowOrWhenAppDidBecomeReadyPolite?
         AppReadiness.runNowOrWhenAppDidBecomeReady {
             guard self.tsAccountManager.isRegistered else {
                 return

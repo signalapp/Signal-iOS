@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "AppReadiness.h"
@@ -14,6 +14,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) NSMutableArray<AppReadyBlock> *appWillBecomeReadyBlocks;
 @property (nonatomic) NSMutableArray<AppReadyBlock> *appDidBecomeReadyBlocks;
+@property (nonatomic) NSMutableArray<AppReadyBlock> *appDidBecomeReadyPoliteBlocks;
 
 @end
 
@@ -43,6 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.appWillBecomeReadyBlocks = [NSMutableArray new];
     self.appDidBecomeReadyBlocks = [NSMutableArray new];
+    self.appDidBecomeReadyPoliteBlocks = [NSMutableArray new];
 
     return self;
 }
@@ -102,6 +104,31 @@ NS_ASSUME_NONNULL_BEGIN
     [self.appDidBecomeReadyBlocks addObject:block];
 }
 
++ (void)runNowOrWhenAppDidBecomeReadyPolite:(AppReadyBlock)block
+{
+    DispatchMainThreadSafe(^{
+        [self.sharedManager runNowOrWhenAppDidBecomeReadyPolite:block];
+    });
+}
+
+- (void)runNowOrWhenAppDidBecomeReadyPolite:(AppReadyBlock)block
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(block);
+
+    if (CurrentAppContext().isRunningTests) {
+        // We don't need to do any "on app ready" work in the tests.
+        return;
+    }
+
+    if (self.isAppReady) {
+        block();
+        return;
+    }
+
+    [self.appDidBecomeReadyPoliteBlocks addObject:block];
+}
+
 + (void)setAppIsReady
 {
     [self.sharedManager setAppIsReady];
@@ -128,6 +155,8 @@ NS_ASSUME_NONNULL_BEGIN
     [self.appWillBecomeReadyBlocks removeAllObjects];
     NSArray<AppReadyBlock> *appDidBecomeReadyBlocks = [self.appDidBecomeReadyBlocks copy];
     [self.appDidBecomeReadyBlocks removeAllObjects];
+    NSArray<AppReadyBlock> *appDidBecomeReadyPoliteBlocks = [self.appDidBecomeReadyPoliteBlocks copy];
+    [self.appDidBecomeReadyPoliteBlocks removeAllObjects];
 
     // We invoke the _will become_ blocks before the _did become_ blocks.
     for (AppReadyBlock block in appWillBecomeReadyBlocks) {
@@ -136,6 +165,40 @@ NS_ASSUME_NONNULL_BEGIN
     for (AppReadyBlock block in appDidBecomeReadyBlocks) {
         [BenchManager benchWithTitle:@"appDidBecomeReadyBlock" logIfLongerThan:0.01 logInProduction:YES block:block];
     }
+
+    // We now have many (36+ in best case; many more in worst case)
+    // "app did become ready" blocks, many of which
+    // perform database writes. This can cause a "stampede" of writes
+    // as the app becomes ready. This can lead to 0x8badf00d crashes
+    // as the main thread can block behind these writes while trying
+    // to perform a checkpoint. The risk is highest on old devices
+    // with large databases. It can also simply cause the main thread
+    // to be less responsive.
+    //
+    // Most "App did become ready" blocks should be performed _soon_
+    // after launch but don't need to be performed sync. Therefore
+    // any blocks we
+    // perform them one-by-one with slight delays between them to
+    // reduce the risk of starving the main thread, especially if
+    // any given block is expensive.
+    [self runAppDidBecomeReadyPoliteBlocks:[appDidBecomeReadyPoliteBlocks mutableCopy]];
+}
+
+- (void)runAppDidBecomeReadyPoliteBlocks:(NSMutableArray<AppReadyBlock> *)blocks
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(self.isAppReady);
+
+    if (blocks.count < 1) {
+        return;
+    }
+
+    AppReadyBlock block = [blocks lastObject];
+    [blocks removeLastObject];
+    [BenchManager benchWithTitle:@"appDidBecomeReadyPoliteBlock" logIfLongerThan:0.01 logInProduction:YES block:block];
+    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 0.025 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+        [self runAppDidBecomeReadyPoliteBlocks:blocks];
+    });
 }
 
 @end
