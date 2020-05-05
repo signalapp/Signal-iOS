@@ -17,6 +17,7 @@
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 #import "OWSPrimaryStorage+Loki.h"
+#import "TSContactThread.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -459,7 +460,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 - (BOOL)isFriendRequest
 {
-    if (self.thread.isContactFriend) { return NO; }
+    if (![self.thread isKindOfClass:TSContactThread.class] || self.thread.isContactFriend) { return NO; }
     return [self.uniqueId isEqual:self.thread.lastInteraction.uniqueId];
 }
 
