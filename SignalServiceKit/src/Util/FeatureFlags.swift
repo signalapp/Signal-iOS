@@ -145,6 +145,9 @@ public class FeatureFlags: NSObject {
     }
 
     @objc
+    public static var requireUUIDs = false
+
+    @objc
     public static let useOnlyModernContactDiscovery = false
 
     @objc
@@ -311,4 +314,7 @@ public class DebugFlags: NSObject {
 
     @objc
     public static let showProfileKeyIndicator = build.includes(.qa)
+
+    @objc
+    public static let verboseNotificationLogging = build.includes(.qa)
 }

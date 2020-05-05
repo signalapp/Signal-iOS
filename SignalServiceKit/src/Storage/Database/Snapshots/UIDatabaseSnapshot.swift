@@ -97,17 +97,6 @@ public class UIDatabaseObserver: NSObject {
                                                selector: #selector(didReceiveCrossProcessNotification),
                                                name: SDSDatabaseStorage.didReceiveCrossProcessNotification,
                                                object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(didBecomeActive),
-                                               name: .OWSApplicationDidBecomeActive,
-                                               object: nil)
-        NotificationCenter.default.addObserver(self,
-                                               selector: #selector(willResignActive),
-                                               name: .OWSApplicationWillResignActive,
-                                               object: nil)
-        if CurrentAppContext().reportedApplicationState == .active {
-            lastAppActivationDate = Date()
-        }
     }
 
     @objc
@@ -118,22 +107,6 @@ public class UIDatabaseObserver: NSObject {
         for delegate in snapshotDelegates {
             delegate.databaseSnapshotDidUpdateExternally()
         }
-    }
-
-    fileprivate var lastAppActivationDate: Date?
-
-    @objc
-    func didBecomeActive() {
-        AssertIsOnMainThread()
-
-        lastAppActivationDate = Date()
-    }
-
-    @objc
-    func willResignActive() {
-        AssertIsOnMainThread()
-
-        lastAppActivationDate = nil
     }
 }
 
@@ -229,10 +202,21 @@ extension UIDatabaseObserver: TransactionObserver {
         //
         //   We periodically try to perform a restart checkpoint which
         //   can limit WAL size when truncation isn't possible.
-        do {
-            try self.checkpoint()
-        } catch {
-            owsFailDebug("error \(error)")
+        //
+        // Run checkpoints after 1/3 of writes.
+        let checkpointFrequencyPercentage = 33
+        let checkpointRandom = arc4random_uniform(100)
+        let shouldTryToCheckpoint = checkpointRandom < checkpointFrequencyPercentage
+        if shouldTryToCheckpoint {
+            // Run restart checkpoints after 1/100 of writes.
+            let checkpointFrequencyPercentage = 1
+            let shouldDoRestartCheckpoint = checkpointRandom < checkpointFrequencyPercentage
+            do {
+                let mode: Database.CheckpointMode = shouldDoRestartCheckpoint ? .restart : .passive
+                try self.checkpoint(mode: mode)
+            } catch {
+                owsFailDebug("error \(error)")
+            }
         }
 
         // [3] open a new transaction from the current db state
@@ -244,25 +228,7 @@ extension UIDatabaseObserver: TransactionObserver {
 
     private static let isRunningCheckpoint = AtomicBool(false)
 
-    private var canDoRestartCheckpoint: Bool {
-        AssertIsOnMainThread()
-
-        // To avoid 0x8badf00d crashes, don't perform restart checkpoints
-        // unless app has been active for N seconds.
-        guard CurrentAppContext().isMainAppAndActive else {
-            return false
-        }
-        guard let lastAppActivationDate = lastAppActivationDate else {
-            return false
-        }
-        let minTimeIntervalSinceActive: TimeInterval = 5
-        let timeIntervalSinceActive = lastAppActivationDate.timeIntervalSinceNow
-        return abs(timeIntervalSinceActive) >= minTimeIntervalSinceActive
-    }
-
-    func checkpoint() throws {
-        AssertIsOnMainThread()
-
+    func checkpoint(mode: Database.CheckpointMode) throws {
         do {
             try UIDatabaseObserver.isRunningCheckpoint.transition(from: false, to: true)
         } catch {
@@ -272,14 +238,6 @@ extension UIDatabaseObserver: TransactionObserver {
         defer {
             UIDatabaseObserver.isRunningCheckpoint.set(false)
         }
-
-        var shouldTryToRestart = false
-        if canDoRestartCheckpoint {
-            // Try to restart after every Nth write.
-            let restartFrequency: UInt32 = 100
-            shouldTryToRestart = arc4random_uniform(restartFrequency) == 0
-        }
-        let mode: Database.CheckpointMode = shouldTryToRestart ? .restart : .passive
 
         let result = try GRDBDatabaseStorageAdapter.checkpoint(pool: pool, mode: mode)
 

@@ -427,7 +427,7 @@ public class KeyBackupService: NSObject {
         return encodedString
     }
 
-    static func normalizePin(_ pin: String) -> String {
+    public static func normalizePin(_ pin: String) -> String {
         // Trim leading and trailing whitespace
         var normalizedPin = pin.ows_stripped()
 

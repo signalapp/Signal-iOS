@@ -2505,7 +2505,7 @@
 "PIN_CREATION_CONFIRM_TITLE" = "Bekräfta din PIN-kod";
 
 /* The explanation of confirmation in the 'pin creation' view. */
-"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Ange PIN-kod igen";
+"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Enter the PIN you just created.";
 
 /* Button asking if the user would like to create an alphanumeric PIN */
 "PIN_CREATION_CREATE_ALPHANUMERIC" = "Skapa alfanumerisk PIN-kod";
@@ -2542,6 +2542,9 @@
 
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "Skapa din PIN-kod";
+
+/* Label indicating that the attempted PIN is too weak */
+"PIN_CREATION_WEAK_ERROR" = "Choose a stronger PIN";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "För att hjälpa dig att memorera din PIN-kod ber vi dig att skriva in den regelbundet. Vi frågar mindre med tiden.";

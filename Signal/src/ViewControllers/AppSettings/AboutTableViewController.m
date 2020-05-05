@@ -190,9 +190,21 @@
     NSString *_Nullable pushToken = [preferences getPushToken];
     NSString *_Nullable voipToken = [preferences getVoipToken];
     [debugSection
-        addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Push Token: %@", pushToken ?: @"None"]]];
+        addItem:[OWSTableItem actionItemWithText:[NSString stringWithFormat:@"Push Token: %@", pushToken ?: @"None"]
+                         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"push_token")
+                                     actionBlock:^{
+                                         if (pushToken) {
+                                             UIPasteboard.generalPasteboard.string = pushToken;
+                                         }
+                                     }]];
     [debugSection
-        addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"VOIP Token: %@", voipToken ?: @"None"]]];
+        addItem:[OWSTableItem actionItemWithText:[NSString stringWithFormat:@"VOIP Token: %@", voipToken ?: @"None"]
+                         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"voip_token")
+                                     actionBlock:^{
+                                         if (voipToken) {
+                                             UIPasteboard.generalPasteboard.string = voipToken;
+                                         }
+                                     }]];
 
     // Strip prefix from category, otherwise it's too long to fit into cell on a small device.
     NSString *audioCategory =

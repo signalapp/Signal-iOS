@@ -325,10 +325,10 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
     }
 
     // Accept push notification when app is not open
-    NSDictionary *remoteNotif = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
-    if (remoteNotif) {
+    NSDictionary *remoteNotification = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
+    if (remoteNotification) {
         OWSLogInfo(@"Application was launched by tapping a push notification.");
-        [self application:application didReceiveRemoteNotification:remoteNotif];
+        [self processRemoteNotification:remoteNotification completion:nil];
     }
 
     [OWSScreenLockUI.sharedManager setupWithRootWindow:self.window];
@@ -1052,23 +1052,33 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
 - (void)application:(UIApplication *)application didReceiveRemoteNotification:(NSDictionary *)userInfo {
     OWSAssertIsOnMainThread();
 
-    if (self.didAppLaunchFail) {
-        OWSFailDebug(@"app launch failed");
-        return;
-    }
-    if (!(AppReadiness.isAppReady && [self.tsAccountManager isRegisteredAndReady])) {
-        OWSLogInfo(@"Ignoring remote notification; app not ready.");
-        return;
+    if (SSKDebugFlags.verboseNotificationLogging) {
+        OWSLogInfo(@"didReceiveRemoteNotification w/o. completion.");
     }
 
-    [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        [[self.messageFetcherJob runObjc] retainUntilComplete];
-    }];
+    [self processRemoteNotification:userInfo completion:nil];
 }
 
 - (void)application:(UIApplication *)application
     didReceiveRemoteNotification:(NSDictionary *)userInfo
           fetchCompletionHandler:(void (^)(UIBackgroundFetchResult))completionHandler {
+    OWSAssertIsOnMainThread();
+
+    if (SSKDebugFlags.verboseNotificationLogging) {
+        OWSLogInfo(@"didReceiveRemoteNotification w. completion.");
+    }
+
+    [self processRemoteNotification:userInfo
+                         completion:^{
+                             dispatch_after(
+                                 dispatch_time(DISPATCH_TIME_NOW, 20 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
+                                     completionHandler(UIBackgroundFetchResultNewData);
+                                 });
+                         }];
+}
+
+- (void)processRemoteNotification:(NSDictionary *)userInfo completion:(nullable void (^)(void))completion
+{
     OWSAssertIsOnMainThread();
 
     if (self.didAppLaunchFail) {
@@ -1082,9 +1092,10 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
 
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
         [[self.messageFetcherJob runObjc] retainUntilComplete];
-        dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 20 * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-            completionHandler(UIBackgroundFetchResultNewData);
-        });
+
+        if (completion != nil) {
+            completion();
+        }
     }];
 }
 

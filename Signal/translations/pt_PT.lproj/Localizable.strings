@@ -2505,7 +2505,7 @@
 "PIN_CREATION_CONFIRM_TITLE" = "Confirme o seu PIN";
 
 /* The explanation of confirmation in the 'pin creation' view. */
-"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Reintroduza o seu PIN.";
+"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Enter the PIN you just created.";
 
 /* Button asking if the user would like to create an alphanumeric PIN */
 "PIN_CREATION_CREATE_ALPHANUMERIC" = "Criar um PIN alfanumérico";
@@ -2542,6 +2542,9 @@
 
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "Criar o seu PIN";
+
+/* Label indicating that the attempted PIN is too weak */
+"PIN_CREATION_WEAK_ERROR" = "Choose a stronger PIN";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Para o(a) ajudar a memorizar o seu PIN, iremos pedir regularmente que o introduza. Ao longo do tempo iremos pedir menos vezes.";

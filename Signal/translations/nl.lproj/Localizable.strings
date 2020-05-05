@@ -1686,7 +1686,7 @@
 "INFO_MESSAGE_SYNCED_THREAD" = "Je kunt gesynchroniseerde berichten verzenden van zowel je telefoon als je iPad.\nVoor je eigen veiligheid wordt je gespreksgeschiedenis niet overgedragen naar nieuw gekoppelde apparaten.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
-"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ gebruikt nu Signal";
+"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ is bereikbaar via Signal.";
 
 /* accessibility label for the button which shows the sticker picker */
 "INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "Stickers";
@@ -2505,7 +2505,7 @@
 "PIN_CREATION_CONFIRM_TITLE" = "Je pincode bevestigen";
 
 /* The explanation of confirmation in the 'pin creation' view. */
-"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Voor dezelfde pincode opnieuw in.";
+"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Enter the PIN you just created.";
 
 /* Button asking if the user would like to create an alphanumeric PIN */
 "PIN_CREATION_CREATE_ALPHANUMERIC" = "Maak een alfanumerieke pincode aan";
@@ -2542,6 +2542,9 @@
 
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "Maak pincode aan";
+
+/* Label indicating that the attempted PIN is too weak */
+"PIN_CREATION_WEAK_ERROR" = "Choose a stronger PIN";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Om je te helpen je pincode te onthouden, vragen we je periodiek om je pincode in te voeren. Na verloop van tijd zullen we je minder vaak vragen om dat te doen.";
@@ -2979,7 +2982,7 @@
 "SCREEN_LOCK_UNLOCK_SIGNAL" = "Signal ontgrendelen";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This will have a female profile photo. */
-"SCREENSHOT_NAME_CONTACT_EIGHT" = "Hannah Watermus";
+"SCREENSHOT_NAME_CONTACT_EIGHT" = "Amber Zeilman";
 
 /* This is a contact's name. Please keep the nick name Ali and change the last name to a popular lastname in your language. This will have male profile photo. */
 "SCREENSHOT_NAME_CONTACT_FIVE" = "Ali Smit";
@@ -3000,7 +3003,7 @@
 "SCREENSHOT_NAME_CONTACT_SIX" = "Michiel Laagveld";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This will have a female profile photo. */
-"SCREENSHOT_NAME_CONTACT_TEN" = "Amber Holthuis";
+"SCREENSHOT_NAME_CONTACT_TEN" = "Hannah Watermus";
 
 /* This is a contact's name. Please keep a similar nickname for Nikola/Nikita/etc in your language and only post the last initial. This profile photo will be either male or female but mostly female. */
 "SCREENSHOT_NAME_CONTACT_THREE" = "Nicky de Jonge";

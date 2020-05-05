@@ -2505,7 +2505,7 @@
 "PIN_CREATION_CONFIRM_TITLE" = "Ripohoni PIN-in tuaj";
 
 /* The explanation of confirmation in the 'pin creation' view. */
-"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Rijepni PIN-in tuaj.";
+"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Enter the PIN you just created.";
 
 /* Button asking if the user would like to create an alphanumeric PIN */
 "PIN_CREATION_CREATE_ALPHANUMERIC" = "Krijoni PIN Alfanumerik";
@@ -2542,6 +2542,9 @@
 
 /* Title of the 'pin creation' view. */
 "PIN_CREATION_TITLE" = "Krijoni PIN-in tuaj";
+
+/* Label indicating that the attempted PIN is too weak */
+"PIN_CREATION_WEAK_ERROR" = "Choose a stronger PIN";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Për t’ju ndihmuar ta mbani mend PIN-in tuaj, do t’ju kërkojmë periodikisht ta jepni. Me kalimin e kohës, do t’jua kërkojmë më rrallë.";
