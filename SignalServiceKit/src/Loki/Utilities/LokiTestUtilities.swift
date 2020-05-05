@@ -23,6 +23,10 @@ enum LokiTestUtilities {
         return Curve25519.generateKeyPair()
     }
 
+    public static func getCurrentUserHexEncodedPublicKey() -> String {
+        return OWSIdentityManager.shared().identityKeyPair()!.hexEncodedPublicKey
+    }
+
     public static func generateHexEncodedPublicKey() -> String {
         return generateKeyPair().hexEncodedPublicKey
     }

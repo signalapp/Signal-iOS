@@ -108,6 +108,8 @@ public final class FriendRequestProtocol : NSObject {
             print("[Loki] Invalid Session ID: \(hexEncodedPublicKey).")
             return
         }
+        let userHexEncodedPublicKey = getUserHexEncodedPublicKey()
+        let userLinkedDevices = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: userHexEncodedPublicKey, in: transaction)
         // Accept all outstanding friend requests associated with this user and try to establish sessions with the
         // subset of their devices that haven't sent a friend request.
         let linkedDevices = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: hexEncodedPublicKey, in: transaction)
@@ -117,7 +119,7 @@ public final class FriendRequestProtocol : NSObject {
                 storage.setFriendRequestStatus(.friends, for: device, transaction: transaction)
                 sendFriendRequestAcceptanceMessage(to: device, using: transaction)
                 // Send a contact sync message if needed
-                guard !LokiDatabaseUtilities.isUserLinkedDevice(hexEncodedPublicKey, transaction: transaction) else { return }
+                guard !userLinkedDevices.contains(hexEncodedPublicKey) else { return }
                 let masterHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: hexEncodedPublicKey, in: transaction) ?? hexEncodedPublicKey
                 let syncManager = SSKEnvironment.shared.syncManager
                 syncManager.syncContact(masterHexEncodedPublicKey, transaction: transaction)
@@ -163,6 +165,14 @@ public final class FriendRequestProtocol : NSObject {
                 storage.setFriendRequestStatus(.none, for: device, transaction: transaction)
             }
         }
+    }
+
+    @objc(shouldUpdateFriendRequestStatusFromMessage:)
+    public static func shouldUpdateFriendRequestStatus(from message: TSOutgoingMessage) -> Bool {
+        // The order of these checks matters
+        if (message as? DeviceLinkMessage)?.kind == .request { return true }
+        if message is SessionRequestMessage { return false }
+        return message is FriendRequestMessage
     }
 
     @objc(setFriendRequestStatusToSendingIfNeededForHexEncodedPublicKey:transaction:)

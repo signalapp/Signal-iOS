@@ -14,6 +14,6 @@ NS_SWIFT_NAME(DeviceLinkMessage)
 @property (nonatomic, readonly) NSData *slaveSignature;
 @property (nonatomic, readonly) LKDeviceLinkMessageKind kind;
 
-- (instancetype)initInThread:(TSThread *)thread masterHexEncodedPublicKey:(NSString *)masterHexEncodedPublicKey slaveHexEncodedPublicKey:(NSString *)slaveHexEncodedPublicKey masterSignature:(NSData *)masterSignature slaveSignature:(NSData *)slaveSignature;
+- (instancetype)initInThread:(TSThread *)thread masterHexEncodedPublicKey:(NSString *)masterHexEncodedPublicKey slaveHexEncodedPublicKey:(NSString *)slaveHexEncodedPublicKey masterSignature:(NSData * _Nullable)masterSignature slaveSignature:(NSData *)slaveSignature;
 
 @end

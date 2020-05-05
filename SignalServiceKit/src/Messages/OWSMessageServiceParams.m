@@ -24,7 +24,6 @@ NS_ASSUME_NONNULL_BEGIN
               registrationId:(int)registrationId
                          ttl:(uint)ttl
                       isPing:(BOOL)isPing
-             isFriendRequest:(BOOL)isFriendRequest
 {
     self = [super init];
 
@@ -41,7 +40,6 @@ NS_ASSUME_NONNULL_BEGIN
     _online = isOnline;
     _ttl = ttl;
     _isPing = isPing;
-    _isFriendRequest = isFriendRequest;
 
     return self;
 }
