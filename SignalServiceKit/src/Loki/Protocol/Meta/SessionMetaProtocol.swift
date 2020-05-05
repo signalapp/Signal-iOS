@@ -114,6 +114,7 @@ public final class SessionMetaProtocol : NSObject {
     @objc(updateDisplayNameIfNeededForHexEncodedPublicKey:using:appendingShortID:in:)
     public static func updateDisplayNameIfNeeded(for hexEncodedPublicKey: String, using dataMessage: SSKProtoDataMessage, appendingShortID appendShortID: Bool, in transaction: YapDatabaseReadWriteTransaction) {
         guard let profile = dataMessage.profile, let rawDisplayName = profile.displayName else { return }
+        guard !rawDisplayName.isEmpty else { return }
         let displayName: String
         // TODO: Figure out why we sometimes don't append the short ID
         if appendShortID {
@@ -122,7 +123,6 @@ public final class SessionMetaProtocol : NSObject {
         } else {
             displayName = rawDisplayName
         }
-        guard !displayName.isEmpty else { return }
         let profileManager = SSKEnvironment.shared.profileManager
         profileManager.updateProfileForContact(withID: hexEncodedPublicKey, displayName: displayName, with: transaction)
     }
