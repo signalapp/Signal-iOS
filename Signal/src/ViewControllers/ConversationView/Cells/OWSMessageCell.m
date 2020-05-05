@@ -227,6 +227,7 @@ NS_ASSUME_NONNULL_BEGIN
         ]];
     } else {
         [self.friendRequestView removeFromSuperview];
+        self.friendRequestView = nil;
         [self.messageBubbleViewBottomConstraint setActive:YES];
     }
 

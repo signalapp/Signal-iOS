@@ -114,7 +114,7 @@ final class FriendRequestView : UIView {
         let format: String?
         switch kind {
         case .incoming:
-            buttonStackView.isHidden = friendRequestStatus != .received
+            buttonStackView.isHidden = (friendRequestStatus != .received)
             spacer2.isHidden = buttonStackView.isHidden
             switch friendRequestStatus {
             case .none: format = NSLocalizedString("You've declined %@'s session request", comment: "")
