@@ -281,14 +281,15 @@ NSString *const TSLazyRestoreAttachmentsGroup = @"TSLazyRestoreAttachmentsGroup"
             return nil;
         }
         TSThread *thread = (TSThread *)object;
+        if (thread.isSlaveThread) { return nil; }
 
-        if (thread.shouldThreadBeVisible && !thread.isForceHidden) {
+        if (thread.shouldThreadBeVisible) {
             // Do nothing; we never hide threads that have ever had a message.
         } else {
             YapDatabaseViewTransaction *viewTransaction = [transaction ext:TSMessageDatabaseViewExtensionName];
             OWSAssertDebug(viewTransaction);
             NSUInteger threadMessageCount = [viewTransaction numberOfItemsInGroup:thread.uniqueId];
-            if (threadMessageCount < 1 || thread.isForceHidden) {
+            if (threadMessageCount < 1) {
                 return nil;
             }
         }

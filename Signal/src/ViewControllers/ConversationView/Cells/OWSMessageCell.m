@@ -225,6 +225,10 @@ NS_ASSUME_NONNULL_BEGIN
             [self.friendRequestView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.messageBubbleView],
             [self.friendRequestView autoPinEdgeToSuperviewEdge:ALEdgeBottom]
         ]];
+    } else {
+        [self.friendRequestView removeFromSuperview];
+        self.friendRequestView = nil;
+        [self.messageBubbleViewBottomConstraint setActive:YES];
     }
 
     if ([self updateAvatarView]) {

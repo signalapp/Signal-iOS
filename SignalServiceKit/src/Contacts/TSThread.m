@@ -722,12 +722,13 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
 
 - (void)removeOldFriendRequestMessagesIfNeeded:(OWSInteractionType)interactionType withTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    // If we're friends with the person then we don't need to remove any friend request messages
+    // Friend request status doesn't apply to group threads
     if (self.isGroupThread) { return; }
+    // If we're friends with the other person then we don't need to remove any friend request messages
     if ([LKFriendRequestProtocol isFriendsWithAnyLinkedDeviceOfHexEncodedPublicKey:self.contactIdentifier]) { return; }
     
     NSMutableArray<NSString *> *idsToRemove = [NSMutableArray new];
-    __block TSMessage *_Nullable messageToKeep = nil; // We want to keep this interaction and not remove it
+    __block TSMessage *_Nullable messageToKeep = nil;
 
     [self enumerateInteractionsWithTransaction:transaction usingBlock:^(TSInteraction *interaction, YapDatabaseReadTransaction *transaction) {
         if (interaction.interactionType != interactionType) { return; }
@@ -754,14 +755,14 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
         }
     }];
     
-    for (NSString *interactionId in idsToRemove) {
-        // Don't delete the recent message
-        if (messageToKeep != nil && interactionId == messageToKeep.uniqueId) { continue; }
+    for (NSString *interactionID in idsToRemove) {
+        // Don't delete the most recent message
+        if (messageToKeep != nil && interactionID == messageToKeep.uniqueId) { continue; }
         
         // We need to fetch each interaction, since [TSInteraction removeWithTransaction:] does important work
-        TSInteraction *_Nullable interaction = [TSInteraction fetchObjectWithUniqueID:interactionId transaction:transaction];
-        if (!interaction) {
-            OWSFailDebug(@"couldn't load thread's interaction for deletion.");
+        TSInteraction *_Nullable interaction = [TSInteraction fetchObjectWithUniqueID:interactionID transaction:transaction];
+        if (interaction == nil) {
+            OWSFailDebug(@"Couldn't load interaction.");
             continue;
         }
         [interaction removeWithTransaction:transaction];
@@ -771,6 +772,11 @@ ConversationColorName const kConversationColorName_Default = ConversationColorNa
 - (BOOL)isContactFriend
 {
     return [LKFriendRequestProtocol getFriendRequestUIStatusForThread:self] == LKFriendRequestUIStatusFriends;
+}
+
+- (BOOL)isSlaveThread
+{
+    return [LKMultiDeviceProtocol isSlaveThread:self];
 }
 
 @end

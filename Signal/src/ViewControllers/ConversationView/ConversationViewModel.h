@@ -123,6 +123,8 @@ typedef NS_ENUM(NSUInteger, ConversationUpdateItemType) {
 
 - (void)appendUnsavedOutgoingTextMessage:(TSOutgoingMessage *)outgoingMessage;
 
+- (BOOL)reloadViewItems;
+
 @end
 
 NS_ASSUME_NONNULL_END

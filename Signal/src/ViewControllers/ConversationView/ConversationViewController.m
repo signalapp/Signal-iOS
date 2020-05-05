@@ -518,7 +518,6 @@ typedef enum : NSUInteger {
 - (void)handleGroupThreadUpdatedNotification:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
-    
     // Check thread
     NSString *threadID = (NSString *)notification.object;
     if (![threadID isEqualToString:self.thread.uniqueId]) { return; }
@@ -526,29 +525,34 @@ typedef enum : NSUInteger {
     [self.thread reload];
     // Update UI
     [self hideInputIfNeeded];
-    [self resetContentAndLayout];
+    [self.collectionView.collectionViewLayout invalidateLayout];
+    for (id<ConversationViewItem> item in self.viewItems) {
+        [item clearCachedLayoutState];
+    }
+    [self.conversationViewModel reloadViewItems];
+    [self.collectionView reloadData];
 }
 
 - (void)handleUserFriendRequestStatusChangedNotification:(NSNotification *)notification
 {
+    OWSAssertIsOnMainThread();
     // Friend request status doesn't apply to group threads
     if (self.thread.isGroupThread) { return; }
     NSString *hexEncodedPublicKey = (NSString *)notification.object;
     // Check if we should update the UI
-    __block BOOL needsUpdate;
+    __block NSSet<NSString *> *linkedDevices;
     [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        NSSet<NSString *> *linkedDevices = [LKDatabaseUtilities getLinkedDeviceHexEncodedPublicKeysFor:self.thread.contactIdentifier in:transaction];
-        needsUpdate = [linkedDevices containsObject:hexEncodedPublicKey];
+        linkedDevices = [LKDatabaseUtilities getLinkedDeviceHexEncodedPublicKeysFor:self.thread.contactIdentifier in:transaction];
     }];
-    if (!needsUpdate) { return; }
-    // Ensure the thread instance is up to date
-    [self.thread reload];
+    if (![linkedDevices containsObject:hexEncodedPublicKey]) { return; }
     // Update the UI
+    [self updateInputBar];
+    [self.collectionView.collectionViewLayout invalidateLayout];
     for (id<ConversationViewItem> item in self.viewItems) {
         [item clearCachedLayoutState];
     }
-    [self updateInputToolbar];
-    [self resetContentAndLayout];
+    [self.conversationViewModel reloadViewItems];
+    [self.collectionView reloadData];
 }
 
 - (void)handleThreadSessionRestoreDevicesChangedNotifiaction:(NSNotification *)notification
@@ -665,6 +669,7 @@ typedef enum : NSUInteger {
         self.inputToolbar.hidden = NO;
     }
 
+    // Loki: In RSS feeds, don't hide the input bar entirely; just hide the text field inside.
     if (self.isRSSFeed) {
         [self.inputToolbar hideInputMethod];
     }
@@ -780,7 +785,7 @@ typedef enum : NSUInteger {
     self.inputToolbar.inputToolbarDelegate = self;
     self.inputToolbar.inputTextViewDelegate = self;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _inputToolbar);
-    [self updateInputToolbar];
+    [self updateInputBar];
 
     self.loadMoreHeader = [UILabel new];
     self.loadMoreHeader.text = NSLocalizedString(@"CONVERSATION_VIEW_LOADING_MORE_MESSAGES", @"Indicates that the app is loading more messages in this conversation.");
@@ -921,7 +926,7 @@ typedef enum : NSUInteger {
         NSTimeInterval appearenceDuration = CACurrentMediaTime() - self.viewControllerCreatedAt;
         OWSLogVerbose(@"First viewWillAppear took: %.2fms", appearenceDuration * 1000);
     }
-    [self updateInputToolbarLayout];
+    [self updateInputBarLayout];
 }
 
 - (NSArray<id<ConversationViewItem>> *)viewItems
@@ -1048,7 +1053,7 @@ typedef enum : NSUInteger {
 
 - (void)updateSessionRestoreBanner {
     BOOL isContactThread = [self.thread isKindOfClass:[TSContactThread class]];
-    BOOL shouldRemoveBanner = !isContactThread;
+    BOOL shouldDetachBanner = !isContactThread;
     if (isContactThread) {
         TSContactThread *thread = (TSContactThread *)self.thread;
         if (thread.sessionRestoreDevices.count > 0) {
@@ -1068,11 +1073,10 @@ typedef enum : NSUInteger {
                 }];
             }
         } else {
-            shouldRemoveBanner = true;
+            shouldDetachBanner = true;
         }
     }
-
-    if (shouldRemoveBanner && self.restoreSessionBannerView) {
+    if (shouldDetachBanner && self.restoreSessionBannerView != nil) {
         [self.restoreSessionBannerView removeFromSuperview];
         self.restoreSessionBannerView = nil;
     }
@@ -1461,7 +1465,7 @@ typedef enum : NSUInteger {
     // Clear the "on open" state after the view has been presented.
     self.actionOnOpen = ConversationViewActionNone;
 
-    [self updateInputToolbarLayout];
+    [self updateInputBarLayout];
     [self ensureScrollDownButton];
 }
 
@@ -1668,7 +1672,7 @@ typedef enum : NSUInteger {
 
 #pragma mark - Updating
 
-- (void)updateInputToolbar {
+- (void)updateInputBar {
     BOOL shouldInputBarBeEnabled = [LKFriendRequestProtocol shouldInputBarBeEnabledForThread:self.thread];
     [self.inputToolbar setUserInteractionEnabled:shouldInputBarBeEnabled];
     NSString *placeholderText = shouldInputBarBeEnabled ? NSLocalizedString(@"Message", "") : NSLocalizedString(@"Pending session request", "");
@@ -2890,6 +2894,15 @@ typedef enum : NSUInteger {
         AudioServicesPlaySystemSound(soundId);
     }
     [self.typingIndicators didSendOutgoingMessageInThread:self.thread];
+
+    // Loki: Lock the input bar early
+    if ([self.thread isKindOfClass:TSContactThread.class] && [message isKindOfClass:LKFriendRequestMessage.class]) {
+        NSString *recipientID = self.thread.contactIdentifier;
+        OWSAssertIsOnMainThread();
+        [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [LKFriendRequestProtocol setFriendRequestStatusToSendingIfNeededForHexEncodedPublicKey:recipientID transaction:transaction];
+        }];
+    }
 }
 
 #pragma mark UIDocumentMenuDelegate
@@ -5086,7 +5099,7 @@ typedef enum : NSUInteger {
     }
 
     [self dismissMenuActionsIfNecessary];
-    [self updateInputToolbar];
+    [self updateInputBar];
 
     if (self.isGroupConversation) {
         [self.uiDatabaseConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
@@ -5332,7 +5345,7 @@ typedef enum : NSUInteger {
             // new size.
             [strongSelf resetForSizeOrOrientationChange];
 
-            [strongSelf updateInputToolbarLayout];
+            [strongSelf updateInputBarLayout];
 
             if (self.menuActionsViewController != nil) {
                 [self scrollToMenuActionInteraction:NO];
@@ -5367,17 +5380,17 @@ typedef enum : NSUInteger {
         // Try to update the lastKnownDistanceFromBottom; the content size may have changed.
         [self updateLastKnownDistanceFromBottom];
     }
-    [self updateInputToolbarLayout];
+    [self updateInputBarLayout];
 }
 
 - (void)viewSafeAreaInsetsDidChange
 {
     [super viewSafeAreaInsetsDidChange];
 
-    [self updateInputToolbarLayout];
+    [self updateInputBarLayout];
 }
 
-- (void)updateInputToolbarLayout
+- (void)updateInputBarLayout
 {
     UIEdgeInsets safeAreaInsets = UIEdgeInsetsZero;
     if (@available(iOS 11, *)) {

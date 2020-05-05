@@ -106,7 +106,7 @@ final class FriendRequestView : UIView {
         updateUI()
     }
     
-    private func updateUI() {
+    @objc public func updateUI() {
         let thread = message.thread
         let friendRequestStatus = FriendRequestProtocol.getFriendRequestUIStatus(for: thread)
         guard let contactID = thread.contactIdentifier() else { return }
@@ -114,7 +114,7 @@ final class FriendRequestView : UIView {
         let format: String?
         switch kind {
         case .incoming:
-            buttonStackView.isHidden = friendRequestStatus != .received
+            buttonStackView.isHidden = (friendRequestStatus != .received)
             spacer2.isHidden = buttonStackView.isHidden
             switch friendRequestStatus {
             case .none: format = NSLocalizedString("You've declined %@'s session request", comment: "")
@@ -127,7 +127,7 @@ final class FriendRequestView : UIView {
             switch friendRequestStatus {
             case .none: format = nil // The message failed to send
             case .friends: format = nil
-            case .received: return
+            case .received: return // Should never occur
             case .sent: format = NSLocalizedString("You've sent %@ a session request", comment: "")
             case .expired: format = NSLocalizedString("Your session request to %@ has expired", comment: "")
             }

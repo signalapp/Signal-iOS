@@ -184,17 +184,6 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     // If we're friends then the assumption is that we have the other user's pre key bundle.
     NSString *messageClassAsString = (thread.isContactFriend || thread.isGroupThread || thread.isNoteToSelf) ? @"TSOutgoingMessage" : @"LKFriendRequestMessage";
     Class messageClass = NSClassFromString(messageClassAsString);
-
-    if ([messageClassAsString isEqual:@"LKFriendRequestMessage"]) {
-        NSString *recipientID = thread.contactIdentifier;
-        if (recipientID != nil) {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                    [LKFriendRequestProtocol setFriendRequestStatusToSendingIfNeededForHexEncodedPublicKey:recipientID transaction:transaction];
-                }];
-            });
-        }
-    }
     
     TSOutgoingMessage *message =
         [[messageClass alloc] initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]

@@ -43,7 +43,7 @@ extern ConversationColorName const kConversationColorName_Default;
 @property (nonatomic) NSInteger friendRequestStatus __deprecated_msg("use OWSPrimaryStorage.getFriendRequestStatusForContact:transaction: instead");
 @property (nonatomic, readonly) BOOL isContactFriend;
 // ========
-@property (nonatomic) BOOL isForceHidden; // FIXME: Having both this and shouldThreadBeVisible is confusing
+@property (nonatomic, readonly) BOOL isSlaveThread;
 
 /**
  *  Whether the object is a group thread or not.
@@ -184,12 +184,12 @@ extern ConversationColorName const kConversationColorName_Default;
 #pragma mark - Loki Friend Request Handling
 
 /**
- Remove any outgoing friend request message which failed to send
+ Remove any old outgoing friend request messages that failed to send.
  */
 - (void)removeOldOutgoingFriendRequestMessagesIfNeededWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 /**
- Remove any old incoming friend request message that is still pending
+ Remove any old incoming friend request messages that are pending.
  */
 - (void)removeOldIncomingFriendRequestMessagesIfNeededWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 

@@ -117,10 +117,6 @@ public final class SessionManagementProtocol : NSObject {
 
     public static func getSessionResetMessageSend(for hexEncodedPublicKey: String, in transaction: YapDatabaseReadWriteTransaction) -> Promise<OWSMessageSend> {
         let thread = TSContactThread.getOrCreateThread(withContactId: hexEncodedPublicKey, transaction: transaction)
-        let masterHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: hexEncodedPublicKey, in: transaction)
-        let isSlaveDeviceThread = masterHexEncodedPublicKey != hexEncodedPublicKey
-        thread.isForceHidden = isSlaveDeviceThread
-        thread.save(with: transaction)
         let message = getSessionResetMessage(for: hexEncodedPublicKey, in: transaction)
         let recipient = SignalRecipient.getOrBuildUnsavedRecipient(forRecipientId: hexEncodedPublicKey, transaction: transaction)
         let udManager = SSKEnvironment.shared.udManager
