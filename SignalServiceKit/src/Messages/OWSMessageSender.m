@@ -1219,10 +1219,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     if (signalMessage.isFriendRequest) {
                         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                             if (!message.skipSave) {
-                                [message.thread removeOldOutgoingFriendRequestMessagesIfNeededWithTransaction:transaction];
-                                if ([message.thread isKindOfClass:[TSContactThread class]]) {
-                                    [((TSContactThread *) message.thread) removeAllSessionRestoreDevicesWithTransaction:transaction];
-                                }
                                 // Update the message
                                 NSTimeInterval expirationInterval = 72 * kHourInterval;
                                 NSDate *expirationDate = [[NSDate new] dateByAddingTimeInterval:expirationInterval];

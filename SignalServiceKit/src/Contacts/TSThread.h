@@ -182,18 +182,6 @@ extern ConversationColorName const kConversationColorName_Default;
 
 - (void)updateWithMutedUntilDate:(NSDate *)mutedUntilDate transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
-#pragma mark - Loki Friend Request Handling
-
-/**
- Remove any old outgoing friend request messages that failed to send.
- */
-- (void)removeOldOutgoingFriendRequestMessagesIfNeededWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
-
-/**
- Remove any old incoming friend request messages that are pending.
- */
-- (void)removeOldIncomingFriendRequestMessagesIfNeededWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
-
 @end
 
 NS_ASSUME_NONNULL_END

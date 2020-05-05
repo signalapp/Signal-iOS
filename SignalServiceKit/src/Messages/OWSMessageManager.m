@@ -1603,11 +1603,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     [incomingMessage saveWithTransaction:transaction];
-    
-    // Loki: Remove any old incoming friend requests
-    if (incomingMessage.isFriendRequest) {
-        [thread removeOldIncomingFriendRequestMessagesIfNeededWithTransaction:transaction];
-    }
 
     // Any messages sent from the current user - from this device or another - should be automatically marked as read.
     if ([(masterThread.contactIdentifier ?: envelope.source) isEqualToString:self.tsAccountManager.localNumber]) {
