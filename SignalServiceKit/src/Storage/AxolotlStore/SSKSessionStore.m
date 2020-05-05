@@ -205,6 +205,27 @@ NS_ASSUME_NONNULL_BEGIN
         [self loadSessionForAccountId:accountId deviceId:deviceId transaction:transaction].sessionState.hasSenderChain;
 }
 
+- (BOOL)containsAnyActiveSessionForAccountId:(NSString *)accountId transaction:(SDSAnyReadTransaction *)transaction
+{
+    OWSAssertDebug(accountId.length > 0);
+    OWSAssertDebug([transaction isKindOfClass:[SDSAnyReadTransaction class]]);
+
+    NSDictionary *_Nullable dictionary = [self.keyValueStore getObjectForKey:accountId transaction:transaction];
+    for (id value in dictionary.allValues) {
+        if (![value isKindOfClass:[SessionRecord class]]) {
+            OWSLogVerbose(@"Unexpected value: %@", value);
+            OWSFailDebug(@"Unexpected value.");
+            continue;
+        }
+        SessionRecord *record = (SessionRecord *)value;
+        OWSLogVerbose(@"Record: %d.", record.sessionState.hasSenderChain);
+        if (record.sessionState.hasSenderChain) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
 - (void)deleteSessionForContact:(NSString *)contactIdentifier
                        deviceId:(int)deviceId
                 protocolContext:(nullable id<SPKProtocolWriteContext>)protocolContext
