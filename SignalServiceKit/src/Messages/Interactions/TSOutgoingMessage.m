@@ -2,6 +2,8 @@
 //  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
+@import Foundation;
+
 #import "TSOutgoingMessage.h"
 #import "NSString+SSK.h"
 #import "OWSContact.h"
@@ -1097,7 +1099,13 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     // Loki: Set display name & profile picture (exclude the profile picture if this is a friend request
     // to prevent unsolicited content from being sent)
     id<ProfileManagerProtocol> profileManager = SSKEnvironment.shared.profileManager;
-    NSString *displayName = profileManager.localProfileName;
+    NSString *displayName;
+    NSString *masterHexEncodedPublicKey = [NSUserDefaults.standardUserDefaults stringForKey:@"masterDeviceHexEncodedPublicKey"];
+    if (masterHexEncodedPublicKey != nil) {
+        displayName = [profileManager profileNameForRecipientWithID:masterHexEncodedPublicKey];
+    } else {
+        displayName = profileManager.localProfileName;
+    }
     NSString *profilePictureURL = profileManager.profilePictureURL;
     SSKProtoDataMessageLokiProfileBuilder *profileBuilder = [SSKProtoDataMessageLokiProfile builder];
     [profileBuilder setDisplayName:displayName];

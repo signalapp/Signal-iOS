@@ -1549,6 +1549,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
             failure(error);
         }];
+
     if ([LKMultiDeviceProtocol isMultiDeviceRequiredForMessage:message]) { // Avoid the write transaction if possible
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.primaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {

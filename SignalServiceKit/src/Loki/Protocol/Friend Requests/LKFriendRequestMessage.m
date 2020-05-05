@@ -3,6 +3,7 @@
 #import "ProfileManagerProtocol.h"
 #import "SignalRecipient.h"
 #import "SSKEnvironment.h"
+#import "TSThread.h"
 
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
@@ -27,6 +28,6 @@
 
 #pragma mark Settings
 - (uint)ttl { return (uint)[LKTTLUtilities getTTLFor:LKMessageTypeFriendRequest]; }
-- (BOOL)shouldSyncTranscript { return NO; }
+- (BOOL)shouldSyncTranscript { return self.thread.isNoteToSelf; }
 
 @end
