@@ -7,6 +7,8 @@ use_frameworks!
 # OWS Pods
 ###
 
+pod 'SwiftProtobuf', "1.7.0"
+
 pod 'SignalCoreKit', git: 'https://github.com/signalapp/SignalCoreKit.git', testspecs: ["Tests"]
 # pod 'SignalCoreKit', path: '../SignalCoreKit', testspecs: ["Tests"]
 
