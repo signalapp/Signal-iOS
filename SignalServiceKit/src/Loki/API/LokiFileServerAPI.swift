@@ -38,11 +38,11 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
     public static func getDeviceLinks(associatedWith hexEncodedPublicKeys: Set<String>) -> Promise<Set<DeviceLink>> {
         let hexEncodedPublicKeysDescription = "[ \(hexEncodedPublicKeys.joined(separator: ", ")) ]"
         print("[Loki] Getting device links for: \(hexEncodedPublicKeysDescription).")
-        return getAuthToken(for: server).then(on: LokiAPI.workQueue) { token -> Promise<Set<DeviceLink>> in
+        return getAuthToken(for: server).then(on: DispatchQueue.global()) { token -> Promise<Set<DeviceLink>> in
             let queryParameters = "ids=\(hexEncodedPublicKeys.map { "@\($0)" }.joined(separator: ","))&include_user_annotations=1"
             let url = URL(string: "\(server)/users?\(queryParameters)")!
             let request = TSRequest(url: url)
-            return LokiFileServerProxy(for: server).perform(request, withCompletionQueue: LokiAPI.workQueue).map(on: LokiAPI.workQueue) { rawResponse -> Set<DeviceLink> in
+            return LokiFileServerProxy(for: server).perform(request, withCompletionQueue: DispatchQueue.global()).map(on: DispatchQueue.global(qos: .userInitiated)) { rawResponse -> Set<DeviceLink> in
                 guard let json = rawResponse as? JSON, let data = json["data"] as? [JSON] else {
                     print("[Loki] Couldn't parse device links for users: \(hexEncodedPublicKeys) from: \(rawResponse).")
                     throw LokiDotNetAPIError.parsingFailed
@@ -84,16 +84,14 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
                         return deviceLink
                     }
                 })
-            }.then(on: LokiAPI.workQueue) { deviceLinks -> Promise<Set<DeviceLink>> in
-                let (promise, seal) = Promise<Set<DeviceLink>>.pending()
+            }.map(on: DispatchQueue.global()) { deviceLinks in
                 // Dispatch async on the main queue to avoid nested write transactions
                 DispatchQueue.main.async {
                     storage.dbReadWriteConnection.readWrite { transaction in
                         storage.setDeviceLinks(deviceLinks, in: transaction)
                     }
-                    seal.fulfill(deviceLinks)
                 }
-                return promise
+                return deviceLinks
             }
         }
     }
