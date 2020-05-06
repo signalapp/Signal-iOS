@@ -37,14 +37,22 @@ public final class SyncMessagesProtocol : NSObject {
     }
 
     public static func syncAllContacts() -> Promise<Void> {
-        var friends: [SignalAccount] = []
+        // Collect all master devices with which a session has been established. Note that
+        // this is not the same as all master devices with which we're friends.
+        var hepks: Set<String> = []
         TSContactThread.enumerateCollectionObjects { object, _ in
             guard let thread = object as? TSContactThread else { return }
             let hexEncodedPublicKey = thread.contactIdentifier()
             guard thread.isContactFriend && thread.shouldThreadBeVisible && !thread.isSlaveThread else { return }
-            friends.append(SignalAccount(recipientId: hexEncodedPublicKey))
+            hepks.insert(hexEncodedPublicKey)
         }
-        friends.append(SignalAccount(recipientId: getUserHexEncodedPublicKey())) // TODO: Are we sure about this?
+        TSGroupThread.enumerateCollectionObjects { object, _ in
+            guard let group = object as? TSGroupThread, group.groupModel.groupType == .closedGroup,
+                group.shouldThreadBeVisible else { return }
+            hepks.formUnion(group.groupModel.groupMemberIds)
+        }
+        hepks.insert(getUserHexEncodedPublicKey()) // TODO: Are we sure about this?
+        let friends = hepks.map { SignalAccount(recipientId: $0) }
         let syncManager = SSKEnvironment.shared.syncManager
         let promises = friends.chunked(by: 3).map { friends -> Promise<Void> in // TODO: Does this always fit?
             return Promise(syncManager.syncContacts(for: friends)).map { _ in }

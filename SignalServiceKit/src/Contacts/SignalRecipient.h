@@ -42,6 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)markRecipientAsRegistered:(NSString *)recipientId
                          deviceId:(UInt32)deviceId
                       transaction:(YapDatabaseReadWriteTransaction *)transaction;
+
 + (void)markRecipientAsUnregistered:(NSString *)recipientId transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end

@@ -190,8 +190,11 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
                     let thread = TSContactThread.getOrCreateThread(withContactId: slaveHexEncodedPublicKey, transaction: transaction)
                     thread.save(with: transaction)
                 }
-                let _ = SSKEnvironment.shared.syncManager.syncAllContacts()
-                let _ = SSKEnvironment.shared.syncManager.syncAllGroups()
+                let _ = SSKEnvironment.shared.syncManager.syncAllGroups().ensure {
+                    // Closed groups first because we prefer the session request mechanism
+                    // to the AFR mechanism
+                    let _ = SSKEnvironment.shared.syncManager.syncAllContacts()
+                }
                 let _ = SSKEnvironment.shared.syncManager.syncAllOpenGroups()
                 storage.dbReadWriteConnection.readWrite { transaction in
                     storage.setFriendRequestStatus(.friends, for: slaveHexEncodedPublicKey, transaction: transaction)

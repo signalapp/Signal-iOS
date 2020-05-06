@@ -180,6 +180,7 @@ public final class SessionManagementProtocol : NSObject {
         storage.setPreKeyBundle(preKeyBundle, forContact: hexEncodedPublicKey, transaction: transaction)
         // If we received a friend request (i.e. also a new pre key bundle), but we were already friends with the other user, reset the session.
         // The envelope type is set during UD decryption.
+        // TODO: Should this ignore session requests?
         if envelope.type == .friendRequest,
             let thread = TSContactThread.getWithContactId(hexEncodedPublicKey, transaction: transaction), // TODO: Should this be getOrCreate?
             thread.isContactFriend {
