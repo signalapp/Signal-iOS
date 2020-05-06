@@ -360,7 +360,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         OWSAssertDebug([message.body lengthOfBytesUsingEncoding:NSUTF8StringEncoding] <= kOversizeTextMessageSizeThreshold);
     }
     
-    if (!message.thread.isGroupThread && ![LKSessionMetaProtocol isThreadNoteToSelf:message.thread]) {
+    if (message.shouldBeSaved && !message.thread.isGroupThread && ![LKSessionMetaProtocol isThreadNoteToSelf:message.thread]) {
         // Not really true but better from a UI point of view
         [NSNotificationCenter.defaultCenter postNotificationName:NSNotification.calculatingPoW object:[[NSNumber alloc] initWithUnsignedLongLong:message.timestamp]];
     }
