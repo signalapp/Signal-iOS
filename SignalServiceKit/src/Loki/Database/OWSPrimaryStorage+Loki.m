@@ -228,7 +228,7 @@
 
 - (NSSet<NSString *> *)getAllFriendsWithTransaction:(YapDatabaseReadTransaction *)transaction {
     NSMutableSet<NSString *> *hexEncodedPublicKeys = [NSMutableSet set];
-    [transaction enumerateKeysAndObjectsInCollection:LKFriendRequestCollection usingBlock:^(NSString *hexEncodedPublicKey, NSNumber *status, BOOL * _Nonnull stop) {
+    [transaction enumerateKeysAndObjectsInCollection:LKFriendRequestCollection usingBlock:^(NSString *hexEncodedPublicKey, NSNumber *status, BOOL *stop) {
         if ([status integerValue] == LKFriendRequestStatusFriends) {
             [hexEncodedPublicKeys addObject:hexEncodedPublicKey];
         }

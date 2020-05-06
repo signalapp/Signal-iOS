@@ -36,7 +36,8 @@ public final class SyncMessagesProtocol : NSObject {
     }
 
     public static func syncAllContacts() -> Promise<Void> {
-        // We need to sync over all contacts whom we are friends with.
+        // We need to sync over all contacts whom we are friends with, even if
+        // we don't have a thread for them.
         var hepks: [String] = []
         storage.dbReadConnection.read { transaction in
             hepks = self.storage
@@ -44,7 +45,6 @@ public final class SyncMessagesProtocol : NSObject {
                 .filter { ECKeyPair.isValidHexEncodedPublicKey(candidate: $0) }
                 .map { storage.getMasterHexEncodedPublicKey(for: $0, in: transaction) ?? $0 }
         }
-
         let friends = Set(hepks).map { SignalAccount(recipientId: $0) }
         let syncManager = SSKEnvironment.shared.syncManager
         let promises = friends.chunked(by: 3).map { friends -> Promise<Void> in // TODO: Does this always fit?
@@ -166,10 +166,10 @@ public final class SyncMessagesProtocol : NSObject {
     public static func handleContactSyncMessageData(_ data: Data, using transaction: YapDatabaseReadWriteTransaction) {
         let parser = ContactParser(data: data)
         let hexEncodedPublicKeys = parser.parseHexEncodedPublicKeys()
-        let ourHexEncodedPublicKey = getUserHexEncodedPublicKey()
+        let userHexEncodedPublicKey = getUserHexEncodedPublicKey()
         // Try to establish sessions
         for hexEncodedPublicKey in hexEncodedPublicKeys {
-            guard hexEncodedPublicKey != ourHexEncodedPublicKey else { continue } // Skip self
+            guard hexEncodedPublicKey != userHexEncodedPublicKey else { continue } // Skip self
             // We don't update the friend request status; that's done in OWSMessageSender.sendMessage(_:)
             let friendRequestStatus = storage.getFriendRequestStatus(for: hexEncodedPublicKey, transaction: transaction)
             switch friendRequestStatus {

@@ -384,7 +384,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             [allAttachmentIds
                 addObjectsFromArray:[OutgoingMessagePreparer prepareMessageForSending:message transaction:transaction]];
 
-            // Loki - Optimistically update friend request status when we can
+            // Loki: Optimistically update friend request status when we can. This is used for
+            // e.g. preventing AFRs from being sent twice on a contact sync.
             if ([LKFriendRequestProtocol shouldUpdateFriendRequestStatusFromMessage:message]) {
                 [LKFriendRequestProtocol setFriendRequestStatusToSendingIfNeededForHexEncodedPublicKey:message.thread.contactIdentifier transaction:transaction];
             }

@@ -622,7 +622,6 @@ class FriendRequestProtocolTests : XCTestCase {
     }
 
     // MARK: - shouldUpdateFriendRequestStatus
-
     func test_shouldUpdateFriendRequestStatusReturnsTheCorrectValue() {
         let thread = LokiTestUtilities.createContactThread(for: LokiTestUtilities.generateHexEncodedPublicKey())
 
