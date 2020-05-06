@@ -637,4 +637,19 @@ class FriendRequestProtocolTests : XCTestCase {
         XCTAssertFalse(FriendRequestProtocol.shouldUpdateFriendRequestStatus(from: sessionRequest))
         XCTAssertFalse(FriendRequestProtocol.shouldUpdateFriendRequestStatus(from: deviceLinkAuthorisation))
     }
+
+    func test_shouldUpdateFriendRequestStatusReturnsFalseForGroupThreads() {
+        let allGroupTypes: [GroupType] = [ .closedGroup, .openGroup, .rssFeed ]
+        for groupType in allGroupTypes {
+            guard let groupThread = LokiTestUtilities.createGroupThread(groupType: groupType) else { return XCTFail() }
+            let friendRequest = FriendRequestMessage(timestamp: 1, thread: groupThread, body: "")
+            XCTAssertFalse(FriendRequestProtocol.shouldUpdateFriendRequestStatus(from: friendRequest))
+        }
+    }
+
+    func test_shouldUpdateFriendRequestStatusReturnsFalseForCurrentDevice() {
+        let thread = LokiTestUtilities.createContactThread(for: LokiTestUtilities.getCurrentUserHexEncodedPublicKey())
+        let friendRequest = FriendRequestMessage(timestamp: 1, thread: thread, body: "")
+        XCTAssertFalse(FriendRequestProtocol.shouldUpdateFriendRequestStatus(from: friendRequest))
+    }
 }

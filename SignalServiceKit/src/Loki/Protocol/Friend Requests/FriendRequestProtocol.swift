@@ -170,6 +170,8 @@ public final class FriendRequestProtocol : NSObject {
     @objc(shouldUpdateFriendRequestStatusFromMessage:)
     public static func shouldUpdateFriendRequestStatus(from message: TSOutgoingMessage) -> Bool {
         // The order of these checks matters
+        if message.thread.isGroupThread() { return false }
+        if message.thread.contactIdentifier() == getUserHexEncodedPublicKey() { return false }
         if (message as? DeviceLinkMessage)?.kind == .request { return true }
         if message is SessionRequestMessage { return false }
         return message is FriendRequestMessage
@@ -243,7 +245,8 @@ public final class FriendRequestProtocol : NSObject {
         // Signal cipher decryption and thus that we have a session with the other person.
         let friendRequestStatus = storage.getFriendRequestStatus(for: hexEncodedPublicKey, transaction: transaction);
         // We shouldn't be able to skip from none to friends
-        guard friendRequestStatus != .none else { return }
+        guard friendRequestStatus == .requestSending || friendRequestStatus == .requestSent
+            || friendRequestStatus == .requestReceived else { return }
         // Become friends
         storage.setFriendRequestStatus(.friends, for: hexEncodedPublicKey, transaction: transaction)
         // Send a contact sync message if needed
