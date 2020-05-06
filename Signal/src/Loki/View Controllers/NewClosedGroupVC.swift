@@ -64,7 +64,7 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
         navigationItem.rightBarButtonItem = doneButton
         // Customize title
         let titleLabel = UILabel()
-        titleLabel.text = NSLocalizedString("New Closed Group (Beta)", comment: "")
+        titleLabel.text = NSLocalizedString("New Closed Group", comment: "")
         titleLabel.textColor = Colors.text
         let titleLabelFontSize = isSmallScreen ? Values.mediumFontSize : Values.largeFontSize
         titleLabel.font = .boldSystemFont(ofSize: titleLabelFontSize)

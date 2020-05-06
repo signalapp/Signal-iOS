@@ -2788,7 +2788,7 @@
 "Would you like to restore your session with %@?" = "Would you like to restore your session with %@?";
 "Restore" = "Restore";
 "Dismiss" = "Dismiss";
-"New Closed Group (Beta)" = "New Closed Group (Beta)";
+"New Closed Group" = "New Closed Group";
 "Group Members" = "Group Members";
 "You don't have any contacts yet" = "You don't have any contacts yet";
 "Start a Session" = "Start a Session";
