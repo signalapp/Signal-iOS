@@ -383,6 +383,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             [allAttachmentIds
                 addObjectsFromArray:[OutgoingMessagePreparer prepareMessageForSending:message transaction:transaction]];
+
+            // Loki - Optimistically update friend request status when we can
+            if ([LKFriendRequestProtocol shouldUpdateFriendRequestStatusFromMessage:message]) {
+                [LKFriendRequestProtocol setFriendRequestStatusToSendingIfNeededForHexEncodedPublicKey:message.thread.contactIdentifier transaction:transaction];
+            }
         }];
 
         NSOperationQueue *sendingQueue = [self sendingQueueForMessage:message];

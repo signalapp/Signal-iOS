@@ -226,6 +226,16 @@
 
 #define LKFriendRequestCollection @"LKFriendRequestCollection"
 
+- (NSSet<NSString *> *)getAllFriendsWithTransaction:(YapDatabaseReadTransaction *)transaction {
+    NSMutableSet<NSString *> *hexEncodedPublicKeys = [NSMutableSet set];
+    [transaction enumerateKeysAndObjectsInCollection:LKFriendRequestCollection usingBlock:^(NSString *hexEncodedPublicKey, NSNumber *status, BOOL * _Nonnull stop) {
+        if ([status integerValue] == LKFriendRequestStatusFriends) {
+            [hexEncodedPublicKeys addObject:hexEncodedPublicKey];
+        }
+    }];
+    return hexEncodedPublicKeys;
+}
+
 - (LKFriendRequestStatus)getFriendRequestStatusForContact:(NSString *)hexEncodedPublicKey transaction:(YapDatabaseReadTransaction *)transaction {
     NSNumber *_Nullable status = [transaction objectForKey:hexEncodedPublicKey inCollection:LKFriendRequestCollection];
     if (status == nil) { return LKFriendRequestStatusNone; }

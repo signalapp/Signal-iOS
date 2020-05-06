@@ -36,22 +36,16 @@ public final class SyncMessagesProtocol : NSObject {
     }
 
     public static func syncAllContacts() -> Promise<Void> {
-        // Collect all master devices with which a session has been established. Note that
-        // this is not the same as all master devices with which we're friends.
-        var hepks: Set<String> = []
-        TSContactThread.enumerateCollectionObjects { object, _ in
-            guard let thread = object as? TSContactThread else { return }
-            let hexEncodedPublicKey = thread.contactIdentifier()
-            guard thread.isContactFriend && thread.shouldThreadBeVisible && !thread.isSlaveThread else { return }
-            hepks.insert(hexEncodedPublicKey)
+        // We need to sync over all contacts whom we are friends with.
+        var hepks: [String] = []
+        storage.dbReadConnection.read { transaction in
+            hepks = self.storage
+                .getAllFriends(using: transaction)
+                .filter { ECKeyPair.isValidHexEncodedPublicKey(candidate: $0) }
+                .map { storage.getMasterHexEncodedPublicKey(for: $0, in: transaction) ?? $0 }
         }
-        TSGroupThread.enumerateCollectionObjects { object, _ in
-            guard let group = object as? TSGroupThread, group.groupModel.groupType == .closedGroup,
-                group.shouldThreadBeVisible else { return }
-            hepks.formUnion(group.groupModel.groupMemberIds)
-        }
-        hepks.insert(getUserHexEncodedPublicKey()) // TODO: Are we sure about this?
-        let friends = hepks.map { SignalAccount(recipientId: $0) }
+
+        let friends = Set(hepks).map { SignalAccount(recipientId: $0) }
         let syncManager = SSKEnvironment.shared.syncManager
         let promises = friends.chunked(by: 3).map { friends -> Promise<Void> in // TODO: Does this always fit?
             return Promise(syncManager.syncContacts(for: friends)).map { _ in }
@@ -172,10 +166,10 @@ public final class SyncMessagesProtocol : NSObject {
     public static func handleContactSyncMessageData(_ data: Data, using transaction: YapDatabaseReadWriteTransaction) {
         let parser = ContactParser(data: data)
         let hexEncodedPublicKeys = parser.parseHexEncodedPublicKeys()
-        let linkedDevices = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: getUserHexEncodedPublicKey(), in: transaction)
+        let ourHexEncodedPublicKey = getUserHexEncodedPublicKey()
         // Try to establish sessions
         for hexEncodedPublicKey in hexEncodedPublicKeys {
-            guard !linkedDevices.contains(hexEncodedPublicKey) else { continue } // Skip self
+            guard hexEncodedPublicKey != ourHexEncodedPublicKey else { continue } // Skip self
             // We don't update the friend request status; that's done in OWSMessageSender.sendMessage(_:)
             let friendRequestStatus = storage.getFriendRequestStatus(for: hexEncodedPublicKey, transaction: transaction)
             switch friendRequestStatus {
