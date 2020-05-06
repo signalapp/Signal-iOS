@@ -113,7 +113,7 @@ public class FeatureFlags: NSObject {
     }
 
     @objc
-    public static let uuidCapabilities = true
+    public static let uuidCapabilities = allowUUIDOnlyContacts && useOnlyModernContactDiscovery
 
     @objc
     public static var storageModeDescription: String {
@@ -135,12 +135,10 @@ public class FeatureFlags: NSObject {
     public static let strictYDBExtensions = build.includes(.beta)
 
     @objc
-    public static var allowUUIDOnlyContacts: Bool {
-        return true
-    }
+    public static var allowUUIDOnlyContacts = useOnlyModernContactDiscovery
 
     @objc
-    public static var requireUUIDs = false
+    public static var uuidSafetyNumbers = allowUUIDOnlyContacts
 
     @objc
     public static let useOnlyModernContactDiscovery = false
