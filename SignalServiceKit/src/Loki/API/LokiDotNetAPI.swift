@@ -38,16 +38,14 @@ public class LokiDotNetAPI : NSObject {
         if let token = getAuthTokenFromDatabase(for: server) {
             return Promise.value(token)
         } else {
-            return requestNewAuthToken(for: server).then(on: LokiAPI.workQueue) { submitAuthToken($0, for: server) }.then(on: LokiAPI.workQueue) { token -> Promise<String> in
-                let (promise, seal) = Promise<String>.pending()
+            return requestNewAuthToken(for: server).then(on: DispatchQueue.global()) { submitAuthToken($0, for: server) }.map(on: DispatchQueue.global()) { token in
                 // Dispatch async on the main queue to avoid nested write transactions
                 DispatchQueue.main.async {
                     storage.dbReadWriteConnection.readWrite { transaction in
                         setAuthToken(for: server, to: token, in: transaction)
                     }
-                    seal.fulfill(token)
                 }
-                return promise
+                return token
             }
         }
     }
@@ -89,7 +87,7 @@ public class LokiDotNetAPI : NSObject {
         let url = URL(string: "\(server)/loki/v1/submit_challenge")!
         let parameters = [ "pubKey" : userHexEncodedPublicKey, "token" : token ]
         let request = TSRequest(url: url, method: "POST", parameters: parameters)
-        return LokiFileServerProxy(for: server).perform(request, withCompletionQueue: LokiAPI.workQueue).map { _ in token }
+        return LokiFileServerProxy(for: server).perform(request, withCompletionQueue: DispatchQueue.global()).map(on: DispatchQueue.global()) { _ in token }
     }
 
     // MARK: Public API

@@ -10,7 +10,7 @@ internal class LokiHTTPClient {
         securityPolicy.validatesDomainName = false
         result.securityPolicy = securityPolicy
         result.responseSerializer = AFHTTPResponseSerializer()
-        result.completionQueue = LokiAPI.workQueue
+        result.completionQueue = DispatchQueue.global()
         return result
     }()
 

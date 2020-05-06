@@ -55,8 +55,8 @@ public extension LokiAPI {
             ]
             print("[Loki] Populating snode pool using: \(target).")
             let (promise, seal) = Promise<LokiAPITarget>.pending()
-            attempt(maxRetryCount: 4, recoveringOn: workQueue) {
-                HTTP.execute(.post, url, parameters: parameters).map(on: workQueue) { json in
+            attempt(maxRetryCount: 4, recoveringOn: DispatchQueue.global()) {
+                HTTP.execute(.post, url, parameters: parameters).map(on: DispatchQueue.global()) { json in
                     guard let intermediate = json["result"] as? JSON, let rawTargets = intermediate["service_node_states"] as? [JSON] else { throw LokiAPIError.randomSnodePoolUpdatingFailed }
                     randomSnodePool = try Set(rawTargets.flatMap { rawTarget in
                         guard let address = rawTarget["public_ip"] as? String, let port = rawTarget["storage_port"] as? Int, let ed25519PublicKey = rawTarget["pubkey_ed25519"] as? String, let x25519PublicKey = rawTarget["pubkey_x25519"] as? String, address != "0.0.0.0" else {
@@ -68,9 +68,9 @@ public extension LokiAPI {
                     // randomElement() uses the system's default random generator, which is cryptographically secure
                     return randomSnodePool.randomElement()!
                 }
-            }.done(on: workQueue) { snode in
+            }.done(on: DispatchQueue.global()) { snode in
                 seal.fulfill(snode)
-            }.catch(on: workQueue) { error in
+            }.catch(on: DispatchQueue.global()) { error in
                 print("[Loki] Failed to contact seed node at: \(target).")
                 seal.reject(error)
             }
@@ -105,7 +105,7 @@ public extension LokiAPI {
             } else {
                 let url = URL(string: "\(snode.address):\(snode.port)/get_stats/v1")!
                 let request = TSRequest(url: url)
-                return TSNetworkManager.shared().perform(request, withCompletionQueue: workQueue).map(on: workQueue) { intermediate in
+                return TSNetworkManager.shared().perform(request, withCompletionQueue: DispatchQueue.global()).map(on: DispatchQueue.global()) { intermediate in
                     let rawResponse = intermediate.responseObject
                     guard let json = rawResponse as? JSON, let version = json["version"] as? String else { throw LokiAPIError.missingSnodeVersion }
                     snodeVersion[snode] = version
@@ -113,8 +113,8 @@ public extension LokiAPI {
                 }
             }
         }
-        getRandomSnode().then(on: workQueue) { snode -> Promise<LokiAPITarget> in
-            return getVersion(for: snode).then(on: workQueue) { version -> Promise<LokiAPITarget> in
+        getRandomSnode().then(on: DispatchQueue.global()) { snode -> Promise<LokiAPITarget> in
+            return getVersion(for: snode).then(on: DispatchQueue.global()) { version -> Promise<LokiAPITarget> in
                 if version >= "2.0.2" {
                     print("[Loki] Using file server proxy with version number \(version).")
                     return Promise { $0.fulfill(snode) }
@@ -122,12 +122,12 @@ public extension LokiAPI {
                     print("[Loki] Rejecting file server proxy with version number \(version).")
                     return getFileServerProxy()
                 }
-            }.recover(on: workQueue) { _ in
+            }.recover(on: DispatchQueue.global()) { _ in
                 return getFileServerProxy()
             }
-        }.done(on: workQueue) { snode in
+        }.done(on: DispatchQueue.global()) { snode in
             seal.fulfill(snode)
-        }.catch(on: workQueue) { error in
+        }.catch(on: DispatchQueue.global()) { error in
             seal.reject(error)
         }
         return promise

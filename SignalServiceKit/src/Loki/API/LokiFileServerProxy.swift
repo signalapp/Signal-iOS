@@ -46,10 +46,10 @@ internal class LokiFileServerProxy : LokiHTTPClient {
     internal func performLokiFileServerNSURLRequest(_ request: NSURLRequest, withCompletionQueue queue: DispatchQueue = DispatchQueue.main) -> LokiAPI.RawResponsePromise {
         var headers = getCanonicalHeaders(for: request)
         return Promise<LokiAPI.RawResponse> { [server = self.server, keyPair = self.keyPair, httpSession = self.httpSession] seal in
-            LokiAPI.workQueue.async {
+            DispatchQueue.global(qos: .userInitiated).async {
                 let uncheckedSymmetricKey = try? Curve25519.generateSharedSecret(fromPublicKey: LokiFileServerProxy.fileServerPublicKey, privateKey: keyPair.privateKey)
                 guard let symmetricKey = uncheckedSymmetricKey else { return seal.reject(Error.symmetricKeyGenerationFailed) }
-                LokiAPI.getFileServerProxy().then(on: LokiAPI.workQueue) { proxy -> Promise<Any> in
+                LokiAPI.getFileServerProxy().then(on: DispatchQueue.global()) { proxy -> Promise<Any> in
                     let url = "\(proxy.address):\(proxy.port)/file_proxy"
                     guard let urlAsString = request.url?.absoluteString, let serverURLEndIndex = urlAsString.range(of: server)?.upperBound,
                         serverURLEndIndex < urlAsString.endIndex else { throw Error.endpointParsingFailed }
@@ -102,7 +102,7 @@ internal class LokiFileServerProxy : LokiHTTPClient {
                     }
                     task.resume()
                     return promise
-                }.map(on: LokiAPI.workQueue) { rawResponse in
+                }.map(on: DispatchQueue.global(qos: .userInitiated)) { rawResponse in
                     guard let responseAsData = rawResponse as? Data, let responseAsJSON = try? JSONSerialization.jsonObject(with: responseAsData, options: .allowFragments) as? JSON, let base64EncodedCipherText = responseAsJSON["data"] as? String,
                         let meta = responseAsJSON["meta"] as? JSON, let statusCode = meta["code"] as? Int, let cipherText = Data(base64Encoded: base64EncodedCipherText) else {
                         print("[Loki] Received an invalid response.")
@@ -115,9 +115,9 @@ internal class LokiFileServerProxy : LokiHTTPClient {
                     let uncheckedJSON = try? JSONSerialization.jsonObject(with: uncheckedJSONAsData, options: .allowFragments) as? JSON
                     guard let json = uncheckedJSON else { throw HTTPError.networkError(code: -1, response: nil, underlyingError: Error.proxyResponseParsingFailed) }
                     return json
-                }.done(on: LokiAPI.workQueue) { rawResponse in
+                }.done(on: DispatchQueue.global()) { rawResponse in
                     seal.fulfill(rawResponse)
-                }.catch(on: LokiAPI.workQueue) { error in
+                }.catch(on: DispatchQueue.global()) { error in
                     print("[Loki] File server proxy request failed with error: \(error.localizedDescription).")
                     seal.reject(HTTPError.from(error: error) ?? error)
                 }

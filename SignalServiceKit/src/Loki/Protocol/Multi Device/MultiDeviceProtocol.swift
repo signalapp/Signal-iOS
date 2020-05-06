@@ -295,10 +295,10 @@ public extension MultiDeviceProtocol {
         }
         if timeSinceLastUpdate > deviceLinkUpdateInterval {
             let masterHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: hexEncodedPublicKey, in: transaction) ?? hexEncodedPublicKey
-            LokiFileServerAPI.getDeviceLinks(associatedWith: masterHexEncodedPublicKey).done(on: LokiAPI.workQueue) { _ in
+            LokiFileServerAPI.getDeviceLinks(associatedWith: masterHexEncodedPublicKey).done(on: DispatchQueue.global()) { _ in
                 getDestinations()
                 lastDeviceLinkUpdate[hexEncodedPublicKey] = Date()
-            }.catch(on: LokiAPI.workQueue) { error in
+            }.catch(on: DispatchQueue.global()) { error in
                 if (error as? LokiDotNetAPI.LokiDotNetAPIError) == LokiDotNetAPI.LokiDotNetAPIError.parsingFailed {
                     // Don't immediately re-fetch in case of failure due to a parsing error
                     lastDeviceLinkUpdate[hexEncodedPublicKey] = Date()
