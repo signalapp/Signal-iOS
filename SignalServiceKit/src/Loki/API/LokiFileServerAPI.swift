@@ -84,14 +84,18 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
                         return deviceLink
                     }
                 })
-            }.map(on: DispatchQueue.global()) { deviceLinks in
+            }.then(on: DispatchQueue.global()) { deviceLinks -> Promise<Set<DeviceLink>> in
+                let (promise, seal) = Promise<Set<DeviceLink>>.pending()
                 // Dispatch async on the main queue to avoid nested write transactions
                 DispatchQueue.main.async {
                     storage.dbReadWriteConnection.readWrite { transaction in
                         storage.setDeviceLinks(deviceLinks, in: transaction)
                     }
+                    // We have to wait for the device links to be stored because a lot of our logic relies
+                    // on them being in the database
+                    seal.fulfill(deviceLinks)
                 }
-                return deviceLinks
+                return promise
             }
         }
     }

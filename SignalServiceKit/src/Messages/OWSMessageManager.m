@@ -1271,7 +1271,7 @@ NS_ASSUME_NONNULL_BEGIN
         }).catchOn(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^(NSError *error) {
             dispatch_semaphore_signal(semaphore);
         }) retainUntilComplete];
-        dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, 8 * NSEC_PER_SEC));
+        dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC));
     }
     // FIXME: ========
 
