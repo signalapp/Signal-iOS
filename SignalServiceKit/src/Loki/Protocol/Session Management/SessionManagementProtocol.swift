@@ -139,6 +139,19 @@ public final class SessionManagementProtocol : NSObject {
         return promise
     }
 
+    @objc(repairSessionIfNeededForMessage:to:)
+    public static func repairSessionIfNeeded(for message: TSOutgoingMessage, to hexEncodedPublicKey: String) {
+        guard (message.thread as? TSGroupThread)?.groupModel.groupType == .closedGroup else { return }
+        DispatchQueue.main.async {
+            storage.dbReadWriteConnection.readWrite { transaction in
+                let thread = TSContactThread.getOrCreateThread(withContactId: hexEncodedPublicKey, transaction: transaction)
+                let sessionRequestMessage = SessionRequestMessage(thread: thread)
+                let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
+                messageSenderJobQueue.add(message: sessionRequestMessage, transaction: transaction)
+            }
+        }
+    }
+
     // MARK: - Receiving
     @objc(handleDecryptionError:forHexEncodedPublicKey:using:)
     public static func handleDecryptionError(_ rawValue: Int32, for hexEncodedPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) {
