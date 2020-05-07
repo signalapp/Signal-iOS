@@ -80,9 +80,8 @@ public final class SessionManagementProtocol : NSObject {
     }
 
     // MARK: - Sending
-    // TODO: Confusing that we have this but also a receiving version
-    @objc(sending_startSessionResetInThread:using:)
-    public static func sending_startSessionReset(in thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) {
+    @objc(startSessionResetInThread:using:)
+    public static func startSessionReset(in thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) {
         guard let thread = thread as? TSContactThread else {
             print("[Loki] Can't restore session for non contact thread.")
             return
@@ -97,7 +96,7 @@ public final class SessionManagementProtocol : NSObject {
         }
         let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .typeLokiSessionResetInProgress)
         infoMessage.save(with: transaction)
-        thread.sessionResetStatus = .requestReceived
+        thread.sessionResetStatus = .initiated
         thread.save(with: transaction)
         thread.removeAllSessionRestoreDevices(with: transaction)
     }
@@ -227,27 +226,32 @@ public final class SessionManagementProtocol : NSObject {
         storage.setPreKeyBundle(preKeyBundle, forContact: hexEncodedPublicKey, transaction: transaction)
         // If we received a friend request (i.e. also a new pre key bundle), but we were already friends with the other user, reset the session.
         // The envelope type is set during UD decryption.
-        // TODO: Should this ignore session requests?
-        if envelope.type == .friendRequest, // TODO: Should this check that the envelope doesn't have the session request flag set?
-            let thread = TSContactThread.getWithContactId(hexEncodedPublicKey, transaction: transaction), // TODO: Should this be getOrCreate?
-            thread.isContactFriend {
-            receiving_startSessionReset(in: thread, using: transaction)
+        if envelope.type == .friendRequest,
+            storage.getFriendRequestStatus(for: hexEncodedPublicKey, transaction: transaction) == .friends {
+            let thread = TSContactThread.getOrCreateThread(withContactId: hexEncodedPublicKey, transaction: transaction)
+            // Archive all sessions
+            storage.archiveAllSessions(forContact: hexEncodedPublicKey, protocolContext: transaction)
+            // Send an ephemeral message
+            let ephemeralMessage = EphemeralMessage(in: thread)
+            let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
+            messageSenderJobQueue.add(message: ephemeralMessage, transaction: transaction)
         }
     }
 
     // TODO: Confusing that we have this but also a sending version
-    @objc(receiving_startSessionResetInThread:using:)
-    public static func receiving_startSessionReset(in thread: TSContactThread, using transaction: YapDatabaseReadWriteTransaction) {
+    @objc(handleEndSessionMessageReceivedInThread:using:)
+    public static func handleEndSessionMessageReceived(in thread: TSContactThread, using transaction: YapDatabaseReadWriteTransaction) {
         let hexEncodedPublicKey = thread.contactIdentifier()
-        print("[Loki] Session reset request received from: \(hexEncodedPublicKey).")
+        print("[Loki] End session message received from: \(hexEncodedPublicKey).")
+        // Notify the user
         let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .typeLokiSessionResetInProgress)
         infoMessage.save(with: transaction)
         // Archive all sessions
         storage.archiveAllSessions(forContact: hexEncodedPublicKey, protocolContext: transaction)
-        // Update session reset status
+        // Update the session reset status
         thread.sessionResetStatus = .requestReceived
         thread.save(with: transaction)
-        // Send an ephemeral message to trigger session reset for the other party as well
+        // Send an ephemeral message
         let ephemeralMessage = EphemeralMessage(in: thread)
         let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
         messageSenderJobQueue.add(message: ephemeralMessage, transaction: transaction)

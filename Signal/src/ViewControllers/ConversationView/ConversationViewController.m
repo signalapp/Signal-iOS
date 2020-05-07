@@ -1256,7 +1256,7 @@ typedef enum : NSUInteger {
 - (void)restoreSession {
     dispatch_async(dispatch_get_main_queue(), ^{
         [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [LKSessionManagementProtocol sending_startSessionResetInThread:self.thread using:transaction];
+            [LKSessionManagementProtocol startSessionResetInThread:self.thread using:transaction];
         }];
     });
 }

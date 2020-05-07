@@ -1042,7 +1042,7 @@ NS_ASSUME_NONNULL_BEGIN
     // Loki: Handle session reset
     NSString *hexEncodedPublicKey = envelope.source;
     TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:hexEncodedPublicKey transaction:transaction];
-    [LKSessionManagementProtocol receiving_startSessionResetInThread:thread using:transaction];
+    [LKSessionManagementProtocol handleEndSessionMessageReceivedInThread:thread using:transaction];
 }
 
 - (void)handleExpirationTimerUpdateMessageWithEnvelope:(SSKProtoEnvelope *)envelope
