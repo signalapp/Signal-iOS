@@ -103,7 +103,7 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
     public static func setDeviceLinks(_ deviceLinks: Set<DeviceLink>) -> Promise<Void> {
         print("[Loki] Updating device links.")
         return getAuthToken(for: server).then { token -> Promise<Void> in
-            let isMaster = deviceLinks.contains { $0.master.hexEncodedPublicKey == userHexEncodedPublicKey }
+            let isMaster = deviceLinks.contains { $0.master.hexEncodedPublicKey == getUserHexEncodedPublicKey() }
             let deviceLinksAsJSON = deviceLinks.map { $0.toJSON() }
             let value = !deviceLinksAsJSON.isEmpty ? [ "isPrimary" : isMaster ? 1 : 0, "authorisations" : deviceLinksAsJSON ] : nil
             let annotation: JSON = [ "type" : deviceLinkType, "value" : value ]
@@ -124,7 +124,7 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
     public static func addDeviceLink(_ deviceLink: DeviceLink) -> Promise<Void> {
         var deviceLinks: Set<DeviceLink> = []
         storage.dbReadConnection.read { transaction in
-            deviceLinks = storage.getDeviceLinks(for: userHexEncodedPublicKey, in: transaction)
+            deviceLinks = storage.getDeviceLinks(for: getUserHexEncodedPublicKey(), in: transaction)
         }
         deviceLinks.insert(deviceLink)
         return setDeviceLinks(deviceLinks).then(on: LokiAPI.workQueue) { _ -> Promise<Void> in
@@ -144,7 +144,7 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
     public static func removeDeviceLink(_ deviceLink: DeviceLink) -> Promise<Void> {
         var deviceLinks: Set<DeviceLink> = []
         storage.dbReadConnection.read { transaction in
-            deviceLinks = storage.getDeviceLinks(for: userHexEncodedPublicKey, in: transaction)
+            deviceLinks = storage.getDeviceLinks(for: getUserHexEncodedPublicKey(), in: transaction)
         }
         deviceLinks.remove(deviceLink)
         return setDeviceLinks(deviceLinks).then(on: LokiAPI.workQueue) { _ -> Promise<Void> in

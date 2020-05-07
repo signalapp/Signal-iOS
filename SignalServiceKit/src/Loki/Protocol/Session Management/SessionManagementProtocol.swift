@@ -215,7 +215,7 @@ public final class SessionManagementProtocol : NSObject {
         // If we received a friend request (i.e. also a new pre key bundle), but we were already friends with the other user, reset the session.
         // The envelope type is set during UD decryption.
         // TODO: Should this ignore session requests?
-        if envelope.type == .friendRequest,
+        if envelope.type == .friendRequest, // TODO: Should this check that the envelope doesn't have the session request flag set?
             let thread = TSContactThread.getWithContactId(hexEncodedPublicKey, transaction: transaction), // TODO: Should this be getOrCreate?
             thread.isContactFriend {
             receiving_startSessionReset(in: thread, using: transaction)
