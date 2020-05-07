@@ -94,8 +94,7 @@ public final class SyncMessagesProtocol : NSObject {
     public static func isValidSyncMessage(_ envelope: SSKProtoEnvelope, in transaction: YapDatabaseReadTransaction) -> Bool {
         // The envelope source is set during UD decryption
         let hexEncodedPublicKey = envelope.source!
-        let linkedDeviceHexEncodedPublicKeys = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: getUserHexEncodedPublicKey(), in: transaction)
-        return linkedDeviceHexEncodedPublicKeys.contains(hexEncodedPublicKey)
+        return LokiDatabaseUtilities.isUserLinkedDevice(hexEncodedPublicKey, transaction: transaction)
     }
 
     // TODO: We should probably look at why sync messages are being duplicated rather than doing this

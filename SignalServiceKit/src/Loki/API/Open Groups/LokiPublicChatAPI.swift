@@ -19,7 +19,7 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
 
     // MARK: Convenience
     private static var userDisplayName: String {
-        return SSKEnvironment.shared.contactsManager.displayName(forPhoneIdentifier: userHexEncodedPublicKey) ?? "Anonymous"
+        return SSKEnvironment.shared.contactsManager.displayName(forPhoneIdentifier: getUserHexEncodedPublicKey()) ?? "Anonymous"
     }
     
     // MARK: Database
@@ -187,7 +187,7 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
                             throw LokiDotNetAPIError.parsingFailed
                         }
                         let timestamp = UInt64(date.timeIntervalSince1970) * 1000
-                        return LokiPublicChatMessage(serverID: serverID, hexEncodedPublicKey: userHexEncodedPublicKey, displayName: displayName, profilePicture: signedMessage.profilePicture, body: body, type: publicChatMessageType, timestamp: timestamp, quote: signedMessage.quote, attachments: signedMessage.attachments, signature: signedMessage.signature)
+                        return LokiPublicChatMessage(serverID: serverID, hexEncodedPublicKey: getUserHexEncodedPublicKey(), displayName: displayName, profilePicture: signedMessage.profilePicture, body: body, type: publicChatMessageType, timestamp: timestamp, quote: signedMessage.quote, attachments: signedMessage.attachments, signature: signedMessage.signature)
                     }
                 }.recover { error -> Promise<LokiPublicChatMessage> in
                     if let error = error as? NetworkManagerError, error.statusCode == 401 {

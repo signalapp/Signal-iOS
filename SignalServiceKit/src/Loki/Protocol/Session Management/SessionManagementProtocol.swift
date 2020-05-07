@@ -139,6 +139,19 @@ public final class SessionManagementProtocol : NSObject {
         return promise
     }
 
+    @objc(repairSessionIfNeededForMessage:to:)
+    public static func repairSessionIfNeeded(for message: TSOutgoingMessage, to hexEncodedPublicKey: String) {
+        guard (message.thread as? TSGroupThread)?.groupModel.groupType == .closedGroup else { return }
+        DispatchQueue.main.async {
+            storage.dbReadWriteConnection.readWrite { transaction in
+                let thread = TSContactThread.getOrCreateThread(withContactId: hexEncodedPublicKey, transaction: transaction)
+                let sessionRequestMessage = SessionRequestMessage(thread: thread)
+                let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
+                messageSenderJobQueue.add(message: sessionRequestMessage, transaction: transaction)
+            }
+        }
+    }
+
     // MARK: - Receiving
     @objc(handleDecryptionError:forHexEncodedPublicKey:using:)
     public static func handleDecryptionError(_ rawValue: Int32, for hexEncodedPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) {
@@ -166,6 +179,27 @@ public final class SessionManagementProtocol : NSObject {
         return dataMessage.flags & UInt32(sessionRequestFlag.rawValue) != 0
     }
 
+    @objc(handleSessionRequestMessage:wrappedIn:using:)
+    public static func handleSessionRequestMessage(_ dataMessage: SSKProtoDataMessage, wrappedIn envelope: SSKProtoEnvelope, using transaction: YapDatabaseReadWriteTransaction) {
+        // The envelope source is set during UD decryption
+        // FIXME: Device links should probably update here if they're out of date
+        let hexEncodedPublicKey = envelope.source!
+        var validHEPKs: Set<String> = []
+        TSGroupThread.enumerateCollectionObjects(with: transaction) { object, _ in
+            guard let group = object as? TSGroupThread, group.groupModel.groupType == .closedGroup,
+                group.shouldThreadBeVisible else { return }
+            let closedGroupMembersIncludingLinkedDevices = group.groupModel.groupMemberIds.flatMap {
+                LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: $0, in: transaction)
+            }
+            validHEPKs.formUnion(closedGroupMembersIncludingLinkedDevices)
+        }
+        guard validHEPKs.contains(hexEncodedPublicKey) else { return }
+        let thread = TSContactThread.getOrCreateThread(withContactId: hexEncodedPublicKey, transaction: transaction)
+        let ephemeralMessage = EphemeralMessage(in: thread)
+        let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
+        messageSenderJobQueue.add(message: ephemeralMessage, transaction: transaction)
+    }
+
     // TODO: This needs an explanation of when we expect pre key bundles to be attached
     @objc(handlePreKeyBundleMessageIfNeeded:wrappedIn:using:)
     public static func handlePreKeyBundleMessageIfNeeded(_ protoContent: SSKProtoContent, wrappedIn envelope: SSKProtoEnvelope, using transaction: YapDatabaseReadWriteTransaction) {
@@ -181,7 +215,7 @@ public final class SessionManagementProtocol : NSObject {
         // If we received a friend request (i.e. also a new pre key bundle), but we were already friends with the other user, reset the session.
         // The envelope type is set during UD decryption.
         // TODO: Should this ignore session requests?
-        if envelope.type == .friendRequest,
+        if envelope.type == .friendRequest, // TODO: Should this check that the envelope doesn't have the session request flag set?
             let thread = TSContactThread.getWithContactId(hexEncodedPublicKey, transaction: transaction), // TODO: Should this be getOrCreate?
             thread.isContactFriend {
             receiving_startSessionReset(in: thread, using: transaction)

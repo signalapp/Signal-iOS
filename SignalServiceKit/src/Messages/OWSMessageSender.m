@@ -1705,6 +1705,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     */
 
     if (!bundle) {
+        [LKSessionManagementProtocol repairSessionIfNeededForMessage:messageSend.message to:recipientID];
         NSString *missingPrekeyBundleException = @"missingPrekeyBundleException";
         OWSRaiseException(missingPrekeyBundleException, @"Missing pre key bundle for: %@.", recipientID);
     } else {

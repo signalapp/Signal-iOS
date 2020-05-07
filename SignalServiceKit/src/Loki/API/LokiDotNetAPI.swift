@@ -6,7 +6,6 @@ public class LokiDotNetAPI : NSObject {
 
     internal static var storage: OWSPrimaryStorage { OWSPrimaryStorage.shared() }
     internal static var userKeyPair: ECKeyPair { OWSIdentityManager.shared().identityKeyPair()! }
-    internal static var userHexEncodedPublicKey: String { userKeyPair.hexEncodedPublicKey }
 
     // MARK: Settings
     private static let attachmentType = "network.loki"
@@ -60,7 +59,7 @@ public class LokiDotNetAPI : NSObject {
     // MARK: Private API
     private static func requestNewAuthToken(for server: String) -> Promise<String> {
         print("[Loki] Requesting auth token for server: \(server).")
-        let queryParameters = "pubKey=\(userHexEncodedPublicKey)"
+        let queryParameters = "pubKey=\(getUserHexEncodedPublicKey())"
         let url = URL(string: "\(server)/loki/v1/get_challenge?\(queryParameters)")!
         let request = TSRequest(url: url)
         return LokiFileServerProxy(for: server).perform(request, withCompletionQueue: LokiAPI.workQueue).map(on: LokiAPI.workQueue) { rawResponse in
@@ -85,7 +84,7 @@ public class LokiDotNetAPI : NSObject {
     private static func submitAuthToken(_ token: String, for server: String) -> Promise<String> {
         print("[Loki] Submitting auth token for server: \(server).")
         let url = URL(string: "\(server)/loki/v1/submit_challenge")!
-        let parameters = [ "pubKey" : userHexEncodedPublicKey, "token" : token ]
+        let parameters = [ "pubKey" : getUserHexEncodedPublicKey(), "token" : token ]
         let request = TSRequest(url: url, method: "POST", parameters: parameters)
         return LokiFileServerProxy(for: server).perform(request, withCompletionQueue: DispatchQueue.global()).map(on: DispatchQueue.global()) { _ in token }
     }

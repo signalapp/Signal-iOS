@@ -14,7 +14,6 @@ public final class LokiAPI : NSObject {
     internal static let workQueue = DispatchQueue(label: "LokiAPI.workQueue", qos: .userInitiated)
 
     internal static var storage: OWSPrimaryStorage { OWSPrimaryStorage.shared() }
-    internal static var userHexEncodedPublicKey: String { getUserHexEncodedPublicKey() }
     
     // MARK: Settings
     private static let maxRetryCount: UInt = 4
@@ -63,16 +62,16 @@ public final class LokiAPI : NSObject {
     
     internal static func getRawMessages(from target: LokiAPITarget, usingLongPolling useLongPolling: Bool) -> RawResponsePromise {
         let lastHashValue = getLastMessageHashValue(for: target) ?? ""
-        let parameters = [ "pubKey" : userHexEncodedPublicKey, "lastHash" : lastHashValue ]
+        let parameters = [ "pubKey" : getUserHexEncodedPublicKey(), "lastHash" : lastHashValue ]
         let headers: [String:String]? = useLongPolling ? [ "X-Loki-Long-Poll" : "true" ] : nil
         let timeout: TimeInterval? = useLongPolling ? longPollingTimeout : nil
-        return invoke(.getMessages, on: target, associatedWith: userHexEncodedPublicKey, parameters: parameters, headers: headers, timeout: timeout)
+        return invoke(.getMessages, on: target, associatedWith: getUserHexEncodedPublicKey(), parameters: parameters, headers: headers, timeout: timeout)
     }
     
     // MARK: Public API
     public static func getMessages() -> Promise<Set<MessageListPromise>> {
         return attempt(maxRetryCount: maxRetryCount, recoveringOn: workQueue) {
-            getTargetSnodes(for: userHexEncodedPublicKey).mapValues { targetSnode in
+            getTargetSnodes(for: getUserHexEncodedPublicKey()).mapValues { targetSnode in
                 getRawMessages(from: targetSnode, usingLongPolling: false).map { parseRawMessagesResponse($0, from: targetSnode) }
             }.map { Set($0) }
         }
@@ -157,7 +156,7 @@ public final class LokiAPI : NSObject {
             setLastMessageHashValue(for: target, hashValue: hashValue, expirationDate: UInt64(expirationDate))
             // FIXME: Move this out of here 
             if UserDefaults.standard[.isUsingFullAPNs] {
-                LokiPushNotificationManager.acknowledgeDelivery(forMessageWithHash: hashValue, expiration: expirationDate, hexEncodedPublicKey: userHexEncodedPublicKey)
+                LokiPushNotificationManager.acknowledgeDelivery(forMessageWithHash: hashValue, expiration: expirationDate, hexEncodedPublicKey: getUserHexEncodedPublicKey())
             }
         } else if (!rawMessages.isEmpty) {
             print("[Loki] Failed to update last message hash value from: \(rawMessages).")
