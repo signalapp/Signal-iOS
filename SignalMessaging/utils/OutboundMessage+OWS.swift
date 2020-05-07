@@ -11,6 +11,7 @@ extension OutgoingMessagePreparer {
                             thread: TSThread,
                             quotedReplyModel: OWSQuotedReplyModel?,
                             transaction: SDSAnyReadTransaction) {
+
         var attachments = mediaAttachments
         let truncatedText: String?
         if fullMessageText.lengthOfBytes(using: .utf8) <= kOversizeTextMessageSizeThreshold {
@@ -54,11 +55,16 @@ extension OutgoingMessagePreparer {
             }
         }
 
+        // Discard quoted reply for view-once messages.
+        let quotedMessage: TSQuotedMessage? = (isViewOnceMessage
+            ? nil
+            : quotedReplyModel?.buildQuotedMessageForSending())
+
         let message = TSOutgoingMessageBuilder(thread: thread,
                                                 messageBody: truncatedText,
                                                 expiresInSeconds: expiresInSeconds,
                                                 isVoiceMessage: isVoiceMessage,
-                                                quotedMessage: quotedReplyModel?.buildQuotedMessageForSending(),
+                                                quotedMessage: quotedMessage,
                                                 isViewOnceMessage: isViewOnceMessage).build()
 
         let attachmentInfos = attachments.map { $0.buildOutgoingAttachmentInfo(message: message) }
