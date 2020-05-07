@@ -166,6 +166,27 @@ public final class SessionManagementProtocol : NSObject {
         return dataMessage.flags & UInt32(sessionRequestFlag.rawValue) != 0
     }
 
+    @objc(handleSessionRequestMessage:wrappedIn:using:)
+    public static func handleSessionRequestMessage(_ dataMessage: SSKProtoDataMessage, wrappedIn envelope: SSKProtoEnvelope, using transaction: YapDatabaseReadWriteTransaction) {
+        // The envelope source is set during UD decryption
+        // FIXME: Device links should probably update here if they're out of date
+        let hexEncodedPublicKey = envelope.source!
+        var validHEPKs: Set<String> = []
+        TSGroupThread.enumerateCollectionObjects(with: transaction) { object, _ in
+            guard let group = object as? TSGroupThread, group.groupModel.groupType == .closedGroup,
+                group.shouldThreadBeVisible else { return }
+            let closedGroupMembersIncludingLinkedDevices = group.groupModel.groupMemberIds.flatMap {
+                LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: $0, in: transaction)
+            }
+            validHEPKs.formUnion(closedGroupMembersIncludingLinkedDevices)
+        }
+        guard validHEPKs.contains(hexEncodedPublicKey) else { return }
+        let thread = TSContactThread.getOrCreateThread(withContactId: hexEncodedPublicKey, transaction: transaction)
+        let ephemeralMessage = EphemeralMessage(in: thread)
+        let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
+        messageSenderJobQueue.add(message: ephemeralMessage, transaction: transaction)
+    }
+
     // TODO: This needs an explanation of when we expect pre key bundles to be attached
     @objc(handlePreKeyBundleMessageIfNeeded:wrappedIn:using:)
     public static func handlePreKeyBundleMessageIfNeeded(_ protoContent: SSKProtoContent, wrappedIn envelope: SSKProtoEnvelope, using transaction: YapDatabaseReadWriteTransaction) {
