@@ -519,8 +519,8 @@ typedef void (^SystemMessageActionBlock)(void);
                                   }
                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"verify_safety_number")];
         case TSErrorMessageMissingKeyId:
-        case TSErrorMessageNoSession:
             return nil;
+        case TSErrorMessageNoSession:
         case TSErrorMessageInvalidMessage:
             return [SystemMessageAction actionWithTitle:NSLocalizedString(@"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON", @"")
                                                   block:^{
