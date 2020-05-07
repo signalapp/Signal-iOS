@@ -21,12 +21,7 @@ public final class SessionMetaProtocol : NSObject {
     // MARK: - Sending
 
     // MARK: Message Destination
-    @objc(getDestinationsForOutgoingSyncMessage)
-    public static func objc_getDestinationsForOutgoingSyncMessage() -> NSMutableSet {
-        return NSMutableSet(set: getDestinationsForOutgoingSyncMessage())
-    }
-
-    public static func getDestinationsForOutgoingSyncMessage() -> Set<String> {
+    private static func getOurDevices() -> Set<String> {
         var result: Set<String> = []
         storage.dbReadConnection.read { transaction in
             // Aim the message at all linked devices, including this one
@@ -34,6 +29,15 @@ public final class SessionMetaProtocol : NSObject {
             result = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: getUserHexEncodedPublicKey(), in: transaction)
         }
         return result
+    }
+
+    @objc(getDestinationsForOutgoingSyncMessage)
+    public static func objc_getDestinationsForOutgoingSyncMessage() -> NSMutableSet {
+        return NSMutableSet(set: getDestinationsForOutgoingSyncMessage())
+    }
+
+    public static func getDestinationsForOutgoingSyncMessage() -> Set<String> {
+        return getOurDevices()
     }
 
     @objc(getDestinationsForOutgoingGroupMessage:inThread:)
@@ -53,7 +57,9 @@ public final class SessionMetaProtocol : NSObject {
                 }
             }
         } else {
-            result = Set(outgoingGroupMessage.sendingRecipientIds()).intersection(thread.groupModel.groupMemberIds) // This is what Signal does
+            result = Set(outgoingGroupMessage.sendingRecipientIds())
+                .intersection(thread.groupModel.groupMemberIds)
+                .subtracting(getOurDevices())
         }
         return result
     }
@@ -73,6 +79,7 @@ public final class SessionMetaProtocol : NSObject {
     // MARK: Transcripts
     @objc(shouldSendTranscriptForMessage:in:)
     public static func shouldSendTranscript(for message: TSOutgoingMessage, in thread: TSThread) -> Bool {
+        guard message.shouldSyncTranscript() else { return false }
         let isOpenGroupMessage = (thread as? TSGroupThread)?.isPublicChat == true
         let wouldSignalRequireTranscript = (AreRecipientUpdatesEnabled() || !message.hasSyncedTranscript)
         guard wouldSignalRequireTranscript && !isOpenGroupMessage else { return false }
@@ -81,7 +88,7 @@ public final class SessionMetaProtocol : NSObject {
             usesMultiDevice = !storage.getDeviceLinks(for: getUserHexEncodedPublicKey(), in: transaction).isEmpty
                 || UserDefaults.standard[.masterHexEncodedPublicKey] != nil
         }
-        return usesMultiDevice && isThreadNoteToSelf(thread)
+        return usesMultiDevice
     }
 
     // MARK: Typing Indicators
