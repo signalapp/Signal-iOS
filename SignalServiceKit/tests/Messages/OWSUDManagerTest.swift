@@ -30,8 +30,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
     let aliceE164 = "+13213214321"
     let aliceUuid = UUID()
     lazy var aliceAddress = SignalServiceAddress(uuid: aliceUuid, phoneNumber: aliceE164)
-    lazy var phoneNumberCertificate = try! SMKSenderCertificate(serializedData: buildSenderCertificateProto(includeUuid: false).serializedData())
-    lazy var uuidCertificate = try! SMKSenderCertificate(serializedData: buildSenderCertificateProto(includeUuid: true).serializedData())
+    lazy var senderCertificate = try! SMKSenderCertificate(serializedData: buildSenderCertificateProto().serializedData())
 
     override func setUp() {
         super.setUp()
@@ -47,8 +46,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
         }
 
         udManager.certificateValidator = MockCertificateValidator()
-        udManager.setSenderCertificate(includeUuid: false, certificateData: phoneNumberCertificate.serializedData)
-        udManager.setSenderCertificate(includeUuid: true, certificateData: uuidCertificate.serializedData)
+        udManager.setSenderCertificate(certificateData: senderCertificate.serializedData)
     }
 
     override func tearDown() {
@@ -59,8 +57,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
     // MARK: - Tests
 
     func testMode_self() {
-        XCTAssert(udManager.hasSenderCertificate(includeUuid: false))
-        XCTAssert(udManager.hasSenderCertificate(includeUuid: true))
+        XCTAssert(udManager.hasSenderCertificate())
 
         XCTAssert(tsAccountManager.isRegistered)
         guard let localAddress = tsAccountManager.localAddress else {
@@ -118,8 +115,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
     }
 
     func testMode_noProfileKey() {
-        XCTAssert(udManager.hasSenderCertificate(includeUuid: false))
-        XCTAssert(udManager.hasSenderCertificate(includeUuid: true))
+        XCTAssert(udManager.hasSenderCertificate())
 
         XCTAssert(tsAccountManager.isRegistered)
         guard let localAddress = tsAccountManager.localAddress else {
@@ -185,8 +181,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
     }
 
     func testMode_withProfileKey() {
-        XCTAssert(udManager.hasSenderCertificate(includeUuid: false))
-        XCTAssert(udManager.hasSenderCertificate(includeUuid: true))
+        XCTAssert(udManager.hasSenderCertificate())
 
         XCTAssert(tsAccountManager.isRegistered)
         guard let localAddress = tsAccountManager.localAddress else {
@@ -257,8 +252,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
     }
 
     func test_senderAccess() {
-        XCTAssert(udManager.hasSenderCertificate(includeUuid: false))
-        XCTAssert(udManager.hasSenderCertificate(includeUuid: true))
+        XCTAssert(udManager.hasSenderCertificate())
 
         XCTAssert(tsAccountManager.isRegistered)
         guard let localAddress = tsAccountManager.localAddress else {
@@ -280,27 +274,14 @@ class OWSUDManagerTest: SSKBaseTestSwift {
         }
 
         let completed = self.expectation(description: "completed")
-        udManager.ensureSenderCertificates(certificateExpirationPolicy: .strict).done { senderCertificates in
-            self.profileManager.stubbedUuidCapabilitiesMap[bobRecipientAddress] = false
+        udManager.ensureSenderCertificate(certificateExpirationPolicy: .strict).done { senderCertificate in
             do {
                 let sendingAccess = self.write {
-                    return self.udManager.udSendingAccess(forAddress: bobRecipientAddress, requireSyncAccess: false, senderCertificates: senderCertificates, transaction: $0)!
+                    return self.udManager.udSendingAccess(forAddress: bobRecipientAddress, requireSyncAccess: false, senderCertificate: senderCertificate, transaction: $0)!
                 }
                 XCTAssertEqual(.unknown, sendingAccess.udAccess.udAccessMode)
                 XCTAssertFalse(sendingAccess.udAccess.isRandomKey)
-                XCTAssertEqual(sendingAccess.senderCertificate.serializedData, self.phoneNumberCertificate.serializedData)
-                XCTAssertNotEqual(sendingAccess.senderCertificate.serializedData, self.uuidCertificate.serializedData)
-            }
-
-            self.profileManager.stubbedUuidCapabilitiesMap[bobRecipientAddress] = true
-            do {
-                let sendingAccess = self.write {
-                    return self.udManager.udSendingAccess(forAddress: bobRecipientAddress, requireSyncAccess: false, senderCertificates: senderCertificates, transaction: $0)!
-                }
-                XCTAssertEqual(.unknown, sendingAccess.udAccess.udAccessMode)
-                XCTAssertFalse(sendingAccess.udAccess.isRandomKey)
-                XCTAssertNotEqual(sendingAccess.senderCertificate.serializedData, self.phoneNumberCertificate.serializedData)
-                XCTAssertEqual(sendingAccess.senderCertificate.serializedData, self.uuidCertificate.serializedData)
+                XCTAssertEqual(sendingAccess.senderCertificate.serializedData, self.senderCertificate.serializedData)
             }
         }.done {
             completed.fulfill()
@@ -322,7 +303,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
         return try! wrapperProto.build()
     }
 
-    func buildSenderCertificateProto(includeUuid: Bool) -> SMKProtoSenderCertificate {
+    func buildSenderCertificateProto() -> SMKProtoSenderCertificate {
         let expires = NSDate.ows_millisecondTimeStamp() + kWeekInMs
         let identityKey = try! Curve25519.generateKeyPair().ecPublicKey().serialized
         let signer = buildServerCertificateProto()
@@ -331,9 +312,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
                                                                               identityKey: identityKey,
                                                                               signer: signer)
         certificateBuilder.setSenderE164(aliceE164)
-        if includeUuid {
-            certificateBuilder.setSenderUuid(aliceUuid.uuidString)
-        }
+        certificateBuilder.setSenderUuid(aliceUuid.uuidString)
         let certificateData = try! certificateBuilder.buildSerializedData()
 
         let signatureData = Randomness.generateRandomBytes(ECCSignatureLength)

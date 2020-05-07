@@ -700,12 +700,9 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
 
 #pragma mark - UD
 
-+ (TSRequest *)udSenderCertificateRequestWithIncludeUuid:(BOOL)includeUuid
++ (TSRequest *)udSenderCertificateRequest
 {
-    NSString *path = @"v1/certificate/delivery";
-    if (includeUuid) {
-        path = [path stringByAppendingString:@"?includeUuid=true"];
-    }
+    NSString *path = @"v1/certificate/delivery?includeUuid=true";
     return [TSRequest requestWithUrl:[NSURL URLWithString:path] method:@"GET" parameters:@{}];
 }
 
