@@ -343,7 +343,7 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
             //
             // All things being equal, we default to retaining the
             // UUID recipient.
-            BOOL shouldUseUuid = (sessionIndexForPhoneNumber.intValue > sessionIndexForUuid.intValue);
+            BOOL shouldUseUuid = (sessionIndexForPhoneNumber.intValue <= sessionIndexForUuid.intValue);
             if (shouldUseUuid) {
                 OWSFailDebug(@"Discarding phone number recipient in favor of uuid recipient.");
                 existingInstance = uuidInstance;
