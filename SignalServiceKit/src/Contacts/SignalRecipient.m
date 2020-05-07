@@ -296,9 +296,6 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
     OWSAssertDebug(address.isValid);
     OWSAssertDebug(transaction);
 
-    OWSLogVerbose(@"address: %@", address);
-    OWSLogFlush();
-
     SignalRecipient *_Nullable phoneNumberInstance = nil;
     SignalRecipient *_Nullable uuidInstance = nil;
     if (address.phoneNumber != nil) {
@@ -325,44 +322,28 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
             // TODO: Should we clean up any state related to the discarded recipient?
 
             // We try to preserve the recipient that has a session.
-            BOOL hasSessionForUuid = [self.sessionStore containsAnyActiveSessionForAccountId:uuidInstance.accountId
-                                                                                 transaction:transaction];
-            BOOL hasSessionForPhoneNumber =
-                [self.sessionStore containsAnyActiveSessionForAccountId:phoneNumberInstance.accountId
-                                                            transaction:transaction];
+            NSNumber *_Nullable sessionIndexForUuid =
+                [self.sessionStore maxSessionSenderChainKeyIndexForAccountId:uuidInstance.accountId
+                                                                 transaction:transaction];
+            NSNumber *_Nullable sessionIndexForPhoneNumber =
+                [self.sessionStore maxSessionSenderChainKeyIndexForAccountId:phoneNumberInstance.accountId
+                                                                 transaction:transaction];
 
-            // We try to preserve the recipient that has the contact thread with the most interactions.
-            NSUInteger numberOfInteractionsWithUUID = 0;
-            TSThread *_Nullable contactThreadForUuid = [[AnyContactThreadFinder new] contactThreadForUUID:address.uuid
-                                                                                              transaction:transaction];
-            if (contactThreadForUuid != nil) {
-                numberOfInteractionsWithUUID = [contactThreadForUuid numberOfInteractionsWithTransaction:transaction];
-            }
-            NSUInteger numberOfInteractionsWithPhoneNumber = 0;
-            TSThread *_Nullable contactThreadForPhoneNumber =
-                [[AnyContactThreadFinder new] contactThreadForPhoneNumber:address.phoneNumber transaction:transaction];
-            if (contactThreadForPhoneNumber != nil) {
-                numberOfInteractionsWithPhoneNumber =
-                    [contactThreadForPhoneNumber numberOfInteractionsWithTransaction:transaction];
+            if (SSKDebugFlags.verboseSignalRecipientLogging) {
+                OWSLogInfo(@"phoneNumberInstance: %@", phoneNumberInstance);
+                OWSLogInfo(@"uuidInstance: %@", uuidInstance);
+                OWSLogInfo(@"sessionIndexForUuid: %@", sessionIndexForUuid);
+                OWSLogInfo(@"sessionIndexForPhoneNumber: %@", sessionIndexForPhoneNumber);
             }
 
-            OWSLogWarn(@"phoneNumberInstance: %@", phoneNumberInstance);
-            OWSLogWarn(@"uuidInstance: %@", uuidInstance);
-            OWSLogWarn(@"numberOfInteractionsWithUUID: %lu", (unsigned long)numberOfInteractionsWithUUID);
-            OWSLogWarn(@"numberOfInteractionsWithPhoneNumber: %lu", (unsigned long)numberOfInteractionsWithPhoneNumber);
-            OWSLogWarn(@"hasSessionForUuid: %d", hasSessionForUuid);
-            OWSLogWarn(@"hasSessionForPhoneNumber: %d", hasSessionForPhoneNumber);
-            BOOL shouldUseUuid = NO;
-            if (hasSessionForPhoneNumber && !hasSessionForUuid) {
-                shouldUseUuid = NO;
-            } else if (hasSessionForUuid && !hasSessionForPhoneNumber) {
-                shouldUseUuid = YES;
-            } else if (numberOfInteractionsWithPhoneNumber > numberOfInteractionsWithUUID) {
-                shouldUseUuid = NO;
-            } else {
-                // Default to retaining the UUID recipient.
-                shouldUseUuid = YES;
-            }
+            // We want to retain the phone number recipient if it
+            // has a session and the uuid recipient doesn't or if
+            // both have a session but the phone number recipient
+            // has seen more use.
+            //
+            // All things being equal, we default to retaining the
+            // UUID recipient.
+            BOOL shouldUseUuid = (sessionIndexForPhoneNumber.intValue <= sessionIndexForUuid.intValue);
             if (shouldUseUuid) {
                 OWSFailDebug(@"Discarding phone number recipient in favor of uuid recipient.");
                 existingInstance = uuidInstance;

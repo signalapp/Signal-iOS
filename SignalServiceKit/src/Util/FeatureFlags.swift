@@ -317,4 +317,7 @@ public class DebugFlags: NSObject {
 
     @objc
     public static let verboseNotificationLogging = build.includes(.qa)
+
+    @objc
+    public static let verboseSignalRecipientLogging = build.includes(.qa)
 }
