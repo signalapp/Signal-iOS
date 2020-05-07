@@ -205,11 +205,13 @@ NS_ASSUME_NONNULL_BEGIN
         [self loadSessionForAccountId:accountId deviceId:deviceId transaction:transaction].sessionState.hasSenderChain;
 }
 
-- (BOOL)containsAnyActiveSessionForAccountId:(NSString *)accountId transaction:(SDSAnyReadTransaction *)transaction
+- (nullable NSNumber *)maxSessionSenderChainKeyIndexForAccountId:(NSString *)accountId
+                                                     transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(accountId.length > 0);
     OWSAssertDebug([transaction isKindOfClass:[SDSAnyReadTransaction class]]);
 
+    NSNumber *_Nullable result = nil;
     NSDictionary *_Nullable dictionary = [self.keyValueStore getObjectForKey:accountId transaction:transaction];
     for (id value in dictionary.allValues) {
         if (![value isKindOfClass:[SessionRecord class]]) {
@@ -218,12 +220,20 @@ NS_ASSUME_NONNULL_BEGIN
             continue;
         }
         SessionRecord *record = (SessionRecord *)value;
-        OWSLogVerbose(@"Record: %d.", record.sessionState.hasSenderChain);
+        if (SSKDebugFlags.verboseSignalRecipientLogging) {
+            OWSLogInfo(@"Record hasSenderChain: %d.", record.sessionState.hasSenderChain);
+        }
         if (record.sessionState.hasSenderChain) {
-            return YES;
+            int index = record.sessionState.senderChainKey.index;
+            if (SSKDebugFlags.verboseSignalRecipientLogging) {
+                OWSLogInfo(@"Record index: %d.", index);
+            }
+            if (result == nil || result.intValue < index) {
+                result = @(index);
+            }
         }
     }
-    return NO;
+    return result;
 }
 
 - (void)deleteSessionForContact:(NSString *)contactIdentifier
