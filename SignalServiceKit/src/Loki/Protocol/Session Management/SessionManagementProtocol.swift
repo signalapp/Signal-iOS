@@ -152,6 +152,16 @@ public final class SessionManagementProtocol : NSObject {
         }
     }
 
+    @objc(shouldIgnoreMissingPreKeyBundleExceptionForMessage:to:)
+    public static func shouldIgnoreMissingPreKeyBundleException(for message: TSOutgoingMessage, to hexEncodedPublicKey: String) -> Bool {
+        // When a closed group is created, members try to establish sessions with eachother in the background through
+        // session requests. Until ALL users those session requests were sent to have come online, stored the pre key
+        // bundles contained in the session requests and replied with background messages to finalize the session
+        // creation, a given user won't be able to successfully send a message to all members of a group. This check
+        // is so that until we can do better on this front the user at least won't see this as an error in the UI.
+        return (message.thread as? TSGroupThread)?.groupModel.groupType == .closedGroup
+    }
+
     // MARK: - Receiving
     @objc(handleDecryptionError:forHexEncodedPublicKey:using:)
     public static func handleDecryptionError(_ rawValue: Int32, for hexEncodedPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) {

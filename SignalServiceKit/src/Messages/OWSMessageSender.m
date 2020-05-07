@@ -977,6 +977,14 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     } else {
         deviceMessages = [self deviceMessagesForMessageSend:messageSend error:&deviceMessagesError];
     }
+
+    // Loki: Remove this when we have shared sender keys
+    // ========
+    if (deviceMessages.count == 0) {
+        return messageSend.success();
+    }
+    // ========
+
     if (deviceMessagesError || !deviceMessages) {
         OWSAssertDebug(deviceMessagesError);
         return messageSend.failure(deviceMessagesError);
@@ -1603,9 +1611,17 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             // This may involve blocking network requests, so we do it _before_
             // we open a transaction.
 
+            BOOL hasSession = YES;
             if ([LKSessionManagementProtocol isSessionRequiredForMessage:messageSend.message]) {
-                [self throws_ensureRecipientHasSessionForMessageSend:messageSend recipientID:recipientID deviceId:@(OWSDevicePrimaryDeviceId)];
+                hasSession = [self throws_ensureRecipientHasSessionForMessageSend:messageSend recipientID:recipientID deviceId:@(OWSDevicePrimaryDeviceId)];
             }
+
+            // Loki: Remove this when we have shared sender keys
+            // ========
+            if (!hasSession && [LKSessionManagementProtocol shouldIgnoreMissingPreKeyBundleExceptionForMessage:messageSend.message to:recipientID]) {
+                return [NSDictionary new];
+            }
+            // ========
 
             __block NSDictionary *_Nullable messageDict;
             __block NSException *encryptionException;
@@ -1647,7 +1663,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     return [messagesArray copy];
 }
 
-- (void)throws_ensureRecipientHasSessionForMessageSend:(OWSMessageSend *)messageSend recipientID:(NSString *)recipientID deviceId:(NSNumber *)deviceId
+- (BOOL)throws_ensureRecipientHasSessionForMessageSend:(OWSMessageSend *)messageSend recipientID:(NSString *)recipientID deviceId:(NSNumber *)deviceId
 {
     OWSAssertDebug(messageSend);
     OWSAssertDebug(deviceId);
@@ -1661,7 +1677,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         hasSession = [storage containsSession:recipientID deviceId:[deviceId intValue] protocolContext:transaction];
     }];
     if (hasSession) {
-        return;
+        return YES;
     }
     // Discard "typing indicator" messages if there is no existing session with the user.
     BOOL canSafelyBeDiscarded = messageSend.message.isOnline;
@@ -1705,7 +1721,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     */
 
     if (!bundle) {
-        [LKSessionManagementProtocol repairSessionIfNeededForMessage:messageSend.message to:recipientID];
+        TSOutgoingMessage *message = messageSend.message;
+        [LKSessionManagementProtocol repairSessionIfNeededForMessage:message to:recipientID];
+        // Loki: Remove this when we have shared sender keys
+        // ========
+        if ([LKSessionManagementProtocol shouldIgnoreMissingPreKeyBundleExceptionForMessage:message to:recipientID]) { return NO; }
+        // ========
         NSString *missingPrekeyBundleException = @"missingPrekeyBundleException";
         OWSRaiseException(missingPrekeyBundleException, @"Missing pre key bundle for: %@.", recipientID);
     } else {
@@ -1733,6 +1754,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             }
             @throw exception;
         }
+        return YES;
     }
 }
 
