@@ -18,7 +18,7 @@ extension FeatureBuild {
     }
 }
 
-let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .beta
+let build: FeatureBuild = .qa
 
 // MARK: -
 
@@ -174,7 +174,7 @@ public class FeatureFlags: NSObject {
     public static let multiRing: Bool = false
 
     @objc
-    public static let groupsV2 = build.includes(.qa) && !isUsingProductionService
+    public static let groupsV2 = true
 
     // Don't consult this feature flag directly; instead
     // consult RemoteConfig.groupsV2CreateGroups.
@@ -261,7 +261,7 @@ public class DebugFlags: NSObject {
     public static let groupsV2dontSendUpdates = false
 
     @objc
-    public static let groupsV2showV2Indicator = FeatureFlags.groupsV2 && build.includes(.qa)
+    public static let groupsV2showV2Indicator = true
 
     // If set, v2 groups will be created and updated with invalid avatars
     // so that we can test clients' robustness to this case.
