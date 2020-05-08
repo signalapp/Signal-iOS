@@ -1388,7 +1388,7 @@ NS_ASSUME_NONNULL_BEGIN
                 // If we were the one that quit then we need to leave the group (only relevant for slave
                 // devices in a multi device context)
                 // TODO: This needs more documentation
-                if ([newMemberIds containsObject:userMasterHexEncodedPublicKey]) {
+                if (![newMemberIds containsObject:userMasterHexEncodedPublicKey]) {
                     [oldGroupThread leaveGroupWithTransaction:transaction];
                 }
                 
