@@ -978,14 +978,14 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         deviceMessages = @{};
     } else {
         deviceMessages = [self deviceMessagesForMessageSend:messageSend error:&deviceMessagesError];
+        
+        // Loki: Remove this when we have shared sender keys
+        // ========
+        if (deviceMessages.count == 0) {
+            return messageSend.success();
+        }
+        // ========
     }
-
-    // Loki: Remove this when we have shared sender keys
-    // ========
-    if (deviceMessages.count == 0) {
-        return messageSend.success();
-    }
-    // ========
 
     if (deviceMessagesError || !deviceMessages) {
         OWSAssertDebug(deviceMessagesError);
