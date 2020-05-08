@@ -11,6 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class SignalServiceAddress;
 @class TSContactThread;
 @class TSGroupThread;
+@class TSIncomingMessageBuilder;
 
 @interface TSIncomingMessage : TSMessage <OWSReadTracking>
 
@@ -50,20 +51,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initIncomingMessageWithTimestamp:(uint64_t)timestamp
-                                        inThread:(TSThread *)thread
-                                   authorAddress:(SignalServiceAddress *)authorAddress
-                                  sourceDeviceId:(uint32_t)sourceDeviceId
-                                     messageBody:(nullable NSString *)body
-                                   attachmentIds:(NSArray<NSString *> *)attachmentIds
-                                expiresInSeconds:(uint32_t)expiresInSeconds
-                                   quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                                    contactShare:(nullable OWSContact *)contactShare
-                                     linkPreview:(nullable OWSLinkPreview *)linkPreview
-                                  messageSticker:(nullable MessageSticker *)messageSticker
-                                 serverTimestamp:(nullable NSNumber *)serverTimestamp
-                                 wasReceivedByUD:(BOOL)wasReceivedByUD
-                               isViewOnceMessage:(BOOL)isViewOnceMessage NS_DESIGNATED_INITIALIZER;
+- (instancetype)initIncomingMessageWithBuilder:(TSIncomingMessageBuilder *)incomingMessageBuilder
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(incomingMessageWithBuilder:));
 
 // --- CODE GENERATION MARKER
 

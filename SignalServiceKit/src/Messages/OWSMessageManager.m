@@ -1980,21 +1980,24 @@ NS_ASSUME_NONNULL_BEGIN
     BOOL isViewOnceMessage = dataMessage.hasIsViewOnce && dataMessage.isViewOnce;
 
     // Legit usage of senderTimestamp when creating an incoming group message record
-    TSIncomingMessage *incomingMessage =
-        [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:timestamp
-                                                           inThread:thread
-                                                      authorAddress:authorAddress
-                                                     sourceDeviceId:envelope.sourceDevice
-                                                        messageBody:body
-                                                      attachmentIds:@[]
-                                                   expiresInSeconds:dataMessage.expireTimer
-                                                      quotedMessage:quotedMessage
-                                                       contactShare:contact
-                                                        linkPreview:linkPreview
-                                                     messageSticker:messageSticker
-                                                    serverTimestamp:serverTimestamp
-                                                    wasReceivedByUD:wasReceivedByUD
-                                                  isViewOnceMessage:isViewOnceMessage];
+    //
+    // The builder() factory method requires us to specify every
+    // property so that this will break if we add any new properties.
+    TSIncomingMessageBuilder *incomingMessageBuilder = [TSIncomingMessageBuilder builderWithThread:thread
+                                                                                         timestamp:timestamp
+                                                                                     authorAddress:authorAddress
+                                                                                    sourceDeviceId:envelope.sourceDevice
+                                                                                       messageBody:body
+                                                                                     attachmentIds:[NSMutableArray new]
+                                                                                  expiresInSeconds:dataMessage.expireTimer
+                                                                                     quotedMessage:quotedMessage
+                                                                                      contactShare:contact
+                                                                                       linkPreview:linkPreview
+                                                                                    messageSticker:messageSticker
+                                                                                   serverTimestamp:serverTimestamp
+                                                                                   wasReceivedByUD:wasReceivedByUD
+                                                                                 isViewOnceMessage:isViewOnceMessage];
+    TSIncomingMessage *incomingMessage = [incomingMessageBuilder build];
     if (!incomingMessage) {
         OWSFailDebug(@"Missing incomingMessage.");
         return nil;

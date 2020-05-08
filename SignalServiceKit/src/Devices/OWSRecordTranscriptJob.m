@@ -131,7 +131,10 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    // TODO group updates. Currently desktop doesn't support group updates, so not a problem yet.
+    // The builder() factory method requires us to specify every
+    // property so that this will break if we add any new properties.
+   
+    // TODO: group updates. Currently desktop doesn't support group updates, so not a problem yet.
     TSOutgoingMessage *outgoingMessage = [[TSOutgoingMessageBuilder builderWithThread:transcript.thread
                                                                             timestamp:transcript.timestamp
                                                                           messageBody:transcript.body

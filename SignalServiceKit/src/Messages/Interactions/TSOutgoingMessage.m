@@ -431,17 +431,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 
 - (instancetype)initOutgoingMessageWithBuilder:(TSOutgoingMessageBuilder *)outgoingMessageBuilder
 {
-    self = [super initMessageWithTimestamp:outgoingMessageBuilder.timestamp
-                                  inThread:outgoingMessageBuilder.thread
-                               messageBody:outgoingMessageBuilder.messageBody
-                             attachmentIds:outgoingMessageBuilder.attachmentIds
-                          expiresInSeconds:outgoingMessageBuilder.expiresInSeconds
-                           expireStartedAt:outgoingMessageBuilder.expireStartedAt
-                             quotedMessage:outgoingMessageBuilder.quotedMessage
-                              contactShare:outgoingMessageBuilder.contactShare
-                               linkPreview:outgoingMessageBuilder.linkPreview
-                            messageSticker:outgoingMessageBuilder.messageSticker
-                         isViewOnceMessage:outgoingMessageBuilder.isViewOnceMessage];
+    self = [super initMessageWithBuilder:incomingMessageBuilder];
     if (!self) {
         return self;
     }

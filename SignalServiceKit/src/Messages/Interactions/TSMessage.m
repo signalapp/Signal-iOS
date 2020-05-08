@@ -65,19 +65,10 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 @implementation TSMessage
 
-- (instancetype)initMessageWithTimestamp:(uint64_t)timestamp
-                                inThread:(TSThread *)thread
-                             messageBody:(nullable NSString *)body
-                           attachmentIds:(NSArray<NSString *> *)attachmentIds
-                        expiresInSeconds:(uint32_t)expiresInSeconds
-                         expireStartedAt:(uint64_t)expireStartedAt
-                           quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                            contactShare:(nullable OWSContact *)contactShare
-                             linkPreview:(nullable OWSLinkPreview *)linkPreview
-                          messageSticker:(nullable MessageSticker *)messageSticker
-                       isViewOnceMessage:(BOOL)isViewOnceMessage
+- (instancetype)initMessageWithBuilder:(TSMessageBuilder *)messageBuilder
 {
-    self = [super initInteractionWithTimestamp:timestamp inThread:thread];
+    self = [super initInteractionWithTimestamp:messageBuilder.timestamp
+                                      inThread:messageBuilder.thread];
 
     if (!self) {
         return self;
@@ -85,16 +76,16 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
     _schemaVersion = OWSMessageSchemaVersion;
 
-    _body = body;
-    _attachmentIds = attachmentIds ? [attachmentIds mutableCopy] : [NSMutableArray new];
-    _expiresInSeconds = expiresInSeconds;
-    _expireStartedAt = expireStartedAt;
+    _body = messageBuilder.messageBody;
+    _attachmentIds = messageBuilder.attachmentIds
+    _expiresInSeconds = messageBuilder.expiresInSeconds;
+    _expireStartedAt = messageBuilder.expireStartedAt;
     [self updateExpiresAt];
-    _quotedMessage = quotedMessage;
-    _contactShare = contactShare;
-    _linkPreview = linkPreview;
-    _messageSticker = messageSticker;
-    _isViewOnceMessage = isViewOnceMessage;
+    _quotedMessage = messageBuilder.quotedMessage;
+    _contactShare = messageBuilder.contactShare;
+    _linkPreview = messageBuilder.linkPreview;
+    _messageSticker = messageBuilder.messageSticker;
+    _isViewOnceMessage = messageBuilder.isViewOnceMessage;
     _isViewOnceComplete = NO;
 
 #ifdef DEBUG

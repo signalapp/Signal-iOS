@@ -17,6 +17,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class SDSAnyWriteTransaction;
 @class TSAttachment;
 @class TSAttachmentStream;
+@class TSMessageBuilder;
 @class TSQuotedMessage;
 
 @interface TSMessage : TSInteraction <OWSPreviewText>
@@ -58,17 +59,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initMessageWithTimestamp:(uint64_t)timestamp
-                                inThread:(TSThread *)thread
-                             messageBody:(nullable NSString *)body
-                           attachmentIds:(NSArray<NSString *> *)attachmentIds
-                        expiresInSeconds:(uint32_t)expiresInSeconds
-                         expireStartedAt:(uint64_t)expireStartedAt
-                           quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                            contactShare:(nullable OWSContact *)contactShare
-                             linkPreview:(nullable OWSLinkPreview *)linkPreview
-                          messageSticker:(nullable MessageSticker *)messageSticker
-                       isViewOnceMessage:(BOOL)isViewOnceMessage NS_DESIGNATED_INITIALIZER;
+- (instancetype)initMessageWithBuilder:(TSMessageBuilder *)messageBuilder
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(messageWithBuilder:));
 
 // --- CODE GENERATION MARKER
 

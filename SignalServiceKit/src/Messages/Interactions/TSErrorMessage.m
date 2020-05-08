@@ -102,18 +102,9 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
                 failedMessageType:(TSErrorMessageType)errorMessageType
                           address:(nullable SignalServiceAddress *)address
 {
-    self = [super initMessageWithTimestamp:timestamp
-                                  inThread:thread
-                               messageBody:nil
-                             attachmentIds:@[]
-                          expiresInSeconds:0
-                           expireStartedAt:0
-                             quotedMessage:nil
-                              contactShare:nil
-                               linkPreview:nil
-                            messageSticker:nil
-                         isViewOnceMessage:NO];
-
+    self = [super initMessageWithBuilder:[TSMessageBuilder messageBuilderWithThread:thread
+                                                                          timestamp:timestamp
+                                                                        messageBody:nil]];
     if (!self) {
         return self;
     }

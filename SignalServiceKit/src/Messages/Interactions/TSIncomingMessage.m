@@ -50,44 +50,21 @@ const NSUInteger TSIncomingMessageSchemaVersion = 1;
     return self;
 }
 
-- (instancetype)initIncomingMessageWithTimestamp:(uint64_t)timestamp
-                                        inThread:(TSThread *)thread
-                                   authorAddress:(SignalServiceAddress *)authorAddress
-                                  sourceDeviceId:(uint32_t)sourceDeviceId
-                                     messageBody:(nullable NSString *)body
-                                   attachmentIds:(NSArray<NSString *> *)attachmentIds
-                                expiresInSeconds:(uint32_t)expiresInSeconds
-                                   quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                                    contactShare:(nullable OWSContact *)contactShare
-                                     linkPreview:(nullable OWSLinkPreview *)linkPreview
-                                  messageSticker:(nullable MessageSticker *)messageSticker
-                                 serverTimestamp:(nullable NSNumber *)serverTimestamp
-                                 wasReceivedByUD:(BOOL)wasReceivedByUD
-                               isViewOnceMessage:(BOOL)isViewOnceMessage
+- (instancetype)initIncomingMessageWithBuilder:(TSIncomingMessageBuilder *)incomingMessageBuilder
 {
-    self = [super initMessageWithTimestamp:timestamp
-                                  inThread:thread
-                               messageBody:body
-                             attachmentIds:attachmentIds
-                          expiresInSeconds:expiresInSeconds
-                           expireStartedAt:0
-                             quotedMessage:quotedMessage
-                              contactShare:contactShare
-                               linkPreview:linkPreview
-                            messageSticker:messageSticker
-                         isViewOnceMessage:isViewOnceMessage];
+    self = [super initMessageWithBuilder:incomingMessageBuilder];
 
     if (!self) {
         return self;
     }
 
-    _authorPhoneNumber = authorAddress.phoneNumber;
-    _authorUUID = authorAddress.uuidString;
+    _authorPhoneNumber = incomingMessageBuilder.authorAddress.phoneNumber;
+    _authorUUID = incomingMessageBuilder.authorAddress.uuidString;
 
-    _sourceDeviceId = sourceDeviceId;
+    _sourceDeviceId = incomingMessageBuilder.sourceDeviceId;
     _read = NO;
-    _serverTimestamp = serverTimestamp;
-    _wasReceivedByUD = wasReceivedByUD;
+    _serverTimestamp = incomingMessageBuilder.serverTimestamp;
+    _wasReceivedByUD = incomingMessageBuilder.wasReceivedByUD;
 
     _incomingMessageSchemaVersion = TSIncomingMessageSchemaVersion;
 
