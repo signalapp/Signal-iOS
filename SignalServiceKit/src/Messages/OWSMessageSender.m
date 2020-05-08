@@ -506,12 +506,21 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     OWSAssertDebug(message);
     OWSAssertDebug(errorHandle);
 
+    NSString *userHexEncodedPublicKey = self.tsAccountManager.localNumber;
+
     __block NSMutableSet<NSString *> *recipientIds = [NSMutableSet new];
     if ([message isKindOfClass:[OWSOutgoingSyncMessage class]]) {
         recipientIds = [LKSessionMetaProtocol getDestinationsForOutgoingSyncMessage];
     } else if (thread.isGroupThread) {
         TSGroupThread *groupThread = (TSGroupThread *)thread;
         recipientIds = [LKSessionMetaProtocol getDestinationsForOutgoingGroupMessage:message inThread:thread];
+        __block NSString *userMasterHexEncodedPublicKey;
+        [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            userMasterHexEncodedPublicKey = [LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:userHexEncodedPublicKey in:transaction] ?: userHexEncodedPublicKey;
+        }];
+        if ([recipientIds containsObject:userMasterHexEncodedPublicKey]) {
+            OWSFailDebug(@"Message send recipients should not include self.");
+        }
     } else if ([thread isKindOfClass:[TSContactThread class]]) {
         NSString *recipientContactId = ((TSContactThread *)thread).contactIdentifier;
 

@@ -259,6 +259,14 @@ public final class MultiDeviceProtocol : NSObject {
     }
 
     // MARK: - General
+    public static func getUserLinkedDevices() -> Set<String> {
+        var result: Set<String> = []
+        storage.dbReadConnection.read { transaction in
+            result = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: getUserHexEncodedPublicKey(), in: transaction)
+        }
+        return result
+    }
+
     @objc public static func isSlaveThread(_ thread: TSThread) -> Bool {
         guard let thread = thread as? TSContactThread else { return false }
         var isSlaveThread = false
