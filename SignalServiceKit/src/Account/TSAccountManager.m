@@ -808,7 +808,7 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
 
             [self.sessionStore resetSessionStore:transaction];
 
-            [self.udManager removeSenderCertificatesWithTransaction:transaction];
+            [self.udManager removeSenderCertificateWithTransaction:transaction];
 
             [self.keyValueStore setObject:localNumber
                                       key:TSAccountManager_ReregisteringPhoneNumberKey

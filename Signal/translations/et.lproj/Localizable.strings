@@ -246,7 +246,7 @@
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "Häälsõnum";
 
 /* A string indicating that an audio message is playing. */
-"AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Audiosõnum";
+"AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Häälsõnum";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Valjuhääldi";
@@ -471,7 +471,7 @@
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Vaheta kaamera suunda";
 
 /* Accessibility label to switch to audio only */
-"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Lülita audiokõnele";
+"CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Lülita häälkõnele";
 
 /* Accessibility label to switch to video call */
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Lülita videokõnele";
@@ -859,6 +859,12 @@
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Eemalda vaigistus";
+
+/* The alert message if user tries to exit conversation settings view without saving changes. */
+"CONVERSATION_SETTINGS_UNSAVED_CHANGES_MESSAGE" = "Would you like to save the changes that you made to this conversation?";
+
+/* The alert title if user tries to exit conversation settings view without saving changes. */
+"CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "Salvestamata muudatused";
 
 /* Label for 'view all members' button in conversation settings view. */
 "CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "Näita kõiki liikmeid";
@@ -2067,7 +2073,7 @@
 "MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Rohkem kui üks selle grupi liige ei ole enam kinnitatuks märgitud. Klõpsa valikuteks.";
 
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
-"MESSAGES_VIEW_TITLE_SUBTITLE" = "Sätete nägemiseks klõpsa siia";
+"MESSAGES_VIEW_TITLE_SUBTITLE" = "Klõpsa sätete nägemiseks siia";
 
 /* Indicator that separates read from unread messages. */
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "Uued sõnumid";
@@ -2100,7 +2106,7 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Oled jõudnud maksimaalse seadmete arvuni, mida on võimalik kontoga ühendada. Palun eemalda mõni seadmetest ja proovi uuesti.";
 
 /* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "Sa ei saa vaigistatud vestluste kohta teavitusi.";
+"MUTE_BEHAVIOR_EXPLANATION" = "Sa ei saa vaigistatud vestluste kohta märguandeid.";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Jäta vahele";
@@ -2280,7 +2286,7 @@
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Luba õigused";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Teavitused võimaldavad sul näha sõnumite saabumist ja saada uuendusi vestluste kohta.";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "Märguanded võimaldavad sul näha sõnumite saabumist ja saada uuendusi vestluste kohta.";
 
 /* Title of the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_TITLE" = "Hangi sõnum";
@@ -2505,7 +2511,7 @@
 "PIN_CREATION_CONFIRM_TITLE" = "Kinnita PIN-kood";
 
 /* The explanation of confirmation in the 'pin creation' view. */
-"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Enter the PIN you just created.";
+"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Sisesta just loodud PIN-kood.";
 
 /* Button asking if the user would like to create an alphanumeric PIN */
 "PIN_CREATION_CREATE_ALPHANUMERIC" = "Loo tähtnumbriline PIN-kood";
@@ -2544,7 +2550,7 @@
 "PIN_CREATION_TITLE" = "Loo PIN-kood";
 
 /* Label indicating that the attempted PIN is too weak */
-"PIN_CREATION_WEAK_ERROR" = "Choose a stronger PIN";
+"PIN_CREATION_WEAK_ERROR" = "Vali tugevam PIN-kood";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "PIN-koodi meeldejätmise aitamiseks palume me sul seda aeg-ajalt sisestada. Aja möödudes küsime seda järjest harvemini.";
@@ -2718,10 +2724,10 @@
 "PUSH_MANAGER_REPLY" = "Vasta";
 
 /* Title of alert shown when push tokens sync job succeeds. */
-"PUSH_REGISTER_SUCCESS" = "Edukalt teavituste saamiseks uuesti registreeritud.";
+"PUSH_REGISTER_SUCCESS" = "Edukalt märguannete saamiseks uuesti registreeritud.";
 
 /* Used in table section header and alert view title contexts */
-"PUSH_REGISTER_TITLE" = "Teavitused";
+"PUSH_REGISTER_TITLE" = "Märguanded";
 
 /* No comment provided by engineer. */
 "QUESTIONMARK_PUNCTUATION" = "?";
@@ -2853,7 +2859,7 @@
 "REGISTER_RATE_LIMITING_ERROR" = "Sa proovisid liiga palju kordi. Palun oota üks minut enne uuesti proovimist.";
 
 /* Title of alert shown when push tokens sync job fails. */
-"REGISTRATION_BODY" = "Teavituste saamiseks uuesti registreerumine ei õnnestunud.";
+"REGISTRATION_BODY" = "Märguannete saamiseks uuesti registreerumine ei õnnestunud.";
 
 /* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Riigi suunakood";
@@ -2925,7 +2931,7 @@
 "REPLACE_ADMIN_VIEW_TITLE" = "Vali uus administraator";
 
 /* No comment provided by engineer. */
-"REREGISTER_FOR_PUSH" = "Registreeru uuesti teavituste saamiseks";
+"REREGISTER_FOR_PUSH" = "Registreeru uuesti märguannete saamiseks";
 
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "Proovi uuesti";
@@ -3387,10 +3393,10 @@
 "SETTINGS_NAV_BAR_TITLE" = "Sätted";
 
 /* table section footer */
-"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Helistamise ja sõnumite teavitused ilmuvad siis, kui telefon on lukustatud. Sul on võimalik piirata, mida nendes teavitustes näidatakse.";
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Helistamise ja sõnumite märguanded ilmuvad siis, kui telefon on lukustatud. Sul on võimalik piirata, mida nendes teavitustes näidatakse.";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Teavituse sisu";
+"SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Märguande sisu";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
 "SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Kontakt ühines Signal-iga";
@@ -3399,7 +3405,7 @@
 "SETTINGS_NOTIFICATION_EVENTS_SECTION_TITLE" = "Sündmused";
 
 /* No comment provided by engineer. */
-"SETTINGS_NOTIFICATIONS" = "Teavitused";
+"SETTINGS_NOTIFICATIONS" = "Märguanded";
 
 /* Footer for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_FOOTER" = "PIN-koodid hoiavad Signal-is salvestatud teabe krüptituna, et ainult sinul on sellele juurdepääs. Kui paigaldad Signal-i uuesti, sii sinu profiil, sätted ja kontaktid taastatakse.";
@@ -3459,7 +3465,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Ekraaniluku aegumine";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Ava Signal-i ekraan, kasutades Touch ID-d, Face ID-d või oma iOS seadme salasõna. Kui ekraanilukk on lubatud, on sul võimalik vastata sissetulevatele kõnedele ja saada teavitusi sõnumite kohta. Signal-i teavituste sätted võimaldavad kuvatavat teavet kohandada.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Ava Signal-i ekraan, kasutades Touch ID-d, Face ID-d või oma iOS seadme salasõna. Kui ekraanilukk on lubatud, on sul võimalik vastata sissetulevatele kõnedele ja saada märguandeid sõnumite kohta. Signal-i teavituste sätted võimaldavad kuvatavat teavet kohandada.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Ekraanilukk";
@@ -3477,7 +3483,7 @@
 "SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOSi kõnede integratsioon näitab Signali kõnesid sinu lukustusekraanil ja süsteemi kõneajaloos. Lisaks on võimalik näidata kontakti nime ja numbrit. Kui iCloud on lubatud, siis jagatakse kõnede ajalugu Apple'iga.";
 
 /* Label for the notifications section of conversation settings view. */
-"SETTINGS_SECTION_NOTIFICATIONS" = "Teavitused";
+"SETTINGS_SECTION_NOTIFICATIONS" = "Märguanded";
 
 /* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "Helid";
@@ -3747,7 +3753,7 @@
 "UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Kaduvad sõnumid olid keelatud.";
 
 /* Info Message when an unknown user enabled disappearing messages. Embeds {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
-"UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Haihtuva sõnumi ajaks seadistati %@.";
+"UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Kaduvate sõnumite ajaks seadistati %@.";
 
 /* Indicates an unknown or unrecognizable value. */
 "UNKNOWN_VALUE" = "Tundmatu";
@@ -3801,7 +3807,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Tutvustame PIN-koode";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal nõuab varsti iOS 10 või uuemat. Palun uuenda seadet, valides rakenduses Settings >> General >> Software Update.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal will soon require iOS 11 or later. Please upgrade in Settings app >> General >> Software Update.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "Uuenda iOSi";

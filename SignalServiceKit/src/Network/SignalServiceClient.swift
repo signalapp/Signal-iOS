@@ -13,7 +13,7 @@ public protocol SignalServiceClient {
     func getAvailablePreKeys() -> Promise<Int>
     func registerPreKeys(identityKey: IdentityKey, signedPreKeyRecord: SignedPreKeyRecord, preKeyRecords: [PreKeyRecord]) -> Promise<Void>
     func setCurrentSignedPreKey(_ signedPreKey: SignedPreKeyRecord) -> Promise<Void>
-    func requestUDSenderCertificate(includeUuid: Bool) -> Promise<Data>
+    func requestUDSenderCertificate() -> Promise<Data>
     func updatePrimaryDeviceAccountAttributes() -> Promise<Void>
     func getAccountUuid() -> Promise<UUID>
     func requestStorageAuth() -> Promise<(username: String, password: String)>
@@ -86,8 +86,8 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
         return networkManager.makePromise(request: request).asVoid()
     }
 
-    public func requestUDSenderCertificate(includeUuid: Bool) -> Promise<Data> {
-        let request = OWSRequestFactory.udSenderCertificateRequest(includeUuid: includeUuid)
+    public func requestUDSenderCertificate() -> Promise<Data> {
+        let request = OWSRequestFactory.udSenderCertificateRequest()
         return firstly {
             self.networkManager.makePromise(request: request)
         }.map { _, responseObject in

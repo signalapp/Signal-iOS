@@ -557,13 +557,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                      success:(void (^)(void))success
                      failure:(RetryableFailureHandler)failure
 {
-    [self.udManager ensureSenderCertificatesWithCertificateExpirationPolicy:OWSUDCertificateExpirationPolicyPermissive
-        success:^(SenderCertificates *senderCertificates) {
+    [self.udManager ensureSenderCertificateWithCertificateExpirationPolicy:OWSUDCertificateExpirationPolicyPermissive
+        success:^(SMKSenderCertificate *senderCertificate) {
             dispatch_async([OWSDispatch sendingQueue], ^{
-                [self sendMessageToService:message
-                        senderCertificates:senderCertificates
-                                   success:success
-                                   failure:failure];
+                [self sendMessageToService:message senderCertificate:senderCertificate success:success failure:failure];
             });
         }
         failure:^(NSError *error) {
@@ -571,7 +568,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
             // Proceed using non-UD message sends.
             dispatch_async([OWSDispatch sendingQueue], ^{
-                [self sendMessageToService:message senderCertificates:nil success:success failure:failure];
+                [self sendMessageToService:message senderCertificate:nil success:success failure:failure];
             });
         }];
 }
@@ -670,7 +667,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 - (AnyPromise *)sendPromiseForRecipients:(NSArray<SignalRecipient *> *)recipients
                                  message:(TSOutgoingMessage *)message
                                   thread:(TSThread *)thread
-                      senderCertificates:(nullable SenderCertificates *)senderCertificates
+                       senderCertificate:(nullable SMKSenderCertificate *)senderCertificate
                               sendErrors:(NSMutableArray<NSError *> *)sendErrors
 {
     OWSAssertDebug(recipients.count > 0);
@@ -684,11 +681,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         // Use chained promises to make the code more readable.
         AnyPromise *sendPromise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
             __block OWSUDSendingAccess *_Nullable udSendingAccess;
-            if (senderCertificates != nil && !recipient.address.isLocalAddress) {
+            if (senderCertificate != nil && !recipient.address.isLocalAddress) {
                 [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
                     udSendingAccess = [self.udManager udSendingAccessForAddress:recipient.address
                                                               requireSyncAccess:YES
-                                                             senderCertificates:senderCertificates
+                                                              senderCertificate:senderCertificate
                                                                     transaction:transaction];
                 }];
             }
@@ -721,7 +718,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 }
 
 - (void)sendMessageToService:(TSOutgoingMessage *)message
-          senderCertificates:(nullable SenderCertificates *)senderCertificates
+           senderCertificate:(nullable SMKSenderCertificate *)senderCertificate
                      success:(void (^)(void))successHandlerParam
                      failure:(RetryableFailureHandler)failureHandlerParam
 {
@@ -838,7 +835,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     AnyPromise *sendPromise = [self sendPromiseForRecipients:recipients
                                                      message:message
                                                       thread:thread
-                                          senderCertificates:senderCertificates
+                                           senderCertificate:senderCertificate
                                                   sendErrors:sendErrors]
                                   .then(^(id value) {
                                       successHandler();
