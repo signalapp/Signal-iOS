@@ -14,7 +14,7 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
     @objc
     public var authorAddress: SignalServiceAddress?
     @objc
-    public var sourceDeviceId: UInt32 = 0
+    public var sourceDeviceId: UInt32 = OWSDevicePrimaryDeviceId
     @objc
     public var serverTimestamp: NSNumber?
     @objc
@@ -66,15 +66,6 @@ public class TSIncomingMessageBuilder: TSMessageBuilder {
         return TSIncomingMessageBuilder(thread: thread,
                                         messageBody: messageBody)
     }
-
-    //    @objc
-    //    public class func builder(thread: TSThread,
-    //                              timestamp: UInt64,
-    //                              messageBody: String?) -> TSMessageBuilder {
-    //        return TSMessageBuilder(thread: thread,
-    //                                timestamp: timestamp,
-    //                                messageBody: messageBody)
-    //    }
 
     // This factory method can be used at call sites that want
     // to specify every property; usage will fail to compile if

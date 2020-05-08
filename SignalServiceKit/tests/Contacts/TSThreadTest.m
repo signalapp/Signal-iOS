@@ -43,21 +43,11 @@
         XCTAssertEqual(0, [thread numberOfInteractionsWithTransaction:transaction]);
     }];
 
-    TSIncomingMessage *incomingMessage = [[TSIncomingMessage alloc]
-        initIncomingMessageWithTimestamp:10000
-                                inThread:thread
-                           authorAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+12223334444"]
-                          sourceDeviceId:OWSDevicePrimaryDeviceId
-                             messageBody:@"Incoming message body"
-                           attachmentIds:@[]
-                        expiresInSeconds:0
-                           quotedMessage:nil
-                            contactShare:nil
-                             linkPreview:nil
-                          messageSticker:nil
-                         serverTimestamp:nil
-                         wasReceivedByUD:NO
-                       isViewOnceMessage:NO];
+    TSIncomingMessageBuilder *incomingMessageBuilder =
+        [TSIncomingMessageBuilder incomingMessageBuilderWithThread:thread messageBody:@"Incoming message body"];
+    incomingMessageBuilder.authorAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+12223334444"];
+    incomingMessageBuilder.timestamp = 10000;
+    TSIncomingMessage *incomingMessage = [incomingMessageBuilder build];
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [incomingMessage anyInsertWithTransaction:transaction];
     }];
@@ -108,21 +98,11 @@
         [[NSFileManager defaultManager] fileExistsAtPath:[incomingAttachment originalFilePath]];
     XCTAssert(incomingFileWasCreated);
 
-    TSIncomingMessage *incomingMessage = [[TSIncomingMessage alloc]
-        initIncomingMessageWithTimestamp:10000
-                                inThread:thread
-                           authorAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+12223334444"]
-                          sourceDeviceId:OWSDevicePrimaryDeviceId
-                             messageBody:@"incoming message body"
-                           attachmentIds:@[ incomingAttachment.uniqueId ]
-                        expiresInSeconds:0
-                           quotedMessage:nil
-                            contactShare:nil
-                             linkPreview:nil
-                          messageSticker:nil
-                         serverTimestamp:nil
-                         wasReceivedByUD:NO
-                       isViewOnceMessage:NO];
+    TSIncomingMessageBuilder *incomingMessageBuilder =
+        [TSIncomingMessageBuilder incomingMessageBuilderWithThread:thread messageBody:@"Incoming message body"];
+    incomingMessageBuilder.authorAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+12223334444"];
+    incomingMessageBuilder.timestamp = 10000;
+    TSIncomingMessage *incomingMessage = [incomingMessageBuilder build];
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [incomingMessage anyInsertWithTransaction:transaction];
     }];

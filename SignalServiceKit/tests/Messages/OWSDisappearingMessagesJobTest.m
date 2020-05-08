@@ -43,17 +43,12 @@ NS_ASSUME_NONNULL_BEGIN
               expiresInSeconds:(uint32_t)expiresInSeconds
                expireStartedAt:(uint64_t)expireStartedAt
 {
-    return [[TSMessage alloc] initMessageWithTimestamp:1
-                                              inThread:self.thread
-                                           messageBody:body
-                                         attachmentIds:@[]
-                                      expiresInSeconds:expiresInSeconds
-                                       expireStartedAt:expireStartedAt
-                                         quotedMessage:nil
-                                          contactShare:nil
-                                           linkPreview:nil
-                                        messageSticker:nil
-                                     isViewOnceMessage:NO];
+    TSIncomingMessageBuilder *incomingMessageBuilder =
+        [TSIncomingMessageBuilder incomingMessageBuilderWithThread:self.thread messageBody:body];
+    incomingMessageBuilder.timestamp = 1;
+    incomingMessageBuilder.expiresInSeconds = expiresInSeconds;
+    incomingMessageBuilder.expireStartedAt = expireStartedAt;
+    return [incomingMessageBuilder build];
 }
 
 - (void)testRemoveAnyExpiredMessage
