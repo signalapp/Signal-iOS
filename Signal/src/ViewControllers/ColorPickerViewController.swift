@@ -462,20 +462,11 @@ private class MockConversationViewItem: NSObject, ConversationViewItem {
 
 private class MockIncomingMessage: TSIncomingMessage {
     init(messageBody: String, thread: TSThread) {
-        super.init(incomingMessageWithTimestamp: NSDate.ows_millisecondTimeStamp(),
-                   in: thread,
-                   authorAddress: SignalServiceAddress(phoneNumber: "+fake-id"),
-                   sourceDeviceId: 1,
-                   messageBody: messageBody,
-                   attachmentIds: [],
-                   expiresInSeconds: 0,
-                   quotedMessage: nil,
-                   contactShare: nil,
-                   linkPreview: nil,
-                   messageSticker: nil,
-                   serverTimestamp: nil,
-                   wasReceivedByUD: false,
-                   isViewOnceMessage: false)
+        let builder = TSIncomingMessageBuilder(thread: thread,
+                                               authorAddress: SignalServiceAddress(phoneNumber: "+fake-id"),
+                                               sourceDeviceId: 1,
+                                               messageBody: messageBody)
+        super.init(incomingMessageWithBuilder: builder)
     }
 
     required init(coder: NSCoder) {

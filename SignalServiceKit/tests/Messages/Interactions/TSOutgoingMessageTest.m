@@ -28,8 +28,8 @@ NS_ASSUME_NONNULL_BEGIN
         SignalServiceAddress *otherAddress = [CommonGenerator address];
         TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactAddress:otherAddress
                                                                            transaction:transaction];
-        TSOutgoingMessageBuilder *messageBuilder = [[TSOutgoingMessageBuilder alloc] initWithThread:thread
-                                                                                        messageBody:nil];
+        TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread
+                                                                                                  messageBody:nil];
         messageBuilder.timestamp = 100;
         TSOutgoingMessage *message = [messageBuilder build];
 
@@ -43,8 +43,8 @@ NS_ASSUME_NONNULL_BEGIN
         SignalServiceAddress *otherAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+12223334444"];
         TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactAddress:otherAddress
                                                                            transaction:transaction];
-        TSOutgoingMessageBuilder *messageBuilder = [[TSOutgoingMessageBuilder alloc] initWithThread:thread
-                                                                                        messageBody:nil];
+        TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread
+                                                                                                  messageBody:nil];
         messageBuilder.timestamp = 100;
         messageBuilder.expiresInSeconds = 10;
         TSOutgoingMessage *message = [messageBuilder build];
@@ -61,8 +61,8 @@ NS_ASSUME_NONNULL_BEGIN
         SignalServiceAddress *otherAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+12223334444"];
         TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactAddress:otherAddress
                                                                            transaction:transaction];
-        TSOutgoingMessageBuilder *messageBuilder = [[TSOutgoingMessageBuilder alloc] initWithThread:thread
-                                                                                        messageBody:nil];
+        TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread
+                                                                                                  messageBody:nil];
         messageBuilder.timestamp = 100;
         messageBuilder.expiresInSeconds = 10;
         TSOutgoingMessage *message = [messageBuilder build];
@@ -77,8 +77,8 @@ NS_ASSUME_NONNULL_BEGIN
         SignalServiceAddress *otherAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+12223334444"];
         TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactAddress:otherAddress
                                                                            transaction:transaction];
-        TSOutgoingMessageBuilder *messageBuilder = [[TSOutgoingMessageBuilder alloc] initWithThread:thread
-                                                                                        messageBody:nil];
+        TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread
+                                                                                                  messageBody:nil];
         messageBuilder.timestamp = 100;
         messageBuilder.expiresInSeconds = 10;
         TSOutgoingMessage *message = [messageBuilder build];

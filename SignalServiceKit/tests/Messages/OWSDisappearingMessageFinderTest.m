@@ -138,8 +138,8 @@ NS_ASSUME_NONNULL_BEGIN
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         TSThread *thread = [self threadWithTransaction:transaction];
 
-        TSOutgoingMessageBuilder *messageBuilder = [[TSOutgoingMessageBuilder alloc] initWithThread:thread
-                                                                                        messageBody:body];
+        TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread
+                                                                                                  messageBody:body];
         messageBuilder.expiresInSeconds = expiresInSeconds;
         messageBuilder.expireStartedAt = expireStartedAt;
         message = [messageBuilder build];

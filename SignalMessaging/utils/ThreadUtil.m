@@ -130,7 +130,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
 
-    TSOutgoingMessageBuilder *builder = [[TSOutgoingMessageBuilder alloc] initWithThread:thread];
+    TSOutgoingMessageBuilder *builder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
     builder.expiresInSeconds = expiresInSeconds;
     builder.contactShare = contactShare;
     TSOutgoingMessage *message = [builder build];
@@ -203,7 +203,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
 
-    TSOutgoingMessageBuilder *builder = [[TSOutgoingMessageBuilder alloc] initWithThread:thread];
+    TSOutgoingMessageBuilder *builder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
     builder.expiresInSeconds = expiresInSeconds;
     return [builder build];
 }
@@ -306,7 +306,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         OWSDisappearingMessagesConfiguration *configuration = [thread disappearingMessagesConfigurationWithTransaction:transaction];
         uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
-        TSOutgoingMessageBuilder *builder = [[TSOutgoingMessageBuilder alloc] initWithThread:thread];
+        TSOutgoingMessageBuilder *builder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
         builder.expiresInSeconds = expiresInSeconds;
         builder.contactShare = contactShare;
         message = [builder build];

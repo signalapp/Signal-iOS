@@ -475,20 +475,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                                            transaction:transaction];
 
         // TSInteraction
-        [[[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                            inThread:thread
-                                                       authorAddress:address2
-                                                      sourceDeviceId:0
-                                                         messageBody:@"Exemplar"
-                                                       attachmentIds:@[]
-                                                    expiresInSeconds:0
-                                                       quotedMessage:nil
-                                                        contactShare:nil
-                                                         linkPreview:nil
-                                                      messageSticker:nil
-                                                     serverTimestamp:nil
-                                                     wasReceivedByUD:NO
-                                                   isViewOnceMessage:NO] anyInsertWithTransaction:transaction];
+        TSIncomingMessageBuilder *incomingMessageBuilder =
+            [TSIncomingMessageBuilder incomingMessageBuilderWithThread:thread messageBody:@"Exemplar"];
+        incomingMessageBuilder.authorAddress = address2;
+        [[incomingMessageBuilder build] anyInsertWithTransaction:transaction];
 
         StickerPackInfo *stickerPackInfo =
             [[StickerPackInfo alloc] initWithPackId:[Randomness generateRandomBytes:16]
@@ -600,8 +590,8 @@ NS_ASSUME_NONNULL_BEGIN
         [[[SSKMessageDecryptJobRecord alloc] initWithEnvelopeData:[Randomness generateRandomBytes:16]
                                                             label:SSKMessageDecryptJobQueue.jobRecordLabel]
             anyInsertWithTransaction:transaction];
-        TSOutgoingMessage *queuedMessage = [[[TSOutgoingMessageBuilder alloc] initWithThread:thread
-                                                                                 messageBody:@"some body"] build];
+        TSOutgoingMessage *queuedMessage =
+            [[TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread messageBody:@"some body"] build];
         NSError *_Nullable error;
         [queuedMessage anyInsertWithTransaction:transaction];
         [[[SSKMessageSenderJobRecord alloc] initWithMessage:queuedMessage

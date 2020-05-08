@@ -397,7 +397,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
         [attachmentIds addObject:attachmentId];
     }
 
-    TSOutgoingMessageBuilder *builder = [[TSOutgoingMessageBuilder alloc] initWithThread:thread];
+    TSOutgoingMessageBuilder *builder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
     builder.messageBody = body;
     builder.attachmentIds = attachmentIds;
     builder.expiresInSeconds = expiresInSeconds;
@@ -411,7 +411,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                        groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
                        expiresInSeconds:(uint32_t)expiresInSeconds
 {
-    TSOutgoingMessageBuilder *builder = [[TSOutgoingMessageBuilder alloc] initWithThread:thread];
+    TSOutgoingMessageBuilder *builder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
     builder.groupMetaMessage = groupMetaMessage;
     builder.expiresInSeconds = expiresInSeconds;
     return [builder build];
@@ -422,7 +422,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                        expiresInSeconds:(uint32_t)expiresInSeconds
                  changeActionsProtoData:(nullable NSData *)changeActionsProtoData
 {
-    TSOutgoingMessageBuilder *builder = [[TSOutgoingMessageBuilder alloc] initWithThread:thread];
+    TSOutgoingMessageBuilder *builder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
     builder.groupMetaMessage = groupMetaMessage;
     builder.expiresInSeconds = expiresInSeconds;
     builder.changeActionsProtoData = changeActionsProtoData;
@@ -431,7 +431,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 
 - (instancetype)initOutgoingMessageWithBuilder:(TSOutgoingMessageBuilder *)outgoingMessageBuilder
 {
-    self = [super initMessageWithBuilder:incomingMessageBuilder];
+    self = [super initMessageWithBuilder:outgoingMessageBuilder];
     if (!self) {
         return self;
     }

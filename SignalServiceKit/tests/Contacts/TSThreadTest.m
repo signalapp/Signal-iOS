@@ -63,7 +63,7 @@
     }];
 
     TSOutgoingMessageBuilder *messageBuilder =
-        [[TSOutgoingMessageBuilder alloc] initWithThread:thread messageBody:@"outgoing message body"];
+        [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread messageBody:@"outgoing message body"];
     messageBuilder.timestamp = 20000;
     TSOutgoingMessage *outgoingMessage = [messageBuilder build];
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
@@ -140,7 +140,7 @@
     XCTAssert(outgoingFileWasCreated);
 
     TSOutgoingMessageBuilder *messageBuilder =
-        [[TSOutgoingMessageBuilder alloc] initWithThread:thread messageBody:@"outgoing message body"];
+        [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread messageBody:@"outgoing message body"];
     messageBuilder.timestamp = 10000;
     messageBuilder.attachmentIds = [@[ outgoingAttachment.uniqueId ] mutableCopy];
     TSOutgoingMessage *outgoingMessage = [messageBuilder build];

@@ -1083,26 +1083,19 @@ public extension DebugUIScreenshots {
         //
         // e.g. "yesterday" would be: Date.ows_millisecondTimestamp() - kDayInMs
         let timestamp = timestamp ?? Date.ows_millisecondTimestamp()
-        var attachmentIds = [String]()
+        let attachmentIds = NSMutableArray()
         if let attachments = attachments {
-            attachmentIds += attachments.map { $0.uniqueId }
+            attachmentIds.addObjects(from: attachments.map { $0.uniqueId })
         }
         let expiresInSeconds = expiresInSeconds ?? 0
         let isViewOnceMessage = isViewOnceMessage ?? false
-        let message = TSIncomingMessage(incomingMessageWithTimestamp: timestamp,
-                                        in: thread,
-                                        authorAddress: authorAddress,
-                                        sourceDeviceId: 0,
-                                        messageBody: messageBody,
-                                        attachmentIds: attachmentIds,
-                                        expiresInSeconds: expiresInSeconds,
-                                        quotedMessage: nil,
-                                        contactShare: nil,
-                                        linkPreview: nil,
-                                        messageSticker: nil,
-                                        serverTimestamp: nil,
-                                        wasReceivedByUD: false,
-                                        isViewOnceMessage: isViewOnceMessage)
+        let message = TSIncomingMessageBuilder(thread: thread,
+                                               timestamp: timestamp,
+                                               authorAddress: authorAddress,
+                                               messageBody: messageBody,
+                                               attachmentIds: attachmentIds,
+                                               expiresInSeconds: expiresInSeconds,
+                                               isViewOnceMessage: isViewOnceMessage).build()
         message.replaceReceived(atTimestamp: timestamp)
         message.anyInsert(transaction: transaction)
         return message
