@@ -203,6 +203,7 @@ public final class SessionManagementProtocol : NSObject {
             closedGroupMembers.formUnion(group.groupModel.groupMemberIds)
         }
         LokiFileServerAPI.getDeviceLinks(associatedWith: closedGroupMembers).ensure {
+            defer { inFlightSessionRequests.remove(hexEncodedPublicKey) }
             storage.dbReadWriteConnection.readWrite { transaction in
                 let validHEPKs = closedGroupMembers.flatMap {
                     LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: $0, in: transaction)
@@ -212,7 +213,6 @@ public final class SessionManagementProtocol : NSObject {
                 let ephemeralMessage = EphemeralMessage(in: thread)
                 let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
                 messageSenderJobQueue.add(message: ephemeralMessage, transaction: transaction)
-                inFlightSessionRequests.remove(hexEncodedPublicKey)
             }
         }
     }
