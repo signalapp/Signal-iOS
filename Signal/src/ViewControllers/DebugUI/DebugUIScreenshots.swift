@@ -1083,9 +1083,9 @@ public extension DebugUIScreenshots {
         //
         // e.g. "yesterday" would be: Date.ows_millisecondTimestamp() - kDayInMs
         let timestamp = timestamp ?? Date.ows_millisecondTimestamp()
-        let attachmentIds = NSMutableArray()
+        var attachmentIds = [String]()
         if let attachments = attachments {
-            attachmentIds.addObjects(from: attachments.map { $0.uniqueId })
+            attachmentIds = attachments.map { $0.uniqueId }
         }
         let expiresInSeconds = expiresInSeconds ?? 0
         let isViewOnceMessage = isViewOnceMessage ?? false

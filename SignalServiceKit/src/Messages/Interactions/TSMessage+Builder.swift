@@ -18,7 +18,7 @@ public class TSMessageBuilder: NSObject {
     @objc
     public var messageBody: String?
     @objc
-    public var attachmentIds = NSMutableArray()
+    public var attachmentIds = [String]()
     @objc
     public var expiresInSeconds: UInt32 = 0
     @objc
@@ -37,7 +37,7 @@ public class TSMessageBuilder: NSObject {
     init(thread: TSThread,
          timestamp: UInt64? = nil,
          messageBody: String? = nil,
-         attachmentIds: NSMutableArray? = nil,
+         attachmentIds: [String]? = nil,
          expiresInSeconds: UInt32 = 0,
          expireStartedAt: UInt64 = 0,
          quotedMessage: TSQuotedMessage? = nil,
@@ -94,7 +94,7 @@ public class TSMessageBuilder: NSObject {
     #if TESTABLE_BUILD
     @objc
     public func addAttachmentId(_ attachmentId: String) {
-        attachmentIds.add(attachmentId)
+        attachmentIds = attachmentIds + [attachmentId ]
     }
     #endif
 }

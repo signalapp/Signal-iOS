@@ -1078,7 +1078,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     
     // Message Attachments
     if (!attachmentWasGroupAvatar) {
-        NSMutableArray *attachments = [NSMutableArray new];
+        NSMutableArray<SSKProtoAttachmentPointer *> *attachments = [NSMutableArray new];
         for (NSString *attachmentId in self.attachmentIds) {
             SSKProtoAttachmentPointer *_Nullable attachmentProto =
                 [TSAttachmentStream buildProtoForAttachmentId:attachmentId transaction:transaction];

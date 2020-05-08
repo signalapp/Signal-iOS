@@ -180,7 +180,7 @@ public class OutgoingMessageFactory: NSObject, Factory {
     }
 
     @objc
-    public var attachmentIdsBuilder: () -> NSMutableArray = {
+    public var attachmentIdsBuilder: () -> [String] = {
         return []
     }
 
@@ -333,7 +333,7 @@ public class IncomingMessageFactory: NSObject, Factory {
     }
 
     @objc
-    public var attachmentIdsBuilder: () -> NSMutableArray = {
+    public var attachmentIdsBuilder: () -> [String] = {
         return []
     }
 

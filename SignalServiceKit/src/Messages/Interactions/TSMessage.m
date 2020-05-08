@@ -219,7 +219,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     }
 
     if (!_attachmentIds) {
-        _attachmentIds = [NSMutableArray new];
+        _attachmentIds = @[];
     }
 
     _schemaVersion = OWSMessageSchemaVersion;
@@ -381,7 +381,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                                     block:^(TSMessage *message) {
                                         NSMutableArray<NSString *> *attachmentIds = [message.attachmentIds mutableCopy];
                                         [attachmentIds removeObject:attachment.uniqueId];
-                                        message.attachmentIds = attachmentIds;
+                                        message.attachmentIds = [attachmentIds copy];
                                     }];
 }
 
@@ -778,7 +778,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                                         message.quotedMessage = nil;
                                         message.linkPreview = nil;
                                         message.messageSticker = nil;
-                                        message.attachmentIds = [NSMutableArray new];
+                                        message.attachmentIds = @[];
                                         OWSAssertDebug(!message.hasRenderableContent);
 
                                         block(message);
