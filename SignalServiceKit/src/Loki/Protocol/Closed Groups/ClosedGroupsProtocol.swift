@@ -43,6 +43,8 @@ public final class ClosedGroupsProtocol : NSObject {
                 thread.save(with: transaction)
                 let sessionRequestMessage = SessionRequestMessage(thread: thread)
                 let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
+                // This has to happen sync to ensure that session requests get sent before AFRs do (it's
+                // asssumed that the master device first syncs closed groups first and contacts after that).
                 messageSenderJobQueue.add(message: sessionRequestMessage, transaction: transaction)
             }
         }
