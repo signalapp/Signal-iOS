@@ -506,7 +506,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     OWSAssertDebug(message);
     OWSAssertDebug(errorHandle);
 
-    NSString *hexEncodedPublicKey = self.tsAccountManager.localNumber;
+    NSString *userHexEncodedPublicKey = self.tsAccountManager.localNumber;
 
     __block NSMutableSet<NSString *> *recipientIds = [NSMutableSet new];
     if ([message isKindOfClass:[OWSOutgoingSyncMessage class]]) {
@@ -514,11 +514,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     } else if (thread.isGroupThread) {
         TSGroupThread *groupThread = (TSGroupThread *)thread;
         recipientIds = [LKSessionMetaProtocol getDestinationsForOutgoingGroupMessage:message inThread:thread];
-        __block NSString *masterHexEncodedPublicKey;
+        __block NSString *userMasterHexEncodedPublicKey;
         [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            masterHexEncodedPublicKey = [LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:hexEncodedPublicKey in:transaction] ?: hexEncodedPublicKey;
+            userMasterHexEncodedPublicKey = [LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:userHexEncodedPublicKey in:transaction] ?: userHexEncodedPublicKey;
         }];
-        if ([recipientIds containsObject:masterHexEncodedPublicKey]) {
+        if ([recipientIds containsObject:userMasterHexEncodedPublicKey]) {
             OWSFailDebug(@"Message send recipients should not include self.");
         }
     } else if ([thread isKindOfClass:[TSContactThread class]]) {

@@ -21,23 +21,13 @@ public final class SessionMetaProtocol : NSObject {
     // MARK: - Sending
 
     // MARK: Message Destination
-    private static func getOurDevices() -> Set<String> {
-        var result: Set<String> = []
-        storage.dbReadConnection.read { transaction in
-            // Aim the message at all linked devices, including this one
-            // TODO: Should we exclude the current device?
-            result = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: getUserHexEncodedPublicKey(), in: transaction)
-        }
-        return result
-    }
-
     @objc(getDestinationsForOutgoingSyncMessage)
     public static func objc_getDestinationsForOutgoingSyncMessage() -> NSMutableSet {
         return NSMutableSet(set: getDestinationsForOutgoingSyncMessage())
     }
 
     public static func getDestinationsForOutgoingSyncMessage() -> Set<String> {
-        return getOurDevices()
+        return MultiDeviceProtocol.getUserLinkedDevices()
     }
 
     @objc(getDestinationsForOutgoingGroupMessage:inThread:)
@@ -59,7 +49,7 @@ public final class SessionMetaProtocol : NSObject {
         } else {
             result = Set(outgoingGroupMessage.sendingRecipientIds())
                 .intersection(thread.groupModel.groupMemberIds)
-                .subtracting(getOurDevices())
+                .subtracting(MultiDeviceProtocol.getUserLinkedDevices())
         }
         return result
     }
