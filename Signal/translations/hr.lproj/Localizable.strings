@@ -45,22 +45,22 @@
 "ADD_GROUP_MEMBERS_ACTION_TITLE_1" = "Dodaj člana";
 
 /* Label for the 'add group members' button. */
-"ADD_GROUP_MEMBERS_ACTION_TITLE_N" = "Add Members";
+"ADD_GROUP_MEMBERS_ACTION_TITLE_N" = "Dodaj članove";
 
 /* Format for the message for the 'add group member' confirmation alert.  Embeds {{ the name of the group. }}. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_1_FORMAT" = "Add member to “%2$@”?";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_1_FORMAT" = "Dodati člana u \"%2$@\"?";
 
 /* Format for the message for the 'add group members' confirmation alert.  Embeds {{ %1$@ number of new members, %2$@ name of the group. }}. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "Add %1$@ members to “%2$@”?";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "Dodati %1$@ članova u \"%2$@\"?";
 
 /* Title for the 'add group member' confirmation alert. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1" = "Add New Member";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1" = "Dodaj novog člana";
 
 /* Title for the 'add group members' confirmation alert. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_N" = "Add New Members";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_N" = "Dodaj nove članove";
 
 /* The title for the 'add group members' view. */
-"ADD_GROUP_MEMBERS_VIEW_TITLE" = "Add Members";
+"ADD_GROUP_MEMBERS_VIEW_TITLE" = "Dodaj članove";
 
 /* Message shown in conversation view that offers to share your profile with a group. */
 "ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Želite li podijeliti svoj profil s ovom grupom?";
@@ -99,13 +99,13 @@
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "Pogreška";
 
 /* Error indicating that the app could not launch because the database could not be loaded. */
-"APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "Could Not Load Database";
+"APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "Učitavanje baze nije uspjelo";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
-"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "Please upgrade to the latest version of Signal.";
+"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "Molimo nadogradite na posljednju verziju Signala.";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
-"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Unknown Database Version.";
+"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Nepoznata verzija baze.";
 
 /* Text prompting user to edit their profile name. */
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Unesite svoje ime";
@@ -129,7 +129,7 @@
 "APPEARANCE_SETTINGS_LIGHT_THEME_NAME" = "Svijetla";
 
 /* Name indicating that the system theme is enabled. */
-"APPEARANCE_SETTINGS_SYSTEM_THEME_NAME" = "System";
+"APPEARANCE_SETTINGS_SYSTEM_THEME_NAME" = "Sustav";
 
 /* Name of application */
 "APPLICATION_NAME" = "Signal";
@@ -150,10 +150,10 @@
 "ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Opis";
 
 /* Error that outgoing attachments could not be exported. */
-"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "Attachment failed to export.";
+"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "Izvoz privitka nije uspio.";
 
 /* alert text when Signal was unable to save a copy of the attachment to the system photo library */
-"ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "Failed to Save";
+"ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "Spremanje nije uspjelo";
 
 /* Format string for file extension label in call interstitial view */
 "ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Vrsta datoteke: %@";
@@ -165,7 +165,7 @@
 "ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "Spremljeno";
 
 /* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
-"ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "Message to %@";
+"ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "Poruka za %@";
 
 /* Label for 'send' button in the 'attachment approval' dialog. */
 "ATTACHMENT_APPROVAL_SEND_BUTTON" = "Šalji";
@@ -207,7 +207,7 @@
 "ATTACHMENT_ERROR_MISSING_DATA" = "Privitak je prazan.";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Choose Media to Send";
+"ATTACHMENT_HINT" = "Odaberite privitke za slanje";
 
 /* A button to open the camera from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_CAMERA" = "Kamera";
@@ -225,10 +225,10 @@
 "ATTACHMENT_KEYBOARD_LOCATION" = "Položaj";
 
 /* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
-"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Grant access to your photos in settings to send them here.";
+"ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Dozvolite pristup Vašim fotografijama kroz postavke kako bi ih mogli slati odavdje.";
 
 /* A string indicating to the user that once they take photos, they'll be able to send them from this view. */
-"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Once you’ve taken photos, you’ll be able to send your recents here.";
+"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Kad slikate nešto, moći će te ih slati odavdje.";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Privitak";
@@ -246,7 +246,7 @@
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "Glasovna poruka";
 
 /* A string indicating that an audio message is playing. */
-"AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Audio Message";
+"AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Audio poruka";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Zvučnik";
@@ -333,13 +333,13 @@
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Deblokiraj";
 
 /* An explanation of what unblocking a contact means. */
-"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "You will be able to message and call each other.";
+"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "Moći će te razmjenjivati poruke i pozive.";
 
 /* Action sheet body when confirming you want to unblock a group */
 "BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Postojeći članovi moći će vas ponovno dodati u grupu.";
 
 /* An explanation of what unblocking a group means. */
-"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Group members will be able to add you to this group again.";
+"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Članovi grupe će Vas moći opet dodati u ovu grupu.";
 
 /* Action sheet title when confirming you want to unblock a group. */
 "BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Deblokiraj ovu grupu?";
@@ -381,7 +381,7 @@
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Blokirani korisnici neće biti u mogućnosti da vas pozovu ili vam pošalju poruku.";
 
 /* browse files option from file sharing menu */
-"BROWSE_FILES_BUTTON" = "Browse";
+"BROWSE_FILES_BUTTON" = "Pregledaj";
 
 /* Label for 'continue' button. */
 "BUTTON_CONTINUE" = "Nastavi";
@@ -393,7 +393,7 @@
 "BUTTON_NEXT" = "Sljedeće";
 
 /* Label for the 'okay' button. */
-"BUTTON_OKAY" = "Okay";
+"BUTTON_OKAY" = "OK";
 
 /* Button text to enable batch selection mode */
 "BUTTON_SELECT" = "Odaberi";
@@ -456,10 +456,10 @@
 "CALL_VIEW_MUTE_LABEL" = "Nijemo";
 
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "You can enable iOS Call Integration in your Signal privacy settings to answer incoming calls from your lock screen.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Možete omogućiti iOS integraciju poziva u Signalovima postavkama privatnosti kako bi odgovarali na pozive sa zaključanog ekrana.";
 
 /* Reminder to the user of the benefits of disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "You can enable iOS Call Integration in your Signal privacy settings to see the name and phone number for incoming calls.";
+"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Možete omogućiti iOS integraciju poziva u Signalovim postavkama privatnosti kako bi vidjeli ime i telefonski broj dolaznih poziva.";
 
 /* Label for button that dismiss the call view's settings nag. */
 "CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Ne sada";
@@ -468,7 +468,7 @@
 "CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Prikaži postavke privatnosti";
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
-"CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Switch Camera Direction";
+"CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Promjeni smjer kamere";
 
 /* Accessibility label to switch to audio only */
 "CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Prebaci na audio poziv";
@@ -477,7 +477,7 @@
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Prebaci na video poziv";
 
 /* Label for the 'return to call' banner. */
-"CALL_WINDOW_RETURN_TO_CALL" = "Touch to return to call";
+"CALL_WINDOW_RETURN_TO_CALL" = "Dodirnite za povratak na poziv";
 
 /* notification action */
 "CALLBACK_BUTTON_TITLE" = "Povratni poziv";
@@ -486,7 +486,7 @@
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal Korisnik";
 
 /* Accessibility hint describing what you can do with the camera button */
-"CAMERA_BUTTON_HINT" = "Take a picture and then send it";
+"CAMERA_BUTTON_HINT" = "Slikajte nešto i pošaljite to";
 
 /* Accessibility label for camera button. */
 "CAMERA_BUTTON_LABEL" = "Kamera";
@@ -501,10 +501,10 @@
 "CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE" = "Odaberi državu";
 
 /* The label for the 'do not restore backup' button. */
-"CHECK_FOR_BACKUP_DO_NOT_RESTORE" = "Do Not Restore";
+"CHECK_FOR_BACKUP_DO_NOT_RESTORE" = "Ne oporavljaj";
 
 /* Message for alert shown when the app failed to check for an existing backup. */
-"CHECK_FOR_BACKUP_FAILED_MESSAGE" = "Could not determine whether there is a backup that can be restored.";
+"CHECK_FOR_BACKUP_FAILED_MESSAGE" = "Utvrđivanje postojanja sigurnosne kopije koaj se može oporaviti nije uspjelo.";
 
 /* Title for alert shown when the app failed to check for an existing backup. */
 "CHECK_FOR_BACKUP_FAILED_TITLE" = "Pogreška";
@@ -513,19 +513,19 @@
 "CHECK_FOR_BACKUP_RESTORE" = "Vrati";
 
 /* Error indicating that the app could not determine that user's iCloud account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal could not determine your iCloud account status. Sign in to your iCloud Account in the iOS settings app to backup your Signal data.";
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal nije mogao utvrditi status Vašeg iCloud računa. Kako bi stvorili sigurnosnu kopiju svojih Signal podataka, prijavite se na svoj iCloud račun kroz aplikaciju iOS postavki.";
 
 /* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "No iCloud Account. Sign in to your iCloud Account in the iOS settings app to backup your Signal data.";
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "Nema iCloud računa. Kako bi stvorili sigurnosnu kopiju svojih Signal podataka, prijavite se na svoj iCloud račun kroz aplikaciju iOS postavki.";
 
 /* Error indicating that the app was prevented from accessing the user's iCloud account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Signal was denied access your iCloud account for backups. Grant Signal access to your iCloud Account in the iOS settings app to backup your Signal data.";
+"CLOUDKIT_STATUS_RESTRICTED" = "Signalu je odbijen pristup Vašem iCloud računu za sigurnosne kopije. Odobrite Signalu pristup svom iCloud računu kako bi stvorili sigurnosnu kopiju svojih Signal podataka.";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
-"COLOR_PICKER_DEMO_MESSAGE_1" = "Choose the color of outgoing messages in this conversation.";
+"COLOR_PICKER_DEMO_MESSAGE_1" = "Odaberite boju odlaznih poruka za ovaj razgovor.";
 
 /* The second of two messages demonstrating the chosen conversation color, by rendering this message in an incoming message bubble. */
-"COLOR_PICKER_DEMO_MESSAGE_2" = "Only you will see the color you choose.";
+"COLOR_PICKER_DEMO_MESSAGE_2" = "Samo Vi vidite odabranu boju.";
 
 /* Modal Sheet title when picking a conversation color. */
 "COLOR_PICKER_SHEET_TITLE" = "Boja razgovora";
@@ -534,10 +534,10 @@
 "COMPARE_SAFETY_NUMBER_ACTION" = "Uporedi sa međuspremnikom";
 
 /* Accessibility hint describing what you can do with the compose button */
-"COMPOSE_BUTTON_HINT" = "Select or search for a Signal user to start a conversation with.";
+"COMPOSE_BUTTON_HINT" = "Odaberite ili potražite Signal korisnika kako bi započeli razgovor.";
 
 /* Accessibility label from compose button. */
-"COMPOSE_BUTTON_LABEL" = "Compose";
+"COMPOSE_BUTTON_LABEL" = "Sastavi";
 
 /* Table section header for contact listing when composing a new message */
 "COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "Kontakti";
@@ -546,25 +546,25 @@
 "COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "Grupe";
 
 /* Table section header for phone number search when composing a new message */
-"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "Phone number search";
+"COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "Pretraga po broju";
 
 /* Table section header for username search when composing a new message */
-"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Username search";
+"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Pretraga po korisničkom imenu";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "You can enable contacts access in the iOS Settings app to see which of your contacts are Signal users.";
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Možete omogućiti pristup kontaktima u iOS postavkama kako bi vidjeli tko od Vaših kontakta koristi Signal.";
 
 /* No comment provided by engineer. */
-"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "This will reset the application by deleting your messages and unregistering you with the server. The app will close after this process is complete.";
+"CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Ovo će ponovno postaviti aplikaciju brisanjem Vaših poruka i odjavljivanjem sa poslužitelja. Aplikacija će se zatvoriti kad ovaj proces završi.";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Da li ste sigurni da želite obrisati vaš račun?";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TEXT" = "This will reset the application by deleting all of your messages from this device. You can always link with your phone again, but that will not restore deleted messages. The app will close after this process is complete.";
+"CONFIRM_DELETE_LINKED_DATA_TEXT" = "Ovo će ponovno postaviti aplikaciju brisanjem svih Vaših poruka sa uređaja. Uvijek se možete ponovno povezati sa svojim telefonom, no to neće vratiti obrisane poruke. Aplikacija će se zatvoriti kad ovaj proces završi.";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TITLE" = "Are you sure you want to delete all data?";
+"CONFIRM_DELETE_LINKED_DATA_TITLE" = "Jeste li sigurni da želite obrisati sve podatke?";
 
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Nećete više biti u mogućnosti slati i primati poruke u ovoj grupi.";
@@ -660,31 +660,31 @@
 "CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "Uredi ime";
 
 /* Error indicating that an invalid contact cannot be shared. */
-"CONTACT_SHARE_INVALID_CONTACT" = "Invalid contact.";
+"CONTACT_SHARE_INVALID_CONTACT" = "Neispravan kontakt.";
 
 /* Error indicating that at least one contact field must be selected before sharing a contact. */
-"CONTACT_SHARE_NO_FIELDS_SELECTED" = "No contact fields selected.";
+"CONTACT_SHARE_NO_FIELDS_SELECTED" = "Nisu odabrana kontakt polja.";
 
 /* Button text to initiate an email to signal support staff */
-"CONTACT_SUPPORT" = "Contact Support";
+"CONTACT_SUPPORT" = "Javite se podršci";
 
 /* Alert body */
-"CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal was unable to complete your support request.";
+"CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal nije uspio završiti Vaš zahtjev za podrškom.";
 
 /* button text */
 "CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "Pokušaj ponovo";
 
 /* Alert body */
-"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Your debug logs will help us troubleshoot your issue faster. Submitting your logs is optional.";
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Zapisi o otklanjanju pogreški će nam pomoći da brže riješimo Vaš problem. Slanje ovih zapisa je opcionalno.";
 
 /* Alert title */
-"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Submit Debug Log?";
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Pošalji zapis o otklanjanju pogreški?";
 
 /* Button text */
-"CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "Submit with Debug Log";
+"CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "Pošalji sa zapisom";
 
 /* Button text */
-"CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "Submit without Debug Log";
+"CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "Pošalji bez zapisa";
 
 /* Label for 'open address in maps app' button in contact view. */
 "CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Otvori u Mapama";
@@ -696,16 +696,16 @@
 "CONTACT_WITHOUT_NAME" = "Neimenovan kontakt";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "This conversation will be deleted from this device.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Ovaj razgovor će biti obrisan sa ovog uređaja.";
 
 /* Title for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Delete Conversation?";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Obriši razgovor?";
 
 /* Indicates that the user can tap to download this image. */
 "CONVERSATION_MEDIA_VIEW_DOWNLOAD_IMAGE" = "Preuzmi";
 
 /* Momentarily shown to the user when attempting to select more conversations than is allowed. Embeds {{max number of conversations}} that can be selected. */
-"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "You can't select more than %@ conversations.";
+"CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "Ne možete odabrati više od %@ razgovora.";
 
 /* table section header for section containing groups */
 "CONVERSATION_PICKER_SECTION_GROUPS" = "Grupe";
@@ -714,19 +714,19 @@
 "CONVERSATION_PICKER_SECTION_RECENTS" = "Nedavni razgovori";
 
 /* table section header for section containing contacts */
-"CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "People";
+"CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "Ljudi";
 
 /* navbar header */
-"CONVERSATION_PICKER_TITLE" = "Choose Recipients";
+"CONVERSATION_PICKER_TITLE" = "Odaberite primatelje";
 
 /* keyboard toolbar label when no messages match the search string */
-"CONVERSATION_SEARCH_NO_RESULTS" = "No matches";
+"CONVERSATION_SEARCH_NO_RESULTS" = "Nema podudaranja";
 
 /* keyboard toolbar label when exactly 1 message matches the search string */
-"CONVERSATION_SEARCH_ONE_RESULT" = "1 match";
+"CONVERSATION_SEARCH_ONE_RESULT" = "1 podudaranje";
 
 /* keyboard toolbar label when more than 1 message matches the search string. Embeds {{number/position of the 'currently viewed' result}} and the {{total number of results}} */
-"CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d of %d matches";
+"CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d podudaranja od %d ";
 
 /* title for conversation settings screen */
 "CONVERSATION_SETTINGS" = "Postavke razgovora";
@@ -738,22 +738,22 @@
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Dodaj postojećem kontaktu";
 
 /* button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Add to System Contacts";
+"CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Dodaj u kontakte sustava";
 
 /* Label indicating that only administrators can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "Admins";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "Administratori";
 
 /* Label indicating that all group members can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "All";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "Svi";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Choose who can edit the group name, avatar and disappearing messages timer.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Odaberite tko može urediti ime grupe, avatar i timer za nestajanje poruka.";
 
 /* Footer text for the 'block and leave' section of conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER" = "Više nećete primati poruke ili ažuriranja iz ove grupe.";
 
 /* Label for 'block group' action in conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_GROUP" = "Block Group";
+"CONVERSATION_SETTINGS_BLOCK_GROUP" = "Blokiraj grupu";
 
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "Blokiraj ovu grupu";
@@ -762,7 +762,7 @@
 "CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Blokiraj ovog korisnika";
 
 /* Label for 'block user' action in conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_USER" = "Block User";
+"CONVERSATION_SETTINGS_BLOCK_USER" = "Blokiraj korisnika";
 
 /* Navbar title when viewing settings for a 1-on-1 thread */
 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Detalji kontakta";
@@ -771,16 +771,16 @@
 "CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Boja razgovora";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Who Can Edit Group Info";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Tko može urediti informacije o grupi";
 
 /* Label for button that sets 'group attributes access' to 'administrators-only'. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Only Admins";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Samo administratori";
 
 /* Description for the 'edit group attributes access' alert. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Choose who can change the group name, avatar and disappearing messages:";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Odaberite tko može promjeniti ime grupe, avatara i nestajanje poruka:";
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "All Members";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "Svi članovi";
 
 /* Label for the 'edit group' button in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_GROUP" = "Uredi";
@@ -789,16 +789,16 @@
 "CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "Informacije o grupi";
 
 /* Label for 'make group admin' button in conversation settings view. */
-"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Make Admin";
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Pretvori u administratora";
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
-"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ will be able to remove group members and make other admins.";
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@će moći ukloniti članove grupe i stvoriti druge administratore.";
 
 /* Section title of the 'members' section in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "Članovi";
 
 /* Format for the section title of the 'members' section in conversation settings view. Embeds: {{ the number of group members }}. */
-"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ Members";
+"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ članova";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Utišaj";
@@ -834,37 +834,43 @@
 "CONVERSATION_SETTINGS_PENDING_MEMBER_INVITES_NONE" = "Nijedno";
 
 /* Label for 'remove from group' button in conversation settings view. */
-"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "Remove From Group";
+"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "Ukloni iz grupe";
 
 /* Format for title for 'remove from group' confirmation alert. Embeds {user to remove from the group}. */
-"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "Remove %@ from the group?";
+"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "Ukloniti %@ iz grupe?";
 
 /* Label for 'revoke group admin' button in conversation settings view. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Remove as Admin";
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Ukloni administratorska prava";
 
 /* Format for title for 'revoke group admin' confirmation alert. Embeds {user to revoke admin status from}. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Remove %@ as group admin?";
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Ukloniti administratorska prava za %@?";
 
 /* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
-"CONVERSATION_SETTINGS_SEARCH" = "Search Conversation";
+"CONVERSATION_SETTINGS_SEARCH" = "Pretraži razgovor";
 
 /* Label for button that opens conversation settings. */
 "CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Dodirni za promjenu";
 
 /* Label for 'unblock group' action in conversation settings view. */
-"CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Unblock Group";
+"CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Odblokiraj grupu";
 
 /* Label for 'unblock user' action in conversation settings view. */
-"CONVERSATION_SETTINGS_UNBLOCK_USER" = "Unblock User";
+"CONVERSATION_SETTINGS_UNBLOCK_USER" = "Odblokiraj koisnika";
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Isključi utišavanje";
 
+/* The alert message if user tries to exit conversation settings view without saving changes. */
+"CONVERSATION_SETTINGS_UNSAVED_CHANGES_MESSAGE" = "Would you like to save the changes that you made to this conversation?";
+
+/* The alert title if user tries to exit conversation settings view without saving changes. */
+"CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "Nespremljene promjene";
+
 /* Label for 'view all members' button in conversation settings view. */
-"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "View all members";
+"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "Vidi sve članove";
 
 /* Indicates that user is in the system contacts list. */
-"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "This user is in your contacts";
+"CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Ovaj korisnik je u Vašim kontaktima";
 
 /* Indicates that user's profile has been shared with a group. */
 "CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "Ova grupa može vidjeti vaš profil.";
@@ -891,7 +897,7 @@
 "CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "Ovaj korisnik nije u vašim kontaktima.";
 
 /* button text to delete all items in the current conversation */
-"CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Delete All";
+"CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Obriši sve";
 
 /* Indicates that the app is loading more messages in this conversation. */
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Učitavanje više poruka...";
@@ -918,10 +924,10 @@
 "DATABASE_VIEW_OVERLAY_TITLE" = "Optimizacija baze podataka";
 
 /* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_FORMAT" = "%@ Hr Ago";
+"DATE_HOURS_AGO_FORMAT" = "Prije %@ sati";
 
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_FORMAT" = "%@ Min Ago";
+"DATE_MINUTES_AGO_FORMAT" = "Prije %@ minuta";
 
 /* The present; the current time. */
 "DATE_NOW" = "Sada";
@@ -966,7 +972,7 @@
 "DEBUG_LOG_ALERT_TITLE" = "Još jedan korak";
 
 /* Error indicating that the app could not launch the Email app. */
-"DEBUG_LOG_COULD_NOT_EMAIL" = "Could not open Email app.";
+"DEBUG_LOG_COULD_NOT_EMAIL" = "Otvaranje email aplikacije nije uspjelo.";
 
 /* Message of the alert before redirecting to GitHub Issues. */
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_MESSAGE" = "U vaš međuspremnik je kopirana gist veza. Uskoro ćete biti preusmjereni GitHub listu problema..";
@@ -975,22 +981,22 @@
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "Preusmjeravanje na GitHub";
 
 /* action sheet body */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Delete all messages in the conversation?";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Obrisati sve poruke u ovom razgovoru?";
 
 /* button text */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Delete All Messages";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Obriši sve poruke";
 
 /* action sheet body. Embeds {{number of selected messages}} which will be deleted. */
 "DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Delete %ld Messages?";
 
 /* action sheet body */
-"DELETE_SELECTED_SINGLE_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Delete Message?";
+"DELETE_SELECTED_SINGLE_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Obrisati poruku?";
 
 /* Label for button that lets users re-register using the same phone number. */
-"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Re-register this phone number";
+"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Ponovno registriraj ovaj telefonski broj";
 
 /* Label warning the user that they have been de-registered. */
-"DEREGISTRATION_WARNING" = "Device no longer registered. Your phone number may be registered with Signal on a different device. Tap to re-register.";
+"DEREGISTRATION_WARNING" = "Uređaj više nije registriran. Vaš telefonski broj se može registrirati sa Signalom na drugom uređaju. Dodirnite za ponovnu registraciju.";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Posljednja aktivnost: %@";
@@ -1005,7 +1011,7 @@
 "DISAPPEARING_MESSAGES" = "Nestajuće poruke";
 
 /* Info Message when added to a group which has enabled disappearing messages. Embeds {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Messages in this conversation will disappear after %@.";
+"DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Poruke u ovom razgovoru će nestati nakon %@.";
 
 /* subheading in conversation settings */
 "DISAPPEARING_MESSAGES_DESCRIPTION" = "Kada je aktivirano, poslane i primljene poruke u ovom razgovoru će same nestajati nakon što budu viđene.";
@@ -1023,7 +1029,7 @@
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Lokacija obilaska cenzure";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "You can enable access in the iOS Settings app.";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Možete omogućiti pristup u iOS postavkama.";
 
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal zahtijeva pristup kontaktima za uređivanje kontakt informacija";
@@ -1032,7 +1038,7 @@
 "EDIT_GROUP_ACTION" = "Uredi grupu";
 
 /* The 'clear avatar' button in the 'edit group' view. */
-"EDIT_GROUP_CLEAR_AVATAR" = "Remove Avatar";
+"EDIT_GROUP_CLEAR_AVATAR" = "Ukloni avatara";
 
 /* a title for the contacts section of the 'new/update group' view. */
 "EDIT_GROUP_CONTACTS_SECTION_TITLE" = "Kontakti";
@@ -1041,16 +1047,16 @@
 "EDIT_GROUP_DEFAULT_TITLE" = "Uredi grupu";
 
 /* Error message indicating the a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "This user can't be added to the group until they upgrade Signal.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Ovaj korisnik ne može biti dodan u grupu dok ne ažurira Signal.";
 
 /* Message for 'group full' error alert when a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "Maximum group size of 100 members reached.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "Dosegnuta maksimalna veličina grupe od 100 članova.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
-"EDIT_GROUP_ERROR_INVALID_AVATAR" = "Invalid avatar.";
+"EDIT_GROUP_ERROR_INVALID_AVATAR" = "Neispravan avatar.";
 
 /* Label for the group name in the 'edit group' view. */
-"EDIT_GROUP_GROUP_NAME" = "Group Name";
+"EDIT_GROUP_GROUP_NAME" = "Ime grupe";
 
 /* An indicator that a user is a new member of the group. */
 "EDIT_GROUP_NEW_MEMBER_LABEL" = "Dodano";
@@ -1059,7 +1065,7 @@
 "EDIT_GROUP_UPDATE_BUTTON" = "Ažuriraj";
 
 /* The alert message if user tries to exit update group view without saving changes. */
-"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Would you like to save the changes that you made to this group?";
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Želite li spremiti promjene koje ste napravili na ovoj grupi?";
 
 /* The alert title if user tries to exit update group view without saving changes. */
 "EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Nespremljene promjene";
@@ -1101,10 +1107,10 @@
 "ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "PIN se ne podudara.";
 
 /* Error indicating that the entered 'two-factor auth PIN' is too long. */
-"ENABLE_2FA_VIEW_PIN_TOO_LONG" = "PIN can be no longer than 20 digits.";
+"ENABLE_2FA_VIEW_PIN_TOO_LONG" = "PIN ne može biti dulji od 20 znamenki.";
 
 /* Error indicating that the entered 'two-factor auth PIN' is too short. */
-"ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "PIN must be at least 4 digits.";
+"ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "PIN mora biti najmanje 4 znamenke.";
 
 /* Indicates that user should select a 'two factor auth pin'. */
 "ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Unesite PIN registracijskog zaključavanja. Od vas će se tražiti da unesete ovaj PIN kada sljedeći put registrirujete ovaj telefonski broj na Signal.";
@@ -1125,40 +1131,40 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "Neuspjeli poziv.";
 
 /* Label indicating that this OS version is no longer supported. */
-"END_OF_LIFE_OS_WARNING" = "The latest Signal features won’t work on this version of iOS. Please upgrade this device to receive future Signal updates.";
+"END_OF_LIFE_OS_WARNING" = "Najnovije značajke Signala neće raditi na ovoj verziji iOS-a. Molimo ažurirajte ovaj uređaj kako bi nastavili dobivati ažuriranja za Signal.";
 
 /* Error indicating that the phone's contacts could not be retrieved. */
-"ERROR_COULD_NOT_FETCH_CONTACTS" = "Could not access contacts.";
+"ERROR_COULD_NOT_FETCH_CONTACTS" = "Pristup kontaktima nije uspio.";
 
 /* Error indicating that 'save video' failed. */
-"ERROR_COULD_NOT_SAVE_VIDEO" = "Could not save video.";
+"ERROR_COULD_NOT_SAVE_VIDEO" = "Spremanje videa nije uspjelo.";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Slanje poruke nije uspjelo!";
 
 /* Error message indicating that message send is disabled due to prekey update failures */
-"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Unable to send due to stale prekey data.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Slanje nije uspjelo zbog zastarjelih podataka predključa.";
 
 /* Error message indicating that message send failed due to block list */
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Neuspješno slanje poruke korisniku jer ste ga blokirali.";
 
 /* Generic error used whenever Signal can't contact the server */
-"ERROR_DESCRIPTION_NO_INTERNET" = "Signal was unable to connect to the internet. Please try again.";
+"ERROR_DESCRIPTION_NO_INTERNET" = "Signal se nije uspio spojiti na internet. Molimo pokušajte opet.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
 "ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Slanje poruke nije uspjelo zbog nedostatka valjanih primatelja.";
 
 /* Error indicating that a socket request failed. */
-"ERROR_DESCRIPTION_REQUEST_FAILED" = "Network request failed.";
+"ERROR_DESCRIPTION_REQUEST_FAILED" = "Mrežni zahtjev nije uspio.";
 
 /* Error indicating that a socket request timed out. */
-"ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "Network request timed out.";
+"ERROR_DESCRIPTION_REQUEST_TIMED_OUT" = "Mrežni zahtjev je istekao.";
 
 /* Error indicating that a socket response failed. */
-"ERROR_DESCRIPTION_RESPONSE_FAILED" = "Invalid response from service.";
+"ERROR_DESCRIPTION_RESPONSE_FAILED" = "Neispravan odgovor od usluge.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "This device is no longer registered with your phone number. Please reinstall Signal.";
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Ovaj uređaj više nije registriran s Vašim telefonskim brojem. Molimo ponovno instalirajte Signal.";
 
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Pogreška servera. Molimo pokušajte kasnije ponovo.";
@@ -1170,22 +1176,22 @@
 "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Kontakt ne koristi Signal.";
 
 /* Error message indicating that attachment download(s) failed. */
-"ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Attachment download failed.";
+"ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Preuzimanje privitka nije uspjelo.";
 
 /* Error message when unable to receive an attachment because the sending client is too old. */
-"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Attachment failure: Ask this contact to send their message again after updating to the latest version of Signal.";
+"ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Greška privitka: Zamolite ovaj kontakt da ponovno pošalje poruku nakon što ažurira svoj Signal na posljednju verziju.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Received a duplicate message.";
+"ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Primljena dupla poruka.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "Ključ primaoca nije validan.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_MESSAGE" = "Received message was out of sync.";
+"ERROR_MESSAGE_INVALID_MESSAGE" = "Primljena poruka nije sinkronizirana.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_VERSION" = "Received a message that is not compatible with this version.";
+"ERROR_MESSAGE_INVALID_VERSION" = "Primljena poruka nije kompatibilna s ovom verzijom.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_NO_SESSION" = "Nema raspoloživih sesija za kontakt.";
@@ -1203,22 +1209,22 @@
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Sigurnosni broj promijenjen.";
 
 /* Error indicating network connectivity problems. */
-"ERROR_NETWORK_FAILURE" = "Network Error";
+"ERROR_NETWORK_FAILURE" = "Mrežna greška";
 
 /* Error indicating a send failure due to a delinked application. */
-"ERROR_SENDING_DELINKED" = "Your device is no longer linked. Please re-link to send further messages.";
+"ERROR_SENDING_DELINKED" = "Vaš uređaj više nije povezan. Molimo ponovno ga povežite kako bi nastavili slati poruke.";
 
 /* Error indicating a send failure due to a deregistered application. */
-"ERROR_SENDING_DEREGISTERED" = "Your device is no longer registered. Please re-register to send further messages.";
+"ERROR_SENDING_DEREGISTERED" = "Vaš uređaj više nije registriran. Molimo ponovno ga registrirajte kako bi nastavili slati poruke.";
 
 /* Error indicating a send failure due to an expired application. */
-"ERROR_SENDING_EXPIRED" = "Your version of Signal has expired. Please update to send further messages.";
+"ERROR_SENDING_EXPIRED" = "Vaša verzija SIgnala je zastarjela. Molimo ažurirajte ju kako bi nastavili slati poruke.";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
-"ERROR_UNREGISTERED_USER_FORMAT" = "Unregistered User: %@";
+"ERROR_UNREGISTERED_USER_FORMAT" = "Neregistrirani korisnik: %@";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "Your version of Signal has expired! Messages will no longer send successfully. Tap to update to the most recent version.";
+"EXPIRATION_ERROR" = "Vaša verzija Signala je zastarjela! Poruke neće biti uspješno poslane. Dodirnite kako bi ažurirali na najnoviju verziju.";
 
 /* Label warning the user that the app will expire soon. */
 "EXPIRATION_WARNING_SOON" = "Vaša verzija Signal-a ističe za %d dana. Dodirnite za ažuriranje najnovije verzije.";
@@ -1227,10 +1233,10 @@
 "EXPIRATION_WARNING_TODAY" = "Vaša će verzija Signala isteći danas. Dodirnite za ažuriranje na najnoviju inačicu.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
-"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Too many failures with this contact. Please try again later.";
+"FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Previše neuspjelih pokušaja s ovim kontaktom. Pokušajte opet kasnije.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
-"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Your safety number with %@ has recently changed. You may wish to verify before sending this message again.";
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Vaš sigurnosni broj s %@ se nedavno promjenio. Možda bi htjeli verificirati ovu promjenu prije nego opet pošaljete poruku.";
 
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "Provjera sigurnosnog broja nije uspjela!";
@@ -1245,19 +1251,19 @@
 "FINISH_GROUP_CREATION_LABEL" = "Završi kreiranje grupe";
 
 /* Label and title for 'contact forwarding' views. */
-"FORWARD_CONTACT" = "Forward Contact";
+"FORWARD_CONTACT" = "Proslijedi kontakt";
 
 /* Label and title for 'message forwarding' views. */
-"FORWARD_MESSAGE" = "Forward Message";
+"FORWARD_MESSAGE" = "Proslijedi poruku";
 
 /* Label indicating media gallery is empty */
 "GALLERY_TILES_EMPTY_GALLERY" = "U ovom razgovoru nemate medija.";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Loading Newer Media…";
+"GALLERY_TILES_LOADING_MORE_RECENT_LABEL" = "Učitavam noviju mediju...";
 
 /* Label indicating loading is in progress */
-"GALLERY_TILES_LOADING_OLDER_LABEL" = "Loading Older Media…";
+"GALLERY_TILES_LOADING_OLDER_LABEL" = "Učitavam stariju mediju...";
 
 /* A label for generic attachments. */
 "GENERIC_ATTACHMENT_LABEL" = "Privitak";
@@ -1287,133 +1293,133 @@
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Unesite pretragu";
 
 /* Body message of notification shown during GRDB migration indicating that user may need to open app to view their content. */
-"GRDB_MIGRATION_NOTIFICATION_BODY" = "This version of Signal includes database optimizations and performance improvements. You may need to open the app to complete the process.";
+"GRDB_MIGRATION_NOTIFICATION_BODY" = "Ova verzija Signala uključuje optimizacije baze podataka i poboljšanja performansi. Možda će te morati otvoriti aplikaciju kako bi dovršili ovaj proces.";
 
 /* Title of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_TITLE" = "Optimizacija baze podataka";
 
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed who can edit group info to “%@“.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "Promjenili ste tko sve može uređivati informacije grupe na \"%@\".";
 
 /* Message indicating that the access to the group's attributes was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed who can edit group info to “%2$@“.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ je promjenio tko sve može uređivati informacije grupe na \"%2$@\".";
 
 /* Message indicating that the access to the group's attributes was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "Group info can be changed by “%@“.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "\"%@\" je promjenio informacije grupe.";
 
 /* Description of the 'admins only' access level. */
-"GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "Admins Only";
+"GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "Samo administratori";
 
 /* Description of the 'all users' access level. */
-"GROUP_ACCESS_LEVEL_ANY" = "Any User";
+"GROUP_ACCESS_LEVEL_ANY" = "Svi korisnici";
 
 /* Description of the 'all members' access level. */
-"GROUP_ACCESS_LEVEL_MEMBER" = "All Members";
+"GROUP_ACCESS_LEVEL_MEMBER" = "Svi članovi";
 
 /* Description of the 'unknown' access level. */
 "GROUP_ACCESS_LEVEL_UNKNOWN" = "Nepoznato";
 
 /* Message indicating that the access to the group's members was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed who can edit group membership to “%@“.";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "Promjenili ste tko može uređivati članstvo grupe na \"%@\".";
 
 /* Message indicating that the access to the group's members was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed who can edit group membership to “%2$@“.";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ je promjenio tko može uređivati članstvo grupe na \"%2$@\".";
 
 /* Message indicating that the access to the group's members was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Group membership can be changed by “%@“.";
+"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Članstvo grupe mogu uređivati \"%@\".";
 
 /* Error indicating that a member cannot be added to a group. */
-"GROUP_CANNOT_ADD_INVALID_MEMBER" = "This user cannot be added to the group.";
+"GROUP_CANNOT_ADD_INVALID_MEMBER" = "Ovaj korisnik ne može biti dodan u grupu.";
 
 /* Message indicating that group was created by the local user. */
-"GROUP_CREATED_BY_LOCAL_USER" = "You created the group.";
+"GROUP_CREATED_BY_LOCAL_USER" = "Vi ste stvorili grupu.";
 
 /* Message indicating that group was created by another user. Embeds {{remote user name}}. */
-"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@ added you to the group.";
+"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@ Vas je dodao u grupu.";
 
 /* Message indicating that group was created by an unknown user. */
-"GROUP_CREATED_BY_UNKNOWN_USER" = "Group was created.";
+"GROUP_CREATED_BY_UNKNOWN_USER" = "Grupa stvorena.";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
 "GROUP_CREATION_FAILED" = "Nisu svi članovi mogli biti dodani u grupu. Dodirni za ponovni pokušaj.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
-"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@ can’t be automatically added to this group by you. They’ve been invited to join, and won’t see any group messages until they accept.";
+"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@ ne možete automatski dodati u grupu. Korisnik je pozvan i neće vidjeti poruke grupe dok ne prihvati poziv.";
 
 /* Title for an alert indicating that a member was invited to a group. */
-"GROUP_INVITES_SENT_ALERT_TITLE_1" = "Invitation Sent";
+"GROUP_INVITES_SENT_ALERT_TITLE_1" = "Pozivnica poslana";
 
 /* Format for the title for an alert indicating that some members were invited to a group. Embeds: {{ the number of invites sent. }} */
-"GROUP_INVITES_SENT_ALERT_TITLE_N_FORMAT" = "%@ Invitations Sent";
+"GROUP_INVITES_SENT_ALERT_TITLE_N_FORMAT" = "Poslano %@ pozivnica";
 
 /* Message for an alert indicating that some members were invited to a group. */
-"GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "These users can’t be automatically added to this group by you. They’ve been invited to join, and won’t see any group messages until they accept.";
+"GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "Ove korisnike ne možete automatski dodati u grupu. Korisnici su pozvani i neće vidjeti poruke grupe dok ne prihvate poziv.";
 
 /* Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%@ added you.";
+"GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%@ Vas je dodao.";
 
 /* Message indicating that the local user was granted administrator role. */
-"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR" = "You are now an admin.";
+"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR" = "Sad ste administrator.";
 
 /* Message indicating that the local user was granted administrator role by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ made you an admin.";
+"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ Vas je postavio za administratora.";
 
 /* Message indicating that the local user accepted an invite to the group. */
-"GROUP_LOCAL_USER_INVITE_ACCEPTED" = "You accepted an invitation to the group.";
+"GROUP_LOCAL_USER_INVITE_ACCEPTED" = "Prihvatili ste poziv u grupu.";
 
 /* Message indicating that the local user accepted an invite to the group. Embeds {{user who invited the local user}}. */
-"GROUP_LOCAL_USER_INVITE_ACCEPTED_FORMAT" = "You accepted an invitation to the group from %@.";
+"GROUP_LOCAL_USER_INVITE_ACCEPTED_FORMAT" = "Prihvatili ste pozvi u grupu koji je poslao %@.";
 
 /* Message indicating that the local user declined an invite to the group. */
-"GROUP_LOCAL_USER_INVITE_DECLINED_BY_LOCAL_USER" = "You declined an invitation to the group.";
+"GROUP_LOCAL_USER_INVITE_DECLINED_BY_LOCAL_USER" = "Odbili ste poziv u grupu.";
 
 /* Message indicating that the local user declined an invite to the group. Embeds {{user who invited the local user}}. */
-"GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT" = "You declined an invitation to the group from %@.";
+"GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT" = "Odbili ste poziv u grupu koji je poslao %@.";
 
 /* Message indicating that the local user's invite was revoked by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_INVITE_REVOKED_BY_REMOTE_USER_FORMAT" = "%@ revoked your invitation to the group.";
+"GROUP_LOCAL_USER_INVITE_REVOKED_BY_REMOTE_USER_FORMAT" = "%@ je opozvao Vaš poziv u grupu.";
 
 /* Message indicating that the local user's invite was revoked by an unknown user. */
-"GROUP_LOCAL_USER_INVITE_REVOKED_BY_UNKNOWN_USER" = "Your invitation to the group was revoked.";
+"GROUP_LOCAL_USER_INVITE_REVOKED_BY_UNKNOWN_USER" = "Vaš poziv u grupu je opozvan.";
 
 /* Message indicating that the local user was invited to the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT" = "%@ invited you.";
+"GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT" = "%@ Vas je pozvao.";
 
 /* Message indicating that the local user was invited to the group. */
-"GROUP_LOCAL_USER_INVITED_TO_THE_GROUP" = "You were invited to the group.";
+"GROUP_LOCAL_USER_INVITED_TO_THE_GROUP" = "Pozvani ste u grupu.";
 
 /* Message indicating that the local user has joined the group. */
-"GROUP_LOCAL_USER_JOINED_THE_GROUP" = "You joined the group.";
+"GROUP_LOCAL_USER_JOINED_THE_GROUP" = "Pridružili ste se grupi.";
 
 /* Message indicating that the local user was removed from the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed you.";
+"GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ Vas je maknuo.";
 
 /* Message indicating that the local user was removed from the group by an unknown user. */
-"GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "You were removed from the group.";
+"GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "Maknuti ste iz grupe.";
 
 /* Message indicating that the local user had their administrator role revoked. */
-"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "Your admin privileges were revoked.";
+"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "Vaše administratorske privilegije su opozvane.";
 
 /* Message indicating that the local user had their administrator role revoked by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ revoked your admin privileges.";
+"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ Vam je opozvao administratorske privilegije.";
 
 /* Conversation settings table section title */
 "GROUP_MANAGEMENT_SECTION" = "Upravljanje grupom";
 
 /* Label indicating that a group member is an admin. */
-"GROUP_MEMBER_ADMIN_INDICATOR" = "Admin";
+"GROUP_MEMBER_ADMIN_INDICATOR" = "Administrator";
 
 /* Format string for the group member count indicator. Embeds {{ %1$@ the number of members in the group, %2$@ the maximum number of members in the group. }}. */
 "GROUP_MEMBER_COUNT_FORMAT" = "%1$@/%2$@";
 
 /* The 'group member count' indicator when there are no members in the group. */
-"GROUP_MEMBER_COUNT_LABEL_0" = "No members";
+"GROUP_MEMBER_COUNT_LABEL_0" = "Nema članova";
 
 /* The 'group member count' indicator when there is 1 member in the group. */
 "GROUP_MEMBER_COUNT_LABEL_1" = "1 član";
 
 /* Format for the 'group member count' indicator. Embeds {the number of group members}. */
-"GROUP_MEMBER_COUNT_LABEL_FORMAT" = "%@ members";
+"GROUP_MEMBER_COUNT_LABEL_FORMAT" = "%@ članova";
 
 /* Label indicating the local user. */
 "GROUP_MEMBER_LOCAL_USER" = "Vi";
@@ -1422,10 +1428,10 @@
 "GROUP_MEMBERS_CALL" = "Poziv";
 
 /* Label indicating that a group has no other members. */
-"GROUP_MEMBERS_NO_OTHER_MEMBERS" = "No members.";
+"GROUP_MEMBERS_NO_OTHER_MEMBERS" = "Nema članova.";
 
 /* Label for the button that clears all verification errors in the 'group members' view. */
-"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "Clear Verification for All";
+"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "Očisti verifikaciju za sve";
 
 /* Label for the 'reset all no-longer-verified group members' confirmation alert. */
 "GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE" = "Ovo će ukloniti provjeru za sve članove grupe čiji su sigurnosni brojevi promijenjeni od zadnje provjere.";
@@ -1440,151 +1446,151 @@
 "GROUP_MEMBERS_SEND_MESSAGE" = "Poruka";
 
 /* Placeholder text for 'group name' field. */
-"GROUP_NAME_PLACEHOLDER" = "Group name (required)";
+"GROUP_NAME_PLACEHOLDER" = "Ime grupe (obavezno)";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "%@ accepted an invitation to the group.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "%@ je prihvatio poziv u grupu.";
 
 /* Message indicating that a remote user has accepted an invite from the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ accepted your invitation to the group.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ je prihvatio Vaš poziv u grupu.";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{ %1$@ user who accepted their invite, %2$@ user who invited the user}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_REMOTE_USER_FORMAT" = "%1$@ accepted an invitation to the group from %2$@.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_REMOTE_USER_FORMAT" = "%1$@ je prihvatio poziv u grupu, poslan od %2$@.";
 
 /* Message indicating that a remote user was added to the group by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_LOCAL_USER_FORMAT" = "You added %@.";
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_LOCAL_USER_FORMAT" = "Dodali ste %@.";
 
 /* Message indicating that a remote user was added to the group by another user. Embeds {{ %1$@ user who added the user, %2$@ user who was added}}. */
-"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ added %2$@.";
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ je dodao %2$@.";
 
 /* Message indicating that a remote user was added to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT" = "%@ was added to the group.";
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT" = "%@ je dodan u grupu.";
 
 /* Message indicating that a remote user has declined their invite. */
-"GROUP_REMOTE_USER_DECLINED_INVITE" = "1 person declined the invitation to the group.";
+"GROUP_REMOTE_USER_DECLINED_INVITE" = "1 osoba je odbila poziv u grupu.";
 
 /* Message indicating that a remote user has declined their invite. Embeds {{ user who invited them }}. */
-"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "1 person invited by %@ declined the invitation to the group.";
+"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "1 osobo je odbila poziv u grupu, poslan od %@.";
 
 /* Message indicating that a remote user has declined an invite to the group from the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ declined your invitation to the group.";
+"GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ je odbio Vaš poziv u grupu.";
 
 /* Message indicating that a remote user was granted administrator role. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR" = "%@ is now an admin";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR" = "%@ je sad administrator";
 
 /* Message indicating that a remote user was granted administrator role by local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_LOCAL_USER" = "You made %@ an admin.";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_LOCAL_USER" = "Postavili ste %@ za administratora.";
 
 /* Message indicating that a remote user was granted administrator role by another user. Embeds {{ %1$@ user who granted, %2$@ user who was granted administrator role}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ made %2$@ an admin.";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ je postavio %2$@ za administratora.";
 
 /* Message indicating that a single remote user's invite was revoked. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_1" = "Invitation to the group was revoked for 1 person.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_1" = "Poziv u grupu je opozvan za 1 osobu.";
 
 /* Message indicating that a remote user's invite was revoked by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_BY_LOCAL_USER_FORMAT" = "Invitation to the group was revoked for %@.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_LOCAL_USER_FORMAT" = "Poziv u grupu je opozvan za %@.";
 
 /* Message indicating that a single remote user's invite was revoked by a remote user. Embeds {{ user who revoked the invite }}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_1_FORMAT" = "%@ revoked an invitation to the group for 1 person.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_1_FORMAT" = "%@ je opozvao poziv u grupu za 1 osobu.";
 
 /* Message indicating that a group of remote users' invites were revoked by a remote user. Embeds {{ %1$@ user who revoked the invite, %2$@ number of users }}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_N_FORMAT" = "%1$@ revoked an invitation to the group for %2$@ people.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_N_FORMAT" = "%1$@ je opozvao pozive u grupu za %2$@ ljudi.";
 
 /* Message indicating that a group of remote users' invites were revoked. Embeds {{ number of users }}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_N_FORMAT" = "Invitations to the group were revoked for %@ people.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_N_FORMAT" = "Pozivi u grupu su opozvani za %@ ljudi.";
 
 /* Message indicating that a single remote user was invited to the group. */
-"GROUP_REMOTE_USER_INVITED_1" = "1 person was invited to the group.";
+"GROUP_REMOTE_USER_INVITED_1" = "1 osoba je pozvana u grupu.";
 
 /* Message indicating that a remote user was invited to the group by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "You invited %@ to the group.";
+"GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "Pozvali ste %@ u grupu.";
 
 /* Message indicating that a single remote user was invited to the group by the local user. Embeds {{ user who invited the user }}. */
-"GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_1_FORMAT" = "%@ invited 1 person to the group.";
+"GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_1_FORMAT" = "%@ je pozvao 1 osobu u grupu.";
 
 /* Message indicating that a group of remote users were invited to the group by the local user. Embeds {{ %1$@ user who invited the user, %2$@ number of invited users }}. */
-"GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_N_FORMAT" = "%1$@ invited %2$@ people to the group.";
+"GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_N_FORMAT" = "%1$@ je pozvao %2$@ ljudi u grupu.";
 
 /* Message indicating that a group of remote users were invited to the group. Embeds {{number of invited users}}. */
-"GROUP_REMOTE_USER_INVITED_N_FORMAT" = "%@ people were invited to the group.";
+"GROUP_REMOTE_USER_INVITED_N_FORMAT" = "%@ ljudi je pozvano u grupu.";
 
 /* Message indicating that a remote user was added to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "%@ joined the group.";
+"GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "%@ se pridružio grupi.";
 
 /* Message indicating that a remote user has left the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%@ left the group.";
+"GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%@ je napustio grupu.";
 
 /* Message indicating that a remote user was removed from the group by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT" = "You removed %@.";
+"GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT" = "Maknuli ste %@.";
 
 /* Message indicating that the remote user was removed from the group. Embeds {{ %1$@ user who removed the user, %2$@ user who was removed}}. */
-"GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ removed %2$@.";
+"GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ je maknuo %2$@.";
 
 /* Message indicating that a remote user had their administrator role revoked. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "%@ had their admin privileges revoked.";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "%@ su opozvana administratorska prava.";
 
 /* Message indicating that a remote user had their administrator role revoked by local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_LOCAL_USER" = "You revoked admin privileges from %@.";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_LOCAL_USER" = "Opozvali ste administratorska prava za %@.";
 
 /* Message indicating that a remote user had their administrator role revoked by another user. Embeds {{ %1$@ user who revoked, %2$@ user who was granted administrator role}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ revoked admin privileges from %2$@.";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ je opozvao administratorska prava za %2$@.";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Grupa je ažurirana.";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED" = "The group avatar was removed.";
+"GROUP_UPDATED_AVATAR_REMOVED" = "Avatar grupe je uklonjen.";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "You removed the avatar.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "Uklonili ste avatara.";
 
 /* Message indicating that the group's avatar was removed by a remote user. Embeds {{user who removed the avatar}}. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed the avatar.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ je uklonio avatara.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED" = "Updated the group avatar.";
+"GROUP_UPDATED_AVATAR_UPDATED" = "Avatar grupe ažuriran.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "You updated the avatar.";
+"GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "Ažurirali ste avatara.";
 
 /* Message indicating that the group's avatar was changed by a remote user. Embeds {{user who changed the avatar}}. */
-"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ updated the avatar.";
+"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ je ažurirao avatara.";
 
 /* Info message indicating that the group was updated by the local user. */
 "GROUP_UPDATED_BY_LOCAL_USER" = "Ažurirali ste grupu.";
 
 /* Info message indicating that the group was updated by another user. Embeds {{remote user name}}. */
-"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ updated the group.";
+"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ je ažurirao grupu.";
 
 /* Message indicating that the group's name was removed. */
-"GROUP_UPDATED_NAME_REMOVED" = "The group name was removed.";
+"GROUP_UPDATED_NAME_REMOVED" = "Ime grupe je uklonjeno.";
 
 /* Message indicating that the group's name was removed by the local user. */
-"GROUP_UPDATED_NAME_REMOVED_BY_LOCAL_USER" = "You removed the group name.";
+"GROUP_UPDATED_NAME_REMOVED_BY_LOCAL_USER" = "Uklonili ste ime grupe.";
 
 /* Message indicating that the group's name was removed by a remote user. Embeds {{user who removed the name}}. */
-"GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed the group name.";
+"GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ je uklonio ime grupe.";
 
 /* Message indicating that the group's name was changed by the local user. Embeds {{new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed the group name to “%@“.";
+"GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "Promjenili ste ime grupe u \"%@\".";
 
 /* Message indicating that the group's name was changed by a remote user. Embeds {{ %1$@ user who changed the name, %2$@ new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed the group name to “%2$@“.";
+"GROUP_UPDATED_NAME_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ je promjenio ime grupe u \"%2$@\".";
 
 /* Message indicating that the group's name was changed. Embeds {{new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Group name is now “%@”.";
+"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Ime grupe je \"%@\".";
 
 /* Message indicating that the local user left the group. */
 "GROUP_YOU_LEFT" = "Napustili ste grupu.";
 
 /* Message for the 'can't replace group admin' alert. */
-"GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Choose a new admin for this group before you leave.";
+"GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Odaberite novog administratora grupe prije nego ju napustite.";
 
 /* Error indicating that an error occurred while accepting an invite. */
 "GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "Could not accept invite.";
 
 /* Label for 'block group' button in group invite view. */
-"GROUPS_INVITE_BLOCK_GROUP" = "Block Group";
+"GROUPS_INVITE_BLOCK_GROUP" = "Blokiraj grupu";
 
 /* Label for 'block group and inviter' button in group invite view. Embeds {{name of user who invited you}}. */
 "GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT" = "Block Group and %@";
@@ -1953,7 +1959,7 @@
 "MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "This conversation will be deleted from all of your devices.";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Delete Conversation?";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Obriši razgovor?";
 
 /* Action sheet action to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Delete and Leave";
@@ -2580,7 +2586,7 @@
 "PIN_REMINDER_TITLE" = "Enter your Signal PIN";
 
 /* Label indicating that the attempted PIN is too short */
-"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN must be at least 4 digits.";
+"PIN_REMINDER_TOO_SHORT_ERROR" = "PIN mora biti najmanje 4 znamenke.";
 
 /* Action text for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_ACTION" = "Create PIN";
@@ -2994,7 +3000,7 @@
 "SCREENSHOT_NAME_CONTACT_NINE" = "Zeus Lehtonen";
 
 /* This is a contact's name. A male leadership/presidential position + the sound a cat makes. This will have a cat profile photo. */
-"SCREENSHOT_NAME_CONTACT_ONE" = "Chairman Meow";
+"SCREENSHOT_NAME_CONTACT_ONE" = "Predsjednik Mijau";
 
 /* This is a contact's name. Please keep a similar unisex first name (Kai) if this name isn't common and only post the last initial. This will have a female profile photo. */
 "SCREENSHOT_NAME_CONTACT_SEVEN" = "Jordan B.";
@@ -3801,7 +3807,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Introducing PINs";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal will soon require iOS 10 or later. Please upgrade in Settings app >> General >> Software Update.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal will soon require iOS 11 or later. Please upgrade in Settings app >> General >> Software Update.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "Ažuriraj iOS";

@@ -810,19 +810,19 @@
 "CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Inte tystad";
 
 /* Label for button to mute a thread for a day. */
-"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "Tysta en dag";
+"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "Tysta i en dag";
 
 /* Label for button to mute a thread for a hour. */
-"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "Tysta en timme";
+"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "Tysta i en timme";
 
 /* Label for button to mute a thread for a minute. */
 "CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "Tysta en minut";
 
 /* Label for button to mute a thread for a week. */
-"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "Tysta en vecka";
+"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "Tysta i en vecka";
 
 /* Label for button to mute a thread for a year. */
-"CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "Tysta ett år";
+"CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "Tysta i ett år";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "tills %@";
@@ -859,6 +859,12 @@
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Ljud på";
+
+/* The alert message if user tries to exit conversation settings view without saving changes. */
+"CONVERSATION_SETTINGS_UNSAVED_CHANGES_MESSAGE" = "Would you like to save the changes that you made to this conversation?";
+
+/* The alert title if user tries to exit conversation settings view without saving changes. */
+"CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "Osparade ändringar";
 
 /* Label for 'view all members' button in conversation settings view. */
 "CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "Visa alla medlemmar";
@@ -2505,7 +2511,7 @@
 "PIN_CREATION_CONFIRM_TITLE" = "Bekräfta din PIN-kod";
 
 /* The explanation of confirmation in the 'pin creation' view. */
-"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Enter the PIN you just created.";
+"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Ange PIN-koden du just skapat.";
 
 /* Button asking if the user would like to create an alphanumeric PIN */
 "PIN_CREATION_CREATE_ALPHANUMERIC" = "Skapa alfanumerisk PIN-kod";
@@ -2544,7 +2550,7 @@
 "PIN_CREATION_TITLE" = "Skapa din PIN-kod";
 
 /* Label indicating that the attempted PIN is too weak */
-"PIN_CREATION_WEAK_ERROR" = "Choose a stronger PIN";
+"PIN_CREATION_WEAK_ERROR" = "Välj en starkare PIN-kod";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "För att hjälpa dig att memorera din PIN-kod ber vi dig att skriva in den regelbundet. Vi frågar mindre med tiden.";
@@ -3801,7 +3807,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Introducerar PIN-koder";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal kommer snart att kräva iOS 10 eller senare. Vänligen uppgradera i appen Inställningar >> Allmänt >> Programuppdatering.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal will soon require iOS 11 or later. Please upgrade in Settings app >> General >> Software Update.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "Uppgradera iOS";

@@ -860,6 +860,12 @@
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Poista mykistys";
 
+/* The alert message if user tries to exit conversation settings view without saving changes. */
+"CONVERSATION_SETTINGS_UNSAVED_CHANGES_MESSAGE" = "Would you like to save the changes that you made to this conversation?";
+
+/* The alert title if user tries to exit conversation settings view without saving changes. */
+"CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "Tallentamattomia muutoksia";
+
 /* Label for 'view all members' button in conversation settings view. */
 "CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "Näytä kaikki jäsenet";
 
@@ -2505,7 +2511,7 @@
 "PIN_CREATION_CONFIRM_TITLE" = "Vahvista PIN-koodisi.";
 
 /* The explanation of confirmation in the 'pin creation' view. */
-"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Enter the PIN you just created.";
+"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Syötä juuri luomasi PIN-koodi.";
 
 /* Button asking if the user would like to create an alphanumeric PIN */
 "PIN_CREATION_CREATE_ALPHANUMERIC" = "Luo aakkosnumeerinen PIN-koodi";
@@ -2544,7 +2550,7 @@
 "PIN_CREATION_TITLE" = "Luo PIN-koodisi";
 
 /* Label indicating that the attempted PIN is too weak */
-"PIN_CREATION_WEAK_ERROR" = "Choose a stronger PIN";
+"PIN_CREATION_WEAK_ERROR" = "Valitse vahvempi PIN-koodi";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Pyydämme sinun PIN-koodia ajoittain sen muistamisen helpottamiseksi. Pyynnöt harvenevat ajan myötä.";
@@ -3801,7 +3807,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Esittelemme PIN-koodit";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Lähitulevaisuudessa Signal tulee vaatimaan iOS 10:ä tai uudempaa. Voit päivittää käyttöjärjestelmäsi Asetukset ohjelmasta >> Yleiset >> Ohjelmistopäivitys";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal will soon require iOS 11 or later. Please upgrade in Settings app >> General >> Software Update.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "Päivitä iOS";

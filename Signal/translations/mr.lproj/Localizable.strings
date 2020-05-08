@@ -42,25 +42,25 @@
 "ACTION_VIDEO_CALL" = "व्हिडीओ कॉल";
 
 /* Label for the 'add group member' button. */
-"ADD_GROUP_MEMBERS_ACTION_TITLE_1" = "Add Member";
+"ADD_GROUP_MEMBERS_ACTION_TITLE_1" = "सदस्य जोडा";
 
 /* Label for the 'add group members' button. */
-"ADD_GROUP_MEMBERS_ACTION_TITLE_N" = "Add Members";
+"ADD_GROUP_MEMBERS_ACTION_TITLE_N" = "सदस्ये जोडा";
 
 /* Format for the message for the 'add group member' confirmation alert.  Embeds {{ the name of the group. }}. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_1_FORMAT" = "Add member to “%2$@”?";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_1_FORMAT" = "\"%2$@\" मध्ये सदस्य जोडायचे?";
 
 /* Format for the message for the 'add group members' confirmation alert.  Embeds {{ %1$@ number of new members, %2$@ name of the group. }}. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "Add %1$@ members to “%2$@”?";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "\"%2$@\" मध्ये %1$@ सदस्य जोडायचे?";
 
 /* Title for the 'add group member' confirmation alert. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1" = "Add New Member";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1" = "नवीन सदस्य जोडा";
 
 /* Title for the 'add group members' confirmation alert. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_N" = "Add New Members";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_N" = "नवीन जोडा सदस्य";
 
 /* The title for the 'add group members' view. */
-"ADD_GROUP_MEMBERS_VIEW_TITLE" = "Add Members";
+"ADD_GROUP_MEMBERS_VIEW_TITLE" = "सदस्ये जोडा";
 
 /* Message shown in conversation view that offers to share your profile with a group. */
 "ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "या गटासोबत आपल्याला आपली प्रोफाईल सामायिक करायला आवडेल का?";
@@ -150,7 +150,7 @@
 "ATTACHMENT_APPROVAL_CAPTION_TITLE" = "कॅप्शन";
 
 /* Error that outgoing attachments could not be exported. */
-"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "Attachment failed to export.";
+"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "संगल्न निर्यात करण्यात अयशस्वी";
 
 /* alert text when Signal was unable to save a copy of the attachment to the system photo library */
 "ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "जतन करण्यात अयशस्वी";
@@ -165,7 +165,7 @@
 "ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "जतन केले";
 
 /* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
-"ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "Message to %@";
+"ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "%@ यास संदेश";
 
 /* Label for 'send' button in the 'attachment approval' dialog. */
 "ATTACHMENT_APPROVAL_SEND_BUTTON" = "पाठवा";
@@ -333,13 +333,13 @@
 "BLOCK_LIST_UNBLOCK_BUTTON" = "अनब्लॉक करा";
 
 /* An explanation of what unblocking a contact means. */
-"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "You will be able to message and call each other.";
+"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "आपण एकमेकांना संदेश पाठवू आणि कॉल करू शकाल.";
 
 /* Action sheet body when confirming you want to unblock a group */
 "BLOCK_LIST_UNBLOCK_GROUP_BODY" = "अस्तित्वात असलेले सदस्य आपल्याला गटामध्ये पुन्हा जोडू शकतील.";
 
 /* An explanation of what unblocking a group means. */
-"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Group members will be able to add you to this group again.";
+"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "गट सदस्य आपल्याला पुन्हा या गटात जोडू शकतील.";
 
 /* Action sheet title when confirming you want to unblock a group. */
 "BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "हा गट अनब्लॉक करायचा?";
@@ -381,7 +381,7 @@
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "अवरोधित केलेले वापरकर्ते आपल्याला कॉल करू किंवा संदेश पाठवू शकणार नाहीत.";
 
 /* browse files option from file sharing menu */
-"BROWSE_FILES_BUTTON" = "Browse";
+"BROWSE_FILES_BUTTON" = "ब्राऊझ करा";
 
 /* Label for 'continue' button. */
 "BUTTON_CONTINUE" = "सुरू ठेवा";
@@ -534,10 +534,10 @@
 "COMPARE_SAFETY_NUMBER_ACTION" = "क्लिपबोर्ड सोबत तुलना करा";
 
 /* Accessibility hint describing what you can do with the compose button */
-"COMPOSE_BUTTON_HINT" = "Select or search for a Signal user to start a conversation with.";
+"COMPOSE_BUTTON_HINT" = "संभाषण चालू करण्यासाठी एक Signal वापरकर्ता निवडा किंवा शोधा.";
 
 /* Accessibility label from compose button. */
-"COMPOSE_BUTTON_LABEL" = "Compose";
+"COMPOSE_BUTTON_LABEL" = "लिहा";
 
 /* Table section header for contact listing when composing a new message */
 "COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "संपर्क";
@@ -561,10 +561,10 @@
 "CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "आपले खाते हटवायची आपणास खात्री आहे का?";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TEXT" = "This will reset the application by deleting all of your messages from this device. You can always link with your phone again, but that will not restore deleted messages. The app will close after this process is complete.";
+"CONFIRM_DELETE_LINKED_DATA_TEXT" = "ह्या डिव्हाईस वरून आपले सर्व संदेश हटवून हे अॅपलिकेशन रीसेट करेल. आपण कधीही आपला फोन पुन्हा लिंक करू शकता, पण त्याने आपल्या संदेशांची पुनर्स्थापना होणार नाही. प्रक्रिया संपल्यावर अॅप बंद होईल.";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TITLE" = "Are you sure you want to delete all data?";
+"CONFIRM_DELETE_LINKED_DATA_TITLE" = "सर्व डेटा हटवायची आपणास खात्री आहे का?";
 
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "या गटामधून आपल्याला यापुढे संदेश पाठवता किंवा प्राप्त करता येणार नाहीत.";
@@ -669,22 +669,22 @@
 "CONTACT_SUPPORT" = "समर्थन सोबत संपर्क साधा";
 
 /* Alert body */
-"CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal was unable to complete your support request.";
+"CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "आपली समर्थन विनंती पूर्ण करण्यात Signal अक्षम होता.";
 
 /* button text */
 "CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "पुन्हा प्रयत्न करा";
 
 /* Alert body */
-"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Your debug logs will help us troubleshoot your issue faster. Submitting your logs is optional.";
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "आपले डीबग लॉग आम्हाला आपल्या समस्या जलदतेने सोडविण्यात मदत करतील. आपले लॉग प्रविष्ट करणे पर्यायी आहे.";
 
 /* Alert title */
-"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Submit Debug Log?";
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "डीबग लॉग प्रविष्ट करायचे?";
 
 /* Button text */
-"CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "Submit with Debug Log";
+"CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "डीबग लॉग सोबत प्रविष्ट करा";
 
 /* Button text */
-"CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "Submit without Debug Log";
+"CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "डीबग लॉग विना प्रविष्ट करा";
 
 /* Label for 'open address in maps app' button in contact view. */
 "CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "मॅप मध्ये उघडा";
@@ -696,7 +696,7 @@
 "CONTACT_WITHOUT_NAME" = "निनावी संपर्क";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "This conversation will be deleted from this device.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "हे संभाषण ह्या डिव्हाईस वरून हटविले जाईल.";
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "संभाषण हटवायचे?";
@@ -741,19 +741,19 @@
 "CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "सिस्टिम संपर्कामध्ये जोडा";
 
 /* Label indicating that only administrators can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "Admins";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "प्रशासक";
 
 /* Label indicating that all group members can update the group's attributes: name, avatar, etc. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "सर्व";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Choose who can edit the group name, avatar and disappearing messages timer.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "गट नाव, अवतार आणि हरवणारे संदेश टायमर जो संपादन करू शकतो त्याला निवडा.";
 
 /* Footer text for the 'block and leave' section of conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER" = "या गटामधून आपल्याला यापुढे संदेश किंवा अद्यतने प्राप्त होणार नाहीत.";
 
 /* Label for 'block group' action in conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_GROUP" = "Block Group";
+"CONVERSATION_SETTINGS_BLOCK_GROUP" = "गट अवरोधित करा";
 
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "हा गट अवरोधित करा";
@@ -762,7 +762,7 @@
 "CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "हा वापरकर्ता अवरोधित करा";
 
 /* Label for 'block user' action in conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_USER" = "Block User";
+"CONVERSATION_SETTINGS_BLOCK_USER" = "वापरकर्त्याला अवरोधित करा";
 
 /* Navbar title when viewing settings for a 1-on-1 thread */
 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "संपर्क माहिती";
@@ -771,10 +771,10 @@
 "CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "संभाषण रंग";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Who Can Edit Group Info";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "गट माहिती जो संपादन करू शकतो";
 
 /* Label for button that sets 'group attributes access' to 'administrators-only'. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Only Admins";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "फक्त प्रशासक";
 
 /* Description for the 'edit group attributes access' alert. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Choose who can change the group name, avatar and disappearing messages:";
@@ -859,6 +859,12 @@
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "अनम्यूट करा";
+
+/* The alert message if user tries to exit conversation settings view without saving changes. */
+"CONVERSATION_SETTINGS_UNSAVED_CHANGES_MESSAGE" = "Would you like to save the changes that you made to this conversation?";
+
+/* The alert title if user tries to exit conversation settings view without saving changes. */
+"CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "जतन न केलेले बदल";
 
 /* Label for 'view all members' button in conversation settings view. */
 "CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "View all members";
@@ -1584,7 +1590,7 @@
 "GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "Could not accept invite.";
 
 /* Label for 'block group' button in group invite view. */
-"GROUPS_INVITE_BLOCK_GROUP" = "Block Group";
+"GROUPS_INVITE_BLOCK_GROUP" = "गट अवरोधित करा";
 
 /* Label for 'block group and inviter' button in group invite view. Embeds {{name of user who invited you}}. */
 "GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT" = "Block Group and %@";
@@ -1932,7 +1938,7 @@
 "MESSAGE_REQUEST_BLOCK_ACTION" = "अवरोधित करा";
 
 /* Action sheet action to confirm blocking and deleting a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Block and Delete";
+"MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "अवरोधित करा आणि हटवा";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Blocked people won’t be able to call you or send you messages.";
@@ -3801,7 +3807,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "PIN ची ओळख करून देत आहे";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "लवकरच Signal ला iOS 10 किंवा नंतरची आवश्यकता लागेल. कृपया सेटिंग अॅप >> साधारण >> सॉफ्टवेअर अद्यतन मधून श्रेणीसुधारित करा.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal will soon require iOS 11 or later. Please upgrade in Settings app >> General >> Software Update.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "iOS श्रेणीसुधारित करा";

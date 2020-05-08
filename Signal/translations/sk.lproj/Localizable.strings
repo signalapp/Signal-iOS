@@ -860,6 +860,12 @@
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Zrušiť stlmenie";
 
+/* The alert message if user tries to exit conversation settings view without saving changes. */
+"CONVERSATION_SETTINGS_UNSAVED_CHANGES_MESSAGE" = "Would you like to save the changes that you made to this conversation?";
+
+/* The alert title if user tries to exit conversation settings view without saving changes. */
+"CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "Neuložené zmeny";
+
 /* Label for 'view all members' button in conversation settings view. */
 "CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "Zobraziť všetkých členov";
 
@@ -2505,7 +2511,7 @@
 "PIN_CREATION_CONFIRM_TITLE" = "Potvrďte svoj PIN";
 
 /* The explanation of confirmation in the 'pin creation' view. */
-"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Enter the PIN you just created.";
+"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Zadajte PIN, čo ste si práve vytvorili.";
 
 /* Button asking if the user would like to create an alphanumeric PIN */
 "PIN_CREATION_CREATE_ALPHANUMERIC" = "Vytvoriť alfanumerický PIN";
@@ -2544,7 +2550,7 @@
 "PIN_CREATION_TITLE" = "Vytvorte si PIN";
 
 /* Label indicating that the attempted PIN is too weak */
-"PIN_CREATION_WEAK_ERROR" = "Choose a stronger PIN";
+"PIN_CREATION_WEAK_ERROR" = "Zvoľte si silnejší PIN";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Aby sme vám pomohli zapamätať si váš PIN, pravidelne vás budeme žiadať o jeho zadanie. Postupom času budeme o to žiadať menej.";
@@ -3801,7 +3807,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Predstavujeme PINy";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal si čoskoro bude vyžadovať iOS 10 alebo novší. Prosím, vykonajte aktualizáciu v aplikácia Nastavenia >> Všeobecné >> Aktualizácia softvéru.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal will soon require iOS 11 or later. Please upgrade in Settings app >> General >> Software Update.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "Aktualizovať iOS";

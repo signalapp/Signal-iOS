@@ -42,25 +42,25 @@
 "ACTION_VIDEO_CALL" = "ভিডিও কল";
 
 /* Label for the 'add group member' button. */
-"ADD_GROUP_MEMBERS_ACTION_TITLE_1" = "Add Member";
+"ADD_GROUP_MEMBERS_ACTION_TITLE_1" = "সদস্য যোগ করুন";
 
 /* Label for the 'add group members' button. */
-"ADD_GROUP_MEMBERS_ACTION_TITLE_N" = "Add Members";
+"ADD_GROUP_MEMBERS_ACTION_TITLE_N" = "সদস্যদের যোগ করুন";
 
 /* Format for the message for the 'add group member' confirmation alert.  Embeds {{ the name of the group. }}. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_1_FORMAT" = "Add member to “%2$@”?";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_1_FORMAT" = "সদস্যকে \"%2$@\" এ যুক্ত করবেন?";
 
 /* Format for the message for the 'add group members' confirmation alert.  Embeds {{ %1$@ number of new members, %2$@ name of the group. }}. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "Add %1$@ members to “%2$@”?";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "%1$@ সদস্যদের \"%2$@\" এ যুক্ত করবেন?";
 
 /* Title for the 'add group member' confirmation alert. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1" = "Add New Member";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1" = "নতুন সদস্য যুক্ত করুন";
 
 /* Title for the 'add group members' confirmation alert. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_N" = "Add New Members";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_N" = "নতুন সদস্যদের যুক্ত করুন";
 
 /* The title for the 'add group members' view. */
-"ADD_GROUP_MEMBERS_VIEW_TITLE" = "Add Members";
+"ADD_GROUP_MEMBERS_VIEW_TITLE" = "সদস্যদের যোগ করুন";
 
 /* Message shown in conversation view that offers to share your profile with a group. */
 "ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "আপনি কি এই গ্রুপের সাথে আপনার প্রোফাইল শেয়ার করতে চান?";
@@ -165,7 +165,7 @@
 "ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "সংরক্ষিত";
 
 /* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
-"ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "Message to %@";
+"ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "%@ এর জন্য বার্তা";
 
 /* Label for 'send' button in the 'attachment approval' dialog. */
 "ATTACHMENT_APPROVAL_SEND_BUTTON" = "পাঠান";
@@ -333,13 +333,13 @@
 "BLOCK_LIST_UNBLOCK_BUTTON" = "মূক্ত করুন";
 
 /* An explanation of what unblocking a contact means. */
-"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "You will be able to message and call each other.";
+"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "আপনি একে অপরকে বার্তা প্রেরণ এবং কল করতে সক্ষম হবেন।";
 
 /* Action sheet body when confirming you want to unblock a group */
 "BLOCK_LIST_UNBLOCK_GROUP_BODY" = "বিদ্যমান সদস্যরা আপনাকে আবার গ্রুপে যোগ করতে সক্ষম হবে।";
 
 /* An explanation of what unblocking a group means. */
-"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Group members will be able to add you to this group again.";
+"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "গ্রুপের সদস্যরা আপনাকে আবার এই গ্রুপে যুক্ত করতে পারবে।";
 
 /* Action sheet title when confirming you want to unblock a group. */
 "BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "এই গ্রুপটি অবরোধ মুক্ত করবেন?";
@@ -669,22 +669,22 @@
 "CONTACT_SUPPORT" = "সহায়তা কেন্দ্রে যোগাযোগ";
 
 /* Alert body */
-"CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal was unable to complete your support request.";
+"CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal আপনার সহায়তার অনুরোধটি সম্পন্ন করতে অক্ষম।";
 
 /* button text */
 "CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "আবারো চেষ্টা করুন";
 
 /* Alert body */
-"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Your debug logs will help us troubleshoot your issue faster. Submitting your logs is optional.";
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "আপনার ডিবাগ লগগুলি আমাদেরকে সমস্যা দ্রুত সমাধানে সহায়তা করবে। আপনার লগ জমা দেওয়া বাধ্যতামূলক নয়।";
 
 /* Alert title */
-"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Submit Debug Log?";
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "ডিবাগ লগ জমা দিবেন?";
 
 /* Button text */
-"CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "Submit with Debug Log";
+"CONTACT_SUPPORT_SUBMIT_WITH_LOG" = "ডিবাগ লগ সহ জমা দিন";
 
 /* Button text */
-"CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "Submit without Debug Log";
+"CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "ডিবাগ লগ ছাড়া জমা দিন";
 
 /* Label for 'open address in maps app' button in contact view. */
 "CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "মানচিত্রে খুলুন";
@@ -696,7 +696,7 @@
 "CONTACT_WITHOUT_NAME" = "নামবিহীন পরিচিতি";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "This conversation will be deleted from this device.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "এই কথোপকথনটি এই ডিভাইস থেকে মুছে ফেলা হবে।";
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "কথোপকথন মুছে দিন ?";
@@ -741,19 +741,19 @@
 "CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "সিস্টেম পরিচিতি সমূহে যুক্ত করুন";
 
 /* Label indicating that only administrators can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "Admins";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "প্রশাসকগণ";
 
 /* Label indicating that all group members can update the group's attributes: name, avatar, etc. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "সব";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Choose who can edit the group name, avatar and disappearing messages timer.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "গ্রুপের নাম, ছবি এবং অদৃশ্য বার্তাগুলির সময়কাল কে সম্পাদনা করতে পারবে তা চয়ন করুন।";
 
 /* Footer text for the 'block and leave' section of conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER" = "আপনি আর এই গ্রুপ থেকে বার্তা বা আপডেট পাবেন না।";
 
 /* Label for 'block group' action in conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_GROUP" = "Block Group";
+"CONVERSATION_SETTINGS_BLOCK_GROUP" = "গ্রুপ অবরুদ্ধ করুন";
 
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "এই গ্রুপটিকে অবরুদ্ধ করুন";
@@ -762,7 +762,7 @@
 "CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "এই ব্যবহারকারীকে অবরুদ্ধ করুন";
 
 /* Label for 'block user' action in conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_USER" = "Block User";
+"CONVERSATION_SETTINGS_BLOCK_USER" = "ব্যবহারকারী অবরুদ্ধ করুন";
 
 /* Navbar title when viewing settings for a 1-on-1 thread */
 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "পরিচিতি এর তথ্য";
@@ -771,16 +771,16 @@
 "CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "কথোপকথনের রঙ";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Who Can Edit Group Info";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "গ্রুপ'র তথ্য কে সম্পাদনা করতে পারে";
 
 /* Label for button that sets 'group attributes access' to 'administrators-only'. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Only Admins";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "শুধুমাত্র প্রশাসকগণ";
 
 /* Description for the 'edit group attributes access' alert. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Choose who can change the group name, avatar and disappearing messages:";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "গ্রুপের নাম, ছবি এবং অদৃশ্য বার্তাগুলি কে পরিবর্তন করতে পারে তা চয়ন করুন:";
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "All Members";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "সকল সদস্য";
 
 /* Label for the 'edit group' button in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_GROUP" = "সম্পাদনা";
@@ -789,16 +789,16 @@
 "CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "গ্রুপের তথ্য";
 
 /* Label for 'make group admin' button in conversation settings view. */
-"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Make Admin";
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "প্রশাসক করুন";
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
-"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ will be able to remove group members and make other admins.";
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ গ্রুপের সদস্যদের অপসারণ এবং অন্যান্য প্রশাসক যোগ করতে সক্ষম হবে।";
 
 /* Section title of the 'members' section in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "সদস্যগণ";
 
 /* Format for the section title of the 'members' section in conversation settings view. Embeds: {{ the number of group members }}. */
-"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ Members";
+"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ সদস্যগণ";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "নিরব";
@@ -834,16 +834,16 @@
 "CONVERSATION_SETTINGS_PENDING_MEMBER_INVITES_NONE" = "কিছুই না";
 
 /* Label for 'remove from group' button in conversation settings view. */
-"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "Remove From Group";
+"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "গ্রুপ থেকে বাদ দিন";
 
 /* Format for title for 'remove from group' confirmation alert. Embeds {user to remove from the group}. */
-"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "Remove %@ from the group?";
+"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "%@-কে গ্রুপ থেকে বাদ দিবেন?";
 
 /* Label for 'revoke group admin' button in conversation settings view. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Remove as Admin";
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "প্রশাসক থেকে বাদ দিন";
 
 /* Format for title for 'revoke group admin' confirmation alert. Embeds {user to revoke admin status from}. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Remove %@ as group admin?";
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "%@-কে গ্রুপের প্রশাসক থেকে বাদ দিবেন?";
 
 /* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
 "CONVERSATION_SETTINGS_SEARCH" = "কথোপকথন অনুসন্ধান";
@@ -852,16 +852,22 @@
 "CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "পরিবর্তন করতে আলতো চাপুন";
 
 /* Label for 'unblock group' action in conversation settings view. */
-"CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Unblock Group";
+"CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "গ্রুপ অবরোধ মুক্ত করুন";
 
 /* Label for 'unblock user' action in conversation settings view. */
-"CONVERSATION_SETTINGS_UNBLOCK_USER" = "Unblock User";
+"CONVERSATION_SETTINGS_UNBLOCK_USER" = "ব্যবহারকারীকে অবরোধ মুক্ত করুন";
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "সশব্দ";
 
+/* The alert message if user tries to exit conversation settings view without saving changes. */
+"CONVERSATION_SETTINGS_UNSAVED_CHANGES_MESSAGE" = "Would you like to save the changes that you made to this conversation?";
+
+/* The alert title if user tries to exit conversation settings view without saving changes. */
+"CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "অসংরক্ষিত পরিবর্তনসমূহ";
+
 /* Label for 'view all members' button in conversation settings view. */
-"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "View all members";
+"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "সব সদস্যদের দেখুন";
 
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "এই ব্যবহারকারীটি আপনার পরিচিতি তালিকায় রয়েছে";
@@ -891,7 +897,7 @@
 "CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "এই ব্যবহারকারীটি আপনার পরিচিতি তালিকায় নেই।";
 
 /* button text to delete all items in the current conversation */
-"CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Delete All";
+"CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "সব মুছে ফেলুন";
 
 /* Indicates that the app is loading more messages in this conversation. */
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "আরও বার্তা লোড হচ্ছে…";
@@ -975,16 +981,16 @@
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "গিটহাব পুনঃনির্দেশ";
 
 /* action sheet body */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Delete all messages in the conversation?";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "কথোপকথনের সমস্ত বার্তা মুছবেন?";
 
 /* button text */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Delete All Messages";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "সমস্ত বার্তা মুছুন";
 
 /* action sheet body. Embeds {{number of selected messages}} which will be deleted. */
-"DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Delete %ld Messages?";
+"DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "%ld বার্তাগুলি মুছবেন?";
 
 /* action sheet body */
-"DELETE_SELECTED_SINGLE_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Delete Message?";
+"DELETE_SELECTED_SINGLE_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "বার্তা মুছবেন?";
 
 /* Label for button that lets users re-register using the same phone number. */
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "এই ফোন নাম্বার পূনরায় রেজিষ্ট্রি করুন";
@@ -1032,7 +1038,7 @@
 "EDIT_GROUP_ACTION" = "গ্রুপ সম্পাদনা";
 
 /* The 'clear avatar' button in the 'edit group' view. */
-"EDIT_GROUP_CLEAR_AVATAR" = "Remove Avatar";
+"EDIT_GROUP_CLEAR_AVATAR" = "প্রোফাইল থেকে ছবি সরান";
 
 /* a title for the contacts section of the 'new/update group' view. */
 "EDIT_GROUP_CONTACTS_SECTION_TITLE" = "পরিচিতিসমূহ";
@@ -1041,16 +1047,16 @@
 "EDIT_GROUP_DEFAULT_TITLE" = "গ্রুপ সম্পাদনা করুন";
 
 /* Error message indicating the a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "This user can't be added to the group until they upgrade Signal.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "এই ব্যবহারকারীটিকে Signal আপগ্রেড না করা পর্যন্ত এই গ্রুপে যোগ করা যাবে না।";
 
 /* Message for 'group full' error alert when a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "Maximum group size of 100 members reached.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "গ্রুপের সর্বোচ্চ সদস্য সংখ্যা ১০০ জন হয়ে গেছে|";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
-"EDIT_GROUP_ERROR_INVALID_AVATAR" = "Invalid avatar.";
+"EDIT_GROUP_ERROR_INVALID_AVATAR" = "প্রোফাইল এর ছবি ঠিক নয়|";
 
 /* Label for the group name in the 'edit group' view. */
-"EDIT_GROUP_GROUP_NAME" = "Group Name";
+"EDIT_GROUP_GROUP_NAME" = "গ্রুপের নাম";
 
 /* An indicator that a user is a new member of the group. */
 "EDIT_GROUP_NEW_MEMBER_LABEL" = "যোগ করা হয়েছে";
@@ -1203,7 +1209,7 @@
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "নিরাপত্তা নাম্বার পরিবর্তন হয়েছে।";
 
 /* Error indicating network connectivity problems. */
-"ERROR_NETWORK_FAILURE" = "Network Error";
+"ERROR_NETWORK_FAILURE" = "নেটওয়ার্ক ত্রুটি";
 
 /* Error indicating a send failure due to a delinked application. */
 "ERROR_SENDING_DELINKED" = "আপনার ডিভাইস আর সংযুক্ত নেই। আরও বার্তা পাঠাতে দয়া করে পুনরায় যুক্ত করুন।";
@@ -1287,133 +1293,133 @@
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "যা অনুসন্ধান করতে চান লিখুন।";
 
 /* Body message of notification shown during GRDB migration indicating that user may need to open app to view their content. */
-"GRDB_MIGRATION_NOTIFICATION_BODY" = "This version of Signal includes database optimizations and performance improvements. You may need to open the app to complete the process.";
+"GRDB_MIGRATION_NOTIFICATION_BODY" = "Signal এর এই সংস্করণে ডাটাবেস অপ্টিমাইজেশন এবং কর্মক্ষমতা উন্নতি রয়েছে। প্রক্রিয়াটি শেষ করতে আপনাকে অ্যাপ চালু করার প্রয়োজন হতে পারে।";
 
 /* Title of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_TITLE" = "ডাটাবেস অপ্টিমাইজ করা হচ্ছে";
 
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed who can edit group info to “%@“.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "কারা গ্রুপের তথ্য সম্পাদনা করতে পারে তা আপনি \"%@\"  এ পরিবর্তন করেছেন।";
 
 /* Message indicating that the access to the group's attributes was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed who can edit group info to “%2$@“.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ কে গ্রুপের তথ্য সম্পাদনা করতে পারে তা \"%2$@\" এ পরিবর্তন করেছে|";
 
 /* Message indicating that the access to the group's attributes was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "Group info can be changed by “%@“.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "গ্রুপ তথ্য \"%@\" দ্বারা পরিবর্তন করা যেতে পারে।";
 
 /* Description of the 'admins only' access level. */
-"GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "Admins Only";
+"GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "শুধু প্রশাসকগণ";
 
 /* Description of the 'all users' access level. */
-"GROUP_ACCESS_LEVEL_ANY" = "Any User";
+"GROUP_ACCESS_LEVEL_ANY" = "যে কোনও ব্যবহারকারী";
 
 /* Description of the 'all members' access level. */
-"GROUP_ACCESS_LEVEL_MEMBER" = "All Members";
+"GROUP_ACCESS_LEVEL_MEMBER" = "সকল সদস্য";
 
 /* Description of the 'unknown' access level. */
 "GROUP_ACCESS_LEVEL_UNKNOWN" = "অজানা";
 
 /* Message indicating that the access to the group's members was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed who can edit group membership to “%@“.";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "কারা গ্রুপের সদস্যতা সম্পাদনা করতে পারবেন তা আপনি \"%@\" এ পরিবর্তন করেছেন।";
 
 /* Message indicating that the access to the group's members was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed who can edit group membership to “%2$@“.";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "কারা গ্রুপের সদস্যতা সম্পাদনা করতে পারবেন তা %1$@ \"%2$@\" এ পরিবর্তন করেছে।";
 
 /* Message indicating that the access to the group's members was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Group membership can be changed by “%@“.";
+"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "গ্রুপের সদস্যতা \"%@\" দ্বারা পরিবর্তন করা যেতে পারে।";
 
 /* Error indicating that a member cannot be added to a group. */
-"GROUP_CANNOT_ADD_INVALID_MEMBER" = "This user cannot be added to the group.";
+"GROUP_CANNOT_ADD_INVALID_MEMBER" = "এই ব্যবহারকারীকে গ্রুপে যোগ করা যাবে না।";
 
 /* Message indicating that group was created by the local user. */
-"GROUP_CREATED_BY_LOCAL_USER" = "You created the group.";
+"GROUP_CREATED_BY_LOCAL_USER" = "আপনি গ্রুপ তৈরি করেছেন।";
 
 /* Message indicating that group was created by another user. Embeds {{remote user name}}. */
-"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@ added you to the group.";
+"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@ আপনাকে গ্রুপে যুক্ত করেছে।";
 
 /* Message indicating that group was created by an unknown user. */
-"GROUP_CREATED_BY_UNKNOWN_USER" = "Group was created.";
+"GROUP_CREATED_BY_UNKNOWN_USER" = "গ্রুপ তৈরি হয়েছিল।";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
 "GROUP_CREATION_FAILED" = "সমস্ত সদস্য গ্রুপে যোগ করা যায়নি। আবার চেষ্টা করতে আলতো চাপুন।";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
-"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@ can’t be automatically added to this group by you. They’ve been invited to join, and won’t see any group messages until they accept.";
+"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@ আপনার দ্বারা স্বয়ংক্রিয়ভাবে এই গ্রুপে যুক্ত করা যাবে না। তাদের যোগদানের জন্য আমন্ত্রণ জানানো হয়েছে এবং তারা গ্রহণ না করা পর্যন্ত কোনও গ্রুপ-বার্তা দেখতে পাবেন না।";
 
 /* Title for an alert indicating that a member was invited to a group. */
-"GROUP_INVITES_SENT_ALERT_TITLE_1" = "Invitation Sent";
+"GROUP_INVITES_SENT_ALERT_TITLE_1" = "আমন্ত্রণ পাঠানো হয়েছে";
 
 /* Format for the title for an alert indicating that some members were invited to a group. Embeds: {{ the number of invites sent. }} */
-"GROUP_INVITES_SENT_ALERT_TITLE_N_FORMAT" = "%@ Invitations Sent";
+"GROUP_INVITES_SENT_ALERT_TITLE_N_FORMAT" = "%@ আমন্ত্রণ পাঠানো হয়েছে";
 
 /* Message for an alert indicating that some members were invited to a group. */
-"GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "These users can’t be automatically added to this group by you. They’ve been invited to join, and won’t see any group messages until they accept.";
+"GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "এই ব্যবহারকারীরা আপনার দ্বারা স্বয়ংক্রিয়ভাবে এই গ্রুপে যুক্ত করা যাবে না। তাদের যোগদানের জন্য আমন্ত্রণ জানানো হয়েছে এবং তারা গ্রহণ না করা পর্যন্ত কোনও গ্রুপ-বার্তা দেখতে পাবেন না।";
 
 /* Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%@ added you.";
+"GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%@ আপনাকে যোগ করেছে।";
 
 /* Message indicating that the local user was granted administrator role. */
-"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR" = "You are now an admin.";
+"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR" = "আপনি এখন প্রশাসক";
 
 /* Message indicating that the local user was granted administrator role by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ made you an admin.";
+"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ আপনাকে প্রশাসক বানিয়েছে|";
 
 /* Message indicating that the local user accepted an invite to the group. */
-"GROUP_LOCAL_USER_INVITE_ACCEPTED" = "You accepted an invitation to the group.";
+"GROUP_LOCAL_USER_INVITE_ACCEPTED" = "আপনি গ্রুপটিতে একটি আমন্ত্রণ গ্রহণ করেছেন।";
 
 /* Message indicating that the local user accepted an invite to the group. Embeds {{user who invited the local user}}. */
-"GROUP_LOCAL_USER_INVITE_ACCEPTED_FORMAT" = "You accepted an invitation to the group from %@.";
+"GROUP_LOCAL_USER_INVITE_ACCEPTED_FORMAT" = "আপনি %@ থেকে গ্রুপে একটি আমন্ত্রণ গ্রহণ করেছেন।";
 
 /* Message indicating that the local user declined an invite to the group. */
-"GROUP_LOCAL_USER_INVITE_DECLINED_BY_LOCAL_USER" = "You declined an invitation to the group.";
+"GROUP_LOCAL_USER_INVITE_DECLINED_BY_LOCAL_USER" = "আপনি এই গ্রুপে আমন্ত্রণ প্রত্যাখ্যান করেছেন।";
 
 /* Message indicating that the local user declined an invite to the group. Embeds {{user who invited the local user}}. */
-"GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT" = "You declined an invitation to the group from %@.";
+"GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT" = "আপনি %@ থেকে গ্রুপে আমন্ত্রণ প্রত্যাখ্যান করেছেন।";
 
 /* Message indicating that the local user's invite was revoked by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_INVITE_REVOKED_BY_REMOTE_USER_FORMAT" = "%@ revoked your invitation to the group.";
+"GROUP_LOCAL_USER_INVITE_REVOKED_BY_REMOTE_USER_FORMAT" = "%@ গ্রুপে আপনার আমন্ত্রণটি বাতিল করে দিয়েছিল।";
 
 /* Message indicating that the local user's invite was revoked by an unknown user. */
-"GROUP_LOCAL_USER_INVITE_REVOKED_BY_UNKNOWN_USER" = "Your invitation to the group was revoked.";
+"GROUP_LOCAL_USER_INVITE_REVOKED_BY_UNKNOWN_USER" = "গ্রুপে আপনার আমন্ত্রণ বাতিল করা হয়েছিল।";
 
 /* Message indicating that the local user was invited to the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT" = "%@ invited you.";
+"GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT" = "%@ আপনাকে আমন্ত্রণ জানিয়েছে।";
 
 /* Message indicating that the local user was invited to the group. */
-"GROUP_LOCAL_USER_INVITED_TO_THE_GROUP" = "You were invited to the group.";
+"GROUP_LOCAL_USER_INVITED_TO_THE_GROUP" = "আপনাকে এই গ্রুপে আমন্ত্রিত করা হয়েছিল।";
 
 /* Message indicating that the local user has joined the group. */
-"GROUP_LOCAL_USER_JOINED_THE_GROUP" = "You joined the group.";
+"GROUP_LOCAL_USER_JOINED_THE_GROUP" = "আপনি গ্রুপে যোগ দিয়েছেন।";
 
 /* Message indicating that the local user was removed from the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed you.";
+"GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = " %@ আপনাকে বাদ দিয়েছে|";
 
 /* Message indicating that the local user was removed from the group by an unknown user. */
-"GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "You were removed from the group.";
+"GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "আপনাকে গ্রুপ থেকে বাদ দেয়া হয়েছে।";
 
 /* Message indicating that the local user had their administrator role revoked. */
-"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "Your admin privileges were revoked.";
+"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "আপনার প্রশাসনের সুবিধাগুলি প্রত্যাহার করা হয়েছে।";
 
 /* Message indicating that the local user had their administrator role revoked by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ revoked your admin privileges.";
+"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ আপনার প্রশাসনের সুবিধাগুলি বাতিল করেছে।";
 
 /* Conversation settings table section title */
 "GROUP_MANAGEMENT_SECTION" = "গ্রুপ ম্যানেজমেন্ট";
 
 /* Label indicating that a group member is an admin. */
-"GROUP_MEMBER_ADMIN_INDICATOR" = "Admin";
+"GROUP_MEMBER_ADMIN_INDICATOR" = "প্রশাসক";
 
 /* Format string for the group member count indicator. Embeds {{ %1$@ the number of members in the group, %2$@ the maximum number of members in the group. }}. */
 "GROUP_MEMBER_COUNT_FORMAT" = "%1$@/%2$@";
 
 /* The 'group member count' indicator when there are no members in the group. */
-"GROUP_MEMBER_COUNT_LABEL_0" = "No members";
+"GROUP_MEMBER_COUNT_LABEL_0" = "কোন সদস্য নেই";
 
 /* The 'group member count' indicator when there is 1 member in the group. */
-"GROUP_MEMBER_COUNT_LABEL_1" = "1 member";
+"GROUP_MEMBER_COUNT_LABEL_1" = "১ সদস্য";
 
 /* Format for the 'group member count' indicator. Embeds {the number of group members}. */
-"GROUP_MEMBER_COUNT_LABEL_FORMAT" = "%@ members";
+"GROUP_MEMBER_COUNT_LABEL_FORMAT" = "%@ সদস্যগণ";
 
 /* Label indicating the local user. */
 "GROUP_MEMBER_LOCAL_USER" = "আপনি";
@@ -1422,7 +1428,7 @@
 "GROUP_MEMBERS_CALL" = "কল";
 
 /* Label indicating that a group has no other members. */
-"GROUP_MEMBERS_NO_OTHER_MEMBERS" = "No members.";
+"GROUP_MEMBERS_NO_OTHER_MEMBERS" = "কোন সদস্য নেই";
 
 /* Label for the button that clears all verification errors in the 'group members' view. */
 "GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "সবার জন্য যাচাইকরণ সাফ করুন";
@@ -1440,109 +1446,109 @@
 "GROUP_MEMBERS_SEND_MESSAGE" = "বার্তা";
 
 /* Placeholder text for 'group name' field. */
-"GROUP_NAME_PLACEHOLDER" = "Group name (required)";
+"GROUP_NAME_PLACEHOLDER" = "গ্রুপের নাম (প্রয়োজনীয়)";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "%@ accepted an invitation to the group.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "%@ গ্রুপের জন্য একটি আমন্ত্রণ গ্রহণ করেছে।";
 
 /* Message indicating that a remote user has accepted an invite from the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ accepted your invitation to the group.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ গ্রুপে আপনার আমন্ত্রণ গ্রহণ করেছে।";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{ %1$@ user who accepted their invite, %2$@ user who invited the user}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_REMOTE_USER_FORMAT" = "%1$@ accepted an invitation to the group from %2$@.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_REMOTE_USER_FORMAT" = "%1$@ গ্রুপে %2$@ থেকে একটি আমন্ত্রণ গ্রহণ করেছে।";
 
 /* Message indicating that a remote user was added to the group by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_LOCAL_USER_FORMAT" = "You added %@.";
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_LOCAL_USER_FORMAT" = "আপনি %@ কে যোগ করেছেন।";
 
 /* Message indicating that a remote user was added to the group by another user. Embeds {{ %1$@ user who added the user, %2$@ user who was added}}. */
-"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ added %2$@.";
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%2$@কে %1$@ যুক্ত করেছে";
 
 /* Message indicating that a remote user was added to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT" = "%@ was added to the group.";
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT" = "%@ গ্রুপে যুক্ত হয়েছিল।";
 
 /* Message indicating that a remote user has declined their invite. */
-"GROUP_REMOTE_USER_DECLINED_INVITE" = "1 person declined the invitation to the group.";
+"GROUP_REMOTE_USER_DECLINED_INVITE" = "1 জন ব্যক্তি এই গ্রুপে আমন্ত্রণ প্রত্যাখ্যান করেছে।";
 
 /* Message indicating that a remote user has declined their invite. Embeds {{ user who invited them }}. */
-"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "1 person invited by %@ declined the invitation to the group.";
+"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "%@ দ্বারা আমন্ত্রিত ১ জন ব্যক্তি এই গ্রুপে আমন্ত্রণ প্রত্যাখ্যান করেছেন।";
 
 /* Message indicating that a remote user has declined an invite to the group from the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ declined your invitation to the group.";
+"GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ গ্রুপে আপনার আমন্ত্রণ প্রত্যাখ্যান করেছে।";
 
 /* Message indicating that a remote user was granted administrator role. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR" = "%@ is now an admin";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR" = "%@ এখন একজন প্রশাসক";
 
 /* Message indicating that a remote user was granted administrator role by local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_LOCAL_USER" = "You made %@ an admin.";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_LOCAL_USER" = "আপনি %@কে প্রশাসক করেছেন|";
 
 /* Message indicating that a remote user was granted administrator role by another user. Embeds {{ %1$@ user who granted, %2$@ user who was granted administrator role}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ made %2$@ an admin.";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ %2$@ কে একজন প্রশাসক করেছে|";
 
 /* Message indicating that a single remote user's invite was revoked. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_1" = "Invitation to the group was revoked for 1 person.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_1" = "১ জন ব্যক্তির জন্য গ্রুপের আমন্ত্রণ বাতিল করা হয়েছিল।";
 
 /* Message indicating that a remote user's invite was revoked by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_BY_LOCAL_USER_FORMAT" = "Invitation to the group was revoked for %@.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_LOCAL_USER_FORMAT" = "%@ এর গ্রুপে আমন্ত্রণ বাতিল করা হয়েছিল।";
 
 /* Message indicating that a single remote user's invite was revoked by a remote user. Embeds {{ user who revoked the invite }}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_1_FORMAT" = "%@ revoked an invitation to the group for 1 person.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_1_FORMAT" = "%@ ১ জন ব্যক্তির জন্য এই গ্রুপে একটি আমন্ত্রণ প্রত্যাহার করেছে।";
 
 /* Message indicating that a group of remote users' invites were revoked by a remote user. Embeds {{ %1$@ user who revoked the invite, %2$@ number of users }}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_N_FORMAT" = "%1$@ revoked an invitation to the group for %2$@ people.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_N_FORMAT" = "%1$@ %2$@ ব্যক্তির জন্য এই গ্রুপে একটি আমন্ত্রণ বাতিল করে দিয়েছিল।";
 
 /* Message indicating that a group of remote users' invites were revoked. Embeds {{ number of users }}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_N_FORMAT" = "Invitations to the group were revoked for %@ people.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_N_FORMAT" = "গ্রুপে আমন্ত্রণগুলি%@ জনের জন্য বাতিল করা হয়েছিল।";
 
 /* Message indicating that a single remote user was invited to the group. */
-"GROUP_REMOTE_USER_INVITED_1" = "1 person was invited to the group.";
+"GROUP_REMOTE_USER_INVITED_1" = "এই গ্রুপে ১ জনকে আমন্ত্রণ জানানো হয়েছিল।";
 
 /* Message indicating that a remote user was invited to the group by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "You invited %@ to the group.";
+"GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "আপনি %@ কে এই গ্রুপে আমন্ত্রণ জানিয়েছেন।";
 
 /* Message indicating that a single remote user was invited to the group by the local user. Embeds {{ user who invited the user }}. */
-"GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_1_FORMAT" = "%@ invited 1 person to the group.";
+"GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_1_FORMAT" = "%@ ১ জনকে গ্রুপে আমন্ত্রণ জানিয়েছে।";
 
 /* Message indicating that a group of remote users were invited to the group by the local user. Embeds {{ %1$@ user who invited the user, %2$@ number of invited users }}. */
-"GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_N_FORMAT" = "%1$@ invited %2$@ people to the group.";
+"GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_N_FORMAT" = "%1$@ %2$@ জনকে গ্রুপে আমন্ত্রণ জানিয়েছে।";
 
 /* Message indicating that a group of remote users were invited to the group. Embeds {{number of invited users}}. */
-"GROUP_REMOTE_USER_INVITED_N_FORMAT" = "%@ people were invited to the group.";
+"GROUP_REMOTE_USER_INVITED_N_FORMAT" = "%@ জনকে এই গ্রুপে আমন্ত্রিত করা হয়েছিল।";
 
 /* Message indicating that a remote user was added to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "%@ joined the group.";
+"GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "%@ গ্রুপে যোগ দিয়েছেন।";
 
 /* Message indicating that a remote user has left the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%@ left the group.";
+"GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%@ গ্রুপ ছেড়েছে।";
 
 /* Message indicating that a remote user was removed from the group by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT" = "You removed %@.";
+"GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT" = "আপনি %@ কে বাদ দিয়েছেন।";
 
 /* Message indicating that the remote user was removed from the group. Embeds {{ %1$@ user who removed the user, %2$@ user who was removed}}. */
-"GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ removed %2$@.";
+"GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ %2$@ কে বাদ দিয়েছে|";
 
 /* Message indicating that a remote user had their administrator role revoked. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "%@ had their admin privileges revoked.";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "%@ তাদের প্রশাসনের সুবিধাগুলি প্রত্যাহার করেছে।";
 
 /* Message indicating that a remote user had their administrator role revoked by local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_LOCAL_USER" = "You revoked admin privileges from %@.";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_LOCAL_USER" = "আপনি %@ এর প্রশাসক সুবিধাগুলি বাতিল করেছেন।";
 
 /* Message indicating that a remote user had their administrator role revoked by another user. Embeds {{ %1$@ user who revoked, %2$@ user who was granted administrator role}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ revoked admin privileges from %2$@.";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@%2$@ এর প্রশাসক সুবিধাগুলি বাতিল করেছেন খ।";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "গ্রুপ আপডেট হয়েছে।";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED" = "The group avatar was removed.";
+"GROUP_UPDATED_AVATAR_REMOVED" = "গ্রুপ প্রোফাইল ছবি সরানো হয়েছে।";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "You removed the avatar.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "আপনি প্রোফাইল ছবি সরিয়েছেন।";
 
 /* Message indicating that the group's avatar was removed by a remote user. Embeds {{user who removed the avatar}}. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed the avatar.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ প্রোফাইল ছবি সরিয়েছেন।";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED" = "Updated the group avatar.";
+"GROUP_UPDATED_AVATAR_UPDATED" = "গ্রুপ প্রোফাইল ছবি আপডেট করেছেন।";
 
 /* Message indicating that the group's avatar was changed. */
 "GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "You updated the avatar.";
@@ -1584,7 +1590,7 @@
 "GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "Could not accept invite.";
 
 /* Label for 'block group' button in group invite view. */
-"GROUPS_INVITE_BLOCK_GROUP" = "Block Group";
+"GROUPS_INVITE_BLOCK_GROUP" = "গ্রুপ অবরুদ্ধ করুন";
 
 /* Label for 'block group and inviter' button in group invite view. Embeds {{name of user who invited you}}. */
 "GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT" = "Block Group and %@";
@@ -3801,7 +3807,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "পিনের সাথে পরিচিত হন";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal gcv জন্য শীঘ্রই আইওএস 10 বা তার পরের সংস্করণ প্রয়োজন হবে। সেটিংস অ্যাপ >> সাধারণ >> সফ্টওয়্যার আপডেটে আপগ্রেড করুন।";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal will soon require iOS 11 or later. Please upgrade in Settings app >> General >> Software Update.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "আইওএস আপগ্রেড করুন";

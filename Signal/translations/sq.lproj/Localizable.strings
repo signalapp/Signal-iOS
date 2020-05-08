@@ -860,6 +860,12 @@
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Çheshtoje";
 
+/* The alert message if user tries to exit conversation settings view without saving changes. */
+"CONVERSATION_SETTINGS_UNSAVED_CHANGES_MESSAGE" = "Would you like to save the changes that you made to this conversation?";
+
+/* The alert title if user tries to exit conversation settings view without saving changes. */
+"CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "Ndryshime të Paruajtura";
+
 /* Label for 'view all members' button in conversation settings view. */
 "CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "Shihni krejt anëtarët";
 
@@ -2505,7 +2511,7 @@
 "PIN_CREATION_CONFIRM_TITLE" = "Ripohoni PIN-in tuaj";
 
 /* The explanation of confirmation in the 'pin creation' view. */
-"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Enter the PIN you just created.";
+"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Jepni PIN-in që sapo krijuat .";
 
 /* Button asking if the user would like to create an alphanumeric PIN */
 "PIN_CREATION_CREATE_ALPHANUMERIC" = "Krijoni PIN Alfanumerik";
@@ -2544,7 +2550,7 @@
 "PIN_CREATION_TITLE" = "Krijoni PIN-in tuaj";
 
 /* Label indicating that the attempted PIN is too weak */
-"PIN_CREATION_WEAK_ERROR" = "Choose a stronger PIN";
+"PIN_CREATION_WEAK_ERROR" = "Zgjidhni një PIN më të fuqishëm";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Për t’ju ndihmuar ta mbani mend PIN-in tuaj, do t’ju kërkojmë periodikisht ta jepni. Me kalimin e kohës, do t’jua kërkojmë më rrallë.";
@@ -3801,7 +3807,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Ju paraqesim PIN-et";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal-i së shpejti do të dojë iOS 10 ose të mëvonshëm. Ju lutemi, përmirësojeni që nga aplikacioni Rregullime >> Të përgjithshme >> Përditësim Software-i.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal will soon require iOS 11 or later. Please upgrade in Settings app >> General >> Software Update.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "Përmirësoni iOS-in";

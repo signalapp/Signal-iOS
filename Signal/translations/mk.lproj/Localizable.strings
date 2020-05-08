@@ -5,7 +5,7 @@
 "ACCEPT_NEW_IDENTITY_ACTION" = "Прифати нов сигурноснен број";
 
 /* Accessibility label for attachment. */
-"ACCESSIBILITY_LABEL_ATTACHMENT" = "Прилог";
+"ACCESSIBILITY_LABEL_ATTACHMENT" = "Прикачување";
 
 /* Accessibility label for audio. */
 "ACCESSIBILITY_LABEL_AUDIO" = "Звук";
@@ -45,37 +45,37 @@
 "ADD_GROUP_MEMBERS_ACTION_TITLE_1" = "Додади член";
 
 /* Label for the 'add group members' button. */
-"ADD_GROUP_MEMBERS_ACTION_TITLE_N" = "Add Members";
+"ADD_GROUP_MEMBERS_ACTION_TITLE_N" = "Додади членови";
 
 /* Format for the message for the 'add group member' confirmation alert.  Embeds {{ the name of the group. }}. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_1_FORMAT" = "Add member to “%2$@”?";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_1_FORMAT" = "Додади член во  “%2$@”?";
 
 /* Format for the message for the 'add group members' confirmation alert.  Embeds {{ %1$@ number of new members, %2$@ name of the group. }}. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "Add %1$@ members to “%2$@”?";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "Додади %1$@ членови во  “%2$@”?";
 
 /* Title for the 'add group member' confirmation alert. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1" = "Add New Member";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1" = "Додади нов член";
 
 /* Title for the 'add group members' confirmation alert. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_N" = "Add New Members";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_N" = "Додади нови членови";
 
 /* The title for the 'add group members' view. */
-"ADD_GROUP_MEMBERS_VIEW_TITLE" = "Add Members";
+"ADD_GROUP_MEMBERS_VIEW_TITLE" = "Додади членови";
 
 /* Message shown in conversation view that offers to share your profile with a group. */
-"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Дали сакате да го споделите вашиот профил со групата?";
+"ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Дали сакате да го споделите вашиот профил оваа група?";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
-"ADD_TO_CONTACTS_OFFER" = "Дали би сакале да го додадете овој корисник во вашите контакти?";
+"ADD_TO_CONTACTS_OFFER" = "Дали сакате да го додадете овој корисник во вашите контакти?";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Дали сакате да го споделите профилот со овој корисник?";
 
 /* generic button text to acknowledge that the corresponding text was read. */
-"ALERT_ACTION_ACKNOWLEDGE" = "Во ред ";
+"ALERT_ACTION_ACKNOWLEDGE" = "Во ред";
 
 /* The label for the 'discard' button in alerts and action sheets. */
-"ALERT_DISCARD_BUTTON" = "Discard";
+"ALERT_DISCARD_BUTTON" = "Откажи";
 
 /* The label for the 'don't save' button in action sheets. */
 "ALERT_DONT_SAVE" = "Не зачувувај";
@@ -99,28 +99,28 @@
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "Грешка";
 
 /* Error indicating that the app could not launch because the database could not be loaded. */
-"APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "Could Not Load Database";
+"APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "Базата со податоци не можеше да се вчита";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
-"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "Please upgrade to the latest version of Signal.";
+"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "Ве молиме надградете го Signal до последната верзија.";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
-"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Unknown Database Version.";
+"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Непозната верзија на базата на податоци.";
 
 /* Text prompting user to edit their profile name. */
-"APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Внеси го твоето име";
+"APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Внесете го вашето име";
 
 /* Label for the 'dismiss' button in the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "Не Сега";
+"APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "Не сега";
 
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number}} */
-"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Верзијата %@ е сега достапна на App Store.";
+"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Верзијата %@ сега е достапна на App Store.";
 
 /* Title for the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_TITLE" = "Достапна е нова верзија на Signal ";
+"APP_UPDATE_NAG_ALERT_TITLE" = "Достапна е нова верзија на Signal";
 
 /* Label for the 'update' button in the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Aжурирај";
+"APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Aжурирајте";
 
 /* Name indicating that the dark theme is enabled. */
 "APPEARANCE_SETTINGS_DARK_THEME_NAME" = "Темна";
@@ -138,76 +138,76 @@
 "ARCHIVE_ACTION" = "Архива";
 
 /* No comment provided by engineer. */
-"ATTACHMENT" = "Прилог";
+"ATTACHMENT" = "Прикачување";
 
 /* One-line label indicating the user can add no more text to the attachment caption. */
-"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Caption limit reached.";
+"ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Лимитот на насловот е постигнат.";
 
 /* placeholder text for an empty captioning field */
-"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Додади титла...";
+"ATTACHMENT_APPROVAL_CAPTION_PLACEHOLDER" = "Додади наслов...";
 
 /* Title for 'caption' mode of the attachment approval view. */
-"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Caption";
+"ATTACHMENT_APPROVAL_CAPTION_TITLE" = "Наслов";
 
 /* Error that outgoing attachments could not be exported. */
-"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "Attachment failed to export.";
+"ATTACHMENT_APPROVAL_FAILED_TO_EXPORT" = "Прикачувањето не успеа да се извезе.";
 
 /* alert text when Signal was unable to save a copy of the attachment to the system photo library */
-"ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "Failed to Save";
+"ATTACHMENT_APPROVAL_FAILED_TO_SAVE" = "Неуспешно зачувување";
 
 /* Format string for file extension label in call interstitial view */
-"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Вид на фајл : %@";
+"ATTACHMENT_APPROVAL_FILE_EXTENSION_FORMAT" = "Тип на датотека: %@";
 
 /* Format string for file size label in call interstitial view. Embeds: {{file size as 'N mb' or 'N kb'}}. */
-"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Големина на фајл : %@";
+"ATTACHMENT_APPROVAL_FILE_SIZE_FORMAT" = "Големина на датотека : %@";
 
 /* toast alert shown after user taps the 'save' button */
 "ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "Зачувано";
 
 /* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
-"ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "Message to %@";
+"ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "Порака на %@";
 
 /* Label for 'send' button in the 'attachment approval' dialog. */
 "ATTACHMENT_APPROVAL_SEND_BUTTON" = "Испрати";
 
 /* Generic filename for an attachment with no known name */
-"ATTACHMENT_DEFAULT_FILENAME" = "Прилог";
+"ATTACHMENT_DEFAULT_FILENAME" = "Прикачување";
 
 /* Status label when an attachment download has failed. */
 "ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Неуспешно преземање. Допри за повторен обид.";
 
 /* The title of the 'attachment error' alert. */
-"ATTACHMENT_ERROR_ALERT_TITLE" = "Грешка при праќање на прилог";
+"ATTACHMENT_ERROR_ALERT_TITLE" = "Грешка при праќање на прикачување";
 
 /* Attachment error message for image attachments which could not be converted to JPEG */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Unable to convert image.";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Конверирањето на сликата беше неуспешно.";
 
 /* Attachment error message for video attachments which could not be converted to MP4 */
-"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "Unable to process video.";
+"ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_MP4" = "Процесирањето на видеото беше неуспешно.";
 
 /* Attachment error message for image attachments which cannot be parsed */
-"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Unable to parse image.";
+"ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Обработувањето на сликата беше науспешно.";
 
 /* Attachment error message for image attachments in which metadata could not be removed */
-"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Unable to remove metadata from image.";
+"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Отстранувањето на мета-податоците од сликата беше неуспешно.";
 
 /* Attachment error message for image attachments which could not be resized */
-"ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "Unable to resize image.";
+"ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "Промената на големината на сликата беше науспешна.";
 
 /* Attachment error message for attachments whose data exceed file size limits */
-"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Прилогот е премногу голем.";
+"ATTACHMENT_ERROR_FILE_SIZE_TOO_LARGE" = "Прикачувањето е премногу големo.";
 
 /* Attachment error message for attachments with invalid data */
-"ATTACHMENT_ERROR_INVALID_DATA" = "Attachment includes invalid content.";
+"ATTACHMENT_ERROR_INVALID_DATA" = "Прикачувањето вклучува невалидна содржина.";
 
 /* Attachment error message for attachments with an invalid file format */
-"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Attachment has an invalid file format.";
+"ATTACHMENT_ERROR_INVALID_FILE_FORMAT" = "Прикачувањето има невалиден формат.";
 
 /* Attachment error message for attachments without any data */
-"ATTACHMENT_ERROR_MISSING_DATA" = "Прилогот е празен.";
+"ATTACHMENT_ERROR_MISSING_DATA" = "Прикачувањето е празно.";
 
 /* Accessibility hint describing what you can do with the attachment button */
-"ATTACHMENT_HINT" = "Choose Media to Send";
+"ATTACHMENT_HINT" = "Изберете медија за испраќање";
 
 /* A button to open the camera from the Attachment Keyboard */
 "ATTACHMENT_KEYBOARD_CAMERA" = "Камера";
@@ -222,7 +222,7 @@
 "ATTACHMENT_KEYBOARD_GIF" = "GIF";
 
 /* A button to select a location from the Attachment Keyboard */
-"ATTACHMENT_KEYBOARD_LOCATION" = "Локација\n";
+"ATTACHMENT_KEYBOARD_LOCATION" = "Локација";
 
 /* A string indicating to the user that they'll be able to send photos from this view once they enable photo access. */
 "ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Дозволете пристап до вашите слики во поставки за да ги испраќате овде.";
@@ -231,22 +231,22 @@
 "ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Once you’ve taken photos, you’ll be able to send your recents here.";
 
 /* Accessibility label for attaching photos */
-"ATTACHMENT_LABEL" = "Прилог";
+"ATTACHMENT_LABEL" = "Прикачување";
 
 /* Alert title when picking a document fails for an unknown reason */
-"ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Failed to choose document.";
+"ATTACHMENT_PICKER_DOCUMENTS_FAILED_ALERT_TITLE" = "Неуспешно избирање документ.";
 
 /* Alert body when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Please create a compressed archive of this file or directory and try sending that instead.";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Ве молиме создадете компресирана архива од оваа датотека или директориум и обидете се тие да ги испратите наместо документот.";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Unsupported File";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Неподдржана датотека";
 
 /* Short text label for a voice message attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "Гласовна порака";
 
 /* A string indicating that an audio message is playing. */
-"AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Audio Message";
+"AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Аудио порака";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Звучник";
@@ -255,52 +255,52 @@
 "BACK_BUTTON" = "Назад";
 
 /* Error indicating the backup export could not export the user's data. */
-"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "Backup data could not be exported.";
+"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT" = "Резервната копија не може да биде извезена.";
 
 /* Error indicating that the app received an invalid response from CloudKit. */
-"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Invalid Service Response";
+"BACKUP_EXPORT_ERROR_INVALID_CLOUDKIT_RESPONSE" = "Невалиден сервис одговор";
 
 /* Indicates that the cloud is being cleaned up. */
-"BACKUP_EXPORT_PHASE_CLEAN_UP" = "Cleaning Up Backup";
+"BACKUP_EXPORT_PHASE_CLEAN_UP" = "Чистење на резервната копија";
 
 /* Indicates that the backup export is being configured. */
-"BACKUP_EXPORT_PHASE_CONFIGURATION" = "Initializing Backup";
+"BACKUP_EXPORT_PHASE_CONFIGURATION" = "Инсталирање резервна копија";
 
 /* Indicates that the database data is being exported. */
-"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "Exporting Data";
+"BACKUP_EXPORT_PHASE_DATABASE_EXPORT" = "Извезување податоци";
 
 /* Indicates that the backup export data is being exported. */
-"BACKUP_EXPORT_PHASE_EXPORT" = "Exporting Backup";
+"BACKUP_EXPORT_PHASE_EXPORT" = "Извезување резервна копија";
 
 /* Indicates that the backup export data is being uploaded. */
-"BACKUP_EXPORT_PHASE_UPLOAD" = "Uploading Backup";
+"BACKUP_EXPORT_PHASE_UPLOAD" = "Прикачување резервна копија";
 
 /* Error indicating the backup import could not import the user's data. */
-"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "Backup could not be imported.";
+"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT" = "Резервната копија не може да биде увезена.";
 
 /* Indicates that the backup import is being configured. */
-"BACKUP_IMPORT_PHASE_CONFIGURATION" = "Configuring Backup";
+"BACKUP_IMPORT_PHASE_CONFIGURATION" = "Конфигурирање резервна копија";
 
 /* Indicates that the backup import data is being downloaded. */
-"BACKUP_IMPORT_PHASE_DOWNLOAD" = "Downloading Backup Data";
+"BACKUP_IMPORT_PHASE_DOWNLOAD" = "Преземање на податоци од резервната копија";
 
 /* Indicates that the backup import data is being finalized. */
-"BACKUP_IMPORT_PHASE_FINALIZING" = "Finalizing Backup";
+"BACKUP_IMPORT_PHASE_FINALIZING" = "Завршување на резервната копија";
 
 /* Indicates that the backup import data is being imported. */
-"BACKUP_IMPORT_PHASE_IMPORT" = "Importing backup.";
+"BACKUP_IMPORT_PHASE_IMPORT" = "Увезување на резервната копија.";
 
 /* Indicates that the backup database is being restored. */
-"BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "Restoring Database";
+"BACKUP_IMPORT_PHASE_RESTORING_DATABASE" = "Враќање на базата на податоци";
 
 /* Indicates that the backup import data is being restored. */
-"BACKUP_IMPORT_PHASE_RESTORING_FILES" = "Restoring Files";
+"BACKUP_IMPORT_PHASE_RESTORING_FILES" = "Враќање на датотеките";
 
 /* Label for the backup restore decision section. */
-"BACKUP_RESTORE_DECISION_TITLE" = "Резервна копија е достапна";
+"BACKUP_RESTORE_DECISION_TITLE" = "Достапна е резервна копија.";
 
 /* Label for the backup restore description. */
-"BACKUP_RESTORE_DESCRIPTION" = "Restoring Backup";
+"BACKUP_RESTORE_DESCRIPTION" = "Враќање на резервната копија";
 
 /* Label for the backup restore progress. */
 "BACKUP_RESTORE_PROGRESS" = "Напредок";
@@ -309,19 +309,19 @@
 "BACKUP_RESTORE_STATUS" = "Статус";
 
 /* Error shown when backup fails due to an unexpected error. */
-"BACKUP_UNEXPECTED_ERROR" = "Unexpected Backup Error";
+"BACKUP_UNEXPECTED_ERROR" = "Неочекувана грешка на резервната копија";
 
 /* An explanation of the consequences of blocking a group. */
-"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "You will no longer receive messages or updates from this group.";
+"BLOCK_GROUP_BEHAVIOR_EXPLANATION" = "Повеќе нема да добивате пораки или ажурирања од оваа група.";
 
 /* Button label for the 'block' button */
 "BLOCK_LIST_BLOCK_BUTTON" = "Блокирај";
 
 /* A format for the 'block group' action sheet title. Embeds the {{group name}}. */
-"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "Блокирај и напушти ја ”%@”  групата? ";
+"BLOCK_LIST_BLOCK_GROUP_TITLE_FORMAT" = "Блокирај и напушти ја ”%@” група? ";
 
 /* A format for the 'block user' action sheet title. Embeds {{the blocked user's name or phone number}}. */
-"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "Блокирај %@?";
+"BLOCK_LIST_BLOCK_USER_TITLE_FORMAT" = "Блокирај го %@";
 
 /* Section header for groups that have been blocked */
 "BLOCK_LIST_BLOCKED_GROUPS_SECTION" = "Блокирани групи";
@@ -333,34 +333,34 @@
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Одблокирај";
 
 /* An explanation of what unblocking a contact means. */
-"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "You will be able to message and call each other.";
+"BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "Ќе можете да си испраќате пораки меѓусебно.";
 
 /* Action sheet body when confirming you want to unblock a group */
-"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Постојните членови ќе можат повторно да ве додадат во групата.";
+"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Постоечките членови ќе можат повторно да ве додадат во групата.";
 
 /* An explanation of what unblocking a group means. */
-"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Group members will be able to add you to this group again.";
+"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Членовите на групата ќе можат повторно да те додаваат во оваа група.";
 
 /* Action sheet title when confirming you want to unblock a group. */
-"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Одблокирај ја оваа група?";
+"BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Одблокирај ја оваа група";
 
 /* A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}. */
-"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Одблокирај %@?";
+"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Одблокирај го %@?";
 
 /* A label for the block button in the block list view */
-"BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Блокирај";
+"BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Блокирај.";
 
 /* The message format of the 'conversation blocked' alert. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ е блокиран";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_MESSAGE_FORMAT" = "%@ е блокиран.";
 
 /* The title of the 'user blocked' alert. */
-"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Корисникот е Блокиран";
+"BLOCK_LIST_VIEW_BLOCKED_ALERT_TITLE" = "Корисникот е блокиран";
 
 /* The title of the 'group blocked' alert. */
 "BLOCK_LIST_VIEW_BLOCKED_GROUP_ALERT_TITLE" = "Групата е блокирана";
 
 /* The message of the 'You can't block yourself' alert. */
-"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "Неможеш да се блокираш самиот.";
+"BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_MESSAGE" = "Не можеш да се блокираш себеси.";
 
 /* The title of the 'You can't block yourself' alert. */
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Грешка";
@@ -369,19 +369,19 @@
 "BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ беше одблокиран";
 
 /* Alert body after unblocking a group. */
-"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Existing members can now add you to the group again.";
+"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Постоечките членови сега повторно ќе може да те додаваат во групата.";
 
 /* Action sheet that will block an unknown user. */
 "BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION" = "Блокирај";
 
 /* Title format for action sheet that offers to block an unknown user.Embeds {{the unknown user's name or phone number}}. */
-"BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "Блокирај %@?";
+"BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "Блокирај го %@?";
 
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Блокираните корисници нема да можат да ве контактираат или да ви праќаат пораки.";
 
 /* browse files option from file sharing menu */
-"BROWSE_FILES_BUTTON" = "Browse";
+"BROWSE_FILES_BUTTON" = "Прелистување";
 
 /* Label for 'continue' button. */
 "BUTTON_CONTINUE" = "Продолжете";
@@ -405,10 +405,10 @@
 "CALL_AGAIN_BUTTON_TITLE" = "Јави се повторно";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "You can enable microphone access in the iOS Settings app to make calls and record voice messages in Signal.";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "Можете да овозможите пристап до микрофонот во апликацијата за iOS Поставки за да правите повици и да снимате гласовни пораки во Signal.";
 
 /* Alert title when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_TITLE" = "Пристап кон микрофонот е задолжителен";
+"CALL_AUDIO_PERMISSION_TITLE" = "Пристап до микрофонот е задолжителен";
 
 /* notification body */
 "CALL_INCOMING_NOTIFICATION_BODY" = "☎️ Дојдовен повик";
@@ -417,13 +417,13 @@
 "CALL_LABEL" = "Повик";
 
 /* notification body */
-"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Пропшутен повик бидејќи сигурносниот број на повикувачот е променет";
+"CALL_MISSED_BECAUSE_OF_IDENTITY_CHANGE_NOTIFICATION_BODY" = "☎️ Пропшутен повик бидејќи сигурносниот број на повикувачот е променет.";
 
 /* notification body */
 "CALL_MISSED_NOTIFICATION_BODY" = "☎️ Пропуштен повик";
 
 /* Call setup status label after outgoing call times out */
-"CALL_SCREEN_STATUS_NO_ANSWER" = "Нема Одговор";
+"CALL_SCREEN_STATUS_NO_ANSWER" = "Нема одговор";
 
 /* embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call' */
 "CALL_STATUS_FORMAT" = "Signal %@";
@@ -444,16 +444,16 @@
 "CALL_VIEW_AUDIO_SOURCE_LABEL" = "Аудио";
 
 /* Accessibility label for declining incoming calls */
-"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Одби дојдовен повик";
+"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Одбиј дојдовен повик";
 
 /* tooltip label when remote party has enabled their video */
-"CALL_VIEW_ENABLE_VIDEO_HINT" = "Допрете овде за да го уклучите вашето видео";
+"CALL_VIEW_ENABLE_VIDEO_HINT" = "Допрете овде за да го вклучите вашето видео";
 
 /* Accessibility label for hang up call */
 "CALL_VIEW_HANGUP_LABEL" = "Заврши го повикот";
 
 /* Accessibility label for muting the microphone */
-"CALL_VIEW_MUTE_LABEL" = "Стиши";
+"CALL_VIEW_MUTE_LABEL" = "Исклучете звук";
 
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
 "CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "You can enable iOS Call Integration in your Signal privacy settings to answer incoming calls from your lock screen.";
@@ -462,13 +462,13 @@
 "CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "You can enable iOS Call Integration in your Signal privacy settings to see the name and phone number for incoming calls.";
 
 /* Label for button that dismiss the call view's settings nag. */
-"CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Не Сега";
+"CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Не сега";
 
 /* Label for button that shows the privacy settings. */
 "CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Покажи Поставки за Приватност";
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
-"CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Сменете ја насоката на камерата";
+"CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Променете ја насоката на камерата";
 
 /* Accessibility label to switch to audio only */
 "CALL_VIEW_SWITCH_TO_AUDIO_LABEL" = "Префрли на аудио повик";
@@ -477,10 +477,10 @@
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Префрли на видео повик";
 
 /* Label for the 'return to call' banner. */
-"CALL_WINDOW_RETURN_TO_CALL" = "Допри за да се вратиш на повикот";
+"CALL_WINDOW_RETURN_TO_CALL" = "Допрете за да се вратиш на повикот";
 
 /* notification action */
-"CALLBACK_BUTTON_TITLE" = "Јави се назад.";
+"CALLBACK_BUTTON_TITLE" = "Јави се назад";
 
 /* The generic name used for calls if CallKit privacy is enabled */
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Signal Корисник";
@@ -510,7 +510,7 @@
 "CHECK_FOR_BACKUP_FAILED_TITLE" = "Грешка";
 
 /* The label for the 'restore backup' button. */
-"CHECK_FOR_BACKUP_RESTORE" = "Врати";
+"CHECK_FOR_BACKUP_RESTORE" = "Обнови";
 
 /* Error indicating that the app could not determine that user's iCloud account status */
 "CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal could not determine your iCloud account status. Sign in to your iCloud Account in the iOS settings app to backup your Signal data.";
@@ -522,10 +522,10 @@
 "CLOUDKIT_STATUS_RESTRICTED" = "Signal was denied access your iCloud account for backups. Grant Signal access to your iCloud Account in the iOS settings app to backup your Signal data.";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
-"COLOR_PICKER_DEMO_MESSAGE_1" = "Choose the color of outgoing messages in this conversation.";
+"COLOR_PICKER_DEMO_MESSAGE_1" = "Изберете ја бојата на излезните пораки во овој разговор.";
 
 /* The second of two messages demonstrating the chosen conversation color, by rendering this message in an incoming message bubble. */
-"COLOR_PICKER_DEMO_MESSAGE_2" = "Само вие ќе може да ја видите бојата што ќе ја одберете.";
+"COLOR_PICKER_DEMO_MESSAGE_2" = "Само вие ќе можете да ја видите бојата што ќе ја одберете.";
 
 /* Modal Sheet title when picking a conversation color. */
 "COLOR_PICKER_SHEET_TITLE" = "Боја на разговорот";
@@ -534,16 +534,16 @@
 "COMPARE_SAFETY_NUMBER_ACTION" = "Споредете со Таблата со исечоци";
 
 /* Accessibility hint describing what you can do with the compose button */
-"COMPOSE_BUTTON_HINT" = "Select or search for a Signal user to start a conversation with.";
+"COMPOSE_BUTTON_HINT" = "Изберете или пребарајте Signal корисник за да започнете разговор со него.";
 
 /* Accessibility label from compose button. */
-"COMPOSE_BUTTON_LABEL" = "Compose";
+"COMPOSE_BUTTON_LABEL" = "Создади";
 
 /* Table section header for contact listing when composing a new message */
 "COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "Контакти";
 
 /* Table section header for group listing when composing a new message */
-"COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "групи";
+"COMPOSE_MESSAGE_GROUP_SECTION_TITLE" = "Групи";
 
 /* Table section header for phone number search when composing a new message */
 "COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "Пребарување по телефонски број";
@@ -552,7 +552,7 @@
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Пребарување по корисничко име";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "You can enable contacts access in the iOS Settings app to see which of your contacts are Signal users.";
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Можете да им овозможите пристап на контактите во апликацијата за iOS Поставки за да видите кој од вашите корисници се Signal корисници.";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "This will reset the application by deleting your messages and unregistering you with the server. The app will close after this process is complete.";
@@ -564,7 +564,7 @@
 "CONFIRM_DELETE_LINKED_DATA_TEXT" = "This will reset the application by deleting all of your messages from this device. You can always link with your phone again, but that will not restore deleted messages. The app will close after this process is complete.";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TITLE" = "Are you sure you want to delete all data?";
+"CONFIRM_DELETE_LINKED_DATA_TITLE" = "Дали сте сигурни дека сакате да ги избриште сите податоци?";
 
 /* Alert body */
 "CONFIRM_LEAVE_GROUP_DESCRIPTION" = "Нема да можете да праќате и да примате пораки во оваа група.";
@@ -603,7 +603,7 @@
 "CONTACT_EMAIL" = "Е–пошта";
 
 /* Label for the 'city' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_CITY" = "Град";
+"CONTACT_FIELD_ADDRESS_CITY" = "Град.";
 
 /* Label for the 'country' field of a contact's address. */
 "CONTACT_FIELD_ADDRESS_COUNTRY" = "Држава";
@@ -627,7 +627,7 @@
 "CONTACT_FIELD_FAMILY_NAME" = "Презиме";
 
 /* Label for the 'given name' field of a contact. */
-"CONTACT_FIELD_GIVEN_NAME" = "Дадено име";
+"CONTACT_FIELD_GIVEN_NAME" = "Име";
 
 /* Label for the 'middle name' field of a contact. */
 "CONTACT_FIELD_MIDDLE_NAME" = "Средно име";
@@ -645,13 +645,13 @@
 "CONTACT_PHONE" = "Телефон";
 
 /* table cell subtitle when contact card has no email */
-"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "Нема достапен емаил.";
+"CONTACT_PICKER_NO_EMAILS_AVAILABLE" = "Нема достапна е-пошта.";
 
 /* table cell subtitle when contact card has no known phone number */
-"CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "Нема достапен телефонски број.";
+"CONTACT_PICKER_NO_PHONE_NUMBERS_AVAILABLE" = "Нема достапен телефонски број";
 
 /* navbar title for contact picker when sharing a contact */
-"CONTACT_PICKER_TITLE" = "Одбери контакт";
+"CONTACT_PICKER_TITLE" = "Избери контакт";
 
 /* Title for the 'Approve contact share' view. */
 "CONTACT_SHARE_APPROVAL_VIEW_TITLE" = "Сподели контакт";
@@ -660,7 +660,7 @@
 "CONTACT_SHARE_EDIT_NAME_VIEW_TITLE" = "Промени име";
 
 /* Error indicating that an invalid contact cannot be shared. */
-"CONTACT_SHARE_INVALID_CONTACT" = "Не валиден контакт";
+"CONTACT_SHARE_INVALID_CONTACT" = "Невалиден контакт";
 
 /* Error indicating that at least one contact field must be selected before sharing a contact. */
 "CONTACT_SHARE_NO_FIELDS_SELECTED" = "No contact fields selected.";
@@ -672,7 +672,7 @@
 "CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal was unable to complete your support request.";
 
 /* button text */
-"CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "Обиди се повторно";
+"CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "Обидете се повторно";
 
 /* Alert body */
 "CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Your debug logs will help us troubleshoot your issue faster. Submitting your logs is optional.";
@@ -687,7 +687,7 @@
 "CONTACT_SUPPORT_SUBMIT_WITHOUT_LOG" = "Submit without Debug Log";
 
 /* Label for 'open address in maps app' button in contact view. */
-"CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Отвори во Maps";
+"CONTACT_VIEW_OPEN_ADDRESS_IN_MAPS_APP" = "Отвори во Мапи";
 
 /* Label for 'open email in email app' button in contact view. */
 "CONTACT_VIEW_OPEN_EMAIL_IN_EMAIL_APP" = "Send Email";
@@ -708,10 +708,10 @@
 "CONVERSATION_PICKER_CAN_SELECT_NO_MORE_CONVERSATIONS" = "You can't select more than %@ conversations.";
 
 /* table section header for section containing groups */
-"CONVERSATION_PICKER_SECTION_GROUPS" = "групи";
+"CONVERSATION_PICKER_SECTION_GROUPS" = "Групи";
 
 /* table section header for section containing recent conversations */
-"CONVERSATION_PICKER_SECTION_RECENTS" = "Скорешни разговори ";
+"CONVERSATION_PICKER_SECTION_RECENTS" = "Неодамнешни разговори ";
 
 /* table section header for section containing contacts */
 "CONVERSATION_PICKER_SECTION_SIGNAL_CONTACTS" = "Луѓе";
@@ -729,7 +729,7 @@
 "CONVERSATION_SEARCH_RESULTS_FORMAT" = "%d од %d совпаѓања";
 
 /* title for conversation settings screen */
-"CONVERSATION_SETTINGS" = "Разговорни подесувања";
+"CONVERSATION_SETTINGS" = "Поставки за разговор";
 
 /* Label for 'add members' button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_MEMBERS" = "Додај членови";
@@ -741,7 +741,7 @@
 "CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Add to System Contacts";
 
 /* Label indicating that only administrators can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "Admins";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "Администратори";
 
 /* Label indicating that all group members can update the group's attributes: name, avatar, etc. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "Сите";
@@ -750,10 +750,10 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Choose who can edit the group name, avatar and disappearing messages timer.";
 
 /* Footer text for the 'block and leave' section of conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER" = "You will no longer receive messages or updates from this group.";
+"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER" = "Повеќе нема да добивате пораки или ажурирања од оваа група.";
 
 /* Label for 'block group' action in conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_GROUP" = "Block Group";
+"CONVERSATION_SETTINGS_BLOCK_GROUP" = "Блокирај група";
 
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "Блокирај ја оваа група";
@@ -762,58 +762,58 @@
 "CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Блокирај го овој корисник";
 
 /* Label for 'block user' action in conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_USER" = "Block User";
+"CONVERSATION_SETTINGS_BLOCK_USER" = "Блокирај корисник";
 
 /* Navbar title when viewing settings for a 1-on-1 thread */
 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Информации за контактот";
 
 /* Label for table cell which leads to picking a new conversation color */
-"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Боја на разговорот";
+"CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Боја на разговор";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Who Can Edit Group Info";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Кој може да ги уредува информациите за групата";
 
 /* Label for button that sets 'group attributes access' to 'administrators-only'. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Only Admins";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Само администратори";
 
 /* Description for the 'edit group attributes access' alert. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Choose who can change the group name, avatar and disappearing messages:";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Изберете кој ќе може да го променува името на групата, аватарот и изчезнувачките пораки:";
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "All Members";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "Сите членови";
 
 /* Label for the 'edit group' button in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_GROUP" = "Измени";
 
 /* Navbar title when viewing settings for a group thread */
-"CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "Информации за групата";
+"CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "Информации за група";
 
 /* Label for 'make group admin' button in conversation settings view. */
-"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Make Admin";
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Направи администратор";
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
-"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ will be able to remove group members and make other admins.";
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ ќе може да отсранува членови на група и да прави други администратори.";
 
 /* Section title of the 'members' section in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "Членови";
 
 /* Format for the section title of the 'members' section in conversation settings view. Embeds: {{ the number of group members }}. */
-"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ Members";
+"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ Членови";
 
 /* Title of the 'mute this thread' action sheet. */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Стиши";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Исклучи звук";
 
 /* label for 'mute thread' cell in conversation settings */
-"CONVERSATION_SETTINGS_MUTE_LABEL" = "Стиши";
+"CONVERSATION_SETTINGS_MUTE_LABEL" = "Исклучи звук";
 
 /* Indicates that the current thread is not muted. */
 "CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Not muted";
 
 /* Label for button to mute a thread for a day. */
-"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "Безгласен 1 ден ";
+"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "Безгласен 1 ден";
 
 /* Label for button to mute a thread for a hour. */
-"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "Безгласен 1 час ";
+"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "Безгласен 1 час";
 
 /* Label for button to mute a thread for a minute. */
 "CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "Безгласен 1 минута";
@@ -828,46 +828,52 @@
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "до %@";
 
 /* Label for 'new contact' button in conversation settings view. */
-"CONVERSATION_SETTINGS_NEW_CONTACT" = "Креирај нов контакт";
+"CONVERSATION_SETTINGS_NEW_CONTACT" = "Создади нов контакт";
 
 /* Indicates that there are no pending member invites in the group. */
-"CONVERSATION_SETTINGS_PENDING_MEMBER_INVITES_NONE" = "Ниедна";
+"CONVERSATION_SETTINGS_PENDING_MEMBER_INVITES_NONE" = "Ништо";
 
 /* Label for 'remove from group' button in conversation settings view. */
-"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "Remove From Group";
+"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "Отстранете од група";
 
 /* Format for title for 'remove from group' confirmation alert. Embeds {user to remove from the group}. */
-"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "Remove %@ from the group?";
+"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "Отстранете го %@од групата?";
 
 /* Label for 'revoke group admin' button in conversation settings view. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Remove as Admin";
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Отстрани како Асминистратор";
 
 /* Format for title for 'revoke group admin' confirmation alert. Embeds {user to revoke admin status from}. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Remove %@ as group admin?";
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Отстранете го %@ како администратор на групата?";
 
 /* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
 "CONVERSATION_SETTINGS_SEARCH" = "Пребарај разговор";
 
 /* Label for button that opens conversation settings. */
-"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Допри за да промениш";
+"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Допрете за да промените";
 
 /* Label for 'unblock group' action in conversation settings view. */
-"CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Unblock Group";
+"CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Одблокирај група";
 
 /* Label for 'unblock user' action in conversation settings view. */
-"CONVERSATION_SETTINGS_UNBLOCK_USER" = "Unblock User";
+"CONVERSATION_SETTINGS_UNBLOCK_USER" = "Одблокирај корисник";
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Вклучи звук";
 
+/* The alert message if user tries to exit conversation settings view without saving changes. */
+"CONVERSATION_SETTINGS_UNSAVED_CHANGES_MESSAGE" = "Would you like to save the changes that you made to this conversation?";
+
+/* The alert title if user tries to exit conversation settings view without saving changes. */
+"CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "Незачувани промени";
+
 /* Label for 'view all members' button in conversation settings view. */
-"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "View all members";
+"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "Види ги сите членови";
 
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Овој корисник е во вашите контакти";
 
 /* Indicates that user's profile has been shared with a group. */
-"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "Оваа група може да го виде вашиот профил.";
+"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "Оваа група може да го види вашиот профил.";
 
 /* Indicates that user's profile has been shared with a user. */
 "CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER" = "Овој корисник може да го види вашиот профил.";
@@ -876,25 +882,25 @@
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "Сподели профил";
 
 /* Action that shares user profile with a group. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_GROUP" = "Сподели го твојот профил";
+"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_GROUP" = "Споделете го вашиот профил";
 
 /* Action that shares user profile with a user. */
-"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER" = "Сподели го твојот профил";
+"CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE_WITH_USER" = "Споделете го вашиот профил";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Додади во контакти";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
-"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Share Your Profile with This User";
+"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Споделете го вашиот профил со овој корисник";
 
 /* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
-"CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "This user is not in your contacts.";
+"CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "Овој корисник не е во вашоте контакти.";
 
 /* button text to delete all items in the current conversation */
-"CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Delete All";
+"CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Избриши се";
 
 /* Indicates that the app is loading more messages in this conversation. */
-"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Вчитувам повеќе пораки...";
+"CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Вчитување на повеќе пораки";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Допрете за повеќе";
@@ -903,25 +909,25 @@
 "CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "Блокирај го овој корисник";
 
 /* ActionSheet title */
-"CORRUPTED_SESSION_DESCRIPTION" = "Ресетирањето на сесијата ќе Ви овозможи да примате пораки од %@ , но нема да ги поврати веќе оштетените пораки.";
+"CORRUPTED_SESSION_DESCRIPTION" = "Ресетирањето на сесијата ќе Ви овозможи да примате пораки од %@, но нема да ги поврати веќе оштетените пораки.";
 
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "Избери повикувачки број на земјата";
 
 /* Title for the 'crop/scale image' dialog. */
-"CROP_SCALE_IMAGE_VIEW_TITLE" = "Move and Scale";
+"CROP_SCALE_IMAGE_VIEW_TITLE" = "Премести и измери";
 
 /* Subtitle shown while the app is updating its database. */
-"DATABASE_VIEW_OVERLAY_SUBTITLE" = "Ова може да потрае неколку минути";
+"DATABASE_VIEW_OVERLAY_SUBTITLE" = "Ова може да потрае неколку минути.";
 
 /* Title shown while the app is updating its database. */
-"DATABASE_VIEW_OVERLAY_TITLE" = "Optimizing Database";
+"DATABASE_VIEW_OVERLAY_TITLE" = "Оптимизирање на базата на податоци";
 
 /* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_FORMAT" = "%@ Hr Ago";
+"DATE_HOURS_AGO_FORMAT" = "Пред %@ ч";
 
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_FORMAT" = "%@ Min Ago";
+"DATE_MINUTES_AGO_FORMAT" = "Пред %@ мин";
 
 /* The present; the current time. */
 "DATE_NOW" = "Сега";
@@ -933,31 +939,31 @@
 "DATE_YESTERDAY" = "Вчера";
 
 /* Error indicating that the debug logs could not be copied. */
-"DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "Could not copy logs.";
+"DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "Логовите не може да бидат копирани.";
 
 /* Error indicating that the debug logs could not be packaged. */
-"DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "Could not package logs.";
+"DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "Логовите не може да бидат спакувани";
 
 /* Error indicating that a debug log could not be uploaded. */
-"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "Could not upload logs.";
+"DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "Логовите не може да бидат прикачени.";
 
 /* Message of the debug log alert. */
-"DEBUG_LOG_ALERT_MESSAGE" = "What would you like to do with the link to your debug log?";
+"DEBUG_LOG_ALERT_MESSAGE" = "Што сакате да направите со линкот до вашиот лог за отстранување грешка?";
 
 /* Error indicating that no debug logs could be found. */
-"DEBUG_LOG_ALERT_NO_LOGS" = "Could not find any logs.";
+"DEBUG_LOG_ALERT_NO_LOGS" = "Не беа пронајдени логови.";
 
 /* Label for the 'Open a Bug Report' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "Open a Bug Report";
+"DEBUG_LOG_ALERT_OPTION_BUG_REPORT" = "Отвори извештај за грешка";
 
 /* Label for the 'copy link' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_COPY_LINK" = "Копирај го линкот";
 
 /* Label for the 'email debug log' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_EMAIL" = "Email Support";
+"DEBUG_LOG_ALERT_OPTION_EMAIL" = "Е-пошта за Поддршка";
 
 /* Label for the 'send to self' option of the debug log alert. */
-"DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Испрати на себе";
+"DEBUG_LOG_ALERT_OPTION_SEND_TO_SELF" = "Испрати си себеси";
 
 /* Label for the 'Share' option of the debug log alert. */
 "DEBUG_LOG_ALERT_OPTION_SHARE" = "Сподели";
@@ -975,22 +981,22 @@
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "GitHub Redirection";
 
 /* action sheet body */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Delete all messages in the conversation?";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Избриши ги сите пораки во разговорот?";
 
 /* button text */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Delete All Messages";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Избриши ги сите пораки";
 
 /* action sheet body. Embeds {{number of selected messages}} which will be deleted. */
-"DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Delete %ld Messages?";
+"DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Избриши ги пораките од %ld?";
 
 /* action sheet body */
-"DELETE_SELECTED_SINGLE_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Delete Message?";
+"DELETE_SELECTED_SINGLE_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Избриши порака?";
 
 /* Label for button that lets users re-register using the same phone number. */
-"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Re-register this phone number";
+"DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Повторно регистрирај го овој телефонски број";
 
 /* Label warning the user that they have been de-registered. */
-"DEREGISTRATION_WARNING" = "Device no longer registered. Your phone number may be registered with Signal on a different device. Tap to re-register.";
+"DEREGISTRATION_WARNING" = "Уредот не е повеќе регистриран. Вашиот телефонски број можеби е регистриран на Signal на друг уред. Допри за повторно да се регистрираш.";
 
 /* {{Short Date}} when device last communicated with Signal Server. */
 "DEVICE_LAST_ACTIVE_AT_LABEL" = "Последен пат активен: %@";
@@ -999,7 +1005,7 @@
 "DEVICE_LINKED_AT_LABEL" = "Поврзан: %@";
 
 /* Alert title that can occur when viewing device manager. */
-"DEVICE_LIST_UPDATE_FAILED_TITLE" = "Неуспешно апдејтирање на листата на уреди.";
+"DEVICE_LIST_UPDATE_FAILED_TITLE" = "Неуспешно ажурирање на листата на уреди.";
 
 /* table cell label in conversation settings */
 "DISAPPEARING_MESSAGES" = "Изчезнувачки пораки";
@@ -1008,13 +1014,13 @@
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Пораките во овој разговор ќе исчезнуваат после %@.";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "Кога е овозможено, испратените и примените пораки во овој разговор ќе исчезнат откако ќе бидат видени .";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "Кога е овозможено, испратените и примените пораки во овој разговор ќе исчезнат откако ќе бидат видени.";
 
 /* Accessibility hint that contains current timeout information */
-"DISAPPEARING_MESSAGES_HINT" = "Моменталните пораките исчезнуваат после %@.";
+"DISAPPEARING_MESSAGES_HINT" = "Моменталните пораките исчезнуваат после %@";
 
 /* Accessibility label for disappearing messages */
-"DISAPPEARING_MESSAGES_LABEL" = "Подесувања за изчезнувачките пораки";
+"DISAPPEARING_MESSAGES_LABEL" = "Поставки за изчезнувачките пораки";
 
 /* Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "Откажи";
@@ -1029,28 +1035,28 @@
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal Needs Contact Access to Edit Contact Information";
 
 /* table cell label in conversation settings */
-"EDIT_GROUP_ACTION" = "Измени во група";
+"EDIT_GROUP_ACTION" = "Уреди група";
 
 /* The 'clear avatar' button in the 'edit group' view. */
-"EDIT_GROUP_CLEAR_AVATAR" = "Remove Avatar";
+"EDIT_GROUP_CLEAR_AVATAR" = "Отстрани Аватар";
 
 /* a title for the contacts section of the 'new/update group' view. */
 "EDIT_GROUP_CONTACTS_SECTION_TITLE" = "Контакти";
 
 /* The navbar title for the 'update group' view. */
-"EDIT_GROUP_DEFAULT_TITLE" = "Измени во група";
+"EDIT_GROUP_DEFAULT_TITLE" = "Уреди група";
 
 /* Error message indicating the a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "This user can't be added to the group until they upgrade Signal.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Овој корисник не може да биде додаден во групата додека не го надгради својот Signal.";
 
 /* Message for 'group full' error alert when a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "Maximum group size of 100 members reached.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "Максималниот број од 100 членови по група е достигнат.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
-"EDIT_GROUP_ERROR_INVALID_AVATAR" = "Invalid avatar.";
+"EDIT_GROUP_ERROR_INVALID_AVATAR" = "Невалиден аватар.";
 
 /* Label for the group name in the 'edit group' view. */
-"EDIT_GROUP_GROUP_NAME" = "Group Name";
+"EDIT_GROUP_GROUP_NAME" = "Име на група";
 
 /* An indicator that a user is a new member of the group. */
 "EDIT_GROUP_NEW_MEMBER_LABEL" = "Додадено";
@@ -1062,7 +1068,7 @@
 "EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Would you like to save the changes that you made to this group?";
 
 /* The alert title if user tries to exit update group view without saving changes. */
-"EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Не зачувани промени";
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Незачувани промени";
 
 /* Short name for edit menu item to copy contents of media message. */
 "EDIT_ITEM_COPY_ACTION" = "Копирај";
@@ -1080,7 +1086,7 @@
 "EMPTY_CONTACTS_LABEL_LINE2" = "Зошто не поканите некого?";
 
 /* Indicates that user should confirm their 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "Потврдете го вашиот PIN";
+"ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "Потврдете го вашиот PIN.";
 
 /* Error indicating that attempt to disable 'two-factor auth' failed. */
 "ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "Could not disable Registration Lock.";
@@ -1092,7 +1098,7 @@
 "ENABLE_2FA_VIEW_DISABLE_2FA" = "Оневозможи";
 
 /* Label for the 'enable two-factor auth' item in the settings view */
-"ENABLE_2FA_VIEW_ENABLE_2FA" = "Овозможете";
+"ENABLE_2FA_VIEW_ENABLE_2FA" = "Овозможи";
 
 /* Label for the 'next' button in the 'enable two factor auth' views. */
 "ENABLE_2FA_VIEW_NEXT_BUTTON" = "Следно";
@@ -1128,19 +1134,19 @@
 "END_OF_LIFE_OS_WARNING" = "The latest Signal features won’t work on this version of iOS. Please upgrade this device to receive future Signal updates.";
 
 /* Error indicating that the phone's contacts could not be retrieved. */
-"ERROR_COULD_NOT_FETCH_CONTACTS" = "Не можам да пристапам контакти";
+"ERROR_COULD_NOT_FETCH_CONTACTS" = "Не може да им се пристапи на контактите";
 
 /* Error indicating that 'save video' failed. */
 "ERROR_COULD_NOT_SAVE_VIDEO" = "Could not save video.";
 
 /* Generic notice when message failed to send. */
-"ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Неуспешно испраќање на пораката.";
+"ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Неуспешно испраќање на порака";
 
 /* Error message indicating that message send is disabled due to prekey update failures */
 "ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Unable to send due to stale prekey data.";
 
 /* Error message indicating that message send failed due to block list */
-"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Неуспешно е да разговарате со корисникот , бидејќи го имате блокирано.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Праќањето на порака на корисникот беше неуспешно, бидејќи го имате блокирано.";
 
 /* Generic error used whenever Signal can't contact the server */
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal was unable to connect to the internet. Please try again.";
@@ -1161,10 +1167,10 @@
 "ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "This device is no longer registered with your phone number. Please reinstall Signal.";
 
 /* Generic server error */
-"ERROR_DESCRIPTION_SERVER_FAILURE" = "Серверска грешка. Обиди се повторно подоцна.";
+"ERROR_DESCRIPTION_SERVER_FAILURE" = "Серверска грешка. Обидете се повторно подоцна.";
 
 /* Worst case generic error message */
-"ERROR_DESCRIPTION_UNKNOWN_ERROR" = " Се појави непозната грешка. ";
+"ERROR_DESCRIPTION_UNKNOWN_ERROR" = " Се појави непозната грешка.";
 
 /* Error message when attempting to send message */
 "ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Контактот не е Signal корисник.";
@@ -1176,7 +1182,7 @@
 "ERROR_MESSAGE_ATTACHMENT_FROM_OLD_CLIENT" = "Attachment failure: Ask this contact to send their message again after updating to the latest version of Signal.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Добив дупликат порака.";
+"ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Добиена дупликат порака.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "Клучот на примателот е неважечки.";
@@ -1191,16 +1197,16 @@
 "ERROR_MESSAGE_NO_SESSION" = "Нема достапна сесија за контакт.";
 
 /* Shown when signal users safety numbers changed */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Сигурносниот  број е променет. ";
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Сигурносниот  број е променет.";
 
 /* Shown when signal users safety numbers changed, embeds the user's {{name or phone number}} */
-"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = " Вашиот сигурносен број со %@ е променет. ";
+"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = " Вашиот сигурносен број  %@ е променет.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_UNKNOWN_ERROR" = " Се појави непозната грешка. ";
+"ERROR_MESSAGE_UNKNOWN_ERROR" = " Се појави непозната грешка.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Сигурносниот  број е променет. ";
+"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Сигурносниот  број е променет.";
 
 /* Error indicating network connectivity problems. */
 "ERROR_NETWORK_FAILURE" = "Network Error";
@@ -1221,7 +1227,7 @@
 "EXPIRATION_ERROR" = "Your version of Signal has expired! Messages will no longer send successfully. Tap to update to the most recent version.";
 
 /* Label warning the user that the app will expire soon. */
-"EXPIRATION_WARNING_SOON" = "Вашата верзија на Signal ќе истече за %d денови. Допри за да наградиш на најновата верзија.";
+"EXPIRATION_WARNING_SOON" = "Вашата верзија на Signal ќе истече за %d денови. Допри за да надградиш во најновата верзија.";
 
 /* Label warning the user that the app will expire today. */
 "EXPIRATION_WARNING_TODAY" = "Your version of Signal will expire today. Tap to update to the most recent version.";
@@ -1233,7 +1239,7 @@
 "FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Your safety number with %@ has recently changed. You may wish to verify before sending this message again.";
 
 /* alert title */
-"FAILED_VERIFICATION_TITLE" = "Неуспешна Потврда на Сигурносен Број!";
+"FAILED_VERIFICATION_TITLE" = "Неуспешна потврда на Сигурносен Број!";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
 "FINGERPRINT_SCAN_VERIFY_BUTTON" = "Mark as Verified";
@@ -1260,37 +1266,37 @@
 "GALLERY_TILES_LOADING_OLDER_LABEL" = "Loading Older Media…";
 
 /* A label for generic attachments. */
-"GENERIC_ATTACHMENT_LABEL" = "Прилог";
+"GENERIC_ATTACHMENT_LABEL" = "Прикачување";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
 "GIF_PICKER_ERROR_FETCH_FAILURE" = "Failed to fetch the requested GIF. Please verify you are online.";
 
 /* Generic error displayed when picking a GIF */
-"GIF_PICKER_ERROR_GENERIC" = " Се појави непозната грешка. ";
+"GIF_PICKER_ERROR_GENERIC" = " Се појави непозната грешка";
 
 /* Shown when selected GIF couldn't be fetched */
 "GIF_PICKER_FAILURE_ALERT_TITLE" = "Unable to Choose GIF";
 
 /* Alert message shown when user tries to search for GIFs without entering any search terms. */
-"GIF_PICKER_VIEW_MISSING_QUERY" = "Ве молиме внесете го вашето пребарување. ";
+"GIF_PICKER_VIEW_MISSING_QUERY" = "Ве молиме внесете го вашето пребарување.";
 
 /* Title for the 'GIF picker' dialog. */
-"GIF_PICKER_VIEW_TITLE" = "GIF Пребарување";
+"GIF_PICKER_VIEW_TITLE" = "GIF пребарување";
 
 /* Indicates that an error occurred while searching. */
-"GIF_VIEW_SEARCH_ERROR" = "Грешка. Допри за повторен обид.";
+"GIF_VIEW_SEARCH_ERROR" = "Грешка. Допрете за повторен обид.";
 
 /* Indicates that the user's search had no results. */
 "GIF_VIEW_SEARCH_NO_RESULTS" = "Нема резултати.";
 
 /* Placeholder text for the search field in GIF view */
-"GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Внесете го вашето пребарување.";
+"GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Внесете го вашето пребарување";
 
 /* Body message of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_BODY" = "This version of Signal includes database optimizations and performance improvements. You may need to open the app to complete the process.";
 
 /* Title of notification shown during GRDB migration indicating that user may need to open app to view their content. */
-"GRDB_MIGRATION_NOTIFICATION_TITLE" = "Optimizing Database";
+"GRDB_MIGRATION_NOTIFICATION_TITLE" = "Оптимизирање на базата на податоци";
 
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed who can edit group info to “%@“.";
@@ -1308,7 +1314,7 @@
 "GROUP_ACCESS_LEVEL_ANY" = "Any User";
 
 /* Description of the 'all members' access level. */
-"GROUP_ACCESS_LEVEL_MEMBER" = "All Members";
+"GROUP_ACCESS_LEVEL_MEMBER" = "Сите членови";
 
 /* Description of the 'unknown' access level. */
 "GROUP_ACCESS_LEVEL_UNKNOWN" = "Непознато";
@@ -1377,43 +1383,43 @@
 "GROUP_LOCAL_USER_INVITE_REVOKED_BY_UNKNOWN_USER" = "Your invitation to the group was revoked.";
 
 /* Message indicating that the local user was invited to the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT" = "%@ invited you.";
+"GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT" = "%@ве покани.";
 
 /* Message indicating that the local user was invited to the group. */
-"GROUP_LOCAL_USER_INVITED_TO_THE_GROUP" = "You were invited to the group.";
+"GROUP_LOCAL_USER_INVITED_TO_THE_GROUP" = "Вие бевте поканети во групата.";
 
 /* Message indicating that the local user has joined the group. */
-"GROUP_LOCAL_USER_JOINED_THE_GROUP" = "You joined the group.";
+"GROUP_LOCAL_USER_JOINED_THE_GROUP" = "Вие и се приклучивте на групата.";
 
 /* Message indicating that the local user was removed from the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed you.";
+"GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ ве отстрани.";
 
 /* Message indicating that the local user was removed from the group by an unknown user. */
-"GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "You were removed from the group.";
+"GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "Вие бевте отстранети од групата.";
 
 /* Message indicating that the local user had their administrator role revoked. */
-"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "Your admin privileges were revoked.";
+"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "Вашите администраторски привилегии беа отповикани.";
 
 /* Message indicating that the local user had their administrator role revoked by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ revoked your admin privileges.";
+"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ ги отповика вашите администраторски привилегии.";
 
 /* Conversation settings table section title */
 "GROUP_MANAGEMENT_SECTION" = "Менаџирање на групата";
 
 /* Label indicating that a group member is an admin. */
-"GROUP_MEMBER_ADMIN_INDICATOR" = "Admin";
+"GROUP_MEMBER_ADMIN_INDICATOR" = "Администратор";
 
 /* Format string for the group member count indicator. Embeds {{ %1$@ the number of members in the group, %2$@ the maximum number of members in the group. }}. */
 "GROUP_MEMBER_COUNT_FORMAT" = "%1$@/%2$@";
 
 /* The 'group member count' indicator when there are no members in the group. */
-"GROUP_MEMBER_COUNT_LABEL_0" = "No members";
+"GROUP_MEMBER_COUNT_LABEL_0" = "Нема членови";
 
 /* The 'group member count' indicator when there is 1 member in the group. */
 "GROUP_MEMBER_COUNT_LABEL_1" = "1 член";
 
 /* Format for the 'group member count' indicator. Embeds {the number of group members}. */
-"GROUP_MEMBER_COUNT_LABEL_FORMAT" = "%@ members";
+"GROUP_MEMBER_COUNT_LABEL_FORMAT" = "%@ членови";
 
 /* Label indicating the local user. */
 "GROUP_MEMBER_LOCAL_USER" = "Вие";
@@ -1422,7 +1428,7 @@
 "GROUP_MEMBERS_CALL" = "Повикај";
 
 /* Label indicating that a group has no other members. */
-"GROUP_MEMBERS_NO_OTHER_MEMBERS" = "No members.";
+"GROUP_MEMBERS_NO_OTHER_MEMBERS" = "Нема членови.";
 
 /* Label for the button that clears all verification errors in the 'group members' view. */
 "GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "Clear Verification for All";
@@ -1440,157 +1446,157 @@
 "GROUP_MEMBERS_SEND_MESSAGE" = "Порака";
 
 /* Placeholder text for 'group name' field. */
-"GROUP_NAME_PLACEHOLDER" = "Group name (required)";
+"GROUP_NAME_PLACEHOLDER" = "Име на групата (потребно)";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "%@ accepted an invitation to the group.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "%@ ја прифати поканата за групата.";
 
 /* Message indicating that a remote user has accepted an invite from the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ accepted your invitation to the group.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ ја прифати вашата покана за групата.";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{ %1$@ user who accepted their invite, %2$@ user who invited the user}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_REMOTE_USER_FORMAT" = "%1$@ accepted an invitation to the group from %2$@.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_REMOTE_USER_FORMAT" = "%1$@ ја прифати поканата за групата од %2$@.";
 
 /* Message indicating that a remote user was added to the group by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_LOCAL_USER_FORMAT" = "You added %@.";
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_LOCAL_USER_FORMAT" = "Вие го додадовте %@.";
 
 /* Message indicating that a remote user was added to the group by another user. Embeds {{ %1$@ user who added the user, %2$@ user who was added}}. */
-"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ added %2$@.";
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ го додаде %2$@.";
 
 /* Message indicating that a remote user was added to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT" = "%@ was added to the group.";
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT" = "%@ беше додаден во групата.";
 
 /* Message indicating that a remote user has declined their invite. */
-"GROUP_REMOTE_USER_DECLINED_INVITE" = "1 person declined the invitation to the group.";
+"GROUP_REMOTE_USER_DECLINED_INVITE" = "1 личност ја одбила поканата за групата.";
 
 /* Message indicating that a remote user has declined their invite. Embeds {{ user who invited them }}. */
-"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "1 person invited by %@ declined the invitation to the group.";
+"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "1 личност која беше поканета од %@ ја одбила поканата за групата.";
 
 /* Message indicating that a remote user has declined an invite to the group from the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ declined your invitation to the group.";
+"GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ ја одби вашата покана за групата.";
 
 /* Message indicating that a remote user was granted administrator role. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR" = "%@ is now an admin";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR" = "%@ сега е администратор";
 
 /* Message indicating that a remote user was granted administrator role by local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_LOCAL_USER" = "You made %@ an admin.";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_LOCAL_USER" = "Вие го направивте %@ администратор.";
 
 /* Message indicating that a remote user was granted administrator role by another user. Embeds {{ %1$@ user who granted, %2$@ user who was granted administrator role}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ made %2$@ an admin.";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ го направи %2$@ администратор.";
 
 /* Message indicating that a single remote user's invite was revoked. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_1" = "Invitation to the group was revoked for 1 person.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_1" = "Поканата за групата беше одбиена од 1 личност.";
 
 /* Message indicating that a remote user's invite was revoked by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_BY_LOCAL_USER_FORMAT" = "Invitation to the group was revoked for %@.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_LOCAL_USER_FORMAT" = "Поканата за групата беше одбиена од %@.";
 
 /* Message indicating that a single remote user's invite was revoked by a remote user. Embeds {{ user who revoked the invite }}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_1_FORMAT" = "%@ revoked an invitation to the group for 1 person.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_1_FORMAT" = "%@ одби покана за групата од 1 личност.";
 
 /* Message indicating that a group of remote users' invites were revoked by a remote user. Embeds {{ %1$@ user who revoked the invite, %2$@ number of users }}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_N_FORMAT" = "%1$@ revoked an invitation to the group for %2$@ people.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_N_FORMAT" = "%1$@ одби покана за групата за %2$@ луѓе.";
 
 /* Message indicating that a group of remote users' invites were revoked. Embeds {{ number of users }}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_N_FORMAT" = "Invitations to the group were revoked for %@ people.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_N_FORMAT" = "Поканите за групата беа одбиени од %@ луѓе.";
 
 /* Message indicating that a single remote user was invited to the group. */
-"GROUP_REMOTE_USER_INVITED_1" = "1 person was invited to the group.";
+"GROUP_REMOTE_USER_INVITED_1" = "1 личност беше поканета во групата.";
 
 /* Message indicating that a remote user was invited to the group by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "You invited %@ to the group.";
+"GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "Вие го поканивте %@ во групата.";
 
 /* Message indicating that a single remote user was invited to the group by the local user. Embeds {{ user who invited the user }}. */
-"GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_1_FORMAT" = "%@ invited 1 person to the group.";
+"GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_1_FORMAT" = "%@ покани 1 личност во групата.";
 
 /* Message indicating that a group of remote users were invited to the group by the local user. Embeds {{ %1$@ user who invited the user, %2$@ number of invited users }}. */
-"GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_N_FORMAT" = "%1$@ invited %2$@ people to the group.";
+"GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_N_FORMAT" = "%1$@ ги покани %2$@ луѓе во групата.";
 
 /* Message indicating that a group of remote users were invited to the group. Embeds {{number of invited users}}. */
-"GROUP_REMOTE_USER_INVITED_N_FORMAT" = "%@ people were invited to the group.";
+"GROUP_REMOTE_USER_INVITED_N_FORMAT" = "%@ луѓе беа поканети во групата.";
 
 /* Message indicating that a remote user was added to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "%@ joined the group.";
+"GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "%@ и се приклучи на групата.";
 
 /* Message indicating that a remote user has left the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%@ left the group.";
+"GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%@ ја напушти групата.";
 
 /* Message indicating that a remote user was removed from the group by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT" = "You removed %@.";
+"GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT" = "Вие го отстранивте %@.";
 
 /* Message indicating that the remote user was removed from the group. Embeds {{ %1$@ user who removed the user, %2$@ user who was removed}}. */
-"GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ removed %2$@.";
+"GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ го отстрани %2$@.";
 
 /* Message indicating that a remote user had their administrator role revoked. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "%@ had their admin privileges revoked.";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "%@ ги отповика своите администраторски привилегии.";
 
 /* Message indicating that a remote user had their administrator role revoked by local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_LOCAL_USER" = "You revoked admin privileges from %@.";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_LOCAL_USER" = "Вие ги отповикавте администраторските привилегии од %@.";
 
 /* Message indicating that a remote user had their administrator role revoked by another user. Embeds {{ %1$@ user who revoked, %2$@ user who was granted administrator role}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ revoked admin privileges from %2$@.";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ ги отповика администраторските привилегии на %2$@.";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Групата е ажурирана.";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED" = "The group avatar was removed.";
+"GROUP_UPDATED_AVATAR_REMOVED" = "Аватарот на групата беше отстранет.";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "You removed the avatar.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "Вие го отстранивте аватарот.";
 
 /* Message indicating that the group's avatar was removed by a remote user. Embeds {{user who removed the avatar}}. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed the avatar.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ го отстрани аватарот. ";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED" = "Updated the group avatar.";
+"GROUP_UPDATED_AVATAR_UPDATED" = "Ажурирање на аватарот на групата.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "You updated the avatar.";
+"GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "Вие го ажуриравте аватарот на групата.";
 
 /* Message indicating that the group's avatar was changed by a remote user. Embeds {{user who changed the avatar}}. */
-"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ updated the avatar.";
+"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ го ажурираше аватарот на групата.";
 
 /* Info message indicating that the group was updated by the local user. */
-"GROUP_UPDATED_BY_LOCAL_USER" = "Вие ја уредивте групата.";
+"GROUP_UPDATED_BY_LOCAL_USER" = "Вие ја ажуриравте групата";
 
 /* Info message indicating that the group was updated by another user. Embeds {{remote user name}}. */
-"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ updated the group.";
+"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ ја ажурираше групата.";
 
 /* Message indicating that the group's name was removed. */
-"GROUP_UPDATED_NAME_REMOVED" = "The group name was removed.";
+"GROUP_UPDATED_NAME_REMOVED" = "Името на групата беше отстрането.";
 
 /* Message indicating that the group's name was removed by the local user. */
-"GROUP_UPDATED_NAME_REMOVED_BY_LOCAL_USER" = "You removed the group name.";
+"GROUP_UPDATED_NAME_REMOVED_BY_LOCAL_USER" = "Вие го отстранивте името на групата.";
 
 /* Message indicating that the group's name was removed by a remote user. Embeds {{user who removed the name}}. */
-"GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed the group name.";
+"GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ го отстрани името на групата.";
 
 /* Message indicating that the group's name was changed by the local user. Embeds {{new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed the group name to “%@“.";
+"GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "Вие го применивте името на групата во  “%@“.";
 
 /* Message indicating that the group's name was changed by a remote user. Embeds {{ %1$@ user who changed the name, %2$@ new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed the group name to “%2$@“.";
+"GROUP_UPDATED_NAME_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ го промени името на групата во  “%2$@“.";
 
 /* Message indicating that the group's name was changed. Embeds {{new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Group name is now “%@”.";
+"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Името на групата сега е  “%@“.";
 
 /* Message indicating that the local user left the group. */
 "GROUP_YOU_LEFT" = "Вие ја напуштивте групата.";
 
 /* Message for the 'can't replace group admin' alert. */
-"GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Choose a new admin for this group before you leave.";
+"GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Изберете нов администратор на оваа група пред да ја напуштите.";
 
 /* Error indicating that an error occurred while accepting an invite. */
-"GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "Could not accept invite.";
+"GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "Поканата не може да биде примена.";
 
 /* Label for 'block group' button in group invite view. */
-"GROUPS_INVITE_BLOCK_GROUP" = "Block Group";
+"GROUPS_INVITE_BLOCK_GROUP" = "Блокирај група";
 
 /* Label for 'block group and inviter' button in group invite view. Embeds {{name of user who invited you}}. */
-"GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT" = "Block Group and %@";
+"GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT" = "Блокирај Група и %@";
 
 /* Label for 'block inviter' button in group invite view. Embeds {{name of user who invited you}}. */
-"GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "Block %@";
+"GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "Блокирај го %@";
 
 /* Message for the 'replace group admin' alert. */
 "GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "Before you leave, choose a new admin for this group.";
@@ -1602,10 +1608,10 @@
 "GROUPS_REPLACE_ADMIN_BUTTON" = "Choose new admin";
 
 /* Label for 'archived conversations' button. */
-"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Archived Conversations";
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Архивирани разговори";
 
 /* Table cell subtitle label for a conversation the user has blocked. */
-"HOME_VIEW_BLOCKED_CONVERSATION" = "Блокирани";
+"HOME_VIEW_BLOCKED_CONVERSATION" = "Блокиран";
 
 /* Placeholder text for search bar which filters conversations. */
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Барај";
@@ -1614,16 +1620,16 @@
 "HOME_VIEW_DRAFT_PREFIX" = "Draft: ";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds {{The name of 1 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Некој од вашите контакти се веќе на Signal, вклучувајќи %@.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Некои од вашите контакти се веќе на Signal, вклучувајќи го %@.";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal contacts.  Embeds {{The names of 2 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Некој од вашите контакти веќе се на Signal, вклучувајќи ги %@ и %@";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Некои од вашите контакти веќе се на Signal, вклучувајќи ги %@ и %@";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Signal contacts.  Embeds {{The names of 3 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Некој од вашите контакти се веќе на Signal, вклучувајќи ги %@, %@ и %@";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Некои од вашите контакти се веќе на Signal, вклучувајќи ги %@, %@ и %@";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Започнете го вашиот прв разговор тука.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Започнете го вашиот прв разговор тука";
 
 /* Table cell subtitle label for a group the user has been added to. {Embeds inviter name} */
 "HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%@ added you to the group";
@@ -1647,7 +1653,7 @@
 "IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Failed to select attachment.";
 
 /* Call setup status label */
-"IN_CALL_CONNECTING" = "Поврзува...";
+"IN_CALL_CONNECTING" = "Поврзување...";
 
 /* Call setup status label */
 "IN_CALL_RECONNECTING" = "Reconnecting…";
@@ -1692,7 +1698,7 @@
 "INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "Стикери";
 
 /* accessibility label for the button which records voice memos */
-"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL" = "Гласовна порака ";
+"INPUT_TOOLBAR_VOICE_MEMO_BUTTON_ACCESSIBILITY_LABEL" = "Гласовна порака";
 
 /* Message for the alert indicating that an audio file is invalid. */
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Invalid audio file.";
@@ -1701,7 +1707,7 @@
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "You can enable contacts access in the iOS Settings app to invite your friends to join Signal.";
 
 /* Alert title when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Дозволи пристап кон контакти";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Дозволете пристап кон контакти";
 
 /* Label for the cell that presents the 'invite contacts' workflow. */
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Поканете пријатели на Signal";
@@ -1764,7 +1770,7 @@
 "KEY_COMMAND_UNARCHIVE" = "Unarchive Conversation";
 
 /* Label for the 'learn more' button. */
-"LEARN_MORE" = "Дознајте повеќе";
+"LEARN_MORE" = "Научете повеќе";
 
 /* Confirmation button within contextual alert */
 "LEAVE_BUTTON_TITLE" = "Напушти";
@@ -1794,13 +1800,13 @@
 "LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Scan the QR code that is displayed on the device you want to link.";
 
 /* Subheading for 'Link New Device' navigation */
-"LINK_NEW_DEVICE_SUBTITLE" = "Скенирајте QR код";
+"LINK_NEW_DEVICE_SUBTITLE" = "Скенирајте го QR кодот";
 
 /* Navigation title when scanning QR code to add new device. */
 "LINK_NEW_DEVICE_TITLE" = "Поврзете нов уред";
 
 /* Label for link previews with an unknown host. */
-"LINK_PREVIEW_UNKNOWN_DOMAIN" = "Приказ на линк ";
+"LINK_PREVIEW_UNKNOWN_DOMAIN" = "Приказ на линк";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "Поврзани уреди";
@@ -1812,10 +1818,10 @@
 "LIST_GROUP_MEMBERS_ACTION" = "Членови на групата";
 
 /* A string indicating that the user can search for a location */
-"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Побарај по име или адреса";
+"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Побарајте по име или адреса";
 
 /* The title for the location picker view */
-"LOCATION_PICKER_TITLE" = "Избери локација";
+"LOCATION_PICKER_TITLE" = "Изберете локација";
 
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "Логирање";
@@ -1830,13 +1836,13 @@
 "MEDIA_FROM_CAMERA_BUTTON" = "Камера";
 
 /* media picker option to choose from library */
-"MEDIA_FROM_LIBRARY_BUTTON" = "Фото Албум";
+"MEDIA_FROM_LIBRARY_BUTTON" = "Фото Библиотека";
 
 /* Confirmation button text to delete selected media from the gallery, embeds {{number of messages}} */
-"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "Избриши %d пораки";
+"MEDIA_GALLERY_DELETE_MULTIPLE_MESSAGES_FORMAT" = "Избришете %d пораки";
 
 /* Confirmation button text to delete selected media message from the gallery */
-"MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Избриши порака";
+"MEDIA_GALLERY_DELETE_SINGLE_MESSAGE" = "Избришете порака";
 
 /* Format for the 'more items' indicator for media galleries. Embeds {{the number of additional items}}. */
 "MEDIA_GALLERY_MORE_ITEMS_FORMAT" = "+%@";
@@ -1857,7 +1863,7 @@
 "MESSAGE_ACTION_COPY_TEXT" = "Копирај го текстот на пораката";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_DELETE_MESSAGE" = "Избриши ја оваа порака ";
+"MESSAGE_ACTION_DELETE_MESSAGE" = "Избриши ја оваа порака";
 
 /* accessibility label */
 "MESSAGE_ACTION_DELETE_SELECTED_MESSAGES" = "Delete Selected Messages";
@@ -1884,7 +1890,7 @@
 "MESSAGE_COMPOSEVIEW_TITLE" = "Нова порака";
 
 /* Label for file size of attachments in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE" = "Големина на датотеката";
+"MESSAGE_METADATA_VIEW_ATTACHMENT_FILE_SIZE" = "Големина на датотека";
 
 /* Label for the MIME type of attachments in the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_ATTACHMENT_MIME_TYPE" = "MIME тип";
@@ -1899,7 +1905,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_READ" = "Прочитано";
 
 /* Status label for messages which are sending. */
-"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "Испраќа...";
+"MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENDING" = "Испраќање";
 
 /* Status label for messages which are sent. */
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_SENT" = "Испратено";
@@ -1911,7 +1917,7 @@
 "MESSAGE_METADATA_VIEW_MESSAGE_STATUS_UPLOADING" = "Прикачување";
 
 /* Label for messages without a body or attachment in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY" = "Пораката нема содржина или прилози";
+"MESSAGE_METADATA_VIEW_NO_ATTACHMENT_OR_BODY" = "Пораката нема содржина или прикачување";
 
 /* Label for the 'received date & time' field of the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_RECEIVED_DATE_TIME" = "Примено";
@@ -1923,7 +1929,7 @@
 "MESSAGE_METADATA_VIEW_SENT_DATE_TIME" = "Испратено";
 
 /* Label for the original filename of any attachment in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_SOURCE_FILENAME" = "Име на датотеката";
+"MESSAGE_METADATA_VIEW_SOURCE_FILENAME" = "Име на датотека";
 
 /* Title for the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_TITLE" = "Порака";
@@ -1938,7 +1944,7 @@
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Blocked people won’t be able to call you or send you messages.";
 
 /* Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}} */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "Блокирај %@?";
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "Блокирај го %@?";
 
 /* Action sheet message to confirm blocking a group via a message request. */
 "MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "You will leave this group and no longer receive messages or updates.";
@@ -1989,13 +1995,13 @@
 "MESSAGE_REQUEST_VIEW_GROUP_INVITE_PROMPT_FORMAT" = "You were invited to this group by %@. Do you want to let members of this group message you?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Дали сакате да дозволите %@ да ви пишува? Тие нема да знаат дека сте ги виделе нивните пораки додека не прифатите.";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Дали сакате да дозволите %@ да ви пишуваат? Тие нема да знаат дека сте ги виделе нивните пораки додека не прифатите.";
 
 /* A prompt asking if the user wants to accept a group invite. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_FORMAT" = "Дали сакате да се приклучите на %@? Тие нема да знаат дека сте ги виделе нивните пораки додека не прифатите.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_FORMAT" = "Дали сакате да им се приклучите на %@? Тие нема да знаат дека сте ги виделе нивните пораки додека не прифатите.";
 
 /* A button used to share your profile with an existing thread. */
-"MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Сподели профил";
+"MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Споделете профил";
 
 /* A button used to unlock a blocked conversation. */
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Одблокирај";
@@ -2016,7 +2022,7 @@
 "MESSAGE_STATUS_DELIVERED" = "Доставено";
 
 /* message status while message is downloading. */
-"MESSAGE_STATUS_DOWNLOADING" = "Превземање";
+"MESSAGE_STATUS_DOWNLOADING" = "Преземање";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED" = "Испраќањето е неуспешно.";
@@ -2040,7 +2046,7 @@
 "MESSAGE_STATUS_SENT" = "Испратено";
 
 /* status message while attachment is uploading */
-"MESSAGE_STATUS_UPLOADING" = "Прикачување... ";
+"MESSAGE_STATUS_UPLOADING" = "Прикачување...";
 
 /* placeholder text for the editable message field */
 "MESSAGE_TEXT_FIELD_PLACEHOLDER" = "Нова порака";
@@ -2055,19 +2061,19 @@
 "MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ is no longer marked as verified. Tap for options.";
 
 /* Indicates that a single member of this group has been blocked. */
-"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "Вие блокиравте 1 член на групата";
+"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "Вие блокиравте 1 член на оваа група";
 
 /* Indicates that this group conversation has been blocked. */
 "MESSAGES_VIEW_GROUP_BLOCKED" = "Вие ја блокиравте оваа група";
 
 /* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
-"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "Вие блокиравте %@ членови на групата";
+"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "Вие ги блокиравте %@ членови на групата";
 
 /* Indicates that more than one member of this group conversation is no longer verified. */
 "MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "More than one member of this group is no longer marked as verified. Tap for options.";
 
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
-"MESSAGES_VIEW_TITLE_SUBTITLE" = "Допрете тука за подесувања";
+"MESSAGES_VIEW_TITLE_SUBTITLE" = "Допрете тука за поставки";
 
 /* Indicator that separates read from unread messages. */
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "Нови пораки";
@@ -2106,13 +2112,13 @@
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Прескокни";
 
 /* No comment provided by engineer. */
-"NETWORK_ERROR_RECOVERY" = " Ве молиме проверете дека сте приклучени на интернет и обидете се повторно ";
+"NETWORK_ERROR_RECOVERY" = "Ве молиме проверете дали сте приклучени на Интернет и обидете се повторно.";
 
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Најди по телефонски број";
 
 /* Action Sheet title prompting the user for a group avatar */
-"NEW_GROUP_ADD_PHOTO_ACTION" = "Постави слика на Групата";
+"NEW_GROUP_ADD_PHOTO_ACTION" = "Поставете слика на групата";
 
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "Нова група";
@@ -2160,7 +2166,7 @@
 "NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Would you like to discard these changes?";
 
 /* The alert title if user tries to exit the new group view without saving changes. */
-"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Не зачувани промени";
+"NEW_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Незачувани промени";
 
 /* No comment provided by engineer. */
 "new_message" = "Нова порака";
@@ -2208,7 +2214,7 @@
 "NOTIFICATIONS_SENDER_AND_MESSAGE" = "Name, Content, and Actions";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_ONLY" = "Име само";
+"NOTIFICATIONS_SENDER_ONLY" = "Само име";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SHOW" = "Прикажи";
@@ -2250,7 +2256,7 @@
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "Skip PIN Entry?";
 
 /* Title of the 'onboarding Captcha' view. */
-"ONBOARDING_CAPTCHA_TITLE" = "Додајте допир на човештво во вашите пораки";
+"ONBOARDING_CAPTCHA_TITLE" = "Додајте хуман гопир во вашите пораки";
 
 /* button indicating that the user will register their ipad */
 "ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Register iPad";
@@ -2289,7 +2295,7 @@
 "ONBOARDING_PHONE_NUMBER_TITLE" = "Внесете го вашиот телефонски број за да започнете";
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Погрешен број";
+"ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Неважечки број";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "You’ve run out of PIN guesses, but you can still access your Signal account by creating a new PIN. For your privacy and security your account will be restored without any saved profile information or settings.";
@@ -2301,7 +2307,7 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_EXPLANATION" = "To protect your privacy and the security of your account, we’ve locked it for 7 days.\n\nAfter 7 days of inactivity, you’ll be able to reregister this phone number without needing your PIN. All content will be wiped.";
 
 /* Label for the 'learn more' link when reglock is enabled in the 'onboarding pin attempts exhausted' view. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_LEARN_MORE" = "Дознајте повеќе за заклучени профили";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_LEARN_MORE" = "Дознајте повеќе за заклучени сметки";
 
 /* Title of the 'onboarding pin attempts exhausted' view when reglock is enabled. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_TITLE" = "Account Locked";
@@ -2319,7 +2325,7 @@
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Terms & Privacy Policy";
 
 /* Title of the 'onboarding splash' view. */
-"ONBOARDING_SPLASH_TITLE" = "Понесете ја приватноста со вас.\n Бидете си себеси во секоја порака. ";
+"ONBOARDING_SPLASH_TITLE" = "Земете ја приватноста со Вас.\nБидете свои во секоја порака. ";
 
 /* Label for the link that lets users change their phone number in the onboarding views. */
 "ONBOARDING_VERIFICATION_BACK_LINK" = "Погрешен број?";
@@ -2346,13 +2352,13 @@
 "ONBOARDING_VERIFICATION_RESEND_CODE_BY_SMS_BUTTON" = "Resend Code";
 
 /* Label for the 'resend code by voice' button in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_BY_VOICE_BUTTON" = "Јави ми се ";
+"ONBOARDING_VERIFICATION_RESEND_CODE_BY_VOICE_BUTTON" = "Јави ми се";
 
 /* Label for link that can be used when the resent code did not arrive. */
-"ONBOARDING_VERIFICATION_RESENT_CODE_MISSING_LINK" = "Се уште нема код?";
+"ONBOARDING_VERIFICATION_RESENT_CODE_MISSING_LINK" = "Сеуште нема код?";
 
 /* Format for the title of the 'onboarding verification' view. Embeds {{the user's phone number}}. */
-"ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "Внесете го кодот што го испративме на %@";
+"ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "Внесете го кодот што ви го испративме на %@";
 
 /* Format for the title of the 'onboarding verification' view after the verification code has been resent. Embeds {{the user's phone number}}. */
 "ONBOARDING_VERIFICATION_TITLE_RESENT_FORMAT" = "We just resent a code to %@";
@@ -2364,7 +2370,7 @@
 "OTHER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ ги оневозможи исчезнувачките пораки.";
 
 /* Info Message when another user enabled disappearing messages. Embeds {{name of other user}} and {{time amount}} before messages disappear. See the *_TIME_AMOUNT strings for context. */
-"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ го подеси исчезнувањето на пораките на време до %@.";
+"OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ го постави времето на исчезнување на пораките на %@.";
 
 /* Label warning the user that the Signal service may be down. */
 "OUTAGE_WARNING" = "Signal is experiencing technical difficulties. We are working hard to restore service as quickly as possible.";
@@ -2379,7 +2385,7 @@
 "OUTGOING_MISSED_CALL" = "Unanswered outgoing call";
 
 /* A display format for oversize text messages. */
-"OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@...";
+"OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@";
 
 /* Error indicating that a PDF could not be displayed. */
 "PDF_VIEW_COULD_NOT_RENDER" = "PDF could not be displayed";
@@ -2490,7 +2496,7 @@
 "PHOTO_CAPTURE_UNABLE_TO_CAPTURE_IMAGE" = "Unable to capture image.";
 
 /* alert title */
-"PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "Неуспешно подесување на камерата.";
+"PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "Неуспешно поставување на камерата.";
 
 /* label for system photo collections which have no name. */
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "Неименуван албум";
@@ -2499,7 +2505,7 @@
 "PIN_CREATION_ALPHANUMERIC_HINT" = "PIN must be at least 4 characters";
 
 /* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_CHANGING_TITLE" = "Сменете го вашиот PIN";
+"PIN_CREATION_CHANGING_TITLE" = "Променете го вашиот PIN.";
 
 /* Title of the 'pin creation' confirmation view. */
 "PIN_CREATION_CONFIRM_TITLE" = "Confirm your PIN";
@@ -2538,10 +2544,10 @@
 "PIN_CREATION_RECREATION_EXPLANATION" = "You can change your PIN as long as this device is registered.";
 
 /* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_RECREATION_TITLE" = "Сменете го вашиот PIN";
+"PIN_CREATION_RECREATION_TITLE" = "Променете го вашиот PIN.";
 
 /* Title of the 'pin creation' view. */
-"PIN_CREATION_TITLE" = "Направете го вашиот PIN";
+"PIN_CREATION_TITLE" = "Создадете го вашиот PIN";
 
 /* Label indicating that the attempted PIN is too weak */
 "PIN_CREATION_WEAK_ERROR" = "Choose a stronger PIN";
@@ -2604,22 +2610,22 @@
 "PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "You have not marked %@ as verified.";
 
 /* Badge indicating that the user is verified. */
-"PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Потвррден";
+"PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Потврден";
 
 /* Label indicating that the user is verified. Embeds {{the user's name or phone number}}. */
 "PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%@ is verified.";
 
 /* Button that shows the 'scan with camera' view. */
-"PRIVACY_TAP_TO_SCAN" = "Допри да скенираш ";
+"PRIVACY_TAP_TO_SCAN" = "Допрете за да скенирате";
 
 /* Button that lets user mark another user's identity as unverified. */
 "PRIVACY_UNVERIFY_BUTTON" = "Clear Verification";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Ова не изгледа како Вашиот сигурносен број со %@. Дали го потврдуваш точниот контакт?";
+"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Ова не изгледа како Вашиот сигурносен број  %@. Дали го потврдувате точниот контакт?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Бројот на твојата табла со исечоци не изгледа како точниот сигурносен број за овој разговор.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Бројот на вашата табла со исечоци не изгледа како точниот сигурносен број за овој разговор.";
 
 /* Alert body for user error */
 "PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal неможе да најде сигурносен број на твојата табла со исечоци. Дали го точно го копиравте?";
@@ -2637,7 +2643,7 @@
 "PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "The scanned code doesn't look like a safety number. Are you both on an up-to-date version of Signal?";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
-"PRIVACY_VERIFICATION_INSTRUCTIONS" = "Ако сакате да ја потврдите сигурноста на вашата крај-до-крај енкрипција со %@, споредете ги горните броеви со броевите на нивниот уред.\n\nАлтернативно, можете да го скенирате кодот на нивниот телефон, или да ги прашате да го скенираат вашиот код.";
+"PRIVACY_VERIFICATION_INSTRUCTIONS" = "Ако сакате да ја потврдите сигурноста на вашата од-крај-до-крај енкрипција со %@, споредете ги погорните броеви со броевите на нивниот уред.\n\nАлтернативно, можете да го скенирате кодот на нивниот телефон, или да ги прашате тие да го скенираат вашиот код.";
 
 /* Navbar title */
 "PRIVACY_VERIFICATION_TITLE" = "Потврдете го сигурносниот број";
@@ -2712,7 +2718,7 @@
 "PROFILE_VIEW_USERNAME_FIELD" = "Корисничко име";
 
 /* Notification action button title */
-"PUSH_MANAGER_MARKREAD" = "Означки како прочитано";
+"PUSH_MANAGER_MARKREAD" = "Означете како прочитано";
 
 /* Notification action button title */
 "PUSH_MANAGER_REPLY" = "Одговори";
@@ -2730,19 +2736,19 @@
 "QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT" = "Одговарате на %@";
 
 /* message header label when someone else is quoting you */
-"QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "Одговараат на тебе";
+"QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "Ви одговараат вам";
 
 /* Footer label that appears below quoted messages when the quoted content was not derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender. */
 "QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "Оригиналната порака не е пронајдена.";
 
 /* Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of the message was since deleted. */
-"QUOTED_REPLY_ORIGINAL_MESSAGE_DELETED" = "Оригиналната порака не е повеќе достапна.";
+"QUOTED_REPLY_ORIGINAL_MESSAGE_DELETED" = "Оригиналната порака  повеќе не е достапна.";
 
 /* Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of the message didn't exist when the quote was received. */
 "QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "Оригиналната порака не е пронајдена.";
 
 /* Indicates this message is a quoted reply to an attachment of unknown type. */
-"QUOTED_REPLY_TYPE_ATTACHMENT" = "Прилог";
+"QUOTED_REPLY_TYPE_ATTACHMENT" = "Прикачување";
 
 /* Indicates this message is a quoted reply to an audio file. */
 "QUOTED_REPLY_TYPE_AUDIO" = "Звук";
@@ -2844,16 +2850,16 @@
 "REGISTER_CONTACTS_WELCOME" = "Добродојдовте!";
 
 /* No comment provided by engineer. */
-"REGISTER_FAILED_TRY_AGAIN" = "Обиди се повторно";
+"REGISTER_FAILED_TRY_AGAIN" = "Обидете се повторно";
 
 /* action sheet body */
-"REGISTER_RATE_LIMITING_BODY" = "Се обидувавте многу често. Ве молиме почекајте малце и обидете се повторно";
+"REGISTER_RATE_LIMITING_BODY" = "Се обидувавте премногу често. Ве молиме почекајте пред да се обидете повторно.";
 
 /* No comment provided by engineer. */
-"REGISTER_RATE_LIMITING_ERROR" = "Се обидувавте многу често. Ве молиме почекајте малце и обидете се повторно";
+"REGISTER_RATE_LIMITING_ERROR" = "Се обидувавте премногу често. Ве молиме почекајте пред да се обидете повторно.";
 
 /* Title of alert shown when push tokens sync job fails. */
-"REGISTRATION_BODY" = "Неуспешно при повторно регистирањето за автоматски известувања.";
+"REGISTRATION_BODY" = "Повторното регистирањето за автоматски известувања беше неуспешно.";
 
 /* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Повикувачки број на земјата";
@@ -2865,10 +2871,10 @@
 "REGISTRATION_ERROR" = "Грешка при регистрирањето";
 
 /* alert body during registration */
-"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Не можеме да го активираме вашиот профил , се додека не го потврдете кодот кој што ви го испративме.";
+"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Не можеме да го активираме вашиот профил, се додека не го потврдете кодот кој што ви го испративме.";
 
 /* No comment provided by engineer. */
-"REGISTRATION_NON_VALID_NUMBER" = "Овој тип на број не е поддржан, Ве молиме контактирајте го тимот за поддршка.";
+"REGISTRATION_NON_VALID_NUMBER" = "Овој формат на број не е поддржан, Ве молиме контактирајте го тимот за поддршка.";
 
 /* Label for the phone number textfield */
 "REGISTRATION_PHONENUMBER_BUTTON" = "Телефонски број";
@@ -2943,7 +2949,7 @@
 "SAFETY_NUMBER_SHARE_FORMAT" = "Нашиот Signal Сигурносен Број :\n%@";
 
 /* Action sheet heading */
-"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Вашиот сигурносен број со %@ е променет. Можеби Би сакале да го потврдете. ";
+"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Вашиот сигурносен број %@ е променет. Можеби сакате да го потврдете. ";
 
 /* label presented once scanning (camera) view is visible. */
 "SCAN_CODE_INSTRUCTIONS" = "Скенирајте го QR на уредот на вашите контакти.";
@@ -2958,7 +2964,7 @@
 "SCREEN_LOCK_ENABLE_UNKNOWN_ERROR" = "Authentication could not be accessed.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode authentication failed. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = " Проверка на автентичноста е неуспешна.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Науспешна автентикација";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Too many failed authentication attempts. Please try again later.";
@@ -2976,7 +2982,7 @@
 "SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Потребна е проверка на автентичноста за да го отворите Signal.";
 
 /* Title for alert indicating that screen lock could not be unlocked. */
-"SCREEN_LOCK_UNLOCK_FAILED" = "Проверка на автентичноста е неуспешна";
+"SCREEN_LOCK_UNLOCK_FAILED" = "Науспешна автентикација";
 
 /* Label for button on lock screen that lets users unlock Signal. */
 "SCREEN_LOCK_UNLOCK_SIGNAL" = "Отклучи го Signal";
@@ -3186,7 +3192,7 @@
 "SELECT_THREAD_TABLE_OTHER_CHATS_TITLE" = "Други контакти";
 
 /* Table section header for recently active conversations */
-"SELECT_THREAD_TABLE_RECENT_CHATS_TITLE" = "Скорешни разговори ";
+"SELECT_THREAD_TABLE_RECENT_CHATS_TITLE" = "Неодамнешни разговори";
 
 /* No comment provided by engineer. */
 "SEND_AGAIN_BUTTON" = "Испрати повторно";
@@ -3195,10 +3201,10 @@
 "SEND_BUTTON_TITLE" = "Испрати";
 
 /* notification body */
-"SEND_FAILED_NOTIFICATION_BODY" = "Неуспешно праќање на вашата порака.";
+"SEND_FAILED_NOTIFICATION_BODY" = "Неуспешно праќање на вашата порака";
 
 /* Alert body after invite failed */
-"SEND_INVITE_FAILURE" = "Неуспешно Испраќање покана, Ве молиме обидете се повторно подоцна.";
+"SEND_INVITE_FAILURE" = "Неуспешно испраќање покана, Ве молиме обидете се повторно подоцна.";
 
 /* Alert body after invite succeeded */
 "SEND_INVITE_SUCCESS" = "Го поканивте вашиот пријател да го користи Signal!";
@@ -3207,7 +3213,7 @@
 "SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Discard Media";
 
 /* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_CAMERA" = "Врати се на камера";
+"SEND_MEDIA_RETURN_TO_CAMERA" = "Врати се на Камера";
 
 /* alert action when the user decides not to cancel the media flow after all. */
 "SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Return to Media Library";
@@ -3222,7 +3228,7 @@
 "SETTINGS_ABOUT" = "За апликацијата";
 
 /* Title for the 'add to block list' view. */
-"SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Блокирани";
+"SETTINGS_ADD_TO_BLOCK_LIST_TITLE" = "Блокирај";
 
 /* Label for the  'manual censorship circumvention' switch. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION" = "Censorship Circumvention";
@@ -3249,19 +3255,19 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "Censorship Circumvention";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_DEBUGLOG" = "Овозможете листа за отстранување грешки";
+"SETTINGS_ADVANCED_DEBUGLOG" = "Овозможете листа за отстранување на грешки";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Доставете листа за отстранување грешки";
+"SETTINGS_ADVANCED_SUBMIT_DEBUGLOG" = "Доставете листа за отстранување на грешки";
 
 /* No comment provided by engineer. */
-"SETTINGS_ADVANCED_TITLE" = "Напредни ";
+"SETTINGS_ADVANCED_TITLE" = "Напредни";
 
 /* table cell label */
 "SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Error Logs";
 
 /* The title for the theme section in the appearance settings. */
-"SETTINGS_APPEARANCE_THEME_TITLE" = "Дизајн";
+"SETTINGS_APPEARANCE_THEME_TITLE" = "Тема";
 
 /* The title for the appearance settings. */
 "SETTINGS_APPEARANCE_TITLE" = "Изглед";
@@ -3279,7 +3285,7 @@
 "SETTINGS_BACKUP_CANCEL_BACKUP" = "Откажи резервна копија";
 
 /* Label for switch in settings that controls whether or not backup is enabled. */
-"SETTINGS_BACKUP_ENABLING_SWITCH" = "Резервна копија е овозможена";
+"SETTINGS_BACKUP_ENABLING_SWITCH" = "Резервната копија е овозможена";
 
 /* Label for iCloud status row in the in the backup settings view. */
 "SETTINGS_BACKUP_ICLOUD_STATUS" = "iCloud статус";
@@ -3306,19 +3312,19 @@
 "SETTINGS_BACKUP_STATUS" = "Статус";
 
 /* Indicates that the last backup failed. */
-"SETTINGS_BACKUP_STATUS_FAILED" = "Резервната копија е неуспешна";
+"SETTINGS_BACKUP_STATUS_FAILED" = "Неуспешна резервната копија";
 
 /* Indicates that app is not backing up. */
 "SETTINGS_BACKUP_STATUS_IDLE" = "Waiting";
 
 /* Indicates that app is backing up. */
-"SETTINGS_BACKUP_STATUS_IN_PROGRESS" = "Правам резервна копија";
+"SETTINGS_BACKUP_STATUS_IN_PROGRESS" = "Правење резервна копија";
 
 /* Indicates that the last backup succeeded. */
 "SETTINGS_BACKUP_STATUS_SUCCEEDED" = "Backup Successful";
 
 /* A label for the 'add phone number' button in the block list table. */
-"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Додај блокиран корисник";
+"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Додадете блокиран корисник";
 
 /* A label that indicates the user has no Signal contacts. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Немате контакти на Signal.";
@@ -3339,10 +3345,10 @@
 "SETTINGS_CLEAR_HISTORY" = "Clear Conversation History";
 
 /* No comment provided by engineer. */
-"SETTINGS_COPYRIGHT" = "Авторски права Signal Messenger \nСо лиценца од GPLv3";
+"SETTINGS_COPYRIGHT" = "Авторски права Signal Messenger\nСо лиценца од GPLv3";
 
 /* No comment provided by engineer. */
-"SETTINGS_DELETE_ACCOUNT_BUTTON" = "Избришете профил";
+"SETTINGS_DELETE_ACCOUNT_BUTTON" = "Избриши сметка";
 
 /* Label for 'delete data' button. */
 "SETTINGS_DELETE_DATA_BUTTON" = "Delete All Data";
@@ -3375,10 +3381,10 @@
 "SETTINGS_LEGAL_TERMS_CELL" = "Terms & Privacy Policy";
 
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "Праќај приказ на линк";
+"SETTINGS_LINK_PREVIEWS" = "Испрати приказ на линк.";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Прикази се подржани за Imgur, Instagram, Pinterest, Reddit и YouTube линкови.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Приказите се подржани за Imgur, Instagram, Pinterest, Reddit и YouTube линкови.";
 
 /* Header for setting for enabling & disabling link previews. */
 "SETTINGS_LINK_PREVIEWS_HEADER" = "Приказ на линк";
@@ -3393,7 +3399,7 @@
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Содржина на известување";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Контакт се приклучи на Signal ";
+"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Контакт се приклучи на Signal";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_EVENTS_SECTION_TITLE" = "Настани";
@@ -3405,7 +3411,7 @@
 "SETTINGS_PINS_FOOTER" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall Signal.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
-"SETTINGS_PINS_ITEM" = "Сменете го вашиот PIN";
+"SETTINGS_PINS_ITEM" = "Променете го вашиот PIN";
 
 /* Label for the 'pins' item of the privacy settings when the user doesn't have a pin. */
 "SETTINGS_PINS_ITEM_CREATE" = "Create a PIN";
@@ -3420,7 +3426,7 @@
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "Show calls in the \"Recents\" list in the iOS Phone app.";
 
 /* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Покажи повици во скорешни";
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Покажи повици во Неодамнешни";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_TITLE" = "iOS интегрирање на повици";
@@ -3540,37 +3546,37 @@
 "SHARE_ACTION_MESSAGE" = "Порака";
 
 /* action sheet item */
-"SHARE_ACTION_TWEET" = "Твитер";
+"SHARE_ACTION_TWEET" = "Twitter";
 
 /* alert body when sharing file failed because of untrusted/changed identity keys */
 "SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Your safety number with %@ has recently changed. You may wish to verify it in the main app before resending.";
 
 /* Indicates that the share extension is still loading. */
-"SHARE_EXTENSION_LOADING" = "  Се вчитува...";
+"SHARE_EXTENSION_LOADING" = "Вчитување...";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
-"SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Отворија Signal апликацијата за да се регистрирате.";
+"SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Отворете ја Signal апликацијата за да се регистрирате.";
 
 /* Title indicating that the share extension cannot be used until the user has registered in the main app. */
-"SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "Не е регистриран";
+"SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "Нерегистриран";
 
 /* Message indicating that the share extension cannot be used until the main app has been launched at least once. */
 "SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Launch the Signal app to update or register.";
 
 /* Title indicating that the share extension cannot be used until the main app has been launched at least once. */
-"SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "Не е спремено";
+"SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "Неподготвено";
 
 /* Alert title */
 "SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Unable to Send Attachment";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Прикачување... ";
+"SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Прикачување...";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
 "SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "Unable to Prepare Attachment";
 
 /* Title for the 'share extension' view. */
-"SHARE_EXTENSION_VIEW_TITLE" = "Сподели на Signal";
+"SHARE_EXTENSION_VIEW_TITLE" = "Сподели со Signal";
 
 /* Action sheet item */
 "SHOW_SAFETY_NUMBER_ACTION" = "Прикажи сигурноснен број";
@@ -3582,7 +3588,7 @@
 "SMS_INVITE_BODY" = "Те поканувам да го инсталираш Signal. Еве ја адресата:";
 
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
-"SOUNDS_NONE" = "Ниедна";
+"SOUNDS_NONE" = "Ништо";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "Sticker Message";
@@ -3600,7 +3606,7 @@
 "STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE" = "Signal Artist Series";
 
 /* Title for the 'available known stickers' section of the 'manage stickers' view. */
-"STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "Стикери што сте ги примиле";
+"STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "Примени стикери";
 
 /* Label indicating that one or more known sticker packs failed to load. */
 "STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Some sticker packs failed to load";
@@ -3612,7 +3618,7 @@
 "STICKERS_MANAGE_VIEW_LOADING_KNOWN_PACKS" = "Се вчитува...";
 
 /* Label indicating that the user has no installed sticker packs. */
-"STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "Нема стикери инсталирано";
+"STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "Нема инсталирано стикери";
 
 /* Label indicating that the user has no known sticker packs. */
 "STICKERS_MANAGE_VIEW_NO_KNOWN_PACKS" = "Stickers from incoming messages will appear here";
@@ -3660,46 +3666,46 @@
 "THREAD_DETAILS_TWO_MUTUAL_GROUP" = "Член на %@ и %@";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_DAYS" = "%@денови";
+"TIME_AMOUNT_DAYS" = "%@ денови";
 
 /* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@д";
+"TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@d";
 
 /* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_HOURS" = "%@часа";
+"TIME_AMOUNT_HOURS" = "%@ часа";
 
 /* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@ч";
+"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@h";
 
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_MINUTES" = "%@минути";
+"TIME_AMOUNT_MINUTES" = "%@ минути";
 
 /* Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5m' not '5 m'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%@м";
+"TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%@m";
 
 /* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SECONDS" = "%@секунди";
+"TIME_AMOUNT_SECONDS" = "%@ секунди";
 
 /* Label text below navbar button, embeds {{number of seconds}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5s' not '5 s'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%@с";
+"TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%@s";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_DAY" = "%@ден";
+"TIME_AMOUNT_SINGLE_DAY" = "%@ ден";
 
 /* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_HOUR" = "%@час";
+"TIME_AMOUNT_SINGLE_HOUR" = "%@ час";
 
 /* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_MINUTE" = "%@";
+"TIME_AMOUNT_SINGLE_MINUTE" = "%@ минута";
 
 /* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_WEEK" = "%@недела";
+"TIME_AMOUNT_SINGLE_WEEK" = "%@ недела";
 
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_WEEKS" = "%@недели";
+"TIME_AMOUNT_WEEKS" = "%@ недели";
 
 /* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@н";
+"TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@w";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "Откажи";
@@ -3708,13 +3714,13 @@
 "TXT_DELETE_TITLE" = "Избриши";
 
 /* Pressing this button moves an archived thread from the archive back to the inbox */
-"UNARCHIVE_ACTION" = "Одархивирај";
+"UNARCHIVE_ACTION" = "Извади од архива";
 
 /* Message shown in conversation view that offers to block an unknown user. */
 "UNKNOWN_CONTACT_BLOCK_OFFER" = "Корисникот го нема во вашите контакти. Дали сакате да го блокирате корисникот?";
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
-"UNKNOWN_CONTACT_NAME" = "непознат контакт";
+"UNKNOWN_CONTACT_NAME" = "Непознат контакт";
 
 /* Label for unknown countries. */
 "UNKNOWN_COUNTRY_NAME" = "Непозната држава";
@@ -3750,7 +3756,7 @@
 "UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Disappearing message time was set to %@.";
 
 /* Indicates an unknown or unrecognizable value. */
-"UNKNOWN_VALUE" = "непознато";
+"UNKNOWN_VALUE" = "Непознато";
 
 /* button title for unlinking a device */
 "UNLINK_ACTION" = "Исклучен";
@@ -3777,13 +3783,13 @@
 "UNSUPPORTED_ATTACHMENT" = "Примен неподржан тип на прилог";
 
 /* No comment provided by engineer. */
-"UNSUPPORTED_FEATURE_ERROR" = "Вашиот уред не ја поддржува оваа функција.";
+"UNSUPPORTED_FEATURE_ERROR" = "Вашиот уред не ја поддржува оваа карактеристика.";
 
 /* Title for alert indicating that group members can't be removed. */
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "You cannot remove group members. They will either have to leave, or you can create a new group without this member.";
 
 /* Title for alert indicating that group members can't be removed. */
-"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Не е подржано";
+"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Неподдржано";
 
 /* Error indicating that a group could not be updated. */
 "UPDATE_GROUP_FAILED" = "Group could not be updated.";
@@ -3792,7 +3798,7 @@
 "UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "This action couldn’t be completed. Check your internet connection and try again.";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Направете го вашиот PIN";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Создадете го вашиот PIN";
 
 /* Body text for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall Signal.";
@@ -3801,10 +3807,10 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Introducing PINs";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal will soon require iOS 10 or later. Please upgrade in Settings app >> General >> Software Update.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal will soon require iOS 11 or later. Please upgrade in Settings app >> General >> Software Update.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_TITLE" = "Надгради го iOS";
+"UPGRADE_IOS_ALERT_TITLE" = "Надградете го iOS";
 
 /* An explanation of how usernames work on the username view. */
 "USERNAME_DESCRIPTION" = "Usernames on Signal are optional. If you choose to create a username other Signal users will be able to find you by this username and contact you without knowing your phone number.";
@@ -3882,13 +3888,13 @@
 "VIEW_ONCE_OUTGOING_TOAST" = "Outgoing view-once media files are automatically removed after they are sent.";
 
 /* Indicates how to cancel a voice message. */
-"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Slide to Cancel";
+"VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Лизгај за икслучување";
 
 /* Filename for voice messages. */
 "VOICE_MESSAGE_FILE_NAME" = "Гласовна порака";
 
 /* Message for the alert indicating the 'voice message' needs to be held to be held down to record. */
-"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "Допри и држи да снимиш гласовна порака.";
+"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "Допрете и задржете за да снимите гласовна порака.";
 
 /* Title for the alert indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "Гласовна порака";
@@ -3897,10 +3903,10 @@
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Завршете го подесувањето на Signal за Компјутери.";
 
 /* Info Message when you disabled disappearing messages. */
-"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Ги онеспособивте исчезнувачките пораки.";
+"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Ги онеспособивте исчезнувачките пораки";
 
 /* alert body shown when trying to use features in the app before completing registration-related setup. */
 "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "You must complete setup before proceeding.";
 
 /* Info Message when you disabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
-"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Го подесивте времето на исчезнувањето на пораките на %@.";
+"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Го поставивте времето на исчезнувањето на пораките на %@.";

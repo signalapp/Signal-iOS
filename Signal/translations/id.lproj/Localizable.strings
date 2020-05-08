@@ -696,7 +696,7 @@
 "CONTACT_WITHOUT_NAME" = "Kontak tak bernama";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "This conversation will be deleted from this device.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Percakapan ini akan dihapus dari perangkat ini.";
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Hapus Percakapan?";
@@ -741,19 +741,19 @@
 "CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Tambahkan ke Kontak Sistem";
 
 /* Label indicating that only administrators can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "Admins";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "Admin";
 
 /* Label indicating that all group members can update the group's attributes: name, avatar, etc. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "Semua";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Choose who can edit the group name, avatar and disappearing messages timer.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Pilih siapa yang dapat mengubah nama dan avatar grup, juga pengatur waktu pesan menghilang.";
 
 /* Footer text for the 'block and leave' section of conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER" = "Anda tidak akan lagi menerima pesan dan pembaruan dari grup ini.";
 
 /* Label for 'block group' action in conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_GROUP" = "Block Group";
+"CONVERSATION_SETTINGS_BLOCK_GROUP" = "Blokir Grup";
 
 /* table cell label in conversation settings */
 "CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "Blokir Grup Ini";
@@ -762,7 +762,7 @@
 "CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Blokir Pengguna Ini";
 
 /* Label for 'block user' action in conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_USER" = "Block User";
+"CONVERSATION_SETTINGS_BLOCK_USER" = "Blokir Pengguna";
 
 /* Navbar title when viewing settings for a 1-on-1 thread */
 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Info Kontak ";
@@ -771,16 +771,16 @@
 "CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Warna Percakapan";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Who Can Edit Group Info";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Pemilik Akses Untuk Mengubah Informasi Grup";
 
 /* Label for button that sets 'group attributes access' to 'administrators-only'. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Only Admins";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Hanya Admin";
 
 /* Description for the 'edit group attributes access' alert. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Choose who can change the group name, avatar and disappearing messages:";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Pilih siapa yang dapat mengubah nama dan avatar grup, juga pengatur waktu pesan menghilang:";
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "All Members";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "Semua Anggota";
 
 /* Label for the 'edit group' button in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_GROUP" = "Sunting";
@@ -789,16 +789,16 @@
 "CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "Info Kontak ";
 
 /* Label for 'make group admin' button in conversation settings view. */
-"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Make Admin";
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Jadikan Admin";
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
-"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ will be able to remove group members and make other admins.";
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ akan mampu mengeluarkan anggota dari grup dan membuat orang lain menjadi admin.";
 
 /* Section title of the 'members' section in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "Anggota-anggota";
 
 /* Format for the section title of the 'members' section in conversation settings view. Embeds: {{ the number of group members }}. */
-"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ Members";
+"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ Anggota";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Senyap";
@@ -834,16 +834,16 @@
 "CONVERSATION_SETTINGS_PENDING_MEMBER_INVITES_NONE" = "Kosong";
 
 /* Label for 'remove from group' button in conversation settings view. */
-"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "Remove From Group";
+"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "Keluarkan Dari Grup";
 
 /* Format for title for 'remove from group' confirmation alert. Embeds {user to remove from the group}. */
-"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "Remove %@ from the group?";
+"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "Keluarkan %@ dari grup?";
 
 /* Label for 'revoke group admin' button in conversation settings view. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Remove as Admin";
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Cabut Akses Admin";
 
 /* Format for title for 'revoke group admin' confirmation alert. Embeds {user to revoke admin status from}. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Remove %@ as group admin?";
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Cabut akses %@ sebagai admin grup?";
 
 /* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
 "CONVERSATION_SETTINGS_SEARCH" = "Cari Percakapan";
@@ -852,16 +852,22 @@
 "CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Ketuk untuk mengubah";
 
 /* Label for 'unblock group' action in conversation settings view. */
-"CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Unblock Group";
+"CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Buka Blokir Grup";
 
 /* Label for 'unblock user' action in conversation settings view. */
-"CONVERSATION_SETTINGS_UNBLOCK_USER" = "Unblock User";
+"CONVERSATION_SETTINGS_UNBLOCK_USER" = "Buka Blokir Pengguna";
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Tidak Senyap";
 
+/* The alert message if user tries to exit conversation settings view without saving changes. */
+"CONVERSATION_SETTINGS_UNSAVED_CHANGES_MESSAGE" = "Would you like to save the changes that you made to this conversation?";
+
+/* The alert title if user tries to exit conversation settings view without saving changes. */
+"CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "Perubahan Tak Tersimpan";
+
 /* Label for 'view all members' button in conversation settings view. */
-"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "View all members";
+"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "Lihat semua anggota";
 
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Pengguna ini ada di kontak Anda";
@@ -891,7 +897,7 @@
 "CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "Pengguna ini tidak ada di dalam kontak Anda.";
 
 /* button text to delete all items in the current conversation */
-"CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Delete All";
+"CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Hapus Semua";
 
 /* Indicates that the app is loading more messages in this conversation. */
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Memuat Lebih Banyak Pesan...";
@@ -975,16 +981,16 @@
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "Pengalihan ke GitHub";
 
 /* action sheet body */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Delete all messages in the conversation?";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Hapus semua pesan dalam percakapan?";
 
 /* button text */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Delete All Messages";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Hapus Semua Pesan";
 
 /* action sheet body. Embeds {{number of selected messages}} which will be deleted. */
-"DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Delete %ld Messages?";
+"DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Hapus %ld Pesan?";
 
 /* action sheet body */
-"DELETE_SELECTED_SINGLE_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Delete Message?";
+"DELETE_SELECTED_SINGLE_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Hapus Pesan?";
 
 /* Label for button that lets users re-register using the same phone number. */
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Daftarkan ulang nomor telpon ini";
@@ -1032,7 +1038,7 @@
 "EDIT_GROUP_ACTION" = "Ubah Grup";
 
 /* The 'clear avatar' button in the 'edit group' view. */
-"EDIT_GROUP_CLEAR_AVATAR" = "Remove Avatar";
+"EDIT_GROUP_CLEAR_AVATAR" = "Hapus Avatar";
 
 /* a title for the contacts section of the 'new/update group' view. */
 "EDIT_GROUP_CONTACTS_SECTION_TITLE" = "Kontak";
@@ -1041,16 +1047,16 @@
 "EDIT_GROUP_DEFAULT_TITLE" = "Ubah Grup";
 
 /* Error message indicating the a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "This user can't be added to the group until they upgrade Signal.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Pengguna ini tidak dapat ditambahkan ke dalam grup sampai dia memperbarui Signal.";
 
 /* Message for 'group full' error alert when a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "Maximum group size of 100 members reached.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "Batas maksimum 100 anggota grup sudah terpenuhi.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
-"EDIT_GROUP_ERROR_INVALID_AVATAR" = "Invalid avatar.";
+"EDIT_GROUP_ERROR_INVALID_AVATAR" = "Avatar Invalid.";
 
 /* Label for the group name in the 'edit group' view. */
-"EDIT_GROUP_GROUP_NAME" = "Group Name";
+"EDIT_GROUP_GROUP_NAME" = "Nama Grup";
 
 /* An indicator that a user is a new member of the group. */
 "EDIT_GROUP_NEW_MEMBER_LABEL" = "Ditambahkan";
@@ -1203,7 +1209,7 @@
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Nomor keamanan diubah";
 
 /* Error indicating network connectivity problems. */
-"ERROR_NETWORK_FAILURE" = "Network Error";
+"ERROR_NETWORK_FAILURE" = "Jaringan Gagal";
 
 /* Error indicating a send failure due to a delinked application. */
 "ERROR_SENDING_DELINKED" = "Perangkat anda tidak lagi terhubung. Harap hubungkan kembali untuk dapat mengirim pesan selanjutnya.";
@@ -1293,37 +1299,37 @@
 "GRDB_MIGRATION_NOTIFICATION_TITLE" = "Mengoptimalkan Database";
 
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed who can edit group info to “%@“.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "Anda memberikan akses untuk mengubah informasi grup ke \"%@\".";
 
 /* Message indicating that the access to the group's attributes was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed who can edit group info to “%2$@“.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ memberikan akses untuk dapat mengubah informasi grup ke \"%2$@\".";
 
 /* Message indicating that the access to the group's attributes was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "Group info can be changed by “%@“.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "Informasi grup dapat diubah oleh \"%@\".";
 
 /* Description of the 'admins only' access level. */
-"GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "Admins Only";
+"GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "Hanya Admin";
 
 /* Description of the 'all users' access level. */
-"GROUP_ACCESS_LEVEL_ANY" = "Any User";
+"GROUP_ACCESS_LEVEL_ANY" = "Semua Pengguna";
 
 /* Description of the 'all members' access level. */
-"GROUP_ACCESS_LEVEL_MEMBER" = "All Members";
+"GROUP_ACCESS_LEVEL_MEMBER" = "Semua Anggota";
 
 /* Description of the 'unknown' access level. */
 "GROUP_ACCESS_LEVEL_UNKNOWN" = "Tidak dikenal";
 
 /* Message indicating that the access to the group's members was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed who can edit group membership to “%@“.";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "Anda memberikan akses untuk mengubah keanggotaan grup ke \"%@\".";
 
 /* Message indicating that the access to the group's members was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed who can edit group membership to “%2$@“.";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ memberikan akses untuk mengubah informasi grup ke \"%2$@\".";
 
 /* Message indicating that the access to the group's members was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Group membership can be changed by “%@“.";
+"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Keanggotaan grup dapat diubah oleh \"%@\".";
 
 /* Error indicating that a member cannot be added to a group. */
-"GROUP_CANNOT_ADD_INVALID_MEMBER" = "This user cannot be added to the group.";
+"GROUP_CANNOT_ADD_INVALID_MEMBER" = "Pengguna ini tidak dapat ditambahkan ke dalam grup.";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "Grup telah dibuat.";
@@ -1332,70 +1338,70 @@
 "GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@mengundang Anda ke grup.";
 
 /* Message indicating that group was created by an unknown user. */
-"GROUP_CREATED_BY_UNKNOWN_USER" = "Group was created.";
+"GROUP_CREATED_BY_UNKNOWN_USER" = "Grup telah dibuat.";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
 "GROUP_CREATION_FAILED" = "Tidak semua anggota dapat ditambahkan ke dalam grup. Ketuk untuk mencoba lagi.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
-"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@ can’t be automatically added to this group by you. They’ve been invited to join, and won’t see any group messages until they accept.";
+"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@ Tidak dapat secara otomatis Anda tambahkan ke dalam grup. Mereka telah mendapatkan undangan, dan tidak dapat melihat pesan di dalam grup sampai mereka menerimanya.";
 
 /* Title for an alert indicating that a member was invited to a group. */
-"GROUP_INVITES_SENT_ALERT_TITLE_1" = "Invitation Sent";
+"GROUP_INVITES_SENT_ALERT_TITLE_1" = "Undangan Terkirim";
 
 /* Format for the title for an alert indicating that some members were invited to a group. Embeds: {{ the number of invites sent. }} */
-"GROUP_INVITES_SENT_ALERT_TITLE_N_FORMAT" = "%@ Invitations Sent";
+"GROUP_INVITES_SENT_ALERT_TITLE_N_FORMAT" = "%@ Undangan Terkirim";
 
 /* Message for an alert indicating that some members were invited to a group. */
-"GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "These users can’t be automatically added to this group by you. They’ve been invited to join, and won’t see any group messages until they accept.";
+"GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "Pengguna ini tidak dapat secara otomatis Anda tambahkan ke dalam grup. Mereka telah mendapatkan undangan, dan tidak dapat melihat pesan di dalam grup sampai mereka menerimanya.";
 
 /* Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%@ added you.";
+"GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%@ menambahkan Anda.";
 
 /* Message indicating that the local user was granted administrator role. */
-"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR" = "You are now an admin.";
+"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR" = "Anda sekarang menjadi admin.";
 
 /* Message indicating that the local user was granted administrator role by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ made you an admin.";
+"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ memberikan akses admin kepada Anda.";
 
 /* Message indicating that the local user accepted an invite to the group. */
-"GROUP_LOCAL_USER_INVITE_ACCEPTED" = "You accepted an invitation to the group.";
+"GROUP_LOCAL_USER_INVITE_ACCEPTED" = "Anda menerima undangan undangan masuk ke dalam grup.";
 
 /* Message indicating that the local user accepted an invite to the group. Embeds {{user who invited the local user}}. */
-"GROUP_LOCAL_USER_INVITE_ACCEPTED_FORMAT" = "You accepted an invitation to the group from %@.";
+"GROUP_LOCAL_USER_INVITE_ACCEPTED_FORMAT" = "Anda menerima undangan grup dari %@.";
 
 /* Message indicating that the local user declined an invite to the group. */
-"GROUP_LOCAL_USER_INVITE_DECLINED_BY_LOCAL_USER" = "You declined an invitation to the group.";
+"GROUP_LOCAL_USER_INVITE_DECLINED_BY_LOCAL_USER" = "Anda menolak undangan untuk masuk ke dalam grup.";
 
 /* Message indicating that the local user declined an invite to the group. Embeds {{user who invited the local user}}. */
-"GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT" = "You declined an invitation to the group from %@.";
+"GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT" = "Anda menolak undangan grup dari %@.";
 
 /* Message indicating that the local user's invite was revoked by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_INVITE_REVOKED_BY_REMOTE_USER_FORMAT" = "%@ revoked your invitation to the group.";
+"GROUP_LOCAL_USER_INVITE_REVOKED_BY_REMOTE_USER_FORMAT" = "%@ membatalkan undangan Anda untuk masuk ke grup.";
 
 /* Message indicating that the local user's invite was revoked by an unknown user. */
-"GROUP_LOCAL_USER_INVITE_REVOKED_BY_UNKNOWN_USER" = "Your invitation to the group was revoked.";
+"GROUP_LOCAL_USER_INVITE_REVOKED_BY_UNKNOWN_USER" = "Undangan Anda untuk masuk ke grup telah dibatalkan.";
 
 /* Message indicating that the local user was invited to the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT" = "%@ invited you.";
+"GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT" = "%@ mengundang Anda.";
 
 /* Message indicating that the local user was invited to the group. */
-"GROUP_LOCAL_USER_INVITED_TO_THE_GROUP" = "You were invited to the group.";
+"GROUP_LOCAL_USER_INVITED_TO_THE_GROUP" = "Anda diundang ke dalam grup.";
 
 /* Message indicating that the local user has joined the group. */
-"GROUP_LOCAL_USER_JOINED_THE_GROUP" = "You joined the group.";
+"GROUP_LOCAL_USER_JOINED_THE_GROUP" = "Anda bergabung ke dalam grup.";
 
 /* Message indicating that the local user was removed from the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed you.";
+"GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ mengeluarkan Anda.";
 
 /* Message indicating that the local user was removed from the group by an unknown user. */
-"GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "You were removed from the group.";
+"GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "Anda dikeluarkan dari grup.";
 
 /* Message indicating that the local user had their administrator role revoked. */
-"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "Your admin privileges were revoked.";
+"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "Akses admin Anda telah dibatalkan.";
 
 /* Message indicating that the local user had their administrator role revoked by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ revoked your admin privileges.";
+"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ membatalkan akses admin Anda.";
 
 /* Conversation settings table section title */
 "GROUP_MANAGEMENT_SECTION" = "Pengelolaan Grup.";
@@ -1407,13 +1413,13 @@
 "GROUP_MEMBER_COUNT_FORMAT" = "%1$@/%2$@";
 
 /* The 'group member count' indicator when there are no members in the group. */
-"GROUP_MEMBER_COUNT_LABEL_0" = "No members";
+"GROUP_MEMBER_COUNT_LABEL_0" = "Tidak ada anggota";
 
 /* The 'group member count' indicator when there is 1 member in the group. */
 "GROUP_MEMBER_COUNT_LABEL_1" = "1 anggota";
 
 /* Format for the 'group member count' indicator. Embeds {the number of group members}. */
-"GROUP_MEMBER_COUNT_LABEL_FORMAT" = "%@ members";
+"GROUP_MEMBER_COUNT_LABEL_FORMAT" = "%@ anggota";
 
 /* Label indicating the local user. */
 "GROUP_MEMBER_LOCAL_USER" = "Anda";
@@ -1422,7 +1428,7 @@
 "GROUP_MEMBERS_CALL" = "Panggil";
 
 /* Label indicating that a group has no other members. */
-"GROUP_MEMBERS_NO_OTHER_MEMBERS" = "No members.";
+"GROUP_MEMBERS_NO_OTHER_MEMBERS" = "Tidak ada anggota.";
 
 /* Label for the button that clears all verification errors in the 'group members' view. */
 "GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "Bersihkan Verifikasi untuk Semua";
@@ -1440,7 +1446,7 @@
 "GROUP_MEMBERS_SEND_MESSAGE" = "Pesan";
 
 /* Placeholder text for 'group name' field. */
-"GROUP_NAME_PLACEHOLDER" = "Group name (required)";
+"GROUP_NAME_PLACEHOLDER" = "Nama grup (diperlukan)";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "%@ accepted an invitation to the group.";
@@ -1584,7 +1590,7 @@
 "GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "Could not accept invite.";
 
 /* Label for 'block group' button in group invite view. */
-"GROUPS_INVITE_BLOCK_GROUP" = "Block Group";
+"GROUPS_INVITE_BLOCK_GROUP" = "Blokir Grup";
 
 /* Label for 'block group and inviter' button in group invite view. Embeds {{name of user who invited you}}. */
 "GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT" = "Block Group and %@";
@@ -3801,7 +3807,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Memperkenalkan PIN";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal akan memerlukan iOS 10 atau lebih baru. Mohon perbarui pada Pengaturan >> Umum >> Pembaruan Perangkat Lunak.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal will soon require iOS 11 or later. Please upgrade in Settings app >> General >> Software Update.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "Perbarui iOS";

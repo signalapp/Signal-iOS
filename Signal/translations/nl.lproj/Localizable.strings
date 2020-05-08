@@ -860,6 +860,12 @@
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Niet meer dempen";
 
+/* The alert message if user tries to exit conversation settings view without saving changes. */
+"CONVERSATION_SETTINGS_UNSAVED_CHANGES_MESSAGE" = "Would you like to save the changes that you made to this conversation?";
+
+/* The alert title if user tries to exit conversation settings view without saving changes. */
+"CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "Niet-opgeslagen wijzigingen";
+
 /* Label for 'view all members' button in conversation settings view. */
 "CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "Alle leden weergeven";
 
@@ -2499,13 +2505,13 @@
 "PIN_CREATION_ALPHANUMERIC_HINT" = "Je pincode moet uit ten minste 4 karakters bestaan";
 
 /* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_CHANGING_TITLE" = "Wijzig je pincode";
+"PIN_CREATION_CHANGING_TITLE" = "Je pincode wijzigen";
 
 /* Title of the 'pin creation' confirmation view. */
 "PIN_CREATION_CONFIRM_TITLE" = "Je pincode bevestigen";
 
 /* The explanation of confirmation in the 'pin creation' view. */
-"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Enter the PIN you just created.";
+"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Voer de pincode die je zojuist hebt aangemaakt opnieuw in.";
 
 /* Button asking if the user would like to create an alphanumeric PIN */
 "PIN_CREATION_CREATE_ALPHANUMERIC" = "Maak een alfanumerieke pincode aan";
@@ -2520,7 +2526,7 @@
 "PIN_CREATION_ERROR_TITLE" = "Pincode aanmaken mislukt";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "Met een pincode wordt informatie versleuteld opgeslagen op Signal's servers zodat alleen jij er toegang toe hebt. Zelfs Signal's ontwikkelaars kunnen je informatie niet inzien. Je kunt dan je profielnaam en -foto, je instellingen en je contacten herstellen wanneer je Signal opnieuw installeert.";
+"PIN_CREATION_EXPLANATION" = "Verzin een pincode die je nergens anders gebruikt. Met die pincode wordt informatie versleuteld opgeslagen op Signal's servers zodat alleen jij er toegang toe hebt. Zelfs Signal's ontwikkelaars kunnen je informatie niet inzien. Je kunt dan je profielnaam en -foto, je instellingen en je contacten herstellen wanneer je Signal opnieuw installeert.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "De pincodes komen niet overeen. Probeer het opnieuw.";
@@ -2529,7 +2535,7 @@
 "PIN_CREATION_NUMERIC_HINT" = "Je pincode moet uit ten minste 4 cijfers bestaan";
 
 /* Label indication the user must confirm their PIN. */
-"PIN_CREATION_PIN_CONFIRMATION_HINT" = "Voer pincode opnieuw in";
+"PIN_CREATION_PIN_CONFIRMATION_HINT" = "Voer je pincode opnieuw in";
 
 /* Indicates the work we are doing while creating the user's pin */
 "PIN_CREATION_PIN_PROGRESS" = "Pincode aan het aanmaken …";
@@ -2541,10 +2547,10 @@
 "PIN_CREATION_RECREATION_TITLE" = "Pincode wijzigen";
 
 /* Title of the 'pin creation' view. */
-"PIN_CREATION_TITLE" = "Maak pincode aan";
+"PIN_CREATION_TITLE" = "Pincode aanmaken";
 
 /* Label indicating that the attempted PIN is too weak */
-"PIN_CREATION_WEAK_ERROR" = "Choose a stronger PIN";
+"PIN_CREATION_WEAK_ERROR" = "Verzin een sterkere pincode";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Om je te helpen je pincode te onthouden, vragen we je periodiek om je pincode in te voeren. Na verloop van tijd zullen we je minder vaak vragen om dat te doen.";
@@ -3801,7 +3807,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "We introduceren pincodes";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Binnenkort vereist Signal dat je iOS 10 of een latere versie gebruikt. Werk je besturingssysteem bij via Instellingen >> Algemeen >> Software-update.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal will soon require iOS 11 or later. Please upgrade in Settings app >> General >> Software Update.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "Werk iOS bij";
