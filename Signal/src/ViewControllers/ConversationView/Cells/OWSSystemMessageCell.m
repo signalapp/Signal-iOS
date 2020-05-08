@@ -497,8 +497,6 @@ typedef void (^SystemMessageActionBlock)(void);
 
     __weak OWSSystemMessageCell *weakSelf = self;
     switch (message.errorType) {
-        case TSErrorMessageInvalidKeyException:
-            return nil;
         case TSErrorMessageNonBlockingIdentityChange:
             return [SystemMessageAction
                         actionWithTitle:NSLocalizedString(@"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER",
@@ -518,8 +516,8 @@ typedef void (^SystemMessageActionBlock)(void);
                                                                                    message];
                                   }
                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"verify_safety_number")];
+        case TSErrorMessageInvalidKeyException:
         case TSErrorMessageMissingKeyId:
-            return nil;
         case TSErrorMessageNoSession:
         case TSErrorMessageInvalidMessage:
             return [SystemMessageAction actionWithTitle:NSLocalizedString(@"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON", @"")
