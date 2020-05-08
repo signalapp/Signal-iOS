@@ -264,6 +264,8 @@ public final class FriendRequestProtocol : NSObject {
         }
         // The envelope source is set during UD decryption
         let hexEncodedPublicKey = envelope.source!
+        // Don't handle a friend request if we're already handling a session request from someone
+        guard !SessionManagementProtocol.inFlightSessionRequests.contains(hexEncodedPublicKey) else { return }
         // The envelope type is set during UD decryption.
         guard envelope.type == .friendRequest else {
             print("[Loki] Ignoring friend request logic for non friend request type envelope.")
