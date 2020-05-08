@@ -14,9 +14,6 @@ public final class SessionManagementProtocol : NSObject {
 
     internal static var storage: OWSPrimaryStorage { OWSPrimaryStorage.shared() }
 
-    /// The session requests that are currently being handled.
-    public static var inFlightSessionRequests: Set<String> = []
-
     // MARK: - General
     // BEHAVIOR NOTE: OWSMessageSender.throws_encryptedMessageForMessageSend:recipientId:plaintext:transaction: sets
     // isFriendRequest to true if the message in question is a friend request or a device linking request, but NOT if
@@ -195,7 +192,6 @@ public final class SessionManagementProtocol : NSObject {
     public static func handleSessionRequestMessage(_ dataMessage: SSKProtoDataMessage, wrappedIn envelope: SSKProtoEnvelope, using transaction: YapDatabaseReadWriteTransaction) {
         // The envelope source is set during UD decryption
         let hexEncodedPublicKey = envelope.source!
-        inFlightSessionRequests.insert(hexEncodedPublicKey)
         var closedGroupMembers: Set<String> = []
         TSGroupThread.enumerateCollectionObjects(with: transaction) { object, _ in
             guard let group = object as? TSGroupThread, group.groupModel.groupType == .closedGroup,
@@ -203,7 +199,6 @@ public final class SessionManagementProtocol : NSObject {
             closedGroupMembers.formUnion(group.groupModel.groupMemberIds)
         }
         LokiFileServerAPI.getDeviceLinks(associatedWith: closedGroupMembers).ensure {
-            defer { inFlightSessionRequests.remove(hexEncodedPublicKey) }
             storage.dbReadWriteConnection.readWrite { transaction in
                 let validHEPKs = closedGroupMembers.flatMap {
                     LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: $0, in: transaction)

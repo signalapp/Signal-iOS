@@ -34,32 +34,16 @@ public final class ClosedGroupsProtocol : NSObject {
 
     @objc(establishSessionsIfNeededWithClosedGroupMembers:in:)
     public static func establishSessionsIfNeeded(with closedGroupMembers: [String], in thread: TSGroupThread) {
-        func establishSessionsIfNeeded(with hexEncodedPublicKeys: Set<String>) {
-            storage.dbReadWriteConnection.readWrite { transaction in
-                hexEncodedPublicKeys.forEach { hexEncodedPublicKey in
-                    guard hexEncodedPublicKey != getUserHexEncodedPublicKey() else { return }
-                    let hasSession = storage.containsSession(hexEncodedPublicKey, deviceId: Int32(OWSDevicePrimaryDeviceId), protocolContext: transaction)
-                    guard !hasSession else { return }
-                    let thread = TSContactThread.getOrCreateThread(withContactId: hexEncodedPublicKey, transaction: transaction)
-                    let sessionRequestMessage = SessionRequestMessage(thread: thread)
-                    let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
-                    messageSenderJobQueue.add(message: sessionRequestMessage, transaction: transaction)
-                }
-            }
-        }
-        // We could just let the multi device message sending logic take care of slave devices, but that'd mean
-        // making a request to the file server for each member involved. With the line below we (hopefully) reduce
-        // that to one request.
-        LokiFileServerAPI.getDeviceLinks(associatedWith: Set(closedGroupMembers)).map {
-            Set($0.flatMap { [ $0.master.hexEncodedPublicKey, $0.slave.hexEncodedPublicKey ] }).union(closedGroupMembers)
-        }.done { hexEncodedPublicKeys in
-            DispatchQueue.main.async {
-                establishSessionsIfNeeded(with: hexEncodedPublicKeys)
-            }
-        }.catch { _ in
-            // Try the inefficient way if the file server failed
-            DispatchQueue.main.async {
-                establishSessionsIfNeeded(with: Set(closedGroupMembers))
+        storage.dbReadWriteConnection.readWrite { transaction in
+            closedGroupMembers.forEach { hexEncodedPublicKey in
+                guard hexEncodedPublicKey != getUserHexEncodedPublicKey() else { return }
+                let hasSession = storage.containsSession(hexEncodedPublicKey, deviceId: Int32(OWSDevicePrimaryDeviceId), protocolContext: transaction)
+                guard !hasSession else { return }
+                let thread = TSContactThread.getOrCreateThread(withContactId: hexEncodedPublicKey, transaction: transaction)
+                thread.save(with: transaction)
+                let sessionRequestMessage = SessionRequestMessage(thread: thread)
+                let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
+                messageSenderJobQueue.add(message: sessionRequestMessage, transaction: transaction)
             }
         }
     }
