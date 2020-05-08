@@ -4,6 +4,24 @@
 
 import Foundation
 
+// We often want to enqueue work that should only be performed
+// once a certain milestone is reached. e.g. when the app
+// "becomes ready" or when the user's account is "registered
+// and ready", etc.
+//
+// This class provides the following functionality:
+//
+// * A boolean flag whose value can be consulted from any thread.
+// * "Will become ready" and "did become ready" blocks that are
+//   performed immediately if the flag is already set or later
+//   when the flag is set.
+// * Additionally, there's support for a "polite" flavor of "did
+//   become ready" block which are performed with slight delays
+//   to avoid a stampede which could block the main thread. One
+//   of the risks there is 0x8badf00d crashes.
+// * The flag can be used in various "queue modes". "App readiness"
+//   blocks should be enqueued and performed on the main thread.
+//   Other flags will want to do their work off the main thread.
 @objc
 public class ReadyFlag: NSObject {
 
@@ -20,16 +38,18 @@ public class ReadyFlag: NSObject {
     public enum QueueMode: UInt {
         // Like the "app is ready" flag:
         //
-        // * The flag should only be accessed on the main thread.
+        // * The flag should only be set on the main thread.
         // * All blocks are performed on the main thread.
+        // * The non-polite blocks are performed sync when
+        //   the flag is set.
         case mainThreadOnly
-        // * The flag can be accessed from any thread.
+        // * The flag can be set from any thread.
         // * All blocks are performed _sync_ on the serial thread
         //   except "polite" blocks which are performed async.
         // * There is the risk of deadlock if any block
         //   accesses the flag.
         case serialQueueSync
-        // * The flag can be accessed from any thread.
+        // * The flag can be set from any thread.
         // * All blocks are performed _async_ on the serial thread.
         case serialQueueAsync
     }
@@ -66,7 +86,7 @@ public class ReadyFlag: NSObject {
 
     @objc
     public func runNowOrWhenWillBecomeReady(_ readyBlock: @escaping ReadyBlock) {
-        perform {
+        performInternal {
             if self.isSet {
                 readyBlock()
             } else {
@@ -77,7 +97,7 @@ public class ReadyFlag: NSObject {
 
     @objc
     public func runNowOrWhenDidBecomeReady(_ readyBlock: @escaping ReadyBlock) {
-        perform {
+        performInternal {
             if self.isSet {
                 readyBlock()
             } else {
@@ -88,7 +108,7 @@ public class ReadyFlag: NSObject {
 
     @objc
     public func runNowOrWhenDidBecomeReadyPolite(_ readyBlock: @escaping ReadyBlock) {
-        perform {
+        performInternal {
             if self.isSet {
                 readyBlock()
             } else {
@@ -99,7 +119,7 @@ public class ReadyFlag: NSObject {
 
     @objc
     public func setIsReady() {
-        perform {
+        performInternal {
             guard !self.isSet else {
                 assert(self.willBecomeReadyBlocks.isEmpty)
                 assert(self.didBecomeReadyBlocks.isEmpty)
@@ -131,7 +151,7 @@ public class ReadyFlag: NSObject {
         }
     }
 
-    private func perform(_ block: @escaping () -> Void) {
+    private func performInternal(_ block: @escaping () -> Void) {
         switch queueMode {
         case .mainThreadOnly:
             AssertIsOnMainThread()
