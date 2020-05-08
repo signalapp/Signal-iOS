@@ -29,6 +29,7 @@ public class LK001UpdateFriendRequestStatusStorage : OWSDatabaseMigration {
                         let friendRequestStatus = LKFriendRequestStatus(rawValue: thread.friendRequestStatus) else { continue }
                     OWSPrimaryStorage.shared().setFriendRequestStatus(friendRequestStatus, for: thread.contactIdentifier(), transaction: transaction)
                 }
+                self.save(with: transaction)
             }
             completion()
         }
