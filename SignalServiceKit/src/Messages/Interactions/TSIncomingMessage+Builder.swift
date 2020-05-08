@@ -7,7 +7,6 @@ import Foundation
 // Every time we add a new property to TSIncomingMessage, we should:
 //
 // * Add that property here.
-// * Handle that property for received sync transcripts.
 // * Handle that property in the test factories.
 @objc
 public class TSIncomingMessageBuilder: TSMessageBuilder {
