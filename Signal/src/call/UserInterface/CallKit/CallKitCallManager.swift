@@ -126,7 +126,10 @@ final class CallKitCallManager: NSObject {
     func removeCall(_ call: SignalCall) {
         Logger.verbose("call: \(call)")
         call.wasRemovedFromSystem = true
-        calls.removeFirst(where: { $0 === call })
+        guard calls.removeFirst(where: { $0 === call }) != nil else {
+            owsFailDebug("no call matching: \(call) to remove")
+            return
+        }
     }
 
     func removeAllCalls() {
@@ -138,11 +141,11 @@ final class CallKitCallManager: NSObject {
 
 fileprivate extension Array {
 
-    mutating func removeFirst(where predicate: (Element) throws -> Bool) rethrows {
+    mutating func removeFirst(where predicate: (Element) throws -> Bool) rethrows -> Element? {
         guard let index = try firstIndex(where: predicate) else {
-            return
+            return nil
         }
 
-        remove(at: index)
+        return remove(at: index)
     }
 }

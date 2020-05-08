@@ -59,9 +59,8 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         // *every* call is in a call group. Our call groups all just happen to be "groups" with 1
         // call in them.
         //
-        // maximumCallGroups is limits how many different calls CallKit can know about at one time.
-        // Exceeding this limit will cause CallKit to error when reporting an additional call when
-        // it already knows about the maximumCallGroups.
+        // maximumCallGroups limits how many different calls CallKit can know about at one time.
+        // Exceeding this limit will cause CallKit to error when reporting an additional call.
         //
         // Generally for us, the number of call groups is 1 or 0, *however* when handling a rapid
         // sequence of offers and hangups, due to the async nature of CXTransactions, there can
@@ -152,7 +151,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
             provider.reportCall(with: call.localId, endedAt: Date(), reason: CXCallEndedReason.failed)
         }
 
-        self.callManager.removeCall(call)
+        callManager.removeCall(call)
     }
 
     func reportIncomingCall(_ call: SignalCall, callerName: String) {
@@ -244,6 +243,7 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         Logger.info("")
 
         provider.reportCall(with: call.localId, endedAt: nil, reason: CXCallEndedReason.remoteEnded)
+        callManager.removeCall(call)
     }
 
     func remoteBusy(_ call: SignalCall) {
@@ -251,6 +251,23 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
         Logger.info("")
 
         provider.reportCall(with: call.localId, endedAt: nil, reason: CXCallEndedReason.unanswered)
+        callManager.removeCall(call)
+    }
+
+    func didAnswerElsewhere(call: SignalCall) {
+        AssertIsOnMainThread()
+        Logger.info("")
+
+        provider.reportCall(with: call.localId, endedAt: nil, reason: .answeredElsewhere)
+        callManager.removeCall(call)
+    }
+
+    func didDeclineElsewhere(call: SignalCall) {
+        AssertIsOnMainThread()
+        Logger.info("")
+
+        provider.reportCall(with: call.localId, endedAt: nil, reason: .declinedElsewhere)
+        callManager.removeCall(call)
     }
 
     func setIsMuted(call: SignalCall, isMuted: Bool) {

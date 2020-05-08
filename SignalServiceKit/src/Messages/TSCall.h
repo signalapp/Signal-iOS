@@ -19,6 +19,9 @@ typedef NS_ENUM(NSUInteger, RPRecentCallType) {
     RPRecentCallTypeIncomingMissedBecauseOfChangedIdentity,
     RPRecentCallTypeIncomingDeclined,
     RPRecentCallTypeOutgoingMissed,
+    RPRecentCallTypeIncomingAnsweredElsewhere,
+    RPRecentCallTypeIncomingDeclinedElsewhere,
+    RPRecentCallTypeIncomingBusyElsewhere
 };
 
 NSString *NSStringFromCallType(RPRecentCallType callType);

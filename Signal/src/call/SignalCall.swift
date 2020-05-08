@@ -17,6 +17,9 @@ public enum CallState: String {
     case localHangup // terminal
     case remoteHangup // terminal
     case remoteBusy // terminal
+    case answeredElsewhere // terminal
+    case declinedElsewhere // terminal
+    case busyElsewhere // terminal
 }
 
 public enum CallDirection {
@@ -114,7 +117,7 @@ public class SignalCall: NSObject, SignalCallNotificationInfo {
 
     public var isEnded: Bool {
         switch state {
-        case .localFailure, .localHangup, .remoteHangup, .remoteBusy:
+        case .localFailure, .localHangup, .remoteHangup, .remoteBusy, .answeredElsewhere, .declinedElsewhere, .busyElsewhere:
             return true
         case .idle, .dialing, .answering, .remoteRinging, .localRinging, .connected, .reconnecting:
             return false

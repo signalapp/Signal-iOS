@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -41,7 +41,7 @@ class DebugUICalling: DebugUIPage {
                     owsFailDebug("could not build proto")
                     return
                 }
-                let callMessage = OWSOutgoingCallMessage(thread: thread, hangupMessage: hangupMessage)
+                let callMessage = OWSOutgoingCallMessage(thread: thread, hangupMessage: hangupMessage, destinationDeviceId: nil)
 
                 strongSelf.messageSender.sendMessage(.promise, callMessage.asPreparer).done {
                     Logger.debug("Successfully sent hangup call message to \(thread.contactAddress)")
@@ -62,7 +62,7 @@ class DebugUICalling: DebugUIPage {
                     return
                 }
 
-                let callMessage = OWSOutgoingCallMessage(thread: thread, busyMessage: busyMessage)
+                let callMessage = OWSOutgoingCallMessage(thread: thread, busyMessage: busyMessage, destinationDeviceId: nil)
 
                 strongSelf.messageSender.sendMessage(.promise, callMessage.asPreparer).done {
                     Logger.debug("Successfully sent busy call message to \(thread.contactAddress)")

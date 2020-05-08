@@ -216,7 +216,8 @@ extension SignalCall: CallManagerCallReference { }
         call.callRecord = callRecord
 
         do {
-            try callManager.placeCall(call: call)
+            // TODO - once the "call as type" feature lands, set the type appropriately
+            try callManager.placeCall(call: call, callMediaType: .audioCall)
         } catch {
             self.handleFailedCall(failedCall: call, error: error)
         }
@@ -374,7 +375,7 @@ extension SignalCall: CallManagerCallReference { }
     /**
      * Received an incoming call Offer from call initiator.
      */
-    public func handleReceivedOffer(thread: TSContactThread, callId: UInt64, sessionDescription callerSessionDescription: String, sentAtTimestamp: UInt64) {
+    public func handleReceivedOffer(thread: TSContactThread, callId: UInt64, sourceDevice: UInt32, sdp: String, sentAtTimestamp: UInt64, callType: SSKProtoCallMessageOfferType, supportsMultiRing: Bool) {
         AssertIsOnMainThread()
         Logger.info("callId: \(callId), thread: \(thread.contactAddress)")
 
@@ -393,6 +394,7 @@ extension SignalCall: CallManagerCallReference { }
                 callRecord.anyInsert(transaction: transaction)
             }
 
+            newCall.state = .localFailure
             terminate(call: newCall)
 
             return
@@ -445,16 +447,23 @@ extension SignalCall: CallManagerCallReference { }
 
         newCall.backgroundTask = backgroundTask
 
-        // TODO MULTIRING - pass through source device id from envelope to support calls from non-primary device
-        let sourceDevice: UInt32 = OWSDevicePrimaryDeviceId
-
         // TODO - once clients have a reliable way of detecting envelope age, we can pass through
         // a timestamp. Until then, we assume envelopes are brand new so as to never fail calls
         // from a mis-aligned clock
         let timestamp = UInt64(Date().timeIntervalSince1970 * 1000)
 
+        let callMediaType: CallMediaType
+        switch callType {
+        case .offerAudioCall: callMediaType = .audioCall
+        case .offerVideoCall: callMediaType = .videoCall
+        // TODO - hook up to request user to share profile key logic when ready
+        case .offerNeedPermission: callMediaType = .audioCall
+        }
+
+        let isPrimaryDevice = TSAccountManager.sharedInstance().isPrimaryDevice
+
         do {
-            try callManager.receivedOffer(call: newCall, sourceDevice: sourceDevice, callId: callId, sdp: callerSessionDescription, timestamp: timestamp)
+            try callManager.receivedOffer(call: newCall, sourceDevice: sourceDevice, callId: callId, sdp: sdp, timestamp: timestamp, callMediaType: callMediaType, remoteSupportsMultiRing: supportsMultiRing, isLocalDevicePrimary: isPrimaryDevice)
         } catch {
             handleFailedCall(failedCall: newCall, error: error)
         }
@@ -463,15 +472,12 @@ extension SignalCall: CallManagerCallReference { }
     /**
      * Called by the call initiator after receiving an Answer from the callee.
      */
-    public func handleReceivedAnswer(thread: TSContactThread, callId: UInt64, sessionDescription: String) {
+    public func handleReceivedAnswer(thread: TSContactThread, callId: UInt64, sourceDevice: UInt32, sdp: String, supportsMultiRing: Bool) {
         AssertIsOnMainThread()
         Logger.info("callId: \(callId), thread: \(thread.contactAddress)")
 
-        // TODO MULTIRING - pass through source device id from envelope to support calls from non-primary device
-        let sourceDevice: UInt32 = OWSDevicePrimaryDeviceId
-
         do {
-             try callManager.receivedAnswer(sourceDevice: sourceDevice, callId: callId, sdp: sessionDescription)
+             try callManager.receivedAnswer(sourceDevice: sourceDevice, callId: callId, sdp: sdp, remoteSupportsMultiRing: supportsMultiRing)
         } catch {
             owsFailDebug("error: \(error)")
             if let currentCall = currentCall, currentCall.callId == callId {
@@ -483,16 +489,13 @@ extension SignalCall: CallManagerCallReference { }
     /**
      * Remote client (could be caller or callee) sent us a connectivity update.
      */
-    public func handleReceivedIceCandidates(thread: TSContactThread, callId: UInt64, candidates: [SSKProtoCallMessageIceUpdate]) {
+    public func handleReceivedIceCandidates(thread: TSContactThread, callId: UInt64, sourceDevice: UInt32, candidates: [SSKProtoCallMessageIceUpdate]) {
         AssertIsOnMainThread()
         Logger.info("callId: \(callId), thread: \(thread.contactAddress)")
 
-        let iceCandidates = candidates.filter {$0.id == callId}.map { candidate in
+        let iceCandidates = candidates.filter { $0.id == callId }.map { candidate in
             CallManagerIceCandidate(sdp: candidate.sdp, sdpMLineIndex: Int32(candidate.sdpMlineIndex), sdpMid: candidate.sdpMid)
         }
-
-        // TODO MULTIRING - pass through source device id from envelope to support calls from non-primary device
-        let sourceDevice: UInt32 = OWSDevicePrimaryDeviceId
 
         do {
             try callManager.receivedIceCandidates(sourceDevice: sourceDevice, callId: callId, candidates: iceCandidates)
@@ -506,15 +509,20 @@ extension SignalCall: CallManagerCallReference { }
     /**
      * The remote client (caller or callee) ended the call.
      */
-    public func handleReceivedHangup(thread: TSContactThread, callId: UInt64) {
+    public func handleReceivedHangup(thread: TSContactThread, callId: UInt64, sourceDevice: UInt32, type: SSKProtoCallMessageHangupType, deviceId: UInt32) {
         AssertIsOnMainThread()
         Logger.info("callId: \(callId), thread: \(thread.contactAddress)")
 
-        // TODO MULTIRING - pass through source device id from envelope to support calls from non-primary device
-        let sourceDevice: UInt32 = OWSDevicePrimaryDeviceId
+        let hangupType: HangupType
+        switch type {
+        case .hangupNormal: hangupType = .normal
+        case .hangupAccepted: hangupType = .accepted
+        case .hangupDeclined: hangupType = .declined
+        case .hangupBusy: hangupType = .busy
+        }
 
         do {
-            try callManager.receivedHangup(sourceDevice: sourceDevice, callId: callId)
+            try callManager.receivedHangup(sourceDevice: sourceDevice, callId: callId, hangupType: hangupType, deviceId: deviceId)
         } catch {
             owsFailDebug("\(error)")
             if let currentCall = currentCall, currentCall.callId == callId {
@@ -526,12 +534,9 @@ extension SignalCall: CallManagerCallReference { }
     /**
      * The callee was already in another call.
      */
-    public func handleReceivedBusy(thread: TSContactThread, callId: UInt64) {
+    public func handleReceivedBusy(thread: TSContactThread, callId: UInt64, sourceDevice: UInt32) {
         AssertIsOnMainThread()
         Logger.info("callId: \(callId), thread: \(thread.contactAddress)")
-
-        // TODO MULTIRING - pass through source device id from envelope to support calls from non-primary device
-        let sourceDevice: UInt32 = OWSDevicePrimaryDeviceId
 
         do {
             try callManager.receivedBusy(sourceDevice: sourceDevice, callId: callId)
@@ -588,8 +593,11 @@ extension SignalCall: CallManagerCallReference { }
 
             let useTurnOnly = isUnknownCaller || Environment.shared.preferences.doCallsHideIPAddress()
 
+            // Get the current local device Id, must be valid for lifetime of the call.
+            let localDeviceId = TSAccountManager.sharedInstance().storedDeviceId()
+
             // Tell the Call Manager to proceed with its active call.
-            try self.callManager.proceed(callId: callId, iceServers: iceServers, hideIp: useTurnOnly, deviceList: deviceList)
+            try self.callManager.proceed(callId: callId, iceServers: iceServers, hideIp: useTurnOnly, localDevice: localDeviceId, remoteDeviceList: deviceList, enableForking: true)
         }.catch { error in
             owsFailDebug("\(error)")
             guard call === self.currentCall else {
@@ -649,7 +657,7 @@ extension SignalCall: CallManagerCallReference { }
             switch call.state {
             case .idle, .dialing, .answering, .localRinging, .localFailure, .remoteBusy, .remoteRinging:
                 handleMissedCall(call)
-            case .connected, .reconnecting, .localHangup, .remoteHangup:
+            case .connected, .reconnecting, .localHangup, .remoteHangup, .answeredElsewhere, .declinedElsewhere, .busyElsewhere:
                 Logger.info("call is finished")
             }
 
@@ -659,6 +667,69 @@ extension SignalCall: CallManagerCallReference { }
             callUIAdapter.remoteDidHangupCall(call)
 
             terminate(call: call)
+
+        case .endedRemoteHangupAccepted:
+            Logger.debug("endedRemoteHangupAccepted")
+
+            guard call === self.currentCall else {
+                cleanupStaleCall(call)
+                return
+            }
+
+            switch call.state {
+            case .idle, .dialing, .remoteBusy, .remoteRinging, .answeredElsewhere, .declinedElsewhere, .busyElsewhere, .remoteHangup:
+                handleFailedCall(failedCall: call, error: OWSAssertionError("unexpected state for endedRemoteHangupAccepted: \(call.state)"))
+                return
+            case .answering, .connected:
+                Logger.info("tried answering locally, but answered somewhere else first. state: \(call.state)")
+                handleAnsweredElsewhere(call: call)
+            case .localRinging, .reconnecting:
+                handleAnsweredElsewhere(call: call)
+            case  .localFailure, .localHangup:
+                Logger.info("ignoring 'endedRemoteHangupAccepted' since call is already finished")
+            }
+
+        case .endedRemoteHangupDeclined:
+            Logger.debug("endedRemoteHangupDeclined")
+
+            guard call === self.currentCall else {
+                cleanupStaleCall(call)
+                return
+            }
+
+            switch call.state {
+            case .idle, .dialing, .remoteBusy, .remoteRinging, .answeredElsewhere, .declinedElsewhere, .busyElsewhere, .remoteHangup:
+                handleFailedCall(failedCall: call, error: OWSAssertionError("unexpected state for endedRemoteHangupDeclined: \(call.state)"))
+                return
+            case .answering, .connected:
+                Logger.info("tried answering locally, but declined somewhere else first. state: \(call.state)")
+                handleDeclinedElsewhere(call: call)
+            case .localRinging, .reconnecting:
+                handleDeclinedElsewhere(call: call)
+            case  .localFailure, .localHangup:
+                Logger.info("ignoring 'endedRemoteHangupDeclined' since call is already finished")
+            }
+
+        case .endedRemoteHangupBusy:
+            Logger.debug("endedRemoteHangupBusy")
+
+            guard call === self.currentCall else {
+                cleanupStaleCall(call)
+                return
+            }
+
+            switch call.state {
+            case .idle, .dialing, .remoteBusy, .remoteRinging, .answeredElsewhere, .declinedElsewhere, .busyElsewhere, .remoteHangup:
+                handleFailedCall(failedCall: call, error: OWSAssertionError("unexpected state for endedRemoteHangupBusy: \(call.state)"))
+                return
+            case .answering, .connected:
+                Logger.info("tried answering locally, but already in a call somewhere else first. state: \(call.state)")
+                handleBusyElsewhere(call: call)
+            case .localRinging, .reconnecting:
+                handleBusyElsewhere(call: call)
+            case  .localFailure, .localHangup:
+                Logger.info("ignoring 'endedRemoteHangupBusy' since call is already finished")
+            }
 
         case .endedRemoteBusy:
             Logger.debug("endedRemoteBusy")
@@ -690,8 +761,8 @@ extension SignalCall: CallManagerCallReference { }
 
             if let callRecord = call.callRecord {
                 switch callRecord.callType {
-                case .outgoingMissed, .incomingDeclined, .incomingMissed, .incomingMissedBecauseOfChangedIdentity:
-                    // already handled as missed, don't update the call record.
+                case .outgoingMissed, .incomingDeclined, .incomingMissed, .incomingMissedBecauseOfChangedIdentity, .incomingAnsweredElsewhere, .incomingDeclinedElsewhere, .incomingBusyElsewhere:
+                    // already handled and ended, don't update the call record.
                     break
                 case .incomingIncomplete, .incoming:
                     callRecord.updateCallType(.incomingMissed)
@@ -779,9 +850,9 @@ extension SignalCall: CallManagerCallReference { }
             self.handleReconnected(call: call)
 
         case .endedReceivedOfferExpired:
-            Logger.debug("offerExpired")
+            Logger.debug("endedReceivedOfferExpired")
 
-            // TODO: This is the case where an incoming offer's timestamp is
+            // TODO - This is the case where an incoming offer's timestamp is
             // not within the range +/- 120 seconds of the current system time.
             // At the moment, this is not an issue since we are currently setting
             // the timestamp separately when we receive the offer (above).
@@ -790,7 +861,14 @@ extension SignalCall: CallManagerCallReference { }
             terminate(call: call)
 
         case .endedReceivedOfferWhileActive:
-            Logger.debug("offerWhileBusy")
+            Logger.debug("endedReceivedOfferWhileActive")
+
+            handleMissedCall(call)
+            call.state = .localFailure
+            terminate(call: call)
+
+        case .endedIgnoreCallsFromNonMultiringCallers:
+            Logger.debug("endedIgnoreCallsFromNonMultiringCallers")
 
             handleMissedCall(call)
             call.state = .localFailure
@@ -832,17 +910,20 @@ extension SignalCall: CallManagerCallReference { }
 
     // MARK: - Call Manager Signaling
 
-    public func callManager(_ callManager: CallManager<SignalCall, CallService>, shouldSendOffer callId: UInt64, call: SignalCall, destDevice: UInt32?, sdp: String) {
+    public func callManager(_ callManager: CallManager<SignalCall, CallService>, shouldSendOffer callId: UInt64, call: SignalCall, destinationDeviceId: UInt32?, sdp: String, callMediaType: CallMediaType) {
         AssertIsOnMainThread()
         Logger.info("shouldSendOffer")
 
         firstly { () throws -> Promise<Void> in
-            let offerBuilder = SSKProtoCallMessageOffer.builder(id: callId, sessionDescription: sdp)
-            let callMessage = OWSOutgoingCallMessage(thread: call.thread, offerMessage: try offerBuilder.build())
-
+            let offerBuilder = SSKProtoCallMessageOffer.builder(id: callId, sdp: sdp)
+            switch callMediaType {
+            case .audioCall: offerBuilder.setType(.offerAudioCall)
+            case .videoCall: offerBuilder.setType(.offerVideoCall)
+            }
+            let callMessage = OWSOutgoingCallMessage(thread: call.thread, offerMessage: try offerBuilder.build(), destinationDeviceId: NSNumber(value: destinationDeviceId))
             return messageSender.sendMessage(.promise, callMessage.asPreparer)
         }.done {
-            Logger.info("sent offer message to \(call.thread.contactAddress) device: \((destDevice != nil) ? String(destDevice!) : "nil")")
+            Logger.info("sent offer message to \(call.thread.contactAddress) device: \((destinationDeviceId != nil) ? String(destinationDeviceId!) : "nil")")
             try self.callManager.signalingMessageDidSend(callId: callId)
         }.catch { error in
             Logger.error("failed to send offer message to \(call.thread.contactAddress) with error: \(error)")
@@ -850,16 +931,16 @@ extension SignalCall: CallManagerCallReference { }
         }.retainUntilComplete()
     }
 
-    public func callManager(_ callManager: CallManager<SignalCall, CallService>, shouldSendAnswer callId: UInt64, call: SignalCall, destDevice: UInt32?, sdp: String) {
+    public func callManager(_ callManager: CallManager<SignalCall, CallService>, shouldSendAnswer callId: UInt64, call: SignalCall, destinationDeviceId: UInt32?, sdp: String) {
         AssertIsOnMainThread()
         Logger.info("shouldSendAnswer")
 
         firstly { () throws -> Promise<Void> in
-            let answerBuilder = SSKProtoCallMessageAnswer.builder(id: callId, sessionDescription: sdp)
-            let callMessage = OWSOutgoingCallMessage(thread: call.thread, answerMessage: try answerBuilder.build())
+            let answerBuilder = SSKProtoCallMessageAnswer.builder(id: callId, sdp: sdp)
+            let callMessage = OWSOutgoingCallMessage(thread: call.thread, answerMessage: try answerBuilder.build(), destinationDeviceId: NSNumber(value: destinationDeviceId))
             return messageSender.sendMessage(.promise, callMessage.asPreparer)
         }.done {
-            Logger.debug("sent answer message to \(call.thread.contactAddress) device: \((destDevice != nil) ? String(destDevice!) : "nil")")
+            Logger.debug("sent answer message to \(call.thread.contactAddress) device: \((destinationDeviceId != nil) ? String(destinationDeviceId!) : "nil")")
             try self.callManager.signalingMessageDidSend(callId: callId)
         }.catch { error in
             Logger.error("failed to send answer message to \(call.thread.contactAddress) with error: \(error)")
@@ -867,7 +948,7 @@ extension SignalCall: CallManagerCallReference { }
         }.retainUntilComplete()
     }
 
-    public func callManager(_ callManager: CallManager<SignalCall, CallService>, shouldSendIceCandidates callId: UInt64, call: SignalCall, destDevice: UInt32?, candidates: [CallManagerIceCandidate]) {
+    public func callManager(_ callManager: CallManager<SignalCall, CallService>, shouldSendIceCandidates callId: UInt64, call: SignalCall, destinationDeviceId: UInt32?, candidates: [CallManagerIceCandidate]) {
         AssertIsOnMainThread()
         Logger.info("shouldSendIceCandidates")
 
@@ -881,7 +962,6 @@ extension SignalCall: CallManagerCallReference { }
                                                                             sdpMlineIndex: UInt32(iceCandidate.sdpMLineIndex),
                                                                             sdp: iceCandidate.sdp)
                 iceUpdateProto = try iceUpdateBuilder.build()
-
                 iceUpdateProtos.append(iceUpdateProto)
             }
 
@@ -889,10 +969,10 @@ extension SignalCall: CallManagerCallReference { }
                 throw OWSAssertionError("no ice updates to send")
             }
 
-            let callMessage = OWSOutgoingCallMessage(thread: call.thread, iceUpdateMessages: iceUpdateProtos)
+            let callMessage = OWSOutgoingCallMessage(thread: call.thread, iceUpdateMessages: iceUpdateProtos, destinationDeviceId: NSNumber(value: destinationDeviceId))
             return messageSender.sendMessage(.promise, callMessage.asPreparer)
         }.done {
-            Logger.debug("sent ice update message to \(call.thread.contactAddress) device: \((destDevice != nil) ? String(destDevice!) : "nil")")
+            Logger.debug("sent ice update message to \(call.thread.contactAddress) device: \((destinationDeviceId != nil) ? String(destinationDeviceId!) : "nil")")
             try self.callManager.signalingMessageDidSend(callId: callId)
         }.catch { error in
             Logger.error("failed to send ice update message to \(call.thread.contactAddress) with error: \(error)")
@@ -900,16 +980,35 @@ extension SignalCall: CallManagerCallReference { }
         }.retainUntilComplete()
     }
 
-    public func callManager(_ callManager: CallManager<SignalCall, CallService>, shouldSendHangup callId: UInt64, call: SignalCall, destDevice: UInt32?) {
+    public func callManager(_ callManager: CallManager<SignalCall, CallService>, shouldSendHangup callId: UInt64, call: SignalCall, destinationDeviceId: UInt32?, hangupType: HangupType, deviceId: UInt32, useLegacyHangupMessage: Bool) {
         AssertIsOnMainThread()
         Logger.info("shouldSendHangup")
 
         firstly { () throws -> Promise<Void> in
             let hangupBuilder = SSKProtoCallMessageHangup.builder(id: callId)
-            let callMessage = OWSOutgoingCallMessage(thread: call.thread, hangupMessage: try hangupBuilder.build())
+
+            switch hangupType {
+            case .normal: hangupBuilder.setType(.hangupNormal)
+            case .accepted: hangupBuilder.setType(.hangupAccepted)
+            case .declined: hangupBuilder.setType(.hangupDeclined)
+            case .busy: hangupBuilder.setType(.hangupBusy)
+            }
+
+            if hangupType != .normal {
+                // deviceId is optional and only used when indicated by a hangup due to
+                // a call being accepted elsewhere.
+                hangupBuilder.setDeviceID(deviceId)
+            }
+
+            let callMessage: OWSOutgoingCallMessage
+            if useLegacyHangupMessage {
+                callMessage = OWSOutgoingCallMessage(thread: call.thread, legacyHangupMessage: try hangupBuilder.build(), destinationDeviceId: NSNumber(value: destinationDeviceId))
+            } else {
+                callMessage = OWSOutgoingCallMessage(thread: call.thread, hangupMessage: try hangupBuilder.build(), destinationDeviceId: NSNumber(value: destinationDeviceId))
+            }
             return messageSender.sendMessage(.promise, callMessage.asPreparer)
         }.done {
-            Logger.debug("sent hangup message to \(call.thread.contactAddress) device: \((destDevice != nil) ? String(destDevice!) : "nil")")
+            Logger.debug("sent hangup message to \(call.thread.contactAddress) device: \((destinationDeviceId != nil) ? String(destinationDeviceId!) : "nil")")
             try self.callManager.signalingMessageDidSend(callId: callId)
         }.catch { error in
             Logger.error("failed to send hangup message to \(call.thread.contactAddress) with error: \(error)")
@@ -917,16 +1016,16 @@ extension SignalCall: CallManagerCallReference { }
         }.retainUntilComplete()
     }
 
-    public func callManager(_ callManager: CallManager<SignalCall, CallService>, shouldSendBusy callId: UInt64, call: SignalCall, destDevice: UInt32?) {
+    public func callManager(_ callManager: CallManager<SignalCall, CallService>, shouldSendBusy callId: UInt64, call: SignalCall, destinationDeviceId: UInt32?) {
         AssertIsOnMainThread()
         Logger.info("shouldSendBusy")
 
         firstly { () throws -> Promise<Void> in
             let busyBuilder = SSKProtoCallMessageBusy.builder(id: callId)
-            let callMessage = OWSOutgoingCallMessage(thread: call.thread, busyMessage: try busyBuilder.build())
+            let callMessage = OWSOutgoingCallMessage(thread: call.thread, busyMessage: try busyBuilder.build(), destinationDeviceId: NSNumber(value: destinationDeviceId))
             return messageSender.sendMessage(.promise, callMessage.asPreparer)
         }.done {
-            Logger.debug("sent busy message to \(call.thread.contactAddress) device: \((destDevice != nil) ? String(destDevice!) : "nil")")
+            Logger.debug("sent busy message to \(call.thread.contactAddress) device: \((destinationDeviceId != nil) ? String(destinationDeviceId!) : "nil")")
             try self.callManager.signalingMessageDidSend(callId: callId)
         }.catch { error in
             Logger.error("failed to send busy message to \(call.thread.contactAddress) with error: \(error)")
@@ -962,7 +1061,7 @@ extension SignalCall: CallManagerCallReference { }
             callUIAdapter.reportMissedCall(call)
         case .outgoingIncomplete:
             callRecord.updateCallType(.outgoingMissed)
-        case .incomingMissedBecauseOfChangedIdentity, .incomingDeclined, .outgoingMissed, .outgoing:
+        case .incomingMissedBecauseOfChangedIdentity, .incomingDeclined, .outgoingMissed, .outgoing, .incomingAnsweredElsewhere, .incomingDeclinedElsewhere, .incomingBusyElsewhere:
             owsFailDebug("unexpected RPRecentCallType: \(callRecord.callType)")
             databaseStorage.write { transaction in
                 callRecord.anyUpsert(transaction: transaction)
@@ -973,6 +1072,66 @@ extension SignalCall: CallManagerCallReference { }
             }
             owsFailDebug("unknown RPRecentCallType: \(callRecord.callType)")
         }
+    }
+
+    func handleAnsweredElsewhere(call: SignalCall) {
+        if let existingCallRecord = call.callRecord {
+            // There should only be an existing call record due to a race where the call is answered
+            // simultaneously on multiple devices, and the caller is proceeding with the *other*
+            // devices call.
+            existingCallRecord.updateCallType(.incomingAnsweredElsewhere)
+        } else {
+            let callRecord = TSCall(callType: .incomingAnsweredElsewhere, in: call.thread, sentAtTimestamp: call.sentAtTimestamp)
+            call.callRecord = callRecord
+            databaseStorage.write { callRecord.anyInsert(transaction: $0) }
+        }
+
+        call.state = .answeredElsewhere
+
+        // Notify UI
+        callUIAdapter.didAnswerElsewhere(call: call)
+
+        terminate(call: call)
+    }
+
+    func handleDeclinedElsewhere(call: SignalCall) {
+        if let existingCallRecord = call.callRecord {
+            // There should only be an existing call record due to a race where the call is answered
+            // simultaneously on multiple devices, and the caller is proceeding with the *other*
+            // devices call.
+            existingCallRecord.updateCallType(.incomingDeclinedElsewhere)
+        } else {
+            let callRecord = TSCall(callType: .incomingDeclinedElsewhere, in: call.thread, sentAtTimestamp: call.sentAtTimestamp)
+            call.callRecord = callRecord
+            databaseStorage.write { callRecord.anyInsert(transaction: $0) }
+        }
+
+        call.state = .declinedElsewhere
+
+        // Notify UI
+        callUIAdapter.didDeclineElsewhere(call: call)
+
+        terminate(call: call)
+    }
+
+    func handleBusyElsewhere(call: SignalCall) {
+        if let existingCallRecord = call.callRecord {
+            // There should only be an existing call record due to a race where the call is answered
+            // simultaneously on multiple devices, and the caller is proceeding with the *other*
+            // devices call.
+            existingCallRecord.updateCallType(.incomingBusyElsewhere)
+        } else {
+            let callRecord = TSCall(callType: .incomingBusyElsewhere, in: call.thread, sentAtTimestamp: call.sentAtTimestamp)
+            call.callRecord = callRecord
+            databaseStorage.write { callRecord.anyInsert(transaction: $0) }
+        }
+
+        call.state = .busyElsewhere
+
+        // Notify UI
+        callUIAdapter.reportMissedCall(call)
+
+        terminate(call: call)
     }
 
     /**
@@ -1004,7 +1163,7 @@ extension SignalCall: CallManagerCallReference { }
             self.callUIAdapter.reportIncomingCall(call, thread: call.thread)
         case .remoteRinging:
             Logger.info("call already ringing. Ignoring \(#function): \(call).")
-        case .idle, .localRinging, .connected, .reconnecting, .localFailure, .localHangup, .remoteHangup, .remoteBusy:
+        case .idle, .localRinging, .connected, .reconnecting, .localFailure, .localHangup, .remoteHangup, .remoteBusy, .answeredElsewhere, .declinedElsewhere, .busyElsewhere:
             owsFailDebug("unexpected call state: \(call.state): \(call).")
         }
     }
@@ -1153,10 +1312,6 @@ extension SignalCall: CallManagerCallReference { }
     }
 
     private func getDeviceIds(call: SignalCall) throws -> [UInt32] {
-        guard FeatureFlags.multiRing else {
-            return [1]
-        }
-
         return try databaseStorage.read { transaction -> [UInt32] in
             guard let recipient = AnySignalRecipientFinder().signalRecipient(for: call.thread.contactAddress, transaction: transaction) else {
                 throw OWSAssertionError("no recipient for contact")
@@ -1245,7 +1400,6 @@ extension SignalCall: CallManagerCallReference { }
 
         // If call is for the current call, clear it out first.
         if self.currentCall === call {
-            // @integration Why are we updating videoTracks here?
             fireDidUpdateVideoTracks()
             self.currentCall = nil
         }
@@ -1459,5 +1613,12 @@ extension RPRecentCallType: CustomStringConvertible {
             owsFailDebug("unexpected RPRecentCallType: \(self)")
             return "RPRecentCallTypeUnknown"
         }
+    }
+}
+
+extension NSNumber {
+    convenience init?(value: UInt32?) {
+        guard let value = value else { return nil }
+        self.init(value: value)
     }
 }

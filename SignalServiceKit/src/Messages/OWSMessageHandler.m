@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSMessageHandler.h"
@@ -99,6 +99,9 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
     } else if (callMessage.answer) {
         messageType = @"Answer";
         callId = callMessage.answer.id;
+    } else if (callMessage.legacyHangup) {
+        messageType = @"legacyHangup";
+        callId = callMessage.legacyHangup.id;
     } else if (callMessage.hangup) {
         messageType = @"Hangup";
         callId = callMessage.hangup.id;

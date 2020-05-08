@@ -847,6 +847,31 @@ extension SSKProtoContent.SSKProtoContentBuilder {
 
 #endif
 
+// MARK: - SSKProtoCallMessageOfferType
+
+@objc
+public enum SSKProtoCallMessageOfferType: Int32 {
+    case offerAudioCall = 0
+    case offerVideoCall = 1
+    case offerNeedPermission = 2
+}
+
+private func SSKProtoCallMessageOfferTypeWrap(_ value: SignalServiceProtos_CallMessage.Offer.TypeEnum) -> SSKProtoCallMessageOfferType {
+    switch value {
+    case .offerAudioCall: return .offerAudioCall
+    case .offerVideoCall: return .offerVideoCall
+    case .offerNeedPermission: return .offerNeedPermission
+    }
+}
+
+private func SSKProtoCallMessageOfferTypeUnwrap(_ value: SSKProtoCallMessageOfferType) -> SignalServiceProtos_CallMessage.Offer.TypeEnum {
+    switch value {
+    case .offerAudioCall: return .offerAudioCall
+    case .offerVideoCall: return .offerVideoCall
+    case .offerNeedPermission: return .offerNeedPermission
+    }
+}
+
 // MARK: - SSKProtoCallMessageOffer
 
 @objc
@@ -855,14 +880,17 @@ public class SSKProtoCallMessageOffer: NSObject {
     // MARK: - SSKProtoCallMessageOfferBuilder
 
     @objc
-    public class func builder(id: UInt64, sessionDescription: String) -> SSKProtoCallMessageOfferBuilder {
-        return SSKProtoCallMessageOfferBuilder(id: id, sessionDescription: sessionDescription)
+    public class func builder(id: UInt64, sdp: String) -> SSKProtoCallMessageOfferBuilder {
+        return SSKProtoCallMessageOfferBuilder(id: id, sdp: sdp)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc
     public func asBuilder() -> SSKProtoCallMessageOfferBuilder {
-        let builder = SSKProtoCallMessageOfferBuilder(id: id, sessionDescription: sessionDescription)
+        let builder = SSKProtoCallMessageOfferBuilder(id: id, sdp: sdp)
+        if let _value = type {
+            builder.setType(_value)
+        }
         return builder
     }
 
@@ -875,11 +903,11 @@ public class SSKProtoCallMessageOffer: NSObject {
         fileprivate override init() {}
 
         @objc
-        fileprivate init(id: UInt64, sessionDescription: String) {
+        fileprivate init(id: UInt64, sdp: String) {
             super.init()
 
             setId(id)
-            setSessionDescription(sessionDescription)
+            setSdp(sdp)
         }
 
         @objc
@@ -889,13 +917,18 @@ public class SSKProtoCallMessageOffer: NSObject {
 
         @objc
         @available(swift, obsoleted: 1.0)
-        public func setSessionDescription(_ valueParam: String?) {
+        public func setSdp(_ valueParam: String?) {
             guard let valueParam = valueParam else { return }
-            proto.sessionDescription = valueParam
+            proto.sdp = valueParam
         }
 
-        public func setSessionDescription(_ valueParam: String) {
-            proto.sessionDescription = valueParam
+        public func setSdp(_ valueParam: String) {
+            proto.sdp = valueParam
+        }
+
+        @objc
+        public func setType(_ valueParam: SSKProtoCallMessageOfferType) {
+            proto.type = SSKProtoCallMessageOfferTypeUnwrap(valueParam)
         }
 
         @objc
@@ -915,14 +948,34 @@ public class SSKProtoCallMessageOffer: NSObject {
     public let id: UInt64
 
     @objc
-    public let sessionDescription: String
+    public let sdp: String
+
+    public var type: SSKProtoCallMessageOfferType? {
+        guard hasType else {
+            return nil
+        }
+        return SSKProtoCallMessageOfferTypeWrap(proto.type)
+    }
+    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
+    @objc
+    public var unwrappedType: SSKProtoCallMessageOfferType {
+        if !hasType {
+            // TODO: We could make this a crashing assert.
+            owsFailDebug("Unsafe unwrap of missing optional: Offer.type.")
+        }
+        return SSKProtoCallMessageOfferTypeWrap(proto.type)
+    }
+    @objc
+    public var hasType: Bool {
+        return proto.hasType
+    }
 
     private init(proto: SignalServiceProtos_CallMessage.Offer,
                  id: UInt64,
-                 sessionDescription: String) {
+                 sdp: String) {
         self.proto = proto
         self.id = id
-        self.sessionDescription = sessionDescription
+        self.sdp = sdp
     }
 
     @objc
@@ -942,10 +995,10 @@ public class SSKProtoCallMessageOffer: NSObject {
         }
         let id = proto.id
 
-        guard proto.hasSessionDescription else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: sessionDescription")
+        guard proto.hasSdp else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: sdp")
         }
-        let sessionDescription = proto.sessionDescription
+        let sdp = proto.sdp
 
         // MARK: - Begin Validation Logic for SSKProtoCallMessageOffer -
 
@@ -953,7 +1006,7 @@ public class SSKProtoCallMessageOffer: NSObject {
 
         let result = SSKProtoCallMessageOffer(proto: proto,
                                               id: id,
-                                              sessionDescription: sessionDescription)
+                                              sdp: sdp)
         return result
     }
 
@@ -989,14 +1042,14 @@ public class SSKProtoCallMessageAnswer: NSObject {
     // MARK: - SSKProtoCallMessageAnswerBuilder
 
     @objc
-    public class func builder(id: UInt64, sessionDescription: String) -> SSKProtoCallMessageAnswerBuilder {
-        return SSKProtoCallMessageAnswerBuilder(id: id, sessionDescription: sessionDescription)
+    public class func builder(id: UInt64, sdp: String) -> SSKProtoCallMessageAnswerBuilder {
+        return SSKProtoCallMessageAnswerBuilder(id: id, sdp: sdp)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc
     public func asBuilder() -> SSKProtoCallMessageAnswerBuilder {
-        let builder = SSKProtoCallMessageAnswerBuilder(id: id, sessionDescription: sessionDescription)
+        let builder = SSKProtoCallMessageAnswerBuilder(id: id, sdp: sdp)
         return builder
     }
 
@@ -1009,11 +1062,11 @@ public class SSKProtoCallMessageAnswer: NSObject {
         fileprivate override init() {}
 
         @objc
-        fileprivate init(id: UInt64, sessionDescription: String) {
+        fileprivate init(id: UInt64, sdp: String) {
             super.init()
 
             setId(id)
-            setSessionDescription(sessionDescription)
+            setSdp(sdp)
         }
 
         @objc
@@ -1023,13 +1076,13 @@ public class SSKProtoCallMessageAnswer: NSObject {
 
         @objc
         @available(swift, obsoleted: 1.0)
-        public func setSessionDescription(_ valueParam: String?) {
+        public func setSdp(_ valueParam: String?) {
             guard let valueParam = valueParam else { return }
-            proto.sessionDescription = valueParam
+            proto.sdp = valueParam
         }
 
-        public func setSessionDescription(_ valueParam: String) {
-            proto.sessionDescription = valueParam
+        public func setSdp(_ valueParam: String) {
+            proto.sdp = valueParam
         }
 
         @objc
@@ -1049,14 +1102,14 @@ public class SSKProtoCallMessageAnswer: NSObject {
     public let id: UInt64
 
     @objc
-    public let sessionDescription: String
+    public let sdp: String
 
     private init(proto: SignalServiceProtos_CallMessage.Answer,
                  id: UInt64,
-                 sessionDescription: String) {
+                 sdp: String) {
         self.proto = proto
         self.id = id
-        self.sessionDescription = sessionDescription
+        self.sdp = sdp
     }
 
     @objc
@@ -1076,10 +1129,10 @@ public class SSKProtoCallMessageAnswer: NSObject {
         }
         let id = proto.id
 
-        guard proto.hasSessionDescription else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: sessionDescription")
+        guard proto.hasSdp else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: sdp")
         }
-        let sessionDescription = proto.sessionDescription
+        let sdp = proto.sdp
 
         // MARK: - Begin Validation Logic for SSKProtoCallMessageAnswer -
 
@@ -1087,7 +1140,7 @@ public class SSKProtoCallMessageAnswer: NSObject {
 
         let result = SSKProtoCallMessageAnswer(proto: proto,
                                                id: id,
-                                               sessionDescription: sessionDescription)
+                                               sdp: sdp)
         return result
     }
 
@@ -1400,6 +1453,34 @@ extension SSKProtoCallMessageBusy.SSKProtoCallMessageBusyBuilder {
 
 #endif
 
+// MARK: - SSKProtoCallMessageHangupType
+
+@objc
+public enum SSKProtoCallMessageHangupType: Int32 {
+    case hangupNormal = 0
+    case hangupAccepted = 1
+    case hangupDeclined = 2
+    case hangupBusy = 3
+}
+
+private func SSKProtoCallMessageHangupTypeWrap(_ value: SignalServiceProtos_CallMessage.Hangup.TypeEnum) -> SSKProtoCallMessageHangupType {
+    switch value {
+    case .hangupNormal: return .hangupNormal
+    case .hangupAccepted: return .hangupAccepted
+    case .hangupDeclined: return .hangupDeclined
+    case .hangupBusy: return .hangupBusy
+    }
+}
+
+private func SSKProtoCallMessageHangupTypeUnwrap(_ value: SSKProtoCallMessageHangupType) -> SignalServiceProtos_CallMessage.Hangup.TypeEnum {
+    switch value {
+    case .hangupNormal: return .hangupNormal
+    case .hangupAccepted: return .hangupAccepted
+    case .hangupDeclined: return .hangupDeclined
+    case .hangupBusy: return .hangupBusy
+    }
+}
+
 // MARK: - SSKProtoCallMessageHangup
 
 @objc
@@ -1416,6 +1497,12 @@ public class SSKProtoCallMessageHangup: NSObject {
     @objc
     public func asBuilder() -> SSKProtoCallMessageHangupBuilder {
         let builder = SSKProtoCallMessageHangupBuilder(id: id)
+        if let _value = type {
+            builder.setType(_value)
+        }
+        if hasDeviceID {
+            builder.setDeviceID(deviceID)
+        }
         return builder
     }
 
@@ -1440,6 +1527,16 @@ public class SSKProtoCallMessageHangup: NSObject {
         }
 
         @objc
+        public func setType(_ valueParam: SSKProtoCallMessageHangupType) {
+            proto.type = SSKProtoCallMessageHangupTypeUnwrap(valueParam)
+        }
+
+        @objc
+        public func setDeviceID(_ valueParam: UInt32) {
+            proto.deviceID = valueParam
+        }
+
+        @objc
         public func build() throws -> SSKProtoCallMessageHangup {
             return try SSKProtoCallMessageHangup.parseProto(proto)
         }
@@ -1454,6 +1551,35 @@ public class SSKProtoCallMessageHangup: NSObject {
 
     @objc
     public let id: UInt64
+
+    public var type: SSKProtoCallMessageHangupType? {
+        guard hasType else {
+            return nil
+        }
+        return SSKProtoCallMessageHangupTypeWrap(proto.type)
+    }
+    // This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.
+    @objc
+    public var unwrappedType: SSKProtoCallMessageHangupType {
+        if !hasType {
+            // TODO: We could make this a crashing assert.
+            owsFailDebug("Unsafe unwrap of missing optional: Hangup.type.")
+        }
+        return SSKProtoCallMessageHangupTypeWrap(proto.type)
+    }
+    @objc
+    public var hasType: Bool {
+        return proto.hasType
+    }
+
+    @objc
+    public var deviceID: UInt32 {
+        return proto.deviceID
+    }
+    @objc
+    public var hasDeviceID: Bool {
+        return proto.hasDeviceID
+    }
 
     private init(proto: SignalServiceProtos_CallMessage.Hangup,
                  id: UInt64) {
@@ -1534,14 +1660,23 @@ public class SSKProtoCallMessage: NSObject {
             builder.setAnswer(_value)
         }
         builder.setIceUpdate(iceUpdate)
-        if let _value = hangup {
-            builder.setHangup(_value)
+        if let _value = legacyHangup {
+            builder.setLegacyHangup(_value)
         }
         if let _value = busy {
             builder.setBusy(_value)
         }
         if let _value = profileKey {
             builder.setProfileKey(_value)
+        }
+        if let _value = hangup {
+            builder.setHangup(_value)
+        }
+        if hasSupportsMultiRing {
+            builder.setSupportsMultiRing(supportsMultiRing)
+        }
+        if hasDestinationDeviceID {
+            builder.setDestinationDeviceID(destinationDeviceID)
         }
         return builder
     }
@@ -1590,13 +1725,13 @@ public class SSKProtoCallMessage: NSObject {
 
         @objc
         @available(swift, obsoleted: 1.0)
-        public func setHangup(_ valueParam: SSKProtoCallMessageHangup?) {
+        public func setLegacyHangup(_ valueParam: SSKProtoCallMessageHangup?) {
             guard let valueParam = valueParam else { return }
-            proto.hangup = valueParam.proto
+            proto.legacyHangup = valueParam.proto
         }
 
-        public func setHangup(_ valueParam: SSKProtoCallMessageHangup) {
-            proto.hangup = valueParam.proto
+        public func setLegacyHangup(_ valueParam: SSKProtoCallMessageHangup) {
+            proto.legacyHangup = valueParam.proto
         }
 
         @objc
@@ -1622,6 +1757,27 @@ public class SSKProtoCallMessage: NSObject {
         }
 
         @objc
+        @available(swift, obsoleted: 1.0)
+        public func setHangup(_ valueParam: SSKProtoCallMessageHangup?) {
+            guard let valueParam = valueParam else { return }
+            proto.hangup = valueParam.proto
+        }
+
+        public func setHangup(_ valueParam: SSKProtoCallMessageHangup) {
+            proto.hangup = valueParam.proto
+        }
+
+        @objc
+        public func setSupportsMultiRing(_ valueParam: Bool) {
+            proto.supportsMultiRing = valueParam
+        }
+
+        @objc
+        public func setDestinationDeviceID(_ valueParam: UInt32) {
+            proto.destinationDeviceID = valueParam
+        }
+
+        @objc
         public func build() throws -> SSKProtoCallMessage {
             return try SSKProtoCallMessage.parseProto(proto)
         }
@@ -1644,10 +1800,13 @@ public class SSKProtoCallMessage: NSObject {
     public let iceUpdate: [SSKProtoCallMessageIceUpdate]
 
     @objc
-    public let hangup: SSKProtoCallMessageHangup?
+    public let legacyHangup: SSKProtoCallMessageHangup?
 
     @objc
     public let busy: SSKProtoCallMessageBusy?
+
+    @objc
+    public let hangup: SSKProtoCallMessageHangup?
 
     @objc
     public var profileKey: Data? {
@@ -1661,18 +1820,38 @@ public class SSKProtoCallMessage: NSObject {
         return proto.hasProfileKey
     }
 
+    @objc
+    public var supportsMultiRing: Bool {
+        return proto.supportsMultiRing
+    }
+    @objc
+    public var hasSupportsMultiRing: Bool {
+        return proto.hasSupportsMultiRing
+    }
+
+    @objc
+    public var destinationDeviceID: UInt32 {
+        return proto.destinationDeviceID
+    }
+    @objc
+    public var hasDestinationDeviceID: Bool {
+        return proto.hasDestinationDeviceID
+    }
+
     private init(proto: SignalServiceProtos_CallMessage,
                  offer: SSKProtoCallMessageOffer?,
                  answer: SSKProtoCallMessageAnswer?,
                  iceUpdate: [SSKProtoCallMessageIceUpdate],
-                 hangup: SSKProtoCallMessageHangup?,
-                 busy: SSKProtoCallMessageBusy?) {
+                 legacyHangup: SSKProtoCallMessageHangup?,
+                 busy: SSKProtoCallMessageBusy?,
+                 hangup: SSKProtoCallMessageHangup?) {
         self.proto = proto
         self.offer = offer
         self.answer = answer
         self.iceUpdate = iceUpdate
-        self.hangup = hangup
+        self.legacyHangup = legacyHangup
         self.busy = busy
+        self.hangup = hangup
     }
 
     @objc
@@ -1700,14 +1879,19 @@ public class SSKProtoCallMessage: NSObject {
         var iceUpdate: [SSKProtoCallMessageIceUpdate] = []
         iceUpdate = try proto.iceUpdate.map { try SSKProtoCallMessageIceUpdate.parseProto($0) }
 
-        var hangup: SSKProtoCallMessageHangup?
-        if proto.hasHangup {
-            hangup = try SSKProtoCallMessageHangup.parseProto(proto.hangup)
+        var legacyHangup: SSKProtoCallMessageHangup?
+        if proto.hasLegacyHangup {
+            legacyHangup = try SSKProtoCallMessageHangup.parseProto(proto.legacyHangup)
         }
 
         var busy: SSKProtoCallMessageBusy?
         if proto.hasBusy {
             busy = try SSKProtoCallMessageBusy.parseProto(proto.busy)
+        }
+
+        var hangup: SSKProtoCallMessageHangup?
+        if proto.hasHangup {
+            hangup = try SSKProtoCallMessageHangup.parseProto(proto.hangup)
         }
 
         // MARK: - Begin Validation Logic for SSKProtoCallMessage -
@@ -1718,8 +1902,9 @@ public class SSKProtoCallMessage: NSObject {
                                          offer: offer,
                                          answer: answer,
                                          iceUpdate: iceUpdate,
-                                         hangup: hangup,
-                                         busy: busy)
+                                         legacyHangup: legacyHangup,
+                                         busy: busy,
+                                         hangup: hangup)
         return result
     }
 

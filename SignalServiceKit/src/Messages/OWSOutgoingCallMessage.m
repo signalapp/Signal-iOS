@@ -33,7 +33,9 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (instancetype)initWithThread:(TSThread *)thread offerMessage:(SSKProtoCallMessageOffer *)offerMessage
+- (instancetype)initWithThread:(TSThread *)thread
+                  offerMessage:(SSKProtoCallMessageOffer *)offerMessage
+           destinationDeviceId:(nullable NSNumber *)destinationDeviceId
 {
     self = [self initWithThread:thread];
     if (!self) {
@@ -41,11 +43,14 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _offerMessage = offerMessage;
+    _destinationDeviceId = destinationDeviceId;
 
     return self;
 }
 
-- (instancetype)initWithThread:(TSThread *)thread answerMessage:(SSKProtoCallMessageAnswer *)answerMessage
+- (instancetype)initWithThread:(TSThread *)thread
+                 answerMessage:(SSKProtoCallMessageAnswer *)answerMessage
+           destinationDeviceId:(nullable NSNumber *)destinationDeviceId
 {
     self = [self initWithThread:thread];
     if (!self) {
@@ -53,12 +58,14 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _answerMessage = answerMessage;
+    _destinationDeviceId = destinationDeviceId;
 
     return self;
 }
 
 - (instancetype)initWithThread:(TSThread *)thread
              iceUpdateMessages:(NSArray<SSKProtoCallMessageIceUpdate *> *)iceUpdateMessages
+           destinationDeviceId:(nullable NSNumber *)destinationDeviceId
 {
     self = [self initWithThread:thread];
     if (!self) {
@@ -66,11 +73,29 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _iceUpdateMessages = iceUpdateMessages;
+    _destinationDeviceId = destinationDeviceId;
 
     return self;
 }
 
-- (instancetype)initWithThread:(TSThread *)thread hangupMessage:(SSKProtoCallMessageHangup *)hangupMessage
+- (instancetype)initWithThread:(TSThread *)thread
+           legacyHangupMessage:(SSKProtoCallMessageHangup *)legacyHangupMessage
+           destinationDeviceId:(nullable NSNumber *)destinationDeviceId
+{
+    self = [self initWithThread:thread];
+    if (!self) {
+        return self;
+    }
+
+    _legacyHangupMessage = legacyHangupMessage;
+    _destinationDeviceId = destinationDeviceId;
+
+    return self;
+}
+
+- (instancetype)initWithThread:(TSThread *)thread
+                 hangupMessage:(SSKProtoCallMessageHangup *)hangupMessage
+           destinationDeviceId:(nullable NSNumber *)destinationDeviceId
 {
     self = [self initWithThread:thread];
     if (!self) {
@@ -78,11 +103,14 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _hangupMessage = hangupMessage;
+    _destinationDeviceId = destinationDeviceId;
 
     return self;
 }
 
-- (instancetype)initWithThread:(TSThread *)thread busyMessage:(SSKProtoCallMessageBusy *)busyMessage
+- (instancetype)initWithThread:(TSThread *)thread
+                   busyMessage:(SSKProtoCallMessageBusy *)busyMessage
+           destinationDeviceId:(nullable NSNumber *)destinationDeviceId
 {
     self = [self initWithThread:thread];
     if (!self) {
@@ -90,6 +118,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _busyMessage = busyMessage;
+    _destinationDeviceId = destinationDeviceId;
 
     return self;
 }
@@ -144,6 +173,10 @@ NS_ASSUME_NONNULL_BEGIN
         [builder setIceUpdate:self.iceUpdateMessages];
     }
 
+    if (self.legacyHangupMessage) {
+        [builder setLegacyHangup:self.legacyHangupMessage];
+    }
+    
     if (self.hangupMessage) {
         [builder setHangup:self.hangupMessage];
     }
@@ -152,10 +185,17 @@ NS_ASSUME_NONNULL_BEGIN
         [builder setBusy:self.busyMessage];
     }
 
+    if (self.destinationDeviceId) {
+        [builder setDestinationDeviceID:self.destinationDeviceId.unsignedIntValue];
+    }
+
     [ProtoUtils addLocalProfileKeyIfNecessary:thread
                                       address:address
                            callMessageBuilder:builder
                                   transaction:transaction];
+
+    // All call messages must indicate multi-ring capability.
+    [builder setSupportsMultiRing:YES];
 
     NSError *error;
     SSKProtoCallMessage *_Nullable result = [builder buildAndReturnError:&error];
@@ -184,6 +224,8 @@ NS_ASSUME_NONNULL_BEGIN
         payload = @"answerMessage";
     } else if (self.iceUpdateMessages.count > 0) {
         payload = [NSString stringWithFormat:@"iceUpdateMessages: %lu", (unsigned long)self.iceUpdateMessages.count];
+    } else if (self.legacyHangupMessage) {
+        payload = @"legacyHangupMessage";
     } else if (self.hangupMessage) {
         payload = @"hangupMessage";
     } else if (self.busyMessage) {

@@ -670,6 +670,13 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
             }
 
             return NSLocalizedString("END_CALL_UNCATEGORIZED_FAILURE", comment: "Call setup status label")
+        case .answeredElsewhere:
+            return NSLocalizedString("IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE", comment: "Call screen label when call was canceled on this device because the call recipient answered on another device.")
+        case .declinedElsewhere:
+            return NSLocalizedString("IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE", comment: "Call screen label when call was canceled on this device because the call recipient declined on another device.")
+        case .busyElsewhere:
+            owsFailDebug("busy elsewhere triggered on call screen, this should never happen")
+            return NSLocalizedString("IN_CALL_ENDED_BECAUSE_BUSY_ELSEWHERE", comment: "Call screen label when call was canceled on this device because the call recipient has a call in progress on another device.")
         }
     }
 
@@ -806,7 +813,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
         // Dismiss Handling
         switch callState {
-        case .remoteHangup, .remoteBusy, .localFailure:
+        case .remoteHangup, .remoteBusy, .localFailure, .answeredElsewhere, .declinedElsewhere, .busyElsewhere:
             Logger.debug("dismissing after delay because new state is \(callState)")
             dismissIfPossible(shouldDelay: true)
         case .localHangup:

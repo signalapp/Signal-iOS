@@ -973,6 +973,14 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
+    // If destinationDevice is defined, ignore messages not addressed to this device.
+    if ([callMessage hasDestinationDeviceID]) {
+        if ([callMessage destinationDeviceID] != self.tsAccountManager.storedDeviceId) {
+            OWSLogInfo(@"Ignoring call message that is not for this device! intended: %u this: %u", [callMessage destinationDeviceID], self.tsAccountManager.storedDeviceId);
+            return;
+        }
+    }
+
     if ([callMessage hasProfileKey]) {
         NSData *profileKey = [callMessage profileKey];
         SignalServiceAddress *address = envelope.sourceAddress;
@@ -982,6 +990,11 @@ NS_ASSUME_NONNULL_BEGIN
                                    transaction:transaction];
     }
 
+    BOOL supportsMultiRing = false;
+    if ([callMessage hasSupportsMultiRing]) {
+        supportsMultiRing = callMessage.supportsMultiRing;
+    }
+
     // By dispatching async, we introduce the possibility that these messages might be lost
     // if the app exits before this block is executed.  This is fine, since the call by
     // definition will end if the app exits.
@@ -989,16 +1002,32 @@ NS_ASSUME_NONNULL_BEGIN
         if (callMessage.offer) {
             [self.callMessageHandler receivedOffer:callMessage.offer
                                         fromCaller:envelope.sourceAddress
-                                   sentAtTimestamp:envelope.timestamp];
+                                      sourceDevice:envelope.sourceDevice
+                                   sentAtTimestamp:envelope.timestamp
+                                 supportsMultiRing:supportsMultiRing];
         } else if (callMessage.answer) {
-            [self.callMessageHandler receivedAnswer:callMessage.answer fromCaller:envelope.sourceAddress];
+            [self.callMessageHandler receivedAnswer:callMessage.answer
+                                         fromCaller:envelope.sourceAddress
+                                       sourceDevice:envelope.sourceDevice
+                                  supportsMultiRing:supportsMultiRing];
         } else if (callMessage.iceUpdate.count > 0) {
-            [self.callMessageHandler receivedIceUpdate:callMessage.iceUpdate fromCaller:envelope.sourceAddress];
+            [self.callMessageHandler receivedIceUpdate:callMessage.iceUpdate
+                                            fromCaller:envelope.sourceAddress
+                                          sourceDevice:envelope.sourceDevice];
+        } else if (callMessage.legacyHangup) {
+            OWSLogVerbose(@"Received CallMessage with Legacy Hangup.");
+            [self.callMessageHandler receivedHangup:callMessage.legacyHangup
+                                         fromCaller:envelope.sourceAddress
+                                       sourceDevice:envelope.sourceDevice];
         } else if (callMessage.hangup) {
             OWSLogVerbose(@"Received CallMessage with Hangup.");
-            [self.callMessageHandler receivedHangup:callMessage.hangup fromCaller:envelope.sourceAddress];
+            [self.callMessageHandler receivedHangup:callMessage.hangup
+                                         fromCaller:envelope.sourceAddress
+                                       sourceDevice:envelope.sourceDevice];
         } else if (callMessage.busy) {
-            [self.callMessageHandler receivedBusy:callMessage.busy fromCaller:envelope.sourceAddress];
+            [self.callMessageHandler receivedBusy:callMessage.busy
+                                       fromCaller:envelope.sourceAddress
+                                     sourceDevice:envelope.sourceDevice];
         } else {
             OWSProdInfoWEnvelope([OWSAnalyticsEvents messageManagerErrorCallMessageNoActionablePayload], envelope);
         }

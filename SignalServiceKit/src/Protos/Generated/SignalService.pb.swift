@@ -357,14 +357,14 @@ struct SignalServiceProtos_CallMessage {
 
   var iceUpdate: [SignalServiceProtos_CallMessage.IceUpdate] = []
 
-  var hangup: SignalServiceProtos_CallMessage.Hangup {
-    get {return _hangup ?? SignalServiceProtos_CallMessage.Hangup()}
-    set {_hangup = newValue}
+  var legacyHangup: SignalServiceProtos_CallMessage.Hangup {
+    get {return _legacyHangup ?? SignalServiceProtos_CallMessage.Hangup()}
+    set {_legacyHangup = newValue}
   }
-  /// Returns true if `hangup` has been explicitly set.
-  var hasHangup: Bool {return self._hangup != nil}
-  /// Clears the value of `hangup`. Subsequent reads from it will return its default value.
-  mutating func clearHangup() {self._hangup = nil}
+  /// Returns true if `legacyHangup` has been explicitly set.
+  var hasLegacyHangup: Bool {return self._legacyHangup != nil}
+  /// Clears the value of `legacyHangup`. Subsequent reads from it will return its default value.
+  mutating func clearLegacyHangup() {self._legacyHangup = nil}
 
   var busy: SignalServiceProtos_CallMessage.Busy {
     get {return _busy ?? SignalServiceProtos_CallMessage.Busy()}
@@ -376,7 +376,7 @@ struct SignalServiceProtos_CallMessage {
   mutating func clearBusy() {self._busy = nil}
 
   /// Signal-iOS sends profile key with call messages
-  /// for earlier discovery
+  /// for earlier discovery.
   var profileKey: Data {
     get {return _profileKey ?? SwiftProtobuf.Internal.emptyData}
     set {_profileKey = newValue}
@@ -385,6 +385,33 @@ struct SignalServiceProtos_CallMessage {
   var hasProfileKey: Bool {return self._profileKey != nil}
   /// Clears the value of `profileKey`. Subsequent reads from it will return its default value.
   mutating func clearProfileKey() {self._profileKey = nil}
+
+  var hangup: SignalServiceProtos_CallMessage.Hangup {
+    get {return _hangup ?? SignalServiceProtos_CallMessage.Hangup()}
+    set {_hangup = newValue}
+  }
+  /// Returns true if `hangup` has been explicitly set.
+  var hasHangup: Bool {return self._hangup != nil}
+  /// Clears the value of `hangup`. Subsequent reads from it will return its default value.
+  mutating func clearHangup() {self._hangup = nil}
+
+  var supportsMultiRing: Bool {
+    get {return _supportsMultiRing ?? false}
+    set {_supportsMultiRing = newValue}
+  }
+  /// Returns true if `supportsMultiRing` has been explicitly set.
+  var hasSupportsMultiRing: Bool {return self._supportsMultiRing != nil}
+  /// Clears the value of `supportsMultiRing`. Subsequent reads from it will return its default value.
+  mutating func clearSupportsMultiRing() {self._supportsMultiRing = nil}
+
+  var destinationDeviceID: UInt32 {
+    get {return _destinationDeviceID ?? 0}
+    set {_destinationDeviceID = newValue}
+  }
+  /// Returns true if `destinationDeviceID` has been explicitly set.
+  var hasDestinationDeviceID: Bool {return self._destinationDeviceID != nil}
+  /// Clears the value of `destinationDeviceID`. Subsequent reads from it will return its default value.
+  mutating func clearDestinationDeviceID() {self._destinationDeviceID = nil}
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -403,24 +430,61 @@ struct SignalServiceProtos_CallMessage {
     /// Clears the value of `id`. Subsequent reads from it will return its default value.
     mutating func clearID() {self._id = nil}
 
-    /// Signal-iOS renamed the description field to avoid
-    /// conflicts with [NSObject description].
     /// @required
-    var sessionDescription: String {
-      get {return _sessionDescription ?? String()}
-      set {_sessionDescription = newValue}
+    var sdp: String {
+      get {return _sdp ?? String()}
+      set {_sdp = newValue}
     }
-    /// Returns true if `sessionDescription` has been explicitly set.
-    var hasSessionDescription: Bool {return self._sessionDescription != nil}
-    /// Clears the value of `sessionDescription`. Subsequent reads from it will return its default value.
-    mutating func clearSessionDescription() {self._sessionDescription = nil}
+    /// Returns true if `sdp` has been explicitly set.
+    var hasSdp: Bool {return self._sdp != nil}
+    /// Clears the value of `sdp`. Subsequent reads from it will return its default value.
+    mutating func clearSdp() {self._sdp = nil}
+
+    var type: SignalServiceProtos_CallMessage.Offer.TypeEnum {
+      get {return _type ?? .offerAudioCall}
+      set {_type = newValue}
+    }
+    /// Returns true if `type` has been explicitly set.
+    var hasType: Bool {return self._type != nil}
+    /// Clears the value of `type`. Subsequent reads from it will return its default value.
+    mutating func clearType() {self._type = nil}
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    enum TypeEnum: SwiftProtobuf.Enum {
+      typealias RawValue = Int
+      case offerAudioCall // = 0
+      case offerVideoCall // = 1
+      case offerNeedPermission // = 2
+
+      init() {
+        self = .offerAudioCall
+      }
+
+      init?(rawValue: Int) {
+        switch rawValue {
+        case 0: self = .offerAudioCall
+        case 1: self = .offerVideoCall
+        case 2: self = .offerNeedPermission
+        default: return nil
+        }
+      }
+
+      var rawValue: Int {
+        switch self {
+        case .offerAudioCall: return 0
+        case .offerVideoCall: return 1
+        case .offerNeedPermission: return 2
+        }
+      }
+
+    }
 
     init() {}
 
     fileprivate var _id: UInt64?
-    fileprivate var _sessionDescription: String?
+    fileprivate var _sdp: String?
+    fileprivate var _type: SignalServiceProtos_CallMessage.Offer.TypeEnum?
   }
 
   struct Answer {
@@ -438,24 +502,22 @@ struct SignalServiceProtos_CallMessage {
     /// Clears the value of `id`. Subsequent reads from it will return its default value.
     mutating func clearID() {self._id = nil}
 
-    /// Signal-iOS renamed the description field to avoid
-    /// conflicts with [NSObject description].
     /// @required
-    var sessionDescription: String {
-      get {return _sessionDescription ?? String()}
-      set {_sessionDescription = newValue}
+    var sdp: String {
+      get {return _sdp ?? String()}
+      set {_sdp = newValue}
     }
-    /// Returns true if `sessionDescription` has been explicitly set.
-    var hasSessionDescription: Bool {return self._sessionDescription != nil}
-    /// Clears the value of `sessionDescription`. Subsequent reads from it will return its default value.
-    mutating func clearSessionDescription() {self._sessionDescription = nil}
+    /// Returns true if `sdp` has been explicitly set.
+    var hasSdp: Bool {return self._sdp != nil}
+    /// Clears the value of `sdp`. Subsequent reads from it will return its default value.
+    mutating func clearSdp() {self._sdp = nil}
 
     var unknownFields = SwiftProtobuf.UnknownStorage()
 
     init() {}
 
     fileprivate var _id: UInt64?
-    fileprivate var _sessionDescription: String?
+    fileprivate var _sdp: String?
   }
 
   struct IceUpdate {
@@ -550,21 +612,88 @@ struct SignalServiceProtos_CallMessage {
     /// Clears the value of `id`. Subsequent reads from it will return its default value.
     mutating func clearID() {self._id = nil}
 
+    var type: SignalServiceProtos_CallMessage.Hangup.TypeEnum {
+      get {return _type ?? .hangupNormal}
+      set {_type = newValue}
+    }
+    /// Returns true if `type` has been explicitly set.
+    var hasType: Bool {return self._type != nil}
+    /// Clears the value of `type`. Subsequent reads from it will return its default value.
+    mutating func clearType() {self._type = nil}
+
+    var deviceID: UInt32 {
+      get {return _deviceID ?? 0}
+      set {_deviceID = newValue}
+    }
+    /// Returns true if `deviceID` has been explicitly set.
+    var hasDeviceID: Bool {return self._deviceID != nil}
+    /// Clears the value of `deviceID`. Subsequent reads from it will return its default value.
+    mutating func clearDeviceID() {self._deviceID = nil}
+
     var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    enum TypeEnum: SwiftProtobuf.Enum {
+      typealias RawValue = Int
+      case hangupNormal // = 0
+      case hangupAccepted // = 1
+      case hangupDeclined // = 2
+      case hangupBusy // = 3
+
+      init() {
+        self = .hangupNormal
+      }
+
+      init?(rawValue: Int) {
+        switch rawValue {
+        case 0: self = .hangupNormal
+        case 1: self = .hangupAccepted
+        case 2: self = .hangupDeclined
+        case 3: self = .hangupBusy
+        default: return nil
+        }
+      }
+
+      var rawValue: Int {
+        switch self {
+        case .hangupNormal: return 0
+        case .hangupAccepted: return 1
+        case .hangupDeclined: return 2
+        case .hangupBusy: return 3
+        }
+      }
+
+    }
 
     init() {}
 
     fileprivate var _id: UInt64?
+    fileprivate var _type: SignalServiceProtos_CallMessage.Hangup.TypeEnum?
+    fileprivate var _deviceID: UInt32?
   }
 
   init() {}
 
   fileprivate var _offer: SignalServiceProtos_CallMessage.Offer?
   fileprivate var _answer: SignalServiceProtos_CallMessage.Answer?
-  fileprivate var _hangup: SignalServiceProtos_CallMessage.Hangup?
+  fileprivate var _legacyHangup: SignalServiceProtos_CallMessage.Hangup?
   fileprivate var _busy: SignalServiceProtos_CallMessage.Busy?
   fileprivate var _profileKey: Data?
+  fileprivate var _hangup: SignalServiceProtos_CallMessage.Hangup?
+  fileprivate var _supportsMultiRing: Bool?
+  fileprivate var _destinationDeviceID: UInt32?
 }
+
+#if swift(>=4.2)
+
+extension SignalServiceProtos_CallMessage.Offer.TypeEnum: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+extension SignalServiceProtos_CallMessage.Hangup.TypeEnum: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+#endif  // swift(>=4.2)
 
 struct SignalServiceProtos_DataMessage {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
@@ -3471,9 +3600,12 @@ extension SignalServiceProtos_CallMessage: SwiftProtobuf.Message, SwiftProtobuf.
     1: .same(proto: "offer"),
     2: .same(proto: "answer"),
     3: .same(proto: "iceUpdate"),
-    4: .same(proto: "hangup"),
+    4: .same(proto: "legacyHangup"),
     5: .same(proto: "busy"),
-    6: .same(proto: "profileKey")
+    6: .same(proto: "profileKey"),
+    7: .same(proto: "hangup"),
+    8: .same(proto: "supportsMultiRing"),
+    9: .same(proto: "destinationDeviceId")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -3482,9 +3614,12 @@ extension SignalServiceProtos_CallMessage: SwiftProtobuf.Message, SwiftProtobuf.
       case 1: try decoder.decodeSingularMessageField(value: &self._offer)
       case 2: try decoder.decodeSingularMessageField(value: &self._answer)
       case 3: try decoder.decodeRepeatedMessageField(value: &self.iceUpdate)
-      case 4: try decoder.decodeSingularMessageField(value: &self._hangup)
+      case 4: try decoder.decodeSingularMessageField(value: &self._legacyHangup)
       case 5: try decoder.decodeSingularMessageField(value: &self._busy)
       case 6: try decoder.decodeSingularBytesField(value: &self._profileKey)
+      case 7: try decoder.decodeSingularMessageField(value: &self._hangup)
+      case 8: try decoder.decodeSingularBoolField(value: &self._supportsMultiRing)
+      case 9: try decoder.decodeSingularUInt32Field(value: &self._destinationDeviceID)
       default: break
       }
     }
@@ -3500,7 +3635,7 @@ extension SignalServiceProtos_CallMessage: SwiftProtobuf.Message, SwiftProtobuf.
     if !self.iceUpdate.isEmpty {
       try visitor.visitRepeatedMessageField(value: self.iceUpdate, fieldNumber: 3)
     }
-    if let v = self._hangup {
+    if let v = self._legacyHangup {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 4)
     }
     if let v = self._busy {
@@ -3509,6 +3644,15 @@ extension SignalServiceProtos_CallMessage: SwiftProtobuf.Message, SwiftProtobuf.
     if let v = self._profileKey {
       try visitor.visitSingularBytesField(value: v, fieldNumber: 6)
     }
+    if let v = self._hangup {
+      try visitor.visitSingularMessageField(value: v, fieldNumber: 7)
+    }
+    if let v = self._supportsMultiRing {
+      try visitor.visitSingularBoolField(value: v, fieldNumber: 8)
+    }
+    if let v = self._destinationDeviceID {
+      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 9)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -3516,9 +3660,12 @@ extension SignalServiceProtos_CallMessage: SwiftProtobuf.Message, SwiftProtobuf.
     if lhs._offer != rhs._offer {return false}
     if lhs._answer != rhs._answer {return false}
     if lhs.iceUpdate != rhs.iceUpdate {return false}
-    if lhs._hangup != rhs._hangup {return false}
+    if lhs._legacyHangup != rhs._legacyHangup {return false}
     if lhs._busy != rhs._busy {return false}
     if lhs._profileKey != rhs._profileKey {return false}
+    if lhs._hangup != rhs._hangup {return false}
+    if lhs._supportsMultiRing != rhs._supportsMultiRing {return false}
+    if lhs._destinationDeviceID != rhs._destinationDeviceID {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -3528,14 +3675,16 @@ extension SignalServiceProtos_CallMessage.Offer: SwiftProtobuf.Message, SwiftPro
   static let protoMessageName: String = SignalServiceProtos_CallMessage.protoMessageName + ".Offer"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "id"),
-    2: .same(proto: "sessionDescription")
+    2: .same(proto: "sdp"),
+    3: .same(proto: "type")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       switch fieldNumber {
       case 1: try decoder.decodeSingularUInt64Field(value: &self._id)
-      case 2: try decoder.decodeSingularStringField(value: &self._sessionDescription)
+      case 2: try decoder.decodeSingularStringField(value: &self._sdp)
+      case 3: try decoder.decodeSingularEnumField(value: &self._type)
       default: break
       }
     }
@@ -3545,32 +3694,44 @@ extension SignalServiceProtos_CallMessage.Offer: SwiftProtobuf.Message, SwiftPro
     if let v = self._id {
       try visitor.visitSingularUInt64Field(value: v, fieldNumber: 1)
     }
-    if let v = self._sessionDescription {
+    if let v = self._sdp {
       try visitor.visitSingularStringField(value: v, fieldNumber: 2)
+    }
+    if let v = self._type {
+      try visitor.visitSingularEnumField(value: v, fieldNumber: 3)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: SignalServiceProtos_CallMessage.Offer, rhs: SignalServiceProtos_CallMessage.Offer) -> Bool {
     if lhs._id != rhs._id {return false}
-    if lhs._sessionDescription != rhs._sessionDescription {return false}
+    if lhs._sdp != rhs._sdp {return false}
+    if lhs._type != rhs._type {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
+}
+
+extension SignalServiceProtos_CallMessage.Offer.TypeEnum: SwiftProtobuf._ProtoNameProviding {
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    0: .same(proto: "OFFER_AUDIO_CALL"),
+    1: .same(proto: "OFFER_VIDEO_CALL"),
+    2: .same(proto: "OFFER_NEED_PERMISSION")
+  ]
 }
 
 extension SignalServiceProtos_CallMessage.Answer: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_CallMessage.protoMessageName + ".Answer"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "id"),
-    2: .same(proto: "sessionDescription")
+    2: .same(proto: "sdp")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       switch fieldNumber {
       case 1: try decoder.decodeSingularUInt64Field(value: &self._id)
-      case 2: try decoder.decodeSingularStringField(value: &self._sessionDescription)
+      case 2: try decoder.decodeSingularStringField(value: &self._sdp)
       default: break
       }
     }
@@ -3580,7 +3741,7 @@ extension SignalServiceProtos_CallMessage.Answer: SwiftProtobuf.Message, SwiftPr
     if let v = self._id {
       try visitor.visitSingularUInt64Field(value: v, fieldNumber: 1)
     }
-    if let v = self._sessionDescription {
+    if let v = self._sdp {
       try visitor.visitSingularStringField(value: v, fieldNumber: 2)
     }
     try unknownFields.traverse(visitor: &visitor)
@@ -3588,7 +3749,7 @@ extension SignalServiceProtos_CallMessage.Answer: SwiftProtobuf.Message, SwiftPr
 
   static func ==(lhs: SignalServiceProtos_CallMessage.Answer, rhs: SignalServiceProtos_CallMessage.Answer) -> Bool {
     if lhs._id != rhs._id {return false}
-    if lhs._sessionDescription != rhs._sessionDescription {return false}
+    if lhs._sdp != rhs._sdp {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -3673,13 +3834,17 @@ extension SignalServiceProtos_CallMessage.Busy: SwiftProtobuf.Message, SwiftProt
 extension SignalServiceProtos_CallMessage.Hangup: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = SignalServiceProtos_CallMessage.protoMessageName + ".Hangup"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "id")
+    1: .same(proto: "id"),
+    2: .same(proto: "type"),
+    3: .same(proto: "deviceId")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       switch fieldNumber {
       case 1: try decoder.decodeSingularUInt64Field(value: &self._id)
+      case 2: try decoder.decodeSingularEnumField(value: &self._type)
+      case 3: try decoder.decodeSingularUInt32Field(value: &self._deviceID)
       default: break
       }
     }
@@ -3689,14 +3854,31 @@ extension SignalServiceProtos_CallMessage.Hangup: SwiftProtobuf.Message, SwiftPr
     if let v = self._id {
       try visitor.visitSingularUInt64Field(value: v, fieldNumber: 1)
     }
+    if let v = self._type {
+      try visitor.visitSingularEnumField(value: v, fieldNumber: 2)
+    }
+    if let v = self._deviceID {
+      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 3)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: SignalServiceProtos_CallMessage.Hangup, rhs: SignalServiceProtos_CallMessage.Hangup) -> Bool {
     if lhs._id != rhs._id {return false}
+    if lhs._type != rhs._type {return false}
+    if lhs._deviceID != rhs._deviceID {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
+}
+
+extension SignalServiceProtos_CallMessage.Hangup.TypeEnum: SwiftProtobuf._ProtoNameProviding {
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    0: .same(proto: "HANGUP_NORMAL"),
+    1: .same(proto: "HANGUP_ACCEPTED"),
+    2: .same(proto: "HANGUP_DECLINED"),
+    3: .same(proto: "HANGUP_BUSY")
+  ]
 }
 
 extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
