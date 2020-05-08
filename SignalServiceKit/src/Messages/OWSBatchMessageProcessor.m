@@ -242,7 +242,7 @@ NSNotificationName const kNSNotificationNameMessageProcessingDidFlushQueue
         return;
     }
 
-    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5f * NSEC_PER_SEC)), self.serialQueue, ^{
+    dispatch_async(self.serialQueue, ^{
         if (self.isDrainingQueue) {
             return;
         }
@@ -261,8 +261,12 @@ NSNotificationName const kNSNotificationNameMessageProcessingDidFlushQueue
         return;
     }
 
-    // Temporarily use small batch sizes.
-    NSUInteger batchSize = 1;
+    // We want a value that is just high enough to yield perf benefits.
+    const NSUInteger kIncomingMessageBatchSize = 32;
+    // If the app is in the background, use batch size of 1.
+    // This reduces the cost of being interrupted and rolled back if
+    // app is suspended.
+    NSUInteger batchSize = self.isAppInBackground ? 1 : kIncomingMessageBatchSize;
 
     __block NSArray<OWSMessageContentJob *> *batchJobs;
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
