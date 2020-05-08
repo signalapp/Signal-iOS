@@ -20,13 +20,13 @@ public class LK001UpdateFriendRequestStatusStorage : OWSDatabaseMigration {
     private func doMigrationAsync(completion: @escaping OWSDatabaseMigrationCompletion) {
         DispatchQueue.global().async {
             self.dbReadWriteConnection().readWrite { transaction in
-                guard let threads = TSThread.allObjectsInCollection() as? [TSThread] else {
-                    owsFailDebug("Failed to convert objects to TSThread.")
-                    return
+                var threads: [TSContactThread] = []
+                TSContactThread.enumerateCollectionObjects(with: transaction) { object, _ in
+                    guard let thread = object as? TSContactThread else { return }
+                    threads.append(thread)
                 }
-                for thread in threads {
-                    guard let thread = thread as? TSContactThread,
-                        let friendRequestStatus = LKFriendRequestStatus(rawValue: thread.friendRequestStatus) else { continue }
+                threads.forEach { thread in
+                    guard let friendRequestStatus = LKFriendRequestStatus(rawValue: thread.friendRequestStatus) else { return }
                     OWSPrimaryStorage.shared().setFriendRequestStatus(friendRequestStatus, for: thread.contactIdentifier(), transaction: transaction)
                 }
                 self.save(with: transaction)
@@ -34,5 +34,4 @@ public class LK001UpdateFriendRequestStatusStorage : OWSDatabaseMigration {
             completion()
         }
     }
-
 }
