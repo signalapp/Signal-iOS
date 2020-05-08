@@ -102,6 +102,7 @@
         [TSIncomingMessageBuilder incomingMessageBuilderWithThread:thread messageBody:@"Incoming message body"];
     incomingMessageBuilder.authorAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+12223334444"];
     incomingMessageBuilder.timestamp = 10000;
+    incomingMessageBuilder.attachmentIds = [@[ incomingAttachment.uniqueId ] mutableCopy];
     TSIncomingMessage *incomingMessage = [incomingMessageBuilder build];
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [incomingMessage anyInsertWithTransaction:transaction];

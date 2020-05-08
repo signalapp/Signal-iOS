@@ -157,7 +157,7 @@
         for (uint64_t i = 0; i < 10; i++) {
             SignalServiceAddress *authorAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+fakephone"];
             TSIncomingMessageBuilder *incomingMessageBuilder =
-                [TSIncomingMessageBuilder incomingMessageBuilderWithThread:self.thread messageBody:body];
+                [TSIncomingMessageBuilder incomingMessageBuilderWithThread:thread messageBody:body];
             incomingMessageBuilder.timestamp = i + 1;
             incomingMessageBuilder.authorAddress = authorAddress;
             incomingMessageBuilder.sourceDeviceId = 1;
