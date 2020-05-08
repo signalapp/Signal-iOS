@@ -365,15 +365,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         [NSNotificationCenter.defaultCenter postNotificationName:NSNotification.calculatingPoW object:[[NSNumber alloc] initWithUnsignedLongLong:message.timestamp]];
     }
 
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if ([LKFriendRequestProtocol shouldUpdateFriendRequestStatusFromMessage:message]) {
-            [self.primaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                // Loki: Optimistically update friend request status when we can. This is used for
-                // e.g. preventing AFRs from being sent twice on a contact sync.
-                [LKFriendRequestProtocol setFriendRequestStatusToSendingIfNeededForHexEncodedPublicKey:message.thread.contactIdentifier transaction:transaction];
-            }];
-        }
-    });
+    if ([LKFriendRequestProtocol shouldUpdateFriendRequestStatusFromMessage:message]) {
+        [self.primaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            // Loki: Optimistically update friend request status when we can. This is used for
+            // e.g. preventing AFRs from being sent twice on a contact sync.
+            [LKFriendRequestProtocol setFriendRequestStatusToSendingIfNeededForHexEncodedPublicKey:message.thread.contactIdentifier transaction:transaction];
+        }];
+    }
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSMutableArray<NSString *> *allAttachmentIds = [NSMutableArray new];
