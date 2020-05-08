@@ -1312,10 +1312,6 @@ extension SignalCall: CallManagerCallReference { }
     }
 
     private func getDeviceIds(call: SignalCall) throws -> [UInt32] {
-        guard FeatureFlags.sendCallsToAllDevices else {
-            return [1]
-        }
-
         return try databaseStorage.read { transaction -> [UInt32] in
             guard let recipient = AnySignalRecipientFinder().signalRecipient(for: call.thread.contactAddress, transaction: transaction) else {
                 throw OWSAssertionError("no recipient for contact")

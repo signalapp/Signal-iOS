@@ -169,39 +169,14 @@ public class FeatureFlags: NSObject {
         return answerCallsOnSecondaryDevice || TSAccountManager.sharedInstance().isRegisteredPrimaryDevice
     }
 
-    // TODO MULTIRING
-    //
-    // Unlike most feature flags, we want to roll out the "send" support for multiring first.
-    //
-    // Even though we're enabling "send" support, secondary devices won't actually ring or
-    // expose the incoming call because:
-    //   - legacy secondary devices are hardcoded to ignore all calls
-    //   - modern clients defer to FeatureFlags.answerCallsOnSecondaryDevice before handling a call
-    //
-    // The symptom this rollout avoids is where a secondary device can *place* calls but not receive
-    // them from a legacy client.
-    //
-    // By rolling out send support first, that means most people will be placing a call which *can*
-    // ring on an iPad.
-    //
-    // Then in a subsequent release, once we flip answerCallsOnSecondaryDevice, iPads will be able
-    // to receive calls not just from the most recent clients, but from all clients who updated
-    // during the rollout period.
-    //
-    // Note: exposing the outgoing call button on iPads is predicated on "answerCallsOnSecondaryDevice", not
-    // this feature flag.
-    @objc
-    public static let sendCallsToAllDevices: Bool = build.includes(.internalPreview)
-
-    // TODO MULTIRING
-    //
-    // We can't enable this until after `sendCallsToAllDevices` has rolled out on iOS and Android.
+    // We can't enable this in production until sending calls to all devices has
+    // rolled out on iOS and Android.
     //
     // Note: As well as exposing incoming calls on iPads, this also exposes the outgoing call button
     // on iPads, because we don't want to allow outgoing calls from an iPad until we're also ready
     // to receive them on iPad.
     @objc
-    public static let answerCallsOnSecondaryDevice: Bool = build.includes(.internalPreview)
+    public static let answerCallsOnSecondaryDevice: Bool = build.includes(.beta)
 
     @objc
     public static let groupsV2 = build.includes(.qa) && !isUsingProductionService
