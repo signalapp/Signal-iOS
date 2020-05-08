@@ -364,6 +364,16 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         // Not really true but better from a UI point of view
         [NSNotificationCenter.defaultCenter postNotificationName:NSNotification.calculatingPoW object:[[NSNumber alloc] initWithUnsignedLongLong:message.timestamp]];
     }
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        if ([LKFriendRequestProtocol shouldUpdateFriendRequestStatusFromMessage:message]) {
+            [self.primaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                // Loki: Optimistically update friend request status when we can. This is used for
+                // e.g. preventing AFRs from being sent twice on a contact sync.
+                [LKFriendRequestProtocol setFriendRequestStatusToSendingIfNeededForHexEncodedPublicKey:message.thread.contactIdentifier transaction:transaction];
+            }];
+        }
+    });
     
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSMutableArray<NSString *> *allAttachmentIds = [NSMutableArray new];
@@ -383,14 +393,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             [allAttachmentIds
                 addObjectsFromArray:[OutgoingMessagePreparer prepareMessageForSending:message transaction:transaction]];
-
-            // Loki: Optimistically update friend request status when we can. This is used for
-            // e.g. preventing AFRs from being sent twice on a contact sync.
-            /*
-            if ([LKFriendRequestProtocol shouldUpdateFriendRequestStatusFromMessage:message]) {
-                [LKFriendRequestProtocol setFriendRequestStatusToSendingIfNeededForHexEncodedPublicKey:message.thread.contactIdentifier transaction:transaction];
-            }
-             */
         }];
 
         NSOperationQueue *sendingQueue = [self sendingQueueForMessage:message];
