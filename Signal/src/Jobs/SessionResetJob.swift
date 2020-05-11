@@ -120,7 +120,7 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
             firstAttempt = false
         }
 
-        let endSessionMessage = EndSessionMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: self.contactThread)
+        let endSessionMessage = EndSessionMessage(thread: self.contactThread)
 
         firstly {
             return self.messageSender.sendMessage(.promise, endSessionMessage.asPreparer)
@@ -133,7 +133,7 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
                 self.sessionStore.archiveAllSessions(for: self.recipientAddress, transaction: transaction)
 
                 let message = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(),
-                                            in: self.contactThread,
+                                            thread: self.contactThread,
                                             messageType: TSInfoMessageType.typeSessionDidEnd)
                 message.anyInsert(transaction: transaction)
             }

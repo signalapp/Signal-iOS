@@ -58,7 +58,7 @@ class AttachmentMultisend {
 
                     let message = try! ThreadUtil.createUnsentMessage(withText: approvalMessageText,
                                                                       mediaAttachments: attachments,
-                                                                      in: thread,
+                                                                      thread: thread,
                                                                       quotedReplyModel: nil,
                                                                       linkPreviewDraft: nil,
                                                                       transaction: transaction)

@@ -45,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSArray<NSDictionary *> *)deviceMessages:(TSOutgoingMessage *)message
                                forRecipient:(SignalRecipient *)recipient
-                                   inThread:(TSThread *)thread
+                                     thread:(TSThread *)thread
 {
     OWSLogInfo(@"[OWSFakeMessagesManager] Faking deviceMessages.");
     return @[];
@@ -202,7 +202,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.thread save];
 
     self.unexpiringMessage = [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:1
-                                                                                inThread:self.thread
+                                                                                  thread:self.thread
                                                                              messageBody:@"outgoing message"
                                                                            attachmentIds:[NSMutableArray new]
                                                                         expiresInSeconds:0
@@ -215,7 +215,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.unexpiringMessage save];
 
     self.expiringMessage = [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:1
-                                                                              inThread:self.thread
+                                                                                thread:self.thread
                                                                            messageBody:@"outgoing message"
                                                                          attachmentIds:[NSMutableArray new]
                                                                       expiresInSeconds:30
@@ -365,8 +365,9 @@ NS_ASSUME_NONNULL_BEGIN
     OWSMessageSender *messageSender = self.successfulMessageSender;
     messageSender.uploadingService = [[OWSFakeUploadingService alloc] initWithSuccess:YES];
 
+    TSOutgoingMessageBuilder *messageBuilder = [[TSOutgoingMessageBuilder alloc] init];
     TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:1
-                                                                     inThread:self.thread
+                                                                       thread:self.thread
                                                                   messageBody:@"We want punks in the palace."];
 
     XCTestExpectation *markedAsSent = [self expectationWithDescription:@"markedAsSent"];
@@ -394,7 +395,7 @@ NS_ASSUME_NONNULL_BEGIN
     messageSender.uploadingService = [[OWSFakeUploadingService alloc] initWithSuccess:YES];
 
     TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:1
-                                                                     inThread:self.thread
+                                                                       thread:self.thread
                                                                   messageBody:@"We want punks in the palace."];
 
     XCTestExpectation *markedAsUnsent = [self expectationWithDescription:@"markedAsUnsent"];
@@ -420,7 +421,7 @@ NS_ASSUME_NONNULL_BEGIN
     messageSender.uploadingService = [[OWSFakeUploadingService alloc] initWithSuccess:YES];
 
     TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:1
-                                                                     inThread:self.thread
+                                                                       thread:self.thread
                                                                   messageBody:@"We want punks in the palace."];
 
     XCTestExpectation *markedAsUnsent = [self expectationWithDescription:@"markedAsUnsent"];
@@ -449,7 +450,7 @@ NS_ASSUME_NONNULL_BEGIN
     messageSender.uploadingService = [[OWSFakeUploadingService alloc] initWithSuccess:NO];
 
     TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:1
-                                                                     inThread:self.thread
+                                                                       thread:self.thread
                                                                   messageBody:@"We want punks in the palace."];
 
     XCTestExpectation *markedAsUnsent = [self expectationWithDescription:@"markedAsUnsent"];
@@ -492,7 +493,7 @@ NS_ASSUME_NONNULL_BEGIN
     }];
 
     TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:1
-                                                                     inThread:groupThread
+                                                                       thread:groupThread
                                                                   messageBody:@"We want punks in the palace."];
 
     XCTestExpectation *markedAsSent = [self expectationWithDescription:@"markedAsSent"];

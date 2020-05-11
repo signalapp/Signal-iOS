@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
             hasAddToContactsOffer:(BOOL)hasAddToContactsOffer
     hasAddToProfileWhitelistOffer:(BOOL)hasAddToProfileWhitelistOffer
 {
-    self = [super initWithUniqueId:uniqueId timestamp:timestamp inThread:thread];
+    self = [super initWithUniqueId:uniqueId timestamp:timestamp thread:thread];
 
     if (!self) {
         return self;

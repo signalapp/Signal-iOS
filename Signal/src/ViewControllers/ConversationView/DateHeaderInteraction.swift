@@ -34,7 +34,7 @@ public class DateHeaderInteraction: TSInteraction {
         super.init(uniqueId: "DateHeader_\(timestamp)",
                    timestamp: timestamp,
                    receivedAtTimestamp: receivedAtTimestamp,
-                   in: thread)
+                   thread: thread)
     }
 
     public override var shouldBeSaved: Bool {

@@ -129,7 +129,7 @@ public class ReactionManager: NSObject {
                     return .success
                 }
 
-                SSKEnvironment.shared.notificationsManager.notifyUser(for: reaction, on: message, in: thread, transaction: transaction)
+                SSKEnvironment.shared.notificationsManager.notifyUser(for: reaction, on: message, thread: thread, transaction: transaction)
             }
         }
 

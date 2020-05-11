@@ -142,7 +142,7 @@ extension ThreadUtil {
         return Promise { resolver in
             self.databaseStorage.read { transaction in
                 _ = self.sendMessageNonDurably(withText: text,
-                                               in: thread,
+                                               thread: thread,
                                                quotedReplyModel: quotedReplyModel,
                                                transaction: transaction,
                                                messageSender: messageSender,

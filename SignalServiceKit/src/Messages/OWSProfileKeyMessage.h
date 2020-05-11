@@ -39,7 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
         recipientAddressStates:(nullable NSDictionary<SignalServiceAddress *,TSOutgoingMessageRecipientState *> *)recipientAddressStates
             storedMessageState:(TSOutgoingMessageState)storedMessageState NS_UNAVAILABLE;
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithThread:(TSThread *)thread NS_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 @end

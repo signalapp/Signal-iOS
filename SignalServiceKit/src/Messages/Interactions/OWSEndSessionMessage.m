@@ -14,10 +14,9 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithCoder:coder];
 }
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread
+- (instancetype)initWithThread:(TSThread *)thread
 {
     TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
-    messageBuilder.timestamp = timestamp;
     return [super initOutgoingMessageWithBuilder:messageBuilder];
 }
 

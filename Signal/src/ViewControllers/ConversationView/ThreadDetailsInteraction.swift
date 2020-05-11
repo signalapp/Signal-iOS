@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -33,7 +33,7 @@ public class ThreadDetailsInteraction: TSInteraction {
 
     @objc
     public init(thread: TSThread, timestamp: UInt64) {
-        super.init(uniqueId: ThreadDetailsInteraction.ThreadDetailsId, timestamp: timestamp, in: thread)
+        super.init(uniqueId: ThreadDetailsInteraction.ThreadDetailsId, timestamp: timestamp, thread: thread)
     }
 
     public override var shouldBeSaved: Bool {

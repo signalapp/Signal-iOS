@@ -13,8 +13,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithThread:(TSThread *)thread NS_UNAVAILABLE;
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp thread:(TSThread *)thread NS_UNAVAILABLE;
-
 - (instancetype)initWithThread:(TSThread *)thread
                   phoneNumbers:(NSArray<NSString *> *)phoneNumbers
                          uuids:(NSArray<NSString *> *)uuids

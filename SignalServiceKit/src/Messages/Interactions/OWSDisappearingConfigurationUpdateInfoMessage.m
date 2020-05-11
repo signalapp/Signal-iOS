@@ -26,13 +26,12 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithCoder:coder];
 }
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                           thread:(TSThread *)thread
-                    configuration:(OWSDisappearingMessagesConfiguration *)configuration
-              createdByRemoteName:(nullable NSString *)remoteName
-           createdInExistingGroup:(BOOL)createdInExistingGroup
+- (instancetype)initWithThread:(TSThread *)thread
+                 configuration:(OWSDisappearingMessagesConfiguration *)configuration
+           createdByRemoteName:(nullable NSString *)remoteName
+        createdInExistingGroup:(BOOL)createdInExistingGroup
 {
-    self = [super initWithTimestamp:timestamp inThread:thread messageType:TSInfoMessageTypeDisappearingMessagesUpdate];
+    self = [super initWithThread:thread messageType:TSInfoMessageTypeDisappearingMessagesUpdate];
     if (!self) {
         return self;
     }

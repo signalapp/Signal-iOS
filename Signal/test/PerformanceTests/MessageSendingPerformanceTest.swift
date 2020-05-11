@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -167,7 +167,7 @@ class MessageSendingPerformanceTest: PerformanceBaseTest {
                 return (messageCount, attemptingOutCount)
             }
 
-            if (messageCount == totalNumberToSend && attemptingOutCount == 0) {
+            if messageCount == totalNumberToSend && attemptingOutCount == 0 {
                 fulfillOnce()
             }
         }
@@ -179,7 +179,7 @@ class MessageSendingPerformanceTest: PerformanceBaseTest {
             // of sending each message
             self.read { transaction in
                 ThreadUtil.enqueueMessage(withText: CommonGenerator.paragraph,
-                                          in: thread,
+                                          thread: thread,
                                           quotedReplyModel: nil,
                                           linkPreviewDraft: nil,
                                           transaction: transaction)

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -61,7 +61,7 @@ public class NewAccountDiscovery: NSObject {
 
                 let thread = TSContactThread.getOrCreateThread(withContactAddress: recipient.address, transaction: transaction)
                 let message = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(),
-                                            in: thread,
+                                            thread: thread,
                                             messageType: .userJoinedSignal)
                 message.anyInsert(transaction: transaction)
 

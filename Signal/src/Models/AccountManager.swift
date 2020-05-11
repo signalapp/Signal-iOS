@@ -314,7 +314,7 @@ public class AccountManager: NSObject {
                             continue
                         }
                         let message = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(),
-                                                    in: thread,
+                                                    thread: thread,
                                                     messageType: .syncedThread)
                         message.anyInsert(transaction: transaction)
                     }

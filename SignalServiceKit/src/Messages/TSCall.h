@@ -32,12 +32,12 @@ NSString *NSStringFromCallType(RPRecentCallType callType);
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
                        timestamp:(uint64_t)timestamp
-                        inThread:(TSThread *)thread NS_UNAVAILABLE;
+                          thread:(TSThread *)thread NS_UNAVAILABLE;
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
                        timestamp:(uint64_t)timestamp
              receivedAtTimestamp:(uint64_t)receivedAtTimestamp
-                        inThread:(TSThread *)thread NS_UNAVAILABLE;
-- (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread NS_UNAVAILABLE;
+                          thread:(TSThread *)thread NS_UNAVAILABLE;
+- (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp thread:(TSThread *)thread NS_UNAVAILABLE;
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
            receivedAtTimestamp:(uint64_t)receivedAtTimestamp
@@ -48,7 +48,7 @@ NSString *NSStringFromCallType(RPRecentCallType callType);
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithCallType:(RPRecentCallType)callType
-                        inThread:(TSContactThread *)thread
+                          thread:(TSContactThread *)thread
                  sentAtTimestamp:(uint64_t)sentAtTimestamp NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
@@ -59,12 +59,12 @@ NSString *NSStringFromCallType(RPRecentCallType callType);
 
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
-             receivedAtTimestamp:(uint64_t)receivedAtTimestamp
-                          sortId:(uint64_t)sortId
-                       timestamp:(uint64_t)timestamp
-                  uniqueThreadId:(NSString *)uniqueThreadId
-                        callType:(RPRecentCallType)callType
-                            read:(BOOL)read
+           receivedAtTimestamp:(uint64_t)receivedAtTimestamp
+                        sortId:(uint64_t)sortId
+                     timestamp:(uint64_t)timestamp
+                uniqueThreadId:(NSString *)uniqueThreadId
+                      callType:(RPRecentCallType)callType
+                          read:(BOOL)read
 NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:callType:read:));
 
 // clang-format on

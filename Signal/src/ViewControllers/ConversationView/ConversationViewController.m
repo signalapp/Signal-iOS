@@ -597,8 +597,8 @@ typedef enum : NSUInteger {
     //
     // TODO: To avoid relayout, it'd be better to take into account safeAreaInsets,
     //       but they're not yet set when this method is called.
-    _collectionView =
-        [[ConversationCollectionView alloc] initWithFrame:self.view.bounds collectionViewLayout:self.layout];
+    _collectionView = [[ConversationCollectionView alloc] initWithFrame:self.view.bounds
+                                                   collectionViewLayout:self.layout];
     self.collectionView.layoutDelegate = self;
     self.collectionView.delegate = self;
     self.collectionView.dataSource = self;
@@ -945,11 +945,11 @@ typedef enum : NSUInteger {
             NSString *displayName = [self.contactsManager displayNameForAddress:address];
             NSString *format
                 = (self.isGroupConversation ? NSLocalizedString(@"MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT",
-                                                  @"Indicates that one member of this group conversation is no longer "
-                                                  @"verified. Embeds {{user's name or phone number}}.")
+                       @"Indicates that one member of this group conversation is no longer "
+                       @"verified. Embeds {{user's name or phone number}}.")
                                             : NSLocalizedString(@"MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT",
-                                                  @"Indicates that this 1:1 conversation is no longer verified. Embeds "
-                                                  @"{{user's name or phone number}}."));
+                                                @"Indicates that this 1:1 conversation is no longer verified. Embeds "
+                                                @"{{user's name or phone number}}."));
             message = [NSString stringWithFormat:format, displayName];
         }
 
@@ -1388,8 +1388,8 @@ typedef enum : NSUInteger {
     _backButtonUnreadCountLabel.font = [UIFont systemFontOfSize:11];
     _backButtonUnreadCountLabel.textAlignment = NSTextAlignmentCenter;
 
-    ConversationHeaderView *headerView =
-        [[ConversationHeaderView alloc] initWithThread:self.thread contactsManager:self.contactsManager];
+    ConversationHeaderView *headerView = [[ConversationHeaderView alloc] initWithThread:self.thread
+                                                                        contactsManager:self.contactsManager];
     self.headerView = headerView;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, headerView);
 
@@ -1895,7 +1895,6 @@ typedef enum : NSUInteger {
         valueChanged = valueChanged || (_showLoadNewerHeader != newValue);
 
         _showLoadNewerHeader = newValue;
-
     }
 
     if (valueChanged) {
@@ -2858,8 +2857,8 @@ typedef enum : NSUInteger {
 
     __block NSIndexPath *_Nullable indexPath;
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-        indexPath =
-            [self.conversationViewModel ensureLoadWindowContainsQuotedReply:quotedReply transaction:transaction];
+        indexPath = [self.conversationViewModel ensureLoadWindowContainsQuotedReply:quotedReply
+                                                                        transaction:transaction];
     }];
 
     if (quotedReply.isRemotelySourced || !indexPath) {
@@ -3083,8 +3082,8 @@ typedef enum : NSUInteger {
 
 - (void)chooseContactForSending
 {
-    ContactsPicker *contactsPicker =
-        [[ContactsPicker alloc] initWithAllowsMultipleSelection:NO subtitleCellType:SubtitleCellValueNone];
+    ContactsPicker *contactsPicker = [[ContactsPicker alloc] initWithAllowsMultipleSelection:NO
+                                                                            subtitleCellType:SubtitleCellValueNone];
     contactsPicker.contactsPickerDelegate = self;
     contactsPicker.title
         = NSLocalizedString(@"CONTACT_PICKER_TITLE", @"navbar title for contact picker when sharing a contact");
@@ -3249,8 +3248,9 @@ typedef enum : NSUInteger {
     }
 
     // "Document picker" attachments _SHOULD NOT_ be resized, if possible.
-    SignalAttachment *attachment =
-        [SignalAttachment attachmentWithDataSource:dataSource dataUTI:type imageQuality:TSImageQualityOriginal];
+    SignalAttachment *attachment = [SignalAttachment attachmentWithDataSource:dataSource
+                                                                      dataUTI:type
+                                                                 imageQuality:TSImageQualityOriginal];
     [self showApprovalDialogForAttachment:attachment];
 }
 
@@ -3299,16 +3299,16 @@ typedef enum : NSUInteger {
             OWSLogWarn(@"Media Library permission denied.");
             return;
         }
-
+        
         SendMediaNavigationController *pickerModal;
         if (shouldTreatAsDocument) {
             pickerModal = [SendMediaNavigationController asMediaDocumentPicker];
         } else {
             pickerModal = [SendMediaNavigationController showingMediaLibraryFirst];
         }
-
+        
         pickerModal.sendMediaNavDelegate = self;
-
+        
         [self dismissKeyBoard];
         [self presentFullScreenViewController:pickerModal animated:YES completion:nil];
     }];
@@ -3388,8 +3388,8 @@ typedef enum : NSUInteger {
             }
         }
         completion:^{
-            TSOutgoingMessage *message =
-                [ThreadUtil enqueueMessageWithContactShare:contactShare.dbRecord inThread:self.thread];
+            TSOutgoingMessage *message = [ThreadUtil enqueueMessageWithContactShare:contactShare.dbRecord
+                                                                             thread:self.thread];
             [self messageWasSent:message];
 
             if (didAddToProfileWhitelist) {
@@ -3407,10 +3407,9 @@ typedef enum : NSUInteger {
                         canCancel:YES
                   backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
                       NSError *error;
-                      id<DataSource>dataSource =
-                          [DataSourcePath dataSourceWithURL:movieURL
-                                 shouldDeleteOnDeallocation:NO
-                                                      error:&error];
+                      id<DataSource> dataSource = [DataSourcePath dataSourceWithURL:movieURL
+                                                         shouldDeleteOnDeallocation:NO
+                                                                              error:&error];
                       if (error != nil) {
                           [self showErrorAlertForAttachment:nil];
                           return;
@@ -3457,13 +3456,13 @@ typedef enum : NSUInteger {
         if (!strongSelf) {
             return;
         }
-
+        
         if (strongSelf.voiceMessageUUID != voiceMessageUUID) {
             // This voice message recording has been cancelled
             // before recording could begin.
             return;
         }
-
+        
         if (granted) {
             [strongSelf startRecordingVoiceMemo];
         } else {
@@ -3566,10 +3565,9 @@ typedef enum : NSUInteger {
     }
 
     NSError *error;
-    _Nullable id<DataSource> dataSource =
-        [DataSourcePath dataSourceWithURL:self.audioRecorder.url
-               shouldDeleteOnDeallocation:YES
-                                    error:&error];
+    _Nullable id<DataSource> dataSource = [DataSourcePath dataSourceWithURL:self.audioRecorder.url
+                                                 shouldDeleteOnDeallocation:YES
+                                                                      error:&error];
     self.audioRecorder = nil;
 
     if (error != nil) {
@@ -3953,14 +3951,14 @@ typedef enum : NSUInteger {
             return;
         }
 
-        BOOL didShowSNAlert = [self
-            showSafetyNumberConfirmationIfNecessaryWithConfirmationText:[SafetyNumberStrings confirmSendButton]
-                                                             completion:^(BOOL didConfirmIdentity) {
-                                                                 if (didConfirmIdentity) {
-                                                                     [weakSelf tryToSendAttachments:attachments
-                                                                                        messageText:messageText];
-                                                                 }
-                                                             }];
+        BOOL didShowSNAlert =
+            [self showSafetyNumberConfirmationIfNecessaryWithConfirmationText:[SafetyNumberStrings confirmSendButton]
+                                                                   completion:^(BOOL didConfirmIdentity) {
+                                                                       if (didConfirmIdentity) {
+                                                                           [weakSelf tryToSendAttachments:attachments
+                                                                                              messageText:messageText];
+                                                                       }
+                                                                   }];
         if (didShowSNAlert) {
             return;
         }
@@ -3980,7 +3978,7 @@ typedef enum : NSUInteger {
         [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *_Nonnull transaction) {
             message = [ThreadUtil enqueueMessageWithText:messageText
                                         mediaAttachments:attachments
-                                                inThread:self.thread
+                                                  thread:self.thread
                                         quotedReplyModel:self.inputToolbar.quotedReply
                                         linkPreviewDraft:nil
                                              transaction:transaction];
@@ -4278,11 +4276,11 @@ typedef enum : NSUInteger {
         // wait, or too fast, and fails to wait long enough to be ready to become first responder.
         // Luckily in this case the stakes aren't catastrophic. In the case that we're too aggressive
         // the user will just have to manually tap into the search field before typing.
-
+        
         // Leaving this assert in as proof that we're not ready to become first responder yet.
         // If this assert fails, *great* maybe we can get rid of this delay.
         OWSAssertDebug(![self.searchController.uiSearchController.searchBar canBecomeFirstResponder]);
-
+        
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(0.5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             [self.searchController.uiSearchController.searchBar becomeFirstResponder];
         });
@@ -4332,8 +4330,8 @@ typedef enum : NSUInteger {
 {
     __block NSIndexPath *_Nullable indexPath;
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-        indexPath =
-            [self.conversationViewModel ensureLoadWindowContainsInteractionId:interactionId transaction:transaction];
+        indexPath = [self.conversationViewModel ensureLoadWindowContainsInteractionId:interactionId
+                                                                          transaction:transaction];
     }];
 
     if (!indexPath) {
@@ -4415,7 +4413,7 @@ typedef enum : NSUInteger {
 
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
         message = [ThreadUtil enqueueMessageWithText:text
-                                            inThread:self.thread
+                                              thread:self.thread
                                     quotedReplyModel:self.inputToolbar.quotedReply
                                     linkPreviewDraft:self.inputToolbar.linkPreviewDraft
                                          transaction:transaction];
@@ -4460,7 +4458,7 @@ typedef enum : NSUInteger {
 
     OWSLogVerbose(@"Sending sticker.");
 
-    TSOutgoingMessage *message = [ThreadUtil enqueueMessageWithInstalledSticker:stickerInfo inThread:self.thread];
+    TSOutgoingMessage *message = [ThreadUtil enqueueMessageWithInstalledSticker:stickerInfo thread:self.thread];
     [self messageWasSent:message];
 }
 
@@ -4648,8 +4646,8 @@ typedef enum : NSUInteger {
     // TODO: Confirm with nancy if this will work.
     NSString *cellName = [NSString stringWithFormat:@"interaction.%@", NSUUID.UUID.UUIDString];
     if (viewItem.hasBodyText && viewItem.displayableBodyText.displayText.length > 0) {
-        NSString *textForId =
-            [viewItem.displayableBodyText.displayText stringByReplacingOccurrencesOfString:@" " withString:@"_"];
+        NSString *textForId = [viewItem.displayableBodyText.displayText stringByReplacingOccurrencesOfString:@" "
+                                                                                                  withString:@"_"];
         cellName = [NSString stringWithFormat:@"message.text.%@", textForId];
     } else if (viewItem.stickerInfo) {
         cellName = [NSString stringWithFormat:@"message.sticker.%@", [viewItem.stickerInfo asKey]];
@@ -4833,8 +4831,8 @@ typedef enum : NSUInteger {
     }
     contactShareRecord.isProfileAvatar = isProfileAvatar;
 
-    ContactShareViewModel *contactShare =
-        [[ContactShareViewModel alloc] initWithContactShareRecord:contactShareRecord avatarImageData:avatarImageData];
+    ContactShareViewModel *contactShare = [[ContactShareViewModel alloc] initWithContactShareRecord:contactShareRecord
+                                                                                    avatarImageData:avatarImageData];
 
     ContactShareApprovalViewController *approveContactShare =
         [[ContactShareApprovalViewController alloc] initWithContactShare:contactShare];
@@ -5053,7 +5051,7 @@ typedef enum : NSUInteger {
     __block BOOL shouldInvalidateLayout = NO;
     void (^batchUpdates)(void) = ^{
         OWSAssertIsOnMainThread();
-
+        
         const NSUInteger section = 0;
         BOOL hasInserted = NO, hasUpdated = NO;
         for (ConversationUpdateItem *updateItem in conversationUpdate.updateItems) {
@@ -5064,14 +5062,14 @@ typedef enum : NSUInteger {
                     [self.collectionView deleteItemsAtIndexPaths:@[
                         [NSIndexPath indexPathForRow:(NSInteger)updateItem.oldIndex inSection:section]
                     ]];
-
+                    
                     if (isSusceptibleToCrashAfterDeletingLastItem) {
                         OWSAssertDebug(interactionCount != nil);
                         if (interactionCount.unsignedLongValue == 0) {
                             shouldInvalidateLayout = YES;
                         }
                     }
-
+                    
                     break;
                 }
                 case ConversationUpdateItemType_Insert: {
@@ -5081,7 +5079,7 @@ typedef enum : NSUInteger {
                         [NSIndexPath indexPathForRow:(NSInteger)updateItem.newIndex inSection:section]
                     ]];
                     hasInserted = YES;
-
+                    
                     id<ConversationViewItem> viewItem = updateItem.viewItem;
                     OWSAssertDebug(viewItem);
                     if ([viewItem.interaction isKindOfClass:[TSOutgoingMessage class]]) {
@@ -5090,7 +5088,7 @@ typedef enum : NSUInteger {
                             scrollToBottom = YES;
                         }
                     }
-
+                    
                     break;
                 }
                 case ConversationUpdateItemType_Update: {
@@ -5102,7 +5100,7 @@ typedef enum : NSUInteger {
                 }
             }
         }
-
+        
         if (shouldInvalidateLayout) {
             OWSLogDebug(@"invalidating layout");
             [self.layout invalidateLayout];
@@ -5112,17 +5110,17 @@ typedef enum : NSUInteger {
     BOOL shouldAnimateUpdates = conversationUpdate.shouldAnimateUpdates;
     void (^batchUpdatesCompletion)(BOOL) = ^(BOOL finished) {
         OWSAssertIsOnMainThread();
-
+        
         // We can't use the transaction parameter; this completion
         // will be run async.
         [self updateLastVisibleSortIdWithSneakyAsyncTransaction];
-
+        
         [self showMessageRequestDialogIfRequired];
-
+        
         if (scrollToBottom) {
             [self scrollToBottomAnimated:NO];
         }
-
+        
         // Try to update the lastKnownDistanceFromBottom; the content size may have changed.
         [self updateLastKnownDistanceFromBottom];
         
@@ -5155,12 +5153,12 @@ typedef enum : NSUInteger {
             // I'm unclear if this is a bug in UIKit, or if we're doing something crazy in
             // ConversationViewLayout#prepareLayout. To reproduce, rapidily insert and delete items into the
             // conversation. See `DebugUIMessages#thrashCellsInThread:`
-            [UIView
-                animateWithDuration:0.0
-                         animations:^{
-                             [self.collectionView performBatchUpdates:batchUpdates completion:batchUpdatesCompletion];
-                             [BenchManager completeEventWithEventId:@"message-send"];
-                         }];
+            [UIView animateWithDuration:0.0
+                             animations:^{
+                                 [self.collectionView performBatchUpdates:batchUpdates
+                                                               completion:batchUpdatesCompletion];
+                                 [BenchManager completeEventWithEventId:@"message-send"];
+                             }];
         }
     } @catch (NSException *exception) {
         OWSFailDebug(@"exception: %@ of type: %@ with reason: %@, user info: %@.",
@@ -5512,7 +5510,7 @@ typedef enum : NSUInteger {
         [strongSelf.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
             message = [ThreadUtil enqueueMessageWithText:location.messageText
                                         mediaAttachments:@[ attachment ]
-                                                inThread:strongSelf.thread
+                                                  thread:strongSelf.thread
                                         quotedReplyModel:nil
                                         linkPreviewDraft:nil
                                              transaction:transaction];
@@ -5685,16 +5683,16 @@ typedef enum : NSUInteger {
             // If we were scrolled away from the bottom, shift the content in lockstep with the
             // keyboard, up to the limits of the content bounds.
             CGFloat insetChange = newInsets.bottom - oldInsets.bottom;
-
+            
             // Only update the content offset if the inset has changed.
             if (insetChange != 0) {
                 // The content offset can go negative, up to the size of the top layout guide.
                 // This accounts for the extended layout under the navigation bar.
                 CGFloat minYOffset = -self.topLayoutGuide.length;
-
+                
                 CGFloat newYOffset = CGFloatClamp(oldYOffset + insetChange, minYOffset, self.safeContentHeight);
                 CGPoint newOffset = CGPointMake(0, newYOffset);
-
+                
                 [self.collectionView setContentOffset:newOffset animated:NO];
             }
         }

@@ -19,12 +19,12 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol NotificationsProtocol <NSObject>
 
 - (void)notifyUserForIncomingMessage:(TSIncomingMessage *)incomingMessage
-                            inThread:(TSThread *)thread
+                              thread:(TSThread *)thread
                          transaction:(SDSAnyReadTransaction *)transaction;
 
 - (void)notifyUserForReaction:(OWSReaction *)reaction
             onOutgoingMessage:(TSOutgoingMessage *)message
-                     inThread:(TSThread *)thread
+                       thread:(TSThread *)thread
                   transaction:(SDSAnyReadTransaction *)transaction;
 
 - (void)notifyUserForErrorMessage:(TSErrorMessage *)errorMessage
