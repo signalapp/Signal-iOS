@@ -65,19 +65,9 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 @implementation TSMessage
 
-- (instancetype)initMessageWithTimestamp:(uint64_t)timestamp
-                                inThread:(TSThread *)thread
-                             messageBody:(nullable NSString *)body
-                           attachmentIds:(NSArray<NSString *> *)attachmentIds
-                        expiresInSeconds:(uint32_t)expiresInSeconds
-                         expireStartedAt:(uint64_t)expireStartedAt
-                           quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                            contactShare:(nullable OWSContact *)contactShare
-                             linkPreview:(nullable OWSLinkPreview *)linkPreview
-                          messageSticker:(nullable MessageSticker *)messageSticker
-                       isViewOnceMessage:(BOOL)isViewOnceMessage
+- (instancetype)initMessageWithBuilder:(TSMessageBuilder *)messageBuilder
 {
-    self = [super initInteractionWithTimestamp:timestamp inThread:thread];
+    self = [super initInteractionWithTimestamp:messageBuilder.timestamp thread:messageBuilder.thread];
 
     if (!self) {
         return self;
@@ -85,16 +75,16 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
     _schemaVersion = OWSMessageSchemaVersion;
 
-    _body = body;
-    _attachmentIds = attachmentIds ? [attachmentIds mutableCopy] : [NSMutableArray new];
-    _expiresInSeconds = expiresInSeconds;
-    _expireStartedAt = expireStartedAt;
+    _body = messageBuilder.messageBody;
+    _attachmentIds = messageBuilder.attachmentIds;
+    _expiresInSeconds = messageBuilder.expiresInSeconds;
+    _expireStartedAt = messageBuilder.expireStartedAt;
     [self updateExpiresAt];
-    _quotedMessage = quotedMessage;
-    _contactShare = contactShare;
-    _linkPreview = linkPreview;
-    _messageSticker = messageSticker;
-    _isViewOnceMessage = isViewOnceMessage;
+    _quotedMessage = messageBuilder.quotedMessage;
+    _contactShare = messageBuilder.contactShare;
+    _linkPreview = messageBuilder.linkPreview;
+    _messageSticker = messageBuilder.messageSticker;
+    _isViewOnceMessage = messageBuilder.isViewOnceMessage;
     _isViewOnceComplete = NO;
 
 #ifdef DEBUG
@@ -112,35 +102,35 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
-             receivedAtTimestamp:(uint64_t)receivedAtTimestamp
-                          sortId:(uint64_t)sortId
-                       timestamp:(uint64_t)timestamp
-                  uniqueThreadId:(NSString *)uniqueThreadId
-                   attachmentIds:(NSArray<NSString *> *)attachmentIds
-                            body:(nullable NSString *)body
-                    contactShare:(nullable OWSContact *)contactShare
-                 expireStartedAt:(uint64_t)expireStartedAt
-                       expiresAt:(uint64_t)expiresAt
-                expiresInSeconds:(unsigned int)expiresInSeconds
-              isViewOnceComplete:(BOOL)isViewOnceComplete
-               isViewOnceMessage:(BOOL)isViewOnceMessage
-                     linkPreview:(nullable OWSLinkPreview *)linkPreview
-                  messageSticker:(nullable MessageSticker *)messageSticker
-                   quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-    storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
-              wasRemotelyDeleted:(BOOL)wasRemotelyDeleted
+           receivedAtTimestamp:(uint64_t)receivedAtTimestamp
+                        sortId:(uint64_t)sortId
+                     timestamp:(uint64_t)timestamp
+                uniqueThreadId:(NSString *)uniqueThreadId
+                 attachmentIds:(NSArray<NSString *> *)attachmentIds
+                          body:(nullable NSString *)body
+                  contactShare:(nullable OWSContact *)contactShare
+               expireStartedAt:(uint64_t)expireStartedAt
+                     expiresAt:(uint64_t)expiresAt
+              expiresInSeconds:(unsigned int)expiresInSeconds
+            isViewOnceComplete:(BOOL)isViewOnceComplete
+             isViewOnceMessage:(BOOL)isViewOnceMessage
+                   linkPreview:(nullable OWSLinkPreview *)linkPreview
+                messageSticker:(nullable MessageSticker *)messageSticker
+                 quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+  storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
+            wasRemotelyDeleted:(BOOL)wasRemotelyDeleted
 {
     self = [super initWithGrdbId:grdbId
                         uniqueId:uniqueId
-               receivedAtTimestamp:receivedAtTimestamp
-                            sortId:sortId
-                         timestamp:timestamp
-                    uniqueThreadId:uniqueThreadId];
-
+             receivedAtTimestamp:receivedAtTimestamp
+                          sortId:sortId
+                       timestamp:timestamp
+                  uniqueThreadId:uniqueThreadId];
+    
     if (!self) {
         return self;
     }
-
+    
     _attachmentIds = attachmentIds;
     _body = body;
     _contactShare = contactShare;
@@ -154,9 +144,9 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     _quotedMessage = quotedMessage;
     _storedShouldStartExpireTimer = storedShouldStartExpireTimer;
     _wasRemotelyDeleted = wasRemotelyDeleted;
-
+    
     [self sdsFinalizeMessage];
-
+    
     return self;
 }
 
@@ -228,7 +218,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     }
 
     if (!_attachmentIds) {
-        _attachmentIds = [NSMutableArray new];
+        _attachmentIds = @[];
     }
 
     _schemaVersion = OWSMessageSchemaVersion;
@@ -390,7 +380,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                                     block:^(TSMessage *message) {
                                         NSMutableArray<NSString *> *attachmentIds = [message.attachmentIds mutableCopy];
                                         [attachmentIds removeObject:attachment.uniqueId];
-                                        message.attachmentIds = attachmentIds;
+                                        message.attachmentIds = [attachmentIds copy];
                                     }];
 }
 
@@ -787,7 +777,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
                                         message.quotedMessage = nil;
                                         message.linkPreview = nil;
                                         message.messageSticker = nil;
-                                        message.attachmentIds = [NSMutableArray new];
+                                        message.attachmentIds = @[];
                                         OWSAssertDebug(!message.hasRenderableContent);
 
                                         block(message);

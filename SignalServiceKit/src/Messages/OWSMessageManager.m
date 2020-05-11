@@ -1663,10 +1663,8 @@ NS_ASSUME_NONNULL_BEGIN
     TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactAddress:envelope.sourceAddress
                                                                        transaction:transaction];
 
-    // MJK TODO - safe to remove senderTimestamp
-    [[[TSInfoMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                     inThread:thread
-                                  messageType:TSInfoMessageTypeSessionDidEnd] anyInsertWithTransaction:transaction];
+    [[[TSInfoMessage alloc] initWithThread:thread
+                               messageType:TSInfoMessageTypeSessionDidEnd] anyInsertWithTransaction:transaction];
 
     [self.sessionStore deleteAllSessionsForAddress:envelope.sourceAddress transaction:transaction];
 }
@@ -1980,21 +1978,24 @@ NS_ASSUME_NONNULL_BEGIN
     BOOL isViewOnceMessage = dataMessage.hasIsViewOnce && dataMessage.isViewOnce;
 
     // Legit usage of senderTimestamp when creating an incoming group message record
-    TSIncomingMessage *incomingMessage =
-        [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:timestamp
-                                                           inThread:thread
-                                                      authorAddress:authorAddress
-                                                     sourceDeviceId:envelope.sourceDevice
-                                                        messageBody:body
-                                                      attachmentIds:@[]
-                                                   expiresInSeconds:dataMessage.expireTimer
-                                                      quotedMessage:quotedMessage
-                                                       contactShare:contact
-                                                        linkPreview:linkPreview
-                                                     messageSticker:messageSticker
-                                                    serverTimestamp:serverTimestamp
-                                                    wasReceivedByUD:wasReceivedByUD
-                                                  isViewOnceMessage:isViewOnceMessage];
+    //
+    // The builder() factory method requires us to specify every
+    // property so that this will break if we add any new properties.
+    TSIncomingMessageBuilder *incomingMessageBuilder = [TSIncomingMessageBuilder builderWithThread:thread
+                                                                                         timestamp:timestamp
+                                                                                     authorAddress:authorAddress
+                                                                                    sourceDeviceId:envelope.sourceDevice
+                                                                                       messageBody:body
+                                                                                     attachmentIds:[NSMutableArray new]
+                                                                                  expiresInSeconds:dataMessage.expireTimer
+                                                                                     quotedMessage:quotedMessage
+                                                                                      contactShare:contact
+                                                                                       linkPreview:linkPreview
+                                                                                    messageSticker:messageSticker
+                                                                                   serverTimestamp:serverTimestamp
+                                                                                   wasReceivedByUD:wasReceivedByUD
+                                                                                 isViewOnceMessage:isViewOnceMessage];
+    TSIncomingMessage *incomingMessage = [incomingMessageBuilder build];
     if (!incomingMessage) {
         OWSFailDebug(@"Missing incomingMessage.");
         return nil;
@@ -2089,7 +2090,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.databaseStorage touchThread:thread transaction:transaction];
 
     [SSKEnvironment.shared.notificationsManager notifyUserForIncomingMessage:incomingMessage
-                                                                    inThread:thread
+                                                                      thread:thread
                                                                  transaction:transaction];
 
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -2116,11 +2117,9 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    TSInteraction *message =
-        [[OWSUnknownProtocolVersionMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                             thread:thread
-                                                             sender:sender
-                                                    protocolVersion:protocolVersion];
+    TSInteraction *message = [[OWSUnknownProtocolVersionMessage alloc] initWithThread:thread
+                                                                               sender:sender
+                                                                      protocolVersion:protocolVersion];
     [message anyInsertWithTransaction:transaction];
 }
 

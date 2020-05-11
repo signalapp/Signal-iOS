@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSOrphanDataCleaner.h"
@@ -68,17 +68,12 @@
 - (TSIncomingMessage *)createIncomingMessageWithThread:(TSThread *)thread
                                          attachmentIds:(NSArray<NSString *> *)attachmentIds
 {
-    TSIncomingMessage *incomingMessage = [[TSIncomingMessage alloc]
-        initIncomingMessageWithTimestamp:1
-                                inThread:thread
-                           authorAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"fake-author-id"]
-                          sourceDeviceId:OWSDevicePrimaryDeviceId
-                             messageBody:@"footch"
-                           attachmentIds:attachmentIds
-                        expiresInSeconds:0
-                           quotedMessage:nil
-                            contactShare:nil
-                             linkPreview:nil];
+    TSIncomingMessageBuilder *incomingMessageBuilder =
+        [TSIncomingMessageBuilder incomingMessageBuilderWithThread:thread messageBody:@"Test body"];
+    incomingMessageBuilder.authorAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:@"fake-author-id"];
+    incomingMessageBuilder.timestamp = 1;
+    incomingMessageBuilder.attachmentIds = attachmentIds;
+    TSIncomingMessage *incomingMessage = [incomingMessageBuilder build];
     [incomingMessage save];
 
     return incomingMessage;

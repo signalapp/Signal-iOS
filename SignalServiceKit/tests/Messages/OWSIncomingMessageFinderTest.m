@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDevice.h"
@@ -46,20 +46,12 @@ NS_ASSUME_NONNULL_BEGIN
                              authorAddress:(SignalServiceAddress *)authorAddress
                             sourceDeviceId:(uint32_t)sourceDeviceId
 {
-    TSIncomingMessage *incomingMessage = [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:timestamp
-                                                                                            inThread:self.thread
-                                                                                       authorAddress:authorAddress
-                                                                                      sourceDeviceId:sourceDeviceId
-                                                                                         messageBody:@"foo"
-                                                                                       attachmentIds:@[]
-                                                                                    expiresInSeconds:0
-                                                                                       quotedMessage:nil
-                                                                                        contactShare:nil
-                                                                                         linkPreview:nil
-                                                                                      messageSticker:nil
-                                                                                     serverTimestamp:nil
-                                                                                     wasReceivedByUD:NO
-                                                                                   isViewOnceMessage:NO];
+    TSIncomingMessageBuilder *incomingMessageBuilder =
+        [TSIncomingMessageBuilder incomingMessageBuilderWithThread:self.thread messageBody:@"foo"];
+    incomingMessageBuilder.timestamp = timestamp;
+    incomingMessageBuilder.authorAddress = authorAddress;
+    incomingMessageBuilder.sourceDeviceId = sourceDeviceId;
+    TSIncomingMessage *incomingMessage = [incomingMessageBuilder build];
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [incomingMessage anyInsertWithTransaction:transaction];
     }];

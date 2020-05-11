@@ -22,7 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug([thread.uniqueId isEqualToString:message.uniqueThreadId]);
 
-    TSOutgoingMessageBuilder *messageBuilder = [[TSOutgoingMessageBuilder alloc] initWithThread:thread];
+    TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
     self = [super initOutgoingMessageWithBuilder:messageBuilder];
     if (!self) {
         return self;

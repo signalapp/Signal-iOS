@@ -95,10 +95,8 @@ NS_ASSUME_NONNULL_BEGIN
         OWSLogInfo(@"EndSession was sent to recipient: %@.", transcript.recipientAddress);
         [self.sessionStore deleteAllSessionsForAddress:transcript.recipientAddress transaction:transaction];
 
-        // MJK TODO - we don't use this timestamp, safe to remove
-        TSInfoMessage *infoMessage = [[TSInfoMessage alloc] initWithTimestamp:transcript.timestamp
-                                                                     inThread:transcript.thread
-                                                                  messageType:TSInfoMessageTypeSessionDidEnd];
+        TSInfoMessage *infoMessage = [[TSInfoMessage alloc] initWithThread:transcript.thread
+                                                               messageType:TSInfoMessageTypeSessionDidEnd];
         [infoMessage anyInsertWithTransaction:transaction];
 
         // Don't continue processing lest we print a bubble for the session reset.
@@ -131,7 +129,8 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    // TODO group updates. Currently desktop doesn't support group updates, so not a problem yet.
+    // The builder() factory method requires us to specify every
+    // property so that this will break if we add any new properties.
     TSOutgoingMessage *outgoingMessage = [[TSOutgoingMessageBuilder builderWithThread:transcript.thread
                                                                             timestamp:transcript.timestamp
                                                                           messageBody:transcript.body
@@ -270,10 +269,9 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     TSInteraction *message =
-        [[OWSUnknownProtocolVersionMessage alloc] initWithTimestamp:transcript.timestamp
-                                                             thread:transcript.thread
-                                                             sender:nil
-                                                    protocolVersion:transcript.requiredProtocolVersion.intValue];
+        [[OWSUnknownProtocolVersionMessage alloc] initWithThread:transcript.thread
+                                                          sender:nil
+                                                 protocolVersion:transcript.requiredProtocolVersion.intValue];
     [message anyInsertWithTransaction:transaction];
 }
 

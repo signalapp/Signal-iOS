@@ -219,8 +219,8 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
     }
     contactShareRecord.isProfileAvatar = isProfileAvatar;
 
-    ContactShareViewModel *contactShare =
-        [[ContactShareViewModel alloc] initWithContactShareRecord:contactShareRecord avatarImageData:avatarImageData];
+    ContactShareViewModel *contactShare = [[ContactShareViewModel alloc] initWithContactShareRecord:contactShareRecord
+                                                                                    avatarImageData:avatarImageData];
 
     ContactShareApprovalViewController *approvalVC =
         [[ContactShareApprovalViewController alloc] initWithContactShare:contactShare];
@@ -265,7 +265,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
             [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
                 outgoingMessage = [ThreadUtil sendMessageNonDurablyWithText:messageText
                                                            mediaAttachments:attachments
-                                                                   inThread:self.thread
+                                                                     thread:self.thread
                                                            quotedReplyModel:nil
                                                                 transaction:transaction
                                                               messageSender:self.messageSender
@@ -317,7 +317,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
         // SAE runs as long as it needs.
         [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
             outgoingMessage = [ThreadUtil sendMessageNonDurablyWithText:messageText
-                                                               inThread:self.thread
+                                                                 thread:self.thread
                                                        quotedReplyModel:nil
                                                             transaction:transaction
                                                           messageSender:self.messageSender
@@ -380,7 +380,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
             completion:^{
                 __block TSOutgoingMessage *outgoingMessage = nil;
                 outgoingMessage = [ThreadUtil sendMessageNonDurablyWithContactShare:contactShare.dbRecord
-                                                                           inThread:self.thread
+                                                                             thread:self.thread
                                                                       messageSender:self.messageSender
                                                                          completion:^(NSError *_Nullable error) {
                                                                              sendCompletion(error, outgoingMessage);
@@ -388,7 +388,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
                 // This is necessary to show progress.
                 self.outgoingMessage = outgoingMessage;
             }];
-                                                    
+        
         
     }
                  fromViewController:approvalViewController];
@@ -467,17 +467,15 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
     [progressActionSheet addAction:progressCancelAction];
 
     SendCompletionBlock sendCompletion = ^(NSError *_Nullable error, TSOutgoingMessage *message) {
-
         dispatch_async(dispatch_get_main_queue(), ^{
             if (error) {
-                [fromViewController
-                    dismissViewControllerAnimated:YES
-                                       completion:^{
-                                           OWSLogInfo(@"Sending message failed with error: %@", error);
-                                           [self showSendFailureAlertWithError:error
-                                                                       message:message
-                                                            fromViewController:fromViewController];
-                                       }];
+                [fromViewController dismissViewControllerAnimated:YES
+                                                       completion:^{
+                                                           OWSLogInfo(@"Sending message failed with error: %@", error);
+                                                           [self showSendFailureAlertWithError:error
+                                                                                       message:message
+                                                                            fromViewController:fromViewController];
+                                                       }];
                 return;
             }
 
@@ -509,8 +507,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
         NSString *failureFormat = NSLocalizedString(@"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT",
             @"alert body when sharing file failed because of untrusted/changed identity keys");
 
-        NSString *displayName =
-            [self.contactsManager displayNameForAddress:untrustedAddress];
+        NSString *displayName = [self.contactsManager displayNameForAddress:untrustedAddress];
         NSString *failureMessage = [NSString stringWithFormat:failureFormat, displayName];
 
         ActionSheetController *failureAlert = [[ActionSheetController alloc] initWithTitle:failureTitle
@@ -569,7 +566,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 }
 
 - (void)confirmIdentityAndResendMessage:(TSOutgoingMessage *)message
-                            address:(SignalServiceAddress *)address
+                                address:(SignalServiceAddress *)address
                      fromViewController:(UIViewController *)fromViewController
 {
     OWSAssertIsOnMainThread();
@@ -581,9 +578,8 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
     [self.databaseStorage
         asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
-            OWSVerificationState verificationState = [[OWSIdentityManager sharedManager]
-                verificationStateForAddress:address
-                                transaction:transaction];
+            OWSVerificationState verificationState =
+                [[OWSIdentityManager sharedManager] verificationStateForAddress:address transaction:transaction];
             switch (verificationState) {
                 case OWSVerificationStateVerified: {
                     OWSFailDebug(@"Shouldn't need to confirm identity if it was already verified");
@@ -600,16 +596,14 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
                 }
                 case OWSVerificationStateNoLongerVerified: {
                     OWSLogInfo(@"marked recipient: %@ as default verification status.", address);
-                    NSData *identityKey = [[OWSIdentityManager sharedManager]
-                        identityKeyForAddress:address
-                                  transaction:transaction];
+                    NSData *identityKey = [[OWSIdentityManager sharedManager] identityKeyForAddress:address
+                                                                                        transaction:transaction];
                     OWSAssertDebug(identityKey);
-                    [[OWSIdentityManager sharedManager]
-                         setVerificationState:OWSVerificationStateDefault
-                                  identityKey:identityKey
-                                      address:address
-                        isUserInitiatedChange:YES
-                                  transaction:transaction];
+                    [[OWSIdentityManager sharedManager] setVerificationState:OWSVerificationStateDefault
+                                                                 identityKey:identityKey
+                                                                     address:address
+                                                       isUserInitiatedChange:YES
+                                                                 transaction:transaction];
                     break;
                 }
             }

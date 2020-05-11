@@ -11,6 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class SignalServiceAddress;
 @class TSContactThread;
 @class TSGroupThread;
+@class TSIncomingMessageBuilder;
 
 @interface TSIncomingMessage : TSMessage <OWSReadTracking>
 
@@ -18,52 +19,32 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) BOOL wasReceivedByUD;
 
-- (instancetype)initMessageWithTimestamp:(uint64_t)timestamp
-                                inThread:(TSThread *)thread
-                             messageBody:(nullable NSString *)body
-                           attachmentIds:(NSArray<NSString *> *)attachmentIds
-                        expiresInSeconds:(uint32_t)expiresInSeconds
-                         expireStartedAt:(uint64_t)expireStartedAt
-                           quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                            contactShare:(nullable OWSContact *)contactShare
-                             linkPreview:(nullable OWSLinkPreview *)linkPreview
-                          messageSticker:(nullable MessageSticker *)messageSticker
-                       isViewOnceMessage:(BOOL)isViewOnceMessage NS_UNAVAILABLE;
+- (instancetype)initMessageWithBuilder:(TSMessageBuilder *)messageBuilder NS_UNAVAILABLE;
+
 - (instancetype)initWithGrdbId:(int64_t)grdbId
-                      uniqueId:(NSString *)uniqueId
-           receivedAtTimestamp:(uint64_t)receivedAtTimestamp
-                        sortId:(uint64_t)sortId
-                     timestamp:(uint64_t)timestamp
-                uniqueThreadId:(NSString *)uniqueThreadId
-                 attachmentIds:(NSArray<NSString *> *)attachmentIds
-                          body:(nullable NSString *)body
-                  contactShare:(nullable OWSContact *)contactShare
-               expireStartedAt:(uint64_t)expireStartedAt
-                     expiresAt:(uint64_t)expiresAt
-              expiresInSeconds:(unsigned int)expiresInSeconds
-            isViewOnceComplete:(BOOL)isViewOnceComplete
-             isViewOnceMessage:(BOOL)isViewOnceMessage
-                   linkPreview:(nullable OWSLinkPreview *)linkPreview
-                messageSticker:(nullable MessageSticker *)messageSticker
-                 quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-  storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer NS_UNAVAILABLE;
+                        uniqueId:(NSString *)uniqueId
+             receivedAtTimestamp:(uint64_t)receivedAtTimestamp
+                          sortId:(uint64_t)sortId
+                       timestamp:(uint64_t)timestamp
+                  uniqueThreadId:(NSString *)uniqueThreadId
+                   attachmentIds:(NSArray<NSString *> *)attachmentIds
+                            body:(nullable NSString *)body
+                    contactShare:(nullable OWSContact *)contactShare
+                 expireStartedAt:(uint64_t)expireStartedAt
+                       expiresAt:(uint64_t)expiresAt
+                expiresInSeconds:(unsigned int)expiresInSeconds
+              isViewOnceComplete:(BOOL)isViewOnceComplete
+               isViewOnceMessage:(BOOL)isViewOnceMessage
+                     linkPreview:(nullable OWSLinkPreview *)linkPreview
+                  messageSticker:(nullable MessageSticker *)messageSticker
+                   quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+    storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
+              wasRemotelyDeleted:(BOOL)wasRemotelyDeleted NS_UNAVAILABLE;
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initIncomingMessageWithTimestamp:(uint64_t)timestamp
-                                        inThread:(TSThread *)thread
-                                   authorAddress:(SignalServiceAddress *)authorAddress
-                                  sourceDeviceId:(uint32_t)sourceDeviceId
-                                     messageBody:(nullable NSString *)body
-                                   attachmentIds:(NSArray<NSString *> *)attachmentIds
-                                expiresInSeconds:(uint32_t)expiresInSeconds
-                                   quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                                    contactShare:(nullable OWSContact *)contactShare
-                                     linkPreview:(nullable OWSLinkPreview *)linkPreview
-                                  messageSticker:(nullable MessageSticker *)messageSticker
-                                 serverTimestamp:(nullable NSNumber *)serverTimestamp
-                                 wasReceivedByUD:(BOOL)wasReceivedByUD
-                               isViewOnceMessage:(BOOL)isViewOnceMessage NS_DESIGNATED_INITIALIZER;
+- (instancetype)initIncomingMessageWithBuilder:(TSIncomingMessageBuilder *)incomingMessageBuilder
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(incomingMessageWithBuilder:));
 
 // --- CODE GENERATION MARKER
 

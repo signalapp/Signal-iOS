@@ -73,20 +73,12 @@
           @"privacy matters; privacy is what allows us to determine who we are and who we want to be.";
 
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        TSIncomingMessage *newMessage = [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:timestamp
-                                                                                           inThread:self.thread
-                                                                                      authorAddress:self.otherAddress
-                                                                                     sourceDeviceId:1
-                                                                                        messageBody:body
-                                                                                      attachmentIds:@[]
-                                                                                   expiresInSeconds:0
-                                                                                      quotedMessage:nil
-                                                                                       contactShare:nil
-                                                                                        linkPreview:nil
-                                                                                     messageSticker:nil
-                                                                                    serverTimestamp:nil
-                                                                                    wasReceivedByUD:NO
-                                                                                  isViewOnceMessage:NO];
+        TSIncomingMessageBuilder *incomingMessageBuilder =
+            [TSIncomingMessageBuilder incomingMessageBuilderWithThread:self.thread messageBody:body];
+        incomingMessageBuilder.timestamp = timestamp;
+        incomingMessageBuilder.authorAddress = self.otherAddress;
+        incomingMessageBuilder.sourceDeviceId = 1;
+        TSIncomingMessage *newMessage = [incomingMessageBuilder build];
 
         [newMessage anyInsertWithTransaction:transaction];
         messageId = newMessage.uniqueId;
@@ -112,21 +104,12 @@
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         NSMutableArray<TSIncomingMessage *> *messages = [NSMutableArray new];
         for (int i = 0; i < 10; i++) {
-            TSIncomingMessage *newMessage =
-                [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:i + 1
-                                                                   inThread:self.thread
-                                                              authorAddress:self.otherAddress
-                                                             sourceDeviceId:1
-                                                                messageBody:body
-                                                              attachmentIds:@[]
-                                                           expiresInSeconds:0
-                                                              quotedMessage:nil
-                                                               contactShare:nil
-                                                                linkPreview:nil
-                                                             messageSticker:nil
-                                                            serverTimestamp:nil
-                                                            wasReceivedByUD:NO
-                                                          isViewOnceMessage:NO];
+            TSIncomingMessageBuilder *incomingMessageBuilder =
+                [TSIncomingMessageBuilder incomingMessageBuilderWithThread:self.thread messageBody:body];
+            incomingMessageBuilder.timestamp = i + 1;
+            incomingMessageBuilder.authorAddress = self.otherAddress;
+            incomingMessageBuilder.sourceDeviceId = 1;
+            TSIncomingMessage *newMessage = [incomingMessageBuilder build];
 
             [messages addObject:newMessage];
             [newMessage anyInsertWithTransaction:transaction];
@@ -173,20 +156,12 @@
         NSMutableArray<TSIncomingMessage *> *messages = [NSMutableArray new];
         for (uint64_t i = 0; i < 10; i++) {
             SignalServiceAddress *authorAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+fakephone"];
-            TSIncomingMessage *newMessage = [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:i + 1
-                                                                                               inThread:thread
-                                                                                          authorAddress:authorAddress
-                                                                                         sourceDeviceId:1
-                                                                                            messageBody:body
-                                                                                          attachmentIds:@[]
-                                                                                       expiresInSeconds:0
-                                                                                          quotedMessage:nil
-                                                                                           contactShare:nil
-                                                                                            linkPreview:nil
-                                                                                         messageSticker:nil
-                                                                                        serverTimestamp:nil
-                                                                                        wasReceivedByUD:NO
-                                                                                      isViewOnceMessage:NO];
+            TSIncomingMessageBuilder *incomingMessageBuilder =
+                [TSIncomingMessageBuilder incomingMessageBuilderWithThread:thread messageBody:body];
+            incomingMessageBuilder.timestamp = i + 1;
+            incomingMessageBuilder.authorAddress = authorAddress;
+            incomingMessageBuilder.sourceDeviceId = 1;
+            TSIncomingMessage *newMessage = [incomingMessageBuilder build];
             [newMessage anyInsertWithTransaction:transaction];
             [messages addObject:newMessage];
         }

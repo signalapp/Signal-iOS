@@ -209,7 +209,7 @@ extension SignalCall: CallManagerCallReference { }
         }
 
         // Create a callRecord for outgoing calls immediately.
-        let callRecord = TSCall(callType: .outgoingIncomplete, in: call.thread, sentAtTimestamp: call.sentAtTimestamp)
+        let callRecord = TSCall(callType: .outgoingIncomplete, thread: call.thread, sentAtTimestamp: call.sentAtTimestamp)
         databaseStorage.write { transaction in
             callRecord.anyInsert(transaction: transaction)
         }
@@ -241,7 +241,7 @@ extension SignalCall: CallManagerCallReference { }
             return
         }
 
-        let callRecord = TSCall(callType: .incomingIncomplete, in: call.thread, sentAtTimestamp: call.sentAtTimestamp)
+        let callRecord = TSCall(callType: .incomingIncomplete, thread: call.thread, sentAtTimestamp: call.sentAtTimestamp)
         databaseStorage.write { transaction in
             callRecord.anyInsert(transaction: transaction)
         }
@@ -294,7 +294,7 @@ extension SignalCall: CallManagerCallReference { }
                 callRecord.updateCallType(.outgoingMissed)
             }
         } else if call.state == .localRinging {
-            let callRecord = TSCall(callType: .incomingDeclined, in: call.thread, sentAtTimestamp: call.sentAtTimestamp)
+            let callRecord = TSCall(callType: .incomingDeclined, thread: call.thread, sentAtTimestamp: call.sentAtTimestamp)
             databaseStorage.write { transaction in
                 callRecord.anyInsert(transaction: transaction)
             }
@@ -387,7 +387,7 @@ extension SignalCall: CallManagerCallReference { }
 
         guard tsAccountManager.isOnboarded() else {
             Logger.warn("user is not onboarded, skipping call.")
-            let callRecord = TSCall(callType: .incomingMissed, in: thread, sentAtTimestamp: sentAtTimestamp)
+            let callRecord = TSCall(callType: .incomingMissed, thread: thread, sentAtTimestamp: sentAtTimestamp)
             assert(newCall.callRecord == nil)
             newCall.callRecord = callRecord
             databaseStorage.write { transaction in
@@ -415,7 +415,7 @@ extension SignalCall: CallManagerCallReference { }
                 self.notificationPresenter.presentMissedCallBecauseOfNoLongerVerifiedIdentity(call: newCall, callerName: callerName)
             }
 
-            let callRecord = TSCall(callType: .incomingMissedBecauseOfChangedIdentity, in: thread, sentAtTimestamp: sentAtTimestamp)
+            let callRecord = TSCall(callType: .incomingMissedBecauseOfChangedIdentity, thread: thread, sentAtTimestamp: sentAtTimestamp)
             assert(newCall.callRecord == nil)
             newCall.callRecord = callRecord
             databaseStorage.write { transaction in
@@ -778,7 +778,7 @@ extension SignalCall: CallManagerCallReference { }
                 }
             } else {
                 assert(call.direction == .incoming)
-                let callRecord = TSCall(callType: .incomingMissed, in: call.thread, sentAtTimestamp: call.sentAtTimestamp)
+                let callRecord = TSCall(callType: .incomingMissed, thread: call.thread, sentAtTimestamp: call.sentAtTimestamp)
                 databaseStorage.write { callRecord.anyInsert(transaction: $0) }
                 call.callRecord = callRecord
                 callUIAdapter.reportMissedCall(call)
@@ -1046,7 +1046,7 @@ extension SignalCall: CallManagerCallReference { }
         if let existingCallRecord = call.callRecord {
             callRecord = existingCallRecord
         } else {
-            callRecord = TSCall(callType: .incomingMissed, in: call.thread, sentAtTimestamp: call.sentAtTimestamp)
+            callRecord = TSCall(callType: .incomingMissed, thread: call.thread, sentAtTimestamp: call.sentAtTimestamp)
             call.callRecord = callRecord
         }
 
@@ -1081,7 +1081,7 @@ extension SignalCall: CallManagerCallReference { }
             // devices call.
             existingCallRecord.updateCallType(.incomingAnsweredElsewhere)
         } else {
-            let callRecord = TSCall(callType: .incomingAnsweredElsewhere, in: call.thread, sentAtTimestamp: call.sentAtTimestamp)
+            let callRecord = TSCall(callType: .incomingAnsweredElsewhere, thread: call.thread, sentAtTimestamp: call.sentAtTimestamp)
             call.callRecord = callRecord
             databaseStorage.write { callRecord.anyInsert(transaction: $0) }
         }
@@ -1101,7 +1101,7 @@ extension SignalCall: CallManagerCallReference { }
             // devices call.
             existingCallRecord.updateCallType(.incomingDeclinedElsewhere)
         } else {
-            let callRecord = TSCall(callType: .incomingDeclinedElsewhere, in: call.thread, sentAtTimestamp: call.sentAtTimestamp)
+            let callRecord = TSCall(callType: .incomingDeclinedElsewhere, thread: call.thread, sentAtTimestamp: call.sentAtTimestamp)
             call.callRecord = callRecord
             databaseStorage.write { callRecord.anyInsert(transaction: $0) }
         }
@@ -1121,7 +1121,7 @@ extension SignalCall: CallManagerCallReference { }
             // devices call.
             existingCallRecord.updateCallType(.incomingBusyElsewhere)
         } else {
-            let callRecord = TSCall(callType: .incomingBusyElsewhere, in: call.thread, sentAtTimestamp: call.sentAtTimestamp)
+            let callRecord = TSCall(callType: .incomingBusyElsewhere, thread: call.thread, sentAtTimestamp: call.sentAtTimestamp)
             call.callRecord = callRecord
             databaseStorage.write { callRecord.anyInsert(transaction: $0) }
         }

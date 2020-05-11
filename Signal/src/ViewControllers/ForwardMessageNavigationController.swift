@@ -240,26 +240,31 @@ extension ForwardMessageNavigationController {
 
     func send(body: String, thread: TSThread) {
         databaseStorage.read { transaction in
-            ThreadUtil.enqueueMessage(withText: body, in: thread, quotedReplyModel: nil, linkPreviewDraft: nil, transaction: transaction)
+            ThreadUtil.enqueueMessage(withText: body, thread: thread, quotedReplyModel: nil, linkPreviewDraft: nil, transaction: transaction)
         }
     }
 
     func send(contactShare: ContactShareViewModel, thread: TSThread) {
-        ThreadUtil.enqueueMessage(withContactShare: contactShare.dbRecord, in: thread)
+        ThreadUtil.enqueueMessage(withContactShare: contactShare.dbRecord, thread: thread)
     }
 
     func send(body: String?, attachment: SignalAttachment, thread: TSThread) {
         databaseStorage.read { transaction in
-            ThreadUtil.enqueueMessage(withText: body, mediaAttachments: [attachment], in: thread, quotedReplyModel: nil, linkPreviewDraft: nil, transaction: transaction)
+            ThreadUtil.enqueueMessage(withText: body,
+                                      mediaAttachments: [attachment],
+                                      thread: thread,
+                                      quotedReplyModel: nil,
+                                      linkPreviewDraft: nil,
+                                      transaction: transaction)
         }
     }
 
     func send(installedSticker stickerInfo: StickerInfo, thread: TSThread) {
-        ThreadUtil.enqueueMessage(withInstalledSticker: stickerInfo, in: thread)
+        ThreadUtil.enqueueMessage(withInstalledSticker: stickerInfo, thread: thread)
     }
 
     func send(uninstalledSticker stickerInfo: StickerInfo, stickerData: Data, thread: TSThread) {
-        ThreadUtil.enqueueMessage(withUninstalledSticker: stickerInfo, stickerData: stickerData, in: thread)
+        ThreadUtil.enqueueMessage(withUninstalledSticker: stickerInfo, stickerData: stickerData, thread: thread)
     }
 
     func send(enqueueBlock: @escaping (TSThread) throws -> Void) {

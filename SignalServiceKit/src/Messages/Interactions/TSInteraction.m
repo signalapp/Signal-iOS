@@ -41,6 +41,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 @interface TSInteraction ()
 
 @property (nonatomic) uint64_t sortId;
+@property (nonatomic) uint64_t receivedAtTimestamp;
 
 @end
 
@@ -73,17 +74,17 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
     NSMutableArray<TSInteraction *> *interactions = [NSMutableArray new];
 
-    [TSDatabaseSecondaryIndexes
-        enumerateMessagesWithTimestamp:timestamp
-                             withBlock:^(NSString *collection, NSString *key, BOOL *stop) {
-                                 TSInteraction *interaction =
-                                     [TSInteraction anyFetchWithUniqueId:key transaction:transaction.asAnyRead];
-                                 if (!filter(interaction)) {
-                                     return;
-                                 }
-                                 [interactions addObject:interaction];
-                             }
-                      usingTransaction:transaction];
+    [TSDatabaseSecondaryIndexes enumerateMessagesWithTimestamp:timestamp
+                                                     withBlock:^(NSString *collection, NSString *key, BOOL *stop) {
+                                                         TSInteraction *interaction =
+                                                             [TSInteraction anyFetchWithUniqueId:key
+                                                                                     transaction:transaction.asAnyRead];
+                                                         if (!filter(interaction)) {
+                                                             return;
+                                                         }
+                                                         [interactions addObject:interaction];
+                                                     }
+                                              usingTransaction:transaction];
 
     return [interactions copy];
 }
@@ -92,7 +93,12 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     return @"TSInteraction";
 }
 
-- (instancetype)initWithUniqueId:(NSString *)uniqueId timestamp:(uint64_t)timestamp inThread:(TSThread *)thread
+- (instancetype)initWithUniqueId:(NSString *)uniqueId thread:(TSThread *)thread
+{
+    return [self initWithUniqueId:uniqueId timestamp:NSDate.ows_millisecondTimeStamp thread:thread];
+}
+
+- (instancetype)initWithUniqueId:(NSString *)uniqueId timestamp:(uint64_t)timestamp thread:(TSThread *)thread
 {
     OWSAssertDebug(timestamp > 0);
     OWSAssertDebug(thread);
@@ -112,7 +118,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
                        timestamp:(uint64_t)timestamp
              receivedAtTimestamp:(uint64_t)receivedAtTimestamp
-                        inThread:(TSThread *)thread
+                          thread:(TSThread *)thread
 {
     OWSAssertDebug(timestamp > 0);
     OWSAssertDebug(thread);
@@ -130,7 +136,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     return self;
 }
 
-- (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread
+- (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp thread:(TSThread *)thread
 {
     OWSAssertDebug(timestamp > 0);
 
@@ -155,23 +161,23 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
-             receivedAtTimestamp:(uint64_t)receivedAtTimestamp
-                          sortId:(uint64_t)sortId
-                       timestamp:(uint64_t)timestamp
-                  uniqueThreadId:(NSString *)uniqueThreadId
+           receivedAtTimestamp:(uint64_t)receivedAtTimestamp
+                        sortId:(uint64_t)sortId
+                     timestamp:(uint64_t)timestamp
+                uniqueThreadId:(NSString *)uniqueThreadId
 {
     self = [super initWithGrdbId:grdbId
                         uniqueId:uniqueId];
-
+    
     if (!self) {
         return self;
     }
-
+    
     _receivedAtTimestamp = receivedAtTimestamp;
     _sortId = sortId;
     _timestamp = timestamp;
     _uniqueThreadId = uniqueThreadId;
-
+    
     return self;
 }
 
@@ -368,7 +374,15 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 #if TESTABLE_BUILD
 - (void)replaceReceivedAtTimestamp:(uint64_t)receivedAtTimestamp
 {
-    _receivedAtTimestamp = receivedAtTimestamp;
+    self.receivedAtTimestamp = receivedAtTimestamp;
+}
+
+- (void)replaceReceivedAtTimestamp:(uint64_t)receivedAtTimestamp transaction:(SDSAnyWriteTransaction *)transaction
+{
+    [self anyUpdateWithTransaction:transaction
+                             block:^(TSInteraction *interaction) {
+                                 interaction.receivedAtTimestamp = receivedAtTimestamp;
+                             }];
 }
 #endif
 

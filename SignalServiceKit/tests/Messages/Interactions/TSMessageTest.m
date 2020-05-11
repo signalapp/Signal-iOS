@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "SSKBaseTestObjC.h"
@@ -32,17 +32,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)testExpiresAtWithoutStartedTimer
 {
-    TSMessage *message = [[TSMessage alloc] initMessageWithTimestamp:1
-                                                            inThread:self.thread
-                                                         messageBody:@"foo"
-                                                       attachmentIds:@[]
-                                                    expiresInSeconds:100
-                                                     expireStartedAt:0
-                                                       quotedMessage:nil
-                                                        contactShare:nil
-                                                         linkPreview:nil
-                                                      messageSticker:nil
-                                                   isViewOnceMessage:NO];
+    TSOutgoingMessageBuilder *outgoingMessageBuilder =
+        [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:self.thread messageBody:@"foo"];
+    outgoingMessageBuilder.timestamp = 1;
+    outgoingMessageBuilder.expiresInSeconds = 100;
+    TSMessage *message = [outgoingMessageBuilder build];
 
     XCTAssertEqual(0, message.expiresAt);
 }
@@ -52,17 +46,12 @@ NS_ASSUME_NONNULL_BEGIN
     uint64_t now = [NSDate ows_millisecondTimeStamp];
     const uint32_t expirationSeconds = 10;
     const uint32_t expirationMs = expirationSeconds * 1000;
-    TSMessage *message = [[TSMessage alloc] initMessageWithTimestamp:1
-                                                            inThread:self.thread
-                                                         messageBody:@"foo"
-                                                       attachmentIds:@[]
-                                                    expiresInSeconds:expirationSeconds
-                                                     expireStartedAt:now
-                                                       quotedMessage:nil
-                                                        contactShare:nil
-                                                         linkPreview:nil
-                                                      messageSticker:nil
-                                                   isViewOnceMessage:NO];
+    TSOutgoingMessageBuilder *outgoingMessageBuilder =
+        [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:self.thread messageBody:@"foo"];
+    outgoingMessageBuilder.timestamp = 1;
+    outgoingMessageBuilder.expiresInSeconds = expirationSeconds;
+    outgoingMessageBuilder.expireStartedAt = now;
+    TSMessage *message = [outgoingMessageBuilder build];
     XCTAssertEqual(now + expirationMs, message.expiresAt);
 }
 

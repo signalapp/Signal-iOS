@@ -179,16 +179,15 @@ class DebugUINotifications: DebugUIPage {
                 let incomingMessage = factory.create(transaction: transaction)
 
                 self.notificationPresenter.notifyUser(for: incomingMessage,
-                                                     in: thread,
-                                                     transaction: transaction)
+                                                      thread: thread,
+                                                      transaction: transaction)
             }
         }
     }
 
     func notifyForErrorMessage(thread: TSThread) -> Guarantee<Void> {
         return delayedNotificationDispatch {
-            let errorMessage = TSErrorMessage(timestamp: NSDate.ows_millisecondTimeStamp(),
-                                              in: thread,
+            let errorMessage = TSErrorMessage(thread: thread,
                                               failedMessageType: TSErrorMessageType.invalidMessage)
 
             self.databaseStorage.write { transaction in
@@ -208,7 +207,7 @@ class DebugUINotifications: DebugUIPage {
     }
 
     func notifyOfNewUsers() -> Guarantee<Void> {
-         return delayedNotificationDispatch {
+        return delayedNotificationDispatch {
             let recipients: Set<SignalRecipient> = self.databaseStorage.read { transaction in
                 let allRecipients = SignalRecipient.anyFetchAll(transaction: transaction)
                 let activeRecipients = allRecipients.filter { recipient in

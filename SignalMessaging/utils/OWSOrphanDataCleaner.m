@@ -878,6 +878,10 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
         if (!shouldRemoveOrphans) {
             continue;
         }
+        if (![OWSFileSystem fileOrFolderExistsAtPath:filePath]) {
+            // Already removed.
+            continue;
+        }
         [[NSFileManager defaultManager] removeItemAtPath:filePath error:&error];
         if (error) {
             OWSLogDebug(@"Could not remove orphan file at: %@", filePath);

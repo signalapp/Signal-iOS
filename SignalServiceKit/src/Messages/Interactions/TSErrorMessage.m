@@ -7,7 +7,6 @@
 #import "OWSMessageManager.h"
 #import "SSKEnvironment.h"
 #import "TSContactThread.h"
-#import "TSErrorMessage_privateConstructor.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
@@ -98,22 +97,13 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
 }
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(TSThread *)thread
+                           thread:(TSThread *)thread
                 failedMessageType:(TSErrorMessageType)errorMessageType
                           address:(nullable SignalServiceAddress *)address
 {
-    self = [super initMessageWithTimestamp:timestamp
-                                  inThread:thread
-                               messageBody:nil
-                             attachmentIds:@[]
-                          expiresInSeconds:0
-                           expireStartedAt:0
-                             quotedMessage:nil
-                              contactShare:nil
-                               linkPreview:nil
-                            messageSticker:nil
-                         isViewOnceMessage:NO];
-
+    self = [super initMessageWithBuilder:[TSMessageBuilder messageBuilderWithThread:thread
+                                                                          timestamp:timestamp
+                                                                        messageBody:nil]];
     if (!self) {
         return self;
     }
@@ -129,23 +119,44 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
     return self;
 }
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(TSThread *)thread
-                failedMessageType:(TSErrorMessageType)errorMessageType
+- (instancetype)initWithThread:(TSThread *)thread
+             failedMessageType:(TSErrorMessageType)errorMessageType
+                       address:(nullable SignalServiceAddress *)address
 {
-    return [self initWithTimestamp:timestamp inThread:thread failedMessageType:errorMessageType address:nil];
+    self = [super initMessageWithBuilder:[TSMessageBuilder messageBuilderWithThread:thread messageBody:nil]];
+    if (!self) {
+        return self;
+    }
+
+    _errorType = errorMessageType;
+    _recipientAddress = address;
+    _errorMessageSchemaVersion = TSErrorMessageSchemaVersion;
+
+    if (self.isDynamicInteraction) {
+        self.read = YES;
+    }
+
+    return self;
+}
+
+- (instancetype)initWithThread:(TSThread *)thread failedMessageType:(TSErrorMessageType)errorMessageType
+{
+    return [self initWithThread:thread failedMessageType:errorMessageType address:nil];
 }
 
 - (instancetype)initWithEnvelope:(SSKProtoEnvelope *)envelope
                  withTransaction:(SDSAnyWriteTransaction *)transaction
                failedMessageType:(TSErrorMessageType)errorMessageType
 {
-    TSContactThread *contactThread =
-        [TSContactThread getOrCreateThreadWithContactAddress:envelope.sourceAddress transaction:transaction];
+    TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactAddress:envelope.sourceAddress
+                                                                              transaction:transaction];
 
     // Legit usage of senderTimestamp. We don't actually currently surface it in the UI, but it serves as
     // a reference to the envelope which we failed to process.
-    return [self initWithTimestamp:envelope.timestamp inThread:contactThread failedMessageType:errorMessageType];
+    return [self initWithTimestamp:envelope.timestamp
+                            thread:contactThread
+                 failedMessageType:errorMessageType
+                           address:nil];
 }
 
 // --- CODE GENERATION MARKER
@@ -156,55 +167,55 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
 
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
-             receivedAtTimestamp:(uint64_t)receivedAtTimestamp
-                          sortId:(uint64_t)sortId
-                       timestamp:(uint64_t)timestamp
-                  uniqueThreadId:(NSString *)uniqueThreadId
-                   attachmentIds:(NSArray<NSString *> *)attachmentIds
-                            body:(nullable NSString *)body
-                    contactShare:(nullable OWSContact *)contactShare
-                 expireStartedAt:(uint64_t)expireStartedAt
-                       expiresAt:(uint64_t)expiresAt
-                expiresInSeconds:(unsigned int)expiresInSeconds
-              isViewOnceComplete:(BOOL)isViewOnceComplete
-               isViewOnceMessage:(BOOL)isViewOnceMessage
-                     linkPreview:(nullable OWSLinkPreview *)linkPreview
-                  messageSticker:(nullable MessageSticker *)messageSticker
-                   quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-    storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
-              wasRemotelyDeleted:(BOOL)wasRemotelyDeleted
-                       errorType:(TSErrorMessageType)errorType
-                            read:(BOOL)read
-                recipientAddress:(nullable SignalServiceAddress *)recipientAddress
+           receivedAtTimestamp:(uint64_t)receivedAtTimestamp
+                        sortId:(uint64_t)sortId
+                     timestamp:(uint64_t)timestamp
+                uniqueThreadId:(NSString *)uniqueThreadId
+                 attachmentIds:(NSArray<NSString *> *)attachmentIds
+                          body:(nullable NSString *)body
+                  contactShare:(nullable OWSContact *)contactShare
+               expireStartedAt:(uint64_t)expireStartedAt
+                     expiresAt:(uint64_t)expiresAt
+              expiresInSeconds:(unsigned int)expiresInSeconds
+            isViewOnceComplete:(BOOL)isViewOnceComplete
+             isViewOnceMessage:(BOOL)isViewOnceMessage
+                   linkPreview:(nullable OWSLinkPreview *)linkPreview
+                messageSticker:(nullable MessageSticker *)messageSticker
+                 quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+  storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
+            wasRemotelyDeleted:(BOOL)wasRemotelyDeleted
+                     errorType:(TSErrorMessageType)errorType
+                          read:(BOOL)read
+              recipientAddress:(nullable SignalServiceAddress *)recipientAddress
 {
     self = [super initWithGrdbId:grdbId
                         uniqueId:uniqueId
-               receivedAtTimestamp:receivedAtTimestamp
-                            sortId:sortId
-                         timestamp:timestamp
-                    uniqueThreadId:uniqueThreadId
-                     attachmentIds:attachmentIds
-                              body:body
-                      contactShare:contactShare
-                   expireStartedAt:expireStartedAt
-                         expiresAt:expiresAt
-                  expiresInSeconds:expiresInSeconds
-                isViewOnceComplete:isViewOnceComplete
-                 isViewOnceMessage:isViewOnceMessage
-                       linkPreview:linkPreview
-                    messageSticker:messageSticker
-                     quotedMessage:quotedMessage
-      storedShouldStartExpireTimer:storedShouldStartExpireTimer
-                wasRemotelyDeleted:wasRemotelyDeleted];
-
+             receivedAtTimestamp:receivedAtTimestamp
+                          sortId:sortId
+                       timestamp:timestamp
+                  uniqueThreadId:uniqueThreadId
+                   attachmentIds:attachmentIds
+                            body:body
+                    contactShare:contactShare
+                 expireStartedAt:expireStartedAt
+                       expiresAt:expiresAt
+                expiresInSeconds:expiresInSeconds
+              isViewOnceComplete:isViewOnceComplete
+               isViewOnceMessage:isViewOnceMessage
+                     linkPreview:linkPreview
+                  messageSticker:messageSticker
+                   quotedMessage:quotedMessage
+    storedShouldStartExpireTimer:storedShouldStartExpireTimer
+              wasRemotelyDeleted:wasRemotelyDeleted];
+    
     if (!self) {
         return self;
     }
-
+    
     _errorType = errorType;
     _read = read;
     _recipientAddress = recipientAddress;
-
+    
     return self;
 }
 
@@ -287,17 +298,16 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
 + (instancetype)missingSessionWithEnvelope:(SSKProtoEnvelope *)envelope
                            withTransaction:(SDSAnyWriteTransaction *)transaction
 {
-    return
-        [[self alloc] initWithEnvelope:envelope withTransaction:transaction failedMessageType:TSErrorMessageNoSession];
+    return [[self alloc] initWithEnvelope:envelope
+                          withTransaction:transaction
+                        failedMessageType:TSErrorMessageNoSession];
 }
 
 + (instancetype)nonblockingIdentityChangeInThread:(TSThread *)thread address:(SignalServiceAddress *)address
 {
-    // MJK TODO - should be safe to remove this senderTimestamp
-    return [[self alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                  inThread:thread
-                         failedMessageType:TSErrorMessageNonBlockingIdentityChange
-                                   address:address];
+    return [[self alloc] initWithThread:thread
+                      failedMessageType:TSErrorMessageNonBlockingIdentityChange
+                                address:address];
 }
 
 #pragma mark - OWSReadTracking

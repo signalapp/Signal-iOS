@@ -19,9 +19,10 @@ typedef NS_CLOSED_ENUM(NSUInteger, OWSSyncRequestType) {
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithTimestamp:(uint64_t)timestamp thread:(TSThread *)thread NS_UNAVAILABLE;
 - (instancetype)initWithThread:(TSThread *)thread NS_UNAVAILABLE;
-- (instancetype)initWithThread:(TSThread *)thread requestType:(OWSSyncRequestType)requestType;
+- (instancetype)initWithTimestamp:(uint64_t)timestamp thread:(TSThread *)thread NS_UNAVAILABLE;
+
+- (instancetype)initWithThread:(TSThread *)thread requestType:(OWSSyncRequestType)requestType NS_DESIGNATED_INITIALIZER;
 
 @end
 

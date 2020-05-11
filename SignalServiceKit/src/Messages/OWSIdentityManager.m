@@ -953,21 +953,16 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
     TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactAddress:address
                                                                               transaction:transaction];
     OWSAssertDebug(contactThread);
-    // MJK TODO - should be safe to remove senderTimestamp
-    [messages addObject:[[OWSVerificationStateChangeMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                                              thread:contactThread
-                                                                    recipientAddress:address
-                                                                   verificationState:verificationState
-                                                                       isLocalChange:isLocalChange]];
+    [messages addObject:[[OWSVerificationStateChangeMessage alloc] initWithThread:contactThread
+                                                                 recipientAddress:address
+                                                                verificationState:verificationState
+                                                                    isLocalChange:isLocalChange]];
 
     for (TSGroupThread *groupThread in [TSGroupThread groupThreadsWithAddress:address transaction:transaction]) {
-        // MJK TODO - should be safe to remove senderTimestamp
-        [messages
-            addObject:[[OWSVerificationStateChangeMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                                            thread:groupThread
-                                                                  recipientAddress:address
-                                                                 verificationState:verificationState
-                                                                     isLocalChange:isLocalChange]];
+        [messages addObject:[[OWSVerificationStateChangeMessage alloc] initWithThread:groupThread
+                                                                     recipientAddress:address
+                                                                    verificationState:verificationState
+                                                                        isLocalChange:isLocalChange]];
     }
 
     // MJK TODO - why not save in-line, vs storing in an array and saving the array?

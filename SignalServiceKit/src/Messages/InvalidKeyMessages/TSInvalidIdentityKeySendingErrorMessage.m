@@ -8,7 +8,6 @@
 #import "PreKeyBundle+jsonDict.h"
 #import "SSKSessionStore.h"
 #import "TSContactThread.h"
-#import "TSErrorMessage_privateConstructor.h"
 #import "TSOutgoingMessage.h"
 #import <AxolotlKit/NSData+keyVersionByte.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>

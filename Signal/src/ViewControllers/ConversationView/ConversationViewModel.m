@@ -1008,18 +1008,12 @@ NS_ASSUME_NONNULL_BEGIN
         return nil;
     }
 
-    // We want the offers to be the first interactions in their
-    // conversation's timeline, so we back-date them to slightly before
-    // the first message - or at an arbitrary old timestamp if the
-    // conversation has no messages.
-    uint64_t contactOffersTimestamp = firstCallOrMessage.timestamp - 1;
     // This view model uses the "unique id" to identify this interaction,
     // but the interaction is never saved in the database so the specific
     // value doesn't matter.
     NSString *uniqueId = @"contact-offers";
     OWSContactOffersInteraction *offersMessage =
         [[OWSContactOffersInteraction alloc] initWithUniqueId:uniqueId
-                                                    timestamp:contactOffersTimestamp
                                                        thread:thread
                                                 hasBlockOffer:shouldHaveBlockOffer
                                         hasAddToContactsOffer:shouldHaveAddToContactsOffer

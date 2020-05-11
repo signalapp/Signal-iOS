@@ -10,7 +10,6 @@
 #import "SSKEnvironment.h"
 #import "SSKSessionStore.h"
 #import "TSContactThread.h"
-#import "TSErrorMessage_privateConstructor.h"
 #import <AxolotlKit/NSData+keyVersionByte.h>
 #import <AxolotlKit/PreKeyWhisperMessage.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
@@ -43,23 +42,26 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
 + (nullable instancetype)untrustedKeyWithEnvelope:(SSKProtoEnvelope *)envelope
                                   withTransaction:(SDSAnyWriteTransaction *)transaction
 {
-    TSContactThread *contactThread =
-        [TSContactThread getOrCreateThreadWithContactAddress:envelope.sourceAddress transaction:transaction];
+    TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactAddress:envelope.sourceAddress
+                                                                              transaction:transaction];
 
     // Legit usage of senderTimestamp, references message which failed to decrypt
     TSInvalidIdentityKeyReceivingErrorMessage *errorMessage =
         [[self alloc] initForUnknownIdentityKeyWithTimestamp:envelope.timestamp
-                                                    inThread:contactThread
+                                                      thread:contactThread
                                             incomingEnvelope:envelope];
     return errorMessage;
 }
 #endif
 
 - (nullable instancetype)initForUnknownIdentityKeyWithTimestamp:(uint64_t)timestamp
-                                                       inThread:(TSThread *)thread
+                                                         thread:(TSThread *)thread
                                                incomingEnvelope:(SSKProtoEnvelope *)envelope
 {
-    self = [self initWithTimestamp:timestamp inThread:thread failedMessageType:TSErrorMessageWrongTrustedIdentityKey];
+    self = [self initWithTimestamp:timestamp
+                            thread:thread
+                 failedMessageType:TSErrorMessageWrongTrustedIdentityKey
+                           address:nil];
     if (!self) {
         return self;
     }
@@ -84,59 +86,59 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
 
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
-             receivedAtTimestamp:(uint64_t)receivedAtTimestamp
-                          sortId:(uint64_t)sortId
-                       timestamp:(uint64_t)timestamp
-                  uniqueThreadId:(NSString *)uniqueThreadId
-                   attachmentIds:(NSArray<NSString *> *)attachmentIds
-                            body:(nullable NSString *)body
-                    contactShare:(nullable OWSContact *)contactShare
-                 expireStartedAt:(uint64_t)expireStartedAt
-                       expiresAt:(uint64_t)expiresAt
-                expiresInSeconds:(unsigned int)expiresInSeconds
-              isViewOnceComplete:(BOOL)isViewOnceComplete
-               isViewOnceMessage:(BOOL)isViewOnceMessage
-                     linkPreview:(nullable OWSLinkPreview *)linkPreview
-                  messageSticker:(nullable MessageSticker *)messageSticker
-                   quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-    storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
-              wasRemotelyDeleted:(BOOL)wasRemotelyDeleted
-                       errorType:(TSErrorMessageType)errorType
-                            read:(BOOL)read
-                recipientAddress:(nullable SignalServiceAddress *)recipientAddress
-                        authorId:(NSString *)authorId
-                    envelopeData:(nullable NSData *)envelopeData
+           receivedAtTimestamp:(uint64_t)receivedAtTimestamp
+                        sortId:(uint64_t)sortId
+                     timestamp:(uint64_t)timestamp
+                uniqueThreadId:(NSString *)uniqueThreadId
+                 attachmentIds:(NSArray<NSString *> *)attachmentIds
+                          body:(nullable NSString *)body
+                  contactShare:(nullable OWSContact *)contactShare
+               expireStartedAt:(uint64_t)expireStartedAt
+                     expiresAt:(uint64_t)expiresAt
+              expiresInSeconds:(unsigned int)expiresInSeconds
+            isViewOnceComplete:(BOOL)isViewOnceComplete
+             isViewOnceMessage:(BOOL)isViewOnceMessage
+                   linkPreview:(nullable OWSLinkPreview *)linkPreview
+                messageSticker:(nullable MessageSticker *)messageSticker
+                 quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+  storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
+            wasRemotelyDeleted:(BOOL)wasRemotelyDeleted
+                     errorType:(TSErrorMessageType)errorType
+                          read:(BOOL)read
+              recipientAddress:(nullable SignalServiceAddress *)recipientAddress
+                      authorId:(NSString *)authorId
+                  envelopeData:(nullable NSData *)envelopeData
 {
     self = [super initWithGrdbId:grdbId
                         uniqueId:uniqueId
-               receivedAtTimestamp:receivedAtTimestamp
-                            sortId:sortId
-                         timestamp:timestamp
-                    uniqueThreadId:uniqueThreadId
-                     attachmentIds:attachmentIds
-                              body:body
-                      contactShare:contactShare
-                   expireStartedAt:expireStartedAt
-                         expiresAt:expiresAt
-                  expiresInSeconds:expiresInSeconds
-                isViewOnceComplete:isViewOnceComplete
-                 isViewOnceMessage:isViewOnceMessage
-                       linkPreview:linkPreview
-                    messageSticker:messageSticker
-                     quotedMessage:quotedMessage
-      storedShouldStartExpireTimer:storedShouldStartExpireTimer
-                wasRemotelyDeleted:wasRemotelyDeleted
-                         errorType:errorType
-                              read:read
-                  recipientAddress:recipientAddress];
-
+             receivedAtTimestamp:receivedAtTimestamp
+                          sortId:sortId
+                       timestamp:timestamp
+                  uniqueThreadId:uniqueThreadId
+                   attachmentIds:attachmentIds
+                            body:body
+                    contactShare:contactShare
+                 expireStartedAt:expireStartedAt
+                       expiresAt:expiresAt
+                expiresInSeconds:expiresInSeconds
+              isViewOnceComplete:isViewOnceComplete
+               isViewOnceMessage:isViewOnceMessage
+                     linkPreview:linkPreview
+                  messageSticker:messageSticker
+                   quotedMessage:quotedMessage
+    storedShouldStartExpireTimer:storedShouldStartExpireTimer
+              wasRemotelyDeleted:wasRemotelyDeleted
+                       errorType:errorType
+                            read:read
+                recipientAddress:recipientAddress];
+    
     if (!self) {
         return self;
     }
-
+    
     _authorId = authorId;
     _envelopeData = envelopeData;
-
+    
     return self;
 }
 

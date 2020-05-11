@@ -29,12 +29,11 @@ NSUInteger const OWSUnknownProtocolVersionMessageSchemaVersion = 1;
     return SSKEnvironment.shared.contactsManager;
 }
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                           thread:(TSThread *)thread
-                           sender:(nullable SignalServiceAddress *)sender
-                  protocolVersion:(NSUInteger)protocolVersion
+- (instancetype)initWithThread:(TSThread *)thread
+                        sender:(nullable SignalServiceAddress *)sender
+               protocolVersion:(NSUInteger)protocolVersion
 {
-    self = [super initWithTimestamp:timestamp inThread:thread messageType:TSInfoMessageUnknownProtocolVersion];
+    self = [super initWithThread:thread messageType:TSInfoMessageUnknownProtocolVersion];
 
     if (self) {
         OWSAssertDebug(sender.isValid);
@@ -74,63 +73,63 @@ NSUInteger const OWSUnknownProtocolVersionMessageSchemaVersion = 1;
 
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
-             receivedAtTimestamp:(uint64_t)receivedAtTimestamp
-                          sortId:(uint64_t)sortId
-                       timestamp:(uint64_t)timestamp
-                  uniqueThreadId:(NSString *)uniqueThreadId
-                   attachmentIds:(NSArray<NSString *> *)attachmentIds
-                            body:(nullable NSString *)body
-                    contactShare:(nullable OWSContact *)contactShare
-                 expireStartedAt:(uint64_t)expireStartedAt
-                       expiresAt:(uint64_t)expiresAt
-                expiresInSeconds:(unsigned int)expiresInSeconds
-              isViewOnceComplete:(BOOL)isViewOnceComplete
-               isViewOnceMessage:(BOOL)isViewOnceMessage
-                     linkPreview:(nullable OWSLinkPreview *)linkPreview
-                  messageSticker:(nullable MessageSticker *)messageSticker
-                   quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-    storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
-              wasRemotelyDeleted:(BOOL)wasRemotelyDeleted
-                   customMessage:(nullable NSString *)customMessage
-             infoMessageUserInfo:(nullable NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo
-                     messageType:(TSInfoMessageType)messageType
-                            read:(BOOL)read
-             unregisteredAddress:(nullable SignalServiceAddress *)unregisteredAddress
-                 protocolVersion:(NSUInteger)protocolVersion
-                          sender:(nullable SignalServiceAddress *)sender
+           receivedAtTimestamp:(uint64_t)receivedAtTimestamp
+                        sortId:(uint64_t)sortId
+                     timestamp:(uint64_t)timestamp
+                uniqueThreadId:(NSString *)uniqueThreadId
+                 attachmentIds:(NSArray<NSString *> *)attachmentIds
+                          body:(nullable NSString *)body
+                  contactShare:(nullable OWSContact *)contactShare
+               expireStartedAt:(uint64_t)expireStartedAt
+                     expiresAt:(uint64_t)expiresAt
+              expiresInSeconds:(unsigned int)expiresInSeconds
+            isViewOnceComplete:(BOOL)isViewOnceComplete
+             isViewOnceMessage:(BOOL)isViewOnceMessage
+                   linkPreview:(nullable OWSLinkPreview *)linkPreview
+                messageSticker:(nullable MessageSticker *)messageSticker
+                 quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+  storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
+            wasRemotelyDeleted:(BOOL)wasRemotelyDeleted
+                 customMessage:(nullable NSString *)customMessage
+           infoMessageUserInfo:(nullable NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo
+                   messageType:(TSInfoMessageType)messageType
+                          read:(BOOL)read
+           unregisteredAddress:(nullable SignalServiceAddress *)unregisteredAddress
+               protocolVersion:(NSUInteger)protocolVersion
+                        sender:(nullable SignalServiceAddress *)sender
 {
     self = [super initWithGrdbId:grdbId
                         uniqueId:uniqueId
-               receivedAtTimestamp:receivedAtTimestamp
-                            sortId:sortId
-                         timestamp:timestamp
-                    uniqueThreadId:uniqueThreadId
-                     attachmentIds:attachmentIds
-                              body:body
-                      contactShare:contactShare
-                   expireStartedAt:expireStartedAt
-                         expiresAt:expiresAt
-                  expiresInSeconds:expiresInSeconds
-                isViewOnceComplete:isViewOnceComplete
-                 isViewOnceMessage:isViewOnceMessage
-                       linkPreview:linkPreview
-                    messageSticker:messageSticker
-                     quotedMessage:quotedMessage
-      storedShouldStartExpireTimer:storedShouldStartExpireTimer
-                wasRemotelyDeleted:wasRemotelyDeleted
-                     customMessage:customMessage
-               infoMessageUserInfo:infoMessageUserInfo
-                       messageType:messageType
-                              read:read
-               unregisteredAddress:unregisteredAddress];
-
+             receivedAtTimestamp:receivedAtTimestamp
+                          sortId:sortId
+                       timestamp:timestamp
+                  uniqueThreadId:uniqueThreadId
+                   attachmentIds:attachmentIds
+                            body:body
+                    contactShare:contactShare
+                 expireStartedAt:expireStartedAt
+                       expiresAt:expiresAt
+                expiresInSeconds:expiresInSeconds
+              isViewOnceComplete:isViewOnceComplete
+               isViewOnceMessage:isViewOnceMessage
+                     linkPreview:linkPreview
+                  messageSticker:messageSticker
+                   quotedMessage:quotedMessage
+    storedShouldStartExpireTimer:storedShouldStartExpireTimer
+              wasRemotelyDeleted:wasRemotelyDeleted
+                   customMessage:customMessage
+             infoMessageUserInfo:infoMessageUserInfo
+                     messageType:messageType
+                            read:read
+             unregisteredAddress:unregisteredAddress];
+    
     if (!self) {
         return self;
     }
-
+    
     _protocolVersion = protocolVersion;
     _sender = sender;
-
+    
     return self;
 }
 

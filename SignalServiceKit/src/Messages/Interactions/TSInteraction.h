@@ -41,16 +41,19 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value);
 - (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
 - (instancetype)initWithGrdbId:(int64_t)grdbId uniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
 
+// Convenience initializer which is neither "designated" nor "unavailable".
+- (instancetype)initWithUniqueId:(NSString *)uniqueId thread:(TSThread *)thread;
+
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
                        timestamp:(uint64_t)timestamp
-                        inThread:(TSThread *)thread NS_DESIGNATED_INITIALIZER;
+                          thread:(TSThread *)thread NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
                        timestamp:(uint64_t)timestamp
              receivedAtTimestamp:(uint64_t)receivedAtTimestamp
-                        inThread:(TSThread *)thread NS_DESIGNATED_INITIALIZER;
+                          thread:(TSThread *)thread NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread NS_DESIGNATED_INITIALIZER;
+- (instancetype)initInteractionWithTimestamp:(uint64_t)timestamp thread:(TSThread *)thread NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 
@@ -60,10 +63,10 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value);
 
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
-             receivedAtTimestamp:(uint64_t)receivedAtTimestamp
-                          sortId:(uint64_t)sortId
-                       timestamp:(uint64_t)timestamp
-                  uniqueThreadId:(NSString *)uniqueThreadId
+           receivedAtTimestamp:(uint64_t)receivedAtTimestamp
+                        sortId:(uint64_t)sortId
+                     timestamp:(uint64_t)timestamp
+                uniqueThreadId:(NSString *)uniqueThreadId
 NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:));
 
 // clang-format on
@@ -120,7 +123,8 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 - (void)replaceSortId:(uint64_t)sortId;
 
 #if TESTABLE_BUILD
-- (void)replaceReceivedAtTimestamp:(uint64_t)receivedAtTimestamp;
+- (void)replaceReceivedAtTimestamp:(uint64_t)receivedAtTimestamp NS_SWIFT_NAME(replaceReceivedAtTimestamp(_:));
+- (void)replaceReceivedAtTimestamp:(uint64_t)receivedAtTimestamp transaction:(SDSAnyWriteTransaction *)transaction;
 #endif
 
 @end

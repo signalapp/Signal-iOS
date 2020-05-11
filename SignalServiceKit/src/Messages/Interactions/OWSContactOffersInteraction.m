@@ -22,13 +22,12 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
-                        timestamp:(uint64_t)timestamp
                            thread:(TSThread *)thread
                     hasBlockOffer:(BOOL)hasBlockOffer
             hasAddToContactsOffer:(BOOL)hasAddToContactsOffer
     hasAddToProfileWhitelistOffer:(BOOL)hasAddToProfileWhitelistOffer
 {
-    self = [super initWithUniqueId:uniqueId timestamp:timestamp inThread:thread];
+    self = [super initWithUniqueId:uniqueId thread:thread];
 
     if (!self) {
         return self;

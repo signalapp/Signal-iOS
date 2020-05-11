@@ -40,7 +40,7 @@ public class UnreadIndicatorInteraction: TSInteraction {
         super.init(uniqueId: UnreadIndicatorInteraction.UnreadIndicatorInteractionId,
                    timestamp: timestamp,
                    receivedAtTimestamp: receivedAtTimestamp,
-                   in: thread)
+                   thread: thread)
     }
 
     public override var shouldBeSaved: Bool {

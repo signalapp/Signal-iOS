@@ -996,8 +996,7 @@ public class GroupManager: NSObject {
                 !groupUpdateSourceAddress.isLocalAddress {
                 remoteContactName = contactsManager.displayName(for: groupUpdateSourceAddress, transaction: transaction)
             }
-            let infoMessage = OWSDisappearingConfigurationUpdateInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(),
-                                                                            thread: thread,
+            let infoMessage = OWSDisappearingConfigurationUpdateInfoMessage(thread: thread,
                                                                             configuration: newConfiguration,
                                                                             createdByRemoteName: remoteContactName,
                                                                             createdInExistingGroup: false)

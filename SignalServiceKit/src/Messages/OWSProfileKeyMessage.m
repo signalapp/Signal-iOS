@@ -12,10 +12,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSProfileKeyMessage
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp inThread:(TSThread *)thread
+- (instancetype)initWithThread:(TSThread *)thread
 {
-    TSOutgoingMessageBuilder *messageBuilder = [[TSOutgoingMessageBuilder alloc] initWithThread:thread];
-    messageBuilder.timestamp = timestamp;
+    TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
     return [super initOutgoingMessageWithBuilder:messageBuilder];
 }
 

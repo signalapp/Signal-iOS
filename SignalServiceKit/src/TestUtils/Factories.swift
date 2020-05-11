@@ -133,6 +133,8 @@ public class OutgoingMessageFactory: NSObject, Factory {
 
     @objc
     public func build(transaction: SDSAnyWriteTransaction) -> TSOutgoingMessage {
+        // The builder() factory method requires us to specify every
+        // property so that this will break if we add any new properties.
         return TSOutgoingMessageBuilder.builder(thread: threadCreator(transaction),
                                                 timestamp: timestampBuilder(),
                                                 messageBody: messageBodyBuilder(),
@@ -178,7 +180,7 @@ public class OutgoingMessageFactory: NSObject, Factory {
     }
 
     @objc
-    var attachmentIdsBuilder: () -> NSMutableArray = {
+    public var attachmentIdsBuilder: () -> [String] = {
         return []
     }
 
@@ -271,23 +273,24 @@ public class IncomingMessageFactory: NSObject, Factory {
 
         let thread = threadCreator(transaction)
 
-        let item = TSIncomingMessage(incomingMessageWithTimestamp: timestampBuilder(),
-                                     in: thread,
-                                     authorAddress: authorAddressBuilder(thread),
-                                     sourceDeviceId: sourceDeviceIdBuilder(),
-                                     messageBody: messageBodyBuilder(),
-                                     attachmentIds: attachmentIdsBuilder(),
-                                     expiresInSeconds: expiresInSecondsBuilder(),
-                                     quotedMessage: quotedMessageBuilder(),
-                                     contactShare: contactShareBuilder(),
-                                     linkPreview: linkPreviewBuilder(),
-                                     messageSticker: messageStickerBuilder(),
-                                     serverTimestamp: serverTimestampBuilder(),
-                                     wasReceivedByUD: wasReceivedByUDBuilder(),
-                                     isViewOnceMessage: isViewOnceMessageBuilder())
-
+        // The builder() factory method requires us to specify every
+        // property so that this will break if we add any new properties.
+        let builder = TSIncomingMessageBuilder.builder(thread: thread,
+                                                       timestamp: timestampBuilder(),
+                                                       authorAddress: authorAddressBuilder(thread),
+                                                       sourceDeviceId: sourceDeviceIdBuilder(),
+                                                       messageBody: messageBodyBuilder(),
+                                                       attachmentIds: attachmentIdsBuilder(),
+                                                       expiresInSeconds: expiresInSecondsBuilder(),
+                                                       quotedMessage: quotedMessageBuilder(),
+                                                       contactShare: contactShareBuilder(),
+                                                       linkPreview: linkPreviewBuilder(),
+                                                       messageSticker: messageStickerBuilder(),
+                                                       serverTimestamp: serverTimestampBuilder(),
+                                                       wasReceivedByUD: wasReceivedByUDBuilder(),
+                                                       isViewOnceMessage: isViewOnceMessageBuilder())
+        let item = builder.build()
         item.anyInsert(transaction: transaction)
-
         return item
     }
 

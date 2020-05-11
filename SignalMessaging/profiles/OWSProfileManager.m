@@ -1963,9 +1963,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
         return;
     }
 
-    // MJK TODO - should be safe to remove this senderTimestamp
-    OWSProfileKeyMessage *message = [[OWSProfileKeyMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                                           inThread:thread];
+    OWSProfileKeyMessage *message = [[OWSProfileKeyMessage alloc] initWithThread:thread];
     [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
 
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {

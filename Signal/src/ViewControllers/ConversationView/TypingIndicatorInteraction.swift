@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -39,7 +39,7 @@ public class TypingIndicatorInteraction: TSInteraction {
         self.address = address
 
         super.init(uniqueId: TypingIndicatorInteraction.TypingIndicatorId,
-            timestamp: timestamp, in: thread)
+            timestamp: timestamp, thread: thread)
     }
 
     public override var shouldBeSaved: Bool {

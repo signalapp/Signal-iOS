@@ -16,7 +16,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithTimestamp:(uint64_t)timestamp NS_UNAVAILABLE;
 - (instancetype)initWithThread:(TSThread *)thread NS_UNAVAILABLE;
 - (instancetype)initWithTimestamp:(uint64_t)timestamp thread:(TSThread *)thread NS_UNAVAILABLE;
 

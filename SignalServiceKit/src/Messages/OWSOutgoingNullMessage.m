@@ -24,7 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithContactThread:(TSContactThread *)contactThread
          verificationStateSyncMessage:(OWSVerificationStateSyncMessage *)verificationStateSyncMessage
 {
-    TSOutgoingMessageBuilder *messageBuilder = [[TSOutgoingMessageBuilder alloc] initWithThread:contactThread];
+    TSOutgoingMessageBuilder *messageBuilder =
+        [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:contactThread];
     self = [super initOutgoingMessageWithBuilder:messageBuilder];
     if (!self) {
         return self;

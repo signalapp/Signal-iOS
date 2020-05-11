@@ -110,14 +110,14 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
             if (self.isProcessing) {
                 return;
             }
-
+            
             self.isProcessing = YES;
         }
-
+        
         [self processReadReceiptsForLinkedDevicesWithCompletion:^{
             @synchronized(self) {
                 OWSAssertDebug(self.isProcessing);
-
+                
                 self.isProcessing = NO;
             }
         }];
@@ -170,7 +170,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
                 }
 
                 [self sendLinkedDeviceReadReceiptForMessages:messagesWithUnreadReactions
-                                                    inThread:thread
+                                                      thread:thread
                                                  transaction:transaction];
             }
         }];

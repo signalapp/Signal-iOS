@@ -711,7 +711,7 @@ public extension DebugUIScreenshots {
                 //                    RPRecentCallTypeOutgoingMissed,
                 //                };
                 let callRecord = TSCall(callType: .incomingMissed,
-                                        in: thread,
+                                        thread: thread,
                                         sentAtTimestamp: Date.ows_millisecondTimestamp())
                 callRecord.anyInsert(transaction: transaction)
             }
@@ -1043,7 +1043,7 @@ public extension DebugUIScreenshots {
                    builder.isViewOnceMessage = isViewOnceMessage
         }
         let message = builder.build()
-        message.replaceReceived(atTimestamp: timestamp ?? Date.ows_millisecondTimestamp())
+        message.replaceReceivedAtTimestamp(timestamp ?? Date.ows_millisecondTimestamp())
         message.anyInsert(transaction: transaction)
         // Mark as sent.
         message.update(withFakeMessageState: .sent, transaction: transaction)
@@ -1085,25 +1085,18 @@ public extension DebugUIScreenshots {
         let timestamp = timestamp ?? Date.ows_millisecondTimestamp()
         var attachmentIds = [String]()
         if let attachments = attachments {
-            attachmentIds += attachments.map { $0.uniqueId }
+            attachmentIds = attachments.map { $0.uniqueId }
         }
         let expiresInSeconds = expiresInSeconds ?? 0
         let isViewOnceMessage = isViewOnceMessage ?? false
-        let message = TSIncomingMessage(incomingMessageWithTimestamp: timestamp,
-                                        in: thread,
-                                        authorAddress: authorAddress,
-                                        sourceDeviceId: 0,
-                                        messageBody: messageBody,
-                                        attachmentIds: attachmentIds,
-                                        expiresInSeconds: expiresInSeconds,
-                                        quotedMessage: nil,
-                                        contactShare: nil,
-                                        linkPreview: nil,
-                                        messageSticker: nil,
-                                        serverTimestamp: nil,
-                                        wasReceivedByUD: false,
-                                        isViewOnceMessage: isViewOnceMessage)
-        message.replaceReceived(atTimestamp: timestamp)
+        let message = TSIncomingMessageBuilder(thread: thread,
+                                               timestamp: timestamp,
+                                               authorAddress: authorAddress,
+                                               messageBody: messageBody,
+                                               attachmentIds: attachmentIds,
+                                               expiresInSeconds: expiresInSeconds,
+                                               isViewOnceMessage: isViewOnceMessage).build()
+        message.replaceReceivedAtTimestamp(timestamp)
         message.anyInsert(transaction: transaction)
         return message
     }

@@ -86,7 +86,7 @@ public extension OWSReadReceiptManager {
     }
 
     func sendLinkedDeviceReadReceipt(forMessages messages: [TSOutgoingMessage],
-                                     inThread thread: TSThread,
+                                     thread: TSThread,
                                      transaction: SDSAnyWriteTransaction) {
         assert(messages.count > 0)
         guard let localAddress = TSAccountManager.localAddress else {

@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug([thread.uniqueId isEqualToString:message.uniqueThreadId]);
     OWSAssertDebug(emoji.isSingleEmoji);
 
-    TSOutgoingMessageBuilder *messageBuilder = [[TSOutgoingMessageBuilder alloc] initWithThread:thread];
+    TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
     messageBuilder.expiresInSeconds = expiresInSeconds;
     self = [super initOutgoingMessageWithBuilder:messageBuilder];
     if (!self) {

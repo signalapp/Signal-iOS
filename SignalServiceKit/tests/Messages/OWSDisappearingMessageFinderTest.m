@@ -99,20 +99,12 @@ NS_ASSUME_NONNULL_BEGIN
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         TSThread *thread = [self threadWithTransaction:transaction];
 
-        message = [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:1
-                                                                     inThread:thread
-                                                                authorAddress:self.otherAddress
-                                                               sourceDeviceId:0
-                                                                  messageBody:body
-                                                                attachmentIds:@[]
-                                                             expiresInSeconds:expiresInSeconds
-                                                                quotedMessage:nil
-                                                                 contactShare:nil
-                                                                  linkPreview:nil
-                                                               messageSticker:nil
-                                                              serverTimestamp:nil
-                                                              wasReceivedByUD:NO
-                                                            isViewOnceMessage:NO];
+        TSIncomingMessageBuilder *incomingMessageBuilder =
+            [TSIncomingMessageBuilder incomingMessageBuilderWithThread:thread messageBody:body];
+        incomingMessageBuilder.timestamp = 1;
+        incomingMessageBuilder.authorAddress = self.otherAddress;
+        incomingMessageBuilder.expiresInSeconds = expiresInSeconds;
+        message = [incomingMessageBuilder build];
         [message anyInsertWithTransaction:transaction];
 
         if (expireStartedAt > 0) {
@@ -138,8 +130,8 @@ NS_ASSUME_NONNULL_BEGIN
     [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         TSThread *thread = [self threadWithTransaction:transaction];
 
-        TSOutgoingMessageBuilder *messageBuilder = [[TSOutgoingMessageBuilder alloc] initWithThread:thread
-                                                                                        messageBody:body];
+        TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread
+                                                                                                  messageBody:body];
         messageBuilder.expiresInSeconds = expiresInSeconds;
         messageBuilder.expireStartedAt = expireStartedAt;
         message = [messageBuilder build];

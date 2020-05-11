@@ -160,8 +160,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     [items addObject:[OWSTableItem subPageItemWithText:@"Share UIImage"
                                            actionBlock:^(UIViewController *viewController) {
-                                               UIImage *image =
-                                               [UIImage imageWithColor:UIColor.redColor size:CGSizeMake(1.f, 1.f)];
+                                               UIImage *image = [UIImage imageWithColor:UIColor.redColor
+                                                                                   size:CGSizeMake(1.f, 1.f)];
                                                [AttachmentSharing showShareUIForUIImage:image];
                                            }]];
     [items addObject:[OWSTableItem subPageItemWithText:@"Share 2 Images"
@@ -301,17 +301,16 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *fileName = filePath.lastPathComponent;
 
     __block BOOL success;
-    [self.databaseStorage
-        writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-            NSError *error;
-            success = [[NSFileManager defaultManager] copyItemAtPath:OWSPrimaryStorage.databaseFilePath
-                                                              toPath:filePath
-                                                               error:&error];
-            if (!success || error) {
-                OWSFailDebug(@"Could not copy database file: %@.", error);
-                success = NO;
-            }
-        }];
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        NSError *error;
+        success = [[NSFileManager defaultManager] copyItemAtPath:OWSPrimaryStorage.databaseFilePath
+                                                          toPath:filePath
+                                                           error:&error];
+        if (!success || error) {
+            OWSFailDebug(@"Could not copy database file: %@.", error);
+            success = NO;
+        }
+    }];
 
     if (!success) {
         return;
@@ -339,7 +338,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *_Nonnull transaction) {
         [ThreadUtil enqueueMessageWithText:nil
                           mediaAttachments:@[ attachment ]
-                                  inThread:thread
+                                    thread:thread
                           quotedReplyModel:nil
                           linkPreviewDraft:nil
                                transaction:transaction];
@@ -375,17 +374,15 @@ NS_ASSUME_NONNULL_BEGIN
    fromAssetLoaders:(NSArray<DebugUIMessagesAssetLoader *> *)assetLoaders
 {
     [DebugUIMessagesAssetLoader prepareAssetLoaders:assetLoaders
-                                            success:^{
-                                                      [self shareAssets:count
-                                               fromPreparedAssetLoaders:assetLoaders];
-                                                      }
-                                            failure:^{
-                                                OWSLogError(@"Could not prepare asset loaders.");
-                                                      }];
+        success:^{
+            [self shareAssets:count fromPreparedAssetLoaders:assetLoaders];
+        }
+        failure:^{
+            OWSLogError(@"Could not prepare asset loaders.");
+        }];
 }
 
-+ (void)shareAssets:(NSUInteger)count
-   fromPreparedAssetLoaders:(NSArray<DebugUIMessagesAssetLoader *> *)assetLoaders
++ (void)shareAssets:(NSUInteger)count fromPreparedAssetLoaders:(NSArray<DebugUIMessagesAssetLoader *> *)assetLoaders
 {
     __block NSMutableArray<NSURL *> *urls = [NSMutableArray new];
     for (NSUInteger i = 0;i < count;i++) {
@@ -407,26 +404,26 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)shareImages:(NSUInteger)count
 {
     [self shareAssets:count
-     fromAssetLoaders:@[
-                        [DebugUIMessagesAssetLoader jpegInstance],
-                        [DebugUIMessagesAssetLoader tinyPngInstance],
-                        ]];
+        fromAssetLoaders:@[
+            [DebugUIMessagesAssetLoader jpegInstance],
+            [DebugUIMessagesAssetLoader tinyPngInstance],
+        ]];
 }
 
 + (void)shareVideos:(NSUInteger)count
 {
     [self shareAssets:count
-     fromAssetLoaders:@[
-                        [DebugUIMessagesAssetLoader mp4Instance],
-                        ]];
+        fromAssetLoaders:@[
+            [DebugUIMessagesAssetLoader mp4Instance],
+        ]];
 }
 
 + (void)sharePDFs:(NSUInteger)count
 {
     [self shareAssets:count
-     fromAssetLoaders:@[
-                        [DebugUIMessagesAssetLoader tinyPdfInstance],
-                        ]];
+        fromAssetLoaders:@[
+            [DebugUIMessagesAssetLoader tinyPdfInstance],
+        ]];
 }
 
 + (void)populateRandomKeyValueStores:(NSUInteger)keyCount
@@ -441,14 +438,14 @@ NS_ASSUME_NONNULL_BEGIN
         @autoreleasepool {
             [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
                 SDSKeyValueStore *store = [OWSBlockingManager keyValueStore];
-
+                
                 // Set three values at a time.
                 for (NSUInteger keyIndex = 0; keyIndex < kBatchSize; keyIndex += 3) {
                     NSData *value = [Randomness generateRandomBytes:4096];
                     [store setData:value key:NSUUID.UUID.UUIDString transaction:transaction];
-
+                    
                     [store setString:NSUUID.UUID.UUIDString key:NSUUID.UUID.UUIDString transaction:transaction];
-
+                    
                     [store setBool:true key:NSUUID.UUID.UUIDString transaction:transaction];
                 }
             }];
@@ -475,20 +472,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                                            transaction:transaction];
 
         // TSInteraction
-        [[[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                                            inThread:thread
-                                                       authorAddress:address2
-                                                      sourceDeviceId:0
-                                                         messageBody:@"Exemplar"
-                                                       attachmentIds:@[]
-                                                    expiresInSeconds:0
-                                                       quotedMessage:nil
-                                                        contactShare:nil
-                                                         linkPreview:nil
-                                                      messageSticker:nil
-                                                     serverTimestamp:nil
-                                                     wasReceivedByUD:NO
-                                                   isViewOnceMessage:NO] anyInsertWithTransaction:transaction];
+        TSIncomingMessageBuilder *incomingMessageBuilder =
+            [TSIncomingMessageBuilder incomingMessageBuilderWithThread:thread messageBody:@"Exemplar"];
+        incomingMessageBuilder.authorAddress = address2;
+        [[incomingMessageBuilder build] anyInsertWithTransaction:transaction];
 
         StickerPackInfo *stickerPackInfo =
             [[StickerPackInfo alloc] initWithPackId:[Randomness generateRandomBytes:16]
@@ -600,8 +587,8 @@ NS_ASSUME_NONNULL_BEGIN
         [[[SSKMessageDecryptJobRecord alloc] initWithEnvelopeData:[Randomness generateRandomBytes:16]
                                                             label:SSKMessageDecryptJobQueue.jobRecordLabel]
             anyInsertWithTransaction:transaction];
-        TSOutgoingMessage *queuedMessage = [[[TSOutgoingMessageBuilder alloc] initWithThread:thread
-                                                                                 messageBody:@"some body"] build];
+        TSOutgoingMessage *queuedMessage =
+            [[TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread messageBody:@"some body"] build];
         NSError *_Nullable error;
         [queuedMessage anyInsertWithTransaction:transaction];
         [[[SSKMessageSenderJobRecord alloc] initWithMessage:queuedMessage
