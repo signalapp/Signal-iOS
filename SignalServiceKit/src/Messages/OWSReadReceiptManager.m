@@ -147,33 +147,65 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
                 [interactionFinder messagesWithUnreadReactionsBeforeSortId:sortId
                                                                transaction:transaction.unwrapGrdbRead];
         }];
+
         if (unreadMessages.count < 1 && messagesWithUnreadReactions.count < 1) {
             // Avoid unnecessary writes.
             dispatch_async(dispatch_get_main_queue(), completion);
             return;
         }
-        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-            if (unreadMessages.count > 0) {
+
+        // Mark as read in batches.
+        NSComparisonResult (^interactionComparator)(id, id) = ^NSComparisonResult(id left, id right) {
+            if (![left isKindOfClass:[TSInteraction class]] || ![right isKindOfClass:[TSInteraction class]]) {
+                OWSFailDebug(@"Unexpected object: %@ %@", [left class], [right class]);
+                return NSOrderedSame;
+            }
+            TSInteraction *leftInteraction = left;
+            TSInteraction *rightInteraction = right;
+            if (leftInteraction.sortId == rightInteraction.sortId) {
+                return NSOrderedSame;
+            } else if (leftInteraction.sortId < rightInteraction.sortId) {
+                return NSOrderedAscending;
+            } else {
+                return NSOrderedDescending;
+            }
+        };
+        unreadMessages = [unreadMessages sortedArrayUsingComparator:interactionComparator];
+        messagesWithUnreadReactions = [messagesWithUnreadReactions sortedArrayUsingComparator:interactionComparator];
+
+        const NSUInteger maxBatchSize = 500;
+        while (unreadMessages.count > 0) {
+            NSUInteger batchSize = MIN(unreadMessages.count, maxBatchSize);
+            NSArray<id<OWSReadTracking>> *batch = [unreadMessages subarrayWithRange:NSMakeRange(0, batchSize)];
+            unreadMessages =
+                [unreadMessages subarrayWithRange:NSMakeRange(batchSize, unreadMessages.count - batchSize)];
+            OWSAssertDebug(batch.count > 0);
+            [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
                 OWSReadCircumstance circumstance = hasPendingMessageRequest
                     ? OWSReadCircumstanceReadOnThisDeviceWhilePendingMessageRequest
                     : OWSReadCircumstanceReadOnThisDevice;
-                [self markMessagesAsRead:unreadMessages
+                [self markMessagesAsRead:batch
                                   thread:thread
                            readTimestamp:readTimestamp
                             circumstance:circumstance
                              transaction:transaction];
-            }
-
-            if (messagesWithUnreadReactions.count > 0) {
-                for (TSOutgoingMessage *message in messagesWithUnreadReactions) {
+            }];
+        }
+        while (messagesWithUnreadReactions.count > 0) {
+            NSUInteger batchSize = MIN(messagesWithUnreadReactions.count, maxBatchSize);
+            NSArray<TSOutgoingMessage *> *batch =
+                [messagesWithUnreadReactions subarrayWithRange:NSMakeRange(0, batchSize)];
+            messagesWithUnreadReactions = [messagesWithUnreadReactions
+                subarrayWithRange:NSMakeRange(batchSize, messagesWithUnreadReactions.count - batchSize)];
+            OWSAssertDebug(batch.count > 0);
+            [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                for (TSOutgoingMessage *message in batch) {
                     [message markUnreadReactionsAsReadWithTransaction:transaction];
                 }
 
-                [self sendLinkedDeviceReadReceiptForMessages:messagesWithUnreadReactions
-                                                      thread:thread
-                                                 transaction:transaction];
-            }
-        }];
+                [self sendLinkedDeviceReadReceiptForMessages:batch thread:thread transaction:transaction];
+            }];
+        }
         dispatch_async(dispatch_get_main_queue(), completion);
     });
 }
