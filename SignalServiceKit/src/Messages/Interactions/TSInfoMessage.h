@@ -70,10 +70,6 @@ extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyGroupUpdateSourceAddre
 
 - (instancetype)initWithThread:(TSThread *)contact messageType:(TSInfoMessageType)infoMessage NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                           thread:(TSThread *)contact
-                      messageType:(TSInfoMessageType)infoMessage NS_DESIGNATED_INITIALIZER;
-
 // Convenience initializer which is neither "designated" nor "unavailable".
 - (instancetype)initWithThread:(TSThread *)thread
                    messageType:(TSInfoMessageType)infoMessage

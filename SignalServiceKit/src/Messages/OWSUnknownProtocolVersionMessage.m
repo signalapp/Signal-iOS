@@ -46,24 +46,6 @@ NSUInteger const OWSUnknownProtocolVersionMessageSchemaVersion = 1;
     return self;
 }
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                           thread:(TSThread *)thread
-                           sender:(nullable SignalServiceAddress *)sender
-                  protocolVersion:(NSUInteger)protocolVersion
-{
-    self = [super initWithTimestamp:timestamp thread:thread messageType:TSInfoMessageUnknownProtocolVersion];
-
-    if (self) {
-        OWSAssertDebug(sender.isValid);
-
-        _protocolVersion = protocolVersion;
-        _sender = sender;
-        _unknownProtocolVersionMessageSchemaVersion = OWSUnknownProtocolVersionMessageSchemaVersion;
-    }
-
-    return self;
-}
-
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
     self = [super initWithCoder:coder];

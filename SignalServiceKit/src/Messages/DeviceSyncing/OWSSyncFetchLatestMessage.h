@@ -14,7 +14,9 @@ typedef NS_CLOSED_ENUM(NSUInteger,
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithThread:(TSThread *)thread NS_UNAVAILABLE;
-- (instancetype)initWithThread:(TSThread *)thread fetchType:(OWSSyncFetchType)requestType;
+- (instancetype)initWithTimestamp:(uint64_t)timestamp thread:(TSThread *)thread NS_UNAVAILABLE;
+
+- (instancetype)initWithThread:(TSThread *)thread fetchType:(OWSSyncFetchType)requestType NS_DESIGNATED_INITIALIZER;
 
 @end
 

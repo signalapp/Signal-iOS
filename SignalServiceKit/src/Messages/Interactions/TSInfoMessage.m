@@ -77,27 +77,6 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
     return self;
 }
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                           thread:(TSThread *)thread
-                      messageType:(TSInfoMessageType)infoMessage
-{
-    self = [super initMessageWithBuilder:[TSMessageBuilder messageBuilderWithThread:thread
-                                                                          timestamp:timestamp
-                                                                        messageBody:nil]];
-    if (!self) {
-        return self;
-    }
-
-    _messageType = infoMessage;
-    _infoMessageSchemaVersion = TSInfoMessageSchemaVersion;
-
-    if (self.isDynamicInteraction) {
-        self.read = YES;
-    }
-
-    return self;
-}
-
 - (instancetype)initWithThread:(TSThread *)thread
                    messageType:(TSInfoMessageType)infoMessage
                  customMessage:(NSString *)customMessage

@@ -45,11 +45,6 @@ NS_ASSUME_NONNULL_BEGIN
                         sender:(nullable SignalServiceAddress *)sender
                protocolVersion:(NSUInteger)protocolVersion NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                           thread:(TSThread *)thread
-                           sender:(nullable SignalServiceAddress *)sender
-                  protocolVersion:(NSUInteger)protocolVersion NS_DESIGNATED_INITIALIZER;
-
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
