@@ -123,7 +123,8 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 - (void)replaceSortId:(uint64_t)sortId;
 
 #if TESTABLE_BUILD
-- (void)replaceReceivedAtTimestamp:(uint64_t)receivedAtTimestamp;
+- (void)replaceReceivedAtTimestamp:(uint64_t)receivedAtTimestamp NS_SWIFT_NAME(replaceReceivedAtTimestamp(_:));
+- (void)replaceReceivedAtTimestamp:(uint64_t)receivedAtTimestamp transaction:(SDSAnyWriteTransaction *)transaction;
 #endif
 
 @end

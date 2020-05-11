@@ -1043,7 +1043,7 @@ public extension DebugUIScreenshots {
                    builder.isViewOnceMessage = isViewOnceMessage
         }
         let message = builder.build()
-        message.replaceReceived(atTimestamp: timestamp ?? Date.ows_millisecondTimestamp())
+        message.replaceReceivedAtTimestamp(timestamp ?? Date.ows_millisecondTimestamp())
         message.anyInsert(transaction: transaction)
         // Mark as sent.
         message.update(withFakeMessageState: .sent, transaction: transaction)
@@ -1096,7 +1096,7 @@ public extension DebugUIScreenshots {
                                                attachmentIds: attachmentIds,
                                                expiresInSeconds: expiresInSeconds,
                                                isViewOnceMessage: isViewOnceMessage).build()
-        message.replaceReceived(atTimestamp: timestamp)
+        message.replaceReceivedAtTimestamp(timestamp)
         message.anyInsert(transaction: transaction)
         return message
     }

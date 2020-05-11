@@ -39,14 +39,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@interface TSOutgoingMessage (PostDatingDebug)
-
-- (void)setReceivedAtTimestamp:(uint64_t)value;
-
-@end
-
-#pragma mark -
-
 @implementation DebugUIMessages
 
 #pragma mark - Factory Methods
@@ -912,9 +904,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                      transaction:transaction];
 
     // This is a hack to "back-date" the message.
-    [message setReceivedAtTimestamp:timestamp];
-
-    [message anyInsertWithTransaction:transaction];
+    [message replaceReceivedAtTimestamp:timestamp transaction:transaction];
 }
 
 #pragma mark - Fake Incoming Media
@@ -2937,8 +2927,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                              linkPreview:nil
                                                           messageSticker:nil
                                                              transaction:transaction];
-            [message setReceivedAtTimestamp:(uint64_t)((int64_t)[NSDate ows_millisecondTimeStamp] + dateOffset)];
-            [message anyInsertWithTransaction:transaction];
+            [message replaceReceivedAtTimestamp:(uint64_t)((int64_t)[NSDate ows_millisecondTimeStamp] + dateOffset)
+                                    transaction:transaction];
         }];
 }
 
@@ -3013,7 +3003,6 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                              linkPreview:nil
                                                           messageSticker:nil
                                                              transaction:transaction];
-                                     [message anyInsertWithTransaction:transaction];
                                  }];
 }
 
@@ -3146,7 +3135,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                   name.givenName = @"Add Me To Your Contacts";
                                                   OWSContactPhoneNumber *phoneNumber = [OWSContactPhoneNumber new];
                                                   phoneNumber.phoneType = OWSContactPhoneType_Work;
-                                                  phoneNumber.phoneNumber = @"+324602053911";
+                                                  phoneNumber.phoneNumber = @"+32460205391";
                                                   contact.phoneNumbers = @[
                                                       phoneNumber,
                                                   ];
@@ -3329,7 +3318,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                   name.givenName = @"Add Me To Your Contacts";
                                                   OWSContactPhoneNumber *phoneNumber = [OWSContactPhoneNumber new];
                                                   phoneNumber.phoneType = OWSContactPhoneType_Work;
-                                                  phoneNumber.phoneNumber = @"+324602053911";
+                                                  phoneNumber.phoneNumber = @"+32460205391";
                                                   contact.phoneNumbers = @[
                                                       phoneNumber,
                                                   ];
@@ -4543,17 +4532,21 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     }];
     if (isDelivered) {
         SignalServiceAddress *_Nullable address = thread.recipientAddresses.lastObject;
-        OWSAssertDebug(address.isValid);
-        [message updateWithDeliveredRecipient:address
-                            deliveryTimestamp:@([NSDate ows_millisecondTimeStamp])
-                                  transaction:transaction];
+        if (address != nil) {
+            OWSAssertDebug(address.isValid);
+            [message updateWithDeliveredRecipient:address
+                                deliveryTimestamp:@([NSDate ows_millisecondTimeStamp])
+                                      transaction:transaction];
+        }
     }
     if (isRead) {
         SignalServiceAddress *_Nullable address = thread.recipientAddresses.lastObject;
-        OWSAssertDebug(address.isValid);
-        [message updateWithReadRecipient:address
-                           readTimestamp:[NSDate ows_millisecondTimeStamp]
-                             transaction:transaction];
+        if (address != nil) {
+            OWSAssertDebug(address.isValid);
+            [message updateWithReadRecipient:address
+                               readTimestamp:[NSDate ows_millisecondTimeStamp]
+                                 transaction:transaction];
+        }
     }
     return message;
 }

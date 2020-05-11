@@ -41,6 +41,7 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 @interface TSInteraction ()
 
 @property (nonatomic) uint64_t sortId;
+@property (nonatomic) uint64_t receivedAtTimestamp;
 
 @end
 
@@ -373,7 +374,15 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 #if TESTABLE_BUILD
 - (void)replaceReceivedAtTimestamp:(uint64_t)receivedAtTimestamp
 {
-    _receivedAtTimestamp = receivedAtTimestamp;
+    self.receivedAtTimestamp = receivedAtTimestamp;
+}
+
+- (void)replaceReceivedAtTimestamp:(uint64_t)receivedAtTimestamp transaction:(SDSAnyWriteTransaction *)transaction
+{
+    [self anyUpdateWithTransaction:transaction
+                             block:^(TSInteraction *interaction) {
+                                 interaction.receivedAtTimestamp = receivedAtTimestamp;
+                             }];
 }
 #endif
 
