@@ -60,8 +60,7 @@ public class NewAccountDiscovery: NSObject {
                 }
 
                 let thread = TSContactThread.getOrCreateThread(withContactAddress: recipient.address, transaction: transaction)
-                let message = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(),
-                                            thread: thread,
+                let message = TSInfoMessage(thread: thread,
                                             messageType: .userJoinedSignal)
                 message.anyInsert(transaction: transaction)
 

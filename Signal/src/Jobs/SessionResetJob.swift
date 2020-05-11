@@ -132,8 +132,7 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
                 // Otherwise if we send another message before them, they wont have the session to decrypt it.
                 self.sessionStore.archiveAllSessions(for: self.recipientAddress, transaction: transaction)
 
-                let message = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(),
-                                            thread: self.contactThread,
+                let message = TSInfoMessage(thread: self.contactThread,
                                             messageType: TSInfoMessageType.typeSessionDidEnd)
                 message.anyInsert(transaction: transaction)
             }

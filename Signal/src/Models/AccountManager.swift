@@ -313,8 +313,7 @@ public class AccountManager: NSObject {
                             owsFailDebug("thread was unexpectedly nil")
                             continue
                         }
-                        let message = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(),
-                                                    thread: thread,
+                        let message = TSInfoMessage(thread: thread,
                                                     messageType: .syncedThread)
                         message.anyInsert(transaction: transaction)
                     }
