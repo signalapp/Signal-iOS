@@ -32,21 +32,19 @@ public final class ClosedGroupsProtocol : NSObject {
         return !thread.isUserAdmin(inGroup: hexEncodedPublicKey, transaction: transaction)
     }
 
-    @objc(establishSessionsIfNeededWithClosedGroupMembers:in:)
-    public static func establishSessionsIfNeeded(with closedGroupMembers: [String], in thread: TSGroupThread) {
-        storage.dbReadWriteConnection.readWrite { transaction in
-            closedGroupMembers.forEach { hexEncodedPublicKey in
-                guard hexEncodedPublicKey != getUserHexEncodedPublicKey() else { return }
-                let hasSession = storage.containsSession(hexEncodedPublicKey, deviceId: Int32(OWSDevicePrimaryDeviceId), protocolContext: transaction)
-                guard !hasSession else { return }
-                let thread = TSContactThread.getOrCreateThread(withContactId: hexEncodedPublicKey, transaction: transaction)
-                thread.save(with: transaction)
-                let sessionRequestMessage = SessionRequestMessage(thread: thread)
-                let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
-                // This has to happen sync to ensure that session requests get sent before AFRs do (it's
-                // asssumed that the master device first syncs closed groups first and contacts after that).
-                messageSenderJobQueue.add(message: sessionRequestMessage, transaction: transaction)
-            }
+    @objc(establishSessionsIfNeededWithClosedGroupMembers:in:using:)
+    public static func establishSessionsIfNeeded(with closedGroupMembers: [String], in thread: TSGroupThread, using transaction: YapDatabaseReadWriteTransaction) {
+        closedGroupMembers.forEach { hexEncodedPublicKey in
+            guard hexEncodedPublicKey != getUserHexEncodedPublicKey() else { return }
+            let hasSession = storage.containsSession(hexEncodedPublicKey, deviceId: Int32(OWSDevicePrimaryDeviceId), protocolContext: transaction)
+            guard !hasSession else { return }
+            let thread = TSContactThread.getOrCreateThread(withContactId: hexEncodedPublicKey, transaction: transaction)
+            thread.save(with: transaction)
+            let sessionRequestMessage = SessionRequestMessage(thread: thread)
+            let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
+            // This has to happen sync to ensure that session requests get sent before AFRs do (it's
+            // asssumed that the master device first syncs closed groups first and contacts after that).
+            messageSenderJobQueue.add(message: sessionRequestMessage, transaction: transaction)
         }
     }
 }
