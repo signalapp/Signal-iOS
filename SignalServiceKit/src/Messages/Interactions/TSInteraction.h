@@ -41,6 +41,9 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value);
 - (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
 - (instancetype)initWithGrdbId:(int64_t)grdbId uniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
 
+// Convenience initializer which is neither "designated" nor "unavailable".
+- (instancetype)initWithUniqueId:(NSString *)uniqueId thread:(TSThread *)thread;
+
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
                        timestamp:(uint64_t)timestamp
                           thread:(TSThread *)thread NS_DESIGNATED_INITIALIZER;

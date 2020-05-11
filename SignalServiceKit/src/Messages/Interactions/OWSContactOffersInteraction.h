@@ -31,9 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
-// MJK TODO should be safe to remove this timestamp param
 - (instancetype)initWithUniqueId:(NSString *)uniqueId
-                        timestamp:(uint64_t)timestamp
                            thread:(TSThread *)thread
                     hasBlockOffer:(BOOL)hasBlockOffer
             hasAddToContactsOffer:(BOOL)hasAddToContactsOffer

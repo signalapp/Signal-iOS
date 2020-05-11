@@ -305,7 +305,6 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
 
 + (instancetype)nonblockingIdentityChangeInThread:(TSThread *)thread address:(SignalServiceAddress *)address
 {
-    // MJK TODO - should be safe to remove this senderTimestamp
     return [[self alloc] initWithThread:thread
                       failedMessageType:TSErrorMessageNonBlockingIdentityChange
                                 address:address];

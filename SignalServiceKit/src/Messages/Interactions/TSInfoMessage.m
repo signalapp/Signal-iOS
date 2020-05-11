@@ -216,7 +216,6 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
     OWSAssertDebug(thread);
     OWSAssertDebug(address.isValid);
 
-    // MJK TODO - remove senderTimestamp
     return [[self alloc] initWithThread:thread messageType:TSInfoMessageUserNotRegistered unregisteredAddress:address];
 }
 

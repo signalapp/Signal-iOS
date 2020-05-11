@@ -92,6 +92,11 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     return @"TSInteraction";
 }
 
+- (instancetype)initWithUniqueId:(NSString *)uniqueId thread:(TSThread *)thread
+{
+    return [self initWithUniqueId:uniqueId timestamp:NSDate.ows_millisecondTimeStamp thread:thread];
+}
+
 - (instancetype)initWithUniqueId:(NSString *)uniqueId timestamp:(uint64_t)timestamp thread:(TSThread *)thread
 {
     OWSAssertDebug(timestamp > 0);

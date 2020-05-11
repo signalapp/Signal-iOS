@@ -953,14 +953,12 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
     TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactAddress:address
                                                                               transaction:transaction];
     OWSAssertDebug(contactThread);
-    // MJK TODO - should be safe to remove senderTimestamp
     [messages addObject:[[OWSVerificationStateChangeMessage alloc] initWithThread:contactThread
                                                                  recipientAddress:address
                                                                 verificationState:verificationState
                                                                     isLocalChange:isLocalChange]];
 
     for (TSGroupThread *groupThread in [TSGroupThread groupThreadsWithAddress:address transaction:transaction]) {
-        // MJK TODO - should be safe to remove senderTimestamp
         [messages addObject:[[OWSVerificationStateChangeMessage alloc] initWithThread:groupThread
                                                                      recipientAddress:address
                                                                     verificationState:verificationState

@@ -3497,7 +3497,6 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
             disappearingMessagesConfiguration = [disappearingMessagesConfiguration
                 copyAsEnabledWithDurationSeconds:(uint32_t)[durationSeconds intValue]];
 
-            // MJK - should be safe to remove this senderTimestamp
             [result addObject:[[OWSDisappearingConfigurationUpdateInfoMessage alloc]
                                           initWithThread:thread
                                            configuration:disappearingMessagesConfiguration
@@ -3512,7 +3511,6 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
             disappearingMessagesConfiguration = [disappearingMessagesConfiguration
                 copyAsEnabledWithDurationSeconds:(uint32_t)[durationSeconds intValue]];
 
-            // MJK - should be safe to remove this senderTimestamp
             [result addObject:[[OWSDisappearingConfigurationUpdateInfoMessage alloc]
                                           initWithThread:thread
                                            configuration:disappearingMessagesConfiguration
@@ -3527,7 +3525,6 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
             disappearingMessagesConfiguration = [disappearingMessagesConfiguration
                 copyAsEnabledWithDurationSeconds:(uint32_t)[durationSeconds intValue]];
 
-            // MJK TODO - remove senderTimestamp
             [result addObject:[[OWSDisappearingConfigurationUpdateInfoMessage alloc]
                                           initWithThread:thread
                                            configuration:disappearingMessagesConfiguration
@@ -3539,7 +3536,6 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                 [thread disappearingMessagesConfigurationWithTransaction:transaction];
             disappearingMessagesConfiguration = [disappearingMessagesConfiguration copyWithIsEnabled:NO];
 
-            // MJK TODO - remove senderTimestamp
             [result addObject:[[OWSDisappearingConfigurationUpdateInfoMessage alloc]
                                           initWithThread:thread
                                            configuration:disappearingMessagesConfiguration
@@ -3551,48 +3547,39 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                                   address:[[SignalServiceAddress alloc]
                                                                               initWithPhoneNumber:@"+19174054215"]]];
 
-        // MJK - should be safe to remove this senderTimestamp
         [result addObject:[[TSInfoMessage alloc] initWithThread:thread messageType:TSInfoMessageTypeSessionDidEnd]];
         // TODO: customMessage?
-        // MJK - should be safe to remove this senderTimestamp
         [result addObject:[[TSInfoMessage alloc] initWithThread:thread messageType:TSInfoMessageTypeGroupUpdate]];
         // TODO: customMessage?
-        // MJK - should be safe to remove this senderTimestamp
         [result addObject:[[TSInfoMessage alloc] initWithThread:thread messageType:TSInfoMessageTypeGroupQuit]];
 
-        // MJK - should be safe to remove this senderTimestamp
         [result addObject:[[OWSVerificationStateChangeMessage alloc]
                                  initWithThread:thread
                                recipientAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"]
                               verificationState:OWSVerificationStateDefault
                                   isLocalChange:YES]];
 
-        // MJK - should be safe to remove this senderTimestamp
         [result addObject:[[OWSVerificationStateChangeMessage alloc]
                                  initWithThread:thread
                                recipientAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"]
                               verificationState:OWSVerificationStateVerified
                                   isLocalChange:YES]];
-        // MJK - should be safe to remove this senderTimestamp
         [result addObject:[[OWSVerificationStateChangeMessage alloc]
                                  initWithThread:thread
                                recipientAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"]
                               verificationState:OWSVerificationStateNoLongerVerified
                                   isLocalChange:YES]];
 
-        // MJK - should be safe to remove this senderTimestamp
         [result addObject:[[OWSVerificationStateChangeMessage alloc]
                                  initWithThread:thread
                                recipientAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"]
                               verificationState:OWSVerificationStateDefault
                                   isLocalChange:NO]];
-        // MJK - should be safe to remove this senderTimestamp
         [result addObject:[[OWSVerificationStateChangeMessage alloc]
                                  initWithThread:thread
                                recipientAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"]
                               verificationState:OWSVerificationStateVerified
                                   isLocalChange:NO]];
-        // MJK - should be safe to remove this senderTimestamp
         [result addObject:[[OWSVerificationStateChangeMessage alloc]
                                  initWithThread:thread
                                recipientAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"]
@@ -3618,7 +3605,6 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         OWSAssertDebug(blockingSNChangeMessage);
         [result addObject:blockingSNChangeMessage];
 
-        // MJK TODO - should be safe to remove this senderTimestamp
         [result addObject:[[TSErrorMessage alloc]
                                  initWithThread:thread
                               failedMessageType:TSErrorMessageNonBlockingIdentityChange
@@ -3798,7 +3784,6 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
             [[self randomText] stringByAppendingFormat:@" (sequence: %lu)", (unsigned long)i + 1 + offset];
         switch (arc4random_uniform(isTextOnly ? 2 : 4)) {
             case 0: {
-                // MJK - should be safe to remove this senderTimestamp
                 TSIncomingMessageBuilder *incomingMessageBuilder =
                     [TSIncomingMessageBuilder incomingMessageBuilderWithThread:thread messageBody:randomText];
                 incomingMessageBuilder.authorAddress =
@@ -3841,7 +3826,6 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                   uploadTimestamp:0];
                 pointer.state = TSAttachmentPointerStateFailed;
                 [pointer anyInsertWithTransaction:transaction];
-                // MJK - should be safe to remove this senderTimestamp
                 TSIncomingMessageBuilder *incomingMessageBuilder =
                     [TSIncomingMessageBuilder incomingMessageBuilderWithThread:thread messageBody:nil];
                 incomingMessageBuilder.authorAddress =
@@ -4179,7 +4163,6 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         OWSDisappearingMessagesConfiguration *configuration =
             [thread disappearingMessagesConfigurationWithTransaction:initialTransaction];
 
-        // MJK TODO - remove senderTimestamp
         TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread
                                                                                                   messageBody:text];
         [messageBuilder applyDisappearingMessagesConfiguration:configuration];
@@ -4270,7 +4253,6 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 
 + (void)createDisappearingMessagesWhichFailedToStartInThread:(TSThread *)thread
 {
-    // MJK TODO - should be safe to remove this senderTimestamp
     uint64_t now = [NSDate ows_millisecondTimeStamp];
     NSString *messageBody = [NSString stringWithFormat:@"Should disappear 60s after %lu", (unsigned long)now];
 
@@ -4542,7 +4524,6 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         [attachmentIds addObject:attachment.uniqueId];
     }
 
-    // MJK TODO - remove senderTimestamp
     TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread
                                                                                               messageBody:messageBody];
     messageBuilder.attachmentIds = attachmentIds;
@@ -4626,12 +4607,6 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         [attachmentIds addObject:attachmentId];
     }
 
-    //    // Random time within last n years. Helpful for filling out a media gallery over time.
-    //    double yearsMillis = 4.0 * kYearsInMs;
-    //    uint64_t millisAgo = (uint64_t)(((double)arc4random() / ((double)0xffffffff)) * yearsMillis);
-    //    uint64_t timestamp = [NSDate ows_millisecondTimeStamp] - millisAgo;
-
-    // MJK TODO - should be safe to remove this senderTimestamp
     TSIncomingMessageBuilder *incomingMessageBuilder =
         [TSIncomingMessageBuilder incomingMessageBuilderWithThread:thread messageBody:messageBody];
     incomingMessageBuilder.authorAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"];
