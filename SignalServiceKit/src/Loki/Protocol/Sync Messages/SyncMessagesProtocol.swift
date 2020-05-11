@@ -136,7 +136,7 @@ public final class SyncMessagesProtocol : NSObject {
         newGroupThread.groupModel = newGroupModel // TODO: Should this use the setGroupModel method on TSGroupThread?
         newGroupThread.save(with: transaction)
         // Try to establish sessions with all members for which none exists yet when a group is created or updated
-        ClosedGroupsProtocol.establishSessionsIfNeeded(with: members, in: newGroupThread)
+        ClosedGroupsProtocol.establishSessionsIfNeeded(with: members, in: newGroupThread, using: transaction)
         OWSDisappearingMessagesJob.shared().becomeConsistent(withDisappearingDuration: transcript.dataMessage.expireTimer, thread: newGroupThread, createdByRemoteRecipientId: nil, createdInExistingGroup: true, transaction: transaction)
         let groupUpdatedMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: newGroupThread, messageType: .typeGroupUpdate, customMessage: groupUpdatedMessageDescription)
         groupUpdatedMessage.save(with: transaction)
@@ -207,7 +207,7 @@ public final class SyncMessagesProtocol : NSObject {
                 thread = TSGroupThread.getOrCreateThread(with: groupModel, transaction: transaction)
                 thread.save(with: transaction)
             }
-            ClosedGroupsProtocol.establishSessionsIfNeeded(with: groupModel.groupMemberIds, in: thread)
+            ClosedGroupsProtocol.establishSessionsIfNeeded(with: groupModel.groupMemberIds, in: thread, using: transaction)
         }
     }
 
