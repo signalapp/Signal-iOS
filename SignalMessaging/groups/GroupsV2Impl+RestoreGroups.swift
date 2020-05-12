@@ -203,9 +203,9 @@ public extension GroupsV2Impl {
                 // failover to using a "snapshot".
                 let groupUpdateMode = GroupUpdateMode.upToCurrentRevisionAfterMessageProcessWithThrottling
                 firstly {
-                    self.groupV2Updates.tryToRefreshV2GroupThreadWithThrottling(groupId: groupContextInfo.groupId,
-                                                                                groupSecretParamsData: groupContextInfo.groupSecretParamsData,
-                                                                                groupUpdateMode: groupUpdateMode)
+                    self.groupV2Updates.tryToRefreshV2GroupThread(groupId: groupContextInfo.groupId,
+                                                                  groupSecretParamsData: groupContextInfo.groupSecretParamsData,
+                                                                  groupUpdateMode: groupUpdateMode)
                 }.done { _ in
                     Logger.verbose("Update succeeded.")
                     markAsComplete()

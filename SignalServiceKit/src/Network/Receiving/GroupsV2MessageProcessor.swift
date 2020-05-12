@@ -673,9 +673,9 @@ class IncomingGroupsV2MessageQueue: NSObject {
         // failover to using a "snapshot".
         let groupUpdateMode = GroupUpdateMode.upToSpecificRevisionImmediately(upToRevision: groupContext.revision)
         return firstly {
-            self.groupV2Updates.tryToRefreshV2GroupThreadWithThrottling(groupId: groupContextInfo.groupId,
-                                                                        groupSecretParamsData: groupContextInfo.groupSecretParamsData,
-                                                                        groupUpdateMode: groupUpdateMode)
+            self.groupV2Updates.tryToRefreshV2GroupThread(groupId: groupContextInfo.groupId,
+                                                          groupSecretParamsData: groupContextInfo.groupSecretParamsData,
+                                                          groupUpdateMode: groupUpdateMode)
         }.map(on: .global()) { (_) in
             return UpdateOutcome.successShouldProcess
         }.recover(on: .global()) { error -> Guarantee<UpdateOutcome> in

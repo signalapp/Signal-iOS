@@ -15,10 +15,10 @@ typedef NSData *_Nonnull (^DynamicOutgoingMessageBlock)(SignalRecipient *);
 
 - (instancetype)initOutgoingMessageWithBuilder:(TSOutgoingMessageBuilder *)outgoingMessageBuilder NS_UNAVAILABLE;
 
-- (instancetype)initWithPlainTextDataBlock:(DynamicOutgoingMessageBlock)block thread:(TSThread *)thread;
-- (instancetype)initWithPlainTextDataBlock:(DynamicOutgoingMessageBlock)block
-                                 timestamp:(uint64_t)timestamp
-                                    thread:(TSThread *)thread;
+- (instancetype)initWithThread:(TSThread *)thread plainTextDataBlock:(DynamicOutgoingMessageBlock)block;
+- (instancetype)initWithThread:(TSThread *)thread
+                     timestamp:(uint64_t)timestamp
+            plainTextDataBlock:(DynamicOutgoingMessageBlock)block;
 
 @end
 

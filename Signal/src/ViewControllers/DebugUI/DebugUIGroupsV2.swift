@@ -25,6 +25,14 @@ class DebugUIGroupsV2: DebugUIPage {
         return Environment.shared.contactsManager
     }
 
+    private var messageSenderJobQueue: MessageSenderJobQueue {
+        return SSKEnvironment.shared.messageSenderJobQueue
+    }
+
+    private var groupsV2: GroupsV2 {
+        return SSKEnvironment.shared.groupsV2
+    }
+
     // MARK: Overrides 
 
     override func name() -> String {
@@ -44,6 +52,12 @@ class DebugUIGroupsV2: DebugUIPage {
                     self?.kickOtherGroupMembers(groupThread: groupThread)
                 })
             }
+        }
+
+        if let contactThread = thread as? TSContactThread {
+            sectionItems.append(OWSTableItem(title: "Send invalid group messages.") { [weak self] in
+                self?.sendInvalidGroupMessages(contactThread: contactThread)
+            })
         }
 
         return OWSTableSection(title: "Groups v2", items: sectionItems)
@@ -522,6 +536,118 @@ class DebugUIGroupsV2: DebugUIPage {
         }.catch { error in
             owsFailDebug("Error: \(error)")
         }.retainUntilComplete()
+    }
+
+    private func sendInvalidGroupMessages(contactThread: TSContactThread) {
+        var messages = [TSOutgoingMessage]()
+
+        let buildValidGroupContextInfo = { () -> GroupV2ContextInfo in
+            let groupsV2 = self.groupsV2
+            let groupSecretParamsData = try! groupsV2.generateGroupSecretParamsData()
+            let masterKeyData = try! GroupsV2Protos.masterKeyData(forGroupSecretParamsData: groupSecretParamsData)
+            return try! groupsV2.groupV2ContextInfo(forMasterKeyData: masterKeyData)
+        }
+
+        do {
+            messages.append(OWSDynamicOutgoingMessage(thread: contactThread) { (_: SignalRecipient) -> Data in
+                // Valid-looking group id/master key/secret params, but doesn't
+                // correspond to an actual group on the service.
+                let groupV2ContextInfo: GroupV2ContextInfo = buildValidGroupContextInfo()
+                let revision: UInt32 = 0
+
+                let builder = SSKProtoGroupContextV2.builder()
+                builder.setMasterKey(groupV2ContextInfo.masterKeyData)
+                builder.setRevision(revision)
+
+//                if let changeActionsProtoData = changeActionsProtoData {
+//                    assert(changeActionsProtoData.count > 0)
+//                    builder.setGroupChange(changeActionsProtoData)
+//                }
+
+                let dataBuilder = SSKProtoDataMessage.builder()
+                dataBuilder.setTimestamp(NSDate.ows_millisecondTimeStamp())
+                dataBuilder.setRequiredProtocolVersion(0)
+                return try! dataBuilder.buildSerializedData()
+            })
+
+//                }
+//            - (OutgoingGroupProtoResult)addGroupsV2ToDataMessageBuilder:(SSKProtoDataMessageBuilder *)builder
+//            groupThread:(TSGroupThread *)groupThread
+//            transaction:(SDSAnyReadTransaction *)transaction
+//            {
+//                OWSAssertDebug(builder);
+//                OWSAssertDebug(groupThread);
+//                OWSAssertDebug(transaction);
+//
+//                if (![groupThread.groupModel isKindOfClass:[TSGroupModelV2 class]]) {
+//                    OWSFailDebug(@"Invalid group model.");
+//                    return OutgoingGroupProtoResult_Error;
+//                }
+//                TSGroupModelV2 *groupModel = (TSGroupModelV2 *)groupThread.groupModel;
+//
+//                NSError *error;
+//                SSKProtoGroupContextV2 *_Nullable groupContextV2 =
+//                    [self.groupsV2 buildGroupContextV2ProtoWithGroupModel:groupModel
+//                        changeActionsProtoData:self.changeActionsProtoData
+//                        error:&error];
+//                if (groupContextV2 == nil || error != nil) {
+//                    OWSFailDebug(@"Error: %@", error);
+//                    return OutgoingGroupProtoResult_Error;
+//                }
+//                [builder setGroupV2:groupContextV2];
+//                return OutgoingGroupProtoResult_AddedWithoutGroupAvatar;
+//
+
+        }
+
+//        guard let localAddress = tsAccountManager.localAddress else {
+//            return owsFailDebug("Missing localAddress.")
+//        }
+//        
+//        let oldGroupModel = groupThread.groupModel
+//        
+//        let oldGroupMembership = oldGroupModel.groupMembership
+//        var groupMembershipBuilder = oldGroupMembership.asBuilder
+//        for address in oldGroupMembership.allUsers {
+//            if address != localAddress {
+//                groupMembershipBuilder.remove(address)
+//            }
+//        }
+//        let newGroupMembership = groupMembershipBuilder.build()
+//        firstly { () -> Promise<TSGroupThread> in
+//            var groupModelBuilder = oldGroupModel.asBuilder
+//            groupModelBuilder.groupMembership = newGroupMembership
+//            let newGroupModel = try databaseStorage.read { transaction in
+//                try groupModelBuilder.buildAsV2(transaction: transaction)
+//            }
+//            return GroupManager.localUpdateExistingGroup(groupModel: newGroupModel,
+//                                                         dmConfiguration: nil,
+//                                                         groupUpdateSourceAddress: localAddress)
+//        }.done { (_) -> Void in
+//            Logger.info("Success.")
+//        }.catch { error in
+//            owsFailDebug("Error: \(error)")
+//        }.retainUntilComplete()
+
+//        [self.messageSenderJobQueue
+//        messageSenderJobQueue.addMessage(
+
+//        NSUInteger contentLength = arc4random_uniform(32);
+//        return [Cryptography generateRandomBytes:contentLength];
+//        SSKProtoContentBuilder *contentBuilder =
+//            [SSKProtoContent builder];
+//        return [[contentBuilder buildIgnoringErrors]
+//            serializedDataIgnoringErrors];
+//
+//        let message = [[OWSDynamicOutgoingMessage alloc] initWithPlainTextDataBlock:block
+//            thread:thread];
+//
+//        [self sendStressMessage:message];
+        databaseStorage.write { transaction in
+            for message in messages {
+                self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+            }
+        }
     }
 }
 

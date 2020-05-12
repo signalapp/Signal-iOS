@@ -157,9 +157,9 @@ public protocol GroupV2UpdatesSwift: GroupV2Updates {
     func tryToRefreshV2GroupUpToCurrentRevisionImmediately(groupId: Data,
                                                            groupSecretParamsData: Data) -> Promise<Void>
 
-    func tryToRefreshV2GroupThreadWithThrottling(groupId: Data,
-                                                 groupSecretParamsData: Data,
-                                                 groupUpdateMode: GroupUpdateMode) -> Promise<Void>
+    func tryToRefreshV2GroupThread(groupId: Data,
+                                   groupSecretParamsData: Data,
+                                   groupUpdateMode: GroupUpdateMode) -> Promise<Void>
 
     func updateGroupWithChangeActions(groupId: Data,
                                       changeActionsProto: GroupsProtoGroupChangeActions,
@@ -431,9 +431,9 @@ public class MockGroupV2Updates: NSObject, GroupV2UpdatesSwift {
         owsFail("Not implemented.")
     }
 
-    public func tryToRefreshV2GroupThreadWithThrottling(groupId: Data,
-                                                        groupSecretParamsData: Data,
-                                                        groupUpdateMode: GroupUpdateMode) -> Promise<Void> {
+    public func tryToRefreshV2GroupThread(groupId: Data,
+                                          groupSecretParamsData: Data,
+                                          groupUpdateMode: GroupUpdateMode) -> Promise<Void> {
         owsFail("Not implemented.")
     }
 

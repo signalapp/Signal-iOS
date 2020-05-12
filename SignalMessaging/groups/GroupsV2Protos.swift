@@ -150,7 +150,10 @@ public class GroupsV2Protos {
     }
 
     public class func masterKeyData(forGroupModel groupModel: TSGroupModelV2) throws -> Data {
-        let groupSecretParamsData = groupModel.secretParamsData
+        return try masterKeyData(forGroupSecretParamsData: groupModel.secretParamsData)
+    }
+
+    public class func masterKeyData(forGroupSecretParamsData groupSecretParamsData: Data) throws -> Data {
         let groupSecretParams = try GroupSecretParams(contents: [UInt8](groupSecretParamsData))
         return try groupSecretParams.getMasterKey().serialize().asData
     }
