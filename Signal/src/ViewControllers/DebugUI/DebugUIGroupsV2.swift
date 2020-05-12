@@ -60,6 +60,13 @@ class DebugUIGroupsV2: DebugUIPage {
             })
         }
 
+        if let groupThread = thread as? TSGroupThread,
+            groupThread.isGroupV2Thread {
+            sectionItems.append(OWSTableItem(title: "Send partially-invalid group messages.") { [weak self] in
+                self?.sendPartiallyInvalidGroupMessages(groupThread: groupThread)
+            })
+        }
+
         return OWSTableSection(title: "Groups v2", items: sectionItems)
     }
 
@@ -648,10 +655,10 @@ class DebugUIGroupsV2: DebugUIPage {
             builder.setRevision(revision)
 
             let dataBuilder = SSKProtoDataMessage.builder()
-            dataBuilder.setTimestamp(NSDate.ows_millisecondTimeStamp())
+            dataBuilder.setGroupV2(try! builder.build())
             dataBuilder.setRequiredProtocolVersion(0)
             dataBuilder.setBody("\(messages.count)")
-            return try! dataBuilder.buildSerializedData()
+            return Self.contentProtoData(forDataBuilder: dataBuilder)
         })
 
         messages.append(OWSDynamicOutgoingMessage(thread: contactThread) { (_: SignalRecipient) -> Data in
@@ -666,10 +673,10 @@ class DebugUIGroupsV2: DebugUIPage {
             builder.setRevision(revision)
 
             let dataBuilder = SSKProtoDataMessage.builder()
-            dataBuilder.setTimestamp(NSDate.ows_millisecondTimeStamp())
+            dataBuilder.setGroupV2(try! builder.build())
             dataBuilder.setRequiredProtocolVersion(0)
             dataBuilder.setBody("\(messages.count)")
-            return try! dataBuilder.buildSerializedData()
+            return Self.contentProtoData(forDataBuilder: dataBuilder)
         })
 
         messages.append(OWSDynamicOutgoingMessage(thread: contactThread) { (_: SignalRecipient) -> Data in
@@ -683,10 +690,10 @@ class DebugUIGroupsV2: DebugUIPage {
             builder.setRevision(revision)
 
             let dataBuilder = SSKProtoDataMessage.builder()
-            dataBuilder.setTimestamp(NSDate.ows_millisecondTimeStamp())
+            dataBuilder.setGroupV2(try! builder.build())
             dataBuilder.setRequiredProtocolVersion(0)
             dataBuilder.setBody("\(messages.count)")
-            return try! dataBuilder.buildSerializedData()
+            return Self.contentProtoData(forDataBuilder: dataBuilder)
         })
 
         messages.append(OWSDynamicOutgoingMessage(thread: contactThread) { (_: SignalRecipient) -> Data in
@@ -702,10 +709,10 @@ class DebugUIGroupsV2: DebugUIPage {
             builder.setRevision(revision)
 
             let dataBuilder = SSKProtoDataMessage.builder()
-            dataBuilder.setTimestamp(NSDate.ows_millisecondTimeStamp())
+            dataBuilder.setGroupV2(try! builder.build())
             dataBuilder.setRequiredProtocolVersion(0)
             dataBuilder.setBody("\(messages.count)")
-            return try! dataBuilder.buildSerializedData()
+            return Self.contentProtoData(forDataBuilder: dataBuilder)
         })
 
         messages.append(OWSDynamicOutgoingMessage(thread: contactThread) { (_: SignalRecipient) -> Data in
@@ -721,10 +728,10 @@ class DebugUIGroupsV2: DebugUIPage {
             builder.setRevision(revision)
 
             let dataBuilder = SSKProtoDataMessage.builder()
-            dataBuilder.setTimestamp(NSDate.ows_millisecondTimeStamp())
+            dataBuilder.setGroupV2(try! builder.build())
             dataBuilder.setRequiredProtocolVersion(0)
             dataBuilder.setBody("\(messages.count)")
-            return try! dataBuilder.buildSerializedData()
+            return Self.contentProtoData(forDataBuilder: dataBuilder)
         })
 
         messages.append(OWSDynamicOutgoingMessage(thread: contactThread) { (_: SignalRecipient) -> Data in
@@ -740,10 +747,10 @@ class DebugUIGroupsV2: DebugUIPage {
             builder.setRevision(revision)
 
             let dataBuilder = SSKProtoDataMessage.builder()
-            dataBuilder.setTimestamp(NSDate.ows_millisecondTimeStamp())
+            dataBuilder.setGroupV2(try! builder.build())
             dataBuilder.setRequiredProtocolVersion(0)
             dataBuilder.setBody("\(messages.count)")
-            return try! dataBuilder.buildSerializedData()
+            return Self.contentProtoData(forDataBuilder: dataBuilder)
         })
 
         messages.append(OWSDynamicOutgoingMessage(thread: contactThread) { (_: SignalRecipient) -> Data in
@@ -755,10 +762,10 @@ class DebugUIGroupsV2: DebugUIPage {
             // Don't set revision.
 
             let dataBuilder = SSKProtoDataMessage.builder()
-            dataBuilder.setTimestamp(NSDate.ows_millisecondTimeStamp())
+            dataBuilder.setGroupV2(try! builder.build())
             dataBuilder.setRequiredProtocolVersion(0)
             dataBuilder.setBody("\(messages.count)")
-            return try! dataBuilder.buildSerializedData()
+            return Self.contentProtoData(forDataBuilder: dataBuilder)
         })
 
         messages.append(OWSDynamicOutgoingMessage(thread: contactThread) { (_: SignalRecipient) -> Data in
@@ -770,10 +777,10 @@ class DebugUIGroupsV2: DebugUIPage {
             builder.setRevision(revision)
 
             let dataBuilder = SSKProtoDataMessage.builder()
-            dataBuilder.setTimestamp(NSDate.ows_millisecondTimeStamp())
+            dataBuilder.setGroupV2(try! builder.build())
             dataBuilder.setRequiredProtocolVersion(0)
             dataBuilder.setBody("\(messages.count)")
-            return try! dataBuilder.buildSerializedData()
+            return Self.contentProtoData(forDataBuilder: dataBuilder)
         })
 
         messages.append(OWSDynamicOutgoingMessage(thread: contactThread) { (_: SignalRecipient) -> Data in
@@ -788,10 +795,10 @@ class DebugUIGroupsV2: DebugUIPage {
             builder.setRevision(revision)
 
             let dataBuilder = SSKProtoDataMessage.builder()
-            dataBuilder.setTimestamp(NSDate.ows_millisecondTimeStamp())
+            dataBuilder.setGroupV2(try! builder.build())
             dataBuilder.setRequiredProtocolVersion(0)
             dataBuilder.setBody("\(messages.count)")
-            return try! dataBuilder.buildSerializedData()
+            return Self.contentProtoData(forDataBuilder: dataBuilder)
         })
 
         messages.append(OWSDynamicOutgoingMessage(thread: contactThread) { (_: SignalRecipient) -> Data in
@@ -804,20 +811,78 @@ class DebugUIGroupsV2: DebugUIPage {
             builder.setMasterKey(masterKeyData)
             builder.setRevision(revision)
 
-            // Invalid embedded change actions proto data.
-            let changeActionsProtoData = Randomness.generateRandomBytes(256)
-            builder.setGroupChange(changeActionsProtoData)
-
             let dataBuilder = SSKProtoDataMessage.builder()
-            dataBuilder.setTimestamp(NSDate.ows_millisecondTimeStamp())
+            dataBuilder.setGroupV2(try! builder.build())
             dataBuilder.setRequiredProtocolVersion(0)
-            dataBuilder.setBody("\(messages.count)")
-            return try! dataBuilder.buildSerializedData()
+            dataBuilder.setBody("Valid gv2 message.")
+            return Self.contentProtoData(forDataBuilder: dataBuilder)
         })
 
         for message in messages {
             ThreadUtil.sendMessageNonDurably(message: message)
         }
+    }
+
+    private func sendPartiallyInvalidGroupMessages(groupThread: TSGroupThread) {
+        guard let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {
+            owsFailDebug("Invalid groupModel.")
+            return
+        }
+
+        var messages = [TSOutgoingMessage]()
+
+        let masterKey = try! GroupsV2Protos.masterKeyData(forGroupModel: groupModelV2)
+        let groupContextInfo = try! self.groupsV2.groupV2ContextInfo(forMasterKeyData: masterKey)
+
+        messages.append(OWSDynamicOutgoingMessage(thread: groupThread) { (_: SignalRecipient) -> Data in
+            // Real and valid group id/master key/secret params.
+            let masterKeyData = groupContextInfo.masterKeyData
+            // Real revision.
+            let revision: UInt32 = 0
+
+            let builder = SSKProtoGroupContextV2.builder()
+            builder.setMasterKey(masterKeyData)
+            builder.setRevision(revision)
+
+            // Invalid embedded change actions proto data.
+            let changeActionsProtoData = Randomness.generateRandomBytes(256)
+            builder.setGroupChange(changeActionsProtoData)
+
+            let dataBuilder = SSKProtoDataMessage.builder()
+            dataBuilder.setGroupV2(try! builder.build())
+            dataBuilder.setRequiredProtocolVersion(0)
+            dataBuilder.setBody("Invalid embedded change actions proto: \(messages.count)")
+            return Self.contentProtoData(forDataBuilder: dataBuilder)
+        })
+
+        messages.append(OWSDynamicOutgoingMessage(thread: groupThread) { (_: SignalRecipient) -> Data in
+            // Real and valid group id/master key/secret params.
+            let masterKeyData = groupContextInfo.masterKeyData
+            // Real revision.
+            let revision: UInt32 = 0
+
+            let builder = SSKProtoGroupContextV2.builder()
+            builder.setMasterKey(masterKeyData)
+            builder.setRevision(revision)
+
+            let dataBuilder = SSKProtoDataMessage.builder()
+            dataBuilder.setGroupV2(try! builder.build())
+            dataBuilder.setRequiredProtocolVersion(0)
+            dataBuilder.setBody("Valid gv2 message.")
+            return Self.contentProtoData(forDataBuilder: dataBuilder)
+        })
+
+        for message in messages {
+            ThreadUtil.sendMessageNonDurably(message: message)
+        }
+    }
+
+    class func contentProtoData(forDataBuilder dataBuilder: SSKProtoDataMessage.SSKProtoDataMessageBuilder) -> Data {
+        let dataProto = try! dataBuilder.build()
+        let contentBuilder = SSKProtoContent.builder()
+        contentBuilder.setDataMessage(dataProto)
+        let plaintextData = try! contentBuilder.buildSerializedData()
+        return plaintextData
     }
 }
 
