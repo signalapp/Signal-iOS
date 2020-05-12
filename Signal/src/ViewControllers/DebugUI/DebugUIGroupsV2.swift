@@ -539,7 +539,95 @@ class DebugUIGroupsV2: DebugUIPage {
     }
 
     private func sendInvalidGroupMessages(contactThread: TSContactThread) {
+        let otherUserAddress = contactThread.contactAddress
+        guard let otherUserUuid = otherUserAddress.uuid else {
+            owsFailDebug("Recipient is missing UUID.")
+            return
+        }
+
+        firstly { () -> Promise<TSGroupModelV2> in
+            // Make a real v2 group on the service.
+            // Local user and "other user" are members.
+            return firstly {
+                GroupManager.localCreateNewGroup(members: [otherUserAddress],
+                                                 name: "Real group, both users are in the group",
+                                                 shouldSendMessage: false)
+            }.map(on: .global()) { (groupThread: TSGroupThread) in
+                guard let validGroupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {
+                    throw OWSAssertionError("Invalid groupModel.")
+                }
+                return validGroupModelV2
+            }
+        }.then(on: .global()) { (validGroupModelV2: TSGroupModelV2) -> Promise<(TSGroupModelV2, TSGroupModelV2)> in
+            // Make a real v2 group on the service.
+            // Local user is a member but "other user" is not.
+            return firstly {
+                GroupManager.localCreateNewGroup(members: [],
+                                                 name: "Real group, recipient is not in the group",
+                                                 shouldSendMessage: false)
+            }.map(on: .global()) { (groupThread: TSGroupThread) in
+                guard let missingOtherUserGroupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {
+                    throw OWSAssertionError("Invalid groupModel.")
+                }
+                return (validGroupModelV2, missingOtherUserGroupModelV2)
+            }
+        }.then(on: .global()) { (validGroupModelV2: TSGroupModelV2,
+            missingOtherUserGroupModelV2: TSGroupModelV2)
+            -> Promise<(TSGroupModelV2, TSGroupModelV2, TSGroupModelV2)> in
+            // Make a real v2 group on the service.
+            // "Other user" is a member but local user is not.
+            return firstly { () -> Promise<TSGroupThread> in
+                GroupManager.localCreateNewGroup(members: [otherUserAddress],
+                                                 name: "Real group, sender is not in the group",
+                                                 shouldSendMessage: false)
+            }.then(on: .global()) { (groupThread: TSGroupThread) -> Promise<TSGroupThread> in
+                guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
+                    throw OWSAssertionError("Invalid groupModel.")
+                }
+                guard groupModel.groupMembership.isNonPendingMember(otherUserAddress) else {
+                    throw OWSAssertionError("Other user is not a full member.")
+                }
+                // Last admin (local user) can't leave group, so first
+                // make the "other user" an admin.
+                return GroupManager.changeMemberRoleV2(groupModel: groupModel,
+                                                       uuid: otherUserUuid,
+                                                       role: .administrator)
+            }.then(on: .global()) { (groupThread: TSGroupThread) -> Promise<TSGroupThread> in
+                GroupManager.localLeaveGroupOrDeclineInvite(groupThread: groupThread)
+            }.map(on: .global()) { (groupThread: TSGroupThread) in
+                guard let missingLocalUserGroupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {
+                    throw OWSAssertionError("Invalid groupModel.")
+                }
+                return (validGroupModelV2, missingOtherUserGroupModelV2, missingLocalUserGroupModelV2)
+            }
+        }.map(on: .global()) { (validGroupModelV2: TSGroupModelV2,
+            missingOtherUserGroupModelV2: TSGroupModelV2,
+            missingLocalUserGroupModelV2: TSGroupModelV2) in
+            self.sendInvalidGroupMessages(contactThread: contactThread,
+                                          validGroupModelV2: validGroupModelV2,
+                                          missingOtherUserGroupModelV2: missingOtherUserGroupModelV2,
+                                          missingLocalUserGroupModelV2: missingLocalUserGroupModelV2)
+        }.done(on: .global()) { _ in
+            Logger.info("Complete.")
+        }.catch(on: .global()) { error in
+            owsFailDebug("Error: \(error)")
+        }.retainUntilComplete()
+    }
+
+    private func sendInvalidGroupMessages(contactThread: TSContactThread,
+                                          validGroupModelV2: TSGroupModelV2,
+                                          missingOtherUserGroupModelV2: TSGroupModelV2,
+                                          missingLocalUserGroupModelV2: TSGroupModelV2) {
         var messages = [TSOutgoingMessage]()
+
+        let groupContextInfoForGroupModel = { (groupModelV2: TSGroupModelV2) -> GroupV2ContextInfo in
+            let masterKey = try! GroupsV2Protos.masterKeyData(forGroupModel: groupModelV2)
+            return try! self.groupsV2.groupV2ContextInfo(forMasterKeyData: masterKey)
+        }
+
+        let validGroupContextInfo = groupContextInfoForGroupModel(validGroupModelV2)
+        let missingOtherUserGroupContextInfo = groupContextInfoForGroupModel(missingOtherUserGroupModelV2)
+        let missingLocalUserGroupContextInfo = groupContextInfoForGroupModel(missingLocalUserGroupModelV2)
 
         let buildValidGroupContextInfo = { () -> GroupV2ContextInfo in
             let groupsV2 = self.groupsV2
@@ -548,105 +636,177 @@ class DebugUIGroupsV2: DebugUIPage {
             return try! groupsV2.groupV2ContextInfo(forMasterKeyData: masterKeyData)
         }
 
-        do {
-            messages.append(OWSDynamicOutgoingMessage(thread: contactThread) { (_: SignalRecipient) -> Data in
-                // Valid-looking group id/master key/secret params, but doesn't
-                // correspond to an actual group on the service.
-                let groupV2ContextInfo: GroupV2ContextInfo = buildValidGroupContextInfo()
-                let revision: UInt32 = 0
+        messages.append(OWSDynamicOutgoingMessage(thread: contactThread) { (_: SignalRecipient) -> Data in
+            // Real and valid group id/master key/secret params.
+            // Other user is not in the group.
+            let masterKeyData = missingOtherUserGroupContextInfo.masterKeyData
+            // Real revision.
+            let revision: UInt32 = 0
 
-                let builder = SSKProtoGroupContextV2.builder()
-                builder.setMasterKey(groupV2ContextInfo.masterKeyData)
-                builder.setRevision(revision)
+            let builder = SSKProtoGroupContextV2.builder()
+            builder.setMasterKey(masterKeyData)
+            builder.setRevision(revision)
 
-//                if let changeActionsProtoData = changeActionsProtoData {
-//                    assert(changeActionsProtoData.count > 0)
-//                    builder.setGroupChange(changeActionsProtoData)
-//                }
+            let dataBuilder = SSKProtoDataMessage.builder()
+            dataBuilder.setTimestamp(NSDate.ows_millisecondTimeStamp())
+            dataBuilder.setRequiredProtocolVersion(0)
+            return try! dataBuilder.buildSerializedData()
+        })
 
-                let dataBuilder = SSKProtoDataMessage.builder()
-                dataBuilder.setTimestamp(NSDate.ows_millisecondTimeStamp())
-                dataBuilder.setRequiredProtocolVersion(0)
-                return try! dataBuilder.buildSerializedData()
-            })
+        messages.append(OWSDynamicOutgoingMessage(thread: contactThread) { (_: SignalRecipient) -> Data in
+            // Real and valid group id/master key/secret params.
+            // Local user is not in the group.
+            let masterKeyData = missingLocalUserGroupContextInfo.masterKeyData
+            // Real revision.
+            let revision: UInt32 = 0
 
-//                }
-//            - (OutgoingGroupProtoResult)addGroupsV2ToDataMessageBuilder:(SSKProtoDataMessageBuilder *)builder
-//            groupThread:(TSGroupThread *)groupThread
-//            transaction:(SDSAnyReadTransaction *)transaction
-//            {
-//                OWSAssertDebug(builder);
-//                OWSAssertDebug(groupThread);
-//                OWSAssertDebug(transaction);
-//
-//                if (![groupThread.groupModel isKindOfClass:[TSGroupModelV2 class]]) {
-//                    OWSFailDebug(@"Invalid group model.");
-//                    return OutgoingGroupProtoResult_Error;
-//                }
-//                TSGroupModelV2 *groupModel = (TSGroupModelV2 *)groupThread.groupModel;
-//
-//                NSError *error;
-//                SSKProtoGroupContextV2 *_Nullable groupContextV2 =
-//                    [self.groupsV2 buildGroupContextV2ProtoWithGroupModel:groupModel
-//                        changeActionsProtoData:self.changeActionsProtoData
-//                        error:&error];
-//                if (groupContextV2 == nil || error != nil) {
-//                    OWSFailDebug(@"Error: %@", error);
-//                    return OutgoingGroupProtoResult_Error;
-//                }
-//                [builder setGroupV2:groupContextV2];
-//                return OutgoingGroupProtoResult_AddedWithoutGroupAvatar;
-//
+            let builder = SSKProtoGroupContextV2.builder()
+            builder.setMasterKey(masterKeyData)
+            builder.setRevision(revision)
 
-        }
+            let dataBuilder = SSKProtoDataMessage.builder()
+            dataBuilder.setTimestamp(NSDate.ows_millisecondTimeStamp())
+            dataBuilder.setRequiredProtocolVersion(0)
+            return try! dataBuilder.buildSerializedData()
+        })
 
-//        guard let localAddress = tsAccountManager.localAddress else {
-//            return owsFailDebug("Missing localAddress.")
-//        }
-//        
-//        let oldGroupModel = groupThread.groupModel
-//        
-//        let oldGroupMembership = oldGroupModel.groupMembership
-//        var groupMembershipBuilder = oldGroupMembership.asBuilder
-//        for address in oldGroupMembership.allUsers {
-//            if address != localAddress {
-//                groupMembershipBuilder.remove(address)
-//            }
-//        }
-//        let newGroupMembership = groupMembershipBuilder.build()
-//        firstly { () -> Promise<TSGroupThread> in
-//            var groupModelBuilder = oldGroupModel.asBuilder
-//            groupModelBuilder.groupMembership = newGroupMembership
-//            let newGroupModel = try databaseStorage.read { transaction in
-//                try groupModelBuilder.buildAsV2(transaction: transaction)
-//            }
-//            return GroupManager.localUpdateExistingGroup(groupModel: newGroupModel,
-//                                                         dmConfiguration: nil,
-//                                                         groupUpdateSourceAddress: localAddress)
-//        }.done { (_) -> Void in
-//            Logger.info("Success.")
-//        }.catch { error in
-//            owsFailDebug("Error: \(error)")
-//        }.retainUntilComplete()
+        messages.append(OWSDynamicOutgoingMessage(thread: contactThread) { (_: SignalRecipient) -> Data in
+            // Real and valid group id/master key/secret params.
+            let masterKeyData = validGroupContextInfo.masterKeyData
+            // Non-existent revision.
+            let revision: UInt32 = 99
 
-//        [self.messageSenderJobQueue
-//        messageSenderJobQueue.addMessage(
+            let builder = SSKProtoGroupContextV2.builder()
+            builder.setMasterKey(masterKeyData)
+            builder.setRevision(revision)
 
-//        NSUInteger contentLength = arc4random_uniform(32);
-//        return [Cryptography generateRandomBytes:contentLength];
-//        SSKProtoContentBuilder *contentBuilder =
-//            [SSKProtoContent builder];
-//        return [[contentBuilder buildIgnoringErrors]
-//            serializedDataIgnoringErrors];
-//
-//        let message = [[OWSDynamicOutgoingMessage alloc] initWithPlainTextDataBlock:block
-//            thread:thread];
-//
-//        [self sendStressMessage:message];
-        databaseStorage.write { transaction in
-            for message in messages {
-                self.messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
-            }
+            let dataBuilder = SSKProtoDataMessage.builder()
+            dataBuilder.setTimestamp(NSDate.ows_millisecondTimeStamp())
+            dataBuilder.setRequiredProtocolVersion(0)
+            return try! dataBuilder.buildSerializedData()
+        })
+
+        messages.append(OWSDynamicOutgoingMessage(thread: contactThread) { (_: SignalRecipient) -> Data in
+            // Real and valid group id/master key/secret params.
+            var masterKeyData = validGroupContextInfo.masterKeyData
+            // Truncate the master key.
+            masterKeyData = masterKeyData.subdata(in: Int(0)..<Int(1))
+            // Real revision.
+            let revision: UInt32 = 0
+
+            let builder = SSKProtoGroupContextV2.builder()
+            builder.setMasterKey(masterKeyData)
+            builder.setRevision(revision)
+
+            let dataBuilder = SSKProtoDataMessage.builder()
+            dataBuilder.setTimestamp(NSDate.ows_millisecondTimeStamp())
+            dataBuilder.setRequiredProtocolVersion(0)
+            return try! dataBuilder.buildSerializedData()
+        })
+
+        messages.append(OWSDynamicOutgoingMessage(thread: contactThread) { (_: SignalRecipient) -> Data in
+            // Real and valid group id/master key/secret params.
+            var masterKeyData = validGroupContextInfo.masterKeyData
+            // Append garbage to the master key.
+            masterKeyData = masterKeyData + Randomness.generateRandomBytes(1)
+            // Real revision.
+            let revision: UInt32 = 0
+
+            let builder = SSKProtoGroupContextV2.builder()
+            builder.setMasterKey(masterKeyData)
+            builder.setRevision(revision)
+
+            let dataBuilder = SSKProtoDataMessage.builder()
+            dataBuilder.setTimestamp(NSDate.ows_millisecondTimeStamp())
+            dataBuilder.setRequiredProtocolVersion(0)
+            return try! dataBuilder.buildSerializedData()
+        })
+
+        messages.append(OWSDynamicOutgoingMessage(thread: contactThread) { (_: SignalRecipient) -> Data in
+            // Real and valid group id/master key/secret params.
+            var masterKeyData = validGroupContextInfo.masterKeyData
+            // Replace master key with zeroes.
+            masterKeyData = Data(repeating: 0, count: masterKeyData.count)
+            // Real revision.
+            let revision: UInt32 = 0
+
+            let builder = SSKProtoGroupContextV2.builder()
+            builder.setMasterKey(masterKeyData)
+            builder.setRevision(revision)
+
+            let dataBuilder = SSKProtoDataMessage.builder()
+            dataBuilder.setTimestamp(NSDate.ows_millisecondTimeStamp())
+            dataBuilder.setRequiredProtocolVersion(0)
+            return try! dataBuilder.buildSerializedData()
+        })
+
+        messages.append(OWSDynamicOutgoingMessage(thread: contactThread) { (_: SignalRecipient) -> Data in
+            // Real and valid group id/master key/secret params.
+            let masterKeyData = validGroupContextInfo.masterKeyData
+
+            let builder = SSKProtoGroupContextV2.builder()
+            builder.setMasterKey(masterKeyData)
+            // Don't set revision.
+
+            let dataBuilder = SSKProtoDataMessage.builder()
+            dataBuilder.setTimestamp(NSDate.ows_millisecondTimeStamp())
+            dataBuilder.setRequiredProtocolVersion(0)
+            return try! dataBuilder.buildSerializedData()
+        })
+
+        messages.append(OWSDynamicOutgoingMessage(thread: contactThread) { (_: SignalRecipient) -> Data in
+            // Real revision.
+            let revision: UInt32 = 0
+
+            let builder = SSKProtoGroupContextV2.builder()
+            // Don't set master key.
+            builder.setRevision(revision)
+
+            let dataBuilder = SSKProtoDataMessage.builder()
+            dataBuilder.setTimestamp(NSDate.ows_millisecondTimeStamp())
+            dataBuilder.setRequiredProtocolVersion(0)
+            return try! dataBuilder.buildSerializedData()
+        })
+
+        messages.append(OWSDynamicOutgoingMessage(thread: contactThread) { (_: SignalRecipient) -> Data in
+            // Valid-looking group id/master key/secret params, but doesn't
+            // correspond to an actual group on the service.
+            let groupV2ContextInfo: GroupV2ContextInfo = buildValidGroupContextInfo()
+            let masterKeyData = groupV2ContextInfo.masterKeyData
+            let revision: UInt32 = 0
+
+            let builder = SSKProtoGroupContextV2.builder()
+            builder.setMasterKey(masterKeyData)
+            builder.setRevision(revision)
+
+            let dataBuilder = SSKProtoDataMessage.builder()
+            dataBuilder.setTimestamp(NSDate.ows_millisecondTimeStamp())
+            dataBuilder.setRequiredProtocolVersion(0)
+            return try! dataBuilder.buildSerializedData()
+        })
+
+        messages.append(OWSDynamicOutgoingMessage(thread: contactThread) { (_: SignalRecipient) -> Data in
+            // Real and valid group id/master key/secret params.
+            let masterKeyData = validGroupContextInfo.masterKeyData
+            // Real revision.
+            let revision: UInt32 = 0
+
+            let builder = SSKProtoGroupContextV2.builder()
+            builder.setMasterKey(masterKeyData)
+            builder.setRevision(revision)
+
+            // Invalid embedded change actions proto data.
+            let changeActionsProtoData = Randomness.generateRandomBytes(256)
+            builder.setGroupChange(changeActionsProtoData)
+
+            let dataBuilder = SSKProtoDataMessage.builder()
+            dataBuilder.setTimestamp(NSDate.ows_millisecondTimeStamp())
+            dataBuilder.setRequiredProtocolVersion(0)
+            return try! dataBuilder.buildSerializedData()
+        })
+
+        for message in messages {
+            ThreadUtil.sendMessageNonDurably(message: message)
         }
     }
 }

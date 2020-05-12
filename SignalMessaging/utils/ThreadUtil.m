@@ -120,33 +120,6 @@ NS_ASSUME_NONNULL_BEGIN
     return [outgoingMessagePreparer prepareMessageWithTransaction:transaction error:error];
 }
 
-+ (TSOutgoingMessage *)enqueueMessageWithContactShare:(OWSContact *)contactShare thread:(TSThread *)thread
-{
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug(contactShare);
-    OWSAssertDebug(contactShare.ows_isValid);
-    OWSAssertDebug(thread);
-
-    __block OWSDisappearingMessagesConfiguration *configuration;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        configuration = [thread disappearingMessagesConfigurationWithTransaction:transaction];
-    }];
-
-    uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
-
-    TSOutgoingMessageBuilder *builder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
-    builder.expiresInSeconds = expiresInSeconds;
-    builder.contactShare = contactShare;
-    TSOutgoingMessage *message = [builder build];
-
-    [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [message anyInsertWithTransaction:transaction];
-        [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
-    }];
-
-    return message;
-}
-
 + (TSOutgoingMessage *)enqueueMessageWithInstalledSticker:(StickerInfo *)stickerInfo thread:(TSThread *)thread
 {
     OWSAssertIsOnMainThread();
@@ -292,46 +265,6 @@ NS_ASSUME_NONNULL_BEGIN
     }];
 
     return outgoingMessagePreparer.unpreparedMessage;
-}
-
-+ (TSOutgoingMessage *)sendMessageNonDurablyWithContactShare:(OWSContact *)contactShare
-                                                      thread:(TSThread *)thread
-                                               messageSender:(OWSMessageSender *)messageSender
-                                                  completion:(void (^)(NSError *_Nullable error))completion
-{
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug(contactShare);
-    OWSAssertDebug(contactShare.ows_isValid);
-    OWSAssertDebug(thread);
-    OWSAssertDebug(messageSender);
-    OWSAssertDebug(completion);
-
-    __block TSOutgoingMessage *message;
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        OWSDisappearingMessagesConfiguration *configuration = [thread disappearingMessagesConfigurationWithTransaction:transaction];
-        uint32_t expiresInSeconds = (configuration.isEnabled ? configuration.durationSeconds : 0);
-        TSOutgoingMessageBuilder *builder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
-        builder.expiresInSeconds = expiresInSeconds;
-        builder.contactShare = contactShare;
-        message = [builder build];
-        [message anyInsertWithTransaction:transaction];
-    }];
-
-    [messageSender sendMessage:message.asPreparer
-        success:^{
-            OWSLogDebug(@"Successfully sent contact share.");
-            dispatch_async(dispatch_get_main_queue(), ^(void) {
-                completion(nil);
-            });
-        }
-        failure:^(NSError *error) {
-            OWSLogError(@"Failed to send contact share with error: %@", error);
-            dispatch_async(dispatch_get_main_queue(), ^(void) {
-                completion(error);
-            });
-        }];
-
-    return message;
 }
 
 + (nullable MessageSticker *)messageStickerForStickerDraft:(MessageStickerDraft *)stickerDraft
