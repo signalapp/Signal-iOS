@@ -73,6 +73,20 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
     }
 }
 
+#if TESTABLE_BUILD
+void uncaughtExceptionHandler(NSException *exception);
+
+void uncaughtExceptionHandler(NSException *exception)
+{
+    OWSLogError(@"exception: %@", exception);
+    OWSLogError(@"name: %@", exception.name);
+    OWSLogError(@"reason: %@", exception.reason);
+    OWSLogError(@"userInfo: %@", exception.userInfo);
+    OWSLogError(@"exception.callStackSymbols: %@", exception.callStackSymbols);
+    OWSLogFlush();
+}
+#endif
+
 @interface AppDelegate () <UNUserNotificationCenterDelegate>
 
 @property (nonatomic) BOOL areVersionMigrationsComplete;
@@ -225,6 +239,9 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
 
+#if TESTABLE_BUILD
+    NSSetUncaughtExceptionHandler(&uncaughtExceptionHandler);
+#endif
     // This should be the first thing we do.
     SetCurrentAppContext([MainAppContext new]);
 
