@@ -623,8 +623,9 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     // NOTE: We use untrimmedText, so that the sticker button disappears
     //       even if the user just enters whitespace.
     BOOL hasTextInput = self.inputTextView.untrimmedText.length > 0;
+    BOOL hasNoWhiteSpace = self.inputTextView.trimmedText.length > 0;
     ensureViewHiddenState(self.attachmentButton, NO);
-    if (hasTextInput) {
+    if (hasTextInput && hasNoWhiteSpace) {
         ensureViewHiddenState(self.cameraButton, YES);
         ensureViewHiddenState(self.voiceMemoButton, YES);
         ensureViewHiddenState(self.sendButton, NO);
