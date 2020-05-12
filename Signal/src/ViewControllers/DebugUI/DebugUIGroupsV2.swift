@@ -650,6 +650,7 @@ class DebugUIGroupsV2: DebugUIPage {
             let dataBuilder = SSKProtoDataMessage.builder()
             dataBuilder.setTimestamp(NSDate.ows_millisecondTimeStamp())
             dataBuilder.setRequiredProtocolVersion(0)
+            dataBuilder.setBody("\(messages.count)")
             return try! dataBuilder.buildSerializedData()
         })
 
@@ -667,6 +668,7 @@ class DebugUIGroupsV2: DebugUIPage {
             let dataBuilder = SSKProtoDataMessage.builder()
             dataBuilder.setTimestamp(NSDate.ows_millisecondTimeStamp())
             dataBuilder.setRequiredProtocolVersion(0)
+            dataBuilder.setBody("\(messages.count)")
             return try! dataBuilder.buildSerializedData()
         })
 
@@ -683,6 +685,7 @@ class DebugUIGroupsV2: DebugUIPage {
             let dataBuilder = SSKProtoDataMessage.builder()
             dataBuilder.setTimestamp(NSDate.ows_millisecondTimeStamp())
             dataBuilder.setRequiredProtocolVersion(0)
+            dataBuilder.setBody("\(messages.count)")
             return try! dataBuilder.buildSerializedData()
         })
 
@@ -701,6 +704,7 @@ class DebugUIGroupsV2: DebugUIPage {
             let dataBuilder = SSKProtoDataMessage.builder()
             dataBuilder.setTimestamp(NSDate.ows_millisecondTimeStamp())
             dataBuilder.setRequiredProtocolVersion(0)
+            dataBuilder.setBody("\(messages.count)")
             return try! dataBuilder.buildSerializedData()
         })
 
@@ -719,6 +723,7 @@ class DebugUIGroupsV2: DebugUIPage {
             let dataBuilder = SSKProtoDataMessage.builder()
             dataBuilder.setTimestamp(NSDate.ows_millisecondTimeStamp())
             dataBuilder.setRequiredProtocolVersion(0)
+            dataBuilder.setBody("\(messages.count)")
             return try! dataBuilder.buildSerializedData()
         })
 
@@ -737,6 +742,7 @@ class DebugUIGroupsV2: DebugUIPage {
             let dataBuilder = SSKProtoDataMessage.builder()
             dataBuilder.setTimestamp(NSDate.ows_millisecondTimeStamp())
             dataBuilder.setRequiredProtocolVersion(0)
+            dataBuilder.setBody("\(messages.count)")
             return try! dataBuilder.buildSerializedData()
         })
 
@@ -751,6 +757,7 @@ class DebugUIGroupsV2: DebugUIPage {
             let dataBuilder = SSKProtoDataMessage.builder()
             dataBuilder.setTimestamp(NSDate.ows_millisecondTimeStamp())
             dataBuilder.setRequiredProtocolVersion(0)
+            dataBuilder.setBody("\(messages.count)")
             return try! dataBuilder.buildSerializedData()
         })
 
@@ -765,6 +772,7 @@ class DebugUIGroupsV2: DebugUIPage {
             let dataBuilder = SSKProtoDataMessage.builder()
             dataBuilder.setTimestamp(NSDate.ows_millisecondTimeStamp())
             dataBuilder.setRequiredProtocolVersion(0)
+            dataBuilder.setBody("\(messages.count)")
             return try! dataBuilder.buildSerializedData()
         })
 
@@ -782,6 +790,7 @@ class DebugUIGroupsV2: DebugUIPage {
             let dataBuilder = SSKProtoDataMessage.builder()
             dataBuilder.setTimestamp(NSDate.ows_millisecondTimeStamp())
             dataBuilder.setRequiredProtocolVersion(0)
+            dataBuilder.setBody("\(messages.count)")
             return try! dataBuilder.buildSerializedData()
         })
 
@@ -802,6 +811,7 @@ class DebugUIGroupsV2: DebugUIPage {
             let dataBuilder = SSKProtoDataMessage.builder()
             dataBuilder.setTimestamp(NSDate.ows_millisecondTimeStamp())
             dataBuilder.setRequiredProtocolVersion(0)
+            dataBuilder.setBody("\(messages.count)")
             return try! dataBuilder.buildSerializedData()
         })
 
