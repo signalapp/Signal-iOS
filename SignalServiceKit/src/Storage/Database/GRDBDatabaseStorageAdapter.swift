@@ -181,7 +181,7 @@ public class GRDBDatabaseStorageAdapter: NSObject {
 
     private static let keyServiceName: String = "GRDBKeyChainService"
     private static let keyName: String = "GRDBDatabaseCipherKeySpec"
-    private static var keyspec: GRDBKeySpecSource {
+    public static var keyspec: GRDBKeySpecSource {
         return GRDBKeySpecSource(keyServiceName: keyServiceName, keyName: keyName)
     }
 
@@ -472,6 +472,7 @@ private struct GRDBStorage {
             try db.execute(sql: "PRAGMA cipher_plaintext_header_size = 32")
         }
         configuration.defaultTransactionKind = .immediate
+        configuration.allowsUnsafeTransactions = true
         self.configuration = configuration
 
         pool = try DatabasePool(path: dbURL.path, configuration: configuration)
@@ -483,7 +484,7 @@ private struct GRDBStorage {
 
 // MARK: -
 
-private struct GRDBKeySpecSource {
+public struct GRDBKeySpecSource {
     // 256 bit key + 128 bit salt
     private let kSQLCipherKeySpecLength: UInt = 48
 
@@ -506,7 +507,7 @@ private struct GRDBKeySpecSource {
         return passphrase
     }
 
-    func fetchData() throws -> Data {
+    public func fetchData() throws -> Data {
         return try CurrentAppContext().keychainStorage().data(forService: keyServiceName, key: keyName)
     }
 
@@ -527,7 +528,7 @@ private struct GRDBKeySpecSource {
         }
     }
 
-    func store(data: Data) throws {
+    public func store(data: Data) throws {
         guard data.count == kSQLCipherKeySpecLength else {
             owsFail("unexpected keyspec length")
         }
@@ -538,15 +539,15 @@ private struct GRDBKeySpecSource {
 // MARK: -
 
 extension GRDBDatabaseStorageAdapter {
-    var databaseFilePath: String {
+    public var databaseFilePath: String {
         return databaseUrl.path
     }
 
-    var databaseWALFilePath: String {
+    public var databaseWALFilePath: String {
         return databaseUrl.path + "-wal"
     }
 
-    var databaseSHMFilePath: String {
+    public var databaseSHMFilePath: String {
         return databaseUrl.path + "-shm"
     }
 

@@ -123,6 +123,10 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 {
     @synchronized(self)
     {
+        // Clear out so we re-initialize if we ever re-run the "on launch" logic,
+        // such as after a completed database transfer.
+        _blockedPhoneNumberSet = nil;
+
         [self ensureLazyInitialization];
     }
 }

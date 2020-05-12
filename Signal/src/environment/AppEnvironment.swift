@@ -58,6 +58,9 @@ import SignalMessaging
     @objc
     public var backupLazyRestore: BackupLazyRestore
 
+    @objc
+    let deviceTransferService = DeviceTransferService()
+
     private override init() {
         self.callMessageHandler = WebRTCCallMessageHandler()
         self.callService = CallService()

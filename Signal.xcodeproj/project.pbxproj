@@ -675,6 +675,8 @@
 		88B688B0238F0D1000286F82 /* ReactionsDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B688AF238F0D1000286F82 /* ReactionsDetailSheet.swift */; };
 		88BCCC8123837B7D00CE5FE6 /* InteractionReactionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88BCCC8023837B7D00CE5FE6 /* InteractionReactionState.swift */; };
 		88BFD4732335C2B3001797D7 /* waveformLoading.json in Resources */ = {isa = PBXBuildFile; fileRef = 88BFD4722335C2B3001797D7 /* waveformLoading.json */; };
+		88C4E38024635337009C9B97 /* DeviceTransferService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C4E37F24635337009C9B97 /* DeviceTransferService.swift */; };
+		88C659B024688335002AC115 /* SelfSignedIdentity.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C659AF24688335002AC115 /* SelfSignedIdentity.swift */; };
 		88D1D40222EBB5A100F472C5 /* MessageRequestView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D1D40122EBB5A100F472C5 /* MessageRequestView.swift */; };
 		88D1D40422EF8A9700F472C5 /* ThreadDetailsInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D1D40322EF8A9700F472C5 /* ThreadDetailsInteraction.swift */; };
 		88D1D40622EF8F1100F472C5 /* ThreadDetailsCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88D1D40522EF8F1100F472C5 /* ThreadDetailsCell.swift */; };
@@ -1621,6 +1623,8 @@
 		88B688AF238F0D1000286F82 /* ReactionsDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReactionsDetailSheet.swift; sourceTree = "<group>"; };
 		88BCCC8023837B7D00CE5FE6 /* InteractionReactionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InteractionReactionState.swift; sourceTree = "<group>"; };
 		88BFD4722335C2B3001797D7 /* waveformLoading.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = waveformLoading.json; sourceTree = "<group>"; };
+		88C4E37F24635337009C9B97 /* DeviceTransferService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceTransferService.swift; sourceTree = "<group>"; };
+		88C659AF24688335002AC115 /* SelfSignedIdentity.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SelfSignedIdentity.swift; sourceTree = "<group>"; };
 		88D1D40122EBB5A100F472C5 /* MessageRequestView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRequestView.swift; sourceTree = "<group>"; };
 		88D1D40322EF8A9700F472C5 /* ThreadDetailsInteraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadDetailsInteraction.swift; sourceTree = "<group>"; };
 		88D1D40522EF8F1100F472C5 /* ThreadDetailsCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ThreadDetailsCell.swift; sourceTree = "<group>"; };
@@ -2944,6 +2948,7 @@
 			children = (
 				4CC1ECFA211A553000CC13BE /* AppUpdateNag.swift */,
 				3496956121A301A100DCFE74 /* Backup */,
+				88C4E38124671F9D009C9B97 /* Device Transfer */,
 				34B0796C1FCF46B000E248C2 /* MainAppContext.h */,
 				34B0796B1FCF46B000E248C2 /* MainAppContext.m */,
 				34D99C911F2937CC00D284D6 /* OWSAnalytics.swift */,
@@ -3114,6 +3119,15 @@
 				8806F21C23E90C8300692638 /* messageRequestsSplash.json */,
 			);
 			path = Lottie;
+			sourceTree = "<group>";
+		};
+		88C4E38124671F9D009C9B97 /* Device Transfer */ = {
+			isa = PBXGroup;
+			children = (
+				88C4E37F24635337009C9B97 /* DeviceTransferService.swift */,
+				88C659AF24688335002AC115 /* SelfSignedIdentity.swift */,
+			);
+			path = "Device Transfer";
 			sourceTree = "<group>";
 		};
 		88D23D0823CEBF4400B0E74B /* Notifications */ = {
@@ -4541,6 +4555,7 @@
 				4C1885D2218F8E1C00B67051 /* PhotoGridViewCell.swift in Sources */,
 				349439D824360D63001045F7 /* BaseGroupMemberViewController.swift in Sources */,
 				886F08A7234958970085C27F /* InputAccessoryViewPlaceholder.swift in Sources */,
+				88C4E38024635337009C9B97 /* DeviceTransferService.swift in Sources */,
 				34D1F0501F7D45A60066283D /* GifPickerCell.swift in Sources */,
 				881677C522DD2B21007BAF49 /* OWSPinReminderViewController.swift in Sources */,
 				3496957421A301A100DCFE74 /* OWSBackupAPI.swift in Sources */,
@@ -4700,6 +4715,7 @@
 				4517642B1DE939FD00EDB8B9 /* ContactCell.swift in Sources */,
 				34EA69402194933900702471 /* MediaDownloadView.swift in Sources */,
 				340FC8AB204DAC8D007AEB0F /* DomainFrontingCountryViewController.m in Sources */,
+				88C659B024688335002AC115 /* SelfSignedIdentity.swift in Sources */,
 				4C586926224FAB83003FD070 /* AVAudioSession+OWS.m in Sources */,
 				8889007523DBD0B400F40186 /* ProfileNameReminder.swift in Sources */,
 				88D23D2523CEC0C700B0E74B /* CallKitCallUIAdaptee.swift in Sources */,

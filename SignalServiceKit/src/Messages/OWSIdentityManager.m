@@ -84,6 +84,12 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
     return self;
 }
 
+- (void)recreateDatabaseQueue
+{
+    OWSAssertIsOnMainThread();
+    _databaseQueue = [SDSDatabaseStorage.shared newDatabaseQueue];
+}
+
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];

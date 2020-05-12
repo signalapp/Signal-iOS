@@ -1,0 +1,43 @@
+//
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//
+
+syntax = "proto3";
+
+// iOS - package name determines class prefix
+package DeviceTransferProtos;
+
+message File {
+  // @required
+  string identifier    = 1;
+  // @required
+  string relativePath  = 2;
+  // @required
+  uint64 estimatedSize = 3;
+}
+
+message Default {
+  // @required
+  string key          = 1;
+  // @required
+  bytes  encodedValue = 2;
+}
+
+message Database {
+  // @required
+  bytes key      = 1;
+  // @required
+  File  database = 2;
+  // @required
+  File  wal      = 3;
+}
+
+message Manifest {
+           // @required
+           uint64   grdbSchemaVersion  = 1;
+           Database database           = 2;
+  repeated Default  appDefaults        = 3;
+  repeated Default  standardDefaults   = 4;
+  repeated File     files              = 5;
+           uint64   estimatedTotalSize = 6;
+}
