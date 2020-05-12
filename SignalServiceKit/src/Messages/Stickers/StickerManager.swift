@@ -1005,12 +1005,13 @@ public class StickerManager: NSObject {
         let (promise, resolver) = Promise<Void>.pending()
         DispatchQueue.global().async {
             databaseStorage.read { (transaction) in
-                ensureDownloads(forStickerPack: stickerPack, transaction: transaction)
-                .done {
+                firstly {
+                    ensureDownloads(forStickerPack: stickerPack, transaction: transaction)
+                }.done {
                     resolver.fulfill(())
                 }.catch { (error) in
                     resolver.reject(error)
-            }.retainUntilComplete()
+                }.retainUntilComplete()
             }
         }
         return promise

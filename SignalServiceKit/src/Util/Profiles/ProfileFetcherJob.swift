@@ -160,8 +160,9 @@ public class ProfileFetcherJob: NSObject {
                                             failure: @escaping (_ error: Error?) -> Void) {
         let subject = ProfileRequestSubject.username(username: username)
         let options = ProfileFetchOptions(ignoreThrottling: true)
-        ProfileFetcherJob(subject: subject, options: options).runAsPromise()
-            .done { profile in
+        firstly {
+            ProfileFetcherJob(subject: subject, options: options).runAsPromise()
+        }.done { profile in
                 success(profile.address)
         }.catch { error in
             switch error {
@@ -170,8 +171,7 @@ public class ProfileFetcherJob: NSObject {
             default:
                 failure(error)
             }
-        }
-        .retainUntilComplete()
+        }.retainUntilComplete()
     }
 
     private init(subject: ProfileRequestSubject,

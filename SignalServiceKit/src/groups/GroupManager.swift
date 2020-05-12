@@ -449,13 +449,15 @@ public class GroupManager: NSObject {
                                                shouldSendMessage: Bool,
                                                success: @escaping (TSGroupThread) -> Void,
                                                failure: @escaping (Error) -> Void) {
-        localCreateNewGroup(members: members,
-                            groupId: groupId,
-                            name: name,
-                            avatarImage: avatarImage,
-                            newGroupSeed: newGroupSeed,
-                            shouldSendMessage: shouldSendMessage).done { thread in
-                                success(thread)
+        firstly {
+            self.localCreateNewGroup(members: members,
+                                     groupId: groupId,
+                                     name: name,
+                                     avatarImage: avatarImage,
+                                     newGroupSeed: newGroupSeed,
+                                     shouldSendMessage: shouldSendMessage)
+        }.done { thread in
+            success(thread)
         }.catch { error in
             failure(error)
         }.retainUntilComplete()
@@ -471,13 +473,15 @@ public class GroupManager: NSObject {
                                                shouldSendMessage: Bool,
                                                success: @escaping (TSGroupThread) -> Void,
                                                failure: @escaping (Error) -> Void) {
-        localCreateNewGroup(members: members,
-                            groupId: groupId,
-                            name: name,
-                            avatarData: avatarData,
-                            newGroupSeed: newGroupSeed,
-                            shouldSendMessage: shouldSendMessage).done { thread in
-                                success(thread)
+        firstly {
+            localCreateNewGroup(members: members,
+                                groupId: groupId,
+                                name: name,
+                                avatarData: avatarData,
+                                newGroupSeed: newGroupSeed,
+                                shouldSendMessage: shouldSendMessage)
+        }.done { thread in
+            success(thread)
         }.catch { error in
             failure(error)
         }.retainUntilComplete()

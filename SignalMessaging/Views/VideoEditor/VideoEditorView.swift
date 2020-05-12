@@ -134,18 +134,19 @@ public class VideoEditorView: UIView {
         let timelineHeight = self.timelineHeight
         let untrimmedDurationSeconds = self.untrimmedDurationSeconds
 
-        VideoEditorView.thumbnails(forVideoAtPath: model.srcVideoPath,
-                                   displaySize: displaySize,
-                                   timelineHeight: timelineHeight,
-                                   untrimmedDurationSeconds: untrimmedDurationSeconds)
-            .done { [weak self] (thumbnails: [UIImage]) -> Void in
-                guard let self = self else {
-                    return
-                }
-                self.videoThumbnails = thumbnails
-                self.timelineView.updateThumbnailView()
-            }.catch { error in
-                owsFailDebug("Error: \(error)")
+        firstly {
+            VideoEditorView.thumbnails(forVideoAtPath: model.srcVideoPath,
+                                       displaySize: displaySize,
+                                       timelineHeight: timelineHeight,
+                                       untrimmedDurationSeconds: untrimmedDurationSeconds)
+        }.done { [weak self] (thumbnails: [UIImage]) -> Void in
+            guard let self = self else {
+                return
+            }
+            self.videoThumbnails = thumbnails
+            self.timelineView.updateThumbnailView()
+        }.catch { error in
+            owsFailDebug("Error: \(error)")
         }.retainUntilComplete()
     }
 

@@ -4,6 +4,7 @@
 
 import Foundation
 import YYImage
+import PromiseKit
 
 @objc
 public class StickerTooltip: TooltipView {
@@ -81,15 +82,16 @@ public class StickerTooltip: TooltipView {
         let stickerInfo = stickerPack.coverInfo
         guard let filePath = StickerManager.filepathForInstalledSticker(stickerInfo: stickerInfo) else {
             // This sticker is not downloaded; try to download now.
-            StickerManager.tryToDownloadSticker(stickerPack: stickerPack, stickerInfo: stickerInfo)
-                .done { [weak self] (stickerData: Data) in
-                    guard let self = self else {
-                        return
-                    }
-                    self.updateIconView(imageData: stickerData)
-                }.catch {(error) in
-                    owsFailDebug("error: \(error)")
-                }.retainUntilComplete()
+            firstly {
+                StickerManager.tryToDownloadSticker(stickerPack: stickerPack, stickerInfo: stickerInfo)
+            }.done { [weak self] (stickerData: Data) in
+                guard let self = self else {
+                    return
+                }
+                self.updateIconView(imageData: stickerData)
+            }.catch {(error) in
+                owsFailDebug("error: \(error)")
+            }.retainUntilComplete()
             return
         }
 

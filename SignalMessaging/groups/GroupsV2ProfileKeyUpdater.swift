@@ -191,7 +191,7 @@ class GroupsV2ProfileKeyUpdater {
                     owsFailDebug("Unexpected error: \(error)")
                     self.markAsComplete(groupId: groupId)
                 }
-            }
+            }.retainUntilComplete()
         }
     }
 
