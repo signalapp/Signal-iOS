@@ -16,7 +16,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-const CGFloat kContactCellAvatarTextMargin = 12;
+const CGFloat kContactCellAvatarTextMargin = 8;
 
 @interface ContactCellView ()
 
@@ -30,6 +30,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 
 @property (nonatomic, nullable) TSThread *thread;
 @property (nonatomic) SignalServiceAddress *address;
+@property (nonatomic, nullable) NSArray<NSLayoutConstraint *> *layoutConstraints;
 
 @end
 
@@ -66,6 +67,11 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     return SSKEnvironment.shared.tsAccountManager;
 }
 
+- (OWSProfileManager *)profileManager
+{
+    return [OWSProfileManager sharedManager];
+}
+
 #pragma mark -
 
 - (void)configure
@@ -75,8 +81,6 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     self.layoutMargins = UIEdgeInsetsZero;
 
     _avatarView = [AvatarImageView new];
-    [_avatarView autoSetDimension:ALDimensionWidth toSize:kStandardAvatarSize];
-    [_avatarView autoSetDimension:ALDimensionHeight toSize:kStandardAvatarSize];
 
     self.nameLabel = [UILabel new];
     self.nameLabel.lineBreakMode = NSLineBreakByTruncatingTail;
@@ -113,10 +117,10 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 
 - (void)configureFontsAndColors
 {
-    self.nameLabel.font = [UIFont ows_dynamicTypeBodyFont];
+    self.nameLabel.font = OWSTableItem.primaryLabelFont;
     self.profileNameLabel.font = [UIFont ows_regularFontWithSize:11.f];
     self.subtitleLabel.font = [UIFont ows_regularFontWithSize:11.f];
-    self.accessoryLabel.font = [UIFont ows_semiboldFontWithSize:13.f];
+    self.accessoryLabel.font = [UIFont ows_semiboldFontWithSize:12.f];
 
     self.nameLabel.textColor = Theme.primaryTextColor;
     self.profileNameLabel.textColor = Theme.secondaryTextAndIconColor;
@@ -142,7 +146,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
                                              selector:@selector(otherUsersProfileDidChange:)
                                                  name:kNSNotificationNameOtherUsersProfileDidChange
                                                object:nil];
-    [self updateProfileName];
+    [self updateNameLabels];
     [self updateAvatar];
 
     if (self.accessoryMessage) {
@@ -162,18 +166,10 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     // Update fonts to reflect changes to dynamic type.
     [self configureFontsAndColors];
 
-    NSString *threadName = [self.contactsManager displayNameForThread:thread transaction:transaction];
     TSContactThread *_Nullable contactThread;
     if ([self.thread isKindOfClass:[TSContactThread class]]) {
         contactThread = (TSContactThread *)self.thread;
     }
-
-    NSAttributedString *attributedText =
-        [[NSAttributedString alloc] initWithString:threadName
-                                        attributes:@{
-                                            NSForegroundColorAttributeName : Theme.primaryTextColor,
-                                        }];
-    self.nameLabel.attributedText = attributedText;
 
     if (contactThread != nil) {
         self.address = contactThread.contactAddress;
@@ -182,9 +178,19 @@ const CGFloat kContactCellAvatarTextMargin = 12;
                                                  selector:@selector(otherUsersProfileDidChange:)
                                                      name:kNSNotificationNameOtherUsersProfileDidChange
                                                    object:nil];
-        [self updateProfileName];
+        [self updateNameLabels];
+    } else {
+        NSString *threadName = [self.contactsManager displayNameForThread:thread transaction:transaction];
+        NSAttributedString *attributedText =
+            [[NSAttributedString alloc] initWithString:threadName
+                                            attributes:@{
+                                                NSForegroundColorAttributeName : Theme.primaryTextColor,
+                                            }];
+        self.nameLabel.attributedText = attributedText;
     }
-    self.avatarView.image = [OWSAvatarBuilder buildImageForThread:thread diameter:kStandardAvatarSize];
+
+    self.layoutConstraints = [self.avatarView autoSetDimensionsToSize:CGSizeMake(self.avatarSize, self.avatarSize)];
+    self.avatarView.image = [OWSAvatarBuilder buildImageForThread:thread diameter:self.avatarSize];
 
     if (self.accessoryMessage) {
         self.accessoryLabel.text = self.accessoryMessage;
@@ -197,6 +203,13 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 
 - (void)updateAvatar
 {
+    self.layoutConstraints = [self.avatarView autoSetDimensionsToSize:CGSizeMake(self.avatarSize, self.avatarSize)];
+
+    if (self.customAvatar != nil) {
+        self.avatarView.image = self.customAvatar;
+        return;
+    }
+
     SignalServiceAddress *address = self.address;
     if (!address.isValid) {
         OWSFailDebug(@"address should not be invalid");
@@ -214,23 +227,40 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 
     OWSContactAvatarBuilder *avatarBuilder = [[OWSContactAvatarBuilder alloc] initWithAddress:address
                                                                                     colorName:colorName
-                                                                                     diameter:kStandardAvatarSize];
+                                                                                     diameter:self.avatarSize];
 
     self.avatarView.image = [avatarBuilder build];
 }
 
-- (void)updateProfileName
+- (NSUInteger)avatarSize
 {
+    return self.useSmallAvatars ? kSmallAvatarSize : kStandardAvatarSize;
+}
+
+- (void)updateNameLabels
+{
+    BOOL hasCustomName = self.customName.length > 0;
     BOOL isNoteToSelf = IsNoteToSelfEnabled() && self.address.isLocalAddress;
-    if (isNoteToSelf) {
+    if (hasCustomName > 0) {
+        self.nameLabel.attributedText = self.customName;
+    } else if (isNoteToSelf) {
         self.nameLabel.text = MessageStrings.noteToSelf;
     } else {
         self.nameLabel.text = [self.contactsManager displayNameForAddress:self.address];
     }
 
-    if (!RemoteConfig.messageRequests && ![self.contactsManager hasNameInSystemContactsForAddress:self.address]) {
-        self.profileNameLabel.text = [self.contactsManager formattedProfileNameForAddress:self.address];
-        [self.profileNameLabel setNeedsLayout];
+    if (!isNoteToSelf && !hasCustomName && !RemoteConfig.messageRequests
+        && ![self.contactsManager hasNameInSystemContactsForAddress:self.address]) {
+        NSString *_Nullable profileName = [self.contactsManager formattedProfileNameForAddress:self.address];
+        if (profileName != nil && ![profileName isEqualToString:self.nameLabel.text]) {
+            self.profileNameLabel.text = profileName;
+            self.profileNameLabel.hidden = NO;
+            [self.profileNameLabel setNeedsLayout];
+        } else {
+            self.profileNameLabel.hidden = YES;
+        }
+    } else {
+        self.profileNameLabel.hidden = YES;
     }
 
     [self.nameLabel setNeedsLayout];
@@ -246,9 +276,14 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     self.subtitleLabel.text = nil;
     self.profileNameLabel.text = nil;
     self.accessoryLabel.text = nil;
+    self.customName = nil;
+    self.customAvatar = nil;
     for (UIView *subview in self.accessoryViewContainer.subviews) {
         [subview removeFromSuperview];
     }
+    [NSLayoutConstraint deactivateConstraints:self.layoutConstraints];
+    self.layoutConstraints = nil;
+    self.useSmallAvatars = NO;
 }
 
 - (void)otherUsersProfileDidChange:(NSNotification *)notification
@@ -259,7 +294,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
     OWSAssertDebug(address.isValid);
 
     if (address.isValid && [self.address isEqualToAddress:address]) {
-        [self updateProfileName];
+        [self updateNameLabels];
         [self updateAvatar];
     }
 }

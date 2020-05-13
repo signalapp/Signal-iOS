@@ -113,6 +113,9 @@ NS_ASSUME_NONNULL_BEGIN
         OWSWindowManager *windowManager = [[OWSWindowManager alloc] initDefault];
         MessageProcessing *messageProcessing = [MessageProcessing new];
         MessageFetcherJob *messageFetcherJob = [MessageFetcherJob new];
+        BulkProfileFetch *bulkProfileFetch = [BulkProfileFetch new];
+        BulkUUIDLookup *bulkUUIDLookup = [BulkUUIDLookup new];
+        id<VersionedProfiles> versionedProfiles = [VersionedProfilesImpl new];
 
         [Environment setShared:[[Environment alloc] initWithAudioSession:audioSession
                                              incomingContactSyncJobQueue:incomingContactSyncJobQueue
@@ -167,7 +170,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                                          groupsV2:groupsV2
                                                                    groupV2Updates:groupV2Updates
                                                                 messageProcessing:messageProcessing
-                                                                messageFetcherJob:messageFetcherJob]];
+                                                                messageFetcherJob:messageFetcherJob
+                                                                 bulkProfileFetch:bulkProfileFetch
+                                                                   bulkUUIDLookup:bulkUUIDLookup
+                                                                versionedProfiles:versionedProfiles]];
 
         appSpecificSingletonBlock();
 
@@ -190,13 +196,6 @@ NS_ASSUME_NONNULL_BEGIN
         [DeviceSleepManager.sharedInstance addBlockWithBlockObject:sleepBlockObject];
 
         dispatch_block_t completionBlock = ^{
-            if (StorageCoordinator.dataStoreForUI == DataStoreYdb) {
-                // It's only safe to do this for YDB. For GRDB-only users in
-                // the post yap world, the tables for this won't exist yet on
-                // the first launch of a new install.
-                [SSKEnvironment.shared warmCaches];
-            }
-
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 if (AppSetup.shouldTruncateGrdbWal) {
                     // Try to truncate GRDB WAL before any readers or writers are

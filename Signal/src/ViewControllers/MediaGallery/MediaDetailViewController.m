@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "MediaDetailViewController.h"
@@ -61,7 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithGalleryItemBox:(GalleryItemBox *)galleryItemBox
                               viewItem:(nullable id<ConversationViewItem>)viewItem
 {
-    self = [super initWithNibName:nil bundle:nil];
+    self = [super init];
     if (!self) {
         return self;
     }

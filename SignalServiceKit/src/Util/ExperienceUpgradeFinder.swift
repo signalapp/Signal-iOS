@@ -15,9 +15,10 @@ public enum ExperienceUpgradeId: String, CaseIterable {
     func hasLaunched(transaction: GRDBReadTransaction) -> Bool {
         switch self {
         case .introducingPins:
-            // The PIN setup flow requires an internet connection
+            // The PIN setup flow requires an internet connection and you to not already have a PIN
             return RemoteConfig.pinsForEveryone &&
-                SSKEnvironment.shared.reachabilityManager.isReachable
+                SSKEnvironment.shared.reachabilityManager.isReachable &&
+                !KeyBackupService.hasMasterKey(transaction: transaction.asAnyRead)
         case .reactions:
             return true
         case .profileNameReminder:
@@ -216,7 +217,7 @@ public extension ExperienceUpgrade {
     var hasViewed: Bool { firstViewedTimestamp > 0 }
 
     func upsertWith(transaction: SDSAnyWriteTransaction, changeBlock: (ExperienceUpgrade) -> Void) {
-        guard id.shouldSave else { return Logger.debug("Skipping save for experience upgrade \(id)") }
+        guard id.shouldSave else { return Logger.debug("Skipping save for experience upgrade \(String(describing: id))") }
 
         let experienceUpgrade = ExperienceUpgrade.anyFetch(uniqueId: uniqueId, transaction: transaction) ?? self
         changeBlock(experienceUpgrade)

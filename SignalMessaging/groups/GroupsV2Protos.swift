@@ -85,7 +85,7 @@ public class GroupsV2Protos {
         groupBuilder.setVersion(initialRevision)
         groupBuilder.setPublicKey(groupV2Params.groupPublicParamsData)
         // GroupsV2 TODO: Will production implementation of encryptString() pad?
-        groupBuilder.setTitle(try groupV2Params.encryptString(groupModel.groupName?.stripped ?? " "))
+        groupBuilder.setTitle(try groupV2Params.encryptGroupName(groupModel.groupName?.stripped ?? " "))
 
         let hasAvatarUrl = groupModel.avatarUrlPath != nil
         let hasAvatarData = groupModel.groupAvatarData != nil
@@ -205,14 +205,7 @@ public class GroupsV2Protos {
                             downloadedAvatars: GroupV2DownloadedAvatars,
                             groupV2Params: GroupV2Params) throws -> GroupV2Snapshot {
 
-        var title = ""
-        if let titleData = groupProto.title {
-            do {
-                title = try groupV2Params.decryptString(titleData)
-            } catch {
-                owsFailDebug("Could not decrypt title: \(error).")
-            }
-        }
+        let title = groupV2Params.decryptGroupName(groupProto.title) ?? ""
 
         var avatarUrlPath: String?
         var avatarData: Data?
@@ -241,27 +234,20 @@ public class GroupsV2Protos {
             guard memberProto.hasRole, let role = memberProto.role else {
                 throw OWSAssertionError("Group member missing role.")
             }
-            guard let profileKeyCiphertextData = memberProto.profileKey else {
-                throw OWSAssertionError("Group member missing profileKeyCiphertextData.")
-            }
+
             let uuid = try groupV2Params.uuid(forUserId: userID)
-            let profileKeyCiphertext = try ProfileKeyCiphertext(contents: [UInt8](profileKeyCiphertextData))
-            let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext,
-                                                          uuid: uuid)
-            // NOTE: presentation is set when creating and updating groups, not
-            //       when fetching group state.
-            guard memberProto.hasJoinedAtVersion else {
-                throw OWSAssertionError("Group member missing joinedAtVersion.")
-            }
-            let joinedAtVersion = memberProto.joinedAtVersion
 
             let member = GroupV2SnapshotImpl.Member(userID: userID,
                                                     uuid: uuid,
-                                                    role: role,
-                                                    profileKey: profileKey,
-                                                    joinedAtVersion: joinedAtVersion)
+                                                    role: role)
             members.append(member)
 
+            guard let profileKeyCiphertextData = memberProto.profileKey else {
+                throw OWSAssertionError("Group member missing profileKeyCiphertextData.")
+            }
+            let profileKeyCiphertext = try ProfileKeyCiphertext(contents: [UInt8](profileKeyCiphertextData))
+            let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext,
+                                                          uuid: uuid)
             profileKeys[uuid] = profileKey
         }
 
@@ -270,22 +256,30 @@ public class GroupsV2Protos {
             guard let memberProto = pendingMemberProto.member else {
                 throw OWSAssertionError("Group pending member missing memberProto.")
             }
-            guard let userID = memberProto.userID else {
+            guard let userId = memberProto.userID else {
                 throw OWSAssertionError("Group pending member missing userID.")
             }
             guard pendingMemberProto.hasTimestamp else {
                 throw OWSAssertionError("Group pending member missing timestamp.")
             }
+            guard let addedByUserId = pendingMemberProto.addedByUserID else {
+                throw OWSAssertionError("Group pending member missing addedByUserID.")
+            }
             let timestamp = pendingMemberProto.timestamp
-            let uuid = try groupV2Params.uuid(forUserId: userID)
             guard memberProto.hasRole, let role = memberProto.role else {
                 throw OWSAssertionError("Group member missing role.")
             }
-            guard let addedByUserID = pendingMemberProto.addedByUserID else {
-                throw OWSAssertionError("Group pending member missing addedByUserID.")
+
+            let uuid: UUID
+            let addedByUuid: UUID
+            do {
+                uuid = try groupV2Params.uuid(forUserId: userId)
+                addedByUuid = try groupV2Params.uuid(forUserId: addedByUserId)
+            } catch {
+                owsFailDebug("Error parsing uuid: \(error)")
+                continue
             }
-            let addedByUuid = try groupV2Params.uuid(forUserId: addedByUserID)
-            let pendingMember = GroupV2SnapshotImpl.PendingMember(userID: userID,
+            let pendingMember = GroupV2SnapshotImpl.PendingMember(userID: userId,
                                                                   uuid: uuid,
                                                                   timestamp: timestamp,
                                                                   role: role,
@@ -303,18 +297,9 @@ public class GroupsV2Protos {
             throw OWSAssertionError("Missing accessControl.members.")
         }
 
-        var disappearingMessageToken = DisappearingMessageToken.disabledToken
-        if let disappearingMessagesTimerEncrypted = groupProto.disappearingMessagesTimer {
-            // If the timer blob is not populated or has zero duration,
-            // disappearing messages should be disabled.
-            do {
-                let disappearingMessagesTimerDecrypted = try groupV2Params.decryptBlob(disappearingMessagesTimerEncrypted)
-                let disappearingMessagesProto = try GroupsProtoDisappearingMessagesTimer.parseData(disappearingMessagesTimerDecrypted)
-                disappearingMessageToken = DisappearingMessageToken.token(forProtoExpireTimer: disappearingMessagesProto.duration)
-            } catch {
-                owsFailDebug("Could not decrypt and parse disappearing messages state: \(error).")
-            }
-        }
+        // If the timer blob is not populated or has zero duration,
+        // disappearing messages should be disabled.
+        let disappearingMessageToken = groupV2Params.decryptDisappearingMessagesTimer(groupProto.disappearingMessagesTimer)
 
         let revision = groupProto.version
         let groupSecretParamsData = groupV2Params.groupSecretParamsData

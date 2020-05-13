@@ -28,7 +28,8 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         let body = "\(url)"
         let previewBuilder = SSKProtoDataMessagePreview.builder(url: url)
         previewBuilder.setTitle("Some Youtube Video")
-        let imageAttachmentBuilder = SSKProtoAttachmentPointer.builder(id: 1)
+        let imageAttachmentBuilder = SSKProtoAttachmentPointer.builder()
+        imageAttachmentBuilder.setCdnID(1)
         imageAttachmentBuilder.setKey(Randomness.generateRandomBytes(32))
         imageAttachmentBuilder.setContentType(OWSMimeTypeImageJpeg)
         previewBuilder.setImage(try! imageAttachmentBuilder.build())
@@ -61,7 +62,8 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         let url = "https://www.youtube.com/watch?v=tP-Ipsat90c"
         let body = "\(url)"
         let previewBuilder = SSKProtoDataMessagePreview.builder(url: url)
-        let imageAttachmentBuilder = SSKProtoAttachmentPointer.builder(id: 1)
+        let imageAttachmentBuilder = SSKProtoAttachmentPointer.builder()
+        imageAttachmentBuilder.setCdnID(1)
         imageAttachmentBuilder.setKey(Randomness.generateRandomBytes(32))
         imageAttachmentBuilder.setContentType(OWSMimeTypeImageJpeg)
         previewBuilder.setImage(try! imageAttachmentBuilder.build())
@@ -133,7 +135,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
         Assert(validPreviewLink: "https://pinterest.com/something")
         Assert(validPreviewLink: "https://www.pinterest.com/something")
         Assert(validPreviewLink: "https://pin.it/something")
-        Assert(validPreviewLink: "https://www.pinterest.com/ohjoy/recipes/")
+        Assert(validPreviewLink: "https://www.pinterest.com/norat0464/test-board/")
 
         // Strip trailing commas.
         Assert(validPreviewLink: "https://imgur.com/gallery/igHOwDM,")
@@ -467,16 +469,13 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
     func testLinkParsingWithRealData10() {
         let expectation = self.expectation(description: "link download and parsing")
 
-        linkPreviewManager.downloadLink(url: "https://www.pinterest.com/ohjoy/recipes/")
+        linkPreviewManager.downloadLink(url: "https://www.pinterest.com/norat0464/test-board/")
             .done { (linkData) in
                 let content = try! self.linkPreviewManager.parse(linkData: linkData)
                 XCTAssertNotNil(content)
 
-                // Be permissive about verifying the title.
-                XCTAssertTrue(content.title?.contains("Best Recipes") ?? false)
-                // Accept any image.
-                XCTAssertTrue(content.imageUrl?.hasPrefix("https://") ?? false)
-                XCTAssertTrue(content.imageUrl?.hasSuffix(".jpg") ?? false)
+                XCTAssertEqual(content.title, "Test Board on Pinterest")
+                XCTAssertEqual(content.imageUrl, "https://i.pinimg.com/200x150/3e/85/f8/3e85f88e7be0dd1418a5b430d2ee8a55.jpg")
 
                 expectation.fulfill()
             }.catch { (error) in

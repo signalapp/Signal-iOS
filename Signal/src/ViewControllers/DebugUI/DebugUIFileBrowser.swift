@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #if DEBUG
@@ -20,10 +20,6 @@
         super.init()
 
         self.contents = buildContents()
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        notImplemented()
     }
 
     override func viewDidLoad() {

@@ -274,7 +274,7 @@ public class SDSKeyValueStore: NSObject {
     // MARK: - Object
 
     @objc
-    public func getObject(_ key: String, transaction: SDSAnyReadTransaction) -> Any? {
+    public func getObject(forKey key: String, transaction: SDSAnyReadTransaction) -> Any? {
         return read(key, transaction: transaction)
     }
 
@@ -426,6 +426,43 @@ public class SDSKeyValueStore: NSObject {
     @objc
     var asObjC: SDSKeyValueStoreObjC {
         return SDSKeyValueStoreObjC(sdsKeyValueStore: self)
+    }
+
+    // MARK: -
+
+    public func setCodable<T: Encodable>(_ value: T, key: String, transaction: SDSAnyWriteTransaction) throws {
+        do {
+            let data = try JSONEncoder().encode(value)
+            setData(data, key: key, transaction: transaction)
+        } catch {
+            owsFailDebug("Failed to encode: \(error).")
+            throw error
+        }
+    }
+
+    public func getCodableValue<T: Decodable>(forKey key: String, transaction: SDSAnyReadTransaction) throws -> T? {
+        guard let data = getData(key, transaction: transaction) else {
+            return nil
+        }
+        do {
+            return try JSONDecoder().decode(T.self, from: data)
+        } catch {
+            owsFailDebug("Failed to decode: \(error).")
+            throw error
+        }
+    }
+
+    public func allCodableValues<T: Decodable>(transaction: SDSAnyReadTransaction) throws -> [T] {
+        var result = [T]()
+        for data in allDataValues(transaction: transaction) {
+            do {
+                result.append(try JSONDecoder().decode(T.self, from: data))
+            } catch {
+                owsFailDebug("Failed to decode: \(error).")
+                throw error
+            }
+        }
+        return result
     }
 
     // MARK: - Internal Methods

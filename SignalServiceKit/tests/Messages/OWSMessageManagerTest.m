@@ -166,7 +166,8 @@ NSString *const kAliceRecipientId = @"+13213214321";
     [groupContextBuilder setType:SSKProtoGroupContextTypeUpdate];
     [groupContextBuilder setName:@"Newly created Group Name"];
 
-    SSKProtoAttachmentPointerBuilder *attachmentBuilder = [SSKProtoAttachmentPointer builderWithId:1234];
+    SSKProtoAttachmentPointerBuilder *attachmentBuilder = [SSKProtoAttachmentPointer builder];
+    attachmentBuilder.cdnID = 1234;
     [attachmentBuilder setContentType:@"image/png"];
     [attachmentBuilder setKey:[Cryptography generateRandomBytes:32]];
     [attachmentBuilder setSize:123];

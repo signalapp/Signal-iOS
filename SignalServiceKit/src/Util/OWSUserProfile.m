@@ -346,8 +346,10 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 
     BOOL isLocalUserProfile = [self.address.phoneNumber isEqualToString:kLocalProfileUniqueId];
 
-    // Profile changes, record updates with storage service. We don't store avatar information on the service.
-    if (self.tsAccountManager.isRegisteredAndReady && wasLocallyInitiated && !onlyAvatarChanged) {
+    // Profile changes, record updates with storage service. We don't store avatar information on the service except for
+    // the local user.
+    if (self.tsAccountManager.isRegisteredAndReady && wasLocallyInitiated
+        && (!onlyAvatarChanged || isLocalUserProfile)) {
         [self.storageServiceManager
             recordPendingUpdatesWithUpdatedAddresses:@[ isLocalUserProfile ? self.tsAccountManager.localAddress
                                                                            : self.address ]];
@@ -491,6 +493,25 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                applyChanges:^(OWSUserProfile *userProfile) {
                    [userProfile setGivenName:givenName];
                    [userProfile setFamilyName:familyName];
+               }
+               functionName:__PRETTY_FUNCTION__
+        wasLocallyInitiated:wasLocallyInitiated
+                transaction:transaction
+                 completion:completion];
+}
+
+- (void)updateWithGivenName:(nullable NSString *)givenName
+                 familyName:(nullable NSString *)familyName
+              avatarUrlPath:(nullable NSString *)avatarUrlPath
+        wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                transaction:(SDSAnyWriteTransaction *)transaction
+                 completion:(nullable OWSUserProfileCompletion)completion
+{
+    [self
+               applyChanges:^(OWSUserProfile *userProfile) {
+                   [userProfile setGivenName:givenName];
+                   [userProfile setFamilyName:familyName];
+                   [userProfile setAvatarUrlPath:avatarUrlPath];
                }
                functionName:__PRETTY_FUNCTION__
         wasLocallyInitiated:wasLocallyInitiated

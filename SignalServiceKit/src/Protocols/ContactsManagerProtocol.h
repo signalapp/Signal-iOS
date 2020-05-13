@@ -28,7 +28,12 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)displayNameForAddress:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
 - (NSString *)displayNameForSignalAccount:(SignalAccount *)signalAccount;
 
+- (NSString *)conversationColorNameForAddress:(SignalServiceAddress *)address
+                                  transaction:(SDSAnyReadTransaction *)transaction;
+
 - (nullable NSPersonNameComponents *)nameComponentsForAddress:(SignalServiceAddress *)address;
+- (nullable NSPersonNameComponents *)nameComponentsForAddress:(SignalServiceAddress *)address
+                                                  transaction:(SDSAnyReadTransaction *)transaction;
 
 - (NSString *)displayNameForThread:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction;
 - (NSString *)displayNameForThreadWithSneakyTransaction:(TSThread *)thread
@@ -40,6 +45,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)isSystemContactWithAddress:(SignalServiceAddress *)address NS_SWIFT_NAME(isSystemContact(address:));
 
 - (BOOL)isSystemContactWithSignalAccount:(NSString *)phoneNumber;
+
+- (NSArray<SignalServiceAddress *> *)sortSignalServiceAddresses:(NSArray<SignalServiceAddress *> *)addresses
+                                                    transaction:(SDSAnyReadTransaction *)transaction;
 
 - (NSComparisonResult)compareSignalAccount:(SignalAccount *)left
                          withSignalAccount:(SignalAccount *)right NS_SWIFT_NAME(compare(signalAccount:with:));

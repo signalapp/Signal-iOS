@@ -96,6 +96,10 @@ public class ParamParser {
         return typedValue
     }
 
+    public func hasKey(_ key: Key) -> Bool {
+        return dictionary[key] != nil && !(dictionary[key] is NSNull)
+    }
+
     // MARK: FixedWidthIntegers (e.g. Int, Int32, UInt, UInt32, etc.)
 
     // You can't blindly cast accross Integer types, so we need to specify and validate which Int type we want.

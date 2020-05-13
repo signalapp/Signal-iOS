@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -553,12 +553,12 @@ class YDBToGRDBMigrationKeyValueTest: SignalBaseTest {
             XCTAssertTrue(store2.hasValue(forKey: "key1", transaction: transaction))
             XCTAssertFalse(store3.hasValue(forKey: "key1", transaction: transaction))
 
-            XCTAssertEqual(value0, store1.getObject("key0", transaction: transaction) as! String)
-            XCTAssertEqual(value1, store2.getObject("key0", transaction: transaction) as! [String])
-            XCTAssertEqual(value2, store3.getObject("key0", transaction: transaction) as! [String: String])
-            XCTAssertEqual(value3, store1.getObject("key1", transaction: transaction) as! [String])
-            XCTAssertEqual(value4, store2.getObject("key1", transaction: transaction) as! [String: String])
-            XCTAssertNil(store3.getObject("key1", transaction: transaction))
+            XCTAssertEqual(value0, store1.getObject(forKey: "key0", transaction: transaction) as! String)
+            XCTAssertEqual(value1, store2.getObject(forKey: "key0", transaction: transaction) as! [String])
+            XCTAssertEqual(value2, store3.getObject(forKey: "key0", transaction: transaction) as! [String: String])
+            XCTAssertEqual(value3, store1.getObject(forKey: "key1", transaction: transaction) as! [String])
+            XCTAssertEqual(value4, store2.getObject(forKey: "key1", transaction: transaction) as! [String: String])
+            XCTAssertNil(store3.getObject(forKey: "key1", transaction: transaction))
         }
     }
 }

@@ -52,19 +52,6 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder
-{
-    self = [super initWithCoder:aDecoder];
-    if (!self) {
-        return self;
-    }
-
-    [self commonInit];
-
-    return self;
-}
-
-
 - (void)commonInit
 {
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
@@ -84,7 +71,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(identityStateDidChange:)
-                                                 name:kNSNotificationName_IdentityStateDidChange
+                                                 name:kNSNotificationNameIdentityStateDidChange
                                                object:nil];
 }
 
@@ -107,6 +94,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug([self.navigationController isKindOfClass:[OWSNavigationController class]]);
 
     self.title = _thread.groupModel.groupName;
+
+    self.useThemeBackgroundColors = YES;
 
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableView.estimatedRowHeight = 45;
@@ -281,7 +270,8 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(address.isValid);
 
     MemberActionSheet *memberActionSheet = [[MemberActionSheet alloc] initWithAddress:address
-                                                                   contactsViewHelper:self.contactsViewHelper];
+                                                                   contactsViewHelper:self.contactsViewHelper
+                                                                      groupViewHelper:nil];
     [memberActionSheet presentFromViewController:self];
 }
 

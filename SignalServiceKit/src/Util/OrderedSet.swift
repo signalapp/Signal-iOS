@@ -33,7 +33,7 @@ public struct OrderedSet<Element> where Element: Hashable {
         orderedMembers = orderedMembers.filter { $0 != element }
     }
 
-    public mutating func contains(_ element: Element) -> Bool {
+    public func contains(_ element: Element) -> Bool {
         return set.contains(element)
     }
 
@@ -41,8 +41,16 @@ public struct OrderedSet<Element> where Element: Hashable {
         return set.isEmpty
     }
 
+    public var count: Int {
+        return set.count
+    }
+
+    public var first: Element? {
+        return orderedMembers.first
+    }
+
     // TODO: I only implemented the minimum API that I needed. There's lots more that could
-    // reasonably be added to an OrderedSet (remove, union, etc.)
+    // reasonably be added to an OrderedSet (union, etc.)
 }
 
 extension OrderedSet: ExpressibleByArrayLiteral {

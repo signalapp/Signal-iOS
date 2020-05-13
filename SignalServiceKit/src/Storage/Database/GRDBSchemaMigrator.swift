@@ -62,6 +62,8 @@ public class GRDBSchemaMigrator: NSObject {
         case createPendingReadReceipts
         case createInteractionAttachmentIdsIndex
         case addIsUuidCapableToUserProfiles
+        case uploadTimestamp
+        case addGroupIdToGroupsV2IncomingMessageJobs
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -84,12 +86,13 @@ public class GRDBSchemaMigrator: NSObject {
         // migrations must be inserted *before* any of these Data Migrations.
         case dataMigration_populateGalleryItems
         case dataMigration_markOnboardedUsers_v2
-        case dataMigration_rotateStorageServiceKeyAndResetLocalDataV2
         case dataMigration_clearLaunchScreenCache
+        case dataMigration_enableV2RegistrationLockIfNecessary
+        case dataMigration_resetStorageServiceData
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
-    public static let grdbSchemaVersionLatest: UInt = 5
+    public static let grdbSchemaVersionLatest: UInt = 6
 
     // An optimization for new users, we have the first migration import the latest schema
     // and mark any other migrations as "already run".
@@ -437,6 +440,21 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
+        migrator.registerMigration(MigrationId.uploadTimestamp.rawValue) { db in
+            try db.alter(table: "model_TSAttachment") { (table: TableAlteration) -> Void in
+                table.add(column: "uploadTimestamp", .integer).notNull().defaults(to: 0)
+            }
+        }
+
+        migrator.registerMigration(MigrationId.addGroupIdToGroupsV2IncomingMessageJobs.rawValue) { db in
+            try db.alter(table: "model_IncomingGroupsV2MessageJob") { (table: TableAlteration) -> Void in
+                table.add(column: "groupId", .blob)
+            }
+            try db.create(index: "index_model_IncomingGroupsV2MessageJob_on_groupId_and_id",
+                          on: "model_IncomingGroupsV2MessageJob",
+                          columns: ["groupId", "id"])
+        }
+
         // MARK: - Schema Migration Insertion Point
     }
 
@@ -453,14 +471,19 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
-        migrator.registerMigration(MigrationId.dataMigration_rotateStorageServiceKeyAndResetLocalDataV2.rawValue) { db in
-            let transaction = GRDBWriteTransaction(database: db).asAnyWrite
-            SSKEnvironment.shared.storageServiceManager.resetLocalData(transaction: transaction)
-            KeyBackupService.rotateStorageServiceKey(transaction: transaction)
-        }
-
         migrator.registerMigration(MigrationId.dataMigration_clearLaunchScreenCache.rawValue) { _ in
             OWSFileSystem.deleteFileIfExists(NSHomeDirectory() + "/Library/SplashBoard")
+        }
+
+        migrator.registerMigration(MigrationId.dataMigration_enableV2RegistrationLockIfNecessary.rawValue) { db in
+            let transaction = GRDBWriteTransaction(database: db).asAnyWrite
+            guard KeyBackupService.hasMasterKey(transaction: transaction) else { return }
+            OWS2FAManager.keyValueStore().setBool(true, key: OWS2FAManager.isRegistrationLockV2EnabledKey, transaction: transaction)
+        }
+
+        migrator.registerMigration(MigrationId.dataMigration_resetStorageServiceData.rawValue) { db in
+            let transaction = GRDBWriteTransaction(database: db).asAnyWrite
+            SSKEnvironment.shared.storageServiceManager.resetLocalData(transaction: transaction)
         }
     }
 }

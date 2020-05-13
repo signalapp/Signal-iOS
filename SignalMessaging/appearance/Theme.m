@@ -199,26 +199,18 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
 
 - (BOOL)isSystemDarkThemeEnabled
 {
-    // TODO Xcode 11: Delete this once we're compiling only in Xcode 11
-#ifdef __IPHONE_13_0
     if (@available(iOS 13, *)) {
         return UITraitCollection.currentTraitCollection.userInterfaceStyle == UIUserInterfaceStyleDark;
     } else {
         return NO;
     }
-#else
-    return NO;
-#endif
 }
 
 - (ThemeMode)defaultTheme
 {
-// TODO Xcode 11: Delete this once we're compiling only in Xcode 11
-#ifdef __IPHONE_13_0
     if (@available(iOS 13, *)) {
         return ThemeMode_System;
     }
-#endif
 
     return ThemeMode_Light;
 }
@@ -388,6 +380,21 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
 + (UIColor *)cursorColor
 {
     return Theme.isDarkThemeEnabled ? UIColor.ows_whiteColor : UIColor.ows_accentBlueColor;
+}
+
++ (UIColor *)accentBlueColor
+{
+    return Theme.isDarkThemeEnabled ? UIColor.ows_accentBlueDarkColor : UIColor.ows_accentBlueColor;
+}
+
++ (UIColor *)tableCellBackgroundColor
+{
+    return Theme.isDarkThemeEnabled ? UIColor.ows_gray90Color : Theme.backgroundColor;
+}
+
++ (UIColor *)tableViewBackgroundColor
+{
+    return (Theme.isDarkThemeEnabled ? UIColor.ows_gray95Color : UIColor.ows_gray02Color);
 }
 
 + (UIColor *)darkThemeBackgroundColor

@@ -371,11 +371,10 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
                                          attributes:@{}]];
     [text appendAttributedString:[[NSAttributedString alloc] initWithString:@" " attributes:@{}]];
     [text appendAttributedString:[[NSAttributedString alloc]
-                                     initWithString:NSLocalizedString(@"PROFILE_VIEW_PROFILE_DESCRIPTION_LINK",
-                                                        @"Link to more information about the user profile.")
+                                     initWithString:CommonStrings.learnMore
                                          attributes:@{
                                              NSUnderlineStyleAttributeName : @(NSUnderlineStyleNone),
-                                             NSForegroundColorAttributeName : UIColor.ows_accentBlueColor,
+                                             NSForegroundColorAttributeName : Theme.accentBlueColor,
                                          }]];
     infoLabel.attributedText = text;
     infoLabel.numberOfLines = 0;
@@ -717,7 +716,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     } else {
         self.usernameLabel.text = NSLocalizedString(@"PROFILE_VIEW_CREATE_USERNAME",
             @"A string indicating that the user can create a username on the profile view.");
-        self.usernameLabel.textColor = UIColor.ows_accentBlueColor;
+        self.usernameLabel.textColor = Theme.accentBlueColor;
     }
 }
 
@@ -770,7 +769,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 {
     if (sender.state == UIGestureRecognizerStateRecognized) {
         SFSafariViewController *safariVC = [[SFSafariViewController alloc]
-            initWithURL:[NSURL URLWithString:@"https://support.signal.org/hc/en-us/articles/115001110511"]];
+            initWithURL:[NSURL URLWithString:@"https://support.signal.org/hc/articles/115001110511"]];
         [self presentViewController:safariVC animated:YES completion:nil];
     }
 }
@@ -824,7 +823,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
 - (BOOL)hasClearAvatarAction
 {
-    return YES;
+    return self.avatarData != nil;
 }
 
 - (NSString *)clearAvatarActionLabel

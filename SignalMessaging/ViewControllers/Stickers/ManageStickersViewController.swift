@@ -33,7 +33,7 @@ private class StickerPackActionButton: UIView {
         actionIconView.tintColor = Theme.secondaryTextAndIconColor
         actionCircleView.addSubview(actionIconView)
         actionIconView.autoCenterInSuperview()
-        actionIconView.autoSetDimensions(to: CGSize(width: actionIconSize, height: actionIconSize))
+        actionIconView.autoSetDimensions(to: CGSize(square: actionIconSize))
 
         self.addSubview(actionCircleView)
         actionCircleView.autoPinEdgesToSuperviewEdges()
@@ -65,11 +65,6 @@ public class ManageStickersViewController: OWSTableViewController {
     }
 
     // MARK: Initializers
-
-    @available(*, unavailable, message:"use other constructor instead.")
-    required public init?(coder aDecoder: NSCoder) {
-        notImplemented()
-    }
 
     @objc
     public required override init() {
@@ -334,7 +329,7 @@ public class ManageStickersViewController: OWSTableViewController {
             iconView = UIView()
         }
         let iconSize: CGFloat = 64
-        iconView.autoSetDimensions(to: CGSize(width: iconSize, height: iconSize))
+        iconView.autoSetDimensions(to: CGSize(square: iconSize))
 
         let title: String
         if let titleValue = titleValue?.ows_stripped(),
@@ -365,7 +360,7 @@ public class ManageStickersViewController: OWSTableViewController {
         var authorViews = [UIView]()
         if isDefaultStickerPack {
             let builtInPackView = UIImageView()
-            builtInPackView.setTemplateImageName("check-circle-filled-16", tintColor: UIColor.ows_accentBlue)
+            builtInPackView.setTemplateImageName("check-circle-filled-16", tintColor: Theme.accentBlueColor)
             builtInPackView.setCompressionResistanceHigh()
             builtInPackView.setContentHuggingHigh()
             authorViews.append(builtInPackView)
@@ -376,7 +371,7 @@ public class ManageStickersViewController: OWSTableViewController {
             let authorLabel = UILabel()
             authorLabel.text = authorName
             authorLabel.font = isDefaultStickerPack ? UIFont.ows_dynamicTypeCaption1.ows_semibold() : UIFont.ows_dynamicTypeCaption1
-            authorLabel.textColor = isDefaultStickerPack ? UIColor.ows_accentBlue : Theme.secondaryTextAndIconColor
+            authorLabel.textColor = isDefaultStickerPack ? Theme.accentBlueColor : Theme.secondaryTextAndIconColor
             authorLabel.lineBreakMode = .byTruncatingTail
             authorViews.append(authorLabel)
         }

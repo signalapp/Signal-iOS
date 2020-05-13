@@ -831,7 +831,7 @@ public class SignalAttachment: NSObject {
         // are points and do reflect orientation).
         let scrSize = CGSize(width: cgImage.width, height: cgImage.height)
         var maxSizeRect = CGRect.zero
-        maxSizeRect.size = CGSize(width: maxSize, height: maxSize)
+        maxSizeRect.size = CGSize(square: maxSize)
         let newSize = AVMakeRect(aspectRatio: scrSize, insideRect: maxSizeRect).size
         assert(newSize.width <= maxSize)
         assert(newSize.height <= maxSize)

@@ -173,11 +173,9 @@ private class TSConstantsProduction: TSConstantsProtocol {
 
     public let applicationGroup = "group.org.whispersystems.signal.group"
 
-    // GroupsV2 TODO: This is for staging. We need the production values.
-    //
     // We need to discard all profile key credentials if these values ever change.
-    // See: VersionedProfiles.clearProfileKeyCredentials(...)
-    public let serverPublicParamsBase64 = "Mmngo/SFRpC5kRLUKE8sXnpUx0QhQGcxUGI3b5eQXUX0kgK6SSL7XWcmjQv2ZsL5qKqyADTfhBakDSSfVEr2dHheAw/6JYMjgXnYZAn1845KOk9gHwWGaISIZWR55u4xpHdqZhZBdUyQ2MuDpIurLWifw8Jq/W6pumywOTg6zAeegHWx9MwyGaQD4R35nAAcPgqWuKrlIBX/z7kCYDwEFCaZwW+KmB0HluyEN362MzuzgGv+zK1SZR2aIpBmtsFYeG7FAV7aXXwB0aqB+5kDBJYCdhrzxWAqnWHC0Gm0JFASX3yaxmIWElacrfYtqLAP9KZcfViLRa4IiBIx3w9OAQ=="
+    // See: GroupsV2Impl.verifyServerPublicParams(...)
+    public let serverPublicParamsBase64 = "AMhf5ywVwITZMsff/eCyudZx9JDmkkkbV6PInzG4p8x3VqVJSFiMvnvlEKWuRob/1eaIetR31IYeAbm0NdOuHH8Qi+Rexi1wLlpzIo1gstHWBfZzy1+qHRV5A4TqPp15YzBPm0WSggW6PbSn+F4lf57VCnHF7p8SvzAA2ZZJPYJURt8X7bbg+H3i+PEjH9DXItNEqs2sNcug37xZQDLm7X0=="
 }
 
 // MARK: -
@@ -206,7 +204,7 @@ private class TSConstantsStaging: TSConstantsProtocol {
         return contactDiscoveryEnclaveName
     }
 
-    public let keyBackupEnclaveName = "a1e9c1d3f352b5c4f0fc7a421b98119e60e5ff703c28fbea85c66bfa7306deab"
+    public let keyBackupEnclaveName = "823a3b2c037ff0cbe305cc48928cfcc97c9ed4a8ca6d49af6f7d6981fb60a4e9"
     public let keyBackupMrEnclave = "a3baab19ef6ce6f34ab9ebb25ba722725ae44a8872dc0ff08ad6d83a9489de87"
     public var keyBackupServiceId: String {
         return keyBackupEnclaveName
@@ -215,6 +213,6 @@ private class TSConstantsStaging: TSConstantsProtocol {
     public let applicationGroup = "group.org.whispersystems.signal.group.staging"
 
     // We need to discard all profile key credentials if these values ever change.
-    // See: VersionedProfiles.clearProfileKeyCredentials(...)
-    public let serverPublicParamsBase64 = "fK6E7h1+VAYcjhPlWfvzUMp2FkXrnl+fwn2GWR8ckX5KKVTR2HZEChXftmMiVg1Jylm8Q1xxVgA6sMYnZPeWFHyuhO4dflQGHI4T5Vn781DKdhZF655fn8J9hlkfHJF+apgc1sDFloo7VSzCcSejZtPrGyr6Ly5EWriNxqlpABCeLkKnC57a3wc0VC+ivu6/QFTDfHLNZp60vgUAjVNYGQ=="
+    // See: GroupsV2Impl.verifyServerPublicParams(...)
+    public let serverPublicParamsBase64 = "ABSY21VckQcbSXVNCGRYJcfWHiAMZmpTtTELcDmxgdFbtp/bWsSxZdMKzfCp8rvIs8ocCU3B37fT3r4Mi5qAemeGeR2X+/YmOGR5ofui7tD5mDQfstAI9i+4WpMtIe8KC3wU5w3Inq3uNWVmoGtpKndsNfwJrCg0Hd9zmObhypUnSkfYn2ooMOOnBpfdanRtrvetZUayDMSC5iSRcXKpdls=="
 }

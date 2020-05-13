@@ -154,7 +154,7 @@ class GroupAndContactStreamTest: SignalBaseTest {
                 thread.shouldThreadBeVisible = true
                 thread.anyOverwritingUpdate(transaction: $0)
                 thread.updateConversationColorName(.taupe, transaction: $0)
-                thread.archiveThread(with: $0)
+                thread.archiveThread(updateStorageService: false, transaction: $0)
             }
             return thread
         }()
@@ -181,7 +181,7 @@ class GroupAndContactStreamTest: SignalBaseTest {
                 messageFactory.threadCreator = { _ in return thread }
                 _ = messageFactory.create(transaction: transaction)
 
-                thread.archiveThread(with: transaction)
+                thread.archiveThread(updateStorageService: false, transaction: transaction)
             }
             return thread
         }()
@@ -347,7 +347,15 @@ class TestContactsManager: NSObject, ContactsManagerProtocol {
         return "Fake Name"
     }
 
+    func conversationColorName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
+        return ConversationColorName.taupe.rawValue
+    }
+
     func nameComponents(for address: SignalServiceAddress) -> PersonNameComponents? {
+        return PersonNameComponents()
+    }
+
+    func nameComponents(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> PersonNameComponents? {
         return PersonNameComponents()
     }
 
@@ -369,6 +377,11 @@ class TestContactsManager: NSObject, ContactsManagerProtocol {
 
     func compare(signalAccount left: SignalAccount, with right: SignalAccount) -> ComparisonResult {
         return .orderedSame
+    }
+
+    public func sortSignalServiceAddresses(_ addresses: [SignalServiceAddress],
+                                           transaction: SDSAnyReadTransaction) -> [SignalServiceAddress] {
+        return addresses
     }
 
     func cnContact(withId contactId: String?) -> CNContact? {

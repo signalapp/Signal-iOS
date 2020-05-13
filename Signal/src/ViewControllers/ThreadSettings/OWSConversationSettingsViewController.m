@@ -71,40 +71,11 @@ const CGFloat kIconViewLength = 24;
         return self;
     }
 
-    [self commonInit];
-
-    return self;
-}
-
-- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder
-{
-    self = [super initWithCoder:aDecoder];
-    if (!self) {
-        return self;
-    }
-
-    [self commonInit];
-
-    return self;
-}
-
-- (instancetype)initWithNibName:(nullable NSString *)nibNameOrNil bundle:(nullable NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (!self) {
-        return self;
-    }
-
-    [self commonInit];
-
-    return self;
-}
-
-- (void)commonInit
-{
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
-
+    
     [self observeNotifications];
+
+    return self;
 }
 
 - (void)dealloc
@@ -157,7 +128,7 @@ const CGFloat kIconViewLength = 24;
 {
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(identityStateDidChange:)
-                                                 name:kNSNotificationName_IdentityStateDidChange
+                                                 name:kNSNotificationNameIdentityStateDidChange
                                                object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(otherUsersProfileDidChange:)
@@ -277,6 +248,7 @@ const CGFloat kIconViewLength = 24;
 {
     [super viewDidLoad];
 
+    self.useThemeBackgroundColors = YES;
     self.tableView.estimatedRowHeight = 45;
     self.tableView.rowHeight = UITableViewAutomaticDimension;
 
@@ -535,7 +507,7 @@ const CGFloat kIconViewLength = 24;
                                      rowLabel.text = NSLocalizedString(
                                          @"DISAPPEARING_MESSAGES", @"table cell label in conversation settings");
                                      rowLabel.textColor = Theme.primaryTextColor;
-                                     rowLabel.font = [UIFont ows_dynamicTypeBodyFont];
+                                     rowLabel.font = OWSTableItem.primaryLabelFont;
                                      rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
 
                                      UISwitch *switchView = [UISwitch new];
@@ -592,7 +564,7 @@ const CGFloat kIconViewLength = 24;
                                          UILabel *rowLabel = strongSelf.disappearingMessagesDurationLabel;
                                          [strongSelf updateDisappearingMessagesDurationLabel];
                                          rowLabel.textColor = Theme.primaryTextColor;
-                                         rowLabel.font = [UIFont ows_dynamicTypeBodyFont];
+                                         rowLabel.font = OWSTableItem.primaryLabelFont;
                                          // don't truncate useful duration info which is in the tail
                                          rowLabel.lineBreakMode = NSLineBreakByTruncatingHead;
 
@@ -673,7 +645,7 @@ const CGFloat kIconViewLength = 24;
                                           return cell;
                                       }
                                       actionBlock:^{
-                                          [weakSelf showUpdateGroupView:UpdateGroupMode_Default];
+                                          [weakSelf showUpdateGroupView:UpdateGroupModeDefault];
                                       }]];
         }
 
@@ -741,7 +713,7 @@ const CGFloat kIconViewLength = 24;
                             rowLabel.text = NSLocalizedString(@"SETTINGS_ITEM_NOTIFICATION_SOUND",
                                 @"Label for settings view that allows user to change the notification sound.");
                             rowLabel.textColor = Theme.primaryTextColor;
-                            rowLabel.font = [UIFont ows_dynamicTypeBodyFont];
+                            rowLabel.font = OWSTableItem.primaryLabelFont;
                             rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
 
                             UIStackView *contentRow =
@@ -785,7 +757,7 @@ const CGFloat kIconViewLength = 24;
                         rowLabel.text = NSLocalizedString(@"CONVERSATION_SETTINGS_MUTE_LABEL",
                             @"label for 'mute thread' cell in conversation settings");
                         rowLabel.textColor = Theme.primaryTextColor;
-                        rowLabel.font = [UIFont ows_dynamicTypeBodyFont];
+                        rowLabel.font = OWSTableItem.primaryLabelFont;
                         rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
 
                         NSString *muteStatus = NSLocalizedString(@"CONVERSATION_SETTINGS_MUTE_NOT_MUTED",
@@ -927,7 +899,7 @@ const CGFloat kIconViewLength = 24;
     UILabel *rowLabel = [UILabel new];
     rowLabel.text = name;
     rowLabel.textColor = Theme.primaryTextColor;
-    rowLabel.font = [UIFont ows_dynamicTypeBodyFont];
+    rowLabel.font = OWSTableItem.primaryLabelFont;
     rowLabel.lineBreakMode = NSLineBreakByTruncatingTail;
 
     UIStackView *contentRow = [[UIStackView alloc] initWithArrangedSubviews:@[ iconView, rowLabel ]];
@@ -962,12 +934,13 @@ const CGFloat kIconViewLength = 24;
 - (UIView *)mainSectionHeader
 {
     UIView *mainSectionHeader = [UIView new];
+    mainSectionHeader.backgroundColor = Theme.tableViewBackgroundColor;
     UIView *threadInfoView = [UIView containerView];
     [mainSectionHeader addSubview:threadInfoView];
     [threadInfoView autoPinWidthToSuperviewWithMargin:16.f];
     [threadInfoView autoPinHeightToSuperviewWithMargin:16.f];
 
-    UIImage *avatarImage = [OWSAvatarBuilder buildImageForThread:self.thread diameter:kLargeAvatarSize];
+    UIImage *avatarImage = [OWSAvatarBuilder buildImageForThread:self.thread diameter:kMediumAvatarSize];
     OWSAssertDebug(avatarImage);
 
     AvatarImageView *avatarView = [[AvatarImageView alloc] initWithImage:avatarImage];
@@ -975,8 +948,8 @@ const CGFloat kIconViewLength = 24;
     [threadInfoView addSubview:avatarView];
     [avatarView autoVCenterInSuperview];
     [avatarView autoPinLeadingToSuperviewMargin];
-    [avatarView autoSetDimension:ALDimensionWidth toSize:kLargeAvatarSize];
-    [avatarView autoSetDimension:ALDimensionHeight toSize:kLargeAvatarSize];
+    [avatarView autoSetDimension:ALDimensionWidth toSize:kMediumAvatarSize];
+    [avatarView autoSetDimension:ALDimensionHeight toSize:kMediumAvatarSize];
 
     if (self.isGroupThread && !self.hasSavedGroupIcon && self.canEditSharedConversationSettings) {
         UIImageView *cameraImageView = [UIImageView new];
@@ -1123,9 +1096,9 @@ const CGFloat kIconViewLength = 24;
         if (self.isGroupThread) {
             CGPoint location = [sender locationInView:self.avatarView];
             if (CGRectContainsPoint(self.avatarView.bounds, location)) {
-                [self showUpdateGroupView:UpdateGroupMode_EditGroupAvatar];
+                [self showUpdateGroupView:UpdateGroupModeEditGroupAvatar];
             } else {
-                [self showUpdateGroupView:UpdateGroupMode_EditGroupName];
+                [self showUpdateGroupView:UpdateGroupModeEditGroupName];
             }
         } else {
             if (self.contactsManager.supportsContactEditing) {
@@ -1300,6 +1273,7 @@ const CGFloat kIconViewLength = 24;
     [GroupManager
         leaveGroupOrDeclineInviteAsyncWithUIWithGroupThread:groupThread
                                          fromViewController:self
+                                       replacementAdminUuid:nil
                                                     success:^{
                                                         [self.navigationController popViewControllerAnimated:YES];
                                                     }];
@@ -1539,7 +1513,7 @@ const CGFloat kIconViewLength = 24;
 
 - (void)tappedConversationSearch
 {
-    [self.conversationSettingsViewDelegate conversationSettingsDidRequestConversationSearch:self];
+    [self.conversationSettingsViewDelegate conversationSettingsDidRequestConversationSearch];
 }
 
 #pragma mark - Notifications

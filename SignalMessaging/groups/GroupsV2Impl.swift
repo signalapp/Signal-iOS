@@ -45,8 +45,8 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         return SSKEnvironment.shared.contactsUpdater
     }
 
-    private var reachabilityManager: SSKReachabilityManager {
-        return SSKEnvironment.shared.reachabilityManager
+    private var versionedProfiles: VersionedProfilesImpl {
+        return SSKEnvironment.shared.versionedProfiles as! VersionedProfilesImpl
     }
 
     // MARK: -
@@ -87,23 +87,40 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
     private func verifyServerPublicParams() {
         let serverPublicParamsBase64 = TSConstants.serverPublicParamsBase64
         let lastServerPublicParamsKey = "lastServerPublicParamsKey"
+        let lastZKgroupVersionCounterKey = "lastZKgroupVersionCounterKey"
+        // This _does not_ conform to the public version number of the
+        // zkgroup library.  Instead it's a counter we should bump
+        // every time there are breaking changes zkgroup library, e.g.
+        // changes to data formats.
+        let zkgroupVersionCounter: Int = 3
 
-        guard serverPublicParamsBase64 != (databaseStorage.read { transaction in
-            return self.serviceStore.getString(lastServerPublicParamsKey, transaction: transaction)
-        }) else {
+        let shouldReset = databaseStorage.read { transaction -> Bool in
+            guard serverPublicParamsBase64 == self.serviceStore.getString(lastServerPublicParamsKey, transaction: transaction) else {
+                Logger.info("Server public params have changed.")
+                return true
+            }
+            guard zkgroupVersionCounter == self.serviceStore.getInt(lastZKgroupVersionCounterKey, transaction: transaction) else {
+                Logger.info("ZKGroup library has changed.")
+                return true
+            }
+            return false
+        }
+        guard shouldReset else {
             // Nothing to be done; server public params haven't changed.
             return
         }
 
-        Logger.info("Server public params have changed.")
+        Logger.info("Resetting zkgroup-related state.")
 
         databaseStorage.write { transaction in
             self.clearTemporalCredentials(transaction: transaction)
-            VersionedProfiles.clearProfileKeyCredentials(transaction: transaction)
+            self.versionedProfiles.clearProfileKeyCredentials(transaction: transaction)
             self.serviceStore.setString(serverPublicParamsBase64, key: lastServerPublicParamsKey, transaction: transaction)
+            self.serviceStore.setInt(zkgroupVersionCounter, key: lastZKgroupVersionCounterKey, transaction: transaction)
         }
         AppReadiness.runNowOrWhenAppDidBecomeReady {
-            if FeatureFlags.versionedProfiledUpdate {
+            if FeatureFlags.versionedProfiledUpdate,
+                self.tsAccountManager.isRegisteredAndReady {
                 self.reuploadLocalProfilePromise().retainUntilComplete()
             }
         }
@@ -183,7 +200,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
         return performServiceRequest(requestBuilder: requestBuilder,
                                      groupId: nil,
-                                     shouldRemoveOn403: false).asVoid()
+                                     behavior403: .fail).asVoid()
     }
 
     // MARK: - Update Group
@@ -259,7 +276,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         return firstly {
             return self.performServiceRequest(requestBuilder: requestBuilder,
                                               groupId: groupId,
-                                              shouldRemoveOn403: true)
+                                              behavior403: .fetchGroupUpdates)
         }.then(on: DispatchQueue.global()) { (response: ServiceResponse) -> Promise<UpdatedV2Group> in
 
             guard let changeActionsProtoData = response.responseObject as? Data else {
@@ -368,7 +385,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             let groupId = try self.groupId(forGroupSecretParamsData: groupV2Params.groupSecretParamsData)
             return self.performServiceRequest(requestBuilder: requestBuilder,
                                               groupId: groupId,
-                                              shouldRemoveOn403: true)
+                                              behavior403: .fetchGroupUpdates)
         }.map(on: DispatchQueue.global()) { (response: ServiceResponse) -> GroupsProtoAvatarUploadAttributes in
 
             guard let protoData = response.responseObject as? Data else {
@@ -378,7 +395,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         }.map(on: DispatchQueue.global()) { (avatarUploadAttributes: GroupsProtoAvatarUploadAttributes) throws -> OWSUploadForm in
             try OWSUploadForm.parse(proto: avatarUploadAttributes)
         }.then(on: DispatchQueue.global()) { (uploadForm: OWSUploadForm) -> Promise<String> in
-            let encryptedData = try groupV2Params.encryptBlob(avatarData)
+            let encryptedData = try groupV2Params.encryptGroupAvatar(avatarData)
             return OWSUploadV2.upload(data: encryptedData, uploadForm: uploadForm, uploadUrlPath: "")
         }
     }
@@ -428,7 +445,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             let groupId = try self.groupId(forGroupSecretParamsData: groupV2Params.groupSecretParamsData)
             return self.performServiceRequest(requestBuilder: requestBuilder,
                                               groupId: groupId,
-                                              shouldRemoveOn403: true)
+                                              behavior403: .removeFromGroup)
         }.map(on: DispatchQueue.global()) { (response: ServiceResponse) -> GroupsProtoGroup in
             guard let groupProtoData = response.responseObject as? Data else {
                 throw OWSAssertionError("Invalid responseObject.")
@@ -499,9 +516,12 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         }
 
         return firstly { () -> Promise<ServiceResponse> in
+            // We can't remove the local user from the group on 403.
+            // For example, user might just be joining the group
+            // using an invite OR have just been re-added after leaving.
             return self.performServiceRequest(requestBuilder: requestBuilder,
-                                              groupId: nil,
-                                              shouldRemoveOn403: false)
+                                              groupId: groupId,
+                                              behavior403: .ignore)
         }.map(on: DispatchQueue.global()) { (response: ServiceResponse) -> GroupsProtoGroupChanges in
             guard let groupChangesProtoData = response.responseObject as? Data else {
                 throw OWSAssertionError("Invalid responseObject.")
@@ -602,7 +622,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                         return avatarData
                     }
                     do {
-                        return try groupV2Params.decryptBlob(avatarData)
+                        return try groupV2Params.decryptGroupAvatar(avatarData) ?? Data()
                     } catch {
                         owsFailDebug("Invalid avatar data: \(error)")
                         // Empty avatar data will be discarded below.
@@ -643,26 +663,14 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         return promise
     }
 
-    // MARK: - Accept Invites
+    // MARK: - Generic Group Change
 
-    public func acceptInviteToGroupV2(groupModel: TSGroupModelV2) -> Promise<TSGroupThread> {
+    public func updateGroupV2(groupModel: TSGroupModelV2,
+                              changeSetBlock: @escaping (GroupsV2ChangeSet) -> Void) -> Promise<TSGroupThread> {
         return DispatchQueue.global().async(.promise) { () throws -> GroupsV2ChangeSet in
             let changeSet = GroupsV2ChangeSetImpl(groupId: groupModel.groupId,
                                                   groupSecretParamsData: groupModel.secretParamsData)
-            changeSet.setShouldAcceptInvite()
-            return changeSet
-        }.then(on: DispatchQueue.global()) { (changeSet: GroupsV2ChangeSet) -> Promise<TSGroupThread> in
-            return self.updateExistingGroupOnService(changeSet: changeSet)
-        }
-    }
-
-    // MARK: - Leave Group / Decline Invite
-
-    public func leaveGroupV2OrDeclineInvite(groupModel: TSGroupModelV2) -> Promise<TSGroupThread> {
-        return DispatchQueue.global().async(.promise) { () throws -> GroupsV2ChangeSet in
-            let changeSet = GroupsV2ChangeSetImpl(groupId: groupModel.groupId,
-                                                  groupSecretParamsData: groupModel.secretParamsData)
-            changeSet.setShouldLeaveGroupDeclineInvite()
+            changeSetBlock(changeSet)
             return changeSet
         }.then(on: DispatchQueue.global()) { (changeSet: GroupsV2ChangeSet) -> Promise<TSGroupThread> in
             return self.updateExistingGroupOnService(changeSet: changeSet)
@@ -688,20 +696,6 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         profileKeyUpdater.updateLocalProfileKeyInGroup(groupId: groupId, transaction: transaction)
     }
 
-    // MARK: - Disappearing Messages
-
-    public func updateDisappearingMessageStateOnService(groupModel: TSGroupModelV2,
-                                                        disappearingMessageToken: DisappearingMessageToken) -> Promise<TSGroupThread> {
-        return DispatchQueue.global().async(.promise) { () throws -> GroupsV2ChangeSet in
-            let changeSet = GroupsV2ChangeSetImpl(groupId: groupModel.groupId,
-                                                  groupSecretParamsData: groupModel.secretParamsData)
-            changeSet.setNewDisappearingMessageToken(disappearingMessageToken)
-            return changeSet
-        }.then(on: DispatchQueue.global()) { (changeSet: GroupsV2ChangeSet) -> Promise<TSGroupThread> in
-            return self.updateExistingGroupOnService(changeSet: changeSet)
-        }
-    }
-
     // MARK: - Perform Request
 
     private struct ServiceResponse {
@@ -713,9 +707,17 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
     private typealias AuthCredentialMap = [UInt32: AuthCredential]
     private typealias RequestBuilder = (AuthCredential, AFHTTPSessionManager) -> Promise<NSURLRequest>
 
+    // Represents how we should respond to 403 status codes.
+    private enum Behavior403 {
+        case fail
+        case removeFromGroup
+        case fetchGroupUpdates
+        case ignore
+    }
+
     private func performServiceRequest(requestBuilder: @escaping RequestBuilder,
                                        groupId: Data?,
-                                       shouldRemoveOn403: Bool,
+                                       behavior403: Behavior403,
                                        remainingRetries: UInt = 3) -> Promise<ServiceResponse> {
         guard let localUuid = tsAccountManager.localUuid else {
             return Promise(error: OWSAssertionError("Missing localUuid."))
@@ -739,7 +741,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                         firstly {
                             self.performServiceRequest(requestBuilder: requestBuilder,
                                                        groupId: groupId,
-                                                       shouldRemoveOn403: shouldRemoveOn403,
+                                                       behavior403: behavior403,
                                                        remainingRetries: remainingRetries - 1)
                         }.done(on: DispatchQueue.global()) { (response: ServiceResponse) in
                             resolver.fulfill(response)
@@ -764,15 +766,41 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                     case 403:
                         // 403 indicates that we are no longer in the group for
                         // many (but not all) group v2 service requests.
-                        if shouldRemoveOn403 {
-                            // We should only receive 403 when groupId is not nil.
-                            if let groupId = groupId {
+
+                        if let groupId = groupId {
+                            switch behavior403 {
+                            case .fail:
+                                // We should never receive 403 when creating groups.
+                                owsFailDebug("Unexpected 403.")
+                                break
+                            case .ignore:
+                                // We can't remove the local user from the group on 403
+                                // when fetching change actions.
+                                // For example, user might just be joining the group
+                                // using an invite OR have just been re-added after leaving.
+                                break
+                            case .removeFromGroup:
+                                // If we receive 403 when trying to fetch group state,
+                                // we have left the group, been removed from the group
+                                // or had our invite revoked and we should make sure
+                                // group state in the database reflects that.
                                 self.databaseStorage.write { transaction in
-                                    GroupManager.handleWasRemovedFromGroupOrInviteRevoked(groupId: groupId, transaction: transaction)
+                                    GroupManager.handleNotInGroup(groupId: groupId,
+                                                                  transaction: transaction)
                                 }
-                            } else {
-                                owsFailDebug("Missing groupId.")
+                            case .fetchGroupUpdates:
+                                // Service returns 403 if client tries to perform an
+                                // update for which it is not authorized (e.g. add a
+                                // new member if membership access is admin-only).
+                                // The local client can't assume that 403 means they
+                                // are not in the group. Therefore we "update group
+                                // to latest" to check for and handle that case (see
+                                // previous case).
+                                self.tryToUpdateGroupToLatest(groupId: groupId)
                             }
+                        } else {
+                            // We should only receive 403 when groupId is not nil.
+                            owsFailDebug("Missing groupId.")
                         }
 
                         resolver.reject(GroupsV2Error.localUserNotInGroup)
@@ -865,6 +893,33 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         }
     }
 
+    private func tryToUpdateGroupToLatest(groupId: Data) {
+        guard let groupThread = (databaseStorage.read { transaction in
+            TSGroupThread.fetch(groupId: groupId, transaction: transaction)
+        }) else {
+            owsFailDebug("Missing group thread.")
+            return
+        }
+        guard let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {
+            owsFailDebug("Invalid group model.")
+            return
+        }
+        let groupUpdateMode = GroupUpdateMode.upToCurrentRevisionAfterMessageProcessWithThrottling
+        firstly {
+            self.groupV2Updates.tryToRefreshV2GroupThreadWithThrottling(groupId: groupId,
+                                                                        groupSecretParamsData: groupModelV2.secretParamsData,
+                                                                        groupUpdateMode: groupUpdateMode)
+        }.done { _ in
+            Logger.verbose("Update succeeded.")
+        }.catch { error in
+            if IsNetworkConnectivityFailure(error) {
+                Logger.warn("Error: \(error)")
+            } else {
+                owsFailDebug("Error: \(error)")
+            }
+        }.retainUntilComplete()
+    }
+
     // MARK: - ProfileKeyCredentials
 
     public func loadProfileKeyCredentialData(for uuids: [UUID]) -> Promise<ProfileKeyCredentialMap> {
@@ -878,8 +933,8 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             for uuid in Set(uuids) {
                 do {
                     let address = SignalServiceAddress(uuid: uuid)
-                    if let credential = try VersionedProfiles.profileKeyCredential(for: address,
-                                                                                   transaction: transaction) {
+                    if let credential = try self.versionedProfiles.profileKeyCredential(for: address,
+                                                                                        transaction: transaction) {
                         credentialMap[uuid] = credential
                         continue
                     }
@@ -922,9 +977,9 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                 try self.databaseStorage.read { transaction in
                     for uuid in uuids {
                         let address = SignalServiceAddress(uuid: uuid)
-                        guard let credential = try VersionedProfiles.profileKeyCredential(for: address,
-                                                                                          transaction: transaction) else {
-                                                                                            throw OWSAssertionError("Could load credential.")
+                        guard let credential = try self.versionedProfiles.profileKeyCredential(for: address,
+                                                                                               transaction: transaction) else {
+                                                                                                throw OWSAssertionError("Could load credential.")
                         }
                         credentialMap[uuid] = credential
                     }
@@ -937,8 +992,8 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
     public func hasProfileKeyCredential(for address: SignalServiceAddress,
                                         transaction: SDSAnyReadTransaction) -> Bool {
         do {
-            return try VersionedProfiles.profileKeyCredential(for: address,
-                                                              transaction: transaction) != nil
+            return try self.versionedProfiles.profileKeyCredential(for: address,
+                                                                   transaction: transaction) != nil
         } catch {
             owsFailDebug("Error: \(error)")
             return false
@@ -992,25 +1047,6 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                                                                            fetchType: .versioned))
         }
         return when(fulfilled: promises).asVoid()
-    }
-
-    // MARK: - UUIDs
-
-    public func tryToEnsureUuidsForGroupMembers(for addresses: [SignalServiceAddress]) -> Promise<Void> {
-        guard FeatureFlags.useOnlyModernContactDiscovery else {
-            // Can't fill in UUIDs using legacy contact intersections.
-            return Promise.value(())
-        }
-
-        let phoneNumbersWithoutUuids = addresses.filter { $0.uuid == nil }.compactMap { $0.phoneNumber }
-        guard phoneNumbersWithoutUuids.count > 0 else {
-            return Promise.value(())
-        }
-
-        return firstly {
-            contactsUpdater.lookupIdentifiersPromise(phoneNumbers:
-                phoneNumbersWithoutUuids)
-        }.asVoid()
     }
 
     // MARK: - Auth Credentials
@@ -1212,10 +1248,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
     }
 
     public func isValidGroupV2MasterKey(_ masterKeyData: Data) -> Bool {
-        // GroupsV2 TODO: Use constant from zkgroup once the
-        // production version of the library is available.
-        // return masterKeyData.count == GroupMasterKey.SIZE
-        return masterKeyData.count == 32
+        return masterKeyData.count == GroupMasterKey.SIZE
     }
 
     // MARK: - Utils

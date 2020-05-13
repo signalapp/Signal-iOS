@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
 import os
@@ -6,7 +6,6 @@ import sys
 import subprocess
 import datetime
 import argparse
-import commands
 import re
 
 
@@ -14,13 +13,13 @@ git_repo_path = os.path.abspath(subprocess.check_output(['git', 'rev-parse', '--
 
 proto_syntax = None
 
-def lowerCamelCase(name):
+def lower_camel_case(name):
     result = name
 
     # We have at least two segments, we'll have to split them up
     if '_' in name:
         splits = name.split('_')
-        splits = [split.title() for split in splits]
+        splits = [captialize_first_letter(split.lower()) for split in splits]
         splits[0] = splits[0].lower()
         result = ''.join(splits)
 
@@ -28,11 +27,26 @@ def lowerCamelCase(name):
     elif name.isupper():
         result = name.lower()
 
-    return supressAdjacentCapitalLetters(result)
+    return supress_adjacent_capital_letters(result)
+
+def camel_case(name):
+    result = name
+
+    splits = name.split('_')
+    splits = [captialize_first_letter(split) for split in splits]
+    result = ''.join(splits)
+
+    return supress_adjacent_capital_letters(result)
+
+def captialize_first_letter(name):
+    if name.isupper():
+        name = name.lower()
+    
+    return name[0].upper() + name[1:]
 
 # The generated code for "Apple Swift Protos" suppresses
-# adjacent capital letters in lowerCamelCase.
-def supressAdjacentCapitalLetters(name):
+# adjacent capital letters in lower_camel_case.
+def supress_adjacent_capital_letters(name):
     chars = []
     lastWasUpper = False
     for char in name:
@@ -43,7 +57,29 @@ def supressAdjacentCapitalLetters(name):
     result = ''.join(chars)
     if result.endswith('Id'):
         result = result[:-2] + 'ID'
+    if result.endswith('Url'):
+        result = result[:-3] + 'URL'
     return result
+
+
+def swift_type_for_proto_primitive_type(proto_type):
+    if proto_type == 'string':
+        return 'String'
+    elif proto_type == 'uint64':
+        return 'UInt64'
+    elif proto_type == 'uint32':
+        return 'UInt32'
+    elif proto_type == 'fixed64':
+        return 'UInt64'
+    elif proto_type == 'bool':
+        return 'Bool'
+    elif proto_type == 'bytes':
+        return 'Data'
+    else:
+        return None
+
+def is_swift_primitive_type(proto_type):
+    return proto_type in ('String', 'UInt64', 'UInt32', 'UInt64', 'Bool', 'Data')
 
 # Provides conext for writing an indented block surrounded by braces.
 #
@@ -200,6 +236,8 @@ class BaseContext(object):
                 return candidate
             if candidate.qualified_proto_name() == field.proto_type:
                 return candidate
+            if candidate.derive_swift_name() == field.proto_type:
+                return candidate
 
         return None
 
@@ -221,19 +259,9 @@ class BaseContext(object):
 
 
     def base_swift_type_for_field(self, field):
-
-        if field.proto_type == 'string':
-            return 'String'
-        elif field.proto_type == 'uint64':
-            return 'UInt64'
-        elif field.proto_type == 'uint32':
-            return 'UInt32'
-        elif field.proto_type == 'fixed64':
-            return 'UInt64'
-        elif field.proto_type == 'bool':
-            return 'Bool'
-        elif field.proto_type == 'bytes':
-            return 'Data'
+        swift_type = swift_type_for_proto_primitive_type(field.proto_type)
+        if swift_type is not None:
+            return swift_type
         else:
             matching_context = self.context_for_proto_type(field)
             if matching_context is not None:
@@ -288,6 +316,13 @@ class BaseContext(object):
         matching_context = self.context_for_proto_type(field)
         if matching_context is not None:
             if type(matching_context) is EnumContext:
+                return True
+        return False
+
+    def is_field_oneof(self, field):
+        matching_context = self.context_for_proto_type(field)
+        if matching_context is not None:
+            if type(matching_context) is OneOfContext:
                 return True
         return False
 
@@ -406,6 +441,7 @@ class MessageContext(BaseContext):
 
         self.messages = []
         self.enums = []
+        self.oneofs = []
 
         self.field_map = {}
 
@@ -421,7 +457,7 @@ class MessageContext(BaseContext):
         return [field.name for field in self.fields()]
 
     def children(self):
-        return self.enums + self.messages
+        return self.enums + self.messages + self.oneofs
 
     def prepare(self):
         self.swift_name = self.derive_swift_name()
@@ -435,6 +471,9 @@ class MessageContext(BaseContext):
             child.generate(writer)
 
         for child in self.enums:
+            child.generate(writer)
+
+        for child in self.oneofs:
             child.generate(writer)
 
         writer.add('// MARK: - %s' % self.swift_name)
@@ -456,7 +495,7 @@ class MessageContext(BaseContext):
         for field in self.fields():
             field.type_swift = self.swift_type_for_field(field)
             field.type_swift_not_optional = self.swift_type_for_field(field, suppress_optional=True)
-            field.name_swift = lowerCamelCase(field.name)
+            field.name_swift = lower_camel_case(field.name)
 
             is_explicit = False
             if field.is_required:
@@ -475,8 +514,8 @@ class MessageContext(BaseContext):
                 e164_field = field
 
             # Ensure that no enum are required.
-            if self.is_field_an_enum(field) and field.is_required:
-                raise Exception('Enum field default values should not be used: %s.%s' % ( self.proto_name, field.name, ))
+            if proto_syntax == 'proto2' and self.is_field_an_enum(field) and field.is_required:
+                raise Exception('Enum fields cannot be required: %s.%s' % ( self.proto_name, field.name, ))
 
         self.generate_builder(writer)
 
@@ -507,12 +546,10 @@ class MessageContext(BaseContext):
                         def write_field_getter(is_objc_accessible, is_required_optional):
                             
                             if is_required_optional:
-                                def captialize_first_letter(s):
-                                    return field.name_swift[0].upper() + field.name_swift[1:]
                                 writer.add('// This "unwrapped" accessor should only be used if the "has value" accessor has already been checked.')
                                 if is_objc_accessible:
                                     writer.add_objc()
-                                writer.add('public var unwrapped%s: %s {' % ( captialize_first_letter(field.name_swift), field.type_swift_not_optional, ))
+                                writer.add('public var unwrapped%s: %s {' % ( camel_case(field.name_swift), field.type_swift_not_optional, ))
                                 writer.push_indent()
                                 writer.add('if !%s {' % field.has_accessor_name() )
                                 writer.push_indent()
@@ -533,6 +570,21 @@ class MessageContext(BaseContext):
                             if self.is_field_an_enum(field):
                                 enum_context = self.context_for_proto_type(field)
                                 writer.add('return %s(proto.%s)' % ( enum_context.wrap_func_name(), field.name_swift, ) )
+                            elif self.is_field_oneof(field):
+                                oneof_context = self.context_for_proto_type(field)
+                                writer.add('guard let %s = proto.%s else {' % ( field.name_swift, field.name_swift, ))
+                                writer.push_indent()
+                                writer.add('owsFailDebug("%s was unexpectedly nil")' % field.name_swift )
+                                writer.add('return nil')
+                                writer.pop_indent()
+                                writer.add('}')
+                                writer.add('guard let unwrapped%s = try? %s(%s) else {' % ( camel_case(field.name_swift), oneof_context.wrap_func_name(), field.name_swift, ))
+                                writer.push_indent()
+                                writer.add('owsFailDebug("failed to unwrap %s")' % field.name_swift )
+                                writer.add('return nil')
+                                writer.pop_indent()
+                                writer.add('}')
+                                writer.add('return unwrapped%s' % camel_case(field.name_swift) )
                             else:
                                 writer.add('return proto.%s' % field.name_swift )
                             writer.pop_indent()
@@ -540,6 +592,8 @@ class MessageContext(BaseContext):
                         if self.is_field_an_enum(field):
                             write_field_getter(is_objc_accessible=False, is_required_optional=False)
                             write_field_getter(is_objc_accessible=True, is_required_optional=True)
+                        elif self.is_field_oneof(field):
+                            write_field_getter(is_objc_accessible=False, is_required_optional=False)
                         else:
                             write_field_getter(is_objc_accessible=True, is_required_optional=False)
                     else:
@@ -558,10 +612,9 @@ class MessageContext(BaseContext):
                     writer.add('public var %s: Bool {' % field.has_accessor_name() )
                     writer.push_indent()
                     if proto_syntax == 'proto3':
-                        # TODO: We might want to return false for empty Data, String?
                         # TODO: We might want to return false for unknown/0 enum?                        
-                        if field.proto_type == 'bytes':
-                            writer.add('return proto.%s.count > 0' % field.name_swift )
+                        if field.proto_type in ['bytes', 'string']:
+                            writer.add('return !proto.%s.isEmpty' % field.name_swift )
                         else:
                             writer.add('return true')
                     else:
@@ -584,6 +637,9 @@ class MessageContext(BaseContext):
                     if self.is_field_an_enum(field):
                         enum_context = self.context_for_proto_type(field)
                         writer.add('return %s(proto.%s)' % ( enum_context.unwrap_func_name(), field.name_swift, ) )
+                    elif self.is_field_oneof(field):
+                        oneof_context = self.context_for_proto_type(field)
+                        writer.add('return %s(proto.%s)' % ( oneof_context.unwrap_func_name(), field.name_swift, ) )
                     else:
                         writer.add('return proto.%s' % field.name_swift )
                     writer.pop_indent()
@@ -713,12 +769,13 @@ public func serializedData() throws -> Data {
 
         for field in explict_fields:
             if field.is_required:
-            # if self.can_field_be_optional(field):
-                writer.add('guard proto.%s else {' % field.has_accessor_name() )
-                writer.push_indent()
-                writer.add('throw %s.invalidProtobuf(description: "\(logTag) missing required field: %s")' % ( writer.invalid_protobuf_error_name, field.name_swift, ) )
-                writer.pop_indent()
-                writer.add('}')
+
+                if proto_syntax == 'proto2':
+                    writer.add('guard proto.%s else {' % field.has_accessor_name() )
+                    writer.push_indent()
+                    writer.add('throw %s.invalidProtobuf(description: "\(logTag) missing required field: %s")' % ( writer.invalid_protobuf_error_name, field.name_swift, ) )
+                    writer.pop_indent()
+                    writer.add('}')
 
                 if self.is_field_an_enum(field):
                     # TODO: Assert that rules is empty.
@@ -931,6 +988,9 @@ public func serializedData() throws -> Data {
                 if self.is_field_an_enum(field):
                     enum_context = self.context_for_proto_type(field)
                     writer.add('items.append(%s(valueParam))' % enum_context.unwrap_func_name() )
+                elif self.is_field_oneof(field):
+                    oneof_context = self.context_for_proto_type(field)
+                    writer.add('items.append(%s(valueParam))' % oneof_context.unwrap_func_name() )
                 elif self.is_field_a_proto(field):
                     writer.add('items.append(valueParam.proto)')
                 else:
@@ -972,6 +1032,9 @@ public func serializedData() throws -> Data {
                     if self.is_field_an_enum(field):
                         enum_context = self.context_for_proto_type(field)
                         writer.add('proto.%s = %s(valueParam)' % ( field.name_swift, enum_context.unwrap_func_name(), ) )
+                    elif self.is_field_oneof(field):
+                        oneof_context = self.context_for_proto_type(field)
+                        writer.add('proto.%s = %s(valueParam)' % ( field.name_swift, oneof_context.unwrap_func_name(), ) )
                     elif self.is_field_a_proto(field):
                         writer.add('proto.%s = valueParam.proto' % ( field.name_swift, ) )
                     else:
@@ -990,6 +1053,9 @@ public func serializedData() throws -> Data {
                 if self.is_field_an_enum(field):
                     enum_context = self.context_for_proto_type(field)
                     writer.add('proto.%s = %s(valueParam)' % ( field.name_swift, enum_context.unwrap_func_name(), ) )
+                elif self.is_field_oneof(field):
+                    oneof_context = self.context_for_proto_type(field)
+                    writer.add('proto.%s = %s(valueParam)' % ( field.name_swift, oneof_context.unwrap_func_name(), ) )
                 elif self.is_field_a_proto(field):
                     writer.add('proto.%s = valueParam.proto' % ( field.name_swift, ) )
                 else:
@@ -1087,7 +1153,7 @@ class EnumContext(BaseContext):
         for index in indices:
             index_str = str(index)
             item_name = self.item_map[index_str]
-            case_name = lowerCamelCase(item_name)
+            case_name = lower_camel_case(item_name)
             result.append( (case_name, index_str,) )
         return result
 
@@ -1211,6 +1277,126 @@ class EnumContext(BaseContext):
         writer.newline()
 
 
+class OneOfContext(BaseContext):
+    def __init__(self, args, parent, proto_name):
+        BaseContext.__init__(self)
+
+        self.args = args
+        self.parent = parent
+        self.proto_name = camel_case(proto_name)
+
+        self.item_type_map = {}
+        self.item_index_map = {}
+
+    def derive_swift_name(self):
+        names = self.inherited_proto_names()
+        names.insert(-1, 'OneOf')
+        return self.args.wrapper_prefix + ''.join(names)
+
+    def derive_wrapped_swift_name(self):
+        names = self.inherited_proto_names()
+        names[-1] = 'OneOf_' + self.proto_name
+        return self.args.proto_prefix + '_' + '.'.join(names)
+
+    def qualified_proto_name(self):
+        names = self.inherited_proto_names()
+        names[-1] = 'OneOf_' + self.proto_name
+        return '.'.join(names)
+
+    def item_names(self):
+        return self.item_index_map.values()
+
+    def item_indices(self):
+        return self.item_index_map.keys()
+
+    def sorted_item_indices(self):
+        indices = [int(index) for index in self.item_indices()]
+        return sorted(indices)
+
+    def last_index(self):
+        return self.sorted_item_indices()[-1]
+
+    def wrap_func_name(self):
+        return '%sWrap' % ( self.swift_name, )
+
+    def unwrap_func_name(self):
+        return '%sUnwrap' % ( self.swift_name, )
+
+    def prepare(self):
+        self.swift_name = self.derive_swift_name()
+
+    def context_for_proto_type(self, proto_type):
+        for candidate in self.all_known_contexts(should_deep_search=False):
+            if candidate.proto_name == proto_type:
+                return candidate
+            if candidate.qualified_proto_name() == proto_type:
+                return candidate
+
+        return None
+
+    def case_pairs(self):
+        result = []
+        for index in self.sorted_item_indices():
+            index_str = str(index)
+            item_name = self.item_index_map[index_str]
+            item_type = self.item_type_map[item_name]
+            case_name = lower_camel_case(item_name)
+            case_type = swift_type_for_proto_primitive_type(item_type)
+            if case_type is None:
+                case_type = self.context_for_proto_type(item_type).swift_name
+            result.append( (case_name, case_type,) )
+        return result
+
+    def generate(self, writer):
+
+        writer.add('// MARK: - %s' % self.swift_name)
+        writer.newline() 
+
+        # proto3 enums are completely different.
+        # Swift-only, with Int rawValue.
+        writer.add('public enum %s: Equatable {' % self.swift_name)
+
+        writer.push_context(self.proto_name, self.swift_name)
+
+        for case_name, case_type in self.case_pairs():
+            writer.add('case %s(%s)' % ( case_name, case_type, ) )
+
+
+        writer.pop_context()
+
+        writer.rstrip()
+        writer.add('}')
+        writer.newline()
+            
+        wrapped_swift_name = self.derive_wrapped_swift_name()
+        writer.add('private func %sWrap(_ value: %s) throws -> %s {' % ( self.swift_name, wrapped_swift_name, self.swift_name, ) )
+        writer.push_indent()
+        writer.add('switch value {')
+        for case_name, case_type in self.case_pairs():
+            if is_swift_primitive_type(case_type):
+                writer.add('case .%s(let value): return .%s(value)' % (case_name, case_name, ) )
+            else:
+                writer.add('case .%s(let value): return .%s(try %s.parseProto(value))' % (case_name, case_name, case_type, ) )
+            
+        writer.add('}')
+        writer.pop_indent()
+        writer.add('}')
+        writer.newline()
+
+        writer.add('private func %sUnwrap(_ value: %s) -> %s {' % ( self.swift_name, self.swift_name, wrapped_swift_name, ) )
+        writer.push_indent()
+        writer.add('switch value {')
+        for case_name, case_type in self.case_pairs():
+            if is_swift_primitive_type(case_type):
+                writer.add('case .%s(let value): return .%s(value)' % (case_name, case_name,))
+            else:
+                writer.add('case .%s(let value): return .%s(value.proto)' % (case_name, case_name,))
+        writer.add('}')
+        writer.pop_indent()
+        writer.add('}')
+        writer.newline()
+
+
 class LineParser:
     def __init__(self, text):
         self.lines = text.split('\n')
@@ -1296,6 +1482,54 @@ def parse_enum(args, proto_file_path, parser, parent_context, enum_name):
         raise Exception('Invalid enum syntax[%s]: "%s"' % (proto_file_path, line))
 
 
+def parse_oneof(args, proto_file_path, parser, parent_context, oneof_name):
+
+    # if args.verbose:
+    #     print '# oneof:', oneof_name
+
+    if oneof_name in parent_context.field_names():
+        raise Exception('Duplicate message field name[%s]: %s' % (proto_file_path, oneof_name))
+
+    context = OneOfContext(args, parent_context, oneof_name)
+
+    oneof_index = None
+
+    while True:
+        try:
+            line = parser.next()
+        except StopIteration:
+            raise Exception('Incomplete oneof: %s' % proto_file_path)
+
+        if line == '}':
+            break
+
+        item_regex = re.compile(r'^(.+?)\s*([\w\d]+?)\s*=\s*(\d+?)\s*;$')
+        item_match = item_regex.search(line)
+        if item_match:
+            item_type = item_match.group(1).strip()
+            item_name = item_match.group(2).strip()
+            item_index = item_match.group(3).strip()
+
+            # if args.verbose:
+            #     print '\t oneof item[%s]: %s' % (item_index, item_name)
+
+            if item_name in context.item_names():
+                raise Exception('Duplicate oneof name[%s]: %s' % (proto_file_path, item_name))
+
+            if item_index in context.item_indices():
+                raise Exception('Duplicate oneof index[%s]: %s' % (proto_file_path, item_name))
+
+            context.item_type_map[item_name] = item_type
+            context.item_index_map[item_index] = item_name
+
+            continue
+
+        raise Exception('Invalid oneof syntax[%s]: "%s"' % (proto_file_path, line))
+
+    parent_context.oneofs.append(context)
+    return context
+
+
 def optional_match_group(match, index):
     group = match.group(index)
     if group is None:
@@ -1338,6 +1572,18 @@ def parse_message(args, proto_file_path, parser, parent_context, message_name):
             message_name = message_match.group(1).strip()
             parse_message(args, proto_file_path, parser, context, message_name)
             continue
+
+        if proto_syntax == 'proto3':
+            oneof_regex = re.compile(r'^oneof\s+(.+?)\s+\{$')
+            oneof_match = oneof_regex.search(line)
+            if oneof_match:
+                oneof_name = oneof_match.group(1).strip()
+                oneof_context = parse_oneof(args, proto_file_path, parser, context, oneof_name)
+                oneof_index = oneof_context.last_index()
+                oneof_type = oneof_context.derive_swift_name()
+                context.field_map[oneof_index] = MessageField(oneof_name, oneof_index, 'optional', oneof_type, None, sort_index, False)
+                sort_index = sort_index + 1
+                continue
 
         # Examples:
         #
@@ -1437,7 +1683,7 @@ def preserve_validation_logic(args, proto_file_path, dst_file_path):
 
             if len(validation_block) > 0:
                 if args.verbose:
-                    print 'Preserving validation logic for:', name
+                    print('Preserving validation logic for:', name)
 
             args.validation_map[name] = validation_block
 
@@ -1470,12 +1716,12 @@ def process_proto_file(args, proto_file_path, dst_file_path):
             global proto_syntax
             proto_syntax = syntax_match.group(1).strip()
             if args.verbose:
-                print 'Syntax:', proto_syntax
+                print('Syntax:', proto_syntax)
             continue
 
         if option_regex.search(line):
             if args.verbose:
-                print '# Ignoring option'
+                print('# Ignoring option')
             continue
 
         package_match = package_regex.search(line)
@@ -1485,7 +1731,7 @@ def process_proto_file(args, proto_file_path, dst_file_path):
             args.package = package_match.group(1).strip()
 
             if args.verbose:
-                print '# package:', args.package
+                print('# package:', args.package)
             continue
 
         message_regex = re.compile(r'^message\s+(.+?)\s+\{$')
@@ -1523,7 +1769,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     if args.verbose:
-        print 'args:', args
+        print('args:', args)
 
     proto_file_path = os.path.abspath(os.path.join(args.proto_dir, args.proto_file))
     if not os.path.exists(proto_file_path):
@@ -1536,7 +1782,7 @@ if __name__ == "__main__":
     dst_file_path = os.path.join(dst_dir_path, "%s.swift" % args.wrapper_prefix)
 
     if args.verbose:
-        print 'dst_file_path:', dst_file_path
+        print('dst_file_path:', dst_file_path)
 
     args.package = None
     process_proto_file(args, proto_file_path, dst_file_path)

@@ -70,12 +70,7 @@ class ImageEditorCropViewController: OWSViewController {
         self.previewImage = previewImage
         transform = model.currentTransform()
 
-        super.init(nibName: nil, bundle: nil)
-    }
-
-    @available(*, unavailable, message: "use other init() instead.")
-    required public init?(coder aDecoder: NSCoder) {
-        notImplemented()
+        super.init()
     }
 
     // MARK: - View Lifecycle

@@ -380,8 +380,9 @@ class CDSBatchOperation: OWSOperation {
             }
 
             var bigEndian: UInt64 = CFSwapInt64HostToBig(numericIdentifier)
-            let buffer = UnsafeBufferPointer(start: &bigEndian, count: 1)
-            output.append(buffer)
+            withUnsafePointer(to: &bigEndian) { pointer in
+                output.append(UnsafeBufferPointer(start: pointer, count: 1))
+            }
         }
 
         return output

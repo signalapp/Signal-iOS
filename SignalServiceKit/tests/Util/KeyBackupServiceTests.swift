@@ -122,7 +122,7 @@ class KeyBackupServiceTests: SSKBaseTestSwift {
             var derivedKey: KeyBackupService.DerivedKey {
                 switch type {
                 case .storageServiceRecord:
-                    return .storageServiceRecord(identifier: StorageService.StorageIdentifier(data: associatedValueData))
+                    return .storageServiceRecord(identifier: StorageService.StorageIdentifier(data: associatedValueData, type: .contact))
                 case .storageServiceManifest:
                     return .storageServiceManifest(version: associatedValueData.withUnsafeBytes { $0.pointee })
                 }

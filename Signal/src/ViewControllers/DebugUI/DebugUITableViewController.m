@@ -8,6 +8,7 @@
 #import "DebugUIDiskUsage.h"
 #import "DebugUIMessages.h"
 #import "DebugUIMisc.h"
+#import "DebugUIScreenshots.h"
 #import "DebugUISessionState.h"
 #import "DebugUIStress.h"
 #import "DebugUISyncMessages.h"
@@ -94,8 +95,12 @@ NS_ASSUME_NONNULL_BEGIN
     [subsectionItems addObject:[self itemForSubsection:[DebugUIProfile new] viewController:viewController thread:thread]];
     [subsectionItems
         addObject:[self itemForSubsection:[DebugUIStress new] viewController:viewController thread:thread]];
-    [subsectionItems
-        addObject:[self itemForSubsection:[DebugUISyncMessages new] viewController:viewController thread:thread]];
+    [subsectionItems addObject:[self itemForSubsection:[DebugUISyncMessages new]
+                                        viewController:viewController
+                                                thread:thread]];
+    [subsectionItems addObject:[self itemForSubsection:[DebugUIScreenshots new]
+                                        viewController:viewController
+                                                thread:thread]];
     OWSTableItem *sharedDataFileBrowserItem = [OWSTableItem
         disclosureItemWithText:@"📁 Shared Container"
                    actionBlock:^{
@@ -153,6 +158,9 @@ NS_ASSUME_NONNULL_BEGIN
         addObject:[self itemForSubsection:[DebugUISyncMessages new] viewController:viewController thread:nil]];
     [subsectionItems addObject:[self itemForSubsection:[DebugUIBackup new] viewController:viewController thread:nil]];
     [subsectionItems addObject:[self itemForSubsection:[DebugUIGroupsV2 new] viewController:viewController thread:nil]];
+    [subsectionItems addObject:[self itemForSubsection:[DebugUIScreenshots new]
+                                        viewController:viewController
+                                                thread:nil]];
     [subsectionItems addObject:[self itemForSubsection:[DebugUIMisc new] viewController:viewController thread:nil]];
     [contents addSection:[OWSTableSection sectionWithTitle:@"Sections" items:subsectionItems]];
 

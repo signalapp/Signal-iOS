@@ -179,19 +179,19 @@ extension TestModelSerializer {
 
     // This defines all of the columns used in the table
     // where this model (and any subclasses) are persisted.
-    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey, columnIndex: 0)
-    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64, columnIndex: 1)
-    static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true, columnIndex: 2)
+    static let idColumn = SDSColumnMetadata(columnName: "id", columnType: .primaryKey)
+    static let recordTypeColumn = SDSColumnMetadata(columnName: "recordType", columnType: .int64)
+    static let uniqueIdColumn = SDSColumnMetadata(columnName: "uniqueId", columnType: .unicodeString, isUnique: true)
     // Properties
-    static let dateValueColumn = SDSColumnMetadata(columnName: "dateValue", columnType: .double, isOptional: true, columnIndex: 3)
-    static let doubleValueColumn = SDSColumnMetadata(columnName: "doubleValue", columnType: .double, columnIndex: 4)
-    static let floatValueColumn = SDSColumnMetadata(columnName: "floatValue", columnType: .double, columnIndex: 5)
-    static let int64ValueColumn = SDSColumnMetadata(columnName: "int64Value", columnType: .int64, columnIndex: 6)
-    static let nsIntegerValueColumn = SDSColumnMetadata(columnName: "nsIntegerValue", columnType: .int64, columnIndex: 7)
-    static let nsNumberValueUsingInt64Column = SDSColumnMetadata(columnName: "nsNumberValueUsingInt64", columnType: .int64, isOptional: true, columnIndex: 8)
-    static let nsNumberValueUsingUInt64Column = SDSColumnMetadata(columnName: "nsNumberValueUsingUInt64", columnType: .int64, isOptional: true, columnIndex: 9)
-    static let nsuIntegerValueColumn = SDSColumnMetadata(columnName: "nsuIntegerValue", columnType: .int64, columnIndex: 10)
-    static let uint64ValueColumn = SDSColumnMetadata(columnName: "uint64Value", columnType: .int64, columnIndex: 11)
+    static let dateValueColumn = SDSColumnMetadata(columnName: "dateValue", columnType: .double, isOptional: true)
+    static let doubleValueColumn = SDSColumnMetadata(columnName: "doubleValue", columnType: .double)
+    static let floatValueColumn = SDSColumnMetadata(columnName: "floatValue", columnType: .double)
+    static let int64ValueColumn = SDSColumnMetadata(columnName: "int64Value", columnType: .int64)
+    static let nsIntegerValueColumn = SDSColumnMetadata(columnName: "nsIntegerValue", columnType: .int64)
+    static let nsNumberValueUsingInt64Column = SDSColumnMetadata(columnName: "nsNumberValueUsingInt64", columnType: .int64, isOptional: true)
+    static let nsNumberValueUsingUInt64Column = SDSColumnMetadata(columnName: "nsNumberValueUsingUInt64", columnType: .int64, isOptional: true)
+    static let nsuIntegerValueColumn = SDSColumnMetadata(columnName: "nsuIntegerValue", columnType: .int64)
+    static let uint64ValueColumn = SDSColumnMetadata(columnName: "uint64Value", columnType: .int64)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.

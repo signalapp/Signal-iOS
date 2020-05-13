@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSRecipientIdentity.h"
@@ -9,7 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 // This notification will be fired whenever identities are created
 // or their verification state changes.
-extern NSString *const kNSNotificationName_IdentityStateDidChange;
+extern NSNotificationName const kNSNotificationNameIdentityStateDidChange;
 
 // number of bytes in a signal identity key, excluding the key-type byte.
 extern const NSUInteger kIdentityKeyLength;

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSAvatarBuilder.h"
@@ -15,8 +15,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+const NSUInteger kSmallAvatarSize = 40;
 const NSUInteger kStandardAvatarSize = 48;
-const NSUInteger kLargeAvatarSize = 68;
+const NSUInteger kMediumAvatarSize = 68;
+const NSUInteger kLargeAvatarSize = 96;
 
 typedef void (^OWSAvatarDrawBlock)(CGContextRef context);
 
@@ -189,7 +191,7 @@ typedef void (^OWSAvatarDrawBlock)(CGContextRef context);
     UIImage *_Nullable image = UIGraphicsGetImageFromCurrentImageContext();
 
     UIGraphicsEndImageContext();
-
+    
     return image;
 }
 

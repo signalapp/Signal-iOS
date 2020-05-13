@@ -39,13 +39,9 @@ public class PinReminderViewController: OWSViewController {
     @objc
     init(completionHandler: (() -> Void)? = nil) {
         self.completionHandler = completionHandler
-        super.init(nibName: nil, bundle: nil)
+        super.init()
         modalPresentationStyle = .custom
         transitioningDelegate = self
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 
     public override func viewWillAppear(_ animated: Bool) {
@@ -171,7 +167,7 @@ public class PinReminderViewController: OWSViewController {
         // Secondary button
         let forgotButton = UIButton()
         forgotButton.setTitle(NSLocalizedString("PIN_REMINDER_FORGOT_PIN", comment: "Text asking if the user forgot their pin for the 'pin reminder' dialog."), for: .normal)
-        forgotButton.setTitleColor(.ows_accentBlue, for: .normal)
+        forgotButton.setTitleColor(Theme.accentBlueColor, for: .normal)
         forgotButton.titleLabel?.font = .ows_dynamicTypeSubheadlineClamped
         forgotButton.addTarget(self, action: #selector(forgotPressed), for: .touchUpInside)
         forgotButton.accessibilityIdentifier = "pinReminder.forgotButton"
@@ -219,7 +215,7 @@ public class PinReminderViewController: OWSViewController {
         let path = UIBezierPath(
             roundedRect: containerView.bounds,
             byRoundingCorners: [.topLeft, .topRight],
-            cornerRadii: CGSize(width: cornerRadius, height: cornerRadius)
+            cornerRadii: CGSize(square: cornerRadius)
         )
         let shapeLayer = CAShapeLayer()
         shapeLayer.path = path.cgPath

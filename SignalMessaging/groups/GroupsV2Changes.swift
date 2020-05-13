@@ -98,9 +98,6 @@ public class GroupsV2Changes {
             guard let role = TSGroupMemberRole.role(for: protoRole) else {
                 throw OWSAssertionError("Invalid role: \(protoRole.rawValue)")
             }
-            guard let profileKeyCiphertextData = member.profileKey else {
-                throw OWSAssertionError("Missing profileKeyCiphertext.")
-            }
             let uuid = try groupV2Params.uuid(forUserId: userId)
             let address = SignalServiceAddress(uuid: uuid)
 
@@ -110,6 +107,9 @@ public class GroupsV2Changes {
             groupMembershipBuilder.remove(address)
             groupMembershipBuilder.addNonPendingMember(address, role: role)
 
+            guard let profileKeyCiphertextData = member.profileKey else {
+                throw OWSAssertionError("Missing profileKeyCiphertext.")
+            }
             let profileKeyCiphertext = try ProfileKeyCiphertext(contents: [UInt8](profileKeyCiphertextData))
             let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext,
                                                           uuid: uuid)
@@ -157,15 +157,16 @@ public class GroupsV2Changes {
             }
             let presentation = try ProfileKeyCredentialPresentation(contents: [UInt8](presentationData))
             let uuidCiphertext = try presentation.getUuidCiphertext()
-            let profileKeyCiphertext = try presentation.getProfileKeyCiphertext()
             let uuid = try groupV2Params.uuid(forUuidCiphertext: uuidCiphertext)
-            let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext,
-                                                          uuid: uuid)
 
             let address = SignalServiceAddress(uuid: uuid)
             guard oldGroupMembership.nonPendingMembers.contains(address) else {
                 throw OWSAssertionError("Invalid membership.")
             }
+
+            let profileKeyCiphertext = try presentation.getProfileKeyCiphertext()
+            let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext,
+                                                          uuid: uuid)
             profileKeys[uuid] = profileKey
         }
 
@@ -185,13 +186,19 @@ public class GroupsV2Changes {
             guard let role = TSGroupMemberRole.role(for: protoRole) else {
                 throw OWSAssertionError("Invalid role: \(protoRole.rawValue)")
             }
-            let uuid = try groupV2Params.uuid(forUserId: userId)
-            let address = SignalServiceAddress(uuid: uuid)
             guard let addedByUserID = pendingMember.addedByUserID else {
                 throw OWSAssertionError("Group pending member missing addedByUserID.")
             }
-            let addedByUuid = try groupV2Params.uuid(forUserId: addedByUserID)
-
+            let uuid: UUID
+            let addedByUuid: UUID
+            do {
+                uuid = try groupV2Params.uuid(forUserId: userId)
+                addedByUuid = try groupV2Params.uuid(forUserId: addedByUserID)
+            } catch {
+                owsFailDebug("Error parsing uuid: \(error)")
+                continue
+            }
+            let address = SignalServiceAddress(uuid: uuid)
             guard !oldGroupMembership.allUsers.contains(address) else {
                 throw OWSAssertionError("Invalid membership.")
             }
@@ -218,10 +225,7 @@ public class GroupsV2Changes {
             }
             let presentation = try ProfileKeyCredentialPresentation(contents: [UInt8](presentationData))
             let uuidCiphertext = try presentation.getUuidCiphertext()
-            let profileKeyCiphertext = try presentation.getProfileKeyCiphertext()
             let uuid = try groupV2Params.uuid(forUuidCiphertext: uuidCiphertext)
-            let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext,
-                                                          uuid: uuid)
 
             let address = SignalServiceAddress(uuid: uuid)
             guard oldGroupMembership.pendingMembers.contains(address) else {
@@ -236,21 +240,15 @@ public class GroupsV2Changes {
             groupMembershipBuilder.remove(address)
             groupMembershipBuilder.addNonPendingMember(address, role: role)
 
+            let profileKeyCiphertext = try presentation.getProfileKeyCiphertext()
+            let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext,
+                                                          uuid: uuid)
             profileKeys[uuid] = profileKey
         }
 
         if let action = changeActionsProto.modifyTitle {
-            if let titleData = action.title {
-                do {
-                    newGroupName = try groupV2Params.decryptString(titleData)
-                } catch {
-                    owsFailDebug("Invalid title: \(error)")
-                    newGroupName = nil
-                }
-            } else {
-                // Change clears the group title.
-                newGroupName = nil
-            }
+            // Change clears or updates the group title.
+            newGroupName = groupV2Params.decryptGroupName(action.title)
         }
 
         if let action = changeActionsProto.modifyAvatar {
@@ -275,17 +273,7 @@ public class GroupsV2Changes {
         if let action = changeActionsProto.modifyDisappearingMessagesTimer {
             // If the timer blob is not populated or has zero duration,
             // disappearing messages should be disabled.
-            newDisappearingMessageToken = DisappearingMessageToken.disabledToken
-
-            if let disappearingMessagesTimerEncrypted = action.timer {
-                do {
-                    let disappearingMessagesTimerDecrypted = try groupV2Params.decryptBlob(disappearingMessagesTimerEncrypted)
-                    let disappearingMessagesProto = try GroupsProtoDisappearingMessagesTimer.parseData(disappearingMessagesTimerDecrypted)
-                    newDisappearingMessageToken = DisappearingMessageToken.token(forProtoExpireTimer: disappearingMessagesProto.duration)
-                } catch {
-                    owsFailDebug("Could not decrypt and parse disappearing messages state: \(error).")
-                }
-            }
+            newDisappearingMessageToken = groupV2Params.decryptDisappearingMessagesTimer(action.timer)
         }
 
         if let action = changeActionsProto.modifyAttributesAccess {

@@ -15,14 +15,9 @@ public class OnboardingBaseViewController: OWSViewController {
     public init(onboardingController: OnboardingController) {
         self.onboardingController = onboardingController
 
-        super.init(nibName: nil, bundle: nil)
+        super.init()
 
         self.shouldUseTheme = false
-    }
-
-    @available(*, unavailable, message: "use other init() instead.")
-    required public init?(coder aDecoder: NSCoder) {
-        notImplemented()
     }
 
     // MARK: - Factory Methods
@@ -65,7 +60,7 @@ public class OnboardingBaseViewController: OWSViewController {
     }
 
     func linkButton(title: String, selector: Selector) -> OWSFlatButton {
-        return button(title: title, selector: selector, titleColor: .ows_accentBlue, backgroundColor: .clear)
+        return button(title: title, selector: selector, titleColor: Theme.accentBlueColor, backgroundColor: .clear)
     }
 
     func shouldShowBackButton() -> Bool {
@@ -109,14 +104,14 @@ public class OnboardingBaseViewController: OWSViewController {
 
         self.shouldBottomViewReserveSpaceForKeyboard = true
 
-        if (shouldShowBackButton()) {
+        if shouldShowBackButton() {
             let backButton = UIButton()
             let backButtonImage = CurrentAppContext().isRTL ? #imageLiteral(resourceName: "NavBarBackRTL") : #imageLiteral(resourceName: "NavBarBack")
             backButton.setTemplateImage(backButtonImage, tintColor: Theme.secondaryTextAndIconColor)
             backButton.addTarget(self, action: #selector(navigateBack), for: .touchUpInside)
 
             view.addSubview(backButton)
-            backButton.autoSetDimensions(to: CGSize(width: 40, height: 40))
+            backButton.autoSetDimensions(to: CGSize(square: 40))
             backButton.autoPinEdge(toSuperviewMargin: .leading)
             backButton.autoPinEdge(toSuperviewMargin: .top)
         }

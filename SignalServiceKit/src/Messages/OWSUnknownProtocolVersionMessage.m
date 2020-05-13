@@ -47,7 +47,7 @@ NSUInteger const OWSUnknownProtocolVersionMessageSchemaVersion = 1;
     return self;
 }
 
-- (instancetype)initWithCoder:(NSCoder *)coder
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
     self = [super initWithCoder:coder];
     if (!self) {

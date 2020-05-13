@@ -131,14 +131,9 @@ public class ImageEditorTextViewController: OWSViewController, VAlignTextViewDel
                                                 itemIdsToIgnore: [textItem.itemId])
         self.paletteView = ImageEditorPaletteView(currentColor: textItem.color)
 
-        super.init(nibName: nil, bundle: nil)
+        super.init()
 
         self.textView.textViewDelegate = self
-    }
-
-    @available(*, unavailable, message: "use other init() instead.")
-    required public init?(coder aDecoder: NSCoder) {
-        notImplemented()
     }
 
     // MARK: - View Lifecycle

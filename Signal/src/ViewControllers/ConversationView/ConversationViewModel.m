@@ -18,10 +18,6 @@
 #import <SignalServiceKit/TSIncomingMessage.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <SignalServiceKit/TSThread.h>
-#import <YapDatabase/YapDatabase.h>
-#import <YapDatabase/YapDatabaseAutoView.h>
-#import <YapDatabase/YapDatabaseViewChange.h>
-#import <YapDatabase/YapDatabaseViewChangePrivate.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -171,7 +167,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) ConversationProfileState *conversationProfileState;
 @property (nonatomic) BOOL hasTooManyOutgoingMessagesToBlockCached;
 
-@property (nonatomic) NSArray<id<ConversationViewItem>> *persistedViewItems;
 @property (nonatomic) NSArray<TSOutgoingMessage *> *unsavedOutgoingMessages;
 
 @end
@@ -194,7 +189,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     _thread = thread;
     _delegate = delegate;
-    _persistedViewItems = @[];
     _unsavedOutgoingMessages = @[];
     _focusMessageIdOnOpen = focusMessageIdOnOpen;
     _viewState = [[ConversationViewState alloc] initWithViewItems:@[] focusMessageId:focusMessageIdOnOpen];
@@ -207,17 +201,6 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 #pragma mark - Dependencies
-
-// POST GRDB TODO - Remove
-- (nullable OWSPrimaryStorage *)primaryStorage
-{
-    return SSKEnvironment.shared.primaryStorage;
-}
-
-- (nullable YapDatabaseConnection *)uiDatabaseConnection
-{
-    return self.primaryStorage.uiDatabaseConnection;
-}
 
 - (SDSDatabaseStorage *)databaseStorage
 {
@@ -308,10 +291,6 @@ NS_ASSUME_NONNULL_BEGIN
     // size, since it depends on where the unread indicator is placed.
     self.typingIndicatorsSender = [self.typingIndicators typingAddressForThread:self.thread];
 
-    if (StorageCoordinator.dataStoreForUI == DataStoreYdb) {
-        [self.primaryStorage updateUIDatabaseConnectionToLatest];
-    }
-
     [BenchManager benchWithTitle:@"loading initial interactions"
                            block:^{
                                [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
@@ -329,41 +308,13 @@ NS_ASSUME_NONNULL_BEGIN
                                }];
                            }];
 
-    if (StorageCoordinator.dataStoreForUI == DataStoreGrdb) {
-        [self.databaseStorage.grdbStorage.conversationViewDatabaseObserver appendSnapshotDelegate:self];
-    } else {
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(uiDatabaseDidUpdateExternally:)
-                                                     name:OWSUIDatabaseConnectionDidUpdateExternallyNotification
-                                                   object:self.primaryStorage.dbNotificationObject];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(uiDatabaseWillUpdate:)
-                                                     name:OWSUIDatabaseConnectionWillUpdateNotification
-                                                   object:self.primaryStorage.dbNotificationObject];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(uiDatabaseDidUpdate:)
-                                                     name:OWSUIDatabaseConnectionDidUpdateNotification
-                                                   object:self.primaryStorage.dbNotificationObject];
-    }
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(applicationWillEnterForeground:)
-                                                 name:OWSApplicationWillEnterForegroundNotification
-                                               object:nil];
+    OWSAssert(StorageCoordinator.dataStoreForUI == DataStoreGrdb);
+    [self.databaseStorage.grdbStorage.conversationViewDatabaseObserver appendSnapshotDelegate:self];
 }
 
 - (void)viewDidLoad
 {
     [self addNotificationListeners];
-
-    [self touchDbAsync];
-}
-
-- (void)touchDbAsync
-{
-    if (StorageCoordinator.dataStoreForUI == DataStoreYdb) {
-        // See comments in primaryStorage.touchDbAsync.
-        [self.primaryStorage touchDbAsync];
-    }
 }
 
 - (void)dealloc
@@ -487,35 +438,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self resetMappingWithSneakyTransaction];
 }
 
-#pragma mark - YapDB Updates
-
-- (void)uiDatabaseWillUpdate:(NSNotification *)notification
-{
-    [self anyDBWillUpdate];
-}
-
-- (void)uiDatabaseDidUpdate:(NSNotification *)notification
-{
-    OWSAssertIsOnMainThread();
-
-    OWSLogVerbose(@"");
-
-    NSArray<NSNotification *> *notifications = notification.userInfo[OWSUIDatabaseConnectionNotificationsKey];
-    OWSAssertDebug([notifications isKindOfClass:[NSArray class]]);
-
-    YapDatabaseAutoViewConnection *messageDatabaseView =
-        [self.uiDatabaseConnection ext:TSMessageDatabaseViewExtensionName];
-    OWSAssertDebug([messageDatabaseView isKindOfClass:[YapDatabaseAutoViewConnection class]]);
-    if (![messageDatabaseView hasChangesForGroup:self.thread.uniqueId inNotifications:notifications]
-        && !self.shouldShowThreadDetails) {
-        [self.delegate conversationViewModelDidUpdateWithSneakyTransaction:ConversationUpdate.minorUpdate];
-        return;
-    }
-
-    NSSet<NSString *> *updatedInteractionIds = [self.messageMapping updatedItemIdsFor:notifications];
-
-    [self anyDBDidUpdateWithUpdatedInteractionIds:updatedInteractionIds];
-}
+#pragma mark -
 
 - (void)anyDBDidUpdateWithUpdatedInteractionIds:(NSSet<NSString *> *)updatedInteractionIds
 {
@@ -554,11 +477,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     for (TSOutgoingMessage *unsavedOutgoingMessage in self.unsavedOutgoingMessages) {
-        // unsavedOutgoingMessages should only exist for a short period (usually 30-50ms) before
-        // they are saved and moved into the `persistedViewItems`
-        //        OWSAssertDebug(unsavedOutgoingMessage.timestamp >= ([NSDate ows_millisecondTimeStamp] - 1 *
-        //        kSecondInMs));
-
         BOOL isFound = ([diff.addedItemIds containsObject:unsavedOutgoingMessage.uniqueId] ||
             [diff.removedItemIds containsObject:unsavedOutgoingMessage.uniqueId] ||
             [diff.updatedItemIds containsObject:unsavedOutgoingMessage.uniqueId]);
@@ -629,11 +547,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self updateViewWithOldItemIdList:oldItemIdList updatedItemSet:updatedItemSet];
 }
 
-- (void)uiDatabaseDidUpdateExternally:(NSNotification *)notification
-{
-    [self anyDBDidUpdateExternally];
-}
-
 #pragma mark - AnyDB Update
 
 - (void)anyDBWillUpdate
@@ -646,10 +559,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
 
     OWSLogVerbose(@"");
-
-    // External database modifications (e.g. changes from another process such as the SAE)
-    // are "flushed" using touchDbAsync when the app re-enters the foreground.
-    // POST GRDB TODO - remove touchDbAsync
 }
 
 #pragma mark -
@@ -941,11 +850,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     // PERF TODO: don't call "reload" when appending new items, do a batch insert. Otherwise we re-render every cell.
     [self.delegate conversationViewModelDidUpdate:ConversationUpdate.reloadUpdate transaction:transaction];
-}
-
-- (void)applicationWillEnterForeground:(NSNotification *)notification
-{
-    [self touchDbAsync];
 }
 
 #pragma mark - View Items
@@ -1312,14 +1216,6 @@ NS_ASSUME_NONNULL_BEGIN
         tryToAddViewItemForInteraction(typingIndicatorInteraction);
     }
 
-    // Flag to ensure that we only increment once per launch.
-    if (hasError) {
-        OWSLogWarn(@"incrementing version of: %@", TSMessageDatabaseViewExtensionName);
-        if (StorageCoordinator.dataStoreForUI == DataStoreYdb) {
-            [OWSPrimaryStorage incrementVersionOfDatabaseExtension:TSMessageDatabaseViewExtensionName];
-        }
-    }
-
     // Update the properties of the view items.
     //
     // NOTE: This logic uses the break properties which are set in the previous pass.
@@ -1597,28 +1493,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self.delegate conversationViewModelRangeDidChangeWithTransaction:transaction];
 }
 
-- (nullable NSNumber *)findGroupIndexOfThreadInteraction:(TSInteraction *)interaction
-                                             transaction:(YapDatabaseReadTransaction *)transaction
-{
-    OWSAssertDebug(interaction);
-    OWSAssertDebug(transaction);
-
-    YapDatabaseAutoViewTransaction *_Nullable extension = [transaction extension:TSMessageDatabaseViewExtensionName];
-    if (!extension) {
-        OWSFailDebug(@"Couldn't load view.");
-        return nil;
-    }
-
-    NSUInteger groupIndex = 0;
-    BOOL foundInGroup =
-        [extension getGroup:nil index:&groupIndex forKey:interaction.uniqueId inCollection:TSInteraction.collection];
-    if (!foundInGroup) {
-        OWSLogError(@"Couldn't find quoted message in group.");
-        return nil;
-    }
-    return @(groupIndex);
-}
-
 - (void)typingIndicatorStateDidChange:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
@@ -1690,7 +1564,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)shouldShowThreadDetails
 {
-    return !self.canLoadOlderItems && RemoteConfig.messageRequests;
+    return (!self.canLoadOlderItems && (RemoteConfig.messageRequests || self.thread.isGroupV2Thread));
 }
 
 @end

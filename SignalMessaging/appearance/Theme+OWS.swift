@@ -21,6 +21,13 @@ public enum ThemeIcon: UInt {
     case settingsViewSafetyNumber
     case settingsUserInContacts
     case settingsAddToContacts
+    case settingsAddMembers
+    case settingsShowAllMembers
+    case settingsEditGroupAccess
+    case settingsViewMakeGroupAdmin
+    case settingsViewRevokeGroupAdmin
+    case settingsViewRemoveFromGroup
+    case settingsViewPendingInvites
 
     case stickerButton
     case cameraButton
@@ -38,8 +45,13 @@ public enum ThemeIcon: UInt {
     case messageActionShare
     case messageActionDelete
     case messageActionSave
+    case messageActionSelect
 
     case compose
+    case composeNewGroup
+    case composeFindByPhoneNumber
+    case composeInvite
+
     case phone
     case checkCircle
     case message
@@ -47,6 +59,8 @@ public enum ThemeIcon: UInt {
     case info
     case groupMessage
 }
+
+// MARK: - Colors
 
 @objc
 public extension Theme {
@@ -58,6 +72,15 @@ public extension Theme {
         return Theme.isDarkThemeEnabled ? .ows_signalBlueDark : .ows_signalBlue
     }
 
+    class var selectedConversationCellColor: UIColor {
+        return Theme.isDarkThemeEnabled ? UIColor.ows_whiteAlpha20 : UIColor.ows_accentBlue.withAlphaComponent(0.15)
+    }
+}
+
+// MARK: - Icons
+
+@objc
+public extension Theme {
     class func iconImage(_ icon: ThemeIcon) -> UIImage {
         let name = iconName(icon)
         guard let image = UIImage(named: name) else {
@@ -86,6 +109,16 @@ public extension Theme {
             return isDarkThemeEnabled ? "profile-circle-solid-24" : "profile-circle-outline-24"
         case .settingsShowGroup:
             return isDarkThemeEnabled ? "group-solid-24" : "group-outline-24"
+        case .settingsEditGroupAccess:
+            return isDarkThemeEnabled ? "group-solid-24" : "group-outline-24"
+        case .settingsViewMakeGroupAdmin:
+            return isDarkThemeEnabled ? "group-solid-24" : "group-outline-24"
+        case .settingsViewRevokeGroupAdmin:
+            return isDarkThemeEnabled ? "group-solid-24" : "group-outline-24"
+        case .settingsViewRemoveFromGroup:
+            return "leave-24"
+        case .settingsViewPendingInvites:
+            return "pending-invite-24"
         case .settingsTimer:
             return "timer-24"
         case .settingsTimerDisabled:
@@ -101,6 +134,10 @@ public extension Theme {
             return "ic_color_palette"
         case .settingsSearch:
             return "search-24"
+        case .settingsAddMembers:
+            return "plus-256"
+        case .settingsShowAllMembers:
+            return "chevron-down-256"
 
         // Input Toolbar
         case .stickerButton:
@@ -134,9 +171,18 @@ public extension Theme {
         case .messageActionSave:
             // There is no separate dark theme version of this icon, by design.
             return "save-24"
+        case .messageActionSelect:
+            return "select-24"
 
         case .compose:
             return isDarkThemeEnabled ? "compose-solid-24" : "compose-outline-24"
+        case .composeNewGroup:
+            return "group-outline-256"
+        case .composeFindByPhoneNumber:
+            return "phone-number-256"
+        case .composeInvite:
+            return "invite-outline-256"
+
         case .phone:
             return isDarkThemeEnabled ? "button_phone_white" : "phone-right-outline-24"
         case .checkCircle:
@@ -148,7 +194,7 @@ public extension Theme {
         case .info:
             return isDarkThemeEnabled ? "info-solid-24" : "ic_info"
         case .groupMessage:
-            return "group-solid-24"
+            return "group-outline-20"
         }
     }
 }

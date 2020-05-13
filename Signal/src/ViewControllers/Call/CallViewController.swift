@@ -131,16 +131,11 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     // MARK: - Initializers
 
-    @available(*, unavailable, message: "use init(call:) constructor instead.")
-    required init?(coder aDecoder: NSCoder) {
-        notImplemented()
-    }
-
     required init(call: SignalCall) {
         contactsManager = Environment.shared.contactsManager
         self.call = call
         self.thread = TSContactThread.getOrCreateThread(contactAddress: call.remoteAddress)
-        super.init(nibName: nil, bundle: nil)
+        super.init()
 
         allAudioSources = Set(callUIAdapter.audioService.availableInputs)
 
@@ -154,7 +149,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     }
 
     @objc func didBecomeActive() {
-        if (self.isViewLoaded) {
+        if self.isViewLoaded {
             shouldRemoteVideoControlsBeHidden = false
         }
     }
@@ -265,7 +260,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         leaveCallViewButton = UIButton()
         let backButtonImage = CurrentAppContext().isRTL ? #imageLiteral(resourceName: "NavBarBackRTL") : #imageLiteral(resourceName: "NavBarBack")
         leaveCallViewButton.setImage(backButtonImage, for: .normal)
-        leaveCallViewButton.autoSetDimensions(to: CGSize(width: 40, height: 40))
+        leaveCallViewButton.autoSetDimensions(to: CGSize(square: 40))
         leaveCallViewButton.addTarget(self, action: #selector(didTapLeaveCall(sender:)), for: .touchUpInside)
         self.view.addSubview(leaveCallViewButton)
 

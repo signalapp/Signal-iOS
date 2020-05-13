@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "BaseModel.h"
@@ -15,7 +15,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) NSInteger referenceCount;
 @property (nonatomic, readonly) NSDate *dateCreated;
 
-- (instancetype)initWithInfo:(StickerPackInfo *)info;
+- (instancetype)init NS_UNAVAILABLE;
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
+- (instancetype)initWithGrdbId:(int64_t)grdbId uniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
+
+- (instancetype)initWithInfo:(StickerPackInfo *)info NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 
@@ -28,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
                      dateCreated:(NSDate *)dateCreated
                             info:(StickerPackInfo *)info
                   referenceCount:(NSInteger)referenceCount
-NS_SWIFT_NAME(init(grdbId:uniqueId:dateCreated:info:referenceCount:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:dateCreated:info:referenceCount:));
 
 // clang-format on
 

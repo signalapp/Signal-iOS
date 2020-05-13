@@ -69,6 +69,8 @@ extern NSString *const OWSPreferencesCallLoggingDidChangeNotification;
 - (void)setHasGeneratedThumbnails:(BOOL)value;
 
 - (BOOL)shouldShowUnidentifiedDeliveryIndicators;
+- (BOOL)shouldShowUnidentifiedDeliveryIndicatorsWithTransaction:(SDSAnyReadTransaction *)transaction
+    NS_SWIFT_NAME(shouldShowUnidentifiedDeliveryIndicators(transaction:));
 - (void)setShouldShowUnidentifiedDeliveryIndicatorsAndSendSyncMessage:(BOOL)value;
 - (void)setShouldShowUnidentifiedDeliveryIndicators:(BOOL)value transaction:(SDSAnyWriteTransaction *)transaction;
 
@@ -76,7 +78,7 @@ extern NSString *const OWSPreferencesCallLoggingDidChangeNotification;
     NS_SWIFT_NAME(shouldNotifyOfNewAccounts(transaction:));
 
 - (void)setShouldNotifyOfNewAccounts:(BOOL)newValue
-                         transaction:(SDSAnyWriteTransaction *)transactio
+                         transaction:(SDSAnyWriteTransaction *)transaction
     NS_SWIFT_NAME(shouldNotifyOfNewAccounts(_:transaction:));
 
 - (BOOL)wasViewOnceTooltipShown;

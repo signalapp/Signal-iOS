@@ -275,16 +275,11 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
 
     // MARK: Initializers
 
-    @available(*, unavailable, message:"use other constructor instead.")
-    required public init?(coder aDecoder: NSCoder) {
-        notImplemented()
-    }
-
     @objc
     required public init(contactShare: ContactShareViewModel) {
         self.contactShare = contactShare
 
-        super.init(nibName: nil, bundle: nil)
+        super.init()
 
         buildFields()
     }
@@ -476,7 +471,7 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
         let editNameLabel = UILabel()
         editNameLabel.text = NSLocalizedString("CONTACT_EDIT_NAME_BUTTON", comment: "Label for the 'edit name' button in the contact share approval view.")
         editNameLabel.font = UIFont.ows_dynamicTypeBody
-        editNameLabel.textColor = UIColor.ows_accentBlue
+        editNameLabel.textColor = Theme.accentBlueColor
         stackView.addArrangedSubview(editNameLabel)
         editNameLabel.setContentHuggingHigh()
         editNameLabel.setCompressionResistanceHigh()

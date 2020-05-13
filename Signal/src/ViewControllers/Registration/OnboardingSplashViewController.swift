@@ -29,7 +29,7 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
             OnboardingController.defaultOnboardingMode == .registering ? "link-24" : "link-broken-24",
             tintColor: .ows_gray25
         )
-        modeSwitchButton.autoSetDimensions(to: CGSize(width: 40, height: 40))
+        modeSwitchButton.autoSetDimensions(to: CGSize(square: 40))
         modeSwitchButton.autoPinEdge(toSuperviewMargin: .trailing)
         modeSwitchButton.autoPinEdge(toSuperviewMargin: .top)
         modeSwitchButton.addTarget(self, action: #selector(didTapModeSwitch), for: .touchUpInside)
@@ -55,7 +55,7 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
         let explanationLabel = UILabel()
         explanationLabel.text = NSLocalizedString("ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY",
                                                   comment: "Link to the 'terms and privacy policy' in the 'onboarding splash' view.")
-        explanationLabel.textColor = .ows_accentBlue
+        explanationLabel.textColor = Theme.accentBlueColor
         explanationLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center

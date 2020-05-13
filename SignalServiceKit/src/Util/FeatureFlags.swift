@@ -18,7 +18,7 @@ extension FeatureBuild {
     }
 }
 
-let build: FeatureBuild = .production
+let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .beta
 
 // MARK: -
 
@@ -177,13 +177,16 @@ public class FeatureFlags: NSObject {
     @objc
     public static let multiRing: Bool = false
 
-    fileprivate static let groupsV2 = build.includes(.dev) && !isUsingProductionService
+    @objc
+    public static let groupsV2 = build.includes(.qa) && !isUsingProductionService
 
     // Don't consult this feature flag directly; instead
     // consult RemoteConfig.groupsV2CreateGroups.
     @objc
     public static let groupsV2CreateGroups = groupsV2
 
+    // Don't consult this feature flag directly; instead
+    // consult RemoteConfig.groupsV2IncomingMessages.
     @objc
     public static let groupsV2IncomingMessages = groupsV2
 
@@ -198,6 +201,8 @@ public class FeatureFlags: NSObject {
     @objc
     public static let groupsV2processProtosInGroupUpdates = false
 
+    // Don't consult this feature flag directly; instead
+    // consult RemoteConfig.groupsV2SetCapability.
     @objc
     public static let groupsV2SetCapability = groupsV2
 
@@ -208,12 +213,12 @@ public class FeatureFlags: NSObject {
     public static let isUsingProductionService = true
 
     @objc
-    public static let versionedProfiledFetches = false || groupsV2
+    public static let versionedProfiledFetches = groupsV2
 
     // When we activate this feature flag, we also need to ensure that all
     // users update their profile once in a durable way.
     @objc
-    public static let versionedProfiledUpdate = false || groupsV2
+    public static let versionedProfiledUpdate = groupsV2
 
     @objc
     public static let useOrphanDataCleaner = true
@@ -225,7 +230,7 @@ public class FeatureFlags: NSObject {
     public static let notificationServiceExtension = build.includes(.dev)
 
     @objc
-    public static let pinsForNewUsers = build.includes(.dev)
+    public static let pinsForNewUsers = true
 }
 
 /// Flags that we'll leave in the code base indefinitely that are helpful for
@@ -260,7 +265,7 @@ public class DebugFlags: NSObject {
     public static let groupsV2dontSendUpdates = false
 
     @objc
-    public static let groupsV2showV2Indicator = FeatureFlags.groupsV2 && build.includes(.internalPreview)
+    public static let groupsV2showV2Indicator = FeatureFlags.groupsV2 && build.includes(.qa)
 
     // If set, v2 groups will be created and updated with invalid avatars
     // so that we can test clients' robustness to this case.
@@ -282,6 +287,9 @@ public class DebugFlags: NSObject {
     public static let groupsV2forceInvites = false
 
     @objc
+    public static var groupsV2memberStatusIndicators = FeatureFlags.groupsV2 && build.includes(.qa)
+
+    @objc
     public static let isMessageProcessingVerbose = false
 
     // Currently this flag is only honored by TSNetworkManager,
@@ -297,4 +305,7 @@ public class DebugFlags: NSObject {
     // bug we want to be able to test them using the debug UI.
     @objc
     public static let permissiveGroupUpdateInfoMessages = build.includes(.dev)
+
+    @objc
+    public static let showProfileKeyIndicator = build.includes(.qa)
 }

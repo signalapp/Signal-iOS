@@ -84,7 +84,7 @@ NS_ASSUME_NONNULL_BEGIN
         foregroundColor = UIColor.whiteColor;
         backgroundColor = UIColor.ows_accentBlueColor;
     } else {
-        foregroundColor = UIColor.ows_accentBlueColor;
+        foregroundColor = Theme.accentBlueColor;
         backgroundColor = Theme.scrollButtonBackgroundColor;
     }
 

@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import PromiseKit
 
 @objc
 class ComposeViewController: OWSViewController {
@@ -13,17 +14,28 @@ class ComposeViewController: OWSViewController {
 
         title = NSLocalizedString("MESSAGE_COMPOSEVIEW_TITLE", comment: "Title for the compose view.")
 
+        view.backgroundColor = Theme.backgroundColor
+
+        let showNewGroupAsCell = RemoteConfig.groupsV2CreateGroups
+
         recipientPicker.allowsSelectingUnregisteredPhoneNumbers = false
         recipientPicker.shouldShowInvites = true
+        recipientPicker.shouldShowNewGroup = showNewGroupAsCell
         recipientPicker.delegate = self
         addChild(recipientPicker)
         view.addSubview(recipientPicker.view)
+        recipientPicker.view.autoPin(toTopLayoutGuideOf: self, withInset: 0)
+        recipientPicker.view.autoPinEdge(toSuperviewEdge: .leading)
+        recipientPicker.view.autoPinEdge(toSuperviewEdge: .trailing)
+        recipientPicker.view.autoPinEdge(toSuperviewEdge: .bottom)
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(dismissPressed))
 
-        navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "btnGroup--white"), style: .plain, target: self, action: #selector(newGroupPressed))
-        navigationItem.rightBarButtonItem?.accessibilityLabel = NSLocalizedString("NEW_GROUP_BUTTON_LABEL",
-                                                                                  comment: "Accessibility label for the new group button")
+        if !showNewGroupAsCell {
+            navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "btnGroup--white"), style: .plain, target: self, action: #selector(newGroupPressed))
+            navigationItem.rightBarButtonItem?.accessibilityLabel = NSLocalizedString("NEW_GROUP_BUTTON_LABEL",
+                                                                                      comment: "Accessibility label for the new group button")
+        }
     }
 
     @objc func dismissPressed() {
@@ -31,10 +43,7 @@ class ComposeViewController: OWSViewController {
     }
 
     @objc func newGroupPressed() {
-        let newGroupView: UIViewController = (FeatureFlags.groupsV2CreateGroups
-            ? NewGroupViewController2()
-            : NewGroupViewController())
-        navigationController?.pushViewController(newGroupView, animated: true)
+        showNewGroupUI()
     }
 
     func newConversation(address: SignalServiceAddress) {
@@ -46,6 +55,13 @@ class ComposeViewController: OWSViewController {
     func newConversation(thread: TSThread) {
         SignalApp.shared().presentConversation(for: thread, action: .compose, animated: false)
         presentingViewController?.dismiss(animated: true)
+    }
+
+    func showNewGroupUI() {
+        let newGroupView: UIViewController = (RemoteConfig.groupsV2CreateGroups
+            ? NewGroupMembersViewController()
+            : NewGroupViewController())
+        navigationController?.pushViewController(newGroupView, animated: true)
     }
 }
 
@@ -69,6 +85,22 @@ extension ComposeViewController: RecipientPickerDelegate {
         }
     }
 
+    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
+                         willRenderRecipient recipient: PickedRecipient) {
+        // Do nothing.
+    }
+
+    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
+                         prepareToSelectRecipient recipient: PickedRecipient) -> AnyPromise {
+        owsFailDebug("This method should not called.")
+        return AnyPromise(Promise.value(()))
+    }
+
+    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
+                         showInvalidRecipientAlert recipient: PickedRecipient) {
+        owsFailDebug("Unexpected error.")
+    }
+
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
         didDeselectRecipient recipient: PickedRecipient
@@ -88,10 +120,11 @@ extension ComposeViewController: RecipientPickerDelegate {
         }
     }
 
-    func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
-                         accessoryViewForRecipient recipient: PickedRecipient) -> UIView? {
-        return nil
+    func recipientPickerTableViewWillBeginDragging(_ recipientPickerViewController: RecipientPickerViewController) {}
+
+    func recipientPickerNewGroupButtonWasPressed() {
+        showNewGroupUI()
     }
 
-    func recipientPickerTableViewWillBeginDragging(_ recipientPickerViewController: RecipientPickerViewController) {}
+    func recipientPickerCustomHeaderViews() -> [UIView] { return [] }
 }

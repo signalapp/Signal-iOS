@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "BaseModel.h"
@@ -17,6 +17,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) uint64_t receivedAtTimestamp;
 
 - (instancetype)init NS_UNAVAILABLE;
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
+- (instancetype)initWithGrdbId:(int64_t)grdbId uniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
 
 - (instancetype)initWithUniqueMessageId:(NSString *)uniqueMessageId emoji:(NSString *)emoji reactor:(SignalServiceAddress *)reactor sentAtTimestamp:(uint64_t)sentAtTimestamp receivedAtTimestamp:(uint64_t)receivedAtTimestamp NS_DESIGNATED_INITIALIZER;
 
@@ -34,7 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
              receivedAtTimestamp:(uint64_t)receivedAtTimestamp
                  sentAtTimestamp:(uint64_t)sentAtTimestamp
                  uniqueMessageId:(NSString *)uniqueMessageId
-NS_SWIFT_NAME(init(grdbId:uniqueId:emoji:reactorE164:reactorUUID:receivedAtTimestamp:sentAtTimestamp:uniqueMessageId:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:emoji:reactorE164:reactorUUID:receivedAtTimestamp:sentAtTimestamp:uniqueMessageId:));
 
 // clang-format on
 

@@ -41,7 +41,7 @@ public class SecondaryLinkingQRCodeViewController: OnboardingBaseViewController 
         let explanationLabel = UILabel()
         explanationLabel.text = NSLocalizedString("SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT",
                                                   comment: "Link text for page with troubleshooting info shown on the QR scanning screen")
-        explanationLabel.textColor = .ows_accentBlue
+        explanationLabel.textColor = Theme.accentBlueColor
         explanationLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center
@@ -84,7 +84,7 @@ public class SecondaryLinkingQRCodeViewController: OnboardingBaseViewController 
             return
         }
 
-        UIApplication.shared.open(URL(string: "https://support.signal.org/hc/en-us/articles/360007320451")!)
+        UIApplication.shared.open(URL(string: "https://support.signal.org/hc/articles/360007320451")!)
     }
 
     // MARK: -

@@ -51,6 +51,9 @@ NS_ASSUME_NONNULL_BEGIN
     self.tableViewController.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableViewController.tableView.estimatedRowHeight = 60;
 
+    self.view.backgroundColor = Theme.tableViewBackgroundColor;
+    self.tableViewController.useThemeBackgroundColors = YES;
+
     [self updateTableContents];
 }
 
@@ -61,7 +64,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSTableContents *contents = [OWSTableContents new];
 
     __weak BlockListViewController *weakSelf = self;
-    ContactsViewHelper *helper = self.contactsViewHelper;
 
     // "Add" section
 

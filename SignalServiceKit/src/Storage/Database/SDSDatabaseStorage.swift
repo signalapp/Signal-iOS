@@ -155,13 +155,8 @@ public class SDSDatabaseStorage: SDSTransactable {
             owsFailDebug("Unexpected data store.")
         }
 
-        // crash if we can't read the DB.
-        do {
-            return try Bench(title: "Creating GRDB storage") {
-                return try GRDBDatabaseStorageAdapter(baseDir: type(of: self).baseDir())
-            }
-        } catch {
-            owsFail("\(error.grdbErrorForLogging)")
+        return Bench(title: "Creating GRDB storage") {
+            return GRDBDatabaseStorageAdapter(baseDir: type(of: self).baseDir())
         }
     }
 
@@ -354,7 +349,9 @@ public class SDSDatabaseStorage: SDSTransactable {
                 owsFail("error: \(error.grdbErrorForLogging)")
             }
         case .ydb:
-            yapStorage.uiRead { transaction in
+            owsFailDebug("YDB UI read.")
+            // We no longer use a UI connection with YDB.
+            yapStorage.read { transaction in
                 block(transaction.asAnyRead)
             }
         }
@@ -416,7 +413,9 @@ public class SDSDatabaseStorage: SDSTransactable {
                 }
             }
         case .ydb:
-            try yapStorage.uiReadThrows { transaction in
+            owsFailDebug("YDB UI read.")
+            // We no longer use a UI connection with YDB.
+            try yapStorage.readThrows { transaction in
                 try block(transaction.asAnyRead)
             }
         }

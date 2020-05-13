@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -13,7 +13,7 @@ public protocol SheetViewControllerDelegate: class {
 public class SheetViewController: UIViewController {
 
     @objc
-    weak var delegate: SheetViewControllerDelegate?
+    public weak var delegate: SheetViewControllerDelegate?
 
     @objc
     public let contentView: UIView = UIView()
@@ -215,7 +215,9 @@ private class SheetView: UIView {
 
     private func updateMask() {
         let cornerRadius: CGFloat = 16
-        let path: UIBezierPath = UIBezierPath(roundedRect: bounds, byRoundingCorners: [.topLeft, .topRight], cornerRadii: CGSize(width: cornerRadius, height: cornerRadius))
+        let path: UIBezierPath = UIBezierPath(roundedRect: bounds,
+                                              byRoundingCorners: [.topLeft, .topRight],
+                                              cornerRadii: CGSize(square: cornerRadius))
         let mask = CAShapeLayer()
         mask.path = path.cgPath
         self.layer.mask = mask

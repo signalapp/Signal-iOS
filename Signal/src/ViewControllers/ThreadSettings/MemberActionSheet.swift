@@ -21,11 +21,16 @@ class MemberActionSheet: NSObject {
 
     private weak var contactsViewHelper: ContactsViewHelper?
 
+    public var canMakeGroupAdmin = false
+
+    public var groupViewHelper: GroupViewHelper?
+
     @objc
-    init(address: SignalServiceAddress, contactsViewHelper: ContactsViewHelper) {
+    init(address: SignalServiceAddress, contactsViewHelper: ContactsViewHelper, groupViewHelper: GroupViewHelper?) {
         assert(address.isValid)
         self.address = address
         self.contactsViewHelper = contactsViewHelper
+        self.groupViewHelper = groupViewHelper
     }
 
     // When presenting the contact view, we must retain ourselves
@@ -126,6 +131,43 @@ class MemberActionSheet: NSObject {
         }
         safetyNumberAction.leadingIcon = .settingsViewSafetyNumber
         actionSheet.addAction(safetyNumberAction)
+
+        if let groupViewHelper = self.groupViewHelper {
+            let address = self.address
+            if groupViewHelper.memberActionSheetCanMakeGroupAdmin(address: address) {
+                let action = ActionSheetAction(
+                    title: NSLocalizedString("CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON",
+                                             comment: "Label for 'make group admin' button in conversation settings view."),
+                    accessibilityIdentifier: "MemberActionSheet.makeGroupAdmin"
+                ) { _ in
+                    groupViewHelper.memberActionSheetMakeGroupAdminWasSelected(address: address)
+                }
+                action.leadingIcon = .settingsViewMakeGroupAdmin
+                actionSheet.addAction(action)
+            }
+            if groupViewHelper.memberActionSheetCanRevokeGroupAdmin(address: address) {
+                let action = ActionSheetAction(
+                    title: NSLocalizedString("CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON",
+                                             comment: "Label for 'revoke group admin' button in conversation settings view."),
+                    accessibilityIdentifier: "MemberActionSheet.revokeGroupAdmin"
+                ) { _ in
+                    groupViewHelper.memberActionSheetRevokeGroupAdminWasSelected(address: address)
+                }
+                action.leadingIcon = .settingsViewRevokeGroupAdmin
+                actionSheet.addAction(action)
+            }
+            if groupViewHelper.memberActionSheetCanRemoveFromGroup(address: address) {
+                let action = ActionSheetAction(
+                    title: NSLocalizedString("CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON",
+                                             comment: "Label for 'remove from group' button in conversation settings view."),
+                    accessibilityIdentifier: "MemberActionSheet.removeFromGroup"
+                ) { _ in
+                    groupViewHelper.memberActionSheetRemoveFromGroupWasSelected(address: address)
+                }
+                action.leadingIcon = .settingsViewRemoveFromGroup
+                actionSheet.addAction(action)
+            }
+        }
 
         fromViewController.presentActionSheet(actionSheet)
     }

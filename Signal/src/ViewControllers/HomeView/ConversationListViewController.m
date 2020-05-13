@@ -7,7 +7,6 @@
 #import "AppSettingsViewController.h"
 #import "ConversationListCell.h"
 #import "OWSNavigationController.h"
-#import "OWSPrimaryStorage.h"
 #import "RegistrationUtils.h"
 #import "Signal-Swift.h"
 #import "SignalApp.h"
@@ -29,8 +28,6 @@
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
 #import <StoreKit/StoreKit.h>
-#import <YapDatabase/YapDatabaseViewChange.h>
-#import <YapDatabase/YapDatabaseViewConnection.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -120,20 +117,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     return self;
 }
 
-- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder
-{
-    OWSFailDebug(@"Do not load this from the storyboard.");
-
-    self = [super initWithCoder:aDecoder];
-    if (!self) {
-        return self;
-    }
-
-    [self commonInit];
-
-    return self;
-}
-
 - (void)commonInit
 {
     _blocklistCache = [OWSBlockListCache new];
@@ -152,12 +135,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 - (SDSDatabaseStorage *)databaseStorage
 {
     return SDSDatabaseStorage.shared;
-}
-
-// POST GRDB TODO - Remove
-- (nullable OWSPrimaryStorage *)primaryStorage
-{
-    return SSKEnvironment.shared.primaryStorage;
 }
 
 - (nullable MessageFetcherJob *)messageFetcherJob
@@ -185,22 +162,9 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                                              selector:@selector(applicationWillResignActive:)
                                                  name:OWSApplicationWillResignActiveNotification
                                                object:nil];
-    if (StorageCoordinator.dataStoreForUI == DataStoreGrdb) {
-        [self.databaseStorage.grdbStorage.conversationListDatabaseObserver appendSnapshotDelegate:self];
-    } else {
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(uiDatabaseDidUpdateExternally:)
-                                                     name:OWSUIDatabaseConnectionDidUpdateExternallyNotification
-                                                   object:self.primaryStorage.dbNotificationObject];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(uiDatabaseWillUpdate:)
-                                                     name:OWSUIDatabaseConnectionWillUpdateNotification
-                                                   object:self.primaryStorage.dbNotificationObject];
-        [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(uiDatabaseDidUpdate:)
-                                                     name:OWSUIDatabaseConnectionDidUpdateNotification
-                                                   object:self.primaryStorage.dbNotificationObject];
-    }
+    OWSAssert(StorageCoordinator.dataStoreForUI == DataStoreGrdb);
+    [self.databaseStorage.grdbStorage.conversationListDatabaseObserver appendSnapshotDelegate:self];
+
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(registrationStateDidChange:)
                                                  name:NSNotificationNameRegistrationStateDidChange
@@ -924,7 +888,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self.conversationSplitViewController.selectedConversationViewController dismissMessageActionsAnimated:YES];
 
     UIViewController *newGroupViewController
-        = (SSKFeatureFlags.groupsV2CreateGroups ? [NewGroupViewController2 new] : [NewGroupViewController new]);
+        = (RemoteConfig.groupsV2CreateGroups ? [NewGroupMembersViewController new] : [NewGroupViewController new]);
 
     [self.contactsManager requestSystemContactsOnceWithCompletion:^(NSError *_Nullable error) {
         if (error) {
@@ -1030,7 +994,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self.conversationSplitViewController closeSelectedConversationAnimated:YES];
 
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [selectedThread archiveThreadWithTransaction:transaction];
+        [selectedThread archiveThreadAndUpdateStorageService:YES transaction:transaction];
     }];
     [self updateViewState];
 }
@@ -1054,7 +1018,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self.conversationSplitViewController closeSelectedConversationAnimated:YES];
 
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        [selectedThread unarchiveThreadWithTransaction:transaction];
+        [selectedThread unarchiveThreadAndUpdateStorageService:YES transaction:transaction];
     }];
     [self updateViewState];
 }
@@ -1421,7 +1385,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         case ConversationListViewControllerSectionConversations: {
             UITableViewRowAction *deleteAction =
                 [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDefault
-                                                   title:NSLocalizedString(@"TXT_DELETE_TITLE", nil)
+                                                   title:CommonStrings.deleteButton
                                                  handler:^(UITableViewRowAction *action, NSIndexPath *swipedIndexPath) {
                                                      [self tableViewCellTappedDelete:swipedIndexPath];
                                                  }];
@@ -1585,7 +1549,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                           @"Title for the 'conversation delete confirmation' alert.")
               message:NSLocalizedString(@"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE",
                           @"Message for the 'conversation delete confirmation' alert.")];
-    [alert addAction:[[ActionSheetAction alloc] initWithTitle:NSLocalizedString(@"TXT_DELETE_TITLE", nil)
+    [alert addAction:[[ActionSheetAction alloc] initWithTitle:CommonStrings.deleteButton
                                                         style:ActionSheetActionStyleDestructive
                                                       handler:^(ActionSheetAction *action) {
                                                           [weakSelf deleteThread:thread];
@@ -1602,7 +1566,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         [self.conversationSplitViewController closeSelectedConversationAnimated:YES];
     }
 
-    // GroupsV2 TODO: Should we leave v2 groups here?
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         if ([thread isKindOfClass:[TSGroupThread class]]) {
             TSGroupThread *groupThread = (TSGroupThread *)thread;
@@ -1638,10 +1601,10 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         switch (self.conversationListMode) {
             case ConversationListMode_Inbox:
-                [thread archiveThreadWithTransaction:transaction];
+                [thread archiveThreadAndUpdateStorageService:YES transaction:transaction];
                 break;
             case ConversationListMode_Archive:
-                [thread unarchiveThreadWithTransaction:transaction];
+                [thread unarchiveThreadAndUpdateStorageService:YES transaction:transaction];
                 break;
         }
     }];
@@ -1754,7 +1717,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 - (void)conversationListDatabaseSnapshotDidUpdateWithUpdatedThreadIds:(NSSet<NSString *> *)updatedThreadIds
 {
     OWSAssertIsOnMainThread();
-    OWSAssertDebug(StorageCoordinator.dataStoreForUI == DataStoreGrdb);
+    OWSAssert(StorageCoordinator.dataStoreForUI == DataStoreGrdb);
 
     if (!self.shouldObserveDBModifications) {
         return;
@@ -1777,47 +1740,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         // do it when we resume.
         [self resetMappings];
     }
-}
-
-#pragma mark YapDB Update
-
-- (void)uiDatabaseWillUpdate:(NSNotification *)notification
-{
-    OWSAssertIsOnMainThread();
-    [self anyUIDBWillUpdate];
-}
-
-- (void)uiDatabaseDidUpdate:(NSNotification *)notification
-{
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug(StorageCoordinator.dataStoreForUI == DataStoreYdb);
-
-    if (!self.shouldObserveDBModifications) {
-        return;
-    }
-
-    NSArray *notifications = notification.userInfo[OWSUIDatabaseConnectionNotificationsKey];
-    YapDatabaseConnection *uiDatabaseConnection = self.primaryStorage.uiDatabaseConnection;
-    if (![[uiDatabaseConnection ext:TSThreadDatabaseViewExtensionName] hasChangesForGroup:self.currentGrouping
-                                                                          inNotifications:notifications]) {
-
-        [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-            [self.threadMapping updateSwallowingErrorsWithIsViewingArchive:self.isViewingArchive
-                                                               transaction:transaction];
-        }];
-        [self updateViewState];
-
-        return;
-    }
-
-    NSSet<NSString *> *updatedThreadIds = [self.threadMapping updatedYapItemIdsForNotifications:notifications];
-    [self anyUIDBDidUpdateWithUpdatedThreadIds:updatedThreadIds];
-}
-
-- (void)uiDatabaseDidUpdateExternally:(NSNotification *)notification
-{
-    OWSAssertIsOnMainThread();
-    [self anyUIDBDidUpdateExternally];
 }
 
 #pragma mark AnyDB Update

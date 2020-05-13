@@ -80,7 +80,7 @@ public class LocationPicker: UIViewController {
         currentLocationButton.contentEdgeInsets = UIEdgeInsets(top: 2, left: 0, bottom: 0, right: 2)
 
         view.addSubview(currentLocationButton)
-        currentLocationButton.autoSetDimensions(to: CGSize(width: 48, height: 48))
+        currentLocationButton.autoSetDimensions(to: CGSize(square: 48))
         currentLocationButton.autoPinEdge(toSuperviewSafeArea: .trailing, withInset: 15)
         currentLocationButton.autoPinEdge(toSuperviewSafeArea: .bottom, withInset: 15)
 
@@ -111,7 +111,7 @@ public class LocationPicker: UIViewController {
         // to use the background image.
         let backgroundImage = UIImage(
             color: Theme.searchFieldBackgroundColor,
-            size: CGSize(width: 36, height: 36)
+            size: CGSize(square: 36)
         ).withCornerRadius(10)
         searchBar.setSearchFieldBackgroundImage(backgroundImage, for: .normal)
         searchBar.searchTextPositionAdjustment = UIOffset(horizontal: 8.0, vertical: 0.0)
@@ -220,8 +220,7 @@ public class LocationPicker: UIViewController {
             if let error = error, !geocodeCanceled {
                 // show error and remove annotation
                 let alert = ActionSheetController(title: nil, message: error.localizedDescription)
-                alert.addAction(ActionSheetAction(title: NSLocalizedString("BUTTON_OKAY",
-                                                                       comment: "Label for the 'okay' button."),
+                alert.addAction(ActionSheetAction(title: CommonStrings.okayButton,
                                               style: .cancel, handler: { _ in }))
                 self.present(alert, animated: true) {
                     self.mapView.removeAnnotation(annotation)
@@ -343,7 +342,7 @@ extension LocationPicker: MKMapViewDelegate {
         if annotation is MKUserLocation { return nil }
 
         let pin = MKPinAnnotationView(annotation: annotation, reuseIdentifier: "annotation")
-        pin.pinTintColor = .ows_accentBlue
+        pin.pinTintColor = Theme.accentBlueColor
         pin.animatesDrop = annotation is MKPointAnnotation
         pin.rightCalloutAccessoryView = sendLocationButton()
         pin.canShowCallout = true
@@ -352,7 +351,7 @@ extension LocationPicker: MKMapViewDelegate {
 
     func sendLocationButton() -> UIButton {
         let button = UIButton(frame: CGRect(x: 0, y: 0, width: 24, height: 24))
-        button.setTemplateImageName("send-solid-24", tintColor: .ows_accentBlue)
+        button.setTemplateImageName("send-solid-24", tintColor: Theme.accentBlueColor)
         return button
     }
 
@@ -446,7 +445,7 @@ public class Location: NSObject {
             // The output size will be 256 * the device's scale. We don't adjust the
             // scale directly on the options to ensure a consistent size because it
             // produces poor results on some devices.
-            options.size = CGSize(width: 256, height: 256)
+            options.size = CGSize(square: 256)
 
             MKMapSnapshotter(options: options).start(with: .global()) { snapshot, error in
                 guard error == nil else {
@@ -465,7 +464,7 @@ public class Location: NSObject {
                 snapshot.image.draw(at: .zero)
 
                 let pinView = MKPinAnnotationView(annotation: nil, reuseIdentifier: nil)
-                pinView.pinTintColor = .ows_accentBlue
+                pinView.pinTintColor = Theme.accentBlueColor
                 let pinImage = pinView.image
 
                 var point = snapshot.point(for: self.coordinate)

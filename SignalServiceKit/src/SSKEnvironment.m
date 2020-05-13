@@ -49,6 +49,9 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) id<GroupV2Updates> groupV2Updates;
 @property (nonatomic) MessageProcessing *messageProcessing;
 @property (nonatomic) MessageFetcherJob *messageFetcherJob;
+@property (nonatomic) BulkProfileFetch *bulkProfileFetch;
+@property (nonatomic) BulkUUIDLookup *bulkUUIDLookup;
+@property (nonatomic) id<VersionedProfiles> versionedProfiles;
 
 @end
 
@@ -103,6 +106,9 @@ static SSKEnvironment *sharedSSKEnvironment;
                          groupV2Updates:(id<GroupV2Updates>)groupV2Updates
                       messageProcessing:(MessageProcessing *)messageProcessing
                       messageFetcherJob:(MessageFetcherJob *)messageFetcherJob
+                       bulkProfileFetch:(BulkProfileFetch *)bulkProfileFetch
+                         bulkUUIDLookup:(BulkUUIDLookup *)bulkUUIDLookup
+                      versionedProfiles:(id<VersionedProfiles>)versionedProfiles
 {
     self = [super init];
     if (!self) {
@@ -150,7 +156,10 @@ static SSKEnvironment *sharedSSKEnvironment;
     OWSAssertDebug(groupsV2);
     OWSAssertDebug(groupV2Updates);
     OWSAssertDebug(messageProcessing);
-    OWSCAssertDebug(messageFetcherJob);
+    OWSAssertDebug(messageFetcherJob);
+    OWSAssertDebug(bulkProfileFetch);
+    OWSAssertDebug(versionedProfiles);
+    OWSAssertDebug(bulkUUIDLookup);
 
     _contactsManager = contactsManager;
     _linkPreviewManager = linkPreviewManager;
@@ -195,6 +204,9 @@ static SSKEnvironment *sharedSSKEnvironment;
     _groupV2Updates = groupV2Updates;
     _messageProcessing = messageProcessing;
     _messageFetcherJob = messageFetcherJob;
+    _bulkProfileFetch = bulkProfileFetch;
+    _versionedProfiles = versionedProfiles;
+    _bulkUUIDLookup = bulkUUIDLookup;
 
     return self;
 }

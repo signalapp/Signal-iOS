@@ -108,7 +108,7 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
 
 // --- CODE GENERATION MARKER
 
-- (instancetype)initWithCoder:(NSCoder *)coder
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
     self = [super initWithCoder:coder];
     if (!self) {

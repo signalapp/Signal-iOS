@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -30,6 +30,6 @@ import Foundation
     }
 
     func openSystemSettings() {
-        openURL(URL(string: UIApplication.openSettingsURLString)!)
+        open(URL(string: UIApplication.openSettingsURLString)!, options: [:])
     }
 }

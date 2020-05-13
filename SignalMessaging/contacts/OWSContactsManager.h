@@ -15,7 +15,6 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 @class SDSKeyValueStore;
 @class SignalAccount;
 @class SignalServiceAddress;
-@class TSThread;
 @class UIFont;
 
 /**
@@ -99,8 +98,6 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 - (nullable UIImage *)imageForAddressWithSneakyTransaction:(nullable SignalServiceAddress *)address;
 
 - (void)clearColorNameCache;
-- (NSString *)conversationColorNameForAddress:(SignalServiceAddress *)address
-                                  transaction:(SDSAnyReadTransaction *)transaction;
 
 // Legacy display name helpers, once the `messageRequests` feature is enabled these can go away.
 - (NSString *)legacyDisplayNameForAddress:(SignalServiceAddress *)address;

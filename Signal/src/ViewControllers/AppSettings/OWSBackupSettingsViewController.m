@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSBackupSettingsViewController.h"
@@ -42,6 +42,8 @@ NS_ASSUME_NONNULL_BEGIN
     [super viewDidLoad];
 
     self.title = NSLocalizedString(@"SETTINGS_BACKUP", @"Label for the backup view in app settings.");
+
+    self.useThemeBackgroundColors = YES;
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(backupStateDidChange:)

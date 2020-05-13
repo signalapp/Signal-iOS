@@ -116,7 +116,7 @@ class AttachmentKeyboard: CustomKeyboard {
         galleryButton.setTemplateImage(#imageLiteral(resourceName: "photo-album-outline-28"), tintColor: .white)
         galleryButton.setBackgroundImage(UIImage(color: UIColor.black.withAlphaComponent(0.7)), for: .normal)
 
-        galleryButton.autoSetDimensions(to: CGSize(width: 48, height: 48))
+        galleryButton.autoSetDimensions(to: CGSize(square: 48))
         galleryButton.clipsToBounds = true
         galleryButton.layer.cornerRadius = 24
 

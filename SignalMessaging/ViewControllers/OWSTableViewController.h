@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalMessaging/OWSViewController.h>
@@ -29,6 +29,9 @@ extern const CGFloat kOWSTable_DefaultCellHeight;
 @property (nonatomic, nullable) NSString *headerTitle;
 @property (nonatomic, nullable) NSString *footerTitle;
 
+@property (nonatomic, nullable) NSAttributedString *headerAttributedTitle;
+@property (nonatomic, nullable) NSAttributedString *footerAttributedTitle;
+
 @property (nonatomic, nullable) UIView *customHeaderView;
 @property (nonatomic, nullable) UIView *customFooterView;
 @property (nonatomic, nullable) NSNumber *customHeaderHeight;
@@ -37,6 +40,8 @@ extern const CGFloat kOWSTable_DefaultCellHeight;
 + (OWSTableSection *)sectionWithTitle:(nullable NSString *)title items:(NSArray<OWSTableItem *> *)items;
 
 - (void)addItem:(OWSTableItem *)item;
+
+- (void)addItems:(NSArray<OWSTableItem *> *)items;
 
 - (NSUInteger)itemCount;
 
@@ -167,6 +172,10 @@ typedef BOOL (^OWSTableSwitchBlock)(void);
 @property (nonatomic, readonly) UITableView *tableView;
 
 @property (nonatomic) UITableViewStyle tableViewStyle;
+
+@property (nonatomic) BOOL useThemeBackgroundColors;
+
+@property (nonatomic, nullable) UIColor *customSectionHeaderFooterBackgroundColor;
 
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
 

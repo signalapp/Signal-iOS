@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -130,7 +130,7 @@ public class ImageEditorCanvasView: UIView {
 
         let superviewSize = superview.frame.size
         let maxSuperviewDimension = max(superviewSize.width, superviewSize.height)
-        let outputSizePoints = CGSize(width: maxSuperviewDimension, height: maxSuperviewDimension)
+        let outputSizePoints = CGSize(square: maxSuperviewDimension)
         // TODO: Add a "shouldFill" parameter.
         //        let outputSizePoints = CGSizeScale(outputSizePixels, 1.0 / UIScreen.main.scale)
         NSLayoutConstraint.autoSetPriority(UILayoutPriority.defaultLow) {

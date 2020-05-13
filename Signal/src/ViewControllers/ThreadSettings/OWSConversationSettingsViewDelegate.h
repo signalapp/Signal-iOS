@@ -11,9 +11,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)conversationColorWasUpdated;
 
-- (void)conversationSettingsDidUpdateGroupThread:(TSGroupThread *)thread;
+- (void)conversationSettingsDidUpdate;
 
-- (void)conversationSettingsDidRequestConversationSearch:(OWSConversationSettingsViewController *)conversationSettingsViewController;
+- (void)conversationSettingsDidRequestConversationSearch;
 
 - (void)popAllConversationSettingsViewsWithCompletion:(void (^_Nullable)(void))completionBlock;
 

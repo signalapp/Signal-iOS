@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSInvalidIdentityKeyReceivingErrorMessage.h"
@@ -32,6 +32,11 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
     SSKProtoEnvelope *_Nullable _envelope;
 }
 
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    return [super initWithCoder:coder];
+}
+
 #ifdef TESTABLE_BUILD
 // We no longer create these messages, but they might exist on legacy clients so it's useful to be able to
 // create them with the debug UI
@@ -48,6 +53,7 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
                                             incomingEnvelope:envelope];
     return errorMessage;
 }
+#endif
 
 - (nullable instancetype)initForUnknownIdentityKeyWithTimestamp:(uint64_t)timestamp
                                                        inThread:(TSThread *)thread
@@ -69,7 +75,6 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
 
     return self;
 }
-#endif
 
 // --- CODE GENERATION MARKER
 

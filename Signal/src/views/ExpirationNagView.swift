@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -9,7 +9,7 @@ class ExpirationNagView: ReminderView {
 
     @objc convenience init() {
         self.init(mode: .nag, text: "") {
-            UIApplication.shared.openURL(ExpirationNagView.updateLink)
+            UIApplication.shared.open(ExpirationNagView.updateLink, options: [:])
         }
     }
 

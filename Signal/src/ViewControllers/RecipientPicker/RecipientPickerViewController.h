@@ -28,7 +28,9 @@ NS_ASSUME_NONNULL_BEGIN
 /// Defaults to `YES`
 @property (nonatomic) BOOL shouldShowAlphabetSlider;
 /// Defaults to `NO`
-@property (nonatomic) BOOL shouldShowSearchBar;
+@property (nonatomic) BOOL shouldShowNewGroup;
+/// Defaults to `NO`
+@property (nonatomic) BOOL showUseAsyncSelection;
 
 @property (nonatomic, nullable) NSString *findByPhoneNumberButtonTitle;
 
@@ -36,7 +38,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, nullable) NSArray<PickedRecipient *> *pickedRecipients;
 
-@property (nonatomic, nullable) NSString *customSearchQuery;
+- (void)reloadContent;
+
+- (void)clearSearchText;
 
 @end
 

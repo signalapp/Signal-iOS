@@ -144,13 +144,31 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
         }.catch(on: .global()) { error in
             Logger.verbose("Group refresh failed: \(error).")
         }.retainUntilComplete()
+        let operationQueue = self.operationQueue(forGroupUpdateMode: groupUpdateMode)
         operationQueue.addOperation(operation)
         return operation.promise
     }
 
-    let operationQueue: OperationQueue = {
+    public func operationQueue(forGroupUpdateMode groupUpdateMode: GroupUpdateMode) -> OperationQueue {
+        switch groupUpdateMode {
+        case .upToCurrentRevisionImmediately,
+             .upToSpecificRevisionImmediately:
+            return immediateOperationQueue
+        case .upToCurrentRevisionAfterMessageProcessWithThrottling:
+            return afterMessageProcessingOperationQueue
+        }
+    }
+
+    let immediateOperationQueue: OperationQueue = {
         let operationQueue = OperationQueue()
-        operationQueue.name = "GroupV2UpdatesImpl"
+        operationQueue.name = "GroupV2UpdatesImpl.immediateOperationQueue"
+        operationQueue.maxConcurrentOperationCount = 1
+        return operationQueue
+    }()
+
+    let afterMessageProcessingOperationQueue: OperationQueue = {
+        let operationQueue = OperationQueue()
+        operationQueue.name = "GroupV2UpdatesImpl.afterMessageProcessingOperationQueue"
         operationQueue.maxConcurrentOperationCount = 1
         return operationQueue
     }()
@@ -362,10 +380,10 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
             throw OWSAssertionError("Invalid group model.")
         }
         guard updatedGroupModel.revision > changedGroupModel.oldGroupModel.revision else {
-            throw OWSAssertionError("Invalid groupV2Revision: \(changedGroupModel.newGroupModel.revision).")
+            throw OWSAssertionError("Invalid groupV2Revision: \(updatedGroupModel.revision) <= \(changedGroupModel.oldGroupModel.revision).")
         }
         guard updatedGroupModel.revision >= changedGroupModel.newGroupModel.revision else {
-            throw OWSAssertionError("Invalid groupV2Revision: \(changedGroupModel.newGroupModel.revision).")
+            throw OWSAssertionError("Invalid groupV2Revision: \(updatedGroupModel.revision) < \(changedGroupModel.newGroupModel.revision).")
         }
         return updatedGroupThread
     }
@@ -388,7 +406,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                                                           groupSecretParamsData: groupSecretParamsData,
                                                           groupChanges: groupChanges,
                                                           groupUpdateMode: groupUpdateMode)
-        }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration,
+        }.timeout(seconds: GroupManager.groupUpdateTimeoutDuration,
                   description: "Update via changes") {
             GroupsV2Error.timeout
         }
@@ -451,6 +469,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
             }
 
             var shouldUpdateProfileKeyInGroup = false
+            var profileKeysByUuid = [UUID: Data]()
             for groupChange in groupChanges {
                 let changeRevision = groupChange.snapshot.revision
                 if let upToRevision = upToRevision {
@@ -460,7 +479,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                         // Enqueue an update to latest.
                         self.tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithThrottling(groupThread)
 
-                        return groupThread
+                        break
                     }
                 }
                 guard let oldGroupModel = groupThread.groupModel as? TSGroupModelV2 else {
@@ -470,11 +489,11 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                 let newGroupModel = try builder.build(transaction: transaction)
 
                 if changeRevision == oldGroupModel.revision {
-                    if !oldGroupModel.isEqual(to: newGroupModel) {
+                    if !oldGroupModel.isEqual(to: newGroupModel, ignoreRevision: false) {
                         // Sometimes we re-apply the snapshot corresponding to the
                         // current revision when refreshing the group from the service.
                         // This should match the state in the database.  If it doesn't,
-                        // this reflects a bug, perhaps\ a deviation in how the service
+                        // this reflects a bug, perhaps a deviation in how the service
                         // and client apply the "group changes" to the local model.
                         Logger.verbose("oldGroupModel: \(oldGroupModel.debugDescription)")
                         Logger.verbose("newGroupModel: \(newGroupModel.debugDescription)")
@@ -502,11 +521,16 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                     profileKey != localProfileKey.keyData {
                     shouldUpdateProfileKeyInGroup = true
                 }
+
+                // Merge known profile keys, always taking latest.
+                profileKeysByUuid = profileKeysByUuid.merging(groupChange.snapshot.profileKeys) { (_, latest) in latest }
             }
 
             if shouldUpdateProfileKeyInGroup {
                 self.groupsV2.updateLocalProfileKeyInGroup(groupId: groupId, transaction: transaction)
             }
+
+            GroupManager.storeProfileKeysFromGroupProtos(profileKeysByUuid)
 
             return groupThread
         }
@@ -574,7 +598,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
         }.then(on: .global()) { groupV2Snapshot in
             return self.tryToApplyCurrentGroupV2SnapshotFromService(groupV2Snapshot: groupV2Snapshot,
                                                                     groupUpdateMode: groupUpdateMode)
-        }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration,
+        }.timeout(seconds: GroupManager.groupUpdateTimeoutDuration,
                   description: "Update via snapshot") {
             GroupsV2Error.timeout
         }

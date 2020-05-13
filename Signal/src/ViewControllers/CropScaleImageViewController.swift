@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -42,7 +42,7 @@ import SignalMessaging
     //
     // TODO: We could make this a parameter.
     var dstSizePixels: CGSize {
-        return CGSize(width: 210, height: 210)
+        return CGSize(square: 210)
     }
     var dstAspectRatio: CGFloat {
         return dstSizePixels.width / dstSizePixels.height
@@ -73,16 +73,11 @@ import SignalMessaging
 
     // MARK: Initializers
 
-    @available(*, unavailable, message:"use other constructor instead.")
-    required init?(coder aDecoder: NSCoder) {
-        notImplemented()
-    }
-
     @objc required init(srcImage: UIImage, successCompletion : @escaping (UIImage) -> Void) {
         // normalized() can be slightly expensive but in practice this is fine.
         self.srcImage = srcImage.normalized()
         self.successCompletion = successCompletion
-        super.init(nibName: nil, bundle: nil)
+        super.init()
 
         configureCropAndScale()
     }
@@ -99,7 +94,7 @@ import SignalMessaging
 
         srcImageSizePoints = srcImage.size
         guard
-            (srcImageSizePoints.width > 0 && srcImageSizePoints.height > 0) else {
+            srcImageSizePoints.width > 0 && srcImageSizePoints.height > 0 else {
                 return
         }
 
@@ -275,7 +270,7 @@ import SignalMessaging
         // The size of the image view (should be full screen).
         let imageViewSizePoints = imageView.frame.size
         guard
-            (imageViewSizePoints.width > 0 && imageViewSizePoints.height > 0) else {
+            imageViewSizePoints.width > 0 && imageViewSizePoints.height > 0 else {
                 return
         }
         // The frame of the crop circle within the image view.

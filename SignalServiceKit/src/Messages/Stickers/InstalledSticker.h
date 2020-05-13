@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "BaseModel.h"
@@ -19,7 +19,12 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) NSData *packKey;
 @property (nonatomic, readonly) UInt32 stickerId;
 
-- (instancetype)initWithInfo:(StickerInfo *)info emojiString:(nullable NSString *)emojiString;
+- (instancetype)init NS_UNAVAILABLE;
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithUniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
+- (instancetype)initWithGrdbId:(int64_t)grdbId uniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
+
+- (instancetype)initWithInfo:(StickerInfo *)info emojiString:(nullable NSString *)emojiString NS_DESIGNATED_INITIALIZER;
 
 // --- CODE GENERATION MARKER
 
@@ -31,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
                       uniqueId:(NSString *)uniqueId
                      emojiString:(nullable NSString *)emojiString
                             info:(StickerInfo *)info
-NS_SWIFT_NAME(init(grdbId:uniqueId:emojiString:info:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:emojiString:info:));
 
 // clang-format on
 

@@ -33,7 +33,7 @@ NSUInteger TSInfoMessageSchemaVersion = 2;
 
 @implementation TSInfoMessage
 
-- (instancetype)initWithCoder:(NSCoder *)coder
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
     self = [super initWithCoder:coder];
     if (!self) {

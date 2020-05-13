@@ -5,7 +5,7 @@
 import Foundation
 
 @objc
-public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding {
+public class SignalServiceAddress: NSObject, NSCopying, NSSecureCoding, Codable {
     public static let supportsSecureCoding: Bool = true
 
     private static var cache: SignalServiceAddressCache {

@@ -60,8 +60,7 @@ typedef void (^UploadProgressBlock)(NSProgress *progress);
 // This property is set on success for non-nil uploads.
 @property (nonatomic, nullable) NSString *urlPath;
 
-- (AnyPromise *)uploadAvatarToService:(NSData *_Nullable)avatarData
-                        progressBlock:(UploadProgressBlock)progressBlock;
+- (AnyPromise *)uploadAvatarToService:(NSData *_Nullable)avatarData;
 
 @end
 
@@ -78,6 +77,7 @@ typedef void (^UploadProgressBlock)(NSProgress *progress);
 @property (nonatomic, nullable) NSData *encryptionKey;
 @property (nonatomic, nullable) NSData *digest;
 @property (nonatomic) UInt64 serverId;
+@property (nonatomic) UInt64 uploadTimestamp;
 
 - (AnyPromise *)uploadAttachmentToService:(TSAttachmentStream *)attachmentStream
                             progressBlock:(UploadProgressBlock)progressBlock;

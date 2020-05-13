@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "BaseModel.h"
@@ -38,6 +38,9 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) NSNumber *uncompressedDataLength;
 
 - (instancetype)init NS_UNAVAILABLE;
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithUniqueId:(NSString *)uniqueId NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithGrdbId:(int64_t)grdbId uniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
 
 // --- CODE GENERATION MARKER
 
@@ -53,7 +56,7 @@ NS_ASSUME_NONNULL_BEGIN
                       recordName:(NSString *)recordName
                 relativeFilePath:(nullable NSString *)relativeFilePath
           uncompressedDataLength:(nullable NSNumber *)uncompressedDataLength
-NS_SWIFT_NAME(init(grdbId:uniqueId:attachmentId:downloadFilePath:encryptionKey:recordName:relativeFilePath:uncompressedDataLength:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:attachmentId:downloadFilePath:encryptionKey:recordName:relativeFilePath:uncompressedDataLength:));
 
 // clang-format on
 

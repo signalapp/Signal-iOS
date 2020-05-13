@@ -5,9 +5,9 @@
 	<key>BuildDetails</key>
 	<dict>
 		<key>OSXVersion</key>
-		<string>10.15.3</string>
+		<string>10.15.4</string>
 		<key>WebRTCCommit</key>
-		<string>e8eb473c416b5b5095159475dbf1b7f495083575 Production build of RingRTC v1.2.0</string>
+		<string>37d5903c6009f0731f356963c07dd0e7f0f3b302 Production build of v1.3.2.</string>
 	</dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
@@ -28,7 +28,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>3.7.1</string>
+	<string>3.8.1</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleURLTypes</key>
@@ -45,7 +45,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>3.7.1.0</string>
+	<string>3.8.1.5</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LOGS_EMAIL</key>

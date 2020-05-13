@@ -246,7 +246,7 @@ public class IncomingGroupSyncOperation: OWSOperation, DurableOperation {
             newThreads.append((threadId: groupThread.uniqueId, sortOrder: inboxSortOrder))
 
             if let isArchived = groupDetails.isArchived, isArchived == true {
-                groupThread.archiveThread(with: transaction)
+                groupThread.archiveThread(updateStorageService: false, transaction: transaction)
             }
         }
 

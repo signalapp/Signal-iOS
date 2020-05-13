@@ -77,6 +77,11 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     return SSKEnvironment.shared.storageServiceManager;
 }
 
+- (id<VersionedProfiles>)versionedProfiles
+{
+    return SSKEnvironment.shared.versionedProfiles;
+}
+
 #pragma mark -
 
 @synthesize localUserProfile = _localUserProfile;
@@ -375,10 +380,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
         }
 
         OWSAvatarUploadV2 *upload = [OWSAvatarUploadV2 new];
-        [[upload uploadAvatarToService:encryptedAvatarData
-                         progressBlock:^(NSProgress *progress){
-                             // Do nothing.
-                         }]
+        [[upload uploadAvatarToService:encryptedAvatarData]
                 .thenInBackground(^{
                     OWSLogVerbose(@"Upload complete.");
 
@@ -445,6 +447,20 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     return [ProfileFetcherJob fetchAndUpdateProfilePromiseObjcWithAddress:localAddress
                                                               mainAppOnly:NO
                                                          ignoreThrottling:YES];
+}
+
+- (AnyPromise *)updateProfileForAddressPromise:(SignalServiceAddress *)address
+{
+    return [ProfileFetcherJob fetchAndUpdateProfilePromiseObjcWithAddress:address mainAppOnly:NO ignoreThrottling:YES];
+}
+
+- (AnyPromise *)updateProfileForAddressPromise:(SignalServiceAddress *)address
+                                   mainAppOnly:(BOOL)mainAppOnly
+                              ignoreThrottling:(BOOL)ignoreThrottling
+{
+    return [ProfileFetcherJob fetchAndUpdateProfilePromiseObjcWithAddress:address
+                                                              mainAppOnly:mainAppOnly
+                                                         ignoreThrottling:ignoreThrottling];
 }
 
 - (void)fetchAndUpdateProfileForUsername:(NSString *)username
@@ -557,6 +573,25 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
                 // key, adding all `group.recipientIds` to `whitelistedRecipientIds` here, would
                 // include Alice, and we'd rotate our profile key every time this method is called.
             }
+
+            // Treat all the members of every group that is whitelisted as if they were directly
+            // whitelisted, since they likely have access to our profile key. We don't explicitly
+            // whitelist group members because we don't want to automatically bypass message requests
+            // for 1:1 threads with every member of a group you've shared your profile in.
+            for (NSData *groupId in whitelistedGroupIds) {
+                TSGroupThread *_Nullable groupThread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
+                if (!groupThread) {
+                    continue;
+                }
+                for (SignalServiceAddress *address in groupThread.groupModel.groupMembers) {
+                    if (address.phoneNumber) {
+                        [whitelistedPhoneNumbers addObject:address.phoneNumber];
+                    }
+                    if (address.uuidString) {
+                        [whitelistedUUIDS addObject:address.uuidString];
+                    }
+                }
+            }
         }];
 
         SignalServiceAddress *_Nullable localAddress = [self.tsAccountManager localAddress];
@@ -635,7 +670,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 
                 // Whenever a user's profile key changes, we need to fetch a new
                 // profile key credential for them.
-                [VersionedProfiles clearProfileKeyCredentialForAddress:localAddress transaction:transaction];
+                [self.versionedProfiles clearProfileKeyCredentialForAddress:localAddress transaction:transaction];
 
                 // We schedule the updates here but process them below using processProfileKeyUpdates.
                 // It's more efficient to process them after the intermediary steps are done.
@@ -1233,13 +1268,6 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
         TSGroupThread *groupThread = (TSGroupThread *)thread;
         NSData *groupId = groupThread.groupModel.groupId;
         [self addGroupIdToProfileWhitelist:groupId];
-
-        // When we add a group to the profile whitelist, we might as well
-        // also add all current and pending members to the profile whitelist
-        // individually as well just in case delivery of the profile key
-        // fails.
-        NSSet<SignalServiceAddress *> *allPendingAndNonPendingMembers = groupThread.groupModel.groupMembership.allUsers;
-        [self addUsersToProfileWhitelist:allPendingAndNonPendingMembers.allObjects];
     } else {
         TSContactThread *contactThread = (TSContactThread *)thread;
         [self addUserToProfileWhitelist:contactThread.contactAddress];
@@ -1254,14 +1282,6 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
         TSGroupThread *groupThread = (TSGroupThread *)thread;
         NSData *groupId = groupThread.groupModel.groupId;
         [self addGroupIdToProfileWhitelist:groupId wasLocallyInitiated:YES transaction:transaction];
-
-        // When we add a group to the profile whitelist, we might as well
-        // also add all current members to the profile whitelist
-        // individually as well just in case delivery of the profile key
-        // fails.
-        [self addUsersToProfileWhitelist:groupThread.recipientAddresses
-                     wasLocallyInitiated:YES
-                             transaction:transaction];
     } else {
         TSContactThread *contactThread = (TSContactThread *)thread;
         [self addUserToProfileWhitelist:contactThread.contactAddress wasLocallyInitiated:YES transaction:transaction];
@@ -1376,18 +1396,24 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 
     // Whenever a user's profile key changes, we need to fetch a new
     // profile key credential for them.
-    [VersionedProfiles clearProfileKeyCredentialForAddress:address transaction:transaction];
+    [self.versionedProfiles clearProfileKeyCredentialForAddress:address transaction:transaction];
 
-    [userProfile
-        clearWithProfileKey:profileKey
-        wasLocallyInitiated:wasLocallyInitiated
-                transaction:transaction
-                 completion:^{
-                     dispatch_async(dispatch_get_main_queue(), ^{
-                         [self.udManager setUnidentifiedAccessMode:UnidentifiedAccessModeUnknown address:address];
-                         [self updateProfileForAddress:address];
-                     });
-                 }];
+    [userProfile clearWithProfileKey:profileKey
+                 wasLocallyInitiated:wasLocallyInitiated
+                         transaction:transaction
+                          completion:^{
+                              dispatch_async(dispatch_get_main_queue(), ^{
+                                  // If this is the profile for the local user, we always want to defer to local state
+                                  // so skip the update profile for address call.
+                                  if (address.isLocalAddress) {
+                                      return;
+                                  }
+
+                                  [self.udManager setUnidentifiedAccessMode:UnidentifiedAccessModeUnknown
+                                                                    address:address];
+                                  [self updateProfileForAddress:address];
+                              });
+                          }];
 }
 
 - (void)fillInMissingProfileKeys:(NSDictionary<SignalServiceAddress *, NSData *> *)profileKeys
@@ -1431,6 +1457,37 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     if (address.isLocalAddress) {
         [self.localUserProfile updateWithGivenName:givenName
                                         familyName:familyName
+                               wasLocallyInitiated:wasLocallyInitiated
+                                       transaction:transaction
+                                        completion:nil];
+    }
+}
+
+- (void)setProfileGivenName:(nullable NSString *)givenName
+                 familyName:(nullable NSString *)familyName
+              avatarUrlPath:(nullable NSString *)avatarUrlPath
+                 forAddress:(SignalServiceAddress *)address
+        wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(address.isValid);
+
+    OWSUserProfile *userProfile = [OWSUserProfile getOrBuildUserProfileForAddress:address transaction:transaction];
+    [userProfile updateWithGivenName:givenName
+                          familyName:familyName
+                       avatarUrlPath:avatarUrlPath
+                 wasLocallyInitiated:wasLocallyInitiated
+                         transaction:transaction
+                          completion:nil];
+
+    if (userProfile.avatarUrlPath.length > 0 && userProfile.avatarFileName.length < 1) {
+        [self downloadAvatarForUserProfile:userProfile];
+    }
+
+    if (address.isLocalAddress) {
+        [self.localUserProfile updateWithGivenName:givenName
+                                        familyName:familyName
+                                     avatarUrlPath:avatarUrlPath
                                wasLocallyInitiated:wasLocallyInitiated
                                        transaction:transaction
                                         completion:nil];
@@ -1534,6 +1591,16 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     }
 
     return nil;
+}
+
+- (nullable NSString *)profileAvatarURLPathForAddress:(SignalServiceAddress *)address
+                                          transaction:(SDSAnyReadTransaction *)transaction
+{
+    OWSAssertDebug(address.isValid);
+
+    OWSUserProfile *_Nullable userProfile = [self getUserProfileForAddress:address transaction:transaction];
+
+    return userProfile.avatarUrlPath;
 }
 
 - (nullable NSString *)usernameForAddress:(SignalServiceAddress *)address

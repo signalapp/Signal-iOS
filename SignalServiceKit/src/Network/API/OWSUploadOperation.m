@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSUploadOperation.h"
@@ -130,6 +130,7 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
                     [attachmentStream updateAsUploadedWithEncryptionKey:upload.encryptionKey
                                                                  digest:upload.digest
                                                                serverId:upload.serverId
+                                                        uploadTimestamp:upload.uploadTimestamp
                                                             transaction:transaction];
                 }];
                 self.completedUpload = attachmentStream;

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -30,7 +30,7 @@ class SendMediaBottomButton: UIView {
         vibrancyView.autoPinEdgesToSuperviewEdges()
 
         addSubview(button)
-        button.autoSetDimensions(to: CGSize(width: diameter, height: diameter))
+        button.autoSetDimensions(to: CGSize(square: diameter))
         button.autoPinEdgesToSuperviewEdges()
         updateViewState()
     }

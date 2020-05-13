@@ -76,6 +76,12 @@ public extension TSAccountManager {
         return isRegisteredPrimaryDevice ? serviceIdentifier : "\(serviceIdentifier).\(storedDeviceId())"
     }
 
+    @objc
+    func localAccountId(transaction: SDSAnyReadTransaction) -> AccountId? {
+        guard let localAddress = localAddress else { return nil }
+        return OWSAccountIdFinder().accountId(forAddress: localAddress, transaction: transaction)
+    }
+
     @objc(performUpdateAccountAttributes)
     func objc_performUpdateAccountAttributes() -> AnyPromise {
         return AnyPromise(performUpdateAccountAttributes())

@@ -11,7 +11,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSMessageCell : ConversationViewCell
+@interface OWSMessageCell : ConversationViewCell <SelectableConversationCell>
 
 @property (nonatomic, readonly) OWSMessageBubbleView *messageBubbleView;
 @property (nonatomic, readonly) OWSMessageStickerView *messageStickerView;

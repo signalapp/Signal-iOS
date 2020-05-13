@@ -1376,7 +1376,7 @@ NS_ASSUME_NONNULL_BEGIN
                         actionLabel:@"Fake Outgoing White Png"
                           imageSize:CGSizeMake(200.f, 200.f)
                     backgroundColor:[UIColor whiteColor]
-                          textColor:UIColor.ows_accentBlueColor
+                          textColor:Theme.accentBlueColor
                          imageLabel:@"W"
                        messageState:TSOutgoingMessageStateFailed
                          hasCaption:YES],
@@ -1384,7 +1384,7 @@ NS_ASSUME_NONNULL_BEGIN
                         actionLabel:@"Fake Outgoing White Png"
                           imageSize:CGSizeMake(200.f, 200.f)
                     backgroundColor:[UIColor whiteColor]
-                          textColor:UIColor.ows_accentBlueColor
+                          textColor:Theme.accentBlueColor
                          imageLabel:@"W"
                        messageState:TSOutgoingMessageStateSending
                          hasCaption:YES],
@@ -1392,7 +1392,7 @@ NS_ASSUME_NONNULL_BEGIN
                         actionLabel:@"Fake Outgoing White Png"
                           imageSize:CGSizeMake(200.f, 200.f)
                     backgroundColor:[UIColor whiteColor]
-                          textColor:UIColor.ows_accentBlueColor
+                          textColor:Theme.accentBlueColor
                          imageLabel:@"W"
                        messageState:TSOutgoingMessageStateSent
                          hasCaption:YES],
@@ -1569,7 +1569,7 @@ NS_ASSUME_NONNULL_BEGIN
                         actionLabel:@"Fake Incoming White Png"
                           imageSize:CGSizeMake(200.f, 200.f)
                     backgroundColor:[UIColor whiteColor]
-                          textColor:UIColor.ows_accentBlueColor
+                          textColor:Theme.accentBlueColor
                          imageLabel:@"W"
              isAttachmentDownloaded:YES
                          hasCaption:YES],
@@ -1577,7 +1577,7 @@ NS_ASSUME_NONNULL_BEGIN
                         actionLabel:@"Fake Incoming White Png"
                           imageSize:CGSizeMake(200.f, 200.f)
                     backgroundColor:[UIColor whiteColor]
-                          textColor:UIColor.ows_accentBlueColor
+                          textColor:Theme.accentBlueColor
                          imageLabel:@"W"
              isAttachmentDownloaded:NO
                          hasCaption:YES],
@@ -3862,7 +3862,8 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                                    albumMessageId:nil
                                                    attachmentType:TSAttachmentTypeDefault
                                                         mediaSize:CGSizeZero
-                                                         blurHash:nil];
+                                                         blurHash:nil
+                                                  uploadTimestamp:0];
                 pointer.state = TSAttachmentPointerStateFailed;
                 [pointer anyInsertWithTransaction:transaction];
                 // MJK - should be safe to remove this senderTimestamp
@@ -4369,7 +4370,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
             SignalServiceAddress *member = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+1323555555"];
             [self createRandomGroupWithName:string
                                      member:member
-                                    success:^(TSGroupThread *thread) {
+                                    success:^(TSGroupThread *ignore) {
                                         // Do nothing.
                                     }];
         }
@@ -4421,7 +4422,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
             SignalServiceAddress *member = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+1323555555"];
             [self createRandomGroupWithName:string
                                      member:member
-                                    success:^(TSGroupThread *thread) {
+                                    success:^(TSGroupThread *ignore) {
                                         // Do nothing.
                                     }];
         }
@@ -4450,7 +4451,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
             SignalServiceAddress *member = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+1323555555"];
             [self createRandomGroupWithName:string
                                      member:member
-                                    success:^(TSGroupThread *thread) {
+                                    success:^(TSGroupThread *ignore) {
                                         // Do nothing.
                                     }];
         }
@@ -4745,7 +4746,8 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                            albumMessageId:nil
                                            attachmentType:TSAttachmentTypeDefault
                                                 mediaSize:CGSizeZero
-                                                 blurHash:nil];
+                                                 blurHash:nil
+                                          uploadTimestamp:0];
         attachmentPointer.state = TSAttachmentPointerStateFailed;
         [attachmentPointer anyInsertWithTransaction:transaction];
         return attachmentPointer;

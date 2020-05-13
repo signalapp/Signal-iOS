@@ -17,11 +17,7 @@ public class SplashViewController: OWSViewController, ExperienceUpgradeView {
 
     init(experienceUpgrade: ExperienceUpgrade) {
         self.experienceUpgrade = experienceUpgrade
-        super.init(nibName: nil, bundle: nil)
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        notImplemented()
+        super.init()
     }
 
     // MARK: - View lifecycle
@@ -34,9 +30,6 @@ public class SplashViewController: OWSViewController, ExperienceUpgradeView {
     public override func viewDidLoad() {
         super.viewDidLoad()
 
-        // TODO Xcode 11: Delete this once we're compiling only in Xcode 11
-        #if swift(>=5.1)
-
         // Don't allow interactive dismissal.
         if #available(iOS 13, *) {
             presentationController?.delegate = self
@@ -44,12 +37,6 @@ public class SplashViewController: OWSViewController, ExperienceUpgradeView {
         } else {
             addDismissGesture()
         }
-
-        #else
-
-        addDismissGesture()
-
-        #endif
     }
 
     // MARK: -

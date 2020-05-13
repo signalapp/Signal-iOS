@@ -10,7 +10,8 @@ public class UpsertGroupResult: NSObject {
     @objc
     public enum Action: UInt {
         case inserted
-        case updated
+        case updatedWithUserFacingChanges
+        case updatedWithoutUserFacingChanges
         case unchanged
     }
 
@@ -72,6 +73,18 @@ public class GroupManager: NSObject {
         return SSKEnvironment.shared.messageProcessing
     }
 
+    private class var bulkProfileFetch: BulkProfileFetch {
+        return SSKEnvironment.shared.bulkProfileFetch
+    }
+
+    private class var bulkUUIDLookup: BulkUUIDLookup {
+        return SSKEnvironment.shared.bulkUUIDLookup
+    }
+
+    private class var contactsUpdater: ContactsUpdater {
+        return SSKEnvironment.shared.contactsUpdater
+    }
+
     // MARK: -
 
     // Never instantiate this class.
@@ -80,7 +93,11 @@ public class GroupManager: NSObject {
     // MARK: -
 
     // GroupsV2 TODO: Finalize this value with the designers.
-    public static let KGroupUpdateTimeoutDuration: TimeInterval = 30
+    public static let groupUpdateTimeoutDuration: TimeInterval = 30
+
+    public static let maxGroupMemberCount: UInt = 100
+
+    public static let maxGroupNameLength: Int = 32
 
     private static func groupIdLength(for groupsVersion: GroupsVersion) -> Int32 {
         switch groupsVersion {
@@ -160,7 +177,6 @@ public class GroupManager: NSObject {
         }
         // NOTE: We do consider users to support groups v2 even if:
         //
-        // * We don't know their UUID.
         // * We don't know their profile key.
         // * They've never done a versioned profile update.
         // * We don't have a profile key credential for them.
@@ -214,12 +230,17 @@ public class GroupManager: NSObject {
         // By default, DMs are disable for new groups.
         let disappearingMessageToken = DisappearingMessageToken.disabledToken
 
-        return firstly {
+        return firstly { () -> Promise<Void> in
             return self.ensureLocalProfileHasCommitmentIfNecessary()
+        }.then(on: .global()) { () -> Promise<Void> in
+            var memberSet = Set(membersParam)
+            memberSet.insert(localAddress)
+            return self.tryToEnableGroupsV2(for: Array(memberSet), isBlocking: true, ignoreErrors: true)
         }.map(on: .global()) { () throws -> GroupMembership in
             // Build member list.
             //
-            // GroupsV2 TODO: Handle roles, etc.
+            // The group creator is an administrator;
+            // the other members are normal users.
             var builder = GroupMembership.Builder()
             builder.addNonPendingMembers(Set(membersParam), role: .normal)
             builder.remove(localAddress)
@@ -233,14 +254,11 @@ public class GroupManager: NSObject {
                 return Promise.value(groupMembership)
             }
             return firstly { () -> Promise<Void> in
-                self.groupsV2.tryToEnsureUuidsForGroupMembers(for: Array(groupMembership.allUsers))
-            }.then(on: .global()) { () -> Promise<Void> in
                 self.groupsV2.tryToEnsureProfileKeyCredentials(for: Array(groupMembership.allUsers))
             }.map(on: .global()) { (_) -> GroupMembership in
                 return groupMembership
             }
         }.map(on: .global()) { (proposedGroupMembership: GroupMembership) throws -> TSGroupModel in
-            // GroupsV2 TODO: Let users specify access levels in the "new group" view.
             let groupAccess = GroupAccess.defaultForV2
             let groupModel = try self.databaseStorage.read { (transaction) throws -> TSGroupModel in
                 // Before we create a v2 group, we need to separate out the
@@ -333,7 +351,7 @@ public class GroupManager: NSObject {
             } else {
                 return Promise.value(thread)
             }
-        }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration,
+        }.timeout(seconds: GroupManager.groupUpdateTimeoutDuration,
                   description: "Create new group") {
             GroupsV2Error.timeout
         }
@@ -392,8 +410,8 @@ public class GroupManager: NSObject {
                 // canUseV2(...).  We will prevent this when
                 // updating existing groups in the UI.
                 //
-                // GroupsV2 TODO: This should probably throw after we rework
-                // the create and update group views.
+                // GroupsV2 TODO: This should throw after we require
+                // all new groups to be v2 groups.
                 owsFailDebug("Invalid address: \(address)")
                 continue
             }
@@ -711,7 +729,10 @@ public class GroupManager: NSObject {
         let groupId = proposedGroupModel.groupId
 
         return firstly { () -> Promise<Void> in
-            self.groupsV2.tryToEnsureUuidsForGroupMembers(for: Array(proposedGroupModel.groupMembership.allUsers))
+            guard RemoteConfig.groupsV2CreateGroups else {
+                return Promise.value(())
+            }
+            return self.tryToEnableGroupsV2(for: Array(proposedGroupModel.groupMembership.allUsers), isBlocking: true, ignoreErrors: true)
         }.then(on: .global()) { () -> Promise<Void> in
             return self.ensureLocalProfileHasCommitmentIfNecessary()
         }.then(on: DispatchQueue.global()) { () -> Promise<String?> in
@@ -766,11 +787,10 @@ public class GroupManager: NSObject {
             }
         }.then(on: .global()) { (_: UpdateInfo, changeSet: GroupsV2ChangeSet) throws -> Promise<TSGroupThread> in
             return self.groupsV2.updateExistingGroupOnService(changeSet: changeSet)
-        }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration,
+        }.timeout(seconds: GroupManager.groupUpdateTimeoutDuration,
                   description: "Update existing group") {
             GroupsV2Error.timeout
         }
-        // GroupsV2 TODO: Handle redundant change error.
     }
 
     // If dmConfiguration is nil, don't change the disappearing messages configuration.
@@ -802,7 +822,7 @@ public class GroupManager: NSObject {
         groupModelBuilder.groupMembership = groupMembership
         let newGroupModel = try groupModelBuilder.build(transaction: transaction)
 
-        if oldGroupModel.isEqual(to: newGroupModel) {
+        if oldGroupModel.isEqual(to: newGroupModel, ignoreRevision: false) {
             // Skip redundant update.
             throw GroupsV2Error.redundantChange
         }
@@ -872,7 +892,7 @@ public class GroupManager: NSObject {
         builder.groupV2Revision = newRevision
         let newGroupModel = try builder.build(transaction: transaction)
 
-        if oldGroupModel.isEqual(to: newGroupModel) {
+        if oldGroupModel.isEqual(to: newGroupModel, ignoreRevision: false) {
             // Skip redundant update.
             throw GroupsV2Error.redundantChange
         }
@@ -927,14 +947,9 @@ public class GroupManager: NSObject {
             return simpleUpdate()
         }
 
-        return firstly {
-            return self.ensureLocalProfileHasCommitmentIfNecessary()
-        }.then(on: .global()) { () throws -> Promise<TSGroupThread> in
-            return groupsV2.updateDisappearingMessageStateOnService(groupModel: groupModel,
-                                                                    disappearingMessageToken: disappearingMessageToken)
-        }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration,
-                  description: "Update DM state") {
-            GroupsV2Error.timeout
+        return updateGroupV2(groupModel: groupModel,
+                             description: "Update disappearing messages") { groupChangeSet in
+            groupChangeSet.setNewDisappearingMessageToken(disappearingMessageToken)
         }.asVoid()
     }
 
@@ -1014,24 +1029,22 @@ public class GroupManager: NSObject {
     // MARK: - Accept Invites
 
     public static func localAcceptInviteToGroupV2(groupModel: TSGroupModelV2) -> Promise<TSGroupThread> {
-
-        return firstly {
-            return self.ensureLocalProfileHasCommitmentIfNecessary()
-        }.then(on: .global()) { () throws -> Promise<TSGroupThread> in
-            return self.groupsV2.acceptInviteToGroupV2(groupModel: groupModel)
-        }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration,
-                  description: "Accept invite") {
-            GroupsV2Error.timeout
+        return updateGroupV2(groupModel: groupModel,
+                             description: "Accept invite") { groupChangeSet in
+            groupChangeSet.setShouldAcceptInvite()
         }
     }
 
     // MARK: - Leave Group / Decline Invite
 
-    public static func localLeaveGroupOrDeclineInvite(groupThread: TSGroupThread) -> Promise<TSGroupThread> {
+    public static func localLeaveGroupOrDeclineInvite(groupThread: TSGroupThread,
+                                                      replacementAdminUuid: UUID? = nil) -> Promise<TSGroupThread> {
         guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
+            assert(replacementAdminUuid == nil)
             return localLeaveGroupV1(groupId: groupThread.groupModel.groupId)
         }
-        return localLeaveGroupV2OrDeclineInvite(groupModel: groupModel)
+        return localLeaveGroupV2OrDeclineInvite(groupModel: groupModel,
+                                                replacementAdminUuid: replacementAdminUuid)
     }
 
     private static func localLeaveGroupV1(groupId: Data) -> Promise<TSGroupThread> {
@@ -1071,14 +1084,16 @@ public class GroupManager: NSObject {
         }
     }
 
-    private static func localLeaveGroupV2OrDeclineInvite(groupModel: TSGroupModelV2) -> Promise<TSGroupThread> {
-        return firstly {
-            return self.ensureLocalProfileHasCommitmentIfNecessary()
-        }.then(on: .global()) { () throws -> Promise<TSGroupThread> in
-            return self.groupsV2.leaveGroupV2OrDeclineInvite(groupModel: groupModel)
-        }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration,
-                  description: "Leave group") {
-            GroupsV2Error.timeout
+    private static func localLeaveGroupV2OrDeclineInvite(groupModel: TSGroupModelV2,
+                                                         replacementAdminUuid: UUID? = nil) -> Promise<TSGroupThread> {
+        return updateGroupV2(groupModel: groupModel,
+                             description: "Leave group or decline invite") { groupChangeSet in
+                                groupChangeSet.setShouldLeaveGroupDeclineInvite()
+
+                                // Sometimes when we leave a group we take care to assign a new admin.
+                                if let replacementAdminUuid = replacementAdminUuid {
+                                    groupChangeSet.changeRoleForMember(replacementAdminUuid, role: .administrator)
+                                }
         }
     }
 
@@ -1103,10 +1118,58 @@ public class GroupManager: NSObject {
         }
     }
 
+    // MARK: - Remove From Group / Revoke Invite
+
+    public static func removeFromGroupOrRevokeInviteV2(groupModel: TSGroupModelV2,
+                                                       uuids: [UUID]) -> Promise<TSGroupThread> {
+        return updateGroupV2(groupModel: groupModel,
+                             description: "Remove from group or revoke invite") { groupChangeSet in
+                                for uuid in uuids {
+                                    groupChangeSet.removeMember(uuid)
+                                }
+        }
+    }
+
+    // MARK: - Change Member Role
+
+    public static func changeMemberRoleV2(groupModel: TSGroupModelV2,
+                                          uuid: UUID,
+                                          role: TSGroupMemberRole) -> Promise<TSGroupThread> {
+        return updateGroupV2(groupModel: groupModel,
+                             description: "Change member role") { groupChangeSet in
+                                groupChangeSet.changeRoleForMember(uuid, role: role)
+        }
+    }
+
+    // MARK: - Change Group Membership Access
+
+    public static func changeGroupAttributesAccessV2(groupModel: TSGroupModelV2,
+                                                     access: GroupV2Access) -> Promise<TSGroupThread> {
+        return updateGroupV2(groupModel: groupModel,
+                             description: "Change group membership access") { groupChangeSet in
+                                groupChangeSet.setAccessForAttributes(access)
+        }
+    }
+
+    // MARK: - Generic Group Change
+
+    public static func updateGroupV2(groupModel: TSGroupModelV2,
+                                     description: String,
+                                     changeSetBlock: @escaping (GroupsV2ChangeSet) -> Void) -> Promise<TSGroupThread> {
+        return firstly {
+            return self.ensureLocalProfileHasCommitmentIfNecessary()
+        }.then(on: .global()) { () throws -> Promise<TSGroupThread> in
+            return self.groupsV2.updateGroupV2(groupModel: groupModel, changeSetBlock: changeSetBlock)
+        }.timeout(seconds: GroupManager.groupUpdateTimeoutDuration,
+                  description: description) {
+                    GroupsV2Error.timeout
+        }
+    }
+
     // MARK: - Removed from Group or Invite Revoked
 
-    public static func handleWasRemovedFromGroupOrInviteRevoked(groupId: Data,
-                                                                transaction: SDSAnyWriteTransaction) {
+    public static func handleNotInGroup(groupId: Data,
+                                        transaction: SDSAnyWriteTransaction) {
         guard let localAddress = tsAccountManager.localAddress else {
             owsFailDebug("Missing localAddress.")
             return
@@ -1117,7 +1180,10 @@ public class GroupManager: NSObject {
             return
         }
         // Remove local user from group.
-        // We do _not_ bump the revision number since.
+        // We do _not_ bump the revision number since this (unlike all other
+        // changes to group state) is inferred from a 403. This is fine; if
+        // we're ever re-added to the group the groups v2 machinery will
+        // recover.
         var groupMembershipBuilder = groupThread.groupModel.groupMembership.asBuilder
         groupMembershipBuilder.remove(localAddress)
         var groupModelBuilder = groupThread.groupModel.asBuilder
@@ -1137,6 +1203,98 @@ public class GroupManager: NSObject {
                                                                             transaction: transaction)
         } catch {
             owsFailDebug("Error: \(error)")
+        }
+    }
+
+    // MARK: - UUIDs
+
+    public static func tryToEnableGroupsV2(for addresses: [SignalServiceAddress],
+                                           isBlocking: Bool,
+                                           ignoreErrors: Bool) -> Promise<Void> {
+        let promise = tryToEnableGroupsV2(for: addresses, isBlocking: isBlocking)
+        if ignoreErrors {
+            return promise.recover { error -> Guarantee<Void> in
+                Logger.warn("Error: \(error).")
+                return Guarantee.value(())
+            }
+        } else {
+            return promise
+        }
+    }
+
+    private static func tryToEnableGroupsV2(for addresses: [SignalServiceAddress],
+                                            isBlocking: Bool) -> Promise<Void> {
+        return firstly { () -> Promise<Void> in
+            for address in addresses {
+                guard address.isValid else {
+                    throw OWSAssertionError("Invalid address: \(address).")
+                }
+            }
+            return Promise.value(())
+        }.then(on: .global()) { _ -> Promise<Void> in
+            return self.tryToFillInMissingUuuids(for: addresses, isBlocking: isBlocking)
+        }.then(on: .global()) { _ -> Promise<Void> in
+            return self.tryToEnableGroupsV2Capability(for: addresses, isBlocking: isBlocking)
+        }
+    }
+
+    public static func tryToFillInMissingUuuids(for addresses: [SignalServiceAddress],
+                                                isBlocking: Bool) -> Promise<Void> {
+        guard FeatureFlags.useOnlyModernContactDiscovery ||
+            FeatureFlags.compareLegacyContactDiscoveryAgainstModern else {
+                // Can't fill in UUIDs using legacy contact intersections.
+                return Promise.value(())
+        }
+
+        let phoneNumbersWithoutUuids = addresses.filter { $0.uuid == nil }.compactMap { $0.phoneNumber }
+        guard phoneNumbersWithoutUuids.count > 0 else {
+            return Promise.value(())
+        }
+
+        if isBlocking {
+            // Block on the outcome.
+            return contactsUpdater.lookupIdentifiersPromise(phoneNumbers:
+                phoneNumbersWithoutUuids).asVoid()
+        } else {
+            // This will throttle, de-bounce, etc.
+            self.bulkUUIDLookup.lookupUuids(phoneNumbers: phoneNumbersWithoutUuids)
+            return Promise.value(())
+        }
+    }
+
+    private static func tryToEnableGroupsV2Capability(for addresses: [SignalServiceAddress],
+                                                      isBlocking: Bool) -> Promise<Void> {
+        return firstly { () -> Promise<[SignalServiceAddress]> in
+            let validAddresses = addresses.filter { $0.isValid }
+            if validAddresses.count < addresses.count {
+                owsFailDebug("Invalid addresses.")
+            }
+            return Promise.value(validAddresses)
+        }.then(on: .global()) { (addresses: [SignalServiceAddress]) -> Promise<Void> in
+            // Try to ensure groups v2 capability.
+            var addressesWithoutCapability = [SignalServiceAddress]()
+            self.databaseStorage.read { transaction in
+                for address in addresses {
+                    if !GroupManager.doesUserHaveGroupsV2Capability(address: address, transaction: transaction) {
+                        addressesWithoutCapability.append(address)
+                    }
+                }
+            }
+            guard !addressesWithoutCapability.isEmpty else {
+                return Promise.value(())
+            }
+            if isBlocking {
+                // Block on the outcome of the profile updates.
+                var promises = [Promise<Void>]()
+                for address in addressesWithoutCapability {
+                    promises.append(self.profileManager.updateProfile(forAddressPromise: address).asVoid())
+                }
+                return when(fulfilled: promises)
+            } else {
+                // This will throttle, de-bounce, etc.
+                self.bulkProfileFetch.fetchAndUpdateProfiles(addresses: addressesWithoutCapability)
+                return Promise.value(())
+            }
         }
     }
 
@@ -1387,11 +1545,6 @@ public class GroupManager: NSObject {
         // Step 3: Update group in database, if necessary.
         let oldGroupModel = groupThread.groupModel
         let updateThreadResult: UpsertGroupResult = {
-            guard !oldGroupModel.isEqual(to: newGroupModel) else {
-                // Skip redundant update.
-                return UpsertGroupResult(action: .unchanged, groupThread: groupThread)
-            }
-
             if let newGroupModelV2 = newGroupModel as? TSGroupModelV2,
                 let oldGroupModelV2 = oldGroupModel as? TSGroupModelV2 {
                 guard newGroupModelV2.revision >= oldGroupModelV2.revision else {
@@ -1409,14 +1562,25 @@ public class GroupManager: NSObject {
                 }
             }
 
+            guard !oldGroupModel.isEqual(to: newGroupModel, ignoreRevision: false) else {
+                // Skip redundant update.
+                return UpsertGroupResult(action: .unchanged, groupThread: groupThread)
+            }
+
+            let hasUserFacingChange = !oldGroupModel.isEqual(to: newGroupModel, ignoreRevision: true)
+
             groupThread.update(with: newGroupModel, transaction: transaction)
 
-            return UpsertGroupResult(action: .updated, groupThread: groupThread)
+            let action: UpsertGroupResult.Action = (hasUserFacingChange
+                ? .updatedWithUserFacingChanges
+                : .updatedWithoutUserFacingChanges)
+            return UpsertGroupResult(action: action, groupThread: groupThread)
         }()
 
         if updateDMResult.action == .unchanged &&
-            updateThreadResult.action == .unchanged {
-            // Neither DM config nor thread model changed.
+            (updateThreadResult.action == .unchanged ||
+                updateThreadResult.action == .updatedWithoutUserFacingChanges) {
+            // Neither DM config nor thread model had user-facing changes.
             return updateThreadResult
         }
 
@@ -1433,7 +1597,7 @@ public class GroupManager: NSObject {
             break
         }
 
-        return UpsertGroupResult(action: .updated, groupThread: groupThread)
+        return UpsertGroupResult(action: .updatedWithUserFacingChanges, groupThread: groupThread)
     }
 
     // MARK: - Storage Service
@@ -1635,7 +1799,7 @@ public extension GroupManager {
     private class func messageProcessingPromise(description: String) -> Promise<Void> {
         return firstly {
             self.messageProcessing.allMessageFetchingAndProcessingPromise()
-        }.timeout(seconds: GroupManager.KGroupUpdateTimeoutDuration,
+        }.timeout(seconds: GroupManager.groupUpdateTimeoutDuration,
                   description: description) {
             GroupsV2Error.timeout
         }

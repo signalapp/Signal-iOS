@@ -365,6 +365,12 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     _sortId = sortId;
 }
 
+#if TESTABLE_BUILD
+- (void)replaceReceivedAtTimestamp:(uint64_t)receivedAtTimestamp {
+    _receivedAtTimestamp = receivedAtTimestamp;
+}
+#endif
+
 @end
 
 NS_ASSUME_NONNULL_END

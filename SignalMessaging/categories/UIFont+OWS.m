@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "UIFont+OWS.h"
@@ -83,6 +83,11 @@ NS_ASSUME_NONNULL_BEGIN
     return self.ows_dynamicTypeSubheadlineFont;
 }
 
++ (UIFont *)ows_dynamicTypeCalloutFont
+{
+    return [UIFont preferredFontForTextStyle:UIFontTextStyleCallout];
+}
+
 + (UIFont *)ows_dynamicTypeSubheadlineFont
 {
     return [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
@@ -118,6 +123,7 @@ NS_ASSUME_NONNULL_BEGIN
             UIFontTextStyleTitle3 : @(26.0),
             UIFontTextStyleHeadline : @(23.0),
             UIFontTextStyleBody : @(23.0),
+            UIFontTextStyleCallout : @(22.0),
             UIFontTextStyleSubheadline : @(21.0),
             UIFontTextStyleFootnote : @(19.0),
             UIFontTextStyleCaption1 : @(18.0),
@@ -174,6 +180,11 @@ NS_ASSUME_NONNULL_BEGIN
 + (UIFont *)ows_dynamicTypeBodyClampedFont
 {
     return [UIFont preferredFontForTextStyleClamped:UIFontTextStyleBody];
+}
+
++ (UIFont *)ows_dynamicTypeCalloutClampedFont
+{
+    return [UIFont preferredFontForTextStyleClamped:UIFontTextStyleCallout];
 }
 
 + (UIFont *)ows_dynamicTypeSubheadlineClampedFont

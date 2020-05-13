@@ -46,8 +46,9 @@ public class ActionSheetController: OWSViewController {
     }
 
     @objc
-    public init() {
-        super.init(nibName: nil, bundle: nil)
+    public override init() {
+        super.init()
+
         modalPresentationStyle = .custom
         transitioningDelegate = self
     }
@@ -56,10 +57,6 @@ public class ActionSheetController: OWSViewController {
     public convenience init(title: String? = nil, message: String? = nil) {
         self.init()
         createHeader(title: title, message: message)
-    }
-
-    required init?(coder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
     }
 
     var firstCancelAction: ActionSheetAction? {
@@ -170,7 +167,7 @@ public class ActionSheetController: OWSViewController {
         let path = UIBezierPath(
             roundedRect: contentView.bounds,
             byRoundingCorners: [.topLeft, .topRight],
-            cornerRadii: CGSize(width: cornerRadius, height: cornerRadius)
+            cornerRadii: CGSize(square: cornerRadius)
         )
         let shapeLayer = CAShapeLayer()
         shapeLayer.path = path.cgPath

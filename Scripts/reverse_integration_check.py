@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python2.7
 # -*- coding: utf-8 -*-
 
 # When we make a hotfix, we need to reverse integrate our hotfix back into
@@ -7,7 +7,7 @@
 import subprocess
 from distutils.version import LooseVersion
 import logging
-import argparse 
+import argparse
 
 # logging.basicConfig(level=logging.DEBUG)
 
@@ -78,19 +78,19 @@ def main():
         '2.38.0.13',
         '2.38.0.14',
         '2.38.1.3',
-        # Looks like this tag was erroneously applied before rebasing. 
+        # Looks like this tag was erroneously applied before rebasing.
         # After rebasing, HEAD was retagged with 2.40.0.20
         '2.40.0.19',
-        # Looks like this tag was erroneously applied before rebasing. 
+        # Looks like this tag was erroneously applied before rebasing.
         # After rebasing, HEAD was retagged with 2.41.0.2
         '2.41.0.1',
         # internal builds, not marked as such
         '2.44.0.0',
         '2.44.0.3',
-        '2.42.0.6', 
-        '2.43.1.0', 
-        '2.43.1.1', 
-        '2.44.0.1', 
+        '2.42.0.6',
+        '2.43.1.0',
+        '2.43.1.1',
+        '2.44.0.1',
         '2.44.0.2',
         '2.44.1.1',
         '3.4.0.8',

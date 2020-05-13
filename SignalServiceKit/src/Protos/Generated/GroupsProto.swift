@@ -143,7 +143,7 @@ public class GroupsProtoAvatarUploadAttributes: NSObject {
         return proto.key
     }
     public var hasKey: Bool {
-        return true
+        return !proto.key.isEmpty
     }
 
     public var credential: String? {
@@ -153,7 +153,7 @@ public class GroupsProtoAvatarUploadAttributes: NSObject {
         return proto.credential
     }
     public var hasCredential: Bool {
-        return true
+        return !proto.credential.isEmpty
     }
 
     public var acl: String? {
@@ -163,7 +163,7 @@ public class GroupsProtoAvatarUploadAttributes: NSObject {
         return proto.acl
     }
     public var hasAcl: Bool {
-        return true
+        return !proto.acl.isEmpty
     }
 
     public var algorithm: String? {
@@ -173,7 +173,7 @@ public class GroupsProtoAvatarUploadAttributes: NSObject {
         return proto.algorithm
     }
     public var hasAlgorithm: Bool {
-        return true
+        return !proto.algorithm.isEmpty
     }
 
     public var date: String? {
@@ -183,7 +183,7 @@ public class GroupsProtoAvatarUploadAttributes: NSObject {
         return proto.date
     }
     public var hasDate: Bool {
-        return true
+        return !proto.date.isEmpty
     }
 
     public var policy: String? {
@@ -193,7 +193,7 @@ public class GroupsProtoAvatarUploadAttributes: NSObject {
         return proto.policy
     }
     public var hasPolicy: Bool {
-        return true
+        return !proto.policy.isEmpty
     }
 
     public var signature: String? {
@@ -203,7 +203,7 @@ public class GroupsProtoAvatarUploadAttributes: NSObject {
         return proto.signature
     }
     public var hasSignature: Bool {
-        return true
+        return !proto.signature.isEmpty
     }
 
     private init(proto: GroupsProtos_AvatarUploadAttributes) {
@@ -393,7 +393,7 @@ public class GroupsProtoMember: NSObject {
         return proto.userID
     }
     public var hasUserID: Bool {
-        return proto.userID.count > 0
+        return !proto.userID.isEmpty
     }
 
     public var role: GroupsProtoMemberRole? {
@@ -421,7 +421,7 @@ public class GroupsProtoMember: NSObject {
         return proto.profileKey
     }
     public var hasProfileKey: Bool {
-        return proto.profileKey.count > 0
+        return !proto.profileKey.isEmpty
     }
 
     public var presentation: Data? {
@@ -431,7 +431,7 @@ public class GroupsProtoMember: NSObject {
         return proto.presentation
     }
     public var hasPresentation: Bool {
-        return proto.presentation.count > 0
+        return !proto.presentation.isEmpty
     }
 
     public var joinedAtVersion: UInt32 {
@@ -560,7 +560,7 @@ public class GroupsProtoPendingMember: NSObject {
         return proto.addedByUserID
     }
     public var hasAddedByUserID: Bool {
-        return proto.addedByUserID.count > 0
+        return !proto.addedByUserID.isEmpty
     }
 
     public var timestamp: UInt64 {
@@ -944,7 +944,7 @@ public class GroupsProtoGroup: NSObject {
         return proto.publicKey
     }
     public var hasPublicKey: Bool {
-        return proto.publicKey.count > 0
+        return !proto.publicKey.isEmpty
     }
 
     public var title: Data? {
@@ -954,7 +954,7 @@ public class GroupsProtoGroup: NSObject {
         return proto.title
     }
     public var hasTitle: Bool {
-        return proto.title.count > 0
+        return !proto.title.isEmpty
     }
 
     public var avatar: String? {
@@ -964,7 +964,7 @@ public class GroupsProtoGroup: NSObject {
         return proto.avatar
     }
     public var hasAvatar: Bool {
-        return true
+        return !proto.avatar.isEmpty
     }
 
     public var disappearingMessagesTimer: Data? {
@@ -974,7 +974,7 @@ public class GroupsProtoGroup: NSObject {
         return proto.disappearingMessagesTimer
     }
     public var hasDisappearingMessagesTimer: Bool {
-        return proto.disappearingMessagesTimer.count > 0
+        return !proto.disappearingMessagesTimer.isEmpty
     }
 
     public var version: UInt32 {
@@ -1201,7 +1201,7 @@ public class GroupsProtoGroupChangeActionsDeleteMemberAction: NSObject {
         return proto.deletedUserID
     }
     public var hasDeletedUserID: Bool {
-        return proto.deletedUserID.count > 0
+        return !proto.deletedUserID.isEmpty
     }
 
     private init(proto: GroupsProtos_GroupChange.Actions.DeleteMemberAction) {
@@ -1308,7 +1308,7 @@ public class GroupsProtoGroupChangeActionsModifyMemberRoleAction: NSObject {
         return proto.userID
     }
     public var hasUserID: Bool {
-        return proto.userID.count > 0
+        return !proto.userID.isEmpty
     }
 
     public var role: GroupsProtoMemberRole? {
@@ -1426,7 +1426,7 @@ public class GroupsProtoGroupChangeActionsModifyMemberProfileKeyAction: NSObject
         return proto.presentation
     }
     public var hasPresentation: Bool {
-        return proto.presentation.count > 0
+        return !proto.presentation.isEmpty
     }
 
     private init(proto: GroupsProtos_GroupChange.Actions.ModifyMemberProfileKeyAction) {
@@ -1626,7 +1626,7 @@ public class GroupsProtoGroupChangeActionsDeletePendingMemberAction: NSObject {
         return proto.deletedUserID
     }
     public var hasDeletedUserID: Bool {
-        return proto.deletedUserID.count > 0
+        return !proto.deletedUserID.isEmpty
     }
 
     private init(proto: GroupsProtos_GroupChange.Actions.DeletePendingMemberAction) {
@@ -1726,7 +1726,7 @@ public class GroupsProtoGroupChangeActionsPromotePendingMemberAction: NSObject {
         return proto.presentation
     }
     public var hasPresentation: Bool {
-        return proto.presentation.count > 0
+        return !proto.presentation.isEmpty
     }
 
     private init(proto: GroupsProtos_GroupChange.Actions.PromotePendingMemberAction) {
@@ -1826,7 +1826,7 @@ public class GroupsProtoGroupChangeActionsModifyTitleAction: NSObject {
         return proto.title
     }
     public var hasTitle: Bool {
-        return proto.title.count > 0
+        return !proto.title.isEmpty
     }
 
     private init(proto: GroupsProtos_GroupChange.Actions.ModifyTitleAction) {
@@ -1926,7 +1926,7 @@ public class GroupsProtoGroupChangeActionsModifyAvatarAction: NSObject {
         return proto.avatar
     }
     public var hasAvatar: Bool {
-        return true
+        return !proto.avatar.isEmpty
     }
 
     private init(proto: GroupsProtos_GroupChange.Actions.ModifyAvatarAction) {
@@ -2026,7 +2026,7 @@ public class GroupsProtoGroupChangeActionsModifyDisappearingMessagesTimerAction:
         return proto.timer
     }
     public var hasTimer: Bool {
-        return proto.timer.count > 0
+        return !proto.timer.isEmpty
     }
 
     private init(proto: GroupsProtos_GroupChange.Actions.ModifyDisappearingMessagesTimerAction) {
@@ -2605,7 +2605,7 @@ public class GroupsProtoGroupChangeActions: NSObject {
         return proto.sourceUuid
     }
     public var hasSourceUuid: Bool {
-        return proto.sourceUuid.count > 0
+        return !proto.sourceUuid.isEmpty
     }
 
     public var version: UInt32 {
@@ -2807,7 +2807,7 @@ public class GroupsProtoGroupChange: NSObject {
         return proto.actions
     }
     public var hasActions: Bool {
-        return proto.actions.count > 0
+        return !proto.actions.isEmpty
     }
 
     public var serverSignature: Data? {
@@ -2817,7 +2817,7 @@ public class GroupsProtoGroupChange: NSObject {
         return proto.serverSignature
     }
     public var hasServerSignature: Bool {
-        return proto.serverSignature.count > 0
+        return !proto.serverSignature.isEmpty
     }
 
     private init(proto: GroupsProtos_GroupChange) {
@@ -3083,54 +3083,95 @@ extension GroupsProtoGroupChanges.GroupsProtoGroupChangesBuilder {
 
 #endif
 
-// MARK: - GroupsProtoDisappearingMessagesTimer
+// MARK: - GroupsProtoGroupAttributeBlobOneOfContent
 
-public class GroupsProtoDisappearingMessagesTimer: NSObject {
+public enum GroupsProtoGroupAttributeBlobOneOfContent: Equatable {
+    case title(String)
+    case avatar(Data)
+    case disappearingMessagesDuration(UInt32)
+}
 
-    // MARK: - GroupsProtoDisappearingMessagesTimerBuilder
+private func GroupsProtoGroupAttributeBlobOneOfContentWrap(_ value: GroupsProtos_GroupAttributeBlob.OneOf_Content) throws -> GroupsProtoGroupAttributeBlobOneOfContent {
+    switch value {
+    case .title(let value): return .title(value)
+    case .avatar(let value): return .avatar(value)
+    case .disappearingMessagesDuration(let value): return .disappearingMessagesDuration(value)
+    }
+}
 
-    public class func builder() -> GroupsProtoDisappearingMessagesTimerBuilder {
-        return GroupsProtoDisappearingMessagesTimerBuilder()
+private func GroupsProtoGroupAttributeBlobOneOfContentUnwrap(_ value: GroupsProtoGroupAttributeBlobOneOfContent) -> GroupsProtos_GroupAttributeBlob.OneOf_Content {
+    switch value {
+    case .title(let value): return .title(value)
+    case .avatar(let value): return .avatar(value)
+    case .disappearingMessagesDuration(let value): return .disappearingMessagesDuration(value)
+    }
+}
+
+// MARK: - GroupsProtoGroupAttributeBlob
+
+public class GroupsProtoGroupAttributeBlob: NSObject {
+
+    // MARK: - GroupsProtoGroupAttributeBlobBuilder
+
+    public class func builder() -> GroupsProtoGroupAttributeBlobBuilder {
+        return GroupsProtoGroupAttributeBlobBuilder()
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
-    public func asBuilder() -> GroupsProtoDisappearingMessagesTimerBuilder {
-        let builder = GroupsProtoDisappearingMessagesTimerBuilder()
-        if hasDuration {
-            builder.setDuration(duration)
+    public func asBuilder() -> GroupsProtoGroupAttributeBlobBuilder {
+        let builder = GroupsProtoGroupAttributeBlobBuilder()
+        if let _value = content {
+            builder.setContent(_value)
         }
         return builder
     }
 
-    public class GroupsProtoDisappearingMessagesTimerBuilder: NSObject {
+    public class GroupsProtoGroupAttributeBlobBuilder: NSObject {
 
-        private var proto = GroupsProtos_DisappearingMessagesTimer()
+        private var proto = GroupsProtos_GroupAttributeBlob()
 
         fileprivate override init() {}
 
-        public func setDuration(_ valueParam: UInt32) {
-            proto.duration = valueParam
+        @available(swift, obsoleted: 1.0)
+        public func setContent(_ valueParam: GroupsProtoGroupAttributeBlobOneOfContent?) {
+            guard let valueParam = valueParam else { return }
+            proto.content = GroupsProtoGroupAttributeBlobOneOfContentUnwrap(valueParam)
         }
 
-        public func build() throws -> GroupsProtoDisappearingMessagesTimer {
-            return try GroupsProtoDisappearingMessagesTimer.parseProto(proto)
+        public func setContent(_ valueParam: GroupsProtoGroupAttributeBlobOneOfContent) {
+            proto.content = GroupsProtoGroupAttributeBlobOneOfContentUnwrap(valueParam)
+        }
+
+        public func build() throws -> GroupsProtoGroupAttributeBlob {
+            return try GroupsProtoGroupAttributeBlob.parseProto(proto)
         }
 
         public func buildSerializedData() throws -> Data {
-            return try GroupsProtoDisappearingMessagesTimer.parseProto(proto).serializedData()
+            return try GroupsProtoGroupAttributeBlob.parseProto(proto).serializedData()
         }
     }
 
-    fileprivate let proto: GroupsProtos_DisappearingMessagesTimer
+    fileprivate let proto: GroupsProtos_GroupAttributeBlob
 
-    public var duration: UInt32 {
-        return proto.duration
+    public var content: GroupsProtoGroupAttributeBlobOneOfContent? {
+        guard hasContent else {
+            return nil
+        }
+        guard let content = proto.content else {
+            owsFailDebug("content was unexpectedly nil")
+            return nil
+        }
+        guard let unwrappedContent = try? GroupsProtoGroupAttributeBlobOneOfContentWrap(content) else {
+            owsFailDebug("failed to unwrap content")
+            return nil
+        }
+        return unwrappedContent
     }
-    public var hasDuration: Bool {
+    public var hasContent: Bool {
         return true
     }
 
-    private init(proto: GroupsProtos_DisappearingMessagesTimer) {
+    private init(proto: GroupsProtos_GroupAttributeBlob) {
         self.proto = proto
     }
 
@@ -3139,17 +3180,17 @@ public class GroupsProtoDisappearingMessagesTimer: NSObject {
         return try self.proto.serializedData()
     }
 
-    public class func parseData(_ serializedData: Data) throws -> GroupsProtoDisappearingMessagesTimer {
-        let proto = try GroupsProtos_DisappearingMessagesTimer(serializedData: serializedData)
+    public class func parseData(_ serializedData: Data) throws -> GroupsProtoGroupAttributeBlob {
+        let proto = try GroupsProtos_GroupAttributeBlob(serializedData: serializedData)
         return try parseProto(proto)
     }
 
-    fileprivate class func parseProto(_ proto: GroupsProtos_DisappearingMessagesTimer) throws -> GroupsProtoDisappearingMessagesTimer {
-        // MARK: - Begin Validation Logic for GroupsProtoDisappearingMessagesTimer -
+    fileprivate class func parseProto(_ proto: GroupsProtos_GroupAttributeBlob) throws -> GroupsProtoGroupAttributeBlob {
+        // MARK: - Begin Validation Logic for GroupsProtoGroupAttributeBlob -
 
-        // MARK: - End Validation Logic for GroupsProtoDisappearingMessagesTimer -
+        // MARK: - End Validation Logic for GroupsProtoGroupAttributeBlob -
 
-        let result = GroupsProtoDisappearingMessagesTimer(proto: proto)
+        let result = GroupsProtoGroupAttributeBlob(proto: proto)
         return result
     }
 
@@ -3160,14 +3201,14 @@ public class GroupsProtoDisappearingMessagesTimer: NSObject {
 
 #if DEBUG
 
-extension GroupsProtoDisappearingMessagesTimer {
+extension GroupsProtoGroupAttributeBlob {
     public func serializedDataIgnoringErrors() -> Data? {
         return try! self.serializedData()
     }
 }
 
-extension GroupsProtoDisappearingMessagesTimer.GroupsProtoDisappearingMessagesTimerBuilder {
-    public func buildIgnoringErrors() -> GroupsProtoDisappearingMessagesTimer? {
+extension GroupsProtoGroupAttributeBlob.GroupsProtoGroupAttributeBlobBuilder {
+    public func buildIgnoringErrors() -> GroupsProtoGroupAttributeBlob? {
         return try! self.build()
     }
 }

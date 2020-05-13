@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSViewController.h"
@@ -29,6 +29,19 @@ NS_ASSUME_NONNULL_BEGIN
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
+- (instancetype)init
+{
+    self = [super initWithNibName:nil bundle:nil];
+    if (!self) {
+        self.shouldUseTheme = YES;
+        return self;
+    }
+    
+    [self observeActivation];
+    
+    return self;
+}
+
 - (instancetype)initWithNibName:(nullable NSString *)nibNameOrNil bundle:(nullable NSBundle *)nibBundleOrNil
 {
     self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
@@ -36,9 +49,9 @@ NS_ASSUME_NONNULL_BEGIN
         self.shouldUseTheme = YES;
         return self;
     }
-
+    
     [self observeActivation];
-
+    
     return self;
 }
 

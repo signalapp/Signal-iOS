@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -41,16 +41,11 @@ public class TextApprovalViewController: OWSViewController, UITextViewDelegate {
 
     // MARK: - Initializers
 
-    @available(*, unavailable, message:"use attachment: constructor instead.")
-    required public init?(coder aDecoder: NSCoder) {
-        notImplemented()
-    }
-
     @objc
     required public init(messageText: String) {
         self.initialMessageText = messageText
 
-        super.init(nibName: nil, bundle: nil)
+        super.init()
     }
 
     // MARK: - UIViewController

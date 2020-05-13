@@ -14,7 +14,16 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
     var imageSize: ImageSize = .small {
         willSet { assert(!hasPresented) }
     }
-    var imageName: String?
+    var imageName: String? {
+        didSet {
+            if imageName != nil { image = nil }
+        }
+    }
+    var image: UIImage? {
+        didSet {
+            if image != nil { imageName = nil }
+        }
+    }
 
     var animation: Animation?
     struct Animation {
@@ -117,7 +126,7 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
 
         guard !hasPresented else { return owsFailDebug("can only present once") }
 
-        guard titleText != nil, bodyText != nil, (imageName != nil || animation != nil) else {
+        guard titleText != nil, bodyText != nil, (imageName != nil || image != nil || animation != nil) else {
             return owsFailDebug("megaphone is not prepared for presentation")
         }
 
@@ -213,10 +222,14 @@ class MegaphoneView: UIView, ExperienceUpgradeView {
     private var animationView: AnimationView?
     func createImageContainer() -> UIView {
         let container: UIView
-        if let imageName = imageName {
+
+        if let image = { () -> UIImage? in
+            if let imageName = imageName { return UIImage(named: imageName) }
+            return image
+        }() {
             container = UIView()
             let imageView = UIImageView()
-            imageView.image = UIImage(named: imageName)
+            imageView.image = image
             imageView.contentMode = .scaleAspectFit
             container.addSubview(imageView)
             imageView.autoPinWidthToSuperview()

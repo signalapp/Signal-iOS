@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "ContactTableViewCell.h"
@@ -8,6 +8,7 @@
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <SignalServiceKit/SignalAccount.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -89,6 +90,26 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setAttributedSubtitle:(nullable NSAttributedString *)attributedSubtitle
 {
     [self.cellView setAttributedSubtitle:attributedSubtitle];
+}
+
+- (void)setCustomName:(nullable NSString *)customName
+{
+    [self.cellView setCustomName:customName.asAttributedString];
+}
+
+- (void)setCustomNameAttributed:(nullable NSAttributedString *)customName
+{
+    [self.cellView setCustomName:customName];
+}
+
+- (void)setCustomAvatar:(nullable UIImage *)customAvatar
+{
+    [self.cellView setCustomAvatar:customAvatar];
+}
+
+- (void)setUseSmallAvatars
+{
+    self.cellView.useSmallAvatars = YES;
 }
 
 - (void)prepareForReuse

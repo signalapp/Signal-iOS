@@ -9,7 +9,6 @@ extern NSString *const kAttachmentDownloadProgressKey;
 extern NSString *const kAttachmentDownloadAttachmentIDKey;
 
 @class SDSAnyReadTransaction;
-@class SSKProtoAttachmentPointer;
 @class TSAttachment;
 @class TSAttachmentPointer;
 @class TSAttachmentStream;

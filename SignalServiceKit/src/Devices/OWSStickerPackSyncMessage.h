@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSOutgoingSyncMessage.h"
@@ -20,7 +20,8 @@ typedef NS_ENUM(NSUInteger, StickerPackOperationType) {
 
 - (instancetype)initWithThread:(TSThread *)thread
                          packs:(NSArray<StickerPackInfo *> *)packs
-                 operationType:(StickerPackOperationType)operationType;
+                 operationType:(StickerPackOperationType)operationType NS_DESIGNATED_INITIALIZER;
+
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 @end

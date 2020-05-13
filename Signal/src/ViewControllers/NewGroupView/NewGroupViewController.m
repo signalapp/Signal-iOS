@@ -7,6 +7,7 @@
 #import "OWSNavigationController.h"
 #import "Signal-Swift.h"
 #import "SignalApp.h"
+#import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalCoreKit/NSString+OWS.h>
 #import <SignalCoreKit/Randomness.h>
@@ -68,18 +69,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init
 {
     self = [super init];
-    if (!self) {
-        return self;
-    }
-
-    [self commonInit];
-
-    return self;
-}
-
-- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder
-{
-    self = [super initWithCoder:aDecoder];
     if (!self) {
         return self;
     }
@@ -156,7 +145,7 @@ NS_ASSUME_NONNULL_BEGIN
     firstSectionHeader.userInteractionEnabled = YES;
     [firstSectionHeader
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(headerWasTapped:)]];
-    firstSectionHeader.backgroundColor = [Theme backgroundColor];
+    firstSectionHeader.backgroundColor = Theme.backgroundColor;
     UIView *threadInfoView = [UIView new];
     [firstSectionHeader addSubview:threadInfoView];
     [threadInfoView autoPinWidthToSuperviewWithMargin:16.f];
@@ -168,8 +157,8 @@ NS_ASSUME_NONNULL_BEGIN
     [threadInfoView addSubview:avatarView];
     [avatarView autoVCenterInSuperview];
     [avatarView autoPinLeadingToSuperviewMargin];
-    [avatarView autoSetDimension:ALDimensionWidth toSize:kLargeAvatarSize];
-    [avatarView autoSetDimension:ALDimensionHeight toSize:kLargeAvatarSize];
+    [avatarView autoSetDimension:ALDimensionWidth toSize:kMediumAvatarSize];
+    [avatarView autoSetDimension:ALDimensionHeight toSize:kMediumAvatarSize];
 
     UIImageView *cameraImageView = [UIImageView new];
     [cameraImageView setTemplateImageName:@"camera-outline-24" tintColor:Theme.secondaryTextAndIconColor];
@@ -334,7 +323,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSString *conversationColorName = [TSGroupThread defaultConversationColorNameForGroupId:groupId];
         groupAvatar = [OWSGroupAvatarBuilder defaultAvatarForGroupId:groupId
                                                conversationColorName:conversationColorName
-                                                            diameter:kLargeAvatarSize];
+                                                            diameter:kMediumAvatarSize];
     }
 
     self.avatarView.image = groupAvatar;
@@ -447,6 +436,25 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
+- (void)recipientPicker:(RecipientPickerViewController *)recipientPickerViewController
+    willRenderRecipient:(PickedRecipient *)recipient
+{
+    // Do nothing.
+}
+
+- (AnyPromise *)recipientPicker:(RecipientPickerViewController *)recipientPickerViewController
+       prepareToSelectRecipient:(PickedRecipient *)recipient
+{
+    OWSFailDebug(@"This method should not called.");
+    return [AnyPromise promiseWithValue:@(1)];
+}
+
+- (void)recipientPicker:(RecipientPickerViewController *)recipientPickerViewController
+    showInvalidRecipientAlert:(PickedRecipient *)recipient
+{
+    OWSFailDebug(@"Unexpected error.");
+}
+
 - (nullable NSString *)recipientPicker:(RecipientPickerViewController *)recipientPickerViewController
           accessoryMessageForRecipient:(PickedRecipient *)recipient
 {
@@ -466,15 +474,19 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (nullable UIView *)recipientPicker:(RecipientPickerViewController *)recipientPickerViewController
-           accessoryViewForRecipient:(PickedRecipient *)recipient
-{
-    return nil;
-}
-
 - (void)recipientPickerTableViewWillBeginDragging:(RecipientPickerViewController *)recipientPickerViewController
 {
     [self.groupNameTextField resignFirstResponder];
+}
+
+- (void)recipientPickerNewGroupButtonWasPressed
+{
+    OWSFailDebug(@"Invalid action.");
+}
+
+- (NSArray<UIView *> *)recipientPickerCustomHeaderViews
+{
+    return @[];
 }
 
 #pragma mark - OWSNavigationView

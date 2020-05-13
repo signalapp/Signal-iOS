@@ -190,9 +190,15 @@ public class MessageProcessing: NSObject {
 
     private func isProcessingIncomingMessages(transaction: SDSAnyReadTransaction) -> Bool {
         guard !batchMessageProcessor.hasPendingJobs(with: transaction) else {
+            if DebugFlags.isMessageProcessingVerbose {
+                Logger.verbose("batchMessageProcessor.hasPendingJobs")
+            }
             return true
         }
         guard !groupsV2MessageProcessor.hasPendingJobs(transaction: transaction) else {
+            if DebugFlags.isMessageProcessingVerbose {
+                Logger.verbose("groupsV2MessageProcessor.hasPendingJobs")
+            }
             return true
         }
         return false
@@ -422,9 +428,15 @@ public class MessageProcessing: NSObject {
 
         let hasPendingDecryptionOrProcess = databaseStorage.read { (transaction: SDSAnyReadTransaction) -> Bool in
             guard !self.isDecryptingIncomingMessages(transaction: transaction) else {
+                if DebugFlags.isMessageProcessingVerbose {
+                    Logger.verbose("isDecryptingIncomingMessages")
+                }
                 return true
             }
             guard !self.isProcessingIncomingMessages(transaction: transaction) else {
+                if DebugFlags.isMessageProcessingVerbose {
+                    Logger.verbose("isProcessingIncomingMessages")
+                }
                 return true
             }
             return false

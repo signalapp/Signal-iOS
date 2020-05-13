@@ -162,7 +162,7 @@ class AppUpdateNag: NSObject {
 
         Logger.debug("")
 
-        UIApplication.shared.openURL(appStoreURL)
+        UIApplication.shared.open(appStoreURL, options: [:])
     }
 
     // MARK: Storage

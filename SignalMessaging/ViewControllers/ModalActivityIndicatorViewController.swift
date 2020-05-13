@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -27,16 +27,11 @@ public class ModalActivityIndicatorViewController: OWSViewController {
 
     // MARK: Initializers
 
-    @available(*, unavailable, message:"use other constructor instead.")
-    public required init?(coder aDecoder: NSCoder) {
-        notImplemented()
-    }
-
     public required init(canCancel: Bool, presentationDelay: TimeInterval) {
         self.canCancel = canCancel
         self.presentationDelay = presentationDelay
 
-        super.init(nibName: nil, bundle: nil)
+        super.init()
     }
 
     @objc

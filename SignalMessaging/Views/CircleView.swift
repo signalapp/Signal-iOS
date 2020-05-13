@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -21,7 +21,7 @@ public class CircleView: UIView {
     public required init(diameter: CGFloat) {
         super.init(frame: .zero)
 
-        autoSetDimensions(to: CGSize(width: diameter, height: diameter))
+        autoSetDimensions(to: CGSize(square: diameter))
     }
 
     @objc
@@ -81,4 +81,3 @@ public class PillView: UIView {
         layer.cornerRadius = bounds.size.height / 2
     }
 }
-

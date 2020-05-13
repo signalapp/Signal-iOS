@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -220,7 +220,7 @@ class AttachmentFormatCell: UICollectionViewCell {
 
         contentView.addSubview(imageView)
         imageView.autoHCenterInSuperview()
-        imageView.autoSetDimensions(to: CGSize(width: 32, height: 32))
+        imageView.autoSetDimensions(to: CGSize(square: 32))
         imageView.contentMode = .scaleAspectFit
 
         label.font = UIFont.ows_dynamicTypeFootnoteClamped.ows_semibold()

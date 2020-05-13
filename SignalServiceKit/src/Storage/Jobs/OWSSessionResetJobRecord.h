@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalServiceKit/SSKJobRecord.h>
@@ -12,11 +12,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) NSString *contactThreadId;
 
-- (instancetype)initWithContactThread:(TSContactThread *)contactThread
-                                label:(NSString *)label NS_DESIGNATED_INITIALIZER;
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
+- (instancetype)initWithContactThread:(TSContactThread *)contactThread
+                                label:(NSString *)label NS_DESIGNATED_INITIALIZER;
+
 - (nullable)initWithLabel:(NSString *)label NS_UNAVAILABLE;
+
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
+                  failureCount:(NSUInteger)failureCount
+                         label:(NSString *)label
+                        sortId:(unsigned long long)sortId
+                        status:(SSKJobRecordStatus)status NS_UNAVAILABLE;
 
 // --- CODE GENERATION MARKER
 
@@ -31,7 +39,7 @@ NS_ASSUME_NONNULL_BEGIN
                           sortId:(unsigned long long)sortId
                           status:(SSKJobRecordStatus)status
                  contactThreadId:(NSString *)contactThreadId
-NS_SWIFT_NAME(init(grdbId:uniqueId:failureCount:label:sortId:status:contactThreadId:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:failureCount:label:sortId:status:contactThreadId:));
 
 // clang-format on
 

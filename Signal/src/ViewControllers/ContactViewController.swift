@@ -40,18 +40,13 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
 
     // MARK: - Initializers
 
-    @available(*, unavailable, message: "use init(call:) constructor instead.")
-    required init?(coder aDecoder: NSCoder) {
-        notImplemented()
-    }
-
     @objc
     required init(contactShare: ContactShareViewModel) {
         contactsManager = Environment.shared.contactsManager
         self.contactShare = contactShare
         self.contactShareViewHelper = ContactShareViewHelper(contactsManager: contactsManager)
 
-        super.init(nibName: nil, bundle: nil)
+        super.init()
 
         contactShareViewHelper.delegate = self
 
@@ -407,7 +402,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         let label = UILabel()
         label.text = labelText
         label.font = UIFont.ows_dynamicTypeBody
-        label.textColor = UIColor.ows_accentBlue
+        label.textColor = Theme.accentBlueColor
         label.lineBreakMode = .byTruncatingTail
         row.addSubview(label)
         label.autoPinTopToSuperviewMargin()
@@ -466,7 +461,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
         let label = UILabel()
         label.text = text
         label.font = UIFont.ows_dynamicTypeBody
-        label.textColor = UIColor.ows_accentBlue
+        label.textColor = Theme.accentBlueColor
         label.lineBreakMode = .byTruncatingTail
         label.textAlignment = .center
         button.addSubview(label)
@@ -572,7 +567,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
             owsFailDebug("could not open phone number.")
             return
         }
-        UIApplication.shared.openURL(url as URL)
+        UIApplication.shared.open(url as URL, options: [:])
     }
 
     func didPressEmail(email: OWSContactEmail) {
@@ -600,7 +595,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
             owsFailDebug("could not open email.")
             return
         }
-        UIApplication.shared.openURL(url as URL)
+        UIApplication.shared.open(url as URL, options: [:])
     }
 
     func didPressAddress(address: OWSContactAddress) {
@@ -638,7 +633,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
             return
         }
 
-        UIApplication.shared.openURL(url as URL)
+        UIApplication.shared.open(url as URL, options: [:])
     }
 
     func formatAddressForQuery(address: OWSContactAddress) -> String {

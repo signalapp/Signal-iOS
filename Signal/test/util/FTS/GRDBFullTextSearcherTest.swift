@@ -47,6 +47,10 @@ class GRDBFullTextSearcherContactsManager: NSObject, ContactsManagerProtocol {
         return PersonNameComponents()
     }
 
+    func nameComponents(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> PersonNameComponents? {
+        return PersonNameComponents()
+    }
+
     func signalAccounts() -> [SignalAccount] {
         return []
     }
@@ -63,10 +67,19 @@ class GRDBFullTextSearcherContactsManager: NSObject, ContactsManagerProtocol {
         return true
     }
 
+    func conversationColorName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
+        ConversationColorName.taupe.rawValue
+    }
+
     func compare(signalAccount left: SignalAccount, with right: SignalAccount) -> ComparisonResult {
         owsFailDebug("if this method ends up being used by the tests, we should provide a better implementation.")
 
         return .orderedAscending
+    }
+
+    public func sortSignalServiceAddresses(_ addresses: [SignalServiceAddress],
+                                           transaction: SDSAnyReadTransaction) -> [SignalServiceAddress] {
+        return addresses
     }
 
     func cnContact(withId contactId: String?) -> CNContact? {

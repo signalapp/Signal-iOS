@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -10,6 +10,8 @@ class AppearanceSettingsTableViewController: OWSTableViewController {
         super.viewDidLoad()
 
         title = NSLocalizedString("SETTINGS_APPEARANCE_TITLE", comment: "The title for the appearance settings.")
+
+        self.useThemeBackgroundColors = true
 
         updateTableContents()
     }

@@ -21,7 +21,9 @@ public class RemoteConfig: NSObject {
         // If we've turned off the KBS feature we don't want to present the
         // pins for everyone migration even if this user is in the bucket.
         guard kbs else { return false }
-        return isEnabled(.pinsForEveryone)
+        // If you've setup a PIN, you have a PIN, regardless of the FF status
+        if KeyBackupService.hasMasterKey { return true }
+        return isEnabled(.pinsForEveryone) || isEnabled(.pinsForEveryoneV2)
     }
 
     @objc
@@ -52,11 +54,25 @@ public class RemoteConfig: NSObject {
     public static var groupsV2CreateGroups: Bool {
         guard FeatureFlags.groupsV2CreateGroups else { return false }
         if DebugFlags.groupsV2IgnoreServerFlags { return true }
-        return isEnabled(.groupsV2CreateGroups)
+        return isEnabled(.groupsV2GoodCitizen)
     }
 
     @objc
-    public static var storageService: Bool { isEnabled(.storageService) }
+    public static var groupsV2IncomingMessages: Bool {
+        guard FeatureFlags.groupsV2IncomingMessages else { return false }
+        if DebugFlags.groupsV2IgnoreServerFlags { return true }
+        return isEnabled(.groupsV2GoodCitizen)
+    }
+
+    @objc
+    public static var groupsV2SetCapability: Bool {
+        guard FeatureFlags.groupsV2SetCapability else { return false }
+        if DebugFlags.groupsV2IgnoreServerFlags { return true }
+        return isEnabled(.groupsV2GoodCitizen)
+    }
+
+    @objc
+    public static var storageService: Bool { isEnabled(.storageServiceV3) }
 
     private static func isEnabled(_ flag: Flags.Supported, defaultValue: Bool = false) -> Bool {
         guard let remoteConfig = SSKEnvironment.shared.remoteConfigManager.cachedConfig else {
@@ -73,6 +89,7 @@ private struct Flags {
     // marked true regardless of the remote state.
     enum Sticky: String, FlagType {
         case pinsForEveryone
+        case pinsForEveryoneV2
     }
 
     // We filter the received config down to just the supported flags.
@@ -82,12 +99,14 @@ private struct Flags {
     // to production.
     enum Supported: String, FlagType {
         case pinsForEveryone
+        case pinsForEveryoneV2
         case kbs
         case profileNameReminder
         case mandatoryPins
         case messageRequests
         case groupsV2CreateGroups
-        case storageService
+        case groupsV2GoodCitizen
+        case storageServiceV3
     }
 }
 
@@ -268,7 +287,7 @@ private extension SDSKeyValueStore {
     var remoteConfigKey: String { "remoteConfigKey" }
 
     func getRemoteConfig(transaction: SDSAnyReadTransaction) -> [String: Bool]? {
-        guard let object = getObject(remoteConfigKey, transaction: transaction) else {
+        guard let object = getObject(forKey: remoteConfigKey, transaction: transaction) else {
             return nil
         }
 

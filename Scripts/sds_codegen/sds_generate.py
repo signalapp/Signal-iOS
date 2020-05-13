@@ -1045,7 +1045,7 @@ extension %s {
                 alignment = max(0, len('- (instancetype)initWithUniqueId') - objc_initializer_param.index(':'))
                 h_snippet += (' ' * alignment) + objc_initializer_param + '\n'
 
-            h_snippet += 'NS_SWIFT_NAME(init(grdbId:%s:));\n' % ':'.join([str(property.name) for property in deserialize_properties])
+            h_snippet += 'NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:%s:));\n' % ':'.join([str(property.name) for property in deserialize_properties])
             h_snippet += '''
 // clang-format on
 '''
@@ -1204,7 +1204,6 @@ extension %sSerializer {
         # changes, class hierarchy changes, etc. 
         column_property_names = []
         def write_column_metadata(property, force_optional=False):
-            column_index = len(column_property_names)
             column_name = property.swift_identifier()
             column_property_names.append(column_name)
             
@@ -1220,8 +1219,8 @@ extension %sSerializer {
                 database_column_type = '.primaryKey'
             
             # TODO: Use skipSelect.
-            return '''    static let %sColumn = SDSColumnMetadata(columnName: "%s", columnType: %s%s%s, columnIndex: %s)
-''' % ( str(column_name), str(column_name), database_column_type, optional_split, is_unique_split, str(column_index) )
+            return '''    static let %sColumn = SDSColumnMetadata(columnName: "%s", columnType: %s%s%s)
+''' % ( str(column_name), str(column_name), database_column_type, optional_split, is_unique_split )
        
         for property in sds_properties:
             swift_body += write_column_metadata(property)

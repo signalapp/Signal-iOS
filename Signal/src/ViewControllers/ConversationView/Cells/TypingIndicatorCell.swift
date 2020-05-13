@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -17,9 +17,9 @@ public class TypingIndicatorCell: ConversationViewCell {
     }
 
     private let kMinBubbleHeight: CGFloat = 36
-    private let kAvatarSize: CGFloat = 28
-    private let kAvatarHSpacing: CGFloat = 8
 
+    private let stackView = UIStackView()
+    private let avatarContainer = UIView()
     private let avatarView = AvatarImageView()
     private let bubbleView = OWSBubbleView()
     private let typingIndicatorView = TypingIndicatorView()
@@ -35,13 +35,23 @@ public class TypingIndicatorCell: ConversationViewCell {
         self.layoutMargins = .zero
         self.contentView.layoutMargins = .zero
 
+        stackView.axis = .horizontal
+        stackView.spacing = ConversationStyle.messageStackSpacing
+        stackView.isLayoutMarginsRelativeArrangement = true
+        contentView.addSubview(stackView)
+        stackView.autoPinEdgesToSuperviewEdges()
+
+        avatarView.autoSetDimensions(to: CGSize(square: ConversationStyle.groupMessageAvatarDiameter))
+        avatarContainer.addSubview(avatarView)
+        avatarView.autoPinWidthToSuperview()
+        avatarView.autoVCenterInSuperview()
+        stackView.addArrangedSubview(avatarContainer)
+
         bubbleView.layoutMargins = .zero
-
         bubbleView.addSubview(typingIndicatorView)
-        contentView.addSubview(bubbleView)
+        stackView.addArrangedSubview(bubbleView)
 
-        avatarView.autoSetDimension(.width, toSize: kAvatarSize)
-        avatarView.autoSetDimension(.height, toSize: kAvatarSize)
+        stackView.addArrangedSubview(UIView.hStretchingSpacer())
     }
 
     @objc
@@ -51,58 +61,51 @@ public class TypingIndicatorCell: ConversationViewCell {
             return
         }
 
+        stackView.layoutMargins = UIEdgeInsets(
+            top: 0,
+            leading: conversationStyle.gutterLeading,
+            bottom: 0,
+            trailing: conversationStyle.gutterTrailing
+        )
+
         bubbleView.fillColor = conversationStyle.bubbleColor(isIncoming: true)
         typingIndicatorView.startAnimation()
 
         viewConstraints.append(contentsOf: [
-            bubbleView.autoPinEdge(toSuperviewEdge: .leading, withInset: conversationStyle.gutterLeading),
-            bubbleView.autoPinEdge(toSuperviewEdge: .trailing, withInset: conversationStyle.gutterTrailing, relation: .greaterThanOrEqual),
-            bubbleView.autoPinTopToSuperviewMargin(withInset: 0),
-            bubbleView.autoPinBottomToSuperviewMargin(withInset: 0),
-
             typingIndicatorView.autoPinEdge(toSuperviewEdge: .leading, withInset: conversationStyle.textInsetHorizontal),
             typingIndicatorView.autoPinEdge(toSuperviewEdge: .trailing, withInset: conversationStyle.textInsetHorizontal),
             typingIndicatorView.autoPinTopToSuperviewMargin(withInset: conversationStyle.textInsetTop),
             typingIndicatorView.autoPinBottomToSuperviewMargin(withInset: conversationStyle.textInsetBottom)
-            ])
+        ])
 
-        if let avatarView = configureAvatarView() {
-            contentView.addSubview(avatarView)
-            viewConstraints.append(contentsOf: [
-                bubbleView.autoPinLeading(toTrailingEdgeOf: avatarView, offset: kAvatarHSpacing),
-                bubbleView.autoAlignAxis(.horizontal, toSameAxisOf: avatarView)
-                ])
-
-        } else {
-            avatarView.removeFromSuperview()
-        }
+        avatarContainer.isHidden = !configureAvatarView()
     }
 
-    private func configureAvatarView() -> UIView? {
+    private func configureAvatarView() -> Bool {
         guard let viewItem = self.viewItem else {
             owsFailDebug("Missing viewItem")
-            return nil
+            return false
         }
         guard let typingIndicators = viewItem.interaction as? TypingIndicatorInteraction else {
             owsFailDebug("Missing typingIndicators")
-            return nil
+            return false
         }
         guard shouldShowAvatar() else {
-            return nil
+            return false
         }
         guard let colorName = viewItem.authorConversationColorName else {
             owsFailDebug("Missing authorConversationColorName")
-            return nil
+            return false
         }
         guard let authorAvatarImage =
             OWSContactAvatarBuilder(address: typingIndicators.address,
                                     colorName: ConversationColorName(rawValue: colorName),
-                                    diameter: UInt(kAvatarSize)).build() else {
+                                    diameter: UInt(ConversationStyle.groupMessageAvatarDiameter)).build() else {
                                         owsFailDebug("Could build avatar image")
-                                        return nil
+                                        return false
         }
         avatarView.image = authorAvatarImage
-        return avatarView
+        return true
     }
 
     private func shouldShowAvatar() -> Bool {
@@ -126,7 +129,7 @@ public class TypingIndicatorCell: ConversationViewCell {
         let bubbleSize = CGSizeAdd(insetsSize, typingIndicatorSize)
 
         if shouldShowAvatar() {
-            return CGSizeCeil(CGSize(width: kAvatarSize + kAvatarHSpacing + bubbleSize.width,
+            return CGSizeCeil(CGSize(width: ConversationStyle.groupMessageAvatarDiameter + ConversationStyle.messageStackSpacing + bubbleSize.width,
                                      height: max(kMinBubbleHeight, bubbleSize.height)))
         } else {
             return CGSizeCeil(CGSize(width: bubbleSize.width,
@@ -142,7 +145,6 @@ public class TypingIndicatorCell: ConversationViewCell {
         viewConstraints = [NSLayoutConstraint]()
 
         avatarView.image = nil
-        avatarView.removeFromSuperview()
 
         typingIndicatorView.stopAnimation()
     }

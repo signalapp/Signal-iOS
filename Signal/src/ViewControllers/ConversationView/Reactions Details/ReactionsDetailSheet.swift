@@ -107,7 +107,7 @@ class ReactionsDetailSheet: UIViewController {
         let path = UIBezierPath(
             roundedRect: contentView.bounds,
             byRoundingCorners: [.topLeft, .topRight],
-            cornerRadii: CGSize(width: cornerRadius, height: cornerRadius)
+            cornerRadii: CGSize(square: cornerRadius)
         )
         let shapeLayer = CAShapeLayer()
         shapeLayer.path = path.cgPath

@@ -48,7 +48,7 @@ public class StickerTooltip: TooltipView {
     }
 
     public override func bubbleContentView() -> UIView {
-        iconView.autoSetDimensions(to: CGSize(width: 24, height: 24))
+        iconView.autoSetDimensions(to: CGSize(square: 24))
         updateIconView()
 
         let label = UILabel()

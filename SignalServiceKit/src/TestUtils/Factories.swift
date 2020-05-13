@@ -467,6 +467,7 @@ public class ConversationFactory: NSObject {
                 attachment.updateAsUploaded(withEncryptionKey: Randomness.generateRandomBytes(16),
                                             digest: Randomness.generateRandomBytes(16),
                                             serverId: 1,
+                                            uploadTimestamp: 1,
                                             transaction: asyncTransaction)
             }
 

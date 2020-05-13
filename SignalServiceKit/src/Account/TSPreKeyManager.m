@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSPreKeyManager.h"
@@ -312,7 +312,8 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
                                       return;
                                   }
                                   [keys removeLastObject];
-                                  PreKeyRecord *_Nullable record = [self.preKeyStore.keyStore getObject:key transaction:transaction];
+                                  PreKeyRecord *_Nullable record =
+                                      [self.preKeyStore.keyStore getObjectForKey:key transaction:transaction];
                                   if (![record isKindOfClass:[PreKeyRecord class]]) {
                                       OWSFailDebug(@"Unexpected value: %@", [record class]);
                                       return;

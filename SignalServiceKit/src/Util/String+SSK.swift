@@ -50,15 +50,20 @@ public extension String {
     }
 }
 
+// MARK: -
+
+@objc
 public extension NSString {
-    @objc
     var ensureArabicNumerals: String {
         return (self as String).ensureArabicNumerals
     }
 
-    @objc
     class func stringFromSysctlKey(_ key: String) -> String? {
         return String(sysctlKey: key)
+    }
+
+    var asAttributedString: NSAttributedString {
+        return NSAttributedString(string: self as String)
     }
 }
 
@@ -83,6 +88,15 @@ public extension NSAttributedString {
 
     static func + (lhs: NSAttributedString, rhs: String) -> NSAttributedString {
         return lhs.stringByAppendingString(rhs)
+    }
+}
+
+// MARK: - 
+
+public extension NSMutableAttributedString {
+    @objc
+    func append(_ string: String, attributes: [NSAttributedString.Key: Any] = [:]) {
+        append(NSAttributedString(string: string, attributes: attributes))
     }
 }
 
