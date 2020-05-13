@@ -509,6 +509,9 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     if (SSKDebugFlags.groupsV2memberStatusIndicators) {
         OWSLogInfo(@"capabilities: %@", capabilities);
     }
+
+    capabilities[@"transfer"] = @(YES);
+
     return [capabilities copy];
 }
 
