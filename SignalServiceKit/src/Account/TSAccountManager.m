@@ -644,6 +644,12 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
                     failureBlock(userError);
                     break;
                 }
+                case 409: {
+                    NSError *userError = OWSErrorWithCodeDescription(OWSErrorCodeRegistrationTransferAvailable,
+                        @"There was an account previously registered with this number that is available for transfer.");
+                    failureBlock(userError);
+                    break;
+                }
                 case 413: {
                     // In the case of the "rate limiting" error, we want to show the
                     // "recovery suggestion", not the error's "description."

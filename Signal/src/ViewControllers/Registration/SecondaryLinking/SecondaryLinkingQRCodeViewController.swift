@@ -15,7 +15,7 @@ public class SecondaryLinkingQRCodeViewController: OnboardingBaseViewController 
         super.init(onboardingController: provisioningController.onboardingController)
     }
 
-    let qrCodeView = ProvisioningQRCodeView()
+    let qrCodeView = QRCodeView()
 
     override public func loadView() {
         view = UIView()
@@ -95,7 +95,7 @@ public class SecondaryLinkingQRCodeViewController: OnboardingBaseViewController 
         hasFetchedAndSetQRCode = true
 
         provisioningController.getProvisioningURL().done { url in
-            self.qrCodeView.setQRImage(try buildQRImage(url: url))
+            try self.qrCodeView.setQR(url: url)
         }.catch { error in
             let title = NSLocalizedString("SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE", comment: "alert title")
             let alert = ActionSheetController(title: title, message: error.localizedDescription)
@@ -109,102 +109,5 @@ public class SecondaryLinkingQRCodeViewController: OnboardingBaseViewController 
             alert.addAction(retryAction)
             self.present(alert, animated: true)
         }.retainUntilComplete()
-    }
-}
-
-private func buildQRImage(url: URL) throws -> UIImage {
-    guard let urlData: Data = url.absoluteString.data(using: .utf8) else {
-        throw OWSAssertionError("urlData was unexpectedly nil")
-    }
-
-    guard let filter = CIFilter(name: "CIQRCodeGenerator") else {
-        throw OWSAssertionError("filter was unexpectedly nil")
-    }
-    filter.setDefaults()
-    filter.setValue(urlData, forKey: "inputMessage")
-
-    guard let ciImage = filter.outputImage else {
-        throw OWSAssertionError("ciImage was unexpectedly nil")
-    }
-
-    // UIImages backed by a CIImage won't render without antialiasing, so we convert the backing
-    // image to a CGImage, which can be scaled crisply.
-    let context = CIContext(options: nil)
-    guard let cgImage = context.createCGImage(ciImage, from: ciImage.extent) else {
-        throw OWSAssertionError("cgImage was unexpectedly nil")
-    }
-
-    let image = UIImage(cgImage: cgImage)
-
-    return image
-}
-
-public class ProvisioningQRCodeView: UIView {
-
-    // MARK: - UIView overrides
-
-    public override init(frame: CGRect) {
-        super.init(frame: frame)
-
-        addSubview(qrCodeWrapper)
-        qrCodeWrapper.autoCenterInSuperview()
-        qrCodeWrapper.autoPinToSquareAspectRatio()
-        NSLayoutConstraint.autoSetPriority(.defaultLow) {
-            qrCodeWrapper.autoPinEdgesToSuperviewMargins()
-        }
-
-        qrCodeWrapper.addSubview(placeholderView)
-        placeholderView.autoPinEdgesToSuperviewMargins()
-    }
-
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-
-    override public func layoutSubviews() {
-        super.layoutSubviews()
-        qrCodeWrapper.layer.cornerRadius = qrCodeWrapper.frame.width / 2
-    }
-
-    // MARK: - Subviews
-
-    var qrCodeView: UIView?
-
-    lazy var qrCodeWrapper: UIView = {
-        let wrapper = UIView()
-        wrapper.backgroundColor = .ows_gray02
-        return wrapper
-    }()
-
-    lazy var placeholderView: UIView = {
-        let placeholder = UIView()
-
-        let activityIndicator = UIActivityIndicatorView(style: .white)
-        placeholder.addSubview(activityIndicator)
-        activityIndicator.autoCenterInSuperview()
-        activityIndicator.autoSetDimensions(to: .init(width: 40, height: 40))
-        activityIndicator.startAnimating()
-
-        return placeholder
-    }()
-
-    // MARK: -
-
-    public func setQRImage(_ qrImage: UIImage) {
-        assert(qrCodeView == nil)
-        placeholderView.removeFromSuperview()
-
-        let qrCodeView = UIImageView(image: qrImage)
-
-        // Don't antialias QR Codes.
-        qrCodeView.layer.magnificationFilter = .nearest
-        qrCodeView.layer.minificationFilter = .nearest
-
-        self.qrCodeView = qrCodeView
-
-        qrCodeWrapper.addSubview(qrCodeView)
-        qrCodeView.autoPinToSquareAspectRatio()
-        qrCodeView.autoCenterInSuperview()
-        qrCodeView.autoMatch(.height, to: .height, of: qrCodeWrapper, withMultiplier: 0.6)
     }
 }

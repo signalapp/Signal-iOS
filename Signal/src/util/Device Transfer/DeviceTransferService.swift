@@ -17,8 +17,8 @@ class DeviceTransferService: NSObject {
     enum Error: Swift.Error {
         case assertion
         case cancel
-        case timeout
         case certificateMismatch
+        case modeMismatch
         case notEnoughSpace
         case unsupportedVersion
     }
@@ -72,6 +72,7 @@ class DeviceTransferService: NSObject {
 
     var tsAccountManager: TSAccountManager { .sharedInstance() }
     var databaseStorage: SDSDatabaseStorage { .shared }
+    var sleepManager: DeviceSleepManager { .sharedInstance }
 
     fileprivate static let pendingTransferDirectory = OWSFileSystem.appSharedDataDirectoryPath() + "/transfer/"
     fileprivate static let pendingTransferFilesDirectory = OWSFileSystem.appSharedDataDirectoryPath() + "/transfer/files/"
@@ -89,7 +90,17 @@ class DeviceTransferService: NSObject {
     }
 
     fileprivate var identity: SecIdentity?
-    fileprivate var session: MCSession?
+    fileprivate var session: MCSession? {
+        didSet {
+            if let oldValue = oldValue {
+                sleepManager.removeBlock(blockObject: oldValue)
+            }
+
+            if let session = session {
+                sleepManager.addBlock(blockObject: session)
+            }
+        }
+    }
     fileprivate lazy var peerId = MCPeerID(displayName: UUID().uuidString)
 
     private lazy var newDeviceServiceBrowser: MCNearbyServiceBrowser = {
@@ -133,7 +144,12 @@ class DeviceTransferService: NSObject {
 
     // MARK: - New Device
 
-    func startAcceptingTransfersFromOldDevices() throws {
+    enum TransferMode: String {
+        case linked
+        case primary
+    }
+
+    func startAcceptingTransfersFromOldDevices(mode: TransferMode) throws -> URL {
         // Create an identity to use for our TLS sessions, the old device
         // will verify this identity via the QR code
         let identity = try SelfSignedIdentity.create(name: "IncomingDeviceTransfer", validForDays: 1)
@@ -144,11 +160,12 @@ class DeviceTransferService: NSObject {
         self.session = session
 
         newDeviceServiceAdvertiser.startAdvertisingPeer()
+
+        return try urlForTransfer(mode: mode)
     }
 
     func stopAcceptingTransfersFromOldDevices() {
         newDeviceServiceAdvertiser.stopAdvertisingPeer()
-        cancelTransferFromOldDevice()
     }
 
     func cancelTransferFromOldDevice() {
@@ -219,6 +236,82 @@ class DeviceTransferService: NSObject {
         notifyObservers { $0.deviceTransferServiceDidEndTransfer(error: .cancel) }
 
         stopTransfer()
+    }
+
+    // MARK: - URL
+
+    private static let currentTransferVersion = 1
+
+    private static let versionKey = "version"
+    private static let peerIdKey = "peerId"
+    private static let certificateHashKey = "certificateHash"
+    private static let transferModeKey = "transferMode"
+
+    private func urlForTransfer(mode: TransferMode) throws -> URL {
+        guard let identity = identity else {
+            throw OWSAssertionError("unexpectedly missing identity")
+        }
+
+        var components = URLComponents()
+        components.scheme = kURLSchemeSGNLKey
+        components.path = kURLHostTransferPrefix
+
+        guard let base64CertificateHash = try identity.computeCertificateHash().base64EncodedString().encodeURIComponent else {
+            throw OWSAssertionError("failed to get base64 certificate hash")
+        }
+
+        guard let base64PeerId = NSKeyedArchiver.archivedData(withRootObject: peerId).base64EncodedString().encodeURIComponent else {
+            throw OWSAssertionError("failed to get base64 peerId")
+        }
+
+        let queryItems = [
+            DeviceTransferService.versionKey: String(DeviceTransferService.currentTransferVersion),
+            DeviceTransferService.transferModeKey: mode.rawValue,
+            DeviceTransferService.certificateHashKey: base64CertificateHash,
+            DeviceTransferService.peerIdKey: base64PeerId
+        ]
+
+        components.queryItems = queryItems.map { URLQueryItem(name: $0.key, value: $0.value) }
+
+        return components.url!
+    }
+
+    func parseTrasnsferURL(_ url: URL) throws -> (peerId: MCPeerID, certificateHash: Data) {
+        guard let components = URLComponents(url: url, resolvingAgainstBaseURL: false), let queryItems = components.queryItems else {
+            throw OWSAssertionError("Invalid url")
+        }
+
+        let queryItemsDictionary = [String: String](uniqueKeysWithValues: queryItems.compactMap { item in
+            guard let value = item.value else { return nil }
+            return (item.name, value)
+        })
+
+        guard let version = queryItemsDictionary[DeviceTransferService.versionKey],
+            Int(version) == DeviceTransferService.currentTransferVersion else {
+            throw Error.unsupportedVersion
+        }
+
+        let currentMode: TransferMode = tsAccountManager.isPrimaryDevice ? .primary : .linked
+
+        guard let rawMode = queryItemsDictionary[DeviceTransferService.transferModeKey],
+            rawMode == currentMode.rawValue else {
+            throw Error.modeMismatch
+        }
+
+        guard let base64CertificateHash = queryItemsDictionary[DeviceTransferService.certificateHashKey],
+            let uriDecodedHash = base64CertificateHash.removingPercentEncoding,
+            let certificateHash = Data(base64Encoded: uriDecodedHash) else {
+                throw OWSAssertionError("failed to decode certificate hash")
+        }
+
+        guard let base64PeerId = queryItemsDictionary[DeviceTransferService.peerIdKey],
+            let uriDecodedPeerId = base64PeerId.removingPercentEncoding,
+            let peerIdData = Data(base64Encoded: uriDecodedPeerId),
+            let peerId = try NSKeyedUnarchiver.unarchiveTopLevelObjectWithData(peerIdData) as? MCPeerID else {
+                throw OWSAssertionError("failed to decode MCPeerId")
+        }
+
+        return (peerId, certificateHash)
     }
 
     // MARK: - Observation
@@ -484,6 +577,7 @@ class DeviceTransferService: NSObject {
         session = nil
         identity = nil
 
+        tsAccountManager.isTransferInProgress = false
         transferState = .idle
 
         stopThroughputCalculation()
@@ -700,7 +794,9 @@ class DeviceTransferService: NSObject {
         }
 
         when(fulfilled: promises).done {
-            self.tsAccountManager.wasTransferred = true
+            if !FeatureFlags.deviceTransferThrowAway {
+                self.tsAccountManager.wasTransferred = true
+            }
             try self.sendDoneMessage(to: newDevicePeerId)
         }.catch { error in
             self.failTransfer(.assertion, "\(error)")

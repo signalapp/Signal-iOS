@@ -102,6 +102,8 @@ public class OnboardingBaseViewController: OWSViewController {
     public override func viewDidLoad() {
         super.viewDidLoad()
 
+        primaryView.layoutMargins = primaryLayoutMargins
+
         self.shouldBottomViewReserveSpaceForKeyboard = true
 
         if shouldShowBackButton() {

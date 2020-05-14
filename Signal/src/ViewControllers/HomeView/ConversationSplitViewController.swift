@@ -3,17 +3,19 @@
 //
 
 import Foundation
+import MultipeerConnectivity
 
 @objc
 class ConversationSplitViewController: UISplitViewController, ConversationSplit {
 
     // MARK: - Dependencies
 
-    var databaseStorage: SDSDatabaseStorage {
-        return .shared
-    }
+    var databaseStorage: SDSDatabaseStorage { .shared }
+    var deviceTransferService: DeviceTransferService { .shared }
 
     // MARK: -
+
+    fileprivate var deviceTransferNavController: DeviceTransferNavigationController?
 
     private let conversationListVC = ConversationListViewController()
     private let detailPlaceholderVC = NoSelectedConversationViewController()
@@ -601,4 +603,31 @@ private class NoSelectedConversationViewController: OWSViewController {
         bodyLabel.textColor = Theme.secondaryTextAndIconColor
         logoImageView.tintColor = Theme.isDarkThemeEnabled ? .ows_gray05 : .ows_gray65
     }
+}
+
+extension ConversationSplitViewController: DeviceTransferServiceObserver {
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+
+        deviceTransferService.addObserver(self)
+        deviceTransferService.startListeningForNewDevices()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+
+        deviceTransferService.removeObserver(self)
+        deviceTransferService.stopListeningForNewDevices()
+    }
+
+    func deviceTransferServiceDiscoveredNewDevice(peerId: MCPeerID, discoveryInfo: [String: String]?) {
+        guard deviceTransferNavController?.presentingViewController == nil else { return }
+        let navController = DeviceTransferNavigationController()
+        deviceTransferNavController = navController
+        navController.present(fromViewController: self)
+    }
+
+    func deviceTransferServiceDidStartTransfer(progress: Progress) {}
+
+    func deviceTransferServiceDidEndTransfer(error: DeviceTransferService.Error?) {}
 }
