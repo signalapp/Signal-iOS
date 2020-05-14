@@ -87,7 +87,7 @@ struct SelfSignedIdentity {
             throw OWSAssertionError("failed to allocate a new EVP_PKEY")
         }
 
-        guard let rsa = RSA_generate_key(2048, UInt(RSA_F4), nil, nil) else {
+        guard let rsa = RSA_generate_key(4096, UInt(RSA_F4), nil, nil) else {
             throw OWSAssertionError("failed to generate RSA keypair")
         }
 
