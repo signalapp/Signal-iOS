@@ -267,11 +267,7 @@ public class KeyBackupService: NSObject {
             // Even if the request to delete our keys from KBS failed,
             // purge them from the database.
             databaseStorage.write { clearKeys(transaction: $0) }
-        }.done { _ in
-            // The next token is no longer valid, as it pertains to
-            // a deleted backup. Clear it out so we fetch a fresh one.
-            Token.clearNext()
-        }
+        }.asVoid()
     }
 
     // PRAGMA MARK: - Master Key Encryption
@@ -520,6 +516,7 @@ public class KeyBackupService: NSObject {
     /// restored from the server if you know the pin.
     @objc
     public static func clearKeys(transaction: SDSAnyWriteTransaction) {
+        Token.clearNext(transaction: transaction)
         keyValueStore.removeAll(transaction: transaction)
         cacheQueue.sync {
             cachedMasterKey = nil
@@ -845,11 +842,13 @@ public class KeyBackupService: NSObject {
         }
 
         static func clearNext() {
-            databaseStorage.write { transaction in
-                keyValueStore.setData(nil, key: backupIdKey, transaction: transaction)
-                keyValueStore.setData(nil, key: dataKey, transaction: transaction)
-                keyValueStore.setObject(nil, key: triesKey, transaction: transaction)
-            }
+            databaseStorage.write { clearNext(transaction: $0) }
+        }
+
+        static func clearNext(transaction: SDSAnyWriteTransaction) {
+            keyValueStore.setData(nil, key: backupIdKey, transaction: transaction)
+            keyValueStore.setData(nil, key: dataKey, transaction: transaction)
+            keyValueStore.setObject(nil, key: triesKey, transaction: transaction)
         }
 
         /// The token to use when making the next enclave request.

@@ -748,6 +748,10 @@ public class OnboardingController: NSObject {
                 return completion(.invalid2FAPin)
             }
 
+            // Clear all cached values before doing restores during onboarding,
+            // they could be stale from previous registrations.
+            databaseStorage.write { KeyBackupService.clearKeys(transaction: $0) }
+
             KeyBackupService.restoreKeys(with: twoFAPin, and: self.kbsAuth).done {
                 // If we restored successfully clear out KBS auth, the server will give it
                 // to us again if we still need to do KBS operations.
