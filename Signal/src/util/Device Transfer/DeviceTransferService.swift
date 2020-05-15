@@ -189,8 +189,6 @@ class DeviceTransferService: NSObject {
     }
 
     func transferAccountToNewDevice(with peerId: MCPeerID, certificateHash: Data?) throws {
-        AssertIsOnMainThread()
-
         cancelTransferToNewDevice()
 
         // Marking the transfer as "in progress" does a few things, most notably it:
@@ -224,13 +222,9 @@ class DeviceTransferService: NSObject {
         )
 
         newDeviceServiceBrowser.invitePeer(peerId, to: session, withContext: nil, timeout: 30)
-
-        notifyObservers { $0.deviceTransferServiceDidStartTransfer(progress: progress) }
     }
 
     func cancelTransferToNewDevice() {
-        AssertIsOnMainThread()
-
         guard case .outgoing = transferState else { return }
 
         notifyObservers { $0.deviceTransferServiceDidEndTransfer(error: .cancel) }
@@ -952,31 +946,43 @@ extension DeviceTransferService: MCSessionDelegate {
     func session(_ session: MCSession, peer peerId: MCPeerID, didChange state: MCSessionState) {
         Logger.debug("Connection to \(peerId) did change: \(state.rawValue)")
 
-        // We only care about state changes for the device we're sending to.
-        guard case .outgoing(let newDevicePeerId, _, _, let transferredFiles, _) = transferState, peerId == newDevicePeerId else { return }
+        switch transferState {
+        case .outgoing(let newDevicePeerId, _, _, let transferredFiles, let progress):
+            // We only care about state changes for the device we're sending to.
+            guard peerId == newDevicePeerId else { return }
 
-        Logger.info("Connection to new device did change: \(state.rawValue)")
+            Logger.info("Connection to new device did change: \(state.rawValue)")
 
-        switch state {
-        case .connected:
-            // Only send the files if we haven't yet sent the manifest.
-            guard !transferredFiles.contains(DeviceTransferService.manifestIdentifier) else { return }
+            switch state {
+            case .connected:
+                notifyObservers { $0.deviceTransferServiceDidStartTransfer(progress: progress) }
 
-            do {
-                try sendManifest().done {
-                    try self.sendAllFiles()
-                }.catch { error in
-                    self.failTransfer(.assertion, "Failed to send manifest to new device \(error)")
+                // Only send the files if we haven't yet sent the manifest.
+                guard !transferredFiles.contains(DeviceTransferService.manifestIdentifier) else { return }
+
+                do {
+                    try sendManifest().done {
+                        try self.sendAllFiles()
+                    }.catch { error in
+                        self.failTransfer(.assertion, "Failed to send manifest to new device \(error)")
+                    }
+                } catch {
+                    failTransfer(.assertion, "Failed to send manifest to new device \(error)")
                 }
-            } catch {
-                failTransfer(.assertion, "Failed to send manifest to new device \(error)")
+            case .connecting:
+                break
+            case .notConnected:
+                failTransfer(.assertion, "Lost connection to new device")
+            @unknown default:
+                failTransfer(.assertion, "Unexpected connection state: \(state.rawValue)")
             }
-        case .connecting:
+        case .incoming(let oldDevicePeerId, _, _, _):
+            // We only care about state changes for the device we're receiving from.
+            guard peerId == oldDevicePeerId else { return }
+
+            if state == .notConnected { failTransfer(.assertion, "Lost connection to old device") }
+        case .idle:
             break
-        case .notConnected:
-            failTransfer(.assertion, "Lost connection to new device")
-        @unknown default:
-            failTransfer(.assertion, "Unexpected connection state: \(state.rawValue)")
         }
     }
 
@@ -1245,6 +1251,7 @@ private class FileTransferOperation: OWSOperation {
     fileprivate static let operationQueue: OperationQueue = {
         let queue = OperationQueue()
         queue.name = logTag()
+        queue.maxConcurrentOperationCount = 1
         return queue
     }()
 

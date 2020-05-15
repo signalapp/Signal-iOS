@@ -12,7 +12,42 @@ class DeviceTransferQRScanningViewController: DeviceTransferBaseViewController {
     var capture: ZXCapture?
     var isCapturing = false
 
-    lazy var maskingContainerView: UIView = {
+    lazy var activityIndicator: UIActivityIndicatorView = {
+        let activityIndicator = UIActivityIndicatorView(style: .white)
+        activityIndicator.color = Theme.primaryIconColor
+        return activityIndicator
+    }()
+    lazy var label: UILabel = {
+        let label = UILabel()
+        label.font = .ows_dynamicTypeBody2
+        label.textColor = Theme.primaryTextColor
+        label.numberOfLines = 0
+        label.lineBreakMode = .byWordWrapping
+        return label
+    }()
+    lazy var hStack: UIStackView = {
+        let stackView = UIStackView()
+        stackView.axis = .horizontal
+        stackView.spacing = 6
+        stackView.setContentHuggingVerticalLow()
+        stackView.setCompressionResistanceVerticalHigh()
+
+        let leadingSpacer = UIView.hStretchingSpacer()
+        stackView.addArrangedSubview(leadingSpacer)
+
+        stackView.addArrangedSubview(activityIndicator)
+
+        stackView.addArrangedSubview(label)
+        label.setCompressionResistanceHorizontalHigh()
+
+        let trailingSpacer = UIView.hStretchingSpacer()
+        stackView.addArrangedSubview(trailingSpacer)
+
+        leadingSpacer.autoMatch(.width, to: .width, of: trailingSpacer)
+
+        return stackView
+    }()
+    lazy var captureContainerView: UIView = {
         let view = UIView()
         view.addSubview(maskingView)
         maskingView.autoPinHeightToSuperview()
@@ -22,6 +57,7 @@ class DeviceTransferQRScanningViewController: DeviceTransferBaseViewController {
     lazy var maskingView: UIView = {
         let maskingView = OWSBezierPathView()
         maskingView.autoPinToSquareAspectRatio()
+        maskingView.autoSetDimension(.height, toSize: 256)
         maskingView.configureShapeLayerBlock = { layer, bounds in
             let path = UIBezierPath(rect: bounds)
 
@@ -53,11 +89,17 @@ class DeviceTransferQRScanningViewController: DeviceTransferBaseViewController {
         )
         contentView.addArrangedSubview(explanationLabel)
 
-        contentView.addArrangedSubview(.spacer(withHeight: 25))
+        let topSpacer = UIView.vStretchingSpacer()
+        contentView.addArrangedSubview(topSpacer)
 
-        contentView.addArrangedSubview(maskingContainerView)
+        contentView.addArrangedSubview(captureContainerView)
+        contentView.addArrangedSubview(hStack)
+        hStack.isHidden = true
 
-        contentView.addArrangedSubview(.vStretchingSpacer())
+        let bottomSpacer = UIView.vStretchingSpacer()
+        contentView.addArrangedSubview(bottomSpacer)
+        topSpacer.autoMatch(.height, to: .height, of: bottomSpacer)
+        topSpacer.autoSetDimension(.height, toSize: 25, relation: .greaterThanOrEqual)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -79,8 +121,8 @@ class DeviceTransferQRScanningViewController: DeviceTransferBaseViewController {
             DispatchQueue.main.async {
                 guard let capture = self.capture else { return }
                 capture.layer.frame = self.maskingView.frame
-                self.maskingContainerView.layer.addSublayer(capture.layer)
-                self.maskingContainerView.bringSubviewToFront(self.maskingView)
+                self.captureContainerView.layer.addSublayer(capture.layer)
+                self.captureContainerView.bringSubviewToFront(self.maskingView)
                 capture.start()
 
                 self.isCapturing = true
@@ -103,49 +145,77 @@ extension DeviceTransferQRScanningViewController: ZXCaptureDelegate {
             return owsFailDebug("scan returned bad result")
         }
 
+        // Ignore if a non-signal url was scanned
+        guard scannedURL.scheme == kURLSchemeSGNLKey else { return }
+
         capture?.stop()
         isCapturing = false
 
-        do {
-            let (peerId, certificateHash) = try deviceTransferService.parseTrasnsferURL(scannedURL)
-            deviceTransferService.addObserver(self)
-            try deviceTransferService.transferAccountToNewDevice(with: peerId, certificateHash: certificateHash)
-        } catch {
-            owsFailDebug("Something went wrong \(error)")
+        showConnecting()
 
-            if let error = error as? DeviceTransferService.Error {
-                switch error {
-                case .unsupportedVersion:
-                    OWSActionSheets.showActionSheet(
-                        title: NSLocalizedString("DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION",
-                                                 comment: "An error indicating the user must update their device before trying to transfer.")
-                    )
-                    return
-                case .modeMismatch:
-                    let desiredMode: DeviceTransferService.TransferMode =
-                        TSAccountManager.sharedInstance().isPrimaryDevice ? .linked : .primary
-                    switch desiredMode {
-                    case .linked:
-                        OWSActionSheets.showActionSheet(
-                            title: NSLocalizedString("DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED",
-                                                     comment: "An error indicating the user must scan this code with a linked device to transfer.")
+        DispatchQueue.global().async {
+            do {
+                let (peerId, certificateHash) = try self.deviceTransferService.parseTrasnsferURL(scannedURL)
+                self.deviceTransferService.addObserver(self)
+                try self.deviceTransferService.transferAccountToNewDevice(with: peerId, certificateHash: certificateHash)
+            } catch {
+//                owsFailDebug("Something went wrong \(error)")
+
+                if let error = error as? DeviceTransferService.Error {
+                    switch error {
+                    case .unsupportedVersion:
+                        self.showError(
+                            text: NSLocalizedString("DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION",
+                                                    comment: "An error indicating the user must update their device before trying to transfer.")
                         )
-                    case .primary:
-                        OWSActionSheets.showActionSheet(
-                            title: NSLocalizedString("DEVICE_TRANSFER_ERROR_MODE_MISMATCH_PRIMARY",
-                                                     comment: "An error indicating the user must scan this code with a primary device to transfer.")
-                        )
+                        return
+                    case .modeMismatch:
+                        let desiredMode: DeviceTransferService.TransferMode =
+                            TSAccountManager.sharedInstance().isPrimaryDevice ? .linked : .primary
+                        switch desiredMode {
+                        case .linked:
+                            self.showError(
+                                text: NSLocalizedString("DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED",
+                                                        comment: "An error indicating the user must scan this code with a linked device to transfer.")
+                            )
+                        case .primary:
+                            self.showError(
+                                text: NSLocalizedString("DEVICE_TRANSFER_ERROR_MODE_MISMATCH_PRIMARY",
+                                                        comment: "An error indicating the user must scan this code with a primary device to transfer.")
+                            )
+                        }
+                        return
+                    default:
+                        break
                     }
-                    return
-                default:
-                    break
                 }
-            }
 
-            OWSActionSheets.showActionSheet(
-                title: NSLocalizedString("DEVICE_TRANSFER_ERROR_GENERIC",
-                                         comment: "An error indicating that something went wrong with the transfer and it could not complete")
-            )
+                self.showError(
+                    text: NSLocalizedString("DEVICE_TRANSFER_ERROR_GENERIC",
+                                            comment: "An error indicating that something went wrong with the transfer and it could not complete")
+                )
+            }
+        }
+    }
+
+    func showConnecting() {
+        captureContainerView.isHidden = true
+        hStack.isHidden = false
+        label.text = NSLocalizedString("DEVICE_TRANSFER_SCANNING_CONNECTING",
+                                       comment: "Text indicating that we are connecting to the scanned device")
+        label.textColor = Theme.primaryTextColor
+        activityIndicator.isHidden = false
+        activityIndicator.startAnimating()
+    }
+
+    func showError(text: String) {
+        DispatchMainThreadSafe {
+            self.captureContainerView.isHidden = true
+            self.hStack.isHidden = false
+            self.label.text = text
+            self.label.textColor = .ows_accentRed
+            self.activityIndicator.stopAnimating()
+            self.activityIndicator.isHidden = true
         }
     }
 }
@@ -159,5 +229,12 @@ extension DeviceTransferQRScanningViewController: DeviceTransferServiceObserver 
         navigationController?.pushViewController(vc, animated: true)
     }
 
-    func deviceTransferServiceDidEndTransfer(error: DeviceTransferService.Error?) {}
+    func deviceTransferServiceDidEndTransfer(error: DeviceTransferService.Error?) {
+        if error != nil {
+            showError(
+                text: NSLocalizedString("DEVICE_TRANSFER_ERROR_GENERIC",
+                                        comment: "An error indicating that something went wrong with the transfer and it could not complete")
+            )
+        }
+    }
 }
