@@ -339,7 +339,8 @@ public class GroupsV2Protos {
             }
             // We can ignoreSignature because these protos came from the service.
             let changeActionsProto: GroupsProtoGroupChangeActions = try parseAndVerifyChangeActionsProto(changeProto, ignoreSignature: true)
-            result.append(GroupV2Change(snapshot: snapshot, changeActionsProto: changeActionsProto))
+            let diff = GroupV2Diff(changeActionsProto: changeActionsProto, downloadedAvatars: downloadedAvatars)
+            result.append(GroupV2Change(snapshot: snapshot, diff: diff))
         }
         return result
     }
