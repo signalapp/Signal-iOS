@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import PromiseKit
 
 @objc
 public class StickerSharingViewController: SelectThreadViewController {
@@ -53,19 +54,19 @@ public class StickerSharingViewController: SelectThreadViewController {
         let packUrl = stickerPackInfo.shareUrl()
 
         // Try to include a link preview of the sticker pack.
-        linkPreviewManager.tryToBuildPreviewInfo(previewUrl: packUrl)
-            .done { (linkPreviewDraft) in
-                self.shareAndDismiss(thread: thread,
-                                     packUrl: packUrl,
-                                     linkPreviewDraft: linkPreviewDraft)
-            }.catch { error in
-                owsFailDebug("Could not build link preview: \(error)")
+        firstly {
+            linkPreviewManager.tryToBuildPreviewInfo(previewUrl: packUrl)
+        }.done { (linkPreviewDraft) in
+            self.shareAndDismiss(thread: thread,
+                                 packUrl: packUrl,
+                                 linkPreviewDraft: linkPreviewDraft)
+        }.catch { error in
+            owsFailDebug("Could not build link preview: \(error)")
 
-                self.shareAndDismiss(thread: thread,
-                                     packUrl: packUrl,
-                                     linkPreviewDraft: nil)
-            }
-            .retainUntilComplete()
+            self.shareAndDismiss(thread: thread,
+                                 packUrl: packUrl,
+                                 linkPreviewDraft: nil)
+        }.retainUntilComplete()
     }
 
     private func shareAndDismiss(thread: TSThread,

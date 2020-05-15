@@ -219,7 +219,7 @@ class UsernameViewController: OWSViewController {
                     OWSActionSheets.showErrorAlert(message: NSLocalizedString("USERNAME_VIEW_ERROR_UPDATE_FAILED",
                                                                         comment: "Error moessage shown when a username update fails."))
                 }
-            }
+            }.retainUntilComplete()
         }
     }
 

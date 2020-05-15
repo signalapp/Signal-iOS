@@ -172,12 +172,13 @@ public class MessageFetcherJob: NSObject {
 
         Logger.info("Fetching messages via REST.")
 
-        fetchMessagesViaRest()
-            .done {
-                resolver.fulfill(())
-            }.catch { error in
-                resolver.reject(error)
-            }.retainUntilComplete()
+        firstly {
+            fetchMessagesViaRest()
+        }.done {
+            resolver.fulfill(())
+        }.catch { error in
+            resolver.reject(error)
+        }.retainUntilComplete()
     }
 
     // MARK: -
