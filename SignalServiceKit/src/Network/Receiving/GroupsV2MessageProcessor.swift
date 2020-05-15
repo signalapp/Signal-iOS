@@ -625,8 +625,9 @@ class IncomingGroupsV2MessageQueue: NSObject {
                 return try self.groupsV2.parseAndVerifyChangeActionsProto(changeActionsProtoData,
                                                                           ignoreSignature: false)
             }.then(on: .global()) { (changeActionsProto: GroupsProtoGroupChangeActions) throws -> Promise<TSGroupThread> in
-                // We need to verify the signatures because these protos came from
-                // another client, not the service.
+                guard changeActionsProto.revision == contextRevision else {
+                    throw OWSAssertionError("Embeded change proto revision doesn't match context revision.")
+                }
                 return try self.groupsV2.updateGroupWithChangeActions(groupId: oldGroupModel.groupId,
                                                                       changeActionsProto: changeActionsProto,
                                                                       ignoreSignature: false,
