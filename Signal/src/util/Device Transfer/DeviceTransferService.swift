@@ -1246,7 +1246,6 @@ private class FileTransferOperation: OWSOperation {
 
     let promise: Promise<Void>
     private let resolver: Resolver<Void>
-    private weak var progress: Progress?
 
     fileprivate static let operationQueue: OperationQueue = {
         let queue = OperationQueue()
@@ -1307,8 +1306,6 @@ private class FileTransferOperation: OWSOperation {
             withCompletionHandler: { [weak self] error in
                 guard let self = self else { return }
 
-                self.progress?.removeObserver(self, forKeyPath: "fractionCompleted")
-
                 if let error = error {
                     self.reportError(OWSAssertionError("Transferring file \(self.file.identifier) failed \(error)"))
                 } else {
@@ -1321,24 +1318,6 @@ private class FileTransferOperation: OWSOperation {
             return reportError(OWSAssertionError("Transfer of file failed \(file.identifier)"))
         }
 
-        fileProgress.addObserver(self, forKeyPath: "fractionCompleted", options: .initial, context: nil)
-
         progress.addChild(fileProgress, withPendingUnitCount: Int64(file.estimatedSize))
-    }
-
-    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey: Any]?, context: UnsafeMutableRawPointer?) {
-        guard keyPath == "fractionCompleted", let progress = object as? Progress else {
-            return super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
-        }
-
-        let transferredBytes = progress.fractionCompleted * Double(progress.totalUnitCount)
-
-        Logger.info(
-            String(
-                format: "Transferring file: \(file.identifier), progress: %0.2f (%0.2f/\(progress.totalUnitCount) bytes)",
-                progress.fractionCompleted * 100,
-                transferredBytes
-            )
-        )
     }
 }
