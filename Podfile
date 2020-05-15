@@ -9,8 +9,8 @@ use_frameworks!
 
 pod 'SwiftProtobuf', "1.7.0"
 
-# pod 'SignalCoreKit', git: 'https://github.com/signalapp/SignalCoreKit.git', testspecs: ["Tests"]
-pod 'SignalCoreKit', path: '../SignalCoreKit', testspecs: ["Tests"]
+pod 'SignalCoreKit', git: 'https://github.com/signalapp/SignalCoreKit.git', testspecs: ["Tests"]
+# pod 'SignalCoreKit', path: '../SignalCoreKit', testspecs: ["Tests"]
 
 pod 'AxolotlKit', git: 'https://github.com/signalapp/SignalProtocolKit.git', branch: 'master', testspecs: ["Tests"]
 # pod 'AxolotlKit', path: '../SignalProtocolKit', testspecs: ["Tests"]
