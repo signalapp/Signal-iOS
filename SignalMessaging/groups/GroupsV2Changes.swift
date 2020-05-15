@@ -62,10 +62,10 @@ public class GroupsV2Changes {
         }
         let changeAuthorUuid = try groupV2Params.uuid(forUserId: changeAuthorUuidData)
 
-        guard changeActionsProto.hasVersion else {
+        guard changeActionsProto.hasRevision else {
             throw OWSAssertionError("Missing revision.")
         }
-        let newRevision = changeActionsProto.version
+        let newRevision = changeActionsProto.revision
         guard newRevision == oldGroupModel.revision + 1 else {
             throw OWSAssertionError("Unexpected revision: \(newRevision) != \(oldGroupModel.revision + 1).")
         }

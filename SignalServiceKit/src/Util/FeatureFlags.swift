@@ -208,6 +208,9 @@ public class FeatureFlags: NSObject {
     public static let groupsV2SetCapability = groupsV2
 
     @objc
+    public static var groupsV2reapplyCurrentRevision = false
+
+    @objc
     public static let linkedPhones = build.includes(.internalPreview)
 
     @objc

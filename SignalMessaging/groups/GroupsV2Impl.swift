@@ -524,7 +524,11 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                     guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
                         throw OWSAssertionError("Invalid group model.")
                     }
-                    return groupModel.revision
+                    if FeatureFlags.groupsV2reapplyCurrentRevision {
+                        return groupModel.revision
+                    } else {
+                        return groupModel.revision + 1
+                    }
                 }
 
                 return try StorageService.buildFetchGroupChangeActionsRequest(groupV2Params: groupV2Params,

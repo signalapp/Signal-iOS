@@ -391,41 +391,148 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
     private func fetchAndApplyChangeActionsFromService(groupSecretParamsData: Data,
                                                        groupUpdateMode: GroupUpdateMode) -> Promise<TSGroupThread> {
         return firstly { () -> Promise<[GroupV2Change]> in
-            var firstKnownRevision: UInt32?
-            switch groupUpdateMode {
-            case .upToSpecificRevisionImmediately(let upToRevision):
-                firstKnownRevision = upToRevision
-            default:
-                break
-            }
-            return self.groupsV2.fetchGroupChangeActions(groupSecretParamsData: groupSecretParamsData,
-                                                         firstKnownRevision: firstKnownRevision)
+            self.fetchChangeActionsFromService(groupSecretParamsData: groupSecretParamsData,
+                                               groupUpdateMode: groupUpdateMode)
         }.then(on: DispatchQueue.global()) { (groupChanges: [GroupV2Change]) throws -> Promise<TSGroupThread> in
             let groupId = try self.groupsV2.groupId(forGroupSecretParamsData: groupSecretParamsData)
             return self.tryToApplyGroupChangesFromService(groupId: groupId,
                                                           groupSecretParamsData: groupSecretParamsData,
                                                           groupChanges: groupChanges,
+                                                          downloadedAvatars: downloadedAvatars,
                                                           groupUpdateMode: groupUpdateMode)
         }.timeout(seconds: GroupManager.groupUpdateTimeoutDuration,
                   description: "Update via changes") {
-            GroupsV2Error.timeout
+                    GroupsV2Error.timeout
+        }
+    }
+
+//    private let changeCacheQueue = DispatchQueue(label: "GroupV2UpdatesImpl.changeCacheQueue")
+    private let changeCache = NSCache<NSString, ChangeCacheItem>()
+
+    private class ChangeCacheItem: NSObject {
+        let groupChanges: [GroupV2Change]
+
+        init(groupChanges: [GroupV2Change]) {
+            self.groupChanges = groupChanges
+        }
+    }
+
+    private func addGroupChangesToCache(groupChanges: [GroupV2Change],
+                                        cacheKey: NSString) {
+        guard !groupChanges.isEmpty else {
+            owsFailDebug("Invalid group changes.")
+            changeCache.removeObject(forKey: cacheKey)
+            return
+        }
+
+        let revisions = groupChanges.map { $0.revision }
+        Logger.verbose("Caching revisions: \(revisions)")
+        changeCache.setObject(ChangeCacheItem(groupChanges: groupChanges),
+                              forKey: cacheKey)
+    }
+
+    private func cachedGroupChanges(forCacheKey cacheKey: NSString,
+                                    groupSecretParamsData: Data,
+                                    upToRevision: UInt32?) -> [GroupV2Change]? {
+        guard let upToRevision = upToRevision else {
+            return nil
+        }
+        let groupId: Data
+        do {
+            groupId = try groupsV2.groupId(forGroupSecretParamsData: groupSecretParamsData)
+        } catch {
+            owsFailDebug("Error: \(error)")
+            return nil
+        }
+        guard let dbRevision = (databaseStorage.read { (transaction) -> UInt32? in
+            guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
+                return nil
+            }
+            guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
+                return nil
+            }
+            return groupModel.revision
+        }) else {
+            return nil
+        }
+        guard dbRevision < upToRevision else {
+            return nil
+        }
+        guard let cacheItem = changeCache.object(forKey: cacheKey) else {
+            return nil
+        }
+        let cachedChanges = cacheItem.groupChanges.filter { groupChange in
+            let revision = groupChange.revision
+            guard revision <= upToRevision else {
+                return false
+            }
+            if FeatureFlags.groupsV2reapplyCurrentRevision {
+                return revision >= dbRevision
+            } else {
+                return revision > dbRevision
+            }
+        }
+        let revisions = cachedChanges.map { $0.revision }
+        guard Set(revisions).contains(upToRevision) else {
+            return nil
+        }
+        Logger.verbose("Using cached revisions: \(revisions), dbRevision: \(dbRevision), upToRevision: \(upToRevision)")
+        return cachedChanges
+    }
+
+    private func fetchChangeActionsFromService(groupSecretParamsData: Data,
+                                               groupUpdateMode: GroupUpdateMode) -> Promise<[GroupV2Change]> {
+
+        let upToRevision: UInt32? = {
+            switch groupUpdateMode {
+            case .upToSpecificRevisionImmediately(let upToRevision):
+                return upToRevision
+            default:
+                return nil
+            }
+        }()
+
+        let cacheKey = groupSecretParamsData.hexadecimalString as NSString
+
+        return DispatchQueue.global().async(.promise) { () -> [GroupV2Change]? in
+            guard let groupChanges = self.cachedGroupChanges(forCacheKey: cacheKey,
+                                                                   groupSecretParamsData: groupSecretParamsData,
+                                                                   upToRevision: upToRevision) else {
+                                                                return nil
+            }
+            return groupChanges
+        }.then(on: DispatchQueue.global()) { (groupChanges: [GroupV2Change]?) -> Promise<[GroupV2Change]> in
+            if let groupChanges = groupChanges {
+                return Promise.value(groupChanges)
+            }
+            return firstly {
+                return self.groupsV2.fetchGroupChangeActions(groupSecretParamsData: groupSecretParamsData,
+                                                             firstKnownRevision: upToRevision)
+            }.map(on: DispatchQueue.global()) { (groupChanges: [GroupV2Change]) -> [GroupV2Change] in
+                self.addGroupChangesToCache(groupChanges: groupChanges, cacheKey: cacheKey)
+
+                return groupChanges
+            }
         }
     }
 
     private func tryToApplyGroupChangesFromService(groupId: Data,
                                                    groupSecretParamsData: Data,
                                                    groupChanges: [GroupV2Change],
+                                                   downloadedAvatars: GroupV2DownloadedAvatars,
                                                    groupUpdateMode: GroupUpdateMode) -> Promise<TSGroupThread> {
         switch groupUpdateMode {
         case .upToCurrentRevisionImmediately:
             return tryToApplyGroupChangesFromServiceNow(groupId: groupId,
                                                         groupSecretParamsData: groupSecretParamsData,
                                                         groupChanges: groupChanges,
+                                                        downloadedAvatars: downloadedAvatars,
                                                         upToRevision: nil)
         case .upToSpecificRevisionImmediately(let upToRevision):
             return tryToApplyGroupChangesFromServiceNow(groupId: groupId,
                                                         groupSecretParamsData: groupSecretParamsData,
                                                         groupChanges: groupChanges,
+                                                        downloadedAvatars: downloadedAvatars,
                                                         upToRevision: upToRevision)
         case .upToCurrentRevisionAfterMessageProcessWithThrottling:
             return firstly {
@@ -434,6 +541,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                 return self.tryToApplyGroupChangesFromServiceNow(groupId: groupId,
                                                                  groupSecretParamsData: groupSecretParamsData,
                                                                  groupChanges: groupChanges,
+                                                                 downloadedAvatars: downloadedAvatars,
                                                                  upToRevision: nil)
             }
         }
@@ -442,6 +550,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
     private func tryToApplyGroupChangesFromServiceNow(groupId: Data,
                                                       groupSecretParamsData: Data,
                                                       groupChanges: [GroupV2Change],
+                                                      downloadedAvatars: GroupV2DownloadedAvatars,
                                                       upToRevision: UInt32?) -> Promise<TSGroupThread> {
 
         let localProfileKey = profileManager.localProfileKey()
@@ -471,7 +580,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
             var shouldUpdateProfileKeyInGroup = false
             var profileKeysByUuid = [UUID: Data]()
             for groupChange in groupChanges {
-                let changeRevision = groupChange.snapshot.revision
+                let changeRevision = groupChange.revision
                 if let upToRevision = upToRevision {
                     guard upToRevision >= changeRevision else {
                         Logger.info("Ignoring group change: \(changeRevision); only updating to revision: \(upToRevision)")
@@ -482,11 +591,37 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                         break
                     }
                 }
+
+                let changeActionsProto = groupChange.changeActionsProto
+                // Many change actions have author info, e.g. addedByUserID. But we can
+                // safely assume that all actions in the "change actions" have the same author.
+                guard let changeAuthorUuidData = groupChange.changeActionsProto.sourceUuid else {
+                    throw OWSAssertionError("Missing changeAuthorUuid.")
+                }
+                let changeAuthorUuid = try groupV2Params.uuid(forUserId: changeAuthorUuidData)
+                let groupUpdateSourceAddress = SignalServiceAddress(uuid: changeAuthorUuid)
+
                 guard let oldGroupModel = groupThread.groupModel as? TSGroupModelV2 else {
                     throw OWSAssertionError("Invalid group model.")
                 }
-                let builder = try TSGroupModelBuilder(groupV2Snapshot: groupChange.snapshot)
-                let newGroupModel = try builder.build(transaction: transaction)
+
+                let newGroupModel: TSGroupModel
+                let newDisappearingMessageToken: DisappearingMessageToken?
+                let newProfileKeys: [UUID: Data]
+                if let snapshot = groupChange.snapshot {
+                    let builder = try TSGroupModelBuilder(groupV2Snapshot: snapshot)
+                    newGroupModel = try builder.build(transaction: transaction)
+                    newDisappearingMessageToken = snapshot.disappearingMessageToken
+                    newProfileKeys = snapshot.profileKeys
+                } else {
+                    let changedGroupModel = try GroupsV2Changes.applyChangesToGroupModel(groupThread: groupThread,
+                                                                                         changeActionsProto: changeActionsProto,
+                                                                                         downloadedAvatars: downloadedAvatars,
+                                                                                         transaction: transaction)
+                    newGroupModel = changedGroupModel.newGroupModel
+                    newDisappearingMessageToken = changedGroupModel.newDisappearingMessageToken
+                    newProfileKeys = changedGroupModel.profileKeys
+                }
 
                 if changeRevision == oldGroupModel.revision {
                     if !oldGroupModel.isEqual(to: newGroupModel, ignoreRevision: false) {
@@ -501,15 +636,6 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                     }
                 }
 
-                // Many change actions have author info, e.g. addedByUserID. But we can
-                // safely assume that all actions in the "change actions" have the same author.
-                guard let changeAuthorUuidData = groupChange.changeActionsProto.sourceUuid else {
-                    throw OWSAssertionError("Missing changeAuthorUuid.")
-                }
-                let changeAuthorUuid = try groupV2Params.uuid(forUserId: changeAuthorUuidData)
-                let groupUpdateSourceAddress = SignalServiceAddress(uuid: changeAuthorUuid)
-
-                let newDisappearingMessageToken = groupChange.snapshot.disappearingMessageToken
                 groupThread = try GroupManager.updateExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: newGroupModel,
                                                                                                        newDisappearingMessageToken: newDisappearingMessageToken,
                                                                                                        groupUpdateSourceAddress: groupUpdateSourceAddress,
@@ -517,13 +643,13 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
 
                 // If the group state includes a stale profile key for the
                 // local user, schedule an update to fix that.
-                if let profileKey = groupChange.snapshot.profileKeys[localUuid],
+                if let profileKey = newProfileKeys[localUuid],
                     profileKey != localProfileKey.keyData {
                     shouldUpdateProfileKeyInGroup = true
                 }
 
                 // Merge known profile keys, always taking latest.
-                profileKeysByUuid = profileKeysByUuid.merging(groupChange.snapshot.profileKeys) { (_, latest) in latest }
+                profileKeysByUuid = profileKeysByUuid.merging(newProfileKeys) { (_, latest) in latest }
             }
 
             if shouldUpdateProfileKeyInGroup {
@@ -558,8 +684,10 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
             guard let groupChange = groupChanges.first else {
                 return nil
             }
-
-            let builder = try TSGroupModelBuilder(groupV2Snapshot: groupChange.snapshot)
+            guard let snapshot = groupChange.snapshot else {
+                throw OWSAssertionError("Missing snapshot.")
+            }
+            let builder = try TSGroupModelBuilder(groupV2Snapshot: snapshot)
             let newGroupModel = try builder.build(transaction: transaction)
 
             // Many change actions have author info, e.g. addedByUserID. But we can
@@ -570,7 +698,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
             let changeAuthorUuid = try groupV2Params.uuid(forUserId: changeAuthorUuidData)
             let groupUpdateSourceAddress = SignalServiceAddress(uuid: changeAuthorUuid)
 
-            let newDisappearingMessageToken = groupChange.snapshot.disappearingMessageToken
+            let newDisappearingMessageToken = snapshot.disappearingMessageToken
 
             let result = try GroupManager.tryToUpsertExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: newGroupModel,
                                                                                                        newDisappearingMessageToken: newDisappearingMessageToken,

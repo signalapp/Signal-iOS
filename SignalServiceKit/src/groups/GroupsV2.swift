@@ -196,13 +196,17 @@ public protocol GroupV2Snapshot {
 // MARK: -
 
 public struct GroupV2Change {
-    public let snapshot: GroupV2Snapshot
-    public let changeActionsProto: GroupsProtoGroupChangeActions
+    public var snapshot: GroupV2Snapshot?
+    public var changeActionsProto: GroupsProtoGroupChangeActions
 
-    public init(snapshot: GroupV2Snapshot,
+    public init(snapshot: GroupV2Snapshot?,
                 changeActionsProto: GroupsProtoGroupChangeActions) {
         self.snapshot = snapshot
         self.changeActionsProto = changeActionsProto
+    }
+
+    public var revision: UInt32 {
+        return changeActionsProto.revision
     }
 }
 
