@@ -55,6 +55,8 @@ public extension StorageService {
                                                     sessionManager: AFHTTPSessionManager,
                                                     authCredential: AuthCredential) throws -> NSURLRequest {
 
+        // GroupsV2 TODO: Apply GroupManager.changeProtoEpoch.
+        // GroupsV2 TODO: Apply GroupManager.changeProtoEpoch.
         let urlPath = "/v1/groups/logs/\(OWSFormat.formatUInt32(fromRevision))"
         return try buildGroupV2Request(protoData: nil,
                                        urlPath: urlPath,

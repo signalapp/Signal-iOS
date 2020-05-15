@@ -626,7 +626,7 @@ class IncomingGroupsV2MessageQueue: NSObject {
                                                                           ignoreSignature: false)
             }.then(on: .global()) { (changeActionsProto: GroupsProtoGroupChangeActions) throws -> Promise<TSGroupThread> in
                 guard changeActionsProto.revision == contextRevision else {
-                    throw OWSAssertionError("Embeded change proto revision doesn't match context revision.")
+                    throw OWSAssertionError("Embedded change proto revision doesn't match context revision.")
                 }
                 return try self.groupsV2.updateGroupWithChangeActions(groupId: oldGroupModel.groupId,
                                                                       changeActionsProto: changeActionsProto,

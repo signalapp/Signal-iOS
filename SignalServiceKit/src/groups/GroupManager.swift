@@ -99,6 +99,12 @@ public class GroupManager: NSObject {
 
     public static let maxGroupNameLength: Int = 32
 
+    // GroupsV2 TODO: Finalize this value with Ehren.
+    public static let changeProtoEpoch: UInt32 = 0
+
+    // This matches kOversizeTextMessageSizeThreshold.
+    public static let maxEmbeddedChangeProtoLength: UInt = 2 * 1024
+
     private static func groupIdLength(for groupsVersion: GroupsVersion) -> Int32 {
         switch groupsVersion {
         case .V1:

@@ -165,7 +165,8 @@ public class GroupsV2Protos {
         builder.setMasterKey(try masterKeyData(forGroupModel: groupModel))
         builder.setRevision(groupModel.revision)
 
-        if let changeActionsProtoData = changeActionsProtoData {
+        if let changeActionsProtoData = changeActionsProtoData,
+        changeActionsProtoData.count <= GroupManager.maxEmbeddedChangeProtoLength {
             assert(changeActionsProtoData.count > 0)
             builder.setGroupChange(changeActionsProtoData)
         }
@@ -179,6 +180,10 @@ public class GroupsV2Protos {
     public class func parseAndVerifyChangeActionsProto(_ changeProtoData: Data,
                                                        ignoreSignature: Bool) throws -> GroupsProtoGroupChangeActions {
         let changeProto = try GroupsProtoGroupChange.parseData(changeProtoData)
+        guard changeProto.hasChangeEpoch,
+            changeProto.changeEpoch <= GroupManager.changeProtoEpoch else {
+            throw OWSAssertionError("Invalid embedded change proto epoch: \(changeProto.changeEpoch).")
+        }
         return try parseAndVerifyChangeActionsProto(changeProto,
                                                     ignoreSignature: ignoreSignature)
     }
