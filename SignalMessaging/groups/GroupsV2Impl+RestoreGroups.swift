@@ -102,7 +102,10 @@ public extension GroupsV2Impl {
     }
 
     private static var canProcessGroupRestore: Bool {
-        guard CurrentAppContext().isMainAppAndActive else {
+        // CurrentAppContext().isMainAppAndActive should
+        // only be called on the main thread.
+        guard CurrentAppContext().isMainApp,
+            CurrentAppContext().isAppForegroundAndActive() else {
             return false
         }
         guard reachabilityManager.isReachable else {
@@ -128,9 +131,9 @@ public extension GroupsV2Impl {
         case retryableFailure
         case emptyQueue
         case cantProcess
-        
+
         // MARK: - CustomStringConvertible
-        
+
         public var description: String {
             switch self {
             case .success:
