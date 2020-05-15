@@ -318,4 +318,7 @@ public class DebugFlags: NSObject {
 
     @objc
     public static let verboseSignalRecipientLogging = build.includes(.qa)
+
+    @objc
+    public static let shouldMergeUserProfiles = build.includes(.qa)
 }

@@ -1070,6 +1070,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 {
     return NSLocalizedString(@"UNKNOWN_USER", @"Label indicating an unknown user.");
 }
+
 - (NSString *_Nonnull)displayNameForSignalAccount:(SignalAccount *)signalAccount
 {
     OWSAssertDebug(signalAccount);

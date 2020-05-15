@@ -57,6 +57,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly) SignalAccountReadCache *signalAccountReadCache;
 
+@property (nonatomic, readonly) NSString *unknownUserLabel;
+
 #pragma mark - CNContacts
 
 - (nullable CNContact *)cnContactWithId:(nullable NSString *)contactId;

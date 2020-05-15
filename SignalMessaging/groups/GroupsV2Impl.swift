@@ -73,7 +73,9 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                 Logger.warn("Local profile update failed with error: \(error)")
             }.retainUntilComplete()
 
-            GroupsV2Impl.enqueueRestoreGroupPass()
+            Self.enqueueRestoreGroupPass()
+
+            self.mergeUserProfiles()
         }
 
         observeNotifications()
@@ -122,6 +124,23 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             if FeatureFlags.versionedProfiledUpdate,
                 self.tsAccountManager.isRegisteredAndReady {
                 self.reuploadLocalProfilePromise().retainUntilComplete()
+            }
+        }
+    }
+
+    // This will only be used for internal builds.
+    private func mergeUserProfiles() {
+        guard DebugFlags.shouldMergeUserProfiles else {
+            return
+        }
+
+        databaseStorage.asyncWrite { transaction in
+            SignalRecipient.anyEnumerate(transaction: transaction) { (recipient, _) in
+                let address = recipient.address
+                guard address.uuid != nil, address.phoneNumber != nil else {
+                    return
+                }
+                OWSUserProfile.mergeUserProfilesIfNecessary(for: address, transaction: transaction)
             }
         }
     }

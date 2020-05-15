@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -22,6 +22,28 @@ extension AnyUserProfileFinder {
         }
     }
 
+    @objc(userProfileForUUID:transaction:)
+    func userProfileForUUID(_ uuid: UUID, transaction: SDSAnyReadTransaction) -> OWSUserProfile? {
+        switch transaction.readTransaction {
+        case .grdbRead(let transaction):
+            return grdbAdapter.userProfileForUUID(uuid, transaction: transaction)
+        case .yapRead:
+            owsFailDebug("Invalid transaction.")
+            return nil
+        }
+    }
+
+    @objc(userProfileForPhoneNumber:transaction:)
+    func userProfileForPhoneNumber(_ phoneNumber: String, transaction: SDSAnyReadTransaction) -> OWSUserProfile? {
+        switch transaction.readTransaction {
+        case .grdbRead(let transaction):
+            return grdbAdapter.userProfileForPhoneNumber(phoneNumber, transaction: transaction)
+        case .yapRead:
+            owsFailDebug("Invalid transaction.")
+            return nil
+        }
+    }
+
     @objc
     func userProfile(forUsername username: String, transaction: SDSAnyReadTransaction) -> OWSUserProfile? {
         switch transaction.readTransaction {
@@ -32,6 +54,8 @@ extension AnyUserProfileFinder {
         }
     }
 }
+
+// MARK: -
 
 @objc
 class GRDBUserProfileFinder: NSObject {
@@ -45,13 +69,13 @@ class GRDBUserProfileFinder: NSObject {
         }
     }
 
-    private func userProfileForUUID(_ uuid: UUID?, transaction: GRDBReadTransaction) -> OWSUserProfile? {
+    fileprivate func userProfileForUUID(_ uuid: UUID?, transaction: GRDBReadTransaction) -> OWSUserProfile? {
         guard let uuidString = uuid?.uuidString else { return nil }
         let sql = "SELECT * FROM \(UserProfileRecord.databaseTableName) WHERE \(userProfileColumn: .recipientUUID) = ?"
         return OWSUserProfile.grdbFetchOne(sql: sql, arguments: [uuidString], transaction: transaction)
     }
 
-    private func userProfileForPhoneNumber(_ phoneNumber: String?, transaction: GRDBReadTransaction) -> OWSUserProfile? {
+    fileprivate func userProfileForPhoneNumber(_ phoneNumber: String?, transaction: GRDBReadTransaction) -> OWSUserProfile? {
         guard let phoneNumber = phoneNumber else { return nil }
         let sql = "SELECT * FROM \(UserProfileRecord.databaseTableName) WHERE \(userProfileColumn: .recipientPhoneNumber) = ?"
         return OWSUserProfile.grdbFetchOne(sql: sql, arguments: [phoneNumber], transaction: transaction)
@@ -62,6 +86,8 @@ class GRDBUserProfileFinder: NSObject {
         return OWSUserProfile.grdbFetchOne(sql: sql, arguments: [username], transaction: transaction)
     }
 }
+
+// MARK: -
 
 @objc
 public class YAPDBUserProfileFinder: NSObject {

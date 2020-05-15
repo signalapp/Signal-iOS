@@ -345,14 +345,17 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
             // UUID recipient.
             BOOL shouldUseUuid = (sessionIndexForPhoneNumber.intValue <= sessionIndexForUuid.intValue);
             if (shouldUseUuid) {
-                OWSFailDebug(@"Discarding phone number recipient in favor of uuid recipient.");
+                OWSLogWarn(@"Discarding phone number recipient in favor of uuid recipient.");
                 existingInstance = uuidInstance;
                 [phoneNumberInstance anyRemoveWithTransaction:transaction];
             } else {
-                OWSFailDebug(@"Discarding uuid recipient in favor of phone number recipient.");
+                OWSLogWarn(@"Discarding uuid recipient in favor of phone number recipient.");
                 existingInstance = phoneNumberInstance;
                 [uuidInstance anyRemoveWithTransaction:transaction];
             }
+
+            [OWSUserProfile mergeUserProfilesIfNecessaryForAddress:address transaction:transaction];
+
             shouldUpdate = YES;
         }
     } else if (phoneNumberInstance != nil) {
@@ -386,6 +389,9 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
     if (existingInstance.recipientUUID == nil && address.uuid != nil) {
         shouldUpdate = YES;
 
+        OWSLogWarn(
+            @"Learned about a user's uuid: %@, phoneNumber: %@.", address.uuid, existingInstance.recipientPhoneNumber);
+
         existingInstance.recipientUUID = address.uuidString;
     }
 
@@ -393,7 +399,8 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
     if (existingInstance.recipientPhoneNumber == nil && address.phoneNumber != nil) {
         shouldUpdate = YES;
 
-        OWSFailDebug(@"unexpectedly learned about a users phone number");
+        OWSLogWarn(
+            @"Learned about a user's phone number: %@, uuid: %@.", address.phoneNumber, existingInstance.recipientUUID);
         existingInstance.recipientPhoneNumber = address.phoneNumber;
     }
 
