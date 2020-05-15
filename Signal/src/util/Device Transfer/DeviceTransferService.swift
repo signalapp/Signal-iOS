@@ -773,11 +773,12 @@ class DeviceTransferService: NSObject {
             walOperation.queuePriority = .high
             FileTransferOperation.operationQueue.addOperation(walOperation)
 
-            when(fulfilled: [dbOperation.promise, walOperation.promise]).done {
+            do {
+                try when(fulfilled: [dbOperation.promise, walOperation.promise]).wait()
                 databaseResolver.fulfill(())
-            }.catch { error in
+            } catch {
                 databaseResolver.reject(error)
-            }.retainUntilComplete()
+            }
         }
 
         for file in manifest.files {
