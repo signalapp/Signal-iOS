@@ -137,6 +137,9 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avat
 
 + (NSSet<NSString *> *)allProfileAvatarFilePathsWithTransaction:(SDSAnyReadTransaction *)transaction;
 
++ (void)mergeUserProfilesIfNecessaryForAddress:(SignalServiceAddress *)address
+                                   transaction:(SDSAnyWriteTransaction *)transaction;
+
 @end
 
 NS_ASSUME_NONNULL_END

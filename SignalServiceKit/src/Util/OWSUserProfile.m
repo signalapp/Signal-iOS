@@ -59,6 +59,11 @@ NSUInteger const kUserProfileSchemaVersion = 1;
     return SSKEnvironment.shared.profileManager;
 }
 
++ (id<ProfileManagerProtocol>)profileManager
+{
+    return SSKEnvironment.shared.profileManager;
+}
+
 - (id<StorageServiceManagerProtocol>)storageServiceManager
 {
     return SSKEnvironment.shared.storageServiceManager;
@@ -699,6 +704,34 @@ NSUInteger const kUserProfileSchemaVersion = 1;
     [super anyDidRemoveWithTransaction:transaction];
 
     [self.profileManager.userProfileReadCache didRemoveUserProfile:self transaction:transaction];
+}
+
++ (void)mergeUserProfilesIfNecessaryForAddress:(SignalServiceAddress *)address
+                                   transaction:(SDSAnyWriteTransaction *)transaction
+{
+    if (address.uuid == nil || address.phoneNumber == nil) {
+        OWSFailDebug(@"Address missing UUID or phone number.");
+        return;
+    }
+
+    OWSUserProfile *_Nullable userProfileForUuid = [self.userProfileFinder userProfileForUUID:address.uuid
+                                                                                  transaction:transaction];
+    OWSUserProfile *_Nullable userProfileForPhoneNumber =
+        [self.userProfileFinder userProfileForPhoneNumber:address.phoneNumber transaction:transaction];
+
+    // AnyUserProfileFinder prefers UUID profiles, so we try to fill in
+    // missing profile keys on UUID profiles from phone number profiles.
+    if (userProfileForUuid != nil && userProfileForUuid.profileKey == nil
+        && userProfileForPhoneNumber.profileKey != nil) {
+        OWSLogInfo(@"Merging user profiles for: %@, %@.", address.uuid, address.phoneNumber);
+
+        [userProfileForUuid updateWithProfileKey:userProfileForPhoneNumber.profileKey
+                             wasLocallyInitiated:YES
+                                     transaction:transaction
+                                      completion:^{
+                                          [self.profileManager updateProfileForAddress:address];
+                                      }];
+    }
 }
 
 @end
