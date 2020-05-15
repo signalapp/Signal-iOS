@@ -76,43 +76,43 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
     public func tryToRefreshV2GroupUpToCurrentRevisionImmediately(groupId: Data,
                                                                   groupSecretParamsData: Data) -> Promise<Void> {
         let groupUpdateMode = GroupUpdateMode.upToCurrentRevisionImmediately
-        return tryToRefreshV2GroupThreadWithThrottling(groupId: groupId,
-                                                       groupSecretParamsData: groupSecretParamsData,
-                                                       groupUpdateMode: groupUpdateMode)
+        return tryToRefreshV2GroupThread(groupId: groupId,
+                                         groupSecretParamsData: groupSecretParamsData,
+                                         groupUpdateMode: groupUpdateMode)
     }
 
     @objc
     public func tryToRefreshV2GroupUpToCurrentRevisionAfterMessageProcessingWithThrottling(_ groupThread: TSGroupThread) {
         let groupUpdateMode = GroupUpdateMode.upToCurrentRevisionAfterMessageProcessWithThrottling
-        tryToRefreshV2GroupThreadWithThrottling(groupThread, groupUpdateMode: groupUpdateMode)
+        tryToRefreshV2GroupThread(groupThread, groupUpdateMode: groupUpdateMode)
     }
 
     @objc
     public func tryToRefreshV2GroupUpToSpecificRevisionImmediately(_ groupThread: TSGroupThread,
                                                                    upToRevision: UInt32) {
         let groupUpdateMode = GroupUpdateMode.upToSpecificRevisionImmediately(upToRevision: upToRevision)
-        tryToRefreshV2GroupThreadWithThrottling(groupThread, groupUpdateMode: groupUpdateMode)
+        tryToRefreshV2GroupThread(groupThread, groupUpdateMode: groupUpdateMode)
     }
 
-    private func tryToRefreshV2GroupThreadWithThrottling(_ groupThread: TSGroupThread,
-                                                         groupUpdateMode: GroupUpdateMode) {
+    private func tryToRefreshV2GroupThread(_ groupThread: TSGroupThread,
+                                           groupUpdateMode: GroupUpdateMode) {
         firstly { () -> Promise<Void> in
             guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
                 return Promise.value(())
             }
             let groupId = groupModel.groupId
             let groupSecretParamsData = groupModel.secretParamsData
-            return tryToRefreshV2GroupThreadWithThrottling(groupId: groupId,
-                                                           groupSecretParamsData: groupSecretParamsData,
-                                                           groupUpdateMode: groupUpdateMode)
+            return tryToRefreshV2GroupThread(groupId: groupId,
+                                             groupSecretParamsData: groupSecretParamsData,
+                                             groupUpdateMode: groupUpdateMode)
         }.catch(on: .global()) { error in
             Logger.warn("Group refresh failed: \(error).")
         }.retainUntilComplete()
     }
 
-    public func tryToRefreshV2GroupThreadWithThrottling(groupId: Data,
-                                                        groupSecretParamsData: Data,
-                                                        groupUpdateMode: GroupUpdateMode) -> Promise<Void> {
+    public func tryToRefreshV2GroupThread(groupId: Data,
+                                          groupSecretParamsData: Data,
+                                          groupUpdateMode: GroupUpdateMode) -> Promise<Void> {
 
         let isThrottled = serialQueue.sync { () -> Bool in
             guard self.shouldThrottle(for: groupUpdateMode) else {

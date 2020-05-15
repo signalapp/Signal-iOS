@@ -47,9 +47,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                 transaction:(SDSAnyWriteTransaction *)transaction
                                                       error:(NSError **)error;
 
-+ (TSOutgoingMessage *)enqueueMessageWithContactShare:(OWSContact *)contactShare thread:(TSThread *)thread;
-
 + (TSOutgoingMessage *)enqueueMessageWithInstalledSticker:(StickerInfo *)stickerInfo thread:(TSThread *)thread;
+
 + (TSOutgoingMessage *)enqueueMessageWithUninstalledSticker:(StickerInfo *)stickerInfo
                                                 stickerData:(NSData *)stickerData
                                                      thread:(TSThread *)thread;
@@ -72,12 +71,6 @@ NS_ASSUME_NONNULL_BEGIN
                                          transaction:(SDSAnyReadTransaction *)transaction
                                        messageSender:(OWSMessageSender *)messageSender
                                           completion:(void (^)(NSError *_Nullable error))completion;
-
-// Used by SAE, otherwise we should use the durable `enqueue` counterpart
-+ (TSOutgoingMessage *)sendMessageNonDurablyWithContactShare:(OWSContact *)contactShare
-                                                      thread:(TSThread *)thread
-                                               messageSender:(OWSMessageSender *)messageSender
-                                                  completion:(void (^)(NSError *_Nullable error))completion;
 
 #pragma mark - Profile Whitelist
 

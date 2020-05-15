@@ -381,7 +381,6 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
                 __block TSOutgoingMessage *outgoingMessage = nil;
                 outgoingMessage = [ThreadUtil sendMessageNonDurablyWithContactShare:contactShare.dbRecord
                                                                              thread:self.thread
-                                                                      messageSender:self.messageSender
                                                                          completion:^(NSError *_Nullable error) {
                                                                              sendCompletion(error, outgoingMessage);
                                                                          }];

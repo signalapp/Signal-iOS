@@ -906,9 +906,9 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         }
         let groupUpdateMode = GroupUpdateMode.upToCurrentRevisionAfterMessageProcessWithThrottling
         firstly {
-            self.groupV2Updates.tryToRefreshV2GroupThreadWithThrottling(groupId: groupId,
-                                                                        groupSecretParamsData: groupModelV2.secretParamsData,
-                                                                        groupUpdateMode: groupUpdateMode)
+            self.groupV2Updates.tryToRefreshV2GroupThread(groupId: groupId,
+                                                          groupSecretParamsData: groupModelV2.secretParamsData,
+                                                          groupUpdateMode: groupUpdateMode)
         }.done { _ in
             Logger.verbose("Update succeeded.")
         }.catch { error in
