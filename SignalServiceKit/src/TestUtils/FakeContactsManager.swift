@@ -85,4 +85,8 @@ public class FakeContactsManager: NSObject, ContactsManagerProtocol {
     public var signalAccountReadCache: SignalAccountReadCache {
         return _signalAccountReadCache
     }
+
+    public var unknownUserLabel: String {
+        "Unknown"
+    }
 }

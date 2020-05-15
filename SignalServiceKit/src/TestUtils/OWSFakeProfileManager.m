@@ -99,6 +99,12 @@ NS_ASSUME_NONNULL_BEGIN
     // Do nothing.
 }
 
+- (nullable NSString *)fullNameForAddress:(SignalServiceAddress *)address
+                              transaction:(SDSAnyReadTransaction *)transaction
+{
+    return @"some fake profile name";
+}
+
 - (nullable NSData *)profileKeyDataForAddress:(SignalServiceAddress *)address
                                   transaction:(SDSAnyReadTransaction *)transaction
 {
