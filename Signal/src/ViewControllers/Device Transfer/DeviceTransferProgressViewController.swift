@@ -8,7 +8,7 @@ import MultipeerConnectivity
 class DeviceTransferProgressViewController: DeviceTransferBaseViewController {
     var deviceTransferService: DeviceTransferService { .shared }
 
-    override var requiresDismissConfirmation: Bool { true }
+    override var requiresDismissConfirmation: Bool { TSAccountManager.sharedInstance().isTransferInProgress }
 
     let progressView: TransferProgressView
     init(progress: Progress) {
