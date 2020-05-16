@@ -60,17 +60,6 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
         lastSuccessfulRefreshMap[groupId] = Date()
     }
 
-    private func shouldThrottle(for groupUpdateMode: GroupUpdateMode) -> Bool {
-        assertOnQueue(serialQueue)
-
-        switch groupUpdateMode {
-        case .upToSpecificRevisionImmediately, .upToCurrentRevisionImmediately:
-            return false
-        case .upToCurrentRevisionAfterMessageProcessWithThrottling:
-            return true
-        }
-    }
-
     // MARK: -
 
     public func tryToRefreshV2GroupUpToCurrentRevisionImmediately(groupId: Data,
@@ -115,7 +104,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                                           groupUpdateMode: GroupUpdateMode) -> Promise<Void> {
 
         let isThrottled = serialQueue.sync { () -> Bool in
-            guard self.shouldThrottle(for: groupUpdateMode) else {
+            guard groupUpdateMode.shouldThrottle else {
                 return false
             }
             guard let lastSuccessfulRefreshDate = self.lastSuccessfulRefreshDate(forGroupId: groupId) else {
@@ -185,6 +174,10 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
             return TSAccountManager.sharedInstance()
         }
 
+        private var messageProcessing: MessageProcessing {
+            return SSKEnvironment.shared.messageProcessing
+        }
+
         // MARK: -
 
         let groupV2Updates: GroupV2UpdatesImpl
@@ -218,9 +211,15 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
         // MARK: -
 
         public override func run() {
-            firstly {
-                groupV2Updates.refreshGroupFromService(groupSecretParamsData: groupSecretParamsData,
-                                                       groupUpdateMode: groupUpdateMode)
+            firstly { () -> Promise<Void> in
+                if groupUpdateMode.shouldBlockOnMessageProcessing {
+                    return self.messageProcessing.allMessageFetchingAndProcessingPromise()
+                } else {
+                    return Promise.value(())
+                }
+            }.then(on: .global()) { _ in
+                self.groupV2Updates.refreshGroupFromService(groupSecretParamsData: self.groupSecretParamsData,
+                                                            groupUpdateMode: self.groupUpdateMode)
             }.done(on: .global()) { _ in
                 Logger.verbose("Group refresh succeeded.")
 
@@ -418,7 +417,9 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
     private func addGroupChangesToCache(groupChanges: [GroupV2Change],
                                         cacheKey: NSString) {
         guard !groupChanges.isEmpty else {
-            owsFailDebug("Invalid group changes.")
+            if FeatureFlags.groupsV2reapplyCurrentRevision {
+                owsFailDebug("Invalid group changes.")
+            }
             changeCache.removeObject(forKey: cacheKey)
             return
         }
@@ -454,6 +455,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
             return nil
         }
         guard dbRevision < upToRevision else {
+            changeCache.removeObject(forKey: cacheKey)
             return nil
         }
         guard let cacheItem = changeCache.object(forKey: cacheKey) else {
@@ -472,6 +474,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
         }
         let revisions = cachedChanges.map { $0.revision }
         guard Set(revisions).contains(upToRevision) else {
+            changeCache.removeObject(forKey: cacheKey)
             return nil
         }
         Logger.verbose("Using cached revisions: \(revisions), dbRevision: \(dbRevision), upToRevision: \(upToRevision)")
@@ -494,8 +497,8 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
 
         return DispatchQueue.global().async(.promise) { () -> [GroupV2Change]? in
             guard let groupChanges = self.cachedGroupChanges(forCacheKey: cacheKey,
-                                                                   groupSecretParamsData: groupSecretParamsData,
-                                                                   upToRevision: upToRevision) else {
+                                                             groupSecretParamsData: groupSecretParamsData,
+                                                             upToRevision: upToRevision) else {
                                                                 return nil
             }
             return groupChanges
@@ -567,7 +570,10 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
             var groupThread = oldGroupThread
 
             if groupChanges.count < 1 {
-                owsFailDebug("No group changes.")
+                if FeatureFlags.groupsV2reapplyCurrentRevision {
+                    owsFailDebug("No group changes.")
+                }
+                return groupThread
             }
 
             var shouldUpdateProfileKeyInGroup = false

@@ -165,10 +165,13 @@ public class GroupsV2Protos {
         builder.setMasterKey(try masterKeyData(forGroupModel: groupModel))
         builder.setRevision(groupModel.revision)
 
-        if let changeActionsProtoData = changeActionsProtoData,
-        changeActionsProtoData.count <= GroupManager.maxEmbeddedChangeProtoLength {
-            assert(changeActionsProtoData.count > 0)
-            builder.setGroupChange(changeActionsProtoData)
+        if let changeActionsProtoData = changeActionsProtoData {
+            if changeActionsProtoData.count <= GroupManager.maxEmbeddedChangeProtoLength {
+                assert(changeActionsProtoData.count > 0)
+                builder.setGroupChange(changeActionsProtoData)
+            } else {
+                owsFailDebug("Discarding oversize group change proto.")
+            }
         }
 
         return try builder.build()

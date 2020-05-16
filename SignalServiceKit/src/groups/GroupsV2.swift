@@ -139,6 +139,24 @@ public enum GroupUpdateMode {
     // * Group update _should not_ block on message processing.
     // * Group update _should not_ be throttled.
     case upToCurrentRevisionImmediately
+
+    public var shouldBlockOnMessageProcessing: Bool {
+        switch self {
+        case .upToCurrentRevisionAfterMessageProcessWithThrottling:
+            return true
+        default:
+            return false
+        }
+    }
+
+    public var shouldThrottle: Bool {
+        switch self {
+        case .upToCurrentRevisionAfterMessageProcessWithThrottling:
+            return true
+        default:
+            return false
+        }
+    }
 }
 
 // MARK: -
