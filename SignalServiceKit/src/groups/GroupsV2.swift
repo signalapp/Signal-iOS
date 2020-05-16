@@ -157,6 +157,15 @@ public enum GroupUpdateMode {
             return false
         }
     }
+
+    public var upToRevision: UInt32? {
+        switch self {
+        case .upToSpecificRevisionImmediately(let upToRevision):
+            return upToRevision
+        default:
+            return nil
+        }
+    }
 }
 
 // MARK: -

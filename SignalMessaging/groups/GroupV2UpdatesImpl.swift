@@ -139,12 +139,10 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
     }
 
     public func operationQueue(forGroupUpdateMode groupUpdateMode: GroupUpdateMode) -> OperationQueue {
-        switch groupUpdateMode {
-        case .upToCurrentRevisionImmediately,
-             .upToSpecificRevisionImmediately:
-            return immediateOperationQueue
-        case .upToCurrentRevisionAfterMessageProcessWithThrottling:
+        if groupUpdateMode.shouldBlockOnMessageProcessing {
             return afterMessageProcessingOperationQueue
+        } else {
+            return immediateOperationQueue
         }
     }
 
@@ -521,26 +519,17 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                                                    groupSecretParamsData: Data,
                                                    groupChanges: [GroupV2Change],
                                                    groupUpdateMode: GroupUpdateMode) -> Promise<TSGroupThread> {
-        switch groupUpdateMode {
-        case .upToCurrentRevisionImmediately:
-            return tryToApplyGroupChangesFromServiceNow(groupId: groupId,
-                                                        groupSecretParamsData: groupSecretParamsData,
-                                                        groupChanges: groupChanges,
-                                                        upToRevision: nil)
-        case .upToSpecificRevisionImmediately(let upToRevision):
-            return tryToApplyGroupChangesFromServiceNow(groupId: groupId,
-                                                        groupSecretParamsData: groupSecretParamsData,
-                                                        groupChanges: groupChanges,
-                                                        upToRevision: upToRevision)
-        case .upToCurrentRevisionAfterMessageProcessWithThrottling:
-            return firstly {
+        return firstly { () -> Promise<Void> in
+            if groupUpdateMode.shouldBlockOnMessageProcessing {
                 return self.messageProcessing.allMessageFetchingAndProcessingPromise()
-            }.then(on: .global()) { _ in
-                return self.tryToApplyGroupChangesFromServiceNow(groupId: groupId,
-                                                                 groupSecretParamsData: groupSecretParamsData,
-                                                                 groupChanges: groupChanges,
-                                                                 upToRevision: nil)
+            } else {
+                return Promise.value(())
             }
+        }.then(on: .global()) {
+            return self.tryToApplyGroupChangesFromServiceNow(groupId: groupId,
+                                                             groupSecretParamsData: groupSecretParamsData,
+                                                             groupChanges: groupChanges,
+                                                             upToRevision: groupUpdateMode.upToRevision)
         }
     }
 
@@ -733,17 +722,14 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
 
     private func tryToApplyCurrentGroupV2SnapshotFromService(groupV2Snapshot: GroupV2Snapshot,
                                                              groupUpdateMode: GroupUpdateMode) -> Promise<TSGroupThread> {
-        switch groupUpdateMode {
-        case .upToCurrentRevisionImmediately:
-            return tryToApplyCurrentGroupV2SnapshotFromServiceNow(groupV2Snapshot: groupV2Snapshot)
-        case .upToSpecificRevisionImmediately:
-            return tryToApplyCurrentGroupV2SnapshotFromServiceNow(groupV2Snapshot: groupV2Snapshot)
-        case .upToCurrentRevisionAfterMessageProcessWithThrottling:
-            return firstly {
+        return firstly { () -> Promise<Void> in
+            if groupUpdateMode.shouldBlockOnMessageProcessing {
                 return self.messageProcessing.allMessageFetchingAndProcessingPromise()
-            }.then(on: .global()) { _ in
-                return self.tryToApplyCurrentGroupV2SnapshotFromServiceNow(groupV2Snapshot: groupV2Snapshot)
+            } else {
+                return Promise.value(())
             }
+        }.then(on: .global()) { _ in
+            return self.tryToApplyCurrentGroupV2SnapshotFromServiceNow(groupV2Snapshot: groupV2Snapshot)
         }
     }
 
