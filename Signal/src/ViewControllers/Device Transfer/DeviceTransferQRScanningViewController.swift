@@ -155,7 +155,7 @@ extension DeviceTransferQRScanningViewController: ZXCaptureDelegate {
 
         DispatchQueue.global().async {
             do {
-                let (peerId, certificateHash) = try self.deviceTransferService.parseTrasnsferURL(scannedURL)
+                let (peerId, certificateHash) = try self.deviceTransferService.parseTransferURL(scannedURL)
                 self.deviceTransferService.addObserver(self)
                 try self.deviceTransferService.transferAccountToNewDevice(with: peerId, certificateHash: certificateHash)
             } catch {

@@ -648,6 +648,12 @@
 		885C35502370DFD50004BA35 /* OWSSyncManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 885C354F2370DFD50004BA35 /* OWSSyncManager.swift */; };
 		8861DED02445349C00BB4145 /* LinkingTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8861DECF2445349B00BB4145 /* LinkingTextView.swift */; };
 		886F08A7234958970085C27F /* InputAccessoryViewPlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 886F08A6234958970085C27F /* InputAccessoryViewPlaceholder.swift */; };
+		887CD4772472FEA500FDD265 /* DeviceTransferOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887CD4762472FEA500FDD265 /* DeviceTransferOperation.swift */; };
+		887CD47B247304B600FDD265 /* DeviceTransferService+URL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887CD47A247304B600FDD265 /* DeviceTransferService+URL.swift */; };
+		887CD47D2473051D00FDD265 /* DeviceTransferService+Manifest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887CD47C2473051D00FDD265 /* DeviceTransferService+Manifest.swift */; };
+		887CD47F247307D900FDD265 /* DeviceTransferService+Restore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887CD47E247307D900FDD265 /* DeviceTransferService+Restore.swift */; };
+		887CD4812473098D00FDD265 /* DeviceTransferService+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887CD4802473098D00FDD265 /* DeviceTransferService+State.swift */; };
+		887CD48324730A6700FDD265 /* DeviceTransferService+MultipeerDelegates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887CD48224730A6700FDD265 /* DeviceTransferService+MultipeerDelegates.swift */; };
 		887EEC1F23F0B20600F8C26D /* PinReminderMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887EEC1E23F0B20600F8C26D /* PinReminderMegaphone.swift */; };
 		8889006C23DBB39B00F40186 /* reactionsMegaphone.json in Resources */ = {isa = PBXBuildFile; fileRef = 8889006323DBB39A00F40186 /* reactionsMegaphone.json */; };
 		8889006D23DBB39B00F40186 /* reactionMegaphone_1.png in Resources */ = {isa = PBXBuildFile; fileRef = 8889006523DBB39B00F40186 /* reactionMegaphone_1.png */; };
@@ -1599,6 +1605,12 @@
 		8861DECF2445349B00BB4145 /* LinkingTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkingTextView.swift; sourceTree = "<group>"; };
 		886F08A6234958970085C27F /* InputAccessoryViewPlaceholder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputAccessoryViewPlaceholder.swift; sourceTree = "<group>"; };
 		8872409323E12DF500824D62 /* NotificationServiceExtension-AppStore.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = "NotificationServiceExtension-AppStore.entitlements"; sourceTree = "<group>"; };
+		887CD4762472FEA500FDD265 /* DeviceTransferOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceTransferOperation.swift; sourceTree = "<group>"; };
+		887CD47A247304B600FDD265 /* DeviceTransferService+URL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DeviceTransferService+URL.swift"; sourceTree = "<group>"; };
+		887CD47C2473051D00FDD265 /* DeviceTransferService+Manifest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DeviceTransferService+Manifest.swift"; sourceTree = "<group>"; };
+		887CD47E247307D900FDD265 /* DeviceTransferService+Restore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DeviceTransferService+Restore.swift"; sourceTree = "<group>"; };
+		887CD4802473098D00FDD265 /* DeviceTransferService+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DeviceTransferService+State.swift"; sourceTree = "<group>"; };
+		887CD48224730A6700FDD265 /* DeviceTransferService+MultipeerDelegates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DeviceTransferService+MultipeerDelegates.swift"; sourceTree = "<group>"; };
 		887D5880236773240048B8FB /* ta */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ta; path = translations/ta.lproj/Localizable.strings; sourceTree = "<group>"; };
 		887D5881236773410048B8FB /* te */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = te; path = translations/te.lproj/Localizable.strings; sourceTree = "<group>"; };
 		887EEC1E23F0B20600F8C26D /* PinReminderMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinReminderMegaphone.swift; sourceTree = "<group>"; };
@@ -3167,7 +3179,13 @@
 		88C4E38124671F9D009C9B97 /* Device Transfer */ = {
 			isa = PBXGroup;
 			children = (
+				887CD4762472FEA500FDD265 /* DeviceTransferOperation.swift */,
 				88C4E37F24635337009C9B97 /* DeviceTransferService.swift */,
+				887CD47C2473051D00FDD265 /* DeviceTransferService+Manifest.swift */,
+				887CD48224730A6700FDD265 /* DeviceTransferService+MultipeerDelegates.swift */,
+				887CD47E247307D900FDD265 /* DeviceTransferService+Restore.swift */,
+				887CD4802473098D00FDD265 /* DeviceTransferService+State.swift */,
+				887CD47A247304B600FDD265 /* DeviceTransferService+URL.swift */,
 				88C659AF24688335002AC115 /* SelfSignedIdentity.swift */,
 			);
 			path = "Device Transfer";
@@ -4656,12 +4674,14 @@
 				88EAD79223764F09004B797E /* OnboardingModeSwitchConfirmationViewController.swift in Sources */,
 				4C2F454F214C00E1004871FF /* AvatarTableViewCell.swift in Sources */,
 				346E9D5421B040B700562252 /* RegistrationController.swift in Sources */,
+				887CD4772472FEA500FDD265 /* DeviceTransferOperation.swift in Sources */,
 				88D23D2023CEC0C700B0E74B /* CallService.swift in Sources */,
 				4CD675BE22E7BE35008010D2 /* MediaDismissAnimationController.swift in Sources */,
 				8813F6E12330082900ADEC6A /* AudioWaveformProgressView.swift in Sources */,
 				340FC8AD204DAC8D007AEB0F /* OWSLinkedDevicesTableViewController.m in Sources */,
 				340FC8AA204DAC8D007AEB0F /* NotificationSettingsViewController.m in Sources */,
 				4C63550022F15A1E00A8ECE6 /* ConversationItem.swift in Sources */,
+				887CD48324730A6700FDD265 /* DeviceTransferService+MultipeerDelegates.swift in Sources */,
 				4C090A1B210FD9C7001FD7F9 /* HapticFeedback.swift in Sources */,
 				8855DF87238F1E0C0066D96F /* EmojiReactorsTableView.swift in Sources */,
 				3496744F2076ACD000080B5F /* LongTextViewController.swift in Sources */,
@@ -4737,6 +4757,7 @@
 				347137FC22A1BCE800F43A63 /* OWSMessageViewOnceView.m in Sources */,
 				45D2AC02204885170033C692 /* OWS2FAReminderViewController.swift in Sources */,
 				8853506A240852F90011D318 /* OWSMessageCell.swift in Sources */,
+				887CD47D2473051D00FDD265 /* DeviceTransferService+Manifest.swift in Sources */,
 				88D23D2623CEC0C700B0E74B /* CallUIAdapter.swift in Sources */,
 				4542DF54208D40AC007B4E76 /* LoadingViewController.swift in Sources */,
 				34D5CCA91EAE3D30005515DB /* AvatarViewHelper.m in Sources */,
@@ -4763,6 +4784,7 @@
 				88D23D2323CEC0C700B0E74B /* NonCallKitCallUIAdaptee.swift in Sources */,
 				34B6A905218B4C91007C4606 /* TypingIndicatorInteraction.swift in Sources */,
 				4517642B1DE939FD00EDB8B9 /* ContactCell.swift in Sources */,
+				887CD47F247307D900FDD265 /* DeviceTransferService+Restore.swift in Sources */,
 				34EA69402194933900702471 /* MediaDownloadView.swift in Sources */,
 				340FC8AB204DAC8D007AEB0F /* DomainFrontingCountryViewController.m in Sources */,
 				88C659B024688335002AC115 /* SelfSignedIdentity.swift in Sources */,
@@ -4799,6 +4821,7 @@
 				8809CE8722F8FE6D00D38867 /* AttachmentKeyboard.swift in Sources */,
 				8810223722DF9C2300A7C44F /* OnboardingPinAttemptsExhaustedViewController.swift in Sources */,
 				34D2CCDA2062E7D000CB1A14 /* OWSScreenLockUI.m in Sources */,
+				887CD47B247304B600FDD265 /* DeviceTransferService+URL.swift in Sources */,
 				4CA46F4C219CCC630038ABDE /* CaptionView.swift in Sources */,
 				345BC30C2047030700257B7C /* OWS2FASettingsViewController.m in Sources */,
 				340FC8B7204DAC8D007AEB0F /* OWSConversationSettingsViewController.m in Sources */,
@@ -4854,6 +4877,7 @@
 				340FC8B3204DAC8D007AEB0F /* AppSettingsViewController.m in Sources */,
 				346B66311F4E29B200E5122F /* CropScaleImageViewController.swift in Sources */,
 				45E5A6991F61E6DE001E4A8A /* MarqueeLabel.swift in Sources */,
+				887CD4812473098D00FDD265 /* DeviceTransferService+State.swift in Sources */,
 				34D1F0B01F867BFC0066283D /* OWSSystemMessageCell.m in Sources */,
 				45A663C51F92EC760027B59E /* GroupTableViewCell.swift in Sources */,
 				88B688B0238F0D1000286F82 /* ReactionsDetailSheet.swift in Sources */,
