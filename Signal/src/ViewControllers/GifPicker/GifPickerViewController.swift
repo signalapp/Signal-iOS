@@ -517,7 +517,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
             })
 
             self.presentActionSheet(alert)
-        }.retainUntilComplete()
+        }
     }
 
     public func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
@@ -613,7 +613,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
         }.catch { error in
             // Don't both showing error UI feedback for default "trending" results.
             Logger.error("error: \(error)")
-        }.retainUntilComplete()
+        }
     }
 
     private func search(query: String) {

@@ -46,38 +46,38 @@ class DebugUINotifications: DebugUIPage {
         if let contactThread = thread as? TSContactThread {
             sectionItems += [
                 OWSTableItem(title: "All Notifications in Sequence") { [weak self] in
-                    self?.notifyForEverythingInSequence(contactThread: contactThread).retainUntilComplete()
+                    self?.notifyForEverythingInSequence(contactThread: contactThread)
                 },
                 OWSTableItem(title: "Incoming Call") { [weak self] in
-                    self?.notifyForIncomingCall(thread: contactThread).retainUntilComplete()
+                    self?.notifyForIncomingCall(thread: contactThread)
                 },
                 OWSTableItem(title: "Call Missed") { [weak self] in
-                    self?.notifyForMissedCall(thread: contactThread).retainUntilComplete()
+                    self?.notifyForMissedCall(thread: contactThread)
                 },
                 OWSTableItem(title: "Call Rejected: New Safety Number") { [weak self] in
-                    self?.notifyForMissedCallBecauseOfNewIdentity(thread: contactThread).retainUntilComplete()
+                    self?.notifyForMissedCallBecauseOfNewIdentity(thread: contactThread)
                 },
                 OWSTableItem(title: "Call Rejected: No Longer Verified") { [weak self] in
-                    self?.notifyForMissedCallBecauseOfNoLongerVerifiedIdentity(thread: contactThread).retainUntilComplete()
+                    self?.notifyForMissedCallBecauseOfNoLongerVerifiedIdentity(thread: contactThread)
                 }
             ]
         }
 
         sectionItems += [
             OWSTableItem(title: "Last Incoming Message") { [weak self] in
-                self?.notifyForIncomingMessage(thread: thread).retainUntilComplete()
+                self?.notifyForIncomingMessage(thread: thread)
             },
 
             OWSTableItem(title: "Notify For Error Message") { [weak self] in
-                self?.notifyForErrorMessage(thread: thread).retainUntilComplete()
+                self?.notifyForErrorMessage(thread: thread)
             },
 
             OWSTableItem(title: "Notify For Threadless Error Message") { [weak self] in
-                self?.notifyUserForThreadlessErrorMessage().retainUntilComplete()
+                self?.notifyUserForThreadlessErrorMessage()
             },
 
             OWSTableItem(title: "Notify of New Signal Users") { [weak self] in
-                self?.notifyOfNewUsers().retainUntilComplete()
+                self?.notifyOfNewUsers()
             }
 
         ]

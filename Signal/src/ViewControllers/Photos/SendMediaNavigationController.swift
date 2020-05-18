@@ -570,7 +570,7 @@ extension SendMediaNavigationController: ImagePickerGridControllerDelegate {
                 modal.dismiss {
                     OWSActionSheets.showActionSheet(title: NSLocalizedString("IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS", comment: "alert title"))
                 }
-            }.retainUntilComplete()
+            }
         }
 
         ModalActivityIndicatorViewController.present(fromViewController: self,

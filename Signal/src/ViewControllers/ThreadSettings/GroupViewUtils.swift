@@ -48,7 +48,7 @@ class GroupViewUtils {
                                                                     GroupViewUtils.showUpdateErrorUI(error: error)
                                                                 }
                                                             }
-                                                        }.retainUntilComplete()
+                                                        }
         }
     }
 

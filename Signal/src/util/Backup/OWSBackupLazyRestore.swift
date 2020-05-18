@@ -159,7 +159,7 @@ public class BackupLazyRestore: NSObject {
 
                 // Continue trying to restore the other attachments.
                 self.tryToRestoreNextAttachment(attachmentIds: attachmentIdsCopy, errorCount: errorCount + 1, backupIO: backupIO)
-            }.retainUntilComplete()
+            }
     }
 
     private func complete(errorCount: UInt) {

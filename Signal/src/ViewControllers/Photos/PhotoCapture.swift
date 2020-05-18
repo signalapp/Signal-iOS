@@ -232,6 +232,7 @@ class PhotoCapture: NSObject {
         }
     }
 
+    @discardableResult
     public func stopCapture() -> Guarantee<Void> {
         return sessionQueue.async(.promise) {
             self.session.stopRunning()
@@ -489,7 +490,7 @@ class PhotoCapture: NSObject {
             self.delegate?.photoCaptureDidBeginMovie(self)
         }.catch { error in
             self.delegate?.photoCapture(self, processingDidError: error)
-        }.retainUntilComplete()
+        }
     }
 
     private func completeMovieCapture() {
@@ -499,7 +500,7 @@ class PhotoCapture: NSObject {
             self.captureOutput.completeMovie(delegate: self)
         }.done(on: sessionQueue) {
             self.stopAudioCapture()
-        }.retainUntilComplete()
+        }
 
         AssertIsOnMainThread()
         // immediately inform UI that capture is stopping
@@ -799,7 +800,7 @@ class CaptureOutput: NSObject {
             delegate.captureOutputDidCapture(movieUrl: .success(outputUrl))
         }.catch { error in
             delegate.captureOutputDidCapture(movieUrl: .failure(error))
-        }.retainUntilComplete()
+        }
     }
 
     func cancelVideo(delegate: CaptureOutputDelegate) {

@@ -86,12 +86,15 @@ extension CameraFirstCaptureSendFlow: ConversationPickerDelegate {
         }
 
         let conversations = selectedConversationsForConversationPicker
-        AttachmentMultisend.sendApprovedMedia(conversations: conversations,
-                                              approvalMessageText: self.approvalMessageText,
-                                              approvedAttachments: approvedAttachments)
-            .done { _ in
+        firstly {
+            AttachmentMultisend.sendApprovedMedia(conversations: conversations,
+                                                  approvalMessageText: self.approvalMessageText,
+                                                  approvedAttachments: approvedAttachments)
+        }.done { _ in
                 self.delegate?.cameraFirstCaptureSendFlowDidComplete(self)
-            }.retainUntilComplete()
+        }.catch { error in
+            owsFailDebug("Error: \(error)")
+        }
     }
 
     func conversationPickerCanCancel(_ conversationPickerViewController: ConversationPickerViewController) -> Bool {

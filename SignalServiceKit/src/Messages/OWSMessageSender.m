@@ -895,7 +895,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             }
         }
     });
-    [sendPromise retainUntilComplete];
 }
 
 - (nullable TSThread *)threadForMessageWithSneakyTransaction:(TSMessage *)message
@@ -1251,44 +1250,43 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         address:recipient.address
         udAccess:messageSend.udSendingAccess.udAccess
         canFailoverUDAuth:NO];
-    [[requestMaker makeRequestObjc]
-            .then(^(OWSRequestMakerResult *result) {
-                dispatch_async([OWSDispatch sendingQueue], ^{
-                    [self messageSendDidSucceed:messageSend
-                                 deviceMessages:deviceMessages
-                                    wasSentByUD:result.wasSentByUD
-                             wasSentByWebsocket:result.wasSentByWebsocket];
-                });
-            })
-            .catch(^(NSError *error) {
-                dispatch_async([OWSDispatch sendingQueue], ^{
-                    NSUInteger statusCode = 0;
-                    NSData *_Nullable responseData = nil;
-                    if ([error.domain isEqualToString:@"SignalServiceKit.RequestMakerUDAuthError"]) {
-                        // Try again.
-                        OWSLogInfo(@"UD request auth failed; failing over to non-UD request.");
-                        [error setIsRetryable:YES];
-                    } else if ([error.domain isEqualToString:TSNetworkManagerErrorDomain]) {
-                        statusCode = error.code;
+    [requestMaker makeRequestObjc]
+        .then(^(OWSRequestMakerResult *result) {
+            dispatch_async([OWSDispatch sendingQueue], ^{
+                [self messageSendDidSucceed:messageSend
+                             deviceMessages:deviceMessages
+                                wasSentByUD:result.wasSentByUD
+                         wasSentByWebsocket:result.wasSentByWebsocket];
+            });
+        })
+        .catch(^(NSError *error) {
+            dispatch_async([OWSDispatch sendingQueue], ^{
+                NSUInteger statusCode = 0;
+                NSData *_Nullable responseData = nil;
+                if ([error.domain isEqualToString:@"SignalServiceKit.RequestMakerUDAuthError"]) {
+                    // Try again.
+                    OWSLogInfo(@"UD request auth failed; failing over to non-UD request.");
+                    [error setIsRetryable:YES];
+                } else if ([error.domain isEqualToString:TSNetworkManagerErrorDomain]) {
+                    statusCode = error.code;
 
-                        NSError *_Nullable underlyingError = error.userInfo[NSUnderlyingErrorKey];
-                        if (underlyingError) {
-                            responseData
-                                = underlyingError.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
-                        } else {
-                            OWSFailDebug(@"Missing underlying error: %@", error);
-                        }
+                    NSError *_Nullable underlyingError = error.userInfo[NSUnderlyingErrorKey];
+                    if (underlyingError) {
+                        responseData = underlyingError.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey];
                     } else {
-                        OWSFailDebug(@"Unexpected error: %@", error);
+                        OWSFailDebug(@"Missing underlying error: %@", error);
                     }
+                } else {
+                    OWSFailDebug(@"Unexpected error: %@", error);
+                }
 
-                    [self messageSendDidFail:messageSend
-                              deviceMessages:deviceMessages
-                                  statusCode:statusCode
-                                       error:error
-                                responseData:responseData];
-                });
-            }) retainUntilComplete];
+                [self messageSendDidFail:messageSend
+                          deviceMessages:deviceMessages
+                              statusCode:statusCode
+                                   error:error
+                            responseData:responseData];
+            });
+        });
 }
 
 - (void)messageSendDidSucceed:(OWSMessageSend *)messageSend
@@ -1813,27 +1811,27 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         address:recipientAddress
         udAccess:messageSend.udSendingAccess.udAccess
         canFailoverUDAuth:YES];
-    [[requestMaker makeRequestObjc]
-            .then(^(OWSRequestMakerResult *result) {
-                // We _do not_ want to dispatch to the sendingQueue here; we're
-                // using a semaphore on the sendingQueue to block on this request.
-                const id responseObject = result.responseObject;
-                PreKeyBundle *_Nullable bundle =
-                    [PreKeyBundle preKeyBundleFromDictionary:responseObject forDeviceNumber:deviceId];
-                success(bundle);
-            })
-            .catch(^(NSError *error) {
-                // We _do not_ want to dispatch to the sendingQueue here; we're
-                // using a semaphore on the sendingQueue to block on this request.
-                NSUInteger statusCode = 0;
-                if ([error.domain isEqualToString:TSNetworkManagerErrorDomain]) {
-                    statusCode = error.code;
-                } else {
-                    OWSFailDebug(@"Unexpected error: %@", error);
-                }
+    [requestMaker makeRequestObjc]
+        .then(^(OWSRequestMakerResult *result) {
+            // We _do not_ want to dispatch to the sendingQueue here; we're
+            // using a semaphore on the sendingQueue to block on this request.
+            const id responseObject = result.responseObject;
+            PreKeyBundle *_Nullable bundle = [PreKeyBundle preKeyBundleFromDictionary:responseObject
+                                                                      forDeviceNumber:deviceId];
+            success(bundle);
+        })
+        .catch(^(NSError *error) {
+            // We _do not_ want to dispatch to the sendingQueue here; we're
+            // using a semaphore on the sendingQueue to block on this request.
+            NSUInteger statusCode = 0;
+            if ([error.domain isEqualToString:TSNetworkManagerErrorDomain]) {
+                statusCode = error.code;
+            } else {
+                OWSFailDebug(@"Unexpected error: %@", error);
+            }
 
-                failure(statusCode);
-            }) retainUntilComplete];
+            failure(statusCode);
+        });
 }
 
 - (nullable NSDictionary *)throws_encryptedMessageForMessageSend:(OWSMessageSend *)messageSend

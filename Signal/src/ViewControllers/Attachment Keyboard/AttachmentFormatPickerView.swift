@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import PromiseKit
 
 protocol AttachmentFormatPickerDelegate: class {
     func didTapCamera(withPhotoCapture: PhotoCapture?)
@@ -61,11 +62,13 @@ class AttachmentFormatPickerView: UICollectionView {
 
         photoCapture.startVideoCapture().done { [weak self] in
             self?.reloadData()
-        }.retainUntilComplete()
+        }.catch { error in
+            owsFailDebug("Error: \(error)")
+        }
     }
 
     func stopCameraPreview() {
-        photoCapture?.stopCapture().retainUntilComplete()
+        photoCapture?.stopCapture()
         photoCapture = nil
     }
 

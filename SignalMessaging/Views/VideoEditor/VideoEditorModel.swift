@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -211,7 +211,7 @@ public class VideoEditorModel: NSObject {
                 } catch {
                     owsFailDebug("Error: \(error)")
                 }
-            }.retainUntilComplete()
+            }
         }
 
         // consumableFilePromise
@@ -391,6 +391,6 @@ private class TrimVideoOperation: OWSOperation {
                 }
             }
             self.reportError(withUndefinedRetry: error)
-        }.retainUntilComplete()
+        }
     }
 }

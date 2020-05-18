@@ -265,7 +265,7 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
     }
 
     private func refresh() {
-        return firstly {
+        firstly {
             self.serviceClient.getRemoteConfig()
         }.done(on: .global()) { fetchedConfig in
             var configToStore = fetchedConfig.filter { Flags.Supported.allRawFlags.contains($0.key) }
@@ -283,7 +283,7 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
             Logger.info("stored new remoteConfig: \(configToStore)")
         }.catch { error in
             Logger.error("error: \(error)")
-        }.retainUntilComplete()
+        }
     }
 }
 

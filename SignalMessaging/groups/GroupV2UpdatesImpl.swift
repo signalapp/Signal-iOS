@@ -96,7 +96,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                                              groupUpdateMode: groupUpdateMode)
         }.catch(on: .global()) { error in
             Logger.warn("Group refresh failed: \(error).")
-        }.retainUntilComplete()
+        }
     }
 
     public func tryToRefreshV2GroupThread(groupId: Data,
@@ -132,7 +132,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
             }
         }.catch(on: .global()) { error in
             Logger.verbose("Group refresh failed: \(error).")
-        }.retainUntilComplete()
+        }
         let operationQueue = self.operationQueue(forGroupUpdateMode: groupUpdateMode)
         operationQueue.addOperation(operation)
         return operation.promise
@@ -248,7 +248,7 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                 }
 
                 self.reportError(nsError)
-            }.retainUntilComplete()
+            }
         }
 
         private var shouldIgnoreAuthFailures: Bool {

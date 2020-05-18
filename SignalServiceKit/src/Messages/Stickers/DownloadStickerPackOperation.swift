@@ -71,7 +71,7 @@ class DownloadStickerPackOperation: CDNDownloadOperation {
                 StickerManager.markStickerPackAsMissing(stickerPackInfo: self.stickerPackInfo)
             }
             return self.reportError(withUndefinedRetry: error)
-        }.retainUntilComplete()
+        }
     }
 
     private func parseStickerPackManifest(stickerPackInfo: StickerPackInfo,

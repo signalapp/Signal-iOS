@@ -122,7 +122,7 @@ public class OWS2FAReminderViewController: UIViewController, PinEntryViewDelegat
                         // don't know / care that something is changing in this moment.
                         // We can try and migrate them again during their next reminder.
                         owsFailDebug("Unexpected error \(error) while migrating to reg lock v2")
-                    }.retainUntilComplete()
+                    }
             }
         } else {
             self.dismiss(animated: true)

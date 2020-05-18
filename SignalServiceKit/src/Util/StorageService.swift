@@ -654,7 +654,7 @@ public extension StorageService {
             }
         }.catch { error in
             owsFailDebug("unexpectedly raised error \(error)")
-        }.retainUntilComplete()
+        }
     }
 }
 

@@ -1353,18 +1353,18 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     OWSAssertIsOnMainThread();
     OWSLogInfo(@"beggining refreshing.");
 
-    [[self.messageFetcherJob runObjc]
-            .then(^{
-                if (TSAccountManager.sharedInstance.isRegisteredPrimaryDevice) {
-                    return [AnyPromise promiseWithValue:nil];
-                }
+    [self.messageFetcherJob runObjc]
+        .then(^{
+            if (TSAccountManager.sharedInstance.isRegisteredPrimaryDevice) {
+                return [AnyPromise promiseWithValue:nil];
+            }
 
-                return [SSKEnvironment.shared.syncManager sendAllSyncRequestMessagesWithTimeout:20];
-            })
-            .ensure(^{
-                OWSLogInfo(@"ending refreshing.");
-                [refreshControl endRefreshing];
-            }) retainUntilComplete];
+            return [SSKEnvironment.shared.syncManager sendAllSyncRequestMessagesWithTimeout:20];
+        })
+        .ensure(^{
+            OWSLogInfo(@"ending refreshing.");
+            [refreshControl endRefreshing];
+        });
 }
 
 #pragma mark - Edit Actions

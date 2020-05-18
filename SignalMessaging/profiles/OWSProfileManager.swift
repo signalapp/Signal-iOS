@@ -124,7 +124,7 @@ extension OWSProfileManager {
             Logger.info("Update succeeded.")
         }.catch { error in
             Logger.error("Update failed: \(error)")
-        }.retainUntilComplete()
+        }
     }
 
     fileprivate class func attemptToUpdateProfileOnService(update: PendingProfileUpdate,
@@ -208,7 +208,11 @@ extension OWSProfileManager {
         // NOTE: We also inform the desktop in the failure case,
         //       since that _may have_ affected service state.
         if self.tsAccountManager.isRegisteredPrimaryDevice {
-            self.syncManager.syncLocalContact().retainUntilComplete()
+            firstly {
+                self.syncManager.syncLocalContact()
+            }.catch { error in
+                Logger.warn("Error: \(error)")
+            }
         }
 
         // Notify all our devices that the profile has changed.

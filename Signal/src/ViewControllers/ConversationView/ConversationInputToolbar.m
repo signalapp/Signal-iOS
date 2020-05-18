@@ -1344,24 +1344,24 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     [self ensureLinkPreviewViewWithState:[LinkPreviewLoading new]];
 
     __weak ConversationInputToolbar *weakSelf = self;
-    [[self.linkPreviewManager tryToBuildPreviewInfoObjcWithPreviewUrl:previewUrl]
-            .then(^(OWSLinkPreviewDraft *linkPreviewDraft) {
-                ConversationInputToolbar *_Nullable strongSelf = weakSelf;
-                if (!strongSelf) {
-                    return;
-                }
-                if (strongSelf.inputLinkPreview != inputLinkPreview) {
-                    // Obsolete callback.
-                    return;
-                }
-                inputLinkPreview.linkPreviewDraft = linkPreviewDraft;
-                LinkPreviewDraft *viewState = [[LinkPreviewDraft alloc] initWithLinkPreviewDraft:linkPreviewDraft];
-                [strongSelf ensureLinkPreviewViewWithState:viewState];
-            })
-            .catch(^(id error) {
-                // The link preview could not be loaded.
-                [weakSelf clearLinkPreviewView];
-            }) retainUntilComplete];
+    [self.linkPreviewManager tryToBuildPreviewInfoObjcWithPreviewUrl:previewUrl]
+        .then(^(OWSLinkPreviewDraft *linkPreviewDraft) {
+            ConversationInputToolbar *_Nullable strongSelf = weakSelf;
+            if (!strongSelf) {
+                return;
+            }
+            if (strongSelf.inputLinkPreview != inputLinkPreview) {
+                // Obsolete callback.
+                return;
+            }
+            inputLinkPreview.linkPreviewDraft = linkPreviewDraft;
+            LinkPreviewDraft *viewState = [[LinkPreviewDraft alloc] initWithLinkPreviewDraft:linkPreviewDraft];
+            [strongSelf ensureLinkPreviewViewWithState:viewState];
+        })
+        .catch(^(id error) {
+            // The link preview could not be loaded.
+            [weakSelf clearLinkPreviewView];
+        });
 }
 
 - (void)ensureLinkPreviewViewWithState:(id<LinkPreviewState>)state

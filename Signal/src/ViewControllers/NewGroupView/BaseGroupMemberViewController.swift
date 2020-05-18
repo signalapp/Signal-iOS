@@ -128,7 +128,7 @@ public class BaseGroupMemberViewController: OWSViewController {
             GroupManager.tryToFillInMissingUuuids(for: addresses, isBlocking: false)
         }.catch { error in
             owsFailDebug("Error: \(error)")
-        }.retainUntilComplete()
+        }
     }
 
     @objc
@@ -409,7 +409,7 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
             if !self.doesRecipientSupportGroupsV2(recipient) {
                 self.tryToEnableGroupsV2ForAddress(address,
                                                    isBlocking: false,
-                                                   ignoreErrors: true).retainUntilComplete()
+                                                   ignoreErrors: true)
             }
         }
     }

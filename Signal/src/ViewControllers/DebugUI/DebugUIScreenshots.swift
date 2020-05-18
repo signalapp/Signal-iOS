@@ -987,7 +987,7 @@ public extension DebugUIScreenshots {
             profileGivenName: givenName,
             profileFamilyName: familyName,
             profileAvatarData: avatarData
-        ).retainUntilComplete()
+        )
     }
 
     private class func buildContact(address: SignalServiceAddress, fullName: String, transaction: SDSAnyWriteTransaction) -> Contact {

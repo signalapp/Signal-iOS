@@ -883,7 +883,7 @@ extension AttachmentApprovalViewController: AttachmentTextToolbarDelegate {
                     modalVC.dismiss {
                         OWSActionSheets.showErrorAlert(message: NSLocalizedString("ATTACHMENT_APPROVAL_FAILED_TO_EXPORT", comment: "Error that outgoing attachments could not be exported."))
                     }
-                }.retainUntilComplete()
+                }
         }
     }
 

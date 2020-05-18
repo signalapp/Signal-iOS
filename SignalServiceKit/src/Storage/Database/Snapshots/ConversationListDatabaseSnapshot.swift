@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -34,8 +34,8 @@ public class ConversationListDatabaseObserver: NSObject {
     private var threadChangeCollector = ThreadChangeCollector()
 
     private typealias ThreadUniqueId = String
-    private var _committedThreadChanges: Result<Set<ThreadUniqueId>, Error>?
-    private var committedThreadChanges: Result<Set<ThreadUniqueId>, Error>? {
+    private var _committedThreadChanges: Swift.Result<Set<ThreadUniqueId>, Error>?
+    private var committedThreadChanges: Swift.Result<Set<ThreadUniqueId>, Error>? {
         get {
             AssertIsOnMainThread()
             return _committedThreadChanges

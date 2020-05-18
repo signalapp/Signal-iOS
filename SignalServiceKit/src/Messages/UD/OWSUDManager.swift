@@ -172,7 +172,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
             }
 
             // Any error is silently ignored on startup.
-            self.ensureSenderCertificate(certificateExpirationPolicy: .strict).retainUntilComplete()
+            _ = self.ensureSenderCertificate(certificateExpirationPolicy: .strict)
         }
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(registrationStateDidChange),
@@ -193,7 +193,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         }
 
         // Any error is silently ignored
-        ensureSenderCertificate(certificateExpirationPolicy: .strict).retainUntilComplete()
+        _ = ensureSenderCertificate(certificateExpirationPolicy: .strict)
     }
 
     @objc func didBecomeActive() {
@@ -206,7 +206,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
             }
 
             // Any error is silently ignored on startup.
-            self.ensureSenderCertificate(certificateExpirationPolicy: .strict).retainUntilComplete()
+            _ = self.ensureSenderCertificate(certificateExpirationPolicy: .strict)
         }
     }
 
@@ -499,10 +499,9 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
     public func ensureSenderCertificate(certificateExpirationPolicy: OWSUDCertificateExpirationPolicy,
                                          success: @escaping (SMKSenderCertificate) -> Void,
                                          failure: @escaping (Error) -> Void) {
-        return ensureSenderCertificate(certificateExpirationPolicy: certificateExpirationPolicy)
+        ensureSenderCertificate(certificateExpirationPolicy: certificateExpirationPolicy)
             .done(success)
             .catch(failure)
-            .retainUntilComplete()
     }
 
     public func ensureSenderCertificate(certificateExpirationPolicy: OWSUDCertificateExpirationPolicy) -> Promise<SMKSenderCertificate> {
@@ -600,6 +599,10 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
         }
 
         // Try to update the account attributes to reflect this change.
-        tsAccountManager.updateAccountAttributes().retainUntilComplete()
+        firstly {
+            tsAccountManager.updateAccountAttributes()
+        }.catch { error in
+            Logger.warn("Error: \(error)")
+        }
     }
 }

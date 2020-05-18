@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -176,7 +176,7 @@ import PromiseKit
                             resolver.fulfill(())
                         }.catch { (error) in
                             resolver.reject(error)
-                        }.retainUntilComplete()
+                        }
                 }
 
                 let outcome = outcomeForCloudKitError(error: error,
@@ -306,7 +306,7 @@ import PromiseKit
                             resolver.fulfill(record)
                         }.catch { (error) in
                             resolver.reject(error)
-                        }.retainUntilComplete()
+                        }
                 })
             case .failureRetryWithoutDelay:
                 DispatchQueue.global().async {
@@ -316,7 +316,7 @@ import PromiseKit
                             resolver.fulfill(record)
                         }.catch { (error) in
                             resolver.reject(error)
-                        }.retainUntilComplete()
+                        }
                 }
             case .unknownItem:
                 // Record not found.
@@ -557,7 +557,7 @@ import PromiseKit
                             resolver.fulfill(asset)
                         }.catch { (error) in
                             resolver.reject(error)
-                        }.retainUntilComplete()
+                        }
                 })
             case .failureRetryWithoutDelay:
                 DispatchQueue.global().async {
@@ -567,7 +567,7 @@ import PromiseKit
                             resolver.fulfill(asset)
                         }.catch { (error) in
                             resolver.reject(error)
-                        }.retainUntilComplete()
+                        }
                 }
             case .unknownItem:
                 Logger.error("missing fetching record.")
@@ -642,7 +642,7 @@ import PromiseKit
 
     private enum APIOutcome {
         case success
-        case failureDoNotRetry(error:Error)
+        case failureDoNotRetry(error: Error)
         case failureRetryAfterDelay(retryDelay: TimeInterval)
         case failureRetryWithoutDelay
         // This only applies to fetches.

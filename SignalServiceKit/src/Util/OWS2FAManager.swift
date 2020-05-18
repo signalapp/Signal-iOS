@@ -81,7 +81,11 @@ extension OWS2FAManager {
                     transaction: transaction
                 )
             }
-            TSAccountManager.sharedInstance().updateAccountAttributes().retainUntilComplete()
+            firstly {
+                TSAccountManager.sharedInstance().updateAccountAttributes()
+            }.catch { error in
+                Logger.error("Error: \(error)")
+            }
         }
     }
 
@@ -103,7 +107,11 @@ extension OWS2FAManager {
                     transaction: transaction
                 )
             }
-            TSAccountManager.sharedInstance().updateAccountAttributes().retainUntilComplete()
+            firstly {
+                TSAccountManager.sharedInstance().updateAccountAttributes()
+            }.catch { error in
+                Logger.error("Error: \(error)")
+            }
         }
     }
 }

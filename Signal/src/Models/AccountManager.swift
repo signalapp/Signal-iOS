@@ -145,7 +145,8 @@ public class AccountManager: NSObject {
         }
 
         Logger.debug("registering with signal server")
-        let registrationPromise: Promise<Void> = firstly {
+
+        return firstly {
             self.registerForTextSecure(verificationCode: verificationCode, pin: pin, checkForAvailableTransfer: checkForAvailableTransfer)
         }.then { response -> Promise<Void> in
             assert(!FeatureFlags.allowUUIDOnlyContacts || response.uuid != nil)
@@ -190,10 +191,6 @@ public class AccountManager: NSObject {
         }.then { _ -> Promise<Void> in
             self.performInitialStorageServiceRestore()
         }
-
-        registrationPromise.retainUntilComplete()
-
-        return registrationPromise
     }
 
     func performInitialStorageServiceRestore() -> Promise<Void> {
@@ -213,7 +210,11 @@ public class AccountManager: NSObject {
 
                 // Note we *don't* return this promise. There's no need to block registration on
                 // it completing, and if there are any errors, it's durable.
-                self.profileManager.reuploadLocalProfilePromise().retainUntilComplete()
+                firstly {
+                    self.profileManager.reuploadLocalProfilePromise()
+                }.catch { error in
+                    Logger.error("error: \(error)")
+                }
             } else {
                 Logger.debug("no local profile name restored.")
             }
@@ -472,7 +473,7 @@ public class AccountManager: NSObject {
                     owsFailDebug("error: \(error)")
                 }
                 Logger.warn("error: \(error)")
-            }.retainUntilComplete()
+            }
         }
     }
 

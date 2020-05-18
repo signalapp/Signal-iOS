@@ -76,10 +76,10 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift {
                     Logger.verbose("success")
             }.catch { error in
                 owsFailDebug("error: \(error)")
-            }.retainUntilComplete()
+            }
         }.catch { error in
             owsFailDebug("error: \(error)")
-        }.retainUntilComplete()
+        }
     }
 
     public func updateProfilePromise(profileGivenName: String?,

@@ -3,6 +3,7 @@
 //
 
 import Foundation
+import PromiseKit
 
 @objc(OWSTypingIndicators)
 public protocol TypingIndicators: class {
@@ -367,7 +368,11 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
             }
 
             let message = TypingIndicatorMessage(thread: thread, action: action)
-            messageSender.sendMessage(.promise, message.asPreparer).retainUntilComplete()
+            firstly {
+                messageSender.sendMessage(.promise, message.asPreparer)
+            }.catch { error in
+                Logger.error("Error: \(error)")
+            }
         }
     }
 

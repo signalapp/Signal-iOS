@@ -1,9 +1,10 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 import SignalServiceKit
+import PromiseKit
 
 @objc
 public class OWS111UDAttributesMigration: YDBDatabaseMigration {
@@ -33,7 +34,11 @@ public class OWS111UDAttributesMigration: YDBDatabaseMigration {
     }
 
     private func doMigration() {
-        tsAccountManager.updateAccountAttributes().retainUntilComplete()
+        firstly {
+            tsAccountManager.updateAccountAttributes()
+        }.catch { error in
+            owsFailDebug("Error: \(error)")
+        }
 
         self.ydbReadWriteConnection.readWrite { transaction in
             self.markAsComplete(with: transaction.asAnyWrite)

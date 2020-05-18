@@ -122,7 +122,7 @@ public class ProvisioningController: NSObject {
                 }))
                 navigationController.presentActionSheet(alert)
             }
-        }.retainUntilComplete()
+        }
     }
 
     func didSetDeviceName(_ deviceName: String, from viewController: UIViewController) {
@@ -144,7 +144,7 @@ public class ProvisioningController: NSObject {
                 modal.dismiss {
                     viewController.presentActionSheet(alert)
                 }
-            }.retainUntilComplete()
+            }
         }
 
         ModalActivityIndicatorViewController.present(fromViewController: viewController,

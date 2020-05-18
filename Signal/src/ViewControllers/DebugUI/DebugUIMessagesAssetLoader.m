@@ -614,14 +614,14 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     // We could use PMKJoin() or PMKWhen().
-    [PMKJoin(promises)
-            .then(^(id value) {
-                success();
-            })
-            .catch(^(id error) {
-                OWSLogError(@"Could not prepare fake asset loaders: %@.", error);
-                failure();
-            }) retainUntilComplete];
+    PMKJoin(promises)
+        .then(^(id value) {
+            success();
+        })
+        .catch(^(id error) {
+            OWSLogError(@"Could not prepare fake asset loaders: %@.", error);
+            failure();
+        });
 }
 
 @end

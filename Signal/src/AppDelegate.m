@@ -715,7 +715,7 @@ void uncaughtExceptionHandler(NSException *exception)
         dispatch_async(dispatch_get_main_queue(), ^{
             [self.socketManager requestSocketOpen];
             [Environment.shared.contactsManager fetchSystemContactsOnceIfAlreadyAuthorized];
-            [[self.messageFetcherJob runObjc] retainUntilComplete];
+            [self.messageFetcherJob runObjc];
 
             if (![UIApplication sharedApplication].isRegisteredForRemoteNotifications) {
                 OWSLogInfo(@"Retrying to register for remote notifications since user hasn't registered yet.");
@@ -723,9 +723,8 @@ void uncaughtExceptionHandler(NSException *exception)
                 // usually sufficient, but e.g. on iOS11, users who have disabled "Allow Notifications" and disabled
                 // "Background App Refresh" will not be able to obtain an APN token. Enabling those settings does not
                 // restart the app, so we check every activation for users who haven't yet registered.
-                __unused AnyPromise *promise =
-                    [OWSSyncPushTokensJob runWithAccountManager:AppEnvironment.shared.accountManager
-                                                    preferences:Environment.shared.preferences];
+                [OWSSyncPushTokensJob runWithAccountManager:AppEnvironment.shared.accountManager
+                                                preferences:Environment.shared.preferences];
             }
 
             OnboardingController *onboardingController = [OnboardingController new];
@@ -1132,7 +1131,7 @@ void uncaughtExceptionHandler(NSException *exception)
     }
 
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        [[self.messageFetcherJob runObjc] retainUntilComplete];
+        [self.messageFetcherJob runObjc];
 
         if (completion != nil) {
             completion();
@@ -1145,7 +1144,7 @@ void uncaughtExceptionHandler(NSException *exception)
 {
     OWSLogInfo(@"performing background fetch");
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-        __block AnyPromise *job = [self.messageFetcherJob runObjc].then(^{
+        [self.messageFetcherJob runObjc].then(^{
             // HACK: Call completion handler after n seconds.
             //
             // We don't currently have a convenient API to know when message fetching is *done* when
@@ -1156,10 +1155,8 @@ void uncaughtExceptionHandler(NSException *exception)
             // use the rest endpoint here rather than the websocket and circumvent making changes to critical code.
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(5 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
                 completionHandler(UIBackgroundFetchResultNewData);
-                job = nil;
             });
         });
-        [job retainUntilComplete];
     }];
 }
 
@@ -1224,12 +1221,11 @@ void uncaughtExceptionHandler(NSException *exception)
         // Fetch messages as soon as possible after launching. In particular, when
         // launching from the background, without this, we end up waiting some extra
         // seconds before receiving an actionable push notification.
-        [[self.messageFetcherJob runObjc] retainUntilComplete];
+        [self.messageFetcherJob runObjc];
 
         // This should happen at any launch, background or foreground.
-        __unused AnyPromise *pushTokenpromise =
-            [OWSSyncPushTokensJob runWithAccountManager:AppEnvironment.shared.accountManager
-                                            preferences:Environment.shared.preferences];
+        [OWSSyncPushTokensJob runWithAccountManager:AppEnvironment.shared.accountManager
+                                        preferences:Environment.shared.preferences];
     }
 
     [DeviceSleepManager.sharedInstance removeBlockWithBlockObject:self];
@@ -1389,7 +1385,7 @@ void uncaughtExceptionHandler(NSException *exception)
                     [DarwinNotificationCenter postNotificationName:DarwinNotificationName.mainAppHandledNotification];
 
                     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
-                        [[self.messageFetcherJob runObjc] retainUntilComplete];
+                        [self.messageFetcherJob runObjc];
                     }];
                 }];
 }

@@ -198,7 +198,7 @@ public class NewGroupConfirmViewController: OWSViewController {
 
                                                                 NewGroupViewController.showCreateErrorUI(error: error)
                                                             }
-                                                        }.retainUntilComplete()
+                                                        }
         }
     }
 

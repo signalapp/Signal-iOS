@@ -47,7 +47,7 @@ class AppUpdateNag: NSObject {
             self.showUpdateNagIfEnoughTimeHasPassed(appStoreRecord: appStoreRecord)
         }.catch { error in
             Logger.warn("failed with error: \(error)")
-        }.retainUntilComplete()
+        }
     }
 
     // MARK: - Internal

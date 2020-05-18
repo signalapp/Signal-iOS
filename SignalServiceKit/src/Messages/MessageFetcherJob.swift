@@ -98,8 +98,6 @@ public class MessageFetcherJob: NSObject {
 
         operationQueue.addOperation(operation)
 
-        promise.retainUntilComplete()
-
         completionQueue.async {
             self.operationQueue.waitUntilAllOperationsAreFinished()
 
@@ -177,8 +175,9 @@ public class MessageFetcherJob: NSObject {
         }.done {
             resolver.fulfill(())
         }.catch { error in
+            Logger.error("Error: \(error).")
             resolver.reject(error)
-        }.retainUntilComplete()
+        }
     }
 
     // MARK: -
@@ -324,7 +323,7 @@ public class MessageFetcherJob: NSObject {
                 },
                 failure: { (_: URLSessionDataTask?, error: Error?) in
                     guard let error = error else {
-                        Logger.error("error was surpringly nil. sheesh rough day.")
+                        Logger.error("error was surprisingly nil. sheesh rough day.")
                         return resolver.reject(OWSErrorMakeUnableToProcessServerResponseError())
                     }
 
@@ -374,8 +373,9 @@ private class MessageFetchOperation: OWSOperation {
         Logger.debug("")
 
         MessageFetcherJob.fetchMessages(resolver: resolver)
-        promise.ensure {
+
+        _ = promise.ensure {
             self.reportSuccess()
-        }.retainUntilComplete()
+        }
     }
 }

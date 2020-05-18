@@ -224,27 +224,25 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
     // completion promise to execute until _all_ promises
     // have either succeeded or failed. PMKWhen() executes as
     // soon as any of its input promises fail.
-    AnyPromise *completionPromise
-        = PMKJoin(promises)
-              .then(^(id value) {
-                  NSArray<TSAttachmentStream *> *attachmentStreamsCopy;
-                  @synchronized(attachmentStreams) {
-                      attachmentStreamsCopy = [attachmentStreams copy];
-                  }
-                  OWSLogInfo(@"Attachment downloads succeeded: %lu.", (unsigned long)attachmentStreamsCopy.count);
+    PMKJoin(promises)
+        .then(^(id value) {
+            NSArray<TSAttachmentStream *> *attachmentStreamsCopy;
+            @synchronized(attachmentStreams) {
+                attachmentStreamsCopy = [attachmentStreams copy];
+            }
+            OWSLogInfo(@"Attachment downloads succeeded: %lu.", (unsigned long)attachmentStreamsCopy.count);
 
-                  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                      successHandler(attachmentStreamsCopy);
-                  });
-              })
-              .catch(^(NSError *error) {
-                  OWSLogError(@"Attachment downloads failed.");
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                successHandler(attachmentStreamsCopy);
+            });
+        })
+        .catch(^(NSError *error) {
+            OWSLogError(@"Attachment downloads failed.");
 
-                  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                      failureHandler(error);
-                  });
-              });
-    [completionPromise retainUntilComplete];
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                failureHandler(error);
+            });
+        });
 }
 
 - (void)downloadBodyAttachmentsForMessage:(TSMessage *)message
@@ -453,27 +451,25 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
         // completion promise to execute until _all_ promises
         // have either succeeded or failed. PMKWhen() executes as
         // soon as any of its input promises fail.
-        AnyPromise *completionPromise
-            = PMKJoin(promises)
-                  .then(^(id value) {
-                      NSArray<TSAttachmentStream *> *attachmentStreamsCopy;
-                      @synchronized(attachmentStreams) {
-                          attachmentStreamsCopy = [attachmentStreams copy];
-                      }
-                      OWSLogInfo(@"Attachment downloads succeeded: %lu.", (unsigned long)attachmentStreamsCopy.count);
+        PMKJoin(promises)
+            .then(^(id value) {
+                NSArray<TSAttachmentStream *> *attachmentStreamsCopy;
+                @synchronized(attachmentStreams) {
+                    attachmentStreamsCopy = [attachmentStreams copy];
+                }
+                OWSLogInfo(@"Attachment downloads succeeded: %lu.", (unsigned long)attachmentStreamsCopy.count);
 
-                      dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                          successHandler(attachmentStreamsCopy);
-                      });
-                  })
-                  .catch(^(NSError *error) {
-                      OWSLogError(@"Attachment downloads failed.");
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                    successHandler(attachmentStreamsCopy);
+                });
+            })
+            .catch(^(NSError *error) {
+                OWSLogError(@"Attachment downloads failed.");
 
-                      dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                          failureHandler(error);
-                      });
-                  });
-        [completionPromise retainUntilComplete];
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                    failureHandler(error);
+                });
+            });
     });
 }
 

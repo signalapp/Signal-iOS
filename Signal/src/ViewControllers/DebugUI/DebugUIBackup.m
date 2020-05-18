@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "DebugUIBackup.h"
@@ -117,9 +117,9 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *recordName = [OWSBackupAPI recordNameForTestFileWithRecipientId:recipientId];
     CKRecord *record = [OWSBackupAPI recordForFileUrl:[NSURL fileURLWithPath:filePath] recordName:recordName];
 
-    [[self.backup ensureCloudKitAccess].thenInBackground(^{
+    [self.backup ensureCloudKitAccess].thenInBackground(^{
         return [OWSBackupAPI saveRecordsToCloudObjcWithRecords:@[ record ]];
-    }) retainUntilComplete];
+    });
 }
 
 + (void)checkForBackup
@@ -250,9 +250,9 @@ NS_ASSUME_NONNULL_BEGIN
         CKRecord *record = [OWSBackupAPI recordForFileUrl:[NSURL fileURLWithPath:filePath] recordName:recordName];
         [records addObject:record];
     }
-    [[OWSBackupAPI saveRecordsToCloudObjcWithRecords:records].thenInBackground(^{
+    [OWSBackupAPI saveRecordsToCloudObjcWithRecords:records].thenInBackground(^{
         OWSLogVerbose(@"success.");
-    }) retainUntilComplete];
+    });
 }
 
 @end

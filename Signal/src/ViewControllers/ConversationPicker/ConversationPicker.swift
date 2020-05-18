@@ -525,19 +525,23 @@ extension ConversationPickerViewController: UITableViewDelegate {
 
 extension ConversationPickerViewController: UISearchBarDelegate {
     func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        buildSearchResults(searchText: searchText).then { [weak self] searchResults -> Promise<ConversationCollection> in
+        firstly {
+            buildSearchResults(searchText: searchText)
+        }.then { [weak self] searchResults -> Promise<ConversationCollection> in
             guard let self = self else {
                 throw PMKError.cancelled
             }
 
             return self.buildConversationCollection(searchResults: searchResults)
-            }.done { [weak self] conversationCollection in
-                guard let self = self else { return }
+        }.done { [weak self] conversationCollection in
+            guard let self = self else { return }
 
-                self.conversationCollection = conversationCollection
-                self.tableView.reloadData()
-                self.restoreSelection(tableView: self.tableView)
-            }.retainUntilComplete()
+            self.conversationCollection = conversationCollection
+            self.tableView.reloadData()
+            self.restoreSelection(tableView: self.tableView)
+        }.catch { error in
+            owsFailDebug("Error: \(error)")
+        }
     }
 
     func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {

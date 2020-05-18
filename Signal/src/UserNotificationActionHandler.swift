@@ -24,7 +24,7 @@ public class UserNotificationActionHandler: NSObject {
             completionHandler()
             owsFailDebug("error: \(error)")
             Logger.error("error: \(error)")
-        }.retainUntilComplete()
+        }
     }
 
     func handleNotificationResponse( _ response: UNNotificationResponse) throws -> Promise<Void> {

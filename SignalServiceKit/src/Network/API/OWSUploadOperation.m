@@ -115,41 +115,41 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
 
     // TODO: Use attachment v3 if enabled by feature flag and fill in cdnKey and cdnNumber below.
     OWSAttachmentUploadV2 *upload = [OWSAttachmentUploadV2 new];
-    [[BlurHash ensureBlurHashForAttachmentStream:attachmentStream]
-            .catchInBackground(^{
-                // Swallow these errors; blurHashes are strictly optional.
-                OWSLogWarn(@"Error generating blurHash.");
-            })
-            .thenInBackground(^{
-                return [upload uploadAttachmentToService:attachmentStream
-                                           progressBlock:^(NSProgress *uploadProgress) {
-                                               [self fireNotificationWithProgress:uploadProgress.fractionCompleted];
-                                           }];
-            })
-            .thenInBackground(^{
-                [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-                    [attachmentStream updateAsUploadedWithEncryptionKey:upload.encryptionKey
-                                                                 digest:upload.digest
-                                                               serverId:upload.serverId
-                                                                 cdnKey:@""
-                                                              cdnNumber:0
-                                                        uploadTimestamp:upload.uploadTimestamp
-                                                            transaction:transaction];
-                }];
-                self.completedUpload = attachmentStream;
-                [self reportSuccess];
-            })
-            .catchInBackground(^(NSError *error) {
-                OWSLogError(@"Failed: %@", error);
+    [BlurHash ensureBlurHashForAttachmentStream:attachmentStream]
+        .catchInBackground(^{
+            // Swallow these errors; blurHashes are strictly optional.
+            OWSLogWarn(@"Error generating blurHash.");
+        })
+        .thenInBackground(^{
+            return [upload uploadAttachmentToService:attachmentStream
+                                       progressBlock:^(NSProgress *uploadProgress) {
+                                           [self fireNotificationWithProgress:uploadProgress.fractionCompleted];
+                                       }];
+        })
+        .thenInBackground(^{
+            [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                [attachmentStream updateAsUploadedWithEncryptionKey:upload.encryptionKey
+                                                             digest:upload.digest
+                                                           serverId:upload.serverId
+                                                             cdnKey:@""
+                                                          cdnNumber:0
+                                                    uploadTimestamp:upload.uploadTimestamp
+                                                        transaction:transaction];
+            }];
+            self.completedUpload = attachmentStream;
+            [self reportSuccess];
+        })
+        .catchInBackground(^(NSError *error) {
+            OWSLogError(@"Failed: %@", error);
 
-                if (error.code == kCFURLErrorSecureConnectionFailed) {
-                    error.isRetryable = NO;
-                } else {
-                    error.isRetryable = YES;
-                }
+            if (error.code == kCFURLErrorSecureConnectionFailed) {
+                error.isRetryable = NO;
+            } else {
+                error.isRetryable = YES;
+            }
 
-                [self reportError:error];
-            }) retainUntilComplete];
+            [self reportError:error];
+        });
 }
 
 - (void)fireNotificationWithProgress:(CGFloat)aProgress

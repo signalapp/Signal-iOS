@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -175,7 +175,7 @@ public class InstalledStickerPackDataSource: BaseStickerPackDataSource {
             return
         }
         // Download any missing stickers.
-        StickerManager.ensureDownloadsAsync(forStickerPack: stickerPack).retainUntilComplete()
+        _ = StickerManager.ensureDownloadsAsync(forStickerPack: stickerPack)
     }
 
     // MARK: Events
@@ -372,7 +372,7 @@ public class TransientStickerPackDataSource: BaseStickerPackDataSource {
                 // so nudge the view to update even though the
                 // the data source change may not have changed.
                 self.fireDidChange()
-            }.retainUntilComplete()
+            }
     }
 
     // Returns true if sticker is already downloaded.
@@ -413,7 +413,7 @@ public class TransientStickerPackDataSource: BaseStickerPackDataSource {
                 }
                 assert(self.downloadKeySet.contains(key))
                 self.downloadKeySet.remove(key)
-            }.retainUntilComplete()
+            }
         return false
     }
 

@@ -40,7 +40,7 @@ public extension GroupManager {
                     OWSActionSheets.showActionSheet(title: NSLocalizedString("LEAVE_GROUP_FAILED",
                                                                              comment: "Error indicating that a group could not be left."))
                 }
-            }.retainUntilComplete()
+            }
         }
     }
 
@@ -63,7 +63,7 @@ public extension GroupManager {
                                                                                               comment: "Error indicating that an error occurred while accepting an invite.")
                                                                 OWSActionSheets.showActionSheet(title: title)
                                                             }
-                                                        }.retainUntilComplete()
+                                                        }
         }
     }
 }

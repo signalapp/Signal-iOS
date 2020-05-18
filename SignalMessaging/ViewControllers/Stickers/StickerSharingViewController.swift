@@ -66,7 +66,7 @@ public class StickerSharingViewController: SelectThreadViewController {
             self.shareAndDismiss(thread: thread,
                                  packUrl: packUrl,
                                  linkPreviewDraft: nil)
-        }.retainUntilComplete()
+        }
     }
 
     private func shareAndDismiss(thread: TSThread,

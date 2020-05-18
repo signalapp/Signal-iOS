@@ -564,32 +564,32 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
         presentFromViewController:self
                         canCancel:NO
                   backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
-                      [[OWSProfileManager updateLocalProfilePromiseObjWithProfileGivenName:normalizedGivenName
-                                                                         profileFamilyName:normalizedFamilyName
-                                                                         profileAvatarData:weakSelf.avatarData]
+                      [OWSProfileManager updateLocalProfilePromiseObjWithProfileGivenName:normalizedGivenName
+                                                                        profileFamilyName:normalizedFamilyName
+                                                                        profileAvatarData:weakSelf.avatarData]
 
-                              .then(^{
-                                  [modalActivityIndicator dismissWithCompletion:^{
-                                      [weakSelf updateProfileCompleted];
+                          .then(^{
+                              [modalActivityIndicator dismissWithCompletion:^{
+                                  [weakSelf updateProfileCompleted];
 
-                                      // Clear the profile name experience upgrade if the user edits their profile name,
-                                      // even if they didn't dismiss the reminder directly.
-                                      [ProfileViewController.databaseStorage
-                                          asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
-                                              [ExperienceUpgradeManager
-                                                  clearProfileNameReminderWithTransaction:transaction.unwrapGrdbWrite];
-                                          }];
-                                  }];
-                              })
-                              .catch(^(NSError *error) {
-                                  OWSFailDebug(@"Error: %@", error);
+                                  // Clear the profile name experience upgrade if the user edits their profile name,
+                                  // even if they didn't dismiss the reminder directly.
+                                  [ProfileViewController.databaseStorage
+                                      asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                                          [ExperienceUpgradeManager
+                                              clearProfileNameReminderWithTransaction:transaction.unwrapGrdbWrite];
+                                      }];
+                              }];
+                          })
+                          .catch(^(NSError *error) {
+                              OWSFailDebug(@"Error: %@", error);
 
-                                  [modalActivityIndicator dismissWithCompletion:^{
-                                      // Don't show an error alert; the profile update
-                                      // is enqueued and will be completed later.
-                                      [weakSelf updateProfileCompleted];
-                                  }];
-                              }) retainUntilComplete];
+                              [modalActivityIndicator dismissWithCompletion:^{
+                                  // Don't show an error alert; the profile update
+                                  // is enqueued and will be completed later.
+                                  [weakSelf updateProfileCompleted];
+                              }];
+                          });
                   }];
 }
 

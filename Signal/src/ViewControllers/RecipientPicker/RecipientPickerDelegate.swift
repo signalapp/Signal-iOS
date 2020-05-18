@@ -115,7 +115,7 @@ extension RecipientPickerViewController {
                 modalActivityIndicator.dismiss {
                     delegate.recipientPicker(self, showInvalidRecipientAlert: recipient)
                 }
-            }.retainUntilComplete()
+            }
         }
     }
 

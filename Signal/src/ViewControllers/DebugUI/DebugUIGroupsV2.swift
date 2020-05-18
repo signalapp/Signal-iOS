@@ -542,7 +542,7 @@ class DebugUIGroupsV2: DebugUIPage {
             Logger.info("Success.")
         }.catch { error in
             owsFailDebug("Error: \(error)")
-        }.retainUntilComplete()
+        }
     }
 
     private func sendInvalidGroupMessages(contactThread: TSContactThread) {
@@ -618,7 +618,7 @@ class DebugUIGroupsV2: DebugUIPage {
             Logger.info("Complete.")
         }.catch(on: .global()) { error in
             owsFailDebug("Error: \(error)")
-        }.retainUntilComplete()
+        }
     }
 
     private func sendInvalidGroupMessages(contactThread: TSContactThread,

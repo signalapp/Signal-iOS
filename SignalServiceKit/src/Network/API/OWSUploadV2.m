@@ -189,14 +189,13 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
                         return resolve(@(1));
                     }
 
-                    [[strongSelf parseFormAndUpload:formResponseObject]
-                            .thenInBackground(^{
-                                return resolve(@(1));
-                            })
-                            .catchInBackground(^(NSError *error) {
-
-                                resolve(error);
-                            }) retainUntilComplete];
+                    [strongSelf parseFormAndUpload:formResponseObject]
+                        .thenInBackground(^{
+                            return resolve(@(1));
+                        })
+                        .catchInBackground(^(NSError *error) {
+                            resolve(error);
+                        });
                 }
                 failure:^(NSURLSessionDataTask *task, NSError *error) {
                     OWSLogError(@"Failed to get profile avatar upload form: %@", error);
@@ -311,13 +310,13 @@ void AppendMultipartFormPath(id<AFMultipartFormData> formData, NSString *name, N
             return resolve(OWSErrorWithCodeDescription(OWSErrorCodeUploadFailed, @"Upload deallocated"));
         }
 
-        [[strongSelf parseFormAndUpload:formResponseObject progressBlock:progressBlock]
-                .thenInBackground(^{
-                    resolve(@(1));
-                })
-                .catchInBackground(^(NSError *error) {
-                    resolve(error);
-                }) retainUntilComplete];
+        [strongSelf parseFormAndUpload:formResponseObject progressBlock:progressBlock]
+            .thenInBackground(^{
+                resolve(@(1));
+            })
+            .catchInBackground(^(NSError *error) {
+                resolve(error);
+            });
     };
     void (^formFailure)(NSError *) = ^(NSError *error) {
         OWSLogError(@"Failed to get profile avatar upload form: %@", error);

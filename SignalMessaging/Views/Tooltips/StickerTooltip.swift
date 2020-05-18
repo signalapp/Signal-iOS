@@ -91,7 +91,7 @@ public class StickerTooltip: TooltipView {
                 self.updateIconView(imageData: stickerData)
             }.catch {(error) in
                 owsFailDebug("error: \(error)")
-            }.retainUntilComplete()
+            }
             return
         }
 

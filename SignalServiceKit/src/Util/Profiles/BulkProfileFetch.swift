@@ -208,7 +208,7 @@ public class BulkProfileFetch: NSObject {
 
                 self.process()
             }
-        }.retainUntilComplete()
+        }
     }
 
     private func shouldUpdateAddress(_ address: SignalServiceAddress) -> Bool {

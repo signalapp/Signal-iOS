@@ -323,7 +323,7 @@ class DeviceTransferService: NSObject {
             try self.sendDoneMessage(to: newDevicePeerId)
         }.catch { error in
             self.failTransfer(.assertion, "\(error)")
-        }.retainUntilComplete()
+        }
     }
 
     static let doneMessage = "Transfer Complete".data(using: .utf8)!
