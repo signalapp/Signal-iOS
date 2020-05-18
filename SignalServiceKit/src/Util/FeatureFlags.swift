@@ -330,4 +330,7 @@ public class DebugFlags: NSObject {
 
     @objc
     public static let deviceTransferVerboseProgressLogging = build.includes(.qa)
+
+    @objc
+    public static let forceMessageRequests = build.includes(.qa) && FeatureFlags.groupsV2
 }
