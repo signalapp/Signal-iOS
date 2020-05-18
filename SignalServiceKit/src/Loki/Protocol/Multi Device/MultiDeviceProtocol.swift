@@ -306,7 +306,7 @@ public extension MultiDeviceProtocol {
         }
         if timeSinceLastUpdate > deviceLinkUpdateInterval {
             let masterHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: hexEncodedPublicKey, in: transaction) ?? hexEncodedPublicKey
-            LokiFileServerAPI.getDeviceLinks(associatedWith: masterHexEncodedPublicKey).done(on: DispatchQueue.global()) { _ in
+            LokiFileServerAPI.getDeviceLinks(associatedWith: masterHexEncodedPublicKey, in: transaction as! YapDatabaseReadWriteTransaction).done(on: DispatchQueue.global()) { _ in
                 getDestinations()
                 lastDeviceLinkUpdate[hexEncodedPublicKey] = Date()
             }.catch(on: DispatchQueue.global()) { error in

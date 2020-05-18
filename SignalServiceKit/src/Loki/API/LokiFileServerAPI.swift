@@ -24,8 +24,8 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
 
     /// Gets the device links associated with the given hex encoded public key from the
     /// server and stores and returns the valid ones.
-    public static func getDeviceLinks(associatedWith hexEncodedPublicKey: String) -> Promise<Set<DeviceLink>> {
-        return getDeviceLinks(associatedWith: [ hexEncodedPublicKey ])
+    public static func getDeviceLinks(associatedWith hexEncodedPublicKey: String, in transaction: YapDatabaseReadWriteTransaction? = nil) -> Promise<Set<DeviceLink>> {
+        return getDeviceLinks(associatedWith: [ hexEncodedPublicKey ], in: transaction)
     }
 
     @objc(getDeviceLinksAssociatedWithHexEncodedPublicKeys:)
@@ -35,7 +35,7 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
     
     /// Gets the device links associated with the given hex encoded public keys from the
     /// server and stores and returns the valid ones.
-    public static func getDeviceLinks(associatedWith hexEncodedPublicKeys: Set<String>) -> Promise<Set<DeviceLink>> {
+    public static func getDeviceLinks(associatedWith hexEncodedPublicKeys: Set<String>, in transaction: YapDatabaseReadWriteTransaction? = nil) -> Promise<Set<DeviceLink>> {
         let hexEncodedPublicKeysDescription = "[ \(hexEncodedPublicKeys.joined(separator: ", ")) ]"
         print("[Loki] Getting device links for: \(hexEncodedPublicKeysDescription).")
         return getAuthToken(for: server).then(on: DispatchQueue.global()) { token -> Promise<Set<DeviceLink>> in
@@ -88,8 +88,12 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
                 let (promise, seal) = Promise<Set<DeviceLink>>.pending()
                 // Dispatch async on the main queue to avoid nested write transactions
                 DispatchQueue.main.async {
-                    storage.dbReadWriteConnection.readWrite { transaction in
-                        storage.setDeviceLinks(deviceLinks, in: transaction)
+                    if let trans = transaction {
+                        storage.setDeviceLinks(deviceLinks, in: trans)
+                    } else {
+                        storage.dbReadWriteConnection.readWrite { transaction in
+                            storage.setDeviceLinks(deviceLinks, in: transaction)
+                        }
                     }
                     // We have to wait for the device links to be stored because a lot of our logic relies
                     // on them being in the database
