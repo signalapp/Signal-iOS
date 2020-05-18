@@ -58,9 +58,9 @@ public enum PushRegistrationError: Error {
     public func requestPushTokens() -> Promise<(pushToken: String, voipToken: String)> {
         Logger.info("")
 
-        return DispatchQueue.main.async(.promise) {
+        return firstly {
             return self.registerUserNotificationSettings()
-        }.then { () -> Promise<(pushToken: String, voipToken: String)> in
+        }.then { (_) -> Promise<(pushToken: String, voipToken: String)> in
             guard !Platform.isSimulator else {
                 throw PushRegistrationError.pushNotSupported(description: "Push not supported on simulators")
             }
@@ -138,8 +138,8 @@ public enum PushRegistrationError: Error {
     // User notification settings must be registered *before* AppDelegate will
     // return any requested push tokens.
     public func registerUserNotificationSettings() -> Promise<Void> {
-        AssertIsOnMainThread()
         Logger.info("registering user notification settings")
+
         return notificationPresenter.registerNotificationSettings()
     }
 
