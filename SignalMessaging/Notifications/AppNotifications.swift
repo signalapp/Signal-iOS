@@ -564,6 +564,21 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
     }
 
     public func notifyUser(for errorMessage: TSErrorMessage, thread: TSThread, transaction: SDSAnyWriteTransaction) {
+        switch errorMessage.errorType {
+        case .noSession,
+             .wrongTrustedIdentityKey,
+             .invalidKeyException,
+             .missingKeyId,
+             .invalidMessage,
+             .duplicateMessage,
+             .invalidVersion,
+             .nonBlockingIdentityChange,
+             .unknownContactBlockOffer,
+             .groupCreationFailed:
+            return
+        @unknown default:
+            break
+        }
         notifyUser(for: errorMessage as TSMessage, thread: thread, wantsSound: true, transaction: transaction)
     }
 
