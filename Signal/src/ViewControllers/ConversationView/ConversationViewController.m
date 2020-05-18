@@ -3577,7 +3577,14 @@ typedef enum : NSUInteger {
                accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"send_gif")
                                  style:UIAlertActionStyleDefault
                                handler:^(UIAlertAction *action) {
-                                   [self showGIFMetadataWarning];
+                                   NSUserDefaults *userDefaults = NSUserDefaults.standardUserDefaults;
+                                   BOOL hasSeenGIFMetadataWarning = [userDefaults boolForKey:@"hasSeenGIFMetadataWarning"];
+                                   if (!hasSeenGIFMetadataWarning) {
+                                       [self showGIFMetadataWarning];
+                                       [userDefaults setBool:YES forKey:@"hasSeenGIFMetadataWarning"];
+                                   } else {
+                                       [self showGifPicker];
+                                   }
                                }];
     UIImage *gifImage = [UIImage imageNamed:@"actionsheet_gif_black"];
     OWSAssertDebug(gifImage);
