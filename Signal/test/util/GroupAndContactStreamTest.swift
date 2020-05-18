@@ -395,4 +395,6 @@ class TestContactsManager: NSObject, ContactsManagerProtocol {
     func avatarImage(forCNContactId contactId: String?) -> UIImage? {
         return nil
     }
+    
+    var unknownUserLabel: String = "unknown"
 }

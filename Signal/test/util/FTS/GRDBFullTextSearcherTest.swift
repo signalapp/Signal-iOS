@@ -93,6 +93,8 @@ class GRDBFullTextSearcherContactsManager: NSObject, ContactsManagerProtocol {
     func avatarImage(forCNContactId contactId: String?) -> UIImage? {
         return nil
     }
+
+    var unknownUserLabel: String = "unknown"
 }
 
 private let bobRecipient = SignalServiceAddress(phoneNumber: "+49030183000")
