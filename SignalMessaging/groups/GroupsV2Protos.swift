@@ -82,7 +82,7 @@ public class GroupsV2Protos {
 
         let groupBuilder = GroupsProtoGroup.builder()
         let initialRevision: UInt32 = 0
-        groupBuilder.setVersion(initialRevision)
+        groupBuilder.setRevision(initialRevision)
         groupBuilder.setPublicKey(groupV2Params.groupPublicParamsData)
         // GroupsV2 TODO: Will production implementation of encryptString() pad?
         groupBuilder.setTitle(try groupV2Params.encryptGroupName(groupModel.groupName?.stripped ?? " "))
@@ -166,8 +166,12 @@ public class GroupsV2Protos {
         builder.setRevision(groupModel.revision)
 
         if let changeActionsProtoData = changeActionsProtoData {
-            assert(changeActionsProtoData.count > 0)
-            builder.setGroupChange(changeActionsProtoData)
+            if changeActionsProtoData.count <= GroupManager.maxEmbeddedChangeProtoLength {
+                assert(changeActionsProtoData.count > 0)
+                builder.setGroupChange(changeActionsProtoData)
+            } else {
+                owsFailDebug("Discarding oversize group change proto.")
+            }
         }
 
         return try builder.build()
@@ -179,6 +183,10 @@ public class GroupsV2Protos {
     public class func parseAndVerifyChangeActionsProto(_ changeProtoData: Data,
                                                        ignoreSignature: Bool) throws -> GroupsProtoGroupChangeActions {
         let changeProto = try GroupsProtoGroupChange.parseData(changeProtoData)
+        guard changeProto.hasChangeEpoch,
+            changeProto.changeEpoch <= GroupManager.changeProtoEpoch else {
+            throw OWSAssertionError("Invalid embedded change proto epoch: \(changeProto.changeEpoch).")
+        }
         return try parseAndVerifyChangeActionsProto(changeProto,
                                                     ignoreSignature: ignoreSignature)
     }
@@ -304,7 +312,7 @@ public class GroupsV2Protos {
         // disappearing messages should be disabled.
         let disappearingMessageToken = groupV2Params.decryptDisappearingMessagesTimer(groupProto.disappearingMessagesTimer)
 
-        let revision = groupProto.version
+        let revision = groupProto.revision
         let groupSecretParamsData = groupV2Params.groupSecretParamsData
         return GroupV2SnapshotImpl(groupSecretParamsData: groupSecretParamsData,
                                    groupProto: groupProto,
@@ -328,18 +336,19 @@ public class GroupsV2Protos {
                                               groupV2Params: GroupV2Params) throws -> [GroupV2Change] {
         var result = [GroupV2Change]()
         for changeStateProto in groupChangesProto.groupChanges {
-            guard let snapshotProto = changeStateProto.groupState else {
-                throw OWSAssertionError("Missing groupState proto.")
-            }
-            let snapshot = try parse(groupProto: snapshotProto,
+            var snapshot: GroupV2Snapshot?
+            if let snapshotProto = changeStateProto.groupState {
+                snapshot = try parse(groupProto: snapshotProto,
                                      downloadedAvatars: downloadedAvatars,
                                      groupV2Params: groupV2Params)
+            }
             guard let changeProto = changeStateProto.groupChange else {
                 throw OWSAssertionError("Missing groupChange proto.")
             }
             // We can ignoreSignature because these protos came from the service.
             let changeActionsProto: GroupsProtoGroupChangeActions = try parseAndVerifyChangeActionsProto(changeProto, ignoreSignature: true)
-            result.append(GroupV2Change(snapshot: snapshot, changeActionsProto: changeActionsProto))
+            let diff = GroupV2Diff(changeActionsProto: changeActionsProto, downloadedAvatars: downloadedAvatars)
+            result.append(GroupV2Change(snapshot: snapshot, diff: diff))
         }
         return result
     }

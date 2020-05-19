@@ -325,8 +325,8 @@ public class GroupsProtoMember: NSObject {
         if let _value = presentation {
             builder.setPresentation(_value)
         }
-        if hasJoinedAtVersion {
-            builder.setJoinedAtVersion(joinedAtVersion)
+        if hasJoinedAtRevision {
+            builder.setJoinedAtRevision(joinedAtRevision)
         }
         return builder
     }
@@ -371,8 +371,8 @@ public class GroupsProtoMember: NSObject {
             proto.presentation = valueParam
         }
 
-        public func setJoinedAtVersion(_ valueParam: UInt32) {
-            proto.joinedAtVersion = valueParam
+        public func setJoinedAtRevision(_ valueParam: UInt32) {
+            proto.joinedAtRevision = valueParam
         }
 
         public func build() throws -> GroupsProtoMember {
@@ -434,10 +434,10 @@ public class GroupsProtoMember: NSObject {
         return !proto.presentation.isEmpty
     }
 
-    public var joinedAtVersion: UInt32 {
-        return proto.joinedAtVersion
+    public var joinedAtRevision: UInt32 {
+        return proto.joinedAtRevision
     }
-    public var hasJoinedAtVersion: Bool {
+    public var hasJoinedAtRevision: Bool {
         return true
     }
 
@@ -832,8 +832,8 @@ public class GroupsProtoGroup: NSObject {
         if let _value = accessControl {
             builder.setAccessControl(_value)
         }
-        if hasVersion {
-            builder.setVersion(version)
+        if hasRevision {
+            builder.setRevision(revision)
         }
         builder.setMembers(members)
         builder.setPendingMembers(pendingMembers)
@@ -896,8 +896,8 @@ public class GroupsProtoGroup: NSObject {
             proto.accessControl = valueParam.proto
         }
 
-        public func setVersion(_ valueParam: UInt32) {
-            proto.version = valueParam
+        public func setRevision(_ valueParam: UInt32) {
+            proto.revision = valueParam
         }
 
         public func addMembers(_ valueParam: GroupsProtoMember) {
@@ -977,10 +977,10 @@ public class GroupsProtoGroup: NSObject {
         return !proto.disappearingMessagesTimer.isEmpty
     }
 
-    public var version: UInt32 {
-        return proto.version
+    public var revision: UInt32 {
+        return proto.revision
     }
-    public var hasVersion: Bool {
+    public var hasRevision: Bool {
         return true
     }
 
@@ -2395,8 +2395,8 @@ public class GroupsProtoGroupChangeActions: NSObject {
         if let _value = sourceUuid {
             builder.setSourceUuid(_value)
         }
-        if hasVersion {
-            builder.setVersion(version)
+        if hasRevision {
+            builder.setRevision(revision)
         }
         builder.setAddMembers(addMembers)
         builder.setDeleteMembers(deleteMembers)
@@ -2439,8 +2439,8 @@ public class GroupsProtoGroupChangeActions: NSObject {
             proto.sourceUuid = valueParam
         }
 
-        public func setVersion(_ valueParam: UInt32) {
-            proto.version = valueParam
+        public func setRevision(_ valueParam: UInt32) {
+            proto.revision = valueParam
         }
 
         public func addAddMembers(_ valueParam: GroupsProtoGroupChangeActionsAddMemberAction) {
@@ -2608,10 +2608,10 @@ public class GroupsProtoGroupChangeActions: NSObject {
         return !proto.sourceUuid.isEmpty
     }
 
-    public var version: UInt32 {
-        return proto.version
+    public var revision: UInt32 {
+        return proto.revision
     }
-    public var hasVersion: Bool {
+    public var hasRevision: Bool {
         return true
     }
 
@@ -2760,6 +2760,9 @@ public class GroupsProtoGroupChange: NSObject {
         if let _value = serverSignature {
             builder.setServerSignature(_value)
         }
+        if hasChangeEpoch {
+            builder.setChangeEpoch(changeEpoch)
+        }
         return builder
     }
 
@@ -2787,6 +2790,10 @@ public class GroupsProtoGroupChange: NSObject {
 
         public func setServerSignature(_ valueParam: Data) {
             proto.serverSignature = valueParam
+        }
+
+        public func setChangeEpoch(_ valueParam: UInt32) {
+            proto.changeEpoch = valueParam
         }
 
         public func build() throws -> GroupsProtoGroupChange {
@@ -2818,6 +2825,13 @@ public class GroupsProtoGroupChange: NSObject {
     }
     public var hasServerSignature: Bool {
         return !proto.serverSignature.isEmpty
+    }
+
+    public var changeEpoch: UInt32 {
+        return proto.changeEpoch
+    }
+    public var hasChangeEpoch: Bool {
+        return true
     }
 
     private init(proto: GroupsProtos_GroupChange) {

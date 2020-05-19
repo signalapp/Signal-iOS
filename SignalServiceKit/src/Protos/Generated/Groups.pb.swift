@@ -60,8 +60,8 @@ struct GroupsProtos_Member {
   /// ProfileKeyCredentialPresentation
   var presentation: Data = SwiftProtobuf.Internal.emptyData
 
-  /// The Group.version this member joined at
-  var joinedAtVersion: UInt32 = 0
+  /// The Group.revision this member joined at
+  var joinedAtRevision: UInt32 = 0
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -240,8 +240,8 @@ struct GroupsProtos_Group {
   /// Clears the value of `accessControl`. Subsequent reads from it will return its default value.
   mutating func clearAccessControl() {self._accessControl = nil}
 
-  /// Current group version number
-  var version: UInt32 = 0
+  /// Current group revision number
+  var revision: UInt32 = 0
 
   var members: [GroupsProtos_Member] = []
 
@@ -265,6 +265,8 @@ struct GroupsProtos_GroupChange {
   /// Server’s signature over serialized actions
   var serverSignature: Data = SwiftProtobuf.Internal.emptyData
 
+  var changeEpoch: UInt32 = 0
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   struct Actions {
@@ -275,8 +277,8 @@ struct GroupsProtos_GroupChange {
     /// Who made the change
     var sourceUuid: Data = SwiftProtobuf.Internal.emptyData
 
-    /// The change version number
-    var version: UInt32 = 0
+    /// The change revision number
+    var revision: UInt32 = 0
 
     /// Members added
     var addMembers: [GroupsProtos_GroupChange.Actions.AddMemberAction] = []
@@ -711,7 +713,7 @@ extension GroupsProtos_Member: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
     2: .same(proto: "role"),
     3: .same(proto: "profileKey"),
     4: .same(proto: "presentation"),
-    5: .same(proto: "joinedAtVersion")
+    5: .same(proto: "joinedAtRevision")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -721,7 +723,7 @@ extension GroupsProtos_Member: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
       case 2: try decoder.decodeSingularEnumField(value: &self.role)
       case 3: try decoder.decodeSingularBytesField(value: &self.profileKey)
       case 4: try decoder.decodeSingularBytesField(value: &self.presentation)
-      case 5: try decoder.decodeSingularUInt32Field(value: &self.joinedAtVersion)
+      case 5: try decoder.decodeSingularUInt32Field(value: &self.joinedAtRevision)
       default: break
       }
     }
@@ -740,8 +742,8 @@ extension GroupsProtos_Member: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
     if !self.presentation.isEmpty {
       try visitor.visitSingularBytesField(value: self.presentation, fieldNumber: 4)
     }
-    if self.joinedAtVersion != 0 {
-      try visitor.visitSingularUInt32Field(value: self.joinedAtVersion, fieldNumber: 5)
+    if self.joinedAtRevision != 0 {
+      try visitor.visitSingularUInt32Field(value: self.joinedAtRevision, fieldNumber: 5)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
@@ -751,7 +753,7 @@ extension GroupsProtos_Member: SwiftProtobuf.Message, SwiftProtobuf._MessageImpl
     if lhs.role != rhs.role {return false}
     if lhs.profileKey != rhs.profileKey {return false}
     if lhs.presentation != rhs.presentation {return false}
-    if lhs.joinedAtVersion != rhs.joinedAtVersion {return false}
+    if lhs.joinedAtRevision != rhs.joinedAtRevision {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -858,7 +860,7 @@ extension GroupsProtos_Group: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
     3: .same(proto: "avatar"),
     4: .same(proto: "disappearingMessagesTimer"),
     5: .same(proto: "accessControl"),
-    6: .same(proto: "version"),
+    6: .same(proto: "revision"),
     7: .same(proto: "members"),
     8: .same(proto: "pendingMembers")
   ]
@@ -871,7 +873,7 @@ extension GroupsProtos_Group: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
       case 3: try decoder.decodeSingularStringField(value: &self.avatar)
       case 4: try decoder.decodeSingularBytesField(value: &self.disappearingMessagesTimer)
       case 5: try decoder.decodeSingularMessageField(value: &self._accessControl)
-      case 6: try decoder.decodeSingularUInt32Field(value: &self.version)
+      case 6: try decoder.decodeSingularUInt32Field(value: &self.revision)
       case 7: try decoder.decodeRepeatedMessageField(value: &self.members)
       case 8: try decoder.decodeRepeatedMessageField(value: &self.pendingMembers)
       default: break
@@ -895,8 +897,8 @@ extension GroupsProtos_Group: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
     if let v = self._accessControl {
       try visitor.visitSingularMessageField(value: v, fieldNumber: 5)
     }
-    if self.version != 0 {
-      try visitor.visitSingularUInt32Field(value: self.version, fieldNumber: 6)
+    if self.revision != 0 {
+      try visitor.visitSingularUInt32Field(value: self.revision, fieldNumber: 6)
     }
     if !self.members.isEmpty {
       try visitor.visitRepeatedMessageField(value: self.members, fieldNumber: 7)
@@ -913,7 +915,7 @@ extension GroupsProtos_Group: SwiftProtobuf.Message, SwiftProtobuf._MessageImple
     if lhs.avatar != rhs.avatar {return false}
     if lhs.disappearingMessagesTimer != rhs.disappearingMessagesTimer {return false}
     if lhs._accessControl != rhs._accessControl {return false}
-    if lhs.version != rhs.version {return false}
+    if lhs.revision != rhs.revision {return false}
     if lhs.members != rhs.members {return false}
     if lhs.pendingMembers != rhs.pendingMembers {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
@@ -925,7 +927,8 @@ extension GroupsProtos_GroupChange: SwiftProtobuf.Message, SwiftProtobuf._Messag
   static let protoMessageName: String = _protobuf_package + ".GroupChange"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "actions"),
-    2: .same(proto: "serverSignature")
+    2: .same(proto: "serverSignature"),
+    3: .same(proto: "changeEpoch")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -933,6 +936,7 @@ extension GroupsProtos_GroupChange: SwiftProtobuf.Message, SwiftProtobuf._Messag
       switch fieldNumber {
       case 1: try decoder.decodeSingularBytesField(value: &self.actions)
       case 2: try decoder.decodeSingularBytesField(value: &self.serverSignature)
+      case 3: try decoder.decodeSingularUInt32Field(value: &self.changeEpoch)
       default: break
       }
     }
@@ -945,12 +949,16 @@ extension GroupsProtos_GroupChange: SwiftProtobuf.Message, SwiftProtobuf._Messag
     if !self.serverSignature.isEmpty {
       try visitor.visitSingularBytesField(value: self.serverSignature, fieldNumber: 2)
     }
+    if self.changeEpoch != 0 {
+      try visitor.visitSingularUInt32Field(value: self.changeEpoch, fieldNumber: 3)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: GroupsProtos_GroupChange, rhs: GroupsProtos_GroupChange) -> Bool {
     if lhs.actions != rhs.actions {return false}
     if lhs.serverSignature != rhs.serverSignature {return false}
+    if lhs.changeEpoch != rhs.changeEpoch {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -960,7 +968,7 @@ extension GroupsProtos_GroupChange.Actions: SwiftProtobuf.Message, SwiftProtobuf
   static let protoMessageName: String = GroupsProtos_GroupChange.protoMessageName + ".Actions"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "sourceUuid"),
-    2: .same(proto: "version"),
+    2: .same(proto: "revision"),
     3: .same(proto: "addMembers"),
     4: .same(proto: "deleteMembers"),
     5: .same(proto: "modifyMemberRoles"),
@@ -979,7 +987,7 @@ extension GroupsProtos_GroupChange.Actions: SwiftProtobuf.Message, SwiftProtobuf
     while let fieldNumber = try decoder.nextFieldNumber() {
       switch fieldNumber {
       case 1: try decoder.decodeSingularBytesField(value: &self.sourceUuid)
-      case 2: try decoder.decodeSingularUInt32Field(value: &self.version)
+      case 2: try decoder.decodeSingularUInt32Field(value: &self.revision)
       case 3: try decoder.decodeRepeatedMessageField(value: &self.addMembers)
       case 4: try decoder.decodeRepeatedMessageField(value: &self.deleteMembers)
       case 5: try decoder.decodeRepeatedMessageField(value: &self.modifyMemberRoles)
@@ -1001,8 +1009,8 @@ extension GroupsProtos_GroupChange.Actions: SwiftProtobuf.Message, SwiftProtobuf
     if !self.sourceUuid.isEmpty {
       try visitor.visitSingularBytesField(value: self.sourceUuid, fieldNumber: 1)
     }
-    if self.version != 0 {
-      try visitor.visitSingularUInt32Field(value: self.version, fieldNumber: 2)
+    if self.revision != 0 {
+      try visitor.visitSingularUInt32Field(value: self.revision, fieldNumber: 2)
     }
     if !self.addMembers.isEmpty {
       try visitor.visitRepeatedMessageField(value: self.addMembers, fieldNumber: 3)
@@ -1045,7 +1053,7 @@ extension GroupsProtos_GroupChange.Actions: SwiftProtobuf.Message, SwiftProtobuf
 
   static func ==(lhs: GroupsProtos_GroupChange.Actions, rhs: GroupsProtos_GroupChange.Actions) -> Bool {
     if lhs.sourceUuid != rhs.sourceUuid {return false}
-    if lhs.version != rhs.version {return false}
+    if lhs.revision != rhs.revision {return false}
     if lhs.addMembers != rhs.addMembers {return false}
     if lhs.deleteMembers != rhs.deleteMembers {return false}
     if lhs.modifyMemberRoles != rhs.modifyMemberRoles {return false}

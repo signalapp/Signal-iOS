@@ -139,6 +139,33 @@ public enum GroupUpdateMode {
     // * Group update _should not_ block on message processing.
     // * Group update _should not_ be throttled.
     case upToCurrentRevisionImmediately
+
+    public var shouldBlockOnMessageProcessing: Bool {
+        switch self {
+        case .upToCurrentRevisionAfterMessageProcessWithThrottling:
+            return true
+        default:
+            return false
+        }
+    }
+
+    public var shouldThrottle: Bool {
+        switch self {
+        case .upToCurrentRevisionAfterMessageProcessWithThrottling:
+            return true
+        default:
+            return false
+        }
+    }
+
+    public var upToRevision: UInt32? {
+        switch self {
+        case .upToSpecificRevisionImmediately(let upToRevision):
+            return upToRevision
+        default:
+            return nil
+        }
+    }
 }
 
 // MARK: -
@@ -195,14 +222,35 @@ public protocol GroupV2Snapshot {
 
 // MARK: -
 
-public struct GroupV2Change {
-    public let snapshot: GroupV2Snapshot
+public struct GroupV2Diff {
     public let changeActionsProto: GroupsProtoGroupChangeActions
+    public let downloadedAvatars: GroupV2DownloadedAvatars
 
-    public init(snapshot: GroupV2Snapshot,
-                changeActionsProto: GroupsProtoGroupChangeActions) {
-        self.snapshot = snapshot
+    public init(changeActionsProto: GroupsProtoGroupChangeActions,
+                downloadedAvatars: GroupV2DownloadedAvatars) {
         self.changeActionsProto = changeActionsProto
+        self.downloadedAvatars = downloadedAvatars
+    }
+
+    public var revision: UInt32 {
+        return changeActionsProto.revision
+    }
+}
+
+// MARK: -
+
+public struct GroupV2Change {
+    public var snapshot: GroupV2Snapshot?
+    public var diff: GroupV2Diff
+
+    public init(snapshot: GroupV2Snapshot?,
+                diff: GroupV2Diff) {
+        self.snapshot = snapshot
+        self.diff = diff
+    }
+
+    public var revision: UInt32 {
+        return diff.revision
     }
 }
 

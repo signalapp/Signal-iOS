@@ -52,9 +52,12 @@ public extension StorageService {
 
     static func buildFetchGroupChangeActionsRequest(groupV2Params: GroupV2Params,
                                                     fromRevision: UInt32,
+                                                    requireSnapshotForFirstChange: Bool,
                                                     sessionManager: AFHTTPSessionManager,
                                                     authCredential: AuthCredential) throws -> NSURLRequest {
 
+        // GroupsV2 TODO: Apply GroupManager.changeProtoEpoch.
+        // GroupsV2 TODO: Apply requireSnapshotForFirstChange.
         let urlPath = "/v1/groups/logs/\(OWSFormat.formatUInt32(fromRevision))"
         return try buildGroupV2Request(protoData: nil,
                                        urlPath: urlPath,

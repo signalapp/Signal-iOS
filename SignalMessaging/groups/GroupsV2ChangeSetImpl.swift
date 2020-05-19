@@ -356,10 +356,10 @@ public class GroupsV2ChangeSetImpl: NSObject, GroupsV2ChangeSet {
         }
         let localAddress = SignalServiceAddress(uuid: localUuid)
 
-        let oldVersion = currentGroupModel.revision
-        let newVersion = oldVersion + 1
-        Logger.verbose("Version: \(oldVersion) -> \(newVersion)")
-        actionsBuilder.setVersion(newVersion)
+        let oldRevision = currentGroupModel.revision
+        let newRevision = oldRevision + 1
+        Logger.verbose("Revision: \(oldRevision) -> \(newRevision)")
+        actionsBuilder.setRevision(newRevision)
 
         var nonPendingAdministratorCount: Int = currentGroupModel.groupMembership.nonPendingAdministrators.count
         var allMemberCount = currentGroupModel.groupMembership.pendingAndNonPendingMemberCount

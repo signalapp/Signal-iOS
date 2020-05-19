@@ -512,23 +512,29 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
         let requestBuilder: RequestBuilder = { (authCredential, sessionManager) in
             return DispatchQueue.global().async(.promise) { () -> NSURLRequest in
-                let fromRevision = try self.databaseStorage.read { (transaction) throws -> UInt32 in
-                    guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
-                        if let firstKnownRevision = firstKnownRevision {
-                            Logger.info("Group not in database, using first known revision.")
-                            return firstKnownRevision
+                let (fromRevision, requireSnapshotForFirstChange) =
+                    try self.databaseStorage.read { (transaction) throws -> (UInt32, Bool) in
+                        guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
+                            if let firstKnownRevision = firstKnownRevision {
+                                Logger.info("Group not in database, using first known revision.")
+                                return (firstKnownRevision, true)
+                            }
+                            // This probably isn't an error and will be handled upstream.
+                            throw GroupsV2Error.groupNotInDatabase
                         }
-                        // This probably isn't an error and will be handled upstream.
-                        throw GroupsV2Error.groupNotInDatabase
-                    }
-                    guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
-                        throw OWSAssertionError("Invalid group model.")
-                    }
-                    return groupModel.revision
+                        guard let groupModel = groupThread.groupModel as? TSGroupModelV2 else {
+                            throw OWSAssertionError("Invalid group model.")
+                        }
+                        if FeatureFlags.groupsV2reapplyCurrentRevision {
+                            return (groupModel.revision, true)
+                        } else {
+                            return (groupModel.revision + 1, false)
+                        }
                 }
 
                 return try StorageService.buildFetchGroupChangeActionsRequest(groupV2Params: groupV2Params,
                                                                               fromRevision: fromRevision,
+                                                                              requireSnapshotForFirstChange: requireSnapshotForFirstChange,
                                                                               sessionManager: sessionManager,
                                                                               authCredential: authCredential)
             }
