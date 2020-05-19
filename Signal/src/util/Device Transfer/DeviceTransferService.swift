@@ -63,11 +63,13 @@ protocol DeviceTransferServiceObserver: class {
 ///          iv. Move all the received files into place, set the new database key, etc.
 ///          v. Hot-swap the new database into place and present the conversation list
 ///
+@objc
 class DeviceTransferService: NSObject {
     var tsAccountManager: TSAccountManager { .sharedInstance() }
     var databaseStorage: SDSDatabaseStorage { .shared }
     var sleepManager: DeviceSleepManager { .sharedInstance }
 
+    @objc
     static var shared: DeviceTransferService {
         return AppEnvironment.shared.deviceTransferService
     }
@@ -134,8 +136,6 @@ class DeviceTransferService: NSObject {
             name: .OWSApplicationDidEnterBackground,
             object: nil
         )
-
-        AppReadiness.runNowOrWhenAppWillBecomeReady { self.launchCleanup() }
     }
 
     // MARK: - New Device

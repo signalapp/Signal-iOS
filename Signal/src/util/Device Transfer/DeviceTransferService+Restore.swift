@@ -15,6 +15,11 @@ extension DeviceTransferService {
         get { CurrentAppContext().appUserDefaults().bool(forKey: DeviceTransferService.beenRestoredKey) }
         set { CurrentAppContext().appUserDefaults().set(newValue, forKey: DeviceTransferService.beenRestoredKey) }
     }
+    private static let pendingWasTransferedClearKey = "DeviceTransferPendingWasTransferredClear"
+    var pendingWasTransferredClear: Bool {
+        get { CurrentAppContext().appUserDefaults().bool(forKey: DeviceTransferService.pendingWasTransferedClearKey) }
+        set { CurrentAppContext().appUserDefaults().set(newValue, forKey: DeviceTransferService.pendingWasTransferedClearKey) }
+    }
 
     func verifyTransferCompletedSuccessfully(receivedFileIds: [String]) -> Bool {
         guard let manifest = readManifestFromTransferDirectory() else {
@@ -84,7 +89,7 @@ extension DeviceTransferService {
         return true
     }
 
-    func restoreTransferredData() {
+    func restoreTransferredData(hotSwapDatabase: Bool) {
         guard hasPendingRestore else {
             return owsFailDebug("Cannot restore data when there was no pending restore")
         }
@@ -96,6 +101,8 @@ extension DeviceTransferService {
         guard let database = manifest.database else {
             return owsFailDebug("manifest is missing database")
         }
+
+        Logger.info("Attempting to restore transferred data.")
 
         do {
             try GRDBDatabaseStorageAdapter.keyspec.store(data: database.key)
@@ -111,6 +118,12 @@ extension DeviceTransferService {
         }
 
         for userDefault in manifest.appDefaults {
+            guard ![
+                DeviceTransferService.pendingRestoreKey,
+                DeviceTransferService.beenRestoredKey,
+                DeviceTransferService.pendingWasTransferedClearKey
+            ].contains(userDefault.key) else { continue }
+
             CurrentAppContext().appUserDefaults().set(
                 NSKeyedUnarchiver.unarchiveObject(with: userDefault.encodedValue),
                 forKey: userDefault.key
@@ -169,13 +182,19 @@ extension DeviceTransferService {
             }
         }
 
+        pendingWasTransferredClear = true
+        hasBeenRestored = true
+
         resetTransferDirectory()
 
-        DispatchMainThreadSafe {
-            self.databaseStorage.reload()
-            self.tsAccountManager.wasTransferred = false
-            self.tsAccountManager.isTransferInProgress = false
-            SignalApp.shared().showConversationSplitView()
+        if hotSwapDatabase {
+            DispatchMainThreadSafe {
+                self.databaseStorage.reload()
+                self.tsAccountManager.wasTransferred = false
+                self.pendingWasTransferredClear = false
+                self.tsAccountManager.isTransferInProgress = false
+                SignalApp.shared().showConversationSplitView()
+            }
         }
     }
 
@@ -193,10 +212,21 @@ extension DeviceTransferService {
         hasPendingRestore = false
     }
 
+    @objc
     func launchCleanup() {
-        tsAccountManager.isTransferInProgress = false
-        if hasPendingRestore && !tsAccountManager.isRegistered {
-            restoreTransferredData()
+        Logger.info("hasBeenRestored: \(hasBeenRestored)")
+
+        AppReadiness.runNowOrWhenAppDidBecomeReady {
+            self.tsAccountManager.isTransferInProgress = false
+
+            if self.pendingWasTransferredClear {
+                self.tsAccountManager.wasTransferred = false
+                self.pendingWasTransferredClear = false
+            }
+        }
+
+        if hasPendingRestore {
+            restoreTransferredData(hotSwapDatabase: false)
         } else {
             resetTransferDirectory()
         }

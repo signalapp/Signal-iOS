@@ -313,6 +313,9 @@ void uncaughtExceptionHandler(NSException *exception)
     if (CurrentAppContext().isRunningTests) {
         return YES;
     }
+
+    [DeviceTransferService.shared launchCleanup];
+
     [AppSetup
         setupEnvironmentWithAppSpecificSingletonBlock:^{
             // Create AppEnvironment.
