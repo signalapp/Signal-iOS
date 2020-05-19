@@ -31,7 +31,7 @@ class TransferProgressView: UIStackView {
     }()
     let dateComponentsFormatter: DateComponentsFormatter = {
         let formatter = DateComponentsFormatter()
-        formatter.allowedUnits = [.hour, .minute, .second]
+        formatter.allowedUnits = [.hour, .minute]
         formatter.unitsStyle = .full
         formatter.maximumUnitCount = 2
         formatter.includesApproximationPhrase = true
@@ -75,7 +75,7 @@ class TransferProgressView: UIStackView {
 
         progressBar.progressTintColor = .ows_accentRed
 
-        // TODO: error icon
+        topLabel.textColor = .ows_accentRed
         topLabel.text = text
     }
 

@@ -159,7 +159,7 @@ extension DeviceTransferQRScanningViewController: ZXCaptureDelegate {
                 self.deviceTransferService.addObserver(self)
                 try self.deviceTransferService.transferAccountToNewDevice(with: peerId, certificateHash: certificateHash)
             } catch {
-//                owsFailDebug("Something went wrong \(error)")
+                owsFailDebug("Something went wrong \(error)")
 
                 if let error = error as? DeviceTransferService.Error {
                     switch error {

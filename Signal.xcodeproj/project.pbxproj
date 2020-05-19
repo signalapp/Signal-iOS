@@ -654,6 +654,7 @@
 		887CD47F247307D900FDD265 /* DeviceTransferService+Restore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887CD47E247307D900FDD265 /* DeviceTransferService+Restore.swift */; };
 		887CD4812473098D00FDD265 /* DeviceTransferService+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887CD4802473098D00FDD265 /* DeviceTransferService+State.swift */; };
 		887CD48324730A6700FDD265 /* DeviceTransferService+MultipeerDelegates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887CD48224730A6700FDD265 /* DeviceTransferService+MultipeerDelegates.swift */; };
+		887CD4872473587300FDD265 /* transfer.json in Resources */ = {isa = PBXBuildFile; fileRef = 887CD4862473587300FDD265 /* transfer.json */; };
 		887EEC1F23F0B20600F8C26D /* PinReminderMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887EEC1E23F0B20600F8C26D /* PinReminderMegaphone.swift */; };
 		8889006C23DBB39B00F40186 /* reactionsMegaphone.json in Resources */ = {isa = PBXBuildFile; fileRef = 8889006323DBB39A00F40186 /* reactionsMegaphone.json */; };
 		8889006D23DBB39B00F40186 /* reactionMegaphone_1.png in Resources */ = {isa = PBXBuildFile; fileRef = 8889006523DBB39B00F40186 /* reactionMegaphone_1.png */; };
@@ -1611,6 +1612,7 @@
 		887CD47E247307D900FDD265 /* DeviceTransferService+Restore.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DeviceTransferService+Restore.swift"; sourceTree = "<group>"; };
 		887CD4802473098D00FDD265 /* DeviceTransferService+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DeviceTransferService+State.swift"; sourceTree = "<group>"; };
 		887CD48224730A6700FDD265 /* DeviceTransferService+MultipeerDelegates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DeviceTransferService+MultipeerDelegates.swift"; sourceTree = "<group>"; };
+		887CD4862473587300FDD265 /* transfer.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = transfer.json; sourceTree = "<group>"; };
 		887D5880236773240048B8FB /* ta */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ta; path = translations/ta.lproj/Localizable.strings; sourceTree = "<group>"; };
 		887D5881236773410048B8FB /* te */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = te; path = translations/te.lproj/Localizable.strings; sourceTree = "<group>"; };
 		887EEC1E23F0B20600F8C26D /* PinReminderMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinReminderMegaphone.swift; sourceTree = "<group>"; };
@@ -3172,6 +3174,7 @@
 				888C828023D795FA0059464B /* pinCreationInProgress.json */,
 				8837F73C23D8DE8400772A32 /* pinCreationSuccess.json */,
 				8806F21C23E90C8300692638 /* messageRequestsSplash.json */,
+				887CD4862473587300FDD265 /* transfer.json */,
 			);
 			path = Lottie;
 			sourceTree = "<group>";
@@ -3900,6 +3903,7 @@
 				34C3C78F2040A4F70000134C /* sonarping.mp3 in Resources */,
 				34661FB820C1C0D60056EDD6 /* message_sent.aiff in Resources */,
 				45CB2FA81CB7146C00E1B343 /* Launch Screen.storyboard in Resources */,
+				887CD4872473587300FDD265 /* transfer.json in Resources */,
 				8889007123DBB39B00F40186 /* reactionMegaphone_6.png in Resources */,
 				34C3C78D20409F320000134C /* Opening.m4r in Resources */,
 				4C0CF6FA2386295400C9F818 /* tap_to_focus.json in Resources */,

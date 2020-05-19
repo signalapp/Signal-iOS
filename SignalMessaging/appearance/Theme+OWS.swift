@@ -58,6 +58,9 @@ public enum ThemeIcon: UInt {
     case call
     case info
     case groupMessage
+
+    case transfer
+    case register
 }
 
 // MARK: - Colors
@@ -195,6 +198,11 @@ public extension Theme {
             return isDarkThemeEnabled ? "info-solid-24" : "ic_info"
         case .groupMessage:
             return "group-outline-20"
+
+        case .transfer:
+            return "transfer-\(UIDevice.current.isIPad ? "ipad" : "phone")-outline-60-\(isDarkThemeEnabled ? "dark" : "light")"
+        case .register:
+            return "register-\(UIDevice.current.isIPad ? "ipad" : "phone")-outline-60-\(isDarkThemeEnabled ? "dark" : "light")"
         }
     }
 }

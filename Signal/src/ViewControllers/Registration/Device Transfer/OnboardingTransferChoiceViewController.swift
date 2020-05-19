@@ -46,7 +46,7 @@ public class OnboardingTransferChoiceViewController: OnboardingBaseViewControlle
                                      comment: "The title for the device transfer 'choice' view 'transfer' option"),
             body: NSLocalizedString("DEVICE_TRANSFER_CHOICE_TRANSFER_BODY",
                                     comment: "The body for the device transfer 'choice' view 'transfer' option"),
-            icon: #imageLiteral(resourceName: "transfer-icon"),
+            iconName: Theme.iconName(.transfer),
             selector: #selector(didSelectTransfer)
         )
         transferButton.accessibilityIdentifier = "onboarding.transferChoice." + "transferButton"
@@ -56,7 +56,7 @@ public class OnboardingTransferChoiceViewController: OnboardingBaseViewControlle
                                      comment: "The title for the device transfer 'choice' view 'register' option"),
             body: NSLocalizedString("DEVICE_TRANSFER_CHOICE_REGISTER_BODY",
                                     comment: "The body for the device transfer 'choice' view 'register' option"),
-            icon: #imageLiteral(resourceName: "register-icon"),
+            iconName: Theme.iconName(.register),
             selector: #selector(didSelectRegister)
         )
         registerButton.accessibilityIdentifier = "onboarding.transferChoice." + "registerButton"
@@ -97,7 +97,7 @@ public class OnboardingTransferChoiceViewController: OnboardingBaseViewControlle
         topSpacer.autoMatch(.height, to: .height, of: bottomSpacer)
     }
 
-    func choiceButton(title: String, body: String, icon: UIImage, selector: Selector) -> OWSFlatButton {
+    func choiceButton(title: String, body: String, iconName: String, selector: Selector) -> OWSFlatButton {
         let button = OWSFlatButton()
         button.setBackgroundColors(upColor: Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_gray02)
         button.layer.cornerRadius = 8
@@ -106,11 +106,11 @@ public class OnboardingTransferChoiceViewController: OnboardingBaseViewControlle
         // Icon
 
         let iconContainer = UIView()
-        let iconView = UIImageView(image: icon)
+        let iconView = UIImageView(image: UIImage(named: iconName))
         iconView.contentMode = .scaleAspectFit
         iconContainer.addSubview(iconView)
         iconView.autoPinWidthToSuperview()
-        iconView.autoSetDimensions(to: CGSize(square: 56))
+        iconView.autoSetDimensions(to: CGSize(square: 60))
         iconView.autoVCenterInSuperview()
         iconView.autoMatch(.height, to: .height, of: iconContainer, withOffset: 0, relation: .lessThanOrEqual)
 
