@@ -25,7 +25,6 @@ extern NSString *const OWSUIDatabaseConnectionNotificationsKey;
 @property (nonatomic, readonly) YapDatabaseConnection *uiDatabaseConnection;
 @property (nonatomic, readonly) YapDatabaseConnection *dbReadConnection;
 @property (nonatomic, readonly) YapDatabaseConnection *dbReadWriteConnection;
-@property (nonatomic) NSSet<LKDeviceLink*> *deviceLinkCache;
 
 - (void)updateUIDatabaseConnectionToLatest;
 

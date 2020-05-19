@@ -1,19 +1,14 @@
 
 public extension OWSPrimaryStorage {
-    
+
+    private static var deviceLinkCache: Set<DeviceLink> = []
+
     private func getDeviceLinkCollection(for masterHexEncodedPublicKey: String) -> String {
         return "LokiDeviceLinkCollection-\(masterHexEncodedPublicKey)"
     }
     
-    public func setDeviceLinksInCache(_ deviceLinks: Set<DeviceLink>) {
-        self.deviceLinkCache = deviceLinks
-    }
-    
-    public func syncDeviceLinkCacheToDatabase(in transaction: YapDatabaseReadWriteTransaction) {
-        if !self.deviceLinkCache.isEmpty {
-            self.setDeviceLinks(self.deviceLinkCache, in: transaction)
-            self.deviceLinkCache.removeAll()
-        }
+    public func cacheDeviceLinks(_ deviceLinks: Set<DeviceLink>) {
+        OWSPrimaryStorage.deviceLinkCache.formUnion(deviceLinks)
     }
 
     public func setDeviceLinks(_ deviceLinks: Set<DeviceLink>, in transaction: YapDatabaseReadWriteTransaction) {
@@ -22,19 +17,24 @@ public extension OWSPrimaryStorage {
     }
 
     public func addDeviceLink(_ deviceLink: DeviceLink, in transaction: YapDatabaseReadWriteTransaction) {
+        OWSPrimaryStorage.deviceLinkCache.insert(deviceLink)
+        /*
         let collection = getDeviceLinkCollection(for: deviceLink.master.hexEncodedPublicKey)
         transaction.setObject(deviceLink, forKey: deviceLink.slave.hexEncodedPublicKey, inCollection: collection)
+         */
     }
 
     public func removeDeviceLink(_ deviceLink: DeviceLink, in transaction: YapDatabaseReadWriteTransaction) {
+        OWSPrimaryStorage.deviceLinkCache.remove(deviceLink)
+        /*
         let collection = getDeviceLinkCollection(for: deviceLink.master.hexEncodedPublicKey)
         transaction.removeObject(forKey: deviceLink.slave.hexEncodedPublicKey, inCollection: collection)
+         */
     }
     
     public func getDeviceLinks(for masterHexEncodedPublicKey: String, in transaction: YapDatabaseReadTransaction) -> Set<DeviceLink> {
-        if !self.deviceLinkCache.isEmpty {
-            return self.deviceLinkCache
-        }
+        return OWSPrimaryStorage.deviceLinkCache.filter { $0.master.hexEncodedPublicKey == masterHexEncodedPublicKey }
+        /*
         let collection = getDeviceLinkCollection(for: masterHexEncodedPublicKey)
         guard !transaction.allKeys(inCollection: collection).isEmpty else { return [] } // Fixes a crash that used to occur on Josh's device
         var result: Set<DeviceLink> = []
@@ -43,9 +43,12 @@ public extension OWSPrimaryStorage {
             result.insert(deviceLink)
         }
         return result
+         */
     }
     
     public func getDeviceLink(for slaveHexEncodedPublicKey: String, in transaction: YapDatabaseReadTransaction) -> DeviceLink? {
+        return OWSPrimaryStorage.deviceLinkCache.filter { $0.slave.hexEncodedPublicKey == slaveHexEncodedPublicKey }.first
+        /*
         let query = YapDatabaseQuery(string: "WHERE \(DeviceLinkIndex.slaveHexEncodedPublicKey) = ?", parameters: [ slaveHexEncodedPublicKey ])
         let deviceLinks = DeviceLinkIndex.getDeviceLinks(for: query, in: transaction)
         guard deviceLinks.count <= 1 else {
@@ -53,6 +56,7 @@ public extension OWSPrimaryStorage {
             return nil
         }
         return deviceLinks.first
+         */
     }
     
     public func getMasterHexEncodedPublicKey(for slaveHexEncodedPublicKey: String, in transaction: YapDatabaseReadTransaction) -> String? {

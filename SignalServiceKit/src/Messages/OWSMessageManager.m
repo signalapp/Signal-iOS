@@ -1266,18 +1266,16 @@ NS_ASSUME_NONNULL_BEGIN
     // Loki: Update device links in a blocking way
     // FIXME: This is horrible for performance
     // FIXME: ========
-    // FIX: Using the cache for write to avoid deadlock
     // The envelope source is set during UD decryption
     if ([ECKeyPair isValidHexEncodedPublicKeyWithCandidate:envelope.source] && dataMessage.publicChatInfo == nil) { // Handled in LokiPublicChatPoller for open group messages
         dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
         dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-        [[LKMultiDeviceProtocol updateDeviceLinksIfNeededForHexEncodedPublicKey:envelope.source in:transaction usingCache: true].ensureOn(queue, ^() {
+        [[LKMultiDeviceProtocol updateDeviceLinksIfNeededForHexEncodedPublicKey:envelope.source in:transaction].ensureOn(queue, ^() {
             dispatch_semaphore_signal(semaphore);
         }).catchOn(queue, ^(NSError *error) {
             dispatch_semaphore_signal(semaphore);
         }) retainUntilComplete];
         dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, 10 * NSEC_PER_SEC));
-        [LKMultiDeviceProtocol syncDeviceLinkCacheToDatabaseInTransaction:transaction];
     }
     // FIXME: ========
 
