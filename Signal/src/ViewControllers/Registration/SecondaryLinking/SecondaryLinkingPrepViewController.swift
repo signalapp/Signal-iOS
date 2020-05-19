@@ -9,12 +9,12 @@ import Lottie
 @objc
 public class SecondaryLinkingPrepViewController: OnboardingBaseViewController {
 
-    let provisioningController: ProvisioningController
-    let animationView = AnimationView(name: "launchApp")
+    lazy var animationView = AnimationView(name: isTransferring ? "launchApp-iPad" : "launchApp-iPhone")
+    let isTransferring: Bool
 
-    public init(provisioningController: ProvisioningController) {
-        self.provisioningController = provisioningController
-        super.init(onboardingController: provisioningController.onboardingController)
+    public init(onboardingController: OnboardingController, isTransferring: Bool) {
+        self.isTransferring = isTransferring
+        super.init(onboardingController: onboardingController)
     }
 
     override public func loadView() {
@@ -29,21 +29,32 @@ public class SecondaryLinkingPrepViewController: OnboardingBaseViewController {
         animationView.contentMode = .scaleAspectFit
         animationView.setContentHuggingHigh()
 
-        let titleLabel = self.titleLabel(text: NSLocalizedString("SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY", comment: "header text before the user can link this device"))
+        let titleText: String
+        if isTransferring {
+            titleText = NSLocalizedString("SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD",
+                                          comment: "header text before the user can transfer to this device")
+
+        } else {
+            titleText = NSLocalizedString("SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY",
+                                          comment: "header text before the user can link this device")
+        }
+
+        let titleLabel = self.titleLabel(text: titleText)
         primaryView.addSubview(titleLabel)
         titleLabel.accessibilityIdentifier = "onboarding.prelink.titleLabel"
 
-        let explanationLabel = UILabel()
-        explanationLabel.text = NSLocalizedString("SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY",
-                                                  comment: "Link explaining what to do when trying to link a device before having a primary device.")
-        explanationLabel.textColor = Theme.accentBlueColor
-        explanationLabel.font = UIFont.ows_dynamicTypeSubheadlineClamped
-        explanationLabel.numberOfLines = 0
-        explanationLabel.textAlignment = .center
-        explanationLabel.lineBreakMode = .byWordWrapping
-        explanationLabel.isUserInteractionEnabled = true
-        explanationLabel.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapExplanationLabel)))
-        explanationLabel.accessibilityIdentifier = "onboarding.prelink.explanationLabel"
+        let dontHaveSignalButton = UILabel()
+        dontHaveSignalButton.text = NSLocalizedString("SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY",
+                                                      comment: "Link explaining what to do when trying to link a device before having a primary device.")
+        dontHaveSignalButton.textColor = Theme.accentBlueColor
+        dontHaveSignalButton.font = UIFont.ows_dynamicTypeSubheadlineClamped
+        dontHaveSignalButton.numberOfLines = 0
+        dontHaveSignalButton.textAlignment = .center
+        dontHaveSignalButton.lineBreakMode = .byWordWrapping
+        dontHaveSignalButton.isUserInteractionEnabled = true
+        dontHaveSignalButton.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(didTapExplanationLabel)))
+        dontHaveSignalButton.accessibilityIdentifier = "onboarding.prelink.explanationLabel"
+        dontHaveSignalButton.isHidden = isTransferring
 
         let nextButton = self.primaryButton(title: CommonStrings.nextButton,
                                             selector: #selector(didPressNext))
@@ -54,7 +65,7 @@ public class SecondaryLinkingPrepViewController: OnboardingBaseViewController {
             titleLabel,
             UIView.spacer(withHeight: 12),
             animationView,
-            explanationLabel,
+            dontHaveSignalButton,
             UIView.vStretchingSpacer(minHeight: 12),
             primaryButtonView
             ])
@@ -98,6 +109,12 @@ public class SecondaryLinkingPrepViewController: OnboardingBaseViewController {
     @objc
     func didPressNext() {
         Logger.info("")
-        provisioningController.didConfirmSecondaryDevice(from: self)
+
+        if isTransferring {
+            onboardingController.transferAccount(fromViewController: self)
+        } else {
+            let provisioningController = ProvisioningController(onboardingController: onboardingController)
+            provisioningController.didConfirmSecondaryDevice(from: self)
+        }
     }
 }

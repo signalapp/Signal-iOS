@@ -9,10 +9,20 @@ public class OnboardingTransferChoiceViewController: OnboardingBaseViewControlle
 
     override var primaryLayoutMargins: UIEdgeInsets {
         var defaultMargins = super.primaryLayoutMargins
-        // we want the choice buttons to have less padding on the left and right. consequently,
-        // we will need to add an extra 16 to all the text on this page.
-        defaultMargins.left = 16
-        defaultMargins.right = 16
+
+        switch traitCollection.horizontalSizeClass {
+        case .unspecified, .compact:
+            // we want the choice buttons to have less padding on the left and right.
+            // on iPhone. consequently, we will need to add an extra 16 to all the text
+            // on this page.
+            defaultMargins.left = 16
+            defaultMargins.right = 16
+        case .regular:
+            break
+        @unknown default:
+            break
+        }
+
         return defaultMargins
     }
 
@@ -29,10 +39,41 @@ public class OnboardingTransferChoiceViewController: OnboardingBaseViewControlle
         )
         titleLabel.accessibilityIdentifier = "onboarding.transferChoice." + "titleLabel"
 
-        let explanationLabel = self.explanationLabel(
-            explanationText: NSLocalizedString("DEVICE_TRANSFER_CHOICE_EXPLANATION",
-                                               comment: "The explanation for the device transfer 'choice' view")
-        )
+        let explanationText: String
+        let transferTitle: String
+        let transferBody: String
+        let registerTitle: String
+        let registerBody: String
+        switch onboardingController.onboardingMode {
+        case .provisioning:
+            explanationText = NSLocalizedString("DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION",
+                                                comment: "The explanation for the device transfer 'choice' view when linking a device")
+
+            transferTitle = NSLocalizedString("DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE",
+                                              comment: "The title for the device transfer 'choice' view 'transfer' option when linking a device")
+            transferBody = NSLocalizedString("DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY",
+                                             comment: "The body for the device transfer 'choice' view 'transfer' option when linking a device")
+
+            registerTitle = NSLocalizedString("DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE",
+                                              comment: "The title for the device transfer 'choice' view 'register' option when linking a device")
+            registerBody = NSLocalizedString("DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY",
+                                             comment: "The body for the device transfer 'choice' view 'register' option when linking a device")
+        case .registering:
+            explanationText = NSLocalizedString("DEVICE_TRANSFER_CHOICE_EXPLANATION",
+                                                comment: "The explanation for the device transfer 'choice' view")
+
+            transferTitle = NSLocalizedString("DEVICE_TRANSFER_CHOICE_TRANSFER_TITLE",
+                                              comment: "The title for the device transfer 'choice' view 'transfer' option")
+            transferBody = NSLocalizedString("DEVICE_TRANSFER_CHOICE_TRANSFER_BODY",
+                                             comment: "The body for the device transfer 'choice' view 'transfer' option")
+
+            registerTitle = NSLocalizedString("DEVICE_TRANSFER_CHOICE_REGISTER_TITLE",
+                                              comment: "The title for the device transfer 'choice' view 'register' option")
+            registerBody = NSLocalizedString("DEVICE_TRANSFER_CHOICE_REGISTER_BODY",
+                                             comment: "The body for the device transfer 'choice' view 'register' option")
+        }
+
+        let explanationLabel = self.explanationLabel(explanationText: explanationText)
         explanationLabel.accessibilityIdentifier = "onboarding.transferChoice." + "explanationLabel"
 
         let warningLabel = self.explanationLabel(
@@ -42,20 +83,16 @@ public class OnboardingTransferChoiceViewController: OnboardingBaseViewControlle
         warningLabel.accessibilityIdentifier = "onboarding.transferChoice." + "warningLabel"
 
         let transferButton = choiceButton(
-            title: NSLocalizedString("DEVICE_TRANSFER_CHOICE_TRANSFER_TITLE",
-                                     comment: "The title for the device transfer 'choice' view 'transfer' option"),
-            body: NSLocalizedString("DEVICE_TRANSFER_CHOICE_TRANSFER_BODY",
-                                    comment: "The body for the device transfer 'choice' view 'transfer' option"),
+            title: transferTitle,
+            body: transferBody,
             iconName: Theme.iconName(.transfer),
             selector: #selector(didSelectTransfer)
         )
         transferButton.accessibilityIdentifier = "onboarding.transferChoice." + "transferButton"
 
         let registerButton = choiceButton(
-            title: NSLocalizedString("DEVICE_TRANSFER_CHOICE_REGISTER_TITLE",
-                                     comment: "The title for the device transfer 'choice' view 'register' option"),
-            body: NSLocalizedString("DEVICE_TRANSFER_CHOICE_REGISTER_BODY",
-                                    comment: "The body for the device transfer 'choice' view 'register' option"),
+            title: registerTitle,
+            body: registerBody,
             iconName: Theme.iconName(.register),
             selector: #selector(didSelectRegister)
         )
@@ -76,6 +113,7 @@ public class OnboardingTransferChoiceViewController: OnboardingBaseViewControlle
         bottomStackView.alignment = .fill
         bottomStackView.isLayoutMarginsRelativeArrangement = true
         bottomStackView.layoutMargins = UIEdgeInsets(top: 0, leading: 16, bottom: 0, trailing: 16)
+        bottomStackView.isHidden = onboardingController.onboardingMode == .provisioning
 
         let topSpacer = UIView.vStretchingSpacer()
         let bottomSpacer = UIView.vStretchingSpacer()
@@ -180,15 +218,27 @@ public class OnboardingTransferChoiceViewController: OnboardingBaseViewControlle
     @objc func didSelectTransfer() {
         Logger.info("")
 
-        onboardingController.transferAccount(fromViewController: self)
+        switch onboardingController.onboardingMode {
+        case .provisioning:
+            let prepViewController = SecondaryLinkingPrepViewController(onboardingController: onboardingController, isTransferring: true)
+            navigationController?.pushViewController(prepViewController, animated: true)
+        case .registering:
+            onboardingController.transferAccount(fromViewController: self)
+        }
     }
 
     @objc func didSelectRegister() {
         Logger.info("")
 
-        onboardingController.submitVerification(fromViewController: self, checkForAvailableTransfer: false, completion: { outcome in
-            guard outcome != .success else { return }
-            owsFailDebug("Unexpected error on transfer choice view \(outcome)")
-        })
+        switch onboardingController.onboardingMode {
+        case .provisioning:
+            let prepViewController = SecondaryLinkingPrepViewController(onboardingController: onboardingController, isTransferring: false)
+            navigationController?.pushViewController(prepViewController, animated: true)
+        case .registering:
+            onboardingController.submitVerification(fromViewController: self, checkForAvailableTransfer: false, completion: { outcome in
+                guard outcome != .success else { return }
+                owsFailDebug("Unexpected error on transfer choice view \(outcome)")
+            })
+        }
     }
 }

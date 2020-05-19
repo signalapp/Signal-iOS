@@ -31,9 +31,9 @@ class TransferProgressView: UIStackView {
     }()
     let dateComponentsFormatter: DateComponentsFormatter = {
         let formatter = DateComponentsFormatter()
-        formatter.allowedUnits = [.hour, .minute]
+        formatter.allowedUnits = [.hour, .minute, .second]
         formatter.unitsStyle = .full
-        formatter.maximumUnitCount = 2
+        formatter.maximumUnitCount = 1
         formatter.includesApproximationPhrase = true
         formatter.includesTimeRemainingPhrase = true
         return formatter

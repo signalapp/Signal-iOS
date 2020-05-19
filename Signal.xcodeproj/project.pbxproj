@@ -580,7 +580,6 @@
 		4C9C510022F495F60054A33F /* BroadcastMediaMessageJob.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9C50FF22F495F60054A33F /* BroadcastMediaMessageJob.swift */; };
 		4C9D347B23679C25006A4307 /* GroupAndContactStreamTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9D347923679C13006A4307 /* GroupAndContactStreamTest.swift */; };
 		4C9D347F23689E06006A4307 /* IncomingContactSyncJobQueue.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C9D347E23689E06006A4307 /* IncomingContactSyncJobQueue.swift */; };
-		4C9D34952369EFC7006A4307 /* launchApp.json in Resources */ = {isa = PBXBuildFile; fileRef = 4C9D34942369EFC7006A4307 /* launchApp.json */; };
 		4C9D34972369F0FC006A4307 /* notificationPermission.json in Resources */ = {isa = PBXBuildFile; fileRef = 4C9D34962369F0FC006A4307 /* notificationPermission.json */; };
 		4C9D349B2369F11F006A4307 /* notificationPermission1.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C9D34982369F11E006A4307 /* notificationPermission1.png */; };
 		4C9D349C2369F11F006A4307 /* notificationPermission0.png in Resources */ = {isa = PBXBuildFile; fileRef = 4C9D34992369F11E006A4307 /* notificationPermission0.png */; };
@@ -655,6 +654,8 @@
 		887CD4812473098D00FDD265 /* DeviceTransferService+State.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887CD4802473098D00FDD265 /* DeviceTransferService+State.swift */; };
 		887CD48324730A6700FDD265 /* DeviceTransferService+MultipeerDelegates.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887CD48224730A6700FDD265 /* DeviceTransferService+MultipeerDelegates.swift */; };
 		887CD4872473587300FDD265 /* transfer.json in Resources */ = {isa = PBXBuildFile; fileRef = 887CD4862473587300FDD265 /* transfer.json */; };
+		887CD48A24735D4200FDD265 /* launchApp-iPhone.json in Resources */ = {isa = PBXBuildFile; fileRef = 887CD48824735D4200FDD265 /* launchApp-iPhone.json */; };
+		887CD48B24735D4200FDD265 /* launchApp-iPad.json in Resources */ = {isa = PBXBuildFile; fileRef = 887CD48924735D4200FDD265 /* launchApp-iPad.json */; };
 		887EEC1F23F0B20600F8C26D /* PinReminderMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887EEC1E23F0B20600F8C26D /* PinReminderMegaphone.swift */; };
 		8889006C23DBB39B00F40186 /* reactionsMegaphone.json in Resources */ = {isa = PBXBuildFile; fileRef = 8889006323DBB39A00F40186 /* reactionsMegaphone.json */; };
 		8889006D23DBB39B00F40186 /* reactionMegaphone_1.png in Resources */ = {isa = PBXBuildFile; fileRef = 8889006523DBB39B00F40186 /* reactionMegaphone_1.png */; };
@@ -1523,7 +1524,6 @@
 		4C9CA25C217E676900607C63 /* ZXingObjC.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ZXingObjC.framework; path = ThirdParty/Carthage/Build/iOS/ZXingObjC.framework; sourceTree = "<group>"; };
 		4C9D347923679C13006A4307 /* GroupAndContactStreamTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GroupAndContactStreamTest.swift; sourceTree = "<group>"; };
 		4C9D347E23689E06006A4307 /* IncomingContactSyncJobQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IncomingContactSyncJobQueue.swift; sourceTree = "<group>"; };
-		4C9D34942369EFC7006A4307 /* launchApp.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = launchApp.json; sourceTree = "<group>"; };
 		4C9D34962369F0FC006A4307 /* notificationPermission.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = notificationPermission.json; sourceTree = "<group>"; };
 		4C9D34982369F11E006A4307 /* notificationPermission1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = notificationPermission1.png; sourceTree = "<group>"; };
 		4C9D34992369F11E006A4307 /* notificationPermission0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = notificationPermission0.png; sourceTree = "<group>"; };
@@ -1613,6 +1613,8 @@
 		887CD4802473098D00FDD265 /* DeviceTransferService+State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DeviceTransferService+State.swift"; sourceTree = "<group>"; };
 		887CD48224730A6700FDD265 /* DeviceTransferService+MultipeerDelegates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DeviceTransferService+MultipeerDelegates.swift"; sourceTree = "<group>"; };
 		887CD4862473587300FDD265 /* transfer.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = transfer.json; sourceTree = "<group>"; };
+		887CD48824735D4200FDD265 /* launchApp-iPhone.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "launchApp-iPhone.json"; sourceTree = "<group>"; };
+		887CD48924735D4200FDD265 /* launchApp-iPad.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = "launchApp-iPad.json"; sourceTree = "<group>"; };
 		887D5880236773240048B8FB /* ta */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ta; path = translations/ta.lproj/Localizable.strings; sourceTree = "<group>"; };
 		887D5881236773410048B8FB /* te */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = te; path = translations/te.lproj/Localizable.strings; sourceTree = "<group>"; };
 		887EEC1E23F0B20600F8C26D /* PinReminderMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinReminderMegaphone.swift; sourceTree = "<group>"; };
@@ -3165,7 +3167,8 @@
 			children = (
 				88A9419324099F6E000E9700 /* Attachment Keyboard */,
 				8889006223DBB38700F40186 /* Reactions Megaphone */,
-				4C9D34942369EFC7006A4307 /* launchApp.json */,
+				887CD48924735D4200FDD265 /* launchApp-iPad.json */,
+				887CD48824735D4200FDD265 /* launchApp-iPhone.json */,
 				4C9D34842369EA3E006A4307 /* NotificationPermission */,
 				880C0FF6233D3F7C00386FB8 /* playPauseButton.json */,
 				4C0CF6F92386295400C9F818 /* tap_to_focus.json */,
@@ -3922,10 +3925,10 @@
 				8837F73D23D8DE8500772A32 /* pinCreationSuccess.json in Resources */,
 				8889006E23DBB39B00F40186 /* reactionMegaphone_0.png in Resources */,
 				45B74A7B2044AAB600CD42F8 /* chord.aifc in Resources */,
+				887CD48B24735D4200FDD265 /* launchApp-iPad.json in Resources */,
 				88A9419724099F85000E9700 /* attachment_light.json in Resources */,
 				8889007223DBB39B00F40186 /* reactionMegaphone_4.png in Resources */,
 				45B74A812044AAB600CD42F8 /* chord-quiet.aifc in Resources */,
-				4C9D34952369EFC7006A4307 /* launchApp.json in Resources */,
 				8889006D23DBB39B00F40186 /* reactionMegaphone_1.png in Resources */,
 				45B74A832044AAB600CD42F8 /* circles.aifc in Resources */,
 				88A9419524099F7E000E9700 /* attachment_dark.json in Resources */,
@@ -3949,6 +3952,7 @@
 				45B74A7D2044AAB600CD42F8 /* popcorn-quiet.aifc in Resources */,
 				45B74A822044AAB600CD42F8 /* pulse.aifc in Resources */,
 				4C9D349D2369F11F006A4307 /* notificationPermission2.png in Resources */,
+				887CD48A24735D4200FDD265 /* launchApp-iPhone.json in Resources */,
 				45B74A802044AAB600CD42F8 /* pulse-quiet.aifc in Resources */,
 				45B74A8B2044AAB600CD42F8 /* synth.aifc in Resources */,
 				888C828223D795FA0059464B /* pinCreationFail.json in Resources */,

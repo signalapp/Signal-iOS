@@ -333,9 +333,8 @@ public class OnboardingController: NSObject {
         AssertIsOnMainThread()
 
         if onboardingMode == .provisioning {
-            let provisioningController = ProvisioningController(onboardingController: self)
-            let prepViewController = SecondaryLinkingPrepViewController(provisioningController: provisioningController)
-            navigationController.pushViewController(prepViewController, animated: true)
+            let view = OnboardingTransferChoiceViewController(onboardingController: self)
+            navigationController.pushViewController(view, animated: true)
         } else {
             let view = OnboardingPhoneNumberViewController(onboardingController: self)
             navigationController.pushViewController(view, animated: true)

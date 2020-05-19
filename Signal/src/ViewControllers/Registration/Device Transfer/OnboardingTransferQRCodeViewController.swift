@@ -92,6 +92,11 @@ public class OnboardingTransferQRCodeViewController: OnboardingBaseViewControlle
 
         onboardingController.pushStartDeviceRegistrationView(onto: navigationController)
     }
+
+    override func shouldShowBackButton() -> Bool {
+        // Never show the back buton here
+        return false
+    }
 }
 
 extension OnboardingTransferQRCodeViewController: DeviceTransferServiceObserver {
