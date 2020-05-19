@@ -46,7 +46,6 @@
 #import <SignalServiceKit/TSSocketManager.h>
 #import <YapDatabase/YapDatabaseCryptoUtils.h>
 #import <sys/utsname.h>
-#import <FirebaseCore/FirebaseCore.h>
 
 @import WebRTC;
 @import Intents;
@@ -58,9 +57,6 @@ static NSString *const kURLSchemeSGNLKey = @"sgnl";
 static NSString *const kURLHostVerifyPrefix = @"verify";
 
 static NSTimeInterval launchStartedAt;
-
-// Debug settings
-static BOOL isInternalTestVersion = NO;
 
 @interface AppDelegate () <UNUserNotificationCenterDelegate>
 
@@ -357,10 +353,6 @@ static BOOL isInternalTestVersion = NO;
 //    if (!self.lokiP2PServer.isRunning) {
 //        NSLog(@"[Loki] Failed to start P2P server.");
 //    }
-
-    if (isInternalTestVersion) {
-        [FIRApp configure];
-    }
 
     return YES;
 }

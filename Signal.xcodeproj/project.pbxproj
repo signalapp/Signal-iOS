@@ -628,9 +628,6 @@
 		C3548F0824456AB6009433A8 /* UIView+Wrapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3548F0724456AB6009433A8 /* UIView+Wrapping.swift */; };
 		C354E75A23FE2A7600CE22E3 /* BaseVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C354E75923FE2A7600CE22E3 /* BaseVC.swift */; };
 		C36B8707243C50C60049991D /* SignalMessaging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 453518921FC63DBF00210559 /* SignalMessaging.framework */; };
-		C3B781FF2411C18600C859D8 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C3B781FE2411C18600C859D8 /* GoogleService-Info.plist */; };
-		C3B782022411C80500C859D8 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C3B781FE2411C18600C859D8 /* GoogleService-Info.plist */; };
-		C3B782032411C81100C859D8 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = C3B781FE2411C18600C859D8 /* GoogleService-Info.plist */; };
 		C3DFFAC623E96F0D0058DAF8 /* Sheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3DFFAC523E96F0D0058DAF8 /* Sheet.swift */; };
 		C3DFFAC823E970080058DAF8 /* OpenGroupSuggestionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3DFFAC723E970080058DAF8 /* OpenGroupSuggestionSheet.swift */; };
 		CC875800737563D6891B741D /* Pods_SignalTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 748A5CAEDD7C919FC64C6807 /* Pods_SignalTests.framework */; };
@@ -1504,7 +1501,6 @@
 		C3548F0524456447009433A8 /* PNModeVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PNModeVC.swift; sourceTree = "<group>"; };
 		C3548F0724456AB6009433A8 /* UIView+Wrapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Wrapping.swift"; sourceTree = "<group>"; };
 		C354E75923FE2A7600CE22E3 /* BaseVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseVC.swift; sourceTree = "<group>"; };
-		C3B781FE2411C18600C859D8 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = "GoogleService-Info.plist"; path = "Signal/GoogleService-Info.plist"; sourceTree = SOURCE_ROOT; };
 		C3DFFAC523E96F0D0058DAF8 /* Sheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sheet.swift; sourceTree = "<group>"; };
 		C3DFFAC723E970080058DAF8 /* OpenGroupSuggestionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenGroupSuggestionSheet.swift; sourceTree = "<group>"; };
 		D17BB5C25D615AB49813100C /* Pods_Signal.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Signal.framework; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -3014,7 +3010,6 @@
 				B66DBF4919D5BBC8006EA940 /* Images.xcassets */,
 				B67EBF5C19194AC60084CCFD /* Settings.bundle */,
 				B657DDC91911A40500F45B0C /* Signal.entitlements */,
-				C3B781FE2411C18600C859D8 /* GoogleService-Info.plist */,
 				C34C8F7323A7830A00D82669 /* SpaceMono-Bold.ttf */,
 				34074F54203D0722004596AE /* Sounds */,
 				76EB03C118170B33006006FC /* src */,
@@ -3203,7 +3198,6 @@
 				451DE9EE1DC1546A00810E42 /* [Carthage] Copy Frameworks */,
 				453518771FC635DD00210559 /* Embed App Extensions */,
 				4535189F1FC63DBF00210559 /* Embed Frameworks */,
-				C3B782012411C26000C859D8 /* Set up Crashlytics */,
 			);
 			buildRules = (
 			);
@@ -3404,7 +3398,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C3B782022411C80500C859D8 /* GoogleService-Info.plist in Resources */,
 				347850321FD7494A007B8332 /* ElegantIcons.ttf in Resources */,
 				4535186E1FC635DD00210559 /* MainInterface.storyboard in Resources */,
 				347850551FD749C0007B8332 /* Localizable.strings in Resources */,
@@ -3418,7 +3411,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C3B782032411C81100C859D8 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -3434,7 +3426,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				C3B781FF2411C18600C859D8 /* GoogleService-Info.plist in Resources */,
 				4C63CC00210A620B003AE45C /* SignalTSan.supp in Resources */,
 				4C6F527C20FFE8400097DEEE /* SignalUBSan.supp in Resources */,
 				34CF078A203E6B78005C4D61 /* end_call_tone_cept.caf in Resources */,
@@ -3783,25 +3774,6 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-SignalTests/Pods-SignalTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
-		};
-		C3B782012411C26000C859D8 /* Set up Crashlytics */ = {
-			isa = PBXShellScriptBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			inputFileListPaths = (
-			);
-			inputPaths = (
-				"$(SRCROOT)/$(BUILT_PRODUCTS_DIR)/$(INFOPLIST_PATH)",
-			);
-			name = "Set up Crashlytics";
-			outputFileListPaths = (
-			);
-			outputPaths = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-			shellPath = /bin/sh;
-			shellScript = "\"${PODS_ROOT}/Fabric/run\"\n";
 		};
 		F4C416F20E3CB0B25DC10C56 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
