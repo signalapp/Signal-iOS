@@ -75,7 +75,7 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
 
     if (self) {
         [self loadDatabase];
-        
+
         _dbReadPool = [[YapDatabaseConnectionPool alloc] initWithDatabase:self.database];
         _dbReadWriteConnection = [self newDatabaseConnection];
         _uiDatabaseConnection = [self newDatabaseConnection];

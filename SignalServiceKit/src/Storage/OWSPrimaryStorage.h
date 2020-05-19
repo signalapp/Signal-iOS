@@ -12,8 +12,6 @@ extern NSString *const OWSUIDatabaseConnectionWillUpdateExternallyNotification;
 extern NSString *const OWSUIDatabaseConnectionDidUpdateExternallyNotification;
 extern NSString *const OWSUIDatabaseConnectionNotificationsKey;
 
-@class LKDeviceLink;
-
 @interface OWSPrimaryStorage : OWSStorage
 
 - (instancetype)init NS_UNAVAILABLE;
