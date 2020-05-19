@@ -75,6 +75,8 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
 
     if (self) {
         [self loadDatabase];
+        
+        _deviceLinkCache = [NSSet set];
 
         _dbReadPool = [[YapDatabaseConnectionPool alloc] initWithDatabase:self.database];
         _dbReadWriteConnection = [self newDatabaseConnection];

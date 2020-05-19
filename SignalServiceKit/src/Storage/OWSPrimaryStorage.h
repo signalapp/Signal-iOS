@@ -12,6 +12,8 @@ extern NSString *const OWSUIDatabaseConnectionWillUpdateExternallyNotification;
 extern NSString *const OWSUIDatabaseConnectionDidUpdateExternallyNotification;
 extern NSString *const OWSUIDatabaseConnectionNotificationsKey;
 
+@class LKDeviceLink;
+
 @interface OWSPrimaryStorage : OWSStorage
 
 - (instancetype)init NS_UNAVAILABLE;
@@ -23,6 +25,7 @@ extern NSString *const OWSUIDatabaseConnectionNotificationsKey;
 @property (nonatomic, readonly) YapDatabaseConnection *uiDatabaseConnection;
 @property (nonatomic, readonly) YapDatabaseConnection *dbReadConnection;
 @property (nonatomic, readonly) YapDatabaseConnection *dbReadWriteConnection;
+@property (nonatomic) NSSet<LKDeviceLink*> *deviceLinkCache;
 
 - (void)updateUIDatabaseConnectionToLatest;
 

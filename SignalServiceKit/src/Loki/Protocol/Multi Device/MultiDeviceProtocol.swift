@@ -144,10 +144,15 @@ public final class MultiDeviceProtocol : NSObject {
         }
     }
 
-    @objc(updateDeviceLinksIfNeededForHexEncodedPublicKey:in:)
-    public static func updateDeviceLinksIfNeeded(for hexEncodedPublicKey: String, in transaction: YapDatabaseReadTransaction) -> AnyPromise {
-        let promise = getMultiDeviceDestinations(for: hexEncodedPublicKey, in: transaction)
+    @objc(updateDeviceLinksIfNeededForHexEncodedPublicKey:in:usingCache:)
+    public static func updateDeviceLinksIfNeeded(for hexEncodedPublicKey: String, in transaction: YapDatabaseReadTransaction, usingCache: Bool = false) -> AnyPromise {
+        let promise = getMultiDeviceDestinations(for: hexEncodedPublicKey, in: transaction, usingCache: usingCache)
         return AnyPromise.from(promise)
+    }
+    
+    @objc(syncDeviceLinkCacheToDatabaseInTransaction:)
+    public static func syncDeviceLinkCacheToDatabase(in transaction: YapDatabaseReadWriteTransaction) {
+        storage.syncDeviceLinkCacheToDatabase(in: transaction)
     }
 
     /// See [Auto-Generated Friend Requests](https://github.com/loki-project/session-protocol-docs/wiki/Auto-Generated-Friend-Requests) for more information.
@@ -284,7 +289,7 @@ public final class MultiDeviceProtocol : NSObject {
 // Here (in a non-@objc extension) because it doesn't interoperate well with Obj-C
 public extension MultiDeviceProtocol {
 
-    fileprivate static func getMultiDeviceDestinations(for hexEncodedPublicKey: String, in transaction: YapDatabaseReadTransaction) -> Promise<Set<MultiDeviceDestination>> {
+    fileprivate static func getMultiDeviceDestinations(for hexEncodedPublicKey: String, in transaction: YapDatabaseReadTransaction, usingCache: Bool = false) -> Promise<Set<MultiDeviceDestination>> {
         let (promise, seal) = Promise<Set<MultiDeviceDestination>>.pending()
         func getDestinations(in transaction: YapDatabaseReadTransaction? = nil) {
             storage.dbReadConnection.read { transaction in
@@ -306,7 +311,7 @@ public extension MultiDeviceProtocol {
         }
         if timeSinceLastUpdate > deviceLinkUpdateInterval {
             let masterHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: hexEncodedPublicKey, in: transaction) ?? hexEncodedPublicKey
-            LokiFileServerAPI.getDeviceLinks(associatedWith: masterHexEncodedPublicKey, in: transaction as! YapDatabaseReadWriteTransaction).done(on: DispatchQueue.global()) { _ in
+            LokiFileServerAPI.getDeviceLinks(associatedWith: masterHexEncodedPublicKey, usingCache: usingCache).done(on: DispatchQueue.global()) { _ in
                 getDestinations()
                 lastDeviceLinkUpdate[hexEncodedPublicKey] = Date()
             }.catch(on: DispatchQueue.global()) { error in

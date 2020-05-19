@@ -4,6 +4,17 @@ public extension OWSPrimaryStorage {
     private func getDeviceLinkCollection(for masterHexEncodedPublicKey: String) -> String {
         return "LokiDeviceLinkCollection-\(masterHexEncodedPublicKey)"
     }
+    
+    public func setDeviceLinksInCache(_ deviceLinks: Set<DeviceLink>) {
+        self.deviceLinkCache = deviceLinks
+    }
+    
+    public func syncDeviceLinkCacheToDatabase(in transaction: YapDatabaseReadWriteTransaction) {
+        if !self.deviceLinkCache.isEmpty {
+            self.setDeviceLinks(self.deviceLinkCache, in: transaction)
+            self.deviceLinkCache.removeAll()
+        }
+    }
 
     public func setDeviceLinks(_ deviceLinks: Set<DeviceLink>, in transaction: YapDatabaseReadWriteTransaction) {
         // TODO: Clear collections first?
@@ -21,6 +32,9 @@ public extension OWSPrimaryStorage {
     }
     
     public func getDeviceLinks(for masterHexEncodedPublicKey: String, in transaction: YapDatabaseReadTransaction) -> Set<DeviceLink> {
+        if !self.deviceLinkCache.isEmpty {
+            return self.deviceLinkCache
+        }
         let collection = getDeviceLinkCollection(for: masterHexEncodedPublicKey)
         guard !transaction.allKeys(inCollection: collection).isEmpty else { return [] } // Fixes a crash that used to occur on Josh's device
         var result: Set<DeviceLink> = []
