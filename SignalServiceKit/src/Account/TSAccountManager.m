@@ -20,6 +20,7 @@
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/Randomness.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/TSSocketManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -35,6 +36,8 @@ NSString *const TSAccountManager_IsDeregisteredKey = @"TSAccountManager_IsDeregi
 NSString *const TSAccountManager_ReregisteringPhoneNumberKey = @"TSAccountManager_ReregisteringPhoneNumberKey";
 NSString *const TSAccountManager_LocalRegistrationIdKey = @"TSStorageLocalRegistrationId";
 NSString *const TSAccountManager_IsOnboardedKey = @"TSAccountManager_IsOnboardedKey";
+NSString *const TSAccountManager_IsTransferInProgressKey = @"TSAccountManager_IsTransferInProgressKey";
+NSString *const TSAccountManager_WasTransferredKey = @"TSAccountManager_WasTransferredKey";
 NSString *const TSAccountManager_HasPendingRestoreDecisionKey = @"TSAccountManager_HasPendingRestoreDecisionKey";
 
 NSString *const TSAccountManager_UserAccountCollection = @"TSStorageUserAccountCollection";
@@ -63,6 +66,9 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
 @property (nonatomic, readonly) BOOL isRegistered;
 @property (nonatomic, readonly) BOOL isDeregistered;
 @property (nonatomic, readonly) BOOL isOnboarded;
+
+@property (nonatomic, readonly) BOOL isTransferInProgress;
+@property (nonatomic, readonly) BOOL wasTransferred;
 
 @property (nonatomic, readonly, nullable) NSString *serverSignalingKey;
 @property (nonatomic, readonly, nullable) NSString *serverAuthToken;
@@ -103,6 +109,13 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
                             defaultValue:1 // lazily migrate legacy primary devices
                              transaction:transaction];
     _isOnboarded = [keyValueStore getBool:TSAccountManager_IsOnboardedKey defaultValue:NO transaction:transaction];
+
+    _isTransferInProgress = [keyValueStore getBool:TSAccountManager_IsTransferInProgressKey
+                                      defaultValue:NO
+                                       transaction:transaction];
+    _wasTransferred = [keyValueStore getBool:TSAccountManager_WasTransferredKey
+                                defaultValue:NO
+                                 transaction:transaction];
 
     return self;
 }
@@ -232,7 +245,7 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
 
 - (void)warmCaches
 {
-    TSAccountState *accountState = [self getOrLoadAccountStateWithSneakyTransaction];
+    TSAccountState *accountState = [self loadAccountStateWithSneakyTransaction];
 
     [accountState log];
 }
@@ -631,6 +644,12 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
                     failureBlock(userError);
                     break;
                 }
+                case 409: {
+                    NSError *userError = OWSErrorWithCodeDescription(OWSErrorCodeRegistrationTransferAvailable,
+                        @"There was an account previously registered with this number that is available for transfer.");
+                    failureBlock(userError);
+                    break;
+                }
                 case 413: {
                     // In the case of the "rate limiting" error, we want to show the
                     // "recovery suggestion", not the error's "description."
@@ -762,7 +781,9 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
 
 - (BOOL)isDeregistered
 {
-    return [self getOrLoadAccountStateWithSneakyTransaction].isDeregistered;
+    TSAccountState *state = [self getOrLoadAccountStateWithSneakyTransaction];
+    // An in progress transfer is treated as being deregistered.
+    return state.isTransferInProgress || state.wasTransferred || state.isDeregistered;
 }
 
 - (void)setIsDeregistered:(BOOL)isDeregistered
@@ -837,6 +858,50 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
     return [self getOrLoadAccountStateWithSneakyTransaction].isReregistering;
 }
 
+- (BOOL)isTransferInProgress
+{
+    return [self getOrLoadAccountStateWithSneakyTransaction].isTransferInProgress;
+}
+
+- (void)setIsTransferInProgress:(BOOL)transferInProgress
+{
+    if (transferInProgress == self.isTransferInProgress) {
+        return;
+    }
+
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        @synchronized(self) {
+            [self.keyValueStore setObject:@(transferInProgress)
+                                      key:TSAccountManager_IsTransferInProgressKey
+                              transaction:transaction];
+
+            [self loadAccountStateWithTransaction:transaction];
+        }
+    }];
+
+    [self postRegistrationStateDidChangeNotification];
+}
+
+- (BOOL)wasTransferred
+{
+    return [self getOrLoadAccountStateWithSneakyTransaction].wasTransferred;
+}
+
+- (void)setWasTransferred:(BOOL)wasTransferred
+{
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        @synchronized(self) {
+            [self.keyValueStore setObject:@(wasTransferred)
+                                      key:TSAccountManager_WasTransferredKey
+                              transaction:transaction];
+
+            [self loadAccountStateWithTransaction:transaction];
+        }
+    }];
+
+    [self postRegistrationStateDidChangeNotification];
+}
+
 - (BOOL)hasPendingBackupRestoreDecision
 {
     __block BOOL result;
@@ -899,8 +964,6 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
 
 - (void)postRegistrationStateDidChangeNotification
 {
-    OWSAssertIsOnMainThread();
-
     [[NSNotificationCenter defaultCenter] postNotificationNameAsync:NSNotificationNameRegistrationStateDidChange
                                                              object:nil
                                                            userInfo:nil];

@@ -75,7 +75,7 @@ class AccountManagerTest: SignalBaseTest {
         let expectation = self.expectation(description: "should fail")
 
         firstly {
-            accountManager.register(verificationCode: "", pin: "")
+            accountManager.register(verificationCode: "", pin: "", checkForAvailableTransfer: false)
         }.done {
             XCTFail("Should fail")
         }.catch { error in
@@ -96,7 +96,7 @@ class AccountManagerTest: SignalBaseTest {
         let expectation = self.expectation(description: "should fail")
 
         firstly {
-            accountManager.register(verificationCode: "123456", pin: "")
+            accountManager.register(verificationCode: "123456", pin: "", checkForAvailableTransfer: false)
         }.done {
             XCTFail("Should fail")
         }.catch { error in
@@ -122,7 +122,7 @@ class AccountManagerTest: SignalBaseTest {
         let expectation = self.expectation(description: "should succeed")
 
         firstly {
-            accountManager.register(verificationCode: "123456", pin: "")
+            accountManager.register(verificationCode: "123456", pin: "", checkForAvailableTransfer: false)
         }.done {
             expectation.fulfill()
         }.catch { error in

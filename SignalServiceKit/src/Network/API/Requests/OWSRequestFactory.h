@@ -85,7 +85,8 @@ typedef NS_ENUM(NSUInteger, TSVerificationTransport) { TSVerificationTransportVo
                                                   phoneNumber:(NSString *)phoneNumber
                                                       authKey:(NSString *)authKey
                                                           pin:(nullable NSString *)pin
-    NS_SWIFT_NAME(verifyPrimaryDeviceRequest(verificationCode:phoneNumber:authKey:pin:));
+                                    checkForAvailableTransfer:(BOOL)checkForAvailableTransfer
+    NS_SWIFT_NAME(verifyPrimaryDeviceRequest(verificationCode:phoneNumber:authKey:pin:checkForAvailableTransfer:));
 
 + (TSRequest *)verifySecondaryDeviceRequestWithVerificationCode:(NSString *)verificationCode
                                                     phoneNumber:(NSString *)phoneNumber

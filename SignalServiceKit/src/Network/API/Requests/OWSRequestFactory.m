@@ -388,12 +388,17 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
                                                   phoneNumber:(NSString *)phoneNumber
                                                       authKey:(NSString *)authKey
                                                           pin:(nullable NSString *)pin
+                                    checkForAvailableTransfer:(BOOL)checkForAvailableTransfer
 {
     OWSAssertDebug(verificationCode.length > 0);
     OWSAssertDebug(phoneNumber.length > 0);
     OWSAssertDebug(authKey.length > 0);
 
     NSString *path = [NSString stringWithFormat:@"%@/code/%@", textSecureAccountsAPI, verificationCode];
+
+    if (checkForAvailableTransfer) {
+        path = [path stringByAppendingString:@"?transfer=true"];
+    }
 
     BOOL isManualMessageFetchEnabled = self.tsAccountManager.isManualMessageFetchEnabled;
     NSMutableDictionary<NSString *, id> *accountAttributes =
@@ -509,6 +514,9 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     if (SSKDebugFlags.groupsV2memberStatusIndicators) {
         OWSLogInfo(@"capabilities: %@", capabilities);
     }
+
+    capabilities[@"transfer"] = @(YES);
+
     return [capabilities copy];
 }
 

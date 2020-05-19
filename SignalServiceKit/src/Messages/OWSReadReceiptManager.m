@@ -431,6 +431,10 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 
 - (void)prepareCachedValues
 {
+    // Clear out so we re-initialize if we ever re-run the "on launch" logic,
+    // such as after a completed database transfer.
+    self.areReadReceiptsEnabledCached = NO;
+
     [self areReadReceiptsEnabled];
 }
 

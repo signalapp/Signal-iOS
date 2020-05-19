@@ -206,7 +206,7 @@ extension UIDatabaseObserver: TransactionObserver {
         // Run checkpoints after 1/3 of writes.
         let checkpointFrequencyPercentage = 33
         let checkpointRandom = arc4random_uniform(100)
-        let shouldTryToCheckpoint = checkpointRandom < checkpointFrequencyPercentage
+        let shouldTryToCheckpoint = checkpointRandom < checkpointFrequencyPercentage && !TSAccountManager.sharedInstance().isTransferInProgress
         if shouldTryToCheckpoint {
             // Run restart checkpoints after 1/100 of writes.
             let checkpointFrequencyPercentage = 1

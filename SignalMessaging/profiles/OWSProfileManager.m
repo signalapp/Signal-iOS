@@ -197,6 +197,12 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 
 - (void)warmCaches
 {
+    // Clear out so we re-initialize if we ever re-run the "on launch" logic,
+    // such as after a completed database transfer.
+    @synchronized(self) {
+        _localUserProfile = nil;
+    }
+
     [self ensureLocalProfileCached];
 }
 

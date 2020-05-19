@@ -31,6 +31,7 @@ extern const NSUInteger kStoredIdentityKeyLength;
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithDatabaseStorage:(SDSDatabaseStorage *)databaseStorage;
+- (void)recreateDatabaseQueue;
 
 + (instancetype)sharedManager;
 

@@ -130,6 +130,24 @@ public class SDSDatabaseStorage: SDSTransactable {
         return GRDBDatabaseStorageAdapter.databaseFileUrl(baseDir: baseDir())
     }
 
+    public func reload() {
+        AssertIsOnMainThread()
+        assert(storageCoordinatorState == .GRDB)
+
+        let wasRegistered = TSAccountManager.sharedInstance().isRegistered
+
+        _grdbStorage = createGrdbStorage()
+
+        GRDBSchemaMigrator().runSchemaMigrations()
+
+        SSKEnvironment.shared.warmCaches()
+        OWSIdentityManager.shared().recreateDatabaseQueue()
+
+        if wasRegistered != TSAccountManager.sharedInstance().isRegistered {
+            NotificationCenter.default.post(name: .registrationStateDidChange, object: nil, userInfo: nil)
+        }
+    }
+
     func createGrdbStorage() -> GRDBDatabaseStorageAdapter {
         if !canLoadGrdb {
             Logger.error("storageMode: \(FeatureFlags.storageModeDescription).")

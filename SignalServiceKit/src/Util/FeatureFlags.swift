@@ -235,6 +235,12 @@ public class FeatureFlags: NSObject {
 
     @objc
     public static let deleteForEveryone = build.includes(.dev)
+
+    @objc
+    public static let deviceTransferDestroyOldDevice = false
+
+    @objc
+    public static let deviceTransferThrowAway = true
 }
 
 /// Flags that we'll leave in the code base indefinitely that are helpful for
@@ -321,4 +327,7 @@ public class DebugFlags: NSObject {
 
     @objc
     public static let shouldMergeUserProfiles = build.includes(.qa)
+
+    @objc
+    public static let deviceTransferVerboseProgressLogging = build.includes(.qa)
 }

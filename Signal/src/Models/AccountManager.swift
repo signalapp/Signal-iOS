@@ -136,7 +136,7 @@ public class AccountManager: NSObject {
         }
     }
 
-    func register(verificationCode: String, pin: String?) -> Promise<Void> {
+    func register(verificationCode: String, pin: String?, checkForAvailableTransfer: Bool) -> Promise<Void> {
         guard verificationCode.count > 0 else {
             let error = OWSErrorWithCodeDescription(.userError,
                                                     NSLocalizedString("REGISTRATION_ERROR_BLANK_VERIFICATION_CODE",
@@ -146,7 +146,7 @@ public class AccountManager: NSObject {
 
         Logger.debug("registering with signal server")
         let registrationPromise: Promise<Void> = firstly {
-            self.registerForTextSecure(verificationCode: verificationCode, pin: pin)
+            self.registerForTextSecure(verificationCode: verificationCode, pin: pin, checkForAvailableTransfer: checkForAvailableTransfer)
         }.then { response -> Promise<Void> in
             assert(!FeatureFlags.allowUUIDOnlyContacts || response.uuid != nil)
             self.tsAccountManager.uuidAwaitingVerification = response.uuid
@@ -331,7 +331,7 @@ public class AccountManager: NSObject {
         var hasPreviouslyUsedKBS = false
     }
 
-    private func registerForTextSecure(verificationCode: String, pin: String?) -> Promise<RegistrationResponse> {
+    private func registerForTextSecure(verificationCode: String, pin: String?, checkForAvailableTransfer: Bool) -> Promise<RegistrationResponse> {
         let serverAuthToken = generateServerAuthToken()
 
         return Promise<Any?> { resolver in
@@ -342,7 +342,8 @@ public class AccountManager: NSObject {
             let request = OWSRequestFactory.verifyPrimaryDeviceRequest(verificationCode: verificationCode,
                                                                        phoneNumber: phoneNumber,
                                                                        authKey: serverAuthToken,
-                                                                       pin: pin)
+                                                                       pin: pin,
+                                                                       checkForAvailableTransfer: checkForAvailableTransfer)
 
             tsAccountManager.verifyAccount(with: request,
                                            success: resolver.fulfill,

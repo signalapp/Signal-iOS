@@ -152,6 +152,13 @@ typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
 - (BOOL)isDeregistered;
 - (void)setIsDeregistered:(BOOL)isDeregistered;
 
+#pragma mark - Transfer
+
+@property (nonatomic) BOOL isTransferInProgress;
+@property (nonatomic) BOOL wasTransferred;
+
+#pragma mark - Backup
+
 - (BOOL)hasPendingBackupRestoreDecision;
 - (void)setHasPendingBackupRestoreDecision:(BOOL)value;
 

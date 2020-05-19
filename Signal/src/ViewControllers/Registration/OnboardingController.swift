@@ -329,7 +329,7 @@ public class OnboardingController: NSObject {
         pushStartDeviceRegistrationView(onto: navigationController)
     }
 
-    private func pushStartDeviceRegistrationView(onto navigationController: UINavigationController) {
+    func pushStartDeviceRegistrationView(onto navigationController: UINavigationController) {
         AssertIsOnMainThread()
 
         if onboardingMode == .provisioning {
@@ -717,6 +717,65 @@ public class OnboardingController: NSObject {
                                         message: nsError.localizedRecoverySuggestion)
     }
 
+    // MARK: - Transfer
+
+    func transferAccount(fromViewController: UIViewController) {
+        AssertIsOnMainThread()
+
+        Logger.info("")
+
+        guard let navigationController = fromViewController.navigationController else {
+            owsFailDebug("Missing navigationController")
+            return
+        }
+
+        guard !(navigationController.topViewController is OnboardingTransferQRCodeViewController) else {
+            // qr code view is already presented, we don't need to push it again.
+            return
+        }
+
+        let view = OnboardingTransferQRCodeViewController(onboardingController: self)
+        navigationController.pushViewController(view, animated: true)
+    }
+
+    func accountTransferInProgress(fromViewController: UIViewController, progress: Progress) {
+        AssertIsOnMainThread()
+
+        Logger.info("")
+
+        guard let navigationController = fromViewController.navigationController else {
+            owsFailDebug("Missing navigationController")
+            return
+        }
+
+        guard !(navigationController.topViewController is OnboardingTransferProgressViewController) else {
+            // qr code view is already presented, we don't need to push it again.
+            return
+        }
+
+        let view = OnboardingTransferProgressViewController(onboardingController: self, progress: progress)
+        navigationController.pushViewController(view, animated: true)
+    }
+
+    public func presentTransferOptions(viewController: UIViewController) {
+        AssertIsOnMainThread()
+
+        Logger.info("")
+
+        guard let navigationController = viewController.navigationController else {
+            owsFailDebug("Missing navigationController")
+            return
+        }
+
+        guard !(navigationController.topViewController is OnboardingTransferChoiceViewController) else {
+            // transfer view is already presented, we don't need to push it again.
+            return
+        }
+
+        let view = OnboardingTransferChoiceViewController(onboardingController: self)
+        navigationController.pushViewController(view, animated: true)
+    }
+
     // MARK: - Verification
 
     public enum VerificationOutcome: Equatable {
@@ -732,6 +791,7 @@ public class OnboardingController: NSObject {
     }
 
     public func submitVerification(fromViewController: UIViewController,
+                                   checkForAvailableTransfer: Bool = true,
                                    completion : @escaping (VerificationOutcome) -> Void) {
         AssertIsOnMainThread()
 
@@ -801,7 +861,11 @@ public class OnboardingController: NSObject {
         ModalActivityIndicatorViewController.present(fromViewController: fromViewController,
                                                      canCancel: true) { (modal) in
 
-                                                        self.accountManager.register(verificationCode: verificationCode, pin: twoFAPin)
+                                                        self.accountManager.register(
+                                                            verificationCode: verificationCode,
+                                                            pin: twoFAPin,
+                                                            checkForAvailableTransfer: checkForAvailableTransfer
+                                                        )
                                                             .then { _ -> Promise<Void> in
                                                                 // Re-enable 2FA and RegLock with the registered pin, if any
                                                                 if let pin = twoFAPin {
@@ -855,6 +919,11 @@ public class OnboardingController: NSObject {
             completion(.invalid2FAPin)
 
             onboardingDidRequire2FAPin(viewController: fromViewController)
+        } else if error.domain == OWSSignalServiceKitErrorDomain &&
+            error.code == OWSErrorCode.registrationTransferAvailable.rawValue {
+            Logger.info("Transfer available")
+
+            presentTransferOptions(viewController: fromViewController)
         } else {
             if error.domain == OWSSignalServiceKitErrorDomain &&
                 error.code == OWSErrorCode.userError.rawValue {
