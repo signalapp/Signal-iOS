@@ -39,6 +39,9 @@ public class RemoteConfig: NSObject {
 
     @objc
     public static var messageRequests: Bool {
+        guard !DebugFlags.forceMessageRequests else {
+            return true
+        }
         return isEnabled(.messageRequests)
     }
 
