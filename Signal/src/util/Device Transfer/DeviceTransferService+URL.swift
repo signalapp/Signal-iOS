@@ -20,7 +20,7 @@ extension DeviceTransferService {
 
         var components = URLComponents()
         components.scheme = kURLSchemeSGNLKey
-        components.path = kURLHostTransferPrefix
+        components.host = kURLHostTransferPrefix
 
         guard let base64CertificateHash = try identity.computeCertificateHash().base64EncodedString().encodeURIComponent else {
             throw OWSAssertionError("failed to get base64 certificate hash")
