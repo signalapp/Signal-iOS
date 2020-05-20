@@ -89,25 +89,29 @@ extension DeviceTransferService {
         return true
     }
 
-    func restoreTransferredData(hotSwapDatabase: Bool) {
+    func restoreTransferredData(hotSwapDatabase: Bool) -> Bool {
         Logger.info("Attempting to restore transferred data.")
 
         guard hasPendingRestore else {
-            return owsFailDebug("Cannot restore data when there was no pending restore")
+            owsFailDebug("Cannot restore data when there was no pending restore")
+            return false
         }
 
         guard let manifest = readManifestFromTransferDirectory() else {
-            return owsFailDebug("Unexpectedly tried to restore data when there is no valid manifest")
+            owsFailDebug("Unexpectedly tried to restore data when there is no valid manifest")
+            return false
         }
 
         guard let database = manifest.database else {
-            return owsFailDebug("manifest is missing database")
+            owsFailDebug("manifest is missing database")
+            return false
         }
 
         do {
             try GRDBDatabaseStorageAdapter.keyspec.store(data: database.key)
         } catch {
-            return owsFailDebug("failed to restore database key")
+            owsFailDebug("failed to restore database key")
+            return false
         }
 
         for userDefault in manifest.standardDefaults {
@@ -148,7 +152,10 @@ extension DeviceTransferService {
             let fileWasAlreadyRestored = OWSFileSystem.fileOrFolderExists(atPath: newFilePath)
 
             if fileIsAwaitingRestoration {
-                OWSFileSystem.deleteFileIfExists(newFilePath)
+                guard OWSFileSystem.deleteFileIfExists(newFilePath) else {
+                    owsFailDebug("Failed to delete existing file \(file.identifier).")
+                    return false
+                }
 
                 let pathComponents = file.relativePath.components(separatedBy: "/")
                 var path = ""
@@ -163,11 +170,15 @@ extension DeviceTransferService {
                     )
                 }
 
-                OWSFileSystem.moveFilePath(pendingFilePath, toFilePath: newFilePath)
+                guard OWSFileSystem.moveFilePath(pendingFilePath, toFilePath: newFilePath) else {
+                    owsFailDebug("Failed to restore \(file.identifier)")
+                    return false
+                }
             } else if fileWasAlreadyRestored {
                 Logger.info("Skipping restoration of file that was already restored: \(file.identifier)")
             } else {
                 owsFailDebug("unable to restore file that is missing")
+                return false
             }
         }
 
@@ -185,6 +196,8 @@ extension DeviceTransferService {
                 SignalApp.shared().showConversationSplitView()
             }
         }
+
+        return true
     }
 
     func resetTransferDirectory() {
@@ -202,7 +215,7 @@ extension DeviceTransferService {
     }
 
     @objc
-    func launchCleanup() {
+    func launchCleanup() -> Bool {
         Logger.info("hasBeenRestored: \(hasBeenRestored)")
 
         AppReadiness.runNowOrWhenAppDidBecomeReady {
@@ -215,9 +228,10 @@ extension DeviceTransferService {
         }
 
         if hasPendingRestore {
-            restoreTransferredData(hotSwapDatabase: false)
+            return restoreTransferredData(hotSwapDatabase: false)
         } else {
             resetTransferDirectory()
+            return true
         }
     }
 }

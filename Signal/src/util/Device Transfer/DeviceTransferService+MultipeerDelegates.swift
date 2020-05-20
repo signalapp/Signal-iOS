@@ -137,7 +137,9 @@ extension DeviceTransferService: MCSessionDelegate {
             // Try and restore the received data. If for some reason the app exits
             // or crashes at this point, we will retry the restore when the app next
             // launches.
-            restoreTransferredData(hotSwapDatabase: true)
+            guard restoreTransferredData(hotSwapDatabase: true) else {
+                owsFail("Restore failed. Crashing, will try again on next launch.")
+            }
 
             stopTransfer()
         }
