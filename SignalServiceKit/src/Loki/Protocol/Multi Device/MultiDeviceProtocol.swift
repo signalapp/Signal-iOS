@@ -24,7 +24,7 @@ public final class MultiDeviceProtocol : NSObject {
     internal static var storage: OWSPrimaryStorage { OWSPrimaryStorage.shared() }
 
     // MARK: - Settings
-    public static let deviceLinkUpdateInterval: TimeInterval = 20
+    public static let deviceLinkUpdateInterval: TimeInterval = 60
     
     // MARK: - Multi Device Destination
     public struct MultiDeviceDestination : Hashable {
