@@ -1150,13 +1150,21 @@ public class GroupManager: NSObject {
         }
     }
 
-    // MARK: - Change Group Membership Access
+    // MARK: - Change Group Access
 
     public static func changeGroupAttributesAccessV2(groupModel: TSGroupModelV2,
                                                      access: GroupV2Access) -> Promise<TSGroupThread> {
         return updateGroupV2(groupModel: groupModel,
-                             description: "Change group membership access") { groupChangeSet in
+                             description: "Change group attributes access") { groupChangeSet in
                                 groupChangeSet.setAccessForAttributes(access)
+        }
+    }
+
+    public static func changeGroupMembershipAccessV2(groupModel: TSGroupModelV2,
+                                                     access: GroupV2Access) -> Promise<TSGroupThread> {
+        return updateGroupV2(groupModel: groupModel,
+                             description: "Change group membership access") { groupChangeSet in
+                                groupChangeSet.setAccessForMembers(access)
         }
     }
 
