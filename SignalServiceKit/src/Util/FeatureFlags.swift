@@ -18,7 +18,7 @@ extension FeatureBuild {
     }
 }
 
-let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .beta
+let build: FeatureBuild = .qa
 
 // MARK: -
 
@@ -113,7 +113,7 @@ public class FeatureFlags: NSObject {
     }
 
     @objc
-    public static let uuidCapabilities = allowUUIDOnlyContacts && useOnlyModernContactDiscovery
+    public static let uuidCapabilities = true
 
     @objc
     public static var storageModeDescription: String {
@@ -135,7 +135,7 @@ public class FeatureFlags: NSObject {
     public static let strictYDBExtensions = build.includes(.beta)
 
     @objc
-    public static var allowUUIDOnlyContacts = useOnlyModernContactDiscovery
+    public static var allowUUIDOnlyContacts = true
 
     @objc
     public static var uuidSafetyNumbers = allowUUIDOnlyContacts
@@ -179,7 +179,7 @@ public class FeatureFlags: NSObject {
     public static let answerCallsOnSecondaryDevice: Bool = build.includes(.beta)
 
     @objc
-    public static let groupsV2 = build.includes(.qa) && !isUsingProductionService
+    public static let groupsV2 = true
 
     // Don't consult this feature flag directly; instead
     // consult RemoteConfig.groupsV2CreateGroups.
@@ -243,7 +243,7 @@ public class FeatureFlags: NSObject {
     public static let deviceTransferDestroyOldDevice = false
 
     @objc
-    public static let deviceTransferThrowAway = false
+    public static let deviceTransferThrowAway = true
 }
 
 /// Flags that we'll leave in the code base indefinitely that are helpful for
@@ -278,7 +278,7 @@ public class DebugFlags: NSObject {
     public static let groupsV2dontSendUpdates = false
 
     @objc
-    public static let groupsV2showV2Indicator = FeatureFlags.groupsV2 && build.includes(.qa)
+    public static let groupsV2showV2Indicator = true
 
     // If set, v2 groups will be created and updated with invalid avatars
     // so that we can test clients' robustness to this case.
