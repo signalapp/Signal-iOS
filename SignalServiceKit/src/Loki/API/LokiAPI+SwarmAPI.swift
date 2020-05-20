@@ -27,7 +27,7 @@ public extension LokiAPI {
     #if TESTNET
     fileprivate static let seedNodePool: Set<String> = [ "http://public.loki.foundation:38157" ]
     #else
-    fileprivate static let seedNodePool: Set<String> = [ "http://storage.seed1.loki.network:22023", "http://storage.seed2.loki.network:38157", "http://149.56.148.124:38157" ]
+    fileprivate static let seedNodePool: Set<String> = [ "http://storage.seed1.loki.network:22023", "http://storage.seed2.loki.network:22023", "http://144.76.164.202:22023" ]
     #endif
 
     internal static var randomSnodePool: Set<LokiAPITarget> = []
