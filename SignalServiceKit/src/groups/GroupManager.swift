@@ -1367,7 +1367,18 @@ public class GroupManager: NSObject {
             // DURABLE CLEANUP - currently one caller uses the completion handler to delete the tappable error message
             // which causes this code to be called. Once we're more aggressive about durable sending retry,
             // we could get rid of this "retryable tappable error message".
-            return self.messageSender.sendMessage(.promise, message.asPreparer)
+            if thread.isGroupV1Thread {
+                return self.messageSender.sendMessage(.promise, message.asPreparer)
+            } else {
+                assert(thread.isGroupV2Thread)
+                return firstly {
+                    return self.messageSender.sendMessage(.promise, message.asPreparer)
+                }.recover(on: .global()) { error in
+                    // Failure to send a "group update" message should not
+                    // be considered a failure when updating a v2 group.
+                    Logger.error("Error sending group update: \(error)")
+                }
+            }
         }
     }
 
