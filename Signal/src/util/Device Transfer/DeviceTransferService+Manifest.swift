@@ -24,11 +24,11 @@ extension DeviceTransferService {
                 estimatedTotalSize += size.uint64Value
                 let fileBuilder = DeviceTransferProtoFile.builder(
                     identifier: DeviceTransferService.databaseIdentifier,
-                    relativePath: pathRelativeToAppSharedDirectory(file),
+                    relativePath: try pathRelativeToAppSharedDirectory(file),
                     estimatedSize: size.uint64Value
                 )
                 return try fileBuilder.build()
-                }()
+            }()
 
             let wal: DeviceTransferProtoFile = try {
                 let file = databaseStorage.grdbStorage.databaseWALFilePath
@@ -38,11 +38,11 @@ extension DeviceTransferService {
                 estimatedTotalSize += size.uint64Value
                 let fileBuilder = DeviceTransferProtoFile.builder(
                     identifier: DeviceTransferService.databaseWALIdentifier,
-                    relativePath: pathRelativeToAppSharedDirectory(file),
+                    relativePath: try pathRelativeToAppSharedDirectory(file),
                     estimatedSize: size.uint64Value
                 )
                 return try fileBuilder.build()
-                }()
+            }()
 
             let databaseBuilder = DeviceTransferProtoDatabase.builder(
                 key: try GRDBDatabaseStorageAdapter.keyspec.fetchData(),
@@ -88,7 +88,7 @@ extension DeviceTransferService {
             estimatedTotalSize += size.uint64Value
             let fileBuilder = DeviceTransferProtoFile.builder(
                 identifier: UUID().uuidString,
-                relativePath: pathRelativeToAppSharedDirectory(file),
+                relativePath: try pathRelativeToAppSharedDirectory(file),
                 estimatedSize: size.uint64Value
             )
             manifestBuilder.addFiles(try fileBuilder.build())
@@ -132,7 +132,10 @@ extension DeviceTransferService {
         return try manifestBuilder.build()
     }
 
-    func pathRelativeToAppSharedDirectory(_ path: String) -> String {
+    func pathRelativeToAppSharedDirectory(_ path: String) throws -> String {
+        guard !["~", "..", "*"].reduce(false, { $0 || path.contains($1) }) else {
+            throw OWSAssertionError("path contains invalid expansion characters")
+        }
         var path = path.replacingOccurrences(of: DeviceTransferService.appSharedDataDirectory.path, with: "")
         if path.starts(with: "/") { path.removeFirst() }
         return path

@@ -53,6 +53,7 @@ class DeviceTransferOperation: OWSOperation {
         DispatchQueue.global().async { self.prepareForSending() }
     }
 
+    private var progress: Progress?
     private func prepareForSending() {
         guard case .outgoing(let newDevicePeerId, _, _, let transferredFiles, let progress) = deviceTransferService.transferState else {
             return reportError(OWSAssertionError("Tried to transfer file while in unexpected state: \(deviceTransferService.transferState)"))
@@ -88,11 +89,33 @@ class DeviceTransferOperation: OWSOperation {
                         self.deviceTransferService.transferState.appendingFileId(self.file.identifier)
                     self.reportSuccess()
                 }
+
+                self.progress?.removeObserver(self, forKeyPath: "fractionCompleted")
             }
         ) else {
             return reportError(OWSAssertionError("Transfer of file failed \(file.identifier)"))
         }
 
         progress.addChild(fileProgress, withPendingUnitCount: Int64(file.estimatedSize))
+        self.progress = fileProgress
+        fileProgress.addObserver(self, forKeyPath: "fractionCompleted", options: .initial, context: nil)
+    }
+
+    private var lastWholeNumberProgress = 0
+    override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey: Any]?, context: UnsafeMutableRawPointer?) {
+        guard keyPath == "fractionCompleted", let progress = object as? Progress else {
+            return super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
+        }
+
+        let currentWholeNumberProgress = Int(progress.fractionCompleted * 100)
+        let percentChange = currentWholeNumberProgress - lastWholeNumberProgress
+
+        defer { lastWholeNumberProgress = currentWholeNumberProgress }
+
+        // Determine how frequently to log progress updates. If in verbose mode, we log
+        // every 1%. Otherwise, every 10%.
+        guard percentChange >= (DebugFlags.deviceTransferVerboseProgressLogging ? 1 : 10) else { return }
+
+        Logger.info("Transferring file \(self.file.identifier) \(currentWholeNumberProgress)%")
     }
 }

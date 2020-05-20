@@ -90,6 +90,8 @@ extension DeviceTransferService {
     }
 
     func restoreTransferredData(hotSwapDatabase: Bool) {
+        Logger.info("Attempting to restore transferred data.")
+
         guard hasPendingRestore else {
             return owsFailDebug("Cannot restore data when there was no pending restore")
         }
@@ -102,8 +104,6 @@ extension DeviceTransferService {
             return owsFailDebug("manifest is missing database")
         }
 
-        Logger.info("Attempting to restore transferred data.")
-
         do {
             try GRDBDatabaseStorageAdapter.keyspec.store(data: database.key)
         } catch {
@@ -111,10 +111,12 @@ extension DeviceTransferService {
         }
 
         for userDefault in manifest.standardDefaults {
-            UserDefaults.standard.set(
-                NSKeyedUnarchiver.unarchiveObject(with: userDefault.encodedValue),
-                forKey: userDefault.key
-            )
+            guard let unarchivedValue = NSKeyedUnarchiver.unarchiveObject(with: userDefault.encodedValue) else {
+                owsFailDebug("Failed to unarchive value for key \(userDefault.key)")
+                continue
+            }
+
+            UserDefaults.standard.set(unarchivedValue, forKey: userDefault.key)
         }
 
         for userDefault in manifest.appDefaults {
@@ -124,33 +126,29 @@ extension DeviceTransferService {
                 DeviceTransferService.pendingWasTransferedClearKey
             ].contains(userDefault.key) else { continue }
 
-            CurrentAppContext().appUserDefaults().set(
-                NSKeyedUnarchiver.unarchiveObject(with: userDefault.encodedValue),
-                forKey: userDefault.key
-            )
+            guard let unarchivedValue = NSKeyedUnarchiver.unarchiveObject(with: userDefault.encodedValue) else {
+                owsFailDebug("Failed to unarchive value for key \(userDefault.key)")
+                continue
+            }
+
+            CurrentAppContext().appUserDefaults().set(unarchivedValue, forKey: userDefault.key)
         }
 
         for file in manifest.files + [database.database, database.wal] {
-            let fileIsAwaitingRestoration = OWSFileSystem.fileOrFolderExists(
-                atPath: URL(
-                    fileURLWithPath: file.identifier,
-                    relativeTo: DeviceTransferService.pendingTransferFilesDirectory
-                ).path
-            )
-            let fileWasAlreadyRestored = OWSFileSystem.fileOrFolderExists(
-                atPath: URL(
-                    fileURLWithPath: file.relativePath,
-                    relativeTo: DeviceTransferService.appSharedDataDirectory
-                ).path
-            )
+            let pendingFilePath = URL(
+                fileURLWithPath: file.identifier,
+                relativeTo: DeviceTransferService.pendingTransferFilesDirectory
+            ).path
+            let newFilePath = URL(
+                fileURLWithPath: file.relativePath,
+                relativeTo: DeviceTransferService.appSharedDataDirectory
+            ).path
+
+            let fileIsAwaitingRestoration = OWSFileSystem.fileOrFolderExists(atPath: pendingFilePath)
+            let fileWasAlreadyRestored = OWSFileSystem.fileOrFolderExists(atPath: newFilePath)
 
             if fileIsAwaitingRestoration {
-                OWSFileSystem.deleteFileIfExists(
-                    URL(
-                        fileURLWithPath: file.relativePath,
-                        relativeTo: DeviceTransferService.appSharedDataDirectory
-                    ).path
-                )
+                OWSFileSystem.deleteFileIfExists(newFilePath)
 
                 let pathComponents = file.relativePath.components(separatedBy: "/")
                 var path = ""
@@ -165,16 +163,7 @@ extension DeviceTransferService {
                     )
                 }
 
-                OWSFileSystem.moveFilePath(
-                    URL(
-                        fileURLWithPath: file.identifier,
-                        relativeTo: DeviceTransferService.pendingTransferFilesDirectory
-                    ).path,
-                    toFilePath: URL(
-                        fileURLWithPath: file.relativePath,
-                        relativeTo: DeviceTransferService.appSharedDataDirectory
-                    ).path
-                )
+                OWSFileSystem.moveFilePath(pendingFilePath, toFilePath: newFilePath)
             } else if fileWasAlreadyRestored {
                 Logger.info("Skipping restoration of file that was already restored: \(file.identifier)")
             } else {

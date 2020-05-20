@@ -314,7 +314,12 @@ void uncaughtExceptionHandler(NSException *exception)
         return YES;
     }
 
-    [DeviceTransferService.shared launchCleanup];
+    [BenchManager benchWithTitle:@"Slow device transfer service launch"
+                 logIfLongerThan:0.01
+                 logInProduction:YES
+                           block:^{
+                               [DeviceTransferService.shared launchCleanup];
+                           }];
 
     [AppSetup
         setupEnvironmentWithAppSpecificSingletonBlock:^{

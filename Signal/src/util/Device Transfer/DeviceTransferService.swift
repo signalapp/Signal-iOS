@@ -20,7 +20,7 @@ protocol DeviceTransferServiceObserver: class {
 ///
 /// 1) As you begin setting up a new device (ND), you are asked if you want to transfer data
 ///    from an old device (OD). This happens *after* the SMS code and reg lock pin are provided,
-///    but (importantly) before the service replaces your old account. Accounts are identifier
+///    but (importantly) before the service replaces your old account. Accounts are identified
 ///    by the service as being eligible for transfer by setting the "transfer" capability.
 /// 2) In order to notify potential ODs on the network, the ND will begin advertising a
 ///    “transfer service” using Bonjour. Nearby ODs will be readily browsing for this service,
@@ -340,6 +340,7 @@ class DeviceTransferService: NSObject {
     // MARK: - Throughput
 
     private var previouslyCompletedBytes: Double = 0
+    private var lastWholeNumberProgress = 0
     private var throughputTimer: Timer?
     func startThroughputCalculation() {
         guard Thread.isMainThread else {
@@ -395,9 +396,16 @@ class DeviceTransferService: NSObject {
 
     @available(iOS 11, *)
     private func logProgress(_ progress: Progress, remainingBytes: Double) {
-        guard DebugFlags.deviceTransferVerboseProgressLogging else { return }
+        let currentWholeNumberProgress = Int(progress.fractionCompleted * 100)
+        let percentChange = currentWholeNumberProgress - lastWholeNumberProgress
 
-        var progressLog = String(format: "Transfer progress %0.2f%%", progress.fractionCompleted * 100)
+        defer { lastWholeNumberProgress = currentWholeNumberProgress }
+
+        // Determine how frequently to log progress updates. If in verbose mode, we log
+        // every 1%. Otherwise, every 10%.
+        guard percentChange >= (DebugFlags.deviceTransferVerboseProgressLogging ? 1 : 10) else { return }
+
+        var progressLog = String(format: "Transfer progress %d%%", currentWholeNumberProgress)
 
         var remainingNumber = remainingBytes
         var remainingUnits = "b"
@@ -447,5 +455,6 @@ class DeviceTransferService: NSObject {
         throughputTimer?.invalidate()
         throughputTimer = nil
         previouslyCompletedBytes = 0
+        lastWholeNumberProgress = 0
     }
 }
