@@ -106,6 +106,11 @@ public class OnboardingTransferProgressViewController: OnboardingBaseViewControl
 
         present(actionSheet, animated: true)
     }
+
+    override func shouldShowBackButton() -> Bool {
+        // Never show the back buton here
+        return false
+    }
 }
 
 extension OnboardingTransferProgressViewController: DeviceTransferServiceObserver {

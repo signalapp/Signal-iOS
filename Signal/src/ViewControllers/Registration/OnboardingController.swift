@@ -923,6 +923,8 @@ public class OnboardingController: NSObject {
             Logger.info("Transfer available")
 
             presentTransferOptions(viewController: fromViewController)
+
+            completion(.success)
         } else {
             if error.domain == OWSSignalServiceKitErrorDomain &&
                 error.code == OWSErrorCode.userError.rawValue {

@@ -669,12 +669,13 @@ class PinProgressView: UIView {
         // instead it sets this flag which waits until the animation is at the point
         // it can transition to the next state.
         completedSuccessfully = success
-        completionHandler = { [weak self] in
-            guard animated else {
-                self?.reset()
-                return completion()
-            }
 
+        guard animated else {
+            reset()
+            return completion()
+        }
+
+        completionHandler = { [weak self] in
             UIView.animate(withDuration: 0.15, animations: {
                 self?.alpha = 0
                 animateAlongside?()
@@ -694,6 +695,8 @@ class PinProgressView: UIView {
         guard let completedSuccessfully = completedSuccessfully else {
             return progressAnimation.play { [weak self] _ in self?.startNextLoopOrFinish() }
         }
+
+        guard progressAnimation.isAnimationPlaying else { return }
 
         progressAnimation.stop()
         progressAnimation.isHidden = true
