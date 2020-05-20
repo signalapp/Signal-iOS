@@ -39,6 +39,7 @@ class DeviceTransferQRScanningViewController: DeviceTransferBaseViewController {
 
         stackView.addArrangedSubview(label)
         label.setCompressionResistanceHorizontalHigh()
+        label.setCompressionResistanceVerticalHigh()
 
         let trailingSpacer = UIView.hStretchingSpacer()
         stackView.addArrangedSubview(trailingSpacer)
@@ -155,11 +156,11 @@ extension DeviceTransferQRScanningViewController: ZXCaptureDelegate {
 
         DispatchQueue.global().async {
             do {
-                let (peerId, certificateHash) = try self.deviceTransferService.parseTrasnsferURL(scannedURL)
+                let (peerId, certificateHash) = try self.deviceTransferService.parseTransferURL(scannedURL)
                 self.deviceTransferService.addObserver(self)
                 try self.deviceTransferService.transferAccountToNewDevice(with: peerId, certificateHash: certificateHash)
             } catch {
-//                owsFailDebug("Something went wrong \(error)")
+                owsFailDebug("Something went wrong \(error)")
 
                 if let error = error as? DeviceTransferService.Error {
                     switch error {

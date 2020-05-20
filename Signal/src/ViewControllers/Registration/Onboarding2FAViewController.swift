@@ -292,6 +292,13 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
 
                 progressView.loadingComplete(success: false, animated: false) { [weak self] in
                     guard let self = self else { return }
+
+                    self.nextButton.alpha = 1
+                    self.pinTypeToggle.alpha = 1
+
+                    self.view.isUserInteractionEnabled = true
+                    progressView.removeFromSuperview()
+
                     self.showAttemptsExhausted()
                 }
             case .success:
@@ -300,7 +307,14 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
                 // The completion handler always dismisses this view, so we don't want to animate anything.
                 progressView.loadingComplete(success: true, animated: false) { [weak self] in
                     guard let self = self else { return }
-                    // If we have success while pending  restoration, show the next onboarding milestone.
+
+                    self.nextButton.alpha = 1
+                    self.pinTypeToggle.alpha = 1
+
+                    self.view.isUserInteractionEnabled = true
+                    progressView.removeFromSuperview()
+
+                    // If we have success while pending restoration, show the next onboarding milestone.
                     if self.hasPendingRestoration { self.showNextMilestone(wasSuccessful: true) }
                 }
 

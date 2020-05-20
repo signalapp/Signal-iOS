@@ -33,7 +33,7 @@ class TransferProgressView: UIStackView {
         let formatter = DateComponentsFormatter()
         formatter.allowedUnits = [.hour, .minute, .second]
         formatter.unitsStyle = .full
-        formatter.maximumUnitCount = 2
+        formatter.maximumUnitCount = 1
         formatter.includesApproximationPhrase = true
         formatter.includesTimeRemainingPhrase = true
         return formatter
@@ -55,19 +55,26 @@ class TransferProgressView: UIStackView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    var isObservingProgress = false
     func startUpdatingProgress() {
         AssertIsOnMainThread()
+
+        guard !isObservingProgress else { return }
 
         progressBar.progressTintColor = .ows_accentBlue
         topLabel.text = nil
 
         progress.addObserver(self, forKeyPath: "fractionCompleted", options: .initial, context: nil)
+        isObservingProgress = true
     }
 
     func stopUpdatingProgress() {
         AssertIsOnMainThread()
 
+        guard isObservingProgress else { return }
+
         progress.removeObserver(self, forKeyPath: "fractionCompleted")
+        isObservingProgress = false
     }
 
     func renderError(text: String) {
@@ -75,8 +82,9 @@ class TransferProgressView: UIStackView {
 
         progressBar.progressTintColor = .ows_accentRed
 
-        // TODO: error icon
+        topLabel.textColor = .ows_accentRed
         topLabel.text = text
+        bottomLabel.text = nil
     }
 
     override func observeValue(
@@ -89,7 +97,9 @@ class TransferProgressView: UIStackView {
             return super.observeValue(forKeyPath: keyPath, of: object, change: change, context: context)
         }
 
-        DispatchQueue.main.async {
+        DispatchMainThreadSafe {
+            guard self.isObservingProgress else { return }
+
             self.topLabel.text = "\(Int(self.progress.fractionCompleted * 100))%"
             self.progressBar.setProgress(Float(self.progress.fractionCompleted), animated: true)
 

@@ -59,6 +59,7 @@ typedef NS_ENUM(NSUInteger, LaunchFailure) {
     LaunchFailure_None,
     LaunchFailure_CouldNotLoadDatabase,
     LaunchFailure_UnknownDatabaseVersion,
+    LaunchFailure_CouldNotRestoreTransferredData
 };
 
 NSString *NSStringForLaunchFailure(LaunchFailure launchFailure);
@@ -71,6 +72,8 @@ NSString *NSStringForLaunchFailure(LaunchFailure launchFailure)
             return @"LaunchFailure_CouldNotLoadDatabase";
         case LaunchFailure_UnknownDatabaseVersion:
             return @"LaunchFailure_UnknownDatabaseVersion";
+        case LaunchFailure_CouldNotRestoreTransferredData:
+            return @"LaunchFailure_CouldNotRestoreTransferredData";
     }
 }
 
@@ -267,6 +270,17 @@ void uncaughtExceptionHandler(NSException *exception)
     OWSLogWarn(@"application: didFinishLaunchingWithOptions.");
     [Cryptography seedRandom];
 
+    // This *must* happen before we try and access or verify the database, since we
+    // may be in a state where the database has been partially restored from transfer
+    // (e.g. the key was replaced, but the database files haven't been moved into place)
+    __block BOOL deviceTransferRestoreFailed = NO;
+    [BenchManager benchWithTitle:@"Slow device transfer service launch"
+                 logIfLongerThan:0.01
+                 logInProduction:YES
+                           block:^{
+                               deviceTransferRestoreFailed = ![DeviceTransferService.shared launchCleanup];
+                           }];
+
     // XXX - careful when moving this. It must happen before we load YDB and/or GRDB.
     [self verifyDBKeysAvailableBeforeBackgroundLaunch];
 
@@ -276,7 +290,9 @@ void uncaughtExceptionHandler(NSException *exception)
     LaunchFailure launchFailure = LaunchFailure_None;
 
     BOOL isYdbNotReady = ![YDBLegacyMigration ensureIsYDBReadyForAppExtensions:&launchError];
-    if (isYdbNotReady || launchError != nil) {
+    if (deviceTransferRestoreFailed) {
+        launchFailure = LaunchFailure_CouldNotRestoreTransferredData;
+    } else if (isYdbNotReady || launchError != nil) {
         launchFailure = LaunchFailure_CouldNotLoadDatabase;
     } else if (StorageCoordinator.hasInvalidDatabaseVersion) {
         // Prevent:
@@ -313,6 +329,7 @@ void uncaughtExceptionHandler(NSException *exception)
     if (CurrentAppContext().isRunningTests) {
         return YES;
     }
+
     [AppSetup
         setupEnvironmentWithAppSpecificSingletonBlock:^{
             // Create AppEnvironment.
@@ -454,6 +471,12 @@ void uncaughtExceptionHandler(NSException *exception)
                 @"Error indicating that the app could not launch without reverting unknown database migrations.");
             alertMessage = NSLocalizedString(@"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE",
                 @"Error indicating that the app could not launch without reverting unknown database migrations.");
+            break;
+        case LaunchFailure_CouldNotRestoreTransferredData:
+            alertTitle = NSLocalizedString(@"APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE",
+                @"Error indicating that the app could not restore transferred data.");
+            alertMessage = NSLocalizedString(@"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE",
+                @"Error indicating that the app could not restore transferred data.");
             break;
         default:
             OWSFailDebug(@"Unknown launch failure.");

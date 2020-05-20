@@ -46,8 +46,9 @@ class DeviceTransferNavigationController: UINavigationController {
             actionSheet.addAction(OWSActionSheets.cancelAction)
 
             let okAction = ActionSheetAction(
-                title: CommonStrings.okayButton,
-                style: .default
+                title: NSLocalizedString("DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION",
+                                         comment: "The stop action of the dialog asking the user if they want to cancel a device transfer"),
+                style: .destructive
             ) { _ in
                 self.dismissActionSheet()
             }

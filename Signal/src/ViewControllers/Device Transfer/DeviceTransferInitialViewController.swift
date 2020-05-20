@@ -3,8 +3,11 @@
 //
 
 import Foundation
+import Lottie
 
 class DeviceTransferInitialViewController: DeviceTransferBaseViewController {
+    let animationView = AnimationView(name: "transfer")
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -25,10 +28,11 @@ class DeviceTransferInitialViewController: DeviceTransferBaseViewController {
         let topSpacer = UIView.vStretchingSpacer()
         contentView.addArrangedSubview(topSpacer)
 
-        let iconView = UIImageView(image: #imageLiteral(resourceName: "transfer-icon"))
-        iconView.contentMode = .scaleAspectFit
-        iconView.autoSetDimension(.height, toSize: 110)
-        contentView.addArrangedSubview(iconView)
+        animationView.contentMode = .scaleAspectFit
+        animationView.loopMode = .loop
+        animationView.backgroundBehavior = .pauseAndRestore
+        animationView.autoSetDimension(.height, toSize: 110)
+        contentView.addArrangedSubview(animationView)
 
         let bottomSpacer = UIView.vStretchingSpacer()
         contentView.addArrangedSubview(bottomSpacer)
@@ -36,6 +40,16 @@ class DeviceTransferInitialViewController: DeviceTransferBaseViewController {
 
         let nextButton = button(title: CommonStrings.nextButton, selector: #selector(didTapNext))
         contentView.addArrangedSubview(nextButton)
+    }
+
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        animationView.play()
+    }
+
+    override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
+        animationView.stop()
     }
 
     @objc
