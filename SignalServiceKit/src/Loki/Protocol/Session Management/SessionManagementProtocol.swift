@@ -145,6 +145,7 @@ public final class SessionManagementProtocol : NSObject {
             storage.dbReadWriteConnection.readWrite { transaction in
                 let thread = TSContactThread.getOrCreateThread(withContactId: hexEncodedPublicKey, transaction: transaction)
                 let sessionRequestMessage = SessionRequestMessage(thread: thread)
+                storage.setSessionRequestTimestamp(for: hexEncodedPublicKey, to: Date(), in: transaction)
                 let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
                 messageSenderJobQueue.add(message: sessionRequestMessage, transaction: transaction)
             }
@@ -192,6 +193,11 @@ public final class SessionManagementProtocol : NSObject {
     public static func handleSessionRequestMessage(_ dataMessage: SSKProtoDataMessage, wrappedIn envelope: SSKProtoEnvelope, using transaction: YapDatabaseReadWriteTransaction) {
         // The envelope source is set during UD decryption
         let hexEncodedPublicKey = envelope.source!
+        if let sentSessionRequestTimestamp = storage.getSessionRequestTimestamp(for: hexEncodedPublicKey, in: transaction),
+            envelope.timestamp < NSDate.ows_millisecondsSince1970(for: sentSessionRequestTimestamp) {
+            // We sent a session request after this one was sent
+            return
+        }
         var closedGroupMembers: Set<String> = []
         TSGroupThread.enumerateCollectionObjects(with: transaction) { object, _ in
             guard let group = object as? TSGroupThread, group.groupModel.groupType == .closedGroup,

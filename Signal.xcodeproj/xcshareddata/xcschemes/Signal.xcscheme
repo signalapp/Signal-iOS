@@ -127,6 +127,9 @@
                   Identifier = "OWSSignalAddressTest">
                </Test>
                <Test
+                  Identifier = "OWSUDManagerTest">
+               </Test>
+               <Test
                   Identifier = "PhoneNumberTest">
                </Test>
                <Test

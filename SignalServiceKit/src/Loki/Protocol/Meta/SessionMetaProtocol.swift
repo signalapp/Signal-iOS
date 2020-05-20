@@ -55,7 +55,6 @@ public final class SessionMetaProtocol : NSObject {
     }
 
     // MARK: Note to Self
-
     @objc(isThreadNoteToSelf:)
     public static func isThreadNoteToSelf(_ thread: TSThread) -> Bool {
         guard let thread = thread as? TSContactThread else { return false }

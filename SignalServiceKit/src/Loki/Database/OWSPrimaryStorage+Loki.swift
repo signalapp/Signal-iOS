@@ -1,6 +1,18 @@
 
 public extension OWSPrimaryStorage {
 
+    // MARK: Session Requests
+    private static let sessionRequestTimestampCollection = "LokiSessionRequestTimestampCollection"
+
+    public func setSessionRequestTimestamp(for publicKey: String, to timestamp: Date, in transaction: YapDatabaseReadWriteTransaction) {
+        transaction.setDate(timestamp, forKey: publicKey, inCollection: OWSPrimaryStorage.sessionRequestTimestampCollection)
+    }
+
+    public func getSessionRequestTimestamp(for publicKey: String, in transaction: YapDatabaseReadTransaction) -> Date? {
+        transaction.date(forKey: publicKey, inCollection: OWSPrimaryStorage.sessionRequestTimestampCollection)
+    }
+
+    // MARK: Multi Device
     private static var deviceLinkCache: Set<DeviceLink> = []
 
     private func getDeviceLinkCollection(for masterHexEncodedPublicKey: String) -> String {
@@ -62,7 +74,8 @@ public extension OWSPrimaryStorage {
     public func getMasterHexEncodedPublicKey(for slaveHexEncodedPublicKey: String, in transaction: YapDatabaseReadTransaction) -> String? {
         return getDeviceLink(for: slaveHexEncodedPublicKey, in: transaction)?.master.hexEncodedPublicKey
     }
-    
+
+    // MARK: Open Groups
     public func getUserCount(for publicChat: LokiPublicChat, in transaction: YapDatabaseReadTransaction) -> Int? {
         return transaction.object(forKey: publicChat.id, inCollection: "LokiPublicChatUserCountCollection") as? Int
     }
