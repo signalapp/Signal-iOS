@@ -58,7 +58,8 @@ public class ReadyFlag: NSObject {
 
     private let name: String
 
-    private static let benchLogDuration: TimeInterval = 0.01
+    private static let blockLogDuration: TimeInterval = 0.01
+    private static let groupLogDuration: TimeInterval = 0.1
 
     // This property should only be set on serialQueue.
     // It can be read from any queue.
@@ -135,17 +136,26 @@ public class ReadyFlag: NSObject {
             self.didBecomeReadyBlocks = []
             self.didBecomeReadyPoliteBlocks = []
 
-            for block in willBecomeReadyBlocks {
-                BenchManager.bench(title: self.name + ".willBecomeReady",
-                                   logIfLongerThan: Self.benchLogDuration,
-                                   logInProduction: true,
-                                   block: block)
+            // We bench the blocks individually and as a group.
+            BenchManager.bench(title: self.name + ".willBecomeReady group",
+                               logIfLongerThan: Self.groupLogDuration,
+                               logInProduction: true) {
+                                for block in willBecomeReadyBlocks {
+                                    BenchManager.bench(title: self.name + ".willBecomeReady",
+                                                       logIfLongerThan: Self.blockLogDuration,
+                                                       logInProduction: true,
+                                                       block: block)
+                                }
             }
-            for block in didBecomeReadyBlocks {
-                BenchManager.bench(title: self.name + ".didBecomeReady",
-                                   logIfLongerThan: Self.benchLogDuration,
-                                   logInProduction: true,
-                                   block: block)
+            BenchManager.bench(title: self.name + ".didBecomeReady group",
+                               logIfLongerThan: Self.groupLogDuration,
+                               logInProduction: true) {
+                                for block in didBecomeReadyBlocks {
+                                    BenchManager.bench(title: self.name + ".didBecomeReady",
+                                                       logIfLongerThan: Self.blockLogDuration,
+                                                       logInProduction: true,
+                                                       block: block)
+                                }
             }
             self.performDidBecomeReadyPoliteBlocks(didBecomeReadyPoliteBlocks)
         }
@@ -181,7 +191,7 @@ public class ReadyFlag: NSObject {
                 return
             }
             BenchManager.bench(title: self.name + ".didBecomeReadyPolite",
-                               logIfLongerThan: Self.benchLogDuration,
+                               logIfLongerThan: Self.blockLogDuration,
                                logInProduction: true,
                                block: block)
 
