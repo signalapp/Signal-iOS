@@ -205,6 +205,7 @@ public final class SyncMessagesProtocol : NSObject {
             var thread: TSGroupThread! = TSGroupThread(groupId: groupModel.groupId, transaction: transaction)
             if thread == nil {
                 thread = TSGroupThread.getOrCreateThread(with: groupModel, transaction: transaction)
+                thread.shouldThreadBeVisible = true
                 thread.save(with: transaction)
             }
             ClosedGroupsProtocol.establishSessionsIfNeeded(with: groupModel.groupMemberIds, in: thread, using: transaction)
