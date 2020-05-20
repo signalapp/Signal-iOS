@@ -611,7 +611,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     // App is killed and restarted when the user changes their contact permissions, so need need to "observe" anything
     // to re-render this.
     self.missingContactsPermissionView.hidden = !self.contactsManager.isSystemContactsDenied;
-    self.deregisteredView.hidden = !TSAccountManager.sharedInstance.isDeregistered;
+    self.deregisteredView.hidden
+        = !TSAccountManager.sharedInstance.isDeregistered || TSAccountManager.sharedInstance.isTransferInProgress;
     self.outageView.hidden = !OutageDetection.sharedManager.hasOutage;
     self.endOfLifeOSView.hidden = !SSKAppExpiry.isEndOfLifeOSVersion;
 

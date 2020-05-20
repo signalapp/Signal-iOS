@@ -39,6 +39,7 @@ class DeviceTransferQRScanningViewController: DeviceTransferBaseViewController {
 
         stackView.addArrangedSubview(label)
         label.setCompressionResistanceHorizontalHigh()
+        label.setCompressionResistanceVerticalHigh()
 
         let trailingSpacer = UIView.hStretchingSpacer()
         stackView.addArrangedSubview(trailingSpacer)

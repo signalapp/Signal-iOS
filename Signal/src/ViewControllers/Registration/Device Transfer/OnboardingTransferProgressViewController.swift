@@ -87,7 +87,24 @@ public class OnboardingTransferProgressViewController: OnboardingBaseViewControl
             return owsFailDebug("unexpectedly missing nav controller")
         }
 
-        onboardingController.pushStartDeviceRegistrationView(onto: navigationController)
+        let actionSheet = ActionSheetController(
+            title: NSLocalizedString("DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE",
+                                     comment: "The title of the dialog asking the user if they want to cancel a device transfer"),
+            message: NSLocalizedString("DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE",
+                                       comment: "The message of the dialog asking the user if they want to cancel a device transfer")
+        )
+        actionSheet.addAction(OWSActionSheets.cancelAction)
+
+        let okAction = ActionSheetAction(
+            title: NSLocalizedString("DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION",
+                                     comment: "The stop action of the dialog asking the user if they want to cancel a device transfer"),
+            style: .destructive
+        ) { _ in
+            self.onboardingController.pushStartDeviceRegistrationView(onto: navigationController)
+        }
+        actionSheet.addAction(okAction)
+
+        present(actionSheet, animated: true)
     }
 }
 
