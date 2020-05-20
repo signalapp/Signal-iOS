@@ -107,6 +107,12 @@
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "अज्ञात डेटाबेस आवृत्ती.";
 
+/* Error indicating that the app could not restore transferred data. */
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "The data transferred from your old device could not be restored. Please send a debug log to support@signal.org so that we can troubleshoot this issue. If you re-install Signal your message history may be lost.";
+
+/* Error indicating that the app could not restore transferred data. */
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Could Not Complete Transfer";
+
 /* Text prompting user to edit their profile name. */
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "आपले नाव प्रविष्ट करा";
 
@@ -777,10 +783,10 @@
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "फक्त प्रशासक";
 
 /* Description for the 'edit group attributes access' alert. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Choose who can change the group name, avatar and disappearing messages:";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "गट नाव, अवतार आणि हरवणारे संदेश जो बदलू शकतो त्याला निवडा:";
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "All Members";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "सर्व सदस्य";
 
 /* Label for the 'edit group' button in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_GROUP" = "संपादन";
@@ -789,16 +795,16 @@
 "CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "गट माहिती";
 
 /* Label for 'make group admin' button in conversation settings view. */
-"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Make Admin";
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "प्रशासक बनवा";
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
-"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ will be able to remove group members and make other admins.";
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ गट सदस्यांना हटवू शकेल आणि इतरांना प्रशासक बनवू शकेल.";
 
 /* Section title of the 'members' section in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "सदस्य";
 
 /* Format for the section title of the 'members' section in conversation settings view. Embeds: {{ the number of group members }}. */
-"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ Members";
+"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ सदस्य";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "म्यूट करा";
@@ -834,16 +840,16 @@
 "CONVERSATION_SETTINGS_PENDING_MEMBER_INVITES_NONE" = "कुठलेही नाही";
 
 /* Label for 'remove from group' button in conversation settings view. */
-"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "Remove From Group";
+"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "गटातून हटवा";
 
 /* Format for title for 'remove from group' confirmation alert. Embeds {user to remove from the group}. */
-"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "Remove %@ from the group?";
+"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "%@ ला गटातून हटवायचे?";
 
 /* Label for 'revoke group admin' button in conversation settings view. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Remove as Admin";
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "प्रशासक म्हणून हटवा";
 
 /* Format for title for 'revoke group admin' confirmation alert. Embeds {user to revoke admin status from}. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Remove %@ as group admin?";
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ ला गट प्रशासक म्हणून हटवायचे?";
 
 /* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
 "CONVERSATION_SETTINGS_SEARCH" = "संभाषणात शोधा";
@@ -852,22 +858,22 @@
 "CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "बदलण्यासाठी टॅप करा";
 
 /* Label for 'unblock group' action in conversation settings view. */
-"CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Unblock Group";
+"CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "गट अनब्लॉक करा";
 
 /* Label for 'unblock user' action in conversation settings view. */
-"CONVERSATION_SETTINGS_UNBLOCK_USER" = "Unblock User";
+"CONVERSATION_SETTINGS_UNBLOCK_USER" = "वापरकर्ता अनब्लॉक करा";
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "अनम्यूट करा";
 
 /* The alert message if user tries to exit conversation settings view without saving changes. */
-"CONVERSATION_SETTINGS_UNSAVED_CHANGES_MESSAGE" = "Would you like to save the changes that you made to this conversation?";
+"CONVERSATION_SETTINGS_UNSAVED_CHANGES_MESSAGE" = "या संभाषणात आपण केलेले बदल जतन करण्यात आपण जतन करण्यास आवडेल का?";
 
 /* The alert title if user tries to exit conversation settings view without saving changes. */
 "CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "जतन न केलेले बदल";
 
 /* Label for 'view all members' button in conversation settings view. */
-"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "View all members";
+"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "सर्व सदस्य बघा";
 
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "हा वापरकर्ता आपल्या संपर्कात आहे";
@@ -897,7 +903,7 @@
 "CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "हा वापरकर्ता आपल्या संपर्कात नाही";
 
 /* button text to delete all items in the current conversation */
-"CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Delete All";
+"CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "सर्व हटवा";
 
 /* Indicates that the app is loading more messages in this conversation. */
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "अधिक संदेश लोड करत आहे...";
@@ -981,16 +987,16 @@
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "GitHub पुनर्निर्देशन";
 
 /* action sheet body */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Delete all messages in the conversation?";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "संभाषणातले सर्व संदेश हटवायचे?\n";
 
 /* button text */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Delete All Messages";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "सर्व संदेश हटवा";
 
 /* action sheet body. Embeds {{number of selected messages}} which will be deleted. */
-"DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Delete %ld Messages?";
+"DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "%ld संदेश हटवायचे?";
 
 /* action sheet body */
-"DELETE_SELECTED_SINGLE_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Delete Message?";
+"DELETE_SELECTED_SINGLE_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "संदेश हटवायचे?";
 
 /* Label for button that lets users re-register using the same phone number. */
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "हा फोन नंबर पुन्हा-नोंदवा";
@@ -1006,6 +1012,105 @@
 
 /* Alert title that can occur when viewing device manager. */
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "डिव्हाईस यादी अद्यतनित करण्यात अयशस्वी.";
+
+/* The stop action of the dialog asking the user if they want to cancel a device transfer */
+"DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION" = "Stop Transfer";
+
+/* The message of the dialog asking the user if they want to cancel a device transfer */
+"DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE" = "Closing this window will stop the transfer you have in progress, are you sure you want to proceed?";
+
+/* The title of the dialog asking the user if they want to cancel a device transfer */
+"DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "Stop Transfer?";
+
+/* The explanation for the device transfer 'choice' view */
+"DEVICE_TRANSFER_CHOICE_EXPLANATION" = "If you have your old iOS device, you can securely transfer your account and messages to this device.";
+
+/* The explanation for the device transfer 'choice' view when linking a device */
+"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "If you were previously using Signal on a linked iPad, you can securely transfer your account and messages to this device.";
+
+/* The body for the device transfer 'choice' view 'register' option */
+"DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "Continue without transferring your account and messages";
+
+/* The body for the device transfer 'choice' view 'register' option when linking a device */
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "Add this iPad as a new linked device without transferring message history";
+
+/* The title for the device transfer 'choice' view 'register' option when linking a device */
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "Add as New Device";
+
+/* The title for the device transfer 'choice' view 'register' option */
+"DEVICE_TRANSFER_CHOICE_REGISTER_TITLE" = "Register without Transferring";
+
+/* The title for the device transfer 'choice' view */
+"DEVICE_TRANSFER_CHOICE_TITLE" = "Transfer Account & Messages";
+
+/* The body for the device transfer 'choice' view 'transfer' option */
+"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Transfer your account and message history from your old iOS device";
+
+/* The body for the device transfer 'choice' view 'transfer' option when linking a device */
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Transfer your account and message history from your old iPad";
+
+/* The title for the device transfer 'choice' view 'transfer' option when linking a device */
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "Transfer from another iPad";
+
+/* The title for the device transfer 'choice' view 'transfer' option */
+"DEVICE_TRANSFER_CHOICE_TRANSFER_TITLE" = "Transfer from iOS Device";
+
+/* A warning for the device transfer 'choice' view indicating you can only have one device registered with your number */
+"DEVICE_TRANSFER_CHOICE_WARNING" = "Continuing will disable Signal on other devices currently registered with the same phone number.";
+
+/* An error indicating that we were unable to verify the indentity of the new device to complete the transfer */
+"DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Unable to verify your new device, please try again";
+
+/* An error indicating that something went wrong with the transfer and it could not complete */
+"DEVICE_TRANSFER_ERROR_GENERIC" = "The transfer couldn't complete, please ensure your devices are near each other and try again";
+
+/* An error indicating the user must scan this code with a linked device to transfer. */
+"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "To set up this iPad as a linked device, you must scan with your old iPad";
+
+/* An error indicating the user must scan this code with a primary device to transfer. */
+"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_PRIMARY" = "To transfer your account, you must scan with your iPhone";
+
+/* An error indicating that the user does not have enough free space on their device to complete the transfer */
+"DEVICE_TRANSFER_ERROR_NOT_ENOUGH_SPACE" = "Not enough free space to complete the transfer";
+
+/* An error indicating the user must update their device before trying to transfer. */
+"DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Update to the latest version of Signal and try again";
+
+/* The explanation on the action sheet prompting the user if they want to transfer their device. */
+"DEVICE_TRANSFER_PROMPT_EXPLANATION" = "Transfer your Signal account to a new iOS device. Make sure your new device is nearby and turned on.";
+
+/* The title on the acttion sheet prompting the user if they want to transfer their device. */
+"DEVICE_TRANSFER_PROMPT_TITLE" = "Transfer Account";
+
+/* The explanation for the device transfer qr code view */
+"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Open Signal on your old device, bring it nearby, and make sure Wi-Fi and Bluetooth are enabled on both devices.";
+
+/* The second explanation for the device transfer qr code view */
+"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Position this QR code in the frame of your other device.";
+
+/* The title for the device transfer qr code view */
+"DEVICE_TRANSFER_QRCODE_TITLE" = "Waiting for Other Device...";
+
+/* The explanation on the view that shows receiving progress */
+"DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Keep both devices near each other. Do not turn off either device and keep Signal open. Transfers are end-to-end encrypted.";
+
+/* The title on the view that shows receiving progress */
+"DEVICE_TRANSFER_RECEIVING_TITLE" = "Receiving Data";
+
+/* Text indicating that we are connecting to the scanned device */
+"DEVICE_TRANSFER_SCANNING_CONNECTING" = "कनेक्ट करत आहे…";
+
+/* The explanation for the action sheet asking the user to scan the QR code to transfer */
+"DEVICE_TRANSFER_SCANNING_EXPLANATION" = "Position the QR code within the circle";
+
+/* The title for the action sheet asking the user to scan the QR code to transfer */
+"DEVICE_TRANSFER_SCANNING_TITLE" = "Hold Your New Device Up to the Camera";
+
+/* The explanation on the action sheet that shows transfer progress */
+"DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "Keep both devices near each other. Do not turn off either device and keep Signal open.";
+
+/* The title on the action sheet that shows transfer progress */
+"DEVICE_TRANSFER_TRANSFERRING_TITLE" = "Transferring Data";
 
 /* table cell label in conversation settings */
 "DISAPPEARING_MESSAGES" = "हरवणारे संदेश";
@@ -1038,7 +1143,7 @@
 "EDIT_GROUP_ACTION" = "गट संपादन करा";
 
 /* The 'clear avatar' button in the 'edit group' view. */
-"EDIT_GROUP_CLEAR_AVATAR" = "Remove Avatar";
+"EDIT_GROUP_CLEAR_AVATAR" = "अवतार हटवा";
 
 /* a title for the contacts section of the 'new/update group' view. */
 "EDIT_GROUP_CONTACTS_SECTION_TITLE" = "संपर्क";
@@ -1047,16 +1152,16 @@
 "EDIT_GROUP_DEFAULT_TITLE" = "गट संपादन करा";
 
 /* Error message indicating the a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "This user can't be added to the group until they upgrade Signal.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "ते जोपर्यंत Signal श्रेणीसुधारणा करत नाही तोपर्यंत हा वापरकर्ता गटात जोडला जाऊ शकत नाही.";
 
 /* Message for 'group full' error alert when a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "Maximum group size of 100 members reached.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "100 सदस्यांचा कमाल गट आकार पूर्ण.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
-"EDIT_GROUP_ERROR_INVALID_AVATAR" = "Invalid avatar.";
+"EDIT_GROUP_ERROR_INVALID_AVATAR" = "अवैध अवतार.";
 
 /* Label for the group name in the 'edit group' view. */
-"EDIT_GROUP_GROUP_NAME" = "Group Name";
+"EDIT_GROUP_GROUP_NAME" = "गट नाव";
 
 /* An indicator that a user is a new member of the group. */
 "EDIT_GROUP_NEW_MEMBER_LABEL" = "जोडले";
@@ -1137,7 +1242,7 @@
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "संपर्क अॅक्सेस करू शकले नाही.";
 
 /* Error indicating that 'save video' failed. */
-"ERROR_COULD_NOT_SAVE_VIDEO" = "Could not save video.";
+"ERROR_COULD_NOT_SAVE_VIDEO" = "व्हिडिओ जतन करू शकले नाही.";
 
 /* Generic notice when message failed to send. */
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "संदेश पाठविण्यात अयशस्वी.";
@@ -1209,13 +1314,13 @@
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "सुरक्षितता नंबर बदलला.";
 
 /* Error indicating network connectivity problems. */
-"ERROR_NETWORK_FAILURE" = "Network Error";
+"ERROR_NETWORK_FAILURE" = "नेटवर्क त्रुटी";
 
 /* Error indicating a send failure due to a delinked application. */
-"ERROR_SENDING_DELINKED" = "Your device is no longer linked. Please re-link to send further messages.";
+"ERROR_SENDING_DELINKED" = "आपला डिव्हाईस आता लिंक केलेला नाही. पुढील संदेश पाठविण्यासाठी कृपया पुन्हा-लिंक करा.";
 
 /* Error indicating a send failure due to a deregistered application. */
-"ERROR_SENDING_DEREGISTERED" = "Your device is no longer registered. Please re-register to send further messages.";
+"ERROR_SENDING_DEREGISTERED" = "आपला डिव्हाईस आता नोंदणीकृत केलेला नाही. पुढील संदेश पाठविण्यासाठी कृपया पुन्हा-नोंदणी करा.";
 
 /* Error indicating a send failure due to an expired application. */
 "ERROR_SENDING_EXPIRED" = "Signal ची आपली आवृत्ती कालबाह्य झाली आहे. पुढील संदेश पाठविण्यासाठी कृपया अद्यतन करा.";
@@ -1251,10 +1356,10 @@
 "FINISH_GROUP_CREATION_LABEL" = "गट तयार करणे संपवा";
 
 /* Label and title for 'contact forwarding' views. */
-"FORWARD_CONTACT" = "Forward Contact";
+"FORWARD_CONTACT" = "संपर्क फॉर्वर्ड करा";
 
 /* Label and title for 'message forwarding' views. */
-"FORWARD_MESSAGE" = "Forward Message";
+"FORWARD_MESSAGE" = "संदेश फॉर्वर्ड करा";
 
 /* Label indicating media gallery is empty */
 "GALLERY_TILES_EMPTY_GALLERY" = "या संभाषणात आपल्याकडे कुठलीही मिडिया नाही.";
@@ -1293,133 +1398,133 @@
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "आपला शोध प्रविष्ट करा";
 
 /* Body message of notification shown during GRDB migration indicating that user may need to open app to view their content. */
-"GRDB_MIGRATION_NOTIFICATION_BODY" = "This version of Signal includes database optimizations and performance improvements. You may need to open the app to complete the process.";
+"GRDB_MIGRATION_NOTIFICATION_BODY" = "Signal च्या या आवृत्ती मध्ये डेटाबेस ऑप्टीमायझेशन आणि कार्यप्रदर्शन सुधारणा समाविष्ट आहेत. प्रक्रिया पूर्ण करण्यासाठी आपल्याला अॅप उघडणे गरजेचे असू शकते.";
 
 /* Title of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_TITLE" = "डेटाबेस ऑप्टीमाईझ करत आहे";
 
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed who can edit group info to “%@“.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "आपण गट माहिती जो संपादित करू शकतो तो \"%@\" वर बदलला आहे.";
 
 /* Message indicating that the access to the group's attributes was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed who can edit group info to “%2$@“.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ ने गट माहिती जो संपादित करू शकतो तो \"%2$@\" वर बदलला आहे.";
 
 /* Message indicating that the access to the group's attributes was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "Group info can be changed by “%@“.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "गट माहिती \"%@\" द्वारा बदलली जाऊ शकते.";
 
 /* Description of the 'admins only' access level. */
-"GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "Admins Only";
+"GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "फक्त प्रशासक";
 
 /* Description of the 'all users' access level. */
-"GROUP_ACCESS_LEVEL_ANY" = "Any User";
+"GROUP_ACCESS_LEVEL_ANY" = "कुठलाही वापरकर्ता";
 
 /* Description of the 'all members' access level. */
-"GROUP_ACCESS_LEVEL_MEMBER" = "All Members";
+"GROUP_ACCESS_LEVEL_MEMBER" = "सर्व सदस्य";
 
 /* Description of the 'unknown' access level. */
 "GROUP_ACCESS_LEVEL_UNKNOWN" = "अज्ञात";
 
 /* Message indicating that the access to the group's members was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed who can edit group membership to “%@“.";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "आपण गट सदस्यता जो संपादित करू शकतो तो \"%@\" वर बदलला आहे.";
 
 /* Message indicating that the access to the group's members was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed who can edit group membership to “%2$@“.";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ ने गट सदस्यता जो संपादित करू शकतो तो \"%2$@\" वर बदलला आहे.";
 
 /* Message indicating that the access to the group's members was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Group membership can be changed by “%@“.";
+"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "गट सदस्यता \"%@\" द्वारा बदलली जाऊ शकते.";
 
 /* Error indicating that a member cannot be added to a group. */
-"GROUP_CANNOT_ADD_INVALID_MEMBER" = "This user cannot be added to the group.";
+"GROUP_CANNOT_ADD_INVALID_MEMBER" = "हा वापरकर्ता गटात जोडला जाऊ शकत नाही.";
 
 /* Message indicating that group was created by the local user. */
-"GROUP_CREATED_BY_LOCAL_USER" = "You created the group.";
+"GROUP_CREATED_BY_LOCAL_USER" = "आपण गट तयार केला.";
 
 /* Message indicating that group was created by another user. Embeds {{remote user name}}. */
-"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@ added you to the group.";
+"GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@ ने आपल्याला गटात जोडले.";
 
 /* Message indicating that group was created by an unknown user. */
-"GROUP_CREATED_BY_UNKNOWN_USER" = "Group was created.";
+"GROUP_CREATED_BY_UNKNOWN_USER" = "गट तयार केला देला.";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
 "GROUP_CREATION_FAILED" = "सर्व सदस्य गटात जोडणे शक्य झाले नाही. पुन्हा प्रयत्न करण्यासाठी टॅप करा.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
-"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@ can’t be automatically added to this group by you. They’ve been invited to join, and won’t see any group messages until they accept.";
+"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "आपल्याद्वारा %@ गटात स्वयंचलितपणे जोडला जाऊ शकत नाही. त्यांना सामील होण्यास निमंत्रण दिले आहे, आणि ते स्वीकारे पर्यंत कुठलेही संदेश पाहू शकणार नाहीत.";
 
 /* Title for an alert indicating that a member was invited to a group. */
-"GROUP_INVITES_SENT_ALERT_TITLE_1" = "Invitation Sent";
+"GROUP_INVITES_SENT_ALERT_TITLE_1" = "निमंत्रण पाठविले";
 
 /* Format for the title for an alert indicating that some members were invited to a group. Embeds: {{ the number of invites sent. }} */
-"GROUP_INVITES_SENT_ALERT_TITLE_N_FORMAT" = "%@ Invitations Sent";
+"GROUP_INVITES_SENT_ALERT_TITLE_N_FORMAT" = "%@ निमंत्रण पाठविले";
 
 /* Message for an alert indicating that some members were invited to a group. */
-"GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "These users can’t be automatically added to this group by you. They’ve been invited to join, and won’t see any group messages until they accept.";
+"GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "हे वापरकर्ते आपल्याद्वारा गटात स्वयंचलितपणे जोडला जाऊ शकत नाहीत. त्यांना सामील होण्यास निमंत्रण दिले आहे, आणि ते स्वीकारे पर्यंत कुठलेही संदेश पाहू शकणार नाहीत.";
 
 /* Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%@ added you.";
+"GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%@ ने आपल्याला जोडले.";
 
 /* Message indicating that the local user was granted administrator role. */
-"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR" = "You are now an admin.";
+"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR" = "आपण आता प्रशासक आहात.";
 
 /* Message indicating that the local user was granted administrator role by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ made you an admin.";
+"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ ने आपल्याला प्रशासक बनवले.";
 
 /* Message indicating that the local user accepted an invite to the group. */
-"GROUP_LOCAL_USER_INVITE_ACCEPTED" = "You accepted an invitation to the group.";
+"GROUP_LOCAL_USER_INVITE_ACCEPTED" = "गटाचे निमंत्रण आपण स्वीकारले.";
 
 /* Message indicating that the local user accepted an invite to the group. Embeds {{user who invited the local user}}. */
-"GROUP_LOCAL_USER_INVITE_ACCEPTED_FORMAT" = "You accepted an invitation to the group from %@.";
+"GROUP_LOCAL_USER_INVITE_ACCEPTED_FORMAT" = "%@ कडून गटाचे निमंत्रण आपण स्वीकारले.";
 
 /* Message indicating that the local user declined an invite to the group. */
-"GROUP_LOCAL_USER_INVITE_DECLINED_BY_LOCAL_USER" = "You declined an invitation to the group.";
+"GROUP_LOCAL_USER_INVITE_DECLINED_BY_LOCAL_USER" = "गटाचे निमंत्रण आपण नाकारले.";
 
 /* Message indicating that the local user declined an invite to the group. Embeds {{user who invited the local user}}. */
-"GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT" = "You declined an invitation to the group from %@.";
+"GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT" = "%@ कडून गटाचे निमंत्रण आपण नाकारले.";
 
 /* Message indicating that the local user's invite was revoked by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_INVITE_REVOKED_BY_REMOTE_USER_FORMAT" = "%@ revoked your invitation to the group.";
+"GROUP_LOCAL_USER_INVITE_REVOKED_BY_REMOTE_USER_FORMAT" = "%@ ने आपले गटाचे निमंत्रण रद्द केले.";
 
 /* Message indicating that the local user's invite was revoked by an unknown user. */
-"GROUP_LOCAL_USER_INVITE_REVOKED_BY_UNKNOWN_USER" = "Your invitation to the group was revoked.";
+"GROUP_LOCAL_USER_INVITE_REVOKED_BY_UNKNOWN_USER" = "आपले गटाचे निमंत्रण रद्द केले गेले.";
 
 /* Message indicating that the local user was invited to the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT" = "%@ invited you.";
+"GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT" = "%@ ने आपल्याला निमंत्रित केले.";
 
 /* Message indicating that the local user was invited to the group. */
-"GROUP_LOCAL_USER_INVITED_TO_THE_GROUP" = "You were invited to the group.";
+"GROUP_LOCAL_USER_INVITED_TO_THE_GROUP" = "आपल्याला गटात निमंत्रित केले गेले होते.";
 
 /* Message indicating that the local user has joined the group. */
-"GROUP_LOCAL_USER_JOINED_THE_GROUP" = "You joined the group.";
+"GROUP_LOCAL_USER_JOINED_THE_GROUP" = "आपण गटात सामील झालात.";
 
 /* Message indicating that the local user was removed from the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed you.";
+"GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ ने आपल्याला काढले.";
 
 /* Message indicating that the local user was removed from the group by an unknown user. */
-"GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "You were removed from the group.";
+"GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "आपण गटातून काढले गेले.";
 
 /* Message indicating that the local user had their administrator role revoked. */
-"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "Your admin privileges were revoked.";
+"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "आपले प्रशासक विशेषाधिकार रद्द केले गेले.";
 
 /* Message indicating that the local user had their administrator role revoked by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ revoked your admin privileges.";
+"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ ने आपले प्रशासक विशेषाधिकार रद्द केले.";
 
 /* Conversation settings table section title */
 "GROUP_MANAGEMENT_SECTION" = "गट व्यवस्थापन";
 
 /* Label indicating that a group member is an admin. */
-"GROUP_MEMBER_ADMIN_INDICATOR" = "Admin";
+"GROUP_MEMBER_ADMIN_INDICATOR" = "प्रशासक";
 
 /* Format string for the group member count indicator. Embeds {{ %1$@ the number of members in the group, %2$@ the maximum number of members in the group. }}. */
 "GROUP_MEMBER_COUNT_FORMAT" = "%1$@/%2$@";
 
 /* The 'group member count' indicator when there are no members in the group. */
-"GROUP_MEMBER_COUNT_LABEL_0" = "No members";
+"GROUP_MEMBER_COUNT_LABEL_0" = "कुठलेही सदस्य नाहीत";
 
 /* The 'group member count' indicator when there is 1 member in the group. */
-"GROUP_MEMBER_COUNT_LABEL_1" = "1 member";
+"GROUP_MEMBER_COUNT_LABEL_1" = "1 सदस्य";
 
 /* Format for the 'group member count' indicator. Embeds {the number of group members}. */
-"GROUP_MEMBER_COUNT_LABEL_FORMAT" = "%@ members";
+"GROUP_MEMBER_COUNT_LABEL_FORMAT" = "%@ सदस्य";
 
 /* Label indicating the local user. */
 "GROUP_MEMBER_LOCAL_USER" = "आपण";
@@ -1428,7 +1533,7 @@
 "GROUP_MEMBERS_CALL" = "कॉल करा";
 
 /* Label indicating that a group has no other members. */
-"GROUP_MEMBERS_NO_OTHER_MEMBERS" = "No members.";
+"GROUP_MEMBERS_NO_OTHER_MEMBERS" = "कुठलेही सदस्य नाहीत.";
 
 /* Label for the button that clears all verification errors in the 'group members' view. */
 "GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "सर्वांसाठी सत्यापन साफ करा";
@@ -1446,166 +1551,166 @@
 "GROUP_MEMBERS_SEND_MESSAGE" = "संदेश";
 
 /* Placeholder text for 'group name' field. */
-"GROUP_NAME_PLACEHOLDER" = "Group name (required)";
+"GROUP_NAME_PLACEHOLDER" = "गट नाव (आवश्यक)";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "%@ accepted an invitation to the group.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "%@ ने गटाचे निमंत्रण स्वीकारले.";
 
 /* Message indicating that a remote user has accepted an invite from the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ accepted your invitation to the group.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ ने आपले गटाचे निमंत्रण स्वीकारले.";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{ %1$@ user who accepted their invite, %2$@ user who invited the user}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_REMOTE_USER_FORMAT" = "%1$@ accepted an invitation to the group from %2$@.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_REMOTE_USER_FORMAT" = "%2$@ कडून %1$@ ने गटाचे निमंत्रण स्वीकारले.";
 
 /* Message indicating that a remote user was added to the group by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_LOCAL_USER_FORMAT" = "You added %@.";
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_LOCAL_USER_FORMAT" = "आपण %@ ला जोडले.";
 
 /* Message indicating that a remote user was added to the group by another user. Embeds {{ %1$@ user who added the user, %2$@ user who was added}}. */
-"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ added %2$@.";
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ ने %2$@ ला जोडले.";
 
 /* Message indicating that a remote user was added to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT" = "%@ was added to the group.";
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT" = "%@ गटात जोडला गेला.";
 
 /* Message indicating that a remote user has declined their invite. */
-"GROUP_REMOTE_USER_DECLINED_INVITE" = "1 person declined the invitation to the group.";
+"GROUP_REMOTE_USER_DECLINED_INVITE" = "1 व्यक्तीने गटाचे निमंत्रण नाकारले.";
 
 /* Message indicating that a remote user has declined their invite. Embeds {{ user who invited them }}. */
-"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "1 person invited by %@ declined the invitation to the group.";
+"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "%@ ने निमंत्रित केलेल्या 1 व्यक्तीने ने गटाचे निमंत्रण नाकारले.";
 
 /* Message indicating that a remote user has declined an invite to the group from the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ declined your invitation to the group.";
+"GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ ने आपले गटाचे निमंत्रण नाकारले.";
 
 /* Message indicating that a remote user was granted administrator role. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR" = "%@ is now an admin";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR" = "%@ आता प्रशासक आहे";
 
 /* Message indicating that a remote user was granted administrator role by local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_LOCAL_USER" = "You made %@ an admin.";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_LOCAL_USER" = "आपण %@ ला प्रशासक बनवले.";
 
 /* Message indicating that a remote user was granted administrator role by another user. Embeds {{ %1$@ user who granted, %2$@ user who was granted administrator role}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ made %2$@ an admin.";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ ने %2$@ ला प्रशासक बनवले.";
 
 /* Message indicating that a single remote user's invite was revoked. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_1" = "Invitation to the group was revoked for 1 person.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_1" = "1 व्यक्ती करिता गटाचे निमंत्रण रद्द केले गेले.";
 
 /* Message indicating that a remote user's invite was revoked by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_BY_LOCAL_USER_FORMAT" = "Invitation to the group was revoked for %@.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_LOCAL_USER_FORMAT" = "%@ करिता गटाचे निमंत्रण रद्द केले गेले.";
 
 /* Message indicating that a single remote user's invite was revoked by a remote user. Embeds {{ user who revoked the invite }}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_1_FORMAT" = "%@ revoked an invitation to the group for 1 person.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_1_FORMAT" = "%@ ने 1 व्यक्ती करिता गटाचे निमंत्रण रद्द केले गेले.";
 
 /* Message indicating that a group of remote users' invites were revoked by a remote user. Embeds {{ %1$@ user who revoked the invite, %2$@ number of users }}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_N_FORMAT" = "%1$@ revoked an invitation to the group for %2$@ people.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_N_FORMAT" = "%2$@ व्यक्तींसाठी %1$@ ने गटाचे निमंत्रण रद्द केले.";
 
 /* Message indicating that a group of remote users' invites were revoked. Embeds {{ number of users }}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_N_FORMAT" = "Invitations to the group were revoked for %@ people.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_N_FORMAT" = "%@ व्यक्तींसाठी गटाचे निमंत्रण रद्द केले गेले.";
 
 /* Message indicating that a single remote user was invited to the group. */
-"GROUP_REMOTE_USER_INVITED_1" = "1 person was invited to the group.";
+"GROUP_REMOTE_USER_INVITED_1" = "1 व्यक्तीला गटामध्ये आमंत्रित केले गेले.";
 
 /* Message indicating that a remote user was invited to the group by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "You invited %@ to the group.";
+"GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "आपण %@ ला गटात आमंत्रित केले.";
 
 /* Message indicating that a single remote user was invited to the group by the local user. Embeds {{ user who invited the user }}. */
-"GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_1_FORMAT" = "%@ invited 1 person to the group.";
+"GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_1_FORMAT" = "%@ ने 1 व्यक्तीला गटात आमंत्रित केले.";
 
 /* Message indicating that a group of remote users were invited to the group by the local user. Embeds {{ %1$@ user who invited the user, %2$@ number of invited users }}. */
-"GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_N_FORMAT" = "%1$@ invited %2$@ people to the group.";
+"GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_N_FORMAT" = "%1$@ ने %2$@ व्यक्तींना गटात आमंत्रित केले.";
 
 /* Message indicating that a group of remote users were invited to the group. Embeds {{number of invited users}}. */
-"GROUP_REMOTE_USER_INVITED_N_FORMAT" = "%@ people were invited to the group.";
+"GROUP_REMOTE_USER_INVITED_N_FORMAT" = "%@ व्यक्ती गटात आमंत्रित केले गेले.";
 
 /* Message indicating that a remote user was added to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "%@ joined the group.";
+"GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "%@ गटात सामील झाले.";
 
 /* Message indicating that a remote user has left the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%@ left the group.";
+"GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%@ ने गट सोडले.";
 
 /* Message indicating that a remote user was removed from the group by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT" = "You removed %@.";
+"GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT" = "आपण %@ ला काढले.";
 
 /* Message indicating that the remote user was removed from the group. Embeds {{ %1$@ user who removed the user, %2$@ user who was removed}}. */
-"GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ removed %2$@.";
+"GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ ने %2$@ ला काढले.";
 
 /* Message indicating that a remote user had their administrator role revoked. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "%@ had their admin privileges revoked.";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "%@ नी त्यांचे प्रशासक विशेषाधिकार रद्द केले.";
 
 /* Message indicating that a remote user had their administrator role revoked by local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_LOCAL_USER" = "You revoked admin privileges from %@.";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_LOCAL_USER" = "%@ कडून आपण प्रशासक विशेषाधिकार रद्द केले.";
 
 /* Message indicating that a remote user had their administrator role revoked by another user. Embeds {{ %1$@ user who revoked, %2$@ user who was granted administrator role}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ revoked admin privileges from %2$@.";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%2$@ कडून %1$@ ने प्रशासक विशेषाधिकार रद्द केले.";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "गट अद्यतनित.";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED" = "The group avatar was removed.";
+"GROUP_UPDATED_AVATAR_REMOVED" = "गट अवतार काढला गेला.";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "You removed the avatar.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "आपण अवतार काढला.";
 
 /* Message indicating that the group's avatar was removed by a remote user. Embeds {{user who removed the avatar}}. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed the avatar.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ ने अवतार काढला.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED" = "Updated the group avatar.";
+"GROUP_UPDATED_AVATAR_UPDATED" = "गट अवतार अद्यतनित केला.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "You updated the avatar.";
+"GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "आपण अवतार अद्यतनित केला.";
 
 /* Message indicating that the group's avatar was changed by a remote user. Embeds {{user who changed the avatar}}. */
-"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ updated the avatar.";
+"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ ने अवतार अद्यतनित केला.";
 
 /* Info message indicating that the group was updated by the local user. */
 "GROUP_UPDATED_BY_LOCAL_USER" = "आपण गट अद्ययावत केले.";
 
 /* Info message indicating that the group was updated by another user. Embeds {{remote user name}}. */
-"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ updated the group.";
+"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ ने गट अद्यतनित केला";
 
 /* Message indicating that the group's name was removed. */
-"GROUP_UPDATED_NAME_REMOVED" = "The group name was removed.";
+"GROUP_UPDATED_NAME_REMOVED" = "गट नाव काढले गेले.";
 
 /* Message indicating that the group's name was removed by the local user. */
-"GROUP_UPDATED_NAME_REMOVED_BY_LOCAL_USER" = "You removed the group name.";
+"GROUP_UPDATED_NAME_REMOVED_BY_LOCAL_USER" = "आपण गट नाव काढले.";
 
 /* Message indicating that the group's name was removed by a remote user. Embeds {{user who removed the name}}. */
-"GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed the group name.";
+"GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ ने गट नाव काढले.";
 
 /* Message indicating that the group's name was changed by the local user. Embeds {{new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed the group name to “%@“.";
+"GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "आपण गट नाव \"%@\" वर बदलले.";
 
 /* Message indicating that the group's name was changed by a remote user. Embeds {{ %1$@ user who changed the name, %2$@ new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed the group name to “%2$@“.";
+"GROUP_UPDATED_NAME_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ गट नाव \"%2$@\" वर बदलले.";
 
 /* Message indicating that the group's name was changed. Embeds {{new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Group name is now “%@”.";
+"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "गट नाव आता \"%@\" आहे.";
 
 /* Message indicating that the local user left the group. */
 "GROUP_YOU_LEFT" = "आपण गट सोडला आहे.";
 
 /* Message for the 'can't replace group admin' alert. */
-"GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Choose a new admin for this group before you leave.";
+"GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "आपण जाण्यापूर्वी या गटासाठी नवीन प्रशासक निवडा.";
 
 /* Error indicating that an error occurred while accepting an invite. */
-"GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "Could not accept invite.";
+"GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "आमंत्रण स्वीकारू शकले नाही.";
 
 /* Label for 'block group' button in group invite view. */
 "GROUPS_INVITE_BLOCK_GROUP" = "गट अवरोधित करा";
 
 /* Label for 'block group and inviter' button in group invite view. Embeds {{name of user who invited you}}. */
-"GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT" = "Block Group and %@";
+"GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT" = "गट अवरोधित करा आणि %@";
 
 /* Label for 'block inviter' button in group invite view. Embeds {{name of user who invited you}}. */
-"GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "Block %@";
+"GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "%@ अवरोधित करा";
 
 /* Message for the 'replace group admin' alert. */
-"GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "Before you leave, choose a new admin for this group.";
+"GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "आपण जाण्यापूर्वी, या गटासाठी नवीन प्रशासक निवडा.";
 
 /* Title for the 'replace group admin' alert. */
-"GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "Choose New Admin";
+"GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "नवीन प्रशासक निवडा";
 
 /* Label for the 'replace group admin' button. */
-"GROUPS_REPLACE_ADMIN_BUTTON" = "Choose new admin";
+"GROUPS_REPLACE_ADMIN_BUTTON" = "नवीन प्रशासक निवडा";
 
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "आर्काईव्ह केलेली संभाषणे.";
@@ -1617,7 +1722,7 @@
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "शोध";
 
 /* A prefix indicating that a message preview is a draft */
-"HOME_VIEW_DRAFT_PREFIX" = "Draft: ";
+"HOME_VIEW_DRAFT_PREFIX" = "मसुदा:";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds {{The name of 1 of your Signal contacts}}. */
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "आपल्या संपर्कांमधील काही आधीपासून Signal वर आहेत, ज्यात %@यांचा समावेश आहे.";
@@ -1632,7 +1737,7 @@
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "आपल्या पहिल्या संभाषणाची सुरूवात येथे करा.";
 
 /* Table cell subtitle label for a group the user has been added to. {Embeds inviter name} */
-"HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%@ added you to the group";
+"HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%@ ने आपल्याला गटात जोडले";
 
 /* Table cell subtitle label for a conversation the user has not accepted. */
 "HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "संदेश विनंती";
@@ -1654,6 +1759,15 @@
 
 /* Call setup status label */
 "IN_CALL_CONNECTING" = "कनेक्ट करत आहे…";
+
+/* Call screen label when call was canceled on this device because the call recipient answered on another device. */
+"IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "इतर डिव्हाईस वर उत्तर दिले.";
+
+/* Call screen label when call was canceled on this device because the call recipient has a call in progress on another device. */
+"IN_CALL_ENDED_BECAUSE_BUSY_ELSEWHERE" = "इतर डिव्हाईस वर कॉल सुरू असल्याने सुटले.";
+
+/* Call screen label when call was canceled on this device because the call recipient declined on another device. */
+"IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "इतर डिव्हाईस वर नकारले गेले.";
 
 /* Call setup status label */
 "IN_CALL_RECONNECTING" = "पुनःकनेक्ट करत आहे…";
@@ -1677,7 +1791,16 @@
 "INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "आपल्या Signal संभाषण यादी मध्ये संपर्क नाव बघण्यासाठी iOS सेटिंग अॅप मध्ये आपण संपर्क अॅक्सेस सक्षम करू शकता.";
 
 /* info message text in conversation view */
-"INCOMING_CALL" = "येणारा कॉल";
+"INCOMING_CALL_ANSWERED" = "उत्तर दिलेले कॉल";
+
+/* info message recorded in conversation history when a call was answered from another device */
+"INCOMING_CALL_ANSWERED_ELSEWHERE" = "इतर डिव्हाईस वर उत्तर दिले";
+
+/* info message recorded in conversation history when a call was missed due to an active call on another device */
+"INCOMING_CALL_BUSY_ELSEWHERE" = "इतर डिव्हाईस वर कॉल सुरू असल्याने सुटले";
+
+/* info message recorded in conversation history when a call was declined from another device */
+"INCOMING_CALL_DECLINED_ELSEWHERE" = "इतर डिव्हाईस वर नकारले गेले";
 
 /* info message recorded in conversation history when local user declined a call */
 "INCOMING_DECLINED_CALL" = "आपण कॉलला नकार दिला";
@@ -1689,7 +1812,7 @@
 "INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "सुटलेला कॉल कारण त्यांचा सुरक्षितता नंबर बदलला आहे.";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, conversation history isn't transferred to new linked devices.";
+"INFO_MESSAGE_SYNCED_THREAD" = "आपण आपल्या फोन किंवा iPad वरून संकलित संदेश पाठवू आणि प्राप्त करू शकता. ↵आपल्या सुरक्षेसाठी, नवीन लिंक केलेल्या डिव्हाईस मध्ये संभाषण इतिहास स्थानांतरित केला जात नाही.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ Signal वर आहे!";
@@ -1728,22 +1851,22 @@
 "KEEP_MESSAGES_FOREVER" = "संदेश नाहीसे होत नाहीत.";
 
 /* A keyboard command to open the current conversation's all media view. */
-"KEY_COMMAND_ALL_MEDIA" = "Go to All Media";
+"KEY_COMMAND_ALL_MEDIA" = "सर्व मिडिया वर जा";
 
 /* A keyboard command to archive the current coversation. */
 "KEY_COMMAND_ARCHIVE" = "संभाषण आर्काईव्ह करा";
 
 /* A keyboard command to open the current conversation's attachment picker. */
-"KEY_COMMAND_ATTACHMENTS" = "Show Attachments";
+"KEY_COMMAND_ATTACHMENTS" = "संलग्न दाखवा";
 
 /* A keyboard command to open the current conversation's settings. */
-"KEY_COMMAND_CONVERSATION_INFO" = "Go to Conversation Info";
+"KEY_COMMAND_CONVERSATION_INFO" = "संभाषण माहिती वर जा";
 
 /* A keyboard command to focus the current conversation's input field. */
-"KEY_COMMAND_FOCUS_COMPOSER" = "Focus Input Bar";
+"KEY_COMMAND_FOCUS_COMPOSER" = "फोकस इनपुट बार";
 
 /* A keyboard command to open the current conversations GIF picker. */
-"KEY_COMMAND_GIF_SEARCH" = "Go to GIF Search";
+"KEY_COMMAND_GIF_SEARCH" = "GIF शोध वर जा";
 
 /* A keyboard command to present the new group dialog. */
 "KEY_COMMAND_NEW_GROUP" = "नवीन गट";
@@ -1752,10 +1875,10 @@
 "KEY_COMMAND_NEW_MESSAGE" = "नवीन संदेश";
 
 /* A keyboard command to jump to the next conversation in the list. */
-"KEY_COMMAND_NEXT_CONVERSATION" = "Go to Next Conversation";
+"KEY_COMMAND_NEXT_CONVERSATION" = "पुढील संभाषण वर जा";
 
 /* A keyboard command to jump to the previous conversation in the list. */
-"KEY_COMMAND_PREVIOUS_CONVERSATION" = "Go to Previous Conversation";
+"KEY_COMMAND_PREVIOUS_CONVERSATION" = "मागील संभाषण वर जा";
 
 /* A keyboard command to begin a search on the conversation list. */
 "KEY_COMMAND_SEARCH" = "शोध";
@@ -1764,10 +1887,10 @@
 "KEY_COMMAND_SETTINGS" = "सेटिंग";
 
 /* A keyboard command to open the current conversation's sticker picker. */
-"KEY_COMMAND_STICKERS" = "Show Stickers";
+"KEY_COMMAND_STICKERS" = "स्टिकर दाखवा";
 
 /* A keyboard command to unarchive the current coversation. */
-"KEY_COMMAND_UNARCHIVE" = "Unarchive Conversation";
+"KEY_COMMAND_UNARCHIVE" = "संभाषण अनआर्काईव्ह करा";
 
 /* Label for the 'learn more' button. */
 "LEARN_MORE" = "अधिक जाणा";
@@ -1779,7 +1902,7 @@
 "LEAVE_GROUP_ACTION" = "गट सोडा";
 
 /* Error indicating that a group could not be left. */
-"LEAVE_GROUP_FAILED" = "An error occurred while leaving the group.";
+"LEAVE_GROUP_FAILED" = "गट सोडताना एक त्रुटी आढळली.";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_BODY" = "हा QR कोड वैध नाही. आपल्याला लिंक करावयाचा डिव्हाईस वर प्रदर्शित केलेला QR कोड आपण स्कॅन करत आहात याची कृपया खात्री करा.";
@@ -1854,34 +1977,43 @@
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "हा महिना";
 
 /* button title to snooze a megaphone */
-"MEGAPHONE_REMIND_LATER" = "Remind Me Later";
+"MEGAPHONE_REMIND_LATER" = "मला नंतर आठवण करून द्या";
 
 /* toast indicating that we will remind the user later */
-"MEGAPHONE_WILL_REMIND_LATER" = "We’ll remind you later.";
+"MEGAPHONE_WILL_REMIND_LATER" = "आम्ही आपल्याला नंतर आठवण करून देऊ.";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_COPY_TEXT" = "संदेश मजकूर कॉपी करा";
+
+/* The title for the action that deletes a message for all users in the conversation. */
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "सर्वांसाठी हटवा";
+
+/* The title for the action sheet asking who the user wants to delete the message for. */
+"MESSAGE_ACTION_DELETE_FOR_TITLE" = "आपण कुणासाठी हा संदेश हटवू इच्छिता?";
+
+/* The title for the action that deletes a message for the local user only. */
+"MESSAGE_ACTION_DELETE_FOR_YOU" = "आपल्यासाठी हटवा";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DELETE_MESSAGE" = "हा संदेश हटवा";
 
 /* accessibility label */
-"MESSAGE_ACTION_DELETE_SELECTED_MESSAGES" = "Delete Selected Messages";
+"MESSAGE_ACTION_DELETE_SELECTED_MESSAGES" = "निवडलेले संदेश हटवा";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DETAILS" = "अधिक माहिती";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_FORWARD_MESSAGE" = "Forward This Message";
+"MESSAGE_ACTION_FORWARD_MESSAGE" = "हा संदेश फॉर्वर्ड करा";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_REPLY" = "ह्या संदेशाला प्रत्युत्तर द्या";
 
 /* Action sheet accessibility label */
-"MESSAGE_ACTION_SELECT_MESSAGE" = "Select Multiple";
+"MESSAGE_ACTION_SELECT_MESSAGE" = "अनेक निवडा";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_SHARE_MEDIA" = "Share Media";
+"MESSAGE_ACTION_SHARE_MEDIA" = "मिडिया सामायिक करा";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "संदेश";
@@ -1941,34 +2073,34 @@
 "MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "अवरोधित करा आणि हटवा";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Blocked people won’t be able to call you or send you messages.";
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "अवरोधित व्यक्ती आपल्याला कॉल करू किंवा संदेश पाठवू शकणार नाहीत.";
 
 /* Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}} */
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "%@ अवरोधित करायचे?";
 
 /* Action sheet message to confirm blocking a group via a message request. */
-"MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "You will leave this group and no longer receive messages or updates.";
+"MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "आपण हा गट सोडाल आणि यापुढे संदेश किंवा अद्यतने प्राप्त करणार नाही.";
 
 /* Action sheet title to confirm blocking a group via a message request. Embeds {{group name}} */
-"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "Block and Leave %@?";
+"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "%@ अवरोधित करायचे आणि सोडायचे?";
 
 /* Action sheet action to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "हटवा";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "This conversation will be deleted from all of your devices.";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "हे संभाषण आपल्या सर्व डिव्हाईस यांवरून हटविले जाईल.";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "संभाषण हटवायचे?";
 
 /* Action sheet action to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Delete and Leave";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "हटवा आणि सोडा";
 
 /* Action sheet message to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "You will leave this group, and it will be deleted from all your devices.";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "आपण हे गट सोडाल, आणि ते आपल्या सर्व डिव्हाईस वरून हटविले जाईल.";
 
 /* Action sheet title to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Delete and Leave Group?";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "हटवायचे आणि सोडायचे?";
 
 /* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "स्वीकार करा";
@@ -1977,10 +2109,10 @@
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "अवरोधित करा";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Do you want to let %@ message you? You won't receive any messages until you unblock them.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "%@ याने आपणास संदेश पाठविण्याची अनुमती द्यायची? आपण जोपर्यंत त्यांना अनब्लॉक नाही तोपर्यंत आपल्याला कोणतेही संदेश प्राप्त होणार नाही.";
 
 /* A prompt notifying that the user must unblock this group to continue. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_FORMAT" = "Do you want to let the group %@ message you? You won't receive any messages until you unblock them.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_FORMAT" = "%@ गटाने आपणास संदेश पाठविण्याची अनुमती द्यायची? आपण जोपर्यंत त्यांना अनब्लॉक नाही तोपर्यंत आपल्याला कोणतेही संदेश प्राप्त होणार नाही.";
 
 /* incoming message request button text which deletes a conversation */
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "काढून टाका";
@@ -1992,7 +2124,7 @@
 "MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT_FORMAT" = "%@ मध्ये आपले संभाषण सुरू ठेवण्यासाठी आपण आपली प्रोफाईल सामायिक करायला हवी.";
 
 /* A prompt for the user to accept or decline an invite to a group. Embeds {{name of user who invited you}}. */
-"MESSAGE_REQUEST_VIEW_GROUP_INVITE_PROMPT_FORMAT" = "You were invited to this group by %@. Do you want to let members of this group message you?";
+"MESSAGE_REQUEST_VIEW_GROUP_INVITE_PROMPT_FORMAT" = "%@ द्वारा आपल्याला या गटात आमंत्रित करण्यात आले होते. या गटातील सदस्यांनी आपल्याला संदेश पाठविण्याची अनुमती द्यायची? ";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "%@ याने आपणास संदेश पाठविण्याची अनुमती द्यायची? आपण जोपर्यंत स्वीकार करत नाही त्यांना कळणार नाही की आपण त्यांचे संदेश पाहिले आहेत.";
@@ -2007,16 +2139,16 @@
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "अनब्लॉक करा";
 
 /* Header for message requests splash screen */
-"MESSAGE_REQUESTS_NAMES_SPLASH_TITLE" = "Introducing Message Requests";
+"MESSAGE_REQUESTS_NAMES_SPLASH_TITLE" = "सादर करत आहे संदेश विनंत्या";
 
 /* Button to start a create profile name flow from the one time splash screen that appears after upgrading */
-"MESSAGE_REQUESTS_SPLASH_ADD_PROFILE_NAME_BUTTON" = "Add Profile Name";
+"MESSAGE_REQUESTS_SPLASH_ADD_PROFILE_NAME_BUTTON" = "प्रोफाईल नाव जोडा";
 
 /* Body text for message requests splash screen */
-"MESSAGE_REQUESTS_SPLASH_BODY" = "You can now choose to ”Accept” or ”Delete“ a new conversation. Names let people know who’s messaging them.";
+"MESSAGE_REQUESTS_SPLASH_BODY" = "आपण आता एका नवीन संभाषणाला \"स्वीकारा\" किंवा \"हटवा\" निवडू शकता. नावाने लोकांना कळते की त्यांना कोण संदेश पाठवत आहे.";
 
 /* Toast indicating that a profile name has been created. */
-"MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "Your profile name has been saved.";
+"MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "आपले प्रोफाईल नाव जतन केले गेले आहे.";
 
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "पोहोचवले";
@@ -2130,16 +2262,16 @@
 "NEW_GROUP_CREATE_BUTTON" = "तयार करा";
 
 /* Error indicating that a new group could not be created. */
-"NEW_GROUP_CREATION_FAILED" = "New group could not be created.";
+"NEW_GROUP_CREATION_FAILED" = "नवीन गट तयार केला जाऊ शकला नाही.";
 
 /* Error indicating that a new group could not be created due to network connectivity problems. */
-"NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "New group could not be created. Check your internet connection and try again.";
+"NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "नवीन गट तयार केला जाऊ शकला नाही. आपले इंटरनेट कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.";
 
 /* Message for error alert indicating that a group name is required. */
-"NEW_GROUP_CREATION_MISSING_NAME_ALERT_MESSAGE" = "A group name is required.";
+"NEW_GROUP_CREATION_MISSING_NAME_ALERT_MESSAGE" = "गट नाव आवश्यक आहे.";
 
 /* Title for error alert indicating that a group name is required. */
-"NEW_GROUP_CREATION_MISSING_NAME_ALERT_TITLE" = "Missing Group Name";
+"NEW_GROUP_CREATION_MISSING_NAME_ALERT_TITLE" = "गट नाव नाही";
 
 /* Used in place of the group name when a group has not yet been named. */
 "NEW_GROUP_DEFAULT_TITLE" = "नवीन गट";
@@ -2151,7 +2283,7 @@
 "NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ ते %@";
 
 /* The title for the 'name new group' view. */
-"NEW_GROUP_NAME_GROUP_VIEW_TITLE" = "Name Group";
+"NEW_GROUP_NAME_GROUP_VIEW_TITLE" = "गटाला नाव द्या";
 
 /* Placeholder text for group name field */
 "NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "या गट चॅटला नाव द्या";
@@ -2160,7 +2292,7 @@
 "NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "इतर वापरकर्ते";
 
 /* The title for the 'select members for new group' view. */
-"NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "Select Members";
+"NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "सदस्य निवडा";
 
 /* The alert message if user tries to exit the new group view without saving changes. */
 "NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "आपल्याला हे बदल टाकून देण्यास आवडतील?";
@@ -2199,7 +2331,7 @@
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "आपला %@ पुन्हा चालू होत असताना आपल्याला संदेश प्राप्त झाले असू शकतात.";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "Actions include “Mark as Read,” “Reply,” and “Call Back.”";
+"NOTIFICATIONS_FOOTER_WARNING" = "क्रियांमध्ये \"वाचले म्हणून चिन्हांकित करा\", \"प्रत्युत्तर द्या\" आणि \"परत कॉल करा\" समाविष्ट आहे.";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "कुठलेही नाव किंवा मजकूर नाही";
@@ -2211,7 +2343,7 @@
 "NOTIFICATIONS_SECTION_SOUNDS" = "ध्वनी";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Name, Content, and Actions";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "नाव, मजकूर, आणि क्रिया";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_ONLY" = "फक्त नाव";
@@ -2226,16 +2358,16 @@
 "ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "चुकीचा PIN. प्रयत्न संपले.";
 
 /* Label for the 'create new pin' button when reglock is disabled during onboarding. */
-"ONBOARDING_2FA_CREATE_NEW_PIN" = "Create New PIN";
+"ONBOARDING_2FA_CREATE_NEW_PIN" = "नवीन PIN तयार करा";
 
 /* Button asking if the user would like to enter an alphanumeric PIN */
-"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "Enter Alphanumeric PIN";
+"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "अल्फान्यूमेरिक PIN प्रविष्ट करा";
 
 /* Button asking if the user would like to enter an numeric PIN */
-"ONBOARDING_2FA_ENTER_NUMERIC" = "Enter Numeric PIN";
+"ONBOARDING_2FA_ENTER_NUMERIC" = "न्यूमेरिक PIN प्रविष्ट करा";
 
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Need Help?";
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "मदत हवी?";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN" = "चुकीचा PIN";
@@ -2247,49 +2379,49 @@
 "ONBOARDING_2FA_INVALID_PIN_SINGLE" = "चुकीचा PIN. 1 प्रयत्न उर्वरित.";
 
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
-"ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Skip and Create New Pin";
+"ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "वगळा आणि नवीन PIN तयार करा";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
-"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "If you can’t remember your PIN, you can create a new one. You can register and use your account but you’ll lose some saved settings like your profile information.";
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "जर आपल्याला आपला PIN आठवत नसेल, तर आपण एक नवीन तयार करू शकता. आपण नोंदणी करू शकता आणि आपले खाते वापरू शकता पण काही जतन केलेल्या सेटिंग आपण गमवाल जसे की आपली प्रोफाईल माहिती.";
 
 /* Title for the skip pin entry action sheet during onboarding. */
-"ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "Skip PIN Entry?";
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "PIN प्रविष्टी वगळायची?";
 
 /* Title of the 'onboarding Captcha' view. */
 "ONBOARDING_CAPTCHA_TITLE" = "आपल्या संदेशांना माणुसकीचा एक स्पर्श जोडा";
 
 /* button indicating that the user will register their ipad */
-"ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Register iPad";
+"ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "iPad नोंदवा";
 
 /* button indicating that the user will link their phone */
-"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Link iPhone";
+"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "iPhone लिंक करा";
 
 /* explanation to the user they're switching from linking to registering flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Tapping “Register iPad” will let you create a brand new Signal account or move an existing account to this iPad. This will disable Signal on any other device currently registered with the same phone number.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "\"iPad नोंदवा\" टॅप केल्याने आपल्याला एकदम नवीन Signal खाता तयार करता येईल किंवा अस्तित्वात असलेला खाता या iPad वर हलवता येईल. सध्या या फोन नंबर सोबत नोंदवलेले इतर कुठल्याही डिव्हाईस वर हे Signal अक्षम करेल.";
 
 /* explanation to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Tapping “Link iPhone” will let you connect your phone to an existing account. Linking your phone is generally not recommended and will limit some functionality, such as calling.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "\"iPhone लिंक करा\" टॅप केल्याने आपल्याला आपला फोन एका अस्तित्वात असलेल्या खात्यासोबत कनेक्ट करता येईल. आपला फोन लिंक करणे साधारणपणे शिफारसीय नसते आणि काही कार्यक्षमता मर्यादित करेल, जसे की कॉलिंग.";
 
 /* header text indicating to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "ह्या iPad ची नोंदणी करा";
 
 /* header text indicating to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Link this iPhone";
+"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "हा iPhone लिंक करा";
 
 /* warning to the user that registering an ipad is not recommended */
-"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Registering this iPad will disable Signal on any other device currently registered with the same phone number.";
+"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "हा iPad नोंदवल्याने या फोन नंबर सोबत नोंदवलेले इतर डिव्हाईस वर Signal अक्षम केले जाईल.";
 
 /* warning to the user that linking a phone is not recommended */
-"ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "Linking your iPhone is not recommended and will limit core functionality.";
+"ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "आपला फोन लिंक करणे शिफारसीय नाही आणि ते मुलभूत कार्यक्षमता मर्यादित करेल.";
 
 /* Label for the 'give access' button in the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "परवानग्या सक्षम करा";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Notifications let you see when messages arrive and receive updates about new conversation activity.";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "सूचना आपल्याला संदेश प्राप्त झाल्यावर बघण्यास आणि नवीन संदेश क्रियाकलाप बद्दल अद्यतने प्राप्त करण्यास अनुमती देते.";
 
 /* Title of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_TITLE" = "Get the message";
+"ONBOARDING_PERMISSIONS_TITLE" = "संदेश मिळवा";
 
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "सुरूवात करण्यासाठी आपला फोन नंबर प्रविष्ट करा";
@@ -2298,7 +2430,7 @@
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "अवैध नंबर";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "You’ve run out of PIN guesses, but you can still access your Signal account by creating a new PIN. For your privacy and security your account will be restored without any saved profile information or settings.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "आपले PIN अंदाज संपले आहेत, पण तरीही नवीन PIN तयार करून आपण आपले Signal खाते अॅक्सेस करू शकता. आपल्या गोपनीयता आणि सुरक्षेसाठी आपले खाते कुठल्याही जतन केलेल्या प्रोफाईल माहिती किंवा सेटिंग विना पुनर्स्थित केले जाईल.";
 
 /* Label for the 'learn more' link when reglock is disabled in the 'onboarding pin attempts exhausted' view. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "PIN बद्दल अधिक जाणा";
@@ -2394,37 +2526,37 @@
 "PDF_VIEW_TITLE" = "PDF";
 
 /* Format for label indicating the a group member has invited 1 other user to the group. Embeds {{ the name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_MEMBER_INVITED_1_USER_FORMAT" = "%@ invited 1 person";
+"PENDING_GROUP_MEMBERS_MEMBER_INVITED_1_USER_FORMAT" = "%@ ने 1 व्यक्तीला आमंत्रित केले";
 
 /* Format for label indicating the a group member has invited N other users to the group. Embeds {{ %1$@ name of the inviting group member, %2$@ the number of users they have invited. }}. */
-"PENDING_GROUP_MEMBERS_MEMBER_INVITED_N_USERS_FORMAT" = "%1$@ invited %2$@ people";
+"PENDING_GROUP_MEMBERS_MEMBER_INVITED_N_USERS_FORMAT" = "%1$@ ने %2$@ व्यक्तींना आमंत्रित केले";
 
 /* Label indicating that a group has no pending members. */
-"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "No invites to show.";
+"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "दाखविण्यासाठी कुठलेही आमंत्रण नाही.";
 
 /* Title of 'revoke invite' button. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "Revoke Invite";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "आमंत्रण रद्द करा";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the invited group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revoke group invite for “%@“?";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "\"%@\" करिता गट आमंत्रण रद्द करायचे?";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Revoke %1$@ invites sent by “%2$@“?";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "\"%2$@\" द्वारा पाठविलेले %1$@ आमंत्रण रद्द करायचे?";
 
 /* Title of 'revoke invites' button. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_N_BUTTON" = "Revoke Invites";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_N_BUTTON" = "आमंत्रण रद्द करा";
 
 /* Footer for the 'invites by other group members' section of the 'pending group members' view. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Details of people invited by other group members are not shown. If invitees choose to join, their information will be shared with the group at that time. They will not see any messages in the group until they join.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "इतर गट सदस्यांद्वारा आमंत्रित व्यक्तींचे तपशील दाखविलेले नाही. जर आमंत्रितांनी सामील होण्यास निवडले, तर त्यांची माहिती गटासोबत त्यावेळी सामायिक केली जाईल. ते सामील होईपर्यंत ते कुठलेही संदेश पाहू शकणार नाही.";
 
 /* Title for the 'invites by other group members' section of the 'pending group members' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "Invites by other group members";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "इतर गट सदस्यांद्वारा आमंत्रण";
 
 /* Title for the 'people you invited' section of the 'pending group members' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "People you invited";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "आपण आमंत्रित केलेल्या व्यक्ती";
 
 /* The title for the 'pending group members' view. */
-"PENDING_GROUP_MEMBERS_VIEW_TITLE" = "Pending Group Invites";
+"PENDING_GROUP_MEMBERS_VIEW_TITLE" = "प्रलंबित गट आमंत्रण";
 
 /* Label for view-once messages that have invalid content. */
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "येणारा संदेश हाताळण्यात त्रुटी";
@@ -2502,46 +2634,46 @@
 "PHOTO_PICKER_UNNAMED_COLLECTION" = "अनामित अल्बम";
 
 /* Label indicating the user must use at least 4 characters */
-"PIN_CREATION_ALPHANUMERIC_HINT" = "PIN must be at least 4 characters";
+"PIN_CREATION_ALPHANUMERIC_HINT" = "PIN कमीतकमी 4 कॅरेक्टर असावा";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_CHANGING_TITLE" = "आपला PIN बदला";
 
 /* Title of the 'pin creation' confirmation view. */
-"PIN_CREATION_CONFIRM_TITLE" = "Confirm your PIN";
+"PIN_CREATION_CONFIRM_TITLE" = "आपल्या PIN ची पुष्टी करा";
 
 /* The explanation of confirmation in the 'pin creation' view. */
-"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Enter the PIN you just created.";
+"PIN_CREATION_CONFIRMATION_EXPLANATION" = "आपण आता तयार केलेला PIN प्रविष्ट करा.";
 
 /* Button asking if the user would like to create an alphanumeric PIN */
-"PIN_CREATION_CREATE_ALPHANUMERIC" = "Create Alphanumeric PIN";
+"PIN_CREATION_CREATE_ALPHANUMERIC" = "अल्फान्यूमेरिक PIN तयार करा";
 
 /* Button asking if the user would like to create an numeric PIN */
-"PIN_CREATION_CREATE_NUMERIC" = "Create Numeric PIN";
+"PIN_CREATION_CREATE_NUMERIC" = "न्यूमेरिक PIN तयार करा";
 
 /* Error body indicating that the attempt to create a PIN failed. */
-"PIN_CREATION_ERROR_MESSAGE" = "Your PIN was not saved. We’ll prompt you to create a PIN later.";
+"PIN_CREATION_ERROR_MESSAGE" = "आपला PIN जतन केला गेला नाही. आम्ही नंतर PIN तयार करण्यासाठी आपल्याला सूचित करू.";
 
 /* Error title indicating that the attempt to create a PIN failed. */
-"PIN_CREATION_ERROR_TITLE" = "PIN Creation Failed";
+"PIN_CREATION_ERROR_TITLE" = "PIN निर्मिती अयशस्वी";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall Signal.";
+"PIN_CREATION_EXPLANATION" = "Signal सोबत संचयित केलेली माहिती PIN एन्क्रिप्टेड ठेवतात जेणेकरून ती फक्त आपण अॅक्सेस करू शकता. आपण Signal पुन्हा स्थापन केल्यावर आपली प्रोफाईल, सेटिंग, आणि संपर्क पुनर्स्थित होईल.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PIN जुळत नाहीत. पुन्हा प्रयत्न करा.";
 
 /* Label indicating the user must use at least 4 digits */
-"PIN_CREATION_NUMERIC_HINT" = "PIN must be at least 4 digits";
+"PIN_CREATION_NUMERIC_HINT" = "PIN किमान 4 अंकांचा असायला हवा";
 
 /* Label indication the user must confirm their PIN. */
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "PIN पुन्हा प्रविष्ट करा";
 
 /* Indicates the work we are doing while creating the user's pin */
-"PIN_CREATION_PIN_PROGRESS" = "Creating PIN…";
+"PIN_CREATION_PIN_PROGRESS" = "PIN तयार करत आहे…";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "You can change your PIN as long as this device is registered.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "जोपर्यंत हा डिव्हाईस नोंदणीकृत आहे आपण आपला PIN बदलू शकता.";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_RECREATION_TITLE" = "आपला PIN बदला";
@@ -2550,7 +2682,7 @@
 "PIN_CREATION_TITLE" = "आपला PIN तयार करा";
 
 /* Label indicating that the attempted PIN is too weak */
-"PIN_CREATION_WEAK_ERROR" = "Choose a stronger PIN";
+"PIN_CREATION_WEAK_ERROR" = "एक शक्तिशाली PIN निवडा";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "आपला PIN आपल्या लक्षात रहाण्यात मदत करण्यासाठी, आम्ही वेळोवेळी तो प्रविष्ट करण्यास विचारू. कालांतराने आम्ही कमी वेळेस विचारू.";
@@ -2559,25 +2691,25 @@
 "PIN_REMINDER_FORGOT_PIN" = "आपला PIN विसरलात?";
 
 /* Action text for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_ACTION" = "Verify PIN";
+"PIN_REMINDER_MEGAPHONE_ACTION" = "PIN सत्यापित करा";
 
 /* Body for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_BODY" = "We’ll occasionally ask you to verify your PIN so that you remember it.";
+"PIN_REMINDER_MEGAPHONE_BODY" = "आम्ही आपल्याला मधून मधून PIN सत्यापित करण्यास विचारू जेणेकरून आपल्याला तो लक्षात राहील.";
 
 /* Toast indicating that we'll ask you for your PIN again in 3 days. */
-"PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "We’ll remind you again in a few days.";
+"PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "आम्ही आपल्याला काही दिवसात पुन्हा आठवण करून देऊ.";
 
 /* Title for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_TITLE" = "Verify your Signal PIN";
+"PIN_REMINDER_MEGAPHONE_TITLE" = "आपला Signal PIN सत्यापित करा.";
 
 /* Toast indicating that we'll ask you for your PIN again tomorrow. */
-"PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "We’ll remind you again tomorrow.";
+"PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "आम्ही आपल्याला उद्या पुन्हा आठवण करून देऊ.";
 
 /* Toast indicating that we'll ask you for your PIN again in 2 weeks. */
-"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "We’ll remind you again in a couple weeks.";
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "आम्ही आपल्याला काही आठवड्यांनी पुन्हा आठवण करून देऊ.";
 
 /* Toast indicating that we'll ask you for your PIN again in a week. */
-"PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "We’ll remind you again in a week.";
+"PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "आम्ही आपल्याला एका आठवड्यानी पुन्हा आठवण करून देऊ.";
 
 /* Label indicating that the attempted PIN does not match the user's PIN */
 "PIN_REMINDER_MISMATCH_ERROR" = "अवैध PIN, पुन्हा प्रयत्न करा.";
@@ -2589,19 +2721,19 @@
 "PIN_REMINDER_TOO_SHORT_ERROR" = "PIN किमान 4 अंकांचा असायला हवा.";
 
 /* Action text for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_ACTION" = "Create PIN";
+"PINS_MEGAPHONE_ACTION" = "PIN तयार करा";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "PINs keep information that’s stored with Signal encrypted";
+"PINS_MEGAPHONE_BODY" = "Signal सोबत संचयित केलेली माहिती PIN एन्क्रिप्टेड ठेवतात";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Creating a PIN will become mandatory in %ld days.";
+"PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "आम्ही आपल्याला नंतर आठवण करून देऊ. %ld दिवसांनी PIN तयार करणे अनिवार्य होईल.";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_TITLE" = "Create a PIN";
+"PINS_MEGAPHONE_TITLE" = "PIN तयार करा.";
 
 /* Toast indicating that a PIN has been created. */
-"PINS_MEGAPHONE_TOAST" = "PIN created. You can change it in settings.";
+"PINS_MEGAPHONE_TOAST" = "PIN तयार केला. आपण त्यास सेटिंग मध्ये बदलू शकता.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "मिडिया प्ले करा";
@@ -2655,22 +2787,22 @@
 "PROCEED_BUTTON" = "पुढे चला";
 
 /* Action text for profile name reminder megaphone */
-"PROFILE_NAME_REMINDER_MEGAPHONE_ACTION" = "Get Started";
+"PROFILE_NAME_REMINDER_MEGAPHONE_ACTION" = "सुरू करा";
 
 /* Body for profile name reminder megaphone when user already has a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_BODY" = "Your profile can now include an optional last name.";
+"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_BODY" = "आपल्या प्रोफाईल मध्ये आता पर्यायी अडनाव समाविष्ट करता येऊ शकते.";
 
 /* Title for profile name reminder megaphone when user already has a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_TITLE" = "Confirm Your Profile Name";
+"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_TITLE" = "आपल्या प्रोफाईल नावाची पुष्टी करा";
 
 /* Body for profile name reminder megaphone when user doesn't have a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "This will be displayed when you start a new conversation or share it.";
+"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "हे दाखविले जाईल जेव्हा आपण नवीन संभाषण चालू करता किंवा त्यास सामायिक करता.";
 
 /* Title for profile name reminder megaphone when user doesn't have a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_TITLE" = "Add a Profile Name";
+"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_TITLE" = "प्रोफाईल नाव जोडा";
 
 /* Toast indicating that a PIN has been created. */
-"PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "Your profile name has been saved.";
+"PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "आपले प्रोफाईल नाव जतन केले गेले आहे.";
 
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "प्रोफाईल अवतार सेट करा";
@@ -2682,28 +2814,28 @@
 "PROFILE_VIEW_CREATE_USERNAME" = "वापरकर्तानाव तयार करा";
 
 /* Error message shown when user tries to update profile with a family name that is too long. */
-"PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "Your last name is too long.";
+"PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "आपले अडनाव खूप लांब आहे.";
 
 /* Error message shown when user tries to update profile without a given name */
-"PROFILE_VIEW_ERROR_GIVEN_NAME_REQUIRED" = "Your first name is required.";
+"PROFILE_VIEW_ERROR_GIVEN_NAME_REQUIRED" = "आपले नाव आवश्यक आहे.";
 
 /* Error message shown when user tries to update profile with a given name that is too long. */
-"PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG" = "Your first name is too long.";
+"PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG" = "आपले नाव खूप लांब आहे.";
 
 /* Default text for the family name field of the profile view. */
-"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "(Optional)";
+"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "(पर्यायी)";
 
 /* Label for the family name field of the profile view. */
-"PROFILE_VIEW_FAMILY_NAME_FIELD" = "Last Name";
+"PROFILE_VIEW_FAMILY_NAME_FIELD" = "अडनाव";
 
 /* Default text for the given name field of the profile view. */
-"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "(Required)";
+"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "(आवश्यक)";
 
 /* Label for the given name field of the profile view. */
-"PROFILE_VIEW_GIVEN_NAME_FIELD" = "First Name";
+"PROFILE_VIEW_GIVEN_NAME_FIELD" = "नाव";
 
 /* Error shown when the user tries to update their profile when the app is not connected to the internet. */
-"PROFILE_VIEW_NO_CONNECTION" = "Profile can only be updated when connected to the internet.";
+"PROFILE_VIEW_NO_CONNECTION" = "इंटरनेटला कनेक्ट केल्यावरच प्रोफाईल अद्यतनित करता येईल.";
 
 /* Description of the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION" = "जेव्हा आपण नवीन संभाषणे चालू करता, आणि जेव्हा आपण इतर वापरकर्ते आणि गटांसोबत ते सामायिक करता, तेव्हा आपली Signal प्रोफाईल आपल्या संपर्कांना दृश्यमान असेल.";
@@ -2763,49 +2895,49 @@
 "QUOTED_REPLY_TYPE_VIDEO" = "व्हिडिओ";
 
 /* The header used to indicate All reactions to a given message. Embeds {{number of reactions}} */
-"REACTION_DETAIL_ALL_FORMAT" = "All · %@";
+"REACTION_DETAIL_ALL_FORMAT" = "सर्व · %@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Reacted %@ to your message";
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "आपल्या संदेशाला %@ प्रतिसाद दिला";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Reacted %@ to your album";
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "आपल्या अल्बमला %@ प्रतिसाद दिला";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Reacted %@ to your audio";
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "आपल्या ऑडिओला %@ प्रतिसाद दिला";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Reacted %@ to your contact share";
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "आपल्या संपर्क सामायिकरणाला %@ प्रतिसाद दिला";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Reacted %@ to your file";
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "आपल्या फाईलला %@ प्रतिसाद दिला";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "Reacted %@ to your GIF";
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "आपल्या GIF ला %@ प्रतिसाद दिला";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "Reacted %@ to your photo";
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "आपल्या फोटोला %@ प्रतिसाद दिला";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Reacted %@ to your sticker";
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "आपल्या स्टिकरला %@ प्रतिसाद दिला";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Reacted %@ to: \"%@\"";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "%@ प्रतिसाद दिला यास: \"%@\"";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Reacted %@ to your video";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "आपल्या व्हिडिओला %@ प्रतिसाद दिला";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Reacted %@ to your view-once media";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "आपल्या एकदा-बघा व्हिडिओला %@ प्रतिसाद दिला";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reacted %@ to your voice message";
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "आपल्या व्हॉईस संदेशाला %@ प्रतिसाद दिला";
 
 /* Body for the megaphone introducing reactions */
-"REACTION_MEGAPHONE_BODY" = "Tap and hold on any message to quickly reply with how you feel.";
+"REACTION_MEGAPHONE_BODY" = "आपल्याला कसे वाटते त्यासोबत जलद प्रतिसाद देण्यासाठी कुठल्याही संदेशावर टॅप करा आणि धरून ठेवा.";
 
 /* Title for the megaphone introducing reactions */
-"REACTION_MEGAPHONE_TITLE" = "Introducing Reactions";
+"REACTION_MEGAPHONE_TITLE" = "सादर करत आहे प्रतिक्रिया";
 
 /* Text describing the local user in the reaction details pane. */
 "REACTIONS_DETAIL_YOU" = "आपण";
@@ -2814,19 +2946,19 @@
 "REGISTER_2FA_FORGOT_PIN" = "मी माझा PIN विसरलो.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Need Help?";
+"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "मदत हवी?";
 
 /* Alert body for a forgotten SVR (V2) PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "आपला PIN आपण तयार केलेला एक 4+ अंकी कोड आहे जो न्युमेरिक किंवा अल्फान्युमेरिक असू शकतो. जर आपल्याला आपला PIN आठवत नसेल, तर आपल्या खात्यावर पुन्हा-नोंदणी करण्यासाठी आपल्याला 7 दिवस थांबावे लागेल.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you can create a new one. You can register and use your account but you’ll lose some saved settings like your profile information.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "आपला PIN आपण तयार केलेला एक 4+ अंकी कोड आहे जो न्युमेरिक किंवा अल्फान्युमेरिक असू शकतो. जर आपल्याला आपला PIN आठवत नसेल, तर आपण नवीन तयार करू शकता. आपण नोंदणी करू शकता आणि आपले खाते वापरू शकता पण आपण काही जतन केलेल्या सेटिंग गमवाल जसे की आपली प्रोफाईल माहिती.";
 
 /* Alert body for a forgotten V1 PIN */
-"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit numeric code you created. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
+"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "आपला PIN आपण तयार केलेला एक 4+ अंकी कोड आहे. जर आपल्याला आपला PIN आठवत नसेल, तर आपल्या खात्यावर पुन्हा-नोंदणी करण्यासाठी आपल्याला 7 दिवस थांबावे लागेल.";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock disabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "You have %lu attempts remaining. If you run out of attempts, you can create a new PIN. You can register and use your account but you’ll lose some saved settings like your profile information.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "आपल्याकडे %lu प्रयत्न उर्वरित आहेत. जर आपले प्रयत्न संपले, तर आपण एक नवीन PIN तयार करू शकता. आपण नोंदणी करू शकता आणि आपले खाते वापरू शकता पण काही जतन केलेल्या सेटिंग आपण गमवाल जसे की आपली प्रोफाईल माहिती.";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock enabled. */
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_PLURAL_FORMAT" = "आपल्याकडे %lu प्रयत्न उर्वरित आहेत. जर आपले प्रयत्न संपले तर आपले खाते अवरोधित केले जाईल. 7 दिवसांच्या निष्क्रियतेनंतर आपण विना PIN पुनःसत्यापन करू शकता. आपले खाते साफ केले जाईल आणि सर्व मजकूर हटविला जाईल.";
@@ -2835,13 +2967,13 @@
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_SINGLE" = "आपल्याकडे 1 प्रयत्न उर्वरित आहेत. जर आपले प्रयत्न संपले तर आपले खाते अवरोधित केले जाईल. 7 दिवसांच्या निष्क्रियतेनंतर आपण विना PIN पुनःसत्यापन करू शकता. आपले खाते साफ केले जाईल आणि सर्व मजकूर हटविला जाईल.";
 
 /* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock disabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "You have 1 attempt remaining. If you run out of attempts, you can create a new PIN. You can register and use your account but you’ll lose some saved settings like your profile information.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "आपल्याकडे 1 प्रयत्न उर्वरित आहे. जर आपले प्रयत्न संपले, तर आपण एक नवीन PIN तयार करू शकता. आपण नोंदणी करू शकता आणि आपले खाते वापरू शकता पण काही जतन केलेल्या सेटिंग आपण गमवाल जसे की आपली प्रोफाईल माहिती.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "चुकीचा PIN";
 
 /* Indicates the work we are doing while verifying the user's pin */
-"REGISTER_2FA_PIN_PROGRESS" = "Verifying PIN…";
+"REGISTER_2FA_PIN_PROGRESS" = "PIN सत्यापित करत आहे…";
 
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "प्रविष्ट करा";
@@ -2928,7 +3060,7 @@
 "REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "हा योग्य PIN नाही.";
 
 /* The title for the 'replace group admin' view. */
-"REPLACE_ADMIN_VIEW_TITLE" = "Choose New Admin";
+"REPLACE_ADMIN_VIEW_TITLE" = "नवीन प्रशासक निवडा";
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "पुश सूचनांकरिता पुनर्नोंदणी करा";
@@ -2988,136 +3120,136 @@
 "SCREEN_LOCK_UNLOCK_SIGNAL" = "Signal अनलॉक करा";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This will have a female profile photo. */
-"SCREENSHOT_NAME_CONTACT_EIGHT" = "Tina Ukuku";
+"SCREENSHOT_NAME_CONTACT_EIGHT" = "टिना उकुकू";
 
 /* This is a contact's name. Please keep the nick name Ali and change the last name to a popular lastname in your language. This will have male profile photo. */
-"SCREENSHOT_NAME_CONTACT_FIVE" = "Ali Smith";
+"SCREENSHOT_NAME_CONTACT_FIVE" = "अली स्मिथ";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This profile photo will be either male or female. Choose a unisex name if possible. */
-"SCREENSHOT_NAME_CONTACT_FOUR" = "Artemis Cheng";
+"SCREENSHOT_NAME_CONTACT_FOUR" = "अर्टेमिस चेंग";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. Include two last names if that is represented in your locale. This should be a unique non-public figure's name. This will have a female profile photo. */
-"SCREENSHOT_NAME_CONTACT_NINE" = "Zeus Lehtonen";
+"SCREENSHOT_NAME_CONTACT_NINE" = "झ्यूस लेहटोनेन";
 
 /* This is a contact's name. A male leadership/presidential position + the sound a cat makes. This will have a cat profile photo. */
 "SCREENSHOT_NAME_CONTACT_ONE" = "अध्यक्ष म्याओ";
 
 /* This is a contact's name. Please keep a similar unisex first name (Kai) if this name isn't common and only post the last initial. This will have a female profile photo. */
-"SCREENSHOT_NAME_CONTACT_SEVEN" = "Jordan B.";
+"SCREENSHOT_NAME_CONTACT_SEVEN" = "जॉर्डन बी.";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This will have a male profile photo. */
-"SCREENSHOT_NAME_CONTACT_SIX" = "Michael Kirk";
+"SCREENSHOT_NAME_CONTACT_SIX" = "मायकल कर्क";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This will have a female profile photo. */
-"SCREENSHOT_NAME_CONTACT_TEN" = "Maya Dorai";
+"SCREENSHOT_NAME_CONTACT_TEN" = "माया डोराई";
 
 /* This is a contact's name. Please keep a similar nickname for Nikola/Nikita/etc in your language and only post the last initial. This profile photo will be either male or female but mostly female. */
-"SCREENSHOT_NAME_CONTACT_THREE" = "Nikki Romanov";
+"SCREENSHOT_NAME_CONTACT_THREE" = "निक्की रोमानोव";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This profile photo will be either male or female. */
-"SCREENSHOT_NAME_CONTACT_TWO" = "Myles Larson";
+"SCREENSHOT_NAME_CONTACT_TWO" = "माईल्स लार्सन";
 
 /* This is a group chat of family members. Please keep Kirk or replace with a common last name in your locale. Translate 'Family' */
-"SCREENSHOT_NAME_GROUP_FIVE" = "Kirk Family";
+"SCREENSHOT_NAME_GROUP_FIVE" = "कर्क कुटूंब";
 
 /* Please include emoji. This is a group name/channel name for pictures of the sun in the sky. */
-"SCREENSHOT_NAME_GROUP_FOUR" = "Sunsets 🌅";
+"SCREENSHOT_NAME_GROUP_FOUR" = "सुर्यास्त 🌅";
 
 /* This is for a group of people interested in discussing books they've read. */
 "SCREENSHOT_NAME_GROUP_ONE" = "पुस्तक क्लब";
 
 /* This is group chat name for members talking about cats. Please include the emoji. */
-"SCREENSHOT_NAME_GROUP_SIX" = "Cat Chat 🐈 🐱";
+"SCREENSHOT_NAME_GROUP_SIX" = "कॅट चॅट 🐈 🐱";
 
 /* Please include emoji. This is a group name for people who climb rocks/climb trees/hike mountains/outside mountaineering. */
-"SCREENSHOT_NAME_GROUP_THREE" = "🧗🏽‍♀️ Rock Climbers";
+"SCREENSHOT_NAME_GROUP_THREE" = "🧗🏽‍♀️ रॉक क्लाइंबर्स";
 
 /* This is for a group chat for people who want weather updates. */
-"SCREENSHOT_NAME_GROUP_TWO" = "Weather Forecasts";
+"SCREENSHOT_NAME_GROUP_TWO" = "हवामान अंदाज";
 
 /* This appears in Signal > Settings. A female leadership/presidential/chairwoman position + female name Freyja or similar spelling. This will have a cat profile photo. */
-"SCREENSHOT_NAME_LOCAL_PROFILE" = "Chairwoman Freya";
+"SCREENSHOT_NAME_LOCAL_PROFILE" = "चेयरवुमन फ्रेया";
 
 /* This is a message expressing support/happiness/awe/shock. */
-"SCREENSHOT_THREAD_DIRECT_FIVE_MESSAGE_ONE" = "Congrats! I can't believe it!";
+"SCREENSHOT_THREAD_DIRECT_FIVE_MESSAGE_ONE" = "अभिनंदन! मला विश्वासच बसत नाहीये!";
 
 /* This is a message. */
-"SCREENSHOT_THREAD_DIRECT_FIVE_MESSAGE_THREE" = "See you tomorrow?";
+"SCREENSHOT_THREAD_DIRECT_FIVE_MESSAGE_THREE" = "उद्या भेटायचे?";
 
 /* This is a message. Please include the emoji. */
-"SCREENSHOT_THREAD_DIRECT_FIVE_MESSAGE_TWO" = "Thank you ☺️";
+"SCREENSHOT_THREAD_DIRECT_FIVE_MESSAGE_TWO" = "धन्यवाद ☺️";
 
 /* This is a message. */
-"SCREENSHOT_THREAD_DIRECT_FOUR_MESSAGE_ONE" = "Your wisdom has saved me.";
+"SCREENSHOT_THREAD_DIRECT_FOUR_MESSAGE_ONE" = "आपल्या विवेकने मला वाचवले.";
 
 /* This is a message. Include 'Thanks' + a similar phrase with the :) emoji. */
-"SCREENSHOT_THREAD_DIRECT_FOUR_MESSAGE_TWO" = "Thanks! What a wonderful message to read :)";
+"SCREENSHOT_THREAD_DIRECT_FOUR_MESSAGE_TWO" = "धन्यवाद! काय सुंदर संदेश होता वाचायला :)";
 
 /* This is a message. */
-"SCREENSHOT_THREAD_DIRECT_ONE_MESSAGE_ONE" = "The rain is pouring down and I'm sitting here just listening to it.";
+"SCREENSHOT_THREAD_DIRECT_ONE_MESSAGE_ONE" = "धो धो पाऊस पडतो आहे आणि मी इथे ते ऐकत बसलो आहे.";
 
 /* This is a message. */
-"SCREENSHOT_THREAD_DIRECT_ONE_MESSAGE_TWO" = "That's what I did this morning too.";
+"SCREENSHOT_THREAD_DIRECT_ONE_MESSAGE_TWO" = "मी पण सकाळी तेच केले.";
 
 /* This is a message before a call. */
-"SCREENSHOT_THREAD_DIRECT_SEVEN_MESSAGE_ONE" = "Free for a call?";
+"SCREENSHOT_THREAD_DIRECT_SEVEN_MESSAGE_ONE" = "कॉलसाठी मोकळे आहात?";
 
 /* This is a message. */
-"SCREENSHOT_THREAD_DIRECT_SIX_MESSAGE_ONE" = "Yes!";
+"SCREENSHOT_THREAD_DIRECT_SIX_MESSAGE_ONE" = "हो!";
 
 /* Replace crepes with similar item that you bake or cook i.e. bread, croissants, naan. */
-"SCREENSHOT_THREAD_DIRECT_THREE_MESSAGE_ONE" = "We're making crepes tomorrow";
+"SCREENSHOT_THREAD_DIRECT_THREE_MESSAGE_ONE" = "आम्ही उद्या क्रेप्स तयार करत आहोत";
 
 /* This is a message before an image of mountains + a lake. */
-"SCREENSHOT_THREAD_DIRECT_TWO_MESSAGE_ONE" = "Hey check this out!";
+"SCREENSHOT_THREAD_DIRECT_TWO_MESSAGE_ONE" = "हे बघा!";
 
 /* This is a message. */
-"SCREENSHOT_THREAD_DIRECT_TWO_MESSAGE_THREE" = "New Zealand!";
+"SCREENSHOT_THREAD_DIRECT_TWO_MESSAGE_THREE" = "न्यू झीलंड!";
 
 /* This is a message after an image of mountains + a lake. */
-"SCREENSHOT_THREAD_DIRECT_TWO_MESSAGE_TWO" = "Whoa where are you!?";
+"SCREENSHOT_THREAD_DIRECT_TWO_MESSAGE_TWO" = "बापरे आपण कोण आहात?";
 
 /* This is a message in the group chat of family members. */
-"SCREENSHOT_THREAD_GROUP_FIVE_MESSAGE_ONE" = "Today is ...";
+"SCREENSHOT_THREAD_GROUP_FIVE_MESSAGE_ONE" = "आज आहे ...";
 
 /* This is a message in the group chat of family members. */
-"SCREENSHOT_THREAD_GROUP_FIVE_MESSAGE_TWO" = "Happy birthday to you. Happy birthday to you!";
+"SCREENSHOT_THREAD_GROUP_FIVE_MESSAGE_TWO" = "आपल्याला वाढदिवसाच्या शुभेच्छा. आपल्याला वाढदिवसाच्या शुभेच्छा!";
 
 /* This is a message in the Sunsets group chat. */
-"SCREENSHOT_THREAD_GROUP_FOUR_MESSAGE_ONE" = "It's too cloudy here.";
+"SCREENSHOT_THREAD_GROUP_FOUR_MESSAGE_ONE" = "इथे खूप आभाळ आहे.";
 
 /* 1984 is the book title. The file extension is a text file. */
 "SCREENSHOT_THREAD_GROUP_ONE_FILE_NAME" = "1984.txt";
 
 /* This is for a message in the 'Book Club' group chat */
-"SCREENSHOT_THREAD_GROUP_ONE_MESSAGE_ONE" = "Did you read this yet?";
+"SCREENSHOT_THREAD_GROUP_ONE_MESSAGE_ONE" = "आपण हे आतापर्यंत वाचले आहे?";
 
 /* This is a file name 'Instructions' for the cat chat group. */
 "SCREENSHOT_THREAD_GROUP_SIX_FILE_NAME" = "Instructions.PDF";
 
 /* This is a message in the cat chat group. */
-"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_FIVE" = "This is the instruction manual.";
+"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_FIVE" = "हे एक सूचना नियमपुस्तिका आहे.";
 
 /* This is a message in the cat chat group. */
-"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_FOUR" = "Pictures, please!";
+"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_FOUR" = "कृपया, चित्रे!";
 
 /* This is a message after seeing a picture. */
-"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_ONE" = "This is peaceful.";
+"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_ONE" = "हे शांत आहे.";
 
 /* This is a message in the cat chat group. */
-"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_THREE" = "She’s walking a cat on a leash...";
+"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_THREE" = "ती मांजरीला वादीने नेत आहे...";
 
 /* This is a message. */
-"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_TWO" = "🌅 Good Morning!";
+"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_TWO" = "🌅 शुभ प्रभात!";
 
 /* This is a message in the 'Rock Climbers' group chat. Please translate to make sense for the translated group name. For example: Which way should we go? */
-"SCREENSHOT_THREAD_GROUP_THREE_MESSAGE_ONE" = "Which route should we take?";
+"SCREENSHOT_THREAD_GROUP_THREE_MESSAGE_ONE" = "आपण कुठला रस्ता घ्यायचा?";
 
 /* This is a message. Please include the emoji if possible. */
-"SCREENSHOT_THREAD_GROUP_TWO_MESSAGE_ONE" = "See you all there 🤗";
+"SCREENSHOT_THREAD_GROUP_TWO_MESSAGE_ONE" = "आपणा सर्वांना तेथे भेटू 🤗";
 
 /* This is a message sent with an attachment. */
-"SCREENSHOT_THREAD_GROUP_TWO_MESSAGE_TWO" = "Raining all day";
+"SCREENSHOT_THREAD_GROUP_TWO_MESSAGE_TWO" = "दिवसभर पाऊस पडत आहे";
 
 /* An example name for a user we use in the screenshots. */
 "SCREENSHOT_USERNAME_1" = "SCREENSHOT_USERNAME_1";
@@ -3144,10 +3276,10 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "लिंकिंग कोड मिळवण्यात अक्षम";
 
 /* alert message for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Your other device is running a legacy version of Signal that doesn't support scanning iPad QR codes. Please install the latest Signal release and try again.";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "आपल्या इतर डिव्हाईस वर Signal ची एक कालबाह्य आवृत्ती चालत आहे जी iPad QR कोड स्कॅन करण्याचे समर्थन करत नाही. कृपया नवीनतम Signal रिलीझ स्थापन करा आणि पुन्हा प्रयत्न करा.";
 
 /* alert title for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "Update Scanning Device";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "स्कॅनिंग डिव्हाईस अद्यतनित करा";
 
 /* alert title */
 "SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "आपला डिव्हाईस लिंक करण्यात अक्षम";
@@ -3165,25 +3297,28 @@
 "SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "लिंक करणे संपवा";
 
 /* header text before the user can link this device */
-"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Launch Signal on your phone to link this iPad to your account";
+"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "हा iPad आपल्या खात्यासोबत लिंक करण्यासाठी आपल्या फोन वर Signal लाँच करा";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
-"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "I don't have Signal on my phone…";
+"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "माझ्या फोनवर Signal नाही आहे…";
 
 /* alert body */
-"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Go to the App Store on your phone, install Signal, complete the registration process, and then you can link your iPad to the same account.";
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "आपल्या फोन वर अॅप स्टोअर वर जा, Signal स्थापन करा, नोंदणी प्रक्रिया पूर्ण करा, आणि नंतर आपण आपला iPad याच खात्यासोबत लिंक करू शकता.";
 
 /* alert title */
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "आपल्या फोनवर Signal स्थापन करा ";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Tap on your profile picture to open Signal Settings on your phone. Then \"Linked Devices\" and \"Link New Device\" to scan this code with your phone:";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "आपल्या फोन वर Signal सेटिंग उघडण्यासाठी आपल्या प्रोफाईल चित्रावर टॅप करा. नंतर हा कोड आपल्या फोन सोबत स्कॅन करण्यासाठी \"लिंक केलेले डिव्हाईस\" आणि \"नवीन डिव्हाईस लिंक करा\":";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
-"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Get help linking your iPad here";
+"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "आपला iPad लिंक करण्यास मदत येथे मिळवा";
 
 /* header text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Scan the QR Code with your phone";
+"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "आपल्या फोन सोबत QR कोड स्कॅन करा";
+
+/* header text before the user can transfer to this device */
+"SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "Launch Signal on your old iPad to transfer your account";
 
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "सुरक्षित सत्र रीसेट केले गेले.";
@@ -3408,13 +3543,13 @@
 "SETTINGS_NOTIFICATIONS" = "सूचना";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall Signal.";
+"SETTINGS_PINS_FOOTER" = "Signal सोबत संचयित केलेली माहिती PIN एन्क्रिप्टेड ठेवतात जेणेकरून ती फक्त आपण अॅक्सेस करू शकता. आपण Signal पुन्हा स्थापन केल्यावर आपली प्रोफाईल, सेटिंग, आणि संपर्क पुनर्स्थित होईल.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "आपला PIN बदला";
 
 /* Label for the 'pins' item of the privacy settings when the user doesn't have a pin. */
-"SETTINGS_PINS_ITEM_CREATE" = "Create a PIN";
+"SETTINGS_PINS_ITEM_CREATE" = "PIN तयार करा.";
 
 /* Title for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_TITLE" = "SIGNAL PIN";
@@ -3441,22 +3576,22 @@
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "संदेश कधी पहिले ते पहा आणि सामायिक करा ही सेटिंग पर्यायी आहे आणि सर्व संभाषणांना लागू होते.";
 
 /* Action to turn off registration lock */
-"SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Turn Off";
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "बंद करा";
 
 /* Title for the alert confirming that the user wants to turn off registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "Turn Off Registration Lock?";
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "नोंदणी लॉक बंद करायचे?";
 
 /* Action to turn on registration lock */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Turn On";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON" = "चालू करा";
 
 /* Body for the alert confirming that the user wants to turn on registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "If you forget your Signal PIN when registering with Signal again, you’ll be locked out of your account for 7 days.";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Signal सोबत पुन्हा नोंदणी करताना जर आपण आपला PIN विसरलात, तर आपण आपल्या खात्यापासून 7 दिवसांसाठी बाहेर रहाल.";
 
 /* Title for the alert confirming that the user wants to turn on registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "Turn On Registration Lock?";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "नोंदणी लॉक चालू करायचे?";
 
 /* Label for re-link button. */
-"SETTINGS_RELINK_BUTTON" = "Re-link";
+"SETTINGS_RELINK_BUTTON" = "पुन्हा-लिंक करा";
 
 /* Label for re-registration button. */
 "SETTINGS_REREGISTER_BUTTON" = "पुनर्नोंदणी";
@@ -3465,7 +3600,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "स्क्रीन लॉक टाईमआऊट";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Unlock Signal's screen using Touch ID, Face ID, or your iOS device passcode. You can still answer incoming calls and receive call and message notifications while Screen Lock is enabled. Signal's notification settings allow you to customize the information that is displayed.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Touch ID, Face ID, किंवा आपल्या iOS डिव्हाईस पासकोड वापरून Signal चे स्क्रीन अनलॉक करा. स्क्रीन लॉक सक्षम केलेले असताना देखील आपण येणारे कॉलला उत्तर देऊ शकता आणि कॉल प्राप्त करू शकता आणि संदेश सूचना प्राप्त करू शकता.Signal चेसूचना सेटिंग आपल्याला प्रदर्शित होणारी माहिती सानुकूल करण्यास अनुमती देते.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "स्क्रीन लॉक";
@@ -3513,7 +3648,7 @@
 "SETTINGS_TWO_FACTOR_AUTH_TITLE" = "नोंदणी लॉक";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "For extra security, turn on registration lock, which will require your Signal PIN to register your phone number with Signal again.";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "अतिरिक्त सुरक्षेसाठी, नोंदणी लॉक चालू करा, ज्यामध्ये Signal सोबत आपला फोन नंबर पुन्हा नोंदवण्यासाठी आपला Signal PIN आवश्यक असेल.";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "टाईपिंग निर्देशक";
@@ -3650,11 +3785,14 @@
 /* Label for button to verify a user's safety number. */
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "सुरक्षितता नंबर सत्यापित करा";
 
+/* text indicating the message was remotely deleted */
+"THIS_MESSAGE_WAS_DELETED" = "हा संदेश हटविला गेला.";
+
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "%@, %@ याचे सदस्य, आणि %lu अतिरिक्त गट";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "You can add notes for yourself in this conversation. If your account has any linked devices, new notes will be synced.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "या संभाषणामध्ये आपण स्वतःसाठी टिपा जोडू शकता. जर आपल्या खात्यामध्ये लिंक केलेले डिव्हाईस असतील, तर नवीन टिपा संकलित केल्या जातील. ";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "%@ याचा सदस्य";
@@ -3750,10 +3888,10 @@
 "UNKNOWN_USER" = "अज्ञात";
 
 /* Info Message when an unknown user disabled disappearing messages. */
-"UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Disappearing messages were disabled.";
+"UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "हरवणारे संदेश अक्षम केले गेले.";
 
 /* Info Message when an unknown user enabled disappearing messages. Embeds {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
-"UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Disappearing message time was set to %@.";
+"UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "हरवणारे संदेश वेळ %@ वर सेट केली गेली होती.";
 
 /* Indicates an unknown or unrecognizable value. */
 "UNKNOWN_VALUE" = "अज्ञात";
@@ -3768,7 +3906,7 @@
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "\"%@\" अनलिंक करायचे?";
 
 /* Label warning the user that they have been unlinked from their primary device. */
-"UNLINKED_WARNING" = "Device no longer linked. Re-link Signal with your phone to continue messaging.";
+"UNLINKED_WARNING" = "डिव्हाईस आता लिंक केलेला नाही. आपल्या फोन सोबत संदेशन सुरू ठेवण्यासाठी Signal पुन्हा-लिंक करा.";
 
 /* Alert title when unlinking device fails */
 "UNLINKING_FAILED_ALERT_TITLE" = "Signal आपल्या डिव्हाईसला अनलिंक करण्यात अक्षम झाले.";
@@ -3792,22 +3930,22 @@
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "समर्थित नाही";
 
 /* Error indicating that a group could not be updated. */
-"UPDATE_GROUP_FAILED" = "Group could not be updated.";
+"UPDATE_GROUP_FAILED" = "गट अद्यतनित केले जाऊ शकले नाही.";
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
-"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "This action couldn’t be completed. Check your internet connection and try again.";
+"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "ही क्रिया पूर्ण होऊ शकली नाही. आपले इंटरनेट कनेक्शन तपासा आणि पुन्हा प्रयत्न करा.";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "आपला PIN तयार करा";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall Signal.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Signal सोबत संचयित केलेली माहिती PIN एन्क्रिप्टेड ठेवतात जेणेकरून ती फक्त आपण अॅक्सेस करू शकता. आपण Signal पुन्हा स्थापन केल्यावर आपली प्रोफाईल, सेटिंग, आणि संपर्क पुनर्स्थित होईल.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "PIN ची ओळख करून देत आहे";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal will soon require iOS 11 or later. Please upgrade in Settings app >> General >> Software Update.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "लवकरच Signal ला iOS 11 किंवा नंतरची आवश्यकता लागेल. कृपया सेटिंग अॅप >> साधारण >> सॉफ्टवेअर अद्यतन मधून श्रेणीसुधारित करा.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "iOS श्रेणीसुधारित करा";
@@ -3822,7 +3960,7 @@
 "USERNAME_INVALID_CHARACTERS_ERROR" = "वापरकर्तानावामध्ये फक्त a-z, 0-9, आणि _ राहू शकतात";
 
 /* A message indicating that username lookup failed. */
-"USERNAME_LOOKUP_ERROR" = "An error occurred while looking up the username. Please try again later.";
+"USERNAME_LOOKUP_ERROR" = "वापरकर्तानाव शोधताना एक त्रुटी आढळली. कृपया नंतर पुन्हा प्रयत्न करा.";
 
 /* A message indicating that the given username is not a registered signal account. Embeds {{username}} */
 "USERNAME_NOT_FOUND_FORMAT" = "%@ Signal वापरकर्ता नाही. आपण पूर्ण वापरकर्तानाव प्रविष्ट केले असल्याची खात्री करा.";
@@ -3837,7 +3975,7 @@
 "USERNAME_PREFIX" = "@";
 
 /* An error indicating that the supplied username cannot start with a number. */
-"USERNAME_STARTS_WITH_NUMBER_ERROR" = "Usernames may not begin with a number.";
+"USERNAME_STARTS_WITH_NUMBER_ERROR" = "वापरकर्तानावे अंकांसोबत सोबत चालू होऊ शकत नाहीत.";
 
 /* The title for the username view. */
 "USERNAME_TITLE" = "वापरकर्तानाव";
@@ -3879,13 +4017,13 @@
 "VERIFY_PRIVACY_MULTIPLE" = "सुरक्षितता नंबरचे पुनरावलोकन करा";
 
 /* Toast alert text shown when tapping on a view-once message that has already been viewed. */
-"VIEW_ONCE_ALREADY_VIEWED_TOAST" = "You already viewed this message.";
+"VIEW_ONCE_ALREADY_VIEWED_TOAST" = "हा संदेश आपण आधीच पाहिला आहे.";
 
 /* Tooltip highlighting the view once messages button. */
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "संदेश बघितल्यानंतर अदृश्य करण्यासाठी येथे टॅप करा.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
-"VIEW_ONCE_OUTGOING_TOAST" = "Outgoing view-once media files are automatically removed after they are sent.";
+"VIEW_ONCE_OUTGOING_TOAST" = "पाठविल्यानंतर बाहेर जाणाऱ्या एकदा-बघा मिडिया फाईल स्वयंचलितपणे काढल्या जातील.";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "रद्द करण्यासाठी स्लाइड करा";
@@ -3906,7 +4044,7 @@
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "आपण नाहीसे होणारे संदेश अक्षम केले.";
 
 /* alert body shown when trying to use features in the app before completing registration-related setup. */
-"YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "You must complete setup before proceeding.";
+"YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "पुढे जाण्यापूर्वी आपण सेटअप पूर्ण करायला हवा.";
 
 /* Info Message when you disabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "आपण नाहीसे होणारे संदेशाची वेळ %@ वर सेट केली आहे.";

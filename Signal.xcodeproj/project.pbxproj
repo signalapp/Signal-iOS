@@ -1606,6 +1606,22 @@
 		8861DECF2445349B00BB4145 /* LinkingTextView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkingTextView.swift; sourceTree = "<group>"; };
 		886F08A6234958970085C27F /* InputAccessoryViewPlaceholder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InputAccessoryViewPlaceholder.swift; sourceTree = "<group>"; };
 		8872409323E12DF500824D62 /* NotificationServiceExtension-AppStore.entitlements */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.entitlements; path = "NotificationServiceExtension-AppStore.entitlements"; sourceTree = "<group>"; };
+		887889942474E198001B5FCF /* ga */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ga; path = ga.lproj/MainInterface.strings; sourceTree = "<group>"; };
+		887889952474E199001B5FCF /* ga */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ga; path = translations/ga.lproj/Localizable.strings; sourceTree = "<group>"; };
+		887889962474E1BE001B5FCF /* gu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = gu; path = gu.lproj/MainInterface.strings; sourceTree = "<group>"; };
+		887889972474E1BF001B5FCF /* gu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = gu; path = translations/gu.lproj/Localizable.strings; sourceTree = "<group>"; };
+		887889982474E1DE001B5FCF /* ha */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ha; path = ha.lproj/MainInterface.strings; sourceTree = "<group>"; };
+		887889992474E1DF001B5FCF /* ha */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ha; path = translations/ha.lproj/Localizable.strings; sourceTree = "<group>"; };
+		8878899A2474E1FB001B5FCF /* kn */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = kn; path = kn.lproj/MainInterface.strings; sourceTree = "<group>"; };
+		8878899B2474E1FC001B5FCF /* kn */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = kn; path = translations/kn.lproj/Localizable.strings; sourceTree = "<group>"; };
+		8878899C2474E223001B5FCF /* ml */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ml; path = ml.lproj/MainInterface.strings; sourceTree = "<group>"; };
+		8878899D2474E224001B5FCF /* ml */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ml; path = translations/ml.lproj/Localizable.strings; sourceTree = "<group>"; };
+		8878899E2474E2C4001B5FCF /* pa_PK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pa_PK; path = pa_PK.lproj/MainInterface.strings; sourceTree = "<group>"; };
+		8878899F2474E2C5001B5FCF /* pa_PK */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pa_PK; path = translations/pa_PK.lproj/Localizable.strings; sourceTree = "<group>"; };
+		887889A02474E3B9001B5FCF /* sr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sr; path = sr.lproj/MainInterface.strings; sourceTree = "<group>"; };
+		887889A12474E3B9001B5FCF /* sr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sr; path = translations/sr.lproj/Localizable.strings; sourceTree = "<group>"; };
+		887889A22474E3C3001B5FCF /* sw */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sw; path = sw.lproj/MainInterface.strings; sourceTree = "<group>"; };
+		887889A32474E3C3001B5FCF /* sw */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sw; path = translations/sw.lproj/Localizable.strings; sourceTree = "<group>"; };
 		887CD4762472FEA500FDD265 /* DeviceTransferOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceTransferOperation.swift; sourceTree = "<group>"; };
 		887CD47A247304B600FDD265 /* DeviceTransferService+URL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DeviceTransferService+URL.swift"; sourceTree = "<group>"; };
 		887CD47C2473051D00FDD265 /* DeviceTransferService+Manifest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DeviceTransferService+Manifest.swift"; sourceTree = "<group>"; };
@@ -3831,6 +3847,14 @@
 				hi,
 				ms,
 				sk,
+				ga,
+				gu,
+				ha,
+				kn,
+				ml,
+				pa_PK,
+				sr,
+				sw,
 			);
 			mainGroup = D221A07E169C9E5E00537ABF;
 			productRefGroup = D221A08A169C9E5E00537ABF /* Products */;
@@ -5062,6 +5086,14 @@
 				34784592237C4813000D1CAA /* hi */,
 				34784593237C4819000D1CAA /* ms */,
 				880FC0A023BFDADC00A2A900 /* sk */,
+				887889952474E199001B5FCF /* ga */,
+				887889972474E1BF001B5FCF /* gu */,
+				887889992474E1DF001B5FCF /* ha */,
+				8878899B2474E1FC001B5FCF /* kn */,
+				8878899D2474E224001B5FCF /* ml */,
+				8878899F2474E2C5001B5FCF /* pa_PK */,
+				887889A12474E3B9001B5FCF /* sr */,
+				887889A32474E3C3001B5FCF /* sw */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
