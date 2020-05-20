@@ -320,7 +320,7 @@ public class DebugFlags: NSObject {
     public static let permissiveGroupUpdateInfoMessages = build.includes(.dev)
 
     @objc
-    public static let showProfileKeyIndicator = build.includes(.qa)
+    public static let showProfileKeyAndUuidsIndicator = build.includes(.qa)
 
     @objc
     public static let verboseNotificationLogging = build.includes(.qa)
