@@ -243,7 +243,7 @@ public class FeatureFlags: NSObject {
     public static let deviceTransferDestroyOldDevice = false
 
     @objc
-    public static let deviceTransferThrowAway = true
+    public static let deviceTransferThrowAway = false
 }
 
 /// Flags that we'll leave in the code base indefinitely that are helpful for
