@@ -1988,11 +1988,14 @@
 /* The title for the action that deletes a message for all users in the conversation. */
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Delete for Everyone";
 
+/* A one-time confirmation that you want to delete for everyone */
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "This message will be permanently deleted for everyone in the conversation. Members will be able to see that you deleted a message.";
+
 /* The title for the action sheet asking who the user wants to delete the message for. */
-"MESSAGE_ACTION_DELETE_FOR_TITLE" = "Who do you want to delete this message for?";
+"MESSAGE_ACTION_DELETE_FOR_TITLE" = "Who would you like to delete this message for?";
 
 /* The title for the action that deletes a message for the local user only. */
-"MESSAGE_ACTION_DELETE_FOR_YOU" = "Delete for You";
+"MESSAGE_ACTION_DELETE_FOR_YOU" = "Delete for Me";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DELETE_MESSAGE" = "Delete This Message";
@@ -4054,6 +4057,9 @@
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Complete setup on Signal Desktop.";
+
+/* text indicating the message was remotely deleted by you */
+"YOU_DELETED_THIS_MESSAGE" = "You deleted this message.";
 
 /* Info Message when you disabled disappearing messages. */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "You disabled disappearing messages.";
