@@ -1073,12 +1073,7 @@ extension ConversationSettingsViewController: OWSNavigationView {
     public func shouldCancelNavigationBack() -> Bool {
         let result = hasUnsavedChangesToDisappearingMessagesConfiguration
         if result {
-            Self.showUnsavedChangesActionSheet(from: self,
-                                               saveBlock: {
-                                                self.updateDisappearingMessagesConfigurationAndDismiss()
-            }, discardBlock: {
-                self.navigationController?.popViewController(animated: true)
-            })
+            self.updateDisappearingMessagesConfigurationAndDismiss()
         }
         return result
     }
