@@ -142,6 +142,11 @@ class GroupViewHelper: NSObject {
             groupMembership.isAdministrator(localAddress))
     }
 
+    var canResendInvites: Bool {
+        return (!threadViewModel.hasPendingMessageRequest &&
+            isLocalUserInConversation)
+    }
+
     var isLocalUserInConversation: Bool {
         guard let groupThread = thread as? TSGroupThread else {
             return true

@@ -1464,6 +1464,37 @@ public class GroupManager: NSObject {
         messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
     }
 
+    public static func resendInvite(groupThread: TSGroupThread,
+                                    transaction: SDSAnyWriteTransaction) {
+
+        guard groupThread.groupModel.groupsVersion == .V2 else {
+            return
+        }
+
+        let messageBuilder = TSOutgoingMessageBuilder(thread: groupThread)
+        // V2 group update messages mostly ignore groupMetaMessage,
+        // but we set it to get the right behavior in shouldBeSaved.
+        // i.e. we need to flag this message as a group update that
+        // is "durable but transient" - it should not be saved.
+        messageBuilder.groupMetaMessage = .update
+        // We need to send v2 group updates to pending members
+        // as well.  Normal group sends only include "full members".
+        assert(messageBuilder.additionalRecipients == nil)
+        let additionalRecipients = groupThread.groupModel.groupMembership.pendingMembers.filter { address in
+            return doesUserSupportGroupsV2(address: address,
+                                           transaction: transaction)
+        }
+        messageBuilder.additionalRecipients = Array(additionalRecipients)
+        let message = messageBuilder.build()
+        messageSender.sendMessage(message.asPreparer,
+                                  success: {
+                                    Logger.info("Successfully sent message.")
+        },
+                                  failure: { error in
+                                    owsFailDebug("Failed to send message with error: \(error)")
+        })
+    }
+
     // MARK: - Group Database
 
     @objc
