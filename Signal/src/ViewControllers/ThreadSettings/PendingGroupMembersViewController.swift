@@ -91,12 +91,13 @@ public class PendingGroupMembersViewController: OWSTableViewController {
             }
         }
 
+        // Only admins can revoke invites.
+        let canRevoke = groupViewHelper.canRevokePendingInvites
+
         let localSection = OWSTableSection()
         localSection.headerTitle = NSLocalizedString("PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED",
                                                      comment: "Title for the 'people you invited' section of the 'pending group members' view.")
         if membersInvitedByLocalUser.count > 0 {
-            // The local user can always revoke invites from themself.
-            let canRevoke = true
             for address in membersInvitedByLocalUser {
                 localSection.add(OWSTableItem(customCellBlock: {
                     let cell = ContactTableViewCell()
@@ -128,10 +129,6 @@ public class PendingGroupMembersViewController: OWSTableViewController {
                 self.contactsManager.sortSignalServiceAddresses(Array(membersInvitedByOtherUsers.keys),
                                                                 transaction: transaction)
             }
-            // Admins can revoke any invite.
-            let canRevoke = (!groupViewHelper.threadViewModel.hasPendingMessageRequest &&
-                groupMembership.isPendingOrNonPendingMember(localAddress) &&
-                groupMembership.isAdministrator(localAddress))
             for inviterAddress in inviterAddresses {
                 guard let invitedAddresses = membersInvitedByOtherUsers[inviterAddress] else {
                     owsFailDebug("Missing invited addresses.")

@@ -85,7 +85,7 @@ struct GroupUpdateCopy {
         case .unknown:
             if newGroupModel.groupsVersion == .V2 {
                 if !DebugFlags.permissiveGroupUpdateInfoMessages {
-                    owsFailDebug("Missing updater info.")
+//                    owsFailDebug("Missing updater info.")
                 } else {
                     addItem(.debug, copy: "Error: Missing updater info.")
                 }
