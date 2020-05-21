@@ -319,13 +319,15 @@ public class BaseGroupMemberViewController: OWSViewController {
 extension BaseGroupMemberViewController: RecipientPickerDelegate {
 
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
-                         canSelectRecipient recipient: PickedRecipient) -> Bool {
+                         canSelectRecipient recipient: PickedRecipient) -> RecipientPickerRecipientState {
         guard let groupMemberViewDelegate = groupMemberViewDelegate else {
             owsFailDebug("Missing groupMemberViewDelegate.")
-            return false
+            return .unknownError
         }
-
-        return !groupMemberViewDelegate.groupMemberViewIsPreExistingMember(recipient)
+        guard !groupMemberViewDelegate.groupMemberViewIsPreExistingMember(recipient) else {
+            return .duplicateGroupMember
+        }
+        return .canBeSelected
     }
 
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
