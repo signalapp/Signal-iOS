@@ -60,6 +60,9 @@ typedef NS_CLOSED_ENUM(NSUInteger, OWS2FAMode) {
 - (void)markEnabledWithTransaction:(SDSAnyWriteTransaction *)transaction NS_SWIFT_NAME(markEnabled(transaction:));
 - (void)markDisabledWithTransaction:(SDSAnyWriteTransaction *)transaction NS_SWIFT_NAME(markDisabled(transaction:));
 
+@property (nonatomic, readonly) BOOL areRemindersEnabled;
+- (void)setAreRemindersEnabled:(BOOL)areRemindersEnabled transaction:(SDSAnyWriteTransaction *)transaction;
+
 // used for testing
 - (void)setDefaultRepetitionIntervalWithTransaction:(SDSAnyWriteTransaction *)transaction;
 

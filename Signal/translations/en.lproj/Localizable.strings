@@ -3542,6 +3542,21 @@
 /* No comment provided by engineer. */
 "SETTINGS_NOTIFICATIONS" = "Notifications";
 
+/* The button text for the dialog asking user to confirm their PIN to disable reminders */
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "Turn Off Reminders";
+
+/* The explanation for the dialog asking user to confirm their PIN to disable reminders */
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "Make sure you memorize or securely store your PIN as it can’t be recovered. If you forget your PIN, you may lose data when re-registering your Signal account.";
+
+/* The title for the dialog asking user to confirm their PIN to disable reminders */
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Confirm your Signal PIN";
+
+/* Footer for the 'pin reminder' section of the privacy settings when Signal PINs are available. */
+"SETTINGS_PIN_REMINDER_FOOTER" = "Reminders help you remember your PIN since it can’t be recovered. You’ll be asked less frequently over time.";
+
+/* Label for the 'pin reminder' switch of the privacy settings. */
+"SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "PIN Reminders";
+
 /* Footer for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_FOOTER" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall Signal.";
 

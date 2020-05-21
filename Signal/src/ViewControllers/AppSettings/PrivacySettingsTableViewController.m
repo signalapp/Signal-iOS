@@ -188,9 +188,25 @@ NS_ASSUME_NONNULL_BEGIN
                                              }]];
         [contents addSection:pinsSection];
 
+        OWSTableSection *reminderSection = [OWSTableSection new];
+        reminderSection.footerTitle = NSLocalizedString(@"SETTINGS_PIN_REMINDER_FOOTER",
+            @"Footer for the 'pin reminder' section of the privacy settings when Signal PINs are available.");
+        [reminderSection
+            addItem:[OWSTableItem
+                        switchItemWithText:NSLocalizedString(@"SETTINGS_PIN_REMINDER_SWITCH_LABEL",
+                                               @"Label for the 'pin reminder' switch of the privacy settings.")
+                        accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"2fa"]
+                        isOnBlock:^{
+                            return OWS2FAManager.sharedManager.areRemindersEnabled;
+                        }
+                        isEnabledBlock:^{
+                            return YES;
+                        }
+                        target:self
+                        selector:@selector(arePINRemindersEnabledDidChange:)]];
+        [contents addSection:reminderSection];
+
         OWSTableSection *registrationLockSection = [OWSTableSection new];
-        registrationLockSection.headerTitle = NSLocalizedString(
-            @"SETTINGS_TWO_FACTOR_AUTH_TITLE", @"Title for the 'two factor auth' section of the privacy settings.");
         registrationLockSection.footerTitle = NSLocalizedString(@"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER",
             @"Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available.");
         [registrationLockSection
@@ -712,6 +728,37 @@ NS_ASSUME_NONNULL_BEGIN
 
     [actionSheet addAction:cancelAction];
     [self presentActionSheet:actionSheet];
+}
+
+- (void)arePINRemindersEnabledDidChange:(UISwitch *)sender
+{
+    if (sender.isOn) {
+        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            [OWS2FAManager.sharedManager setAreRemindersEnabled:YES transaction:transaction];
+        }];
+    } else {
+        OWSPinConfirmationViewController *pinConfirmationVC = [[OWSPinConfirmationViewController alloc]
+                initWithTitle:NSLocalizedString(@"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE",
+                                  @"The title for the dialog asking user to confirm their PIN to disable reminders".)
+                  explanation:
+                      NSLocalizedString(@"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION",
+                          @"The explanation for the dialog asking user to confirm their PIN to disable reminders".)
+                   actionText:
+                       NSLocalizedString(@"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION",
+                           @"The button text for the dialog asking user to confirm their PIN to disable reminders".)
+            completionHandler:^(BOOL confirmed) {
+                if (confirmed) {
+                    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                        [OWS2FAManager.sharedManager setAreRemindersEnabled:NO transaction:transaction];
+                    }];
+
+                    [ExperienceUpgradeManager dismissPINReminderIfNecessary];
+                } else {
+                    [self updateTableContents];
+                }
+            }];
+        [self presentViewController:pinConfirmationVC animated:YES completion:nil];
+    }
 }
 
 - (void)isScreenLockEnabledDidChange:(UISwitch *)sender

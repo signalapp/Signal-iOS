@@ -62,6 +62,12 @@ class ExperienceUpgradeManager: NSObject {
 
     // MARK: - Experience Specific Helpers
 
+    @objc
+    static func dismissPINReminderIfNecessary() {
+        guard lastPresented?.experienceUpgrade.id == .pinReminder else { return }
+        lastPresented?.dismiss(animated: false, completion: nil)
+    }
+
     /// Marks the specified type up of upgrade as complete and dismisses it if it is currently presented.
     static func clearExperienceUpgrade(_ experienceUpgradeId: ExperienceUpgradeId, transaction: GRDBWriteTransaction) {
         ExperienceUpgradeFinder.markAsComplete(experienceUpgradeId: experienceUpgradeId, transaction: transaction)

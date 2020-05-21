@@ -18,6 +18,7 @@ NSString *const kOWS2FAManager_LastSuccessfulReminderDateKey = @"kOWS2FAManager_
 NSString *const kOWS2FAManager_PinCode = @"kOWS2FAManager_PinCode";
 NSString *const kOWS2FAManager_RepetitionInterval = @"kOWS2FAManager_RepetitionInterval";
 NSString *const kOWS2FAManager_HasMigratedTruncatedPinKey = @"kOWS2FAManager_HasMigratedTruncatedPinKey";
+NSString *const kOWS2FAManager_AreRemindersEnabled = @"kOWS2FAManager_AreRemindersEnabled";
 
 const NSUInteger kHourSecs = 60 * 60;
 const NSUInteger kDaySecs = kHourSecs * 24;
@@ -327,6 +328,10 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
         return NO;
     }
 
+    if (![self areRemindersEnabledTransaction:transaction]) {
+        return NO;
+    }
+
     NSDate *nextReminderDate = [self nextReminderDateWithTransaction:transaction];
 
     return nextReminderDate.timeIntervalSinceNow < 0;
@@ -487,6 +492,29 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
     [OWS2FAManager.keyValueStore setDouble:self.defaultRepetitionInterval
                                        key:kOWS2FAManager_RepetitionInterval
                                transaction:transaction];
+}
+
+- (BOOL)areRemindersEnabled
+{
+    __block BOOL areRemindersEnabled;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        areRemindersEnabled = [self areRemindersEnabledTransaction:transaction];
+    }];
+    return areRemindersEnabled;
+}
+
+- (BOOL)areRemindersEnabledTransaction:(SDSAnyReadTransaction *)transaction
+{
+    return [OWS2FAManager.keyValueStore getBool:kOWS2FAManager_AreRemindersEnabled
+                                   defaultValue:YES
+                                    transaction:transaction];
+}
+
+- (void)setAreRemindersEnabled:(BOOL)areRemindersEnabled transaction:(SDSAnyWriteTransaction *)transaction
+{
+    return [OWS2FAManager.keyValueStore setBool:areRemindersEnabled
+                                            key:kOWS2FAManager_AreRemindersEnabled
+                                    transaction:transaction];
 }
 
 @end
