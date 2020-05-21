@@ -84,6 +84,9 @@ extern NSString *const OWSPreferencesCallLoggingDidChangeNotification;
 - (BOOL)wasViewOnceTooltipShown;
 - (void)setWasViewOnceTooltipShown;
 
+- (BOOL)wasDeleteForEveryoneConfirmationShown;
+- (void)setWasDeleteForEveryoneConfirmationShown;
+
 #pragma mark Callkit
 
 - (BOOL)isSystemCallLogEnabled;

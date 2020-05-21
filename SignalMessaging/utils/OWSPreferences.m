@@ -48,6 +48,8 @@ NSString *const OWSPreferencesKey_IsGrdbReadyForAppExtensions = @"IsGrdbReadyFor
 NSString *const OWSPreferencesKey_IsAudibleErrorLoggingEnabled = @"IsAudibleErrorLoggingEnabled";
 NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySystemCallLogEnabled";
 NSString *const OWSPreferencesKeyWasViewOnceTooltipShown = @"OWSPreferencesKeyWasViewOnceTooltipShown";
+NSString *const OWSPreferencesKeyWasDeleteForEveryoneConfirmationShown
+    = @"OWSPreferencesKeyWasDeleteForEveryoneConfirmationShown";
 
 @interface OWSPreferences ()
 
@@ -483,6 +485,16 @@ NSString *const OWSPreferencesKeyWasViewOnceTooltipShown = @"OWSPreferencesKeyWa
 - (void)setWasViewOnceTooltipShown
 {
     [self setBool:YES forKey:OWSPreferencesKeyWasViewOnceTooltipShown];
+}
+
+- (BOOL)wasDeleteForEveryoneConfirmationShown
+{
+    return [self boolForKey:OWSPreferencesKeyWasDeleteForEveryoneConfirmationShown defaultValue:NO];
+}
+
+- (void)setWasDeleteForEveryoneConfirmationShown
+{
+    [self setBool:YES forKey:OWSPreferencesKeyWasDeleteForEveryoneConfirmationShown];
 }
 
 #pragma mark direct call connectivity (non-TURN)

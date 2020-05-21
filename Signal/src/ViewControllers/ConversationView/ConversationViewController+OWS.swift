@@ -81,38 +81,15 @@ extension ConversationViewController: MessageActionsDelegate {
     }
 
     func messageActionsDeleteItem(_ conversationViewItem: ConversationViewItem) {
-        // TODO: Actual send flow for delete-for-everyone
+        // Only show the new menu at all if the feature is on.
+        guard RemoteConfig.deleteForEveryone else { return conversationViewItem.deleteAction() }
 
-        guard FeatureFlags.deleteForEveryone,
-        let outgoingMessage = conversationViewItem.interaction as? TSOutgoingMessage,
-            Date.ows_millisecondTimestamp() - outgoingMessage.timestamp <= kHourInMs else {
-            conversationViewItem.deleteAction()
-            return
-        }
-
-        let actionSheetController = ActionSheetController(title: NSLocalizedString(
+        let actionSheetController = ActionSheetController(message: NSLocalizedString(
             "MESSAGE_ACTION_DELETE_FOR_TITLE",
             comment: "The title for the action sheet asking who the user wants to delete the message for."
         ))
 
-        let deleteForEveryoneAction = ActionSheetAction(
-            title: NSLocalizedString(
-                "MESSAGE_ACTION_DELETE_FOR_EVERYONE",
-                comment: "The title for the action that deletes a message for all users in the conversation."
-            ),
-            style: .destructive
-        ) { [weak self] _ in
-            guard let self = self else { return }
-            let deleteMessage = TSOutgoingDeleteMessage(thread: self.thread, message: outgoingMessage)
-
-            self.databaseStorage.write { transaction in
-                outgoingMessage.updateWithRemotelyDeletedAndRemoveRenderableContent(with: transaction)
-                SSKEnvironment.shared.messageSenderJobQueue.add(message: deleteMessage.asPreparer, transaction: transaction)
-            }
-        }
-        actionSheetController.addAction(deleteForEveryoneAction)
-
-        let deleteForYouAction = ActionSheetAction(
+        let deleteForMeAction = ActionSheetAction(
             title: NSLocalizedString(
                 "MESSAGE_ACTION_DELETE_FOR_YOU",
                 comment: "The title for the action that deletes a message for the local user only."
@@ -121,11 +98,67 @@ extension ConversationViewController: MessageActionsDelegate {
         ) { _ in
             conversationViewItem.deleteAction()
         }
-        actionSheetController.addAction(deleteForYouAction)
+        actionSheetController.addAction(deleteForMeAction)
+
+        if canBeRemotelyDeleted(conversationViewItem: conversationViewItem),
+            let message = conversationViewItem.interaction as? TSMessage {
+
+            let deleteForEveryoneAction = ActionSheetAction(
+                title: NSLocalizedString(
+                    "MESSAGE_ACTION_DELETE_FOR_EVERYONE",
+                    comment: "The title for the action that deletes a message for all users in the conversation."
+                ),
+                style: .destructive
+            ) { [weak self] _ in
+                self?.showDeleteForEveryoneConfirmationIfNecessary {
+                    guard let self = self else { return }
+
+                    let deleteMessage = TSOutgoingDeleteMessage(thread: self.thread, message: message)
+
+                    self.databaseStorage.write { transaction in
+                        message.updateWithRemotelyDeletedAndRemoveRenderableContent(with: transaction)
+                        SSKEnvironment.shared.messageSenderJobQueue.add(message: deleteMessage.asPreparer, transaction: transaction)
+                    }
+                }
+            }
+            actionSheetController.addAction(deleteForEveryoneAction)
+        }
 
         actionSheetController.addAction(OWSActionSheets.cancelAction)
 
         presentActionSheet(actionSheetController)
+    }
+
+    // A message can be remoetely deleted iff:
+    //  * the feature flag is enabled
+    //  * you sent this message
+    //  * you haven't already remotely deleted this message
+    //  * it has been less than 8 hours since you sent the message
+    func canBeRemotelyDeleted(conversationViewItem: ConversationViewItem) -> Bool {
+        guard RemoteConfig.deleteForEveryone else { return false }
+        guard let outgoingMessage = conversationViewItem.interaction as? TSOutgoingMessage else { return false }
+        guard !outgoingMessage.wasRemotelyDeleted else { return false }
+        guard Date.ows_millisecondTimestamp() - outgoingMessage.timestamp <= (kHourInMs * 8) else { return false }
+
+        return true
+    }
+
+    func showDeleteForEveryoneConfirmationIfNecessary(completion: @escaping () -> Void) {
+        guard !Environment.shared.preferences.wasDeleteForEveryoneConfirmationShown() else { return completion() }
+
+        OWSActionSheets.showConfirmationAlert(
+            title: NSLocalizedString(
+                "MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION",
+                comment: "A one-time confirmation that you want to delete for everyone"
+            ),
+            proceedTitle: NSLocalizedString(
+                "MESSAGE_ACTION_DELETE_FOR_EVERYONE",
+                comment: "The title for the action that deletes a message for all users in the conversation."
+            ),
+            proceedStyle: .destructive) { _ in
+                Environment.shared.preferences.setWasDeleteForEveryoneConfirmationShown()
+                completion()
+        }
     }
 
     func clearSelection() {

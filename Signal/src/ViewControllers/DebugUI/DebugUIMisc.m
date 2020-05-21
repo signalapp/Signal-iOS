@@ -115,6 +115,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                   @"current messages, but your account will be "
                                                                   @"deactivated until you complete re-registration."
                                                      proceedTitle:@"Proceed"
+                                                     proceedStyle:ActionSheetActionStyleDefault
                                                     proceedAction:^(ActionSheetAction *_Nonnull action) {
                                                         [DebugUIMisc reregister];
                                                     }];

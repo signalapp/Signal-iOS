@@ -47,7 +47,7 @@ import Foundation
     }
 
     @objc
-    public class func showConfirmationAlert(title: String, message: String? = nil, proceedTitle: String? = nil, proceedAction: @escaping ActionSheetAction.Handler) {
+    public class func showConfirmationAlert(title: String, message: String? = nil, proceedTitle: String? = nil, proceedStyle: ActionSheetAction.Style = .default, proceedAction: @escaping ActionSheetAction.Handler) {
         assert(title.count > 0)
 
         let actionSheet = ActionSheetController(title: title, message: message)
@@ -57,7 +57,7 @@ import Foundation
         let okAction = ActionSheetAction(
             title: actionTitle,
             accessibilityIdentifier: "OWSActionSheets.ok",
-            style: .default,
+            style: proceedStyle,
             handler: proceedAction
         )
         actionSheet.addAction(okAction)

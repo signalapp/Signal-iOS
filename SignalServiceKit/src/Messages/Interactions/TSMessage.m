@@ -452,7 +452,9 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
 - (NSString *)previewTextWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     if (self.wasRemotelyDeleted) {
-        return NSLocalizedString(@"THIS_MESSAGE_WAS_DELETED", "text indicating the message was remotely deleted");
+        return [self isKindOfClass:[TSIncomingMessage class]]
+            ? NSLocalizedString(@"THIS_MESSAGE_WAS_DELETED", "text indicating the message was remotely deleted")
+            : NSLocalizedString(@"YOU_DELETED_THIS_MESSAGE", "text indicating the message was remotely deleted by you");
     }
 
     NSString *_Nullable bodyDescription = nil;

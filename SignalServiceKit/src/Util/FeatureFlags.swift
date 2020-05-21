@@ -237,9 +237,6 @@ public class FeatureFlags: NSObject {
     public static let pinsForNewUsers = true
 
     @objc
-    public static let deleteForEveryone = build.includes(.dev)
-
-    @objc
     public static let deviceTransferDestroyOldDevice = false
 
     @objc

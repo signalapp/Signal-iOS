@@ -163,7 +163,9 @@ public class ConversationStyle: NSObject {
 
     @objc
     public func bubbleColor(message: TSMessage) -> UIColor {
-        if message is TSIncomingMessage {
+        if message.wasRemotelyDeleted {
+            return Theme.backgroundColor
+        } else if message is TSIncomingMessage {
             return ConversationStyle.defaultBubbleColorIncoming
         } else if let outgoingMessage = message as? TSOutgoingMessage {
             switch outgoingMessage.messageState {
@@ -211,7 +213,9 @@ public class ConversationStyle: NSObject {
 
     @objc
     public func bubbleTextColor(message: TSMessage) -> UIColor {
-        if message is TSIncomingMessage {
+        if message.wasRemotelyDeleted {
+            return Theme.primaryTextColor
+        } else if message is TSIncomingMessage {
             return ConversationStyle.bubbleTextColorIncoming
         } else if message is TSOutgoingMessage {
             return ConversationStyle.bubbleTextColorOutgoing

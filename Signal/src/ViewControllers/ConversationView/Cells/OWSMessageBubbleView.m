@@ -437,7 +437,7 @@ NS_ASSUME_NONNULL_BEGIN
                                          conversationStyle:self.conversationStyle
                                                 isIncoming:self.isIncoming
                                          isOverlayingMedia:NO
-                                           isOutsideBubble:NO];
+                                           isOutsideBubble:self.isBubbleTransparent];
         [textViews addObject:self.footerView];
     }
 
@@ -458,6 +458,12 @@ NS_ASSUME_NONNULL_BEGIN
     [self updateBubbleColor];
 
     [self configureBubbleRounding];
+
+    UIColor *_Nullable bubbleStrokeColor = self.bubbleStrokeColor;
+    if (bubbleStrokeColor != nil) {
+        self.bubbleView.strokeColor = bubbleStrokeColor;
+        self.bubbleView.strokeThickness = 1.f;
+    }
 }
 
 - (void)insertContactShareButtonsIfNecessary
@@ -587,6 +593,16 @@ NS_ASSUME_NONNULL_BEGIN
 
     TSMessage *message = (TSMessage *)self.viewItem.interaction;
     return [self.conversationStyle bubbleColorWithMessage:message];
+}
+
+- (BOOL)isBubbleTransparent
+{
+    return self.wasRemotelyDeleted;
+}
+
+- (nullable UIColor *)bubbleStrokeColor
+{
+    return self.wasRemotelyDeleted ? Theme.outlineColor : nil;
 }
 
 - (BOOL)hasBodyMediaWithThumbnail
@@ -720,8 +736,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (self.wasRemotelyDeleted) {
         self.bodyTextView.hidden = NO;
-        self.bodyTextView.text
-            = NSLocalizedString(@"THIS_MESSAGE_WAS_DELETED", "text indicating the message was remotely deleted");
+        self.bodyTextView.text = self.isIncoming
+            ? NSLocalizedString(@"THIS_MESSAGE_WAS_DELETED", "text indicating the message was remotely deleted")
+            : NSLocalizedString(@"YOU_DELETED_THIS_MESSAGE", "text indicating the message was remotely deleted by you");
         self.bodyTextView.textColor = self.bodyTextColor;
         self.bodyTextView.font = self.textMessageFont.ows_italic;
         return;
@@ -1424,6 +1441,8 @@ NS_ASSUME_NONNULL_BEGIN
     self.bodyTextView.hidden = YES;
 
     self.bubbleView.fillColor = nil;
+    self.bubbleView.strokeColor = nil;
+    self.bubbleView.strokeThickness = 0.f;
     [self.bubbleView clearPartnerViews];
 
     for (UIView *subview in self.bubbleView.subviews) {
