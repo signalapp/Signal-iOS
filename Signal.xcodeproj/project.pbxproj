@@ -1616,6 +1616,9 @@
 		887889A12474E3B9001B5FCF /* sr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sr; path = translations/sr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		887889A32474E3C3001B5FCF /* sw */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sw; path = translations/sw.lproj/Localizable.strings; sourceTree = "<group>"; };
 		887889A42476E999001B5FCF /* OWSPinConfirmationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSPinConfirmationViewController.swift; sourceTree = "<group>"; };
+		887889A6247718C7001B5FCF /* pa */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = pa; path = translations/pa.lproj/Localizable.strings; sourceTree = "<group>"; };
+		887889A7247718DE001B5FCF /* af */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = af; path = translations/af.lproj/Localizable.strings; sourceTree = "<group>"; };
+		887889A8247718F7001B5FCF /* jv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = jv; path = translations/jv.lproj/Localizable.strings; sourceTree = "<group>"; };
 		887CD4762472FEA500FDD265 /* DeviceTransferOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceTransferOperation.swift; sourceTree = "<group>"; };
 		887CD47A247304B600FDD265 /* DeviceTransferService+URL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DeviceTransferService+URL.swift"; sourceTree = "<group>"; };
 		887CD47C2473051D00FDD265 /* DeviceTransferService+Manifest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DeviceTransferService+Manifest.swift"; sourceTree = "<group>"; };
@@ -3850,6 +3853,9 @@
 				pa_PK,
 				sr,
 				sw,
+				pa,
+				af,
+				jv,
 			);
 			mainGroup = D221A07E169C9E5E00537ABF;
 			productRefGroup = D221A08A169C9E5E00537ABF /* Products */;
@@ -5090,6 +5096,9 @@
 				8878899F2474E2C5001B5FCF /* pa_PK */,
 				887889A12474E3B9001B5FCF /* sr */,
 				887889A32474E3C3001B5FCF /* sw */,
+				887889A6247718C7001B5FCF /* pa */,
+				887889A7247718DE001B5FCF /* af */,
+				887889A8247718F7001B5FCF /* jv */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";

@@ -993,7 +993,7 @@
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "تمام پیغامات کو حذف کریں";
 
 /* action sheet body. Embeds {{number of selected messages}} which will be deleted. */
-"DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "پرانے پیغامات کو حذف کریں؟";
+"DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Delete %ld Messages?";
 
 /* action sheet body */
 "DELETE_SELECTED_SINGLE_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "پیغام حذف کریں؟";
@@ -2727,7 +2727,7 @@
 "PINS_MEGAPHONE_BODY" = "PINs وہ معلومات رکھتے ہیں جو Signal کے خفیہ کردہ کے ساتھ ذخیرہ ہوتا ہے";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "ہم آپ کو بعد میں یاد دلائیں گے۔ پن بنانا ٪ دنوں میں لازمی ہوجائے گا۔";
+"PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "ہم آپ کو بعد میں یاد دلائیں گے۔ پن بنانا %ld دنوں میں لازمی ہوجائے گا۔";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_TITLE" = "ایک پن بنائیں";
@@ -2958,7 +2958,7 @@
 "REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "آپ کا پن ایک 4+ ہندسوں کا عددی کوڈ ہے جو آپ نے بنایا ہے۔ اگر آپ اپنا پن یاد نہیں کرسکتے ہیں تو ، آپ کو اپنا اکاؤنٹ دوبارہ رجسٹر کرنے کے لئے 7 دن انتظار کرنا پڑے گا۔";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock disabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "آپ کے پاس٪ lu کوششیں باقی ہیں۔ اگر آپ کی کوششیں ختم ہوجاتی ہیں تو ، آپ نیا پن تشکیل دے سکتے ہیں۔ آپ اپنا اکاؤنٹ رجسٹر اور استعمال کرسکتے ہیں لیکن آپ اپنی پروفائل کی معلومات جیسے کچھ محفوظ کردہ ترتیبات کو گنوا بیٹھیں گے۔";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "آپ کے پاس %lu کوششیں باقی ہیں۔ اگر آپ کی کوششیں ختم ہوجاتی ہیں تو ، آپ نیا پن تشکیل دے سکتے ہیں۔ آپ اپنا اکاؤنٹ رجسٹر اور استعمال کرسکتے ہیں لیکن آپ اپنی پروفائل کی معلومات جیسے کچھ محفوظ کردہ ترتیبات کو گنوا بیٹھیں گے۔";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock enabled. */
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_PLURAL_FORMAT" = "آپ کی %lu کوششیں باقی ہیں۔اگر آپ زیادہ کوشش کریں گے تو آپ کا اکاؤنٹ لاک ہو جائے گا۔ 7 دنوں  کی سرگرمی کے بعد آپ اپنے پن کیساتھ دوبارہ رجسٹر کر سکتے ہیں۔آپ کا اکاؤنٹ صاف اور مواد حذف ہو جائے گا۔";
@@ -3541,6 +3541,21 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_NOTIFICATIONS" = "اطلاعات";
+
+/* The button text for the dialog asking user to confirm their PIN to disable reminders */
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "Turn Off Reminders";
+
+/* The explanation for the dialog asking user to confirm their PIN to disable reminders */
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "Make sure you memorize or securely store your PIN as it can’t be recovered. If you forget your PIN, you may lose data when re-registering your Signal account.";
+
+/* The title for the dialog asking user to confirm their PIN to disable reminders */
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Confirm your Signal PIN";
+
+/* Footer for the 'pin reminder' section of the privacy settings when Signal PINs are available. */
+"SETTINGS_PIN_REMINDER_FOOTER" = "Reminders help you remember your PIN since it can’t be recovered. You’ll be asked less frequently over time.";
+
+/* Label for the 'pin reminder' switch of the privacy settings. */
+"SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "PIN Reminders";
 
 /* Footer for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_FOOTER" = "PINs Signal کے ساتھ ذخیرہ شدہ معلومات کو خفیہ شدہ رکھتا ہے لہذا صرف آپ ہی اس تک رسائی حاصل کرسکتے ہیں۔ جب آپ Signal کو دوبارہ انسٹال کرتے ہیں تو آپ کا پروفائل ، ترتیبات اور رابطے بحال ہوجائیں گے۔";

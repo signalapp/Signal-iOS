@@ -1,5 +1,5 @@
 /* Button text to dismiss missing contacts permission alert */
-"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "ഡാർക്ക്";
+"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "ഇപ്പോൾ വേണ്ട";
 
 /* Action sheet item */
 "ACCEPT_NEW_IDENTITY_ACTION" = "പുതിയ സുരക്ഷാ നമ്പർ സ്വീകരിക്കുക";
@@ -108,10 +108,10 @@
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "തിരിച്ചറിയാനാകാത്ത ഡാറ്റാബേസ് വേർഷൻ";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "The data transferred from your old device could not be restored. Please send a debug log to support@signal.org so that we can troubleshoot this issue. If you re-install Signal your message history may be lost.";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "നിങ്ങളുടെ പഴയ ഡിവൈസിൽ നിന്ന് മാറ്റം ചെയ്ത ഡാറ്റ റീസ്റ്റോർ ചെയ്യാൻ കഴിയുന്നില്ല.  ദയവായി support@signal.org ലേക്ക് ഒരു ഡീബഗ് ലോഗ് അയയ്ക്കുക, അങ്ങനെ നമുക്ക് ഈ പ്രശ്നത്തിനു പരിഹാരം കാണാൻ കഴിയും.  നിങ്ങൾ Signal റീഇൻസ്റ്റാൾ ചെയ്യുകയാണെങ്കിൽ, നിങ്ങളുടെ സന്ദേശ ചരിത്രം ചിലപ്പോൾ നഷ്ടപ്പെട്ടേക്കാം.";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Could Not Complete Transfer";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "കൈമാറ്റം പൂർത്തീകരിക്കാൻ കഴിയുന്നില്ല";
 
 /* Text prompting user to edit their profile name. */
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "നിങ്ങളുടെ പേര് എന്റർ ചെയ്യുക";
@@ -459,7 +459,7 @@
 "CALL_VIEW_HANGUP_LABEL" = "കോൾ അവസാനിപ്പിക്കുക";
 
 /* Accessibility label for muting the microphone */
-"CALL_VIEW_MUTE_LABEL" = "മ്യൂറ്റ്";
+"CALL_VIEW_MUTE_LABEL" = "നിശബ്ദമാക്കുക";
 
 /* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
 "CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "നിങ്ങൾക്ക് നിങ്ങളുടെ ലോക്ക് സ്ക്രീനിൽ നിന്ന് കോളുകൾ അറ്റൻഡ് ചെയ്യണമെങ്കിൽ നിങ്ങളുടെ Signal പ്രൈവസി സെറ്റിംഗ്സിൽ iOS കോൾ ഇന്റഗ്രേഷൻ പ്രാപ്തമാക്കുക.";
@@ -807,28 +807,28 @@
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ അംഗങ്ങൾ";
 
 /* Title of the 'mute this thread' action sheet. */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "മ്യൂറ്റ്";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "നിശബ്ദമാക്കുക";
 
 /* label for 'mute thread' cell in conversation settings */
-"CONVERSATION_SETTINGS_MUTE_LABEL" = "മ്യൂറ്റ്";
+"CONVERSATION_SETTINGS_MUTE_LABEL" = "നിശബ്ദമാക്കുക";
 
 /* Indicates that the current thread is not muted. */
-"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "മ്യൂട്ട് ചെയ്തില്ല";
+"CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "നിശബ്ദമാക്കിയിട്ടില്ല";
 
 /* Label for button to mute a thread for a day. */
-"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "ഒരു ദിവസത്തേക്ക് മ്യൂട്ട് ചെയ്യുക";
+"CONVERSATION_SETTINGS_MUTE_ONE_DAY_ACTION" = "ഒരു ദിവസത്തേക്ക് നിശബ്ദമാക്കുക";
 
 /* Label for button to mute a thread for a hour. */
-"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "ഒരു മണിക്കൂർ മ്യൂട്ട് ചെയ്യുക";
+"CONVERSATION_SETTINGS_MUTE_ONE_HOUR_ACTION" = "ഒരു മണിക്കൂർ നിശബ്ദമാക്കുക";
 
 /* Label for button to mute a thread for a minute. */
-"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "ഒരു മിനിറ്റ് മ്യൂട്ട് ചെയ്യുക";
+"CONVERSATION_SETTINGS_MUTE_ONE_MINUTE_ACTION" = "ഒരു മിനിറ്റ് നിശബ്ദമാക്കുക";
 
 /* Label for button to mute a thread for a week. */
-"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "ഒരു ആഴ്ചത്തേക്ക് മ്യൂട്ട് ചെയ്യുക";
+"CONVERSATION_SETTINGS_MUTE_ONE_WEEK_ACTION" = "ഒരു ആഴ്ചത്തേക്ക് നിശബ്ദമാക്കുക";
 
 /* Label for button to mute a thread for a year. */
-"CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "ഒരു വർഷത്തേക്ക് മ്യൂട്ട് ചെയ്യുക";
+"CONVERSATION_SETTINGS_MUTE_ONE_YEAR_ACTION" = "ഒരു വർഷത്തേക്ക് നിശബ്ദമാക്കുക";
 
 /* Indicates that this thread is muted until a given date or time. Embeds {{The date or time which the thread is muted until}}. */
 "CONVERSATION_SETTINGS_MUTED_UNTIL_FORMAT" = "%@ വരെ";
@@ -1014,103 +1014,103 @@
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "ഡിവൈസ് ലിസ്റ്റ് അപ്ഡേറ്റ് ചെയ്യുന്നതിൽ പരാജയപ്പെട്ടു.";
 
 /* The stop action of the dialog asking the user if they want to cancel a device transfer */
-"DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION" = "Stop Transfer";
+"DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION" = "കൈമാറ്റം നിറുത്തുക";
 
 /* The message of the dialog asking the user if they want to cancel a device transfer */
-"DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE" = "Closing this window will stop the transfer you have in progress, are you sure you want to proceed?";
+"DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE" = "ഈ വിൻഡോ ക്ലോസ് ചെയ്യുന്നത് മൂലം നിങ്ങൾക്ക് ഇപ്പോൾ നടന്നുകൊണ്ടിരിക്കുന്ന കൈമാറ്റം അവസാനിക്കും, നിങ്ങൾക്ക് ഇത് തുടരണമെന്ന് ഉറപ്പാണോ?";
 
 /* The title of the dialog asking the user if they want to cancel a device transfer */
-"DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "Stop Transfer?";
+"DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "കൈമാറ്റം നിറുത്തണമോ?";
 
 /* The explanation for the device transfer 'choice' view */
-"DEVICE_TRANSFER_CHOICE_EXPLANATION" = "If you have your old iOS device, you can securely transfer your account and messages to this device.";
+"DEVICE_TRANSFER_CHOICE_EXPLANATION" = "നിങ്ങൾക്കുള്ള പഴയ iOS ഡിവൈസ് ആണെങ്കിൽ, നിങ്ങൾക്ക് നിങ്ങളുടെ അക്കൗണ്ടും സന്ദേശങ്ങളും ഈ ഡിവൈസിലേക്ക് സുരക്ഷിതമായി കൈമാറ്റം ചെയ്യാൻ കഴിയും.";
 
 /* The explanation for the device transfer 'choice' view when linking a device */
-"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "If you were previously using Signal on a linked iPad, you can securely transfer your account and messages to this device.";
+"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "ലിങ്ക് ചെയ്ത ഒരു ഐപാഡിലാണ് നിങ്ങൾ ഇതിന് മുന്നെ Signal ഉപയോഗിച്ചിരുന്നതെങ്കിൽ, നിങ്ങൾക്ക് നിങ്ങളുടെ അക്കൗണ്ടും സന്ദേശങ്ങളും ഈ ഡിവൈസിലേക്ക് സുരക്ഷിതമായി കൈമാറ്റം ചെയ്യാൻ കഴിയും.";
 
 /* The body for the device transfer 'choice' view 'register' option */
-"DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "Continue without transferring your account and messages";
+"DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "നിങ്ങളുടെ അക്കൗണ്ടും സന്ദേശങ്ങളും കൈമാറ്റം ചെയ്യാതെ തന്നെ തുടരുക";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "Add this iPad as a new linked device without transferring message history";
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "സന്ദേശ ചരിത്രം കൈമാറ്റം ചെയ്യാതെ തന്നെ ഈ ഐപാഡിനെ പുതുതായി ലിങ്ക് ചെയ്ത ഒരു ഡിവൈസ് ആയി ചേർക്കുക";
 
 /* The title for the device transfer 'choice' view 'register' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "Add as New Device";
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "പുതിയ ഡിവൈസ് ആയി ചേർക്കുക";
 
 /* The title for the device transfer 'choice' view 'register' option */
-"DEVICE_TRANSFER_CHOICE_REGISTER_TITLE" = "Register without Transferring";
+"DEVICE_TRANSFER_CHOICE_REGISTER_TITLE" = "കൈമാറ്റം ചെയ്യാതെ തന്നെ രജിസ്റ്റർ ചെയ്യുക";
 
 /* The title for the device transfer 'choice' view */
-"DEVICE_TRANSFER_CHOICE_TITLE" = "Transfer Account & Messages";
+"DEVICE_TRANSFER_CHOICE_TITLE" = "അക്കൗണ്ടും സന്ദേശങ്ങളും കൈമാറ്റം ചെയ്യുക";
 
 /* The body for the device transfer 'choice' view 'transfer' option */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Transfer your account and message history from your old iOS device";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "നിങ്ങളുടെ പഴയ iOS ഡിവൈസിൽ നിന്ന് നിങ്ങളുടെ അക്കൗണ്ടും സന്ദേശ ചരിത്രവും കൈമാറ്റം ചെയ്യുക";
 
 /* The body for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Transfer your account and message history from your old iPad";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "നിങ്ങളുടെ പഴയ ഐപാഡിൽ നിന്ന് നിങ്ങളുടെ അക്കൗണ്ടും സന്ദേശ ചരിത്രവും കൈമാറ്റം ചെയ്യുക";
 
 /* The title for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "Transfer from another iPad";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "മറ്റൊരു ഐപാഡിൽ നിന്നുള്ള കൈമാറ്റം";
 
 /* The title for the device transfer 'choice' view 'transfer' option */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_TITLE" = "Transfer from iOS Device";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_TITLE" = "iOS ഡിവൈസിൽ നിന്നുള്ള കൈമാറ്റം";
 
 /* A warning for the device transfer 'choice' view indicating you can only have one device registered with your number */
-"DEVICE_TRANSFER_CHOICE_WARNING" = "Continuing will disable Signal on other devices currently registered with the same phone number.";
+"DEVICE_TRANSFER_CHOICE_WARNING" = "തുടർന്നാൽ, ഇതേ ഫോൺ നമ്പർ നിലവിൽ രജിസ്റ്റർ ചെയ്തിരിക്കുന്ന മറ്റ് ഡിവൈസുകളിൽ  Signal നെ  സജീവമല്ലാതാക്കും.";
 
 /* An error indicating that we were unable to verify the indentity of the new device to complete the transfer */
-"DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Unable to verify your new device, please try again";
+"DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "നിങ്ങളുടെ പുതിയ ഡിവൈസ് പരിശോധിക്കാൻ കഴിയുന്നില്ല, ദയവായി വീണ്ടും ശ്രമിക്കുക";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_GENERIC" = "The transfer couldn't complete, please ensure your devices are near each other and try again";
+"DEVICE_TRANSFER_ERROR_GENERIC" = "കൈമാറ്റം പൂർത്തിയാക്കാൻ കഴിയുന്നില്ല, നിങ്ങളുടെ ഡിവൈസുകൾ പരസ്പരം അടുത്ത് തന്നെയാണെന്ന് ദയവായി ഉറപ്പാക്കുകയും വീണ്ടും ശ്രമിക്കുകയും ചെയ്യുക";
 
 /* An error indicating the user must scan this code with a linked device to transfer. */
-"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "To set up this iPad as a linked device, you must scan with your old iPad";
+"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "ഈ ഐപാഡിനെ ഒരു ലിങ്ക് ചെയ്ത ഡിവൈസ് ആയി സെറ്റ് അപ്പ് ചെയ്യുന്നതിന്, നിങ്ങൾ നിങ്ങളുടെ പഴയ ഐപാഡുമായി സ്കാൻ ചെയ്യണം";
 
 /* An error indicating the user must scan this code with a primary device to transfer. */
-"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_PRIMARY" = "To transfer your account, you must scan with your iPhone";
+"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_PRIMARY" = "നിങ്ങളുടെ അക്കൗണ്ട് കൈമാറ്റം ചെയ്യുന്നതിന്, നിങ്ങളുടെ ഐഫോണുമായി നിങ്ങൾ സ്കാൻ ചെയ്തിരിക്കണം";
 
 /* An error indicating that the user does not have enough free space on their device to complete the transfer */
-"DEVICE_TRANSFER_ERROR_NOT_ENOUGH_SPACE" = "Not enough free space to complete the transfer";
+"DEVICE_TRANSFER_ERROR_NOT_ENOUGH_SPACE" = "ഈ കൈമാറ്റം പൂർത്തിയാക്കാൻ വേണ്ട ഫ്രീ സ്പെയ്സ് ഇല്ല";
 
 /* An error indicating the user must update their device before trying to transfer. */
-"DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Update to the latest version of Signal and try again";
+"DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Signal ൻ്റെ ഏറ്റവും പുതിയ പതിപ്പിലേക്ക് അപ്‌ഡേറ്റ് ചെയ്ത ശേഷം വീണ്ടും ശ്രമിക്കുക";
 
 /* The explanation on the action sheet prompting the user if they want to transfer their device. */
-"DEVICE_TRANSFER_PROMPT_EXPLANATION" = "Transfer your Signal account to a new iOS device. Make sure your new device is nearby and turned on.";
+"DEVICE_TRANSFER_PROMPT_EXPLANATION" = "ഒരു പുതിയ iOS ഡിവൈസിലേക്ക് നിങ്ങളുടെ Signal അക്കൗണ്ട് കൈമാറ്റം ചെയ്യുക.  നിങ്ങളുടെ പുതിയ ഡിവൈസ് സമീപത്ത് തന്നെ ഉണ്ടെന്നും ഓൺ ചെയ്തിട്ടുണ്ടെന്നും ഉറപ്പാക്കുക.";
 
 /* The title on the acttion sheet prompting the user if they want to transfer their device. */
-"DEVICE_TRANSFER_PROMPT_TITLE" = "Transfer Account";
+"DEVICE_TRANSFER_PROMPT_TITLE" = "അക്കൗണ്ട് കൈമാറ്റം ചെയ്യുക";
 
 /* The explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Open Signal on your old device, bring it nearby, and make sure Wi-Fi and Bluetooth are enabled on both devices.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "നിങ്ങളുടെ പഴയ ഡിവൈസിൽ Signal ഓപ്പൺ ചെയ്യുക, അത് സമീപത്തേക്ക് കൊണ്ട് വരിക, രണ്ട് ഡിവൈസുകളിലും വൈ-ഫൈ, ബ്ലൂടൂത്ത്  സജീവമാക്കിയിട്ടുണ്ടെന്ന് ഉറപ്പാക്കുക.";
 
 /* The second explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Position this QR code in the frame of your other device.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "നിങ്ങളുടെ മറ്റെ ഡിവസിൻ്റെ ഫ്രെയിമിൽ ഈ QR കോഡ് ക്രമീകരിക്കുക.";
 
 /* The title for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_TITLE" = "Waiting for Other Device...";
+"DEVICE_TRANSFER_QRCODE_TITLE" = "മറ്റെ ഡിവൈസിന് വേണ്ടി കാത്തിരിക്കുന്നു...";
 
 /* The explanation on the view that shows receiving progress */
-"DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Keep both devices near each other. Do not turn off either device and keep Signal open. Transfers are end-to-end encrypted.";
+"DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "രണ്ട് ഡിവൈസുകളും സമീപത്തായി പരസ്പരം സൂക്ഷിക്കുക.  രണ്ടും ഓഫ് ചെയ്യരുത്, Signal ഓപ്പൺ ആക്കി വയ്ക്കുക.  കൈമാറ്റം എൻഡ്-ടു-എൻഡ് എൻക്രിപ്റ്റ് ചെയ്തിരിക്കുന്നു.";
 
 /* The title on the view that shows receiving progress */
-"DEVICE_TRANSFER_RECEIVING_TITLE" = "Receiving Data";
+"DEVICE_TRANSFER_RECEIVING_TITLE" = "ഡാറ്റ സ്വീകരിക്കുന്നു";
 
 /* Text indicating that we are connecting to the scanned device */
-"DEVICE_TRANSFER_SCANNING_CONNECTING" = "ബന്ധിപ്പിക്കുന്നു…";
+"DEVICE_TRANSFER_SCANNING_CONNECTING" = "കണക്ട് ചെയ്യുന്നു";
 
 /* The explanation for the action sheet asking the user to scan the QR code to transfer */
-"DEVICE_TRANSFER_SCANNING_EXPLANATION" = "Position the QR code within the circle";
+"DEVICE_TRANSFER_SCANNING_EXPLANATION" = "QR കോഡ് വൃത്തത്തിനുള്ളിൽ ക്രമീകരിക്കുക";
 
 /* The title for the action sheet asking the user to scan the QR code to transfer */
-"DEVICE_TRANSFER_SCANNING_TITLE" = "Hold Your New Device Up to the Camera";
+"DEVICE_TRANSFER_SCANNING_TITLE" = "നിങ്ങളുടെ പുതിയ ഡിവൈസ് ക്യാമറയ്ക്ക് സമീപത്തായി പിടിക്കുക";
 
 /* The explanation on the action sheet that shows transfer progress */
-"DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "Keep both devices near each other. Do not turn off either device and keep Signal open.";
+"DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "രണ്ട് ഡിവൈസുകളും സമീപത്തായി പരസ്പരം സൂക്ഷിക്കുക. രണ്ടും ഓഫ് ചെയ്യരുത്, Signal ഓപ്പൺ ആക്കി വയ്ക്കുക.";
 
 /* The title on the action sheet that shows transfer progress */
-"DEVICE_TRANSFER_TRANSFERRING_TITLE" = "Transferring Data";
+"DEVICE_TRANSFER_TRANSFERRING_TITLE" = "ഡാറ്റ കൈമാറ്റം ചെയ്യുന്നു";
 
 /* table cell label in conversation settings */
 "DISAPPEARING_MESSAGES" = "അപ്രത്യക്ഷമാകുന്ന സന്ദേശങ്ങൾ";
@@ -1314,7 +1314,7 @@
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "സുരക്ഷാ നമ്പർ മാറ്റി.";
 
 /* Error indicating network connectivity problems. */
-"ERROR_NETWORK_FAILURE" = "നെറ്റ്‌വർക്ക് തകരാർ.";
+"ERROR_NETWORK_FAILURE" = "നെറ്റ്‌വർക്ക് തകരാർ";
 
 /* Error indicating a send failure due to a delinked application. */
 "ERROR_SENDING_DELINKED" = "നിങ്ങളുടെ ഡിവൈസ് ലിങ്ക് ചെയ്തിട്ടില്ല.  മേലിൽ സന്ദേശങ്ങൾ അയയ്ക്കുന്നതിന് ദയവായി റീ-ലിങ്ക് ചെയ്യുക.";
@@ -1374,7 +1374,7 @@
 "GENERIC_ATTACHMENT_LABEL" = "അറ്റാച്ച്‌മെന്റ്";
 
 /* Error displayed when there is a failure fetching a GIF from the remote service. */
-"GIF_PICKER_ERROR_FETCH_FAILURE" = "താത്പര്യപ്പെട്ടതായ GIF പ്രാപ്യമാക്കുന്നതിൽ പരാജയപ്പെട്ടു.  നിങ്ങൾ ഓൺലൈൻ ആണെന്നത് ദവയായി വിലയിരുത്തുക.";
+"GIF_PICKER_ERROR_FETCH_FAILURE" = "താൽപ്പര്യപ്പെട്ടതായ GIF പ്രാപ്യമാക്കുന്നതിൽ പരാജയപ്പെട്ടു.  നിങ്ങൾ ഓൺലൈൻ ആണെന്നത് ദയവായി വിലയിരുത്തുക.";
 
 /* Generic error displayed when picking a GIF */
 "GIF_PICKER_ERROR_GENERIC" = "അറിയാത്ത ഒരു തകരാർ സംഭവിച്ചിരിക്കുന്നു.";
@@ -2316,7 +2316,7 @@
 "NO_SELECTED_CONVERSATION_DESCRIPTION" = "ചാറ്റിംഗ് ആരംഭിക്കുന്നതിന് ഒരു കോൺടാക്ട് അല്ലെങ്കിൽ ഗ്രൂപ്പ് തിരെഞ്ഞെടുക്കുക.";
 
 /* Title welcoming to the app */
-"NO_SELECTED_CONVERSATION_TITLE" = "Signal-ലേക്ക് സ്വാഗതം";
+"NO_SELECTED_CONVERSATION_TITLE" = "Signal ലേക്ക് സ്വാഗതം";
 
 /* A string prompting the user to send a new mesaage to a user */
 "NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "പുതിയ സന്ദേശം അയക്കേണ്ടത്:";
@@ -3237,7 +3237,7 @@
 "SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_ONE" = "ഇത് സമധാനപൂർണ്ണമാണ്.";
 
 /* This is a message in the cat chat group. */
-"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_THREE" = "She’s walking a cat on a leash...";
+"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_THREE" = "അവർ ഒരു പൂച്ചയെ കയർ പിടിച്ച് നടത്തുന്നു...";
 
 /* This is a message. */
 "SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_TWO" = "🌅 സുപ്രഭാതം!";
@@ -3318,7 +3318,7 @@
 "SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "QR കോഡ് നിങ്ങളുടെ ഫോണിൽ സ്കാൻ ചെയ്യുക.";
 
 /* header text before the user can transfer to this device */
-"SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "Launch Signal on your old iPad to transfer your account";
+"SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "നിങ്ങളുടെ അക്കൗണ്ട് കൈമാറ്റം ചെയ്യുന്നതിന് നിങ്ങളുടെ പഴയ ഐപാഡിൽ Signal ലോഞ്ച് ചെയ്യുക";
 
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "സുരക്ഷിതമായ സെഷൻ റീസെറ്റ് ആയിരിക്കുന്നു.";
@@ -3542,6 +3542,21 @@
 /* No comment provided by engineer. */
 "SETTINGS_NOTIFICATIONS" = "അറിയിപ്പുകൾ";
 
+/* The button text for the dialog asking user to confirm their PIN to disable reminders */
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "Turn Off Reminders";
+
+/* The explanation for the dialog asking user to confirm their PIN to disable reminders */
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "Make sure you memorize or securely store your PIN as it can’t be recovered. If you forget your PIN, you may lose data when re-registering your Signal account.";
+
+/* The title for the dialog asking user to confirm their PIN to disable reminders */
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Confirm your Signal PIN";
+
+/* Footer for the 'pin reminder' section of the privacy settings when Signal PINs are available. */
+"SETTINGS_PIN_REMINDER_FOOTER" = "Reminders help you remember your PIN since it can’t be recovered. You’ll be asked less frequently over time.";
+
+/* Label for the 'pin reminder' switch of the privacy settings. */
+"SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "PIN Reminders";
+
 /* Footer for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_FOOTER" = "Signal എൻക്രിപ്റ്റ് ചെയ്ത് സ്റ്റോർ ചെയ്ത വിവരങ്ങൾ PIN കൾ സൂക്ഷിക്കുന്നു, അതിനാൽ നിങ്ങൾക്ക് മാത്രമെ അത് പ്രാപ്യമാവുകയുള്ളു.  നിങ്ങൾ Signal റീഇൻസ്റ്റാൾ ചെയ്യുമ്പോൾ, നിങ്ങളുടെ പ്രൊഫൈൽ, സെറ്റിംഗ്സ്, കോണ്ടാക്റ്റുകൾ എന്നിവ റീസ്റ്റോർ ചെയ്യപ്പെടും.";
 
@@ -3600,22 +3615,22 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "സ്ക്രീൻ ലോക്ക് സമയം കഴിഞ്ഞിരിക്കുന്നു";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Unlock Signal's screen using Touch ID, Face ID, or your iOS device passcode. You can still answer incoming calls and receive call and message notifications while Screen Lock is enabled. Signal's notification settings allow you to customize the information that is displayed.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = " ടച്ച് ID, ഫേസ് ID  അല്ലെങ്കിൽ നിങ്ങളുടെ  iOS ഡിവൈസ് പാസ്കോഡ് ഉപയോഗിച്ച് Signal ൻ്റെ സ്ക്രീൻ അൺലോക്ക് ചെയ്യുക.  നിങ്ങൾക്ക് ഇപ്പോഴും വരുന്ന കോളുകൾക്ക് ഉത്തരം നൽകാനും സ്ക്രീൻ ലോക്ക് പ്രാപ്തമാക്കിയിരിക്കുമ്പോഴും കോൾ, സന്ദേശ നോട്ടിഫിക്കേഷനുകൾ സ്വീകരിക്കാനും  കഴിയും. ഡിസ്പ്ലേ ചെയ്യേണ്ട വിവരങ്ങൾ ഏതൊക്കെയെന്ന് കസ്റ്റമൈസ് ചെയ്യാൻ Signal ൻ്റെ നോട്ടിഫിക്കേഷൻ സെറ്റിംഗ്സ് നിങ്ങളെ അനുവദിക്കുന്നു. ";
 
 /* Title for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Screen Lock";
+"SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "സ്‌ക്രീൻ ലോക്ക്";
 
 /* Label for the 'enable screen lock' switch of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "Screen Lock";
+"SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "സ്‌ക്രീൻ ലോക്ക്";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY" = "Enable Screen Security";
+"SETTINGS_SCREEN_SECURITY" = "സ്ക്രീൻ സുരക്ഷ പ്രാപ്തമാക്കുക";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY_DETAIL" = "Prevent Signal previews from appearing in the app switcher.";
+"SETTINGS_SCREEN_SECURITY_DETAIL" = "ആപ്പ് സ്വിച്ചറിൽ Signal പ്രിവ്യൂകൾ ദൃശ്യമാകുന്നത് തടയുക.";
 
 /* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS Call Integration shows Signal calls on your lock screen and in the system's call history. You may optionally show your contact's name and number. If iCloud is enabled, this call history will be shared with Apple.";
+"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "നിങ്ങളുടെ കോൾ സ്ക്രീനിലും സിസ്റ്റത്തിൻ്റെ കോൾ ചരിത്രത്തിലും iOS കോൾ ഇൻ്റഗ്രേഷൻ Signal കോളുകൾ ദൃശ്യമാക്കുന്നു.  നിങ്ങളുടെ കോൺടാക്ടിൻ്റെ പേരും നമ്പരും നിങ്ങൾക്ക് ആവശ്യമെങ്കിൽ കാണിക്കാവുന്നതാണ്.  iCloud പ്രാപ്തമാക്കിയിട്ടുണ്ടെങ്കിൽ, ഈ കോൾ ചരിത്രം ആപ്പിളുമായി പങ്കിടുന്നതാണ്.";
 
 /* Label for the notifications section of conversation settings view. */
 "SETTINGS_SECTION_NOTIFICATIONS" = "അറിയിപ്പുകൾ";
@@ -3624,13 +3639,13 @@
 "SETTINGS_SECTION_SOUNDS" = "ശബ്ദങ്ങൾ";
 
 /* settings topic header for table section */
-"SETTINGS_SECTION_TITLE_CALLING" = "Calling";
+"SETTINGS_SECTION_TITLE_CALLING" = "കോളിംഗ്";
 
 /* Section header */
-"SETTINGS_SECURITY_TITLE" = "Screen Security";
+"SETTINGS_SECURITY_TITLE" = "സ്ക്രീൻ സുരക്ഷ";
 
 /* No comment provided by engineer. */
-"SETTINGS_SUPPORT" = "Support";
+"SETTINGS_SUPPORT" = "സപ്പോർട്ട്";
 
 /* Indicates that 'two factor auth' is disabled in the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_DISABLED" = "അപ്രാപ്‌തമാക്കി";
@@ -3648,85 +3663,85 @@
 "SETTINGS_TWO_FACTOR_AUTH_TITLE" = "രജിസ്ട്രേഷൻ ലോക്ക്";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "For extra security, turn on registration lock, which will require your Signal PIN to register your phone number with Signal again.";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "അധിക സുരക്ഷയ്ക്ക് വേണ്ടി, രജിസ്ട്രേഷൻ ലോക്ക് സജീവമാക്കുക, അതിനായി നിങ്ങളുടെ ഫോൺ നമ്പർ Signal മായി വീണ്ടും രജിസ്റ്റർ ചെയ്യുന്നതിന് നിങ്ങളുടെ Signal PIN ആവശ്യമുണ്ട്.";
 
 /* Label for the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS" = "Typing Indicators";
+"SETTINGS_TYPING_INDICATORS" = "ടൈപ്പിംഗ് ഇൻഡിക്കേറ്ററുകൾ";
 
 /* An explanation of the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS_FOOTER" = "See and share when messages are being typed. This setting is optional and applies to all conversations.";
+"SETTINGS_TYPING_INDICATORS_FOOTER" = "സന്ദേശങ്ങൾ എപ്പോഴാണ് ടൈപ്പ് ചെയ്യുന്നത് എന്നുള്ള കാര്യം കാണുകയും പങ്കിടുകയും ചെയ്യുക.  ഈ സെറ്റിംഗ് ഓപ്ഷണലും എല്ലാ സംഭാഷണങ്ങൾക്കും ബാധകവുമാണ്.";
 
 /* table section label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Sealed Sender";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "സീൽ ചെയ്യപ്പെട്ട സെൻഡർ";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Display Indicators";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "ഡിസ്പ്ലേ ഇൻഡിക്കേറ്ററുകൾ";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "Show a status icon when you select \"More Info\" on messages that were delivered using sealed sender.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "സീൽ ചെയ്യപ്പെട്ട സെൻഡർ ഉപയോഗിച്ച് ഡെലിവർ ചെയ്ത സന്ദേശങ്ങൾക്ക് മേൽ  \"More Info\"  നിങ്ങൾ തിരെഞ്ഞെടുക്കുമ്പോൾ  ഒരു സ്റ്റാറ്റസ് ഐക്കൺ കാണിക്കുക.";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Allow from Anyone";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "ഏതൊരാളിൽ നിന്നും അനുവദിക്കുക";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Enable sealed sender for incoming messages from non-contacts and people with whom you have not shared your profile.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "കോൺടാക്ടുകൾ അല്ലാത്തവരിൽ നിന്നും നിങ്ങളുടെ പ്രൊഫൈൽ പങ്കിടാത്തവരായ ആളുകളിൽ നിന്നും വരുന്ന സന്ദേശങ്ങൾക്കായി സീൽ ചെയ്യപ്പെട്ട സെൻഡർ പ്രാപ്തമാക്കുക.";
 
 /* No comment provided by engineer. */
-"SETTINGS_VERSION" = "Version";
+"SETTINGS_VERSION" = "പതിപ്പ്";
 
 /* action sheet item to open native mail app */
-"SHARE_ACTION_MAIL" = "Mail";
+"SHARE_ACTION_MAIL" = "മെയിൽ";
 
 /* action sheet item to open native messages app */
 "SHARE_ACTION_MESSAGE" = "സന്ദേശം";
 
 /* action sheet item */
-"SHARE_ACTION_TWEET" = "Twitter";
+"SHARE_ACTION_TWEET" = "ട്വിറ്റർ";
 
 /* alert body when sharing file failed because of untrusted/changed identity keys */
-"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Your safety number with %@ has recently changed. You may wish to verify it in the main app before resending.";
+"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "%@ നൊപ്പമുള്ള നിങ്ങളുടെ സുരക്ഷാ നമ്പർ അടുത്തിടെ മാറിയിരിക്കുന്നു.  വീണ്ടും അയയ്ക്കുന്നതിന് മുൻപ് പ്രധാന ആപ്പിൽ നിങ്ങൾ അത് വിലയിരുത്താൻ താത്പര്യപ്പെടുന്നു.";
 
 /* Indicates that the share extension is still loading. */
 "SHARE_EXTENSION_LOADING" = "ലോഡിംഗ്…";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
-"SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Launch the Signal app to register.";
+"SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "രജിസ്റ്റർ ചെയ്യുന്നതിന് Signal ആപ്പ് ലോഞ്ച് ചെയ്യുക.";
 
 /* Title indicating that the share extension cannot be used until the user has registered in the main app. */
-"SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "Not Registered";
+"SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "രജിസ്റ്റർ ചെയ്തിട്ടില്ല";
 
 /* Message indicating that the share extension cannot be used until the main app has been launched at least once. */
-"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Launch the Signal app to update or register.";
+"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "അപ്ഡേറ്റ് ചെയ്യുന്നതിന് അല്ലെങ്കിൽ രജിസ്റ്റർ ചെയ്യുന്നതിന് Signal ആപ്പ് ലോഞ്ച് ചെയ്യുക.";
 
 /* Title indicating that the share extension cannot be used until the main app has been launched at least once. */
-"SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "Not Ready";
+"SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "റെഡി അല്ല";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Unable to Send Attachment";
+"SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "അറ്റാച്ച്‌‌മെന്റ് അയയ്ക്കാൻ കഴിയുന്നില്ല";
 
 /* Alert title */
 "SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "അപ്‌ലോഡ് ചെയ്യുന്നു...";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
-"SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "Unable to Prepare Attachment";
+"SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "അറ്റാച്ച്‌‌മെന്റ് തയ്യാറാക്കാൻ കഴിയുന്നില്ല";
 
 /* Title for the 'share extension' view. */
-"SHARE_EXTENSION_VIEW_TITLE" = "Share to Signal";
+"SHARE_EXTENSION_VIEW_TITLE" = "Signal ലേക്ക് പങ്കിടുക";
 
 /* Action sheet item */
-"SHOW_SAFETY_NUMBER_ACTION" = "Show Safety Number";
+"SHOW_SAFETY_NUMBER_ACTION" = "സുരക്ഷാ നമ്പർ കാണിക്കുക";
 
 /* notification action */
-"SHOW_THREAD_BUTTON_TITLE" = "Show Conversation";
+"SHOW_THREAD_BUTTON_TITLE" = "സംഭാഷണം കാണിക്കുക";
 
 /* body sent to contacts when inviting to Install Signal */
-"SMS_INVITE_BODY" = "I'm inviting you to install Signal! Here is the link:";
+"SMS_INVITE_BODY" = "Signal ഇൻസ്റ്റാൾ ചെയ്യാൻ ഞാൻ നിങ്ങളെ ക്ഷണിക്കുന്നു! ലിങ്ക് ഇതാ ഇവിടെ:";
 
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "ഒന്നുമില്ല";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
-"STICKER_MESSAGE_PREVIEW" = "Sticker Message";
+"STICKER_MESSAGE_PREVIEW" = "സ്റ്റിക്കർ സന്ദേശം";
 
 /* Tooltip indicating that a sticker pack was installed. */
 "STICKER_PACK_INSTALLED_TOOLTIP" = "സ്റ്റിക്കർ പായ്ക്ക് ഇൻസ്റ്റാൾ ചെയ്തു";
@@ -3738,13 +3753,13 @@
 "STICKERS_INSTALL_BUTTON" = "ഇൻസ്റ്റാൾ";
 
 /* Title for the 'available built-in stickers' section of the 'manage stickers' view. */
-"STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE" = "Signal Artist Series";
+"STICKERS_MANAGE_VIEW_AVAILABLE_BUILT_IN_PACKS_SECTION_TITLE" = "Signal ആർട്ടിസ്റ്റ് സീരീസ്";
 
 /* Title for the 'available known stickers' section of the 'manage stickers' view. */
-"STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "Stickers You Received";
+"STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "നിങ്ങൾക്ക് ലഭിച്ച സ്റ്റിക്കറുകൾ";
 
 /* Label indicating that one or more known sticker packs failed to load. */
-"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Some sticker packs failed to load";
+"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "ചില സ്റ്റിക്കർ പാക്കുകൾ ലോഡ് ചെയ്യുന്നതിൽ പരാജയപ്പെട്ടു";
 
 /* Title for the 'installed stickers' section of the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "ഇൻസ്റ്റാളുചെയ്‌ത സ്റ്റിക്കറുകൾ";
@@ -3756,31 +3771,31 @@
 "STICKERS_MANAGE_VIEW_NO_INSTALLED_PACKS" = "സ്റ്റിക്കറുകളൊന്നും ഇൻസ്റ്റാൾ ചെയ്തിട്ടില്ല";
 
 /* Label indicating that the user has no known sticker packs. */
-"STICKERS_MANAGE_VIEW_NO_KNOWN_PACKS" = "Stickers from incoming messages will appear here";
+"STICKERS_MANAGE_VIEW_NO_KNOWN_PACKS" = "വരുന്ന സന്ദേശങ്ങളിൽ നിന്നുള്ള സ്റ്റിക്കറുകൽ ഇവിടെ ദൃശ്യമാകും";
 
 /* Title for the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_TITLE" = "സ്റ്റിക്കറുകൾ";
 
 /* Default title for sticker packs. */
-"STICKERS_PACK_DEFAULT_TITLE" = "Sticker Pack";
+"STICKERS_PACK_DEFAULT_TITLE" = "സ്റ്റിക്കർ പാക്ക്";
 
 /* Title of the 'share sticker pack' view. */
-"STICKERS_PACK_SHARE_VIEW_TITLE" = "Share Sticker Pack";
+"STICKERS_PACK_SHARE_VIEW_TITLE" = "സ്റ്റിക്കർ പാക്ക് പങ്കിടുക";
 
 /* The default title for the 'sticker pack' view. */
-"STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Sticker Pack";
+"STICKERS_PACK_VIEW_DEFAULT_TITLE" = "സ്റ്റിക്കർ പാക്ക്";
 
 /* Label indicating that the sticker pack failed to load. */
-"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "Sticker Pack failed to load";
+"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "സ്റ്റിക്കർ പാക്ക് ലോഡ് ചെയ്യുന്നതിൽ പരാജയപ്പെട്ടു";
 
 /* Label for the 'uninstall sticker pack' button. */
-"STICKERS_UNINSTALL_BUTTON" = "Uninstall";
+"STICKERS_UNINSTALL_BUTTON" = "അൺഇൻസ്റ്റാൾ ചെയ്യുക";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Your safety number with %@ matches. You can mark this contact as verified.";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "%@ നൊപ്പമുള്ള നിങ്ങളുടെ സുരക്ഷാ നമ്പർ പൊരുത്തപ്പെടുന്നു.  നിങ്ങൾക്ക് ഈ കോൺടാക്ട് പരിശോധിച്ചതായി അടയാളപ്പെടുത്താം.";
 
 /* No comment provided by engineer. */
-"SUCCESSFUL_VERIFICATION_TITLE" = "Safety Number Matches!";
+"SUCCESSFUL_VERIFICATION_TITLE" = "സുരക്ഷാ നമ്പർ പൊരുത്തപ്പെടുന്നു!";
 
 /* Label for button to verify a user's safety number. */
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "സുരക്ഷാ നമ്പർ പരിശോധിക്കുക";
@@ -3789,58 +3804,58 @@
 "THIS_MESSAGE_WAS_DELETED" = "ഈ സന്ദേശം ഇല്ലാതാക്കി.";
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
-"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Member of %@, %@, and %lu additional groups";
+"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "%@, %@ ലെ അംഗം, കൂടാതെ %lu അധിക ഗ്രൂപ്പുകൾ";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
 "THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "ഈ സംഭാഷണത്തിൽ‌ നിങ്ങൾ‌ക്കായി കുറിപ്പുകൾ‌ ചേർ‌ക്കാൻ‌ കഴിയും. നിങ്ങളുടെ അക്കൗണ്ടിൽ ലിങ്കുചെയ്‌ത ഉപകരണങ്ങളുണ്ടെങ്കിൽ, പുതിയ കുറിപ്പുകൾ സമന്വയിപ്പിക്കും.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Member of %@";
+"THREAD_DETAILS_ONE_MUTUAL_GROUP" = "%@ ലെ അംഗം";
 
 /* A string indicating three mutual groups the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_THREE_MUTUAL_GROUP" = "Member of %@, %@, and %@";
+"THREAD_DETAILS_THREE_MUTUAL_GROUP" = "%@, %@, %@ ലെ അംഗം";
 
 /* A string indicating two mutual groups the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_TWO_MUTUAL_GROUP" = "Member of %@ and %@";
+"THREAD_DETAILS_TWO_MUTUAL_GROUP" = "%@ ലെയും %@ ലെയും അംഗം";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_DAYS" = "%@ days";
+"TIME_AMOUNT_DAYS" = "%@ ദിവസങ്ങൾ";
 
 /* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@d";
+"TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@ d";
 
 /* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_HOURS" = "%@ hours";
+"TIME_AMOUNT_HOURS" = "%@ മണിക്കൂറുകൾ";
 
 /* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@h";
+"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@ h";
 
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_MINUTES" = "%@ minutes";
+"TIME_AMOUNT_MINUTES" = "%@ മിനിറ്റുകൾ";
 
 /* Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5m' not '5 m'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%@m";
+"TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%@ m";
 
 /* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SECONDS" = "%@ seconds";
+"TIME_AMOUNT_SECONDS" = "%@ സെക്കൻ്റുകൾ";
 
 /* Label text below navbar button, embeds {{number of seconds}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5s' not '5 s'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%@s";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_DAY" = "%@ day";
+"TIME_AMOUNT_SINGLE_DAY" = "%@ ദിവസം";
 
 /* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_HOUR" = "%@ hour";
+"TIME_AMOUNT_SINGLE_HOUR" = "%@ മണിക്കൂർ";
 
 /* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_MINUTE" = "%@ minute";
+"TIME_AMOUNT_SINGLE_MINUTE" = "%@ മിനിറ്റ്";
 
 /* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_WEEK" = "%@ week";
+"TIME_AMOUNT_SINGLE_WEEK" = "%@ ആഴ്ച";
 
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_WEEKS" = "%@ weeks";
+"TIME_AMOUNT_WEEKS" = "%@ ആഴ്ചകൾ";
 
 /* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@w";
@@ -3852,88 +3867,88 @@
 "TXT_DELETE_TITLE" = "ഇല്ലാതാക്കുക ";
 
 /* Pressing this button moves an archived thread from the archive back to the inbox */
-"UNARCHIVE_ACTION" = "Unarchive";
+"UNARCHIVE_ACTION" = "ആർക്കൈവ് ചെയ്യാത്ത";
 
 /* Message shown in conversation view that offers to block an unknown user. */
-"UNKNOWN_CONTACT_BLOCK_OFFER" = "User not in your contacts. Would you like to block this user?";
+"UNKNOWN_CONTACT_BLOCK_OFFER" = "യൂസർ നിങ്ങളുടെ കോൺടാക്ടുകളിൽ ഇല്ല.  നിങ്ങൾക്ക് ഈ യൂസറെ ബ്ലോക്ക് ചെയ്യാൻ താല്പര്യമുണ്ടോ?";
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
-"UNKNOWN_CONTACT_NAME" = "Unknown Contact";
+"UNKNOWN_CONTACT_NAME" = "അജ്ഞാത കോൺടാക്ട്";
 
 /* Label for unknown countries. */
-"UNKNOWN_COUNTRY_NAME" = "Unknown Country";
+"UNKNOWN_COUNTRY_NAME" = "അജ്ഞാത രാജ്യം";
 
 /* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "One of your devices sent a message that can't be processed or displayed here because it uses a new Signal feature.";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "നിങ്ങളുടെ ഒരു ഡിവൈസ് ഒരു സന്ദേശം അയച്ചിട്ടുണ്ട്, അത് ഉപയോഗിക്കുന്നത് ഒരു പുതിയ Signal ഫീച്ചർ ആയതിനാൽ സന്ദേശം പ്രോസസ് ചെയ്യാനോ ഇവിടെ ഡിസ്പ്ലേ ചെയ്യാനോ സാധ്യമല്ല.";
 
 /* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. Embeds {{user's name or phone number}}. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "%@ sent you a message that can't be processed or displayed because it uses a new Signal feature.";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "%@ നിങ്ങൾക്ക് ഒരു സന്ദേശം അയച്ചിട്ടുണ്ട്, അത് ഉപയോഗിക്കുന്നത് ഒരു പുതിയ Signal ഫീച്ചർ ആയതിനാൽ സന്ദേശം പ്രോസസ് ചെയ്യാനോ ഇവിടെ ഡിസ്പ്ലേ ചെയ്യാനോ സാധ്യമല്ല.";
 
 /* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "You received a message that can't be processed or displayed because it uses a new Signal feature.";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "നിങ്ങൾക്ക് ഒരു സന്ദേശം ലഭിച്ചിട്ടുണ്ട്, അത് ഉപയോഗിക്കുന്നത് ഒരു പുതിയ Signal ഫീച്ചർ ആയതിനാൽ സന്ദേശം പ്രോസസ് ചെയ്യാനോ ഇവിടെ ഡിസ്പ്ലേ ചെയ്യാനോ സാധ്യമല്ല.";
 
 /* Label for button that lets users upgrade the app. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "Update Signal Now";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "Signal ഇപ്പോൾ അപ്ഡേറ്റ് ചെയ്യുക";
 
 /* Info message recorded in conversation history when local user has received an unknown unknown message from a linked device and has upgraded. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "Updated to the latest version of Signal. You can now receive this message type on your device.";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "Signal ൻ്റെ ഏറ്റവും പുതിയ പതിപ്പിലേക്ക് അപ്ഡേറ്റ് ചെയ്തിരിക്കുന്നു.  നിങ്ങൾക്കിപ്പോൾ ഈ തരം സന്ദേശം നിങ്ങളുടെ ഡിവൈസിൽ സ്വീകരിക്കാൻ കഴിയും.";
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. Embeds {{user's name or phone number}}. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "You can ask %@ to re-send this message now that you are using an up-to-date version of Signal.";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "നിങ്ങൾ ഇപ്പോൾ ഉപയോഗിക്കുന്നത് Signal ൻ്റെ ഏറ്റവും പുതിയ പതിപ്പായതിനാൽ %@ നോട് ഈ സന്ദേശം വീണ്ടും അയയ്ക്കാൻ നിങ്ങൾക്ക് ആവശ്യപ്പെടാവുന്നതാണ്.";
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "You can ask the sender to re-send this message now that you are using an up-to-date version of Signal.";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "നിങ്ങൾ ഇപ്പോൾ ഉപയോഗിക്കുന്നത് Signal ൻ്റെ ഏറ്റവും പുതിയ പതിപ്പായതിനാൽ അയക്കുന്ന ആളോട് ഈ സന്ദേശം വീണ്ടും അയയ്ക്കാൻ നിങ്ങൾക്ക് ആവശ്യപ്പെടാവുന്നതാണ്.";
 
 /* Label indicating an unknown user. */
 "UNKNOWN_USER" = "അജ്ഞാതം";
 
 /* Info Message when an unknown user disabled disappearing messages. */
-"UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Disappearing messages were disabled.";
+"UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "സന്ദേശങ്ങൾ അപ്രത്യക്ഷമാവുന്നത് പ്രാപ്തമല്ലാതാക്കിയിരിക്കുന്നു.";
 
 /* Info Message when an unknown user enabled disappearing messages. Embeds {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
-"UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Disappearing message time was set to %@.";
+"UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "സന്ദേശം അപ്രത്യക്ഷമാകേണ്ട സമയം %@ ആയി സജ്ജമാക്കിയിരിക്കുന്നു.";
 
 /* Indicates an unknown or unrecognizable value. */
 "UNKNOWN_VALUE" = "അജ്ഞാതം";
 
 /* button title for unlinking a device */
-"UNLINK_ACTION" = "Unlink";
+"UNLINK_ACTION" = "അൺലിങ്ക് ചെയ്യുക";
 
 /* Alert message to confirm unlinking a device */
-"UNLINK_CONFIRMATION_ALERT_BODY" = "This device will no longer be able to send or receive messages if it is unlinked.";
+"UNLINK_CONFIRMATION_ALERT_BODY" = "ഈ ഉപകരണം അൺലിങ്കു ചെയ്യുകയാണെങ്കിൽ, ഇതിന് മേലിൽ സന്ദേശങ്ങൾ അയയ്‌ക്കാനോ സ്വീകരിക്കാനോ കഴിയില്ല.";
 
 /* Alert title for confirming device deletion */
-"UNLINK_CONFIRMATION_ALERT_TITLE" = "Unlink \"%@\"?";
+"UNLINK_CONFIRMATION_ALERT_TITLE" = "\"%@\" അൺലിങ്ക് ചെയ്യട്ടെ?";
 
 /* Label warning the user that they have been unlinked from their primary device. */
-"UNLINKED_WARNING" = "Device no longer linked. Re-link Signal with your phone to continue messaging.";
+"UNLINKED_WARNING" = "ഡിവൈസ് ലിങ്ക് ചെയ്തിട്ടില്ല.  സന്ദേശങ്ങൾ അയയ്ക്കുന്നത് തുടരുന്നതിന്  നിങ്ങളുടെ ഫോണുമായി Signal റീ-ലിങ്ക് ചെയ്യുക.";
 
 /* Alert title when unlinking device fails */
-"UNLINKING_FAILED_ALERT_TITLE" = "Signal was unable to unlink your device.";
+"UNLINKING_FAILED_ALERT_TITLE" = "Signal ന് നിങ്ങളുടെ ഡിവൈസ് അൺലിങ്ക് ചെയ്യാൻ സാധിക്കുന്നില്ല.";
 
 /* Label text in device manager for a device with no name */
-"UNNAMED_DEVICE" = "Unnamed Device";
+"UNNAMED_DEVICE" = "പേരിടാത്ത ഉപകരണം";
 
 /* No comment provided by engineer. */
-"UNREGISTER_SIGNAL_FAIL" = "Failed to unregister from Signal.";
+"UNREGISTER_SIGNAL_FAIL" = "Signal ലിൽ നിന്ന് അൺരജിസ്റ്റർ ചെയ്യുന്നതിൽ പരാജയപ്പെട്ടു.";
 
 /* No comment provided by engineer. */
-"UNSUPPORTED_ATTACHMENT" = "Received unsupported attachment type.";
+"UNSUPPORTED_ATTACHMENT" = "സപ്പോർട്ട് ചെയ്യാത്ത തരത്തിലുള്ള അറ്റാച്ച്‌മെൻ്റ് സ്വീകരിച്ചിരിക്കുന്നു.";
 
 /* No comment provided by engineer. */
-"UNSUPPORTED_FEATURE_ERROR" = "Your device doesn't support this feature.";
+"UNSUPPORTED_FEATURE_ERROR" = "നിങ്ങളുടെ ഡിവൈസ് ഈ ഫീച്ചർ സപ്പോർട്ട് ചെയ്യുന്നില്ല.";
 
 /* Title for alert indicating that group members can't be removed. */
-"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "You cannot remove group members. They will either have to leave, or you can create a new group without this member.";
+"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "നിങ്ങൾക്ക് ഗ്രൂപ്പ് അംഗങ്ങളെ നീക്കം ചെയ്യാൻ കഴിയുകയില്ല.  അവർ വിട്ടു പോകണം അല്ലെങ്കിൽ ഈ അംഗം ഇല്ലാതെ നിങ്ങൾ പുതിയൊരു ഗ്രൂപ്പ് ഉണ്ടാക്കാൻ കഴിയും.";
 
 /* Title for alert indicating that group members can't be removed. */
-"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Not Supported";
+"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "സപ്പോർട്ട് ചെയ്യുന്നില്ല";
 
 /* Error indicating that a group could not be updated. */
-"UPDATE_GROUP_FAILED" = "Group could not be updated.";
+"UPDATE_GROUP_FAILED" = "ഗ്രൂപ്പ് അപ്‌ഡേറ്റ് ചെയ്യാനാകുന്നില്ല.";
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
-"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "This action couldn’t be completed. Check your internet connection and try again.";
+"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "ഈ പ്രവർത്തനം പൂർത്തിയാക്കാൻ കഴിയുന്നില്ല.  നിങ്ങളുടെ ഇൻ്റർനെറ്റ് കണക്ഷൻ പരിശോധിച്ച ശേഷം വീണ്ടും ശ്രമിക്കുക";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "നിങ്ങളുടെ പിൻ സൃഷ്ടിക്കുക";
@@ -3945,85 +3960,85 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "അവതരിപ്പിക്കുന്നു PIN-കൾ";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal will soon require iOS 11 or later. Please upgrade in Settings app >> General >> Software Update.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal ന് ഉടനെ തന്നെ iOS 11 അല്ലെങ്കിൽ അതിന് ശേഷമുള്ളത് ആവശ്യമുണ്ട്.   Settings app >> General >> Software Update ൽ പോയി അപ്‌ഗ്രേഡ് ചെയ്യുക.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_TITLE" = "Upgrade iOS";
+"UPGRADE_IOS_ALERT_TITLE" = "iOS അപ്‌ഗ്രേഡ് ചെയ്യുക";
 
 /* An explanation of how usernames work on the username view. */
-"USERNAME_DESCRIPTION" = "Usernames on Signal are optional. If you choose to create a username other Signal users will be able to find you by this username and contact you without knowing your phone number.";
+"USERNAME_DESCRIPTION" = "Signal ൽ യൂസർ പേര് ഓപ്ഷണൽ ആണ്.  നിങ്ങൾ ഒരു യൂസർ പേര് സൃഷ്ടിക്കുകയാണെങ്കിൽ, മറ്റ് Signal യൂസർമാർക്ക് നിങ്ങളുടെ ഈ യൂസർ പേര് വച്ച് നിങ്ങളെ കണ്ടുപിടിക്കാനും നിങ്ങളുടെ ഫോൺ നമ്പർ അറിയാതെ തന്നെ നിങ്ങളെ ബന്ധപ്പെടാനും സാധിക്കും.";
 
 /* Label for the username field in the username view. */
 "USERNAME_FIELD" = "യൂസേർനേമ്";
 
 /* An error indicating that the supplied username contains disallowed characters. */
-"USERNAME_INVALID_CHARACTERS_ERROR" = "Usernames may only contain a-z, 0-9, and _";
+"USERNAME_INVALID_CHARACTERS_ERROR" = "യൂസർ പേരിൽ a-Z, 0-9, _ എന്നിവ മാത്രമേ ഉൾപ്പെടുത്താനാകൂ.";
 
 /* A message indicating that username lookup failed. */
-"USERNAME_LOOKUP_ERROR" = "An error occurred while looking up the username. Please try again later.";
+"USERNAME_LOOKUP_ERROR" = "യൂസർ പേര് തിരയുന്നതിനിടയിൽ ഒരു തകരാർ സംഭവിച്ചു.  ദയവായി അൽപ്പ സമയത്തിന് ശേഷം വീണ്ടും ശ്രമിക്കുക.";
 
 /* A message indicating that the given username is not a registered signal account. Embeds {{username}} */
-"USERNAME_NOT_FOUND_FORMAT" = "%@ is not a Signal user. Make sure you’ve entered the complete username.";
+"USERNAME_NOT_FOUND_FORMAT" = "%@ ഒരു Signal യൂസർ അല്ല.  നിങ്ങൾ യൂസർ പേര് പൂർണ്ണമായും നൽകിയിട്ടുണ്ടെന്ന് ഉറപ്പാക്കുക.";
 
 /* A message indicating that the given username was not registered with signal. */
-"USERNAME_NOT_FOUND_TITLE" = "User Not Found";
+"USERNAME_NOT_FOUND_TITLE" = "യൂസറിനെ കണ്ടെത്താനാവുന്നില്ല";
 
 /* The placeholder for the username text entry in the username view. */
-"USERNAME_PLACEHOLDER" = "Enter a username";
+"USERNAME_PLACEHOLDER" = "ഒരു യൂസർ പേര് നൽകുക";
 
 /* A prefix appeneded to all usernames when displayed */
 "USERNAME_PREFIX" = "@";
 
 /* An error indicating that the supplied username cannot start with a number. */
-"USERNAME_STARTS_WITH_NUMBER_ERROR" = "Usernames may not begin with a number.";
+"USERNAME_STARTS_WITH_NUMBER_ERROR" = "യൂസർ പേര് ഒരു അക്കത്തിൽ ആരംഭിച്ചേക്കില്ല.";
 
 /* The title for the username view. */
 "USERNAME_TITLE" = "യൂസേർനേമ്";
 
 /* An error indicating that the supplied username is too short. */
-"USERNAME_TOO_SHORT_ERROR" = "Usernames must have at least 4 characters.";
+"USERNAME_TOO_SHORT_ERROR" = "യൂസർ പേരിൽ കുറഞ്ഞത് 4 അക്കങ്ങൾ/അക്ഷരങ്ങൾ ഉണ്ടായിരിക്കണം";
 
 /* An error indicating that the supplied username is in use by another user. Embeds {{requested username}}. */
-"USERNAME_UNAVAIALBE_ERROR_FORMAT" = "%@ is taken.";
+"USERNAME_UNAVAIALBE_ERROR_FORMAT" = "%@ എടുത്തിട്ടുണ്ട്.";
 
 /* Error moessage shown when a username update fails. */
-"USERNAME_VIEW_ERROR_UPDATE_FAILED" = "Username update failed.";
+"USERNAME_VIEW_ERROR_UPDATE_FAILED" = "യൂസർ പേര് അപ്ഡേറ്റ് ചെയ്യുന്നത് പരാജയപ്പെട്ടിരിക്കുന്നു.";
 
 /* error label near a field */
-"VALIDATION_ERROR_CANNOT_BE_BLANK" = "Device name cannot be blank";
+"VALIDATION_ERROR_CANNOT_BE_BLANK" = "ഡിവൈസിൻ്റെ പേര് ഒഴിച്ചിടാൻ സാധിക്കുകയില്ല";
 
 /* error label near a field */
-"VALIDATION_ERROR_TOO_LONG" = "Device name is too long";
+"VALIDATION_ERROR_TOO_LONG" = "ഡിവൈസിൻ്റെ പേരിൻ്റെ ദൈർഘ്യം കൂടുതലാണ്.";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "You marked %@ as not verified.";
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "%@ നെ പരിശോധിച്ചിട്ടില്ലെന്ന് നിങ്ങൾ അടയാളപ്പെടുത്തിരിക്കുന്നു.";
 
 /* Format for info message indicating that the verification state was unverified on another device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "You marked %@ as not verified on another device.";
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "%@ നെ പരിശോധിച്ചിട്ടില്ലെന്ന് നിങ്ങൾ മറ്റൊരു ഡിവൈസിൽ അടയാളപ്പെടുത്തിരിക്കുന്നു.";
 
 /* Format for info message indicating that the verification state was verified on this device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "You marked %@ as verified.";
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "%@ നെ പരിശോധിച്ചതായി നിങ്ങൾ അടയാളപ്പെടുത്തിരിക്കുന്നു.";
 
 /* Format for info message indicating that the verification state was verified on another device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "You marked %@ as verified on another device.";
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "%@ നെ പരിശോധിച്ചതായി നിങ്ങൾ മറ്റൊരു ഡിവൈസിൽ അടയാളപ്പെടുത്തിരിക്കുന്നു.";
 
 /* Generic message indicating that verification state changed for a given user. */
-"VERIFICATION_STATE_CHANGE_GENERIC" = "Verification state changed.";
+"VERIFICATION_STATE_CHANGE_GENERIC" = "പരിശോധനാ സാഹചര്യം മാറിയിരിക്കുന്നു.";
 
 /* Label for button or row which allows users to verify the safety number of another user. */
-"VERIFY_PRIVACY" = "View Safety Number";
+"VERIFY_PRIVACY" = "സുരക്ഷാ നമ്പർ കാണുക";
 
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
-"VERIFY_PRIVACY_MULTIPLE" = "Review Safety Numbers";
+"VERIFY_PRIVACY_MULTIPLE" = "സുരക്ഷാ നമ്പർ പുനപരിശോധിക്കുക";
 
 /* Toast alert text shown when tapping on a view-once message that has already been viewed. */
-"VIEW_ONCE_ALREADY_VIEWED_TOAST" = "You already viewed this message.";
+"VIEW_ONCE_ALREADY_VIEWED_TOAST" = "നിങ്ങൾ ഇതിനകം തന്നെ ഈ സന്ദേശം കണ്ടിരിക്കുന്നു.";
 
 /* Tooltip highlighting the view once messages button. */
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "ഈ സന്ദേശം കണ്ടതിനുശേഷം അത് അപ്രത്യക്ഷമാകാൻ ഇവിടെ ടാപ്പുചെയ്യുക.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
-"VIEW_ONCE_OUTGOING_TOAST" = "Outgoing view-once media files are automatically removed after they are sent.";
+"VIEW_ONCE_OUTGOING_TOAST" = "അയയ്ക്കുന്ന ഒറ്റ തവണ കാണാവുന്ന മീഡിയ ഫയലുകൾ അയച്ചതിനുശേഷം അവ സ്വയമേവ നീക്കംചെയ്യപ്പെടും.";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "റദ്ദാക്കുന്നതിന് സ്ലൈഡ് ചെയ്യുക";
@@ -4032,19 +4047,19 @@
 "VOICE_MESSAGE_FILE_NAME" = "വോയിസ് മെസേജ്";
 
 /* Message for the alert indicating the 'voice message' needs to be held to be held down to record. */
-"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "Tap and hold to record a voice message.";
+"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "ഒരു ശബ്‌ദ സന്ദേശം റെക്കോർഡുചെയ്യാൻ ടാപ്പുചെയ്‌ത് പിടിക്കുക.";
 
 /* Title for the alert indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "വോയിസ് മെസേജ്";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
-"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Complete setup on Signal Desktop.";
+"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Signal Desktop സെറ്റ്അപ്പ് പൂർത്തിയാക്കുക.";
 
 /* Info Message when you disabled disappearing messages. */
-"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "You disabled disappearing messages.";
+"YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "സന്ദേശങ്ങൾ അപ്രത്യക്ഷമാകുന്നത് നിങ്ങൾ സജീവമല്ലാതാക്കിയിട്ടുണ്ട്.";
 
 /* alert body shown when trying to use features in the app before completing registration-related setup. */
-"YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "You must complete setup before proceeding.";
+"YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "തുടരുന്നതിന് മുൻപ് നിങ്ങൾ സെറ്റ്അപ്പ് പൂർത്തിയാക്കേണ്ടതുണ്ട്.";
 
 /* Info Message when you disabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
-"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "You set disappearing message time to %@.";
+"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "സന്ദേശം അപ്രത്യക്ഷമാകാനുള്ള സമയം %@ ആയി നിങ്ങൾ ക്രമീകരിച്ചിരിക്കുന്നു.";
