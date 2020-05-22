@@ -3420,24 +3420,29 @@ typedef enum : NSUInteger {
                           [SignalAttachment compressVideoAsMp4WithDataSource:dataSource
                                                                      dataUTI:(NSString *)kUTTypeMPEG4];
 
-                      [compressionResult.attachmentPromise.then(^(SignalAttachment *attachment) {
-                          OWSAssertIsOnMainThread();
-                          OWSAssertDebug([attachment isKindOfClass:[SignalAttachment class]]);
+                      compressionResult.attachmentPromise
+                          .then(^(SignalAttachment *attachment) {
+                              OWSAssertIsOnMainThread();
+                              OWSAssertDebug([attachment isKindOfClass:[SignalAttachment class]]);
 
-                          if (modalActivityIndicator.wasCancelled) {
-                              return;
-                          }
-
-                          [modalActivityIndicator dismissWithCompletion:^{
-                              if (!attachment || [attachment hasError]) {
-                                  OWSLogError(@"Invalid attachment: %@.",
-                                      attachment ? [attachment errorName] : @"Missing data");
-                                  [self showErrorAlertForAttachment:attachment];
-                              } else {
-                                  [self showApprovalDialogForAttachment:attachment];
+                              if (modalActivityIndicator.wasCancelled) {
+                                  return;
                               }
-                          }];
-                      }) retainUntilComplete];
+
+                              [modalActivityIndicator dismissWithCompletion:^{
+                                  if (!attachment || [attachment hasError]) {
+                                      OWSLogError(@"Invalid attachment: %@.",
+                                          attachment ? [attachment errorName] : @"Missing data");
+                                      [self showErrorAlertForAttachment:attachment];
+                                  } else {
+                                      [self showApprovalDialogForAttachment:attachment];
+                                  }
+                              }];
+                          })
+                          .catch(^(NSError *error) {
+                              OWSLogError(@"Error: %@.", error);
+                              [self showErrorAlertForAttachment:nil];
+                          });
                   }];
 }
 
@@ -4219,14 +4224,14 @@ typedef enum : NSUInteger {
     OWSAssertDebug(message);
 
     TSGroupThread *groupThread = (TSGroupThread *)self.thread;
-    [[GroupManager sendGroupUpdateMessageObjcWithThread:groupThread].thenOn(
+    [GroupManager sendGroupUpdateMessageObjcWithThread:groupThread].thenOn(
         dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             OWSLogInfo(@"Group updated, removing group creation error.");
 
             [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
                 [message anyRemoveWithTransaction:transaction];
             }];
-        }) retainUntilComplete];
+        });
 }
 
 - (void)conversationColorWasUpdated

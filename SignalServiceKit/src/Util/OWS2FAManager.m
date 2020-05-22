@@ -8,6 +8,7 @@
 #import "SSKEnvironment.h"
 #import "TSAccountManager.h"
 #import "TSNetworkManager.h"
+#import <PromiseKit/AnyPromise.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -122,7 +123,9 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
                                                                  object:nil
                                                                userInfo:nil];
 
-        [[self.tsAccountManager updateAccountAttributes] retainUntilComplete];
+        [self.tsAccountManager updateAccountAttributes].catch(^(NSError *error) {
+            OWSLogError(@"Error: %@", error);
+        });
     }];
 }
 
@@ -163,7 +166,9 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
                                                                  object:nil
                                                                userInfo:nil];
 
-        [[self.tsAccountManager updateAccountAttributes] retainUntilComplete];
+        [self.tsAccountManager updateAccountAttributes].catch(^(NSError *error) {
+            OWSLogError(@"Error: %@", error);
+        });
     }];
 }
 
@@ -180,25 +185,25 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
         case OWS2FAMode_V2: {
             // Enabling V2 2FA doesn't inherently enable registration lock,
             // it's managed by a separate setting.
-            [[OWSKeyBackupService generateAndBackupKeysWithPin:pin]
-                    .then(^{
-                        OWSAssertIsOnMainThread();
+            [OWSKeyBackupService generateAndBackupKeysWithPin:pin]
+                .then(^{
+                    OWSAssertIsOnMainThread();
 
-                        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-                            [self markEnabledWithTransaction:transaction];
-                        }];
+                    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                        [self markEnabledWithTransaction:transaction];
+                    }];
 
-                        if (success) {
-                            success();
-                        }
-                    })
-                    .catch(^(NSError *error) {
-                        OWSAssertIsOnMainThread();
+                    if (success) {
+                        success();
+                    }
+                })
+                .catch(^(NSError *error) {
+                    OWSAssertIsOnMainThread();
 
-                        if (failure) {
-                            failure(error);
-                        }
-                    }) retainUntilComplete];
+                    if (failure) {
+                        failure(error);
+                    }
+                });
             break;
         }
         case OWS2FAMode_V1: {
@@ -237,11 +242,12 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
     switch (self.mode) {
         case OWS2FAMode_V2:
         {
-            [[OWSKeyBackupService deleteKeys]
-                    .then(^{
-                        [self disableRegistrationLockV2];
-                    })
-                    .then(^() {
+            [OWSKeyBackupService deleteKeys]
+                .then(^{
+                    [self disableRegistrationLockV2];
+                })
+                .then(
+                    ^() {
                         OWSAssertIsOnMainThread();
 
                         [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
@@ -252,13 +258,13 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
                             success();
                         }
                     })
-                    .catch(^(NSError *error) {
-                        OWSAssertIsOnMainThread();
+                .catch(^(NSError *error) {
+                    OWSAssertIsOnMainThread();
 
-                        if (failure) {
-                            failure(error);
-                        }
-                    }) retainUntilComplete];
+                    if (failure) {
+                        failure(error);
+                    }
+                });
             break;
         }
         case OWS2FAMode_V1:

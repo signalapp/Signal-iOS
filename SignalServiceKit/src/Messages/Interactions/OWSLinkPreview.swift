@@ -701,7 +701,7 @@ public class OWSLinkPreviewManager: NSObject {
                                 resolver.fulfill(data)
                             }.catch(on: DispatchQueue.global()) { (error) in
                                 resolver.reject(error)
-                            }.retainUntilComplete()
+                            }
         })
         return promise
     }

@@ -116,7 +116,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)sendContactsSyncMessage
 {
-    [[self.syncManager syncAllContacts] retainUntilComplete];
+    [self.syncManager syncAllContacts];
 }
 
 + (void)sendGroupSyncMessage

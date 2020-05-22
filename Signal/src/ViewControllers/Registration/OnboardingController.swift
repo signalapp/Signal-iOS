@@ -686,7 +686,7 @@ public class OnboardingController: NSObject {
                 modal.dismiss {
                     self.requestingVerificationDidFail(viewController: fromViewController, error: error)
                 }
-            }.retainUntilComplete()
+            }
         }
     }
 
@@ -814,7 +814,7 @@ public class OnboardingController: NSObject {
                 if self.hasPendingRestoration {
                     self.accountManager.performInitialStorageServiceRestore()
                         .ensure { completion(.success) }
-                        .retainUntilComplete()
+
                 } else {
                     // We've restored our keys, we can now re-run this method to post our registration token
                     self.submitVerification(fromViewController: fromViewController, completion: completion)
@@ -837,7 +837,7 @@ public class OnboardingController: NSObject {
                     // have to retry after the registration lock window expires.
                     completion(.exhaustedV2RegistrationLockAttempts)
                 }
-            }.retainUntilComplete()
+            }
 
             return
         }
@@ -894,7 +894,7 @@ public class OnboardingController: NSObject {
                                                                                                 completion: completion)
                                                                     })
                                                                 }
-                                                            }).retainUntilComplete()
+                                                            })
         }
     }
 

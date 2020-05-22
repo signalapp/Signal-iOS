@@ -10,6 +10,7 @@
 #import "SSKEnvironment.h"
 #import "TSContactThread.h"
 #import "TSYapDatabaseObject.h"
+#import <PromiseKit/AnyPromise.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -159,7 +160,6 @@ typedef NS_ENUM(NSUInteger, OWSReceiptType) {
                     [self process];
                 });
         });
-        [completionPromise retainUntilComplete];
     });
 }
 

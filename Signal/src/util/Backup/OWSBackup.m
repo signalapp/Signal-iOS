@@ -491,16 +491,16 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
         return failWithUnexpectedError();
     }
 
-    [[OWSBackupAPI ensureCloudKitAccessObjc]
-            .thenInBackground(^{
-                return [OWSBackupAPI checkForManifestInCloudObjcWithRecipientId:recipientId];
-            })
-            .then(^(NSNumber *value) {
-                success(value.boolValue);
-            })
-            .catch(^(NSError *error) {
-                failure(error);
-            }) retainUntilComplete];
+    [OWSBackupAPI ensureCloudKitAccessObjc]
+        .thenInBackground(^{
+            return [OWSBackupAPI checkForManifestInCloudObjcWithRecipientId:recipientId];
+        })
+        .then(^(NSNumber *value) {
+            success(value.boolValue);
+        })
+        .catch(^(NSError *error) {
+            failure(error);
+        });
 }
 
 - (void)tryToImportBackup

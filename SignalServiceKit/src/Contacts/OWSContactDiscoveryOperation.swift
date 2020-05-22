@@ -257,7 +257,7 @@ class CDSBatchOperation: OWSOperation {
             default:
                 self.reportError(withUndefinedRetry: error)
             }
-        }.retainUntilComplete()
+        }
     }
 
     private func makeContactDiscoveryRequest(phoneNumbersToLookup: [String]) -> Promise<Set<CDSRegisteredContact>> {

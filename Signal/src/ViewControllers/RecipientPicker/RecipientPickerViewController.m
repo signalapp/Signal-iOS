@@ -205,16 +205,18 @@ const NSUInteger kMinimumSearchLength = 2;
     OWSAssertIsOnMainThread();
     OWSLogInfo(@"beggining refreshing.");
 
-    [[self.contactsManager userRequestedSystemContactsRefresh].then(^{
-        if (TSAccountManager.sharedInstance.isRegisteredPrimaryDevice) {
-            return [AnyPromise promiseWithValue:nil];
-        }
+    [self.contactsManager userRequestedSystemContactsRefresh]
+        .then(^{
+            if (TSAccountManager.sharedInstance.isRegisteredPrimaryDevice) {
+                return [AnyPromise promiseWithValue:nil];
+            }
 
-        return [SSKEnvironment.shared.syncManager sendAllSyncRequestMessagesWithTimeout:20];
-    }).ensure(^{
-        OWSLogInfo(@"ending refreshing.");
-        [refreshControl endRefreshing];
-    }) retainUntilComplete];
+            return [SSKEnvironment.shared.syncManager sendAllSyncRequestMessagesWithTimeout:20];
+        })
+        .ensure(^{
+            OWSLogInfo(@"ending refreshing.");
+            [refreshControl endRefreshing];
+        });
 }
 
 - (UIView *)createNoSignalContactsView

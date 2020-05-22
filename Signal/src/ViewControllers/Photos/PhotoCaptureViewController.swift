@@ -54,7 +54,7 @@ class PhotoCaptureViewController: OWSViewController {
         UIDevice.current.endGeneratingDeviceOrientationNotifications()
         photoCapture.stopCapture().done {
             Logger.debug("stopCapture completed")
-        }.retainUntilComplete()
+        }
     }
 
     // MARK: - Overrides
@@ -349,15 +349,19 @@ class PhotoCaptureViewController: OWSViewController {
         }
         photoCapture.switchCamera().catch { error in
             self.showFailureUI(error: error)
-        }.retainUntilComplete()
+        }
     }
 
     @objc
     func didTapFlashMode() {
         Logger.debug("")
-        photoCapture.switchFlashMode().done {
+        firstly {
+            photoCapture.switchFlashMode()
+        }.done {
             self.updateFlashModeControl()
-        }.retainUntilComplete()
+        }.catch { error in
+            owsFailDebug("Error: \(error)")
+        }
     }
 
     @objc
@@ -501,12 +505,14 @@ class PhotoCaptureViewController: OWSViewController {
             return captureReady()
         }
 
-        photoCapture.startVideoCapture()
-            .done(captureReady)
-            .catch { [weak self] error in
-                guard let self = self else { return }
-                self.showFailureUI(error: error)
-            }.retainUntilComplete()
+        firstly {
+            photoCapture.startVideoCapture()
+        }.done {
+            captureReady()
+        }.catch { [weak self] error in
+            guard let self = self else { return }
+            self.showFailureUI(error: error)
+        }
     }
 
     private func showFailureUI(error: Error) {

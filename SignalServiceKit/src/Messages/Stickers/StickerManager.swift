@@ -289,12 +289,14 @@ public class StickerManager: NSObject {
     private class func tryToDownloadAndSaveStickerPack(stickerPackInfo: StickerPackInfo,
                                                        installMode: InstallMode,
                                                        wasLocallyInitiated: Bool) {
-        return tryToDownloadStickerPack(stickerPackInfo: stickerPackInfo)
+        tryToDownloadStickerPack(stickerPackInfo: stickerPackInfo)
             .done(on: DispatchQueue.global()) { (stickerPack) in
                 self.upsertStickerPack(stickerPack: stickerPack,
                                        installMode: installMode,
                                        wasLocallyInitiated: wasLocallyInitiated)
-            }.retainUntilComplete()
+        }.catch { error in
+            Logger.verbose("Error: \(error)")
+        }
     }
 
     // This method is public so that we can download "transient" (uninstalled) sticker packs.
@@ -349,7 +351,7 @@ public class StickerManager: NSObject {
 
         // If the pack is already installed, make sure all stickers are installed.
         if stickerPack.isInstalled {
-            installStickerPackContents(stickerPack: stickerPack, transaction: transaction).retainUntilComplete()
+            installStickerPackContents(stickerPack: stickerPack, transaction: transaction)
         } else {
             switch installMode {
             case .doNotInstall:
@@ -384,7 +386,7 @@ public class StickerManager: NSObject {
 
         stickerPack.update(withIsInstalled: true, transaction: transaction)
 
-        installStickerPackContents(stickerPack: stickerPack, transaction: transaction).retainUntilComplete()
+        installStickerPackContents(stickerPack: stickerPack, transaction: transaction)
 
         if wasLocallyInitiated {
             enqueueStickerSyncMessage(operationType: .install,
@@ -393,6 +395,7 @@ public class StickerManager: NSObject {
         }
     }
 
+    @discardableResult
     private class func installStickerPackContents(stickerPack: StickerPack,
                                                   transaction: SDSAnyReadTransaction,
                                                   onlyInstallCover: Bool = false) -> Promise<Void> {
@@ -995,7 +998,7 @@ public class StickerManager: NSObject {
         DispatchQueue.global().async {
             databaseStorage.read { (transaction) in
                 for stickerPack in self.allStickerPacks(transaction: transaction) {
-                    ensureDownloads(forStickerPack: stickerPack, transaction: transaction).retainUntilComplete()
+                    ensureDownloads(forStickerPack: stickerPack, transaction: transaction)
                 }
             }
         }
@@ -1011,12 +1014,13 @@ public class StickerManager: NSObject {
                     resolver.fulfill(())
                 }.catch { (error) in
                     resolver.reject(error)
-                }.retainUntilComplete()
+                }
             }
         }
         return promise
     }
 
+    @discardableResult
     private class func ensureDownloads(forStickerPack stickerPack: StickerPack, transaction: SDSAnyReadTransaction) -> Promise<Void> {
         // TODO: As an optimization, we could flag packs as "complete" if we know all
         // of their stickers are installed.

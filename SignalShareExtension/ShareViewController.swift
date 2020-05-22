@@ -128,7 +128,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
 
             Logger.debug("setup is slow - showing loading screen")
             strongSelf.showPrimaryViewController(loadViewController)
-            }.retainUntilComplete()
+            }
 
         // We don't need to use "screen protection" in the SAE.
 
@@ -570,7 +570,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
                                     self.shareViewWasCancelled()
             }
             owsFailDebug("building attachment failed with error: \(error)")
-        }.retainUntilComplete()
+        }
     }
 
     private func presentScreenLock() {

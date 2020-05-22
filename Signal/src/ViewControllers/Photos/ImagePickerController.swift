@@ -442,7 +442,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         UIView.animate(.promise, duration: 0.25, delay: 0, options: .curveEaseInOut) {
             collectionPickerView.superview?.layoutIfNeeded()
             self.titleView.rotateIcon(.up)
-        }.retainUntilComplete()
+        }
     }
 
     func hideCollectionPicker() {
@@ -457,7 +457,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         }.done { _ in
             self.collectionPickerController.view.removeFromSuperview()
             self.collectionPickerController.removeFromParent()
-        }.retainUntilComplete()
+        }
     }
 
     // MARK: - PhotoCollectionPickerDelegate

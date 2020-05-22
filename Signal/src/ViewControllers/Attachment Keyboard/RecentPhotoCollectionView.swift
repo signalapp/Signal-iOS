@@ -123,9 +123,10 @@ extension RecentPhotosCollectionView: UICollectionViewDelegate {
             self?.recentPhotosDelegate?.didSelectRecentPhoto(asset: asset, attachment: attachment)
         }.ensure { [weak self] in
             self?.fetchingAttachmentIndex = nil
-        }.catch { _ in
+        }.catch { error in
+            Logger.error("Error: \(error)")
             OWSActionSheets.showActionSheet(title: NSLocalizedString("IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS", comment: "alert title"))
-        }.retainUntilComplete()
+        }
     }
 }
 

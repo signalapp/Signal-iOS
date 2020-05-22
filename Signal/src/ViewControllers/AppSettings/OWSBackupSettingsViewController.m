@@ -73,19 +73,19 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)updateICloudStatus
 {
     __weak OWSBackupSettingsViewController *weakSelf = self;
-    [[self.backup ensureCloudKitAccess]
-            .then(^{
-                OWSAssertIsOnMainThread();
+    [self.backup ensureCloudKitAccess]
+        .then(^{
+            OWSAssertIsOnMainThread();
 
-                weakSelf.iCloudError = nil;
-                [weakSelf updateTableContents];
-            })
-            .catch(^(NSError *error) {
-                OWSAssertIsOnMainThread();
+            weakSelf.iCloudError = nil;
+            [weakSelf updateTableContents];
+        })
+        .catch(^(NSError *error) {
+            OWSAssertIsOnMainThread();
 
-                weakSelf.iCloudError = error;
-                [weakSelf updateTableContents];
-            }) retainUntilComplete];
+            weakSelf.iCloudError = error;
+            [weakSelf updateTableContents];
+        });
 }
 
 #pragma mark - Table Contents

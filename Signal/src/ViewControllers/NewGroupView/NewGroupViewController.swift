@@ -40,7 +40,7 @@ public extension NewGroupViewController {
 
                                                                 NewGroupViewController.showCreateErrorUI(error: error)
                                                             }
-                                                        }.retainUntilComplete()
+                                                        }
         }
     }
 

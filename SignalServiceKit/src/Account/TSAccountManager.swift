@@ -110,7 +110,7 @@ public extension TSAccountManager {
             Logger.info("Success.")
         }.catch(on: DispatchQueue.global()) { error in
             Logger.warn("Error: \(error).")
-        }.retainUntilComplete()
+        }
     }
 
     // Performs a single attempt to update the account attributes.

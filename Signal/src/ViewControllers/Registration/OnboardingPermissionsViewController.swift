@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -69,14 +69,18 @@ public class OnboardingPermissionsViewController: OnboardingBaseViewController {
     private func requestAccess() {
         Logger.info("")
 
-        requestContactsAccess().then { _ in
+        firstly {
+            requestContactsAccess()
+        }.then { _ in
             return PushRegistrationManager.shared.registerUserNotificationSettings()
         }.done { [weak self] in
             guard let self = self else {
                 return
             }
             self.onboardingController.onboardingPermissionsDidComplete(viewController: self)
-            }.retainUntilComplete()
+        }.catch { error in
+            owsFailDebug("Error: \(error)")
+        }
     }
 
     private func requestContactsAccess() -> Promise<Void> {

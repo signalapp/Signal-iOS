@@ -696,9 +696,13 @@ NS_ASSUME_NONNULL_BEGIN
                               }];
                           [self.navigationController pushViewController:vc animated:YES];
                       } else {
-                          [[OWS2FAManager.sharedManager enableRegistrationLockV2].then(^{
-                              [self updateTableContents];
-                          }) retainUntilComplete];
+                          [OWS2FAManager.sharedManager enableRegistrationLockV2]
+                              .then(^{
+                                  [self updateTableContents];
+                              })
+                              .catch(^(NSError *error) {
+                                  OWSLogError(@"Error: %@", error);
+                              });
                       }
                   }];
         [actionSheet addAction:turnOnAction];
@@ -713,9 +717,13 @@ NS_ASSUME_NONNULL_BEGIN
                                                          @"Action to turn off registration lock")
                                                style:ActionSheetActionStyleDestructive
                                              handler:^(ActionSheetAction *action) {
-                                                 [[OWS2FAManager.sharedManager disableRegistrationLockV2].then(^{
-                                                     [self updateTableContents];
-                                                 }) retainUntilComplete];
+                                                 [OWS2FAManager.sharedManager disableRegistrationLockV2]
+                                                     .then(^{
+                                                         [self updateTableContents];
+                                                     })
+                                                     .catch(^(NSError *error) {
+                                                         OWSLogError(@"Error: %@", error);
+                                                     });
                                              }];
         [actionSheet addAction:turnOffAction];
     }

@@ -219,7 +219,7 @@ public extension GroupsV2Impl {
                         markAsFailed()
                         return resolver.fulfill(.unretryableFailure)
                     }
-                }.retainUntilComplete()
+                }
             }
         }
     }
@@ -257,7 +257,7 @@ public extension GroupsV2Impl {
                 let nsError: NSError = error as NSError
                 nsError.isRetryable = false
                 self.reportError(nsError)
-            }.retainUntilComplete()
+            }
         }
 
         public override func didFail(error: Error) {

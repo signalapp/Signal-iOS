@@ -47,7 +47,7 @@ class DebugUICalling: DebugUIPage {
                     Logger.debug("Successfully sent hangup call message to \(thread.contactAddress)")
                 }.catch { error in
                     Logger.error("failed to send hangup call message to \(thread.contactAddress) with error: \(error)")
-                }.retainUntilComplete()
+                }
             },
             OWSTableItem(title: "Send 'busy' for old call") { [weak self] in
                 guard let strongSelf = self else { return }
@@ -68,7 +68,7 @@ class DebugUICalling: DebugUIPage {
                     Logger.debug("Successfully sent busy call message to \(thread.contactAddress)")
                 }.catch { error in
                     Logger.error("failed to send busy call message to \(thread.contactAddress) with error: \(error)")
-                }.retainUntilComplete()
+                }
             }
         ]
 

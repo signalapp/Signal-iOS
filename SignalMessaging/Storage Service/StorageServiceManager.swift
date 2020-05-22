@@ -739,7 +739,7 @@ class StorageServiceOperation: OWSOperation {
             self.mergeLocalManifest(withRemoteManifest: conflictingManifest, backupAfterSuccess: true)
         }.catch { error in
             self.reportError(withUndefinedRetry: error)
-        }.retainUntilComplete()
+        }
     }
 
     private func buildManifestRecord(manifestVersion: UInt64,
@@ -796,7 +796,7 @@ class StorageServiceOperation: OWSOperation {
             }
 
             self.reportError(withUndefinedRetry: error)
-        }.retainUntilComplete()
+        }
     }
 
     private func createNewManifest(version: UInt64) {
@@ -918,7 +918,7 @@ class StorageServiceOperation: OWSOperation {
             self.mergeLocalManifest(withRemoteManifest: conflictingManifest, backupAfterSuccess: true)
         }.catch { error in
             self.reportError(withUndefinedRetry: error)
-        }.retainUntilComplete()
+        }
     }
 
     // MARK: - Conflict Resolution
@@ -1184,7 +1184,7 @@ class StorageServiceOperation: OWSOperation {
             }
 
             self.reportError(withUndefinedRetry: error)
-        }.retainUntilComplete()
+        }
     }
 
     // MARK: - Clean Up Unknown Identifiers

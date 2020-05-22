@@ -45,7 +45,7 @@ public class RotateSignedPreKeyOperation: OWSOperation {
             self.reportSuccess()
         }.catch { error in
             self.reportError(withUndefinedRetry: error)
-        }.retainUntilComplete()
+        }
     }
 
     override public func didFail(error: Error) {

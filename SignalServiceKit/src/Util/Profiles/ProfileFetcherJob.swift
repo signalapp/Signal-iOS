@@ -149,8 +149,11 @@ public class ProfileFetcherJob: NSObject {
     public class func fetchAndUpdateProfile(address: SignalServiceAddress, ignoreThrottling: Bool) {
         let subject = ProfileRequestSubject.address(address: address)
         let options = ProfileFetchOptions(ignoreThrottling: ignoreThrottling)
-        ProfileFetcherJob(subject: subject, options: options).runAsPromise()
-            .retainUntilComplete()
+        firstly {
+            ProfileFetcherJob(subject: subject, options: options).runAsPromise()
+        }.catch { error in
+            owsFailDebug("Error: \(error)")
+        }
     }
 
     @objc
@@ -171,7 +174,7 @@ public class ProfileFetcherJob: NSObject {
             default:
                 failure(error)
             }
-        }.retainUntilComplete()
+        }
     }
 
     private init(subject: ProfileRequestSubject,
@@ -319,9 +322,9 @@ public class ProfileFetcherJob: NSObject {
                     resolver.fulfill(fetchedProfile)
                 }.catch(on: DispatchQueue.global()) { error in
                     resolver.reject(error)
-                }.retainUntilComplete()
+                }
             }
-        }.retainUntilComplete()
+        }
         return promise
     }
 

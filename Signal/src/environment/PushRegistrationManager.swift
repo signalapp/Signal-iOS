@@ -58,7 +58,7 @@ public enum PushRegistrationError: Error {
     public func requestPushTokens() -> Promise<(pushToken: String, voipToken: String)> {
         Logger.info("")
 
-        return firstly {
+        return firstly { () -> Promise<Void> in
             return self.registerUserNotificationSettings()
         }.then { (_) -> Promise<(pushToken: String, voipToken: String)> in
             guard !Platform.isSimulator else {
@@ -110,7 +110,7 @@ public enum PushRegistrationError: Error {
                 preauthChallengeResolver.fulfill(challenge)
                 self.preauthChallengeResolver = nil
             } else {
-                self.messageFetcherJob.run().promise.retainUntilComplete()
+                self.messageFetcherJob.run()
             }
         }
     }

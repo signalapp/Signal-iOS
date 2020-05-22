@@ -48,7 +48,7 @@ public class ContactSupportAlert {
                 }.catch { error in
                     guard !modal.wasCancelled else { return }
                     showError(error, emailSubject: emailSubject, fromViewController: fromViewController)
-                }.retainUntilComplete()
+                }
             }
         }
 

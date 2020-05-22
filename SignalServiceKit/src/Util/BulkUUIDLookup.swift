@@ -185,7 +185,7 @@ public class BulkUUIDLookup: NSObject {
 
                 self.process()
             }
-        }.retainUntilComplete()
+        }
     }
 
     private func shouldUpdatePhoneNumber(_ phoneNumber: String) -> Bool {

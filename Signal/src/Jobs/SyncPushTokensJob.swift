@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import PromiseKit
@@ -33,7 +33,7 @@ class SyncPushTokensJob: NSObject {
     func run() -> Promise<Void> {
         Logger.info("Starting.")
 
-        let runPromise = firstly {
+        return firstly {
             return self.pushRegistrationManager.requestPushTokens()
         }.then { (pushToken: String, voipToken: String) -> Promise<Void> in
             Logger.info("finished: requesting push tokens")
@@ -66,18 +66,19 @@ class SyncPushTokensJob: NSObject {
         }.done {
             Logger.info("completed successfully.")
         }
-
-        runPromise.retainUntilComplete()
-
-        return runPromise
     }
 
     // MARK: - objc wrappers, since objc can't use swift parameterized types
 
     @objc
-    class func run(accountManager: AccountManager, preferences: OWSPreferences) -> AnyPromise {
-        let promise: Promise<Void> = self.run(accountManager: accountManager, preferences: preferences)
-        return AnyPromise(promise)
+    class func run(accountManager: AccountManager, preferences: OWSPreferences) {
+        firstly {
+            self.run(accountManager: accountManager, preferences: preferences)
+        }.done {
+            Logger.info("completed successfully.")
+        }.catch { error in
+            Logger.error("Error: \(error).")
+        }
     }
 
     @objc
@@ -93,19 +94,19 @@ class SyncPushTokensJob: NSObject {
 
         var didTokensChange = false
 
-        if (pushToken != self.preferences.getPushToken()) {
+        if pushToken != self.preferences.getPushToken() {
             Logger.info("Recording new plain push token")
             self.preferences.setPushToken(pushToken)
             didTokensChange = true
         }
 
-        if (voipToken != self.preferences.getVoipToken()) {
+        if voipToken != self.preferences.getVoipToken() {
             Logger.info("Recording new voip token")
             self.preferences.setVoipToken(voipToken)
             didTokensChange = true
         }
 
-        if (didTokensChange) {
+        if didTokensChange {
             NotificationCenter.default.postNotificationNameAsync(SyncPushTokensJob.PushTokensDidChange, object: nil)
         }
     }

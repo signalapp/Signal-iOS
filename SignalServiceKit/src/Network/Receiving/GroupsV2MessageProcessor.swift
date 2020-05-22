@@ -533,7 +533,7 @@ class IncomingGroupsV2MessageQueue: NSObject {
                     completion([jobInfo.job], false, transaction)
                 }
             }
-        }.retainUntilComplete()
+        }
     }
 
     private func updateGroupPromise(jobInfo: IncomingGroupsV2MessageJobInfo) -> Promise<UpdateOutcome> {
@@ -657,7 +657,7 @@ class IncomingGroupsV2MessageQueue: NSObject {
                     owsFailDebug("Error: \(error)")
                     return resolver.fulfill(.failureShouldFailoverToService)
                 }
-            }.retainUntilComplete()
+            }
         }
         return promise
     }

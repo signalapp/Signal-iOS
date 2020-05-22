@@ -261,7 +261,7 @@ public extension JobQueue {
 
             self.isSetup.set(true)
             self.startWorkWhenAppIsReady()
-        }.retainUntilComplete()
+        }
     }
 
     func remainingRetries(durableOperation: DurableOperationType) -> UInt {

@@ -140,7 +140,7 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
         }.catch { error in
             Logger.error("sending error: \(error.localizedDescription)")
             self.reportError(withUndefinedRetry: error)
-        }.retainUntilComplete()
+        }
     }
 
     override public func didSucceed() {

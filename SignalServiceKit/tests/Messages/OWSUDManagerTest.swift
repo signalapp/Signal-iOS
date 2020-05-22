@@ -285,7 +285,7 @@ class OWSUDManagerTest: SSKBaseTestSwift {
             }
         }.done {
             completed.fulfill()
-        }.retainUntilComplete()
+        }
         self.wait(for: [completed], timeout: 1.0)
     }
     // MARK: - Util

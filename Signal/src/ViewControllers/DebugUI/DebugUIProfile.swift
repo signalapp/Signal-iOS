@@ -67,7 +67,7 @@ class DebugUIProfile: DebugUIPage {
                     Logger.info("Successfully sent profile key message to thread: \(String(describing: aThread))")
                 }.catch { _ in
                     owsFailDebug("Failed to send profile key message to thread: \(String(describing: aThread))")
-                }.retainUntilComplete()
+                }
             }
         ].compactMap { $0 }
 

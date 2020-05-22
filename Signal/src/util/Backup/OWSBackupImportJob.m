@@ -92,39 +92,38 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
 
     [self updateProgressWithDescription:nil progress:nil];
 
-    [[self.backup ensureCloudKitAccess]
-            .thenInBackground(^{
-                [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_IMPORT_PHASE_CONFIGURATION",
-                                                        @"Indicates that the backup import is being configured.")
-                                           progress:nil];
+    [self.backup ensureCloudKitAccess]
+        .thenInBackground(^{
+            [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_IMPORT_PHASE_CONFIGURATION",
+                                                    @"Indicates that the backup import is being configured.")
+                                       progress:nil];
 
-                return [self configureImport];
-            })
-            .thenInBackground(^{
-                if (self.isComplete) {
-                    return
-                        [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Backup import no longer active.")];
-                }
+            return [self configureImport];
+        })
+        .thenInBackground(^{
+            if (self.isComplete) {
+                return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Backup import no longer active.")];
+            }
 
-                [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_IMPORT_PHASE_IMPORT",
-                                                        @"Indicates that the backup import data is being imported.")
-                                           progress:nil];
+            [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_IMPORT_PHASE_IMPORT",
+                                                    @"Indicates that the backup import data is being imported.")
+                                       progress:nil];
 
-                return [self downloadAndProcessManifestWithBackupIO:self.backupIO];
-            })
-            .thenInBackground(^(OWSBackupManifestContents *manifest) {
-                OWSCAssertDebug(manifest.databaseItems.count > 0);
-                OWSCAssertDebug(manifest.attachmentsItems);
+            return [self downloadAndProcessManifestWithBackupIO:self.backupIO];
+        })
+        .thenInBackground(^(OWSBackupManifestContents *manifest) {
+            OWSCAssertDebug(manifest.databaseItems.count > 0);
+            OWSCAssertDebug(manifest.attachmentsItems);
 
-                self.manifest = manifest;
+            self.manifest = manifest;
 
-                return [self downloadAndProcessImport];
-            })
-            .catch(^(NSError *error) {
-                [self failWithErrorDescription:
-                          NSLocalizedString(@"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT",
-                              @"Error indicating the backup import could not import the user's data.")];
-            }) retainUntilComplete];
+            return [self downloadAndProcessImport];
+        })
+        .catch(^(NSError *error) {
+            [self
+                failWithErrorDescription:NSLocalizedString(@"BACKUP_IMPORT_ERROR_COULD_NOT_IMPORT",
+                                             @"Error indicating the backup import could not import the user's data.")];
+        });
 }
 
 - (AnyPromise *)downloadAndProcessImport

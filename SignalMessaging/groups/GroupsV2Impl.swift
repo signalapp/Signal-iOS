@@ -71,7 +71,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                 GroupManager.ensureLocalProfileHasCommitmentIfNecessary()
             }.catch { error in
                 Logger.warn("Local profile update failed with error: \(error)")
-            }.retainUntilComplete()
+            }
 
             Self.enqueueRestoreGroupPass()
 
@@ -123,7 +123,11 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         AppReadiness.runNowOrWhenAppDidBecomeReadyPolite {
             if FeatureFlags.versionedProfiledUpdate,
                 self.tsAccountManager.isRegisteredAndReady {
-                self.reuploadLocalProfilePromise().retainUntilComplete()
+                firstly {
+                    self.reuploadLocalProfilePromise()
+                }.catch { error in
+                    Logger.warn("Error: \(error)")
+                }
             }
         }
     }
@@ -639,7 +643,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                     }
 
                     resolver.reject(error)
-                }.retainUntilComplete()
+                }
 
                 let promise = downloadPromise.map(on: DispatchQueue.global()) { (avatarData: Data) -> Data in
                     guard avatarData.count > 0 else {
@@ -772,7 +776,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                             resolver.fulfill(response)
                         }.catch(on: DispatchQueue.global()) { (error: Error) in
                             resolver.reject(error)
-                        }.retainUntilComplete()
+                        }
                     } else {
                         resolver.reject(error)
                     }
@@ -844,7 +848,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                     // Unexpected error.
                     resolver.reject(error)
                 }
-            }.retainUntilComplete()
+            }
             return promise
         }
     }
@@ -942,7 +946,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             } else {
                 owsFailDebug("Error: \(error)")
             }
-        }.retainUntilComplete()
+        }
     }
 
     // MARK: - ProfileKeyCredentials

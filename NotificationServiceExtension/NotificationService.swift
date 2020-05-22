@@ -256,6 +256,6 @@ class NotificationService: UNNotificationServiceExtension {
             Logger.info("Message fetch completed.")
             self.isProcessingMessages.set(false)
             self.completeSilenty()
-        }.retainUntilComplete()
+        }
     }
 }

@@ -108,6 +108,6 @@ public class SecondaryLinkingQRCodeViewController: OnboardingBaseViewController 
             }
             alert.addAction(retryAction)
             self.present(alert, animated: true)
-        }.retainUntilComplete()
+        }
     }
 }

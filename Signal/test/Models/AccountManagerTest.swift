@@ -85,7 +85,7 @@ class AccountManagerTest: SignalBaseTest {
             } else {
                 XCTFail("Unexpected error: \(error)")
             }
-        }.retainUntilComplete()
+        }
 
         self.waitForExpectations(timeout: 1.0, handler: nil)
     }
@@ -105,7 +105,7 @@ class AccountManagerTest: SignalBaseTest {
             } else {
                 XCTFail("Unexpected error: \(error)")
             }
-        }.retainUntilComplete()
+        }
 
         self.waitForExpectations(timeout: 1.0, handler: nil)
     }
@@ -127,7 +127,7 @@ class AccountManagerTest: SignalBaseTest {
             expectation.fulfill()
         }.catch { error in
             XCTFail("Unexpected error: \(error)")
-        }.retainUntilComplete()
+        }
 
         self.waitForExpectations(timeout: 1.0, handler: nil)
     }
@@ -143,7 +143,7 @@ class AccountManagerTest: SignalBaseTest {
             XCTFail("Expected to fail.")
         }.catch { _ in
             expectation.fulfill()
-        }.retainUntilComplete()
+        }
 
         self.waitForExpectations(timeout: 1.0, handler: nil)
     }

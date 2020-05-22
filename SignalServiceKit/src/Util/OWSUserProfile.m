@@ -369,7 +369,9 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                                       // be any linked device to sync to at this point anyway).
                                       if (self.tsAccountManager.isRegisteredPrimaryDevice
                                           && CurrentAppContext().isMainApp) {
-                                          [[self.syncManager syncLocalContact] retainUntilComplete];
+                                          [self.syncManager syncLocalContact].catchInBackground(^(NSError *error) {
+                                              OWSLogError(@"Error: %@", error);
+                                          });
                                       }
 
                                       [[NSNotificationCenter defaultCenter]

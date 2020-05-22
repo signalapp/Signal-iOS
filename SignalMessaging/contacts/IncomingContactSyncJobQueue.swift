@@ -137,7 +137,7 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
             self.reportSuccess()
         }.catch { error in
             self.reportError(withUndefinedRetry: error)
-        }.retainUntilComplete()
+        }
     }
 
     public override func didSucceed() {

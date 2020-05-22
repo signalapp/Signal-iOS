@@ -147,7 +147,7 @@ public class VideoEditorView: UIView {
             self.timelineView.updateThumbnailView()
         }.catch { error in
             owsFailDebug("Error: \(error)")
-        }.retainUntilComplete()
+        }
     }
 
     private class func thumbnails(forVideoAtPath videoPath: String,
@@ -328,7 +328,7 @@ public class VideoEditorView: UIView {
                     modalVC.dismiss {
                         OWSActionSheets.showErrorAlert(message: NSLocalizedString("ERROR_COULD_NOT_SAVE_VIDEO", comment: "Error indicating that 'save video' failed."))
                     }
-                }.retainUntilComplete()
+                }
             }
         }
     }

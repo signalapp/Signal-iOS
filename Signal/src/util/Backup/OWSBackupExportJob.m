@@ -354,40 +354,40 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self updateProgressWithDescription:nil progress:nil];
 
-    [[self.backup ensureCloudKitAccess]
-            .thenInBackground(^{
-                [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_EXPORT_PHASE_CONFIGURATION",
-                                                        @"Indicates that the backup export is being configured.")
-                                           progress:nil];
+    [self.backup ensureCloudKitAccess]
+        .thenInBackground(^{
+            [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_EXPORT_PHASE_CONFIGURATION",
+                                                    @"Indicates that the backup export is being configured.")
+                                       progress:nil];
 
-                return [self configureExport];
-            })
-            .thenInBackground(^{
-                return [self fetchAllRecords];
-            })
-            .thenInBackground(^{
-                [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_EXPORT_PHASE_EXPORT",
-                                                        @"Indicates that the backup export data is being exported.")
-                                           progress:nil];
+            return [self configureExport];
+        })
+        .thenInBackground(^{
+            return [self fetchAllRecords];
+        })
+        .thenInBackground(^{
+            [self updateProgressWithDescription:NSLocalizedString(@"BACKUP_EXPORT_PHASE_EXPORT",
+                                                    @"Indicates that the backup export data is being exported.")
+                                       progress:nil];
 
-                return [self exportDatabase];
-            })
-            .thenInBackground(^{
-                return [self saveToCloud];
-            })
-            .thenInBackground(^{
-                return [self cleanUp];
-            })
-            .thenInBackground(^{
-                [self succeed];
-            })
-            .catch(^(NSError *error) {
-                OWSFailDebug(@"Backup export failed with error: %@.", error);
+            return [self exportDatabase];
+        })
+        .thenInBackground(^{
+            return [self saveToCloud];
+        })
+        .thenInBackground(^{
+            return [self cleanUp];
+        })
+        .thenInBackground(^{
+            [self succeed];
+        })
+        .catch(^(NSError *error) {
+            OWSFailDebug(@"Backup export failed with error: %@.", error);
 
-                [self failWithErrorDescription:
-                          NSLocalizedString(@"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT",
-                              @"Error indicating the backup export could not export the user's data.")];
-            }) retainUntilComplete];
+            [self
+                failWithErrorDescription:NSLocalizedString(@"BACKUP_EXPORT_ERROR_COULD_NOT_EXPORT",
+                                             @"Error indicating the backup export could not export the user's data.")];
+        });
 }
 
 - (AnyPromise *)configureExport

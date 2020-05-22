@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -106,7 +106,7 @@ class DownloadStickerOperation: CDNDownloadOperation {
                 return
             }
             return self.reportError(withUndefinedRetry: error)
-        }.retainUntilComplete()
+        }
     }
 
     override public func didFail(error: Error) {

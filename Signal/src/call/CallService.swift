@@ -607,7 +607,7 @@ extension SignalCall: CallManagerCallReference { }
 
             callManager.drop(callId: callId)
             self.handleFailedCall(failedCall: call, error: error)
-        }.retainUntilComplete()
+        }
 
         Logger.debug("")
     }
@@ -928,7 +928,7 @@ extension SignalCall: CallManagerCallReference { }
         }.catch { error in
             Logger.error("failed to send offer message to \(call.thread.contactAddress) with error: \(error)")
             self.callManager.signalingMessageDidFail(callId: callId)
-        }.retainUntilComplete()
+        }
     }
 
     public func callManager(_ callManager: CallManager<SignalCall, CallService>, shouldSendAnswer callId: UInt64, call: SignalCall, destinationDeviceId: UInt32?, sdp: String) {
@@ -945,7 +945,7 @@ extension SignalCall: CallManagerCallReference { }
         }.catch { error in
             Logger.error("failed to send answer message to \(call.thread.contactAddress) with error: \(error)")
             self.callManager.signalingMessageDidFail(callId: callId)
-        }.retainUntilComplete()
+        }
     }
 
     public func callManager(_ callManager: CallManager<SignalCall, CallService>, shouldSendIceCandidates callId: UInt64, call: SignalCall, destinationDeviceId: UInt32?, candidates: [CallManagerIceCandidate]) {
@@ -977,7 +977,7 @@ extension SignalCall: CallManagerCallReference { }
         }.catch { error in
             Logger.error("failed to send ice update message to \(call.thread.contactAddress) with error: \(error)")
             callManager.signalingMessageDidFail(callId: callId)
-        }.retainUntilComplete()
+        }
     }
 
     public func callManager(_ callManager: CallManager<SignalCall, CallService>, shouldSendHangup callId: UInt64, call: SignalCall, destinationDeviceId: UInt32?, hangupType: HangupType, deviceId: UInt32, useLegacyHangupMessage: Bool) {
@@ -1013,7 +1013,7 @@ extension SignalCall: CallManagerCallReference { }
         }.catch { error in
             Logger.error("failed to send hangup message to \(call.thread.contactAddress) with error: \(error)")
             self.callManager.signalingMessageDidFail(callId: callId)
-        }.retainUntilComplete()
+        }
     }
 
     public func callManager(_ callManager: CallManager<SignalCall, CallService>, shouldSendBusy callId: UInt64, call: SignalCall, destinationDeviceId: UInt32?) {
@@ -1030,7 +1030,7 @@ extension SignalCall: CallManagerCallReference { }
         }.catch { error in
             Logger.error("failed to send busy message to \(call.thread.contactAddress) with error: \(error)")
             self.callManager.signalingMessageDidFail(callId: callId)
-        }.retainUntilComplete()
+        }
     }
 
     // MARK: - Support Functions

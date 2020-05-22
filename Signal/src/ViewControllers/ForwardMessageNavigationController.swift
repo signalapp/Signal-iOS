@@ -224,13 +224,17 @@ extension ForwardMessageNavigationController {
             }
 
             let conversations = selectedConversationsForConversationPicker
-            AttachmentMultisend.sendApprovedMedia(conversations: conversations,
-                                                  approvalMessageText: self.approvalMessageText,
-                                                  approvedAttachments: approvedAttachments)
-                .done { threads in
-                    self.forwardMessageDelegate?.forwardMessageFlowDidComplete(viewItem: self.conversationViewItem,
-                                                                               threads: threads)
-                }.retainUntilComplete()
+            firstly {
+                AttachmentMultisend.sendApprovedMedia(conversations: conversations,
+                                                      approvalMessageText: self.approvalMessageText,
+                                                      approvedAttachments: approvedAttachments)
+            }.done { threads in
+                self.forwardMessageDelegate?.forwardMessageFlowDidComplete(viewItem: self.conversationViewItem,
+                                                                           threads: threads)
+            }.catch { error in
+                owsFailDebug("Error: \(error)")
+                // TODO: Do we need to call a delegate method?
+            }
         case .unknown,
              .oversizeTextDownloading,
              .viewOnce:
@@ -271,18 +275,22 @@ extension ForwardMessageNavigationController {
         AssertIsOnMainThread()
 
         let conversations = self.selectedConversationsForConversationPicker
-        self.threads(for: conversations)
-            .done { (threads: [TSThread]) in
-                for thread in threads {
-                    try enqueueBlock(thread)
+        firstly {
+            self.threads(for: conversations)
+        }.done { (threads: [TSThread]) in
+            for thread in threads {
+                try enqueueBlock(thread)
 
-                    // We're sending a message to this thread, approve any pending message request
-                    ThreadUtil.addToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction(thread: thread)
-                }
+                // We're sending a message to this thread, approve any pending message request
+                ThreadUtil.addToProfileWhitelistIfEmptyOrPendingRequestWithSneakyTransaction(thread: thread)
+            }
 
-                self.forwardMessageDelegate?.forwardMessageFlowDidComplete(viewItem: self.conversationViewItem,
-                                                                           threads: threads)
-            }.retainUntilComplete()
+            self.forwardMessageDelegate?.forwardMessageFlowDidComplete(viewItem: self.conversationViewItem,
+                                                                       threads: threads)
+        }.catch { error in
+            owsFailDebug("Error: \(error)")
+            // TODO: Do we need to call a delegate methoad?
+        }
     }
 
     func threads(for conversationItems: [ConversationItem]) -> Promise<[TSThread]> {

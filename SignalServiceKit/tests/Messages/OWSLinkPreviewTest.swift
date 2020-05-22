@@ -233,7 +233,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
                 Logger.error("error: \(error)")
                 XCTFail("Unexpected error: \(error)")
                 expectation.fulfill()
-            }.retainUntilComplete()
+            }
 
         self.waitForExpectations(timeout: 15.0, handler: nil)
     }
@@ -281,7 +281,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
                 Logger.error("error: \(error)")
                 XCTFail("Unexpected error: \(error)")
                 expectation.fulfill()
-            }.retainUntilComplete()
+            }
 
         self.waitForExpectations(timeout: 15.0, handler: nil)
     }
@@ -302,7 +302,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
                 Logger.error("error: \(error)")
                 XCTFail("Unexpected error: \(error)")
                 expectation.fulfill()
-            }.retainUntilComplete()
+            }
 
         self.waitForExpectations(timeout: 15.0, handler: nil)
     }
@@ -323,7 +323,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
                 Logger.error("error: \(error)")
                 XCTFail("Unexpected error: \(error)")
                 expectation.fulfill()
-            }.retainUntilComplete()
+            }
 
         self.waitForExpectations(timeout: 15.0, handler: nil)
     }
@@ -344,7 +344,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
                 Logger.error("error: \(error)")
                 XCTFail("Unexpected error: \(error)")
                 expectation.fulfill()
-            }.retainUntilComplete()
+            }
 
         self.waitForExpectations(timeout: 15.0, handler: nil)
     }
@@ -365,7 +365,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
                 Logger.error("error: \(error)")
                 XCTFail("Unexpected error: \(error)")
                 expectation.fulfill()
-            }.retainUntilComplete()
+            }
 
         self.waitForExpectations(timeout: 15.0, handler: nil)
     }
@@ -386,7 +386,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
                 Logger.error("error: \(error)")
                 XCTFail("Unexpected error: \(error)")
                 expectation.fulfill()
-            }.retainUntilComplete()
+            }
 
         self.waitForExpectations(timeout: 15.0, handler: nil)
     }
@@ -413,7 +413,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
                 Logger.error("error: \(error)")
                 XCTFail("Unexpected error: \(error)")
                 expectation.fulfill()
-            }.retainUntilComplete()
+            }
 
         self.waitForExpectations(timeout: 15.0, handler: nil)
     }
@@ -440,7 +440,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
                 Logger.error("error: \(error)")
                 XCTFail("Unexpected error: \(error)")
                 expectation.fulfill()
-            }.retainUntilComplete()
+            }
 
         self.waitForExpectations(timeout: 15.0, handler: nil)
     }
@@ -461,7 +461,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
                 Logger.error("error: \(error)")
                 XCTFail("Unexpected error: \(error)")
                 expectation.fulfill()
-            }.retainUntilComplete()
+            }
 
         self.waitForExpectations(timeout: 15.0, handler: nil)
     }
@@ -482,7 +482,7 @@ class OWSLinkPreviewTest: SSKBaseTestSwift {
                 Logger.error("error: \(error)")
                 XCTFail("Unexpected error: \(error)")
                 expectation.fulfill()
-            }.retainUntilComplete()
+            }
 
         self.waitForExpectations(timeout: 15.0, handler: nil)
     }

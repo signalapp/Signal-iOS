@@ -466,7 +466,7 @@ public class GroupManager: NSObject {
             success(thread)
         }.catch { error in
             failure(error)
-        }.retainUntilComplete()
+        }
     }
 
     // success and failure are invoked on the main thread.
@@ -490,7 +490,7 @@ public class GroupManager: NSObject {
             success(thread)
         }.catch { error in
             failure(error)
-        }.retainUntilComplete()
+        }
     }
 
     // MARK: - Tests
@@ -1123,7 +1123,7 @@ public class GroupManager: NSObject {
                 success?()
             }.catch { error in
                 owsFailDebug("Leave group failed: \(error)")
-            }.retainUntilComplete()
+            }
         }
     }
 

@@ -104,9 +104,7 @@ public class RequestMaker: NSObject {
                     throw error
                 }
             }
-        let anyPromise = AnyPromise(promise)
-        anyPromise.retainUntilComplete()
-        return anyPromise
+        return AnyPromise(promise)
     }
 
     public func makeRequest() -> Promise<RequestMakerResult> {

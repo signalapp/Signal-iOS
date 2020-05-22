@@ -88,7 +88,9 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                 // so this won't yield redundant traffic.
                 [self sendSyncContactsMessageIfNecessary];
             } else {
-                [[self sendAllSyncRequestMessages] retainUntilComplete];
+                [self sendAllSyncRequestMessages].catch(^(NSError *error) {
+                    OWSLogError(@"Error: %@.", error);
+                });
             }
         }
     }];
@@ -318,8 +320,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 - (void)sendSyncContactsMessageIfNecessary
 {
     OWSAssertDebug(self.tsAccountManager.isRegisteredPrimaryDevice);
-    [[self syncContactsForSignalAccounts:self.contactsManager.signalAccounts skipIfRedundant:YES debounce:YES]
-        retainUntilComplete];
+    [self syncContactsForSignalAccounts:self.contactsManager.signalAccounts skipIfRedundant:YES debounce:YES];
 }
 
 - (dispatch_queue_t)serialQueue

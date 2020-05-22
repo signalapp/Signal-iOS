@@ -386,17 +386,17 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
         }
 
         OWSAvatarUploadV2 *upload = [OWSAvatarUploadV2 new];
-        [[upload uploadAvatarToService:encryptedAvatarData]
-                .thenInBackground(^{
-                    OWSLogVerbose(@"Upload complete.");
+        [upload uploadAvatarToService:encryptedAvatarData]
+            .thenInBackground(^{
+                OWSLogVerbose(@"Upload complete.");
 
-                    successBlock(upload.urlPath);
-                })
-                .catchInBackground(^(NSError *error) {
-                    OWSLogError(@"Failed: %@", error);
+                successBlock(upload.urlPath);
+            })
+            .catchInBackground(^(NSError *error) {
+                OWSLogError(@"Failed: %@", error);
 
-                    failureBlock(error);
-                }) retainUntilComplete];
+                failureBlock(error);
+            });
     });
 }
 
@@ -752,7 +752,6 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
                 failure(OWSErrorMakeAssertionError(@"Profile key rotation failure missing error."));
             }
         });
-        [promise retainUntilComplete];
     });
 }
 
@@ -829,7 +828,9 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
                              transaction:transaction
                               completion:nil];
     }];
-    [[self.tsAccountManager updateAccountAttributes] retainUntilComplete];
+    [self.tsAccountManager updateAccountAttributes].catch(^(NSError *error) {
+        OWSLogError(@"Error: %@.", error);
+    });
 }
 
 - (void)setLocalProfileKey:(OWSAES256Key *)key

@@ -566,7 +566,7 @@ public class PinSetupViewController: OWSViewController {
                     )
                 }
             }
-        }.retainUntilComplete()
+        }
     }
 }
 

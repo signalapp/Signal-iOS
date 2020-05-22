@@ -40,7 +40,7 @@ class GroupsV2AvatarDownloadOperation: CDNDownloadOperation {
                 return
             }
             return self.reportError(withUndefinedRetry: error)
-        }.retainUntilComplete()
+        }
     }
 
     override public func didFail(error: Error) {
