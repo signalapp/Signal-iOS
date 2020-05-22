@@ -108,7 +108,7 @@
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Ukendt version af database";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Overførte data fra din gamle enhed kunne ikke gendannes. Send en fejlsøgningslog til support@signal.org, så vi kan løse dette problem. Hvis du geninstallerer Signal, kan din beskedhistorik gå tabt.";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Overførte data fra din gamle enhed kunne ikke gendannes. Send en fejlsøgningslog til support@signal.org, så vi kan løse problemet. Hvis du geninstallerer Signal, kan din beskedhistorik gå tabt";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Gennemførelsen af overførslen mislykkedes";
@@ -334,6 +334,12 @@
 
 /* Section header for users that have been blocked */
 "BLOCK_LIST_BLOCKED_USERS_SECTION" = "Blokerede brugere";
+
+/* Error message indicating that a conversation can't be blocked because they are already blocked. */
+"BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "Group already blocked.";
+
+/* Error message indicating that a user can't be blocked because they are already blocked. */
+"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "User already blocked.";
 
 /* Button label for the 'unblock' button */
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Fjern blokering";
@@ -791,6 +797,18 @@
 /* Label for the 'edit group' button in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_GROUP" = "Redigér";
 
+/* Label for 'edit membership access' action in conversation settings view. */
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Who Can Edit Membership";
+
+/* Label for button that sets 'group membership access' to 'administrators-only'. */
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Kun administratorer";
+
+/* Description for the 'edit group membership access' alert. */
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "Choose who can edit group membership:";
+
+/* Label for button that sets 'group membership access' to 'members-only'. */
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "Alle medlemmer";
+
 /* Navbar title when viewing settings for a group thread */
 "CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "Gruppeinformation";
 
@@ -805,6 +823,9 @@
 
 /* Format for the section title of the 'members' section in conversation settings view. Embeds: {{ the number of group members }}. */
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ medlemmer";
+
+/* Footer for the 'membership access' section in conversation settings view. */
+"CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "Choose who can edit group membership.";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Udsæt";
@@ -993,7 +1014,7 @@
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Slet alle beskeder";
 
 /* action sheet body. Embeds {{number of selected messages}} which will be deleted. */
-"DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Slet gamle beskeder?";
+"DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Slet %ld beskeder?";
 
 /* action sheet body */
 "DELETE_SELECTED_SINGLE_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Slet besked?";
@@ -1017,16 +1038,16 @@
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION" = "Stop overførslen";
 
 /* The message of the dialog asking the user if they want to cancel a device transfer */
-"DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE" = "Lukning af dette vindue vil stoppe igangværende overførsel, er du sikker på, at du vil fortsætte?";
+"DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE" = "Luk af dette vindue vil stoppe igangværende overførsel, er du sikker på, at du vil fortsætte?";
 
 /* The title of the dialog asking the user if they want to cancel a device transfer */
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "Stop overførslen?";
 
 /* The explanation for the device transfer 'choice' view */
-"DEVICE_TRANSFER_CHOICE_EXPLANATION" = "Hvis du har din gamle iOS-enhed, kan du sikkert overføre din konto og beskeder til denne enhed.";
+"DEVICE_TRANSFER_CHOICE_EXPLANATION" = "Hvis du har din gamle iOS-enhed, kan du sikkert overføre din konto og beskeder til denne enhed";
 
 /* The explanation for the device transfer 'choice' view when linking a device */
-"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "Hvis du tidligere brugte Signal på en sammenkoblet iPad, kan du sikkert overføre din konto og beskeder til denne enhed.";
+"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "Har du tidligere brugt Signal på en sammenkoblet iPad, kan du sikkert overføre din konto og beskeder til denne enhed";
 
 /* The body for the device transfer 'choice' view 'register' option */
 "DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "Fortsæt uden at overføre din konto og beskeder";
@@ -1056,13 +1077,13 @@
 "DEVICE_TRANSFER_CHOICE_TRANSFER_TITLE" = "Overfør fra iOS-enhed";
 
 /* A warning for the device transfer 'choice' view indicating you can only have one device registered with your number */
-"DEVICE_TRANSFER_CHOICE_WARNING" = "Hvis du fortsætter, deaktiveres Signal på andre enheder, der i øjeblikket er registreret med det samme telefonnummer.";
+"DEVICE_TRANSFER_CHOICE_WARNING" = "Hvis du fortsætter, deaktiveres Signal på andre enheder, der i øjeblikket er registreret med det samme telefonnummer";
 
 /* An error indicating that we were unable to verify the indentity of the new device to complete the transfer */
-"DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Det lykkedes ikke at bekræfte din nye enhed. Prøv igen.";
+"DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Det lykkedes ikke at bekræfte din nye enhed. Prøv igen";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_GENERIC" = "Overførslen kunne ikke gennemføres. Sørg for, at dine enheder er tætved hinanden, og prøv igen";
+"DEVICE_TRANSFER_ERROR_GENERIC" = "Overførslen kunne ikke gennemføres. Sørg for, at dine enheder er tæt ved hinanden, og prøv igen";
 
 /* An error indicating the user must scan this code with a linked device to transfer. */
 "DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "For at opsætte denne iPad som en sammenkoblet enhed, skal du scanne med din gamle iPad";
@@ -1074,25 +1095,25 @@
 "DEVICE_TRANSFER_ERROR_NOT_ENOUGH_SPACE" = "Ikke nok plads til at gennemføre overførslen";
 
 /* An error indicating the user must update their device before trying to transfer. */
-"DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Opdater til den nyeste version af Signal og prøv igen";
+"DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Opdatér til den nyeste version af Signal og prøv igen";
 
 /* The explanation on the action sheet prompting the user if they want to transfer their device. */
-"DEVICE_TRANSFER_PROMPT_EXPLANATION" = "Overfør din Signal-konto til en ny iOS-enhed. Sørg for, at din nye enhed er tætved og tændt.";
+"DEVICE_TRANSFER_PROMPT_EXPLANATION" = "Overfør din Signal-konto til en ny iOS-enhed. Sørg for at din nye enhed er tæt ved og tændt";
 
 /* The title on the acttion sheet prompting the user if they want to transfer their device. */
 "DEVICE_TRANSFER_PROMPT_TITLE" = "Overfør konto";
 
 /* The explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Åbn Signal på din gamle enhed, læg det tætved, og sørg for, at Wi-Fi og Bluetooth er aktiveret på begge enheder.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Åbn Signal på din gamle enhed, læg den tæt ved, og sørg for, at Wi-Fi og Bluetooth er aktiveret på begge enheder";
 
 /* The second explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Placer denne QR-kode i rammen på din anden enhed.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Placer QR-koden i rammen på din anden enhed";
 
 /* The title for the device transfer qr code view */
 "DEVICE_TRANSFER_QRCODE_TITLE" = "Venter på anden enhed...";
 
 /* The explanation on the view that shows receiving progress */
-"DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Hold begge enheder tætved hinanden. Sluk ikke for nogen enhed, og hold Signal åbent. Overførsler er end-to-end krypteret.";
+"DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Hold begge enheder tæt ved hinanden. Sluk ikke for nogen af enhederne og hold Signal åbent. Overførsler er end-to-end krypteret";
 
 /* The title on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_TITLE" = "Modtager data";
@@ -1107,7 +1128,7 @@
 "DEVICE_TRANSFER_SCANNING_TITLE" = "Hold din nye enhed op til kameraet";
 
 /* The explanation on the action sheet that shows transfer progress */
-"DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "Hold begge enheder tætved hinanden. Sluk ikke for nogen enhed, og hold Signal åbent.";
+"DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "Hold begge enheder tætved hinanden. Sluk ikke for nogen af enhederne og hold Signal åbent";
 
 /* The title on the action sheet that shows transfer progress */
 "DEVICE_TRANSFER_TRANSFERRING_TITLE" = "Overfører data";
@@ -1690,6 +1711,9 @@
 
 /* Message for the 'can't replace group admin' alert. */
 "GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Vælg en ny administrator for gruppen, inden du forlader den";
+
+/* Error message indicating that a member can't be added to a group because they are already in the group. */
+"GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP" = "User already in group.";
 
 /* Error indicating that an error occurred while accepting an invite. */
 "GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "Invitationen kunne ikke accepteres";
@@ -2373,7 +2397,7 @@
 "ONBOARDING_2FA_INVALID_PIN" = "Forkert PIN";
 
 /* Label indicating that the 2fa pin is invalid with a retry count other than one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "Forkert PIN. Forsøg igen";
+"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "Forkert PIN. %lu forsøg tilbage";
 
 /* Label indicating that the 2fa pin is invalid with a retry count of one in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN_SINGLE" = "Forkert PIN. 1 forsøg tilbage";
@@ -2534,17 +2558,32 @@
 /* Label indicating that a group has no pending members. */
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "Ingen invitationer ";
 
+/* Title of 're-send invite' button. */
+"PENDING_GROUP_MEMBERS_RESEND_INVITE_1_BUTTON" = "Re-send Invite";
+
+/* Title of 're-send invites' button. */
+"PENDING_GROUP_MEMBERS_RESEND_INVITE_N_BUTTON" = "Re-send Invites";
+
 /* Title of 'revoke invite' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "Tilbagekald invitation";
 
-/* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the invited group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Tilbagekald invitation til gruppen for \"%@\"?";
+/* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the inviting group member. }}. */
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revoke group invite sent by “%@“?";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Tilbagekald %1$@ invitationer sendt af \"%2$@\"?";
 
 /* Title of 'revoke invites' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_N_BUTTON" = "Tilbagekald invitationer";
+
+/* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the invited group member. }}. */
+"PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Tilbagekald invitation til gruppen for \"%@\"?";
+
+/* Format for title of 'revoke or re-send invite' confirmation alert. Embeds {{ name of the inviting group member. }}. */
+"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revoke or re-send group invite for “%@“?";
+
+/* Format for title of 'revoke or re-send invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
+"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Revoke or re-send %1$@ invites sent by “%2$@“?";
 
 /* Footer for the 'invites by other group members' section of the 'pending group members' view. */
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Detaljer om personer inviteret af andre medlemmer af gruppen, vises ikke. Hvis de inviterede accepterer at deltage, vil deres information blive delt med gruppen derefter. De vil ingen beskeder se fra gruppen, før de deltager";
@@ -2942,6 +2981,9 @@
 /* Text describing the local user in the reaction details pane. */
 "REACTIONS_DETAIL_YOU" = "Dig";
 
+/* Error message indicating that a user can't be selected. */
+"RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "User can't be selected.";
+
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "Jeg har glemt min PIN";
 
@@ -2961,7 +3003,7 @@
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "Du har %lu få forsøg tilbage. Hvis du løber tør for forsøg, kan du oprette en ny PIN. Du kan registrere og bruge din konto, men du vil miste nogle gemte indstillinger, såsom din profil information";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock enabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_PLURAL_FORMAT" = "Du har %lu få forsøg tilbage. Hvis du løber tør for forsøg vil din konto blive låst. Efter 7 dages inaktivitet, kan du genregistrere uden din PIN. Din konto vil blive fjernet og alt indhold slettet";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_PLURAL_FORMAT" = "Du har %lu forsøg tilbage. Hvis du løber tør for forsøg vil din konto blive låst. Efter 7 dages inaktivitet, kan du genregistrere uden din PIN. Din konto vil blive fjernet og alt indhold slettet";
 
 /* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock enabled. */
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_SINGLE" = "Du har 1 forsøg tilbage. Hvis du løber tør for forsøg vil din konto blive låst. Efter 7 dages inaktivitet, kan du genregistrere uden din PIN. Din konto vil blive fjernet og alt indhold slettet";
@@ -3543,19 +3585,19 @@
 "SETTINGS_NOTIFICATIONS" = "Notifikationer";
 
 /* The button text for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "Turn Off Reminders";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "Déaktiver påmindelser";
 
 /* The explanation for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "Make sure you memorize or securely store your PIN as it can’t be recovered. If you forget your PIN, you may lose data when re-registering your Signal account.";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "Vær sikker på at du husker eller sikkert gemmer din PIN, da den ikke kan gendannes. Hvis du glemmer din PIN, kan du miste data når du genregistrerer din Signal konto";
 
 /* The title for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Confirm your Signal PIN";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Bekræft din Signal PIN";
 
 /* Footer for the 'pin reminder' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_PIN_REMINDER_FOOTER" = "Reminders help you remember your PIN since it can’t be recovered. You’ll be asked less frequently over time.";
+"SETTINGS_PIN_REMINDER_FOOTER" = "Påmindelser hjælper dig med at huske din PIN, da den ikke kan gendannes. Over tid vil der går længere tid imellem du bliver spurgt";
 
 /* Label for the 'pin reminder' switch of the privacy settings. */
-"SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "PIN Reminders";
+"SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "PIN påmindelser";
 
 /* Footer for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_FOOTER" = "PIN-koder holder krypteret lagrede oplysninger, lagret med Signal, så kun du har adgang til den. Din profil, indstillinger og kontakter gendannes, når du installerer Signal igen";
@@ -3804,7 +3846,7 @@
 "THIS_MESSAGE_WAS_DELETED" = "Beskeden blev slettet";
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
-"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Medlem af %@, %@, og andre grupper";
+"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Medlem af %@, %@, og %lu andre grupper";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
 "THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Du kan tilføje egne notater i samtalen. Hvis din konto har forbundne enheder, vil notaterne blive synkroniseret";
