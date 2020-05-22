@@ -477,7 +477,6 @@ public class KeyBackupService: NSObject {
     }
 
     private static let masterKeyIdentifer = "masterKey"
-    private static let storageServiceKeyIdentifer = "storageServiceKey"
     private static let pinTypeIdentifier = "pinType"
     private static let encodedVerificationStringIdentifier = "encodedVerificationString"
     private static let hasBackupKeyRequestFailedIdentifier = "hasBackupKeyRequestFailed"
@@ -517,7 +516,13 @@ public class KeyBackupService: NSObject {
     @objc
     public static func clearKeys(transaction: SDSAnyWriteTransaction) {
         Token.clearNext(transaction: transaction)
-        keyValueStore.removeAll(transaction: transaction)
+
+        keyValueStore.removeValues(forKeys: [
+            masterKeyIdentifer,
+            pinTypeIdentifier,
+            encodedVerificationStringIdentifier
+        ], transaction: transaction)
+
         cacheQueue.sync {
             cachedMasterKey = nil
             cachedPinType = nil

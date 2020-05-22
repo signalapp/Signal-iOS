@@ -158,6 +158,12 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
         updatePinType()
     }
 
+    public override func viewDidLoad() {
+        super.viewDidLoad()
+
+        shouldBottomViewReserveSpaceForKeyboard = false
+    }
+
     public override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
 
@@ -240,6 +246,8 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
             attemptState = .invalid(remainingAttempts: nil)
             return
         }
+
+        pinTextField.resignFirstResponder()
 
         let progressView = PinProgressView(
             loadingText: NSLocalizedString("REGISTER_2FA_PIN_PROGRESS",

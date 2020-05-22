@@ -133,9 +133,20 @@ extension DeviceTransferService {
     }
 
     func pathRelativeToAppSharedDirectory(_ path: String) throws -> String {
-        guard !["~", "..", "*"].reduce(false, { $0 || path.contains($1) }) else {
-            throw OWSAssertionError("path contains invalid expansion characters: \(path)")
+        guard !path.contains("*") else {
+            throw OWSAssertionError("path contains invalid character: *")
         }
+
+        guard !path.contains("~") else {
+            throw OWSAssertionError("path starts with invalid character: .")
+        }
+
+        for component in path.components(separatedBy: "/") {
+            guard !component.starts(with: ".") else {
+                throw OWSAssertionError("path starts with invalid character: .")
+            }
+        }
+
         var path = path.replacingOccurrences(of: DeviceTransferService.appSharedDataDirectory.path, with: "")
         if path.starts(with: "/") { path.removeFirst() }
         return path
