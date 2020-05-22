@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "DataSource.h"
@@ -137,17 +137,12 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(self.data);
     OWSAssertDebug(!self.isConsumed);
 
-    // There's an odd bug wherein instances of NSData/Data created in Swift
-    // code reliably crash on iOS 9 when calling [NSData writeToFile:...].
-    // We can avoid these crashes by simply copying the Data.
-    NSData *dataCopy = (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(10, 0) ? self.data : [self.data copy]);
-
     __block BOOL success;
-    NSString *benchTitle = [NSString stringWithFormat:@"DataSourceValue writeData of size: %llu", (unsigned long long)dataCopy.length];
+    NSString *benchTitle = [NSString stringWithFormat:@"DataSourceValue writeData of size: %llu", (unsigned long long)self.data.length];
     [BenchManager benchWithTitle:benchTitle block:^{
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wblock-capture-autoreleasing"
-        success = [dataCopy writeToURL:dstUrl options:NSDataWritingAtomic error:error];
+        success = [self.data writeToURL:dstUrl options:NSDataWritingAtomic error:error];
 #pragma clang diagnostic pop
     }];
     if (!success) {

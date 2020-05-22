@@ -606,11 +606,11 @@ typedef enum : NSUInteger {
     self.collectionView.showsHorizontalScrollIndicator = NO;
     self.collectionView.keyboardDismissMode = UIScrollViewKeyboardDismissModeInteractive;
     self.collectionView.allowsMultipleSelection = YES;
-    if (@available(iOS 10, *)) {
-        // To minimize time to initial apearance, we initially disable prefetching, but then
-        // re-enable it once the view has appeared.
-        self.collectionView.prefetchingEnabled = NO;
-    }
+
+    // To minimize time to initial apearance, we initially disable prefetching, but then
+    // re-enable it once the view has appeared.
+    self.collectionView.prefetchingEnabled = NO;
+
     [self.view addSubview:self.collectionView];
     [self.collectionView autoPinEdgeToSuperviewEdge:ALEdgeTop];
     [self.collectionView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
@@ -1217,9 +1217,7 @@ typedef enum : NSUInteger {
     if (!self.viewHasEverAppeared) {
         // To minimize time to initial apearance, we initially disable prefetching, but then
         // re-enable it once the view has appeared.
-        if (@available(iOS 10, *)) {
-            self.collectionView.prefetchingEnabled = YES;
-        }
+        self.collectionView.prefetchingEnabled = YES;
     }
 
     self.conversationViewModel.focusMessageIdOnOpen = nil;
@@ -1312,19 +1310,6 @@ typedef enum : NSUInteger {
 
 #pragma mark - Initiliazers
 
-- (void)updateHeaderViewFrame
-{
-    if (@available(iOS 11, *)) {
-        // Do nothing, we use autolayout/intrinsic content size to grow
-    } else {
-        // Request "full width" title; the navigation bar will truncate this
-        // to fit between the left and right buttons.
-        CGSize navControllerSize = self.navigationController.view.frame.size;
-        CGRect headerFrame = CGRectMake(0, 0, navControllerSize.width, 44);
-        self.headerView.frame = headerFrame;
-    }
-}
-
 - (void)updateNavigationTitle
 {
     NSString *_Nullable name;
@@ -1396,8 +1381,6 @@ typedef enum : NSUInteger {
     headerView.delegate = self;
     self.navigationItem.titleView = headerView;
 
-    [self updateHeaderViewFrame];
-
 #ifdef USE_DEBUG_UI
     [headerView addGestureRecognizer:[[UILongPressGestureRecognizer alloc]
                                          initWithTarget:self
@@ -1423,51 +1406,9 @@ typedef enum : NSUInteger {
 
     // Otherwise, show the back button.
 
-    if (@available(iOS 11, *)) {
-        // We use the default back button from conversation list, which animates nicely with interactive transitions
-        // like the interactive pop gesture and the "slide left" for info.
-        self.navigationItem.leftBarButtonItem = nil;
-    } else {
-        // On iOS9/10 the default back button is too wide, so we use a custom back button. This doesn't animate nicely
-        // with interactive transitions, but has the appropriate width.
-        [self createBackButton];
-    }
-}
-
-- (void)createBackButton
-{
-    if (self.navigationController.viewControllers.count == 1) {
-        // There's nowhere to go back to, do nothing.
-        return;
-    }
-
-    UIBarButtonItem *backItem = [self createOWSBackButton];
-    self.customBackButton = backItem;
-    if (backItem.customView) {
-        // This method gets called multiple times, so it's important we re-layout the unread badge
-        // with respect to the new backItem.
-        [backItem.customView addSubview:_backButtonUnreadCountView];
-        // TODO: The back button assets are assymetrical.  There are strong reasons
-        // to use spacing in the assets to manipulate the size and positioning of
-        // bar button items, but it means we'll probably need separate RTL and LTR
-        // flavors of these assets.
-        [_backButtonUnreadCountView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:-6];
-        [_backButtonUnreadCountView autoPinLeadingToSuperviewMarginWithInset:1];
-        [_backButtonUnreadCountView autoSetDimension:ALDimensionHeight toSize:self.unreadCountViewDiameter];
-        // We set a min width, but we will also pin to our subview label, so we can grow to accommodate multiple digits.
-        [_backButtonUnreadCountView autoSetDimension:ALDimensionWidth
-                                              toSize:self.unreadCountViewDiameter
-                                            relation:NSLayoutRelationGreaterThanOrEqual];
-
-        [_backButtonUnreadCountView addSubview:_backButtonUnreadCountLabel];
-        [_backButtonUnreadCountLabel autoPinWidthToSuperviewWithMargin:4];
-        [_backButtonUnreadCountLabel autoPinHeightToSuperview];
-
-        // Initialize newly created unread count badge to accurately reflect the current unread count.
-        [self updateBackButtonUnreadCount];
-    }
-
-    self.navigationItem.leftBarButtonItem = backItem;
+    // We use the default back button from conversation list, which animates nicely with interactive transitions
+    // like the interactive pop gesture and the "slide left" for info.
+    self.navigationItem.leftBarButtonItem = nil;
 }
 
 - (void)windowManagerCallDidChange:(NSNotification *)notification
@@ -1566,15 +1507,7 @@ typedef enum : NSUInteger {
                 timerView.delegate = self;
                 timerView.tintColor = Theme.primaryIconColor;
 
-                // As of iOS11, we can size barButton item custom views with autoLayout.
-                // Before that, though we can still use autoLayout *within* the customView,
-                // setting the view's size with constraints causes the customView to be temporarily
-                // laid out with a misplaced origin.
-                if (@available(iOS 11.0, *)) {
-                    [timerView autoSetDimensionsToSize:CGSizeMake(36, 44)];
-                } else {
-                    timerView.frame = CGRectMake(0, 0, 36, 44);
-                }
+                [timerView autoSetDimensionsToSize:CGSizeMake(36, 44)];
 
                 [barButtons addObject:[[UIBarButtonItem alloc]
                                                initWithCustomView:timerView
@@ -4141,23 +4074,8 @@ typedef enum : NSUInteger {
     // we use the collectionView bounds to determine where the "bottom" is.
     [self.view layoutIfNeeded];
 
-    const CGFloat topInset = ^{
-        if (@available(iOS 11, *)) {
-            return -self.collectionView.adjustedContentInset.top;
-        } else {
-            return -self.collectionView.contentInset.top;
-        }
-    }();
-
-    const CGFloat bottomInset = ^{
-        if (@available(iOS 11, *)) {
-            return -self.collectionView.adjustedContentInset.bottom;
-        } else {
-            return -self.collectionView.contentInset.bottom;
-        }
-    }();
-
-    const CGFloat firstContentPageTop = topInset;
+    const CGFloat bottomInset = -self.collectionView.adjustedContentInset.bottom;
+    const CGFloat firstContentPageTop = -self.collectionView.adjustedContentInset.top;
     const CGFloat collectionViewUnobscuredHeight = self.collectionView.bounds.size.height + bottomInset;
     const CGFloat lastContentPageTop = self.safeContentHeight - collectionViewUnobscuredHeight;
 
@@ -4733,12 +4651,7 @@ typedef enum : NSUInteger {
     // from the bottom of the content.
     CGFloat contentOffsetYBottom = self.maxContentOffsetY;
     CGFloat contentOffsetY = contentOffsetYBottom - MAX(0, lastKnownDistanceFromBottom);
-    CGFloat minContentOffsetY;
-    if (@available(iOS 11, *)) {
-        minContentOffsetY = -self.collectionView.safeAreaInsets.top;
-    } else {
-        minContentOffsetY = 0.f;
-    }
+    CGFloat minContentOffsetY = -self.collectionView.safeAreaInsets.top;
     contentOffsetY = MAX(minContentOffsetY, contentOffsetY);
     return [NSValue valueWithCGPoint:CGPointMake(0, contentOffsetY)];
 }
@@ -4778,12 +4691,7 @@ typedef enum : NSUInteger {
 {
     CGFloat contentHeight = self.safeContentHeight;
 
-    UIEdgeInsets adjustedContentInset;
-    if (@available(iOS 11, *)) {
-        adjustedContentInset = self.collectionView.adjustedContentInset;
-    } else {
-        adjustedContentInset = self.collectionView.contentInset;
-    }
+    UIEdgeInsets adjustedContentInset = self.collectionView.adjustedContentInset;
     // Note the usage of MAX() to handle the case where there isn't enough
     // content to fill the collection view at its current size.
     CGFloat maxContentOffsetY = contentHeight + adjustedContentInset.bottom - self.collectionView.bounds.size.height;
@@ -5402,7 +5310,6 @@ typedef enum : NSUInteger {
         [self updateLastKnownDistanceFromBottom];
     }
     [self updateInputToolbarLayout];
-    [self updateHeaderViewFrame];
     [self updateLeftBarItem];
     [self maintainSelectionAfterMappingChange];
     [self updateSelectionHighlight];
@@ -5418,11 +5325,7 @@ typedef enum : NSUInteger {
 
 - (void)updateInputToolbarLayout
 {
-    UIEdgeInsets safeAreaInsets = UIEdgeInsetsZero;
-    if (@available(iOS 11, *)) {
-        safeAreaInsets = self.view.safeAreaInsets;
-    }
-    [self.inputToolbar updateLayoutWithSafeAreaInsets:safeAreaInsets];
+    [self.inputToolbar updateLayoutWithSafeAreaInsets:self.view.safeAreaInsets];
 }
 
 #pragma mark - Message Request
@@ -5461,10 +5364,7 @@ typedef enum : NSUInteger {
     }
 
     // Slide the request view off the bottom of the screen.
-    CGFloat bottomInset = 0;
-    if (@available(iOS 11, *)) {
-        bottomInset = self.view.safeAreaInsets.bottom;
-    }
+    CGFloat bottomInset = self.view.safeAreaInsets.bottom;
 
     UIView *dismissingView = self.messageRequestView;
     self.messageRequestView = nil;

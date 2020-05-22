@@ -14,7 +14,6 @@ import SignalServiceKit
  *   mirrored (and delegated from) CallKitCallUIAdaptee.
  *   TODO: Would it simplify things to merge this into CallKitCallUIAdaptee?
  */
-@available(iOS 10.0, *)
 final class CallKitCallManager: NSObject {
 
     let callController = CXCallController()

@@ -422,7 +422,7 @@ public class OWSLinkPreviewManager: NSObject {
     private let serialQueue = DispatchQueue(label: "org.signal.linkPreview")
 
     private func assertIsOnSerialQueue() {
-        if _isDebugAssertConfiguration(), #available(iOS 10.0, *) {
+        if _isDebugAssertConfiguration() {
             assertOnQueue(serialQueue)
         }
     }

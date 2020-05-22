@@ -908,7 +908,6 @@ extension CaptureOutput: AVCaptureVideoDataOutputSampleBufferDelegate, AVCapture
     }
 }
 
-@available(iOS 10.0, *)
 class PhotoCaptureOutputAdaptee: NSObject, ImageCaptureOutput {
 
     let photoOutput = AVCapturePhotoOutput()
@@ -966,7 +965,6 @@ class PhotoCaptureOutputAdaptee: NSObject, ImageCaptureOutput {
             self.completion = completion
         }
 
-        @available(iOS 11.0, *)
         func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
             defer { completion() }
 
@@ -979,42 +977,6 @@ class PhotoCaptureOutputAdaptee: NSObject, ImageCaptureOutput {
                 }
                 guard let rawData = photo.fileDataRepresentation()  else {
                     throw OWSAssertionError("photo data was unexpectely empty")
-                }
-
-                let resizedData = try crop(photoData: rawData, toOutputRect: captureRect)
-                result = .success(resizedData)
-            } catch {
-                result = .failure(error)
-            }
-
-            DispatchQueue.main.async {
-                delegate.captureOutputDidCapture(photoData: result)
-            }
-        }
-
-        func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photoSampleBuffer: CMSampleBuffer?, previewPhoto previewPhotoSampleBuffer: CMSampleBuffer?, resolvedSettings: AVCaptureResolvedPhotoSettings, bracketSettings: AVCaptureBracketedStillImageSettings?, error: Error?) {
-            defer { completion() }
-
-            if #available(iOS 11, *) {
-                owsFailDebug("unexpectedly calling legacy method.")
-            }
-
-            guard let photoSampleBuffer = photoSampleBuffer else {
-                owsFailDebug("sampleBuffer was unexpectedly nil")
-                return
-            }
-
-            guard let delegate = delegate else { return }
-
-            let result: Swift.Result<Data, Error>
-            do {
-                if let error = error {
-                    throw error
-                }
-
-                guard let rawData = AVCapturePhotoOutput.jpegPhotoDataRepresentation(forJPEGSampleBuffer: photoSampleBuffer,
-                                                                                     previewPhotoSampleBuffer: previewPhotoSampleBuffer) else {
-                    throw OWSAssertionError("photo data was unexpectedly empty")
                 }
 
                 let resizedData = try crop(photoData: rawData, toOutputRect: captureRect)

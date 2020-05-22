@@ -74,9 +74,7 @@ NSError *SSKEnsureError(NSError *_Nullable error, OWSErrorCode fallbackCode, NSS
 void AssertIsOnSendingQueue()
 {
 #ifdef DEBUG
-    if (@available(iOS 10.0, *)) {
-        dispatch_assert_queue([OWSDispatch sendingQueue]);
-    } // else, skip assert as it's a development convenience.
+    dispatch_assert_queue([OWSDispatch sendingQueue]);
 #endif
 }
 

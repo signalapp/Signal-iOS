@@ -744,11 +744,7 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
     } else {
         UIView *_Nullable view = [self tableView:tableView viewForHeaderInSection:sectionIndex];
         if (view) {
-            if (@available(iOS 11, *)) {
-                return UITableViewAutomaticDimension;
-            } else {
-                return [view sizeThatFits:self.view.frame.size].height;
-            }
+            return UITableViewAutomaticDimension;
         } else {
             return 0;
         }
@@ -769,11 +765,7 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
     } else {
         UIView *_Nullable view = [self tableView:tableView viewForFooterInSection:sectionIndex];
         if (view) {
-            if (@available(iOS 11, *)) {
-                return UITableViewAutomaticDimension;
-            } else {
-                return [view sizeThatFits:self.view.frame.size].height;
-            }
+            return UITableViewAutomaticDimension;
         } else {
             return 0;
         }

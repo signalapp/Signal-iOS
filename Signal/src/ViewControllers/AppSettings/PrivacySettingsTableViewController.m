@@ -304,7 +304,7 @@ NS_ASSUME_NONNULL_BEGIN
 
         if (CallUIAdapter.isCallkitDisabledForLocale) {
             // Hide all CallKit-related prefs; CallKit is disabled.
-        } else if (@available(iOS 11, *)) {
+        } else {
             OWSTableSection *callKitSection = [OWSTableSection new];
             [callKitSection
                 addItem:[OWSTableItem
@@ -323,38 +323,6 @@ NS_ASSUME_NONNULL_BEGIN
                             selector:@selector(didToggleEnableSystemCallLogSwitch:)]];
             callKitSection.footerTitle = NSLocalizedString(
                 @"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION", @"Settings table section footer.");
-            [contents addSection:callKitSection];
-        } else if (@available(iOS 10, *)) {
-            OWSTableSection *callKitSection = [OWSTableSection new];
-            callKitSection.footerTitle
-                = NSLocalizedString(@"SETTINGS_SECTION_CALL_KIT_DESCRIPTION", @"Settings table section footer.");
-            [callKitSection
-                addItem:[OWSTableItem switchItemWithText:NSLocalizedString(@"SETTINGS_PRIVACY_CALLKIT_TITLE",
-                                                             @"Short table cell label")
-                            accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"callkit"]
-                            isOnBlock:^{
-                                return [Environment.shared.preferences isCallKitEnabled];
-                            }
-                            isEnabledBlock:^{
-                                return YES;
-                            }
-                            target:weakSelf
-                            selector:@selector(didToggleEnableCallKitSwitch:)]];
-            if (self.preferences.isCallKitEnabled) {
-                [callKitSection addItem:[OWSTableItem switchItemWithText:NSLocalizedString(
-                                                                             @"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE",
-                                                                             @"Label for 'CallKit privacy' preference")
-                                            accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@",
-                                                                              @"callkit_privacy"]
-                                            isOnBlock:^{
-                                                return (BOOL) ![Environment.shared.preferences isCallKitPrivacyEnabled];
-                                            }
-                                            isEnabledBlock:^{
-                                                return YES;
-                                            }
-                                            target:weakSelf
-                                            selector:@selector(didToggleEnableCallKitPrivacySwitch:)]];
-            }
             [contents addSection:callKitSection];
         }
     }
@@ -584,27 +552,6 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSLogInfo(@"user toggled call kit preference: %@", (sender.isOn ? @"ON" : @"OFF"));
     [self.preferences setIsSystemCallLogEnabled:sender.isOn];
-
-    // rebuild callUIAdapter since CallKit configuration changed.
-    [AppEnvironment.shared.callService createCallUIAdapter];
-}
-
-- (void)didToggleEnableCallKitSwitch:(UISwitch *)sender
-{
-    OWSLogInfo(@"user toggled call kit preference: %@", (sender.isOn ? @"ON" : @"OFF"));
-    [self.preferences setIsCallKitEnabled:sender.isOn];
-
-    // rebuild callUIAdapter since CallKit vs not changed.
-    [AppEnvironment.shared.callService createCallUIAdapter];
-
-    // Show/Hide dependent switch: CallKit privacy
-    [self updateTableContents];
-}
-
-- (void)didToggleEnableCallKitPrivacySwitch:(UISwitch *)sender
-{
-    OWSLogInfo(@"user toggled call kit privacy preference: %@", (sender.isOn ? @"ON" : @"OFF"));
-    [self.preferences setIsCallKitPrivacyEnabled:!sender.isOn];
 
     // rebuild callUIAdapter since CallKit configuration changed.
     [AppEnvironment.shared.callService createCallUIAdapter];

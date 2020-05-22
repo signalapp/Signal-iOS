@@ -226,10 +226,7 @@ class MessageActionsViewController: UIViewController {
         // If the picker is not at least 16pts away from the edge
         // of the screen, we offset it so that it is.
 
-        let edgeThresholds: UIEdgeInsets = { () -> UIEdgeInsets in
-            guard #available(iOS 11, *) else { return .zero }
-            return backdropView.safeAreaInsets
-        }().plus(16)
+        let edgeThresholds = backdropView.safeAreaInsets.plus(16)
 
         if pickerOrigin.x < backdropView.frame.origin.x + edgeThresholds.left {
             pickerOrigin.x = backdropView.frame.origin.x + edgeThresholds.left

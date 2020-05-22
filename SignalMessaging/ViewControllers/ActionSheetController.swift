@@ -173,10 +173,7 @@ public class ActionSheetController: OWSViewController {
         shapeLayer.path = path.cgPath
         contentView.layer.mask = shapeLayer
 
-        let bottomInset: CGFloat = {
-            guard #available(iOS 11, *) else { return scrollView.contentInset.bottom }
-            return scrollView.adjustedContentInset.bottom
-        }()
+        let bottomInset = scrollView.adjustedContentInset.bottom
 
         // Always scroll to the bottom initially, so it's clear to the
         // user that there's more to scroll to if it goes offscreen.

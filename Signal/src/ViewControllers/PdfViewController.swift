@@ -28,15 +28,6 @@ public class PdfViewController: OWSViewController {
         super.init()
     }
 
-    @objc
-    public class var canRenderPdf: Bool {
-        if #available(iOS 11.0, *) {
-            return true
-        } else {
-            return false
-        }
-    }
-
     // MARK: - View Lifecycle
 
     public override func viewDidLoad() {
@@ -50,8 +41,7 @@ public class PdfViewController: OWSViewController {
         let contentView: UIView
 
         // Setup the PDFView as the contentView if supported
-        if #available(iOS 11.0, *),
-            let url = attachmentStream.originalMediaURL,
+        if let url = attachmentStream.originalMediaURL,
             let pdfDocument = PDFDocument(url: url) {
             let pdfView = PDFView()
             self.pdfView = pdfView
@@ -115,8 +105,7 @@ public class PdfViewController: OWSViewController {
     public override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
-        if #available(iOS 11.0, *),
-            !viewHasEverAppeared,
+        if !viewHasEverAppeared,
             let pdfView = pdfView as? PDFView {
             pdfView.scaleFactor = pdfView.scaleFactorForSizeToFit
             pdfView.goToFirstPage(nil)

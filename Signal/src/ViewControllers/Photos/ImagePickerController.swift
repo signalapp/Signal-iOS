@@ -92,13 +92,6 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         titleView.delegate = self
         titleView.text = photoCollection.localizedTitle()
 
-        if #available(iOS 11, *) {
-            // do nothing
-        } else {
-            // must assign titleView frame manually on older iOS
-            titleView.frame = CGRect(origin: .zero, size: titleView.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize))
-        }
-
         navigationItem.titleView = titleView
         self.titleView = titleView
 
@@ -277,10 +270,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     // MARK: 
 
     var lastPageYOffset: CGFloat {
-        var yOffset = collectionView.contentSize.height - collectionView.frame.height + collectionView.contentInset.bottom
-        if #available(iOS 11.0, *) {
-            yOffset += view.safeAreaInsets.bottom
-        }
+        var yOffset = collectionView.contentSize.height - collectionView.frame.height + collectionView.contentInset.bottom + view.safeAreaInsets.bottom
         return yOffset
     }
 
@@ -339,9 +329,7 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     private class func buildLayout() -> UICollectionViewFlowLayout {
         let layout = UICollectionViewFlowLayout()
 
-        if #available(iOS 11, *) {
-            layout.sectionInsetReference = .fromSafeArea
-        }
+        layout.sectionInsetReference = .fromSafeArea
         layout.minimumInteritemSpacing = kInterItemSpacing
         layout.minimumLineSpacing = kInterItemSpacing
         layout.sectionHeadersPinToVisibleBounds = true
@@ -350,12 +338,8 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
     }
 
     func updateLayout() {
-        let containerWidth: CGFloat
-        if #available(iOS 11.0, *) {
-            containerWidth = self.view.safeAreaLayoutGuide.layoutFrame.size.width
-        } else {
-            containerWidth = self.view.frame.size.width
-        }
+        let containerWidth = self.view.safeAreaLayoutGuide.layoutFrame.size.width
+
         let minItemWidth: CGFloat = 100
         let itemCount = floor(containerWidth / minItemWidth)
         let interSpaceWidth = (itemCount - 1) * type(of: self).kInterItemSpacing

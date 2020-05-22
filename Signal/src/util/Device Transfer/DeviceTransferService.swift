@@ -348,12 +348,6 @@ class DeviceTransferService: NSObject {
             return
         }
 
-        // We can only manage throughput + estimated time on the `Progress` object
-        // in iOS 11 and later. Since we're imminiently dropping support for iOS 10,
-        // don't bother doing this in any other way for old devices. iOS 10 devices
-        // will only see a percentage progress without any estimated time.
-        guard #available(iOS 11, *) else { return }
-
         stopThroughputCalculation()
 
         guard let progress: Progress = {
@@ -394,7 +388,6 @@ class DeviceTransferService: NSObject {
         throughputTimer?.fire()
     }
 
-    @available(iOS 11, *)
     private func logProgress(_ progress: Progress, remainingBytes: Double) {
         let currentWholeNumberProgress = Int(progress.fractionCompleted * 100)
         let percentChange = currentWholeNumberProgress - lastWholeNumberProgress

@@ -351,13 +351,11 @@ void uncaughtExceptionHandler(NSException *exception)
     mainWindow.rootViewController = [LoadingViewController new];
     [mainWindow makeKeyAndVisible];
 
-    if (@available(iOS 10, *)) {
-        // This must happen in appDidFinishLaunching or earlier to ensure we don't
-        // miss notifications.
-        // Setting the delegate also seems to prevent us from getting the legacy notification
-        // notification callbacks upon launch e.g. 'didReceiveLocalNotification'
-        UNUserNotificationCenter.currentNotificationCenter.delegate = self;
-    }
+    // This must happen in appDidFinishLaunching or earlier to ensure we don't
+    // miss notifications.
+    // Setting the delegate also seems to prevent us from getting the legacy notification
+    // notification callbacks upon launch e.g. 'didReceiveLocalNotification'
+    UNUserNotificationCenter.currentNotificationCenter.delegate = self;
 
     // Accept push notification when app is not open
     NSDictionary *remoteNotification = launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey];
@@ -834,11 +832,6 @@ void uncaughtExceptionHandler(NSException *exception)
     }
 
     if ([userActivity.activityType isEqualToString:@"INStartVideoCallIntent"]) {
-        if (!SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(10, 0)) {
-            OWSLogError(@"unexpectedly received INStartVideoCallIntent pre iOS10");
-            return NO;
-        }
-
         OWSLogInfo(@"got start video call intent");
 
         INInteraction *interaction = [userActivity interaction];
@@ -897,12 +890,6 @@ void uncaughtExceptionHandler(NSException *exception)
         }];
         return YES;
     } else if ([userActivity.activityType isEqualToString:@"INStartAudioCallIntent"]) {
-
-        if (!SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(10, 0)) {
-            OWSLogError(@"unexpectedly received INStartAudioCallIntent pre iOS10");
-            return NO;
-        }
-
         OWSLogInfo(@"got start audio call intent");
 
         INInteraction *interaction = [userActivity interaction];

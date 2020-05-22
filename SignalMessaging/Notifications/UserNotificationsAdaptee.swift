@@ -6,7 +6,6 @@ import Foundation
 import UserNotifications
 import PromiseKit
 
-@available(iOS 10.0, *)
 public class UserNotificationConfig {
 
     class var allNotificationCategories: Set<UNNotificationCategory> {
@@ -62,7 +61,6 @@ public class UserNotificationConfig {
 
 }
 
-@available(iOS 10.0, *)
 class UserNotificationPresenterAdaptee: NSObject {
 
     private let notificationCenter: UNUserNotificationCenter
@@ -75,7 +73,6 @@ class UserNotificationPresenterAdaptee: NSObject {
     }
 }
 
-@available(iOS 10.0, *)
 extension UserNotificationPresenterAdaptee: NotificationPresenterAdaptee {
 
     // MARK: - Dependencies
@@ -312,7 +309,6 @@ public protocol ConversationSplit {
 }
 
 extension OWSSound {
-    @available(iOS 10.0, *)
     func notificationSound(isQuiet: Bool) -> UNNotificationSound {
         guard let filename = OWSSounds.filename(for: self, quiet: isQuiet) else {
             owsFailDebug("filename was unexpectedly nil")

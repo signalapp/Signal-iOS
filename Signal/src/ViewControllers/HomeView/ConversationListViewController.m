@@ -684,11 +684,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [searchResultsController.view autoPinEdgeToSuperviewEdge:ALEdgeBottom];
     [searchResultsController.view autoPinEdgeToSuperviewEdge:ALEdgeLeading];
     [searchResultsController.view autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
-    if (@available(iOS 11, *)) {
-        [searchResultsController.view autoPinTopToSuperviewMarginWithInset:56];
-    } else {
-        [searchResultsController.view autoPinToTopLayoutGuideOfViewController:self withInset:40];
-    }
+    [searchResultsController.view autoPinTopToSuperviewMarginWithInset:56];
     searchResultsController.view.hidden = YES;
 
     [self updateReminderViews];
@@ -768,31 +764,20 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     }
 
     //  Settings button.
-    UIBarButtonItem *settingsButton;
-    if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(11, 0)) {
-        const NSUInteger kAvatarSize = 28;
-        UIImage *_Nullable localProfileAvatarImage = [OWSProfileManager.sharedManager localProfileAvatarImage];
-        UIImage *avatarImage = (localProfileAvatarImage
-                ?: [[[OWSContactAvatarBuilder alloc] initForLocalUserWithDiameter:kAvatarSize] buildDefaultImage]);
-        OWSAssertDebug(avatarImage);
+    const NSUInteger kAvatarSize = 28;
+    UIImage *_Nullable localProfileAvatarImage = [OWSProfileManager.sharedManager localProfileAvatarImage];
+    UIImage *avatarImage = (localProfileAvatarImage
+                            ?: [[[OWSContactAvatarBuilder alloc] initForLocalUserWithDiameter:kAvatarSize] buildDefaultImage]);
+    OWSAssertDebug(avatarImage);
 
-        UIButton *avatarButton = [AvatarImageButton buttonWithType:UIButtonTypeCustom];
-        [avatarButton addTarget:self action:@selector(showAppSettings) forControlEvents:UIControlEventTouchUpInside];
-        [avatarButton setImage:avatarImage forState:UIControlStateNormal];
-        [avatarButton autoSetDimension:ALDimensionWidth toSize:kAvatarSize];
-        [avatarButton autoSetDimension:ALDimensionHeight toSize:kAvatarSize];
+    UIButton *avatarButton = [AvatarImageButton buttonWithType:UIButtonTypeCustom];
+    [avatarButton addTarget:self action:@selector(showAppSettings) forControlEvents:UIControlEventTouchUpInside];
+    [avatarButton setImage:avatarImage forState:UIControlStateNormal];
+    [avatarButton autoSetDimension:ALDimensionWidth toSize:kAvatarSize];
+    [avatarButton autoSetDimension:ALDimensionHeight toSize:kAvatarSize];
 
-        settingsButton = [[UIBarButtonItem alloc] initWithCustomView:avatarButton];
-    } else {
-        // iOS 9 and 10 have a bug around layout of custom views in UIBarButtonItem,
-        // so we just use a simple icon.
-        UIImage *image = [UIImage imageNamed:@"button_settings_white"];
-        settingsButton = [[UIBarButtonItem alloc] initWithImage:image
-                                                          style:UIBarButtonItemStylePlain
-                                                         target:self
-                                                         action:@selector(showAppSettings)
-                                        accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"settings")];
-    }
+    UIBarButtonItem *settingsButton = [[UIBarButtonItem alloc] initWithCustomView:avatarButton];
+
     settingsButton.accessibilityLabel = CommonStrings.openSettingsButton;
     self.navigationItem.leftBarButtonItem = settingsButton;
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, settingsButton);
@@ -1918,18 +1903,16 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     callCount++;
     if (self.hasEverAppeared && callCount > 25) {
         OWSLogDebug(@"requesting review");
-        if (@available(iOS 10, *)) {
-            // In Debug this pops up *every* time, which is helpful, but annoying.
-            // In Production this will pop up at most 3 times per 365 days.
+        // In Debug this pops up *every* time, which is helpful, but annoying.
+        // In Production this will pop up at most 3 times per 365 days.
 #ifndef DEBUG
-            static dispatch_once_t onceToken;
-            // Despite `SKStoreReviewController` docs, some people have reported seeing the "request review" prompt
-            // repeatedly after first installation. Let's make sure it only happens at most once per launch.
-            dispatch_once(&onceToken, ^{
-                [SKStoreReviewController requestReview];
-            });
+        static dispatch_once_t onceToken;
+        // Despite `SKStoreReviewController` docs, some people have reported seeing the "request review" prompt
+        // repeatedly after first installation. Let's make sure it only happens at most once per launch.
+        dispatch_once(&onceToken, ^{
+            [SKStoreReviewController requestReview];
+        });
 #endif
-        }
     } else {
         OWSLogDebug(@"not requesting review");
     }
