@@ -696,7 +696,7 @@ class PinProgressView: UIView {
             return progressAnimation.play { [weak self] _ in self?.startNextLoopOrFinish() }
         }
 
-        guard progressAnimation.isAnimationPlaying else { return }
+        guard !progressAnimation.isHidden else { return }
 
         progressAnimation.stop()
         progressAnimation.isHidden = true
