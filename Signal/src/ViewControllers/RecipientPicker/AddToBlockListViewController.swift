@@ -62,14 +62,18 @@ extension AddToBlockListViewController: RecipientPickerDelegate {
     func recipientPicker(
         _ recipientPickerViewController: RecipientPickerViewController,
         canSelectRecipient recipient: PickedRecipient
-    ) -> Bool {
+    ) -> RecipientPickerRecipientState {
         switch recipient.identifier {
         case .address(let address):
-            guard !recipientPicker.contactsViewHelper.isSignalServiceAddressBlocked(address) else { return false }
-            return true
+            guard !recipientPicker.contactsViewHelper.isSignalServiceAddressBlocked(address) else {
+                return .userAlreadyInBlocklist
+            }
+            return .canBeSelected
         case .group(let thread):
-            guard !recipientPicker.contactsViewHelper.isThreadBlocked(thread) else { return false }
-            return true
+            guard !recipientPicker.contactsViewHelper.isThreadBlocked(thread) else {
+                return .conversationAlreadyInBlocklist
+            }
+            return .canBeSelected
         }
     }
 

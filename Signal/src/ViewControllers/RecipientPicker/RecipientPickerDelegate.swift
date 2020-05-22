@@ -6,9 +6,18 @@ import Foundation
 import PromiseKit
 
 @objc
+public enum RecipientPickerRecipientState: Int {
+    case canBeSelected
+    case duplicateGroupMember
+    case userAlreadyInBlocklist
+    case conversationAlreadyInBlocklist
+    case unknownError
+}
+
+@objc
 protocol RecipientPickerDelegate: AnyObject {
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
-                         canSelectRecipient recipient: PickedRecipient) -> Bool
+                         canSelectRecipient recipient: PickedRecipient) -> RecipientPickerRecipientState
 
     func recipientPicker(_ recipientPickerViewController: RecipientPickerViewController,
                          didSelectRecipient recipient: PickedRecipient)
@@ -92,7 +101,14 @@ extension RecipientPickerViewController {
     func tryToSelectRecipient(_ recipient: PickedRecipient) {
         guard let delegate = delegate else { return }
         guard showUseAsyncSelection else {
-            guard delegate.recipientPicker(self, canSelectRecipient: recipient) else { return }
+            AssertIsOnMainThread()
+
+            let recipientPickerRecipientState = delegate.recipientPicker(self, canSelectRecipient: recipient)
+            guard recipientPickerRecipientState == .canBeSelected else {
+                showErrorAlert(recipientPickerRecipientState: recipientPickerRecipientState)
+                return
+            }
+
             delegate.recipientPicker(self, didSelectRecipient: recipient)
             return
         }
@@ -106,7 +122,12 @@ extension RecipientPickerViewController {
             }.done { _ in
                 AssertIsOnMainThread()
                 modalActivityIndicator.dismiss {
-                    guard delegate.recipientPicker(self, canSelectRecipient: recipient) else { return }
+                    AssertIsOnMainThread()
+                    let recipientPickerRecipientState = delegate.recipientPicker(self, canSelectRecipient: recipient)
+                    guard recipientPickerRecipientState == .canBeSelected else {
+                        self.showErrorAlert(recipientPickerRecipientState: recipientPickerRecipientState)
+                        return
+                    }
                     delegate.recipientPicker(self, didSelectRecipient: recipient)
                 }
             }.catch { error in
@@ -119,6 +140,27 @@ extension RecipientPickerViewController {
         }
     }
 
+    func showErrorAlert(recipientPickerRecipientState: RecipientPickerRecipientState) {
+        let errorMessage: String
+        switch recipientPickerRecipientState {
+        case .duplicateGroupMember:
+            errorMessage = NSLocalizedString("GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP",
+                                             comment: "Error message indicating that a member can't be added to a group because they are already in the group.")
+        case .userAlreadyInBlocklist:
+            errorMessage = NSLocalizedString("BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST",
+                                             comment: "Error message indicating that a user can't be blocked because they are already blocked.")
+        case .conversationAlreadyInBlocklist:
+            errorMessage = NSLocalizedString("BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST",
+                                             comment: "Error message indicating that a conversation can't be blocked because they are already blocked.")
+        case .canBeSelected, .unknownError:
+            owsFailDebug("Unexpected value.")
+            errorMessage = NSLocalizedString("RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED",
+                                             comment: "Error message indicating that a user can't be selected.")
+        }
+        OWSActionSheets.showErrorAlert(message: errorMessage)
+        return
+    }
+
     func item(forRecipient recipient: PickedRecipient) -> OWSTableItem {
         switch recipient.identifier {
         case .address(let address):
@@ -128,7 +170,7 @@ extension RecipientPickerViewController {
                     guard let self = self else { return cell }
 
                     if let delegate = self.delegate {
-                        if !delegate.recipientPicker(self, canSelectRecipient: recipient) {
+                        if delegate.recipientPicker(self, canSelectRecipient: recipient) != .canBeSelected {
                             cell.selectionStyle = .none
                         }
 
@@ -162,7 +204,7 @@ extension RecipientPickerViewController {
                     guard let self = self else { return cell }
 
                     if let delegate = self.delegate {
-                        if !delegate.recipientPicker(self, canSelectRecipient: recipient) {
+                        if delegate.recipientPicker(self, canSelectRecipient: recipient) != .canBeSelected {
                             cell.selectionStyle = .none
                         }
 

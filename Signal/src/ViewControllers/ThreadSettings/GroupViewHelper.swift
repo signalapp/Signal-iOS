@@ -128,6 +128,25 @@ class GroupViewHelper: NSObject {
         return groupModelV2.groupMembership.isAdministrator(localAddress)
     }
 
+    var canRevokePendingInvites: Bool {
+        guard let groupThread = thread as? TSGroupThread else {
+            return false
+        }
+        guard let localAddress = tsAccountManager.localAddress else {
+            owsFailDebug("Missing localAddress.")
+            return false
+        }
+        let groupMembership = groupThread.groupModel.groupMembership
+        return (!threadViewModel.hasPendingMessageRequest &&
+            groupMembership.isPendingOrNonPendingMember(localAddress) &&
+            groupMembership.isAdministrator(localAddress))
+    }
+
+    var canResendInvites: Bool {
+        return (!threadViewModel.hasPendingMessageRequest &&
+            isLocalUserInConversation)
+    }
+
     var isLocalUserInConversation: Bool {
         guard let groupThread = thread as? TSGroupThread else {
             return true

@@ -303,6 +303,9 @@ public class DebugFlags: NSObject {
     public static var groupsV2memberStatusIndicators = FeatureFlags.groupsV2 && build.includes(.qa)
 
     @objc
+    public static var groupsV2editMemberAccess = build.includes(.qa)
+
+    @objc
     public static let isMessageProcessingVerbose = false
 
     // Currently this flag is only honored by TSNetworkManager,
@@ -320,7 +323,7 @@ public class DebugFlags: NSObject {
     public static let permissiveGroupUpdateInfoMessages = build.includes(.dev)
 
     @objc
-    public static let showProfileKeyIndicator = build.includes(.qa)
+    public static let showProfileKeyAndUuidsIndicator = build.includes(.qa)
 
     @objc
     public static let verboseNotificationLogging = build.includes(.qa)
