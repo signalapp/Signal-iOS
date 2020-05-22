@@ -299,15 +299,6 @@ class StorageServiceOperation: OWSOperation {
     override public func run() {
         Logger.info("\(mode)")
 
-        // Don't do anything unless storage service is enabled on the server.
-        // This is a kill switch in case something goes wrong.
-        // TODO: Derive Storage Service Key – When we start using the master
-        // key to derive the storage service key we cannot rely on this since
-        // we will need to do storage service operations during registration.
-        guard RemoteConfig.storageService else {
-            return reportSuccess()
-        }
-
         // We don't have backup keys, do nothing. We'll try a
         // fresh restore once the keys are set.
         guard KeyBackupService.DerivedKey.storageService.isAvailable else {
