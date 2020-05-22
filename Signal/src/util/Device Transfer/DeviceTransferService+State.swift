@@ -25,7 +25,7 @@ extension DeviceTransferService {
         )
         case outgoing(
             newDevicePeerId: MCPeerID,
-            newDeviceCertificateHash: Data?,
+            newDeviceCertificateHash: Data,
             manifest: DeviceTransferProtoManifest,
             transferredFileIds: [String],
             progress: Progress

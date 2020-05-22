@@ -111,7 +111,7 @@
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "The data transferred from your old device could not be restored. Please send a debug log to support@signal.org so that we can troubleshoot this issue. If you re-install Signal your message history may be lost.";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Could Not Complete Transfer";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "ไม่สามารถถ่ายโอนได้เสร็จสมบูรณ์";
 
 /* Text prompting user to edit their profile name. */
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "ป้อนชื่อของคุณ";
@@ -334,6 +334,12 @@
 
 /* Section header for users that have been blocked */
 "BLOCK_LIST_BLOCKED_USERS_SECTION" = "ผู้ใช้ที่ถูกปิดกั้น";
+
+/* Error message indicating that a conversation can't be blocked because they are already blocked. */
+"BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "Group already blocked.";
+
+/* Error message indicating that a user can't be blocked because they are already blocked. */
+"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "User already blocked.";
 
 /* Button label for the 'unblock' button */
 "BLOCK_LIST_UNBLOCK_BUTTON" = "เลิกปิดกั้น";
@@ -791,6 +797,18 @@
 /* Label for the 'edit group' button in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_GROUP" = "แก้ไข";
 
+/* Label for 'edit membership access' action in conversation settings view. */
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Who Can Edit Membership";
+
+/* Label for button that sets 'group membership access' to 'administrators-only'. */
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "เฉพาะผู้ดูแล";
+
+/* Description for the 'edit group membership access' alert. */
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "Choose who can edit group membership:";
+
+/* Label for button that sets 'group membership access' to 'members-only'. */
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "สมาชิกทั้งหมด";
+
 /* Navbar title when viewing settings for a group thread */
 "CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "ข้อมูลกลุ่ม";
 
@@ -805,6 +823,9 @@
 
 /* Format for the section title of the 'members' section in conversation settings view. Embeds: {{ the number of group members }}. */
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@สมาชิก";
+
+/* Footer for the 'membership access' section in conversation settings view. */
+"CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "Choose who can edit group membership.";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "ปิดเสียง";
@@ -1014,13 +1035,13 @@
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "ปรับปรุงรายการอุปกรณ์ไม่สำเร็จ";
 
 /* The stop action of the dialog asking the user if they want to cancel a device transfer */
-"DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION" = "Stop Transfer";
+"DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION" = "หยุดการถ่ายโอน";
 
 /* The message of the dialog asking the user if they want to cancel a device transfer */
-"DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE" = "Closing this window will stop the transfer you have in progress, are you sure you want to proceed?";
+"DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE" = "การปิดหน้าต่างนี้จะหยุดการถ่ายโอนที่คุณกำลังทำอยู่ คุณต้องการหยุดหรือไม่?";
 
 /* The title of the dialog asking the user if they want to cancel a device transfer */
-"DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "Stop Transfer?";
+"DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "หยุดการถ่ายโอนหรือไม่?";
 
 /* The explanation for the device transfer 'choice' view */
 "DEVICE_TRANSFER_CHOICE_EXPLANATION" = "If you have your old iOS device, you can securely transfer your account and messages to this device.";
@@ -1050,10 +1071,10 @@
 "DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Transfer your account and message history from your old iPad";
 
 /* The title for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "Transfer from another iPad";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "ถ่ายโอนจากไอแพดอีกเครื่อง";
 
 /* The title for the device transfer 'choice' view 'transfer' option */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_TITLE" = "Transfer from iOS Device";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_TITLE" = "ถ่ายโอนจากอุปกรณ์ iOS";
 
 /* A warning for the device transfer 'choice' view indicating you can only have one device registered with your number */
 "DEVICE_TRANSFER_CHOICE_WARNING" = "Continuing will disable Signal on other devices currently registered with the same phone number.";
@@ -1074,13 +1095,13 @@
 "DEVICE_TRANSFER_ERROR_NOT_ENOUGH_SPACE" = "Not enough free space to complete the transfer";
 
 /* An error indicating the user must update their device before trying to transfer. */
-"DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Update to the latest version of Signal and try again";
+"DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "ปรับปรุง Signal ให้เป็นรุ่นล่าสุดและลองอีกครั้ง";
 
 /* The explanation on the action sheet prompting the user if they want to transfer their device. */
 "DEVICE_TRANSFER_PROMPT_EXPLANATION" = "Transfer your Signal account to a new iOS device. Make sure your new device is nearby and turned on.";
 
 /* The title on the acttion sheet prompting the user if they want to transfer their device. */
-"DEVICE_TRANSFER_PROMPT_TITLE" = "Transfer Account";
+"DEVICE_TRANSFER_PROMPT_TITLE" = "ถ่ายโอนบัญชี";
 
 /* The explanation for the device transfer qr code view */
 "DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Open Signal on your old device, bring it nearby, and make sure Wi-Fi and Bluetooth are enabled on both devices.";
@@ -1089,28 +1110,28 @@
 "DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Position this QR code in the frame of your other device.";
 
 /* The title for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_TITLE" = "Waiting for Other Device...";
+"DEVICE_TRANSFER_QRCODE_TITLE" = "กำลังรออุปกรณ์ตัวอื่นอยู่...";
 
 /* The explanation on the view that shows receiving progress */
-"DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Keep both devices near each other. Do not turn off either device and keep Signal open. Transfers are end-to-end encrypted.";
+"DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "ทำให้แน่ใจว่าอุปกรณ์ทั้งคู่อยู่ใกล้กัน อย่าปิดเครื่องใด และให้เปิด Signal อยู่ตลอดเวลา การถ่ายโอนนั้นจะถูกเข้ารหัสลับตั้งแต่ต้นทางถึงปลายทาง";
 
 /* The title on the view that shows receiving progress */
-"DEVICE_TRANSFER_RECEIVING_TITLE" = "Receiving Data";
+"DEVICE_TRANSFER_RECEIVING_TITLE" = "กำลังรับข้อมูล";
 
 /* Text indicating that we are connecting to the scanned device */
 "DEVICE_TRANSFER_SCANNING_CONNECTING" = "กำลังเชื่อมต่อ…";
 
 /* The explanation for the action sheet asking the user to scan the QR code to transfer */
-"DEVICE_TRANSFER_SCANNING_EXPLANATION" = "Position the QR code within the circle";
+"DEVICE_TRANSFER_SCANNING_EXPLANATION" = "เลื่อนรหัส QR ให้อยู่ในวงกลม";
 
 /* The title for the action sheet asking the user to scan the QR code to transfer */
-"DEVICE_TRANSFER_SCANNING_TITLE" = "Hold Your New Device Up to the Camera";
+"DEVICE_TRANSFER_SCANNING_TITLE" = "จับอุปกรณ์ใหม่ของคุณให้อยู่ในกล้อง";
 
 /* The explanation on the action sheet that shows transfer progress */
-"DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "Keep both devices near each other. Do not turn off either device and keep Signal open.";
+"DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "ทำให้แน่ใจว่าอุปกรณ์ทั้งคู่อยู่ใกล้กัน อย่าปิดเครื่องใด และให้เปิด Signal อยู่ตลอดเวลา";
 
 /* The title on the action sheet that shows transfer progress */
-"DEVICE_TRANSFER_TRANSFERRING_TITLE" = "Transferring Data";
+"DEVICE_TRANSFER_TRANSFERRING_TITLE" = "กำลังถ่ายโอนข้อมูล";
 
 /* table cell label in conversation settings */
 "DISAPPEARING_MESSAGES" = "ข้อความที่ลบตัวเองได้";
@@ -1690,6 +1711,9 @@
 
 /* Message for the 'can't replace group admin' alert. */
 "GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "เลือกผู้ดูแลคนใหม่ก่อนคุณออกจากกลุ่มนี้";
+
+/* Error message indicating that a member can't be added to a group because they are already in the group. */
+"GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP" = "User already in group.";
 
 /* Error indicating that an error occurred while accepting an invite. */
 "GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "ไม่สามารถตอบรับคำเชิญ";
@@ -2534,11 +2558,17 @@
 /* Label indicating that a group has no pending members. */
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "ไม่มีคำเชิญให้แสดง";
 
+/* Title of 're-send invite' button. */
+"PENDING_GROUP_MEMBERS_RESEND_INVITE_1_BUTTON" = "Re-send Invite";
+
+/* Title of 're-send invites' button. */
+"PENDING_GROUP_MEMBERS_RESEND_INVITE_N_BUTTON" = "Re-send Invites";
+
 /* Title of 'revoke invite' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "เพิกถอนคำเชิญ";
 
-/* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the invited group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "เพิกถอนคำเชิญเข้ากลุ่มสำหรับ “%@“ หรือไม่?";
+/* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the inviting group member. }}. */
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revoke group invite sent by “%@“?";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "เพิกถอน %1$@ คำเชิญที่ถูกส่งโดย “%2$@“ หรือไม่?";
@@ -2546,11 +2576,20 @@
 /* Title of 'revoke invites' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_N_BUTTON" = "เพิกถอนคำเชิญ";
 
+/* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the invited group member. }}. */
+"PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "เพิกถอนคำเชิญเข้ากลุ่มสำหรับ “%@“ หรือไม่?";
+
+/* Format for title of 'revoke or re-send invite' confirmation alert. Embeds {{ name of the inviting group member. }}. */
+"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revoke or re-send group invite for “%@“?";
+
+/* Format for title of 'revoke or re-send invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
+"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Revoke or re-send %1$@ invites sent by “%2$@“?";
+
 /* Footer for the 'invites by other group members' section of the 'pending group members' view. */
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "รายละเอียดของบุคคลที่ถูกเชิญเข้ากลุ่มโดยสมาชิกคนอื่นจะไม่ถูกแสดง ถ้าผู้ถูกเชิญเลือกเข้าร่วมกลุ่ม ข้อมูลของบุคคลเหล่านั้นจะถูกแบ่งปันกับกลุ่ม ผู้ถูกเชิญจะมองไม่เห็นข้อความในกลุ่มจนกว่าจะเข้าร่วม";
 
 /* Title for the 'invites by other group members' section of the 'pending group members' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "เชิญโดยสมาชิกกลุ่มคนอื่น";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "คำเชิญโดยสมาชิกคนอื่นในกลุ่ม";
 
 /* Title for the 'people you invited' section of the 'pending group members' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "ผู้คนที่คุณได้เชิญ";
@@ -2942,6 +2981,9 @@
 /* Text describing the local user in the reaction details pane. */
 "REACTIONS_DETAIL_YOU" = "คุณ";
 
+/* Error message indicating that a user can't be selected. */
+"RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "User can't be selected.";
+
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "ฉันลืมรหัส PIN";
 
@@ -3318,7 +3360,7 @@
 "SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "สแกนรหัส QR ด้วยโทรศัพท์ของคุณ";
 
 /* header text before the user can transfer to this device */
-"SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "Launch Signal on your old iPad to transfer your account";
+"SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "เปิด Signal ในไอแพดเครื่องเก่าของคุณเพื่อถ่ายโอนบัญชีของคุณ";
 
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "เซสชันที่ปลอดภัยถูกรีเซ็ตแล้ว";
@@ -3543,19 +3585,19 @@
 "SETTINGS_NOTIFICATIONS" = "การแจ้งเตือน";
 
 /* The button text for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "Turn Off Reminders";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "ปิดการเตือนความจำ";
 
 /* The explanation for the dialog asking user to confirm their PIN to disable reminders */
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "Make sure you memorize or securely store your PIN as it can’t be recovered. If you forget your PIN, you may lose data when re-registering your Signal account.";
 
 /* The title for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Confirm your Signal PIN";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "ยืนยันรหัส PIN สำหรับ Signal ของคุณ";
 
 /* Footer for the 'pin reminder' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_PIN_REMINDER_FOOTER" = "Reminders help you remember your PIN since it can’t be recovered. You’ll be asked less frequently over time.";
+"SETTINGS_PIN_REMINDER_FOOTER" = "ตัวช่วยจำจะช่วยให้คุณจำรหัส PIN ได้ เนื่องจากรหัสนี้จะไม่สามารถถูกกู้คืนได้ คุณจะถูกถามน้อยครั้งลงเมื่อเวลาผ่านไป";
 
 /* Label for the 'pin reminder' switch of the privacy settings. */
-"SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "PIN Reminders";
+"SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "ตัวช่วยจำรหัส PIN";
 
 /* Footer for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_FOOTER" = "รหัส PIN รักษาข้อมูลที่เก็บไว้ใน Signal ที่เข้ารหัส ดังนั้นจึงมีแต่คุณที่เข้าถึงข้อมูลนี้ได้ โปรไฟล์ของคุณ การตั้งค่า และรายชื่อผู้ติดต่อจะถูกกู้คืนเมื่อคุณติดตั้ง Signal อีกครั้ง";

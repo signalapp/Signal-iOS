@@ -288,7 +288,7 @@ extension DeviceTransferService: MCSessionDelegate {
             }
         }
 
-        guard case .outgoing(let newDevicePeerId, let newDeviceCertificateHash, _, _, _) = transferState else {
+        guard case .outgoing(let newDevicePeerId, let expectedCertificateHash, _, _, _) = transferState else {
             // Accept all connections if we're not doing an outgoing transfer AND we aren't yet registered.
             // Registered devices can only ever perform outgoing transfers.
             certificateIsTrusted = !tsAccountManager.isRegistered
@@ -299,31 +299,24 @@ extension DeviceTransferService: MCSessionDelegate {
         guard peerId == newDevicePeerId else { return }
 
         // Verify the received certificate matches the expected certificate.
-        if let expectedCertificateHash = newDeviceCertificateHash {
-            // Reject any connections that don't expclitly declare a certificate
-            guard let certificate = certificates?.first else {
-                return owsFailDebug("new connection did not provide any certificate")
-            }
-
-            let certificateData = SecCertificateCopyData(certificate as! SecCertificate) as Data
-
-            // Reject any connections where we can't compute the certificate hash
-            guard let certificateHash = Cryptography.computeSHA256Digest(certificateData) else {
-                return owsFailDebug("failed to calculate certificate hash")
-            }
-
-            // Reject any connections where the certificate doesn't match the expected certificate
-            guard expectedCertificateHash.ows_constantTimeIsEqual(to: certificateHash) else {
-                return owsFailDebug("connection from known peer \(peerId) using unexpected certificate")
-            }
-
-            Logger.info("Successfully verified new device certificate \(peerId)")
-
-            certificateIsTrusted = true
-        } else {
-            // TODO: This path is useful for testing, but can probably be eliminated once the UI is built out
-            Logger.info("Proceeding without certificate verification, because outgoing transfer was not started with a certificate hash")
-            certificateIsTrusted = true
+        guard let certificate = certificates?.first else {
+            return owsFailDebug("new connection did not provide any certificate")
         }
+
+        let certificateData = SecCertificateCopyData(certificate as! SecCertificate) as Data
+
+        // Reject any connections where we can't compute the certificate hash
+        guard let certificateHash = Cryptography.computeSHA256Digest(certificateData) else {
+            return owsFailDebug("failed to calculate certificate hash")
+        }
+
+        // Reject any connections where the certificate doesn't match the expected certificate
+        guard expectedCertificateHash.ows_constantTimeIsEqual(to: certificateHash) else {
+            return owsFailDebug("connection from known peer \(peerId) using unexpected certificate")
+        }
+
+        Logger.info("Successfully verified new device certificate \(peerId)")
+
+        certificateIsTrusted = true
     }
 }

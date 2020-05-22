@@ -430,10 +430,10 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (BOOL)recipientPicker:(RecipientPickerViewController *)recipientPickerViewController
-     canSelectRecipient:(PickedRecipient *)recipient
+- (RecipientPickerRecipientState)recipientPicker:(RecipientPickerViewController *)recipientPickerViewController
+                              canSelectRecipient:(PickedRecipient *)recipient
 {
-    return YES;
+    return RecipientPickerRecipientStateCanBeSelected;
 }
 
 - (void)recipientPicker:(RecipientPickerViewController *)recipientPickerViewController

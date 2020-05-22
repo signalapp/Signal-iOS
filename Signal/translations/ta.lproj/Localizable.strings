@@ -335,6 +335,12 @@
 /* Section header for users that have been blocked */
 "BLOCK_LIST_BLOCKED_USERS_SECTION" = "தடுக்கப்பட்ட பயனர்கள்";
 
+/* Error message indicating that a conversation can't be blocked because they are already blocked. */
+"BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "Group already blocked.";
+
+/* Error message indicating that a user can't be blocked because they are already blocked. */
+"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "User already blocked.";
+
 /* Button label for the 'unblock' button */
 "BLOCK_LIST_UNBLOCK_BUTTON" = "தடைநீக்கு ";
 
@@ -791,6 +797,18 @@
 /* Label for the 'edit group' button in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_GROUP" = "தொகு";
 
+/* Label for 'edit membership access' action in conversation settings view. */
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Who Can Edit Membership";
+
+/* Label for button that sets 'group membership access' to 'administrators-only'. */
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "நிர்வாகிகள் மட்டுமே";
+
+/* Description for the 'edit group membership access' alert. */
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "Choose who can edit group membership:";
+
+/* Label for button that sets 'group membership access' to 'members-only'. */
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "அனைத்து உறுப்பினர்களும்";
+
 /* Navbar title when viewing settings for a group thread */
 "CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "குழு தகவல்";
 
@@ -805,6 +823,9 @@
 
 /* Format for the section title of the 'members' section in conversation settings view. Embeds: {{ the number of group members }}. */
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ உறுப்பினர்கள்";
+
+/* Footer for the 'membership access' section in conversation settings view. */
+"CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "Choose who can edit group membership.";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "முடக்கு";
@@ -1691,6 +1712,9 @@
 /* Message for the 'can't replace group admin' alert. */
 "GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "இதற்கு முன்பு இந்த குழுவுக்கு புதிய நிர்வாகியைத் தேர்வுசெய்க நீங்கள் விடுங்கள்.";
 
+/* Error message indicating that a member can't be added to a group because they are already in the group. */
+"GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP" = "User already in group.";
+
 /* Error indicating that an error occurred while accepting an invite. */
 "GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "முடியவில்லை ஏற்றுக்கொள் அழைக்க.";
 
@@ -2534,17 +2558,32 @@
 /* Label indicating that a group has no pending members. */
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "இல்லை காட்ட அழைக்கிறது.";
 
+/* Title of 're-send invite' button. */
+"PENDING_GROUP_MEMBERS_RESEND_INVITE_1_BUTTON" = "Re-send Invite";
+
+/* Title of 're-send invites' button. */
+"PENDING_GROUP_MEMBERS_RESEND_INVITE_N_BUTTON" = "Re-send Invites";
+
 /* Title of 'revoke invite' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "அழைப்பைத் திரும்பப்பெறு";
 
-/* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the invited group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "குழு அழைப்பை ரத்துசெய் “%@“?";
+/* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the inviting group member. }}. */
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revoke group invite sent by “%@“?";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "திரும்பப் பெறு %1$@ அனுப்பிய அழைப்புகள் “%2$@“?";
 
 /* Title of 'revoke invites' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_N_BUTTON" = "அழைப்புகளைத் திரும்பப்பெறுங்கள்";
+
+/* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the invited group member. }}. */
+"PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "குழு அழைப்பை ரத்துசெய் “%@“?";
+
+/* Format for title of 'revoke or re-send invite' confirmation alert. Embeds {{ name of the inviting group member. }}. */
+"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revoke or re-send group invite for “%@“?";
+
+/* Format for title of 'revoke or re-send invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
+"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Revoke or re-send %1$@ invites sent by “%2$@“?";
 
 /* Footer for the 'invites by other group members' section of the 'pending group members' view. */
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "விவரங்கள் அழைக்கப்பட்ட நபர்களின் மற்றவை குழு உறுப்பினர்கள் காட்டப்படவில்லை. என்றால் அழைப்பாளர்கள் தேர்வு சேர, அவர்களது தகவல்அந்த நேரத்தில் குழுவுடன் பகிரப்படும். அவர்கள் குழுவில் எந்த செய்திகளையும் அவர்கள் பார்க்க மாட்டார்கள்சேர.";
@@ -2941,6 +2980,9 @@
 
 /* Text describing the local user in the reaction details pane. */
 "REACTIONS_DETAIL_YOU" = "நீங்கள்";
+
+/* Error message indicating that a user can't be selected. */
+"RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "User can't be selected.";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "எனது பின்னை மறந்துவிட்டேன்.";

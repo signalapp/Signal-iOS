@@ -75,9 +75,6 @@ public class RemoteConfig: NSObject {
     }
 
     @objc
-    public static var storageService: Bool { isEnabled(.storageServiceV3) }
-
-    @objc
     public static var deleteForEveryone: Bool { isEnabled(.deleteForEveryone) }
 
     private static func isEnabled(_ flag: Flags.Supported, defaultValue: Bool = false) -> Bool {
@@ -112,7 +109,6 @@ private struct Flags {
         case messageRequests
         case groupsV2CreateGroups
         case groupsV2GoodCitizen
-        case storageServiceV3
         case deleteForEveryone
     }
 }

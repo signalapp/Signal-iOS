@@ -179,7 +179,7 @@ class DeviceTransferService: NSObject {
         newDeviceServiceBrowser.stopBrowsingForPeers()
     }
 
-    func transferAccountToNewDevice(with peerId: MCPeerID, certificateHash: Data?) throws {
+    func transferAccountToNewDevice(with peerId: MCPeerID, certificateHash: Data) throws {
         cancelTransferToNewDevice()
 
         // Marking the transfer as "in progress" does a few things, most notably it:

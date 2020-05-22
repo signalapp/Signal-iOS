@@ -111,7 +111,7 @@
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "The data transferred from your old device could not be restored. Please send a debug log to support@signal.org so that we can troubleshoot this issue. If you re-install Signal your message history may be lost.";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Could Not Complete Transfer";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Hindi Makumpleto ang Paglipat";
 
 /* Text prompting user to edit their profile name. */
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Ilagay ang iyong pangalan";
@@ -334,6 +334,12 @@
 
 /* Section header for users that have been blocked */
 "BLOCK_LIST_BLOCKED_USERS_SECTION" = "Mga User na Naka-block";
+
+/* Error message indicating that a conversation can't be blocked because they are already blocked. */
+"BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "Group already blocked.";
+
+/* Error message indicating that a user can't be blocked because they are already blocked. */
+"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "User already blocked.";
 
 /* Button label for the 'unblock' button */
 "BLOCK_LIST_UNBLOCK_BUTTON" = "I-unblock";
@@ -791,6 +797,18 @@
 /* Label for the 'edit group' button in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_GROUP" = "I-edit";
 
+/* Label for 'edit membership access' action in conversation settings view. */
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Who Can Edit Membership";
+
+/* Label for button that sets 'group membership access' to 'administrators-only'. */
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Mga Admin Lamang";
+
+/* Description for the 'edit group membership access' alert. */
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "Choose who can edit group membership:";
+
+/* Label for button that sets 'group membership access' to 'members-only'. */
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "Lahat ng Kasapi";
+
 /* Navbar title when viewing settings for a group thread */
 "CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "Info ng Grupo";
 
@@ -805,6 +823,9 @@
 
 /* Format for the section title of the 'members' section in conversation settings view. Embeds: {{ the number of group members }}. */
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ Mga Kasapi";
+
+/* Footer for the 'membership access' section in conversation settings view. */
+"CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "Choose who can edit group membership.";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "I-Mute";
@@ -1691,6 +1712,9 @@
 /* Message for the 'can't replace group admin' alert. */
 "GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Pumili ng bagong admin para sa grupong ito bago ka umalis.";
 
+/* Error message indicating that a member can't be added to a group because they are already in the group. */
+"GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP" = "User already in group.";
+
 /* Error indicating that an error occurred while accepting an invite. */
 "GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "Hindi matanggap ang imbitasyon.";
 
@@ -2534,17 +2558,32 @@
 /* Label indicating that a group has no pending members. */
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "Walang maipakitang mga imbitasyon.";
 
+/* Title of 're-send invite' button. */
+"PENDING_GROUP_MEMBERS_RESEND_INVITE_1_BUTTON" = "Re-send Invite";
+
+/* Title of 're-send invites' button. */
+"PENDING_GROUP_MEMBERS_RESEND_INVITE_N_BUTTON" = "Re-send Invites";
+
 /* Title of 'revoke invite' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "Bawiin ang Imbitasyon";
 
-/* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the invited group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Bawiin ang imbitasyon sa grupo para kay “%@“?";
+/* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the inviting group member. }}. */
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revoke group invite sent by “%@“?";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Bawiin ang %1$@ imbitasyon na ipinadala ni \"%2$@\"?";
 
 /* Title of 'revoke invites' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_N_BUTTON" = "Bawiin ang mga Imbitasyon";
+
+/* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the invited group member. }}. */
+"PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Bawiin ang imbitasyon sa grupo para kay “%@“?";
+
+/* Format for title of 'revoke or re-send invite' confirmation alert. Embeds {{ name of the inviting group member. }}. */
+"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revoke or re-send group invite for “%@“?";
+
+/* Format for title of 'revoke or re-send invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
+"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Revoke or re-send %1$@ invites sent by “%2$@“?";
 
 /* Footer for the 'invites by other group members' section of the 'pending group members' view. */
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Details of people invited by other group members are not shown. If invitees choose to join, their information will be shared with the group at that time. They will not see any messages in the group until they join.";
@@ -2941,6 +2980,9 @@
 
 /* Text describing the local user in the reaction details pane. */
 "REACTIONS_DETAIL_YOU" = "Ikaw";
+
+/* Error message indicating that a user can't be selected. */
+"RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "User can't be selected.";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "Nakalimutan ko ang aking PIN";
@@ -3681,13 +3723,13 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "Show a status icon when you select \"More Info\" on messages that were delivered using sealed sender.";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Allow from Anyone";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Payagan ang Mula sa Sinuman";
 
 /* table section footer */
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Paganahin ang selyadong tagapagpadala para sa paparating na mga mensahe mula sa hindi mga contact at taong hindi ka pa nagbahagi ng iyong profile";
 
 /* No comment provided by engineer. */
-"SETTINGS_VERSION" = "Version";
+"SETTINGS_VERSION" = "Bersyon";
 
 /* action sheet item to open native mail app */
 "SHARE_ACTION_MAIL" = "Mail";
@@ -3708,13 +3750,13 @@
 "SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Launch the Signal app to register.";
 
 /* Title indicating that the share extension cannot be used until the user has registered in the main app. */
-"SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "Not Registered";
+"SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "Hindi Rehistrado";
 
 /* Message indicating that the share extension cannot be used until the main app has been launched at least once. */
 "SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Launch the Signal app to update or register.";
 
 /* Title indicating that the share extension cannot be used until the main app has been launched at least once. */
-"SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "Not Ready";
+"SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "Hindi Handa";
 
 /* Alert title */
 "SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Unable to Send Attachment";
@@ -3744,7 +3786,7 @@
 "STICKER_MESSAGE_PREVIEW" = "Sticker Message";
 
 /* Tooltip indicating that a sticker pack was installed. */
-"STICKER_PACK_INSTALLED_TOOLTIP" = "Pakete ng sticker installed na";
+"STICKER_PACK_INSTALLED_TOOLTIP" = "Naka-install na ang sticker pack";
 
 /* Label for a sticker that failed to download. */
 "STICKERS_FAILED_DOWNLOAD" = "Sticker";
@@ -4062,4 +4104,4 @@
 "YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "You must complete setup before proceeding.";
 
 /* Info Message when you disabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
-"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "You set disappearing message time to %@.";
+"YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Itinakda mo ang oras ng naglalahong mensahe sa %@.";

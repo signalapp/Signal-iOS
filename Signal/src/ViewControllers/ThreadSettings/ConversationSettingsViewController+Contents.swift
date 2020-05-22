@@ -78,7 +78,8 @@ extension ConversationSettingsViewController {
         if let groupModel = currentGroupModel {
             if canEditConversationAccess,
                 let groupModelV2 = groupModel as? TSGroupModelV2 {
-                contents.addSection(buildGroupAccessSection(groupModelV2: groupModelV2))
+                buildGroupAccessSections(groupModelV2: groupModelV2,
+                                         contents: contents)
             }
 
             contents.addSection(buildGroupMembershipSection(groupModel: groupModel))
@@ -527,43 +528,75 @@ extension ConversationSettingsViewController {
         return section
     }
 
-    private func buildGroupAccessSection(groupModelV2: TSGroupModelV2) -> OWSTableSection {
-        let section = OWSTableSection()
-        section.customHeaderHeight = 14
+    private func buildGroupAccessSections(groupModelV2: TSGroupModelV2,
+                                         contents: OWSTableContents) {
 
-        section.footerTitle = NSLocalizedString("CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER",
-                                                comment: "Footer for the 'attributes access' section in conversation settings view.")
+        do {
+            let section = OWSTableSection()
+            section.customHeaderHeight = 14
 
-        section.add(OWSTableItem(customCellBlock: { [weak self] in
-            guard let self = self else {
-                owsFailDebug("Missing self")
-                return OWSTableItem.newCell()
-            }
+            section.footerTitle = NSLocalizedString("CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER",
+                                                    comment: "Footer for the 'attributes access' section in conversation settings view.")
 
-            let accessStatus: String
-            switch groupModelV2.access.attributes {
-            case .unknown, .any, .member:
-                if groupModelV2.access.attributes != .member {
-                    owsFailDebug("Invalid attributes access: \(groupModelV2.access.attributes.rawValue)")
+            section.add(OWSTableItem(customCellBlock: { [weak self] in
+                guard let self = self else {
+                    owsFailDebug("Missing self")
+                    return OWSTableItem.newCell()
                 }
-                accessStatus = NSLocalizedString("CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER",
-                                                 comment: "Label indicating that all group members can update the group's attributes: name, avatar, etc.")
-            case .administrator:
-                accessStatus = NSLocalizedString("CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR",
-                                                 comment: "Label indicating that only administrators can update the group's attributes: name, avatar, etc.")
-            }
-            let cell = OWSTableItem.buildCellWithAccessoryLabel(icon: .settingsEditGroupAccess,
-                                                                itemName: NSLocalizedString("CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS",
-                                                                                            comment: "Label for 'edit attributes access' action in conversation settings view."),
-                                                                accessoryText: accessStatus)
-            cell.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "edit_group_access")
-            return cell
-            },
-                                 actionBlock: { [weak self] in
-                                    self?.showGroupAttributesAccessView()
-        }))
 
-        return section
+                let accessStatus = self.accessoryLabel(forAccess: groupModelV2.access.attributes)
+                let cell = OWSTableItem.buildCellWithAccessoryLabel(icon: .settingsEditGroupAccess,
+                                                                    itemName: NSLocalizedString("CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS",
+                                                                                                comment: "Label for 'edit attributes access' action in conversation settings view."),
+                                                                    accessoryText: accessStatus)
+                cell.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "edit_group_attributes_access")
+                return cell
+                },
+                                     actionBlock: { [weak self] in
+                                        self?.showGroupAttributesAccessView()
+            }))
+            contents.addSection(section)
+        }
+
+        if DebugFlags.groupsV2editMemberAccess {
+            let section = OWSTableSection()
+            section.customHeaderHeight = 14
+
+            section.footerTitle = NSLocalizedString("CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER",
+                                                    comment: "Footer for the 'membership access' section in conversation settings view.")
+            section.add(OWSTableItem(customCellBlock: { [weak self] in
+                guard let self = self else {
+                    owsFailDebug("Missing self")
+                    return OWSTableItem.newCell()
+                }
+
+                let accessStatus = self.accessoryLabel(forAccess: groupModelV2.access.members)
+                let cell = OWSTableItem.buildCellWithAccessoryLabel(icon: .settingsEditGroupAccess,
+                                                                    itemName: NSLocalizedString("CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS",
+                                                                                                comment: "Label for 'edit membership access' action in conversation settings view."),
+                                                                    accessoryText: accessStatus)
+                cell.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "edit_group_membership_access")
+                return cell
+                },
+                                     actionBlock: { [weak self] in
+                                        self?.showGroupMembershipAccessView()
+            }))
+            contents.addSection(section)
+        }
+    }
+
+    private func accessoryLabel(forAccess access: GroupV2Access) -> String {
+        switch access {
+        case .unknown, .any, .member:
+            if access != .member {
+                owsFailDebug("Invalid attributes access: \(access.rawValue)")
+            }
+            return NSLocalizedString("CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER",
+                                             comment: "Label indicating that all group members can update the group's attributes: name, avatar, etc.")
+        case .administrator:
+            return NSLocalizedString("CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR",
+                                             comment: "Label indicating that only administrators can update the group's attributes: name, avatar, etc.")
+        }
     }
 
     private func buildGroupMembershipSection(groupModel: TSGroupModel) -> OWSTableSection {
@@ -580,37 +613,39 @@ extension ConversationSettingsViewController {
         }
 
         // "Add Members" cell.
-        section.add(OWSTableItem(customCellBlock: { [weak self] in
-            guard let self = self else {
-                owsFailDebug("Missing self")
-                return OWSTableItem.newCell()
-            }
-            let cell = OWSTableItem.newCell()
-            cell.preservesSuperviewLayoutMargins = true
-            cell.contentView.preservesSuperviewLayoutMargins = true
+        if canEditConversationMembership {
+            section.add(OWSTableItem(customCellBlock: { [weak self] in
+                guard let self = self else {
+                    owsFailDebug("Missing self")
+                    return OWSTableItem.newCell()
+                }
+                let cell = OWSTableItem.newCell()
+                cell.preservesSuperviewLayoutMargins = true
+                cell.contentView.preservesSuperviewLayoutMargins = true
 
-            let iconView = OWSTableItem.buildIconInCircleView(icon: .settingsAddMembers,
-                                                              iconSize: kSmallAvatarSize,
-                                                              innerIconSize: 22)
+                let iconView = OWSTableItem.buildIconInCircleView(icon: .settingsAddMembers,
+                                                                  iconSize: kSmallAvatarSize,
+                                                                  innerIconSize: 22)
 
-            let rowLabel = UILabel()
-            rowLabel.text = NSLocalizedString("CONVERSATION_SETTINGS_ADD_MEMBERS",
-                                              comment: "Label for 'add members' button in conversation settings view.")
-            rowLabel.textColor = Theme.accentBlueColor
-            rowLabel.font = OWSTableItem.primaryLabelFont
-            rowLabel.lineBreakMode = .byTruncatingTail
+                let rowLabel = UILabel()
+                rowLabel.text = NSLocalizedString("CONVERSATION_SETTINGS_ADD_MEMBERS",
+                                                  comment: "Label for 'add members' button in conversation settings view.")
+                rowLabel.textColor = Theme.accentBlueColor
+                rowLabel.font = OWSTableItem.primaryLabelFont
+                rowLabel.lineBreakMode = .byTruncatingTail
 
-            let contentRow = UIStackView(arrangedSubviews: [ iconView, rowLabel ])
-            contentRow.spacing = self.iconSpacingSmall
+                let contentRow = UIStackView(arrangedSubviews: [ iconView, rowLabel ])
+                contentRow.spacing = self.iconSpacingSmall
 
-            cell.contentView.addSubview(contentRow)
-            contentRow.autoPinEdgesToSuperviewMargins()
+                cell.contentView.addSubview(contentRow)
+                contentRow.autoPinEdgesToSuperviewMargins()
 
-            return cell
-            },
-                                 customRowHeight: UITableView.automaticDimension) { [weak self] in
-                                    self?.showAddMembersView()
-        })
+                return cell
+                },
+                                     customRowHeight: UITableView.automaticDimension) { [weak self] in
+                                        self?.showAddMembersView()
+            })
+        }
 
         let groupMembership = groupModel.groupMembership
         let allMembers = groupMembership.nonPendingMembers

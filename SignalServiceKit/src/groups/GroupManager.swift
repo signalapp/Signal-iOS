@@ -1150,13 +1150,21 @@ public class GroupManager: NSObject {
         }
     }
 
-    // MARK: - Change Group Membership Access
+    // MARK: - Change Group Access
 
     public static func changeGroupAttributesAccessV2(groupModel: TSGroupModelV2,
                                                      access: GroupV2Access) -> Promise<TSGroupThread> {
         return updateGroupV2(groupModel: groupModel,
-                             description: "Change group membership access") { groupChangeSet in
+                             description: "Change group attributes access") { groupChangeSet in
                                 groupChangeSet.setAccessForAttributes(access)
+        }
+    }
+
+    public static func changeGroupMembershipAccessV2(groupModel: TSGroupModelV2,
+                                                     access: GroupV2Access) -> Promise<TSGroupThread> {
+        return updateGroupV2(groupModel: groupModel,
+                             description: "Change group membership access") { groupChangeSet in
+                                groupChangeSet.setAccessForMembers(access)
         }
     }
 
@@ -1367,7 +1375,18 @@ public class GroupManager: NSObject {
             // DURABLE CLEANUP - currently one caller uses the completion handler to delete the tappable error message
             // which causes this code to be called. Once we're more aggressive about durable sending retry,
             // we could get rid of this "retryable tappable error message".
-            return self.messageSender.sendMessage(.promise, message.asPreparer)
+            if thread.isGroupV1Thread {
+                return self.messageSender.sendMessage(.promise, message.asPreparer)
+            } else {
+                assert(thread.isGroupV2Thread)
+                return firstly {
+                    return self.messageSender.sendMessage(.promise, message.asPreparer)
+                }.recover(on: .global()) { error in
+                    // Failure to send a "group update" message should not
+                    // be considered a failure when updating a v2 group.
+                    Logger.error("Error sending group update: \(error)")
+                }
+            }
         }
     }
 
@@ -1443,6 +1462,37 @@ public class GroupManager: NSObject {
                                         groupMetaMessage: .quit,
                                         expiresInSeconds: 0)
         messageSenderJobQueue.add(message: message.asPreparer, transaction: transaction)
+    }
+
+    public static func resendInvite(groupThread: TSGroupThread,
+                                    transaction: SDSAnyWriteTransaction) {
+
+        guard groupThread.groupModel.groupsVersion == .V2 else {
+            return
+        }
+
+        let messageBuilder = TSOutgoingMessageBuilder(thread: groupThread)
+        // V2 group update messages mostly ignore groupMetaMessage,
+        // but we set it to get the right behavior in shouldBeSaved.
+        // i.e. we need to flag this message as a group update that
+        // is "durable but transient" - it should not be saved.
+        messageBuilder.groupMetaMessage = .update
+        // We need to send v2 group updates to pending members
+        // as well.  Normal group sends only include "full members".
+        assert(messageBuilder.additionalRecipients == nil)
+        let additionalRecipients = groupThread.groupModel.groupMembership.pendingMembers.filter { address in
+            return doesUserSupportGroupsV2(address: address,
+                                           transaction: transaction)
+        }
+        messageBuilder.additionalRecipients = Array(additionalRecipients)
+        let message = messageBuilder.build()
+        messageSender.sendMessage(message.asPreparer,
+                                  success: {
+                                    Logger.info("Successfully sent message.")
+        },
+                                  failure: { error in
+                                    owsFailDebug("Failed to send message with error: \(error)")
+        })
     }
 
     // MARK: - Group Database

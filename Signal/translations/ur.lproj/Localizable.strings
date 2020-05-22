@@ -108,10 +108,10 @@
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "نامعلوم ڈیٹا بیس ورژن۔";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "The data transferred from your old device could not be restored. Please send a debug log to support@signal.org so that we can troubleshoot this issue. If you re-install Signal your message history may be lost.";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "آپ کے پرانے device سے منتقل کردہ ڈیٹا کو بحال نہیں کیا جاسکا۔ براہ کرم support@signal.org پر ڈیبگ لاگ ارسال کریں تاکہ ہم اس مسئلے کا ازالہ کرسکیں۔ اگر آپ Signal کو دوبارہ انسٹال کرتے ہیں تو آپ کی مسیج کی تاریخ کھو سکتی ہے۔";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Could Not Complete Transfer";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "مکمل منتقلی نہیں ہوسکی";
 
 /* Text prompting user to edit their profile name. */
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "اپنا نام داخل کریں";
@@ -334,6 +334,12 @@
 
 /* Section header for users that have been blocked */
 "BLOCK_LIST_BLOCKED_USERS_SECTION" = "بلاک کردہ صارفین";
+
+/* Error message indicating that a conversation can't be blocked because they are already blocked. */
+"BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "Group already blocked.";
+
+/* Error message indicating that a user can't be blocked because they are already blocked. */
+"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "User already blocked.";
 
 /* Button label for the 'unblock' button */
 "BLOCK_LIST_UNBLOCK_BUTTON" = "اَن بلاک";
@@ -791,6 +797,18 @@
 /* Label for the 'edit group' button in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_GROUP" = "ترتیب دیں";
 
+/* Label for 'edit membership access' action in conversation settings view. */
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Who Can Edit Membership";
+
+/* Label for button that sets 'group membership access' to 'administrators-only'. */
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "صرف ایڈمنز";
+
+/* Description for the 'edit group membership access' alert. */
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "Choose who can edit group membership:";
+
+/* Label for button that sets 'group membership access' to 'members-only'. */
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "تمام ممبران";
+
 /* Navbar title when viewing settings for a group thread */
 "CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "گروپ کی معلومات";
 
@@ -805,6 +823,9 @@
 
 /* Format for the section title of the 'members' section in conversation settings view. Embeds: {{ the number of group members }}. */
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ممبران";
+
+/* Footer for the 'membership access' section in conversation settings view. */
+"CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "Choose who can edit group membership.";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "خاموش ";
@@ -993,7 +1014,7 @@
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "تمام پیغامات کو حذف کریں";
 
 /* action sheet body. Embeds {{number of selected messages}} which will be deleted. */
-"DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Delete %ld Messages?";
+"DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "پرانے پیغامات کو حذف کریں؟";
 
 /* action sheet body */
 "DELETE_SELECTED_SINGLE_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "پیغام حذف کریں؟";
@@ -1014,103 +1035,103 @@
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "ڈیوائس لِسٹ کی تجدید میں ناکامی";
 
 /* The stop action of the dialog asking the user if they want to cancel a device transfer */
-"DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION" = "Stop Transfer";
+"DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION" = "منتقلی بند کرو";
 
 /* The message of the dialog asking the user if they want to cancel a device transfer */
-"DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE" = "Closing this window will stop the transfer you have in progress, are you sure you want to proceed?";
+"DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE" = "اس ونڈو کو بند کرنے سے آپ کی منتقلی بند ہوجائے گی ، کیا آپ واقعی آگے بڑھنا چاہتے ہیں؟";
 
 /* The title of the dialog asking the user if they want to cancel a device transfer */
-"DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "Stop Transfer?";
+"DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "منتقلی بند کرو؟";
 
 /* The explanation for the device transfer 'choice' view */
-"DEVICE_TRANSFER_CHOICE_EXPLANATION" = "If you have your old iOS device, you can securely transfer your account and messages to this device.";
+"DEVICE_TRANSFER_CHOICE_EXPLANATION" = "اگر آپ کے پاس آپ کا پرانا iOS آلہ ہے تو ، آپ اپنے اکاؤنٹ اور پیغامات کو محفوظ طریقے سے اس ڈیوائس میں منتقل کرسکتے ہیں۔";
 
 /* The explanation for the device transfer 'choice' view when linking a device */
-"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "If you were previously using Signal on a linked iPad, you can securely transfer your account and messages to this device.";
+"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "اگر آپ پہلے کسی منسلک iPad پر Signal استعمال کر رہے تھے تو ، آپ اپنے اکاؤنٹ اور پیغامات کو محفوظ طریقے سے اس device پر منتقل کرسکتے ہیں۔";
 
 /* The body for the device transfer 'choice' view 'register' option */
-"DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "Continue without transferring your account and messages";
+"DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "اپنے اکاؤنٹ اور پیغامات کی منتقلی کے بغیر جاری رکھیں";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "Add this iPad as a new linked device without transferring message history";
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "پیغام کی تاریخ کو منتقل کیے بغیر اس iPad کو بطور نیا منسلک device شامل کریں";
 
 /* The title for the device transfer 'choice' view 'register' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "Add as New Device";
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "بطور نیا device شامل کریں";
 
 /* The title for the device transfer 'choice' view 'register' option */
-"DEVICE_TRANSFER_CHOICE_REGISTER_TITLE" = "Register without Transferring";
+"DEVICE_TRANSFER_CHOICE_REGISTER_TITLE" = "منتقلی کے بغیر رجسٹر کریں";
 
 /* The title for the device transfer 'choice' view */
-"DEVICE_TRANSFER_CHOICE_TITLE" = "Transfer Account & Messages";
+"DEVICE_TRANSFER_CHOICE_TITLE" = "اکاؤنٹ اور پیغامات کی منتقلی کریں";
 
 /* The body for the device transfer 'choice' view 'transfer' option */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Transfer your account and message history from your old iOS device";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "اپنے پرانے iOS device سے اپنے اکاؤنٹ اور پیغام کی تاریخ کو منتقل کریں";
 
 /* The body for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Transfer your account and message history from your old iPad";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "اپنے پرانے ipad سے اپنا اکاؤنٹ اور پیغام کی تاریخ منتقل کریں";
 
 /* The title for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "Transfer from another iPad";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "کسی دوسرے iPad سے منتقل کریں";
 
 /* The title for the device transfer 'choice' view 'transfer' option */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_TITLE" = "Transfer from iOS Device";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_TITLE" = "iOS device سے منتقل کریں";
 
 /* A warning for the device transfer 'choice' view indicating you can only have one device registered with your number */
-"DEVICE_TRANSFER_CHOICE_WARNING" = "Continuing will disable Signal on other devices currently registered with the same phone number.";
+"DEVICE_TRANSFER_CHOICE_WARNING" = "جاری رکھنے سے اسی فون نمبر کے ساتھ فی الحال رجسٹرڈ دیگر آلات پر Signal کو غیر فعال کردے گا۔";
 
 /* An error indicating that we were unable to verify the indentity of the new device to complete the transfer */
-"DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Unable to verify your new device, please try again";
+"DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "آپ کے نئے device کی تصدیق کرنے سے قاصر ، براہ کرم دوبارہ کوشش کریں";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_GENERIC" = "The transfer couldn't complete, please ensure your devices are near each other and try again";
+"DEVICE_TRANSFER_ERROR_GENERIC" = "منتقلی مکمل نہیں ہو سکی ، براہ کرم یقینی بنائیں کہ آپ کے devices ایک دوسرے کے قریب ہیں اور دوبارہ کوشش کریں";
 
 /* An error indicating the user must scan this code with a linked device to transfer. */
-"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "To set up this iPad as a linked device, you must scan with your old iPad";
+"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "اس iPad کو ایک منسلک device کے طور پر ترتیب دینے کے لیئے آپ کو اپنے پرانے iPad سے اسکین کرنا ہوگا";
 
 /* An error indicating the user must scan this code with a primary device to transfer. */
-"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_PRIMARY" = "To transfer your account, you must scan with your iPhone";
+"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_PRIMARY" = "اپنا اکاؤنٹ منتقل کرنے کے لیئے آپ کو اپنے iPhone سے اسکین کرنا ہوگا";
 
 /* An error indicating that the user does not have enough free space on their device to complete the transfer */
-"DEVICE_TRANSFER_ERROR_NOT_ENOUGH_SPACE" = "Not enough free space to complete the transfer";
+"DEVICE_TRANSFER_ERROR_NOT_ENOUGH_SPACE" = "منتقلی مکمل کرنے کے لئے جگہ کافی نہیں ہے";
 
 /* An error indicating the user must update their device before trying to transfer. */
-"DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Update to the latest version of Signal and try again";
+"DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Signal کے تازہ ترین ورژن میں تازہ کاری کریں اور دوبارہ کوشش کریں";
 
 /* The explanation on the action sheet prompting the user if they want to transfer their device. */
-"DEVICE_TRANSFER_PROMPT_EXPLANATION" = "Transfer your Signal account to a new iOS device. Make sure your new device is nearby and turned on.";
+"DEVICE_TRANSFER_PROMPT_EXPLANATION" = "اپنے Signal اکاؤنٹ کو کسی نئے iOS device میں منتقل کریں۔ یقینی بنائیں کہ آپ کا نیا device قریب ہی ہے اور آن ہے۔";
 
 /* The title on the acttion sheet prompting the user if they want to transfer their device. */
-"DEVICE_TRANSFER_PROMPT_TITLE" = "Transfer Account";
+"DEVICE_TRANSFER_PROMPT_TITLE" = "اکاؤنٹ کی منتقلی";
 
 /* The explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Open Signal on your old device, bring it nearby, and make sure Wi-Fi and Bluetooth are enabled on both devices.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "اپنے پرانے device پر Signal کھولیں ، اسے قریب لائیں ، اور یہ یقینی بنائیں کہ Wi-Fi اور Bluetooth دونوں devices پر فعال ہے۔";
 
 /* The second explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Position this QR code in the frame of your other device.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "اس QR کوڈ کو اپنے دوسرے device کے فریم میں رکھیں۔";
 
 /* The title for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_TITLE" = "Waiting for Other Device...";
+"DEVICE_TRANSFER_QRCODE_TITLE" = "دوسرے device کا انتظار کر رہا ہے…";
 
 /* The explanation on the view that shows receiving progress */
-"DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Keep both devices near each other. Do not turn off either device and keep Signal open. Transfers are end-to-end encrypted.";
+"DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "دونوں devices ایک دوسرے کے قریب رکھیں۔ کسی بھی device کو بند نہ کریں اور Signal کو کھلا رکھیں۔ منتقلی اختتام سے آخر تک encrypted ہوتی ہیں۔";
 
 /* The title on the view that shows receiving progress */
-"DEVICE_TRANSFER_RECEIVING_TITLE" = "Receiving Data";
+"DEVICE_TRANSFER_RECEIVING_TITLE" = "ڈیٹا وصول کرنا";
 
 /* Text indicating that we are connecting to the scanned device */
 "DEVICE_TRANSFER_SCANNING_CONNECTING" = "منسلک ہورہا ہے۔۔۔۔۔";
 
 /* The explanation for the action sheet asking the user to scan the QR code to transfer */
-"DEVICE_TRANSFER_SCANNING_EXPLANATION" = "Position the QR code within the circle";
+"DEVICE_TRANSFER_SCANNING_EXPLANATION" = "حلقہ کے اندر QR کوڈ رکھیں";
 
 /* The title for the action sheet asking the user to scan the QR code to transfer */
-"DEVICE_TRANSFER_SCANNING_TITLE" = "Hold Your New Device Up to the Camera";
+"DEVICE_TRANSFER_SCANNING_TITLE" = "اپنی نئی ڈیوائس کو کیمرے تک پکڑو";
 
 /* The explanation on the action sheet that shows transfer progress */
-"DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "Keep both devices near each other. Do not turn off either device and keep Signal open.";
+"DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "دونوں devices ایک دوسرے کے قریب رکھیں۔ کسی بھی device کو بند نہ کریں اور Signal کو کھلا رکھیں۔";
 
 /* The title on the action sheet that shows transfer progress */
-"DEVICE_TRANSFER_TRANSFERRING_TITLE" = "Transferring Data";
+"DEVICE_TRANSFER_TRANSFERRING_TITLE" = "ڈیٹا کی منتقلی";
 
 /* table cell label in conversation settings */
 "DISAPPEARING_MESSAGES" = "پیغامات غائب ہورہے ہیں";
@@ -1690,6 +1711,9 @@
 
 /* Message for the 'can't replace group admin' alert. */
 "GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "جانے سے پہلے اس گروپ کے لئے ایک نیا ایڈمن منتخب کریں۔";
+
+/* Error message indicating that a member can't be added to a group because they are already in the group. */
+"GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP" = "User already in group.";
 
 /* Error indicating that an error occurred while accepting an invite. */
 "GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "دعوت نامہ قبول نہیں کیا جاسکا۔";
@@ -2534,17 +2558,32 @@
 /* Label indicating that a group has no pending members. */
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "کوئی دعوت نامہ نہیں ہے۔";
 
+/* Title of 're-send invite' button. */
+"PENDING_GROUP_MEMBERS_RESEND_INVITE_1_BUTTON" = "Re-send Invite";
+
+/* Title of 're-send invites' button. */
+"PENDING_GROUP_MEMBERS_RESEND_INVITE_N_BUTTON" = "Re-send Invites";
+
 /* Title of 'revoke invite' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "دعوت نامہ کالعدم کریں";
 
-/* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the invited group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "\"%@\" کے لئے گروپ دعوت کو کالعدم کریں؟";
+/* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the inviting group member. }}. */
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revoke group invite sent by “%@“?";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "\"%2$@\" کے ذریعہ بھیجے گئے %1$@ دعوتوں کو کالعدم کریں؟";
 
 /* Title of 'revoke invites' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_N_BUTTON" = "دعوتیں کالعدم کریں";
+
+/* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the invited group member. }}. */
+"PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "\"%@\" کے لئے گروپ دعوت کو کالعدم کریں؟";
+
+/* Format for title of 'revoke or re-send invite' confirmation alert. Embeds {{ name of the inviting group member. }}. */
+"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revoke or re-send group invite for “%@“?";
+
+/* Format for title of 'revoke or re-send invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
+"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Revoke or re-send %1$@ invites sent by “%2$@“?";
 
 /* Footer for the 'invites by other group members' section of the 'pending group members' view. */
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "گروپ کے دوسرے ممبروں کے ذریعہ مدعو کیے گئے لوگوں کی تفصیلات نہیں دکھائی گئیں۔ اگر مدعو شامل ہونے کا انتخاب کرتے ہیں تو ، اس وقت ان کی معلومات گروپ کے ساتھ شیئر کی جائیں گی۔ وہ اس گروپ میں شامل ہونے تک کوئی پیغامات نہیں دیکھیں گے۔";
@@ -2942,6 +2981,9 @@
 /* Text describing the local user in the reaction details pane. */
 "REACTIONS_DETAIL_YOU" = "آپ";
 
+/* Error message indicating that a user can't be selected. */
+"RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "User can't be selected.";
+
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "میں میرا پن بھول گیا";
 
@@ -3318,7 +3360,7 @@
 "SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "اپنے فون سے کیو آر کوڈ اسکین کریں";
 
 /* header text before the user can transfer to this device */
-"SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "Launch Signal on your old iPad to transfer your account";
+"SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "اپنے اکاؤنٹ کو منتقل کرنے کے لئے اپنے پرانے iPad پر Signal لانچ کریں";
 
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "محفوظ سیشن ترتیب دیں۔";
@@ -3543,19 +3585,19 @@
 "SETTINGS_NOTIFICATIONS" = "اطلاعات";
 
 /* The button text for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "Turn Off Reminders";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "یاد دہانی بند کردیں";
 
 /* The explanation for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "Make sure you memorize or securely store your PIN as it can’t be recovered. If you forget your PIN, you may lose data when re-registering your Signal account.";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "اس بات کو یقینی بنائیں کہ آپ اپنے پن کو حفظ یا محفوظ طریقے سے محفوظ کریں کیونکہ اسے بازیافت نہیں کیا جاسکتا ہے۔ اگر آپ اپنا پن بھول جاتے ہیں تو ، اپنے Signal اکاؤنٹ کی دوبارہ رجسٹریشن کرتے وقت آپ ڈیٹا کھو سکتے ہیں۔";
 
 /* The title for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Confirm your Signal PIN";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "اپنے Signal پن کی تصدیق کریں";
 
 /* Footer for the 'pin reminder' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_PIN_REMINDER_FOOTER" = "Reminders help you remember your PIN since it can’t be recovered. You’ll be asked less frequently over time.";
+"SETTINGS_PIN_REMINDER_FOOTER" = "یاد دہانیاں آپ کو اپنے پن کو یاد رکھنے میں مدد کرتی ہیں کیونکہ اسے بازیافت نہیں کیا جاسکتا ہے۔ وقت کے ساتھ آپ سے کم پوچھا جائے گا۔";
 
 /* Label for the 'pin reminder' switch of the privacy settings. */
-"SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "PIN Reminders";
+"SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "پن کی یاد دہانی";
 
 /* Footer for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_FOOTER" = "PINs Signal کے ساتھ ذخیرہ شدہ معلومات کو خفیہ شدہ رکھتا ہے لہذا صرف آپ ہی اس تک رسائی حاصل کرسکتے ہیں۔ جب آپ Signal کو دوبارہ انسٹال کرتے ہیں تو آپ کا پروفائل ، ترتیبات اور رابطے بحال ہوجائیں گے۔";

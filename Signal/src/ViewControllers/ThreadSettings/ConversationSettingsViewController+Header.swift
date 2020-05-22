@@ -189,10 +189,10 @@ extension ConversationSettingsViewController {
             }
         }
 
-        #if TESTABLE_BUILD
-        let uuidText = String(format: "UUID: %@", contactThread.contactAddress.uuid?.uuidString ?? "Unknown")
-        builder.addSubtitleLabel(text: uuidText)
-        #endif
+        if DebugFlags.showProfileKeyAndUuidsIndicator {
+            let uuidText = String(format: "UUID: %@", contactThread.contactAddress.uuid?.uuidString ?? "Unknown")
+            builder.addSubtitleLabel(text: uuidText)
+        }
 
         let isVerified = identityManager.verificationState(for: recipientAddress) == .verified
         if isVerified {
@@ -208,7 +208,7 @@ extension ConversationSettingsViewController {
         }
 
         // This will not appear in public builds.
-        if DebugFlags.showProfileKeyIndicator {
+        if DebugFlags.showProfileKeyAndUuidsIndicator {
             let hasProfileKey = self.databaseStorage.uiRead { transaction in
                 self.profileManager.profileKeyData(for: recipientAddress, transaction: transaction) != nil
             }

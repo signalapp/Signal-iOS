@@ -108,7 +108,7 @@
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Versão desconhecida da base de dados.";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "The data transferred from your old device could not be restored. Please send a debug log to support@signal.org so that we can troubleshoot this issue. If you re-install Signal your message history may be lost.";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Os dados transferidos do seu dispositivo antigo não puderam ser restaurados. Envie um registo de depuração para support@signal.org para que possamos solucionar esse problema. Se você reinstalar o Signal, o seu histórico de mensagens poderá ser perdido.";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Não foi possível terminar a transferência";
@@ -334,6 +334,12 @@
 
 /* Section header for users that have been blocked */
 "BLOCK_LIST_BLOCKED_USERS_SECTION" = "Utilizadores bloqueados";
+
+/* Error message indicating that a conversation can't be blocked because they are already blocked. */
+"BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "Group already blocked.";
+
+/* Error message indicating that a user can't be blocked because they are already blocked. */
+"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "User already blocked.";
 
 /* Button label for the 'unblock' button */
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Desbloquear";
@@ -791,6 +797,18 @@
 /* Label for the 'edit group' button in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_GROUP" = "Editar";
 
+/* Label for 'edit membership access' action in conversation settings view. */
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Who Can Edit Membership";
+
+/* Label for button that sets 'group membership access' to 'administrators-only'. */
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Only Admins";
+
+/* Description for the 'edit group membership access' alert. */
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "Choose who can edit group membership:";
+
+/* Label for button that sets 'group membership access' to 'members-only'. */
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "All Members";
+
 /* Navbar title when viewing settings for a group thread */
 "CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "Informação de grupo";
 
@@ -805,6 +823,9 @@
 
 /* Format for the section title of the 'members' section in conversation settings view. Embeds: {{ the number of group members }}. */
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ membros";
+
+/* Footer for the 'membership access' section in conversation settings view. */
+"CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "Choose who can edit group membership.";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Silenciar";
@@ -1023,7 +1044,7 @@
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "Parar transferência?";
 
 /* The explanation for the device transfer 'choice' view */
-"DEVICE_TRANSFER_CHOICE_EXPLANATION" = "If you have your old iOS device, you can securely transfer your account and messages to this device.";
+"DEVICE_TRANSFER_CHOICE_EXPLANATION" = "Se tiver o seu dispositivo iOS antigo, você poderá transferir de forma segura a sua conta e mensagens para este dispositivo.";
 
 /* The explanation for the device transfer 'choice' view when linking a device */
 "DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "Se anteriormente estava a utilizar o Signal num iPad associado, você poderá transferir de forma segura a sua conta e mensagens para este dispositivo.";
@@ -1071,19 +1092,19 @@
 "DEVICE_TRANSFER_ERROR_MODE_MISMATCH_PRIMARY" = "Para transferir a sua conta, deverá digitalizar com o seu iPhone";
 
 /* An error indicating that the user does not have enough free space on their device to complete the transfer */
-"DEVICE_TRANSFER_ERROR_NOT_ENOUGH_SPACE" = "Not enough free space to complete the transfer";
+"DEVICE_TRANSFER_ERROR_NOT_ENOUGH_SPACE" = "Não existe espaço livre suficiente para terminar a transferência";
 
 /* An error indicating the user must update their device before trying to transfer. */
 "DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Faça a atualização para a última versão do Signal e tente novamente";
 
 /* The explanation on the action sheet prompting the user if they want to transfer their device. */
-"DEVICE_TRANSFER_PROMPT_EXPLANATION" = "Transfer your Signal account to a new iOS device. Make sure your new device is nearby and turned on.";
+"DEVICE_TRANSFER_PROMPT_EXPLANATION" = "Transfira a sua conta do Signal para um dispositivo iOS novo. Assegure-se que o seu dispositivo novo está por perto e encontra-se ligado.";
 
 /* The title on the acttion sheet prompting the user if they want to transfer their device. */
 "DEVICE_TRANSFER_PROMPT_TITLE" = "Transferir conta";
 
 /* The explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Open Signal on your old device, bring it nearby, and make sure Wi-Fi and Bluetooth are enabled on both devices.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Abra o Signal no seu dispositivo antigo, traga-o para perto, e assegure-se que tanto o Wi-Fi como  bluetooth se encontram ativados em ambos os dispositivos.";
 
 /* The second explanation for the device transfer qr code view */
 "DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Posicione o código QR na moldura do seu outro dispositivo.";
@@ -1104,7 +1125,7 @@
 "DEVICE_TRANSFER_SCANNING_EXPLANATION" = "Posicione o código QR dentro do circulo";
 
 /* The title for the action sheet asking the user to scan the QR code to transfer */
-"DEVICE_TRANSFER_SCANNING_TITLE" = "Hold Your New Device Up to the Camera";
+"DEVICE_TRANSFER_SCANNING_TITLE" = "Mantenha o seu dispositivo novo perto da câmara";
 
 /* The explanation on the action sheet that shows transfer progress */
 "DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "Mantenha ambos os dispositivos próximos um do outro. Não desligue nenhum dos dispositivos e mantenha o Signal aberto.";
@@ -1690,6 +1711,9 @@
 
 /* Message for the 'can't replace group admin' alert. */
 "GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Escolha um novo administrador para este grupo antes de o abandonar.";
+
+/* Error message indicating that a member can't be added to a group because they are already in the group. */
+"GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP" = "User already in group.";
 
 /* Error indicating that an error occurred while accepting an invite. */
 "GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "Não foi possível aceitar o convite.";
@@ -2534,17 +2558,32 @@
 /* Label indicating that a group has no pending members. */
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "Sem convites para exibir.";
 
+/* Title of 're-send invite' button. */
+"PENDING_GROUP_MEMBERS_RESEND_INVITE_1_BUTTON" = "Re-send Invite";
+
+/* Title of 're-send invites' button. */
+"PENDING_GROUP_MEMBERS_RESEND_INVITE_N_BUTTON" = "Re-send Invites";
+
 /* Title of 'revoke invite' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "Revogar convite";
 
-/* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the invited group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revogar o convite de grupo de  “%@“?";
+/* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the inviting group member. }}. */
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revoke group invite sent by “%@“?";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Revogar %1$@ convites enviados por  “%2$@“?";
 
 /* Title of 'revoke invites' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_N_BUTTON" = "Revogar convites";
+
+/* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the invited group member. }}. */
+"PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revoke group invite for “%@“?";
+
+/* Format for title of 'revoke or re-send invite' confirmation alert. Embeds {{ name of the inviting group member. }}. */
+"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revoke or re-send group invite for “%@“?";
+
+/* Format for title of 'revoke or re-send invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
+"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Revoke or re-send %1$@ invites sent by “%2$@“?";
 
 /* Footer for the 'invites by other group members' section of the 'pending group members' view. */
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Os detalhes das pessoas convidadas por outros membros do grupo não são exibidos. Se os convidados optarem se juntarem, as suas informações serão partilhadas com o grupo a partir desse momento. Eles não verão nenhuma mensagem do grupo até se juntarem ao grupo.";
@@ -2942,6 +2981,9 @@
 /* Text describing the local user in the reaction details pane. */
 "REACTIONS_DETAIL_YOU" = "Você";
 
+/* Error message indicating that a user can't be selected. */
+"RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "User can't be selected.";
+
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "Esqueci-me do PIN.";
 
@@ -3318,7 +3360,7 @@
 "SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Leia o código QR com o seu telemóvel";
 
 /* header text before the user can transfer to this device */
-"SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "Launch Signal on your old iPad to transfer your account";
+"SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "Inicie o Signal no seu iPad antigo para transferir a sua conta";
 
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "A sessão segura foi reiniciada.";
@@ -3543,19 +3585,19 @@
 "SETTINGS_NOTIFICATIONS" = "Notificações";
 
 /* The button text for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "Turn Off Reminders";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "Desativar lembretes";
 
 /* The explanation for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "Make sure you memorize or securely store your PIN as it can’t be recovered. If you forget your PIN, you may lose data when re-registering your Signal account.";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "Lembre-se de memorizar ou armazenar em segurança o seu PIN, pois ele não poderá ser recuperado. Se se esquecer do seu PIN, poderá perder dados ao registar novamente a sua conta do Signal.";
 
 /* The title for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Confirm your Signal PIN";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Confirme o seu PIN do Signal";
 
 /* Footer for the 'pin reminder' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_PIN_REMINDER_FOOTER" = "Reminders help you remember your PIN since it can’t be recovered. You’ll be asked less frequently over time.";
+"SETTINGS_PIN_REMINDER_FOOTER" = "Os lembretes ajudam-no a lembrar-se do seu PIN, pois ele não pode ser recuperado. Este, ser-lhe-á solicitado com menos frequência ao longo do tempo.";
 
 /* Label for the 'pin reminder' switch of the privacy settings. */
-"SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "PIN Reminders";
+"SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "Lembretes de PIN";
 
 /* Footer for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_FOOTER" = "Os PINs mantém encriptada a informação guardada no Signal de forma a que apenas você lhe possa aceder. O seu perfil, definições e contactos serão restaurados quando reinstalar o Signal.";
