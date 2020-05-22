@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -36,10 +36,10 @@ public class AppExpiry: NSObject {
     /// installable on their device and show a special banner
     /// that indicates we will no longer support their device.
     ///
-    /// Currently, only iOS 10 and greater are officially supported.
+    /// Currently, only iOS 11 and greater are officially supported.
     @objc
     public static var isEndOfLifeOSVersion: Bool {
-        if #available(iOS 10, *) {
+        if #available(iOS 11, *) {
             return false
         } else {
             return true
