@@ -142,12 +142,12 @@ extension ConversationViewController: MessageActionsDelegate {
     //  * the feature flag is enabled
     //  * you sent this message
     //  * you haven't already remotely deleted this message
-    //  * it has been less than 8 hours since you sent the message
+    //  * it has been less than 3 hours since you sent the message
     func canBeRemotelyDeleted(conversationViewItem: ConversationViewItem) -> Bool {
         guard RemoteConfig.deleteForEveryone else { return false }
         guard let outgoingMessage = conversationViewItem.interaction as? TSOutgoingMessage else { return false }
         guard !outgoingMessage.wasRemotelyDeleted else { return false }
-        guard Date.ows_millisecondTimestamp() - outgoingMessage.timestamp <= (kHourInMs * 8) else { return false }
+        guard Date.ows_millisecondTimestamp() - outgoingMessage.timestamp <= (kHourInMs * 3) else { return false }
 
         return true
     }
