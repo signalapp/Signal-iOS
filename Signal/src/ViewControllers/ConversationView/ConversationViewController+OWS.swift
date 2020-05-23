@@ -22,6 +22,15 @@ extension ConversationViewController {
                                                                              transaction: transaction)
         }
     }
+
+    @objc
+    func clearMarkedUnread() {
+        if thread.isMarkedUnread {
+            self.databaseStorage.write { transaction in
+                self.thread.clearMarkedAsUnread(updateStorageService: true, transaction: transaction)
+            }
+        }
+    }
 }
 
 // MARK: - ForwardMessageDelegate

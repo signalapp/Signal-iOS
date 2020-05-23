@@ -29,6 +29,7 @@ CREATE
             ,"contactUUID" TEXT
             ,"groupModel" BLOB
             ,"hasDismissedOffers" INTEGER
+            ,"isMarkedUnread" BOOLEAN NOT NULL DEFAULT 0
         )
 ;
 

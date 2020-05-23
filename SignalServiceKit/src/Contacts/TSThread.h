@@ -42,6 +42,7 @@ extern ConversationColorName const ConversationColorNameDefault;
 @property (nonatomic, readonly, nullable) NSDate *creationDate;
 @property (nonatomic, readonly) BOOL isArchivedByLegacyTimestampForSorting DEPRECATED_MSG_ATTRIBUTE("this property is only to be used in the sortId migration");
 @property (nonatomic, readonly) BOOL isArchived;
+@property (nonatomic, readonly) BOOL isMarkedUnread;
 
 // zero if thread has never had an interaction.
 // The corresponding interaction may have been deleted.
@@ -63,11 +64,12 @@ extern ConversationColorName const ConversationColorNameDefault;
            conversationColorName:(ConversationColorName)conversationColorName
                     creationDate:(nullable NSDate *)creationDate
                       isArchived:(BOOL)isArchived
+                  isMarkedUnread:(BOOL)isMarkedUnread
             lastInteractionRowId:(int64_t)lastInteractionRowId
                     messageDraft:(nullable NSString *)messageDraft
                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorName:creationDate:isArchived:lastInteractionRowId:messageDraft:mutedUntilDate:shouldThreadBeVisible:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorName:creationDate:isArchived:isMarkedUnread:lastInteractionRowId:messageDraft:mutedUntilDate:shouldThreadBeVisible:));
 
 // clang-format on
 
@@ -112,7 +114,16 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
 
 - (BOOL)hasSafetyNumbers;
 
-- (void)markAllAsReadWithTransaction:(SDSAnyWriteTransaction *)transaction;
+- (void)markAllAsReadAndUpdateStorageService:(BOOL)updateStorageService
+                                 transaction:(SDSAnyWriteTransaction *)transaction
+    NS_SWIFT_NAME(markAllAsRead(updateStorageService:transaction:));
+
+- (void)markAsUnreadAndUpdateStorageService:(BOOL)updateStorageService
+                                transaction:(SDSAnyWriteTransaction *)transaction
+    NS_SWIFT_NAME(markAsUnread(updateStorageService:transaction:));
+- (void)clearMarkedAsUnreadAndUpdateStorageService:(BOOL)updateStorageService
+                                       transaction:(SDSAnyWriteTransaction *)transaction
+    NS_SWIFT_NAME(clearMarkedAsUnread(updateStorageService:transaction:));
 
 - (nullable TSInteraction *)lastInteractionForInboxWithTransaction:(SDSAnyReadTransaction *)transaction
     NS_SWIFT_NAME(lastInteractionForInbox(transaction:));

@@ -44,6 +44,7 @@ ConversationColorName const ConversationColorNameDefault = ConversationColorName
 
 @property (nonatomic, nullable) NSDate *creationDate;
 @property (nonatomic) BOOL isArchived;
+@property (nonatomic) BOOL isMarkedUnread;
 @property (nonatomic, copy, nullable) NSString *messageDraft;
 @property (atomic, nullable) NSDate *mutedUntilDate;
 @property (nonatomic) int64_t lastInteractionRowId;
@@ -107,6 +108,7 @@ ConversationColorName const ConversationColorNameDefault = ConversationColorName
            conversationColorName:(ConversationColorName)conversationColorName
                     creationDate:(nullable NSDate *)creationDate
                       isArchived:(BOOL)isArchived
+                  isMarkedUnread:(BOOL)isMarkedUnread
             lastInteractionRowId:(int64_t)lastInteractionRowId
                     messageDraft:(nullable NSString *)messageDraft
                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
@@ -122,6 +124,7 @@ ConversationColorName const ConversationColorNameDefault = ConversationColorName
     _conversationColorName = conversationColorName;
     _creationDate = creationDate;
     _isArchived = isArchived;
+    _isMarkedUnread = isMarkedUnread;
     _lastInteractionRowId = lastInteractionRowId;
     _messageDraft = messageDraft;
     _mutedUntilDate = mutedUntilDate;
@@ -360,7 +363,8 @@ ConversationColorName const ConversationColorNameDefault = ConversationColorName
     return [[[InteractionFinder alloc] initWithThreadUniqueId:self.uniqueId] countWithTransaction:transaction];
 }
 
-- (void)markAllAsReadWithTransaction:(SDSAnyWriteTransaction *)transaction
+- (void)markAllAsReadAndUpdateStorageService:(BOOL)updateStorageService
+                                 transaction:(SDSAnyWriteTransaction *)transaction
 {
     BOOL hasPendingMessageRequest = [self hasPendingMessageRequestWithTransaction:transaction.unwrapGrdbWrite];
     OWSReadCircumstance circumstance = hasPendingMessageRequest
@@ -377,8 +381,39 @@ ConversationColorName const ConversationColorNameDefault = ConversationColorName
                            transaction:transaction];
     }
 
+    [self clearMarkedAsUnreadAndUpdateStorageService:updateStorageService transaction:transaction];
+
     // Just to be defensive, we'll also check for unread messages.
     OWSAssertDebug([interactionFinder allUnreadMessagesWithTransaction:transaction.unwrapGrdbRead].count < 1);
+}
+
+- (void)clearMarkedAsUnreadAndUpdateStorageService:(BOOL)updateStorageService
+                                       transaction:(SDSAnyWriteTransaction *)transaction
+{
+    __block BOOL wasMarkedUnread;
+    [self anyUpdateWithTransaction:transaction
+                             block:^(TSThread *thread) {
+                                 wasMarkedUnread = thread.isMarkedUnread;
+                                 thread.isMarkedUnread = NO;
+                             }];
+
+    if (updateStorageService && wasMarkedUnread) {
+        [self recordPendingStorageServiceUpdates];
+    }
+}
+
+- (void)markAsUnreadAndUpdateStorageService:(BOOL)updateStorageService transaction:(SDSAnyWriteTransaction *)transaction
+{
+    __block BOOL wasMarkedUnread;
+    [self anyUpdateWithTransaction:transaction
+                             block:^(TSThread *thread) {
+                                 wasMarkedUnread = thread.isMarkedUnread;
+                                 thread.isMarkedUnread = YES;
+                             }];
+
+    if (updateStorageService && !wasMarkedUnread) {
+        [self recordPendingStorageServiceUpdates];
+    }
 }
 
 - (nullable TSInteraction *)lastInteractionForInboxWithTransaction:(SDSAnyReadTransaction *)transaction
@@ -564,7 +599,8 @@ ConversationColorName const ConversationColorNameDefault = ConversationColorName
                                  thread.isArchived = YES;
                              }];
 
-    [self markAllAsReadWithTransaction:transaction];
+    // We already update storage service below, so we don't need to here.
+    [self markAllAsReadAndUpdateStorageService:NO transaction:transaction];
 
     if (updateStorageService) {
         [self recordPendingStorageServiceUpdates];

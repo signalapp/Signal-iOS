@@ -50,6 +50,7 @@ NSUInteger const TSContactThreadSchemaVersion = 1;
            conversationColorName:(ConversationColorName)conversationColorName
                     creationDate:(nullable NSDate *)creationDate
                       isArchived:(BOOL)isArchived
+                  isMarkedUnread:(BOOL)isMarkedUnread
             lastInteractionRowId:(int64_t)lastInteractionRowId
                     messageDraft:(nullable NSString *)messageDraft
                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
@@ -63,6 +64,7 @@ NSUInteger const TSContactThreadSchemaVersion = 1;
              conversationColorName:conversationColorName
                       creationDate:creationDate
                         isArchived:isArchived
+                    isMarkedUnread:isMarkedUnread
               lastInteractionRowId:lastInteractionRowId
                       messageDraft:messageDraft
                     mutedUntilDate:mutedUntilDate

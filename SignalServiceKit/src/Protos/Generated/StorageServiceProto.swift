@@ -1094,6 +1094,9 @@ public class StorageServiceProtoContactRecord: NSObject {
         if hasArchived {
             builder.setArchived(archived)
         }
+        if hasMarkedUnread {
+            builder.setMarkedUnread(markedUnread)
+        }
         return builder
     }
 
@@ -1187,6 +1190,10 @@ public class StorageServiceProtoContactRecord: NSObject {
 
         public func setArchived(_ valueParam: Bool) {
             proto.archived = valueParam
+        }
+
+        public func setMarkedUnread(_ valueParam: Bool) {
+            proto.markedUnread = valueParam
         }
 
         public func build() throws -> StorageServiceProtoContactRecord {
@@ -1309,6 +1316,13 @@ public class StorageServiceProtoContactRecord: NSObject {
         return true
     }
 
+    public var markedUnread: Bool {
+        return proto.markedUnread
+    }
+    public var hasMarkedUnread: Bool {
+        return true
+    }
+
     public var hasValidService: Bool {
         return serviceAddress != nil
     }
@@ -1421,6 +1435,9 @@ public class StorageServiceProtoGroupV1Record: NSObject {
         if hasArchived {
             builder.setArchived(archived)
         }
+        if hasMarkedUnread {
+            builder.setMarkedUnread(markedUnread)
+        }
         return builder
     }
 
@@ -1458,6 +1475,10 @@ public class StorageServiceProtoGroupV1Record: NSObject {
             proto.archived = valueParam
         }
 
+        public func setMarkedUnread(_ valueParam: Bool) {
+            proto.markedUnread = valueParam
+        }
+
         public func build() throws -> StorageServiceProtoGroupV1Record {
             return try StorageServiceProtoGroupV1Record.parseProto(proto)
         }
@@ -1489,6 +1510,13 @@ public class StorageServiceProtoGroupV1Record: NSObject {
         return proto.archived
     }
     public var hasArchived: Bool {
+        return true
+    }
+
+    public var markedUnread: Bool {
+        return proto.markedUnread
+    }
+    public var hasMarkedUnread: Bool {
         return true
     }
 
@@ -1563,6 +1591,9 @@ public class StorageServiceProtoGroupV2Record: NSObject {
         if hasArchived {
             builder.setArchived(archived)
         }
+        if hasMarkedUnread {
+            builder.setMarkedUnread(markedUnread)
+        }
         return builder
     }
 
@@ -1600,6 +1631,10 @@ public class StorageServiceProtoGroupV2Record: NSObject {
             proto.archived = valueParam
         }
 
+        public func setMarkedUnread(_ valueParam: Bool) {
+            proto.markedUnread = valueParam
+        }
+
         public func build() throws -> StorageServiceProtoGroupV2Record {
             return try StorageServiceProtoGroupV2Record.parseProto(proto)
         }
@@ -1631,6 +1666,13 @@ public class StorageServiceProtoGroupV2Record: NSObject {
         return proto.archived
     }
     public var hasArchived: Bool {
+        return true
+    }
+
+    public var markedUnread: Bool {
+        return proto.markedUnread
+    }
+    public var hasMarkedUnread: Bool {
         return true
     }
 
@@ -1711,6 +1753,9 @@ public class StorageServiceProtoAccountRecord: NSObject {
         if hasNoteToSelfArchived {
             builder.setNoteToSelfArchived(noteToSelfArchived)
         }
+        if hasNoteToSelfMarkedUnread {
+            builder.setNoteToSelfMarkedUnread(noteToSelfMarkedUnread)
+        }
         if hasReadReceipts {
             builder.setReadReceipts(readReceipts)
         }
@@ -1774,6 +1819,10 @@ public class StorageServiceProtoAccountRecord: NSObject {
 
         public func setNoteToSelfArchived(_ valueParam: Bool) {
             proto.noteToSelfArchived = valueParam
+        }
+
+        public func setNoteToSelfMarkedUnread(_ valueParam: Bool) {
+            proto.noteToSelfMarkedUnread = valueParam
         }
 
         public func setReadReceipts(_ valueParam: Bool) {
@@ -1847,6 +1896,13 @@ public class StorageServiceProtoAccountRecord: NSObject {
         return proto.noteToSelfArchived
     }
     public var hasNoteToSelfArchived: Bool {
+        return true
+    }
+
+    public var noteToSelfMarkedUnread: Bool {
+        return proto.noteToSelfMarkedUnread
+    }
+    public var hasNoteToSelfMarkedUnread: Bool {
         return true
     }
 

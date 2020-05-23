@@ -167,55 +167,55 @@ NSUInteger TSErrorMessageSchemaVersion = 2;
 
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
-           receivedAtTimestamp:(uint64_t)receivedAtTimestamp
-                        sortId:(uint64_t)sortId
-                     timestamp:(uint64_t)timestamp
-                uniqueThreadId:(NSString *)uniqueThreadId
-                 attachmentIds:(NSArray<NSString *> *)attachmentIds
-                          body:(nullable NSString *)body
-                  contactShare:(nullable OWSContact *)contactShare
-               expireStartedAt:(uint64_t)expireStartedAt
-                     expiresAt:(uint64_t)expiresAt
-              expiresInSeconds:(unsigned int)expiresInSeconds
-            isViewOnceComplete:(BOOL)isViewOnceComplete
-             isViewOnceMessage:(BOOL)isViewOnceMessage
-                   linkPreview:(nullable OWSLinkPreview *)linkPreview
-                messageSticker:(nullable MessageSticker *)messageSticker
-                 quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-  storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
-            wasRemotelyDeleted:(BOOL)wasRemotelyDeleted
-                     errorType:(TSErrorMessageType)errorType
-                          read:(BOOL)read
-              recipientAddress:(nullable SignalServiceAddress *)recipientAddress
+             receivedAtTimestamp:(uint64_t)receivedAtTimestamp
+                          sortId:(uint64_t)sortId
+                       timestamp:(uint64_t)timestamp
+                  uniqueThreadId:(NSString *)uniqueThreadId
+                   attachmentIds:(NSArray<NSString *> *)attachmentIds
+                            body:(nullable NSString *)body
+                    contactShare:(nullable OWSContact *)contactShare
+                 expireStartedAt:(uint64_t)expireStartedAt
+                       expiresAt:(uint64_t)expiresAt
+                expiresInSeconds:(unsigned int)expiresInSeconds
+              isViewOnceComplete:(BOOL)isViewOnceComplete
+               isViewOnceMessage:(BOOL)isViewOnceMessage
+                     linkPreview:(nullable OWSLinkPreview *)linkPreview
+                  messageSticker:(nullable MessageSticker *)messageSticker
+                   quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+    storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
+              wasRemotelyDeleted:(BOOL)wasRemotelyDeleted
+                       errorType:(TSErrorMessageType)errorType
+                            read:(BOOL)read
+                recipientAddress:(nullable SignalServiceAddress *)recipientAddress
 {
     self = [super initWithGrdbId:grdbId
                         uniqueId:uniqueId
-             receivedAtTimestamp:receivedAtTimestamp
-                          sortId:sortId
-                       timestamp:timestamp
-                  uniqueThreadId:uniqueThreadId
-                   attachmentIds:attachmentIds
-                            body:body
-                    contactShare:contactShare
-                 expireStartedAt:expireStartedAt
-                       expiresAt:expiresAt
-                expiresInSeconds:expiresInSeconds
-              isViewOnceComplete:isViewOnceComplete
-               isViewOnceMessage:isViewOnceMessage
-                     linkPreview:linkPreview
-                  messageSticker:messageSticker
-                   quotedMessage:quotedMessage
-    storedShouldStartExpireTimer:storedShouldStartExpireTimer
-              wasRemotelyDeleted:wasRemotelyDeleted];
-    
+               receivedAtTimestamp:receivedAtTimestamp
+                            sortId:sortId
+                         timestamp:timestamp
+                    uniqueThreadId:uniqueThreadId
+                     attachmentIds:attachmentIds
+                              body:body
+                      contactShare:contactShare
+                   expireStartedAt:expireStartedAt
+                         expiresAt:expiresAt
+                  expiresInSeconds:expiresInSeconds
+                isViewOnceComplete:isViewOnceComplete
+                 isViewOnceMessage:isViewOnceMessage
+                       linkPreview:linkPreview
+                    messageSticker:messageSticker
+                     quotedMessage:quotedMessage
+      storedShouldStartExpireTimer:storedShouldStartExpireTimer
+                wasRemotelyDeleted:wasRemotelyDeleted];
+
     if (!self) {
         return self;
     }
-    
+
     _errorType = errorType;
     _read = read;
     _recipientAddress = recipientAddress;
-    
+
     return self;
 }
 

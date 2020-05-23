@@ -87,6 +87,7 @@ extension StorageServiceProtoContactRecord {
 
         if let thread = TSContactThread.getWithContactAddress(address, transaction: transaction) {
             builder.setArchived(thread.isArchived)
+            builder.setMarkedUnread(thread.isMarkedUnread)
         }
 
         return try builder.build()
@@ -202,6 +203,14 @@ extension StorageServiceProtoContactRecord {
                     localThread.unarchiveThread(updateStorageService: false, transaction: transaction)
                 }
             }
+
+            if markedUnread != localThread.isMarkedUnread {
+                if markedUnread {
+                    localThread.markAsUnread(updateStorageService: false, transaction: transaction)
+                } else {
+                    localThread.clearMarkedAsUnread(updateStorageService: false, transaction: transaction)
+                }
+            }
         }
 
         return mergeState
@@ -273,6 +282,7 @@ extension StorageServiceProtoGroupV1Record {
 
         if let thread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
             builder.setArchived(thread.isArchived)
+            builder.setMarkedUnread(thread.isMarkedUnread)
         }
 
         return try builder.build()
@@ -328,6 +338,14 @@ extension StorageServiceProtoGroupV1Record {
                     localThread.archiveThread(updateStorageService: false, transaction: transaction)
                 } else {
                     localThread.unarchiveThread(updateStorageService: false, transaction: transaction)
+                }
+            }
+
+            if markedUnread != localThread.isMarkedUnread {
+                if markedUnread {
+                    localThread.markAsUnread(updateStorageService: false, transaction: transaction)
+                } else {
+                    localThread.clearMarkedAsUnread(updateStorageService: false, transaction: transaction)
                 }
             }
         }
@@ -387,6 +405,7 @@ extension StorageServiceProtoGroupV2Record {
 
         if let thread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) {
             builder.setArchived(thread.isArchived)
+            builder.setMarkedUnread(thread.isMarkedUnread)
         }
 
         return try builder.build()
@@ -481,6 +500,14 @@ extension StorageServiceProtoGroupV2Record {
                     localThread.unarchiveThread(updateStorageService: false, transaction: transaction)
                 }
             }
+
+            if markedUnread != localThread.isMarkedUnread {
+                if markedUnread {
+                    localThread.markAsUnread(updateStorageService: false, transaction: transaction)
+                } else {
+                    localThread.clearMarkedAsUnread(updateStorageService: false, transaction: transaction)
+                }
+            }
         }
 
         return mergeState
@@ -551,6 +578,7 @@ extension StorageServiceProtoAccountRecord {
 
         if let thread = TSContactThread.getWithContactAddress(localAddress, transaction: transaction) {
             builder.setNoteToSelfArchived(thread.isArchived)
+            builder.setNoteToSelfMarkedUnread(thread.isMarkedUnread)
         }
 
         let readReceiptsEnabled = readReceiptManager.areReadReceiptsEnabled()
@@ -620,6 +648,14 @@ extension StorageServiceProtoAccountRecord {
                     localThread.archiveThread(updateStorageService: false, transaction: transaction)
                 } else {
                     localThread.unarchiveThread(updateStorageService: false, transaction: transaction)
+                }
+            }
+
+            if noteToSelfMarkedUnread != localThread.isMarkedUnread {
+                if noteToSelfMarkedUnread {
+                    localThread.markAsUnread(updateStorageService: false, transaction: transaction)
+                } else {
+                    localThread.clearMarkedAsUnread(updateStorageService: false, transaction: transaction)
                 }
             }
         }

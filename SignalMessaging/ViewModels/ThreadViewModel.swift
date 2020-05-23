@@ -50,8 +50,9 @@ public class ThreadViewModel: NSObject {
             self.contactAddress = nil
         }
 
-        self.unreadCount = InteractionFinder(threadUniqueId: thread.uniqueId).unreadCount(transaction: transaction.unwrapGrdbRead)
-        self.hasUnreadMessages = unreadCount > 0
+        let unreadCount = InteractionFinder(threadUniqueId: thread.uniqueId).unreadCount(transaction: transaction.unwrapGrdbRead)
+        self.unreadCount = unreadCount
+        self.hasUnreadMessages = thread.isMarkedUnread || unreadCount > 0
         self.hasPendingMessageRequest = thread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead)
 
         if let groupThread = thread as? TSGroupThread, let addedByAddress = groupThread.groupModel.addedByAddress {

@@ -85,22 +85,25 @@ message ContactRecord {
   bool          blocked       = 9;
   bool          whitelisted   = 10;
   bool          archived      = 11;
+  bool          markedUnread  = 12;
 }
 
 message GroupV1Record {
   // @required
-  bytes id          = 1;
-  bool  blocked     = 2;
-  bool  whitelisted = 3;
-  bool  archived    = 4;
+  bytes id           = 1;
+  bool  blocked      = 2;
+  bool  whitelisted  = 3;
+  bool  archived     = 4;
+  bool  markedUnread = 5;
 }
 
 message GroupV2Record {
   // @required
-  bytes masterKey   = 1;
-  bool  blocked     = 2;
-  bool  whitelisted = 3;
-  bool  archived    = 4;
+  bytes masterKey    = 1;
+  bool  blocked      = 2;
+  bool  whitelisted  = 3;
+  bool  archived     = 4;
+  bool  markedUnread = 5;
 }
 
 message AccountRecord {
@@ -109,6 +112,7 @@ message AccountRecord {
   string familyName             = 3;
   string avatarUrl              = 4;
   bool   noteToSelfArchived     = 5;
+  bool   noteToSelfMarkedUnread = 10;
   bool   readReceipts           = 6;
   bool   sealedSenderIndicators = 7;
   bool   typingIndicators       = 8;

@@ -86,27 +86,27 @@ NSUInteger TSCallCurrentSchemaVersion = 1;
 
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
-           receivedAtTimestamp:(uint64_t)receivedAtTimestamp
-                        sortId:(uint64_t)sortId
-                     timestamp:(uint64_t)timestamp
-                uniqueThreadId:(NSString *)uniqueThreadId
-                      callType:(RPRecentCallType)callType
-                          read:(BOOL)read
+             receivedAtTimestamp:(uint64_t)receivedAtTimestamp
+                          sortId:(uint64_t)sortId
+                       timestamp:(uint64_t)timestamp
+                  uniqueThreadId:(NSString *)uniqueThreadId
+                        callType:(RPRecentCallType)callType
+                            read:(BOOL)read
 {
     self = [super initWithGrdbId:grdbId
                         uniqueId:uniqueId
-             receivedAtTimestamp:receivedAtTimestamp
-                          sortId:sortId
-                       timestamp:timestamp
-                  uniqueThreadId:uniqueThreadId];
-    
+               receivedAtTimestamp:receivedAtTimestamp
+                            sortId:sortId
+                         timestamp:timestamp
+                    uniqueThreadId:uniqueThreadId];
+
     if (!self) {
         return self;
     }
-    
+
     _callType = callType;
     _read = read;
-    
+
     return self;
 }
 

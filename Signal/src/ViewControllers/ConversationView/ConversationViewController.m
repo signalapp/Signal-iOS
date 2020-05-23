@@ -3706,6 +3706,8 @@ typedef enum : NSUInteger {
         return;
     }
 
+    [self clearMarkedUnread];
+
     [self updateLastVisibleSortIdWithSneakyAsyncTransaction];
 
     uint64_t lastVisibleSortId = self.lastVisibleSortId;
