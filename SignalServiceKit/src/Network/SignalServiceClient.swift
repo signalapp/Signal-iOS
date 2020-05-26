@@ -6,6 +6,13 @@ import Foundation
 import PromiseKit
 import SignalMetadataKit
 
+@objc
+public enum SignalServiceError: Int, Error {
+    case obsoleteLinkedDevice
+}
+
+// MARK: -
+
 public protocol SignalServiceClient {
     func requestPreauthChallenge(recipientId: String, pushToken: String) -> Promise<Void>
     func requestVerificationCode(recipientId: String, preauthChallenge: String?, captchaToken: String?, transport: TSVerificationTransport) -> Promise<Void>
@@ -23,6 +30,8 @@ public protocol SignalServiceClient {
 
     func updateSecondaryDeviceCapabilities() -> Promise<Void>
 }
+
+// MARK: -
 
 /// Based on libsignal-service-java's PushServiceSocket class
 @objc
@@ -150,13 +159,26 @@ public class SignalServiceRestClient: NSObject, SignalServiceClient {
                                                                      authKey: authKey,
                                                                      encryptedDeviceName: encryptedDeviceName)
 
-        return networkManager.makePromise(request: request).map { _, responseObject in
+        return firstly {
+            networkManager.makePromise(request: request)
+        }.map(on: .global()) { _, responseObject in
             guard let parser = ParamParser(responseObject: responseObject) else {
                 throw OWSErrorMakeUnableToProcessServerResponseError()
             }
 
             let deviceId: UInt32 = try parser.required(key: "deviceId")
             return deviceId
+        }.recover { error -> Promise<UInt32> in
+            if let statusCode = error.httpStatusCode,
+                statusCode == 409 {
+                // Convert 409 errors into .obsoleteLinkedDevice
+                // so that they can be explicitly handled.
+
+                throw SignalServiceError.obsoleteLinkedDevice
+            } else {
+                // Re-throw.
+                throw error
+            }
         }
     }
 
