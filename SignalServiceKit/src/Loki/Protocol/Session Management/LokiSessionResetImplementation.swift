@@ -22,6 +22,8 @@ public class LokiSessionResetImplementation : NSObject, SessionResetProtocol {
         guard let preKeyMessage = whisperMessage as? PreKeyWhisperMessage else { return }
         guard let storedPreKey = storage.getPreKeyRecord(forContact: recipientID, transaction: transaction) else {
             print("[Loki] Received a friend request accepted message from a public key for which no pre key bundle was created.")
+            // FIXME: Don't throw an error for now as a way to de-bork some existing clients. For example, Simon's Android device was
+            // somehow triggering this and causing iOS to discard all messages received from him.
             return
         }
         guard storedPreKey.id == preKeyMessage.prekeyID else {
