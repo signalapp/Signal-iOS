@@ -21,8 +21,8 @@ public class LokiSessionResetImplementation : NSObject, SessionResetProtocol {
         }
         guard let preKeyMessage = whisperMessage as? PreKeyWhisperMessage else { return }
         guard let storedPreKey = storage.getPreKeyRecord(forContact: recipientID, transaction: transaction) else {
-            print("[Loki] Received a friend request from a public key for which no pre key bundle was created.")
-            throw Errors.invalidPreKey
+            print("[Loki] Received a friend request accepted message from a public key for which no pre key bundle was created.")
+            return
         }
         guard storedPreKey.id == preKeyMessage.prekeyID else {
             print("[Loki] Received a `PreKeyWhisperMessage` (friend request acceptance) from an unknown source.")
