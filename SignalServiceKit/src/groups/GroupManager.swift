@@ -95,7 +95,14 @@ public class GroupManager: NSObject {
     // GroupsV2 TODO: Finalize this value with the designers.
     public static let groupUpdateTimeoutDuration: TimeInterval = 30
 
-    public static let maxGroupMemberCount: UInt = 100
+    public static var maxGroupMemberCount: UInt {
+        let defaultValue: UInt = 100
+        guard OWSStorage.isStorageReady() else {
+            owsFailDebug("Storage is not yet ready.")
+            return defaultValue
+        }
+        return RemoteConfig.groupsV2maxMemberCount(defaultValue: defaultValue)
+    }
 
     public static let maxGroupNameLength: Int = 32
 
