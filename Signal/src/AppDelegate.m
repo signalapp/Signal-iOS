@@ -1070,6 +1070,8 @@ static NSTimeInterval launchStartedAt;
 - (void)application:(UIApplication *)application
     performFetchWithCompletionHandler:(void (^)(UIBackgroundFetchResult result))completionHandler
 {
+    BOOL isUsingFullAPNs = [NSUserDefaults.standardUserDefaults boolForKey:@"isUsingFullAPNs"];
+    if (isUsingFullAPNs) { return; }
     NSLog(@"[Loki] Performing background fetch.");
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
         NSMutableArray *promises = [NSMutableArray new];
