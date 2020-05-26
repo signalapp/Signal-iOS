@@ -580,6 +580,8 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                 return;
             }
 
+            // FIXME: This can be hit if someone sends an invalid pre key. We should probably try to recover with a session reset.
+
             OWSFailDebug(@"Could not decrypt UD message: %@.", underlyingError);
             failureBlock(underlyingError);
             return;
