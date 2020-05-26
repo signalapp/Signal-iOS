@@ -2784,8 +2784,8 @@
 "When enabled, messages between you and %@ will disappear after they have been seen." = "When enabled, messages between you and %@ will disappear after they have been seen.";
 "This will be your name when you use Session." = "This will be your name when you use Session.";
 "Session Out of Sync" = "Session Out of Sync";
-"Would you like to restore your session?" = "Would you like to restore your session?";
-"Would you like to restore your session with %@?" = "Would you like to restore your session with %@?";
+"Would you like to restore your session? This can help resolve issues. Your messages will be preserved." = "Would you like to restore your session? This can help resolve issues. Your messages will be preserved.";
+"Would you like to restore your session with %@? This can help resolve issues. Your messages will be preserved." = "Would you like to restore your session with %@? This can help resolve issues. Your messages will be preserved.";
 "Restore" = "Restore";
 "Dismiss" = "Dismiss";
 "New Closed Group" = "New Closed Group";

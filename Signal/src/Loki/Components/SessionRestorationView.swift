@@ -37,7 +37,7 @@ final class SessionRestorationView : UIView {
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = NSLocalizedString("Would you like to restore your session?", comment: "")
+        explanationLabel.text = NSLocalizedString("Would you like to restore your session? This can help resolve issues. Your messages will be preserved.", comment: "")
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping
@@ -73,7 +73,7 @@ final class SessionRestorationView : UIView {
         // Update explanation label if possible
         if let contactID = thread.contactIdentifier() {
             let displayName = UserDisplayNameUtilities.getPrivateChatDisplayName(for: contactID) ?? contactID
-            explanationLabel.text = String(format: NSLocalizedString("Would you like to restore your session with %@?", comment: ""), displayName)
+            explanationLabel.text = String(format: NSLocalizedString("Would you like to restore your session with %@? This can help resolve issues. Your messages will be preserved.", comment: ""), displayName)
         }
     }
     
