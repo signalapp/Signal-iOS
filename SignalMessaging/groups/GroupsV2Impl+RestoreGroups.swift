@@ -215,7 +215,12 @@ public extension GroupsV2Impl {
                         Logger.warn("Error: \(error)")
                         return resolver.fulfill(.retryableFailure)
                     } else {
-                        owsFailDebug("Error: \(error)")
+                        switch error {
+                        case GroupsV2Error.localUserNotInGroup:
+                            Logger.warn("Error: \(error)")
+                        default:
+                            owsFailDebug("Error: \(error)")
+                        }
                         markAsFailed()
                         return resolver.fulfill(.unretryableFailure)
                     }

@@ -54,7 +54,10 @@ class DeviceTransferInitialViewController: DeviceTransferBaseViewController {
 
     @objc
     func didTapNext() {
-        let qrScanner = DeviceTransferQRScanningViewController()
-        navigationController?.pushViewController(qrScanner, animated: true)
+        ows_askForCameraPermissions { granted in
+            guard granted else { return }
+            let qrScanner = DeviceTransferQRScanningViewController()
+            self.navigationController?.pushViewController(qrScanner, animated: true)
+        }
     }
 }

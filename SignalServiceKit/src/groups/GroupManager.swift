@@ -1193,7 +1193,9 @@ public class GroupManager: NSObject {
         }
         guard let groupThread = TSGroupThread.fetch(groupId: groupId, transaction: transaction) else {
             // Local user may have just deleted the thread via the UI.
-            owsFailDebug("Missing group in database.")
+            // Or we maybe be trying to restore a group from storage service
+            // that we are no longer a member of.
+            Logger.warn("Missing group in database.")
             return
         }
         // Remove local user from group.

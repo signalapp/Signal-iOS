@@ -23,6 +23,7 @@ class DeviceTransferQRScanningViewController: DeviceTransferBaseViewController {
         label.textColor = Theme.primaryTextColor
         label.numberOfLines = 0
         label.lineBreakMode = .byWordWrapping
+        label.textAlignment = .center
         return label
     }()
     lazy var hStack: UIStackView = {

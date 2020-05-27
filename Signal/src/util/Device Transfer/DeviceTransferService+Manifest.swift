@@ -154,21 +154,27 @@ extension DeviceTransferService {
 
     func handleReceivedManifest(at localURL: URL, fromPeer peerId: MCPeerID) {
         guard case .idle = transferState else {
+            stopTransfer()
             return owsFailDebug("Received manifest in unexpected state \(transferState)")
         }
         guard let fileSize = OWSFileSystem.fileSize(of: localURL) else {
+            stopTransfer()
             return owsFailDebug("Missing manifest file.")
         }
-        guard fileSize.uint64Value < 1024 * 1024 else {
+        guard fileSize.uint64Value < 1024 * 1024 * 10 else {
+            stopTransfer()
             return owsFailDebug("Unexpectedly received a very large manifest \(fileSize)")
         }
         guard let data = try? Data(contentsOf: localURL) else {
+            stopTransfer()
             return owsFailDebug("Failed to read manifest data")
         }
         guard let manifest = try? DeviceTransferProtoManifest.parseData(data) else {
+            stopTransfer()
             return owsFailDebug("Failed to parse manifest proto")
         }
         guard !tsAccountManager.isRegistered else {
+            stopTransfer()
             return owsFailDebug("Ignoring incoming transfer to a registered device")
         }
 
@@ -210,7 +216,7 @@ extension DeviceTransferService {
         guard let fileSystemAttributes = try? FileManager.default.attributesOfFileSystem(
             forPath: DeviceTransferService.pendingTransferDirectory.path
         ) else {
-            return owsFailDebug("failed to calculate available disk space")
+            return self.failTransfer(.assertion, "failed to calculate available disk space")
         }
 
         guard let freeSpaceInBytes = fileSystemAttributes[.systemFreeSize] as? UInt64, freeSpaceInBytes > manifest.estimatedTotalSize else {

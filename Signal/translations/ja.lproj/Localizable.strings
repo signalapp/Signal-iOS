@@ -336,10 +336,10 @@
 "BLOCK_LIST_BLOCKED_USERS_SECTION" = "ブロックしたユーザ";
 
 /* Error message indicating that a conversation can't be blocked because they are already blocked. */
-"BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "Group already blocked.";
+"BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "グループはすでにブロックされています。";
 
 /* Error message indicating that a user can't be blocked because they are already blocked. */
-"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "User already blocked.";
+"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "ユーザはすでにブロックされています。";
 
 /* Button label for the 'unblock' button */
 "BLOCK_LIST_UNBLOCK_BUTTON" = "ブロックを解除";
@@ -798,13 +798,13 @@
 "CONVERSATION_SETTINGS_EDIT_GROUP" = "編集";
 
 /* Label for 'edit membership access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Who Can Edit Membership";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "メンバーシップ編集できるユーザ";
 
 /* Label for button that sets 'group membership access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "管理者のみ";
 
 /* Description for the 'edit group membership access' alert. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "Choose who can edit group membership:";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "グループメンバーシップを編集できるメンバーを選択:";
 
 /* Label for button that sets 'group membership access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "全てのメンバー";
@@ -825,7 +825,7 @@
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@メンバー";
 
 /* Footer for the 'membership access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "Choose who can edit group membership.";
+"CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "グループメンバーシップを編集できるメンバーを選択します。";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "消音";
@@ -1038,10 +1038,10 @@
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION" = "移動を中止する";
 
 /* The message of the dialog asking the user if they want to cancel a device transfer */
-"DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE" = "このウィンドウを閉じると、進行中のデータ移動が中止になります。本当に閉じますか？";
+"DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE" = "このウィンドウを閉じると、進行中のデータ移動が中止になります。本当に閉じますか?";
 
 /* The title of the dialog asking the user if they want to cancel a device transfer */
-"DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "移動を中止しますか？";
+"DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "移動を中止しますか?";
 
 /* The explanation for the device transfer 'choice' view */
 "DEVICE_TRANSFER_CHOICE_EXPLANATION" = "古いiOS端末があれば、アカウントやメッセージをこの端末に安全に移動できます。";
@@ -1080,22 +1080,22 @@
 "DEVICE_TRANSFER_CHOICE_WARNING" = "続行すると、この電話番号で登録している他の端末でSignalが使えなくなります。";
 
 /* An error indicating that we were unable to verify the indentity of the new device to complete the transfer */
-"DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "新規の端末を確認できませんでした。再試行してください。";
+"DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "新規の端末を確認できませんでした。再試行してください";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_GENERIC" = "移動を完了できませんでした。両端末が近くにあることを確認して、もう一度試してください。";
+"DEVICE_TRANSFER_ERROR_GENERIC" = "移動を完了できませんでした。両端末が近くにあることを確認して、もう一度試してください";
 
 /* An error indicating the user must scan this code with a linked device to transfer. */
-"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "このiPadを接続端末に設定するには、古いiPadでスキャンする必要があります。";
+"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "このiPadを接続端末に設定するには、古いiPadでスキャンする必要があります";
 
 /* An error indicating the user must scan this code with a primary device to transfer. */
-"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_PRIMARY" = "アカウントを移動するには、iPhoneでスキャンする必要があります。";
+"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_PRIMARY" = "アカウントを移動するには、iPhoneでスキャンする必要があります";
 
 /* An error indicating that the user does not have enough free space on their device to complete the transfer */
 "DEVICE_TRANSFER_ERROR_NOT_ENOUGH_SPACE" = "移動するには空き領域が不足しています";
 
 /* An error indicating the user must update their device before trying to transfer. */
-"DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Signalの最新版にアップデートしてから再試行してください。";
+"DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Signalを最新版にアップデートしてから再試行してください";
 
 /* The explanation on the action sheet prompting the user if they want to transfer their device. */
 "DEVICE_TRANSFER_PROMPT_EXPLANATION" = "新規のiOS端末にSignalアカウントを移動します。新しい端末を近くに置いてからオンにしてください。";
@@ -1104,16 +1104,16 @@
 "DEVICE_TRANSFER_PROMPT_TITLE" = "アカウントの移動";
 
 /* The explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "旧端末でSignalを開き、近くに置いて、Wi-fiとBluetoothを両方の端末で有効にしてください。";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "旧端末でSignalを開き、近くに置いて、Wi-FiとBluetoothを両方の端末で有効にしてください。";
 
 /* The second explanation for the device transfer qr code view */
 "DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "このQRコードを他の端末の枠の中に置いてください。";
 
 /* The title for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_TITLE" = "他の端末を待っています";
+"DEVICE_TRANSFER_QRCODE_TITLE" = "他の端末を待っています...";
 
 /* The explanation on the view that shows receiving progress */
-"DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "端末どうしを近くに置いてください。どちらも電源を切らず、Signalを開けたままにしてください。移動は端から端まで暗号化されます。";
+"DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "端末同士を近くにしてください。どちらも電源を切らず、Signalを開けたままにしてください。";
 
 /* The title on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_TITLE" = "データ受信中";
@@ -1128,7 +1128,7 @@
 "DEVICE_TRANSFER_SCANNING_TITLE" = "新しい端末をカメラから見えるように置いてください。";
 
 /* The explanation on the action sheet that shows transfer progress */
-"DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "端末どうしを近くにしてください。どちらも電源を切らず、Signalを開けたままにしてください。";
+"DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "端末同士を近くにしてください。どちらも電源を切らず、Signalを開けたままにしてください。";
 
 /* The title on the action sheet that shows transfer progress */
 "DEVICE_TRANSFER_TRANSFERRING_TITLE" = "データ移動中";
@@ -1713,7 +1713,7 @@
 "GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "去る前に、このグループの新しい管理者を選択してください。";
 
 /* Error message indicating that a member can't be added to a group because they are already in the group. */
-"GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP" = "User already in group.";
+"GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP" = "ユーザはすでにグループにいます。";
 
 /* Error indicating that an error occurred while accepting an invite. */
 "GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "招待を承認できませんでした。";
@@ -2559,16 +2559,16 @@
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "表示する招待がありません。";
 
 /* Title of 're-send invite' button. */
-"PENDING_GROUP_MEMBERS_RESEND_INVITE_1_BUTTON" = "Re-send Invite";
+"PENDING_GROUP_MEMBERS_RESEND_INVITE_1_BUTTON" = "招待を再送信";
 
 /* Title of 're-send invites' button. */
-"PENDING_GROUP_MEMBERS_RESEND_INVITE_N_BUTTON" = "Re-send Invites";
+"PENDING_GROUP_MEMBERS_RESEND_INVITE_N_BUTTON" = "招待を再送信";
 
 /* Title of 'revoke invite' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "招待を無効にする";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revoke group invite sent by “%@“?";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "「%@」から送信されたグループ招待を無効にしますか?";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "「%2$@」からの%1$@件の招待を無効にしますか?";
@@ -2580,10 +2580,10 @@
 "PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "「%@」からのグループ招待を無効にしますか?";
 
 /* Format for title of 'revoke or re-send invite' confirmation alert. Embeds {{ name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revoke or re-send group invite for “%@“?";
+"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "「%@」から送信されたのグループ招待を無効にしますか?";
 
 /* Format for title of 'revoke or re-send invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Revoke or re-send %1$@ invites sent by “%2$@“?";
+"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "「%2$@」から送信された%1$@件の招待を無効または再送信しますか?";
 
 /* Footer for the 'invites by other group members' section of the 'pending group members' view. */
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "他のグループメンバーから招待を受けたユーザーの詳細は表示されません。招待を受けたユーザーの情報は、そのユーザーがグループに参加する時点でグループと共有されます。それまでの間、そのユーザーにグループのメッセージは表示されません。";
@@ -2721,7 +2721,7 @@
 "PIN_CREATION_TITLE" = "あなたのPINを作成";
 
 /* Label indicating that the attempted PIN is too weak */
-"PIN_CREATION_WEAK_ERROR" = "もっと強いPINを選んでください";
+"PIN_CREATION_WEAK_ERROR" = "もっと強いPINを選択してください";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "あなたがPINを忘れないよう、Signalは定期的に確認します。頻度は次第に減ってゆきます。";
@@ -2982,7 +2982,7 @@
 "REACTIONS_DETAIL_YOU" = "あなた";
 
 /* Error message indicating that a user can't be selected. */
-"RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "User can't be selected.";
+"RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "ユーザを選択できません。";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "PINを忘れました。";
@@ -3216,7 +3216,7 @@
 "SCREENSHOT_THREAD_DIRECT_FIVE_MESSAGE_ONE" = "おめでとう! 信じられないよ!";
 
 /* This is a message. */
-"SCREENSHOT_THREAD_DIRECT_FIVE_MESSAGE_THREE" = "また明日？";
+"SCREENSHOT_THREAD_DIRECT_FIVE_MESSAGE_THREE" = "また明日?";
 
 /* This is a message. Please include the emoji. */
 "SCREENSHOT_THREAD_DIRECT_FIVE_MESSAGE_TWO" = "ありがとう ☺️";
@@ -3225,7 +3225,7 @@
 "SCREENSHOT_THREAD_DIRECT_FOUR_MESSAGE_ONE" = "あなたの知恵で救われました。";
 
 /* This is a message. Include 'Thanks' + a similar phrase with the :) emoji. */
-"SCREENSHOT_THREAD_DIRECT_FOUR_MESSAGE_TWO" = "ありがとう！なんて素敵なメッセージでしょう :)";
+"SCREENSHOT_THREAD_DIRECT_FOUR_MESSAGE_TWO" = "ありがとう! なんて素敵なメッセージでしょう :)";
 
 /* This is a message. */
 "SCREENSHOT_THREAD_DIRECT_ONE_MESSAGE_ONE" = "私は激しく降る雨の音をここに座って聞いています。";
@@ -3243,7 +3243,7 @@
 "SCREENSHOT_THREAD_DIRECT_THREE_MESSAGE_ONE" = "私たちは明日クレープを作ります";
 
 /* This is a message before an image of mountains + a lake. */
-"SCREENSHOT_THREAD_DIRECT_TWO_MESSAGE_ONE" = "これ見て！";
+"SCREENSHOT_THREAD_DIRECT_TWO_MESSAGE_ONE" = "これ見て!";
 
 /* This is a message. */
 "SCREENSHOT_THREAD_DIRECT_TWO_MESSAGE_THREE" = "ニュージーランド!";
@@ -3351,7 +3351,7 @@
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Signalのインストール";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "携帯電話のSingnalで、あなたのアイコン（左上）をタップし、「リンク済み端末」の「新しい端末をリンク」から、このQRコードを撮影してください。";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "携帯電話のSignalで、あなたのアイコンをタップし、「リンク済み端末」の「新しい端末をリンク」から、このQRコードを撮影してください。";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
 "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "iPadのリンクに関するヘルプはこちら";
@@ -3765,7 +3765,7 @@
 "SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "アップロード中...";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
-"SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "添付ファイル作成に失敗11";
+"SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "添付ファイル作成に失敗";
 
 /* Title for the 'share extension' view. */
 "SHARE_EXTENSION_VIEW_TITLE" = "Signalと共有";
@@ -3921,7 +3921,7 @@
 "UNKNOWN_COUNTRY_NAME" = "不明な国名";
 
 /* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "Signalの新機能を使用してメッセージを送ったため、処理または表示できませんでした。";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "Signalの新機能を使用してメッセージを送信したため、処理または表示できませんでした。";
 
 /* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. Embeds {{user's name or phone number}}. */
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "%@からメッセージが届きましたが、Signalの新機能を使用したもののため処理または表示できませんでした。";

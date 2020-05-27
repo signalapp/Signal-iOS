@@ -19,6 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)setup;
 
+@property (nonatomic, readonly) BOOL hasSelectedThread;
+
 #pragma mark - Conversation Presentation
 
 - (void)showNewConversationView;

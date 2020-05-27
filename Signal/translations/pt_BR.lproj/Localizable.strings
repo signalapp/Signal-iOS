@@ -336,10 +336,10 @@
 "BLOCK_LIST_BLOCKED_USERS_SECTION" = "Pessoas bloquadas";
 
 /* Error message indicating that a conversation can't be blocked because they are already blocked. */
-"BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "Group already blocked.";
+"BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "Grupo já bloqueado.";
 
 /* Error message indicating that a user can't be blocked because they are already blocked. */
-"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "User already blocked.";
+"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "Pessoa já bloqueada.";
 
 /* Button label for the 'unblock' button */
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Desbloquear";
@@ -798,13 +798,13 @@
 "CONVERSATION_SETTINGS_EDIT_GROUP" = "Editar";
 
 /* Label for 'edit membership access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Who Can Edit Membership";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Quem pode editar os membros do grupo";
 
 /* Label for button that sets 'group membership access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Somente admins";
 
 /* Description for the 'edit group membership access' alert. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "Choose who can edit group membership:";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "Escolha quem pode editar os membros do grupo:";
 
 /* Label for button that sets 'group membership access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "Todos os membros";
@@ -825,7 +825,7 @@
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ membros";
 
 /* Footer for the 'membership access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "Choose who can edit group membership.";
+"CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "Escolha quem pode editar os membros do grupo.";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Silenciar";
@@ -1242,7 +1242,7 @@
 "ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Insira um PIN de Desbloqueio de Registro. Você deverá informar esse PIN na próxima vez que registrar este número de telefone no Signal.";
 
 /* Indicates that user has 'two factor auth pin' disabled. */
-"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "Para maior segurança, ative um PIN de Desbloqueio de Registro. Ele será requerido para registrar este número de telefone no Signal a partir de agora.";
+"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "Para maior segurança, ative um PIN de Desbloqueio de Registro. A partir de agora, ele será requerido para registrar este número de telefone no Signal.";
 
 /* Indicates that user has 'two factor auth pin' enabled. */
 "ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "O Bloqueio de Registro foi habilitado. Você deve inserir seu PIN quando for registrar seu número de telefone no Signal novamente.";
@@ -1341,7 +1341,7 @@
 "ERROR_SENDING_DELINKED" = "O seu aparelho não está mais vinculado. Por favor, revincule-o para continuar a enviar mensagens.";
 
 /* Error indicating a send failure due to a deregistered application. */
-"ERROR_SENDING_DEREGISTERED" = "O seu dispositivo não está mais registrado. Por favor, registre-o novamente para continuar a enviar mensagens.";
+"ERROR_SENDING_DEREGISTERED" = "O seu aparelho não está mais registrado. Por favor, registre-o novamente para continuar a enviar mensagens.";
 
 /* Error indicating a send failure due to an expired application. */
 "ERROR_SENDING_EXPIRED" = "Esta versão do Signal expirou. Por favor, atualize-o para a versão mais recente para continuar a enviar mensagens.";
@@ -1479,7 +1479,7 @@
 "GROUP_INVITES_SENT_ALERT_TITLE_N_FORMAT" = "%@ Convites enviados";
 
 /* Message for an alert indicating that some members were invited to a group. */
-"GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "Estas pessoas não podem ser adicionadas automaticamente a este grupo por você. Elas foram convidadas a participar e não verão nenhuma mensagem do grupo até que aceitem o convite.";
+"GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "Essas pessoas não podem ser adicionadas automaticamente a este grupo por você. Elas foram convidadas a participar e não verão nenhuma mensagem do grupo até que aceitem o convite.";
 
 /* Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%@ adicionou você.";
@@ -1713,7 +1713,7 @@
 "GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Escolha um novo admin para este grupo antes que você saia.";
 
 /* Error message indicating that a member can't be added to a group because they are already in the group. */
-"GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP" = "User already in group.";
+"GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP" = "Essa pessoa já faz parte do grupo.";
 
 /* Error indicating that an error occurred while accepting an invite. */
 "GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "Erro ao aceitar o convite.";
@@ -1863,7 +1863,7 @@
 "INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Buscar";
 
 /* Navbar title */
-"INVITE_FRIENDS_PICKER_TITLE" = "Convidar amigos";
+"INVITE_FRIENDS_PICKER_TITLE" = "Convidar amigos e amigas";
 
 /* Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other. */
 "INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Quando várias pessoas são convidadas ao mesmo tempo, elas recebem uma mensagem única e podem se ver entre si.";
@@ -2559,16 +2559,16 @@
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "Nenhum convite a mostrar.";
 
 /* Title of 're-send invite' button. */
-"PENDING_GROUP_MEMBERS_RESEND_INVITE_1_BUTTON" = "Re-send Invite";
+"PENDING_GROUP_MEMBERS_RESEND_INVITE_1_BUTTON" = "Reenviar convite";
 
 /* Title of 're-send invites' button. */
-"PENDING_GROUP_MEMBERS_RESEND_INVITE_N_BUTTON" = "Re-send Invites";
+"PENDING_GROUP_MEMBERS_RESEND_INVITE_N_BUTTON" = "Reenviar convites";
 
 /* Title of 'revoke invite' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "Revogar convite";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revoke group invite sent by “%@“?";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revogar convite de grupo enviado por  “%@“?";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Revogar %1$@ convites enviados por \"%2$@\"?";
@@ -2580,10 +2580,10 @@
 "PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revogar convite de grupo para \"%@\"?";
 
 /* Format for title of 'revoke or re-send invite' confirmation alert. Embeds {{ name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revoke or re-send group invite for “%@“?";
+"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revogar ou reenviar convite de grupo para “%@“?";
 
 /* Format for title of 'revoke or re-send invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Revoke or re-send %1$@ invites sent by “%2$@“?";
+"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Revogar ou reenviar %1$@ convites enviados por “%2$@“?";
 
 /* Footer for the 'invites by other group members' section of the 'pending group members' view. */
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Os detalhes das pessoas convidadas por outros membros do grupo não vão aparecer. Se elas optarem por entrar, suas informações serão compartilhadas com o grupo naquele momento. Elas não verão nenhuma mensagem no grupo antes de entrarem.";
@@ -2895,10 +2895,10 @@
 "PUSH_MANAGER_REPLY" = "Responder";
 
 /* Title of alert shown when push tokens sync job succeeds. */
-"PUSH_REGISTER_SUCCESS" = "Re-registrou com sucesso para notificações.";
+"PUSH_REGISTER_SUCCESS" = "Êxito ao registrar novamente para envio de notificações.";
 
 /* Used in table section header and alert view title contexts */
-"PUSH_REGISTER_TITLE" = "Notificações";
+"PUSH_REGISTER_TITLE" = "Envio de notificações";
 
 /* No comment provided by engineer. */
 "QUESTIONMARK_PUNCTUATION" = "?";
@@ -2982,7 +2982,7 @@
 "REACTIONS_DETAIL_YOU" = "Você";
 
 /* Error message indicating that a user can't be selected. */
-"RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "User can't be selected.";
+"RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "Não é possível selecionar essa pessoa";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "Esqueci meu PIN.";
@@ -2997,7 +2997,7 @@
 "REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Seu PIN é um código de mais de quatro dígitos, que você criou e que pode ser numérico ou alfanumérico. Se você não conseguir se lembrar do seu PIN, poderá criar um outro. Nesse caso, você pode se registrar e usar sua conta, mas perderá algumas configurações salvas, como as informações do seu perfil.";
 
 /* Alert body for a forgotten V1 PIN */
-"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "O seu PIN é um código, criado por você, com 4 ou mais dígitos númericos ou alfanuméricos. Se não lembrar dele, você terá que esperar sete dias antes de registrar sua conta novamente.";
+"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "O seu PIN é um código, criado por você, com 4 ou mais dígitos númericos ou alfanuméricos. Se não lembrar dele, você terá que esperar 7 dias antes de registrar sua conta novamente.";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock disabled. */
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "Restam %lu tentativas. Se você esgotá-las antes de conseguir se lembrar do seu PIN, poderá criar um outro. Nesse caso, você pode se registrar e usar sua conta, mas perderá algumas configurações salvas, como as informações do seu perfil.";
@@ -3006,7 +3006,7 @@
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_PLURAL_FORMAT" = "Você tem mais %lu tentativas restantes. Se suas tentativas acabarem, sua conta será bloqueada. Depois de 7 dias de inatividade, você pode se registrar novamente sem um PIN. Sua conta será apagada e seu conteúdo suprimido.";
 
 /* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock enabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_SINGLE" = "Resta uma tentativa. Se você esgotar as suas tentativas, a sua conta será bloqueada. Após 7 dias de inatividade, você poderá se recadastrar sem o seu PIN. Todo o conteúdo da sua conta será suprimido.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_SINGLE" = "Resta uma tentativa. Se você esgotar as suas tentativas, a sua conta será bloqueada. Após 7 dias de inatividade, você poderá se registrar novamente sem o seu PIN. Todo o conteúdo da sua conta será suprimido.";
 
 /* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock disabled. */
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "Resta uma tentativa. Se você esgotá-la antes de conseguir se lembrar do seu PIN, poderá criar um outro. Nesse caso, você pode se registrar e usar sua conta, mas perderá algumas configurações salvas, como as informações do seu perfil.";
@@ -3033,7 +3033,7 @@
 "REGISTER_RATE_LIMITING_ERROR" = "Muitas tentativas. Por favor, aguarde um minuto antes de tentar novamente.";
 
 /* Title of alert shown when push tokens sync job fails. */
-"REGISTRATION_BODY" = "Falha ao re-registrar para notificações.";
+"REGISTRATION_BODY" = "Falha ao rerregistrar para envio de notificações";
 
 /* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Código do país";
@@ -3084,7 +3084,7 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "O número de telefone que você está tentanto registrar já foi registrado em um outro servidor. Por favor, anule o outro registro e tente de novo. ";
 
 /* Body text for when user is periodically prompted to enter their registration lock PIN */
-"REMINDER_2FA_BODY" = "O Bloqueio de Registro está habilitado para o seu número de telefone. Para ajudar você a memorizar seu PIN de Desbloqueio de Registro, o Signal pedirá que você o confirme periodicamente.";
+"REMINDER_2FA_BODY" = "O Bloqueio de Registro está habilitado com o seu número de telefone. Para ajudar você a memorizar seu PIN de Desbloqueio de Registro, o Signal pedirá que você o confirme periodicamente.";
 
 /* Body header for when user is periodically prompted to enter their registration lock PIN */
 "REMINDER_2FA_BODY_HEADER" = "Lembrete:";
@@ -3105,7 +3105,7 @@
 "REPLACE_ADMIN_VIEW_TITLE" = "Escolher Novo Admin";
 
 /* No comment provided by engineer. */
-"REREGISTER_FOR_PUSH" = "Re-registrar para notificações";
+"REREGISTER_FOR_PUSH" = "Rerregistrar para envio de notificações";
 
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "Tentar Novamente";
@@ -3345,7 +3345,7 @@
 "SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "Eu não tenho Signal no meu telefone ...";
 
 /* alert body */
-"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Vá à App Store no seu telefone, instale o Signal, complete o processo de registro; em seguida, você poderá vincular o seu iPad à mesma conta.";
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Vá à App Store no seu telefone, instale o Signal e complete o processo de registro. Em seguida, você poderá vincular o seu iPad à mesma conta.";
 
 /* alert title */
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Instalar o Signal no seu telefone";
@@ -3588,7 +3588,7 @@
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "Desativar lembretes";
 
 /* The explanation for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "Tenha certeza de ter memorizado seu PIN, ou guarde-o em um lugar seguro já que ele não pode ser recuperado. Se você se esquecer do seu PIN, seus dados podem ser perdidos quando você re-registrar sua conta no Signal.";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "Tenha certeza de ter memorizado seu PIN, ou guarde-o em um lugar seguro, já que ele não pode ser recuperado. Se você se esquecer do seu PIN, seus dados poderão ser perdidos quando você rerregistrar sua conta no Signal.";
 
 /* The title for the dialog asking user to confirm their PIN to disable reminders */
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Confirme o seu PIN do Signal";
@@ -3642,16 +3642,16 @@
 "SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Habilitar";
 
 /* Body for the alert confirming that the user wants to turn on registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Se você esquecer seu PIN do Signal ao se registrar novamente no Signal, ficará sem acesso à sua conta por sete dias.";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Se você esquecer seu PIN do Signal ao se registrar novamente no Signal, ficará sem acesso à sua conta por 7 dias.";
 
 /* Title for the alert confirming that the user wants to turn on registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "Ativar o Bloqueio de Registro?";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "Habilitar o Bloqueio de Registro?";
 
 /* Label for re-link button. */
 "SETTINGS_RELINK_BUTTON" = "Revincular";
 
 /* Label for re-registration button. */
-"SETTINGS_REREGISTER_BUTTON" = "Recadastrar-se";
+"SETTINGS_REREGISTER_BUTTON" = "Registrar novamente";
 
 /* Label for the 'screen lock activity timeout' setting of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Tempo de bloqueio de tela";
@@ -3699,13 +3699,13 @@
 "SETTINGS_TWO_FACTOR_AUTH_ITEM" = "Bloqueio de Registro";
 
 /* Label for the 'enable registration lock' switch of the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Desbloqueio de Registro";
+"SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Bloqueio de Registro";
 
 /* Title for the 'two factor auth' section of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Bloqueio de Registro";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Para segurança extra, ative o bloqueio de registro, que exigirá que o seu PIN do Signal registre seu número de telefone com o Signal novamente.";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Para segurança extra, habilite o Bloqueio de Registro. Este exigirá que o seu PIN do Signal registre novamente seu número de telefone no Signal.";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Indicadores de digitação";
@@ -3747,13 +3747,13 @@
 "SHARE_EXTENSION_LOADING" = "Carregando...";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
-"SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Lançar a app Signal para registrar.";
+"SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Abrir a app Signal para registrar.";
 
 /* Title indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "Não registrado";
 
 /* Message indicating that the share extension cannot be used until the main app has been launched at least once. */
-"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Inicie o Signal para atualizar ou se cadastrar.";
+"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "abra o Signal para atualizar ou se registrar.";
 
 /* Title indicating that the share extension cannot be used until the main app has been launched at least once. */
 "SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "Aguarde";

@@ -197,7 +197,7 @@ struct SelfSignedIdentity {
                 [
                     kSecAttrKeyType: kSecAttrKeyTypeRSA,
                     kSecAttrKeyClass: kSecAttrKeyClassPrivate,
-                    kSecAttrKeySizeInBits: 2048
+                    kSecAttrKeySizeInBits: 4096
                 ] as CFDictionary,
                 nil
             ) else {
