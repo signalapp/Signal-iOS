@@ -4,11 +4,7 @@ import PromiseKit
 public final class LokiFileServerAPI : LokiDotNetAPI {
 
     // MARK: Settings
-    #if DEBUG
-    @objc public static let server = "http://file-dev.lokinet.org"
-    #else
     @objc public static let server = "https://file.getsession.org"
-    #endif
     public static let maxFileSize = 10_000_000 // 10 MB
     private static let deviceLinkType = "network.loki.messenger.devicemapping"
     private static let attachmentType = "net.app.core.oembed"

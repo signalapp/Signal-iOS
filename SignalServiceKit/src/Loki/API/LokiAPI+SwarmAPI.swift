@@ -24,11 +24,7 @@ public extension LokiAPI {
     }
     
     // MARK: Clearnet Setup
-    #if TESTNET
-    fileprivate static let seedNodePool: Set<String> = [ "http://public.loki.foundation:38157" ]
-    #else
-    fileprivate static let seedNodePool: Set<String> = [ "http://storage.seed1.loki.network:22023", "http://storage.seed2.loki.network:22023", "http://144.76.164.202:22023" ]
-    #endif
+    fileprivate static let seedNodePool: Set<String> = [ "https://storage.seed1.loki.network", "https://storage.seed3.loki.network", "https://public.loki.foundation" ]
 
     internal static var randomSnodePool: Set<LokiAPITarget> = []
 
