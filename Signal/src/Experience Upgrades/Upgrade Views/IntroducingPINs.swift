@@ -185,10 +185,12 @@ class IntroducingPinsSplash: SplashViewController {
         }
 
         super.dismiss(animated: flag) { [weak self] in
-            self?.presentToast(
-                text: NSLocalizedString("PINS_MEGAPHONE_TOAST", comment: "Toast indicating that a PIN has been created."),
-                fromViewController: fromViewController
-            )
+            if let self = self, !self.isDismissWithoutCompleting {
+                self.presentToast(
+                    text: NSLocalizedString("PINS_MEGAPHONE_TOAST", comment: "Toast indicating that a PIN has been created."),
+                    fromViewController: fromViewController
+                )
+            }
             completion?()
         }
     }

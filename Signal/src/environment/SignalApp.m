@@ -80,6 +80,11 @@ NS_ASSUME_NONNULL_BEGIN
                                                object:nil];
 }
 
+- (BOOL)hasSelectedThread
+{
+    return self.conversationSplitViewController.selectedThread != nil;
+}
+
 #pragma mark - View Convenience Methods
 
 - (void)presentConversationForAddress:(SignalServiceAddress *)address animated:(BOOL)isAnimated
@@ -172,6 +177,11 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     DispatchMainThreadSafe(^{
+        // If there's a presented blocking splash, but the user is trying to open a thread,
+        // dismiss it. We'll try again next time they open the app. We don't want to block
+        // them from accessing their conversations.
+        [ExperienceUpgradeManager dismissSplashWithoutCompletingIfNecessary];
+
         if (self.conversationSplitViewController.visibleThread) {
             if ([self.conversationSplitViewController.visibleThread.uniqueId isEqualToString:thread.uniqueId]) {
                 [self.conversationSplitViewController.selectedConversationViewController

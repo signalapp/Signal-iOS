@@ -48,6 +48,12 @@ public class SplashViewController: OWSViewController, ExperienceUpgradeView {
         view.isUserInteractionEnabled = true
     }
 
+    var isDismissWithoutCompleting = false
+    public func dismissWithoutCompleting(animated flag: Bool, completion: (() -> Void)? = nil) {
+        isDismissWithoutCompleting = true
+        dismiss(animated: flag, completion: completion)
+    }
+
     @objc
     public override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
         super.dismiss(animated: flag) {
@@ -62,7 +68,7 @@ public class SplashViewController: OWSViewController, ExperienceUpgradeView {
 
         // Only complete on dismissal if we're ready to do so. This is by
         // default always true, but can be overriden on an individual basis.
-        guard isReadyToComplete else { return }
+        guard isReadyToComplete, !isDismissWithoutCompleting else { return }
 
         markAsComplete()
     }
