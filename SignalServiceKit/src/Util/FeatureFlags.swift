@@ -240,7 +240,7 @@ public class FeatureFlags: NSObject {
     public static let deleteForEveryone = build.includes(.dev)
 
     @objc
-    public static let deviceTransferDestroyOldDevice = false
+    public static let deviceTransferDestroyOldDevice = true
 
     @objc
     public static let deviceTransferThrowAway = false
