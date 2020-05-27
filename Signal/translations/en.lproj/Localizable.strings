@@ -2834,4 +2834,8 @@
 "Authorizing Device Link" = "Authorizing Device Link";
 "Please wait while the device link is created. This can take up to a minute." = "Please wait while the device link is created. This can take up to a minute.";
 "Path" = "Path";
-"Session hides your IP by onion routing your messages through Session's decentralized Service Node network. The Service Nodes currently being used for this are shown below." = "Session hides your IP by onion routing your messages through Session's decentralized Service Node network. The Service Nodes currently being used for this are shown below.";
+"Session hides your IP by routing your messages through several Service Nodes in Session's decentralized Service Node network before sending them to their destination. The Service Nodes currently being used by your device are shown below." = "Session hides your IP by routing your messages through several Service Nodes in Session's decentralized Service Node network before sending them to their destination. The Service Nodes currently being used by your device are shown below.";
+"Service Node" = "Service Node";
+"You" = "You";
+"Destination" = "Destination";
+"Rebuild Path" = "Rebuild Path";

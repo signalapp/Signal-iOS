@@ -158,7 +158,9 @@ final class NewConversationButtonSet : UIView {
             self.layoutIfNeeded()
             button.frame = frame
             button.layer.cornerRadius = size / 2
-            button.setGlow(to: size, with: Colors.newConversationButtonShadow, animated: true)
+            let glowColor = Colors.newConversationButtonShadow
+            let glowConfiguration = UIView.CircularGlowConfiguration(size: size, color: glowColor, isAnimated: true, radius: isLightMode ? 4 : 6)
+            button.setCircularGlow(with: glowConfiguration)
             button.backgroundColor = Colors.accent
         }
     }
@@ -183,7 +185,8 @@ final class NewConversationButtonSet : UIView {
             button.frame = frame
             button.layer.cornerRadius = size / 2
             let glowColor = isLightMode ? UIColor.black.withAlphaComponent(0.4) : UIColor.black
-            button.setGlow(to: size, with: glowColor, animated: true)
+            let glowConfiguration = UIView.CircularGlowConfiguration(size: size, color: glowColor, isAnimated: true, radius: isLightMode ? 4 : 6)
+            button.setCircularGlow(with: glowConfiguration)
             button.backgroundColor = Colors.newConversationButtonCollapsedBackground
         }
     }
@@ -208,8 +211,7 @@ private final class NewConversationButton : UIImageView {
     private let icon: UIImage
     var widthConstraint: NSLayoutConstraint!
     var heightConstraint: NSLayoutConstraint!
-    
-    // Initialization
+
     init(isMainButton: Bool, icon: UIImage) {
         self.isMainButton = isMainButton
         self.icon = icon
@@ -230,38 +232,14 @@ private final class NewConversationButton : UIImageView {
         let size = Values.newConversationButtonCollapsedSize
         layer.cornerRadius = size / 2
         let glowColor = isMainButton ? Colors.newConversationButtonShadow : (isLightMode ? UIColor.black.withAlphaComponent(0.4) : UIColor.black)
-        setGlow(to: size, with: glowColor, animated: false)
+        let glowConfiguration = UIView.CircularGlowConfiguration(size: size, color: glowColor, isAnimated: false, radius: isLightMode ? 4 : 6)
+        setCircularGlow(with: glowConfiguration)
         layer.masksToBounds = false
         let iconColor = (isMainButton && isLightMode) ? UIColor.white : Colors.text
         image = icon.asTintedImage(color: iconColor)!
         contentMode = .center
         widthConstraint = set(.width, to: size)
         heightConstraint = set(.height, to: size)
-    }
-    
-    // General
-    func setGlow(to size: CGFloat, with color: UIColor, animated isAnimated: Bool) {
-        let newPath = UIBezierPath(ovalIn: CGRect(origin: CGPoint(x: 0, y: 0), size: CGSize(width: size, height: size))).cgPath
-        if isAnimated {
-            let pathAnimation = CABasicAnimation(keyPath: "shadowPath")
-            pathAnimation.fromValue = layer.shadowPath
-            pathAnimation.toValue = newPath
-            pathAnimation.duration = 0.25
-            layer.add(pathAnimation, forKey: pathAnimation.keyPath)
-        }
-        layer.shadowPath = newPath
-        let newColor = color.cgColor
-        if isAnimated {
-            let colorAnimation = CABasicAnimation(keyPath: "shadowColor")
-            colorAnimation.fromValue = layer.shadowColor
-            colorAnimation.toValue = newColor
-            colorAnimation.duration = 0.25
-            layer.add(colorAnimation, forKey: colorAnimation.keyPath)
-        }
-        layer.shadowColor = newColor
-        layer.shadowOffset = CGSize(width: 0, height: 0.8)
-        layer.shadowOpacity = isLightMode ? 0.4 : 1
-        layer.shadowRadius = isLightMode ? 4 : 6
     }
 }
 
@@ -304,15 +282,5 @@ private extension CGPoint {
     
     func distance(to otherPoint: CGPoint) -> CGFloat {
         return sqrt(pow(self.x - otherPoint.x, 2) + pow(self.y - otherPoint.y, 2))
-    }
-}
-
-private extension CGRect {
-    
-    init(center: CGPoint, size: CGSize) {
-        let originX = center.x - size.width / 2
-        let originY = center.y - size.height / 2
-        let origin = CGPoint(x: originX, y: originY)
-        self.init(origin: origin, size: size)
     }
 }
