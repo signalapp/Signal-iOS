@@ -2552,7 +2552,9 @@
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "You set disappearing message time to %@";
 
-// Loki:
+
+
+// MARK: - Loki Messenger:
 "Session can let you know when you get a message (and who it is from)" = "Session can let you know when you get a message (and who it is from)";
 "Create Your Session Account" = "Create Your Session Account";
 "Enter a name to be shown to your contacts" = "Enter a name to be shown to your contacts";
@@ -2683,7 +2685,9 @@
 "Restore session" = "Restore session";
 "Would you like to start a new session with %@?" = "Would you like to start a new session with %@?";
 
-// MARK: - Redesign
+
+
+// MARK: - Session
 "Messages" = "Messages";
 "Note to Self" = "Note to Self";
 "New Group" = "New Group";
