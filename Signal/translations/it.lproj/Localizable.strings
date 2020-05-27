@@ -29,7 +29,7 @@
 "ACTION_AUDIO_CALL" = "Chiamata Signal";
 
 /* Label for 'invite' button in contact view. */
-"ACTION_INVITE" = "Invita a Signal";
+"ACTION_INVITE" = "Invita ad usare Signal";
 
 /* Label for 'send message' button in contact view.
    Label for button that lets you send a message to a contact. */
@@ -66,7 +66,7 @@
 "ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Vuoi condividere il tuo profilo con questo gruppo?";
 
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
-"ADD_TO_CONTACTS_OFFER" = "Vuoi aggiungere questo utente tra i contatti ?";
+"ADD_TO_CONTACTS_OFFER" = "Vuoi aggiungere questo utente nei contatti ?";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Vuoi condividere il tuo profilo con questo utente?";
@@ -102,7 +102,7 @@
 "APP_LAUNCH_FAILURE_COULD_NOT_LOAD_DATABASE" = "Impossibile caricare il database";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
-"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "Aggiorna all'ultima versione di Signal.";
+"APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_MESSAGE" = "Per favore, aggiorna Signal all'ultima versione.";
 
 /* Error indicating that the app could not launch without reverting unknown database migrations. */
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Versione del database sconosciuta.";
@@ -183,7 +183,7 @@
 "ATTACHMENT_DOWNLOADING_STATUS_FAILED" = "Download non riuscito. Tocca per riprovare.";
 
 /* The title of the 'attachment error' alert. */
-"ATTACHMENT_ERROR_ALERT_TITLE" = "Errore invio allegato";
+"ATTACHMENT_ERROR_ALERT_TITLE" = "Errore nell'invio dell'allegato";
 
 /* Attachment error message for image attachments which could not be converted to JPEG */
 "ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG" = "Impossibile convertire l'immagine.";
@@ -252,7 +252,7 @@
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "Messaggio vocale";
 
 /* A string indicating that an audio message is playing. */
-"AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Messaggio Audio";
+"AUDIO_ACTIVITY_PLAYBACK_NAME_AUDIO_MESSAGE" = "Messaggio audio";
 
 /* action sheet button title to enable built in speaker during a call */
 "AUDIO_ROUTE_BUILT_IN_SPEAKER" = "Vivavoce";
@@ -336,10 +336,10 @@
 "BLOCK_LIST_BLOCKED_USERS_SECTION" = "Utenti bloccati";
 
 /* Error message indicating that a conversation can't be blocked because they are already blocked. */
-"BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "Group already blocked.";
+"BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "Gruppo già bloccato.";
 
 /* Error message indicating that a user can't be blocked because they are already blocked. */
-"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "User already blocked.";
+"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "Utente già bloccato.";
 
 /* Button label for the 'unblock' button */
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Sblocca";
@@ -798,13 +798,13 @@
 "CONVERSATION_SETTINGS_EDIT_GROUP" = "Modifica";
 
 /* Label for 'edit membership access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Who Can Edit Membership";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Chi può modificare l'appartenenza";
 
 /* Label for button that sets 'group membership access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Solo gli amministratori";
 
 /* Description for the 'edit group membership access' alert. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "Choose who can edit group membership:";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "Scegli chi può modificare l'appartenenza al gruppo:";
 
 /* Label for button that sets 'group membership access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "Tutti i membri";
@@ -825,7 +825,7 @@
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ membri";
 
 /* Footer for the 'membership access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "Choose who can edit group membership.";
+"CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "Scegli chi può modificare l'appartenenza al gruppo.";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Silenzioso";
@@ -1200,7 +1200,7 @@
 "EDIT_ITEM_COPY_ACTION" = "Copia";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Ehi,\n\nUltimamente sto usando Signal per mantenere private le conversazioni sul mio iPhone. Vorrei che anche tu la installassi, così potremo essere sicuri di essere gli unici a poter leggere i nostri messaggi e ad ascoltare le nostre chiamate.\n\nSignal è disponibile per iPhone e Android. Scaricalo qui: %@\n\nSignal funziona come la tua solita app di messaggistica. Possiamo mandarci immagini, video, fare chiamate e creare chat di gruppo. Ma la ciliegina sulla torta è che nessuno potrà vedere né sentire nulla di tutto ciò, nemmeno chi produce Signal!\n\nPuoi scoprire di più su Open Whisper Systems, i creatori di Signal, qui: %@";
+"EMAIL_INVITE_BODY" = "Ehi,\n\nUltimamente sto usando Signal per mantenere private le conversazioni sul mio iPhone. Vorrei che anche tu la installassi, così potremo essere sicuri di essere gli unici a poter leggere i nostri messaggi e ad ascoltare le nostre chiamate.\n\nSignal è disponibile per iPhone e Android. Scaricalo qui: %@\n\nSignal funziona come la tua solita app di messaggistica. Possiamo mandarci immagini, video, fare chiamate e creare chat di gruppo. Ma la ciliegina sulla torta è che nessuno potrà vedere né sentire nulla di tutto ciò, nemmeno chi programma Signal!\n\nPuoi scoprire di più su Open Whisper Systems, i creatori di Signal, qui: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Passiamo a Signal";
@@ -1212,7 +1212,7 @@
 "EMPTY_CONTACTS_LABEL_LINE2" = "Perché non inviti qualcuno?";
 
 /* Indicates that user should confirm their 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "Conferma il tuo PIN";
+"ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "Conferma il tuo PIN.";
 
 /* Error indicating that attempt to disable 'two-factor auth' failed. */
 "ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "Impossibile disattivare il blocco registrazione.";
@@ -1239,7 +1239,7 @@
 "ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "Il PIN deve essere almeno di 4 cifre.";
 
 /* Indicates that user should select a 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Inserisci un PIN per il blocco registrazione. Questo PIN ti verrà richiesto la prossima volta che verrà effettuata una registrazione con questo numero di telefono.";
+"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Inserisci un PIN per il blocco registrazione. Questo PIN ti verrà richiesto la prossima volta che verrà effettuata una registrazione a Signal con questo numero di telefono.";
 
 /* Indicates that user has 'two factor auth pin' disabled. */
 "ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "Per aumentare la sicurezza, attiva il PIN di blocco registrazione che diventerà necessario per registrare nuovamente questo numero di telefono con Signal.";
@@ -1296,10 +1296,10 @@
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Errore del server. Si prega di riprovare.";
 
 /* Worst case generic error message */
-"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Errore sconosciuto.";
+"ERROR_DESCRIPTION_UNKNOWN_ERROR" = "Si è verificato un errore sconosciuto.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Il contatto non è un utente Signal";
+"ERROR_DESCRIPTION_UNREGISTERED_RECIPIENT" = "Il contatto non è un utente Signal.";
 
 /* Error message indicating that attachment download(s) failed. */
 "ERROR_MESSAGE_ATTACHMENT_DOWNLOAD_FAILED" = "Il download dell'allegato non è riuscito.";
@@ -1320,7 +1320,7 @@
 "ERROR_MESSAGE_INVALID_VERSION" = "Ricevuto un messaggio non compatibile con questa versione.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_NO_SESSION" = "Nessuna sessione disponibile per il contatto";
+"ERROR_MESSAGE_NO_SESSION" = "Nessuna sessione disponibile per il contatto.";
 
 /* Shown when signal users safety numbers changed */
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE" = "Il codice di sicurezza è cambiato.";
@@ -1329,7 +1329,7 @@
 "ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT" = "Il tuo codice di sicurezza con %@ è cambiato.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_UNKNOWN_ERROR" = "Errore sconosciuto.";
+"ERROR_MESSAGE_UNKNOWN_ERROR" = "Si è verificato un errore sconosciuto.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "Codice di sicurezza cambiato.";
@@ -1713,7 +1713,7 @@
 "GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Scegli un nuovo amministratore per questo gruppo prima di abbandonarlo.";
 
 /* Error message indicating that a member can't be added to a group because they are already in the group. */
-"GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP" = "User already in group.";
+"GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP" = "Utente già nel gruppo.";
 
 /* Error indicating that an error occurred while accepting an invite. */
 "GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "Impossibile accettare l'invito.";
@@ -1785,13 +1785,13 @@
 "IN_CALL_CONNECTING" = "Connessione...";
 
 /* Call screen label when call was canceled on this device because the call recipient answered on another device. */
-"IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Hai risposto su un altro dispositivo.";
+"IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Risposta su un altro dispositivo.";
 
 /* Call screen label when call was canceled on this device because the call recipient has a call in progress on another device. */
 "IN_CALL_ENDED_BECAUSE_BUSY_ELSEWHERE" = "Persa perché è in corso una chiamata su un altro dispositivo.";
 
 /* Call screen label when call was canceled on this device because the call recipient declined on another device. */
-"IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Hai rifiutato su un altro dispositivo.";
+"IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Rifiutata su un altro dispositivo.";
 
 /* Call setup status label */
 "IN_CALL_RECONNECTING" = "Riconnessione...";
@@ -1929,16 +1929,16 @@
 "LEAVE_GROUP_FAILED" = "Si è verificato un errore durante l'abbandono del gruppo.";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_BODY" = "Questo codice QR non è valido. Assicurarati che stai effettuando la scansione del codice QR visualizzato sul dispositivo che desideri collegare.";
+"LINK_DEVICE_INVALID_CODE_BODY" = "Questo codice QR non è valido. Assicurati di stare effettuando la scansione del codice QR visualizzato sul dispositivo che desideri collegare.";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_TITLE" = "Collegamento con dispositivo non riuscito";
+"LINK_DEVICE_INVALID_CODE_TITLE" = "Associazione dispositivo non riuscita";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_BODY" = "Questo dispositivo sarà in grado di vedere i tuoi gruppi e contatti, accedere alle conversazioni e inviare messaggi a tuo nome.";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Associa questo dispositivo?";
+"LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Associare questo dispositivo?";
 
 /* attempt another linking */
 "LINK_DEVICE_RESTART" = "Riprova";
@@ -1968,7 +1968,7 @@
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Cerca per nome o indirizzo";
 
 /* The title for the location picker view */
-"LOCATION_PICKER_TITLE" = "Seleziona la Posizione";
+"LOCATION_PICKER_TITLE" = "Seleziona la posizione";
 
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "Registro eventi";
@@ -2559,16 +2559,16 @@
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "Nessun invito da mostrare.";
 
 /* Title of 're-send invite' button. */
-"PENDING_GROUP_MEMBERS_RESEND_INVITE_1_BUTTON" = "Re-send Invite";
+"PENDING_GROUP_MEMBERS_RESEND_INVITE_1_BUTTON" = "Rinvia invito";
 
 /* Title of 're-send invites' button. */
-"PENDING_GROUP_MEMBERS_RESEND_INVITE_N_BUTTON" = "Re-send Invites";
+"PENDING_GROUP_MEMBERS_RESEND_INVITE_N_BUTTON" = "Rinvia inviti";
 
 /* Title of 'revoke invite' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "Revoca invito";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revoke group invite sent by “%@“?";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revocare l'invito al gruppo inviato da “%@“?";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Revocare %1$@ inviti inviati da “%2$@”?";
@@ -2580,10 +2580,10 @@
 "PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revocare l'invito al gruppo per “%@”?";
 
 /* Format for title of 'revoke or re-send invite' confirmation alert. Embeds {{ name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revoke or re-send group invite for “%@“?";
+"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revocare o rinviare l'invito al gruppo per “%@“?";
 
 /* Format for title of 'revoke or re-send invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Revoke or re-send %1$@ invites sent by “%2$@“?";
+"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Revocare o rinviare %1$@ inviti inviati da “%2$@“?";
 
 /* Footer for the 'invites by other group members' section of the 'pending group members' view. */
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "I dettagli delle persone invitate da altri membri del gruppo non vengono visualizzati. Se gli invitati scelgono di unirsi, le loro informazioni saranno condivise con il gruppo in quel momento. Non vedranno alcun messaggio nel gruppo fino a quando non si uniranno.";
@@ -2937,40 +2937,40 @@
 "REACTION_DETAIL_ALL_FORMAT" = "Tutte · %@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Reagito %@ al tuo messaggio";
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Ha reagito %@ al tuo messaggio";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Reagito %@ al tuo album";
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Ha reagito %@ al tuo album";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Reagito %@ al tuo audio";
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Ha reagito %@ al tuo audio";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Reagito %@ alla tua condivisione del contatto";
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Ha reagito %@ alla tua condivisione del contatto";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Reagito %@ al tuo file";
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Ha reagito %@ al tuo file";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "Reagito %@ alla tua GIF";
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "Ha reagito %@ alla tua GIF";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "Reagito %@ alla tua foto";
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "Ha reagito %@ alla tua foto";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Reagito %@ al tuo adesivo";
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Ha reagito %@ al tuo adesivo";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Reagito %@ a: “%@”";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Ha reagito %@ a: “%@”";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Reagito %@ al tuo video";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Ha reagito %@ al tuo video";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Reagito %@ al tuo media visualizzabile una volta";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Ha reagito %@ al tuo media visualizzabile una volta";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reagito %@ al tuo messaggio vocale";
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Ha reagito %@ al tuo messaggio vocale";
 
 /* Body for the megaphone introducing reactions */
 "REACTION_MEGAPHONE_BODY" = "Tieni premuto qualsiasi messaggio per rispondere rapidamente con una reazione.";
@@ -2982,7 +2982,7 @@
 "REACTIONS_DETAIL_YOU" = "Tu";
 
 /* Error message indicating that a user can't be selected. */
-"RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "User can't be selected.";
+"RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "L'utente non può essere selezionato.";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "Ho dimenticato il mio PIN.";
@@ -2991,13 +2991,13 @@
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Hai bisogno di aiuto?";
 
 /* Alert body for a forgotten SVR (V2) PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Il tuo PIN è un codice di minimo 4 cifre che hai creato e che può essere numerico o alfanumerico. Se non ti ricordi il tuo PIN, dovrai attendere 7 giorni per registrare nuovamente il tuo account.";
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Il tuo PIN è un codice di minimo 4 cifre creato da te e che può essere numerico o alfanumerico. Se non ti ricordi il tuo PIN, dovrai attendere 7 giorni per registrare nuovamente il tuo account.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Il tuo PIN è un codice di 4+ cifre creato da te che può essere numerico o alfanumerico. Se non riesci a ricordarti il tuo PIN, puoi crearne uno nuovo. Puoi registrarti e usare il tuo account ma perderai alcune impostazioni salvate come le informazioni del tuo profilo.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Il tuo PIN è un codice di minimo 4 cifre creato da te e che può essere numerico o alfanumerico. Se non riesci a ricordarti il tuo PIN, puoi crearne uno nuovo. Puoi registrarti e usare il tuo account ma perderai alcune impostazioni salvate come le informazioni del tuo profilo.";
 
 /* Alert body for a forgotten V1 PIN */
-"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Il tuo PIN è un codice numerico di minimo 4 cifre che hai creato. Se non ti ricordi il tuo PIN, dovrai attendere 7 giorni per registrare nuovamente il tuo account.";
+"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Il tuo PIN è un codice di minimo 4 cifre creato da te. Se non ti ricordi il tuo PIN, dovrai attendere 7 giorni per registrare nuovamente il tuo account.";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock disabled. */
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "Hai %lu tentativi rimanenti. Se esaurisci i tentativi, puoi creare un nuovo PIN. Puoi registrarti e usare il tuo account ma perderai alcune impostazioni salvate come le informazioni del tuo profilo.";
@@ -3027,7 +3027,7 @@
 "REGISTER_FAILED_TRY_AGAIN" = "Prova ancora";
 
 /* action sheet body */
-"REGISTER_RATE_LIMITING_BODY" = "Ha effettuato troppi tentativi. Attendi un minuto prima di riprovare.";
+"REGISTER_RATE_LIMITING_BODY" = "Hai effettuato troppi tentativi. Attendi un minuto prima di riprovare.";
 
 /* No comment provided by engineer. */
 "REGISTER_RATE_LIMITING_ERROR" = "Hai provato troppe volte. Attendi un minuto prima di ritentare.";
@@ -3045,16 +3045,16 @@
 "REGISTRATION_ERROR" = "Errore durante la registrazione";
 
 /* alert body during registration */
-"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Non possiamo attivare il tuo accanto fintanto che non verificherai il codice che ti abbiamo inviato.";
+"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Non possiamo attivare il tuo account fintanto che non verificherai il codice che ti abbiamo inviato.";
 
 /* No comment provided by engineer. */
-"REGISTRATION_NON_VALID_NUMBER" = "Il formato di questo numero non è supportato, si prega di contattare il supporto.";
+"REGISTRATION_NON_VALID_NUMBER" = "Il formato di questo numero non è supportato, si prega di contattare l'assistenza.";
 
 /* Label for the phone number textfield */
 "REGISTRATION_PHONENUMBER_BUTTON" = "Numero di telefono";
 
 /* No comment provided by engineer. */
-"REGISTRATION_RESTRICTED_MESSAGE" = "Devi iscriverti prima di poter inviare un messaggio.";
+"REGISTRATION_RESTRICTED_MESSAGE" = "Devi registrarti prima di poter inviare un messaggio.";
 
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "Verifica non riuscita";
@@ -3063,16 +3063,16 @@
 "REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "I numeri che hai inserito non corrispondono con quelli inviati. Vuoi fare un nuovo controllo?";
 
 /* Error message indicating that registration failed due to a missing or incorrect 2FA PIN. */
-"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "PIN Blocco Registrazione non corretto.";
+"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "PIN blocco registrazione non corretto.";
 
 /* Message of alert indicating that users needs to enter a valid phone number to register. */
-"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Inserire un numero di telefono valido per la registrazione";
+"REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Inserire un numero di telefono valido per la registrazione.";
 
 /* Title of alert indicating that users needs to enter a valid phone number to register. */
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_TITLE" = "Numero di telefono non valido";
 
 /* Message of alert indicating that users needs to enter a phone number to register. */
-"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_MESSAGE" = "Inserire un numero di telefono per la registrazione";
+"REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_MESSAGE" = "Inserire un numero di telefono per la registrazione.";
 
 /* Title of alert indicating that users needs to enter a phone number to register. */
 "REGISTRATION_VIEW_NO_PHONE_NUMBER_ALERT_TITLE" = "Nessun numero";
@@ -3228,7 +3228,7 @@
 "SCREENSHOT_THREAD_DIRECT_FOUR_MESSAGE_TWO" = "Grazie! Che messaggio meraviglioso da leggere :)";
 
 /* This is a message. */
-"SCREENSHOT_THREAD_DIRECT_ONE_MESSAGE_ONE" = "Piove a dirotto e sono seduto qui ad ascoltare la pioggia.";
+"SCREENSHOT_THREAD_DIRECT_ONE_MESSAGE_ONE" = "Piove a dirotto e sono seduto qui ad ascoltare il rumore della pioggia.";
 
 /* This is a message. */
 "SCREENSHOT_THREAD_DIRECT_ONE_MESSAGE_TWO" = "Questo è quello che ho fatto stamattina anch'io.";
@@ -3363,7 +3363,7 @@
 "SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "Avvia Signal sul tuo vecchio iPad per trasferire il tuo account";
 
 /* No comment provided by engineer. */
-"SECURE_SESSION_RESET" = "La sezione protetta è stata resettata.";
+"SECURE_SESSION_RESET" = "La sessione protetta è stata resettata.";
 
 /* Table section header for conversations you haven't recently used. */
 "SELECT_THREAD_TABLE_OTHER_CHATS_TITLE" = "Altri contatti";
@@ -3396,7 +3396,7 @@
 "SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Ritorna alla libreria multimediale";
 
 /* No comment provided by engineer. */
-"SEND_SMS_CONFIRM_TITLE" = "Invita un amico usando un SMS insicuro?";
+"SEND_SMS_CONFIRM_TITLE" = "Invitare un amico usando un SMS insicuro?";
 
 /* No comment provided by engineer. */
 "SEND_SMS_INVITE_TITLE" = "Vuoi invitare il seguente numero a Signal:";
@@ -3822,7 +3822,7 @@
 "STICKERS_PACK_DEFAULT_TITLE" = "Pacchetto di adesivi";
 
 /* Title of the 'share sticker pack' view. */
-"STICKERS_PACK_SHARE_VIEW_TITLE" = "Condividi pacchetto adesivi";
+"STICKERS_PACK_SHARE_VIEW_TITLE" = "Condividi pacchetto di adesivi";
 
 /* The default title for the 'sticker pack' view. */
 "STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Pacchetto di adesivi";
@@ -3936,10 +3936,10 @@
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "Aggiornato all'ultima versione di Signal. Ora puoi ricevere questo tipo di messaggio sul tuo dispositivo.";
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. Embeds {{user's name or phone number}}. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "Puoi chiedere a %@ di reinviarti questo messaggio, ora che stai usando una versione aggiornata di Signal.";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "Puoi chiedere a %@ di rinviarti questo messaggio, ora che stai usando una versione aggiornata di Signal.";
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "Puoi chiedere al mittente di reinviarti questo messaggio, ora che stai usando una versione aggiornata di Signal.";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "Puoi chiedere al mittente di rinviarti questo messaggio, ora che stai usando una versione aggiornata di Signal.";
 
 /* Label indicating an unknown user. */
 "UNKNOWN_USER" = "Sconosciuto";
@@ -4008,7 +4008,7 @@
 "UPGRADE_IOS_ALERT_TITLE" = "Aggiornare iOS";
 
 /* An explanation of how usernames work on the username view. */
-"USERNAME_DESCRIPTION" = "I nomi utente su Signal sono facoltativi. Se scegli di creare un nome utente gli altri utenti Signal potranno trovarti con questo nome utente e contattarti senza conoscere il tuo numero di telefono.";
+"USERNAME_DESCRIPTION" = "I nomi utente su Signal sono facoltativi. Se scegli di creare un nome utente, gli altri utilizzatori di Signal potranno trovarti con questo nome utente e contattarti senza conoscere il tuo numero di telefono.";
 
 /* Label for the username field in the username view. */
 "USERNAME_FIELD" = "Nome utente";
@@ -4053,7 +4053,7 @@
 "VALIDATION_ERROR_TOO_LONG" = "Il nome del dispositivo è troppo lungo";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Hai segnato %@ come verificato.";
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Hai segnato %@ come non verificato.";
 
 /* Format for info message indicating that the verification state was unverified on another device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "Su un altro dispositivo hai segnato %@ come non verificato.";
@@ -4062,7 +4062,7 @@
 "VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "Hai segnato %@ come verificato.";
 
 /* Format for info message indicating that the verification state was verified on another device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "Hai impostato %@ su un altro dispositivo come verificato.";
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "Su un altro dispositivo hai segnato %@ come verificato.";
 
 /* Generic message indicating that verification state changed for a given user. */
 "VERIFICATION_STATE_CHANGE_GENERIC" = "Lo stato di verifica è stato modificato.";
