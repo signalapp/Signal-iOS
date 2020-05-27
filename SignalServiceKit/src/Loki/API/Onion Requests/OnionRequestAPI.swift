@@ -2,11 +2,11 @@ import CryptoSwift
 import PromiseKit
 
 /// See the "Onion Requests" section of [The Session Whitepaper](https://arxiv.org/pdf/2002.04609.pdf) for more information.
-internal enum OnionRequestAPI {
+public enum OnionRequestAPI {
     /// - Note: Must only be modified from `LokiAPI.workQueue`.
     private static var guardSnodes: Set<LokiAPITarget> = []
     /// - Note: Must only be modified from `LokiAPI.workQueue`.
-    private static var paths: Set<Path> = []
+    public static var paths: [Path] = []
 
     private static var snodePool: Set<LokiAPITarget> {
         let unreliableSnodes = Set(LokiAPI.failureCount.keys)
@@ -42,7 +42,7 @@ internal enum OnionRequestAPI {
     }
 
     // MARK: Path
-    internal typealias Path = [LokiAPITarget]
+    public typealias Path = [LokiAPITarget]
 
     // MARK: Onion Building Result
     private typealias OnionBuildingResult = (guardSnode: LokiAPITarget, finalEncryptionResult: EncryptionResult, targetSnodeSymmetricKey: Data)
@@ -54,7 +54,7 @@ internal enum OnionRequestAPI {
         let queue = DispatchQueue.global() // No need to block the work queue for this
         queue.async {
             let url = "\(snode.address):\(snode.port)/get_stats/v1"
-            let timeout: TimeInterval = 6 // Use a shorter timeout for testing
+            let timeout: TimeInterval = 3 // Use a shorter timeout for testing
             HTTP.execute(.get, url, timeout: timeout).done(on: queue) { rawResponse in
                 guard let json = rawResponse as? JSON, let version = json["version"] as? String else { return seal.reject(Error.missingSnodeVersion) }
                 if version >= "2.0.0" {
@@ -100,15 +100,15 @@ internal enum OnionRequestAPI {
 
     /// Builds and returns `pathCount` paths. The returned promise errors out with `Error.insufficientSnodes`
     /// if not enough (reliable) snodes are available.
-    private static func buildPaths() -> Promise<Set<Path>> {
+    private static func buildPaths() -> Promise<[Path]> {
         print("[Loki] [Onion Request API] Building onion request paths.")
-        return LokiAPI.getRandomSnode().then(on: LokiAPI.workQueue) { _ -> Promise<Set<Path>> in // Just used to populate the snode pool
+        return LokiAPI.getRandomSnode().then(on: LokiAPI.workQueue) { _ -> Promise<[Path]> in // Just used to populate the snode pool
             return getGuardSnodes().map(on: LokiAPI.workQueue) { guardSnodes in
                 var unusedSnodes = snodePool.subtracting(guardSnodes)
                 let pathSnodeCount = guardSnodeCount * pathSize - guardSnodeCount
                 guard unusedSnodes.count >= pathSnodeCount else { throw Error.insufficientSnodes }
                 // Don't test path snodes as this would reveal the user's IP to them
-                return Set(guardSnodes.map { guardSnode in
+                return guardSnodes.map { guardSnode in
                     let result = [ guardSnode ] + (0..<(pathSize - 1)).map { _ in
                         // randomElement() uses the system's default random generator, which is cryptographically secure
                         let pathSnode = unusedSnodes.randomElement()! // Safe because of the pathSnodeCount check above
@@ -117,7 +117,7 @@ internal enum OnionRequestAPI {
                     }
                     print("[Loki] [Onion Request API] Built new onion request path: \(result.prettifiedDescription).")
                     return result
-                })
+                }
             }
         }
     }

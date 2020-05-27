@@ -2829,3 +2829,5 @@
 "Please check your internet connection and try again" = "Please check your internet connection and try again";
 "Authorizing Device Link" = "Authorizing Device Link";
 "Please wait while the device link is created. This can take up to a minute." = "Please wait while the device link is created. This can take up to a minute.";
+"Path" = "Path";
+"Session hides your IP by onion routing your messages through Session's decentralized Service Node network. The Service Nodes currently being used for this are shown below." = "Session hides your IP by onion routing your messages through Session's decentralized Service Node network. The Service Nodes currently being used for this are shown below.";

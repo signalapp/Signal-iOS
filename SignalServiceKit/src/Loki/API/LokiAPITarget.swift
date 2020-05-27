@@ -1,6 +1,6 @@
 
 /// Either a service node or another client if P2P is enabled.
-internal final class LokiAPITarget : NSObject, NSCoding {
+public final class LokiAPITarget : NSObject, NSCoding {
     internal let address: String
     internal let port: UInt16
     internal let publicKeySet: KeySet?
@@ -27,7 +27,7 @@ internal final class LokiAPITarget : NSObject, NSCoding {
     }
     
     // MARK: Coding
-    internal init?(coder: NSCoder) {
+    public init?(coder: NSCoder) {
         address = coder.decodeObject(forKey: "address") as! String
         port = coder.decodeObject(forKey: "port") as! UInt16
         if let idKey = coder.decodeObject(forKey: "idKey") as? String, let encryptionKey = coder.decodeObject(forKey: "encryptionKey") as? String {
@@ -38,7 +38,7 @@ internal final class LokiAPITarget : NSObject, NSCoding {
         super.init()
     }
     
-    internal func encode(with coder: NSCoder) {
+    public func encode(with coder: NSCoder) {
         coder.encode(address, forKey: "address")
         coder.encode(port, forKey: "port")
         if let keySet = publicKeySet {
@@ -48,16 +48,16 @@ internal final class LokiAPITarget : NSObject, NSCoding {
     }
     
     // MARK: Equality
-    override internal func isEqual(_ other: Any?) -> Bool {
+    override public func isEqual(_ other: Any?) -> Bool {
         guard let other = other as? LokiAPITarget else { return false }
         return address == other.address && port == other.port
     }
     
     // MARK: Hashing
-    override internal var hash: Int { // Override NSObject.hash and not Hashable.hashValue or Hashable.hash(into:)
+    override public var hash: Int { // Override NSObject.hash and not Hashable.hashValue or Hashable.hash(into:)
         return address.hashValue ^ port.hashValue
     }
 
     // MARK: Description
-    override internal var description: String { return "\(address):\(port)" }
+    override public var description: String { return "\(address):\(port)" }
 }
