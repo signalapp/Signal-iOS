@@ -728,7 +728,7 @@ typedef enum : NSUInteger {
         [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
             publicChat = [LKDatabaseUtilities getPublicChatForThreadID:thread.uniqueId transaction:transaction];
         }];
-        [LKPublicChatAPI getUserCountForGroup:publicChat.channel onServer:publicChat.server]
+        [LKPublicChatAPI getInfoForChannelWithID:publicChat.channel onServer:publicChat.server]
         .thenOn(dispatch_get_main_queue(), ^(id userCount) {
             [self.headerView updateSubtitleForCurrentStatus];
         });

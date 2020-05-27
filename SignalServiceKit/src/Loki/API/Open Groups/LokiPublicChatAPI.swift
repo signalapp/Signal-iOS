@@ -296,32 +296,6 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
             }
         }
     }
-
-    @objc(getUserCountForGroup:onServer:)
-    public static func objc_getUserCount(for group: UInt64, on server: String) -> AnyPromise {
-        return AnyPromise.from(getUserCount(for: group, on: server))
-    }
-
-    public static func getUserCount(for channel: UInt64, on server: String) -> Promise<Int> {
-        return getAuthToken(for: server).then { token -> Promise<Int> in
-            let queryParameters = "count=200"
-            let url = URL(string: "\(server)/channels/\(channel)/subscribers?\(queryParameters)")!
-            let request = TSRequest(url: url)
-            request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
-            return LokiFileServerProxy(for: server).perform(request).map { rawResponse in
-                guard let json = rawResponse as? JSON, let users = json["data"] as? [JSON] else {
-                    print("[Loki] Couldn't parse user count for public chat channel with ID: \(channel) on server: \(server) from: \(rawResponse).")
-                    throw LokiDotNetAPIError.parsingFailed
-                }
-                let userCount = users.count
-                let storage = OWSPrimaryStorage.shared()
-                storage.dbReadWriteConnection.readWrite { transaction in
-                    storage.setUserCount(userCount, forPublicChatWithID: "\(server).\(channel)", in: transaction)
-                }
-                return userCount
-            }
-        }
-    }
     
     public static func getDisplayNames(for channel: UInt64, on server: String) -> Promise<Void> {
         let publicChatID = "\(server).\(channel)"
@@ -401,6 +375,11 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
         }
     }
     
+    @objc(getInfoForChannelWithID:onServer:)
+    public static func objc_getInfo(for channel: UInt64, on server: String) -> AnyPromise {
+        return AnyPromise.from(getInfo(for: channel, on: server))
+    }
+    
     public static func getInfo(for channel: UInt64, on server: String) -> Promise<LokiPublicChatInfo> {
         let url = URL(string: "\(server)/channels/\(channel)?include_annotations=1")!
         let request = TSRequest(url: url)
@@ -410,11 +389,18 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
                 let annotations = data["annotations"] as? [JSON],
                 let annotation = annotations.first,
                 let info = annotation["value"] as? JSON,
-                let displayName = info["name"] as? String else {
+                let displayName = info["name"] as? String,
+                let countInfo = data["counts"] as? JSON,
+                let memberCount = countInfo["subscribers"] as? Int else {
                 print("[Loki] Couldn't parse info for public chat channel with ID: \(channel) on server: \(server) from: \(rawResponse).")
                 throw LokiDotNetAPIError.parsingFailed
             }
-            return LokiPublicChatInfo(displayName: displayName)
+            let storage = OWSPrimaryStorage.shared()
+            storage.dbReadWriteConnection.readWrite { transaction in
+                storage.setUserCount(memberCount, forPublicChatWithID: "\(server).\(channel)", in: transaction)
+            }
+            // TODO: Use this to update open group names as needed
+            return LokiPublicChatInfo(displayName: displayName, memberCount: memberCount)
         }
     }
 

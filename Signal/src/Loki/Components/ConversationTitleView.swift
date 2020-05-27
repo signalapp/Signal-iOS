@@ -187,11 +187,7 @@ final class ConversationTitleView : UIView {
                         }
                     }
                     if let userCount = userCount {
-                        if userCount >= 200 {
-                            subtitle.append(NSAttributedString(string: "200+ members"))
-                        } else {
-                            subtitle.append(NSAttributedString(string: "\(userCount) members"))
-                        }
+                        subtitle.append(NSAttributedString(string: "\(userCount) members"))
                     } else if let hexEncodedPublicKey = (self.thread as? TSContactThread)?.contactIdentifier(), ECKeyPair.isValidHexEncodedPublicKey(candidate: hexEncodedPublicKey) {
                         subtitle.append(NSAttributedString(string: hexEncodedPublicKey))
                     } else {
