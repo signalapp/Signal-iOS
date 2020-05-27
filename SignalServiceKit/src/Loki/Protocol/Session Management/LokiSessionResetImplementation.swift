@@ -16,18 +16,16 @@ public class LokiSessionResetImplementation : NSObject, SessionResetProtocol {
 
     public func validatePreKeyForFriendRequestAcceptance(for recipientID: String, whisperMessage: CipherMessage, protocolContext: Any?) throws {
          guard let transaction = protocolContext as? YapDatabaseReadTransaction else {
-            print("[Loki] Couldn't verify friend request acceptance pre key because an invalid transaction was provided.")
+            print("[Loki] Couldn't verify friend request accepted message because an invalid transaction was provided.")
             return
         }
         guard let preKeyMessage = whisperMessage as? PreKeyWhisperMessage else { return }
         guard let storedPreKey = storage.getPreKeyRecord(forContact: recipientID, transaction: transaction) else {
             print("[Loki] Received a friend request accepted message from a public key for which no pre key bundle was created.")
-            // FIXME: Don't throw an error for now as a way to de-bork some existing clients. For example, Simon's Android device was
-            // somehow triggering this and causing iOS to discard all messages received from him.
-            return
+            throw Errors.invalidPreKey
         }
         guard storedPreKey.id == preKeyMessage.prekeyID else {
-            print("[Loki] Received a `PreKeyWhisperMessage` (friend request acceptance) from an unknown source.")
+            print("[Loki] Received a `PreKeyWhisperMessage` (friend request accepted message) from an unknown source.")
             throw Errors.preKeyIDsDontMatch
         }
     }
