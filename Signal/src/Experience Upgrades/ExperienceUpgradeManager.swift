@@ -33,15 +33,16 @@ class ExperienceUpgradeManager: NSObject {
         // If we have a megaphone and a splash, we only show the megaphone for
         // 7 days after the user first viewed the megaphone. After this point
         // we will display the splash. If there is only a megaphone we will
-        // render it for as long as the upgrade is active.
-
+        // render it for as long as the upgrade is active. We don't show the
+        // splash if the user currently has a selected thread, as we don't
+        // ever want to block access to messaging (e.g. via tapping a notification).
         let didPresentView: Bool
         if (hasMegaphone && !hasSplash) || (hasMegaphone && next.daysSinceFirstViewed < splashStartDay) {
             let megaphone = self.megaphone(forExperienceUpgrade: next, fromViewController: fromViewController)
             megaphone?.present(fromViewController: fromViewController)
             lastPresented = megaphone
             didPresentView = true
-        } else if hasSplash, let splash = splash(forExperienceUpgrade: next) {
+        } else if hasSplash, !SignalApp.shared().hasSelectedThread, let splash = splash(forExperienceUpgrade: next) {
             fromViewController.presentFormSheet(OWSNavigationController(rootViewController: splash), animated: true)
             lastPresented = splash
             didPresentView = true
@@ -61,6 +62,12 @@ class ExperienceUpgradeManager: NSObject {
     }
 
     // MARK: - Experience Specific Helpers
+
+    @objc
+    static func dismissSplashWithoutCompletingIfNecessary() {
+        guard let lastPresented = lastPresented as? SplashViewController else { return }
+        lastPresented.dismissWithoutCompleting(animated: false, completion: nil)
+    }
 
     @objc
     static func dismissPINReminderIfNecessary() {

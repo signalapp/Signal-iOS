@@ -108,11 +108,13 @@ class MessageRequestsSplash: SplashViewController {
         }
 
         super.dismiss(animated: flag) { [weak self] in
-            self?.presentToast(
-                text: NSLocalizedString("MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST",
-                                        comment: "Toast indicating that a profile name has been created."),
-                fromViewController: fromViewController
-            )
+            if let self = self, !self.isDismissWithoutCompleting {
+                self.presentToast(
+                    text: NSLocalizedString("MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST",
+                                            comment: "Toast indicating that a profile name has been created."),
+                    fromViewController: fromViewController
+                )
+            }
             completion?()
         }
     }
