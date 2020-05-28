@@ -299,6 +299,18 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         profilePictureView.pin(.trailing, to: .trailing, of: profilePictureViewContainer)
         profilePictureView.pin(.bottom, to: .bottom, of: profilePictureViewContainer)
         navigationItem.leftBarButtonItem = UIBarButtonItem(customView: profilePictureViewContainer)
+        let pathStatusViewContainer = UIView()
+        let pathStatusViewContainerSize = Values.verySmallProfilePictureSize // Match the profile picture view
+        pathStatusViewContainer.set(.width, to: pathStatusViewContainerSize)
+        pathStatusViewContainer.set(.height, to: pathStatusViewContainerSize)
+        let pathStatusView = PathStatusView()
+        pathStatusView.set(.width, to: Values.pathStatusViewSize)
+        pathStatusView.set(.height, to: Values.pathStatusViewSize)
+        pathStatusViewContainer.addSubview(pathStatusView)
+        pathStatusView.center(.horizontal, in: pathStatusViewContainer)
+        pathStatusView.center(.vertical, in: pathStatusViewContainer)
+        pathStatusViewContainer.addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(showPath)))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(customView: pathStatusViewContainer)
     }
     
     // MARK: Interaction
@@ -395,6 +407,12 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
     @objc private func openSettings() {
         let settingsVC = SettingsVC()
         let navigationController = OWSNavigationController(rootViewController: settingsVC)
+        present(navigationController, animated: true, completion: nil)
+    }
+    
+    @objc private func showPath() {
+        let pathVC = PathVC()
+        let navigationController = OWSNavigationController(rootViewController: pathVC)
         present(navigationController, animated: true, completion: nil)
     }
     

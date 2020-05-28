@@ -2,21 +2,21 @@ import CryptoSwift
 import PromiseKit
 
 /// See the "Onion Requests" section of [The Session Whitepaper](https://arxiv.org/pdf/2002.04609.pdf) for more information.
-internal enum OnionRequestAPI {
+public enum OnionRequestAPI {
     /// - Note: Must only be modified from `LokiAPI.workQueue`.
-    private static var guardSnodes: Set<LokiAPITarget> = []
+    public static var guardSnodes: Set<LokiAPITarget> = []
     /// - Note: Must only be modified from `LokiAPI.workQueue`.
-    private static var paths: Set<Path> = []
+    public static var paths: [Path] = []
 
     private static var snodePool: Set<LokiAPITarget> {
         let unreliableSnodes = Set(LokiAPI.failureCount.keys)
-        return LokiAPI.randomSnodePool.subtracting(unreliableSnodes)
+        return LokiAPI.snodePool.subtracting(unreliableSnodes)
     }
 
     // MARK: Settings
-    private static let pathCount: UInt = 2
     /// The number of snodes (including the guard snode) in a path.
-    private static let pathSize: UInt = 1
+    private static let pathSize: UInt = 3
+    public static let pathCount: UInt = 2
 
     private static var guardSnodeCount: UInt { return pathCount } // One per path
 
@@ -42,7 +42,7 @@ internal enum OnionRequestAPI {
     }
 
     // MARK: Path
-    internal typealias Path = [LokiAPITarget]
+    public typealias Path = [LokiAPITarget]
 
     // MARK: Onion Building Result
     private typealias OnionBuildingResult = (guardSnode: LokiAPITarget, finalEncryptionResult: EncryptionResult, targetSnodeSymmetricKey: Data)
@@ -54,7 +54,7 @@ internal enum OnionRequestAPI {
         let queue = DispatchQueue.global() // No need to block the work queue for this
         queue.async {
             let url = "\(snode.address):\(snode.port)/get_stats/v1"
-            let timeout: TimeInterval = 6 // Use a shorter timeout for testing
+            let timeout: TimeInterval = 3 // Use a shorter timeout for testing
             HTTP.execute(.get, url, timeout: timeout).done(on: queue) { rawResponse in
                 guard let json = rawResponse as? JSON, let version = json["version"] as? String else { return seal.reject(Error.missingSnodeVersion) }
                 if version >= "2.0.0" {
@@ -100,15 +100,18 @@ internal enum OnionRequestAPI {
 
     /// Builds and returns `pathCount` paths. The returned promise errors out with `Error.insufficientSnodes`
     /// if not enough (reliable) snodes are available.
-    private static func buildPaths() -> Promise<Set<Path>> {
+    public static func buildPaths() -> Promise<[Path]> {
         print("[Loki] [Onion Request API] Building onion request paths.")
-        return LokiAPI.getRandomSnode().then(on: LokiAPI.workQueue) { _ -> Promise<Set<Path>> in // Just used to populate the snode pool
-            return getGuardSnodes().map(on: LokiAPI.workQueue) { guardSnodes in
+        DispatchQueue.main.async {
+            NotificationCenter.default.post(name: .buildingPaths, object: nil)
+        }
+        return LokiAPI.getRandomSnode().then(on: LokiAPI.workQueue) { _ -> Promise<[Path]> in // Just used to populate the snode pool
+            return getGuardSnodes().map(on: LokiAPI.workQueue) { guardSnodes -> [Path] in
                 var unusedSnodes = snodePool.subtracting(guardSnodes)
                 let pathSnodeCount = guardSnodeCount * pathSize - guardSnodeCount
                 guard unusedSnodes.count >= pathSnodeCount else { throw Error.insufficientSnodes }
                 // Don't test path snodes as this would reveal the user's IP to them
-                return Set(guardSnodes.map { guardSnode in
+                return guardSnodes.map { guardSnode in
                     let result = [ guardSnode ] + (0..<(pathSize - 1)).map { _ in
                         // randomElement() uses the system's default random generator, which is cryptographically secure
                         let pathSnode = unusedSnodes.randomElement()! // Safe because of the pathSnodeCount check above
@@ -117,7 +120,19 @@ internal enum OnionRequestAPI {
                     }
                     print("[Loki] [Onion Request API] Built new onion request path: \(result.prettifiedDescription).")
                     return result
-                })
+                }
+            }.map(on: LokiAPI.workQueue) { paths in
+                OnionRequestAPI.paths = paths
+                // Dispatch async on the main queue to avoid nested write transactions
+                DispatchQueue.main.async {
+                    let storage = OWSPrimaryStorage.shared()
+                    storage.dbReadWriteConnection.readWrite { transaction in
+                        print("[Loki] Persisting onion request paths to database.")
+                        storage.setOnionRequestPaths(paths, in: transaction)
+                    }
+                    NotificationCenter.default.post(name: .pathsBuilt, object: nil)
+                }
+                return paths
             }
         }
     }
@@ -127,6 +142,12 @@ internal enum OnionRequestAPI {
     /// - Note: Exposed for testing purposes.
     internal static func getPath(excluding snode: LokiAPITarget) -> Promise<Path> {
         guard pathSize >= 1 else { preconditionFailure("Can't build path of size zero.") }
+        if paths.count < pathCount {
+            let storage = OWSPrimaryStorage.shared()
+            storage.dbReadConnection.read { transaction in
+                paths = storage.getOnionRequestPaths(in: transaction)
+            }
+        }
         // randomElement() uses the system's default random generator, which is cryptographically secure
         if paths.count >= pathCount {
             return Promise<Path> { seal in
@@ -134,15 +155,20 @@ internal enum OnionRequestAPI {
             }
         } else {
             return buildPaths().map(on: LokiAPI.workQueue) { paths in
-                let path = paths.filter { !$0.contains(snode) }.randomElement()!
-                OnionRequestAPI.paths = paths
-                return path
+                return paths.filter { !$0.contains(snode) }.randomElement()!
             }
         }
     }
 
-    private static func dropPath(containing snode: LokiAPITarget) {
-        paths = paths.filter { !$0.contains(snode) }
+    private static func dropPaths() {
+        paths.removeAll()
+        // Dispatch async on the main queue to avoid nested write transactions
+        DispatchQueue.main.async {
+            let storage = OWSPrimaryStorage.shared()
+            storage.dbReadWriteConnection.readWrite { transaction in
+                storage.clearOnionRequestPaths(in: transaction)
+            }
+        }
     }
 
     private static func dropGuardSnode(_ snode: LokiAPITarget) {
@@ -224,7 +250,7 @@ internal enum OnionRequestAPI {
         }
         promise.catch(on: LokiAPI.workQueue) { error in // Must be invoked on LokiAPI.workQueue
             guard case HTTP.Error.httpRequestFailed(_, _) = error else { return }
-            dropPath(containing: guardSnode) // A snode in the path is bad; retry with a different path
+            dropPaths() // A snode in the path is bad; retry with a different path
             dropGuardSnode(guardSnode)
         }
         promise.handlingErrorsIfNeeded(forTargetSnode: snode, associatedWith: hexEncodedPublicKey)
@@ -250,7 +276,14 @@ private extension Promise where T == JSON {
                 if newFailureCount >= LokiAPI.failureThreshold {
                     print("[Loki] Failure threshold reached for: \(snode); dropping it.")
                     LokiAPI.dropIfNeeded(snode, hexEncodedPublicKey: hexEncodedPublicKey) // Remove it from the swarm cache associated with the given public key
-                    LokiAPI.randomSnodePool.remove(snode) // Remove it from the random snode pool
+                    LokiAPI.snodePool.remove(snode) // Remove it from the snode pool
+                    // Dispatch async on the main queue to avoid nested write transactions
+                    DispatchQueue.main.async {
+                        let storage = OWSPrimaryStorage.shared()
+                        storage.dbReadWriteConnection.readWrite { transaction in
+                            storage.dropSnode(snode, in: transaction)
+                        }
+                    }
                     LokiAPI.failureCount[snode] = 0
                 }
             case 406:

@@ -47,6 +47,11 @@ public final class Values : NSObject {
     @objc public static let messageBubbleCornerRadius: CGFloat = 10
     @objc public static let progressBarThickness: CGFloat = 2
     @objc public static let pnOptionCornerRadius = CGFloat(8)
+    @objc public static let pathStatusViewSize = CGFloat(8)
+    @objc public static var pathRowLineThickness: CGFloat { return 1 / UIScreen.main.scale }
+    @objc public static let pathRowDotSize = CGFloat(8)
+    @objc public static let pathRowExpandedDotSize = CGFloat(16)
+    @objc public static let pathRowHeight = isSmallScreen ? CGFloat(52) : CGFloat(75)
     
     // MARK: - Distances
     @objc public static let verySmallSpacing = CGFloat(4)

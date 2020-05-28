@@ -196,11 +196,11 @@ final class RestoreVC : BaseVC {
         let touchInLegalLabelCoordinates = tapGestureRecognizer.location(in: legalLabel)
         let characterIndex = legalLabel.characterIndex(for: touchInLegalLabelCoordinates)
         if tosRange.contains(characterIndex) {
-            urlAsString = "https://getsession.org/legal/#tos"
+            urlAsString = "https://getsession.org/terms-of-service/"
         } else if eulaRange.contains(characterIndex) {
-            urlAsString = "https://getsession.org/legal/#eula"
+            urlAsString = "https://getsession.org/terms-of-service/#eula"
         } else if ppRange.contains(characterIndex) {
-            urlAsString = "https://getsession.org/legal/#privacy-policy"
+            urlAsString = "https://getsession.org/privacy-policy/"
         } else {
             urlAsString = nil
         }

@@ -2552,7 +2552,9 @@
 /* Info message embedding a {{time amount}}, see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "You set disappearing message time to %@";
 
-// Loki:
+
+
+// MARK: - Loki Messenger:
 "Session can let you know when you get a message (and who it is from)" = "Session can let you know when you get a message (and who it is from)";
 "Create Your Session Account" = "Create Your Session Account";
 "Enter a name to be shown to your contacts" = "Enter a name to be shown to your contacts";
@@ -2683,7 +2685,9 @@
 "Restore session" = "Restore session";
 "Would you like to start a new session with %@?" = "Would you like to start a new session with %@?";
 
-// MARK: - Redesign
+
+
+// MARK: - Session
 "Messages" = "Messages";
 "Note to Self" = "Note to Self";
 "New Group" = "New Group";
@@ -2829,3 +2833,10 @@
 "Please check your internet connection and try again" = "Please check your internet connection and try again";
 "Authorizing Device Link" = "Authorizing Device Link";
 "Please wait while the device link is created. This can take up to a minute." = "Please wait while the device link is created. This can take up to a minute.";
+"Path" = "Path";
+"Session hides your IP by bouncing your messages through several Service Nodes in Session’s decentralized network. These are the Service Nodes currently being used by your device:" = "Session hides your IP by bouncing your messages through several Service Nodes in Session’s decentralized network. These are the Service Nodes currently being used by your device:";
+"Guard Node" = "Guard Node";
+"Service Node" = "Service Node";
+"You" = "You";
+"Destination" = "Destination";
+"Rebuild Path" = "Rebuild Path";

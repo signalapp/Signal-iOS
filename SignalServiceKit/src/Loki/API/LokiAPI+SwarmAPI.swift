@@ -26,15 +26,26 @@ public extension LokiAPI {
     // MARK: Clearnet Setup
     fileprivate static let seedNodePool: Set<String> = [ "https://storage.seed1.loki.network", "https://storage.seed3.loki.network", "https://public.loki.foundation" ]
 
-    internal static var randomSnodePool: Set<LokiAPITarget> = []
+    internal static var snodePool: Set<LokiAPITarget> = []
 
-    @objc public static func clearRandomSnodePool() {
-        randomSnodePool.removeAll()
+    @objc public static func clearSnodePool() {
+        snodePool.removeAll()
+        // Dispatch async on the main queue to avoid nested write transactions
+        DispatchQueue.main.async {
+            storage.dbReadWriteConnection.readWrite { transaction in
+                storage.clearSnodePool(in: transaction)
+            }
+        }
     }
     
     // MARK: Internal API
     internal static func getRandomSnode() -> Promise<LokiAPITarget> {
-        if randomSnodePool.isEmpty {
+        if snodePool.isEmpty {
+            storage.dbReadConnection.read { transaction in
+                snodePool = storage.getSnodePool(in: transaction)
+            }
+        }
+        if snodePool.isEmpty {
             let target = seedNodePool.randomElement()!
             let url = "\(target)/json_rpc"
             let parameters: JSON = [
@@ -42,19 +53,16 @@ public extension LokiAPI {
                 "params" : [
                     "active_only" : true,
                     "fields" : [
-                        "public_ip" : true,
-                        "storage_port" : true,
-                        "pubkey_ed25519" : true,
-                        "pubkey_x25519" : true
+                        "public_ip" : true, "storage_port" : true, "pubkey_ed25519" : true, "pubkey_x25519" : true
                     ]
                 ]
             ]
             print("[Loki] Populating snode pool using: \(target).")
             let (promise, seal) = Promise<LokiAPITarget>.pending()
             attempt(maxRetryCount: 4, recoveringOn: DispatchQueue.global()) {
-                HTTP.execute(.post, url, parameters: parameters).map(on: DispatchQueue.global()) { json in
+                HTTP.execute(.post, url, parameters: parameters).map(on: DispatchQueue.global()) { json -> LokiAPITarget in
                     guard let intermediate = json["result"] as? JSON, let rawTargets = intermediate["service_node_states"] as? [JSON] else { throw LokiAPIError.randomSnodePoolUpdatingFailed }
-                    randomSnodePool = try Set(rawTargets.flatMap { rawTarget in
+                    snodePool = try Set(rawTargets.flatMap { rawTarget in
                         guard let address = rawTarget["public_ip"] as? String, let port = rawTarget["storage_port"] as? Int, let ed25519PublicKey = rawTarget["pubkey_ed25519"] as? String, let x25519PublicKey = rawTarget["pubkey_x25519"] as? String, address != "0.0.0.0" else {
                             print("[Loki] Failed to parse target from: \(rawTarget).")
                             return nil
@@ -62,10 +70,17 @@ public extension LokiAPI {
                         return LokiAPITarget(address: "https://\(address)", port: UInt16(port), publicKeySet: LokiAPITarget.KeySet(ed25519Key: ed25519PublicKey, x25519Key: x25519PublicKey))
                     })
                     // randomElement() uses the system's default random generator, which is cryptographically secure
-                    return randomSnodePool.randomElement()!
+                    return snodePool.randomElement()!
                 }
             }.done(on: DispatchQueue.global()) { snode in
                 seal.fulfill(snode)
+                // Dispatch async on the main queue to avoid nested write transactions
+                DispatchQueue.main.async {
+                    storage.dbReadWriteConnection.readWrite { transaction in
+                        print("[Loki] Persisting snode pool to database.")
+                        storage.setSnodePool(LokiAPI.snodePool, in: transaction)
+                    }
+                }
             }.catch(on: DispatchQueue.global()) { error in
                 print("[Loki] Failed to contact seed node at: \(target).")
                 seal.reject(error)
@@ -74,7 +89,7 @@ public extension LokiAPI {
         } else {
             return Promise<LokiAPITarget> { seal in
                 // randomElement() uses the system's default random generator, which is cryptographically secure
-                seal.fulfill(randomSnodePool.randomElement()!)
+                seal.fulfill(snodePool.randomElement()!)
             }
         }
     }
@@ -161,7 +176,14 @@ internal extension Promise {
                     if newFailureCount >= LokiAPI.failureThreshold {
                         print("[Loki] Failure threshold reached for: \(target); dropping it.")
                         LokiAPI.dropIfNeeded(target, hexEncodedPublicKey: hexEncodedPublicKey) // Remove it from the swarm cache associated with the given public key
-                        LokiAPI.randomSnodePool.remove(target) // Remove it from the random snode pool
+                        LokiAPI.snodePool.remove(target) // Remove it from the snode pool
+                        // Dispatch async on the main queue to avoid nested write transactions
+                        DispatchQueue.main.async {
+                            let storage = OWSPrimaryStorage.shared()
+                            storage.dbReadWriteConnection.readWrite { transaction in
+                                storage.dropSnode(target, in: transaction)
+                            }
+                        }
                         LokiAPI.failureCount[target] = 0
                     }
                 case 406:

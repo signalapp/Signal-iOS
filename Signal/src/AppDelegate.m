@@ -1519,7 +1519,7 @@ static NSTimeInterval launchStartedAt;
     [ThreadUtil deleteAllContent];
     [SSKEnvironment.shared.messageSenderJobQueue clearAllJobs];
     [SSKEnvironment.shared.identityManager clearIdentityKey];
-    [LKAPI clearRandomSnodePool];
+    [LKAPI clearSnodePool];
     [self stopPollerIfNeeded];
     [self stopOpenGroupPollersIfNeeded];
     [self.lokiNewsFeedPoller stop];
