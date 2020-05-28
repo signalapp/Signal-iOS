@@ -1,14 +1,45 @@
+import NVActivityIndicatorView
 
 final class PathVC : BaseVC {
-    
+
+    // MARK: Components
+    private lazy var pathStackView: UIStackView = {
+        let result = UIStackView()
+        result.axis = .vertical
+        return result
+    }()
+
+    private lazy var spinner: NVActivityIndicatorView = {
+        let result = NVActivityIndicatorView(frame: CGRect.zero, type: .circleStrokeSpin, color: Colors.text, padding: nil)
+        result.set(.width, to: 64)
+        result.set(.height, to: 64)
+        return result
+    }()
+
+    private lazy var rebuildPathButton: Button = {
+        let result = Button(style: .prominentOutline, size: .large)
+        result.setTitle(NSLocalizedString("Rebuild Path", comment: ""), for: UIControl.State.normal)
+        result.addTarget(self, action: #selector(rebuildPath), for: UIControl.Event.touchUpInside)
+        return result
+    }()
+
     // MARK: Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Set gradient background
+        setUpBackground()
+        setUpNavBar()
+        setUpViewHierarchy()
+        registerObservers()
+    }
+
+    private func setUpBackground() {
         view.backgroundColor = .clear
         let gradient = Gradients.defaultLokiBackground
         view.setGradient(gradient)
-        // Set up navigation bar
+    }
+
+    private func setUpNavBar() {
+        // Set up navigation bar style
         let navigationBar = navigationController!.navigationBar
         navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
         navigationBar.shadowImage = UIImage()
@@ -24,6 +55,9 @@ final class PathVC : BaseVC {
         titleLabel.textColor = Colors.text
         titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
         navigationItem.titleView = titleLabel
+    }
+
+    private func setUpViewHierarchy() {
         // Set up explanation label
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
@@ -32,49 +66,88 @@ final class PathVC : BaseVC {
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping
-        view.addSubview(explanationLabel)
-        explanationLabel.pin(.leading, to: .leading, of: view, withInset: Values.largeSpacing)
-        explanationLabel.pin(.top, to: .top, of: view, withInset: Values.mediumSpacing)
-        explanationLabel.pin(.trailing, to: .trailing, of: view, withInset: -Values.largeSpacing)
         // Set up path stack view
-        guard let mainPath = OnionRequestAPI.paths.first else {
-            return close() // TODO: Show path establishing UI
-        }
-        let dotAnimationRepeatInterval = (Double(mainPath.count) + 2) * 0.5
-        let snodeRows = mainPath.enumerated().reversed().map { index, snode in
-            getPathRow(snode: snode, location: .middle, dotAnimationStartDelay: (Double(index) + 1) * 0.5, dotAnimationRepeatInterval: dotAnimationRepeatInterval)
-        }
-        let destinationRow = getPathRow(title: NSLocalizedString("Destination", comment: ""), subtitle: nil, location: .top, dotAnimationStartDelay: (Double(mainPath.count) + 1) * 0.5, dotAnimationRepeatInterval: dotAnimationRepeatInterval)
-        let youRow = getPathRow(title: NSLocalizedString("You", comment: ""), subtitle: nil, location: .bottom, dotAnimationStartDelay: 0, dotAnimationRepeatInterval: dotAnimationRepeatInterval)
-        let rows = [ destinationRow ] + snodeRows + [ youRow ]
-        let pathStackView = UIStackView(arrangedSubviews: rows)
-        pathStackView.axis = .vertical
         let pathStackViewContainer = UIView()
         pathStackViewContainer.addSubview(pathStackView)
         pathStackView.pin([ UIView.VerticalEdge.top, UIView.VerticalEdge.bottom ], to: pathStackViewContainer)
         pathStackView.center(in: pathStackViewContainer)
         pathStackView.leadingAnchor.constraint(greaterThanOrEqualTo: pathStackViewContainer.leadingAnchor).isActive = true
         pathStackViewContainer.trailingAnchor.constraint(greaterThanOrEqualTo: pathStackView.trailingAnchor).isActive = true
+        pathStackViewContainer.addSubview(spinner)
+        spinner.leadingAnchor.constraint(greaterThanOrEqualTo: pathStackViewContainer.leadingAnchor).isActive = true
+        spinner.topAnchor.constraint(greaterThanOrEqualTo: pathStackViewContainer.topAnchor).isActive = true
+        pathStackViewContainer.trailingAnchor.constraint(greaterThanOrEqualTo: spinner.trailingAnchor).isActive = true
+        pathStackViewContainer.bottomAnchor.constraint(greaterThanOrEqualTo: spinner.bottomAnchor).isActive = true
+        spinner.center(in: pathStackViewContainer)
         // Set up rebuild path button
-        let rebuildPathButton = Button(style: .prominentOutline, size: .large)
-        rebuildPathButton.setTitle(NSLocalizedString("Rebuild Path", comment: ""), for: UIControl.State.normal)
-        rebuildPathButton.addTarget(self, action: #selector(rebuildPath), for: UIControl.Event.touchUpInside)
         let rebuildPathButtonContainer = UIView()
         rebuildPathButtonContainer.addSubview(rebuildPathButton)
         rebuildPathButton.pin(.leading, to: .leading, of: rebuildPathButtonContainer, withInset: 80)
         rebuildPathButton.pin(.top, to: .top, of: rebuildPathButtonContainer)
         rebuildPathButtonContainer.pin(.trailing, to: .trailing, of: rebuildPathButton, withInset: 80)
         rebuildPathButtonContainer.pin(.bottom, to: .bottom, of: rebuildPathButton)
+        // Set up spacers
+        let topSpacer = UIView.vStretchingSpacer()
+        let bottomSpacer = UIView.vStretchingSpacer()
         // Set up main stack view
-        let mainStackView = UIStackView(arrangedSubviews: [ explanationLabel, UIView.spacer(withHeight: Values.mediumSpacing), pathStackViewContainer, UIView.vStretchingSpacer(), rebuildPathButtonContainer ])
+        let mainStackView = UIStackView(arrangedSubviews: [ explanationLabel, topSpacer, pathStackViewContainer, bottomSpacer, rebuildPathButtonContainer ])
         mainStackView.axis = .vertical
         mainStackView.alignment = .fill
         mainStackView.layoutMargins = UIEdgeInsets(top: Values.largeSpacing, left: Values.largeSpacing, bottom: Values.largeSpacing, right: Values.largeSpacing)
         mainStackView.isLayoutMarginsRelativeArrangement = true
         view.addSubview(mainStackView)
         mainStackView.pin(to: view)
+        // Set up spacer constraints
+        topSpacer.heightAnchor.constraint(equalTo: bottomSpacer.heightAnchor).isActive = true
+        // Perform initial update
+        update()
     }
 
+    private func registerObservers() {
+        let notificationCenter = NotificationCenter.default
+        notificationCenter.addObserver(self, selector: #selector(handleBuildingPathsNotification), name: .buildingPaths, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(handlePathsBuiltNotification), name: .pathsBuilt, object: nil)
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+
+    // MARK: Updating
+    @objc private func handleBuildingPathsNotification() { update() }
+    @objc private func handlePathsBuiltNotification() { update() }
+
+    private func update() {
+        pathStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
+        if OnionRequestAPI.paths.count >= OnionRequestAPI.pathCount {
+            let pathToDisplay = OnionRequestAPI.paths.first!
+            let dotAnimationRepeatInterval = Double(pathToDisplay.count) + 2
+            let snodeRows = pathToDisplay.enumerated().reversed().map { index, snode in
+                getPathRow(snode: snode, location: .middle, dotAnimationStartDelay: Double(index) + 2, dotAnimationRepeatInterval: dotAnimationRepeatInterval)
+            }
+            let destinationRow = getPathRow(title: NSLocalizedString("Destination", comment: ""), subtitle: nil, location: .top, dotAnimationStartDelay: Double(pathToDisplay.count) + 2, dotAnimationRepeatInterval: dotAnimationRepeatInterval)
+            let youRow = getPathRow(title: NSLocalizedString("You", comment: ""), subtitle: nil, location: .bottom, dotAnimationStartDelay: 1, dotAnimationRepeatInterval: dotAnimationRepeatInterval)
+            let rows = [ destinationRow ] + snodeRows + [ youRow ]
+            rows.forEach { pathStackView.addArrangedSubview($0) }
+            spinner.stopAnimating()
+            UIView.animate(withDuration: 0.25) {
+                self.spinner.alpha = 0
+                self.rebuildPathButton.layer.borderColor = Colors.accent.cgColor
+                self.rebuildPathButton.setTitleColor(Colors.accent, for: UIControl.State.normal)
+            }
+            rebuildPathButton.isEnabled = true
+        } else {
+            spinner.startAnimating()
+            UIView.animate(withDuration: 0.25) {
+                self.spinner.alpha = 1
+                self.rebuildPathButton.layer.borderColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity).cgColor
+                self.rebuildPathButton.setTitleColor(Colors.text.withAlphaComponent(Values.unimportantElementOpacity), for: UIControl.State.normal)
+            }
+            rebuildPathButton.isEnabled = false
+        }
+    }
+
+    // MARK: General
     private func getPathRow(title: String, subtitle: String?, location: LineView.Location, dotAnimationStartDelay: Double, dotAnimationRepeatInterval: Double) -> UIStackView {
         let lineView = LineView(location: location, dotAnimationStartDelay: dotAnimationStartDelay, dotAnimationRepeatInterval: dotAnimationRepeatInterval)
         lineView.set(.width, to: Values.pathRowDotSize)
@@ -116,7 +189,9 @@ final class PathVC : BaseVC {
     }
 
     @objc private func rebuildPath() {
-        // TODO: Implement
+        OnionRequestAPI.guardSnodes = []
+        OnionRequestAPI.paths = []
+        let _ = OnionRequestAPI.buildPaths()
     }
 }
 
@@ -193,7 +268,7 @@ private final class LineView : UIView {
 
     private func animate() {
         expandDot()
-        Timer.scheduledTimer(withTimeInterval: 0.5, repeats: false) { [weak self] _ in
+        Timer.scheduledTimer(withTimeInterval: 1, repeats: false) { [weak self] _ in
             self?.collapseDot()
         }
     }
@@ -214,7 +289,7 @@ private final class LineView : UIView {
         let frame = CGRect(center: dotView.center, size: CGSize(width: size, height: size))
         dotViewWidthConstraint.constant = size
         dotViewHeightConstraint.constant = size
-        UIView.animate(withDuration: 0.25) {
+        UIView.animate(withDuration: 0.5) {
             self.layoutIfNeeded()
             self.dotView.frame = frame
             self.dotView.layer.cornerRadius = size / 2

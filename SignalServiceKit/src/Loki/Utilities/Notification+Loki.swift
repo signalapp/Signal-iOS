@@ -20,6 +20,9 @@ public extension Notification.Name {
     public static let dataNukeRequested = Notification.Name("dataNukeRequested")
     // Device linking
     public static let unexpectedDeviceLinkRequestReceived = Notification.Name("unexpectedDeviceLinkRequestReceived")
+    // Onion requests
+    public static let buildingPaths = Notification.Name("buildingPaths")
+    public static let pathsBuilt = Notification.Name("pathsBuilt")
 }
 
 @objc public extension NSNotification {
@@ -43,4 +46,7 @@ public extension Notification.Name {
     @objc public static let dataNukeRequested = Notification.Name.dataNukeRequested.rawValue as NSString
     // Device linking
     @objc public static let unexpectedDeviceLinkRequestReceived = Notification.Name.unexpectedDeviceLinkRequestReceived.rawValue as NSString
+    // Onion requests
+    @objc public static let buildingPaths = Notification.Name.buildingPaths.rawValue as NSString
+    @objc public static let pathsBuilt = Notification.Name.pathsBuilt.rawValue as NSString
 }

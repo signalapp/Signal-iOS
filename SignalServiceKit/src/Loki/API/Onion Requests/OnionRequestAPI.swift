@@ -4,7 +4,7 @@ import PromiseKit
 /// See the "Onion Requests" section of [The Session Whitepaper](https://arxiv.org/pdf/2002.04609.pdf) for more information.
 public enum OnionRequestAPI {
     /// - Note: Must only be modified from `LokiAPI.workQueue`.
-    private static var guardSnodes: Set<LokiAPITarget> = []
+    public static var guardSnodes: Set<LokiAPITarget> = []
     /// - Note: Must only be modified from `LokiAPI.workQueue`.
     public static var paths: [Path] = []
 
@@ -14,9 +14,9 @@ public enum OnionRequestAPI {
     }
 
     // MARK: Settings
-    private static let pathCount: UInt = 2
     /// The number of snodes (including the guard snode) in a path.
     private static let pathSize: UInt = 3
+    public static let pathCount: UInt = 2
 
     private static var guardSnodeCount: UInt { return pathCount } // One per path
 
@@ -100,10 +100,13 @@ public enum OnionRequestAPI {
 
     /// Builds and returns `pathCount` paths. The returned promise errors out with `Error.insufficientSnodes`
     /// if not enough (reliable) snodes are available.
-    private static func buildPaths() -> Promise<[Path]> {
+    public static func buildPaths() -> Promise<[Path]> {
         print("[Loki] [Onion Request API] Building onion request paths.")
+        DispatchQueue.main.async {
+            NotificationCenter.default.post(name: .buildingPaths, object: nil)
+        }
         return LokiAPI.getRandomSnode().then(on: LokiAPI.workQueue) { _ -> Promise<[Path]> in // Just used to populate the snode pool
-            return getGuardSnodes().map(on: LokiAPI.workQueue) { guardSnodes in
+            return getGuardSnodes().map(on: LokiAPI.workQueue) { guardSnodes -> [Path] in
                 var unusedSnodes = snodePool.subtracting(guardSnodes)
                 let pathSnodeCount = guardSnodeCount * pathSize - guardSnodeCount
                 guard unusedSnodes.count >= pathSnodeCount else { throw Error.insufficientSnodes }
@@ -118,6 +121,12 @@ public enum OnionRequestAPI {
                     print("[Loki] [Onion Request API] Built new onion request path: \(result.prettifiedDescription).")
                     return result
                 }
+            }.map(on: LokiAPI.workQueue) { paths in
+                OnionRequestAPI.paths = paths
+                DispatchQueue.main.async {
+                    NotificationCenter.default.post(name: .pathsBuilt, object: nil)
+                }
+                return paths
             }
         }
     }
@@ -134,9 +143,7 @@ public enum OnionRequestAPI {
             }
         } else {
             return buildPaths().map(on: LokiAPI.workQueue) { paths in
-                let path = paths.filter { !$0.contains(snode) }.randomElement()!
-                OnionRequestAPI.paths = paths
-                return path
+                return paths.filter { !$0.contains(snode) }.randomElement()!
             }
         }
     }

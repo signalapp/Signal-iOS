@@ -4,19 +4,44 @@ final class PathStatusView : UIView {
     override init(frame: CGRect) {
         super.init(frame: frame)
         setUpViewHierarchy()
+        registerObservers()
     }
 
     required init?(coder: NSCoder) {
         super.init(coder: coder)
         setUpViewHierarchy()
+        registerObservers()
     }
     
     private func setUpViewHierarchy() {
-        backgroundColor = Colors.accent
-        let size = Values.pathStatusViewSize
-        layer.cornerRadius = size / 2
-        let glowConfiguration = UIView.CircularGlowConfiguration(size: size, color: Colors.accent, isAnimated: false, radius: isLightMode ? 6 : 8)
-        setCircularGlow(with: glowConfiguration)
+        layer.cornerRadius = Values.pathStatusViewSize / 2
         layer.masksToBounds = false
+        let color = (OnionRequestAPI.paths.count >= OnionRequestAPI.pathCount) ? Colors.accent : Colors.destructive
+        setColor(to: color, isAnimated: false)
+    }
+
+    private func registerObservers() {
+        let notificationCenter = NotificationCenter.default
+        notificationCenter.addObserver(self, selector: #selector(handleBuildingPathsNotification), name: .buildingPaths, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(handlePathsBuiltNotification), name: .pathsBuilt, object: nil)
+    }
+
+    deinit {
+        NotificationCenter.default.removeObserver(self)
+    }
+
+    private func setColor(to color: UIColor, isAnimated: Bool) {
+        backgroundColor = color
+        let size = Values.pathStatusViewSize
+        let glowConfiguration = UIView.CircularGlowConfiguration(size: size, color: color, isAnimated: isAnimated, radius: isLightMode ? 6 : 8)
+        setCircularGlow(with: glowConfiguration)
+    }
+
+    @objc private func handleBuildingPathsNotification() {
+        setColor(to: Colors.destructive, isAnimated: true)
+    }
+
+    @objc private func handlePathsBuiltNotification() {
+        setColor(to: Colors.accent, isAnimated: true)
     }
 }
