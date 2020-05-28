@@ -348,25 +348,11 @@ NSString *const OWSPreferencesKeyWasDeleteForEveryoneConfirmationShown
 
 - (BOOL)isSystemCallLogEnabled
 {
-    if (@available(iOS 11, *)) {
-        // do nothing
-    } else {
-        OWSFailDebug(@"Call Logging can only be configured on iOS11+");
-        return NO;
-    }
-
     return [self boolForKey:OWSPreferencesKeySystemCallLogEnabled defaultValue:YES];
 }
 
 - (void)setIsSystemCallLogEnabled:(BOOL)value
 {
-    if (@available(iOS 11, *)) {
-        // do nothing
-    } else {
-        OWSFailDebug(@"Call Logging can only be configured on iOS11+");
-        return;
-    }
-
     [self setBool:value forKey:OWSPreferencesKeySystemCallLogEnabled];
 }
 
@@ -414,67 +400,6 @@ NSString *const OWSPreferencesKeyWasDeleteForEveryoneConfirmationShown
     // notifications to decouple the code. This is admittedly awkward, but it only happens once, and the alternative would
     // be importing all the call related classes into SignalMessaging.
     [[NSNotificationCenter defaultCenter] postNotificationNameAsync:OWSPreferencesCallLoggingDidChangeNotification object:nil];
-}
-
-- (BOOL)isCallKitEnabled
-{
-    if (@available(iOS 11, *)) {
-        OWSFailDebug(@"CallKit is always enabled for iOS11+");
-        return YES;
-    }
-
-    return [self boolForKey:OWSPreferencesKeyCallKitEnabled defaultValue:YES];
-}
-
-- (void)setIsCallKitEnabled:(BOOL)value
-{
-    if (@available(iOS 11, *)) {
-        OWSFailDebug(@"CallKit is always enabled for iOS11+");
-        return;
-    }
-
-    [self setBool:value forKey:OWSPreferencesKeyCallKitEnabled];
-    // Rev callUIAdaptee to get new setting
-}
-
-- (BOOL)isCallKitEnabledSet
-{
-    if (@available(iOS 11, *)) {
-        OWSFailDebug(@"CallKit is always enabled for iOS11+");
-        return NO;
-    }
-
-    return [self hasValueForKey:OWSPreferencesKeyCallKitEnabled];
-}
-
-- (BOOL)isCallKitPrivacyEnabled
-{
-    if (@available(iOS 11, *)) {
-        OWSFailDebug(@"CallKit privacy is irrelevant for iOS11+");
-        return NO;
-    }
-
-    return [self boolForKey:OWSPreferencesKeyCallKitPrivacyEnabled defaultValue:YES];
-}
-
-- (void)setIsCallKitPrivacyEnabled:(BOOL)value
-{
-    if (@available(iOS 11, *)) {
-        OWSFailDebug(@"CallKit privacy is irrelevant for iOS11+");
-        return;
-    }
-
-    [self setBool:value forKey:OWSPreferencesKeyCallKitPrivacyEnabled];
-}
-
-- (BOOL)isCallKitPrivacySet
-{
-    if (@available(iOS 11, *)) {
-        OWSFailDebug(@"CallKit privacy is irrelevant for iOS11+");
-        return NO;
-    }
-
-    return [self hasValueForKey:OWSPreferencesKeyCallKitPrivacyEnabled];
 }
 
 - (BOOL)wasViewOnceTooltipShown

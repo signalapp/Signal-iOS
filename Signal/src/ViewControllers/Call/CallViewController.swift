@@ -84,18 +84,6 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         }
     }
 
-    // MARK: - Settings Nag Views
-
-    var isShowingSettingsNag = false {
-        didSet {
-            if oldValue != isShowingSettingsNag {
-                updateCallUI(callState: call.state)
-            }
-        }
-    }
-    var settingsNagView: UIView!
-    var settingsNagDescriptionLabel: UILabel!
-
     // MARK: - Audio Source
 
     var hasAlternateAudioSources: Bool {
@@ -233,7 +221,6 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         createContactViews()
         createOngoingCallControls()
         createIncomingCallControls()
-        createSettingsNagViews()
     }
 
     @objc func didTouchRootView(sender: UIGestureRecognizer) {
@@ -305,60 +292,6 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         contactNameLabel.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "contactNameLabel")
         callStatusLabel.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "callStatusLabel")
         contactAvatarView.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "contactAvatarView")
-    }
-
-    func createSettingsNagViews() {
-        settingsNagView = UIView()
-        settingsNagView.isHidden = true
-        self.view.addSubview(settingsNagView)
-
-        let viewStack = UIView()
-        settingsNagView.addSubview(viewStack)
-        viewStack.autoPinWidthToSuperview()
-        viewStack.autoVCenterInSuperview()
-
-        settingsNagDescriptionLabel = UILabel()
-        settingsNagDescriptionLabel.text = NSLocalizedString("CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL",
-                                                             comment: "Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy.")
-        settingsNagDescriptionLabel.font = UIFont.ows_regularFont(withSize: ScaleFromIPhone5To7Plus(16, 18))
-        settingsNagDescriptionLabel.textColor = UIColor.white
-        settingsNagDescriptionLabel.numberOfLines = 0
-        settingsNagDescriptionLabel.lineBreakMode = .byWordWrapping
-        viewStack.addSubview(settingsNagDescriptionLabel)
-        settingsNagDescriptionLabel.autoPinWidthToSuperview()
-        settingsNagDescriptionLabel.autoPinEdge(toSuperviewEdge: .top)
-
-        let buttonHeight = ScaleFromIPhone5To7Plus(35, 45)
-        let descriptionVSpacingHeight = ScaleFromIPhone5To7Plus(30, 60)
-
-        let callSettingsButton = OWSFlatButton.button(title: NSLocalizedString("CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS",
-                                                                              comment: "Label for button that shows the privacy settings."),
-                                                      font: OWSFlatButton.fontForHeight(buttonHeight),
-                                                      titleColor: UIColor.white,
-                                                      backgroundColor: UIColor.ows_accentBlue,
-                                                      target: self,
-                                                      selector: #selector(didPressShowCallSettings))
-        viewStack.addSubview(callSettingsButton)
-        callSettingsButton.autoSetDimension(.height, toSize: buttonHeight)
-        callSettingsButton.autoPinWidthToSuperview()
-        callSettingsButton.autoPinEdge(.top, to: .bottom, of: settingsNagDescriptionLabel, withOffset: descriptionVSpacingHeight)
-
-        let notNowButton = OWSFlatButton.button(title: NSLocalizedString("CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON",
-                                                                        comment: "Label for button that dismiss the call view's settings nag."),
-                                                font: OWSFlatButton.fontForHeight(buttonHeight),
-                                                titleColor: UIColor.white,
-                                                backgroundColor: UIColor.ows_accentBlue,
-                                                target: self,
-                                                selector: #selector(didPressDismissNag))
-        viewStack.addSubview(notNowButton)
-        notNowButton.autoSetDimension(.height, toSize: buttonHeight)
-        notNowButton.autoPinWidthToSuperview()
-        notNowButton.autoPinEdge(toSuperviewEdge: .bottom)
-        notNowButton.autoPinEdge(.top, to: .bottom, of: callSettingsButton, withOffset: 12)
-
-        settingsNagDescriptionLabel.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "settingsNagDescriptionLabel")
-        callSettingsButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "callSettingsButton")
-        notNowButton.accessibilityIdentifier = UIView.accessibilityIdentifier(in: self, name: "notNowButton")
     }
 
     func buttonSize() -> CGFloat {
@@ -508,11 +441,9 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     func createViewConstraints() {
 
         let contactVSpacing = CGFloat(3)
-        let settingsNagHMargin = CGFloat(30)
         let ongoingBottomMargin = ScaleFromIPhone5To7Plus(23, 41)
         let incomingHMargin = ScaleFromIPhone5To7Plus(30, 56)
         let incomingBottomMargin = CGFloat(41)
-        let settingsNagBottomMargin = CGFloat(41)
         let avatarTopSpacing = ScaleFromIPhone5To7Plus(25, 50)
         // The buttons have built-in 10% margins, so to appear centered
         // the avatar's bottom spacing should be a bit less.
@@ -526,13 +457,8 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
         leaveCallViewButton.autoPinEdge(toSuperviewEdge: .leading)
 
-        if #available(iOS 11, *) {
-            leaveCallViewButton.autoPinEdge(toSuperviewMargin: .top)
-            contactNameLabel.autoPinEdge(toSuperviewMargin: .top)
-        } else {
-            leaveCallViewButton.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-            contactNameLabel.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-        }
+        leaveCallViewButton.autoPinEdge(toSuperviewMargin: .top)
+        contactNameLabel.autoPinEdge(toSuperviewMargin: .top)
 
         contactNameLabel.autoPinEdge(.leading, to: .trailing, of: leaveCallViewButton, withOffset: 8, relation: .greaterThanOrEqual)
         contactNameLabel.autoHCenterInSuperview()
@@ -582,11 +508,6 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         incomingCallControls.autoPinLeadingToSuperviewMargin(withInset: incomingHMargin)
         incomingCallControls.autoPinTrailingToSuperviewMargin(withInset: incomingHMargin)
         incomingCallControls.setContentHuggingVerticalHigh()
-
-        // Settings nag views
-        settingsNagView.autoPinEdge(toSuperviewEdge: .bottom, withInset: settingsNagBottomMargin)
-        settingsNagView.autoPinWidthToSuperview(withMargin: settingsNagHMargin)
-        settingsNagView.autoPinEdge(.top, to: .bottom, of: callStatusLabel)
     }
 
     override func updateViewConstraints() {
@@ -713,12 +634,6 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     func updateCallUI(callState: CallState) {
         assert(Thread.isMainThread)
         updateCallStatusLabel(callState: callState)
-        if isShowingSettingsNag {
-            settingsNagView.isHidden = false
-            contactAvatarView.isHidden = true
-            ongoingCallControls.isHidden = true
-            return
-        }
 
         // Marquee scrolling is distracting during a video call, disable it.
         contactNameLabel.labelize = call.hasLocalVideo
@@ -944,9 +859,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
     @objc func didPressShowCallSettings(sender: UIButton) {
         Logger.info("")
 
-        markSettingsNagAsComplete()
-
-        dismissIfPossible(shouldDelay: false, ignoreNag: true, completion: {
+        dismissIfPossible(shouldDelay: false, completion: {
             // Find the frontmost presented UIViewController from which to present the
             // settings views.
             let fromViewController = UIApplication.shared.frontmostViewControllerIgnoringAlerts
@@ -958,29 +871,6 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
             fromViewController?.present(navigationController, animated: true, completion: nil)
         })
-    }
-
-    @objc func didPressDismissNag(sender: UIButton) {
-        Logger.info("")
-
-        markSettingsNagAsComplete()
-
-        dismissIfPossible(shouldDelay: false, ignoreNag: true)
-    }
-
-    // We only show the "blocking" settings nag until the user has chosen
-    // to view the privacy settings _or_ dismissed the nag at least once.
-    // 
-    // In either case, we set the "CallKit enabled" and "CallKit privacy enabled" 
-    // settings to their default values to indicate that the user has reviewed
-    // them.
-    private func markSettingsNagAsComplete() {
-        Logger.info("")
-
-        let preferences = Environment.shared.preferences!
-
-        preferences.setIsCallKitEnabled(preferences.isCallKitEnabled())
-        preferences.setIsCallKitPrivacyEnabled(preferences.isCallKitPrivacyEnabled())
     }
 
     @objc func didTapLeaveCall(sender: UIButton) {
@@ -1110,51 +1000,12 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
     // MARK: - Dismiss
 
-    internal func dismissIfPossible(shouldDelay: Bool, ignoreNag ignoreNagParam: Bool = false, completion: (() -> Void)? = nil) {
+    internal func dismissIfPossible(shouldDelay: Bool, completion: (() -> Void)? = nil) {
         callUIAdapter.audioService.delegate = nil
-
-        let ignoreNag: Bool = {
-            // Nothing to nag about on iOS11
-            if #available(iOS 11, *) {
-                return true
-            } else {
-                // otherwise on iOS10, nag as specified
-                return ignoreNagParam
-            }
-        }()
 
         if hasDismissed {
             // Don't dismiss twice.
             return
-        } else if !ignoreNag &&
-            call.direction == .incoming &&
-            UIDevice.current.supportsCallKit &&
-            (!Environment.shared.preferences.isCallKitEnabled() ||
-                Environment.shared.preferences.isCallKitPrivacyEnabled()) {
-
-            isShowingSettingsNag = true
-
-            // Update the nag view's copy to reflect the settings state.
-            if Environment.shared.preferences.isCallKitEnabled() {
-                settingsNagDescriptionLabel.text = NSLocalizedString("CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY",
-                                                                     comment: "Reminder to the user of the benefits of disabling CallKit privacy.")
-            } else {
-                settingsNagDescriptionLabel.text = NSLocalizedString("CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL",
-                                                                     comment: "Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy.")
-            }
-            settingsNagDescriptionLabel.superview?.setNeedsLayout()
-
-            if Environment.shared.preferences.isCallKitEnabledSet() ||
-                Environment.shared.preferences.isCallKitPrivacySet() {
-                // User has already touched these preferences, only show
-                // the "fleeting" nag, not the "blocking" nag.
-
-                // Show nag for N seconds.
-                DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
-                    guard let strongSelf = self else { return }
-                    strongSelf.dismissIfPossible(shouldDelay: false, ignoreNag: true)
-                }
-            }
         } else if shouldDelay {
             hasDismissed = true
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) { [weak self] in

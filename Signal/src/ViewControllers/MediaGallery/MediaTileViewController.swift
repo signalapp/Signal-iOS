@@ -422,9 +422,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
     private class func buildLayout() -> MediaTileViewLayout {
         let layout = MediaTileViewLayout()
 
-        if #available(iOS 11, *) {
-            layout.sectionInsetReference = .fromSafeArea
-        }
+        layout.sectionInsetReference = .fromSafeArea
         layout.minimumInteritemSpacing = kInterItemSpacing
         layout.minimumLineSpacing = kInterItemSpacing
         layout.sectionHeadersPinToVisibleBounds = true
@@ -433,12 +431,8 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDe
     }
 
     func updateLayout() {
-        let rawSize: CGSize
-        if #available(iOS 11.0, *) {
-            rawSize = view.safeAreaLayoutGuide.layoutFrame.size
-        } else {
-            rawSize = view.frame.size
-        }
+        let rawSize = view.safeAreaLayoutGuide.layoutFrame.size
+
         let containerSize = CGSize(width: floor(rawSize.width), height: floor(rawSize.height))
 
         let kItemsPerPortraitRow = 4

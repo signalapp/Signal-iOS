@@ -62,12 +62,7 @@ class MessageRequestView: UIStackView {
         // We want the background to extend to the bottom of the screen
         // behind the safe area, so we add that inset to our bottom inset
         // instead of pinning this view to the safe area
-        let safeAreaInset: CGFloat
-        if #available(iOS 11, *) {
-            safeAreaInset = safeAreaInsets.bottom
-        } else {
-            safeAreaInset = 0
-        }
+        let safeAreaInset = safeAreaInsets.bottom
 
         autoresizingMask = .flexibleHeight
 

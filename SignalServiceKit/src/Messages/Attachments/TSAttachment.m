@@ -310,11 +310,7 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
     } else if ([MIMETypeUtil isVideo:contentType]) {
         return @"🎥";
     } else if ([MIMETypeUtil isAudio:contentType]) {
-        if (SYSTEM_VERSION_GREATER_THAN_OR_EQUAL_TO(11, 0)) {
-            return @"🎧";
-        } else {
-            return @"📻";
-        }
+        return @"🎧";
     } else if ([MIMETypeUtil isAnimated:contentType]) {
         return @"🎡";
     } else {

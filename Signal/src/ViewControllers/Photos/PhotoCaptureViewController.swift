@@ -175,7 +175,6 @@ class PhotoCaptureViewController: OWSViewController {
         }
     }
 
-    @available(iOS 11.0, *)
     override func viewSafeAreaInsetsDidChange() {
         super.viewSafeAreaInsetsDidChange()
         if !UIDevice.current.isIPad {
@@ -962,20 +961,6 @@ class RecordingTimerView: UIView {
         return icon
     }()
 
-    // MARK: - Overrides  //
-
-    override func sizeThatFits(_ size: CGSize) -> CGSize {
-        if #available(iOS 10, *) {
-            return super.sizeThatFits(size)
-        } else {
-            // iOS9 manual layout sizing required for items in the navigation bar
-            var baseSize = label.frame.size
-            baseSize.width = baseSize.width + stackViewSpacing + RecordingTimerView.iconWidth + layoutMargins.left + layoutMargins.right
-            baseSize.height = baseSize.height + layoutMargins.top + layoutMargins.bottom
-            return baseSize
-        }
-    }
-
     // MARK: -
     var recordingStartTime: TimeInterval?
 
@@ -1024,11 +1009,6 @@ class RecordingTimerView: UIView {
         let recordingDuration = self.recordingDuration
         let durationDate = Date(timeIntervalSinceReferenceDate: recordingDuration)
         label.text = timeFormatter.string(from: durationDate)
-        if #available(iOS 10, *) {
-            // do nothing
-        } else {
-            label.sizeToFit()
-        }
     }
 }
 

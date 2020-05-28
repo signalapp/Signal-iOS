@@ -441,7 +441,7 @@ protocol CallAudioServiceDelegate: class {
 
         var audioSessionChanged = false
         do {
-            if #available(iOS 10.0, *), let mode = mode {
+            if let mode = mode {
                 let oldCategory = avAudioSession.category
                 let oldMode = avAudioSession.mode
                 let oldOptions = avAudioSession.categoryOptions

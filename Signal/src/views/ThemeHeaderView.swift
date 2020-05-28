@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -22,11 +22,7 @@ public class ThemeHeaderView: UIView {
                 // HACK: scrollbar incorrectly appears *behind* section headers
                 // in collection view on early iOS11.
                 // Appears fine on iOS11.4+
-                if #available(iOS 11, *) {
-                    return AlwaysOnTopLayer.self
-                } else {
-                    return super.layerClass
-                }
+                return AlwaysOnTopLayer.self
             }
 
             return super.layerClass

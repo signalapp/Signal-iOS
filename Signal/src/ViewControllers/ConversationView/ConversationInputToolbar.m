@@ -361,14 +361,13 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     [self.outerStack autoPinEdgeToSuperviewSafeArea:ALEdgeBottom];
 
     // See comments on updateContentLayout:.
-    if (@available(iOS 11, *)) {
-        self.suggestedStickerView.insetsLayoutMarginsFromSafeArea = NO;
-        vStack.insetsLayoutMarginsFromSafeArea = NO;
-        vStackRoundingOffsetView.insetsLayoutMarginsFromSafeArea = NO;
-        hStack.insetsLayoutMarginsFromSafeArea = NO;
-        self.outerStack.insetsLayoutMarginsFromSafeArea = NO;
-        self.insetsLayoutMarginsFromSafeArea = NO;
-    }
+    self.suggestedStickerView.insetsLayoutMarginsFromSafeArea = NO;
+    vStack.insetsLayoutMarginsFromSafeArea = NO;
+    vStackRoundingOffsetView.insetsLayoutMarginsFromSafeArea = NO;
+    hStack.insetsLayoutMarginsFromSafeArea = NO;
+    self.outerStack.insetsLayoutMarginsFromSafeArea = NO;
+    self.insetsLayoutMarginsFromSafeArea = NO;
+
     self.suggestedStickerView.preservesSuperviewLayoutMargins = NO;
     vStack.preservesSuperviewLayoutMargins = NO;
     vStackRoundingOffsetView.preservesSuperviewLayoutMargins = NO;

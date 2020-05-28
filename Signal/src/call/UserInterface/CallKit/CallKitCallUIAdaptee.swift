@@ -15,7 +15,6 @@ import SignalMessaging
  * User interface is routed to the CallManager which requests CXCallActions, and if the CXProvider accepts them,
  * their corresponding consequences are implmented in the CXProviderDelegate methods, e.g. using the CallService
  */
-@available(iOS 10.0, *)
 final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
     private let callManager: CallKitCallManager
@@ -84,14 +83,8 @@ final class CallKitCallUIAdaptee: NSObject, CallUIAdaptee, CXProviderDelegate {
 
         // We don't set the ringtoneSound property, so that we use either the
         // default iOS ringtone OR the custom ringtone associated with this user's
-        // system contact, if possible (iOS 11 or later).
-
-        if #available(iOS 11.0, *) {
-            providerConfiguration.includesCallsInRecents = useSystemCallLog
-        } else {
-            // not configurable for iOS10+
-            assert(useSystemCallLog)
-        }
+        // system contact.
+        providerConfiguration.includesCallsInRecents = useSystemCallLog
 
         return providerConfiguration
     }

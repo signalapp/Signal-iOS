@@ -37,9 +37,7 @@ NS_ASSUME_NONNULL_BEGIN
 void AssertIsOnDisappearingMessagesQueue()
 {
 #ifdef DEBUG
-    if (@available(iOS 10.0, *)) {
-        dispatch_assert_queue(OWSDisappearingMessagesJob.serialQueue);
-    }
+    dispatch_assert_queue(OWSDisappearingMessagesJob.serialQueue);
 #endif
 }
 

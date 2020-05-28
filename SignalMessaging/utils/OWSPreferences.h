@@ -96,17 +96,6 @@ extern NSString *const OWSPreferencesCallLoggingDidChangeNotification;
 
 - (void)applyCallLoggingSettingsForLegacyUsersWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
-- (BOOL)isCallKitEnabled;
-- (void)setIsCallKitEnabled:(BOOL)value;
-
-// Returns YES IFF isCallKitEnabled has been set by user.
-- (BOOL)isCallKitEnabledSet;
-
-- (BOOL)isCallKitPrivacyEnabled;
-- (void)setIsCallKitPrivacyEnabled:(BOOL)value;
-// Returns YES IFF isCallKitPrivacyEnabled has been set by user.
-- (BOOL)isCallKitPrivacySet;
-
 #pragma mark direct call connectivity (non-TURN)
 
 - (BOOL)doCallsHideIPAddress;

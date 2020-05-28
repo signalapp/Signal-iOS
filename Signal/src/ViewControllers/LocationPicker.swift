@@ -117,12 +117,7 @@ public class LocationPicker: UIViewController {
         searchBar.searchTextPositionAdjustment = UIOffset(horizontal: 8.0, vertical: 0.0)
         searchBar.textField?.backgroundColor = .clear
 
-        // Pre iOS 11, use the titleView for the search bar.
-        if #available(iOS 11.0, *) {
-            navigationItem.searchController = searchController
-        } else {
-            navigationItem.titleView = searchBar
-        }
+        navigationItem.searchController = searchController
         definesPresentationContext = true
 
         // Select a new location by long pressing

@@ -1604,8 +1604,7 @@ NS_ASSUME_NONNULL_BEGIN
             return;
         case OWSMessageCellType_GenericAttachment:
             if (self.viewItem.attachmentStream) {
-                if (PdfViewController.canRenderPdf &&
-                    [OWSMimeTypePdf isEqualToString:self.viewItem.attachmentStream.contentType]) {
+                if ([OWSMimeTypePdf isEqualToString:self.viewItem.attachmentStream.contentType]) {
                     [self.delegate didTapPdfForItem:self.viewItem attachmentStream:self.viewItem.attachmentStream];
                 } else {
                     [AttachmentSharing showShareUIForAttachment:self.viewItem.attachmentStream sender:self];

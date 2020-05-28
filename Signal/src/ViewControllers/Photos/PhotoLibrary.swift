@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -39,10 +39,10 @@ class PhotoPickerAssetItem: PhotoGridItem {
     var type: PhotoGridItemType {
         if asset.mediaType == .video {
             return .video
-        } else if #available(iOS 11, *), asset.playbackStyle == .imageAnimated {
+        } else if asset.playbackStyle == .imageAnimated {
             return .animated
         } else {
-            return  .photo
+            return .photo
         }
     }
 

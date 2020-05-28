@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -23,8 +23,8 @@ public class OWSScreenLock: NSObject {
     public enum OWSScreenLockOutcome {
         case success
         case cancel
-        case failure(error:String)
-        case unexpectedFailure(error:String)
+        case failure(error: String)
+        case unexpectedFailure(error: String)
     }
 
     @objc
@@ -230,24 +230,22 @@ public class OWSScreenLock: NSObject {
                 return .failure(error:defaultErrorDescription)
             }
 
-            if #available(iOS 11.0, *) {
-                switch laError.code {
-                case .biometryNotAvailable:
-                    Logger.error("local authentication error: biometryNotAvailable.")
-                    return .failure(error: NSLocalizedString("SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE",
-                                                             comment: "Indicates that Touch ID/Face ID/Phone Passcode are not available on this device."))
-                case .biometryNotEnrolled:
-                    Logger.error("local authentication error: biometryNotEnrolled.")
-                    return .failure(error: NSLocalizedString("SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED",
-                                                             comment: "Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device."))
-                case .biometryLockout:
-                    Logger.error("local authentication error: biometryLockout.")
-                    return .failure(error: NSLocalizedString("SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT",
-                                                             comment: "Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures."))
-                default:
-                    // Fall through to second switch
-                    break
-                }
+            switch laError.code {
+            case .biometryNotAvailable:
+                Logger.error("local authentication error: biometryNotAvailable.")
+                return .failure(error: NSLocalizedString("SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE",
+                                                         comment: "Indicates that Touch ID/Face ID/Phone Passcode are not available on this device."))
+            case .biometryNotEnrolled:
+                Logger.error("local authentication error: biometryNotEnrolled.")
+                return .failure(error: NSLocalizedString("SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED",
+                                                         comment: "Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device."))
+            case .biometryLockout:
+                Logger.error("local authentication error: biometryLockout.")
+                return .failure(error: NSLocalizedString("SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT",
+                                                         comment: "Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures."))
+            default:
+                // Fall through to second switch
+                break
             }
 
             switch laError.code {
@@ -301,9 +299,7 @@ public class OWSScreenLock: NSObject {
         // Never recycle biometric auth.
         context.touchIDAuthenticationAllowableReuseDuration = TimeInterval(0)
 
-        if #available(iOS 11.0, *) {
-            assert(!context.interactionNotAllowed)
-        }
+        assert(!context.interactionNotAllowed)
 
         return context
     }

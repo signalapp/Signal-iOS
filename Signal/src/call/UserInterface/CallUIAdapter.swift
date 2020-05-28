@@ -110,24 +110,12 @@ extension CallUIAdaptee {
         } else if CallUIAdapter.isCallkitDisabledForLocale {
             Logger.info("choosing non-callkit adaptee due to locale.")
             return NonCallKitCallUIAdaptee(callService: callService, notificationPresenter: notificationPresenter)
-        } else if #available(iOS 11, *) {
+        } else {
             Logger.info("choosing callkit adaptee for iOS11+")
             let showNames = preferences.notificationPreviewType() != .noNameNoPreview
             let useSystemCallLog = preferences.isSystemCallLogEnabled()
 
             return CallKitCallUIAdaptee(callService: callService, contactsManager: contactsManager, notificationPresenter: notificationPresenter, showNamesOnCallScreen: showNames, useSystemCallLog: useSystemCallLog)
-        } else if #available(iOS 10.0, *), preferences.isCallKitEnabled() {
-            Logger.info("choosing callkit adaptee for iOS10")
-            let hideNames = preferences.isCallKitPrivacyEnabled() || preferences.notificationPreviewType() == .noNameNoPreview
-            let showNames = !hideNames
-
-            // All CallKit calls use the system call log on iOS10
-            let useSystemCallLog = true
-
-            return CallKitCallUIAdaptee(callService: callService, contactsManager: contactsManager, notificationPresenter: notificationPresenter, showNamesOnCallScreen: showNames, useSystemCallLog: useSystemCallLog)
-        } else {
-            Logger.info("choosing non-callkit adaptee")
-            return NonCallKitCallUIAdaptee(callService: callService, notificationPresenter: notificationPresenter)
         }
     }()
 

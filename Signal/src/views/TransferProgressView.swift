@@ -103,7 +103,7 @@ class TransferProgressView: UIStackView {
             self.topLabel.text = "\(Int(self.progress.fractionCompleted * 100))%"
             self.progressBar.setProgress(Float(self.progress.fractionCompleted), animated: true)
 
-            if #available(iOS 11, *), let estimatedTime = self.progress.estimatedTimeRemaining, estimatedTime.isFinite {
+            if let estimatedTime = self.progress.estimatedTimeRemaining, estimatedTime.isFinite {
                 self.bottomLabel.text = self.dateComponentsFormatter.string(from: estimatedTime)
             } else {
                 self.bottomLabel.text = nil

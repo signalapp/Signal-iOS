@@ -6,7 +6,6 @@ import Foundation
 import PromiseKit
 
 @objc(OWSUserNotificationActionHandler)
-@available(iOS 10.0, *)
 public class UserNotificationActionHandler: NSObject {
 
     var actionHandler: NotificationActionHandler {

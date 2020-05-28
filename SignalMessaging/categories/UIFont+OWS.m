@@ -117,7 +117,7 @@ NS_ASSUME_NONNULL_BEGIN
     static NSDictionary<UIFontTextStyle, NSNumber *> *maxPointSizeMap = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        NSMutableDictionary<UIFontTextStyle, NSNumber *> *map = [@{
+        maxPointSizeMap = @{
             UIFontTextStyleTitle1 : @(34.0),
             UIFontTextStyleTitle2 : @(28.0),
             UIFontTextStyleTitle3 : @(26.0),
@@ -128,11 +128,8 @@ NS_ASSUME_NONNULL_BEGIN
             UIFontTextStyleFootnote : @(19.0),
             UIFontTextStyleCaption1 : @(18.0),
             UIFontTextStyleCaption2 : @(17.0),
-        } mutableCopy];
-        if (@available(iOS 11.0, *)) {
-            map[UIFontTextStyleLargeTitle] = @(40.0);
-        }
-        maxPointSizeMap = map;
+            UIFontTextStyleLargeTitle: @(40.0)
+        };
     });
 
     UIFont *font = [UIFont preferredFontForTextStyle:fontTextStyle];
@@ -150,11 +147,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (UIFont *)ows_dynamicTypeLargeTitle1ClampedFont
 {
-    if (@available(iOS 11.0, *)) {
-        return [UIFont preferredFontForTextStyleClamped:UIFontTextStyleLargeTitle];
-    } else {
-        return [UIFont preferredFontForTextStyleClamped:UIFontTextStyleTitle1];
-    }
+    return [UIFont preferredFontForTextStyleClamped:UIFontTextStyleLargeTitle];
 }
 
 + (UIFont *)ows_dynamicTypeTitle1ClampedFont

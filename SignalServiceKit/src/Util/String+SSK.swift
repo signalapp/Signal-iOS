@@ -106,11 +106,8 @@ public extension String {
     private var dominantLanguage: String? {
         if #available(iOS 12, *) {
             return NLLanguageRecognizer.dominantLanguage(for: self)?.rawValue
-        } else if #available(iOS 11, *) {
-            return NSLinguisticTagger.dominantLanguage(for: self)
         } else {
-            let nsstring = self as NSString
-            return nsstring.dominantLanguageWithLegacyLinguisticTagger
+            return NSLinguisticTagger.dominantLanguage(for: self)
         }
     }
 

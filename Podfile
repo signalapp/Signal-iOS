@@ -1,4 +1,4 @@
-platform :ios, '10.0'
+platform :ios, '11.0'
 plugin 'cocoapods-binary'
 
 use_frameworks!

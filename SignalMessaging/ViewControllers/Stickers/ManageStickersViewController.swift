@@ -458,12 +458,7 @@ public class ManageStickersViewController: OWSTableViewController {
         label.setCompressionResistanceHigh()
         label.setContentHuggingHigh()
         cell.contentView.addSubview(label)
-        // This sidesteps an apparent bug in iOS Auto Layout.
-        if #available(iOS 11.0, *) {
-            label.autoPinEdgesToSuperviewMargins(with: UIEdgeInsets(top: 24, leading: 16, bottom: 24, trailing: 16))
-        } else {
-            label.autoPinEdgesToSuperviewMargins()
-        }
+        label.autoPinEdgesToSuperviewMargins(with: UIEdgeInsets(top: 24, leading: 16, bottom: 24, trailing: 16))
 
         return cell
     }

@@ -666,11 +666,9 @@ import PromiseKit
                 return .failureDoNotRetry(error:error)
             }
 
-            if #available(iOS 11, *) {
-                if error.code == CKError.serverResponseLost {
-                    Logger.verbose("\(label) retry without delay.")
-                    return .failureRetryWithoutDelay
-                }
+            if error.code == CKError.serverResponseLost {
+                Logger.verbose("\(label) retry without delay.")
+                return .failureRetryWithoutDelay
             }
 
             switch error {

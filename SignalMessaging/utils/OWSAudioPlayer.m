@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSAudioPlayer.h"
@@ -145,16 +145,14 @@ NS_ASSUME_NONNULL_BEGIN
         return MPRemoteCommandHandlerStatusSuccess;
     }];
 
-    if (@available(iOS 9.1, *)) {
-        [commandCenter.changePlaybackPositionCommand setEnabled:YES];
-        [commandCenter.changePlaybackPositionCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(
-            MPRemoteCommandEvent *event) {
-            OWSAssertDebug([event isKindOfClass:[MPChangePlaybackPositionCommandEvent class]]);
-            MPChangePlaybackPositionCommandEvent *playbackChangeEvent = (MPChangePlaybackPositionCommandEvent *)event;
-            [weakSelf setCurrentTime:playbackChangeEvent.positionTime];
-            return MPRemoteCommandHandlerStatusSuccess;
-        }];
-    }
+    [commandCenter.changePlaybackPositionCommand setEnabled:YES];
+    [commandCenter.changePlaybackPositionCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(
+                                                                                                    MPRemoteCommandEvent *event) {
+        OWSAssertDebug([event isKindOfClass:[MPChangePlaybackPositionCommandEvent class]]);
+        MPChangePlaybackPositionCommandEvent *playbackChangeEvent = (MPChangePlaybackPositionCommandEvent *)event;
+        [weakSelf setCurrentTime:playbackChangeEvent.positionTime];
+        return MPRemoteCommandHandlerStatusSuccess;
+    }];
 
     [self updateNowPlayingInfo];
 }
@@ -167,9 +165,7 @@ NS_ASSUME_NONNULL_BEGIN
         [commandCenter.playCommand setEnabled:NO];
         [commandCenter.pauseCommand setEnabled:NO];
 
-        if (@available(iOS 9.1, *)) {
-            [commandCenter.changePlaybackPositionCommand setEnabled:NO];
-        }
+        [commandCenter.changePlaybackPositionCommand setEnabled:NO];
 
         MPNowPlayingInfoCenter.defaultCenter.nowPlayingInfo = @{};
     }
