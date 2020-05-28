@@ -10,7 +10,7 @@ public enum OnionRequestAPI {
 
     private static var snodePool: Set<LokiAPITarget> {
         let unreliableSnodes = Set(LokiAPI.failureCount.keys)
-        return LokiAPI.randomSnodePool.subtracting(unreliableSnodes)
+        return LokiAPI.snodePool.subtracting(unreliableSnodes)
     }
 
     // MARK: Settings
@@ -257,7 +257,14 @@ private extension Promise where T == JSON {
                 if newFailureCount >= LokiAPI.failureThreshold {
                     print("[Loki] Failure threshold reached for: \(snode); dropping it.")
                     LokiAPI.dropIfNeeded(snode, hexEncodedPublicKey: hexEncodedPublicKey) // Remove it from the swarm cache associated with the given public key
-                    LokiAPI.randomSnodePool.remove(snode) // Remove it from the random snode pool
+                    LokiAPI.snodePool.remove(snode) // Remove it from the snode pool
+                    // Dispatch async on the main queue to avoid nested write transactions
+                    DispatchQueue.main.async {
+                        let storage = OWSPrimaryStorage.shared()
+                        storage.dbReadWriteConnection.readWrite { transaction in
+                            storage.clearSnodePool(in: transaction)
+                        }
+                    }
                     LokiAPI.failureCount[snode] = 0
                 }
             case 406:
