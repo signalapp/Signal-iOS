@@ -1193,6 +1193,36 @@
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Let's switch to Signal";
 
+/* The name for the emoji category 'Activities' */
+"EMOJI_CATEGORY_ACTIVITIES_NAME" = "Activities";
+
+/* The name for the emoji category 'Animals & Nature' */
+"EMOJI_CATEGORY_ANIMALS_NAME" = "Animals & Nature";
+
+/* The name for the emoji category 'Flags' */
+"EMOJI_CATEGORY_FLAGS_NAME" = "Flags";
+
+/* The name for the emoji category 'Food & Drink' */
+"EMOJI_CATEGORY_FOOD_NAME" = "Food & Drink";
+
+/* The name for the emoji category 'Objects' */
+"EMOJI_CATEGORY_OBJECTS_NAME" = "Objects";
+
+/* The name for the emoji category 'People & Body' */
+"EMOJI_CATEGORY_PEOPLE_NAME" = "People & Body";
+
+/* The name for the emoji category 'Skin Tones' */
+"EMOJI_CATEGORY_SKINTONES_NAME" = "Skin Tones";
+
+/* The name for the emoji category 'Smileys & Emotion' */
+"EMOJI_CATEGORY_SMILEYS_NAME" = "Smileys & Emotion";
+
+/* The name for the emoji category 'Symbols' */
+"EMOJI_CATEGORY_SYMBOLS_NAME" = "Symbols";
+
+/* The name for the emoji category 'Travel & Places' */
+"EMOJI_CATEGORY_TRAVEL_NAME" = "Travel & Places";
+
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE1" = "None of your contacts have Signal.";
 

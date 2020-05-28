@@ -648,6 +648,9 @@
 		8861DED02445349C00BB4145 /* LinkingTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8861DECF2445349B00BB4145 /* LinkingTextView.swift */; };
 		886F08A7234958970085C27F /* InputAccessoryViewPlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 886F08A6234958970085C27F /* InputAccessoryViewPlaceholder.swift */; };
 		887889A52476E999001B5FCF /* OWSPinConfirmationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887889A42476E999001B5FCF /* OWSPinConfirmationViewController.swift */; };
+		887889B1247F2E72001B5FCF /* Emoji+Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887889AF247F2E72001B5FCF /* Emoji+Category.swift */; };
+		887889B2247F2E72001B5FCF /* Emoji.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887889B0247F2E72001B5FCF /* Emoji.swift */; };
+		887889B4247F350E001B5FCF /* Emoji+Value.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887889B3247F350E001B5FCF /* Emoji+Value.swift */; };
 		887CD4772472FEA500FDD265 /* DeviceTransferOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887CD4762472FEA500FDD265 /* DeviceTransferOperation.swift */; };
 		887CD47B247304B600FDD265 /* DeviceTransferService+URL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887CD47A247304B600FDD265 /* DeviceTransferService+URL.swift */; };
 		887CD47D2473051D00FDD265 /* DeviceTransferService+Manifest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887CD47C2473051D00FDD265 /* DeviceTransferService+Manifest.swift */; };
@@ -1620,6 +1623,9 @@
 		887889A7247718DE001B5FCF /* af */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = af; path = translations/af.lproj/Localizable.strings; sourceTree = "<group>"; };
 		887889A8247718F7001B5FCF /* jv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = jv; path = translations/jv.lproj/Localizable.strings; sourceTree = "<group>"; };
 		887889AB247E09B7001B5FCF /* kk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = kk; path = translations/kk.lproj/Localizable.strings; sourceTree = "<group>"; };
+		887889AF247F2E72001B5FCF /* Emoji+Category.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Emoji+Category.swift"; sourceTree = "<group>"; };
+		887889B0247F2E72001B5FCF /* Emoji.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Emoji.swift; sourceTree = "<group>"; };
+		887889B3247F350E001B5FCF /* Emoji+Value.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Emoji+Value.swift"; sourceTree = "<group>"; };
 		887CD4762472FEA500FDD265 /* DeviceTransferOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceTransferOperation.swift; sourceTree = "<group>"; };
 		887CD47A247304B600FDD265 /* DeviceTransferService+URL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DeviceTransferService+URL.swift"; sourceTree = "<group>"; };
 		887CD47C2473051D00FDD265 /* DeviceTransferService+Manifest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DeviceTransferService+Manifest.swift"; sourceTree = "<group>"; };
@@ -3000,6 +3006,7 @@
 				4CC1ECFA211A553000CC13BE /* AppUpdateNag.swift */,
 				3496956121A301A100DCFE74 /* Backup */,
 				88C4E38124671F9D009C9B97 /* Device Transfer */,
+				887889AE247F2E72001B5FCF /* Emoji */,
 				34B0796C1FCF46B000E248C2 /* MainAppContext.h */,
 				34B0796B1FCF46B000E248C2 /* MainAppContext.m */,
 				34D99C911F2937CC00D284D6 /* OWSAnalytics.swift */,
@@ -3099,6 +3106,16 @@
 				88A595E223AB48E80029E835 /* NotificationServiceExtensionContext.swift */,
 			);
 			path = NotificationServiceExtension;
+			sourceTree = "<group>";
+		};
+		887889AE247F2E72001B5FCF /* Emoji */ = {
+			isa = PBXGroup;
+			children = (
+				887889B0247F2E72001B5FCF /* Emoji.swift */,
+				887889AF247F2E72001B5FCF /* Emoji+Category.swift */,
+				887889B3247F350E001B5FCF /* Emoji+Value.swift */,
+			);
+			path = Emoji;
 			sourceTree = "<group>";
 		};
 		8889006223DBB38700F40186 /* Reactions Megaphone */ = {
@@ -4691,6 +4708,7 @@
 				34D2CCE0206939B400CB1A14 /* DebugUIMessagesAssetLoader.m in Sources */,
 				3416BCAA227763A500E761B4 /* OWSMessageView.m in Sources */,
 				88905E9E229CCA96004E4234 /* ExpirationNagView.swift in Sources */,
+				887889B2247F2E72001B5FCF /* Emoji.swift in Sources */,
 				881D85B822D92C2B00E118DF /* OWSPinSetupViewController.swift in Sources */,
 				340FC8BA204DAC8D007AEB0F /* FingerprintViewScanController.m in Sources */,
 				34D3E57C245A189D00F5E4A1 /* DebugUIScreenshots.m in Sources */,
@@ -4735,6 +4753,7 @@
 				88A357B923639384009D6B9A /* MemberActionSheet.swift in Sources */,
 				34B0796D1FCF46B100E248C2 /* MainAppContext.m in Sources */,
 				34E3EF101EFC2684007F6822 /* DebugUIPage.m in Sources */,
+				887889B1247F2E72001B5FCF /* Emoji+Category.swift in Sources */,
 				34A8B3512190A40E00218A25 /* MediaAlbumCellView.swift in Sources */,
 				34D1F0AE1F867BFC0066283D /* OWSMessageCell.m in Sources */,
 				4C4AEC4520EC343B0020E72B /* DismissableTextField.swift in Sources */,
@@ -4851,6 +4870,7 @@
 				4C46361122EB98EC00185951 /* CameraFirstNavigationController.swift in Sources */,
 				4539B5861F79348F007141FF /* PushRegistrationManager.swift in Sources */,
 				340FC8BB204DAC8D007AEB0F /* OWSAddToContactViewController.m in Sources */,
+				887889B4247F350E001B5FCF /* Emoji+Value.swift in Sources */,
 				34C2EEB92272244600BCA1D0 /* OWSMessageStickerView.m in Sources */,
 				45F32C232057297A00A300D5 /* MediaPageViewController.swift in Sources */,
 				8809CE8722F8FE6D00D38867 /* AttachmentKeyboard.swift in Sources */,
