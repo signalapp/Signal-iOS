@@ -2835,6 +2835,7 @@
 "Please wait while the device link is created. This can take up to a minute." = "Please wait while the device link is created. This can take up to a minute.";
 "Path" = "Path";
 "Session hides your IP by bouncing your messages through several Service Nodes in Session’s decentralized network. These are the Service Nodes currently being used by your device:" = "Session hides your IP by bouncing your messages through several Service Nodes in Session’s decentralized network. These are the Service Nodes currently being used by your device:";
+"Guard Node" = "Guard Node";
 "Service Node" = "Service Node";
 "You" = "You";
 "Destination" = "Destination";

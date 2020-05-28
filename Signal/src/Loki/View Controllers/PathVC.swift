@@ -122,12 +122,13 @@ final class PathVC : BaseVC {
         if OnionRequestAPI.paths.count >= OnionRequestAPI.pathCount {
             let pathToDisplay = OnionRequestAPI.paths.first!
             let dotAnimationRepeatInterval = Double(pathToDisplay.count) + 2
-            let snodeRows = pathToDisplay.enumerated().reversed().map { index, snode in
-                getPathRow(snode: snode, location: .middle, dotAnimationStartDelay: Double(index) + 2, dotAnimationRepeatInterval: dotAnimationRepeatInterval)
+            let snodeRows: [UIStackView] = pathToDisplay.enumerated().map { index, snode in
+                let isGuardSnode = (snode == pathToDisplay.first!)
+                return getPathRow(snode: snode, location: .middle, dotAnimationStartDelay: Double(index) + 2, dotAnimationRepeatInterval: dotAnimationRepeatInterval, isGuardSnode: isGuardSnode)
             }
-            let destinationRow = getPathRow(title: NSLocalizedString("Destination", comment: ""), subtitle: nil, location: .top, dotAnimationStartDelay: Double(pathToDisplay.count) + 2, dotAnimationRepeatInterval: dotAnimationRepeatInterval)
-            let youRow = getPathRow(title: NSLocalizedString("You", comment: ""), subtitle: nil, location: .bottom, dotAnimationStartDelay: 1, dotAnimationRepeatInterval: dotAnimationRepeatInterval)
-            let rows = [ destinationRow ] + snodeRows + [ youRow ]
+            let youRow = getPathRow(title: NSLocalizedString("You", comment: ""), subtitle: nil, location: .top, dotAnimationStartDelay: 1, dotAnimationRepeatInterval: dotAnimationRepeatInterval)
+            let destinationRow = getPathRow(title: NSLocalizedString("Destination", comment: ""), subtitle: nil, location: .bottom, dotAnimationStartDelay: Double(pathToDisplay.count) + 2, dotAnimationRepeatInterval: dotAnimationRepeatInterval)
+            let rows = [ youRow ] + snodeRows + [ destinationRow ]
             rows.forEach { pathStackView.addArrangedSubview($0) }
             spinner.stopAnimating()
             UIView.animate(withDuration: 0.25) {
@@ -174,13 +175,14 @@ final class PathVC : BaseVC {
         return stackView
     }
 
-    private func getPathRow(snode: LokiAPITarget, location: LineView.Location, dotAnimationStartDelay: Double, dotAnimationRepeatInterval: Double) -> UIStackView {
+    private func getPathRow(snode: LokiAPITarget, location: LineView.Location, dotAnimationStartDelay: Double, dotAnimationRepeatInterval: Double, isGuardSnode: Bool) -> UIStackView {
         var snodeIP = snode.description
         if snodeIP.hasPrefix("https://") { snodeIP.removeFirst(8) }
         if let colonIndex = snodeIP.lastIndex(of: ":") {
             snodeIP = String(snodeIP[snodeIP.startIndex..<colonIndex])
         }
-        return getPathRow(title: NSLocalizedString("Service Node", comment: ""), subtitle: snodeIP, location: location, dotAnimationStartDelay: dotAnimationStartDelay, dotAnimationRepeatInterval: dotAnimationRepeatInterval)
+        let title = isGuardSnode ? NSLocalizedString("Guard Node", comment: "") : NSLocalizedString("Service Node", comment: "")
+        return getPathRow(title: title, subtitle: snodeIP, location: location, dotAnimationStartDelay: dotAnimationStartDelay, dotAnimationRepeatInterval: dotAnimationRepeatInterval)
     }
     
     // MARK: Interaction
