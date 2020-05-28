@@ -1208,14 +1208,8 @@
 /* The name for the emoji category 'Objects' */
 "EMOJI_CATEGORY_OBJECTS_NAME" = "Objects";
 
-/* The name for the emoji category 'People & Body' */
-"EMOJI_CATEGORY_PEOPLE_NAME" = "People & Body";
-
-/* The name for the emoji category 'Skin Tones' */
-"EMOJI_CATEGORY_SKINTONES_NAME" = "Skin Tones";
-
-/* The name for the emoji category 'Smileys & Emotion' */
-"EMOJI_CATEGORY_SMILEYS_NAME" = "Smileys & Emotion";
+/* The name for the emoji category 'Smileys & People' */
+"EMOJI_CATEGORY_SMILEYSANDPEOPLE_NAME" = "Smileys & People";
 
 /* The name for the emoji category 'Symbols' */
 "EMOJI_CATEGORY_SYMBOLS_NAME" = "Symbols";
