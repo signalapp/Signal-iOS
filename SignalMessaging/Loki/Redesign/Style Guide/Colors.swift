@@ -38,4 +38,5 @@ public final class Colors : NSObject {
     @objc public static var newConversationButtonCollapsedBackground = isLightMode ? UIColor(hex: 0xF5F5F5) : UIColor(hex: 0x1F1F1F)
     @objc public static var pnOptionBackground = isLightMode ? UIColor(hex: 0xFCFCFC) : UIColor(hex: 0x1B1B1B)
     @objc public static var pnOptionBorder = UIColor(hex: 0x212121)
+    @objc public static var pathsBuilding = UIColor(hex: 0xFFCE3A)
 }
