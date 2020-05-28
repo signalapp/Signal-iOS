@@ -128,7 +128,7 @@ class NotificationActionHandler {
 
     private func markAsRead(thread: TSThread) -> Promise<Void> {
         return databaseStorage.write(.promise) { transaction in
-            thread.markAllAsRead(with: transaction)
+            thread.markAllAsRead(updateStorageService: true, transaction: transaction)
         }
     }
 }

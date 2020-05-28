@@ -32,28 +32,28 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
 
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
-           receivedAtTimestamp:(uint64_t)receivedAtTimestamp
-                        sortId:(uint64_t)sortId
-                     timestamp:(uint64_t)timestamp
-                uniqueThreadId:(NSString *)uniqueThreadId
-                 attachmentIds:(NSArray<NSString *> *)attachmentIds
-                          body:(nullable NSString *)body
-                  contactShare:(nullable OWSContact *)contactShare
-               expireStartedAt:(uint64_t)expireStartedAt
-                     expiresAt:(uint64_t)expiresAt
-              expiresInSeconds:(unsigned int)expiresInSeconds
-            isViewOnceComplete:(BOOL)isViewOnceComplete
-             isViewOnceMessage:(BOOL)isViewOnceMessage
-                   linkPreview:(nullable OWSLinkPreview *)linkPreview
-                messageSticker:(nullable MessageSticker *)messageSticker
-                 quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-  storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
-            wasRemotelyDeleted:(BOOL)wasRemotelyDeleted
-                     errorType:(TSErrorMessageType)errorType
-                          read:(BOOL)read
-              recipientAddress:(nullable SignalServiceAddress *)recipientAddress
-                      authorId:(NSString *)authorId
-                  envelopeData:(nullable NSData *)envelopeData
+             receivedAtTimestamp:(uint64_t)receivedAtTimestamp
+                          sortId:(uint64_t)sortId
+                       timestamp:(uint64_t)timestamp
+                  uniqueThreadId:(NSString *)uniqueThreadId
+                   attachmentIds:(NSArray<NSString *> *)attachmentIds
+                            body:(nullable NSString *)body
+                    contactShare:(nullable OWSContact *)contactShare
+                 expireStartedAt:(uint64_t)expireStartedAt
+                       expiresAt:(uint64_t)expiresAt
+                expiresInSeconds:(unsigned int)expiresInSeconds
+              isViewOnceComplete:(BOOL)isViewOnceComplete
+               isViewOnceMessage:(BOOL)isViewOnceMessage
+                     linkPreview:(nullable OWSLinkPreview *)linkPreview
+                  messageSticker:(nullable MessageSticker *)messageSticker
+                   quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+    storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
+              wasRemotelyDeleted:(BOOL)wasRemotelyDeleted
+                       errorType:(TSErrorMessageType)errorType
+                            read:(BOOL)read
+                recipientAddress:(nullable SignalServiceAddress *)recipientAddress
+                        authorId:(NSString *)authorId
+                    envelopeData:(nullable NSData *)envelopeData
 NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:wasRemotelyDeleted:errorType:read:recipientAddress:authorId:envelopeData:));
 
 // clang-format on

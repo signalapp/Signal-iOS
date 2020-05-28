@@ -161,23 +161,23 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
-           receivedAtTimestamp:(uint64_t)receivedAtTimestamp
-                        sortId:(uint64_t)sortId
-                     timestamp:(uint64_t)timestamp
-                uniqueThreadId:(NSString *)uniqueThreadId
+             receivedAtTimestamp:(uint64_t)receivedAtTimestamp
+                          sortId:(uint64_t)sortId
+                       timestamp:(uint64_t)timestamp
+                  uniqueThreadId:(NSString *)uniqueThreadId
 {
     self = [super initWithGrdbId:grdbId
                         uniqueId:uniqueId];
-    
+
     if (!self) {
         return self;
     }
-    
+
     _receivedAtTimestamp = receivedAtTimestamp;
     _sortId = sortId;
     _timestamp = timestamp;
     _uniqueThreadId = uniqueThreadId;
-    
+
     return self;
 }
 

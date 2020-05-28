@@ -1361,52 +1361,123 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     return;
 }
 
-- (nullable NSArray *)tableView:(UITableView *)tableView editActionsForRowAtIndexPath:(NSIndexPath *)indexPath
+- (nullable UISwipeActionsConfiguration *)tableView:(UITableView *)tableView
+    trailingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     ConversationListViewControllerSection section = (ConversationListViewControllerSection)indexPath.section;
     switch (section) {
-        case ConversationListViewControllerSectionReminders: {
-            return @[];
-        }
+        case ConversationListViewControllerSectionReminders:
+            return nil;
+        case ConversationListViewControllerSectionArchiveButton:
+            return nil;
         case ConversationListViewControllerSectionConversations: {
-            UITableViewRowAction *deleteAction =
-                [UITableViewRowAction rowActionWithStyle:UITableViewRowActionStyleDefault
-                                                   title:CommonStrings.deleteButton
-                                                 handler:^(UITableViewRowAction *action, NSIndexPath *swipedIndexPath) {
-                                                     [self tableViewCellTappedDelete:swipedIndexPath];
-                                                 }];
+            UIContextualAction *deleteAction =
+                [UIContextualAction contextualActionWithStyle:UIContextualActionStyleDestructive
+                                                        title:nil
+                                                      handler:^(UIContextualAction *action,
+                                                          __kindof UIView *sourceView,
+                                                          void (^completionHandler)(BOOL)) {
+                                                          [self tableViewCellTappedDelete:indexPath];
+                                                          completionHandler(YES);
+                                                      }];
+            deleteAction.backgroundColor = UIColor.ows_accentRedColor;
+            deleteAction.image = [self actionImageNamed:@"trash-outline-24" withTitle:CommonStrings.deleteButton];
+            deleteAction.accessibilityLabel = CommonStrings.deleteButton;
 
-            UITableViewRowAction *archiveAction;
+            UIContextualAction *archiveAction =
+                [UIContextualAction contextualActionWithStyle:UIContextualActionStyleNormal
+                                                        title:nil
+                                                      handler:^(UIContextualAction *action,
+                                                          __kindof UIView *sourceView,
+                                                          void (^completionHandler)(BOOL)) {
+                                                          [self archiveIndexPath:indexPath];
+                                                          completionHandler(YES);
+                                                      }];
+
+            NSString *archiveTitle;
             if (self.conversationListMode == ConversationListMode_Inbox) {
-                archiveAction = [UITableViewRowAction
-                    rowActionWithStyle:UITableViewRowActionStyleNormal
-                                 title:NSLocalizedString(@"ARCHIVE_ACTION",
-                                           @"Pressing this button moves a thread from the inbox to the archive")
-                               handler:^(UITableViewRowAction *_Nonnull action, NSIndexPath *_Nonnull tappedIndexPath) {
-                                   [self archiveIndexPath:tappedIndexPath];
-                               }];
-
+                archiveTitle = NSLocalizedString(
+                    @"ARCHIVE_ACTION", @"Pressing this button moves a thread from the inbox to the archive");
             } else {
-                archiveAction = [UITableViewRowAction
-                    rowActionWithStyle:UITableViewRowActionStyleNormal
-                                 title:NSLocalizedString(@"UNARCHIVE_ACTION",
-                                           @"Pressing this button moves an archived thread from the archive back to "
-                                           @"the inbox")
-                               handler:^(UITableViewRowAction *_Nonnull action, NSIndexPath *_Nonnull tappedIndexPath) {
-                                   [self archiveIndexPath:tappedIndexPath];
-                               }];
+                archiveTitle = NSLocalizedString(@"UNARCHIVE_ACTION",
+                    @"Pressing this button moves an archived thread from the archive back to the inbox");
             }
 
+            archiveAction.backgroundColor = UIColor.ows_gray60Color;
+            archiveAction.image = [self actionImageNamed:@"archive-outline-24" withTitle:archiveTitle];
+            archiveAction.accessibilityLabel = archiveTitle;
+
             // The first action will be auto-performed for "very long swipes".
-            return @[
-                archiveAction,
-                deleteAction,
-            ];
-        }
-        case ConversationListViewControllerSectionArchiveButton: {
-            return @[];
+            return [UISwipeActionsConfiguration configurationWithActions:@[ archiveAction, deleteAction ]];
         }
     }
+}
+
+- (nullable UISwipeActionsConfiguration *)tableView:(UITableView *)tableView
+    leadingSwipeActionsConfigurationForRowAtIndexPath:(NSIndexPath *)indexPath
+{
+    ConversationListViewControllerSection section = (ConversationListViewControllerSection)indexPath.section;
+    switch (section) {
+        case ConversationListViewControllerSectionReminders:
+            return nil;
+        case ConversationListViewControllerSectionArchiveButton:
+            return nil;
+        case ConversationListViewControllerSectionConversations: {
+
+            ThreadViewModel *model = [self threadViewModelForIndexPath:indexPath];
+
+            if (model.hasUnreadMessages) {
+                UIContextualAction *readAction =
+                    [UIContextualAction contextualActionWithStyle:UIContextualActionStyleDestructive
+                                                            title:nil
+                                                          handler:^(UIContextualAction *action,
+                                                              __kindof UIView *sourceView,
+                                                              void (^completionHandler)(BOOL)) {
+                                                              [self markAsReadIndexPath:indexPath];
+                                                              completionHandler(YES);
+                                                          }];
+
+                readAction.backgroundColor = UIColor.ows_accentBlueColor;
+                readAction.accessibilityLabel
+                    = NSLocalizedString(@"READ_ACTION", @"Pressing this button marks a thread as read");
+                readAction.image = [self actionImageNamed:@"message-outline-24"
+                                                withTitle:readAction.accessibilityLabel];
+
+                return [UISwipeActionsConfiguration configurationWithActions:@[ readAction ]];
+            } else {
+                UIContextualAction *unreadAction =
+                    [UIContextualAction contextualActionWithStyle:UIContextualActionStyleNormal
+                                                            title:nil
+                                                          handler:^(UIContextualAction *action,
+                                                              __kindof UIView *sourceView,
+                                                              void (^completionHandler)(BOOL)) {
+                                                              [self markAsUnreadIndexPath:indexPath];
+                                                              completionHandler(YES);
+                                                          }];
+
+                unreadAction.backgroundColor = UIColor.ows_accentBlueColor;
+                unreadAction.accessibilityLabel
+                    = NSLocalizedString(@"UNREAD_ACTION", @"Pressing this button marks a thread as unread");
+                unreadAction.image = [self actionImageNamed:@"message-unread-outline-24"
+                                                  withTitle:unreadAction.accessibilityLabel];
+
+                return [UISwipeActionsConfiguration configurationWithActions:@[ unreadAction ]];
+            }
+        }
+    }
+}
+
+- (nullable UIImage *)actionImageNamed:(NSString *)imageName withTitle:(NSString *)title
+{
+    // We need to bake the title text into the image because `UIContextualAction`
+    // only displays title + image when the cell's height > 91. We want to always
+    // show both.
+    return [[[UIImage imageNamed:imageName] withTitle:title
+                                                 font:[UIFont ows_semiboldFontWithSize:12]
+                                                color:UIColor.ows_whiteColor
+                                        maxTitleWidth:68
+                                   minimumScaleFactor:2 / 3
+                                              spacing:2] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
@@ -1568,6 +1639,34 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     }];
 
     [self updateViewState];
+}
+
+- (void)markAsReadIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.section != ConversationListViewControllerSectionConversations) {
+        OWSFailDebug(@"failure: unexpected section: %lu", (unsigned long)indexPath.section);
+        return;
+    }
+
+    TSThread *thread = [self threadForIndexPath:indexPath];
+
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [thread markAllAsReadAndUpdateStorageService:YES transaction:transaction];
+    }];
+}
+
+- (void)markAsUnreadIndexPath:(NSIndexPath *)indexPath
+{
+    if (indexPath.section != ConversationListViewControllerSectionConversations) {
+        OWSFailDebug(@"failure: unexpected section: %lu", (unsigned long)indexPath.section);
+        return;
+    }
+
+    TSThread *thread = [self threadForIndexPath:indexPath];
+
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [thread markAsUnreadAndUpdateStorageService:YES transaction:transaction];
+    }];
 }
 
 - (void)archiveIndexPath:(NSIndexPath *)indexPath

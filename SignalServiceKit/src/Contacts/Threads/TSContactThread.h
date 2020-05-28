@@ -41,6 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
            conversationColorName:(ConversationColorName)conversationColorName
                     creationDate:(nullable NSDate *)creationDate
                       isArchived:(BOOL)isArchived
+                  isMarkedUnread:(BOOL)isMarkedUnread
             lastInteractionRowId:(int64_t)lastInteractionRowId
                     messageDraft:(nullable NSString *)messageDraft
                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
@@ -48,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
               contactPhoneNumber:(nullable NSString *)contactPhoneNumber
                      contactUUID:(nullable NSString *)contactUUID
               hasDismissedOffers:(BOOL)hasDismissedOffers
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorName:creationDate:isArchived:lastInteractionRowId:messageDraft:mutedUntilDate:shouldThreadBeVisible:contactPhoneNumber:contactUUID:hasDismissedOffers:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorName:creationDate:isArchived:isMarkedUnread:lastInteractionRowId:messageDraft:mutedUntilDate:shouldThreadBeVisible:contactPhoneNumber:contactUUID:hasDismissedOffers:));
 
 // clang-format on
 

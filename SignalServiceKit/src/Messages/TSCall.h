@@ -59,12 +59,12 @@ NSString *NSStringFromCallType(RPRecentCallType callType);
 
 - (instancetype)initWithGrdbId:(int64_t)grdbId
                       uniqueId:(NSString *)uniqueId
-           receivedAtTimestamp:(uint64_t)receivedAtTimestamp
-                        sortId:(uint64_t)sortId
-                     timestamp:(uint64_t)timestamp
-                uniqueThreadId:(NSString *)uniqueThreadId
-                      callType:(RPRecentCallType)callType
-                          read:(BOOL)read
+             receivedAtTimestamp:(uint64_t)receivedAtTimestamp
+                          sortId:(uint64_t)sortId
+                       timestamp:(uint64_t)timestamp
+                  uniqueThreadId:(NSString *)uniqueThreadId
+                        callType:(RPRecentCallType)callType
+                            read:(BOOL)read
 NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:callType:read:));
 
 // clang-format on

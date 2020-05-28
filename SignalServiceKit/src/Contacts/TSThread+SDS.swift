@@ -39,6 +39,7 @@ public struct ThreadRecord: SDSRecord {
     public let contactUUID: String?
     public let groupModel: Data?
     public let hasDismissedOffers: Bool?
+    public let isMarkedUnread: Bool
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -55,6 +56,7 @@ public struct ThreadRecord: SDSRecord {
         case contactUUID
         case groupModel
         case hasDismissedOffers
+        case isMarkedUnread
     }
 
     public static func columnName(_ column: ThreadRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -92,6 +94,7 @@ public extension ThreadRecord {
         contactUUID = row[11]
         groupModel = row[12]
         hasDismissedOffers = row[13]
+        isMarkedUnread = row[14]
     }
 }
 
@@ -127,6 +130,7 @@ extension TSThread {
             let creationDateInterval: Double? = record.creationDate
             let creationDate: Date? = SDSDeserialization.optionalDoubleAsDate(creationDateInterval, name: "creationDate")
             let isArchived: Bool = record.isArchived
+            let isMarkedUnread: Bool = record.isMarkedUnread
             let lastInteractionRowId: Int64 = record.lastInteractionRowId
             let messageDraft: String? = record.messageDraft
             let mutedUntilDateInterval: Double? = record.mutedUntilDate
@@ -141,6 +145,7 @@ extension TSThread {
                                    conversationColorName: conversationColorName,
                                    creationDate: creationDate,
                                    isArchived: isArchived,
+                                   isMarkedUnread: isMarkedUnread,
                                    lastInteractionRowId: lastInteractionRowId,
                                    messageDraft: messageDraft,
                                    mutedUntilDate: mutedUntilDate,
@@ -156,6 +161,7 @@ extension TSThread {
             let creationDateInterval: Double? = record.creationDate
             let creationDate: Date? = SDSDeserialization.optionalDoubleAsDate(creationDateInterval, name: "creationDate")
             let isArchived: Bool = record.isArchived
+            let isMarkedUnread: Bool = record.isMarkedUnread
             let lastInteractionRowId: Int64 = record.lastInteractionRowId
             let messageDraft: String? = record.messageDraft
             let mutedUntilDateInterval: Double? = record.mutedUntilDate
@@ -169,6 +175,7 @@ extension TSThread {
                                  conversationColorName: conversationColorName,
                                  creationDate: creationDate,
                                  isArchived: isArchived,
+                                 isMarkedUnread: isMarkedUnread,
                                  lastInteractionRowId: lastInteractionRowId,
                                  messageDraft: messageDraft,
                                  mutedUntilDate: mutedUntilDate,
@@ -182,6 +189,7 @@ extension TSThread {
             let creationDateInterval: Double? = record.creationDate
             let creationDate: Date? = SDSDeserialization.optionalDoubleAsDate(creationDateInterval, name: "creationDate")
             let isArchived: Bool = record.isArchived
+            let isMarkedUnread: Bool = record.isMarkedUnread
             let lastInteractionRowId: Int64 = record.lastInteractionRowId
             let messageDraft: String? = record.messageDraft
             let mutedUntilDateInterval: Double? = record.mutedUntilDate
@@ -193,6 +201,7 @@ extension TSThread {
                             conversationColorName: conversationColorName,
                             creationDate: creationDate,
                             isArchived: isArchived,
+                            isMarkedUnread: isMarkedUnread,
                             lastInteractionRowId: lastInteractionRowId,
                             messageDraft: messageDraft,
                             mutedUntilDate: mutedUntilDate,
@@ -258,6 +267,7 @@ extension TSThreadSerializer {
     static let contactUUIDColumn = SDSColumnMetadata(columnName: "contactUUID", columnType: .unicodeString, isOptional: true)
     static let groupModelColumn = SDSColumnMetadata(columnName: "groupModel", columnType: .blob, isOptional: true)
     static let hasDismissedOffersColumn = SDSColumnMetadata(columnName: "hasDismissedOffers", columnType: .int, isOptional: true)
+    static let isMarkedUnreadColumn = SDSColumnMetadata(columnName: "isMarkedUnread", columnType: .int)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -277,7 +287,8 @@ extension TSThreadSerializer {
         contactPhoneNumberColumn,
         contactUUIDColumn,
         groupModelColumn,
-        hasDismissedOffersColumn
+        hasDismissedOffersColumn,
+        isMarkedUnreadColumn
         ])
 }
 
@@ -698,7 +709,8 @@ class TSThreadSerializer: SDSSerializer {
         let contactUUID: String? = nil
         let groupModel: Data? = nil
         let hasDismissedOffers: Bool? = nil
+        let isMarkedUnread: Bool = model.isMarkedUnread
 
-        return ThreadRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, conversationColorName: conversationColorName, creationDate: creationDate, isArchived: isArchived, lastInteractionRowId: lastInteractionRowId, messageDraft: messageDraft, mutedUntilDate: mutedUntilDate, shouldThreadBeVisible: shouldThreadBeVisible, contactPhoneNumber: contactPhoneNumber, contactUUID: contactUUID, groupModel: groupModel, hasDismissedOffers: hasDismissedOffers)
+        return ThreadRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, conversationColorName: conversationColorName, creationDate: creationDate, isArchived: isArchived, lastInteractionRowId: lastInteractionRowId, messageDraft: messageDraft, mutedUntilDate: mutedUntilDate, shouldThreadBeVisible: shouldThreadBeVisible, contactPhoneNumber: contactPhoneNumber, contactUUID: contactUUID, groupModel: groupModel, hasDismissedOffers: hasDismissedOffers, isMarkedUnread: isMarkedUnread)
     }
 }

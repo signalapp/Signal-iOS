@@ -275,6 +275,8 @@ struct StorageServiceProtos_ContactRecord {
 
   var archived: Bool = false
 
+  var markedUnread: Bool = false
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   enum IdentityState: SwiftProtobuf.Enum {
@@ -338,6 +340,8 @@ struct StorageServiceProtos_GroupV1Record {
 
   var archived: Bool = false
 
+  var markedUnread: Bool = false
+
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
   init() {}
@@ -356,6 +360,8 @@ struct StorageServiceProtos_GroupV2Record {
   var whitelisted: Bool = false
 
   var archived: Bool = false
+
+  var markedUnread: Bool = false
 
   var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -376,6 +382,8 @@ struct StorageServiceProtos_AccountRecord {
   var avatarURL: String = String()
 
   var noteToSelfArchived: Bool = false
+
+  var noteToSelfMarkedUnread: Bool = false
 
   var readReceipts: Bool = false
 
@@ -733,7 +741,8 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
     8: .same(proto: "username"),
     9: .same(proto: "blocked"),
     10: .same(proto: "whitelisted"),
-    11: .same(proto: "archived")
+    11: .same(proto: "archived"),
+    12: .same(proto: "markedUnread")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -750,6 +759,7 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
       case 9: try decoder.decodeSingularBoolField(value: &self.blocked)
       case 10: try decoder.decodeSingularBoolField(value: &self.whitelisted)
       case 11: try decoder.decodeSingularBoolField(value: &self.archived)
+      case 12: try decoder.decodeSingularBoolField(value: &self.markedUnread)
       default: break
       }
     }
@@ -789,6 +799,9 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
     if self.archived != false {
       try visitor.visitSingularBoolField(value: self.archived, fieldNumber: 11)
     }
+    if self.markedUnread != false {
+      try visitor.visitSingularBoolField(value: self.markedUnread, fieldNumber: 12)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -804,6 +817,7 @@ extension StorageServiceProtos_ContactRecord: SwiftProtobuf.Message, SwiftProtob
     if lhs.blocked != rhs.blocked {return false}
     if lhs.whitelisted != rhs.whitelisted {return false}
     if lhs.archived != rhs.archived {return false}
+    if lhs.markedUnread != rhs.markedUnread {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -823,7 +837,8 @@ extension StorageServiceProtos_GroupV1Record: SwiftProtobuf.Message, SwiftProtob
     1: .same(proto: "id"),
     2: .same(proto: "blocked"),
     3: .same(proto: "whitelisted"),
-    4: .same(proto: "archived")
+    4: .same(proto: "archived"),
+    5: .same(proto: "markedUnread")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -833,6 +848,7 @@ extension StorageServiceProtos_GroupV1Record: SwiftProtobuf.Message, SwiftProtob
       case 2: try decoder.decodeSingularBoolField(value: &self.blocked)
       case 3: try decoder.decodeSingularBoolField(value: &self.whitelisted)
       case 4: try decoder.decodeSingularBoolField(value: &self.archived)
+      case 5: try decoder.decodeSingularBoolField(value: &self.markedUnread)
       default: break
       }
     }
@@ -851,6 +867,9 @@ extension StorageServiceProtos_GroupV1Record: SwiftProtobuf.Message, SwiftProtob
     if self.archived != false {
       try visitor.visitSingularBoolField(value: self.archived, fieldNumber: 4)
     }
+    if self.markedUnread != false {
+      try visitor.visitSingularBoolField(value: self.markedUnread, fieldNumber: 5)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -859,6 +878,7 @@ extension StorageServiceProtos_GroupV1Record: SwiftProtobuf.Message, SwiftProtob
     if lhs.blocked != rhs.blocked {return false}
     if lhs.whitelisted != rhs.whitelisted {return false}
     if lhs.archived != rhs.archived {return false}
+    if lhs.markedUnread != rhs.markedUnread {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -870,7 +890,8 @@ extension StorageServiceProtos_GroupV2Record: SwiftProtobuf.Message, SwiftProtob
     1: .same(proto: "masterKey"),
     2: .same(proto: "blocked"),
     3: .same(proto: "whitelisted"),
-    4: .same(proto: "archived")
+    4: .same(proto: "archived"),
+    5: .same(proto: "markedUnread")
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -880,6 +901,7 @@ extension StorageServiceProtos_GroupV2Record: SwiftProtobuf.Message, SwiftProtob
       case 2: try decoder.decodeSingularBoolField(value: &self.blocked)
       case 3: try decoder.decodeSingularBoolField(value: &self.whitelisted)
       case 4: try decoder.decodeSingularBoolField(value: &self.archived)
+      case 5: try decoder.decodeSingularBoolField(value: &self.markedUnread)
       default: break
       }
     }
@@ -898,6 +920,9 @@ extension StorageServiceProtos_GroupV2Record: SwiftProtobuf.Message, SwiftProtob
     if self.archived != false {
       try visitor.visitSingularBoolField(value: self.archived, fieldNumber: 4)
     }
+    if self.markedUnread != false {
+      try visitor.visitSingularBoolField(value: self.markedUnread, fieldNumber: 5)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -906,6 +931,7 @@ extension StorageServiceProtos_GroupV2Record: SwiftProtobuf.Message, SwiftProtob
     if lhs.blocked != rhs.blocked {return false}
     if lhs.whitelisted != rhs.whitelisted {return false}
     if lhs.archived != rhs.archived {return false}
+    if lhs.markedUnread != rhs.markedUnread {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -919,6 +945,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     3: .same(proto: "familyName"),
     4: .same(proto: "avatarUrl"),
     5: .same(proto: "noteToSelfArchived"),
+    10: .same(proto: "noteToSelfMarkedUnread"),
     6: .same(proto: "readReceipts"),
     7: .same(proto: "sealedSenderIndicators"),
     8: .same(proto: "typingIndicators"),
@@ -937,6 +964,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
       case 7: try decoder.decodeSingularBoolField(value: &self.sealedSenderIndicators)
       case 8: try decoder.decodeSingularBoolField(value: &self.typingIndicators)
       case 9: try decoder.decodeSingularBoolField(value: &self.linkPreviews)
+      case 10: try decoder.decodeSingularBoolField(value: &self.noteToSelfMarkedUnread)
       default: break
       }
     }
@@ -970,6 +998,9 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     if self.linkPreviews != false {
       try visitor.visitSingularBoolField(value: self.linkPreviews, fieldNumber: 9)
     }
+    if self.noteToSelfMarkedUnread != false {
+      try visitor.visitSingularBoolField(value: self.noteToSelfMarkedUnread, fieldNumber: 10)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
@@ -979,6 +1010,7 @@ extension StorageServiceProtos_AccountRecord: SwiftProtobuf.Message, SwiftProtob
     if lhs.familyName != rhs.familyName {return false}
     if lhs.avatarURL != rhs.avatarURL {return false}
     if lhs.noteToSelfArchived != rhs.noteToSelfArchived {return false}
+    if lhs.noteToSelfMarkedUnread != rhs.noteToSelfMarkedUnread {return false}
     if lhs.readReceipts != rhs.readReceipts {return false}
     if lhs.sealedSenderIndicators != rhs.sealedSenderIndicators {return false}
     if lhs.typingIndicators != rhs.typingIndicators {return false}

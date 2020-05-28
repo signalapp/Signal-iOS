@@ -68,6 +68,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addGroupIdToGroupsV2IncomingMessageJobs
         case removeEarlyReceiptTables
         case addReadToReactions
+        case addIsMarkedUnreadToThreads
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -493,6 +494,12 @@ public class GRDBSchemaMigrator: NSObject {
 
             // Mark existing reactions as read
             try db.execute(sql: "UPDATE model_OWSReaction SET read = 1")
+        }
+
+        migrator.registerMigration(MigrationId.addIsMarkedUnreadToThreads.rawValue) { db in
+            try db.alter(table: "model_TSThread") { (table: TableAlteration) -> Void in
+                table.add(column: "isMarkedUnread", .boolean).notNull().defaults(to: false)
+            }
         }
 
         // MARK: - Schema Migration Insertion Point
