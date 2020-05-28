@@ -123,7 +123,13 @@ public enum OnionRequestAPI {
                 }
             }.map(on: LokiAPI.workQueue) { paths in
                 OnionRequestAPI.paths = paths
+                // Dispatch async on the main queue to avoid nested write transactions
                 DispatchQueue.main.async {
+                    let storage = OWSPrimaryStorage.shared()
+                    storage.dbReadWriteConnection.readWrite { transaction in
+                        print("[Loki] Persisting onion request paths to database.")
+                        storage.setOnionRequestPaths(paths, in: transaction)
+                    }
                     NotificationCenter.default.post(name: .pathsBuilt, object: nil)
                 }
                 return paths
@@ -136,6 +142,12 @@ public enum OnionRequestAPI {
     /// - Note: Exposed for testing purposes.
     internal static func getPath(excluding snode: LokiAPITarget) -> Promise<Path> {
         guard pathSize >= 1 else { preconditionFailure("Can't build path of size zero.") }
+        if paths.count < pathCount {
+            let storage = OWSPrimaryStorage.shared()
+            storage.dbReadConnection.read { transaction in
+                paths = storage.getOnionRequestPaths(in: transaction)
+            }
+        }
         // randomElement() uses the system's default random generator, which is cryptographically secure
         if paths.count >= pathCount {
             return Promise<Path> { seal in
@@ -148,8 +160,15 @@ public enum OnionRequestAPI {
         }
     }
 
-    private static func dropPath(containing snode: LokiAPITarget) {
-        paths = paths.filter { !$0.contains(snode) }
+    private static func dropPaths() {
+        paths.removeAll()
+        // Dispatch async on the main queue to avoid nested write transactions
+        DispatchQueue.main.async {
+            let storage = OWSPrimaryStorage.shared()
+            storage.dbReadWriteConnection.readWrite { transaction in
+                storage.clearOnionRequestPaths(in: transaction)
+            }
+        }
     }
 
     private static func dropGuardSnode(_ snode: LokiAPITarget) {
@@ -231,7 +250,7 @@ public enum OnionRequestAPI {
         }
         promise.catch(on: LokiAPI.workQueue) { error in // Must be invoked on LokiAPI.workQueue
             guard case HTTP.Error.httpRequestFailed(_, _) = error else { return }
-            dropPath(containing: guardSnode) // A snode in the path is bad; retry with a different path
+            dropPaths() // A snode in the path is bad; retry with a different path
             dropGuardSnode(guardSnode)
         }
         promise.handlingErrorsIfNeeded(forTargetSnode: snode, associatedWith: hexEncodedPublicKey)
@@ -262,7 +281,7 @@ private extension Promise where T == JSON {
                     DispatchQueue.main.async {
                         let storage = OWSPrimaryStorage.shared()
                         storage.dbReadWriteConnection.readWrite { transaction in
-                            storage.clearSnodePool(in: transaction)
+                            storage.dropSnode(snode, in: transaction)
                         }
                     }
                     LokiAPI.failureCount[snode] = 0
