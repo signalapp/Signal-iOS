@@ -48,130 +48,133 @@ extension Emoji {
             switch self {
             case .smileysAndPeople:
                 return [
-                    .grinningFace,
-                    .smilingFaceWithOpenMouth,
-                    .smilingFaceWithOpenMouthAndSmilingEyes,
-                    .grinningFaceWithSmilingEyes,
-                    .smilingFaceWithOpenMouthAndTightlyClosedEyes,
-                    .smilingFaceWithOpenMouthAndColdSweat,
+                    .grinning,
+                    .smiley,
+                    .smile,
+                    .grin,
+                    .laughing,
+                    .sweatSmile,
                     .rollingOnTheFloorLaughing,
-                    .faceWithTearsOfJoy,
+                    .joy,
                     .slightlySmilingFace,
                     .upsideDownFace,
-                    .winkingFace,
-                    .smilingFaceWithSmilingEyes,
-                    .smilingFaceWithHalo,
-                    .smilingFaceWithSmilingEyesAndThreeHearts,
-                    .smilingFaceWithHeartShapedEyes,
-                    .grinningFaceWithStarEyes,
-                    .faceThrowingAKiss,
-                    .kissingFace,
-                    .whiteSmilingFace,
-                    .kissingFaceWithClosedEyes,
-                    .kissingFaceWithSmilingEyes,
-                    .faceSavouringDeliciousFood,
-                    .faceWithStuckOutTongue,
-                    .faceWithStuckOutTongueAndWinkingEye,
-                    .grinningFaceWithOneLargeAndOneSmallEye,
-                    .faceWithStuckOutTongueAndTightlyClosedEyes,
+                    .wink,
+                    .blush,
+                    .innocent,
+                    .smilingFaceWith3Hearts,
+                    .heartEyes,
+                    .starStruck,
+                    .kissingHeart,
+                    .kissing,
+                    .relaxed,
+                    .kissingClosedEyes,
+                    .kissingSmilingEyes,
+                    .yum,
+                    .stuckOutTongue,
+                    .stuckOutTongueWinkingEye,
+                    .zanyFace,
+                    .stuckOutTongueClosedEyes,
                     .moneyMouthFace,
                     .huggingFace,
-                    .smilingFaceWithSmilingEyesAndHandCoveringMouth,
-                    .faceWithFingerCoveringClosedLips,
+                    .faceWithHandOverMouth,
+                    .shushingFace,
                     .thinkingFace,
                     .zipperMouthFace,
-                    .faceWithOneEyebrowRaised,
+                    .faceWithRaisedEyebrow,
                     .neutralFace,
-                    .expressionlessFace,
-                    .faceWithoutMouth,
-                    .smirkingFace,
-                    .unamusedFace,
+                    .expressionless,
+                    .noMouth,
+                    .smirk,
+                    .unamused,
                     .faceWithRollingEyes,
-                    .grimacingFace,
+                    .grimacing,
                     .lyingFace,
-                    .relievedFace,
-                    .pensiveFace,
-                    .sleepyFace,
+                    .relieved,
+                    .pensive,
+                    .sleepy,
                     .droolingFace,
-                    .sleepingFace,
-                    .faceWithMedicalMask,
+                    .sleeping,
+                    .mask,
                     .faceWithThermometer,
                     .faceWithHeadBandage,
                     .nauseatedFace,
-                    .faceWithOpenMouthVomiting,
+                    .faceVomiting,
                     .sneezingFace,
-                    .overheatedFace,
-                    .freezingFace,
-                    .faceWithUnevenEyesAndWavyMouth,
+                    .hotFace,
+                    .coldFace,
+                    .woozyFace,
                     .dizzyFace,
-                    .shockedFaceWithExplodingHead,
+                    .explodingHead,
                     .faceWithCowboyHat,
-                    .faceWithPartyHornAndPartyHat,
-                    .smilingFaceWithSunglasses,
+                    .partyingFace,
+                    .sunglasses,
                     .nerdFace,
                     .faceWithMonocle,
-                    .confusedFace,
-                    .worriedFace,
+                    .confused,
+                    .worried,
                     .slightlyFrowningFace,
-                    .faceWithOpenMouth,
-                    .hushedFace,
-                    .astonishedFace,
-                    .flushedFace,
-                    .faceWithPleadingEyes,
-                    .frowningFaceWithOpenMouth,
-                    .anguishedFace,
-                    .fearfulFace,
-                    .faceWithOpenMouthAndColdSweat,
-                    .disappointedButRelievedFace,
-                    .cryingFace,
-                    .loudlyCryingFace,
-                    .faceScreamingInFear,
-                    .confoundedFace,
-                    .perseveringFace,
-                    .disappointedFace,
-                    .faceWithColdSweat,
-                    .wearyFace,
+                    .whiteFrowningFace,
+                    .openMouth,
+                    .hushed,
+                    .astonished,
+                    .flushed,
+                    .pleadingFace,
+                    .frowning,
+                    .anguished,
+                    .fearful,
+                    .coldSweat,
+                    .disappointedRelieved,
+                    .cry,
+                    .sob,
+                    .scream,
+                    .confounded,
+                    .persevere,
+                    .disappointed,
+                    .sweat,
+                    .weary,
                     .tiredFace,
                     .yawningFace,
-                    .faceWithLookOfTriumph,
-                    .poutingFace,
-                    .angryFace,
-                    .seriousFaceWithSymbolsCoveringMouth,
-                    .smilingFaceWithHorns,
+                    .triumph,
+                    .rage,
+                    .angry,
+                    .faceWithSymbolsOnMouth,
+                    .smilingImp,
                     .imp,
                     .skull,
-                    .pileOfPoo,
+                    .skullAndCrossbones,
+                    .hankey,
                     .clownFace,
                     .japaneseOgre,
                     .japaneseGoblin,
                     .ghost,
-                    .extraterrestrialAlien,
-                    .alienMonster,
+                    .alien,
+                    .spaceInvader,
                     .robotFace,
-                    .smilingCatFaceWithOpenMouth,
-                    .grinningCatFaceWithSmilingEyes,
-                    .catFaceWithTearsOfJoy,
-                    .smilingCatFaceWithHeartShapedEyes,
-                    .catFaceWithWrySmile,
-                    .kissingCatFaceWithClosedEyes,
-                    .wearyCatFace,
+                    .smileyCat,
+                    .smileCat,
+                    .joyCat,
+                    .heartEyesCat,
+                    .smirkCat,
+                    .kissingCat,
+                    .screamCat,
                     .cryingCatFace,
-                    .poutingCatFace,
-                    .seeNoEvilMonkey,
-                    .hearNoEvilMonkey,
-                    .speakNoEvilMonkey,
-                    .kissMark,
+                    .poutingCat,
+                    .seeNoEvil,
+                    .hearNoEvil,
+                    .speakNoEvil,
+                    .kiss,
                     .loveLetter,
-                    .heartWithArrow,
-                    .heartWithRibbon,
+                    .cupid,
+                    .giftHeart,
                     .sparklingHeart,
-                    .growingHeart,
-                    .beatingHeart,
+                    .heartpulse,
+                    .heartbeat,
                     .revolvingHearts,
                     .twoHearts,
                     .heartDecoration,
+                    .heavyHeartExclamationMarkOrnament,
                     .brokenHeart,
-                    .heavyBlackHeart,
+                    .heart,
                     .orangeHeart,
                     .yellowHeart,
                     .greenHeart,
@@ -180,48 +183,54 @@ extension Emoji {
                     .brownHeart,
                     .blackHeart,
                     .whiteHeart,
-                    .hundredPointsSymbol,
-                    .angerSymbol,
-                    .collisionSymbol,
-                    .dizzySymbol,
-                    .splashingSweatSymbol,
-                    .dashSymbol,
+                    .oneHundred,
+                    .anger,
+                    .boom,
+                    .dizzy,
+                    .sweatDrops,
+                    .dash,
+                    .hole,
                     .bomb,
                     .speechBalloon,
+                    .eyeInSpeechBubble,
+                    .leftSpeechBubble,
+                    .rightAngerBubble,
                     .thoughtBalloon,
-                    .sleepingSymbol,
-                    .wavingHandSign,
+                    .zzz,
+                    .wave,
                     .raisedBackOfHand,
-                    .raisedHand,
-                    .raisedHandWithPartBetweenMiddleAndRingFingers,
-                    .okHandSign,
+                    .raisedHandWithFingersSplayed,
+                    .hand,
+                    .spockHand,
+                    .okHand,
                     .pinchingHand,
-                    .victoryHand,
-                    .handWithIndexAndMiddleFingersCrossed,
+                    .v,
+                    .crossedFingers,
                     .iLoveYouHandSign,
-                    .signOfTheHorns,
+                    .theHorns,
                     .callMeHand,
-                    .whiteLeftPointingBackhandIndex,
-                    .whiteRightPointingBackhandIndex,
-                    .whiteUpPointingBackhandIndex,
-                    .reversedHandWithMiddleFingerExtended,
-                    .whiteDownPointingBackhandIndex,
-                    .whiteUpPointingIndex,
-                    .thumbsUpSign,
-                    .thumbsDownSign,
-                    .raisedFist,
-                    .fistedHandSign,
+                    .pointLeft,
+                    .pointRight,
+                    .pointUp2,
+                    .middleFinger,
+                    .pointDown,
+                    .pointUp,
+                    .plusOne,
+                    .negativeOne,
+                    .fist,
+                    .facepunch,
                     .leftFacingFist,
                     .rightFacingFist,
-                    .clappingHandsSign,
-                    .personRaisingBothHandsInCelebration,
-                    .openHandsSign,
+                    .clap,
+                    .raisedHands,
+                    .openHands,
                     .palmsUpTogether,
                     .handshake,
-                    .personWithFoldedHands,
-                    .nailPolish,
+                    .pray,
+                    .writingHand,
+                    .nailCare,
                     .selfie,
-                    .flexedBiceps,
+                    .muscle,
                     .mechanicalArm,
                     .mechanicalLeg,
                     .leg,
@@ -233,8 +242,9 @@ extension Emoji {
                     .tooth,
                     .bone,
                     .eyes,
+                    .eye,
                     .tongue,
-                    .mouth,
+                    .lips,
                     .baby,
                     .child,
                     .boy,
@@ -243,77 +253,281 @@ extension Emoji {
                     .personWithBlondHair,
                     .man,
                     .beardedPerson,
+                    .redHairedMan,
+                    .curlyHairedMan,
+                    .whiteHairedMan,
+                    .baldMan,
                     .woman,
+                    .redHairedWoman,
+                    .redHairedPerson,
+                    .curlyHairedWoman,
+                    .curlyHairedPerson,
+                    .whiteHairedWoman,
+                    .whiteHairedPerson,
+                    .baldWoman,
+                    .baldPerson,
+                    .blondHairedWoman,
+                    .blondHairedMan,
                     .olderAdult,
                     .olderMan,
                     .olderWoman,
                     .personFrowning,
+                    .manFrowning,
+                    .womanFrowning,
                     .personWithPoutingFace,
-                    .faceWithNoGoodGesture,
-                    .faceWithOkGesture,
+                    .manPouting,
+                    .womanPouting,
+                    .noGood,
+                    .manGesturingNo,
+                    .womanGesturingNo,
+                    .okWoman,
+                    .manGesturingOk,
+                    .womanGesturingOk,
                     .informationDeskPerson,
-                    .happyPersonRaisingOneHand,
+                    .manTippingHand,
+                    .womanTippingHand,
+                    .raisingHand,
+                    .manRaisingHand,
+                    .womanRaisingHand,
                     .deafPerson,
-                    .personBowingDeeply,
+                    .deafMan,
+                    .deafWoman,
+                    .bow,
+                    .manBowing,
+                    .womanBowing,
                     .facePalm,
+                    .manFacepalming,
+                    .womanFacepalming,
                     .shrug,
-                    .policeOfficer,
+                    .manShrugging,
+                    .womanShrugging,
+                    .healthWorker,
+                    .maleDoctor,
+                    .femaleDoctor,
+                    .student,
+                    .maleStudent,
+                    .femaleStudent,
+                    .teacher,
+                    .maleTeacher,
+                    .femaleTeacher,
+                    .judge,
+                    .maleJudge,
+                    .femaleJudge,
+                    .farmer,
+                    .maleFarmer,
+                    .femaleFarmer,
+                    .cook,
+                    .maleCook,
+                    .femaleCook,
+                    .mechanic,
+                    .maleMechanic,
+                    .femaleMechanic,
+                    .factoryWorker,
+                    .maleFactoryWorker,
+                    .femaleFactoryWorker,
+                    .officeWorker,
+                    .maleOfficeWorker,
+                    .femaleOfficeWorker,
+                    .scientist,
+                    .maleScientist,
+                    .femaleScientist,
+                    .technologist,
+                    .maleTechnologist,
+                    .femaleTechnologist,
+                    .singer,
+                    .maleSinger,
+                    .femaleSinger,
+                    .artist,
+                    .maleArtist,
+                    .femaleArtist,
+                    .pilot,
+                    .malePilot,
+                    .femalePilot,
+                    .astronaut,
+                    .maleAstronaut,
+                    .femaleAstronaut,
+                    .firefighter,
+                    .maleFirefighter,
+                    .femaleFirefighter,
+                    .cop,
+                    .malePoliceOfficer,
+                    .femalePoliceOfficer,
+                    .sleuthOrSpy,
+                    .maleDetective,
+                    .femaleDetective,
                     .guardsman,
+                    .maleGuard,
+                    .femaleGuard,
                     .constructionWorker,
+                    .maleConstructionWorker,
+                    .femaleConstructionWorker,
                     .prince,
                     .princess,
                     .manWithTurban,
+                    .manWearingTurban,
+                    .womanWearingTurban,
                     .manWithGuaPiMao,
                     .personWithHeadscarf,
                     .manInTuxedo,
                     .brideWithVeil,
                     .pregnantWoman,
                     .breastFeeding,
-                    .babyAngel,
-                    .fatherChristmas,
-                    .motherChristmas,
+                    .angel,
+                    .santa,
+                    .mrsClaus,
                     .superhero,
+                    .maleSuperhero,
+                    .femaleSuperhero,
                     .supervillain,
+                    .maleSupervillain,
+                    .femaleSupervillain,
                     .mage,
+                    .maleMage,
+                    .femaleMage,
                     .fairy,
+                    .maleFairy,
+                    .femaleFairy,
                     .vampire,
+                    .maleVampire,
+                    .femaleVampire,
                     .merperson,
+                    .merman,
+                    .mermaid,
                     .elf,
+                    .maleElf,
+                    .femaleElf,
                     .genie,
+                    .maleGenie,
+                    .femaleGenie,
                     .zombie,
-                    .faceMassage,
+                    .maleZombie,
+                    .femaleZombie,
+                    .massage,
+                    .manGettingMassage,
+                    .womanGettingMassage,
                     .haircut,
-                    .pedestrian,
+                    .manGettingHaircut,
+                    .womanGettingHaircut,
+                    .walking,
+                    .manWalking,
+                    .womanWalking,
                     .standingPerson,
+                    .manStanding,
+                    .womanStanding,
                     .kneelingPerson,
+                    .manKneeling,
+                    .womanKneeling,
+                    .personWithProbingCane,
+                    .manWithProbingCane,
+                    .womanWithProbingCane,
+                    .personInMotorizedWheelchair,
+                    .manInMotorizedWheelchair,
+                    .womanInMotorizedWheelchair,
+                    .personInManualWheelchair,
+                    .manInManualWheelchair,
+                    .womanInManualWheelchair,
                     .runner,
+                    .manRunning,
+                    .womanRunning,
                     .dancer,
                     .manDancing,
-                    .womanWithBunnyEars,
+                    .manInBusinessSuitLevitating,
+                    .dancers,
+                    .manWithBunnyEarsPartying,
+                    .womanWithBunnyEarsPartying,
                     .personInSteamyRoom,
+                    .manInSteamyRoom,
+                    .womanInSteamyRoom,
                     .personClimbing,
+                    .manClimbing,
+                    .womanClimbing,
                     .fencer,
                     .horseRacing,
+                    .skier,
                     .snowboarder,
+                    .golfer,
+                    .manGolfing,
+                    .womanGolfing,
                     .surfer,
+                    .manSurfing,
+                    .womanSurfing,
                     .rowboat,
+                    .manRowingBoat,
+                    .womanRowingBoat,
                     .swimmer,
+                    .manSwimming,
+                    .womanSwimming,
+                    .personWithBall,
+                    .manBouncingBall,
+                    .womanBouncingBall,
+                    .weightLifter,
+                    .manLiftingWeights,
+                    .womanLiftingWeights,
                     .bicyclist,
+                    .manBiking,
+                    .womanBiking,
                     .mountainBicyclist,
+                    .manMountainBiking,
+                    .womanMountainBiking,
                     .personDoingCartwheel,
+                    .manCartwheeling,
+                    .womanCartwheeling,
                     .wrestlers,
+                    .manWrestling,
+                    .womanWrestling,
                     .waterPolo,
+                    .manPlayingWaterPolo,
+                    .womanPlayingWaterPolo,
                     .handball,
+                    .manPlayingHandball,
+                    .womanPlayingHandball,
                     .juggling,
+                    .manJuggling,
+                    .womanJuggling,
                     .personInLotusPosition,
+                    .manInLotusPosition,
+                    .womanInLotusPosition,
                     .bath,
                     .sleepingAccommodation,
+                    .peopleHoldingHands,
                     .twoWomenHoldingHands,
-                    .manAndWomanHoldingHands,
+                    .couple,
                     .twoMenHoldingHands,
-                    .kiss,
+                    .couplekiss,
+                    .womanKissMan,
+                    .manKissMan,
+                    .womanKissWoman,
                     .coupleWithHeart,
+                    .womanHeartMan,
+                    .manHeartMan,
+                    .womanHeartWoman,
                     .family,
+                    .manWomanBoy,
+                    .manWomanGirl,
+                    .manWomanGirlBoy,
+                    .manWomanBoyBoy,
+                    .manWomanGirlGirl,
+                    .manManBoy,
+                    .manManGirl,
+                    .manManGirlBoy,
+                    .manManBoyBoy,
+                    .manManGirlGirl,
+                    .womanWomanBoy,
+                    .womanWomanGirl,
+                    .womanWomanGirlBoy,
+                    .womanWomanBoyBoy,
+                    .womanWomanGirlGirl,
+                    .manBoy,
+                    .manBoyBoy,
+                    .manGirl,
+                    .manGirlBoy,
+                    .manGirlGirl,
+                    .womanBoy,
+                    .womanBoyBoy,
+                    .womanGirl,
+                    .womanGirlBoy,
+                    .womanGirlGirl,
+                    .speakingHeadInSilhouette,
                     .bustInSilhouette,
                     .bustsInSilhouette,
                     .footprints,
@@ -324,51 +538,53 @@ extension Emoji {
                     .monkey,
                     .gorilla,
                     .orangutan,
-                    .dogFace,
                     .dog,
+                    .dog2,
                     .guideDog,
+                    .serviceDog,
                     .poodle,
-                    .wolfFace,
+                    .wolf,
                     .foxFace,
                     .raccoon,
-                    .catFace,
                     .cat,
+                    .cat2,
                     .lionFace,
-                    .tigerFace,
                     .tiger,
+                    .tiger2,
                     .leopard,
-                    .horseFace,
                     .horse,
+                    .racehorse,
                     .unicornFace,
                     .zebraFace,
                     .deer,
-                    .cowFace,
+                    .cow,
                     .ox,
                     .waterBuffalo,
-                    .cow,
-                    .pigFace,
+                    .cow2,
                     .pig,
+                    .pig2,
                     .boar,
                     .pigNose,
                     .ram,
                     .sheep,
                     .goat,
                     .dromedaryCamel,
-                    .bactrianCamel,
+                    .camel,
                     .llama,
                     .giraffeFace,
                     .elephant,
                     .rhinoceros,
                     .hippopotamus,
-                    .mouseFace,
                     .mouse,
+                    .mouse2,
                     .rat,
-                    .hamsterFace,
-                    .rabbitFace,
+                    .hamster,
                     .rabbit,
+                    .rabbit2,
+                    .chipmunk,
                     .hedgehog,
                     .bat,
-                    .bearFace,
+                    .bear,
                     .koala,
                     .pandaFace,
                     .sloth,
@@ -376,15 +592,16 @@ extension Emoji {
                     .skunk,
                     .kangaroo,
                     .badger,
-                    .pawPrints,
+                    .feet,
                     .turkey,
                     .chicken,
                     .rooster,
                     .hatchingChick,
                     .babyChick,
-                    .frontFacingBabyChick,
+                    .hatchedChick,
                     .bird,
                     .penguin,
+                    .doveOfPeace,
                     .eagle,
                     .duck,
                     .swan,
@@ -392,7 +609,7 @@ extension Emoji {
                     .flamingo,
                     .peacock,
                     .parrot,
-                    .frogFace,
+                    .frog,
                     .crocodile,
                     .turtle,
                     .lizard,
@@ -401,28 +618,31 @@ extension Emoji {
                     .dragon,
                     .sauropod,
                     .tRex,
-                    .spoutingWhale,
                     .whale,
+                    .whale2,
                     .dolphin,
                     .fish,
                     .tropicalFish,
                     .blowfish,
                     .shark,
                     .octopus,
-                    .spiralShell,
+                    .shell,
                     .snail,
                     .butterfly,
                     .bug,
                     .ant,
-                    .honeybee,
-                    .ladyBeetle,
+                    .bee,
+                    .beetle,
                     .cricket,
+                    .spider,
+                    .spiderWeb,
                     .scorpion,
                     .mosquito,
                     .microbe,
                     .bouquet,
                     .cherryBlossom,
                     .whiteFlower,
+                    .rosette,
                     .rose,
                     .wiltedFlower,
                     .hibiscus,
@@ -436,10 +656,11 @@ extension Emoji {
                     .cactus,
                     .earOfRice,
                     .herb,
+                    .shamrock,
                     .fourLeafClover,
                     .mapleLeaf,
                     .fallenLeaf,
-                    .leafFlutteringInWind,
+                    .leaves,
                 ]
             case .food:
                 return [
@@ -451,7 +672,7 @@ extension Emoji {
                     .banana,
                     .pineapple,
                     .mango,
-                    .redApple,
+                    .apple,
                     .greenApple,
                     .pear,
                     .peach,
@@ -461,10 +682,11 @@ extension Emoji {
                     .tomato,
                     .coconut,
                     .avocado,
-                    .aubergine,
+                    .eggplant,
                     .potato,
                     .carrot,
-                    .earOfMaize,
+                    .corn,
+                    .hotPepper,
                     .cucumber,
                     .leafyGreen,
                     .broccoli,
@@ -486,36 +708,36 @@ extension Emoji {
                     .cutOfMeat,
                     .bacon,
                     .hamburger,
-                    .frenchFries,
-                    .sliceOfPizza,
-                    .hotDog,
+                    .fries,
+                    .pizza,
+                    .hotdog,
                     .sandwich,
                     .taco,
                     .burrito,
                     .stuffedFlatbread,
                     .falafel,
                     .egg,
-                    .cooking,
+                    .friedEgg,
                     .shallowPanOfFood,
-                    .potOfFood,
+                    .stew,
                     .bowlWithSpoon,
                     .greenSalad,
                     .popcorn,
                     .butter,
-                    .saltShaker,
+                    .salt,
                     .cannedFood,
-                    .bentoBox,
+                    .bento,
                     .riceCracker,
                     .riceBall,
-                    .cookedRice,
-                    .curryAndRice,
-                    .steamingBowl,
+                    .rice,
+                    .curry,
+                    .ramen,
                     .spaghetti,
-                    .roastedSweetPotato,
+                    .sweetPotato,
                     .oden,
                     .sushi,
                     .friedShrimp,
-                    .fishCakeWithSwirlDesign,
+                    .fishCake,
                     .moonCake,
                     .dango,
                     .dumpling,
@@ -526,13 +748,13 @@ extension Emoji {
                     .shrimp,
                     .squid,
                     .oyster,
-                    .softIceCream,
+                    .icecream,
                     .shavedIce,
                     .iceCream,
                     .doughnut,
                     .cookie,
-                    .birthdayCake,
-                    .shortcake,
+                    .birthday,
+                    .cake,
                     .cupcake,
                     .pie,
                     .chocolateBar,
@@ -542,15 +764,15 @@ extension Emoji {
                     .honeyPot,
                     .babyBottle,
                     .glassOfMilk,
-                    .hotBeverage,
-                    .teacupWithoutHandle,
-                    .sakeBottleAndCup,
-                    .bottleWithPoppingCork,
+                    .coffee,
+                    .tea,
+                    .sake,
+                    .champagne,
                     .wineGlass,
-                    .cocktailGlass,
+                    .cocktail,
                     .tropicalDrink,
-                    .beerMug,
-                    .clinkingBeerMugs,
+                    .beer,
+                    .beers,
                     .clinkingGlasses,
                     .tumblerGlass,
                     .cupWithStraw,
@@ -558,6 +780,7 @@ extension Emoji {
                     .mateDrink,
                     .iceCube,
                     .chopsticks,
+                    .knifeForkPlate,
                     .forkAndKnife,
                     .spoon,
                     .hocho,
@@ -568,91 +791,111 @@ extension Emoji {
                     .jackOLantern,
                     .christmasTree,
                     .fireworks,
-                    .fireworkSparkler,
+                    .sparkler,
                     .firecracker,
                     .sparkles,
                     .balloon,
-                    .partyPopper,
+                    .tada,
                     .confettiBall,
                     .tanabataTree,
-                    .pineDecoration,
-                    .japaneseDolls,
-                    .carpStreamer,
+                    .bamboo,
+                    .dolls,
+                    .flags,
                     .windChime,
-                    .moonViewingCeremony,
-                    .redGiftEnvelope,
+                    .riceScene,
+                    .redEnvelope,
                     .ribbon,
-                    .wrappedPresent,
+                    .gift,
+                    .reminderRibbon,
+                    .admissionTickets,
                     .ticket,
+                    .medal,
                     .trophy,
                     .sportsMedal,
                     .firstPlaceMedal,
                     .secondPlaceMedal,
                     .thirdPlaceMedal,
-                    .soccerBall,
+                    .soccer,
                     .baseball,
                     .softball,
-                    .basketballAndHoop,
+                    .basketball,
                     .volleyball,
-                    .americanFootball,
+                    .football,
                     .rugbyFootball,
-                    .tennisRacquetAndBall,
+                    .tennis,
                     .flyingDisc,
                     .bowling,
                     .cricketBatAndBall,
                     .fieldHockeyStickAndBall,
                     .iceHockeyStickAndPuck,
-                    .lacrosseStickAndBall,
+                    .lacrosse,
                     .tableTennisPaddleAndBall,
                     .badmintonRacquetAndShuttlecock,
                     .boxingGlove,
                     .martialArtsUniform,
                     .goalNet,
-                    .flagInHole,
+                    .golf,
+                    .iceSkate,
                     .fishingPoleAndFish,
                     .divingMask,
                     .runningShirtWithSash,
-                    .skiAndSkiBoot,
+                    .ski,
                     .sled,
                     .curlingStone,
-                    .directHit,
+                    .dart,
                     .yoYo,
                     .kite,
-                    .billiards,
+                    .eightBall,
                     .crystalBall,
                     .nazarAmulet,
                     .videoGame,
+                    .joystick,
                     .slotMachine,
                     .gameDie,
-                    .jigsawPuzzlePiece,
+                    .jigsaw,
                     .teddyBear,
-                    .blackSpadeSuit,
-                    .blackHeartSuit,
-                    .blackDiamondSuit,
-                    .blackClubSuit,
-                    .playingCardBlackJoker,
-                    .mahjongTileRedDragon,
+                    .spades,
+                    .hearts,
+                    .diamonds,
+                    .clubs,
+                    .chessPawn,
+                    .blackJoker,
+                    .mahjong,
                     .flowerPlayingCards,
                     .performingArts,
-                    .artistPalette,
-                    .spoolOfThread,
-                    .ballOfYarn,
+                    .frameWithPicture,
+                    .art,
+                    .thread,
+                    .yarn,
                 ]
             case .travel:
                 return [
-                    .earthGlobeEuropeAfrica,
-                    .earthGlobeAmericas,
-                    .earthGlobeAsiaAustralia,
+                    .earthAfrica,
+                    .earthAmericas,
+                    .earthAsia,
                     .globeWithMeridians,
-                    .silhouetteOfJapan,
+                    .worldMap,
+                    .japan,
                     .compass,
+                    .snowCappedMountain,
+                    .mountain,
                     .volcano,
                     .mountFuji,
-                    .brick,
-                    .houseBuilding,
+                    .camping,
+                    .beachWithUmbrella,
+                    .desert,
+                    .desertIsland,
+                    .nationalPark,
+                    .stadium,
+                    .classicalBuilding,
+                    .buildingConstruction,
+                    .bricks,
+                    .houseBuildings,
+                    .derelictHouseBuilding,
+                    .house,
                     .houseWithGarden,
-                    .officeBuilding,
-                    .japanesePostOffice,
+                    .office,
+                    .postOffice,
                     .europeanPostOffice,
                     .hospital,
                     .bank,
@@ -671,34 +914,36 @@ extension Emoji {
                     .mosque,
                     .hinduTemple,
                     .synagogue,
+                    .shintoShrine,
                     .kaaba,
                     .fountain,
                     .tent,
                     .foggy,
                     .nightWithStars,
+                    .cityscape,
                     .sunriseOverMountains,
                     .sunrise,
-                    .cityscapeAtDusk,
-                    .sunsetOverBuildings,
+                    .citySunset,
+                    .citySunrise,
                     .bridgeAtNight,
-                    .hotSprings,
+                    .hotsprings,
                     .carouselHorse,
                     .ferrisWheel,
                     .rollerCoaster,
-                    .barberPole,
+                    .barber,
                     .circusTent,
                     .steamLocomotive,
                     .railwayCar,
-                    .highSpeedTrain,
-                    .highSpeedTrainWithBulletNose,
-                    .train,
+                    .bullettrainSide,
+                    .bullettrainFront,
+                    .train2,
                     .metro,
                     .lightRail,
                     .station,
                     .tram,
                     .monorail,
                     .mountainRailway,
-                    .tramCar,
+                    .train,
                     .bus,
                     .oncomingBus,
                     .trolleybus,
@@ -709,32 +954,41 @@ extension Emoji {
                     .oncomingPoliceCar,
                     .taxi,
                     .oncomingTaxi,
-                    .automobile,
+                    .car,
                     .oncomingAutomobile,
-                    .recreationalVehicle,
-                    .deliveryTruck,
+                    .blueCar,
+                    .truck,
                     .articulatedLorry,
                     .tractor,
+                    .racingCar,
+                    .racingMotorcycle,
                     .motorScooter,
                     .manualWheelchair,
                     .motorizedWheelchair,
                     .autoRickshaw,
-                    .bicycle,
+                    .bike,
                     .scooter,
                     .skateboard,
-                    .busStop,
-                    .fuelPump,
-                    .policeCarsRevolvingLight,
-                    .horizontalTrafficLight,
+                    .busstop,
+                    .motorway,
+                    .railwayTrack,
+                    .oilDrum,
+                    .fuelpump,
+                    .rotatingLight,
+                    .trafficLight,
                     .verticalTrafficLight,
                     .octagonalSign,
-                    .constructionSign,
+                    .construction,
                     .anchor,
-                    .sailboat,
+                    .boat,
                     .canoe,
                     .speedboat,
+                    .passengerShip,
+                    .ferry,
+                    .motorBoat,
                     .ship,
                     .airplane,
+                    .smallAirplane,
                     .airplaneDeparture,
                     .airplaneArriving,
                     .parachute,
@@ -743,78 +997,99 @@ extension Emoji {
                     .suspensionRailway,
                     .mountainCableway,
                     .aerialTramway,
+                    .satellite,
                     .rocket,
                     .flyingSaucer,
+                    .bellhopBell,
                     .luggage,
                     .hourglass,
-                    .hourglassWithFlowingSand,
+                    .hourglassFlowingSand,
                     .watch,
                     .alarmClock,
-                    .clockFaceTwelveOclock,
-                    .clockFaceTwelveThirty,
-                    .clockFaceOneOclock,
-                    .clockFaceOneThirty,
-                    .clockFaceTwoOclock,
-                    .clockFaceTwoThirty,
-                    .clockFaceThreeOclock,
-                    .clockFaceThreeThirty,
-                    .clockFaceFourOclock,
-                    .clockFaceFourThirty,
-                    .clockFaceFiveOclock,
-                    .clockFaceFiveThirty,
-                    .clockFaceSixOclock,
-                    .clockFaceSixThirty,
-                    .clockFaceSevenOclock,
-                    .clockFaceSevenThirty,
-                    .clockFaceEightOclock,
-                    .clockFaceEightThirty,
-                    .clockFaceNineOclock,
-                    .clockFaceNineThirty,
-                    .clockFaceTenOclock,
-                    .clockFaceTenThirty,
-                    .clockFaceElevenOclock,
-                    .clockFaceElevenThirty,
-                    .newMoonSymbol,
-                    .waxingCrescentMoonSymbol,
-                    .firstQuarterMoonSymbol,
-                    .waxingGibbousMoonSymbol,
-                    .fullMoonSymbol,
-                    .waningGibbousMoonSymbol,
-                    .lastQuarterMoonSymbol,
-                    .waningCrescentMoonSymbol,
+                    .stopwatch,
+                    .timerClock,
+                    .mantelpieceClock,
+                    .clock12,
+                    .clock1230,
+                    .clock1,
+                    .clock130,
+                    .clock2,
+                    .clock230,
+                    .clock3,
+                    .clock330,
+                    .clock4,
+                    .clock430,
+                    .clock5,
+                    .clock530,
+                    .clock6,
+                    .clock630,
+                    .clock7,
+                    .clock730,
+                    .clock8,
+                    .clock830,
+                    .clock9,
+                    .clock930,
+                    .clock10,
+                    .clock1030,
+                    .clock11,
+                    .clock1130,
+                    .newMoon,
+                    .waxingCrescentMoon,
+                    .firstQuarterMoon,
+                    .moon,
+                    .fullMoon,
+                    .waningGibbousMoon,
+                    .lastQuarterMoon,
+                    .waningCrescentMoon,
                     .crescentMoon,
                     .newMoonWithFace,
                     .firstQuarterMoonWithFace,
                     .lastQuarterMoonWithFace,
-                    .blackSunWithRays,
+                    .thermometer,
+                    .sunny,
                     .fullMoonWithFace,
                     .sunWithFace,
                     .ringedPlanet,
-                    .whiteMediumStar,
-                    .glowingStar,
-                    .shootingStar,
+                    .star,
+                    .star2,
+                    .stars,
                     .milkyWay,
                     .cloud,
-                    .sunBehindCloud,
+                    .partlySunny,
+                    .thunderCloudAndRain,
+                    .mostlySunny,
+                    .barelySunny,
+                    .partlySunnyRain,
+                    .rainCloud,
+                    .snowCloud,
+                    .lightning,
+                    .tornado,
+                    .fog,
+                    .windBlowingFace,
                     .cyclone,
                     .rainbow,
                     .closedUmbrella,
+                    .umbrella,
                     .umbrellaWithRainDrops,
-                    .highVoltageSign,
+                    .umbrellaOnGround,
+                    .zap,
                     .snowflake,
+                    .snowman,
                     .snowmanWithoutSnow,
+                    .comet,
                     .fire,
                     .droplet,
-                    .waterWave,
+                    .ocean,
                 ]
             case .objects:
                 return [
                     .eyeglasses,
+                    .darkSunglasses,
                     .goggles,
                     .labCoat,
                     .safetyVest,
                     .necktie,
-                    .tShirt,
+                    .shirt,
                     .jeans,
                     .scarf,
                     .gloves,
@@ -831,38 +1106,43 @@ extension Emoji {
                     .purse,
                     .handbag,
                     .pouch,
+                    .shoppingBags,
                     .schoolSatchel,
                     .mansShoe,
                     .athleticShoe,
                     .hikingBoot,
-                    .flatShoe,
-                    .highHeeledShoe,
-                    .womansSandal,
+                    .womansFlatShoe,
+                    .highHeel,
+                    .sandal,
                     .balletShoes,
-                    .womansBoots,
+                    .boot,
                     .crown,
                     .womansHat,
-                    .topHat,
-                    .graduationCap,
+                    .tophat,
+                    .mortarBoard,
                     .billedCap,
+                    .helmetWithWhiteCross,
                     .prayerBeads,
                     .lipstick,
                     .ring,
-                    .gemStone,
-                    .speakerWithCancellationStroke,
+                    .gem,
+                    .mute,
                     .speaker,
-                    .speakerWithOneSoundWave,
-                    .speakerWithThreeSoundWaves,
-                    .publicAddressLoudspeaker,
-                    .cheeringMegaphone,
+                    .sound,
+                    .loudSound,
+                    .loudspeaker,
+                    .mega,
                     .postalHorn,
                     .bell,
-                    .bellWithCancellationStroke,
+                    .noBell,
                     .musicalScore,
                     .musicalNote,
-                    .multipleMusicalNotes,
+                    .notes,
+                    .studioMicrophone,
+                    .levelSlider,
+                    .controlKnobs,
                     .microphone,
-                    .headphone,
+                    .headphones,
                     .radio,
                     .saxophone,
                     .guitar,
@@ -871,36 +1151,44 @@ extension Emoji {
                     .violin,
                     .banjo,
                     .drumWithDrumsticks,
-                    .mobilePhone,
-                    .mobilePhoneWithRightwardsArrowAtLeft,
-                    .blackTelephone,
+                    .iphone,
+                    .calling,
+                    .phone,
                     .telephoneReceiver,
                     .pager,
-                    .faxMachine,
+                    .fax,
                     .battery,
                     .electricPlug,
-                    .personalComputer,
+                    .computer,
+                    .desktopComputer,
+                    .printer,
+                    .keyboard,
+                    .threeButtonMouse,
+                    .trackball,
                     .minidisc,
                     .floppyDisk,
-                    .opticalDisc,
+                    .cd,
                     .dvd,
                     .abacus,
                     .movieCamera,
-                    .clapperBoard,
-                    .television,
+                    .filmFrames,
+                    .filmProjector,
+                    .clapper,
+                    .tv,
                     .camera,
                     .cameraWithFlash,
                     .videoCamera,
-                    .videocassette,
-                    .leftPointingMagnifyingGlass,
-                    .rightPointingMagnifyingGlass,
-                    .electricLightBulb,
-                    .electricTorch,
+                    .vhs,
+                    .mag,
+                    .magRight,
+                    .candle,
+                    .bulb,
+                    .flashlight,
                     .izakayaLantern,
                     .diyaLamp,
                     .notebookWithDecorativeCover,
                     .closedBook,
-                    .openBook,
+                    .book,
                     .greenBook,
                     .blueBook,
                     .orangeBook,
@@ -911,39 +1199,49 @@ extension Emoji {
                     .scroll,
                     .pageFacingUp,
                     .newspaper,
+                    .rolledUpNewspaper,
                     .bookmarkTabs,
                     .bookmark,
-                    .moneyBag,
-                    .banknoteWithYenSign,
-                    .banknoteWithDollarSign,
-                    .banknoteWithEuroSign,
-                    .banknoteWithPoundSign,
+                    .label,
+                    .moneybag,
+                    .yen,
+                    .dollar,
+                    .euro,
+                    .pound,
                     .moneyWithWings,
                     .creditCard,
                     .receipt,
-                    .chartWithUpwardsTrendAndYenSign,
+                    .chart,
                     .currencyExchange,
                     .heavyDollarSign,
-                    .envelope,
-                    .eMailSymbol,
+                    .email,
+                    .eMail,
                     .incomingEnvelope,
-                    .envelopeWithDownwardsArrowAbove,
+                    .envelopeWithArrow,
                     .outboxTray,
                     .inboxTray,
                     .package,
-                    .closedMailboxWithRaisedFlag,
-                    .closedMailboxWithLoweredFlag,
-                    .openMailboxWithRaisedFlag,
-                    .openMailboxWithLoweredFlag,
+                    .mailbox,
+                    .mailboxClosed,
+                    .mailboxWithMail,
+                    .mailboxWithNoMail,
                     .postbox,
-                    .pencil,
+                    .ballotBoxWithBallot,
+                    .pencil2,
                     .blackNib,
+                    .lowerLeftFountainPen,
+                    .lowerLeftBallpointPen,
+                    .lowerLeftPaintbrush,
+                    .lowerLeftCrayon,
                     .memo,
                     .briefcase,
                     .fileFolder,
                     .openFileFolder,
+                    .cardIndexDividers,
+                    .date,
                     .calendar,
-                    .tearOffCalendar,
+                    .spiralNotePad,
+                    .spiralCalendarPad,
                     .cardIndex,
                     .chartWithUpwardsTrend,
                     .chartWithDownwardsTrend,
@@ -952,27 +1250,43 @@ extension Emoji {
                     .pushpin,
                     .roundPushpin,
                     .paperclip,
+                    .linkedPaperclips,
                     .straightRuler,
                     .triangularRuler,
-                    .blackScissors,
+                    .scissors,
+                    .cardFileBox,
+                    .fileCabinet,
+                    .wastebasket,
                     .lock,
-                    .openLock,
+                    .unlock,
                     .lockWithInkPen,
                     .closedLockWithKey,
                     .key,
+                    .oldKey,
                     .hammer,
                     .axe,
-                    .pistol,
+                    .pick,
+                    .hammerAndPick,
+                    .hammerAndWrench,
+                    .daggerKnife,
+                    .crossedSwords,
+                    .gun,
                     .bowAndArrow,
+                    .shield,
                     .wrench,
                     .nutAndBolt,
+                    .gear,
+                    .compression,
+                    .scales,
                     .probingCane,
-                    .linkSymbol,
+                    .link,
+                    .chains,
                     .toolbox,
                     .magnet,
+                    .alembic,
                     .testTube,
                     .petriDish,
-                    .dnaDoubleHelix,
+                    .dna,
                     .microscope,
                     .telescope,
                     .satelliteAntenna,
@@ -982,6 +1296,8 @@ extension Emoji {
                     .adhesiveBandage,
                     .stethoscope,
                     .door,
+                    .bed,
+                    .couchAndLamp,
                     .chair,
                     .toilet,
                     .shower,
@@ -992,63 +1308,76 @@ extension Emoji {
                     .broom,
                     .basket,
                     .rollOfPaper,
-                    .barOfSoap,
+                    .soap,
                     .sponge,
                     .fireExtinguisher,
                     .shoppingTrolley,
-                    .smokingSymbol,
+                    .smoking,
+                    .coffin,
+                    .funeralUrn,
                     .moyai,
                 ]
             case .symbols:
                 return [
-                    .automatedTellerMachine,
-                    .putLitterInItsPlaceSymbol,
-                    .potableWaterSymbol,
-                    .wheelchairSymbol,
-                    .mensSymbol,
-                    .womensSymbol,
+                    .atm,
+                    .putLitterInItsPlace,
+                    .potableWater,
+                    .wheelchair,
+                    .mens,
+                    .womens,
                     .restroom,
                     .babySymbol,
-                    .waterCloset,
+                    .wc,
                     .passportControl,
                     .customs,
                     .baggageClaim,
                     .leftLuggage,
-                    .warningSign,
+                    .warning,
                     .childrenCrossing,
                     .noEntry,
                     .noEntrySign,
                     .noBicycles,
-                    .noSmokingSymbol,
-                    .doNotLitterSymbol,
-                    .nonPotableWaterSymbol,
+                    .noSmoking,
+                    .doNotLitter,
+                    .nonPotableWater,
                     .noPedestrians,
                     .noMobilePhones,
-                    .noOneUnderEighteenSymbol,
-                    .upwardsBlackArrow,
-                    .northEastArrow,
-                    .blackRightwardsArrow,
-                    .southEastArrow,
-                    .downwardsBlackArrow,
-                    .southWestArrow,
-                    .leftwardsBlackArrow,
-                    .northWestArrow,
-                    .upDownArrow,
+                    .underage,
+                    .radioactiveSign,
+                    .biohazardSign,
+                    .arrowUp,
+                    .arrowUpperRight,
+                    .arrowRight,
+                    .arrowLowerRight,
+                    .arrowDown,
+                    .arrowLowerLeft,
+                    .arrowLeft,
+                    .arrowUpperLeft,
+                    .arrowUpDown,
                     .leftRightArrow,
                     .leftwardsArrowWithHook,
-                    .rightwardsArrowWithHook,
-                    .arrowPointingRightwardsThenCurvingUpwards,
-                    .arrowPointingRightwardsThenCurvingDownwards,
-                    .clockwiseDownwardsAndUpwardsOpenCircleArrows,
-                    .anticlockwiseDownwardsAndUpwardsOpenCircleArrows,
-                    .backWithLeftwardsArrowAbove,
-                    .endWithLeftwardsArrowAbove,
-                    .onWithExclamationMarkWithLeftRightArrowAbove,
-                    .soonWithRightwardsArrowAbove,
-                    .topWithUpwardsArrowAbove,
+                    .arrowRightHook,
+                    .arrowHeadingUp,
+                    .arrowHeadingDown,
+                    .arrowsClockwise,
+                    .arrowsCounterclockwise,
+                    .back,
+                    .end,
+                    .on,
+                    .soon,
+                    .top,
                     .placeOfWorship,
+                    .atomSymbol,
+                    .omSymbol,
+                    .starOfDavid,
+                    .wheelOfDharma,
+                    .yinYang,
+                    .latinCross,
+                    .orthodoxCross,
+                    .starAndCrescent,
+                    .peaceSymbol,
                     .menorahWithNineBranches,
-                    .sixPointedStarWithMiddleDot,
+                    .sixPointedStar,
                     .aries,
                     .taurus,
                     .gemini,
@@ -1063,112 +1392,125 @@ extension Emoji {
                     .pisces,
                     .ophiuchus,
                     .twistedRightwardsArrows,
-                    .clockwiseRightwardsAndLeftwardsOpenCircleArrows,
-                    .clockwiseRightwardsAndLeftwardsOpenCircleArrowsWithCircledOneOverlay,
-                    .blackRightPointingTriangle,
-                    .blackRightPointingDoubleTriangle,
-                    .blackLeftPointingTriangle,
-                    .blackLeftPointingDoubleTriangle,
-                    .upPointingSmallRedTriangle,
-                    .blackUpPointingDoubleTriangle,
-                    .downPointingSmallRedTriangle,
-                    .blackDownPointingDoubleTriangle,
+                    .`repeat`,
+                    .repeatOne,
+                    .arrowForward,
+                    .fastForward,
+                    .blackRightPointingDoubleTriangleWithVerticalBar,
+                    .blackRightPointingTriangleWithDoubleVerticalBar,
+                    .arrowBackward,
+                    .rewind,
+                    .blackLeftPointingDoubleTriangleWithVerticalBar,
+                    .arrowUpSmall,
+                    .arrowDoubleUp,
+                    .arrowDownSmall,
+                    .arrowDoubleDown,
+                    .doubleVerticalBar,
+                    .blackSquareForStop,
+                    .blackCircleForRecord,
+                    .eject,
                     .cinema,
-                    .lowBrightnessSymbol,
-                    .highBrightnessSymbol,
-                    .antennaWithBars,
+                    .lowBrightness,
+                    .highBrightness,
+                    .signalStrength,
                     .vibrationMode,
                     .mobilePhoneOff,
-                    .blackUniversalRecyclingSymbol,
-                    .tridentEmblem,
+                    .femaleSign,
+                    .maleSign,
+                    .medicalSymbol,
+                    .infinity,
+                    .recycle,
+                    .fleurDeLis,
+                    .trident,
                     .nameBadge,
-                    .japaneseSymbolForBeginner,
-                    .heavyLargeCircle,
-                    .whiteHeavyCheckMark,
+                    .beginner,
+                    .o,
+                    .whiteCheckMark,
                     .ballotBoxWithCheck,
                     .heavyCheckMark,
                     .heavyMultiplicationX,
-                    .crossMark,
+                    .x,
                     .negativeSquaredCrossMark,
                     .heavyPlusSign,
                     .heavyMinusSign,
                     .heavyDivisionSign,
                     .curlyLoop,
-                    .doubleCurlyLoop,
+                    .loop,
                     .partAlternationMark,
                     .eightSpokedAsterisk,
                     .eightPointedBlackStar,
                     .sparkle,
-                    .doubleExclamationMark,
-                    .exclamationQuestionMark,
-                    .blackQuestionMarkOrnament,
-                    .whiteQuestionMarkOrnament,
-                    .whiteExclamationMarkOrnament,
-                    .heavyExclamationMarkSymbol,
+                    .bangbang,
+                    .interrobang,
+                    .question,
+                    .greyQuestion,
+                    .greyExclamation,
+                    .exclamation,
                     .wavyDash,
-                    .copyrightSign,
-                    .registeredSign,
-                    .tradeMarkSign,
-                    .hashKey,
-                    .keycap0,
-                    .keycap1,
-                    .keycap2,
-                    .keycap3,
-                    .keycap4,
-                    .keycap5,
-                    .keycap6,
-                    .keycap7,
-                    .keycap8,
-                    .keycap9,
+                    .copyright,
+                    .registered,
+                    .tm,
+                    .hash,
+                    .keycapStar,
+                    .zero,
+                    .one,
+                    .two,
+                    .three,
+                    .four,
+                    .five,
+                    .six,
+                    .seven,
+                    .eight,
+                    .nine,
                     .keycapTen,
-                    .inputSymbolForLatinCapitalLetters,
-                    .inputSymbolForLatinSmallLetters,
-                    .inputSymbolForNumbers,
-                    .inputSymbolForSymbols,
-                    .inputSymbolForLatinLetters,
-                    .negativeSquaredLatinCapitalLetterA,
-                    .negativeSquaredAb,
-                    .negativeSquaredLatinCapitalLetterB,
-                    .squaredCl,
-                    .squaredCool,
-                    .squaredFree,
+                    .capitalAbcd,
+                    .abcd,
+                    .oneTwoThreeFour,
+                    .symbols,
+                    .abc,
+                    .a,
+                    .ab,
+                    .b,
+                    .cl,
+                    .cool,
+                    .free,
                     .informationSource,
-                    .squaredId,
-                    .circledLatinCapitalLetterM,
-                    .squaredNew,
-                    .squaredNg,
-                    .negativeSquaredLatinCapitalLetterO,
-                    .squaredOk,
-                    .negativeSquaredLatinCapitalLetterP,
-                    .squaredSos,
-                    .squaredUpWithExclamationMark,
-                    .squaredVs,
-                    .squaredKatakanaKoko,
-                    .squaredKatakanaSa,
-                    .squaredCjkUnifiedIdeograph6708,
-                    .squaredCjkUnifiedIdeograph6709,
-                    .squaredCjkUnifiedIdeograph6307,
-                    .circledIdeographAdvantage,
-                    .squaredCjkUnifiedIdeograph5272,
-                    .squaredCjkUnifiedIdeograph7121,
-                    .squaredCjkUnifiedIdeograph7981,
-                    .circledIdeographAccept,
-                    .squaredCjkUnifiedIdeograph7533,
-                    .squaredCjkUnifiedIdeograph5408,
-                    .squaredCjkUnifiedIdeograph7a7a,
-                    .circledIdeographCongratulation,
-                    .circledIdeographSecret,
-                    .squaredCjkUnifiedIdeograph55b6,
-                    .squaredCjkUnifiedIdeograph6e80,
-                    .largeRedCircle,
+                    .id,
+                    .m,
+                    .new,
+                    .ng,
+                    .o2,
+                    .ok,
+                    .parking,
+                    .sos,
+                    .up,
+                    .vs,
+                    .koko,
+                    .sa,
+                    .u6708,
+                    .u6709,
+                    .u6307,
+                    .ideographAdvantage,
+                    .u5272,
+                    .u7121,
+                    .u7981,
+                    .accept,
+                    .u7533,
+                    .u5408,
+                    .u7a7a,
+                    .congratulations,
+                    .secret,
+                    .u55b6,
+                    .u6e80,
+                    .redCircle,
                     .largeOrangeCircle,
                     .largeYellowCircle,
                     .largeGreenCircle,
                     .largeBlueCircle,
                     .largePurpleCircle,
                     .largeBrownCircle,
-                    .mediumBlackCircle,
-                    .mediumWhiteCircle,
+                    .blackCircle,
+                    .whiteCircle,
                     .largeRedSquare,
                     .largeOrangeSquare,
                     .largeYellowSquare,
@@ -1188,8 +1530,8 @@ extension Emoji {
                     .largeBlueDiamond,
                     .smallOrangeDiamond,
                     .smallBlueDiamond,
-                    .upPointingRedTriangle,
-                    .downPointingRedTriangle,
+                    .smallRedTriangle,
+                    .smallRedTriangleDown,
                     .diamondShapeWithADotInside,
                     .radioButton,
                     .whiteSquareButton,
@@ -1197,271 +1539,274 @@ extension Emoji {
                 ]
             case .flags:
                 return [
-                    .chequeredFlag,
+                    .checkeredFlag,
                     .triangularFlagOnPost,
                     .crossedFlags,
                     .wavingBlackFlag,
-                    .ascensionIslandFlag,
-                    .andorraFlag,
-                    .unitedArabEmiratesFlag,
-                    .afghanistanFlag,
-                    .antiguaBarbudaFlag,
-                    .anguillaFlag,
-                    .albaniaFlag,
-                    .armeniaFlag,
-                    .angolaFlag,
-                    .antarcticaFlag,
-                    .argentinaFlag,
-                    .americanSamoaFlag,
-                    .austriaFlag,
-                    .australiaFlag,
-                    .arubaFlag,
-                    .ålandIslandsFlag,
-                    .azerbaijanFlag,
-                    .bosniaHerzegovinaFlag,
-                    .barbadosFlag,
-                    .bangladeshFlag,
-                    .belgiumFlag,
-                    .burkinaFasoFlag,
-                    .bulgariaFlag,
-                    .bahrainFlag,
-                    .burundiFlag,
-                    .beninFlag,
-                    .stBarthélemyFlag,
-                    .bermudaFlag,
-                    .bruneiFlag,
-                    .boliviaFlag,
-                    .caribbeanNetherlandsFlag,
-                    .brazilFlag,
-                    .bahamasFlag,
-                    .bhutanFlag,
-                    .bouvetIslandFlag,
-                    .botswanaFlag,
-                    .belarusFlag,
-                    .belizeFlag,
-                    .canadaFlag,
-                    .cocosKeelingIslandsFlag,
-                    .congoKinshasaFlag,
-                    .centralAfricanRepublicFlag,
-                    .congoBrazzavilleFlag,
-                    .switzerlandFlag,
-                    .côteDivoireFlag,
-                    .cookIslandsFlag,
-                    .chileFlag,
-                    .cameroonFlag,
-                    .chinaFlag,
-                    .colombiaFlag,
-                    .clippertonIslandFlag,
-                    .costaRicaFlag,
-                    .cubaFlag,
-                    .capeVerdeFlag,
-                    .curaçaoFlag,
-                    .christmasIslandFlag,
-                    .cyprusFlag,
-                    .czechiaFlag,
-                    .germanyFlag,
-                    .diegoGarciaFlag,
-                    .djiboutiFlag,
-                    .denmarkFlag,
-                    .dominicaFlag,
-                    .dominicanRepublicFlag,
-                    .algeriaFlag,
-                    .ceutaMelillaFlag,
-                    .ecuadorFlag,
-                    .estoniaFlag,
-                    .egyptFlag,
-                    .westernSaharaFlag,
-                    .eritreaFlag,
-                    .spainFlag,
-                    .ethiopiaFlag,
-                    .europeanUnionFlag,
-                    .finlandFlag,
-                    .fijiFlag,
-                    .falklandIslandsFlag,
-                    .micronesiaFlag,
-                    .faroeIslandsFlag,
-                    .franceFlag,
-                    .gabonFlag,
-                    .unitedKingdomFlag,
-                    .grenadaFlag,
-                    .georgiaFlag,
-                    .frenchGuianaFlag,
-                    .guernseyFlag,
-                    .ghanaFlag,
-                    .gibraltarFlag,
-                    .greenlandFlag,
-                    .gambiaFlag,
-                    .guineaFlag,
-                    .guadeloupeFlag,
-                    .equatorialGuineaFlag,
-                    .greeceFlag,
-                    .southGeorgiaSouthSandwichIslandsFlag,
-                    .guatemalaFlag,
-                    .guamFlag,
-                    .guineaBissauFlag,
-                    .guyanaFlag,
-                    .hongKongSarChinaFlag,
-                    .heardMcdonaldIslandsFlag,
-                    .hondurasFlag,
-                    .croatiaFlag,
-                    .haitiFlag,
-                    .hungaryFlag,
-                    .canaryIslandsFlag,
-                    .indonesiaFlag,
-                    .irelandFlag,
-                    .israelFlag,
-                    .isleOfManFlag,
-                    .indiaFlag,
-                    .britishIndianOceanTerritoryFlag,
-                    .iraqFlag,
-                    .iranFlag,
-                    .icelandFlag,
-                    .italyFlag,
-                    .jerseyFlag,
-                    .jamaicaFlag,
-                    .jordanFlag,
-                    .japanFlag,
-                    .kenyaFlag,
-                    .kyrgyzstanFlag,
-                    .cambodiaFlag,
-                    .kiribatiFlag,
-                    .comorosFlag,
-                    .stKittsNevisFlag,
-                    .northKoreaFlag,
-                    .southKoreaFlag,
-                    .kuwaitFlag,
-                    .caymanIslandsFlag,
-                    .kazakhstanFlag,
-                    .laosFlag,
-                    .lebanonFlag,
-                    .stLuciaFlag,
-                    .liechtensteinFlag,
-                    .sriLankaFlag,
-                    .liberiaFlag,
-                    .lesothoFlag,
-                    .lithuaniaFlag,
-                    .luxembourgFlag,
-                    .latviaFlag,
-                    .libyaFlag,
-                    .moroccoFlag,
-                    .monacoFlag,
-                    .moldovaFlag,
-                    .montenegroFlag,
-                    .stMartinFlag,
-                    .madagascarFlag,
-                    .marshallIslandsFlag,
-                    .northMacedoniaFlag,
-                    .maliFlag,
-                    .myanmarBurmaFlag,
-                    .mongoliaFlag,
-                    .macaoSarChinaFlag,
-                    .northernMarianaIslandsFlag,
-                    .martiniqueFlag,
-                    .mauritaniaFlag,
-                    .montserratFlag,
-                    .maltaFlag,
-                    .mauritiusFlag,
-                    .maldivesFlag,
-                    .malawiFlag,
-                    .mexicoFlag,
-                    .malaysiaFlag,
-                    .mozambiqueFlag,
-                    .namibiaFlag,
-                    .newCaledoniaFlag,
-                    .nigerFlag,
-                    .norfolkIslandFlag,
-                    .nigeriaFlag,
-                    .nicaraguaFlag,
-                    .netherlandsFlag,
-                    .norwayFlag,
-                    .nepalFlag,
-                    .nauruFlag,
-                    .niueFlag,
-                    .newZealandFlag,
-                    .omanFlag,
-                    .panamaFlag,
-                    .peruFlag,
-                    .frenchPolynesiaFlag,
-                    .papuaNewGuineaFlag,
-                    .philippinesFlag,
-                    .pakistanFlag,
-                    .polandFlag,
-                    .stPierreMiquelonFlag,
-                    .pitcairnIslandsFlag,
-                    .puertoRicoFlag,
-                    .palestinianTerritoriesFlag,
-                    .portugalFlag,
-                    .palauFlag,
-                    .paraguayFlag,
-                    .qatarFlag,
-                    .réunionFlag,
-                    .romaniaFlag,
-                    .serbiaFlag,
-                    .russiaFlag,
-                    .rwandaFlag,
-                    .saudiArabiaFlag,
-                    .solomonIslandsFlag,
-                    .seychellesFlag,
-                    .sudanFlag,
-                    .swedenFlag,
-                    .singaporeFlag,
-                    .stHelenaFlag,
-                    .sloveniaFlag,
-                    .svalbardJanMayenFlag,
-                    .slovakiaFlag,
-                    .sierraLeoneFlag,
-                    .sanMarinoFlag,
-                    .senegalFlag,
-                    .somaliaFlag,
-                    .surinameFlag,
-                    .southSudanFlag,
-                    .sãoToméPríncipeFlag,
-                    .elSalvadorFlag,
-                    .sintMaartenFlag,
-                    .syriaFlag,
-                    .eswatiniFlag,
-                    .tristanDaCunhaFlag,
-                    .turksCaicosIslandsFlag,
-                    .chadFlag,
-                    .frenchSouthernTerritoriesFlag,
-                    .togoFlag,
-                    .thailandFlag,
-                    .tajikistanFlag,
-                    .tokelauFlag,
-                    .timorLesteFlag,
-                    .turkmenistanFlag,
-                    .tunisiaFlag,
-                    .tongaFlag,
-                    .turkeyFlag,
-                    .trinidadTobagoFlag,
-                    .tuvaluFlag,
-                    .taiwanFlag,
-                    .tanzaniaFlag,
-                    .ukraineFlag,
-                    .ugandaFlag,
-                    .usOutlyingIslandsFlag,
-                    .unitedNationsFlag,
-                    .unitedStatesFlag,
-                    .uruguayFlag,
-                    .uzbekistanFlag,
-                    .vaticanCityFlag,
-                    .stVincentGrenadinesFlag,
-                    .venezuelaFlag,
-                    .britishVirginIslandsFlag,
-                    .usVirginIslandsFlag,
-                    .vietnamFlag,
-                    .vanuatuFlag,
-                    .wallisFutunaFlag,
-                    .samoaFlag,
-                    .kosovoFlag,
-                    .yemenFlag,
-                    .mayotteFlag,
-                    .southAfricaFlag,
-                    .zambiaFlag,
-                    .zimbabweFlag,
-                    .englandFlag,
-                    .scotlandFlag,
-                    .walesFlag,
+                    .wavingWhiteFlag,
+                    .rainbowFlag,
+                    .pirateFlag,
+                    .flagAc,
+                    .flagAd,
+                    .flagAe,
+                    .flagAf,
+                    .flagAg,
+                    .flagAi,
+                    .flagAl,
+                    .flagAm,
+                    .flagAo,
+                    .flagAq,
+                    .flagAr,
+                    .flagAs,
+                    .flagAt,
+                    .flagAu,
+                    .flagAw,
+                    .flagAx,
+                    .flagAz,
+                    .flagBa,
+                    .flagBb,
+                    .flagBd,
+                    .flagBe,
+                    .flagBf,
+                    .flagBg,
+                    .flagBh,
+                    .flagBi,
+                    .flagBj,
+                    .flagBl,
+                    .flagBm,
+                    .flagBn,
+                    .flagBo,
+                    .flagBq,
+                    .flagBr,
+                    .flagBs,
+                    .flagBt,
+                    .flagBv,
+                    .flagBw,
+                    .flagBy,
+                    .flagBz,
+                    .flagCa,
+                    .flagCc,
+                    .flagCd,
+                    .flagCf,
+                    .flagCg,
+                    .flagCh,
+                    .flagCi,
+                    .flagCk,
+                    .flagCl,
+                    .flagCm,
+                    .cn,
+                    .flagCo,
+                    .flagCp,
+                    .flagCr,
+                    .flagCu,
+                    .flagCv,
+                    .flagCw,
+                    .flagCx,
+                    .flagCy,
+                    .flagCz,
+                    .de,
+                    .flagDg,
+                    .flagDj,
+                    .flagDk,
+                    .flagDm,
+                    .flagDo,
+                    .flagDz,
+                    .flagEa,
+                    .flagEc,
+                    .flagEe,
+                    .flagEg,
+                    .flagEh,
+                    .flagEr,
+                    .es,
+                    .flagEt,
+                    .flagEu,
+                    .flagFi,
+                    .flagFj,
+                    .flagFk,
+                    .flagFm,
+                    .flagFo,
+                    .fr,
+                    .flagGa,
+                    .gb,
+                    .flagGd,
+                    .flagGe,
+                    .flagGf,
+                    .flagGg,
+                    .flagGh,
+                    .flagGi,
+                    .flagGl,
+                    .flagGm,
+                    .flagGn,
+                    .flagGp,
+                    .flagGq,
+                    .flagGr,
+                    .flagGs,
+                    .flagGt,
+                    .flagGu,
+                    .flagGw,
+                    .flagGy,
+                    .flagHk,
+                    .flagHm,
+                    .flagHn,
+                    .flagHr,
+                    .flagHt,
+                    .flagHu,
+                    .flagIc,
+                    .flagId,
+                    .flagIe,
+                    .flagIl,
+                    .flagIm,
+                    .flagIn,
+                    .flagIo,
+                    .flagIq,
+                    .flagIr,
+                    .flagIs,
+                    .it,
+                    .flagJe,
+                    .flagJm,
+                    .flagJo,
+                    .jp,
+                    .flagKe,
+                    .flagKg,
+                    .flagKh,
+                    .flagKi,
+                    .flagKm,
+                    .flagKn,
+                    .flagKp,
+                    .kr,
+                    .flagKw,
+                    .flagKy,
+                    .flagKz,
+                    .flagLa,
+                    .flagLb,
+                    .flagLc,
+                    .flagLi,
+                    .flagLk,
+                    .flagLr,
+                    .flagLs,
+                    .flagLt,
+                    .flagLu,
+                    .flagLv,
+                    .flagLy,
+                    .flagMa,
+                    .flagMc,
+                    .flagMd,
+                    .flagMe,
+                    .flagMf,
+                    .flagMg,
+                    .flagMh,
+                    .flagMk,
+                    .flagMl,
+                    .flagMm,
+                    .flagMn,
+                    .flagMo,
+                    .flagMp,
+                    .flagMq,
+                    .flagMr,
+                    .flagMs,
+                    .flagMt,
+                    .flagMu,
+                    .flagMv,
+                    .flagMw,
+                    .flagMx,
+                    .flagMy,
+                    .flagMz,
+                    .flagNa,
+                    .flagNc,
+                    .flagNe,
+                    .flagNf,
+                    .flagNg,
+                    .flagNi,
+                    .flagNl,
+                    .flagNo,
+                    .flagNp,
+                    .flagNr,
+                    .flagNu,
+                    .flagNz,
+                    .flagOm,
+                    .flagPa,
+                    .flagPe,
+                    .flagPf,
+                    .flagPg,
+                    .flagPh,
+                    .flagPk,
+                    .flagPl,
+                    .flagPm,
+                    .flagPn,
+                    .flagPr,
+                    .flagPs,
+                    .flagPt,
+                    .flagPw,
+                    .flagPy,
+                    .flagQa,
+                    .flagRe,
+                    .flagRo,
+                    .flagRs,
+                    .ru,
+                    .flagRw,
+                    .flagSa,
+                    .flagSb,
+                    .flagSc,
+                    .flagSd,
+                    .flagSe,
+                    .flagSg,
+                    .flagSh,
+                    .flagSi,
+                    .flagSj,
+                    .flagSk,
+                    .flagSl,
+                    .flagSm,
+                    .flagSn,
+                    .flagSo,
+                    .flagSr,
+                    .flagSs,
+                    .flagSt,
+                    .flagSv,
+                    .flagSx,
+                    .flagSy,
+                    .flagSz,
+                    .flagTa,
+                    .flagTc,
+                    .flagTd,
+                    .flagTf,
+                    .flagTg,
+                    .flagTh,
+                    .flagTj,
+                    .flagTk,
+                    .flagTl,
+                    .flagTm,
+                    .flagTn,
+                    .flagTo,
+                    .flagTr,
+                    .flagTt,
+                    .flagTv,
+                    .flagTw,
+                    .flagTz,
+                    .flagUa,
+                    .flagUg,
+                    .flagUm,
+                    .flagUn,
+                    .us,
+                    .flagUy,
+                    .flagUz,
+                    .flagVa,
+                    .flagVc,
+                    .flagVe,
+                    .flagVg,
+                    .flagVi,
+                    .flagVn,
+                    .flagVu,
+                    .flagWf,
+                    .flagWs,
+                    .flagXk,
+                    .flagYe,
+                    .flagYt,
+                    .flagZa,
+                    .flagZm,
+                    .flagZw,
+                    .flagEngland,
+                    .flagScotland,
+                    .flagWales,
                 ]
             }
         }
@@ -1469,1396 +1814,1741 @@ extension Emoji {
 
     var category: Category {
         switch self {
-        case .earthGlobeEuropeAfrica: return .travel
+        case .earthAfrica: return .travel
         case .grapes: return .food
         case .jackOLantern: return .activities
-        case .chequeredFlag: return .flags
-        case .automatedTellerMachine: return .symbols
+        case .checkeredFlag: return .flags
+        case .atm: return .symbols
         case .monkeyFace: return .animals
-        case .wavingHandSign: return .smileysAndPeople
+        case .wave: return .smileysAndPeople
         case .eyeglasses: return .objects
-        case .grinningFace: return .smileysAndPeople
-        case .earthGlobeAmericas: return .travel
+        case .grinning: return .smileysAndPeople
+        case .earthAmericas: return .travel
         case .melon: return .food
         case .christmasTree: return .activities
         case .monkey: return .animals
-        case .smilingFaceWithOpenMouth: return .smileysAndPeople
+        case .darkSunglasses: return .objects
+        case .smiley: return .smileysAndPeople
         case .triangularFlagOnPost: return .flags
-        case .putLitterInItsPlaceSymbol: return .symbols
+        case .putLitterInItsPlace: return .symbols
         case .raisedBackOfHand: return .smileysAndPeople
-        case .earthGlobeAsiaAustralia: return .travel
+        case .earthAsia: return .travel
         case .watermelon: return .food
         case .fireworks: return .activities
         case .crossedFlags: return .flags
-        case .smilingFaceWithOpenMouthAndSmilingEyes: return .smileysAndPeople
-        case .potableWaterSymbol: return .symbols
+        case .raisedHandWithFingersSplayed: return .smileysAndPeople
+        case .smile: return .smileysAndPeople
+        case .potableWater: return .symbols
         case .goggles: return .objects
         case .gorilla: return .animals
         case .globeWithMeridians: return .travel
         case .tangerine: return .food
-        case .fireworkSparkler: return .activities
+        case .sparkler: return .activities
         case .wavingBlackFlag: return .flags
-        case .grinningFaceWithSmilingEyes: return .smileysAndPeople
+        case .grin: return .smileysAndPeople
         case .labCoat: return .objects
         case .orangutan: return .animals
-        case .wheelchairSymbol: return .symbols
-        case .raisedHand: return .smileysAndPeople
+        case .wheelchair: return .symbols
+        case .hand: return .smileysAndPeople
         case .lemon: return .food
-        case .dogFace: return .animals
-        case .raisedHandWithPartBetweenMiddleAndRingFingers: return .smileysAndPeople
-        case .smilingFaceWithOpenMouthAndTightlyClosedEyes: return .smileysAndPeople
-        case .mensSymbol: return .symbols
+        case .wavingWhiteFlag: return .flags
+        case .dog: return .animals
+        case .spockHand: return .smileysAndPeople
+        case .worldMap: return .travel
+        case .laughing: return .smileysAndPeople
+        case .mens: return .symbols
         case .safetyVest: return .objects
         case .firecracker: return .activities
         case .banana: return .food
-        case .dog: return .animals
-        case .okHandSign: return .smileysAndPeople
+        case .rainbowFlag: return .flags
+        case .dog2: return .animals
+        case .okHand: return .smileysAndPeople
         case .necktie: return .objects
-        case .silhouetteOfJapan: return .travel
-        case .smilingFaceWithOpenMouthAndColdSweat: return .smileysAndPeople
-        case .womensSymbol: return .symbols
+        case .japan: return .travel
+        case .sweatSmile: return .smileysAndPeople
+        case .womens: return .symbols
         case .sparkles: return .activities
         case .pineapple: return .food
         case .balloon: return .activities
-        case .tShirt: return .objects
+        case .pirateFlag: return .flags
+        case .shirt: return .objects
         case .restroom: return .symbols
         case .pinchingHand: return .smileysAndPeople
         case .rollingOnTheFloorLaughing: return .smileysAndPeople
         case .guideDog: return .animals
         case .compass: return .travel
-        case .ascensionIslandFlag: return .flags
-        case .partyPopper: return .activities
+        case .flagAc: return .flags
+        case .tada: return .activities
+        case .snowCappedMountain: return .travel
+        case .serviceDog: return .animals
         case .jeans: return .objects
-        case .faceWithTearsOfJoy: return .smileysAndPeople
+        case .joy: return .smileysAndPeople
         case .babySymbol: return .symbols
         case .mango: return .food
-        case .victoryHand: return .smileysAndPeople
-        case .andorraFlag: return .flags
-        case .redApple: return .food
+        case .v: return .smileysAndPeople
+        case .flagAd: return .flags
+        case .apple: return .food
         case .confettiBall: return .activities
         case .poodle: return .animals
         case .slightlySmilingFace: return .smileysAndPeople
-        case .waterCloset: return .symbols
-        case .handWithIndexAndMiddleFingersCrossed: return .smileysAndPeople
+        case .wc: return .symbols
+        case .crossedFingers: return .smileysAndPeople
         case .scarf: return .objects
-        case .unitedArabEmiratesFlag: return .flags
+        case .mountain: return .travel
+        case .flagAe: return .flags
         case .volcano: return .travel
         case .greenApple: return .food
         case .tanabataTree: return .activities
-        case .wolfFace: return .animals
+        case .wolf: return .animals
         case .upsideDownFace: return .smileysAndPeople
         case .passportControl: return .symbols
         case .iLoveYouHandSign: return .smileysAndPeople
         case .gloves: return .objects
-        case .afghanistanFlag: return .flags
+        case .flagAf: return .flags
         case .pear: return .food
-        case .pineDecoration: return .activities
+        case .bamboo: return .activities
         case .mountFuji: return .travel
-        case .winkingFace: return .smileysAndPeople
+        case .wink: return .smileysAndPeople
         case .customs: return .symbols
-        case .signOfTheHorns: return .smileysAndPeople
+        case .theHorns: return .smileysAndPeople
         case .foxFace: return .animals
         case .coat: return .objects
-        case .antiguaBarbudaFlag: return .flags
+        case .flagAg: return .flags
         case .peach: return .food
-        case .japaneseDolls: return .activities
-        case .smilingFaceWithSmilingEyes: return .smileysAndPeople
+        case .dolls: return .activities
+        case .camping: return .travel
+        case .blush: return .smileysAndPeople
         case .baggageClaim: return .symbols
         case .callMeHand: return .smileysAndPeople
         case .raccoon: return .animals
         case .socks: return .objects
-        case .anguillaFlag: return .flags
+        case .flagAi: return .flags
         case .cherries: return .food
-        case .carpStreamer: return .activities
-        case .catFace: return .animals
-        case .whiteLeftPointingBackhandIndex: return .smileysAndPeople
+        case .flags: return .activities
+        case .beachWithUmbrella: return .travel
+        case .cat: return .animals
+        case .pointLeft: return .smileysAndPeople
         case .dress: return .objects
-        case .smilingFaceWithHalo: return .smileysAndPeople
+        case .innocent: return .smileysAndPeople
         case .leftLuggage: return .symbols
-        case .albaniaFlag: return .flags
+        case .flagAl: return .flags
         case .strawberry: return .food
         case .windChime: return .activities
-        case .cat: return .animals
-        case .whiteRightPointingBackhandIndex: return .smileysAndPeople
+        case .desert: return .travel
+        case .cat2: return .animals
+        case .pointRight: return .smileysAndPeople
         case .kimono: return .objects
-        case .smilingFaceWithSmilingEyesAndThreeHearts: return .smileysAndPeople
-        case .warningSign: return .symbols
-        case .armeniaFlag: return .flags
-        case .moonViewingCeremony: return .activities
-        case .whiteUpPointingBackhandIndex: return .smileysAndPeople
-        case .smilingFaceWithHeartShapedEyes: return .smileysAndPeople
+        case .smilingFaceWith3Hearts: return .smileysAndPeople
+        case .warning: return .symbols
+        case .flagAm: return .flags
+        case .riceScene: return .activities
+        case .desertIsland: return .travel
+        case .pointUp2: return .smileysAndPeople
+        case .heartEyes: return .smileysAndPeople
         case .childrenCrossing: return .symbols
         case .kiwifruit: return .food
         case .sari: return .objects
         case .lionFace: return .animals
-        case .angolaFlag: return .flags
+        case .flagAo: return .flags
         case .tomato: return .food
-        case .tigerFace: return .animals
-        case .reversedHandWithMiddleFingerExtended: return .smileysAndPeople
-        case .grinningFaceWithStarEyes: return .smileysAndPeople
-        case .redGiftEnvelope: return .activities
+        case .nationalPark: return .travel
+        case .tiger: return .animals
+        case .middleFinger: return .smileysAndPeople
+        case .starStruck: return .smileysAndPeople
+        case .redEnvelope: return .activities
         case .onePieceSwimsuit: return .objects
         case .noEntry: return .symbols
-        case .antarcticaFlag: return .flags
+        case .flagAq: return .flags
         case .ribbon: return .activities
-        case .tiger: return .animals
-        case .whiteDownPointingBackhandIndex: return .smileysAndPeople
-        case .faceThrowingAKiss: return .smileysAndPeople
+        case .stadium: return .travel
+        case .tiger2: return .animals
+        case .pointDown: return .smileysAndPeople
+        case .kissingHeart: return .smileysAndPeople
         case .noEntrySign: return .symbols
         case .coconut: return .food
         case .briefs: return .objects
-        case .argentinaFlag: return .flags
-        case .wrappedPresent: return .activities
+        case .flagAr: return .flags
+        case .gift: return .activities
+        case .classicalBuilding: return .travel
         case .leopard: return .animals
-        case .kissingFace: return .smileysAndPeople
+        case .kissing: return .smileysAndPeople
         case .noBicycles: return .symbols
         case .avocado: return .food
         case .shorts: return .objects
-        case .whiteUpPointingIndex: return .smileysAndPeople
-        case .americanSamoaFlag: return .flags
-        case .aubergine: return .food
-        case .horseFace: return .animals
-        case .thumbsUpSign: return .smileysAndPeople
-        case .bikini: return .objects
-        case .noSmokingSymbol: return .symbols
-        case .whiteSmilingFace: return .smileysAndPeople
-        case .austriaFlag: return .flags
+        case .pointUp: return .smileysAndPeople
+        case .flagAs: return .flags
+        case .eggplant: return .food
+        case .reminderRibbon: return .activities
+        case .buildingConstruction: return .travel
         case .horse: return .animals
-        case .thumbsDownSign: return .smileysAndPeople
+        case .plusOne: return .smileysAndPeople
+        case .bikini: return .objects
+        case .noSmoking: return .symbols
+        case .relaxed: return .smileysAndPeople
+        case .flagAt: return .flags
+        case .admissionTickets: return .activities
+        case .racehorse: return .animals
+        case .negativeOne: return .smileysAndPeople
         case .womansClothes: return .objects
-        case .kissingFaceWithClosedEyes: return .smileysAndPeople
-        case .doNotLitterSymbol: return .symbols
+        case .kissingClosedEyes: return .smileysAndPeople
+        case .doNotLitter: return .symbols
         case .potato: return .food
-        case .brick: return .travel
-        case .australiaFlag: return .flags
+        case .bricks: return .travel
+        case .flagAu: return .flags
         case .ticket: return .activities
+        case .houseBuildings: return .travel
         case .purse: return .objects
-        case .kissingFaceWithSmilingEyes: return .smileysAndPeople
-        case .nonPotableWaterSymbol: return .symbols
+        case .kissingSmilingEyes: return .smileysAndPeople
+        case .nonPotableWater: return .symbols
         case .carrot: return .food
         case .unicornFace: return .animals
-        case .raisedFist: return .smileysAndPeople
-        case .arubaFlag: return .flags
-        case .earOfMaize: return .food
-        case .fistedHandSign: return .smileysAndPeople
+        case .fist: return .smileysAndPeople
+        case .flagAw: return .flags
+        case .corn: return .food
+        case .medal: return .activities
+        case .derelictHouseBuilding: return .travel
+        case .facepunch: return .smileysAndPeople
         case .handbag: return .objects
-        case .faceSavouringDeliciousFood: return .smileysAndPeople
+        case .yum: return .smileysAndPeople
         case .noPedestrians: return .symbols
         case .zebraFace: return .animals
-        case .ålandIslandsFlag: return .flags
+        case .flagAx: return .flags
+        case .hotPepper: return .food
         case .trophy: return .activities
-        case .houseBuilding: return .travel
+        case .house: return .travel
         case .pouch: return .objects
         case .noMobilePhones: return .symbols
-        case .faceWithStuckOutTongue: return .smileysAndPeople
+        case .stuckOutTongue: return .smileysAndPeople
         case .leftFacingFist: return .smileysAndPeople
         case .deer: return .animals
-        case .azerbaijanFlag: return .flags
+        case .flagAz: return .flags
         case .sportsMedal: return .activities
         case .houseWithGarden: return .travel
-        case .cowFace: return .animals
-        case .noOneUnderEighteenSymbol: return .symbols
-        case .faceWithStuckOutTongueAndWinkingEye: return .smileysAndPeople
+        case .cow: return .animals
+        case .underage: return .symbols
+        case .stuckOutTongueWinkingEye: return .smileysAndPeople
+        case .shoppingBags: return .objects
         case .rightFacingFist: return .smileysAndPeople
         case .cucumber: return .food
-        case .bosniaHerzegovinaFlag: return .flags
+        case .flagBa: return .flags
         case .schoolSatchel: return .objects
-        case .officeBuilding: return .travel
+        case .office: return .travel
         case .ox: return .animals
-        case .clappingHandsSign: return .smileysAndPeople
-        case .grinningFaceWithOneLargeAndOneSmallEye: return .smileysAndPeople
+        case .clap: return .smileysAndPeople
+        case .zanyFace: return .smileysAndPeople
         case .firstPlaceMedal: return .activities
         case .leafyGreen: return .food
-        case .barbadosFlag: return .flags
-        case .japanesePostOffice: return .travel
+        case .radioactiveSign: return .symbols
+        case .flagBb: return .flags
+        case .postOffice: return .travel
         case .waterBuffalo: return .animals
         case .mansShoe: return .objects
-        case .faceWithStuckOutTongueAndTightlyClosedEyes: return .smileysAndPeople
-        case .personRaisingBothHandsInCelebration: return .smileysAndPeople
+        case .stuckOutTongueClosedEyes: return .smileysAndPeople
+        case .raisedHands: return .smileysAndPeople
         case .secondPlaceMedal: return .activities
         case .broccoli: return .food
-        case .bangladeshFlag: return .flags
+        case .biohazardSign: return .symbols
+        case .flagBd: return .flags
         case .europeanPostOffice: return .travel
-        case .cow: return .animals
-        case .openHandsSign: return .smileysAndPeople
+        case .cow2: return .animals
+        case .openHands: return .smileysAndPeople
         case .athleticShoe: return .objects
         case .moneyMouthFace: return .smileysAndPeople
         case .thirdPlaceMedal: return .activities
         case .garlic: return .food
-        case .upwardsBlackArrow: return .symbols
-        case .belgiumFlag: return .flags
+        case .arrowUp: return .symbols
+        case .flagBe: return .flags
         case .hospital: return .travel
-        case .pigFace: return .animals
+        case .pig: return .animals
         case .huggingFace: return .smileysAndPeople
         case .palmsUpTogether: return .smileysAndPeople
         case .hikingBoot: return .objects
         case .onion: return .food
-        case .northEastArrow: return .symbols
-        case .soccerBall: return .activities
-        case .burkinaFasoFlag: return .flags
+        case .arrowUpperRight: return .symbols
+        case .soccer: return .activities
+        case .flagBf: return .flags
         case .mushroom: return .food
         case .bank: return .travel
-        case .pig: return .animals
+        case .pig2: return .animals
         case .handshake: return .smileysAndPeople
-        case .smilingFaceWithSmilingEyesAndHandCoveringMouth: return .smileysAndPeople
-        case .flatShoe: return .objects
+        case .faceWithHandOverMouth: return .smileysAndPeople
+        case .womansFlatShoe: return .objects
         case .baseball: return .activities
-        case .blackRightwardsArrow: return .symbols
-        case .bulgariaFlag: return .flags
+        case .arrowRight: return .symbols
+        case .flagBg: return .flags
         case .hotel: return .travel
         case .boar: return .animals
-        case .highHeeledShoe: return .objects
-        case .personWithFoldedHands: return .smileysAndPeople
-        case .faceWithFingerCoveringClosedLips: return .smileysAndPeople
+        case .highHeel: return .objects
+        case .pray: return .smileysAndPeople
+        case .shushingFace: return .smileysAndPeople
         case .softball: return .activities
         case .peanuts: return .food
-        case .southEastArrow: return .symbols
-        case .bahrainFlag: return .flags
+        case .arrowLowerRight: return .symbols
+        case .flagBh: return .flags
         case .chestnut: return .food
-        case .basketballAndHoop: return .activities
+        case .basketball: return .activities
         case .loveHotel: return .travel
         case .pigNose: return .animals
-        case .womansSandal: return .objects
+        case .sandal: return .objects
         case .thinkingFace: return .smileysAndPeople
-        case .downwardsBlackArrow: return .symbols
-        case .burundiFlag: return .flags
+        case .writingHand: return .smileysAndPeople
+        case .arrowDown: return .symbols
+        case .flagBi: return .flags
         case .bread: return .food
         case .volleyball: return .activities
         case .convenienceStore: return .travel
         case .ram: return .animals
-        case .nailPolish: return .smileysAndPeople
+        case .nailCare: return .smileysAndPeople
         case .zipperMouthFace: return .smileysAndPeople
         case .balletShoes: return .objects
-        case .southWestArrow: return .symbols
-        case .beninFlag: return .flags
-        case .americanFootball: return .activities
+        case .arrowLowerLeft: return .symbols
+        case .flagBj: return .flags
+        case .football: return .activities
         case .school: return .travel
         case .sheep: return .animals
-        case .womansBoots: return .objects
-        case .faceWithOneEyebrowRaised: return .smileysAndPeople
+        case .boot: return .objects
+        case .faceWithRaisedEyebrow: return .smileysAndPeople
         case .selfie: return .smileysAndPeople
         case .croissant: return .food
-        case .leftwardsBlackArrow: return .symbols
-        case .stBarthélemyFlag: return .flags
+        case .arrowLeft: return .symbols
+        case .flagBl: return .flags
         case .rugbyFootball: return .activities
         case .departmentStore: return .travel
         case .goat: return .animals
         case .crown: return .objects
-        case .flexedBiceps: return .smileysAndPeople
+        case .muscle: return .smileysAndPeople
         case .neutralFace: return .smileysAndPeople
         case .baguetteBread: return .food
-        case .northWestArrow: return .symbols
-        case .bermudaFlag: return .flags
-        case .tennisRacquetAndBall: return .activities
+        case .arrowUpperLeft: return .symbols
+        case .flagBm: return .flags
+        case .tennis: return .activities
         case .factory: return .travel
         case .dromedaryCamel: return .animals
         case .womansHat: return .objects
-        case .expressionlessFace: return .smileysAndPeople
+        case .expressionless: return .smileysAndPeople
         case .pretzel: return .food
         case .mechanicalArm: return .smileysAndPeople
-        case .upDownArrow: return .symbols
-        case .bruneiFlag: return .flags
-        case .topHat: return .objects
+        case .arrowUpDown: return .symbols
+        case .flagBn: return .flags
+        case .tophat: return .objects
         case .japaneseCastle: return .travel
-        case .bactrianCamel: return .animals
-        case .faceWithoutMouth: return .smileysAndPeople
+        case .camel: return .animals
+        case .noMouth: return .smileysAndPeople
         case .flyingDisc: return .activities
         case .bagel: return .food
         case .mechanicalLeg: return .smileysAndPeople
         case .leftRightArrow: return .symbols
-        case .boliviaFlag: return .flags
-        case .graduationCap: return .objects
+        case .flagBo: return .flags
+        case .mortarBoard: return .objects
         case .bowling: return .activities
         case .europeanCastle: return .travel
-        case .smirkingFace: return .smileysAndPeople
+        case .smirk: return .smileysAndPeople
         case .pancakes: return .food
         case .llama: return .animals
         case .leg: return .smileysAndPeople
         case .leftwardsArrowWithHook: return .symbols
-        case .caribbeanNetherlandsFlag: return .flags
+        case .flagBq: return .flags
         case .cricketBatAndBall: return .activities
         case .wedding: return .travel
-        case .unamusedFace: return .smileysAndPeople
+        case .unamused: return .smileysAndPeople
         case .giraffeFace: return .animals
         case .foot: return .smileysAndPeople
         case .waffle: return .food
         case .billedCap: return .objects
-        case .rightwardsArrowWithHook: return .symbols
-        case .brazilFlag: return .flags
+        case .arrowRightHook: return .symbols
+        case .flagBr: return .flags
         case .fieldHockeyStickAndBall: return .activities
         case .elephant: return .animals
         case .ear: return .smileysAndPeople
         case .tokyoTower: return .travel
         case .faceWithRollingEyes: return .smileysAndPeople
         case .cheeseWedge: return .food
-        case .arrowPointingRightwardsThenCurvingUpwards: return .symbols
-        case .bahamasFlag: return .flags
+        case .helmetWithWhiteCross: return .objects
+        case .arrowHeadingUp: return .symbols
+        case .flagBs: return .flags
         case .meatOnBone: return .food
         case .iceHockeyStickAndPuck: return .activities
         case .prayerBeads: return .objects
         case .statueOfLiberty: return .travel
-        case .grimacingFace: return .smileysAndPeople
+        case .grimacing: return .smileysAndPeople
         case .rhinoceros: return .animals
         case .earWithHearingAid: return .smileysAndPeople
-        case .arrowPointingRightwardsThenCurvingDownwards: return .symbols
-        case .bhutanFlag: return .flags
+        case .arrowHeadingDown: return .symbols
+        case .flagBt: return .flags
         case .poultryLeg: return .food
         case .nose: return .smileysAndPeople
         case .lipstick: return .objects
-        case .clockwiseDownwardsAndUpwardsOpenCircleArrows: return .symbols
+        case .arrowsClockwise: return .symbols
         case .lyingFace: return .smileysAndPeople
-        case .lacrosseStickAndBall: return .activities
+        case .lacrosse: return .activities
         case .hippopotamus: return .animals
         case .church: return .travel
-        case .bouvetIslandFlag: return .flags
+        case .flagBv: return .flags
         case .tableTennisPaddleAndBall: return .activities
-        case .mouseFace: return .animals
+        case .mouse: return .animals
         case .ring: return .objects
-        case .anticlockwiseDownwardsAndUpwardsOpenCircleArrows: return .symbols
+        case .arrowsCounterclockwise: return .symbols
         case .mosque: return .travel
-        case .relievedFace: return .smileysAndPeople
+        case .relieved: return .smileysAndPeople
         case .cutOfMeat: return .food
         case .brain: return .smileysAndPeople
-        case .botswanaFlag: return .flags
+        case .flagBw: return .flags
         case .badmintonRacquetAndShuttlecock: return .activities
-        case .mouse: return .animals
-        case .gemStone: return .objects
-        case .backWithLeftwardsArrowAbove: return .symbols
-        case .pensiveFace: return .smileysAndPeople
+        case .mouse2: return .animals
+        case .gem: return .objects
+        case .back: return .symbols
+        case .pensive: return .smileysAndPeople
         case .hinduTemple: return .travel
         case .bacon: return .food
         case .tooth: return .smileysAndPeople
-        case .belarusFlag: return .flags
+        case .flagBy: return .flags
         case .hamburger: return .food
         case .rat: return .animals
-        case .speakerWithCancellationStroke: return .objects
-        case .endWithLeftwardsArrowAbove: return .symbols
+        case .mute: return .objects
+        case .end: return .symbols
         case .synagogue: return .travel
-        case .sleepyFace: return .smileysAndPeople
+        case .sleepy: return .smileysAndPeople
         case .boxingGlove: return .activities
         case .bone: return .smileysAndPeople
-        case .belizeFlag: return .flags
-        case .frenchFries: return .food
-        case .hamsterFace: return .animals
+        case .flagBz: return .flags
+        case .fries: return .food
+        case .hamster: return .animals
         case .eyes: return .smileysAndPeople
         case .speaker: return .objects
-        case .onWithExclamationMarkWithLeftRightArrowAbove: return .symbols
+        case .on: return .symbols
         case .droolingFace: return .smileysAndPeople
         case .martialArtsUniform: return .activities
-        case .canadaFlag: return .flags
-        case .sliceOfPizza: return .food
-        case .rabbitFace: return .animals
-        case .speakerWithOneSoundWave: return .objects
-        case .soonWithRightwardsArrowAbove: return .symbols
-        case .kaaba: return .travel
-        case .sleepingFace: return .smileysAndPeople
-        case .goalNet: return .activities
-        case .cocosKeelingIslandsFlag: return .flags
-        case .hotDog: return .food
+        case .shintoShrine: return .travel
+        case .flagCa: return .flags
+        case .pizza: return .food
         case .rabbit: return .animals
+        case .eye: return .smileysAndPeople
+        case .sound: return .objects
+        case .soon: return .symbols
+        case .kaaba: return .travel
+        case .sleeping: return .smileysAndPeople
+        case .goalNet: return .activities
+        case .flagCc: return .flags
+        case .hotdog: return .food
+        case .rabbit2: return .animals
         case .tongue: return .smileysAndPeople
-        case .speakerWithThreeSoundWaves: return .objects
-        case .topWithUpwardsArrowAbove: return .symbols
-        case .faceWithMedicalMask: return .smileysAndPeople
+        case .loudSound: return .objects
+        case .top: return .symbols
+        case .mask: return .smileysAndPeople
         case .fountain: return .travel
-        case .flagInHole: return .activities
-        case .congoKinshasaFlag: return .flags
-        case .mouth: return .smileysAndPeople
-        case .publicAddressLoudspeaker: return .objects
+        case .golf: return .activities
+        case .flagCd: return .flags
+        case .chipmunk: return .animals
+        case .lips: return .smileysAndPeople
+        case .loudspeaker: return .objects
         case .placeOfWorship: return .symbols
         case .faceWithThermometer: return .smileysAndPeople
         case .sandwich: return .food
+        case .iceSkate: return .activities
         case .tent: return .travel
-        case .centralAfricanRepublicFlag: return .flags
+        case .flagCf: return .flags
         case .foggy: return .travel
         case .taco: return .food
         case .fishingPoleAndFish: return .activities
         case .baby: return .smileysAndPeople
-        case .cheeringMegaphone: return .objects
+        case .mega: return .objects
         case .faceWithHeadBandage: return .smileysAndPeople
         case .hedgehog: return .animals
-        case .congoBrazzavilleFlag: return .flags
+        case .atomSymbol: return .symbols
+        case .flagCg: return .flags
         case .nightWithStars: return .travel
         case .burrito: return .food
         case .postalHorn: return .objects
+        case .omSymbol: return .symbols
         case .nauseatedFace: return .smileysAndPeople
         case .divingMask: return .activities
         case .bat: return .animals
         case .child: return .smileysAndPeople
-        case .switzerlandFlag: return .flags
+        case .flagCh: return .flags
         case .runningShirtWithSash: return .activities
-        case .bearFace: return .animals
+        case .cityscape: return .travel
+        case .bear: return .animals
         case .boy: return .smileysAndPeople
         case .bell: return .objects
-        case .faceWithOpenMouthVomiting: return .smileysAndPeople
+        case .faceVomiting: return .smileysAndPeople
         case .stuffedFlatbread: return .food
-        case .côteDivoireFlag: return .flags
+        case .starOfDavid: return .symbols
+        case .flagCi: return .flags
         case .sunriseOverMountains: return .travel
-        case .skiAndSkiBoot: return .activities
+        case .ski: return .activities
         case .koala: return .animals
         case .girl: return .smileysAndPeople
-        case .bellWithCancellationStroke: return .objects
+        case .noBell: return .objects
         case .sneezingFace: return .smileysAndPeople
         case .falafel: return .food
-        case .cookIslandsFlag: return .flags
+        case .wheelOfDharma: return .symbols
+        case .flagCk: return .flags
         case .sunrise: return .travel
         case .musicalScore: return .objects
         case .pandaFace: return .animals
         case .sled: return .activities
         case .egg: return .food
-        case .overheatedFace: return .smileysAndPeople
+        case .hotFace: return .smileysAndPeople
         case .adult: return .smileysAndPeople
-        case .chileFlag: return .flags
-        case .cityscapeAtDusk: return .travel
-        case .cooking: return .food
+        case .yinYang: return .symbols
+        case .flagCl: return .flags
+        case .citySunset: return .travel
+        case .friedEgg: return .food
         case .musicalNote: return .objects
         case .personWithBlondHair: return .smileysAndPeople
         case .curlingStone: return .activities
-        case .freezingFace: return .smileysAndPeople
+        case .coldFace: return .smileysAndPeople
         case .sloth: return .animals
-        case .cameroonFlag: return .flags
-        case .sunsetOverBuildings: return .travel
-        case .directHit: return .activities
-        case .multipleMusicalNotes: return .objects
+        case .latinCross: return .symbols
+        case .flagCm: return .flags
+        case .citySunrise: return .travel
+        case .dart: return .activities
+        case .notes: return .objects
         case .man: return .smileysAndPeople
         case .shallowPanOfFood: return .food
-        case .faceWithUnevenEyesAndWavyMouth: return .smileysAndPeople
+        case .woozyFace: return .smileysAndPeople
         case .otter: return .animals
-        case .chinaFlag: return .flags
+        case .orthodoxCross: return .symbols
+        case .cn: return .flags
         case .bridgeAtNight: return .travel
-        case .potOfFood: return .food
+        case .stew: return .food
+        case .studioMicrophone: return .objects
         case .dizzyFace: return .smileysAndPeople
         case .skunk: return .animals
         case .beardedPerson: return .smileysAndPeople
         case .yoYo: return .activities
-        case .colombiaFlag: return .flags
-        case .shockedFaceWithExplodingHead: return .smileysAndPeople
+        case .starAndCrescent: return .symbols
+        case .flagCo: return .flags
+        case .levelSlider: return .objects
+        case .redHairedMan: return .smileysAndPeople
+        case .explodingHead: return .smileysAndPeople
         case .bowlWithSpoon: return .food
         case .kangaroo: return .animals
         case .kite: return .activities
-        case .hotSprings: return .travel
-        case .clippertonIslandFlag: return .flags
+        case .peaceSymbol: return .symbols
+        case .hotsprings: return .travel
+        case .flagCp: return .flags
+        case .controlKnobs: return .objects
         case .carouselHorse: return .travel
-        case .billiards: return .activities
+        case .eightBall: return .activities
+        case .curlyHairedMan: return .smileysAndPeople
         case .menorahWithNineBranches: return .symbols
         case .faceWithCowboyHat: return .smileysAndPeople
         case .greenSalad: return .food
         case .badger: return .animals
-        case .costaRicaFlag: return .flags
+        case .flagCr: return .flags
         case .popcorn: return .food
         case .ferrisWheel: return .travel
         case .microphone: return .objects
-        case .pawPrints: return .animals
+        case .feet: return .animals
+        case .whiteHairedMan: return .smileysAndPeople
         case .crystalBall: return .activities
-        case .sixPointedStarWithMiddleDot: return .symbols
-        case .faceWithPartyHornAndPartyHat: return .smileysAndPeople
-        case .cubaFlag: return .flags
+        case .sixPointedStar: return .symbols
+        case .partyingFace: return .smileysAndPeople
+        case .flagCu: return .flags
         case .rollerCoaster: return .travel
-        case .headphone: return .objects
-        case .smilingFaceWithSunglasses: return .smileysAndPeople
+        case .headphones: return .objects
+        case .baldMan: return .smileysAndPeople
+        case .sunglasses: return .smileysAndPeople
         case .turkey: return .animals
         case .butter: return .food
         case .nazarAmulet: return .activities
         case .aries: return .symbols
-        case .capeVerdeFlag: return .flags
+        case .flagCv: return .flags
         case .videoGame: return .activities
         case .chicken: return .animals
         case .woman: return .smileysAndPeople
-        case .barberPole: return .travel
+        case .barber: return .travel
         case .radio: return .objects
         case .nerdFace: return .smileysAndPeople
-        case .saltShaker: return .food
+        case .salt: return .food
         case .taurus: return .symbols
-        case .curaçaoFlag: return .flags
+        case .flagCw: return .flags
         case .circusTent: return .travel
         case .saxophone: return .objects
         case .rooster: return .animals
+        case .redHairedWoman: return .smileysAndPeople
+        case .joystick: return .activities
         case .cannedFood: return .food
         case .faceWithMonocle: return .smileysAndPeople
         case .gemini: return .symbols
-        case .christmasIslandFlag: return .flags
-        case .bentoBox: return .food
+        case .flagCx: return .flags
+        case .bento: return .food
         case .slotMachine: return .activities
         case .guitar: return .objects
         case .hatchingChick: return .animals
-        case .confusedFace: return .smileysAndPeople
+        case .confused: return .smileysAndPeople
         case .steamLocomotive: return .travel
+        case .redHairedPerson: return .smileysAndPeople
         case .cancer: return .symbols
-        case .cyprusFlag: return .flags
+        case .flagCy: return .flags
         case .riceCracker: return .food
         case .gameDie: return .activities
         case .musicalKeyboard: return .objects
         case .babyChick: return .animals
-        case .worriedFace: return .smileysAndPeople
+        case .curlyHairedWoman: return .smileysAndPeople
+        case .worried: return .smileysAndPeople
         case .railwayCar: return .travel
         case .leo: return .symbols
-        case .czechiaFlag: return .flags
+        case .flagCz: return .flags
         case .riceBall: return .food
         case .trumpet: return .objects
-        case .frontFacingBabyChick: return .animals
+        case .hatchedChick: return .animals
         case .slightlyFrowningFace: return .smileysAndPeople
-        case .highSpeedTrain: return .travel
-        case .jigsawPuzzlePiece: return .activities
+        case .bullettrainSide: return .travel
+        case .curlyHairedPerson: return .smileysAndPeople
+        case .jigsaw: return .activities
         case .virgo: return .symbols
-        case .germanyFlag: return .flags
-        case .cookedRice: return .food
+        case .de: return .flags
+        case .rice: return .food
         case .violin: return .objects
         case .bird: return .animals
-        case .highSpeedTrainWithBulletNose: return .travel
+        case .whiteHairedWoman: return .smileysAndPeople
+        case .bullettrainFront: return .travel
         case .teddyBear: return .activities
+        case .whiteFrowningFace: return .smileysAndPeople
         case .libra: return .symbols
-        case .diegoGarciaFlag: return .flags
-        case .curryAndRice: return .food
+        case .flagDg: return .flags
+        case .curry: return .food
         case .penguin: return .animals
-        case .faceWithOpenMouth: return .smileysAndPeople
-        case .train: return .travel
+        case .openMouth: return .smileysAndPeople
+        case .train2: return .travel
+        case .whiteHairedPerson: return .smileysAndPeople
         case .banjo: return .objects
         case .scorpius: return .symbols
-        case .blackSpadeSuit: return .activities
-        case .djiboutiFlag: return .flags
-        case .steamingBowl: return .food
-        case .hushedFace: return .smileysAndPeople
+        case .spades: return .activities
+        case .flagDj: return .flags
+        case .ramen: return .food
+        case .baldWoman: return .smileysAndPeople
+        case .doveOfPeace: return .animals
+        case .hushed: return .smileysAndPeople
         case .metro: return .travel
         case .drumWithDrumsticks: return .objects
         case .sagittarius: return .symbols
-        case .blackHeartSuit: return .activities
-        case .denmarkFlag: return .flags
+        case .hearts: return .activities
+        case .flagDk: return .flags
         case .spaghetti: return .food
-        case .mobilePhone: return .objects
-        case .astonishedFace: return .smileysAndPeople
+        case .iphone: return .objects
+        case .astonished: return .smileysAndPeople
         case .lightRail: return .travel
         case .eagle: return .animals
+        case .baldPerson: return .smileysAndPeople
         case .capricorn: return .symbols
-        case .blackDiamondSuit: return .activities
-        case .dominicaFlag: return .flags
-        case .roastedSweetPotato: return .food
-        case .mobilePhoneWithRightwardsArrowAtLeft: return .objects
-        case .flushedFace: return .smileysAndPeople
+        case .diamonds: return .activities
+        case .flagDm: return .flags
+        case .sweetPotato: return .food
+        case .blondHairedWoman: return .smileysAndPeople
+        case .calling: return .objects
+        case .flushed: return .smileysAndPeople
         case .station: return .travel
         case .duck: return .animals
         case .aquarius: return .symbols
-        case .blackClubSuit: return .activities
-        case .dominicanRepublicFlag: return .flags
+        case .clubs: return .activities
+        case .flagDo: return .flags
         case .oden: return .food
+        case .blondHairedMan: return .smileysAndPeople
         case .tram: return .travel
-        case .faceWithPleadingEyes: return .smileysAndPeople
+        case .pleadingFace: return .smileysAndPeople
         case .swan: return .animals
-        case .blackTelephone: return .objects
+        case .phone: return .objects
         case .pisces: return .symbols
-        case .playingCardBlackJoker: return .activities
-        case .algeriaFlag: return .flags
+        case .chessPawn: return .activities
+        case .blackJoker: return .activities
+        case .flagDz: return .flags
         case .sushi: return .food
         case .telephoneReceiver: return .objects
-        case .frowningFaceWithOpenMouth: return .smileysAndPeople
+        case .frowning: return .smileysAndPeople
         case .monorail: return .travel
         case .owl: return .animals
         case .olderAdult: return .smileysAndPeople
         case .ophiuchus: return .symbols
-        case .mahjongTileRedDragon: return .activities
-        case .ceutaMelillaFlag: return .flags
+        case .mahjong: return .activities
+        case .flagEa: return .flags
         case .friedShrimp: return .food
         case .olderMan: return .smileysAndPeople
         case .pager: return .objects
         case .twistedRightwardsArrows: return .symbols
-        case .anguishedFace: return .smileysAndPeople
+        case .anguished: return .smileysAndPeople
         case .mountainRailway: return .travel
         case .flamingo: return .animals
-        case .ecuadorFlag: return .flags
-        case .fishCakeWithSwirlDesign: return .food
+        case .flagEc: return .flags
+        case .fishCake: return .food
         case .flowerPlayingCards: return .activities
         case .olderWoman: return .smileysAndPeople
-        case .faxMachine: return .objects
-        case .clockwiseRightwardsAndLeftwardsOpenCircleArrows: return .symbols
-        case .fearfulFace: return .smileysAndPeople
-        case .tramCar: return .travel
+        case .fax: return .objects
+        case .`repeat`: return .symbols
+        case .fearful: return .smileysAndPeople
+        case .train: return .travel
         case .peacock: return .animals
-        case .estoniaFlag: return .flags
+        case .flagEe: return .flags
         case .performingArts: return .activities
-        case .clockwiseRightwardsAndLeftwardsOpenCircleArrowsWithCircledOneOverlay: return .symbols
+        case .repeatOne: return .symbols
         case .battery: return .objects
-        case .faceWithOpenMouthAndColdSweat: return .smileysAndPeople
+        case .coldSweat: return .smileysAndPeople
         case .personFrowning: return .smileysAndPeople
         case .bus: return .travel
         case .moonCake: return .food
         case .parrot: return .animals
-        case .egyptFlag: return .flags
+        case .flagEg: return .flags
         case .dango: return .food
-        case .frogFace: return .animals
+        case .frog: return .animals
         case .electricPlug: return .objects
-        case .disappointedButRelievedFace: return .smileysAndPeople
+        case .frameWithPicture: return .activities
+        case .disappointedRelieved: return .smileysAndPeople
+        case .manFrowning: return .smileysAndPeople
         case .oncomingBus: return .travel
-        case .blackRightPointingTriangle: return .symbols
-        case .westernSaharaFlag: return .flags
-        case .artistPalette: return .activities
+        case .arrowForward: return .symbols
+        case .flagEh: return .flags
+        case .art: return .activities
         case .crocodile: return .animals
-        case .personalComputer: return .objects
-        case .cryingFace: return .smileysAndPeople
+        case .computer: return .objects
+        case .cry: return .smileysAndPeople
+        case .womanFrowning: return .smileysAndPeople
         case .trolleybus: return .travel
         case .dumpling: return .food
-        case .blackRightPointingDoubleTriangle: return .symbols
-        case .eritreaFlag: return .flags
+        case .fastForward: return .symbols
+        case .flagEr: return .flags
         case .turtle: return .animals
-        case .loudlyCryingFace: return .smileysAndPeople
+        case .desktopComputer: return .objects
+        case .sob: return .smileysAndPeople
         case .personWithPoutingFace: return .smileysAndPeople
         case .minibus: return .travel
         case .fortuneCookie: return .food
-        case .spoolOfThread: return .activities
-        case .spainFlag: return .flags
-        case .faceScreamingInFear: return .smileysAndPeople
+        case .thread: return .activities
+        case .blackRightPointingDoubleTriangleWithVerticalBar: return .symbols
+        case .es: return .flags
+        case .printer: return .objects
+        case .scream: return .smileysAndPeople
+        case .manPouting: return .smileysAndPeople
         case .ambulance: return .travel
         case .takeoutBox: return .food
         case .lizard: return .animals
-        case .ballOfYarn: return .activities
-        case .ethiopiaFlag: return .flags
+        case .yarn: return .activities
+        case .blackRightPointingTriangleWithDoubleVerticalBar: return .symbols
+        case .flagEt: return .flags
         case .snake: return .animals
-        case .confoundedFace: return .smileysAndPeople
+        case .confounded: return .smileysAndPeople
+        case .womanPouting: return .smileysAndPeople
         case .fireEngine: return .travel
         case .crab: return .food
-        case .blackLeftPointingTriangle: return .symbols
-        case .europeanUnionFlag: return .flags
+        case .keyboard: return .objects
+        case .arrowBackward: return .symbols
+        case .flagEu: return .flags
         case .dragonFace: return .animals
-        case .perseveringFace: return .smileysAndPeople
-        case .faceWithNoGoodGesture: return .smileysAndPeople
+        case .threeButtonMouse: return .objects
+        case .persevere: return .smileysAndPeople
+        case .noGood: return .smileysAndPeople
         case .policeCar: return .travel
         case .lobster: return .food
-        case .blackLeftPointingDoubleTriangle: return .symbols
-        case .finlandFlag: return .flags
+        case .rewind: return .symbols
+        case .flagFi: return .flags
         case .dragon: return .animals
-        case .disappointedFace: return .smileysAndPeople
+        case .trackball: return .objects
+        case .disappointed: return .smileysAndPeople
+        case .manGesturingNo: return .smileysAndPeople
         case .oncomingPoliceCar: return .travel
         case .shrimp: return .food
-        case .fijiFlag: return .flags
+        case .blackLeftPointingDoubleTriangleWithVerticalBar: return .symbols
+        case .flagFj: return .flags
         case .minidisc: return .objects
-        case .upPointingSmallRedTriangle: return .symbols
-        case .faceWithColdSweat: return .smileysAndPeople
+        case .arrowUpSmall: return .symbols
+        case .sweat: return .smileysAndPeople
+        case .womanGesturingNo: return .smileysAndPeople
         case .taxi: return .travel
         case .squid: return .food
         case .sauropod: return .animals
-        case .falklandIslandsFlag: return .flags
+        case .flagFk: return .flags
         case .floppyDisk: return .objects
-        case .wearyFace: return .smileysAndPeople
-        case .faceWithOkGesture: return .smileysAndPeople
+        case .weary: return .smileysAndPeople
+        case .okWoman: return .smileysAndPeople
         case .oncomingTaxi: return .travel
         case .tRex: return .animals
         case .oyster: return .food
-        case .blackUpPointingDoubleTriangle: return .symbols
-        case .micronesiaFlag: return .flags
-        case .softIceCream: return .food
-        case .spoutingWhale: return .animals
-        case .opticalDisc: return .objects
-        case .downPointingSmallRedTriangle: return .symbols
-        case .tiredFace: return .smileysAndPeople
-        case .automobile: return .travel
-        case .faroeIslandsFlag: return .flags
-        case .shavedIce: return .food
+        case .arrowDoubleUp: return .symbols
+        case .flagFm: return .flags
+        case .icecream: return .food
         case .whale: return .animals
+        case .cd: return .objects
+        case .arrowDownSmall: return .symbols
+        case .tiredFace: return .smileysAndPeople
+        case .manGesturingOk: return .smileysAndPeople
+        case .car: return .travel
+        case .flagFo: return .flags
+        case .shavedIce: return .food
+        case .whale2: return .animals
         case .dvd: return .objects
+        case .womanGesturingOk: return .smileysAndPeople
         case .oncomingAutomobile: return .travel
         case .yawningFace: return .smileysAndPeople
-        case .blackDownPointingDoubleTriangle: return .symbols
-        case .franceFlag: return .flags
+        case .arrowDoubleDown: return .symbols
+        case .fr: return .flags
         case .iceCream: return .food
         case .dolphin: return .animals
         case .informationDeskPerson: return .smileysAndPeople
-        case .faceWithLookOfTriumph: return .smileysAndPeople
-        case .recreationalVehicle: return .travel
+        case .triumph: return .smileysAndPeople
+        case .blueCar: return .travel
         case .abacus: return .objects
-        case .gabonFlag: return .flags
+        case .doubleVerticalBar: return .symbols
+        case .flagGa: return .flags
         case .doughnut: return .food
         case .movieCamera: return .objects
         case .fish: return .animals
-        case .poutingFace: return .smileysAndPeople
-        case .deliveryTruck: return .travel
-        case .unitedKingdomFlag: return .flags
+        case .manTippingHand: return .smileysAndPeople
+        case .rage: return .smileysAndPeople
+        case .truck: return .travel
+        case .blackSquareForStop: return .symbols
+        case .gb: return .flags
         case .cookie: return .food
+        case .filmFrames: return .objects
         case .tropicalFish: return .animals
-        case .angryFace: return .smileysAndPeople
+        case .womanTippingHand: return .smileysAndPeople
+        case .angry: return .smileysAndPeople
         case .articulatedLorry: return .travel
-        case .grenadaFlag: return .flags
-        case .birthdayCake: return .food
+        case .blackCircleForRecord: return .symbols
+        case .flagGd: return .flags
+        case .birthday: return .food
         case .blowfish: return .animals
-        case .happyPersonRaisingOneHand: return .smileysAndPeople
+        case .filmProjector: return .objects
+        case .raisingHand: return .smileysAndPeople
         case .tractor: return .travel
-        case .seriousFaceWithSymbolsCoveringMouth: return .smileysAndPeople
-        case .georgiaFlag: return .flags
-        case .shortcake: return .food
+        case .faceWithSymbolsOnMouth: return .smileysAndPeople
+        case .eject: return .symbols
+        case .flagGe: return .flags
+        case .cake: return .food
         case .cinema: return .symbols
-        case .clapperBoard: return .objects
-        case .smilingFaceWithHorns: return .smileysAndPeople
+        case .clapper: return .objects
+        case .racingCar: return .travel
+        case .smilingImp: return .smileysAndPeople
+        case .manRaisingHand: return .smileysAndPeople
         case .shark: return .animals
-        case .frenchGuianaFlag: return .flags
+        case .flagGf: return .flags
+        case .racingMotorcycle: return .travel
         case .octopus: return .animals
         case .imp: return .smileysAndPeople
-        case .television: return .objects
-        case .lowBrightnessSymbol: return .symbols
+        case .tv: return .objects
+        case .lowBrightness: return .symbols
+        case .womanRaisingHand: return .smileysAndPeople
         case .cupcake: return .food
-        case .guernseyFlag: return .flags
-        case .spiralShell: return .animals
+        case .flagGg: return .flags
+        case .shell: return .animals
         case .skull: return .smileysAndPeople
         case .camera: return .objects
-        case .highBrightnessSymbol: return .symbols
+        case .highBrightness: return .symbols
         case .motorScooter: return .travel
         case .pie: return .food
         case .deafPerson: return .smileysAndPeople
-        case .ghanaFlag: return .flags
+        case .flagGh: return .flags
         case .chocolateBar: return .food
         case .snail: return .animals
-        case .antennaWithBars: return .symbols
+        case .signalStrength: return .symbols
         case .cameraWithFlash: return .objects
         case .manualWheelchair: return .travel
-        case .gibraltarFlag: return .flags
+        case .deafMan: return .smileysAndPeople
+        case .skullAndCrossbones: return .smileysAndPeople
+        case .flagGi: return .flags
         case .candy: return .food
-        case .pileOfPoo: return .smileysAndPeople
+        case .hankey: return .smileysAndPeople
         case .vibrationMode: return .symbols
         case .videoCamera: return .objects
         case .butterfly: return .animals
         case .motorizedWheelchair: return .travel
-        case .greenlandFlag: return .flags
+        case .deafWoman: return .smileysAndPeople
+        case .flagGl: return .flags
         case .lollipop: return .food
         case .bug: return .animals
         case .mobilePhoneOff: return .symbols
-        case .videocassette: return .objects
-        case .personBowingDeeply: return .smileysAndPeople
+        case .vhs: return .objects
+        case .bow: return .smileysAndPeople
         case .autoRickshaw: return .travel
         case .clownFace: return .smileysAndPeople
-        case .gambiaFlag: return .flags
+        case .flagGm: return .flags
         case .custard: return .food
         case .ant: return .animals
         case .japaneseOgre: return .smileysAndPeople
-        case .leftPointingMagnifyingGlass: return .objects
-        case .bicycle: return .travel
-        case .guineaFlag: return .flags
+        case .mag: return .objects
+        case .manBowing: return .smileysAndPeople
+        case .bike: return .travel
+        case .femaleSign: return .symbols
+        case .flagGn: return .flags
         case .honeyPot: return .food
-        case .honeybee: return .animals
+        case .bee: return .animals
         case .japaneseGoblin: return .smileysAndPeople
-        case .rightPointingMagnifyingGlass: return .objects
+        case .magRight: return .objects
+        case .womanBowing: return .smileysAndPeople
         case .scooter: return .travel
-        case .guadeloupeFlag: return .flags
+        case .maleSign: return .symbols
+        case .flagGp: return .flags
         case .babyBottle: return .food
-        case .ladyBeetle: return .animals
+        case .beetle: return .animals
         case .ghost: return .smileysAndPeople
+        case .candle: return .objects
         case .skateboard: return .travel
         case .facePalm: return .smileysAndPeople
-        case .equatorialGuineaFlag: return .flags
-        case .extraterrestrialAlien: return .smileysAndPeople
-        case .electricLightBulb: return .objects
-        case .busStop: return .travel
+        case .medicalSymbol: return .symbols
+        case .flagGq: return .flags
+        case .alien: return .smileysAndPeople
+        case .bulb: return .objects
+        case .busstop: return .travel
+        case .manFacepalming: return .smileysAndPeople
         case .glassOfMilk: return .food
         case .cricket: return .animals
-        case .greeceFlag: return .flags
-        case .alienMonster: return .smileysAndPeople
-        case .electricTorch: return .objects
-        case .hotBeverage: return .food
-        case .blackUniversalRecyclingSymbol: return .symbols
-        case .southGeorgiaSouthSandwichIslandsFlag: return .flags
-        case .teacupWithoutHandle: return .food
+        case .infinity: return .symbols
+        case .flagGr: return .flags
+        case .spaceInvader: return .smileysAndPeople
+        case .flashlight: return .objects
+        case .spider: return .animals
+        case .motorway: return .travel
+        case .womanFacepalming: return .smileysAndPeople
+        case .coffee: return .food
+        case .recycle: return .symbols
+        case .flagGs: return .flags
+        case .tea: return .food
         case .izakayaLantern: return .objects
+        case .spiderWeb: return .animals
+        case .railwayTrack: return .travel
         case .robotFace: return .smileysAndPeople
         case .shrug: return .smileysAndPeople
-        case .guatemalaFlag: return .flags
-        case .sakeBottleAndCup: return .food
-        case .tridentEmblem: return .symbols
-        case .smilingCatFaceWithOpenMouth: return .smileysAndPeople
+        case .fleurDeLis: return .symbols
+        case .flagGt: return .flags
+        case .sake: return .food
+        case .trident: return .symbols
+        case .smileyCat: return .smileysAndPeople
+        case .oilDrum: return .travel
+        case .manShrugging: return .smileysAndPeople
         case .scorpion: return .animals
         case .diyaLamp: return .objects
-        case .guamFlag: return .flags
-        case .bottleWithPoppingCork: return .food
+        case .flagGu: return .flags
+        case .champagne: return .food
         case .notebookWithDecorativeCover: return .objects
         case .nameBadge: return .symbols
-        case .grinningCatFaceWithSmilingEyes: return .smileysAndPeople
+        case .smileCat: return .smileysAndPeople
+        case .womanShrugging: return .smileysAndPeople
         case .mosquito: return .animals
-        case .fuelPump: return .travel
-        case .guineaBissauFlag: return .flags
+        case .fuelpump: return .travel
+        case .flagGw: return .flags
         case .wineGlass: return .food
         case .closedBook: return .objects
-        case .japaneseSymbolForBeginner: return .symbols
-        case .catFaceWithTearsOfJoy: return .smileysAndPeople
-        case .policeCarsRevolvingLight: return .travel
+        case .beginner: return .symbols
+        case .joyCat: return .smileysAndPeople
+        case .rotatingLight: return .travel
         case .microbe: return .animals
-        case .guyanaFlag: return .flags
-        case .cocktailGlass: return .food
+        case .healthWorker: return .smileysAndPeople
+        case .flagGy: return .flags
+        case .cocktail: return .food
+        case .maleDoctor: return .smileysAndPeople
         case .bouquet: return .animals
-        case .openBook: return .objects
-        case .smilingCatFaceWithHeartShapedEyes: return .smileysAndPeople
-        case .horizontalTrafficLight: return .travel
-        case .heavyLargeCircle: return .symbols
-        case .hongKongSarChinaFlag: return .flags
+        case .book: return .objects
+        case .heartEyesCat: return .smileysAndPeople
+        case .trafficLight: return .travel
+        case .o: return .symbols
+        case .flagHk: return .flags
         case .cherryBlossom: return .animals
         case .tropicalDrink: return .food
+        case .femaleDoctor: return .smileysAndPeople
         case .greenBook: return .objects
-        case .catFaceWithWrySmile: return .smileysAndPeople
+        case .smirkCat: return .smileysAndPeople
         case .verticalTrafficLight: return .travel
-        case .whiteHeavyCheckMark: return .symbols
-        case .heardMcdonaldIslandsFlag: return .flags
-        case .beerMug: return .food
+        case .whiteCheckMark: return .symbols
+        case .flagHm: return .flags
+        case .beer: return .food
         case .whiteFlower: return .animals
         case .blueBook: return .objects
-        case .kissingCatFaceWithClosedEyes: return .smileysAndPeople
+        case .kissingCat: return .smileysAndPeople
         case .octagonalSign: return .travel
+        case .student: return .smileysAndPeople
         case .ballotBoxWithCheck: return .symbols
-        case .hondurasFlag: return .flags
-        case .clinkingBeerMugs: return .food
+        case .flagHn: return .flags
+        case .beers: return .food
+        case .rosette: return .animals
+        case .maleStudent: return .smileysAndPeople
         case .orangeBook: return .objects
-        case .wearyCatFace: return .smileysAndPeople
-        case .constructionSign: return .travel
+        case .screamCat: return .smileysAndPeople
+        case .construction: return .travel
         case .heavyCheckMark: return .symbols
-        case .croatiaFlag: return .flags
+        case .flagHr: return .flags
         case .rose: return .animals
+        case .femaleStudent: return .smileysAndPeople
         case .books: return .objects
         case .cryingCatFace: return .smileysAndPeople
         case .clinkingGlasses: return .food
         case .anchor: return .travel
         case .heavyMultiplicationX: return .symbols
-        case .haitiFlag: return .flags
+        case .flagHt: return .flags
         case .notebook: return .objects
-        case .poutingCatFace: return .smileysAndPeople
+        case .poutingCat: return .smileysAndPeople
         case .wiltedFlower: return .animals
         case .tumblerGlass: return .food
-        case .sailboat: return .travel
-        case .crossMark: return .symbols
-        case .hungaryFlag: return .flags
+        case .teacher: return .smileysAndPeople
+        case .boat: return .travel
+        case .x: return .symbols
+        case .flagHu: return .flags
         case .hibiscus: return .animals
+        case .maleTeacher: return .smileysAndPeople
         case .ledger: return .objects
-        case .seeNoEvilMonkey: return .smileysAndPeople
+        case .seeNoEvil: return .smileysAndPeople
         case .canoe: return .travel
         case .cupWithStraw: return .food
         case .negativeSquaredCrossMark: return .symbols
-        case .canaryIslandsFlag: return .flags
+        case .flagIc: return .flags
         case .sunflower: return .animals
+        case .femaleTeacher: return .smileysAndPeople
         case .pageWithCurl: return .objects
-        case .hearNoEvilMonkey: return .smileysAndPeople
+        case .hearNoEvil: return .smileysAndPeople
         case .speedboat: return .travel
         case .beverageBox: return .food
         case .heavyPlusSign: return .symbols
-        case .indonesiaFlag: return .flags
+        case .flagId: return .flags
         case .blossom: return .animals
         case .scroll: return .objects
-        case .speakNoEvilMonkey: return .smileysAndPeople
+        case .speakNoEvil: return .smileysAndPeople
+        case .passengerShip: return .travel
         case .mateDrink: return .food
+        case .judge: return .smileysAndPeople
         case .heavyMinusSign: return .symbols
-        case .irelandFlag: return .flags
+        case .flagIe: return .flags
         case .tulip: return .animals
-        case .kissMark: return .smileysAndPeople
+        case .maleJudge: return .smileysAndPeople
+        case .kiss: return .smileysAndPeople
         case .pageFacingUp: return .objects
         case .iceCube: return .food
+        case .ferry: return .travel
         case .heavyDivisionSign: return .symbols
-        case .israelFlag: return .flags
+        case .flagIl: return .flags
         case .seedling: return .animals
+        case .femaleJudge: return .smileysAndPeople
         case .loveLetter: return .smileysAndPeople
         case .newspaper: return .objects
+        case .motorBoat: return .travel
         case .chopsticks: return .food
         case .curlyLoop: return .symbols
-        case .isleOfManFlag: return .flags
+        case .flagIm: return .flags
         case .evergreenTree: return .animals
-        case .heartWithArrow: return .smileysAndPeople
+        case .knifeForkPlate: return .food
+        case .cupid: return .smileysAndPeople
+        case .rolledUpNewspaper: return .objects
         case .ship: return .travel
-        case .doubleCurlyLoop: return .symbols
-        case .indiaFlag: return .flags
+        case .farmer: return .smileysAndPeople
+        case .loop: return .symbols
+        case .flagIn: return .flags
         case .deciduousTree: return .animals
         case .forkAndKnife: return .food
-        case .heartWithRibbon: return .smileysAndPeople
+        case .maleFarmer: return .smileysAndPeople
+        case .giftHeart: return .smileysAndPeople
         case .bookmarkTabs: return .objects
         case .airplane: return .travel
         case .partAlternationMark: return .symbols
-        case .britishIndianOceanTerritoryFlag: return .flags
+        case .flagIo: return .flags
         case .palmTree: return .animals
+        case .femaleFarmer: return .smileysAndPeople
         case .sparklingHeart: return .smileysAndPeople
         case .bookmark: return .objects
+        case .smallAirplane: return .travel
         case .spoon: return .food
         case .eightSpokedAsterisk: return .symbols
-        case .iraqFlag: return .flags
+        case .flagIq: return .flags
         case .cactus: return .animals
-        case .growingHeart: return .smileysAndPeople
+        case .label: return .objects
+        case .heartpulse: return .smileysAndPeople
         case .hocho: return .food
         case .airplaneDeparture: return .travel
+        case .cook: return .smileysAndPeople
         case .eightPointedBlackStar: return .symbols
-        case .iranFlag: return .flags
+        case .flagIr: return .flags
         case .earOfRice: return .animals
         case .amphora: return .food
-        case .beatingHeart: return .smileysAndPeople
-        case .moneyBag: return .objects
+        case .maleCook: return .smileysAndPeople
+        case .heartbeat: return .smileysAndPeople
+        case .moneybag: return .objects
         case .airplaneArriving: return .travel
         case .sparkle: return .symbols
-        case .icelandFlag: return .flags
+        case .flagIs: return .flags
         case .herb: return .animals
+        case .femaleCook: return .smileysAndPeople
         case .revolvingHearts: return .smileysAndPeople
-        case .banknoteWithYenSign: return .objects
+        case .yen: return .objects
         case .parachute: return .travel
-        case .doubleExclamationMark: return .symbols
-        case .italyFlag: return .flags
+        case .bangbang: return .symbols
+        case .it: return .flags
         case .twoHearts: return .smileysAndPeople
-        case .banknoteWithDollarSign: return .objects
+        case .dollar: return .objects
         case .seat: return .travel
-        case .exclamationQuestionMark: return .symbols
-        case .jerseyFlag: return .flags
+        case .mechanic: return .smileysAndPeople
+        case .interrobang: return .symbols
+        case .shamrock: return .animals
+        case .flagJe: return .flags
         case .fourLeafClover: return .animals
+        case .maleMechanic: return .smileysAndPeople
         case .heartDecoration: return .smileysAndPeople
-        case .banknoteWithEuroSign: return .objects
+        case .euro: return .objects
         case .helicopter: return .travel
-        case .blackQuestionMarkOrnament: return .symbols
-        case .jamaicaFlag: return .flags
+        case .question: return .symbols
+        case .flagJm: return .flags
         case .mapleLeaf: return .animals
-        case .banknoteWithPoundSign: return .objects
+        case .femaleMechanic: return .smileysAndPeople
+        case .pound: return .objects
         case .suspensionRailway: return .travel
-        case .whiteQuestionMarkOrnament: return .symbols
-        case .jordanFlag: return .flags
+        case .greyQuestion: return .symbols
+        case .heavyHeartExclamationMarkOrnament: return .smileysAndPeople
+        case .flagJo: return .flags
         case .fallenLeaf: return .animals
         case .brokenHeart: return .smileysAndPeople
         case .moneyWithWings: return .objects
         case .mountainCableway: return .travel
-        case .whiteExclamationMarkOrnament: return .symbols
-        case .japanFlag: return .flags
-        case .leafFlutteringInWind: return .animals
+        case .factoryWorker: return .smileysAndPeople
+        case .greyExclamation: return .symbols
+        case .jp: return .flags
+        case .leaves: return .animals
+        case .maleFactoryWorker: return .smileysAndPeople
         case .creditCard: return .objects
         case .aerialTramway: return .travel
-        case .heavyExclamationMarkSymbol: return .symbols
-        case .heavyBlackHeart: return .smileysAndPeople
-        case .kenyaFlag: return .flags
+        case .exclamation: return .symbols
+        case .heart: return .smileysAndPeople
+        case .flagKe: return .flags
+        case .femaleFactoryWorker: return .smileysAndPeople
+        case .satellite: return .travel
         case .orangeHeart: return .smileysAndPeople
         case .receipt: return .objects
         case .wavyDash: return .symbols
-        case .copyrightSign: return .symbols
-        case .kyrgyzstanFlag: return .flags
+        case .copyright: return .symbols
+        case .flagKg: return .flags
         case .yellowHeart: return .smileysAndPeople
-        case .chartWithUpwardsTrendAndYenSign: return .objects
+        case .chart: return .objects
         case .rocket: return .travel
-        case .registeredSign: return .symbols
-        case .cambodiaFlag: return .flags
+        case .officeWorker: return .smileysAndPeople
+        case .registered: return .symbols
+        case .flagKh: return .flags
+        case .maleOfficeWorker: return .smileysAndPeople
         case .greenHeart: return .smileysAndPeople
         case .currencyExchange: return .objects
         case .flyingSaucer: return .travel
-        case .kiribatiFlag: return .flags
+        case .flagKi: return .flags
+        case .femaleOfficeWorker: return .smileysAndPeople
         case .blueHeart: return .smileysAndPeople
         case .heavyDollarSign: return .objects
-        case .tradeMarkSign: return .symbols
-        case .hashKey: return .symbols
-        case .comorosFlag: return .flags
+        case .bellhopBell: return .travel
+        case .tm: return .symbols
+        case .hash: return .symbols
+        case .flagKm: return .flags
         case .purpleHeart: return .smileysAndPeople
+        case .scientist: return .smileysAndPeople
         case .luggage: return .travel
-        case .envelope: return .objects
-        case .stKittsNevisFlag: return .flags
-        case .eMailSymbol: return .objects
+        case .email: return .objects
+        case .keycapStar: return .symbols
+        case .flagKn: return .flags
+        case .maleScientist: return .smileysAndPeople
+        case .eMail: return .objects
         case .brownHeart: return .smileysAndPeople
         case .hourglass: return .travel
-        case .keycap0: return .symbols
-        case .northKoreaFlag: return .flags
+        case .zero: return .symbols
+        case .flagKp: return .flags
+        case .femaleScientist: return .smileysAndPeople
         case .incomingEnvelope: return .objects
         case .blackHeart: return .smileysAndPeople
-        case .hourglassWithFlowingSand: return .travel
-        case .keycap1: return .symbols
-        case .southKoreaFlag: return .flags
-        case .envelopeWithDownwardsArrowAbove: return .objects
+        case .hourglassFlowingSand: return .travel
+        case .one: return .symbols
+        case .kr: return .flags
+        case .envelopeWithArrow: return .objects
         case .whiteHeart: return .smileysAndPeople
+        case .technologist: return .smileysAndPeople
         case .watch: return .travel
-        case .keycap2: return .symbols
-        case .kuwaitFlag: return .flags
-        case .hundredPointsSymbol: return .smileysAndPeople
+        case .two: return .symbols
+        case .flagKw: return .flags
+        case .maleTechnologist: return .smileysAndPeople
+        case .oneHundred: return .smileysAndPeople
         case .outboxTray: return .objects
         case .alarmClock: return .travel
-        case .keycap3: return .symbols
-        case .caymanIslandsFlag: return .flags
-        case .angerSymbol: return .smileysAndPeople
+        case .three: return .symbols
+        case .flagKy: return .flags
+        case .femaleTechnologist: return .smileysAndPeople
+        case .anger: return .smileysAndPeople
         case .inboxTray: return .objects
-        case .keycap4: return .symbols
-        case .kazakhstanFlag: return .flags
-        case .collisionSymbol: return .smileysAndPeople
+        case .stopwatch: return .travel
+        case .four: return .symbols
+        case .flagKz: return .flags
+        case .boom: return .smileysAndPeople
         case .package: return .objects
-        case .keycap5: return .symbols
-        case .laosFlag: return .flags
-        case .dizzySymbol: return .smileysAndPeople
-        case .closedMailboxWithRaisedFlag: return .objects
-        case .keycap6: return .symbols
-        case .lebanonFlag: return .flags
-        case .splashingSweatSymbol: return .smileysAndPeople
-        case .closedMailboxWithLoweredFlag: return .objects
-        case .clockFaceTwelveOclock: return .travel
-        case .keycap7: return .symbols
-        case .stLuciaFlag: return .flags
-        case .dashSymbol: return .smileysAndPeople
-        case .openMailboxWithRaisedFlag: return .objects
-        case .clockFaceTwelveThirty: return .travel
-        case .keycap8: return .symbols
-        case .liechtensteinFlag: return .flags
-        case .openMailboxWithLoweredFlag: return .objects
-        case .clockFaceOneOclock: return .travel
-        case .keycap9: return .symbols
-        case .sriLankaFlag: return .flags
+        case .singer: return .smileysAndPeople
+        case .timerClock: return .travel
+        case .five: return .symbols
+        case .flagLa: return .flags
+        case .maleSinger: return .smileysAndPeople
+        case .dizzy: return .smileysAndPeople
+        case .mailbox: return .objects
+        case .mantelpieceClock: return .travel
+        case .six: return .symbols
+        case .flagLb: return .flags
+        case .femaleSinger: return .smileysAndPeople
+        case .sweatDrops: return .smileysAndPeople
+        case .mailboxClosed: return .objects
+        case .clock12: return .travel
+        case .seven: return .symbols
+        case .flagLc: return .flags
+        case .dash: return .smileysAndPeople
+        case .mailboxWithMail: return .objects
+        case .clock1230: return .travel
+        case .artist: return .smileysAndPeople
+        case .eight: return .symbols
+        case .flagLi: return .flags
+        case .maleArtist: return .smileysAndPeople
+        case .mailboxWithNoMail: return .objects
+        case .clock1: return .travel
+        case .hole: return .smileysAndPeople
+        case .nine: return .symbols
+        case .flagLk: return .flags
+        case .femaleArtist: return .smileysAndPeople
         case .bomb: return .smileysAndPeople
         case .postbox: return .objects
-        case .clockFaceOneThirty: return .travel
-        case .liberiaFlag: return .flags
+        case .clock130: return .travel
+        case .flagLr: return .flags
         case .speechBalloon: return .smileysAndPeople
         case .keycapTen: return .symbols
-        case .clockFaceTwoOclock: return .travel
-        case .lesothoFlag: return .flags
-        case .inputSymbolForLatinCapitalLetters: return .symbols
-        case .clockFaceTwoThirty: return .travel
-        case .pencil: return .objects
-        case .lithuaniaFlag: return .flags
-        case .inputSymbolForLatinSmallLetters: return .symbols
-        case .clockFaceThreeOclock: return .travel
+        case .clock2: return .travel
+        case .ballotBoxWithBallot: return .objects
+        case .pilot: return .smileysAndPeople
+        case .flagLs: return .flags
+        case .eyeInSpeechBubble: return .smileysAndPeople
+        case .malePilot: return .smileysAndPeople
+        case .capitalAbcd: return .symbols
+        case .clock230: return .travel
+        case .pencil2: return .objects
+        case .flagLt: return .flags
+        case .femalePilot: return .smileysAndPeople
+        case .abcd: return .symbols
+        case .clock3: return .travel
+        case .leftSpeechBubble: return .smileysAndPeople
         case .blackNib: return .objects
-        case .luxembourgFlag: return .flags
-        case .inputSymbolForNumbers: return .symbols
-        case .clockFaceThreeThirty: return .travel
-        case .latviaFlag: return .flags
+        case .flagLu: return .flags
+        case .oneTwoThreeFour: return .symbols
+        case .clock330: return .travel
+        case .lowerLeftFountainPen: return .objects
+        case .rightAngerBubble: return .smileysAndPeople
+        case .astronaut: return .smileysAndPeople
+        case .flagLv: return .flags
+        case .maleAstronaut: return .smileysAndPeople
         case .thoughtBalloon: return .smileysAndPeople
-        case .inputSymbolForSymbols: return .symbols
-        case .clockFaceFourOclock: return .travel
-        case .libyaFlag: return .flags
-        case .sleepingSymbol: return .smileysAndPeople
-        case .inputSymbolForLatinLetters: return .symbols
-        case .clockFaceFourThirty: return .travel
-        case .negativeSquaredLatinCapitalLetterA: return .symbols
-        case .moroccoFlag: return .flags
-        case .clockFaceFiveOclock: return .travel
-        case .negativeSquaredAb: return .symbols
-        case .monacoFlag: return .flags
+        case .symbols: return .symbols
+        case .clock4: return .travel
+        case .lowerLeftBallpointPen: return .objects
+        case .flagLy: return .flags
+        case .femaleAstronaut: return .smileysAndPeople
+        case .zzz: return .smileysAndPeople
+        case .abc: return .symbols
+        case .clock430: return .travel
+        case .lowerLeftPaintbrush: return .objects
+        case .a: return .symbols
+        case .flagMa: return .flags
+        case .clock5: return .travel
+        case .lowerLeftCrayon: return .objects
+        case .firefighter: return .smileysAndPeople
+        case .ab: return .symbols
+        case .flagMc: return .flags
+        case .maleFirefighter: return .smileysAndPeople
         case .memo: return .objects
-        case .clockFaceFiveThirty: return .travel
-        case .negativeSquaredLatinCapitalLetterB: return .symbols
-        case .moldovaFlag: return .flags
+        case .clock530: return .travel
+        case .b: return .symbols
+        case .flagMd: return .flags
+        case .femaleFirefighter: return .smileysAndPeople
         case .briefcase: return .objects
-        case .clockFaceSixOclock: return .travel
-        case .squaredCl: return .symbols
-        case .montenegroFlag: return .flags
-        case .policeOfficer: return .smileysAndPeople
+        case .clock6: return .travel
+        case .cl: return .symbols
+        case .flagMe: return .flags
+        case .cop: return .smileysAndPeople
         case .fileFolder: return .objects
-        case .clockFaceSixThirty: return .travel
-        case .squaredCool: return .symbols
-        case .stMartinFlag: return .flags
+        case .clock630: return .travel
+        case .cool: return .symbols
+        case .flagMf: return .flags
+        case .malePoliceOfficer: return .smileysAndPeople
         case .openFileFolder: return .objects
-        case .clockFaceSevenOclock: return .travel
-        case .squaredFree: return .symbols
-        case .madagascarFlag: return .flags
-        case .clockFaceSevenThirty: return .travel
-        case .marshallIslandsFlag: return .flags
-        case .calendar: return .objects
-        case .clockFaceEightOclock: return .travel
+        case .clock7: return .travel
+        case .free: return .symbols
+        case .flagMg: return .flags
+        case .femalePoliceOfficer: return .smileysAndPeople
+        case .clock730: return .travel
+        case .cardIndexDividers: return .objects
+        case .flagMh: return .flags
+        case .date: return .objects
+        case .clock8: return .travel
+        case .sleuthOrSpy: return .smileysAndPeople
         case .informationSource: return .symbols
-        case .squaredId: return .symbols
-        case .northMacedoniaFlag: return .flags
-        case .tearOffCalendar: return .objects
-        case .clockFaceEightThirty: return .travel
-        case .maliFlag: return .flags
-        case .clockFaceNineOclock: return .travel
-        case .circledLatinCapitalLetterM: return .symbols
-        case .squaredNew: return .symbols
-        case .myanmarBurmaFlag: return .flags
+        case .id: return .symbols
+        case .flagMk: return .flags
+        case .calendar: return .objects
+        case .clock830: return .travel
+        case .maleDetective: return .smileysAndPeople
+        case .flagMl: return .flags
+        case .clock9: return .travel
+        case .femaleDetective: return .smileysAndPeople
+        case .spiralNotePad: return .objects
+        case .m: return .symbols
+        case .new: return .symbols
+        case .flagMm: return .flags
         case .guardsman: return .smileysAndPeople
-        case .clockFaceNineThirty: return .travel
-        case .squaredNg: return .symbols
-        case .mongoliaFlag: return .flags
+        case .clock930: return .travel
+        case .spiralCalendarPad: return .objects
+        case .ng: return .symbols
+        case .flagMn: return .flags
+        case .maleGuard: return .smileysAndPeople
         case .cardIndex: return .objects
-        case .clockFaceTenOclock: return .travel
-        case .negativeSquaredLatinCapitalLetterO: return .symbols
-        case .macaoSarChinaFlag: return .flags
+        case .clock10: return .travel
+        case .o2: return .symbols
+        case .flagMo: return .flags
+        case .femaleGuard: return .smileysAndPeople
         case .chartWithUpwardsTrend: return .objects
-        case .clockFaceTenThirty: return .travel
-        case .squaredOk: return .symbols
-        case .northernMarianaIslandsFlag: return .flags
+        case .clock1030: return .travel
+        case .ok: return .symbols
+        case .flagMp: return .flags
         case .constructionWorker: return .smileysAndPeople
         case .chartWithDownwardsTrend: return .objects
-        case .clockFaceElevenOclock: return .travel
-        case .negativeSquaredLatinCapitalLetterP: return .symbols
-        case .martiniqueFlag: return .flags
+        case .clock11: return .travel
+        case .parking: return .symbols
+        case .flagMq: return .flags
+        case .maleConstructionWorker: return .smileysAndPeople
         case .barChart: return .objects
-        case .clockFaceElevenThirty: return .travel
-        case .squaredSos: return .symbols
-        case .mauritaniaFlag: return .flags
-        case .newMoonSymbol: return .travel
+        case .clock1130: return .travel
+        case .sos: return .symbols
+        case .flagMr: return .flags
+        case .newMoon: return .travel
+        case .femaleConstructionWorker: return .smileysAndPeople
         case .clipboard: return .objects
-        case .squaredUpWithExclamationMark: return .symbols
-        case .montserratFlag: return .flags
-        case .waxingCrescentMoonSymbol: return .travel
+        case .up: return .symbols
+        case .flagMs: return .flags
+        case .waxingCrescentMoon: return .travel
         case .pushpin: return .objects
         case .prince: return .smileysAndPeople
-        case .squaredVs: return .symbols
-        case .maltaFlag: return .flags
-        case .firstQuarterMoonSymbol: return .travel
+        case .vs: return .symbols
+        case .flagMt: return .flags
+        case .firstQuarterMoon: return .travel
         case .princess: return .smileysAndPeople
         case .roundPushpin: return .objects
-        case .mauritiusFlag: return .flags
-        case .squaredKatakanaKoko: return .symbols
-        case .waxingGibbousMoonSymbol: return .travel
+        case .flagMu: return .flags
+        case .koko: return .symbols
+        case .moon: return .travel
         case .manWithTurban: return .smileysAndPeople
         case .paperclip: return .objects
-        case .maldivesFlag: return .flags
-        case .squaredKatakanaSa: return .symbols
-        case .fullMoonSymbol: return .travel
-        case .malawiFlag: return .flags
-        case .squaredCjkUnifiedIdeograph6708: return .symbols
-        case .waningGibbousMoonSymbol: return .travel
+        case .flagMv: return .flags
+        case .sa: return .symbols
+        case .fullMoon: return .travel
+        case .manWearingTurban: return .smileysAndPeople
+        case .linkedPaperclips: return .objects
+        case .flagMw: return .flags
+        case .u6708: return .symbols
+        case .waningGibbousMoon: return .travel
+        case .womanWearingTurban: return .smileysAndPeople
         case .straightRuler: return .objects
-        case .mexicoFlag: return .flags
-        case .squaredCjkUnifiedIdeograph6709: return .symbols
-        case .lastQuarterMoonSymbol: return .travel
+        case .flagMx: return .flags
+        case .u6709: return .symbols
+        case .lastQuarterMoon: return .travel
         case .manWithGuaPiMao: return .smileysAndPeople
         case .triangularRuler: return .objects
-        case .malaysiaFlag: return .flags
-        case .squaredCjkUnifiedIdeograph6307: return .symbols
-        case .waningCrescentMoonSymbol: return .travel
+        case .flagMy: return .flags
+        case .u6307: return .symbols
+        case .waningCrescentMoon: return .travel
         case .personWithHeadscarf: return .smileysAndPeople
-        case .blackScissors: return .objects
-        case .mozambiqueFlag: return .flags
-        case .circledIdeographAdvantage: return .symbols
+        case .scissors: return .objects
+        case .flagMz: return .flags
+        case .ideographAdvantage: return .symbols
         case .crescentMoon: return .travel
+        case .cardFileBox: return .objects
         case .manInTuxedo: return .smileysAndPeople
-        case .namibiaFlag: return .flags
-        case .squaredCjkUnifiedIdeograph5272: return .symbols
+        case .flagNa: return .flags
+        case .u5272: return .symbols
         case .newMoonWithFace: return .travel
         case .brideWithVeil: return .smileysAndPeople
-        case .newCaledoniaFlag: return .flags
-        case .squaredCjkUnifiedIdeograph7121: return .symbols
+        case .fileCabinet: return .objects
+        case .flagNc: return .flags
+        case .u7121: return .symbols
         case .firstQuarterMoonWithFace: return .travel
+        case .wastebasket: return .objects
         case .pregnantWoman: return .smileysAndPeople
-        case .nigerFlag: return .flags
-        case .squaredCjkUnifiedIdeograph7981: return .symbols
+        case .flagNe: return .flags
+        case .u7981: return .symbols
         case .lastQuarterMoonWithFace: return .travel
         case .lock: return .objects
         case .breastFeeding: return .smileysAndPeople
-        case .norfolkIslandFlag: return .flags
-        case .circledIdeographAccept: return .symbols
-        case .babyAngel: return .smileysAndPeople
-        case .openLock: return .objects
-        case .nigeriaFlag: return .flags
-        case .squaredCjkUnifiedIdeograph7533: return .symbols
-        case .fatherChristmas: return .smileysAndPeople
+        case .flagNf: return .flags
+        case .accept: return .symbols
+        case .thermometer: return .travel
+        case .angel: return .smileysAndPeople
+        case .unlock: return .objects
+        case .flagNg: return .flags
+        case .u7533: return .symbols
+        case .santa: return .smileysAndPeople
         case .lockWithInkPen: return .objects
-        case .blackSunWithRays: return .travel
-        case .nicaraguaFlag: return .flags
-        case .squaredCjkUnifiedIdeograph5408: return .symbols
+        case .sunny: return .travel
+        case .flagNi: return .flags
+        case .u5408: return .symbols
         case .fullMoonWithFace: return .travel
         case .closedLockWithKey: return .objects
-        case .motherChristmas: return .smileysAndPeople
-        case .netherlandsFlag: return .flags
-        case .squaredCjkUnifiedIdeograph7a7a: return .symbols
+        case .mrsClaus: return .smileysAndPeople
+        case .flagNl: return .flags
+        case .u7a7a: return .symbols
         case .sunWithFace: return .travel
         case .key: return .objects
         case .superhero: return .smileysAndPeople
-        case .norwayFlag: return .flags
+        case .flagNo: return .flags
+        case .oldKey: return .objects
+        case .maleSuperhero: return .smileysAndPeople
         case .ringedPlanet: return .travel
-        case .circledIdeographCongratulation: return .symbols
-        case .nepalFlag: return .flags
+        case .congratulations: return .symbols
+        case .flagNp: return .flags
         case .hammer: return .objects
-        case .whiteMediumStar: return .travel
-        case .circledIdeographSecret: return .symbols
-        case .nauruFlag: return .flags
-        case .squaredCjkUnifiedIdeograph55b6: return .symbols
-        case .glowingStar: return .travel
+        case .femaleSuperhero: return .smileysAndPeople
+        case .star: return .travel
+        case .secret: return .symbols
+        case .flagNr: return .flags
+        case .u55b6: return .symbols
+        case .star2: return .travel
         case .supervillain: return .smileysAndPeople
         case .axe: return .objects
-        case .niueFlag: return .flags
-        case .squaredCjkUnifiedIdeograph6e80: return .symbols
-        case .shootingStar: return .travel
-        case .newZealandFlag: return .flags
+        case .flagNu: return .flags
+        case .u6e80: return .symbols
+        case .stars: return .travel
+        case .maleSupervillain: return .smileysAndPeople
+        case .pick: return .objects
+        case .flagNz: return .flags
         case .milkyWay: return .travel
-        case .largeRedCircle: return .symbols
-        case .omanFlag: return .flags
+        case .redCircle: return .symbols
+        case .femaleSupervillain: return .smileysAndPeople
+        case .hammerAndPick: return .objects
+        case .flagOm: return .flags
+        case .hammerAndWrench: return .objects
         case .largeOrangeCircle: return .symbols
         case .mage: return .smileysAndPeople
         case .cloud: return .travel
-        case .panamaFlag: return .flags
+        case .flagPa: return .flags
+        case .daggerKnife: return .objects
         case .largeYellowCircle: return .symbols
-        case .sunBehindCloud: return .travel
-        case .peruFlag: return .flags
+        case .maleMage: return .smileysAndPeople
+        case .partlySunny: return .travel
+        case .flagPe: return .flags
         case .largeGreenCircle: return .symbols
-        case .frenchPolynesiaFlag: return .flags
-        case .pistol: return .objects
+        case .femaleMage: return .smileysAndPeople
+        case .crossedSwords: return .objects
+        case .thunderCloudAndRain: return .travel
+        case .flagPf: return .flags
+        case .mostlySunny: return .travel
+        case .gun: return .objects
         case .largeBlueCircle: return .symbols
         case .fairy: return .smileysAndPeople
-        case .papuaNewGuineaFlag: return .flags
+        case .flagPg: return .flags
+        case .barelySunny: return .travel
         case .bowAndArrow: return .objects
         case .largePurpleCircle: return .symbols
-        case .philippinesFlag: return .flags
+        case .maleFairy: return .smileysAndPeople
+        case .flagPh: return .flags
+        case .partlySunnyRain: return .travel
+        case .shield: return .objects
         case .largeBrownCircle: return .symbols
-        case .pakistanFlag: return .flags
+        case .femaleFairy: return .smileysAndPeople
+        case .flagPk: return .flags
+        case .rainCloud: return .travel
         case .wrench: return .objects
         case .vampire: return .smileysAndPeople
-        case .mediumBlackCircle: return .symbols
-        case .polandFlag: return .flags
+        case .blackCircle: return .symbols
+        case .flagPl: return .flags
+        case .snowCloud: return .travel
         case .nutAndBolt: return .objects
-        case .mediumWhiteCircle: return .symbols
-        case .stPierreMiquelonFlag: return .flags
+        case .maleVampire: return .smileysAndPeople
+        case .whiteCircle: return .symbols
+        case .flagPm: return .flags
+        case .lightning: return .travel
         case .largeRedSquare: return .symbols
-        case .pitcairnIslandsFlag: return .flags
+        case .femaleVampire: return .smileysAndPeople
+        case .gear: return .objects
+        case .flagPn: return .flags
+        case .tornado: return .travel
+        case .compression: return .objects
         case .largeOrangeSquare: return .symbols
         case .merperson: return .smileysAndPeople
-        case .puertoRicoFlag: return .flags
+        case .flagPr: return .flags
+        case .fog: return .travel
         case .largeYellowSquare: return .symbols
-        case .palestinianTerritoriesFlag: return .flags
+        case .merman: return .smileysAndPeople
+        case .scales: return .objects
+        case .flagPs: return .flags
+        case .windBlowingFace: return .travel
         case .largeGreenSquare: return .symbols
         case .probingCane: return .objects
-        case .portugalFlag: return .flags
+        case .mermaid: return .smileysAndPeople
+        case .flagPt: return .flags
         case .cyclone: return .travel
-        case .linkSymbol: return .objects
+        case .link: return .objects
         case .largeBlueSquare: return .symbols
         case .elf: return .smileysAndPeople
-        case .palauFlag: return .flags
+        case .flagPw: return .flags
         case .rainbow: return .travel
         case .largePurpleSquare: return .symbols
-        case .paraguayFlag: return .flags
+        case .maleElf: return .smileysAndPeople
+        case .chains: return .objects
+        case .flagPy: return .flags
         case .closedUmbrella: return .travel
         case .largeBrownSquare: return .symbols
+        case .femaleElf: return .smileysAndPeople
         case .toolbox: return .objects
-        case .qatarFlag: return .flags
+        case .flagQa: return .flags
         case .genie: return .smileysAndPeople
         case .magnet: return .objects
+        case .umbrella: return .travel
         case .blackLargeSquare: return .symbols
-        case .réunionFlag: return .flags
+        case .flagRe: return .flags
+        case .maleGenie: return .smileysAndPeople
         case .umbrellaWithRainDrops: return .travel
+        case .alembic: return .objects
         case .whiteLargeSquare: return .symbols
-        case .romaniaFlag: return .flags
+        case .flagRo: return .flags
+        case .femaleGenie: return .smileysAndPeople
         case .testTube: return .objects
         case .blackMediumSquare: return .symbols
-        case .serbiaFlag: return .flags
+        case .umbrellaOnGround: return .travel
+        case .flagRs: return .flags
         case .zombie: return .smileysAndPeople
         case .petriDish: return .objects
         case .whiteMediumSquare: return .symbols
-        case .highVoltageSign: return .travel
-        case .russiaFlag: return .flags
-        case .dnaDoubleHelix: return .objects
+        case .zap: return .travel
+        case .ru: return .flags
+        case .maleZombie: return .smileysAndPeople
+        case .dna: return .objects
         case .blackMediumSmallSquare: return .symbols
         case .snowflake: return .travel
-        case .rwandaFlag: return .flags
+        case .flagRw: return .flags
         case .microscope: return .objects
+        case .femaleZombie: return .smileysAndPeople
         case .whiteMediumSmallSquare: return .symbols
-        case .saudiArabiaFlag: return .flags
-        case .faceMassage: return .smileysAndPeople
+        case .snowman: return .travel
+        case .flagSa: return .flags
+        case .massage: return .smileysAndPeople
         case .telescope: return .objects
         case .blackSmallSquare: return .symbols
         case .snowmanWithoutSnow: return .travel
-        case .solomonIslandsFlag: return .flags
+        case .flagSb: return .flags
+        case .manGettingMassage: return .smileysAndPeople
         case .satelliteAntenna: return .objects
         case .whiteSmallSquare: return .symbols
-        case .seychellesFlag: return .flags
+        case .comet: return .travel
+        case .flagSc: return .flags
+        case .womanGettingMassage: return .smileysAndPeople
         case .syringe: return .objects
         case .fire: return .travel
         case .largeOrangeDiamond: return .symbols
-        case .sudanFlag: return .flags
+        case .flagSd: return .flags
         case .haircut: return .smileysAndPeople
         case .droplet: return .travel
         case .largeBlueDiamond: return .symbols
         case .dropOfBlood: return .objects
-        case .swedenFlag: return .flags
-        case .waterWave: return .travel
+        case .flagSe: return .flags
+        case .ocean: return .travel
+        case .manGettingHaircut: return .smileysAndPeople
         case .pill: return .objects
         case .smallOrangeDiamond: return .symbols
-        case .singaporeFlag: return .flags
+        case .flagSg: return .flags
+        case .womanGettingHaircut: return .smileysAndPeople
         case .smallBlueDiamond: return .symbols
         case .adhesiveBandage: return .objects
-        case .stHelenaFlag: return .flags
-        case .upPointingRedTriangle: return .symbols
-        case .pedestrian: return .smileysAndPeople
+        case .flagSh: return .flags
+        case .smallRedTriangle: return .symbols
+        case .walking: return .smileysAndPeople
         case .stethoscope: return .objects
-        case .sloveniaFlag: return .flags
-        case .downPointingRedTriangle: return .symbols
+        case .flagSi: return .flags
+        case .smallRedTriangleDown: return .symbols
         case .door: return .objects
-        case .svalbardJanMayenFlag: return .flags
+        case .manWalking: return .smileysAndPeople
+        case .flagSj: return .flags
         case .diamondShapeWithADotInside: return .symbols
-        case .slovakiaFlag: return .flags
+        case .womanWalking: return .smileysAndPeople
+        case .bed: return .objects
+        case .flagSk: return .flags
         case .radioButton: return .symbols
+        case .couchAndLamp: return .objects
         case .standingPerson: return .smileysAndPeople
-        case .sierraLeoneFlag: return .flags
+        case .flagSl: return .flags
         case .whiteSquareButton: return .symbols
+        case .manStanding: return .smileysAndPeople
         case .chair: return .objects
-        case .sanMarinoFlag: return .flags
+        case .flagSm: return .flags
         case .blackSquareButton: return .symbols
         case .toilet: return .objects
-        case .senegalFlag: return .flags
+        case .womanStanding: return .smileysAndPeople
+        case .flagSn: return .flags
         case .shower: return .objects
         case .kneelingPerson: return .smileysAndPeople
-        case .somaliaFlag: return .flags
+        case .flagSo: return .flags
         case .bathtub: return .objects
-        case .surinameFlag: return .flags
+        case .manKneeling: return .smileysAndPeople
+        case .flagSr: return .flags
+        case .womanKneeling: return .smileysAndPeople
         case .razor: return .objects
-        case .southSudanFlag: return .flags
+        case .flagSs: return .flags
+        case .personWithProbingCane: return .smileysAndPeople
         case .lotionBottle: return .objects
-        case .sãoToméPríncipeFlag: return .flags
+        case .flagSt: return .flags
+        case .manWithProbingCane: return .smileysAndPeople
         case .safetyPin: return .objects
-        case .elSalvadorFlag: return .flags
+        case .flagSv: return .flags
+        case .womanWithProbingCane: return .smileysAndPeople
         case .broom: return .objects
-        case .sintMaartenFlag: return .flags
+        case .flagSx: return .flags
+        case .personInMotorizedWheelchair: return .smileysAndPeople
         case .basket: return .objects
-        case .syriaFlag: return .flags
+        case .flagSy: return .flags
+        case .manInMotorizedWheelchair: return .smileysAndPeople
         case .rollOfPaper: return .objects
-        case .eswatiniFlag: return .flags
-        case .barOfSoap: return .objects
-        case .tristanDaCunhaFlag: return .flags
+        case .flagSz: return .flags
+        case .womanInMotorizedWheelchair: return .smileysAndPeople
+        case .soap: return .objects
+        case .flagTa: return .flags
+        case .personInManualWheelchair: return .smileysAndPeople
         case .sponge: return .objects
-        case .turksCaicosIslandsFlag: return .flags
+        case .flagTc: return .flags
+        case .manInManualWheelchair: return .smileysAndPeople
         case .fireExtinguisher: return .objects
-        case .chadFlag: return .flags
+        case .flagTd: return .flags
+        case .womanInManualWheelchair: return .smileysAndPeople
         case .shoppingTrolley: return .objects
-        case .frenchSouthernTerritoriesFlag: return .flags
+        case .flagTf: return .flags
         case .runner: return .smileysAndPeople
-        case .smokingSymbol: return .objects
-        case .togoFlag: return .flags
-        case .thailandFlag: return .flags
-        case .tajikistanFlag: return .flags
+        case .smoking: return .objects
+        case .flagTg: return .flags
+        case .manRunning: return .smileysAndPeople
+        case .coffin: return .objects
+        case .flagTh: return .flags
+        case .womanRunning: return .smileysAndPeople
+        case .funeralUrn: return .objects
+        case .flagTj: return .flags
         case .dancer: return .smileysAndPeople
         case .moyai: return .objects
-        case .tokelauFlag: return .flags
+        case .flagTk: return .flags
         case .manDancing: return .smileysAndPeople
-        case .timorLesteFlag: return .flags
-        case .turkmenistanFlag: return .flags
-        case .womanWithBunnyEars: return .smileysAndPeople
-        case .tunisiaFlag: return .flags
-        case .tongaFlag: return .flags
-        case .turkeyFlag: return .flags
+        case .flagTl: return .flags
+        case .manInBusinessSuitLevitating: return .smileysAndPeople
+        case .flagTm: return .flags
+        case .dancers: return .smileysAndPeople
+        case .flagTn: return .flags
+        case .manWithBunnyEarsPartying: return .smileysAndPeople
+        case .flagTo: return .flags
+        case .womanWithBunnyEarsPartying: return .smileysAndPeople
+        case .flagTr: return .flags
         case .personInSteamyRoom: return .smileysAndPeople
-        case .trinidadTobagoFlag: return .flags
-        case .tuvaluFlag: return .flags
-        case .taiwanFlag: return .flags
+        case .flagTt: return .flags
+        case .manInSteamyRoom: return .smileysAndPeople
+        case .flagTv: return .flags
+        case .womanInSteamyRoom: return .smileysAndPeople
+        case .flagTw: return .flags
         case .personClimbing: return .smileysAndPeople
-        case .tanzaniaFlag: return .flags
-        case .ukraineFlag: return .flags
-        case .ugandaFlag: return .flags
+        case .flagTz: return .flags
+        case .manClimbing: return .smileysAndPeople
+        case .flagUa: return .flags
+        case .womanClimbing: return .smileysAndPeople
+        case .flagUg: return .flags
         case .fencer: return .smileysAndPeople
-        case .usOutlyingIslandsFlag: return .flags
+        case .flagUm: return .flags
         case .horseRacing: return .smileysAndPeople
-        case .unitedNationsFlag: return .flags
-        case .unitedStatesFlag: return .flags
+        case .flagUn: return .flags
+        case .skier: return .smileysAndPeople
+        case .us: return .flags
         case .snowboarder: return .smileysAndPeople
-        case .uruguayFlag: return .flags
-        case .uzbekistanFlag: return .flags
-        case .vaticanCityFlag: return .flags
-        case .stVincentGrenadinesFlag: return .flags
+        case .flagUy: return .flags
+        case .golfer: return .smileysAndPeople
+        case .flagUz: return .flags
+        case .manGolfing: return .smileysAndPeople
+        case .flagVa: return .flags
+        case .womanGolfing: return .smileysAndPeople
+        case .flagVc: return .flags
         case .surfer: return .smileysAndPeople
-        case .venezuelaFlag: return .flags
-        case .britishVirginIslandsFlag: return .flags
-        case .usVirginIslandsFlag: return .flags
+        case .flagVe: return .flags
+        case .manSurfing: return .smileysAndPeople
+        case .flagVg: return .flags
+        case .womanSurfing: return .smileysAndPeople
+        case .flagVi: return .flags
         case .rowboat: return .smileysAndPeople
-        case .vietnamFlag: return .flags
-        case .vanuatuFlag: return .flags
-        case .wallisFutunaFlag: return .flags
+        case .flagVn: return .flags
+        case .manRowingBoat: return .smileysAndPeople
+        case .flagVu: return .flags
+        case .womanRowingBoat: return .smileysAndPeople
+        case .flagWf: return .flags
         case .swimmer: return .smileysAndPeople
-        case .samoaFlag: return .flags
-        case .kosovoFlag: return .flags
-        case .yemenFlag: return .flags
-        case .mayotteFlag: return .flags
-        case .southAfricaFlag: return .flags
-        case .zambiaFlag: return .flags
-        case .zimbabweFlag: return .flags
-        case .englandFlag: return .flags
-        case .scotlandFlag: return .flags
+        case .flagWs: return .flags
+        case .manSwimming: return .smileysAndPeople
+        case .flagXk: return .flags
+        case .womanSwimming: return .smileysAndPeople
+        case .flagYe: return .flags
+        case .personWithBall: return .smileysAndPeople
+        case .flagYt: return .flags
+        case .manBouncingBall: return .smileysAndPeople
+        case .flagZa: return .flags
+        case .womanBouncingBall: return .smileysAndPeople
+        case .flagZm: return .flags
+        case .weightLifter: return .smileysAndPeople
+        case .flagZw: return .flags
+        case .manLiftingWeights: return .smileysAndPeople
+        case .womanLiftingWeights: return .smileysAndPeople
+        case .flagEngland: return .flags
+        case .flagScotland: return .flags
         case .bicyclist: return .smileysAndPeople
-        case .walesFlag: return .flags
+        case .flagWales: return .flags
+        case .manBiking: return .smileysAndPeople
+        case .womanBiking: return .smileysAndPeople
         case .mountainBicyclist: return .smileysAndPeople
+        case .manMountainBiking: return .smileysAndPeople
+        case .womanMountainBiking: return .smileysAndPeople
         case .personDoingCartwheel: return .smileysAndPeople
+        case .manCartwheeling: return .smileysAndPeople
+        case .womanCartwheeling: return .smileysAndPeople
         case .wrestlers: return .smileysAndPeople
+        case .manWrestling: return .smileysAndPeople
+        case .womanWrestling: return .smileysAndPeople
         case .waterPolo: return .smileysAndPeople
+        case .manPlayingWaterPolo: return .smileysAndPeople
+        case .womanPlayingWaterPolo: return .smileysAndPeople
         case .handball: return .smileysAndPeople
+        case .manPlayingHandball: return .smileysAndPeople
+        case .womanPlayingHandball: return .smileysAndPeople
         case .juggling: return .smileysAndPeople
+        case .manJuggling: return .smileysAndPeople
+        case .womanJuggling: return .smileysAndPeople
         case .personInLotusPosition: return .smileysAndPeople
+        case .manInLotusPosition: return .smileysAndPeople
+        case .womanInLotusPosition: return .smileysAndPeople
         case .bath: return .smileysAndPeople
         case .sleepingAccommodation: return .smileysAndPeople
+        case .peopleHoldingHands: return .smileysAndPeople
         case .twoWomenHoldingHands: return .smileysAndPeople
-        case .manAndWomanHoldingHands: return .smileysAndPeople
+        case .couple: return .smileysAndPeople
         case .twoMenHoldingHands: return .smileysAndPeople
-        case .kiss: return .smileysAndPeople
+        case .couplekiss: return .smileysAndPeople
+        case .womanKissMan: return .smileysAndPeople
+        case .manKissMan: return .smileysAndPeople
+        case .womanKissWoman: return .smileysAndPeople
         case .coupleWithHeart: return .smileysAndPeople
+        case .womanHeartMan: return .smileysAndPeople
+        case .manHeartMan: return .smileysAndPeople
+        case .womanHeartWoman: return .smileysAndPeople
         case .family: return .smileysAndPeople
+        case .manWomanBoy: return .smileysAndPeople
+        case .manWomanGirl: return .smileysAndPeople
+        case .manWomanGirlBoy: return .smileysAndPeople
+        case .manWomanBoyBoy: return .smileysAndPeople
+        case .manWomanGirlGirl: return .smileysAndPeople
+        case .manManBoy: return .smileysAndPeople
+        case .manManGirl: return .smileysAndPeople
+        case .manManGirlBoy: return .smileysAndPeople
+        case .manManBoyBoy: return .smileysAndPeople
+        case .manManGirlGirl: return .smileysAndPeople
+        case .womanWomanBoy: return .smileysAndPeople
+        case .womanWomanGirl: return .smileysAndPeople
+        case .womanWomanGirlBoy: return .smileysAndPeople
+        case .womanWomanBoyBoy: return .smileysAndPeople
+        case .womanWomanGirlGirl: return .smileysAndPeople
+        case .manBoy: return .smileysAndPeople
+        case .manBoyBoy: return .smileysAndPeople
+        case .manGirl: return .smileysAndPeople
+        case .manGirlBoy: return .smileysAndPeople
+        case .manGirlGirl: return .smileysAndPeople
+        case .womanBoy: return .smileysAndPeople
+        case .womanBoyBoy: return .smileysAndPeople
+        case .womanGirl: return .smileysAndPeople
+        case .womanGirlBoy: return .smileysAndPeople
+        case .womanGirlGirl: return .smileysAndPeople
+        case .speakingHeadInSilhouette: return .smileysAndPeople
         case .bustInSilhouette: return .smileysAndPeople
         case .bustsInSilhouette: return .smileysAndPeople
         case .footprints: return .smileysAndPeople

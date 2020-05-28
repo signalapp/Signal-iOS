@@ -57,26 +57,24 @@ class EmojiGenerator {
 
     struct EmojiData: Codable {
         let name: String?
+        let shortName: String
         let unified: String
         let sortOrder: UInt
         let category: EmojiCategory
 
-        var enumName: String? {
-            guard let name = name else { return nil }
-
-            let sanitizedName = name
-                .lowercased()
-                .replacingOccurrences(of: " & ", with: " ")
-                .replacingOccurrences(of: " - ", with: " ")
-                .replacingOccurrences(of: "-", with: " ")
-                .replacingOccurrences(of: "(", with: " ")
-                .replacingOccurrences(of: ")", with: " ")
-                .replacingOccurrences(of: "’", with: "")
-                .replacingOccurrences(of: ".", with: "")
-
-            let uppperCamelCase = sanitizedName.components(separatedBy: " ").map(titlecase).joined(separator: "")
-            guard let first = uppperCamelCase.unicodeScalars.first else { return nil }
-            return String(first).lowercased() + String(uppperCamelCase.unicodeScalars.dropFirst())
+        var enumName: String {
+            // some names don't play nice with swift, so we special case them
+            switch shortName {
+            case "+1": return "plusOne"
+            case "-1": return "negativeOne"
+            case "8ball": return "eightBall"
+            case "repeat": return "`repeat`"
+            case "100": return "oneHundred"
+            case "1234": return "oneTwoThreeFour"
+            default:
+                let uppperCamelCase = shortName.replacingOccurrences(of: "-", with: "_").components(separatedBy: "_").map(titlecase).joined(separator: "")
+                return String(uppperCamelCase.unicodeScalars.first!).lowercased() + String(uppperCamelCase.unicodeScalars.dropFirst())
+            }
         }
 
         var emoji: String {
@@ -100,7 +98,6 @@ class EmojiGenerator {
 
         let sortedEmojiData = try! jsonDecoder.decode([EmojiData].self, from: jsonData)
             .sorted { $0.sortOrder < $1.sortOrder }
-            .filter { $0.name != nil }
             .filter { $0.category != .skinTones } // for now, we don't care about skin tones
 
         // Main enum
@@ -109,8 +106,7 @@ class EmojiGenerator {
             fileHandle.writeLine("enum Emoji: String, CaseIterable {")
 
             for emojiData in sortedEmojiData {
-                guard let enumName = emojiData.enumName, let name = emojiData.name else { continue }
-                fileHandle.writeLine("    case \(enumName) = \"\(name)\"")
+                fileHandle.writeLine("    case \(emojiData.enumName) = \"\(emojiData.emoji)\"")
             }
 
             fileHandle.writeLine("}")
@@ -154,16 +150,16 @@ class EmojiGenerator {
             }
 
             for category in outputCategories {
-                guard let emoji: [EmojiData] = {
+                let emoji: [EmojiData] = {
                     switch category {
                     case .smileysAndPeople:
                         // Merge smileys & people. It's important we initially bucket these seperately,
                         // because we want the emojis to be sorted smileys followed by people
                         return emojiPerCategory[.smileys]! + emojiPerCategory[.people]!
                     default:
-                        return emojiPerCategory[category]
+                        return emojiPerCategory[category]!
                     }
-                }() else { continue }
+                }()
 
                 fileHandle.writeLine("            case .\(category):")
 
@@ -189,9 +185,8 @@ class EmojiGenerator {
             fileHandle.writeLine("        switch self {")
 
             for emojiData in sortedEmojiData {
-                guard let enumName = emojiData.enumName else { continue }
                 let category = [.smileys, .people].contains(emojiData.category) ? .smileysAndPeople : emojiData.category
-                fileHandle.writeLine("        case .\(enumName): return .\(category)")
+                fileHandle.writeLine("        case .\(emojiData.enumName): return .\(category)")
             }
 
             // Write a default case, because this enum is too long for the compiler to validate it's exhaustive
@@ -204,22 +199,21 @@ class EmojiGenerator {
             fileHandle.writeLine("}")
         }
 
-        // Value lookup
-        writeBlock(fileName: "Emoji+Value.swift") { fileHandle in
+        // Name lookup
+        writeBlock(fileName: "Emoji+Name.swift") { fileHandle in
             // Start Extension
             fileHandle.writeLine("extension Emoji {")
 
             // Value lookup per emoji
-            fileHandle.writeLine("    var value: String {")
+            fileHandle.writeLine("    var name: String? {")
             fileHandle.writeLine("        switch self {")
 
             for emojiData in sortedEmojiData {
-                guard let enumName = emojiData.enumName else { continue }
-                fileHandle.writeLine("        case .\(enumName): return \"\(emojiData.emoji)\"")
+                guard let name = emojiData.name else { continue }
+                fileHandle.writeLine("        case .\(emojiData.enumName): return \"\(name)\"")
             }
 
-            // Write a default case, because this enum is too long for the compiler to validate it's exhaustive
-            fileHandle.writeLine("        default: fatalError(\"Unexpected case \\(self)\")")
+            fileHandle.writeLine("        default: return nil")
 
             fileHandle.writeLine("        }")
             fileHandle.writeLine("    }")
