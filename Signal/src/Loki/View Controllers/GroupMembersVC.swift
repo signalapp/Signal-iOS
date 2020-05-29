@@ -33,22 +33,9 @@ final class GroupMembersVC : BaseVC, UITableViewDataSource {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Set gradient background
-        view.backgroundColor = .clear
-        let gradient = Gradients.defaultLokiBackground
-        view.setGradient(gradient)
-        // Set navigation bar background color
-        let navigationBar = navigationController!.navigationBar
-        navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
-        navigationBar.shadowImage = UIImage()
-        navigationBar.isTranslucent = false
-        navigationBar.barTintColor = Colors.navigationBarBackground
-        // Customize title
-        let titleLabel = UILabel()
-        titleLabel.text = NSLocalizedString("Group Members", comment: "")
-        titleLabel.textColor = Colors.text
-        titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
-        navigationItem.titleView = titleLabel
+        setUpGradientBackground()
+        setUpNavBarStyle()
+        setNavBarTitle(NSLocalizedString("Group Members", comment: ""))
         // Set up explanation label
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)

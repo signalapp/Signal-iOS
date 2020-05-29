@@ -8,6 +8,37 @@ class BaseVC : UIViewController {
         NotificationCenter.default.addObserver(self, selector: #selector(handleUnexpectedDeviceLinkRequestReceivedNotification), name: .unexpectedDeviceLinkRequestReceived, object: nil)
     }
 
+    internal func setUpGradientBackground() {
+        view.backgroundColor = .clear
+        let gradient = Gradients.defaultLokiBackground
+        view.setGradient(gradient)
+    }
+
+    internal func setUpNavBarStyle() {
+        let navigationBar = navigationController!.navigationBar
+        navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
+        navigationBar.shadowImage = UIImage()
+        navigationBar.isTranslucent = false
+        navigationBar.barTintColor = Colors.navigationBarBackground
+    }
+
+    internal func setNavBarTitle(_ title: String, customFontSize: CGFloat? = nil) {
+        let titleLabel = UILabel()
+        titleLabel.text = title
+        titleLabel.textColor = Colors.text
+        titleLabel.font = .boldSystemFont(ofSize: customFontSize ?? Values.veryLargeFontSize)
+        navigationItem.titleView = titleLabel
+    }
+
+    internal func setUpNavBarSessionIcon() {
+        let logoImageView = UIImageView()
+        logoImageView.image = #imageLiteral(resourceName: "SessionGreen32")
+        logoImageView.contentMode = .scaleAspectFit
+        logoImageView.set(.width, to: 32)
+        logoImageView.set(.height, to: 32)
+        navigationItem.titleView = logoImageView
+    }
+
     deinit {
         NotificationCenter.default.removeObserver(self)
     }

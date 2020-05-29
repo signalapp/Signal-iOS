@@ -38,22 +38,9 @@ final class DeviceLinksVC : BaseVC, UITableViewDataSource, UITableViewDelegate, 
     // MARK: Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Set gradient background
-        view.backgroundColor = .clear
-        let gradient = Gradients.defaultLokiBackground
-        view.setGradient(gradient)
-        // Set navigation bar background color
-        let navigationBar = navigationController!.navigationBar
-        navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
-        navigationBar.shadowImage = UIImage()
-        navigationBar.isTranslucent = false
-        navigationBar.barTintColor = Colors.navigationBarBackground
-        // Customize title
-        let titleLabel = UILabel()
-        titleLabel.text = NSLocalizedString("Devices", comment: "")
-        titleLabel.textColor = Colors.text
-        titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
-        navigationItem.titleView = titleLabel
+        setUpGradientBackground()
+        setUpNavBarStyle()
+        setNavBarTitle(NSLocalizedString("Devices", comment: ""))
         // Set up link new device button
         let linkNewDeviceButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(linkNewDevice))
         linkNewDeviceButton.tintColor = Colors.text

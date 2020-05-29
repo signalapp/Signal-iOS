@@ -213,7 +213,7 @@ const CGFloat kContactCellAvatarTextMargin = 12;
 {
     if (self.thread.isGroupThread) {
         NSMutableArray<NSString *> *sortedUsers = @[].mutableCopy;
-        NSSet<NSString *> *users = LKMentionsManager.userHexEncodedPublicKeyCache[self.thread.uniqueId];
+        NSSet<NSString *> *users = LKMentionsManager.userPublicKeyCache[self.thread.uniqueId];
         if (users != nil) {
             for (NSString *user in users) {
                 [sortedUsers addObject:user];

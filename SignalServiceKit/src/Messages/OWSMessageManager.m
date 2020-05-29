@@ -1466,7 +1466,7 @@ NS_ASSUME_NONNULL_BEGIN
                 // Loki: Cache the user hex encoded public key (for mentions)
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-                        [LKMentionsManager populateUserHexEncodedPublicKeyCacheIfNeededFor:oldGroupThread.uniqueId in:transaction];
+                        [LKMentionsManager populateUserPublicKeyCacheIfNeededFor:oldGroupThread.uniqueId in:transaction];
                         [LKMentionsManager cache:incomingMessage.authorId for:oldGroupThread.uniqueId];
                     }];
                 });

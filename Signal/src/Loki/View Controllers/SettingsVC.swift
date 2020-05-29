@@ -53,27 +53,14 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
     // MARK: Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Set gradient background
-        view.backgroundColor = .clear
-        let gradient = Gradients.defaultLokiBackground
-        view.setGradient(gradient)
-        // Set navigation bar background color
-        let navigationBar = navigationController!.navigationBar
-        navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
-        navigationBar.shadowImage = UIImage()
-        navigationBar.isTranslucent = false
-        navigationBar.barTintColor = Colors.navigationBarBackground
+        setUpGradientBackground()
+        setUpNavBarStyle()
+        setNavBarTitle(NSLocalizedString("Settings", comment: ""))
         // Set up navigation bar buttons
         let backButton = UIBarButtonItem(title: NSLocalizedString("Back", comment: ""), style: .plain, target: nil, action: nil)
         backButton.tintColor = Colors.text
         navigationItem.backBarButtonItem = backButton
         updateNavigationBarButtons()
-        // Customize title
-        let titleLabel = UILabel()
-        titleLabel.text = NSLocalizedString("Settings", comment: "")
-        titleLabel.textColor = Colors.text
-        titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
-        navigationItem.titleView = titleLabel
         // Set up profile picture view
         let profilePictureTapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(showEditProfilePictureUI))
         profilePictureView.addGestureRecognizer(profilePictureTapGestureRecognizer)

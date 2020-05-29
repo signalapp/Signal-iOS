@@ -605,7 +605,7 @@ typedef enum : NSUInteger {
                                                           userInfo:nil
                                                            repeats:YES];
 
-    [LKMentionsManager populateUserHexEncodedPublicKeyCacheIfNeededFor:thread.uniqueId in:nil];
+    [LKMentionsManager populateUserPublicKeyCacheIfNeededFor:thread.uniqueId in:nil];
 }
 
 - (void)dealloc

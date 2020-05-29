@@ -42,22 +42,10 @@ final class QRCodeVC : BaseVC, UIPageViewControllerDataSource, UIPageViewControl
     // MARK: Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Set gradient background
-        view.backgroundColor = .clear
-        let gradient = Gradients.defaultLokiBackground
-        view.setGradient(gradient)
-        // Set navigation bar background color
+        setUpGradientBackground()
+        setUpNavBarStyle()
+        setNavBarTitle(NSLocalizedString("QR Code", comment: ""))
         let navigationBar = navigationController!.navigationBar
-        navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
-        navigationBar.shadowImage = UIImage()
-        navigationBar.isTranslucent = false
-        navigationBar.barTintColor = Colors.navigationBarBackground
-        // Customize title
-        let titleLabel = UILabel()
-        titleLabel.text = NSLocalizedString("QR Code", comment: "")
-        titleLabel.textColor = Colors.text
-        titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
-        navigationItem.titleView = titleLabel
         // Set up page VC
         let hasCameraAccess = (AVCaptureDevice.authorizationStatus(for: .video) == .authorized)
         pages = [ viewMyQRCodeVC, (hasCameraAccess ? scanQRCodeWrapperVC : scanQRCodePlaceholderVC) ]

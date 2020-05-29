@@ -275,7 +275,7 @@ private extension Promise where T == JSON {
                 print("[Loki] Couldn't reach snode at: \(snode); setting failure count to \(newFailureCount).")
                 if newFailureCount >= LokiAPI.failureThreshold {
                     print("[Loki] Failure threshold reached for: \(snode); dropping it.")
-                    LokiAPI.dropIfNeeded(snode, hexEncodedPublicKey: hexEncodedPublicKey) // Remove it from the swarm cache associated with the given public key
+                    LokiAPI.dropSnodeIfNeeded(snode, hexEncodedPublicKey: hexEncodedPublicKey) // Remove it from the swarm cache associated with the given public key
                     LokiAPI.snodePool.remove(snode) // Remove it from the snode pool
                     // Dispatch async on the main queue to avoid nested write transactions
                     DispatchQueue.main.async {
@@ -292,7 +292,7 @@ private extension Promise where T == JSON {
             case 421:
                 // The snode isn't associated with the given public key anymore
                 print("[Loki] Invalidating swarm for: \(hexEncodedPublicKey).")
-                LokiAPI.dropIfNeeded(snode, hexEncodedPublicKey: hexEncodedPublicKey)
+                LokiAPI.dropSnodeIfNeeded(snode, hexEncodedPublicKey: hexEncodedPublicKey)
             case 432:
                 // The proof of work difficulty is too low
                 if let powDifficulty = json["difficulty"] as? Int {

@@ -28,10 +28,7 @@ final class ScanQRCodeWrapperVC : BaseVC {
         if isPresentedModally {
             navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(close))
         }
-        // Set gradient background
-        view.backgroundColor = .clear
-        let gradient = Gradients.defaultLokiBackground
-        view.setGradient(gradient)
+        setUpGradientBackground()
         // Set up scan QR code VC
         scanQRCodeVC.scanDelegate = delegate
         let scanQRCodeVCView = scanQRCodeVC.view!

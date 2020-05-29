@@ -4,7 +4,7 @@ public final class MentionsManager : NSObject {
 
     private static var _userHexEncodedPublicKeyCache: [String:Set<String>] = [:]
     /// A mapping from thread ID to set of user hex encoded public keys.
-    @objc public static var userHexEncodedPublicKeyCache: [String:Set<String>] {
+    @objc public static var userPublicKeyCache: [String:Set<String>] {
         get { LokiAPI.stateQueue.sync { _userHexEncodedPublicKeyCache } }
         set { LokiAPI.stateQueue.sync { _userHexEncodedPublicKeyCache = newValue } }
     }
@@ -21,16 +21,16 @@ public final class MentionsManager : NSObject {
 
     // MARK: Implementation
     @objc public static func cache(_ hexEncodedPublicKey: String, for threadID: String) {
-        if let cache = userHexEncodedPublicKeyCache[threadID] {
-            userHexEncodedPublicKeyCache[threadID] = cache.union([ hexEncodedPublicKey ])
+        if let cache = userPublicKeyCache[threadID] {
+            userPublicKeyCache[threadID] = cache.union([ hexEncodedPublicKey ])
         } else {
-            userHexEncodedPublicKeyCache[threadID] = [ hexEncodedPublicKey ]
+            userPublicKeyCache[threadID] = [ hexEncodedPublicKey ]
         }
     }
 
     @objc public static func getMentionCandidates(for query: String, in threadID: String) -> [Mention] {
         // Prepare
-        guard let cache = userHexEncodedPublicKeyCache[threadID] else { return [] }
+        guard let cache = userPublicKeyCache[threadID] else { return [] }
         var candidates: [Mention] = []
         // Gather candidates
         var publicChat: LokiPublicChat?
@@ -65,14 +65,14 @@ public final class MentionsManager : NSObject {
         return candidates
     }
 
-    @objc public static func populateUserHexEncodedPublicKeyCacheIfNeeded(for threadID: String, in transaction: YapDatabaseReadTransaction? = nil) {
+    @objc public static func populateUserPublicKeyCacheIfNeeded(for threadID: String, in transaction: YapDatabaseReadTransaction? = nil) {
         var result: Set<String> = []
         func populate(in transaction: YapDatabaseReadTransaction) {
             guard let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) else { return }
             if let groupThread = thread as? TSGroupThread, groupThread.groupModel.groupType == .closedGroup {
                 result = result.union(groupThread.groupModel.groupMemberIds)
             } else {
-                guard userHexEncodedPublicKeyCache[threadID] == nil else { return }
+                guard userPublicKeyCache[threadID] == nil else { return }
                 let interactions = transaction.ext(TSMessageDatabaseViewExtensionName) as! YapDatabaseViewTransaction
                 interactions.enumerateKeysAndObjects(inGroup: threadID) { _, _, object, index, _ in
                     guard let message = object as? TSIncomingMessage, index < userIDScanLimit else { return }
@@ -88,6 +88,6 @@ public final class MentionsManager : NSObject {
             }
         }
         result.insert(getUserHexEncodedPublicKey())
-        userHexEncodedPublicKeyCache[threadID] = result
+        userPublicKeyCache[threadID] = result
     }
 }

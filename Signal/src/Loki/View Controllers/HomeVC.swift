@@ -85,25 +85,12 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
     override func viewDidLoad() {
         super.viewDidLoad()
         SignalApp.shared().homeViewController = self
-        // Set gradient background
-        view.backgroundColor = .clear
-        let gradient = Gradients.defaultLokiBackground
-        view.setGradient(gradient)
-        // Set navigation bar background color
-        if let navigationBar = navigationController?.navigationBar {
-            navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
-            navigationBar.shadowImage = UIImage()
-            navigationBar.isTranslucent = false
-            navigationBar.barTintColor = Colors.navigationBarBackground
+        setUpGradientBackground()
+        if navigationController?.navigationBar != nil {
+            setUpNavBarStyle()
         }
-        // Set up navigation bar buttons
         updateNavigationBarButtons()
-        // Customize title
-        let titleLabel = UILabel()
-        titleLabel.text = NSLocalizedString("Messages", comment: "")
-        titleLabel.textColor = Colors.text
-        titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
-        navigationItem.titleView = titleLabel
+        setNavBarTitle(NSLocalizedString("Messages", comment: ""))
         // Set up seed reminder view if needed
         let userDefaults = UserDefaults.standard
         let hasViewedSeed = userDefaults[.hasViewedSeed]

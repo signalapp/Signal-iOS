@@ -32,23 +32,9 @@ final class RestoreVC : BaseVC {
     // MARK: Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Set gradient background
-        view.backgroundColor = .clear
-        let gradient = Gradients.defaultLokiBackground
-        view.setGradient(gradient)
-        // Set up navigation bar
-        let navigationBar = navigationController!.navigationBar
-        navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
-        navigationBar.shadowImage = UIImage()
-        navigationBar.isTranslucent = false
-        navigationBar.barTintColor = Colors.navigationBarBackground
-        // Set up logo image view
-        let logoImageView = UIImageView()
-        logoImageView.image = #imageLiteral(resourceName: "SessionGreen32")
-        logoImageView.contentMode = .scaleAspectFit
-        logoImageView.set(.width, to: 32)
-        logoImageView.set(.height, to: 32)
-        navigationItem.titleView = logoImageView
+        setUpGradientBackground()
+        setUpNavBarStyle()
+        setUpNavBarSessionIcon()
         // Set up title label
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text

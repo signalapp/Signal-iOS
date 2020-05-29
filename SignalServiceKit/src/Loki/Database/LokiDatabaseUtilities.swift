@@ -3,8 +3,8 @@
 public final class LokiDatabaseUtilities : NSObject {
     
     private override init() { }
-    
-    // MARK: Quotes
+
+    // MARK: - Quotes
     @objc(getServerIDForQuoteWithID:quoteeHexEncodedPublicKey:threadID:transaction:)
     public static func getServerID(quoteID: UInt64, quoteeHexEncodedPublicKey: String, threadID: String, transaction: YapDatabaseReadTransaction) -> UInt64 {
         guard let message = TSInteraction.interactions(withTimestamp: quoteID, filter: { interaction in
@@ -20,8 +20,10 @@ public final class LokiDatabaseUtilities : NSObject {
         }, with: transaction).first as! TSMessage? else { return 0 }
         return message.openGroupServerMessageID
     }
-    
-    // MARK: Device Links
+
+
+
+    // MARK: - Device Links
     @objc(getLinkedDeviceHexEncodedPublicKeysFor:in:)
     public static func getLinkedDeviceHexEncodedPublicKeys(for hexEncodedPublicKey: String, in transaction: YapDatabaseReadTransaction) -> Set<String> {
         let storage = OWSPrimaryStorage.shared()
@@ -54,8 +56,10 @@ public final class LokiDatabaseUtilities : NSObject {
     public static func objc_getDeviceLinks(for masterHexEncodedPublicKey: String, in transaction: YapDatabaseReadTransaction) -> Set<DeviceLink> {
         return OWSPrimaryStorage.shared().getDeviceLinks(for: masterHexEncodedPublicKey, in: transaction)
     }
-    
-    // MARK: Public Chats
+
+
+
+    // MARK: - Open Groups
     private static let publicChatCollection = "LokiPublicChatCollection"
     
     @objc(getAllPublicChats:)

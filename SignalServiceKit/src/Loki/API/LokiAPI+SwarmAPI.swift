@@ -15,7 +15,7 @@ public extension LokiAPI {
     // MARK: Caching
     internal static var swarmCache: [String:[LokiAPITarget]] = [:]
     
-    internal static func dropIfNeeded(_ target: LokiAPITarget, hexEncodedPublicKey: String) {
+    internal static func dropSnodeIfNeeded(_ target: LokiAPITarget, hexEncodedPublicKey: String) {
         let swarm = LokiAPI.swarmCache[hexEncodedPublicKey]
         if var swarm = swarm, let index = swarm.firstIndex(of: target) {
             swarm.remove(at: index)
@@ -175,7 +175,7 @@ internal extension Promise {
                     print("[Loki] Couldn't reach snode at: \(target); setting failure count to \(newFailureCount).")
                     if newFailureCount >= LokiAPI.failureThreshold {
                         print("[Loki] Failure threshold reached for: \(target); dropping it.")
-                        LokiAPI.dropIfNeeded(target, hexEncodedPublicKey: hexEncodedPublicKey) // Remove it from the swarm cache associated with the given public key
+                        LokiAPI.dropSnodeIfNeeded(target, hexEncodedPublicKey: hexEncodedPublicKey) // Remove it from the swarm cache associated with the given public key
                         LokiAPI.snodePool.remove(target) // Remove it from the snode pool
                         // Dispatch async on the main queue to avoid nested write transactions
                         DispatchQueue.main.async {
@@ -192,7 +192,7 @@ internal extension Promise {
                 case 421:
                     // The snode isn't associated with the given public key anymore
                     print("[Loki] Invalidating swarm for: \(hexEncodedPublicKey).")
-                    LokiAPI.dropIfNeeded(target, hexEncodedPublicKey: hexEncodedPublicKey)
+                    LokiAPI.dropSnodeIfNeeded(target, hexEncodedPublicKey: hexEncodedPublicKey)
                 case 432:
                     // The PoW difficulty is too low
                     if case LokiHTTPClient.HTTPError.networkError(_, let result, _) = error, let json = result as? JSON, let powDifficulty = json["difficulty"] as? Int {

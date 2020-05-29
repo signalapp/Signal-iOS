@@ -45,16 +45,9 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
     // MARK: Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Set gradient background
-        view.backgroundColor = .clear
-        let gradient = Gradients.defaultLokiBackground
-        view.setGradient(gradient)
-        // Set navigation bar background color
-        let navigationBar = navigationController!.navigationBar
-        navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
-        navigationBar.shadowImage = UIImage()
-        navigationBar.isTranslucent = false
-        navigationBar.barTintColor = Colors.navigationBarBackground
+        setUpGradientBackground()
+        setUpNavBarStyle()
+        setNavBarTitle(NSLocalizedString("New Closed Group", comment: ""))
         // Set up navigation bar buttons
         let closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "X"), style: .plain, target: self, action: #selector(close))
         closeButton.tintColor = Colors.text
@@ -62,13 +55,6 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
         let doneButton = UIBarButtonItem(barButtonSystemItem: .done, target: self, action: #selector(createClosedGroup))
         doneButton.tintColor = Colors.text
         navigationItem.rightBarButtonItem = doneButton
-        // Customize title
-        let titleLabel = UILabel()
-        titleLabel.text = NSLocalizedString("New Closed Group", comment: "")
-        titleLabel.textColor = Colors.text
-        let titleLabelFontSize = isSmallScreen ? Values.mediumFontSize : Values.largeFontSize
-        titleLabel.font = .boldSystemFont(ofSize: titleLabelFontSize)
-        navigationItem.titleView = titleLabel
         // Set up content
         if !contacts.isEmpty {
             view.addSubview(nameTextField)

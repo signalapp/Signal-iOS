@@ -26,25 +26,15 @@ final class PathVC : BaseVC {
     // MARK: Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        setUpBackground()
+        setUpGradientBackground()
         setUpNavBar()
         setUpViewHierarchy()
         registerObservers()
     }
 
-    private func setUpBackground() {
-        view.backgroundColor = .clear
-        let gradient = Gradients.defaultLokiBackground
-        view.setGradient(gradient)
-    }
-
     private func setUpNavBar() {
-        // Set up navigation bar style
-        let navigationBar = navigationController!.navigationBar
-        navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
-        navigationBar.shadowImage = UIImage()
-        navigationBar.isTranslucent = false
-        navigationBar.barTintColor = Colors.navigationBarBackground
+        setUpNavBarStyle()
+        setNavBarTitle(NSLocalizedString("Path", comment: ""))
         // Set up close button
         let closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "X"), style: .plain, target: self, action: #selector(close))
         closeButton.tintColor = Colors.text
@@ -52,12 +42,6 @@ final class PathVC : BaseVC {
         let learnMoreButton = UIBarButtonItem(image: #imageLiteral(resourceName: "QuestionMark").scaled(to: CGSize(width: 24, height: 24)), style: .plain, target: self, action: #selector(learnMore))
         learnMoreButton.tintColor = Colors.text
         navigationItem.rightBarButtonItem = learnMoreButton
-        // Customize title
-        let titleLabel = UILabel()
-        titleLabel.text = NSLocalizedString("Path", comment: "")
-        titleLabel.textColor = Colors.text
-        titleLabel.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
-        navigationItem.titleView = titleLabel
     }
 
     private func setUpViewHierarchy() {
@@ -200,6 +184,13 @@ final class PathVC : BaseVC {
     }
 
     @objc private func rebuildPath() {
+        // Dispatch async on the main queue to avoid nested write transactions
+        DispatchQueue.main.async {
+            let storage = OWSPrimaryStorage.shared()
+            storage.dbReadWriteConnection.readWrite { transaction in
+                storage.clearOnionRequestPaths(in: transaction)
+            }
+        }
         OnionRequestAPI.guardSnodes = []
         OnionRequestAPI.paths = []
         let _ = OnionRequestAPI.buildPaths()

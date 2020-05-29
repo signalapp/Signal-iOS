@@ -55,23 +55,9 @@ final class SeedVC : BaseVC {
     // MARK: Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Set gradient background
-        view.backgroundColor = .clear
-        let gradient = Gradients.defaultLokiBackground
-        view.setGradient(gradient)
-        // Set up navigation bar
-        let navigationBar = navigationController!.navigationBar
-        navigationBar.setBackgroundImage(UIImage(), for: UIBarMetrics.default)
-        navigationBar.shadowImage = UIImage()
-        navigationBar.isTranslucent = false
-        navigationBar.barTintColor = Colors.navigationBarBackground
-        // Customize title
-        let navigationBarTitleLabel = UILabel()
-        navigationBarTitleLabel.text = NSLocalizedString("Your Recovery Phrase", comment: "")
-        navigationBarTitleLabel.textColor = Colors.text
-        let titleLabelFontSize = isSmallScreen ? Values.largeFontSize : Values.veryLargeFontSize
-        navigationBarTitleLabel.font = .boldSystemFont(ofSize: titleLabelFontSize)
-        navigationItem.titleView = navigationBarTitleLabel
+        setUpGradientBackground()
+        setUpNavBarStyle()
+        setNavBarTitle(NSLocalizedString("Your Recovery Phrase", comment: ""))
         // Set up navigation bar buttons
         let closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "X"), style: .plain, target: self, action: #selector(close))
         closeButton.tintColor = Colors.text
