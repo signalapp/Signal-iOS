@@ -27,6 +27,7 @@ private extension String {
     // by verifying its image is different than the "unknwon"
     // reference image
     var isUnicodeStringAvailable: Bool {
+        guard isSingleEmoji else { return false }
         return String.unknownUnicodeStringPng != unicodeStringPngRepresentation
     }
 

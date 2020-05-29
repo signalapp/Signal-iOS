@@ -61,6 +61,16 @@ public enum ThemeIcon: UInt {
 
     case transfer
     case register
+
+    case emojiActivity
+    case emojiAnimal
+    case emojiFlag
+    case emojiFood
+    case emojiObject
+    case emojiSmiley
+    case emojiSymbol
+    case emojiTravel
+    case emojiRecent
 }
 
 // MARK: - Colors
@@ -203,6 +213,25 @@ public extension Theme {
             return "transfer-\(UIDevice.current.isIPad ? "ipad" : "phone")-outline-60-\(isDarkThemeEnabled ? "dark" : "light")"
         case .register:
             return "register-\(UIDevice.current.isIPad ? "ipad" : "phone")-outline-60-\(isDarkThemeEnabled ? "dark" : "light")"
+
+        case .emojiActivity:
+            return "emoji-activity-\(isDarkThemeEnabled ? "solid" : "outline")-20"
+        case .emojiAnimal:
+            return "emoji-animal-\(isDarkThemeEnabled ? "solid" : "outline")-20"
+        case .emojiFlag:
+            return "emoji-flag-\(isDarkThemeEnabled ? "solid" : "outline")-20"
+        case .emojiFood:
+            return "emoji-food-\(isDarkThemeEnabled ? "solid" : "outline")-20"
+        case .emojiObject:
+            return "emoji-object-\(isDarkThemeEnabled ? "solid" : "outline")-20"
+        case .emojiSmiley:
+            return "emoji-smiley-\(isDarkThemeEnabled ? "solid" : "outline")-20"
+        case .emojiSymbol:
+            return "emoji-symbol-\(isDarkThemeEnabled ? "solid" : "outline")-20"
+        case .emojiTravel:
+            return "emoji-travel-\(isDarkThemeEnabled ? "solid" : "outline")-20"
+        case .emojiRecent:
+            return "recent-\(isDarkThemeEnabled ? "solid" : "outline")-20"
         }
     }
 }
