@@ -76,7 +76,7 @@
                               }
                               target:weakSelf
                               selector:@selector(didToggleAPNsSwitch:)]];
-    strategySection.footerTitle = NSLocalizedString(@"Session will use the Apple Push Notification Service to receive push notifications. You’ll be notified of new messages reliably and immediately. Using APNs means that this device will communicate directly with Apple’s servers to retrieve push notifications, which will expose your IP address to Apple. Your messages will still be onion-routed and end-to-end encrypted, so the contents of your messages will remain completely private.", @"");
+    strategySection.footerTitle = NSLocalizedString(@"Session will use the Apple Push Notification service to receive push notifications. You'll be notified of new messages reliably and immediately. Using APNs means that your IP address and device token will be exposed to Apple. If you use push notifications for other apps, this will already be the case. Your IP address and device token will also be exposed to Loki, but your messages will still be onion-routed and end-to-end encrypted, so the contents of your messages will remain completely private.", @"");
     [contents addSection:strategySection];
 
     // Sounds section.

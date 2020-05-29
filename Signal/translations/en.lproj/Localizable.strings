@@ -2720,7 +2720,7 @@
 "Devices" = "Devices";
 "Recovery Phrase" = "Recovery Phrase";
 "Clear All Data" = "Clear All Data";
-"This will permanently delete your Session ID, including all messages, sessions, and contacts." = "This will permanently delete your Session ID, including all messages, sessions, and contacts.";
+"This will permanently delete your messages, sessions, and contacts." = "This will permanently delete your messages, sessions, and contacts.";
 "Delete" = "Delete";
 "This is your recovery phrase. With it, you can restore or migrate your Session ID to a new device." = "This is your recovery phrase. With it, you can restore or migrate your Session ID to a new device.";
 "The information shown in notifications when your phone is locked." = "The information shown in notifications when your phone is locked.";
@@ -2765,7 +2765,7 @@
 "Continue" = "Continue";
 "Your Recovery Phrase" = "Your Recovery Phrase";
 "Meet your recovery phrase" = "Meet your recovery phrase";
-"Your recovery phrase is the master key to your Session ID — you can use it to restore your Session ID if you lose access to your device. Store your recovery phrase in a safe place, and don’t give it to anyone. To restore your Session ID, launch Session and tap Continue your Session." = "Your recovery phrase is the master key to your Session ID — you can use it to restore your Session ID if you lose access to your device. Store your recovery phrase in a safe place, and don’t give it to anyone. To restore your Session ID, launch Session and tap Continue your Session.";
+"Your recovery phrase is the master key to your Session ID — you can use it to restore your Session ID if you lose access to your device. Store your recovery phrase in a safe place, and don’t give it to anyone." = "Your recovery phrase is the master key to your Session ID — you can use it to restore your Session ID if you lose access to your device. Store your recovery phrase in a safe place, and don’t give it to anyone.";
 "Tap and hold the redacted words to reveal your recovery phrase, then store it safely to secure your Session ID." = "Tap and hold the redacted words to reveal your recovery phrase, then store it safely to secure your Session ID.";
 "Hold to reveal" = "Hold to reveal";
 "Make sure to store your recovery phrase in a safe place" = "Make sure to store your recovery phrase in a safe place";
@@ -2786,7 +2786,7 @@
 "Disable Preview in App Switcher" = "Disable Preview in App Switcher";
 "Are you sure? This cannot be undone." = "Are you sure? This cannot be undone.";
 "When enabled, messages between you and %@ will disappear after they have been seen." = "When enabled, messages between you and %@ will disappear after they have been seen.";
-"This will be your name when you use Session." = "This will be your name when you use Session.";
+"This will be your name when you use Session. It can be your real name, an alias, or anything else you like." = "This will be your name when you use Session. It can be your real name, an alias, or anything else you like.";
 "Session Out of Sync" = "Session Out of Sync";
 "Would you like to restore your session? This can help resolve issues. Your messages will be preserved." = "Would you like to restore your session? This can help resolve issues. Your messages will be preserved.";
 "Would you like to restore your session with %@? This can help resolve issues. Your messages will be preserved." = "Would you like to restore your session with %@? This can help resolve issues. Your messages will be preserved.";
@@ -2816,9 +2816,9 @@
 "Please Pick an Option" = "Please Pick an Option";
 "There are two ways Session can handle push notifications. Make sure to read the descriptions carefully before you choose." = "There are two ways Session can handle push notifications. Make sure to read the descriptions carefully before you choose.";
 "Apple Push Notification Service" = "Apple Push Notification Service";
-"Session will use the Apple Push Notification Service to receive push notifications. You’ll be notified of new messages reliably and immediately. Using APNs means that this device will communicate directly with Apple’s servers to retrieve push notifications, which will expose your IP address to Apple. Your messages will still be onion-routed and end-to-end encrypted, so the contents of your messages will remain completely private." = "Session will use the Apple Push Notification Service to receive push notifications. You’ll be notified of new messages reliably and immediately. Using APNs means that this device will communicate directly with Apple’s servers to retrieve push notifications, which will expose your IP address to Apple. Your messages will still be onion-routed and end-to-end encrypted, so the contents of your messages will remain completely private.";
+"Session will use the Apple Push Notification service to receive push notifications. You'll be notified of new messages reliably and immediately. Using APNs means that your IP address and device token will be exposed to Apple. If you use push notifications for other apps, this will already be the case. Your IP address and device token will also be exposed to Loki, but your messages will still be onion-routed and end-to-end encrypted, so the contents of your messages will remain completely private." = "Session will use the Apple Push Notification service to receive push notifications. You'll be notified of new messages reliably and immediately. Using APNs means that your IP address and device token will be exposed to Apple. If you use push notifications for other apps, this will already be the case. Your IP address and device token will also be exposed to Loki, but your messages will still be onion-routed and end-to-end encrypted, so the contents of your messages will remain completely private.";
 "Background Polling" = "Background Polling";
-"Session will occasionally check for new messages in the background. This guarantees full privacy protection, but message notifications may be significantly delayed." = "Session will occasionally check for new messages in the background. This guarantees full privacy protection, but message notifications may be significantly delayed.";
+"Session will occasionally check for new messages in the background. This guarantees full metadata protection, but message notifications may be significantly delayed." = "Session will occasionally check for new messages in the background. This guarantees full metadata protection, but message notifications may be significantly delayed.";
 "Use APNs" = "Use APNs";
 "Recommended" = "Recommended";
 "Notification Strategy" = "Notification Strategy";

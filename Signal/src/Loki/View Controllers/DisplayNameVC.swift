@@ -43,7 +43,7 @@ final class DisplayNameVC : BaseVC {
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = "This will be your name when you use Session."
+        explanationLabel.text = "This will be your name when you use Session. It can be your real name, an alias, or anything else you like."
         explanationLabel.numberOfLines = 0
         explanationLabel.lineBreakMode = .byWordWrapping
         // Set up spacers
