@@ -49,6 +49,9 @@ final class PathVC : BaseVC {
         let closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "X"), style: .plain, target: self, action: #selector(close))
         closeButton.tintColor = Colors.text
         navigationItem.leftBarButtonItem = closeButton
+        let learnMoreButton = UIBarButtonItem(image: #imageLiteral(resourceName: "QuestionMark").scaled(to: CGSize(width: 24, height: 24)), style: .plain, target: self, action: #selector(learnMore))
+        learnMoreButton.tintColor = Colors.text
+        navigationItem.rightBarButtonItem = learnMoreButton
         // Customize title
         let titleLabel = UILabel()
         titleLabel.text = NSLocalizedString("Path", comment: "")
@@ -188,6 +191,12 @@ final class PathVC : BaseVC {
     // MARK: Interaction
     @objc private func close() {
         dismiss(animated: true, completion: nil)
+    }
+
+    @objc private func learnMore() {
+        let urlAsString = "https://getsession.org/faq/#onion-routing"
+        let url = URL(string: urlAsString)!
+        UIApplication.shared.open(url)
     }
 
     @objc private func rebuildPath() {
