@@ -54,12 +54,12 @@ class Modal : BaseVC {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
-        verticalCenteringConstraint.constant = contentView.height() / 2 + view.height() / 2
-        view.layoutIfNeeded()
-        verticalCenteringConstraint.constant = 0
-        UIView.animate(withDuration: 0.25) {
-            self.view.layoutIfNeeded()
-        }
+//        verticalCenteringConstraint.constant = contentView.height() / 2 + view.height() / 2
+//        view.layoutIfNeeded()
+//        verticalCenteringConstraint.constant = 0
+//        UIView.animate(withDuration: 0.25) {
+//            self.view.layoutIfNeeded()
+//        }
     }
     
     // MARK: Interaction
