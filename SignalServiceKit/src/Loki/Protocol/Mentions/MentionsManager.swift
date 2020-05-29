@@ -70,7 +70,7 @@ public final class MentionsManager : NSObject {
         func populate(in transaction: YapDatabaseReadTransaction) {
             guard let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) else { return }
             if let groupThread = thread as? TSGroupThread, groupThread.groupModel.groupType == .closedGroup {
-                result = result.union(groupThread.groupModel.groupMemberIds)
+                result = result.union(groupThread.groupModel.groupMemberIds).subtracting([ getUserHexEncodedPublicKey() ])
             } else {
                 guard userPublicKeyCache[threadID] == nil else { return }
                 let interactions = transaction.ext(TSMessageDatabaseViewExtensionName) as! YapDatabaseViewTransaction
@@ -78,6 +78,7 @@ public final class MentionsManager : NSObject {
                     guard let message = object as? TSIncomingMessage, index < userIDScanLimit else { return }
                     result.insert(message.authorId)
                 }
+                result.insert(getUserHexEncodedPublicKey())
             }
         }
         if let transaction = transaction {
@@ -87,7 +88,6 @@ public final class MentionsManager : NSObject {
                 populate(in: transaction)
             }
         }
-        result.insert(getUserHexEncodedPublicKey())
         userPublicKeyCache[threadID] = result
     }
 }
