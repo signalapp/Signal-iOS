@@ -111,7 +111,6 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
         @(OWSSound_Keys),
         @(OWSSound_Popcorn),
         @(OWSSound_Pulse),
-        @(OWSSound_SignalClassic),
         @(OWSSound_Synth),
     ];
 }
