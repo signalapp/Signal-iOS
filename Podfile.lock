@@ -265,7 +265,7 @@ DEPENDENCIES:
   - ZXingObjC (from `https://github.com/zxingify/zxingify-objc.git`)
 
 SPEC REPOS:
-  https://github.com/cocoapods/specs.git:
+  https://github.com/CocoaPods/Specs.git:
     - AFNetworking
     - CocoaLumberjack
     - GRDB.swift
@@ -401,4 +401,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: a39ddee2a62e41a02241922b4f1eefb726bc66d2
 
-COCOAPODS: 1.7.5
+COCOAPODS: 1.9.2
