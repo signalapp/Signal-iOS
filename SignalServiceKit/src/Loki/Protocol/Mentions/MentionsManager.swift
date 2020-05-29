@@ -66,14 +66,18 @@ public final class MentionsManager : NSObject {
     }
 
     @objc public static func populateUserHexEncodedPublicKeyCacheIfNeeded(for threadID: String, in transaction: YapDatabaseReadTransaction? = nil) {
-        guard userHexEncodedPublicKeyCache[threadID] == nil else { return }
         var result: Set<String> = []
         func populate(in transaction: YapDatabaseReadTransaction) {
             guard let thread = TSThread.fetch(uniqueId: threadID, transaction: transaction) else { return }
-            let interactions = transaction.ext(TSMessageDatabaseViewExtensionName) as! YapDatabaseViewTransaction
-            interactions.enumerateKeysAndObjects(inGroup: threadID) { _, _, object, index, _ in
-                guard let message = object as? TSIncomingMessage, index < userIDScanLimit else { return }
-                result.insert(message.authorId)
+            if let groupThread = thread as? TSGroupThread, groupThread.groupModel.groupType == .closedGroup {
+                result = result.union(groupThread.groupModel.groupMemberIds)
+            } else {
+                guard userHexEncodedPublicKeyCache[threadID] == nil else { return }
+                let interactions = transaction.ext(TSMessageDatabaseViewExtensionName) as! YapDatabaseViewTransaction
+                interactions.enumerateKeysAndObjects(inGroup: threadID) { _, _, object, index, _ in
+                    guard let message = object as? TSIncomingMessage, index < userIDScanLimit else { return }
+                    result.insert(message.authorId)
+                }
             }
         }
         if let transaction = transaction {
