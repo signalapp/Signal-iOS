@@ -352,7 +352,13 @@ const CGFloat kIconViewLength = 24;
     OWSTableSection *mainSection = [OWSTableSection new];
 
     mainSection.customHeaderView = [self mainSectionHeader];
-    mainSection.customHeaderHeight = self.isGroupThread ? @(147.f) : @(208.f);
+
+    if (self.isGroupThread) {
+        mainSection.customHeaderHeight = @(147.f);
+    } else {
+        BOOL isSmallScreen = (UIScreen.mainScreen.bounds.size.height - 568) < 1;
+        mainSection.customHeaderHeight = isSmallScreen ? @(201.f) : @(208.f);
+    }
 
     /**
      * Loki: Original code
@@ -945,7 +951,9 @@ const CGFloat kIconViewLength = 24;
     stackView.spacing = LKValues.mediumSpacing;
     stackView.distribution = UIStackViewDistributionEqualCentering; 
     stackView.alignment = UIStackViewAlignmentCenter;
-    stackView.layoutMargins = UIEdgeInsetsMake(LKValues.mediumSpacing, LKValues.veryLargeSpacing, LKValues.mediumSpacing, LKValues.veryLargeSpacing);
+    BOOL isSmallScreen = (UIScreen.mainScreen.bounds.size.height - 568) < 1;
+    CGFloat horizontalSpacing = isSmallScreen ? LKValues.largeSpacing : LKValues.veryLargeSpacing;
+    stackView.layoutMargins = UIEdgeInsetsMake(LKValues.mediumSpacing, horizontalSpacing, LKValues.mediumSpacing, horizontalSpacing);
     [stackView setLayoutMarginsRelativeArrangement:YES];
     
     if (self.isGroupThread) {
@@ -954,9 +962,9 @@ const CGFloat kIconViewLength = 24;
     } else {
         profilePictureView.hexEncodedPublicKey = self.thread.contactIdentifier;
         
-        UILabel *subtitleView = [UILabel new];
+        SRCopyableLabel *subtitleView = [SRCopyableLabel new];
         subtitleView.textColor = LKColors.text;
-        subtitleView.font = [LKFonts spaceMonoOfSize:LKValues.mediumFontSize];
+        subtitleView.font = [LKFonts spaceMonoOfSize:LKValues.smallFontSize];
         subtitleView.lineBreakMode = NSLineBreakByCharWrapping;
         subtitleView.numberOfLines = 2;
         subtitleView.text = self.thread.contactIdentifier;
