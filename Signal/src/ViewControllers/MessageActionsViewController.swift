@@ -172,6 +172,18 @@ class MessageActionsViewController: UIViewController {
         }
     }
 
+    @objc
+    func dismissWithoutAnimating() {
+        AssertIsOnMainThread()
+
+        guard view.superview != nil else {
+            return owsFailDebug("trying to dismiss when not presented")
+        }
+
+        view.removeFromSuperview()
+        emojiPicker?.dismiss(animated: false)
+    }
+
     @objc(dismissAndAnimateAlongside:completion:)
     func dismiss(animateAlongside: (() -> Void)?, completion: (() -> Void)?) {
         guard view.superview != nil else {
@@ -187,6 +199,7 @@ class MessageActionsViewController: UIViewController {
             completion?()
         }
 
+        emojiPicker?.dismiss(animated: true, completion: completeOnce)
         reactionPicker?.playDismissalAnimation(duration: 0.2, completion: completeOnce)
 
         UIView.animate(withDuration: 0.2,
@@ -294,18 +307,53 @@ class MessageActionsViewController: UIViewController {
             return
         }
 
-        // Otherwise, dismiss the menu and send the focused emoji
-        delegate?.messageActionsViewControllerRequestedDismissal(
-            self,
-            withReaction: focusedEmoji,
-            isRemoving: focusedEmoji == focusedViewItem.reactionState?.localUserEmoji
-        )
+        if focusedEmoji == MessageReactionPicker.anyEmojiName {
+            showAnyEmojiPicker()
+        } else {
+            // Otherwise, dismiss the menu and send the focused emoji
+            delegate?.messageActionsViewControllerRequestedDismissal(
+                self,
+                withReaction: focusedEmoji,
+                isRemoving: focusedEmoji == focusedViewItem.reactionState?.localUserEmoji
+            )
+        }
+    }
+
+    private var emojiPicker: EmojiPickerSheet?
+    func showAnyEmojiPicker() {
+        let picker = EmojiPickerSheet { [weak self] emoji in
+            guard let self = self else { return }
+
+            guard let emojiString = emoji?.rawValue else {
+                self.delegate?.messageActionsViewControllerRequestedDismissal(self, withAction: nil)
+                return
+            }
+
+            self.delegate?.messageActionsViewControllerRequestedDismissal(
+                self,
+                withReaction: emojiString,
+                isRemoving: emojiString == self.focusedViewItem.reactionState?.localUserEmoji
+            )
+        }
+        picker.backdropView = backdropView
+        emojiPicker = picker
+
+        present(picker, animated: true)
+        reactionPicker?.playDismissalAnimation(duration: 0.2) {
+            self.reactionPicker?.removeFromSuperview()
+            self.reactionPicker = nil
+            self.bottomBar.alpha = 0
+        }
     }
 }
 
 extension MessageActionsViewController: MessageReactionPickerDelegate {
     func didSelectReaction(reaction: String, isRemoving: Bool) {
         delegate?.messageActionsViewControllerRequestedDismissal(self, withReaction: reaction, isRemoving: isRemoving)
+    }
+
+    func didSelectAnyEmoji() {
+        showAnyEmojiPicker()
     }
 }
 

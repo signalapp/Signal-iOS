@@ -8,7 +8,7 @@ import Foundation
 class EmojiPickerSheet: UIViewController {
     let contentView = UIView()
     let handle = UIView()
-    let backdropView = UIView()
+    weak var backdropView: UIView?
 
     let completionHandler: (Emoji?) -> Void
 
@@ -92,9 +92,8 @@ class EmojiPickerSheet: UIViewController {
     }
 
     @objc func didTapBackdrop(_ sender: UITapGestureRecognizer) {
-        dismiss(animated: true) { [weak self] in
-            self?.completionHandler(nil)
-        }
+        completionHandler(nil)
+        dismiss(animated: true)
     }
 
     // MARK: - Resize / Interactive Dismiss
@@ -160,7 +159,7 @@ class EmojiPickerSheet: UIViewController {
 
             // If the height is decreasing, adjust the relevant view's proporitionally
             if newHeight < startingHeight {
-                backdropView.alpha = 1 - (startingHeight - newHeight) / startingHeight
+                backdropView?.alpha = 1 - (startingHeight - newHeight) / startingHeight
             }
 
             // Update our height to reflect the new position
@@ -215,15 +214,14 @@ class EmojiPickerSheet: UIViewController {
                     self.view.layoutIfNeeded()
                 }
 
-                self.backdropView.alpha = completionState == .dismissing ? 0 : 1
+                self.backdropView?.alpha = completionState == .dismissing ? 0 : 1
             }) { _ in
                 self.heightConstraint?.constant = finalHeight
                 self.view.layoutIfNeeded()
 
                 if completionState == .dismissing {
-                    self.dismiss(animated: true) { [weak self] in
-                        self?.completionHandler(nil)
-                    }
+                    self.completionHandler(nil)
+                    self.dismiss(animated: true)
                 }
             }
 
@@ -231,7 +229,7 @@ class EmojiPickerSheet: UIViewController {
         default:
             resetInteractiveTransition()
 
-            backdropView.alpha = 1
+            backdropView?.alpha = 1
 
             guard let startingHeight = startingHeight else { break }
             heightConstraint?.constant = startingHeight
@@ -270,7 +268,7 @@ extension EmojiPickerSheet: EmojiPickerSectionToolbarDelegate {
         UIView.animate(withDuration: maxAnimationDuration, delay: 0, options: .curveEaseOut, animations: {
             self.heightConstraint?.constant = self.maximizedHeight
             self.view.layoutIfNeeded()
-            self.backdropView.alpha = 1
+            self.backdropView?.alpha = 1
         })
     }
 
@@ -281,9 +279,8 @@ extension EmojiPickerSheet: EmojiPickerSectionToolbarDelegate {
 
 extension EmojiPickerSheet: EmojiPickerCollectionViewDelegate {
     func emojiPicker(_ emojiPicker: EmojiPickerCollectionView, didSelectEmoji emoji: Emoji) {
-        dismiss(animated: true) { [weak self] in
-            self?.completionHandler(emoji)
-        }
+        completionHandler(emoji)
+        dismiss(animated: true)
     }
 
     func emojiPicker(_ emojiPicker: EmojiPickerCollectionView, didScrollToSection section: Int) {
@@ -323,18 +320,7 @@ private class EmojiPickerAnimationController: UIPresentationController {
         return vc.backdropView
     }
 
-    override init(presentedViewController: UIViewController, presenting presentingViewController: UIViewController?) {
-        super.init(presentedViewController: presentedViewController, presenting: presentingViewController)
-        backdropView?.backgroundColor = Theme.backdropColor
-    }
-
     override func presentationTransitionWillBegin() {
-        guard let containerView = containerView, let backdropView = backdropView else { return }
-        backdropView.alpha = 0
-        containerView.addSubview(backdropView)
-        backdropView.autoPinEdgesToSuperviewEdges()
-        containerView.layoutIfNeeded()
-
         presentedViewController.transitionCoordinator?.animate(alongsideTransition: { _ in
             self.backdropView?.alpha = 1
         }, completion: nil)
@@ -343,9 +329,7 @@ private class EmojiPickerAnimationController: UIPresentationController {
     override func dismissalTransitionWillBegin() {
         presentedViewController.transitionCoordinator?.animate(alongsideTransition: { _ in
             self.backdropView?.alpha = 0
-        }, completion: { _ in
-            self.backdropView?.removeFromSuperview()
-        })
+        }, completion: nil)
     }
 
     override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {

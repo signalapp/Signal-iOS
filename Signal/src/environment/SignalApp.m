@@ -44,6 +44,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSSingletonAssert();
 
+    [self warmAvailableEmojiCache];
+
     return self;
 }
 

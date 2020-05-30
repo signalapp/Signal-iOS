@@ -5,6 +5,10 @@
 extension Emoji {
     static var availableCache = [Emoji: Bool]()
 
+    static func warmAvailableCache() {
+        Emoji.allCases.forEach { _ = $0.available }
+    }
+
     /// Indicates whether the given emoji is available on this iOS
     /// version. We cache the availability in memory.
     var available: Bool {
