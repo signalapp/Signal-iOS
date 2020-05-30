@@ -251,19 +251,24 @@ NS_ASSUME_NONNULL_BEGIN
     }
     self.dateTimeLabel.textColor = textColor;
 
-    NSUInteger unreadCount = thread.unreadCount;
     if (overrideSnippet) {
         // If we're using the conversation list cell to render search results,
         // don't show "unread badge" or "message status" indicator.
         self.unreadBadge.hidden = YES;
         self.messageStatusView.hidden = YES;
-    } else if (unreadCount > 0) {
+    } else if (thread.hasUnreadMessages) {
         // If there are unread messages, show the "unread badge."
         // The "message status" indicators is redundant.
         self.unreadBadge.hidden = NO;
         self.messageStatusView.hidden = YES;
 
-        self.unreadLabel.text = [OWSFormat formatInt:(int)unreadCount];
+        NSUInteger unreadCount = thread.unreadCount;
+        if (unreadCount > 0) {
+            self.unreadLabel.text = [OWSFormat formatInt:(int)unreadCount];
+        } else {
+            self.unreadLabel.text = @"";
+        }
+
         self.unreadLabel.font = self.unreadFont;
         const int unreadBadgeHeight = (int)ceil(self.unreadLabel.font.lineHeight * 1.5f);
         self.unreadBadge.layer.cornerRadius = unreadBadgeHeight / 2;
