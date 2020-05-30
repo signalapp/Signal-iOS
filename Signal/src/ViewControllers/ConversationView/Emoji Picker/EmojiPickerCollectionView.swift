@@ -50,7 +50,7 @@ class EmojiPickerCollectionView: UICollectionView {
             withReuseIdentifier: EmojiSectionHeader.reuseIdentifier
         )
 
-        backgroundColor = Theme.backgroundColor
+        backgroundColor = Theme.isDarkThemeEnabled ? .ows_gray80 : .ows_white
     }
 
     required init?(coder: NSCoder) {
