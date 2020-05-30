@@ -112,4 +112,22 @@ extension OWS2FAManager {
             }
         }
     }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func migrateToRegistrationLockV2() -> AnyPromise {
+        return AnyPromise(migrateToRegistrationLockV2())
+    }
+
+    public func migrateToRegistrationLockV2() -> Promise<Void> {
+        guard let pinCode = pinCode else {
+            return Promise(error: OWSAssertionError("tried to migrate to registration lock V2 without legacy PIN"))
+        }
+
+        return firstly {
+            return requestEnable2FA(withPin: pinCode, mode: .V2)
+        }.then {
+            return self.enableRegistrationLockV2()
+        }
+    }
 }

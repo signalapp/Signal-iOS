@@ -3,6 +3,7 @@
 //
 
 #import "OWS2FAManager.h"
+#import "AppReadiness.h"
 #import "NSNotificationCenter+OWS.h"
 #import "OWSRequestFactory.h"
 #import "SSKEnvironment.h"
@@ -65,6 +66,20 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
     }
 
     OWSSingletonAssert();
+
+    [AppReadiness runNowOrWhenAppDidBecomeReadyPolite:^{
+        if (self.mode == OWS2FAMode_V1) {
+            OWSLogInfo(@"Migrating V1 reglock to V2 reglock");
+
+            [self migrateToRegistrationLockV2]
+                .then(^{
+                    OWSLogInfo(@"Successfully migrated to registration lock V2");
+                })
+                .catch(^(NSError *error) {
+                    OWSFailDebug(@"Failed to migrate V1 reglock to V2 reglock: %@", error.localizedDescription);
+                });
+        }
+    }];
 
     return self;
 }
