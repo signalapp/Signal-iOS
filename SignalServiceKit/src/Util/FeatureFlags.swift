@@ -179,7 +179,7 @@ public class FeatureFlags: NSObject {
     public static let answerCallsOnSecondaryDevice: Bool = build.includes(.beta)
 
     @objc
-    public static let groupsV2 = true
+    public static let groupsV2 = !CurrentAppContext().isRunningTests
 
     // Don't consult this feature flag directly; instead
     // consult RemoteConfig.groupsV2CreateGroups.

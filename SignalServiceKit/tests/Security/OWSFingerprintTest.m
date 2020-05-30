@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSFingerprint.h"
@@ -17,9 +17,11 @@
 
 - (void)testDisplayableTextInsertsSpaces
 {
-    SignalServiceAddress *aliceStableAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+13231111111"];
+    SignalServiceAddress *aliceStableAddress = [[SignalServiceAddress alloc] initWithUuid:NSUUID.UUID
+                                                                              phoneNumber:@"+13231111111"];
     NSData *aliceIdentityKey = [Curve25519 generateKeyPair].publicKey;
-    SignalServiceAddress *bobStableAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+14152222222"];
+    SignalServiceAddress *bobStableAddress = [[SignalServiceAddress alloc] initWithUuid:NSUUID.UUID
+                                                                            phoneNumber:@"+14152222222"];
     NSData *bobIdentityKey = [Curve25519 generateKeyPair].publicKey;
 
     OWSFingerprint *aliceFingerprint = [OWSFingerprint fingerprintWithMyStableAddress:aliceStableAddress
@@ -46,11 +48,14 @@
 
 - (void)testTextMatchesReciprocally
 {
-    SignalServiceAddress *aliceStableAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+13231111111"];
+    SignalServiceAddress *aliceStableAddress = [[SignalServiceAddress alloc] initWithUuid:NSUUID.UUID
+                                                                              phoneNumber:@"+13231111111"];
     NSData *aliceIdentityKey = [Curve25519 generateKeyPair].publicKey;
-    SignalServiceAddress *bobStableAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+14152222222"];
+    SignalServiceAddress *bobStableAddress = [[SignalServiceAddress alloc] initWithUuid:NSUUID.UUID
+                                                                            phoneNumber:@"+14152222222"];
     NSData *bobIdentityKey = [Curve25519 generateKeyPair].publicKey;
-    SignalServiceAddress *charlieStableAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+14153333333"];
+    SignalServiceAddress *charlieStableAddress = [[SignalServiceAddress alloc] initWithUuid:NSUUID.UUID
+                                                                                phoneNumber:@"+14153333333"];
     NSData *charlieIdentityKey = [Curve25519 generateKeyPair].publicKey;
 
     OWSFingerprint *aliceFingerprint = [OWSFingerprint fingerprintWithMyStableAddress:aliceStableAddress

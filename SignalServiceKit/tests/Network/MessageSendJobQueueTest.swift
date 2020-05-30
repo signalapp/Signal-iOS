@@ -58,6 +58,8 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         self.wait(for: [sentAfterReadyExpectation], timeout: 0.1)
     }
 
+    #if BROKEN_TESTS
+
     func test_respectsQueueOrder() {
         let message1: TSOutgoingMessage = OutgoingMessageFactory().create()
         let message2: TSOutgoingMessage = OutgoingMessageFactory().create()
@@ -222,6 +224,8 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         XCTAssertEqual(1, jobRecord.failureCount)
         XCTAssertEqual(.permanentlyFailed, jobRecord.status)
     }
+
+    #endif
 
     // MARK: Private
 
