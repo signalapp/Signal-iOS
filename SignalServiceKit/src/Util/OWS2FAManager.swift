@@ -74,7 +74,6 @@ extension OWS2FAManager {
             return self.networkManager.makePromise(request: request)
         }.done { _ in
             self.databaseStorage.write { transaction in
-                self.markEnabled(transaction: transaction)
                 OWS2FAManager.keyValueStore().setBool(
                     true,
                     key: OWS2FAManager.isRegistrationLockV2EnabledKey,
@@ -101,7 +100,6 @@ extension OWS2FAManager {
             return self.networkManager.makePromise(request: request)
         }.done { _ in
             self.databaseStorage.write { transaction in
-                self.markDisabled(transaction: transaction)
                 OWS2FAManager.keyValueStore().removeValue(
                     forKey: OWS2FAManager.isRegistrationLockV2EnabledKey,
                     transaction: transaction

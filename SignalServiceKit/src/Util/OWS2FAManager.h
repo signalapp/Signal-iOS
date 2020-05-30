@@ -34,6 +34,8 @@ typedef NS_CLOSED_ENUM(NSUInteger, OWS2FAMode) {
 + (instancetype)sharedManager;
 
 @property (nullable, nonatomic, readonly) NSString *pinCode;
+- (void)setPinCode:(nullable NSString *)pin transaction:(SDSAnyWriteTransaction *)transaction;
+
 @property (nonatomic, readonly) OWS2FAMode mode;
 @property (nonatomic, readonly) BOOL isDueForV1Reminder;
 @property (nonatomic, readonly) NSTimeInterval repetitionInterval;
@@ -57,7 +59,6 @@ typedef NS_CLOSED_ENUM(NSUInteger, OWS2FAMode) {
 
 - (void)markEnabledWithPin:(NSString *)pin
                transaction:(SDSAnyWriteTransaction *)transaction NS_SWIFT_NAME(markEnabled(pin:transaction:));
-- (void)markEnabledWithTransaction:(SDSAnyWriteTransaction *)transaction NS_SWIFT_NAME(markEnabled(transaction:));
 - (void)markDisabledWithTransaction:(SDSAnyWriteTransaction *)transaction NS_SWIFT_NAME(markDisabled(transaction:));
 
 @property (nonatomic, readonly) BOOL areRemindersEnabled;

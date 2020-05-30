@@ -838,6 +838,7 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
             [self loadAccountStateWithTransaction:transaction];
 
             [OWSKeyBackupService clearKeysWithTransaction:transaction];
+            [OWS2FAManager.sharedManager setPinCode:nil transaction:transaction];
         }
     }];
 
