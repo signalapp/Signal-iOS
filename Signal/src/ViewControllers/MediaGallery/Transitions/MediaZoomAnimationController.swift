@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -74,6 +74,8 @@ extension MediaZoomAnimationController: UIViewControllerAnimatedTransitioning {
             return
         }
         containerView.addSubview(toView)
+        toView.autoPinEdgesToSuperviewEdges()
+        toView.layoutIfNeeded()
 
         guard let toMediaContext = toContextProvider.mediaPresentationContext(galleryItem: galleryItem, in: containerView) else {
             owsFailDebug("toPresentationContext was unexpectedly nil")
