@@ -718,7 +718,7 @@ NS_ASSUME_NONNULL_BEGIN
         tintColor = Theme.isDarkThemeEnabled ? [UIColor ows_gray25Color] : [UIColor ows_gray75Color];
 
         // If we're transitioning to the active state, play haptic feedback
-        [[ImpactHapticFeedback new] impactOccurred];
+        [ImpactHapticFeedback impactOccuredWithStyle:UIImpactFeedbackStyleLight];
     }
 
     self.swipeToReplyImageView.tintColor = tintColor;

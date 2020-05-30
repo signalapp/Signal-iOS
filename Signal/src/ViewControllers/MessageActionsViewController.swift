@@ -299,7 +299,10 @@ class MessageActionsViewController: UIViewController {
     func didEndLongpress() {
         // If the long press never moved, do nothing when we release.
         // The menu should continue to display until the user dismisses.
-        guard gestureExitedDeadZone else { return }
+        guard gestureExitedDeadZone else {
+            ImpactHapticFeedback.impactOccured(style: .light)
+            return
+        }
 
         // If there's not a focused reaction, dismiss the menu with no action
         guard let focusedEmoji = reactionPicker?.focusedEmoji else {

@@ -1118,6 +1118,8 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 {
     OWSAssertDebug(self.inputToolbarDelegate);
 
+    [ImpactHapticFeedback impactOccuredWithStyle:UIImpactFeedbackStyleLight];
+
     [self.inputToolbarDelegate cameraButtonPressed];
 }
 
@@ -1125,12 +1127,16 @@ const CGFloat kMaxIPadTextViewHeight = 142;
 {
     OWSLogVerbose(@"");
 
+    [ImpactHapticFeedback impactOccuredWithStyle:UIImpactFeedbackStyleLight];
+
     [self toggleKeyboardType:KeyboardType_Attachment animated:YES];
 }
 
 - (void)stickerButtonPressed
 {
     OWSLogVerbose(@"");
+
+    [ImpactHapticFeedback impactOccuredWithStyle:UIImpactFeedbackStyleLight];
 
     __block BOOL hasInstalledStickerPacks;
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {

@@ -147,6 +147,8 @@ class MessageReactionPicker: UIStackView {
         // Do nothing if we're already focused
         guard previouslyFocusedButton != focusedButton else { return }
 
+        SelectionHapticFeedback().selectionChanged()
+
         UIView.animate(withDuration: animated ? 0.15 : 0) {
             previouslyFocusedButton?.transform = .identity
             focusedButton?.transform = CGAffineTransform.scale(1.5).translatedBy(x: 0, y: -24)

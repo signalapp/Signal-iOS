@@ -718,6 +718,8 @@ class CaptureOutput: NSObject {
             return
         }
 
+        ImpactHapticFeedback.impactOccured(style: .medium)
+
         let videoOrientation = delegate.captureOrientation
         photoVideoConnection.videoOrientation = videoOrientation
         Logger.verbose("videoOrientation: \(videoOrientation), deviceOrientation: \(UIDevice.current.orientation)")
