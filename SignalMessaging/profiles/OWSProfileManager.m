@@ -38,7 +38,7 @@ NSNotificationName const kNSNotificationNameProfileKeyDidChange = @"kNSNotificat
 // The max bytes for a user's profile name, encoded in UTF8.
 // Before encrypting and submitting we NULL pad the name data to this length.
 const NSUInteger kOWSProfileManager_NameDataLength = 26;
-const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 640;
+const NSUInteger kOWSProfileManager_MaxAvatarDiameter = 1024;
 const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_WasLocallyInitiated";
 
 @interface OWSProfileManager ()
