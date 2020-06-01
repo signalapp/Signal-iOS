@@ -151,6 +151,11 @@ public class OWSFlatButton: UIView {
     }
 
     @objc
+    public func setImage(_ image: UIImage) {
+        button.setImage(image, for: .normal)
+    }
+
+    @objc
     public func setBackgroundColors(upColor: UIColor,
                                     downColor: UIColor ) {
         button.setBackgroundImage(UIImage(color: upColor), for: .normal)

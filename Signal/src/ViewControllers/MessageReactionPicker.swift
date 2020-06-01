@@ -6,9 +6,12 @@ import Foundation
 
 protocol MessageReactionPickerDelegate: class {
     func didSelectReaction(reaction: String, isRemoving: Bool)
+    func didSelectAnyEmoji()
 }
 
 class MessageReactionPicker: UIStackView {
+    static let anyEmojiName = "any"
+
     let pickerDiameter: CGFloat = UIDevice.current.isNarrowerThanIPhone6 ? 50 : 56
     let reactionFontSize: CGFloat = UIDevice.current.isNarrowerThanIPhone6 ? 30 : 32
     let pickerPadding: CGFloat = 6
@@ -48,7 +51,15 @@ class MessageReactionPicker: UIStackView {
         isLayoutMarginsRelativeArrangement = true
         layoutMargins = UIEdgeInsets(top: pickerPadding, leading: pickerPadding, bottom: pickerPadding, trailing: pickerPadding)
 
-        for emoji in ReactionManager.emojiSet {
+        var emojiSet = ReactionManager.emojiSet
+        var addAnyButton = true
+
+        if let selectedEmoji = selectedEmoji, !emojiSet.contains(selectedEmoji) {
+            emojiSet.append(selectedEmoji)
+            addAnyButton = false
+        }
+
+        for emoji in emojiSet {
             let button = OWSFlatButton()
             button.autoSetDimensions(to: CGSize(square: reactionHeight))
             button.setTitle(title: emoji, font: .systemFont(ofSize: reactionFontSize), titleColor: Theme.primaryTextColor)
@@ -69,6 +80,17 @@ class MessageReactionPicker: UIStackView {
                 selectedBackgroundView.autoAlignAxis(.horizontal, toSameAxisOf: button)
                 selectedBackgroundView.autoAlignAxis(.vertical, toSameAxisOf: button)
             }
+        }
+
+        if addAnyButton {
+            let button = OWSFlatButton()
+            button.autoSetDimensions(to: CGSize(square: reactionHeight))
+            button.setImage(#imageLiteral(resourceName: "any-emoji-32"))
+            button.setPressedBlock { [weak self] in
+                self?.delegate?.didSelectAnyEmoji()
+            }
+            buttonForEmoji[MessageReactionPicker.anyEmojiName] = button
+            addArrangedSubview(button)
         }
     }
 
@@ -124,6 +146,8 @@ class MessageReactionPicker: UIStackView {
 
         // Do nothing if we're already focused
         guard previouslyFocusedButton != focusedButton else { return }
+
+        SelectionHapticFeedback().selectionChanged()
 
         UIView.animate(withDuration: animated ? 0.15 : 0) {
             previouslyFocusedButton?.transform = .identity

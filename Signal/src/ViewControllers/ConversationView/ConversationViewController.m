@@ -2149,7 +2149,7 @@ typedef enum : NSUInteger {
                 completion();
             }];
     } else {
-        [self.messageActionsViewController.view removeFromSuperview];
+        [self.messageActionsViewController dismissWithoutAnimating];
         [self clearMessageActionsState];
         completion();
     }

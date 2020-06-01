@@ -619,6 +619,12 @@
 		8809CE8A22F93C2200D38867 /* RecentPhotoCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8809CE8922F93C2200D38867 /* RecentPhotoCollectionView.swift */; };
 		880BFFEA234590FA00F6FAB1 /* ConversationSplitViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880BFFE82345907600F6FAB1 /* ConversationSplitViewController.swift */; };
 		880C0FF7233D3F7C00386FB8 /* playPauseButton.json in Resources */ = {isa = PBXBuildFile; fileRef = 880C0FF6233D3F7C00386FB8 /* playPauseButton.json */; };
+		880D9025247F8841003D2B14 /* Emoji+Name.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880D9024247F8841003D2B14 /* Emoji+Name.swift */; };
+		880D9027247F90CC003D2B14 /* Emoji+Available.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880D9026247F90CC003D2B14 /* Emoji+Available.swift */; };
+		880D902A2480887F003D2B14 /* EmojiPickerSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880D90292480887F003D2B14 /* EmojiPickerSheet.swift */; };
+		880D902C2480889B003D2B14 /* EmojiPickerCollectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880D902B2480889B003D2B14 /* EmojiPickerCollectionView.swift */; };
+		880D902E2480A23E003D2B14 /* EmojiPickerSectionToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880D902D2480A23E003D2B14 /* EmojiPickerSectionToolbar.swift */; };
+		880D90302481E617003D2B14 /* SignalApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 880D902F2481E617003D2B14 /* SignalApp.swift */; };
 		8810223722DF9C2300A7C44F /* OnboardingPinAttemptsExhaustedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8810223622DF9C2300A7C44F /* OnboardingPinAttemptsExhaustedViewController.swift */; };
 		8811CF842295D8DA00FF6549 /* VolumeButtons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8811CF832295D8DA00FF6549 /* VolumeButtons.swift */; };
 		881218F0238CA51600E6F271 /* MessageReactionPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 881218EF238CA51600E6F271 /* MessageReactionPicker.swift */; };
@@ -648,6 +654,8 @@
 		8861DED02445349C00BB4145 /* LinkingTextView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8861DECF2445349B00BB4145 /* LinkingTextView.swift */; };
 		886F08A7234958970085C27F /* InputAccessoryViewPlaceholder.swift in Sources */ = {isa = PBXBuildFile; fileRef = 886F08A6234958970085C27F /* InputAccessoryViewPlaceholder.swift */; };
 		887889A52476E999001B5FCF /* OWSPinConfirmationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887889A42476E999001B5FCF /* OWSPinConfirmationViewController.swift */; };
+		887889B1247F2E72001B5FCF /* Emoji+Category.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887889AF247F2E72001B5FCF /* Emoji+Category.swift */; };
+		887889B2247F2E72001B5FCF /* Emoji.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887889B0247F2E72001B5FCF /* Emoji.swift */; };
 		887CD4772472FEA500FDD265 /* DeviceTransferOperation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887CD4762472FEA500FDD265 /* DeviceTransferOperation.swift */; };
 		887CD47B247304B600FDD265 /* DeviceTransferService+URL.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887CD47A247304B600FDD265 /* DeviceTransferService+URL.swift */; };
 		887CD47D2473051D00FDD265 /* DeviceTransferService+Manifest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887CD47C2473051D00FDD265 /* DeviceTransferService+Manifest.swift */; };
@@ -1572,6 +1580,12 @@
 		8809CE8922F93C2200D38867 /* RecentPhotoCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentPhotoCollectionView.swift; sourceTree = "<group>"; };
 		880BFFE82345907600F6FAB1 /* ConversationSplitViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ConversationSplitViewController.swift; sourceTree = "<group>"; };
 		880C0FF6233D3F7C00386FB8 /* playPauseButton.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = playPauseButton.json; sourceTree = "<group>"; };
+		880D9024247F8841003D2B14 /* Emoji+Name.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Emoji+Name.swift"; sourceTree = "<group>"; };
+		880D9026247F90CC003D2B14 /* Emoji+Available.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Emoji+Available.swift"; sourceTree = "<group>"; };
+		880D90292480887F003D2B14 /* EmojiPickerSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiPickerSheet.swift; sourceTree = "<group>"; };
+		880D902B2480889B003D2B14 /* EmojiPickerCollectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiPickerCollectionView.swift; sourceTree = "<group>"; };
+		880D902D2480A23E003D2B14 /* EmojiPickerSectionToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmojiPickerSectionToolbar.swift; sourceTree = "<group>"; };
+		880D902F2481E617003D2B14 /* SignalApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SignalApp.swift; sourceTree = "<group>"; };
 		880FC0A023BFDADC00A2A900 /* sk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = sk; path = translations/sk.lproj/Localizable.strings; sourceTree = "<group>"; };
 		8810223622DF9C2300A7C44F /* OnboardingPinAttemptsExhaustedViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingPinAttemptsExhaustedViewController.swift; sourceTree = "<group>"; };
 		8811CF832295D8DA00FF6549 /* VolumeButtons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VolumeButtons.swift; sourceTree = "<group>"; };
@@ -1620,6 +1634,8 @@
 		887889A7247718DE001B5FCF /* af */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = af; path = translations/af.lproj/Localizable.strings; sourceTree = "<group>"; };
 		887889A8247718F7001B5FCF /* jv */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = jv; path = translations/jv.lproj/Localizable.strings; sourceTree = "<group>"; };
 		887889AB247E09B7001B5FCF /* kk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = kk; path = translations/kk.lproj/Localizable.strings; sourceTree = "<group>"; };
+		887889AF247F2E72001B5FCF /* Emoji+Category.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Emoji+Category.swift"; sourceTree = "<group>"; };
+		887889B0247F2E72001B5FCF /* Emoji.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Emoji.swift; sourceTree = "<group>"; };
 		887CD4762472FEA500FDD265 /* DeviceTransferOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceTransferOperation.swift; sourceTree = "<group>"; };
 		887CD47A247304B600FDD265 /* DeviceTransferService+URL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DeviceTransferService+URL.swift"; sourceTree = "<group>"; };
 		887CD47C2473051D00FDD265 /* DeviceTransferService+Manifest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DeviceTransferService+Manifest.swift"; sourceTree = "<group>"; };
@@ -2177,6 +2193,7 @@
 				34D1F0721F8678AA0066283D /* ConversationViewLayout.m */,
 				341341ED2187467900192D59 /* ConversationViewModel.h */,
 				341341EE2187467900192D59 /* ConversationViewModel.m */,
+				880D902824808830003D2B14 /* Emoji Picker */,
 				88BCCC8023837B7D00CE5FE6 /* InteractionReactionState.swift */,
 				88D1D40122EBB5A100F472C5 /* MessageRequestView.swift */,
 				8855DF85238F1DEE0066D96F /* Reactions Details */,
@@ -2981,6 +2998,7 @@
 				4539B5851F79348F007141FF /* PushRegistrationManager.swift */,
 				346129981FD1E4DA00532771 /* SignalApp.h */,
 				346129971FD1E4D900532771 /* SignalApp.m */,
+				880D902F2481E617003D2B14 /* SignalApp.swift */,
 			);
 			path = environment;
 			sourceTree = "<group>";
@@ -3000,6 +3018,7 @@
 				4CC1ECFA211A553000CC13BE /* AppUpdateNag.swift */,
 				3496956121A301A100DCFE74 /* Backup */,
 				88C4E38124671F9D009C9B97 /* Device Transfer */,
+				887889AE247F2E72001B5FCF /* Emoji */,
 				34B0796C1FCF46B000E248C2 /* MainAppContext.h */,
 				34B0796B1FCF46B000E248C2 /* MainAppContext.m */,
 				34D99C911F2937CC00D284D6 /* OWSAnalytics.swift */,
@@ -3067,6 +3086,16 @@
 			path = "Attachment Keyboard";
 			sourceTree = "<group>";
 		};
+		880D902824808830003D2B14 /* Emoji Picker */ = {
+			isa = PBXGroup;
+			children = (
+				880D90292480887F003D2B14 /* EmojiPickerSheet.swift */,
+				880D902B2480889B003D2B14 /* EmojiPickerCollectionView.swift */,
+				880D902D2480A23E003D2B14 /* EmojiPickerSectionToolbar.swift */,
+			);
+			path = "Emoji Picker";
+			sourceTree = "<group>";
+		};
 		8835DDFB230CEE7600DC6B66 /* RecipientPicker */ = {
 			isa = PBXGroup;
 			children = (
@@ -3099,6 +3128,17 @@
 				88A595E223AB48E80029E835 /* NotificationServiceExtensionContext.swift */,
 			);
 			path = NotificationServiceExtension;
+			sourceTree = "<group>";
+		};
+		887889AE247F2E72001B5FCF /* Emoji */ = {
+			isa = PBXGroup;
+			children = (
+				887889B0247F2E72001B5FCF /* Emoji.swift */,
+				887889AF247F2E72001B5FCF /* Emoji+Category.swift */,
+				880D9024247F8841003D2B14 /* Emoji+Name.swift */,
+				880D9026247F90CC003D2B14 /* Emoji+Available.swift */,
+			);
+			path = Emoji;
 			sourceTree = "<group>";
 		};
 		8889006223DBB38700F40186 /* Reactions Megaphone */ = {
@@ -4691,6 +4731,7 @@
 				34D2CCE0206939B400CB1A14 /* DebugUIMessagesAssetLoader.m in Sources */,
 				3416BCAA227763A500E761B4 /* OWSMessageView.m in Sources */,
 				88905E9E229CCA96004E4234 /* ExpirationNagView.swift in Sources */,
+				887889B2247F2E72001B5FCF /* Emoji.swift in Sources */,
 				881D85B822D92C2B00E118DF /* OWSPinSetupViewController.swift in Sources */,
 				340FC8BA204DAC8D007AEB0F /* FingerprintViewScanController.m in Sources */,
 				34D3E57C245A189D00F5E4A1 /* DebugUIScreenshots.m in Sources */,
@@ -4726,6 +4767,7 @@
 				340CCB6A23032762005243B3 /* YDBLegacyMigration.m in Sources */,
 				88A4CC09246CB0960082211F /* OnboardingTransferChoiceViewController.swift in Sources */,
 				3496955D219B605E00DCFE74 /* PhotoCollectionPickerController.swift in Sources */,
+				880D9027247F90CC003D2B14 /* Emoji+Available.swift in Sources */,
 				8835DDFD230CEE8900DC6B66 /* RecipientPickerDelegate.swift in Sources */,
 				34E6003A24251AD50026AD4B /* GroupViewUtils.swift in Sources */,
 				340E9AC4236095CD00FA362C /* AttachmentMultisend.swift in Sources */,
@@ -4735,6 +4777,7 @@
 				88A357B923639384009D6B9A /* MemberActionSheet.swift in Sources */,
 				34B0796D1FCF46B100E248C2 /* MainAppContext.m in Sources */,
 				34E3EF101EFC2684007F6822 /* DebugUIPage.m in Sources */,
+				887889B1247F2E72001B5FCF /* Emoji+Category.swift in Sources */,
 				34A8B3512190A40E00218A25 /* MediaAlbumCellView.swift in Sources */,
 				34D1F0AE1F867BFC0066283D /* OWSMessageCell.m in Sources */,
 				4C4AEC4520EC343B0020E72B /* DismissableTextField.swift in Sources */,
@@ -4768,6 +4811,7 @@
 				452B999020A34B6B006F2F9E /* AddContactShareToExistingContactViewController.swift in Sources */,
 				88D23D2223CEC0C700B0E74B /* OutboundCallInitiator.swift in Sources */,
 				346594822434D5E000E5C510 /* GroupAttributesEditorHelper.swift in Sources */,
+				880D902E2480A23E003D2B14 /* EmojiPickerSectionToolbar.swift in Sources */,
 				346129991FD1E4DA00532771 /* SignalApp.m in Sources */,
 				88F8195A2383569A007914E8 /* CNContactViewController+OWS.m in Sources */,
 				34BE2F5822A7371D002C94AC /* PdfViewController.swift in Sources */,
@@ -4820,6 +4864,7 @@
 				34B6A905218B4C91007C4606 /* TypingIndicatorInteraction.swift in Sources */,
 				4517642B1DE939FD00EDB8B9 /* ContactCell.swift in Sources */,
 				887CD47F247307D900FDD265 /* DeviceTransferService+Restore.swift in Sources */,
+				880D9025247F8841003D2B14 /* Emoji+Name.swift in Sources */,
 				34EA69402194933900702471 /* MediaDownloadView.swift in Sources */,
 				340FC8AB204DAC8D007AEB0F /* DomainFrontingCountryViewController.m in Sources */,
 				88C659B024688335002AC115 /* SelfSignedIdentity.swift in Sources */,
@@ -4863,6 +4908,7 @@
 				34BECE2E1F7ABCE000D7438D /* GifPickerViewController.swift in Sources */,
 				34D1F0C01F8EC1760066283D /* MessageRecipientStatusUtils.swift in Sources */,
 				34277A5E20751BDC006049F2 /* OWSQuotedMessageView.m in Sources */,
+				880D902A2480887F003D2B14 /* EmojiPickerSheet.swift in Sources */,
 				45DDA6242090CEB500DE97F8 /* ConversationHeaderView.swift in Sources */,
 				3488F9362191CC4000E524CC /* ConversationMediaView.swift in Sources */,
 				45F32C242057297A00A300D5 /* MessageDetailViewController.swift in Sources */,
@@ -4870,6 +4916,7 @@
 				3496955C219B605E00DCFE74 /* ImagePickerController.swift in Sources */,
 				34D1F0841F8678AA0066283D /* ConversationInputToolbar.m in Sources */,
 				4CBBFE4A2306F5D300B37450 /* LogViewController.swift in Sources */,
+				880D902C2480889B003D2B14 /* EmojiPickerCollectionView.swift in Sources */,
 				881218F0238CA51600E6F271 /* MessageReactionPicker.swift in Sources */,
 				457F671B20746193000EABCD /* QuotedReplyPreview.swift in Sources */,
 				34A6C28021E503E700B5B12E /* OWSImagePickerController.swift in Sources */,
@@ -4909,6 +4956,7 @@
 				340FC8AE204DAC8D007AEB0F /* OWSSoundSettingsViewController.m in Sources */,
 				4579431E1E7C8CE9008ED0C0 /* Pastelog.m in Sources */,
 				8809CE8A22F93C2200D38867 /* RecentPhotoCollectionView.swift in Sources */,
+				880D90302481E617003D2B14 /* SignalApp.swift in Sources */,
 				3496957321A301A100DCFE74 /* OWSBackupJob.m in Sources */,
 				340FC8B3204DAC8D007AEB0F /* AppSettingsViewController.m in Sources */,
 				346B66311F4E29B200E5122F /* CropScaleImageViewController.swift in Sources */,
