@@ -1,4 +1,6 @@
 
+// TODO: Make this strongly typed like LKUserDefaults
+
 public extension OWSPrimaryStorage {
 
     // MARK: - Snode Pool
@@ -26,6 +28,37 @@ public extension OWSPrimaryStorage {
 
     public func dropSnode(_ snode: LokiAPITarget, in transaction: YapDatabaseReadWriteTransaction) {
         transaction.removeObject(forKey: snode.description, inCollection: OWSPrimaryStorage.snodePoolCollection)
+    }
+
+
+
+    // MARK: - Swarm
+    private func getSwarmCollection(for publicKey: String) -> String {
+        return "LokiSwarmCollection-\(publicKey)"
+    }
+
+    public func setSwarm(_ swarm: [Snode], for publicKey: String, in transaction: YapDatabaseReadWriteTransaction) {
+        print("[Loki] Caching swarm for: \(publicKey).")
+        clearSwarm(for: publicKey, in: transaction)
+        let collection = getSwarmCollection(for: publicKey)
+        swarm.forEach { snode in
+            transaction.setObject(snode, forKey: snode.description, inCollection: collection)
+        }
+    }
+
+    public func clearSwarm(for publicKey: String, in transaction: YapDatabaseReadWriteTransaction) {
+        let collection = getSwarmCollection(for: publicKey)
+        transaction.removeAllObjects(inCollection: collection)
+    }
+
+    public func getSwarm(for publicKey: String, in transaction: YapDatabaseReadTransaction) -> [Snode] {
+        var result: [Snode] = []
+        let collection = getSwarmCollection(for: publicKey)
+        transaction.enumerateKeysAndObjects(inCollection: collection) { _, object, _ in
+            guard let snode = object as? Snode else { return }
+            result.append(snode)
+        }
+        return result
     }
 
 
