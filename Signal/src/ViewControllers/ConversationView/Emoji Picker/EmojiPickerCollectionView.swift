@@ -57,6 +57,7 @@ class EmojiPickerCollectionView: UICollectionView {
         fatalError("init(coder:) has not been implemented")
     }
 
+    // This is not an exact calculation, but is simple and works for our purposes.
     var numberOfColumns: Int { Int((width) / (EmojiPickerCollectionView.emojiWidth + EmojiPickerCollectionView.minimumSpacing)) }
 
     // At max, we show 3 rows of recent emoji
@@ -101,7 +102,7 @@ class EmojiPickerCollectionView: UICollectionView {
         newRecentEmoji.removeAll { emoji == $0 }
         // Insert the selected emoji at the start of the list
         newRecentEmoji.insert(emoji, at: 0)
-        // Truncate the recent emoji list to a maxium of 50 stored
+        // Truncate the recent emoji list to a maximum of 50 stored
         newRecentEmoji = Array(newRecentEmoji[0..<min(50, newRecentEmoji.count)])
 
         SDSDatabaseStorage.shared.asyncWrite { transaction in

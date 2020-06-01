@@ -161,7 +161,7 @@ class MessageActionsViewController: UIViewController {
         addSnapshotFocusedView()
         addReactionPickerIfNecessary()
 
-        reactionPicker?.playPresentationAnimation(duration: 0.2)
+        quickReactionPicker?.playPresentationAnimation(duration: 0.2)
 
         UIView.animate(withDuration: 0.2, animations: {
             self.backdropView.alpha = 1
@@ -181,7 +181,7 @@ class MessageActionsViewController: UIViewController {
         }
 
         view.removeFromSuperview()
-        emojiPicker?.dismiss(animated: false)
+        anyReactionPicker?.dismiss(animated: false)
     }
 
     @objc(dismissAndAnimateAlongside:completion:)
@@ -199,8 +199,8 @@ class MessageActionsViewController: UIViewController {
             completion?()
         }
 
-        emojiPicker?.dismiss(animated: true, completion: completeOnce)
-        reactionPicker?.playDismissalAnimation(duration: 0.2, completion: completeOnce)
+        anyReactionPicker?.dismiss(animated: true, completion: completeOnce)
+        quickReactionPicker?.playDismissalAnimation(duration: 0.2, completion: completeOnce)
 
         UIView.animate(withDuration: 0.2,
                        animations: {
@@ -218,9 +218,9 @@ class MessageActionsViewController: UIViewController {
         return delegate.messageActionsViewController(self, shouldShowReactionPickerForInteraction: focusedInteraction)
     }
 
-    private var reactionPicker: MessageReactionPicker?
+    private var quickReactionPicker: MessageReactionPicker?
     private func addReactionPickerIfNecessary() {
-        guard interactionAllowsReactions, reactionPicker == nil else { return }
+        guard interactionAllowsReactions, quickReactionPicker == nil else { return }
 
         let picker = MessageReactionPicker(selectedEmoji: focusedViewItem.reactionState?.localUserEmoji, delegate: self)
         view.addSubview(picker)
@@ -256,7 +256,7 @@ class MessageActionsViewController: UIViewController {
         picker.autoPinEdge(.leading, to: .leading, of: view, withOffset: pickerOrigin.x)
         picker.autoPinEdge(.top, to: .top, of: view, withOffset: pickerOrigin.y)
 
-        reactionPicker = picker
+        quickReactionPicker = picker
     }
 
     private lazy var initialTouchLocation = currentTouchLocation
@@ -277,7 +277,7 @@ class MessageActionsViewController: UIViewController {
         // Do nothing if reactions aren't enabled.
         guard interactionAllowsReactions else { return }
 
-        guard let reactionPicker = reactionPicker else {
+        guard let reactionPicker = quickReactionPicker else {
             return owsFailDebug("unexpectedly missing reaction picker")
         }
 
@@ -305,7 +305,7 @@ class MessageActionsViewController: UIViewController {
         }
 
         // If there's not a focused reaction, dismiss the menu with no action
-        guard let focusedEmoji = reactionPicker?.focusedEmoji else {
+        guard let focusedEmoji = quickReactionPicker?.focusedEmoji else {
             delegate?.messageActionsViewControllerRequestedDismissal(self, withAction: nil)
             return
         }
@@ -322,7 +322,7 @@ class MessageActionsViewController: UIViewController {
         }
     }
 
-    private var emojiPicker: EmojiPickerSheet?
+    private var anyReactionPicker: EmojiPickerSheet?
     func showAnyEmojiPicker() {
         let picker = EmojiPickerSheet { [weak self] emoji in
             guard let self = self else { return }
@@ -339,12 +339,12 @@ class MessageActionsViewController: UIViewController {
             )
         }
         picker.backdropView = backdropView
-        emojiPicker = picker
+        anyReactionPicker = picker
 
         present(picker, animated: true)
-        reactionPicker?.playDismissalAnimation(duration: 0.2) {
-            self.reactionPicker?.removeFromSuperview()
-            self.reactionPicker = nil
+        quickReactionPicker?.playDismissalAnimation(duration: 0.2) {
+            self.quickReactionPicker?.removeFromSuperview()
+            self.quickReactionPicker = nil
             self.bottomBar.alpha = 0
         }
     }

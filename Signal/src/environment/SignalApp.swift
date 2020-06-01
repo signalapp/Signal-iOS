@@ -7,7 +7,7 @@ import Foundation
 extension SignalApp {
     @objc
     func warmAvailableEmojiCache() {
-        DispatchQueue.global().async {
+        DispatchQueue.global(qos: .background) {
             Emoji.warmAvailableCache()
         }
     }
