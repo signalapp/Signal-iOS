@@ -215,6 +215,8 @@ typedef enum : NSUInteger {
 @property (nonatomic, readonly) SelectionHighlightView *selectionHighlightView;
 @property (nonatomic) NSDictionary<NSString *, id<ConversationViewItem>> *selectedItems;
 
+@property (nonatomic, nullable) NSNumber *contentOffsetWhenBackgrounded;
+
 @end
 
 #pragma mark -
@@ -721,12 +723,30 @@ typedef enum : NSUInteger {
 {
     [self startReadTimer];
     [self updateCellsVisible];
+
+    // This works around a bug that was introduced around the time we introduced
+    // windowed conversation rendering. When not scrolled to the bottom, if the
+    // app is backgrounded and then foregrounded, the scroll position will jump
+    // to the top of the currently loaded conversation. In order to avoid this
+    // we store the content offset when we enter the background and restore it
+    // when we re-enter the foreground. This bug does *not* occur when the app
+    // just becomes inactive, only when the app is fully backgrounded.
+    if (self.contentOffsetWhenBackgrounded) {
+        CGPoint contentOffset = self.collectionView.contentOffset;
+        contentOffset.y = [self.contentOffsetWhenBackgrounded floatValue];
+        self.collectionView.contentOffset = contentOffset;
+        self.contentOffsetWhenBackgrounded = nil;
+    }
 }
 
 - (void)applicationDidEnterBackground:(NSNotification *)notification
 {
     [self updateCellsVisible];
     [self.cellMediaCache removeAllObjects];
+
+    if (!self.isScrolledToBottom) {
+        self.contentOffsetWhenBackgrounded = @(self.collectionView.contentOffset.y);
+    }
 }
 
 - (void)applicationWillResignActive:(NSNotification *)notification
