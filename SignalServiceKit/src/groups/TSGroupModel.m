@@ -101,7 +101,7 @@ NSUInteger const TSGroupModelSchemaVersion = 1;
     if (image == nil) {
         return nil;
     }
-    const CGFloat kMaxDimension = 800;
+    const CGFloat kMaxDimension = 1024;
     if (image.pixelWidth > kMaxDimension ||
         image.pixelHeight > kMaxDimension) {
         CGFloat thumbnailSizePixels = MIN(kMaxDimension, MIN(image.pixelWidth, image.pixelHeight));

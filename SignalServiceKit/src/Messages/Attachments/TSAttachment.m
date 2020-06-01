@@ -288,19 +288,46 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
 }
 
 - (NSString *)description {
-    NSString *attachmentString = NSLocalizedString(@"ATTACHMENT", nil);
+    NSString *attachmentString;
 
-    if ([MIMETypeUtil isAudio:self.contentType]) {
+    if ([MIMETypeUtil isImage:self.contentType]) {
+        attachmentString = NSLocalizedString(@"ATTACHMENT_TYPE_PHOTO",
+            @"Short text label for a photo attachment, used for thread preview and on the lock screen");
+    } else if ([MIMETypeUtil isVideo:self.contentType]) {
+        attachmentString = NSLocalizedString(@"ATTACHMENT_TYPE_VIDEO",
+            @"Short text label for a video attachment, used for thread preview and on the lock screen");
+    } else if ([MIMETypeUtil isAudio:self.contentType]) {
         // a missing filename is the legacy way to determine if an audio attachment is
         // a voice note vs. other arbitrary audio attachments.
         if (self.isVoiceMessage || !self.sourceFilename || self.sourceFilename.length == 0) {
             attachmentString = NSLocalizedString(@"ATTACHMENT_TYPE_VOICE_MESSAGE",
                 @"Short text label for a voice message attachment, used for thread preview and on the lock screen");
-            return [NSString stringWithFormat:@"🎤 %@", attachmentString];
+        } else {
+            attachmentString = NSLocalizedString(@"ATTACHMENT_TYPE_AUDIO",
+                @"Short text label for a audio attachment, used for thread preview and on the lock screen");
+        }
+    } else if ([MIMETypeUtil isAnimated:self.contentType]) {
+        attachmentString = NSLocalizedString(@"ATTACHMENT_TYPE_GIF",
+            @"Short text label for a gif attachment, used for thread preview and on the lock screen");
+    } else {
+        attachmentString = NSLocalizedString(@"ATTACHMENT_TYPE_FILE",
+            @"Short text label for a file attachment, used for thread preview and on the lock screen");
+    }
+
+    return [NSString stringWithFormat:@"%@ %@", self.emoji, attachmentString];
+}
+
+- (NSString *)emoji
+{
+    if ([MIMETypeUtil isAudio:self.contentType]) {
+        // a missing filename is the legacy way to determine if an audio attachment is
+        // a voice note vs. other arbitrary audio attachments.
+        if (self.isVoiceMessage || !self.sourceFilename || self.sourceFilename.length == 0) {
+            return @"🎤";
         }
     }
 
-    return [NSString stringWithFormat:@"%@ %@", [TSAttachment emojiForMimeType:self.contentType], attachmentString];
+    return [TSAttachment emojiForMimeType:self.contentType];
 }
 
 + (NSString *)emojiForMimeType:(NSString *)contentType

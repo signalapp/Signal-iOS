@@ -477,10 +477,12 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         }
     }
 
+    NSString *_Nullable attachmentEmoji = nil;
     NSString *_Nullable attachmentDescription = nil;
 
     TSAttachment *_Nullable mediaAttachment = [self mediaAttachmentsWithTransaction:transaction].firstObject;
     if (mediaAttachment != nil) {
+        attachmentEmoji = mediaAttachment.emoji;
         attachmentDescription = mediaAttachment.description;
     }
 
@@ -505,15 +507,15 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
         }
     }
 
-    if (attachmentDescription.length > 0 && bodyDescription.length > 0) {
+    if (attachmentEmoji.length > 0 && bodyDescription.length > 0) {
         // Attachment with caption.
-        return [[bodyDescription stringByAppendingString:@" "] stringByAppendingString:attachmentDescription];
+        return [[attachmentEmoji stringByAppendingString:@" "] stringByAppendingString:bodyDescription];
     } else if (bodyDescription.length > 0) {
         return bodyDescription;
     } else if (attachmentDescription.length > 0) {
         return attachmentDescription;
     } else if (self.contactShare) {
-        return [[self.contactShare.name.displayName stringByAppendingString:@" "] stringByAppendingString:@"👤"];
+        return [[@"👤" stringByAppendingString:@" "] stringByAppendingString:self.contactShare.name.displayName];
     } else if (self.messageSticker) {
         return NSLocalizedString(@"STICKER_MESSAGE_PREVIEW",
             @"Preview text shown in notifications and conversation list for sticker messages.");

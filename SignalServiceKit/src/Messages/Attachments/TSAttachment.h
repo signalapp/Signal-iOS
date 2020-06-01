@@ -47,6 +47,7 @@ typedef NS_ENUM(NSUInteger, TSAttachmentType) {
 
 @property (nonatomic, readonly, nullable) NSString *caption;
 @property (nonatomic, readonly, nullable) NSString *albumMessageId;
+@property (nonatomic, readonly) NSString *emoji;
 
 - (nullable TSMessage *)fetchAlbumMessageWithTransaction:(SDSAnyReadTransaction *)transaction
     NS_SWIFT_NAME(fetchAlbumMessage(transaction:));
