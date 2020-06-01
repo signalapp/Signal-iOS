@@ -108,10 +108,10 @@
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Versi Pangkalan Data Yang Tidak Diketahui";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "The data transferred from your old device could not be restored. Please send a debug log to support@signal.org so that we can troubleshoot this issue. If you re-install Signal your message history may be lost.";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Data yang dipindahkan daripada peranti lama anda tidak dapat dipulihkan. Sila hantar log nyahpepijat ke support@signal.org supaya kami boleh menyelesaikan masalah ini. Jika anda memasang semula Signal, sejarah msej anda akan hilang.";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Could Not Complete Transfer";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Tidak Dapat Melengkapkan Pemindahan";
 
 /* Text prompting user to edit their profile name. */
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "Masukkan nama anda";
@@ -142,9 +142,6 @@
 
 /* Pressing this button moves a thread from the inbox to the archive */
 "ARCHIVE_ACTION" = "Arkib";
-
-/* No comment provided by engineer. */
-"ATTACHMENT" = "Lampiran";
 
 /* One-line label indicating the user can add no more text to the attachment caption. */
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Had kapsyen dicapai.";
@@ -248,6 +245,21 @@
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Fail Tidak Disokong";
 
+/* Short text label for a audio attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_AUDIO" = "Audio";
+
+/* Short text label for a file attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_FILE" = "Fail";
+
+/* Short text label for a gif attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_GIF" = "GIF";
+
+/* Short text label for a photo attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_PHOTO" = "Foto";
+
+/* Short text label for a video attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_VIDEO" = "Video";
+
 /* Short text label for a voice message attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "Mesej suara";
 
@@ -336,10 +348,10 @@
 "BLOCK_LIST_BLOCKED_USERS_SECTION" = "Pengguna Disekat";
 
 /* Error message indicating that a conversation can't be blocked because they are already blocked. */
-"BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "Group already blocked.";
+"BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "Kumpulan telah disekat.";
 
 /* Error message indicating that a user can't be blocked because they are already blocked. */
-"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "User already blocked.";
+"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "Pengguna telah disekat.";
 
 /* Button label for the 'unblock' button */
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Nyahsekat";
@@ -466,18 +478,6 @@
 
 /* Accessibility label for muting the microphone */
 "CALL_VIEW_MUTE_LABEL" = "Bisukan";
-
-/* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Anda boleh mendayakan Integrasi Panggilan iOS dalam tetapan privasi Signal anda untuk menjawab panggilan masuk daripada skrin kunci anda.";
-
-/* Reminder to the user of the benefits of disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Anda boleh mendayakan Integrasi Panggilan iOS dalam tetapan privasi Signal anda untuk melihat nama dan nombor telefon untuk panggilan masuk.";
-
-/* Label for button that dismiss the call view's settings nag. */
-"CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Bukan sekarang";
-
-/* Label for button that shows the privacy settings. */
-"CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Paparkan Tetapan Privasi";
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Tukar Arah Kamera";
@@ -798,13 +798,13 @@
 "CONVERSATION_SETTINGS_EDIT_GROUP" = "Edit";
 
 /* Label for 'edit membership access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Who Can Edit Membership";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Siapa Boleh Edit Keahlian";
 
 /* Label for button that sets 'group membership access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Hanya Pentadbir";
 
 /* Description for the 'edit group membership access' alert. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "Choose who can edit group membership:";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "Pilih siapa boleh edit keahlian:";
 
 /* Label for button that sets 'group membership access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "Semua Ahli";
@@ -825,7 +825,7 @@
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ Ahli-ahli";
 
 /* Footer for the 'membership access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "Choose who can edit group membership.";
+"CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "Pilih siapa boleh edit keahlian kumpulan.";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Bisukan";
@@ -1035,103 +1035,103 @@
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "Gagal untuk mengemas kini senarai peranti";
 
 /* The stop action of the dialog asking the user if they want to cancel a device transfer */
-"DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION" = "Stop Transfer";
+"DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION" = "Hentikan Pemindahan";
 
 /* The message of the dialog asking the user if they want to cancel a device transfer */
-"DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE" = "Closing this window will stop the transfer you have in progress, are you sure you want to proceed?";
+"DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE" = "Menutup tetingkap ini akan menghentikan pemindahan yang anda ada sedang berjalan, adakah anda mahu teruskan?";
 
 /* The title of the dialog asking the user if they want to cancel a device transfer */
-"DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "Stop Transfer?";
+"DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "Hentikan Pemindahan?";
 
 /* The explanation for the device transfer 'choice' view */
-"DEVICE_TRANSFER_CHOICE_EXPLANATION" = "If you have your old iOS device, you can securely transfer your account and messages to this device.";
+"DEVICE_TRANSFER_CHOICE_EXPLANATION" = "Jika anda mempunyai peranti iOS lama anda, anda boleh memindahkan akaun dan mesej anda dengan selaamat kepada peranti ini.";
 
 /* The explanation for the device transfer 'choice' view when linking a device */
-"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "If you were previously using Signal on a linked iPad, you can securely transfer your account and messages to this device.";
+"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "Jika anda sebelum ini menggunakan Signal pada iPad yang dipautkan, anda boleh memindahkan akaun dan mesej anda dengan selamat kepada peranti ini.";
 
 /* The body for the device transfer 'choice' view 'register' option */
-"DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "Continue without transferring your account and messages";
+"DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "Teruskan tanpa memindahkan akaun dan mesej anda";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "Add this iPad as a new linked device without transferring message history";
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "Tambah iPad ini sebagai peranti dipautkan baru tanpa memindahkan sejarah mesej";
 
 /* The title for the device transfer 'choice' view 'register' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "Add as New Device";
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "Tambah Sebagai Peranti Baru";
 
 /* The title for the device transfer 'choice' view 'register' option */
-"DEVICE_TRANSFER_CHOICE_REGISTER_TITLE" = "Register without Transferring";
+"DEVICE_TRANSFER_CHOICE_REGISTER_TITLE" = "Daftar tanpa Pemindahan";
 
 /* The title for the device transfer 'choice' view */
-"DEVICE_TRANSFER_CHOICE_TITLE" = "Transfer Account & Messages";
+"DEVICE_TRANSFER_CHOICE_TITLE" = "Pindah Akaun & Mesej";
 
 /* The body for the device transfer 'choice' view 'transfer' option */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Transfer your account and message history from your old iOS device";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Pindahkan sejarah akaun dan mesej anda daripada peranti iOS lama anda";
 
 /* The body for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Transfer your account and message history from your old iPad";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Pindah sejarah akaun dan mesej anda daripada iPad lama anda";
 
 /* The title for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "Transfer from another iPad";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "Pindah daripada iPad lain";
 
 /* The title for the device transfer 'choice' view 'transfer' option */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_TITLE" = "Transfer from iOS Device";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_TITLE" = "Pindah daripada Peranti iOS";
 
 /* A warning for the device transfer 'choice' view indicating you can only have one device registered with your number */
-"DEVICE_TRANSFER_CHOICE_WARNING" = "Continuing will disable Signal on other devices currently registered with the same phone number.";
+"DEVICE_TRANSFER_CHOICE_WARNING" = "Teruskan akan menyahdayakan Signal pada peranti lain yang pada masa ini berdaftar dengan nombor telefon yang sama.";
 
 /* An error indicating that we were unable to verify the indentity of the new device to complete the transfer */
-"DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Unable to verify your new device, please try again";
+"DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Tidak dapat mengesahkan peranti baru anda, sila cuba lagi";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_GENERIC" = "The transfer couldn't complete, please ensure your devices are near each other and try again";
+"DEVICE_TRANSFER_ERROR_GENERIC" = "Pemindahan tidak dapat dilengkapkan, sila pastikan peranti anda berdekatan satu sama lain dan cuba lagi.";
 
 /* An error indicating the user must scan this code with a linked device to transfer. */
-"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "To set up this iPad as a linked device, you must scan with your old iPad";
+"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "Untuk menetapkan iPad ini sebagai peranti yang dipautkan, anda perlu imbas dengan iPad lama anda.";
 
 /* An error indicating the user must scan this code with a primary device to transfer. */
-"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_PRIMARY" = "To transfer your account, you must scan with your iPhone";
+"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_PRIMARY" = "Untuk memindahkan akaun anda, anda perlu imbas dengan iPhone anda";
 
 /* An error indicating that the user does not have enough free space on their device to complete the transfer */
-"DEVICE_TRANSFER_ERROR_NOT_ENOUGH_SPACE" = "Not enough free space to complete the transfer";
+"DEVICE_TRANSFER_ERROR_NOT_ENOUGH_SPACE" = "Tidak cukup ruang kosong untuk melengkapkan pemindahan";
 
 /* An error indicating the user must update their device before trying to transfer. */
-"DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Update to the latest version of Signal and try again";
+"DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Kemas kini kepada versi terkini Signal dan cuba lagi";
 
 /* The explanation on the action sheet prompting the user if they want to transfer their device. */
-"DEVICE_TRANSFER_PROMPT_EXPLANATION" = "Transfer your Signal account to a new iOS device. Make sure your new device is nearby and turned on.";
+"DEVICE_TRANSFER_PROMPT_EXPLANATION" = "Pindahkan akaun Signal anda kepada peranti iOS baru. Pastikan peranti baru anda berdekatan dan dihidupkan.";
 
 /* The title on the acttion sheet prompting the user if they want to transfer their device. */
-"DEVICE_TRANSFER_PROMPT_TITLE" = "Transfer Account";
+"DEVICE_TRANSFER_PROMPT_TITLE" = "Pindahkan Akaun";
 
 /* The explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Open Signal on your old device, bring it nearby, and make sure Wi-Fi and Bluetooth are enabled on both devices.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Buka Signal dalam peranti lama anda, bawanya berdekatan, dan pastikan Wi-Fi dan Bluetooth didayakan dalam kedua-dua peranti.";
 
 /* The second explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Position this QR code in the frame of your other device.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Letakkan kod QR ini dalam bingkai peranti lain anda.";
 
 /* The title for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_TITLE" = "Waiting for Other Device...";
+"DEVICE_TRANSFER_QRCODE_TITLE" = "Menunggu Peranti Lain...";
 
 /* The explanation on the view that shows receiving progress */
-"DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Keep both devices near each other. Do not turn off either device and keep Signal open. Transfers are end-to-end encrypted.";
+"DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Kekalkan kedua-dua peranti berdekatan satu sama lain. Jangan matikan peranti dan kekalkan Signal terbuka. Pemindahan adalah disulitkan hujung ke hujung.";
 
 /* The title on the view that shows receiving progress */
-"DEVICE_TRANSFER_RECEIVING_TITLE" = "Receiving Data";
+"DEVICE_TRANSFER_RECEIVING_TITLE" = "Menerima Data";
 
 /* Text indicating that we are connecting to the scanned device */
 "DEVICE_TRANSFER_SCANNING_CONNECTING" = "Menyambung...";
 
 /* The explanation for the action sheet asking the user to scan the QR code to transfer */
-"DEVICE_TRANSFER_SCANNING_EXPLANATION" = "Position the QR code within the circle";
+"DEVICE_TRANSFER_SCANNING_EXPLANATION" = "Meletakkan kod QR dalam bulatan";
 
 /* The title for the action sheet asking the user to scan the QR code to transfer */
-"DEVICE_TRANSFER_SCANNING_TITLE" = "Hold Your New Device Up to the Camera";
+"DEVICE_TRANSFER_SCANNING_TITLE" = "Pegang Peranti Baru Anda Dekat dengan Kamera";
 
 /* The explanation on the action sheet that shows transfer progress */
-"DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "Keep both devices near each other. Do not turn off either device and keep Signal open.";
+"DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "Kekalkan kedua-dua peranti berdekatan satu sama lain. Jangan matikan peranti dan kekalkan Signal terbuka. ";
 
 /* The title on the action sheet that shows transfer progress */
-"DEVICE_TRANSFER_TRANSFERRING_TITLE" = "Transferring Data";
+"DEVICE_TRANSFER_TRANSFERRING_TITLE" = "Memindahkan Data";
 
 /* table cell label in conversation settings */
 "DISAPPEARING_MESSAGES" = "Mesej hilang";
@@ -1204,6 +1204,33 @@
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Mari tukar ke Signal";
+
+/* The name for the emoji category 'Activities' */
+"EMOJI_CATEGORY_ACTIVITIES_NAME" = "Activities";
+
+/* The name for the emoji category 'Animals & Nature' */
+"EMOJI_CATEGORY_ANIMALS_NAME" = "Animals & Nature";
+
+/* The name for the emoji category 'Flags' */
+"EMOJI_CATEGORY_FLAGS_NAME" = "Flags";
+
+/* The name for the emoji category 'Food & Drink' */
+"EMOJI_CATEGORY_FOOD_NAME" = "Food & Drink";
+
+/* The name for the emoji category 'Objects' */
+"EMOJI_CATEGORY_OBJECTS_NAME" = "Objects";
+
+/* The name for the emoji category 'Recents' */
+"EMOJI_CATEGORY_RECENTS_NAME" = "Recents";
+
+/* The name for the emoji category 'Smileys & People' */
+"EMOJI_CATEGORY_SMILEYSANDPEOPLE_NAME" = "Smileys & People";
+
+/* The name for the emoji category 'Symbols' */
+"EMOJI_CATEGORY_SYMBOLS_NAME" = "Symbols";
+
+/* The name for the emoji category 'Travel & Places' */
+"EMOJI_CATEGORY_TRAVEL_NAME" = "Travel & Places";
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE1" = "Tiada kenalan anda yang mempunyai Signal.";
@@ -1713,7 +1740,7 @@
 "GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Pilih pentadbir baru kumpulan ini sebelum anda tinggalkan.";
 
 /* Error message indicating that a member can't be added to a group because they are already in the group. */
-"GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP" = "User already in group.";
+"GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP" = "Pengguna sudah dalam kumpulan.";
 
 /* Error indicating that an error occurred while accepting an invite. */
 "GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "Tidak dapat menerima jemputan.";
@@ -2012,11 +2039,14 @@
 /* The title for the action that deletes a message for all users in the conversation. */
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Padam untuk Semua Orang";
 
+/* A one-time confirmation that you want to delete for everyone */
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "This message will be permanently deleted for everyone in the conversation. Members will be able to see that you deleted a message.";
+
 /* The title for the action sheet asking who the user wants to delete the message for. */
-"MESSAGE_ACTION_DELETE_FOR_TITLE" = "Siapa yang anda mahu padam bagi mesej ini?";
+"MESSAGE_ACTION_DELETE_FOR_TITLE" = "Who would you like to delete this message for?";
 
 /* The title for the action that deletes a message for the local user only. */
-"MESSAGE_ACTION_DELETE_FOR_YOU" = "Padam untuk Anda";
+"MESSAGE_ACTION_DELETE_FOR_YOU" = "Delete for Me";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DELETE_MESSAGE" = "Padam Mesej Ini";
@@ -2559,16 +2589,16 @@
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "Tiada jemputan untuk ditunjukkan.";
 
 /* Title of 're-send invite' button. */
-"PENDING_GROUP_MEMBERS_RESEND_INVITE_1_BUTTON" = "Re-send Invite";
+"PENDING_GROUP_MEMBERS_RESEND_INVITE_1_BUTTON" = "Hantar Semula Jemputan";
 
 /* Title of 're-send invites' button. */
-"PENDING_GROUP_MEMBERS_RESEND_INVITE_N_BUTTON" = "Re-send Invites";
+"PENDING_GROUP_MEMBERS_RESEND_INVITE_N_BUTTON" = "Hantar Semula Jemputan-Jemputan";
 
 /* Title of 'revoke invite' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "Batalkan Jemputan";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revoke group invite sent by “%@“?";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Batalkan jemputan kumpulan dihantar oleh “%@“?";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Batal %1$@ jemputan dihantar oleh “%2$@“?";
@@ -2580,10 +2610,10 @@
 "PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Batalkkan jemputan kumpulan untuk “%@“?";
 
 /* Format for title of 'revoke or re-send invite' confirmation alert. Embeds {{ name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revoke or re-send group invite for “%@“?";
+"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Batalkan atau hantar semula jemputan kumpulan untuk “%@“?";
 
 /* Format for title of 'revoke or re-send invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Revoke or re-send %1$@ invites sent by “%2$@“?";
+"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Batalkan atau hantar semula %1$@ ijemputan dihantar oleh “%2$@“?";
 
 /* Footer for the 'invites by other group members' section of the 'pending group members' view. */
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Maklumat orang yang dijemput oleh ahli kumpulan yang lain tidak ditunjukkan. Jika jemputan memilih untuk menyertai, maklumat mereka akan dikongsi dengan kumpulan pada masa tersebut. Mereka tidak akan melihat sebarang mesej dalam kumpulan sehingga mereka menyertai.";
@@ -2981,8 +3011,11 @@
 /* Text describing the local user in the reaction details pane. */
 "REACTIONS_DETAIL_YOU" = "Anda";
 
+/* Pressing this button marks a thread as read */
+"READ_ACTION" = "Baca";
+
 /* Error message indicating that a user can't be selected. */
-"RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "User can't be selected.";
+"RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "Pengguna tidak boleh dipilih.";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "Saya terlupa PIN saya";
@@ -3351,7 +3384,7 @@
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Pasangkan Signal di Telefon Anda";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Ketik pada gambar profil anda untuk membuka Tetapan Signal di telefon anda. Kemudian \"Peranti Terpaut\" dan \"Pautkan Peranti Baru\" untuk mengimbas kod ini dengan telefon anda:";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Ketik pada gambar profil anda untuk membuka Tetapan Signal di telefon anda. Kemudian \"Peranti Dipautkan\" dan \"Pautkan Peranti Baru\" untuk mengimbas kod ini dengan telefon anda:";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
 "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Dapatkan bantuan untuk memautkan iPad anda di sini";
@@ -3360,7 +3393,7 @@
 "SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Imbas Kod QR dengan telefon anda";
 
 /* header text before the user can transfer to this device */
-"SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "Launch Signal on your old iPad to transfer your account";
+"SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "Lancarkan Signal dalam iPad lama anda untuk memindahkan akaun anda";
 
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "Sesi selamat ditetapkan semula";
@@ -3585,19 +3618,19 @@
 "SETTINGS_NOTIFICATIONS" = "Pemberitahuan";
 
 /* The button text for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "Turn Off Reminders";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "Matikan Peringatan";
 
 /* The explanation for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "Make sure you memorize or securely store your PIN as it can’t be recovered. If you forget your PIN, you may lose data when re-registering your Signal account.";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "Pastikan anda mengingati atau menyimpan PIN anda dengan selamat kerana ia tidak dapat dipulihkan. Jika anda lupa PIN anda, anda akan kehilangan data apabila mendaftar semula akaun Signal anda.";
 
 /* The title for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Confirm your Signal PIN";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Sahkan PIN Signal anda";
 
 /* Footer for the 'pin reminder' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_PIN_REMINDER_FOOTER" = "Reminders help you remember your PIN since it can’t be recovered. You’ll be asked less frequently over time.";
+"SETTINGS_PIN_REMINDER_FOOTER" = "Peringatan membantu anda mengingati PIN anda memandangkan ia tidak boleh dipulihkan. Anda akan ditanya kurang kerap dari semasa ke semasa.";
 
 /* Label for the 'pin reminder' switch of the privacy settings. */
-"SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "PIN Reminders";
+"SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "Peringatan PIN";
 
 /* Footer for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_FOOTER" = "PIN mengekalkan maklumat yang disimpan dengan Signal disulitkan jadi hanya anda boleh mengaksesnya. Profil, tetapan dan kenalan anda dipulihkan apabila anda memasang semula Signal.";
@@ -3611,17 +3644,11 @@
 /* Title for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_TITLE" = "PIN SIGNAL";
 
-/* Label for 'CallKit privacy' preference */
-"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Paparkan Nama & Nombor Pemanggil";
-
 /* Settings table section footer. */
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "Paparkan panggilan dalam senarai \"Terbaru\" dalam aplikasi Telefon iOS.";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Paparkan Penggilan dalam Terbaru";
-
-/* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_TITLE" = "Integrasi Panggilan iOS";
 
 /* Settings table view cell label */
 "SETTINGS_PRIVACY_TITLE" = "Privasi";
@@ -3670,9 +3697,6 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Halang pratonton Signal daripada muncul di penukar aplikasi.";
-
-/* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "Integrasi Panggilan iOS menunjukkan panggilan Signal pada skrin kunci anda dan dalam sejarah panggilan sistem. Anda boleh memilih untuk menunjukkan nama dan nombor kenalan anda. Jika iCloud diaktifkan, sejarah panggilan ini akan dikongsi dengan Apple.";
 
 /* Label for the notifications section of conversation settings view. */
 "SETTINGS_SECTION_NOTIFICATIONS" = "Pemberitahuan";
@@ -3971,6 +3995,9 @@
 /* Label text in device manager for a device with no name */
 "UNNAMED_DEVICE" = "Peranti Tidak Dinamakan";
 
+/* Pressing this button marks a thread as unread */
+"UNREAD_ACTION" = "Unread";
+
 /* No comment provided by engineer. */
 "UNREGISTER_SIGNAL_FAIL" = "Gagal untuk nyahdaftar daripada Signal";
 
@@ -4096,6 +4123,9 @@
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Selesaikan tetapan pada Signal Desktop.";
+
+/* text indicating the message was remotely deleted by you */
+"YOU_DELETED_THIS_MESSAGE" = "You deleted this message.";
 
 /* Info Message when you disabled disappearing messages. */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Anda telah menyahdayakan mesej hilang.";

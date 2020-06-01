@@ -143,9 +143,6 @@
 /* Pressing this button moves a thread from the inbox to the archive */
 "ARCHIVE_ACTION" = "보관하기";
 
-/* No comment provided by engineer. */
-"ATTACHMENT" = "첨부";
-
 /* One-line label indicating the user can add no more text to the attachment caption. */
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "자막 글자 제한 초과";
 
@@ -247,6 +244,21 @@
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "지원되지 않는 파일";
+
+/* Short text label for a audio attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_AUDIO" = "오디오";
+
+/* Short text label for a file attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_FILE" = "파일";
+
+/* Short text label for a gif attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_GIF" = "GIF";
+
+/* Short text label for a photo attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_PHOTO" = "사진";
+
+/* Short text label for a video attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_VIDEO" = "동영상";
 
 /* Short text label for a voice message attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "음성 메시지";
@@ -466,18 +478,6 @@
 
 /* Accessibility label for muting the microphone */
 "CALL_VIEW_MUTE_LABEL" = "음소거";
-
-/* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Signal 개인정보 설정에서 iOS 전화 통합 기능을 켜면 잠금 화면에서 전화를 받을 수 있습니다.";
-
-/* Reminder to the user of the benefits of disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Signal 개인정보 설정에서 iOS 전화 통합 기능을 켜면 전화 발신인의 이름과 휴대전화 번호를 볼 수 있습니다.";
-
-/* Label for button that dismiss the call view's settings nag. */
-"CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "나중에";
-
-/* Label for button that shows the privacy settings. */
-"CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "개인정보 설정으로";
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "카메라 방향 전환";
@@ -1083,7 +1083,7 @@
 "DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "새 기기를 인증할 수 없습니다. 다시 시도해 주세요.";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_GENERIC" = "전송을 완료할 수 없습니다. 기기가 가까이 있는지 확인하고 다시 시도해 주세요.";
+"DEVICE_TRANSFER_ERROR_GENERIC" = "전송을 완료할 수 없습니다. 기기들이 서로 가까이 있는지 확인하고 다시 시도해 주세요.";
 
 /* An error indicating the user must scan this code with a linked device to transfer. */
 "DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "iPad를 연결된 기기로 설정하려면 이전 iPad로 읽어야 합니다.";
@@ -1204,6 +1204,33 @@
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "시그널로  이전합시다.";
+
+/* The name for the emoji category 'Activities' */
+"EMOJI_CATEGORY_ACTIVITIES_NAME" = "Activities";
+
+/* The name for the emoji category 'Animals & Nature' */
+"EMOJI_CATEGORY_ANIMALS_NAME" = "Animals & Nature";
+
+/* The name for the emoji category 'Flags' */
+"EMOJI_CATEGORY_FLAGS_NAME" = "Flags";
+
+/* The name for the emoji category 'Food & Drink' */
+"EMOJI_CATEGORY_FOOD_NAME" = "Food & Drink";
+
+/* The name for the emoji category 'Objects' */
+"EMOJI_CATEGORY_OBJECTS_NAME" = "Objects";
+
+/* The name for the emoji category 'Recents' */
+"EMOJI_CATEGORY_RECENTS_NAME" = "Recents";
+
+/* The name for the emoji category 'Smileys & People' */
+"EMOJI_CATEGORY_SMILEYSANDPEOPLE_NAME" = "Smileys & People";
+
+/* The name for the emoji category 'Symbols' */
+"EMOJI_CATEGORY_SYMBOLS_NAME" = "Symbols";
+
+/* The name for the emoji category 'Travel & Places' */
+"EMOJI_CATEGORY_TRAVEL_NAME" = "Travel & Places";
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE1" = "당신의 연락처 지인중 아무도 시그널을 사용하지 않고있습니다.";
@@ -2012,11 +2039,14 @@
 /* The title for the action that deletes a message for all users in the conversation. */
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "모두에게서 삭제";
 
+/* A one-time confirmation that you want to delete for everyone */
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "This message will be permanently deleted for everyone in the conversation. Members will be able to see that you deleted a message.";
+
 /* The title for the action sheet asking who the user wants to delete the message for. */
-"MESSAGE_ACTION_DELETE_FOR_TITLE" = "누구에 대해 메시지를 삭제하시겠습니까?";
+"MESSAGE_ACTION_DELETE_FOR_TITLE" = "Who would you like to delete this message for?";
 
 /* The title for the action that deletes a message for the local user only. */
-"MESSAGE_ACTION_DELETE_FOR_YOU" = "나에게서 삭제";
+"MESSAGE_ACTION_DELETE_FOR_YOU" = "Delete for Me";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DELETE_MESSAGE" = "메시지 삭제";
@@ -2307,7 +2337,7 @@
 "NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ 님이 %@에";
 
 /* The title for the 'name new group' view. */
-"NEW_GROUP_NAME_GROUP_VIEW_TITLE" = "그룹 이름을 입력하세요";
+"NEW_GROUP_NAME_GROUP_VIEW_TITLE" = "그룹 이름 입력";
 
 /* Placeholder text for group name field */
 "NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "그룹 이름짓기";
@@ -2937,40 +2967,40 @@
 "REACTION_DETAIL_ALL_FORMAT" = "모든 %@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "메시지에 대해 %@로 리액션했습니다.";
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "메시지에 대해 %@(으)로 리액션했습니다.";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "앨범에 대해 %@로 리액션했습니다.";
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "앨범에 대해 %@(으)로 리액션했습니다.";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "오디오에 %@로 리액션했습니다.";
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "오디오에 %@(으)로 리액션했습니다.";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "연락처 공유에 대해 %@로 리액션했습니다.";
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "연락처 공유에 대해 %@(으)로 리액션했습니다.";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "파일에 대해 %@로 리액션했습니다.";
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "파일에 대해 %@(으)로 리액션했습니다.";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "GIF에 대해 %@로 리액션했습니다.";
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "GIF에 대해 %@(으)로 리액션했습니다.";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "사진에 대해 %@로 리액션했습니다.";
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "사진에 대해 %@(으)로 리액션했습니다.";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "스티커에 대해 %@로 리액션했습니다.";
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "스티커에 대해 %@(으)로 리액션했습니다.";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "'%@'에 대해 %@로 리액션했습니다.";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "'%@'에 대해 %@(으)로 리액션했습니다.";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "동영상에 대해 %@로 리액션했습니다.";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "동영상에 대해 %@(으)로 리액션했습니다.";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "한 번 볼 수 있는 미디어에 대해 %@로 리액션했습니다.";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "한 번 볼 수 있는 미디어에 대해 %@(으)로 리액션했습니다.";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "음성 메시지에 대해 %@로 리액션했습니다.";
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "음성 메시지에 대해 %@(으)로 리액션했습니다.";
 
 /* Body for the megaphone introducing reactions */
 "REACTION_MEGAPHONE_BODY" = "아무 메시지나 길게 탭하여 내 기분을 빠르게 알려보세요.";
@@ -2980,6 +3010,9 @@
 
 /* Text describing the local user in the reaction details pane. */
 "REACTIONS_DETAIL_YOU" = "나";
+
+/* Pressing this button marks a thread as read */
+"READ_ACTION" = "읽음";
 
 /* Error message indicating that a user can't be selected. */
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "사용자를 선택할 수 없습니다.";
@@ -3420,7 +3453,7 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "검열 우회가 계정의 휴대전화에서 활성화되습니다.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been manually disabled. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "당신은 수동으로 검열 우회 기능을 멈출 수 있습니다.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "사용자는 수동으로 검열 우회 기능을 멈출 수 있습니다.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "검열 우회는 인터넷에 연결되었을 때만 활성화할 수 있습니다.";
@@ -3611,17 +3644,11 @@
 /* Title for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_TITLE" = "SIGNAL PIN";
 
-/* Label for 'CallKit privacy' preference */
-"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "발신자 이름 및 번호 표시";
-
 /* Settings table section footer. */
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "기본 iOS 전화 앱에서 최근 Signal 통화목록을 표시합니다.";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "최근 통화목록 보이기";
-
-/* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_TITLE" = "iOS 통화 통합";
 
 /* Settings table view cell label */
 "SETTINGS_PRIVACY_TITLE" = "개인정보 보호";
@@ -3670,9 +3697,6 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Signal 미리 보기가 앱 전환기에 나타나지 않도록 하세요.";
-
-/* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS 통화통합 기능을 사용하면 Signal 통화가 기본 통화 앱과 마찬가지로 잠금화면과 최근 목록에서 보여집니다. 사용자는 연락처 이름과 번호를 보여줄지 선택 할 수 있습니다. 만약 iCloud가 켜져있다면, 시그널 통화기록이 애플과 공유될 수 있습니다.";
 
 /* Label for the notifications section of conversation settings view. */
 "SETTINGS_SECTION_NOTIFICATIONS" = "알림";
@@ -3843,7 +3867,7 @@
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "안전 번호 검증";
 
 /* text indicating the message was remotely deleted */
-"THIS_MESSAGE_WAS_DELETED" = "본 메세지는 삭제되었습니다.<br>";
+"THIS_MESSAGE_WAS_DELETED" = "이 메세지는 삭제되었습니다.";
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "%@, %@ 및 추가 그룹 %lu개의 멤버";
@@ -3971,6 +3995,9 @@
 /* Label text in device manager for a device with no name */
 "UNNAMED_DEVICE" = "이름 없는 기기";
 
+/* Pressing this button marks a thread as unread */
+"UNREAD_ACTION" = "Unread";
+
 /* No comment provided by engineer. */
 "UNREGISTER_SIGNAL_FAIL" = "Signal 등록 해제에 실패했습니다.";
 
@@ -4096,6 +4123,9 @@
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Signal Desktop 설정이 완료되었습니다.";
+
+/* text indicating the message was remotely deleted by you */
+"YOU_DELETED_THIS_MESSAGE" = "You deleted this message.";
 
 /* Info Message when you disabled disappearing messages. */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "사라지는 메시지 기능을 껐습니다.";

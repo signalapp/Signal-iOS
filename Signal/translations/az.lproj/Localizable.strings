@@ -108,7 +108,7 @@
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Bilinməyən databaza versiyası.";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "The data transferred from your old device could not be restored. Please send a debug log to support@signal.org so that we can troubleshoot this issue. If you re-install Signal your message history may be lost.";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Köhnə alətinizdən köçürülmüş məlumat açılmır. Xahiş edirik support@signal.org -a debug girişini göndərin ki, bunu araşdıraq. Signal-ı yenidən qursanız ismarış tarixçəniz itəcək.";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Köçürmə alınmadı";
@@ -142,9 +142,6 @@
 
 /* Pressing this button moves a thread from the inbox to the archive */
 "ARCHIVE_ACTION" = "Arxiv";
-
-/* No comment provided by engineer. */
-"ATTACHMENT" = "Qoşma";
 
 /* One-line label indicating the user can add no more text to the attachment caption. */
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Başlığın limitinə çatdın.";
@@ -248,6 +245,21 @@
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Dəstəklənməyən Fayl";
 
+/* Short text label for a audio attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_AUDIO" = "Audio";
+
+/* Short text label for a file attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_FILE" = "Fayl";
+
+/* Short text label for a gif attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_GIF" = "GIF";
+
+/* Short text label for a photo attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_PHOTO" = "Şəkil";
+
+/* Short text label for a video attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_VIDEO" = "Video";
+
 /* Short text label for a voice message attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "Səsli Mesaj";
 
@@ -336,10 +348,10 @@
 "BLOCK_LIST_BLOCKED_USERS_SECTION" = "Kilidlənmiş İstifadəçilər";
 
 /* Error message indicating that a conversation can't be blocked because they are already blocked. */
-"BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "Group already blocked.";
+"BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "Qrup artıq bloklanıb.";
 
 /* Error message indicating that a user can't be blocked because they are already blocked. */
-"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "User already blocked.";
+"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "İstifadəçi artıq bloklanıb.";
 
 /* Button label for the 'unblock' button */
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Kilidi aç";
@@ -467,18 +479,6 @@
 /* Accessibility label for muting the microphone */
 "CALL_VIEW_MUTE_LABEL" = "Səssiz";
 
-/* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Kilidli ekrandan gələn zəngləri cavablamaq üçün Signal-ın məxfilik parametrlərində iOS Zəng İnteqrasiyasını aktivləşdirə bilərsən.";
-
-/* Reminder to the user of the benefits of disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Gələn zənglərin məxsus olduğu şəxsin adını və nömrəsini görmək üçün Signal-ın məxfilik parametrlərində iOS Zəng İnteqrasiyasını aktivləşdirə bilərsən.";
-
-/* Label for button that dismiss the call view's settings nag. */
-"CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "İndi yox";
-
-/* Label for button that shows the privacy settings. */
-"CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Məxfilik Parametrlərini Göstər";
-
 /* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Kameranin Üzünü Dəyiş";
 
@@ -573,7 +573,7 @@
 "CONFIRM_ACCOUNT_DESTRUCTION_TITLE" = "Hesabınızı silmək istədiyinizi təsdiqləyirsiniz?";
 
 /* No comment provided by engineer. */
-"CONFIRM_DELETE_LINKED_DATA_TEXT" = "This will reset the application by deleting all of your messages from this device. You can always link with your phone again, but that will not restore deleted messages. The app will close after this process is complete.";
+"CONFIRM_DELETE_LINKED_DATA_TEXT" = "Bu tətbiqinizi sırfırlayacaq və cihazınızdakı bütün ismarışlar silinəcək. Telefonunuzu yenidən qoşa bilərsiniz, amma silinmiş ismarışlar qayıtmayacaq. Bu proses bitəndən sonra tətbiq bağlanacaq.";
 
 /* No comment provided by engineer. */
 "CONFIRM_DELETE_LINKED_DATA_TITLE" = "Bütün məlumatları silmək istədiyinə əminsən?";
@@ -687,7 +687,7 @@
 "CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "Yenidən Cəhd Et";
 
 /* Alert body */
-"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Your debug logs will help us troubleshoot your issue faster. Submitting your logs is optional.";
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Debug girişləriniz sizin məsələni daha tez araşdırmağa kömək edər. Girişləri göndərmək məcburi deyil.";
 
 /* Alert title */
 "CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Debug girişini göndərək?";
@@ -798,13 +798,13 @@
 "CONVERSATION_SETTINGS_EDIT_GROUP" = "Dəyiş";
 
 /* Label for 'edit membership access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Who Can Edit Membership";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Üzvlüyü kim dəyişə bilər";
 
 /* Label for button that sets 'group membership access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Yalnız inzibatçılar";
 
 /* Description for the 'edit group membership access' alert. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "Choose who can edit group membership:";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "Qrup üzvlüyünü kim dəyişə bilənini seçin:";
 
 /* Label for button that sets 'group membership access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "Bütün üzvlər";
@@ -825,7 +825,7 @@
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ Üzvlər";
 
 /* Footer for the 'membership access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "Choose who can edit group membership.";
+"CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "Qrup üzvlüyünü kim dəyişə bilənini seçin.";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Səssiz";
@@ -1104,7 +1104,7 @@
 "DEVICE_TRANSFER_PROMPT_TITLE" = "Hesab köçürülməsi";
 
 /* The explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Open Signal on your old device, bring it nearby, and make sure Wi-Fi and Bluetooth are enabled on both devices.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Köhnə cihazınızda Signal-ı açın, yaxınlaşdırın, hər iki cihazda Wi-Fi və Bluetooth açıq olduğuna əmin olun.";
 
 /* The second explanation for the device transfer qr code view */
 "DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Bu QR kodu digər cihazınızdakı çərçivəyə tutun.";
@@ -1113,7 +1113,7 @@
 "DEVICE_TRANSFER_QRCODE_TITLE" = "Digər cihazınızı gözləyir...";
 
 /* The explanation on the view that shows receiving progress */
-"DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Keep both devices near each other. Do not turn off either device and keep Signal open. Transfers are end-to-end encrypted.";
+"DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Cihazlarınızı yaxınlaşdırın. Cihazları söndürməyin və hər ikisində Signal açıq olsun. Köçürmə ikitərəfli şifrələmə ilədir.";
 
 /* The title on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_TITLE" = "Məlumat alır";
@@ -1128,7 +1128,7 @@
 "DEVICE_TRANSFER_SCANNING_TITLE" = "Cihazınızın kamera tərəfini tutun";
 
 /* The explanation on the action sheet that shows transfer progress */
-"DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "Keep both devices near each other. Do not turn off either device and keep Signal open.";
+"DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "Cihazlarınızı yaxınlaşdırın. Cihazları söndürməyin və hər ikisində Signal açıq olsun.";
 
 /* The title on the action sheet that shows transfer progress */
 "DEVICE_TRANSFER_TRANSFERRING_TITLE" = "Məlumat köçür";
@@ -1205,6 +1205,33 @@
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Gəl Signal-a keçək";
 
+/* The name for the emoji category 'Activities' */
+"EMOJI_CATEGORY_ACTIVITIES_NAME" = "Activities";
+
+/* The name for the emoji category 'Animals & Nature' */
+"EMOJI_CATEGORY_ANIMALS_NAME" = "Animals & Nature";
+
+/* The name for the emoji category 'Flags' */
+"EMOJI_CATEGORY_FLAGS_NAME" = "Flags";
+
+/* The name for the emoji category 'Food & Drink' */
+"EMOJI_CATEGORY_FOOD_NAME" = "Food & Drink";
+
+/* The name for the emoji category 'Objects' */
+"EMOJI_CATEGORY_OBJECTS_NAME" = "Objects";
+
+/* The name for the emoji category 'Recents' */
+"EMOJI_CATEGORY_RECENTS_NAME" = "Recents";
+
+/* The name for the emoji category 'Smileys & People' */
+"EMOJI_CATEGORY_SMILEYSANDPEOPLE_NAME" = "Smileys & People";
+
+/* The name for the emoji category 'Symbols' */
+"EMOJI_CATEGORY_SYMBOLS_NAME" = "Symbols";
+
+/* The name for the emoji category 'Travel & Places' */
+"EMOJI_CATEGORY_TRAVEL_NAME" = "Travel & Places";
+
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE1" = "Əlaqələrinin heç birinin Signal-ı yoxdur.";
 
@@ -1257,7 +1284,7 @@
 "END_CALL_UNCATEGORIZED_FAILURE" = "Zəng Alınmadı.";
 
 /* Label indicating that this OS version is no longer supported. */
-"END_OF_LIFE_OS_WARNING" = "The latest Signal features won’t work on this version of iOS. Please upgrade this device to receive future Signal updates.";
+"END_OF_LIFE_OS_WARNING" = "iOS-un bu versiyasında sonuncu Signal işləməyəcək. Alətinizi yeniləyin ki, gələcək Signal yeniləmələrini ala biləsiniz.";
 
 /* Error indicating that the phone's contacts could not be retrieved. */
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "Əlaqələrə daxil ola bilmədik.";
@@ -1419,7 +1446,7 @@
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Axtarışı daxil et";
 
 /* Body message of notification shown during GRDB migration indicating that user may need to open app to view their content. */
-"GRDB_MIGRATION_NOTIFICATION_BODY" = "This version of Signal includes database optimizations and performance improvements. You may need to open the app to complete the process.";
+"GRDB_MIGRATION_NOTIFICATION_BODY" = "Signal-ın bu versiyası databaza optimallaşması və işləmə inkişafına təsir edir. Bu prosesi bitirmək üçün tətbiqi açmalısınız.";
 
 /* Title of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_TITLE" = "Məlumat Bazasının Optimallaşdırılması";
@@ -1470,7 +1497,7 @@
 "GROUP_CREATION_FAILED" = "Bütün üzvlər qrupa əlavə edilə bilmədi. Yenidən cəhd üçün kliklə.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
-"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@ can’t be automatically added to this group by you. They’ve been invited to join, and won’t see any group messages until they accept.";
+"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@ qrupa avtomatik əlavə edə bilməzsiniz. Onlar dəvət olunub, ancaq qəbul etməyənə qədər qrup ismarışlarını görməyəcəklər.";
 
 /* Title for an alert indicating that a member was invited to a group. */
 "GROUP_INVITES_SENT_ALERT_TITLE_1" = "Dəvətnamə göndərildi";
@@ -1479,7 +1506,7 @@
 "GROUP_INVITES_SENT_ALERT_TITLE_N_FORMAT" = "%@ dəvətnamə göndərildi";
 
 /* Message for an alert indicating that some members were invited to a group. */
-"GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "These users can’t be automatically added to this group by you. They’ve been invited to join, and won’t see any group messages until they accept.";
+"GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "Bu istifadəçiləri qrupa avtomatik əlavə edə bilməzsiniz. Onlar dəvət olunub, ancaq qəbul etməyənə qədər qrup ismarışlarını görməyəcəklər.";
 
 /* Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%@ sizi əlavə etdi.";
@@ -1713,7 +1740,7 @@
 "GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Qrupdan çıxmamışdan əvvəl yeni inzibatçı seçin. ";
 
 /* Error message indicating that a member can't be added to a group because they are already in the group. */
-"GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP" = "User already in group.";
+"GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP" = "İstifadəçi artıq qrupdadır.";
 
 /* Error indicating that an error occurred while accepting an invite. */
 "GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "Dəvət qəbul edilmədi.";
@@ -1836,7 +1863,7 @@
 "INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "Onun təhlükəsizlik rəqəmi dəyişdiyi üçün cavab verilməmiş zəng baş verdi.";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, conversation history isn't transferred to new linked devices.";
+"INFO_MESSAGE_SYNCED_THREAD" = "Telefon və ya iPadinizdən sinxronlaşmış ismarışları göndərə və ala bilərsiniz. \nTəhlükəsizliyiniz üçün söhbət tarixçəniz yeni cihazlara köçürülmür.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ artıq Signal-dadır!";
@@ -2012,11 +2039,14 @@
 /* The title for the action that deletes a message for all users in the conversation. */
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Hamı üçün silin";
 
+/* A one-time confirmation that you want to delete for everyone */
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "This message will be permanently deleted for everyone in the conversation. Members will be able to see that you deleted a message.";
+
 /* The title for the action sheet asking who the user wants to delete the message for. */
-"MESSAGE_ACTION_DELETE_FOR_TITLE" = "Bu ismarışı kimin üçün silmək istəyirsiniz?";
+"MESSAGE_ACTION_DELETE_FOR_TITLE" = "Who would you like to delete this message for?";
 
 /* The title for the action that deletes a message for the local user only. */
-"MESSAGE_ACTION_DELETE_FOR_YOU" = "Sizin üçün silinsin";
+"MESSAGE_ACTION_DELETE_FOR_YOU" = "Delete for Me";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DELETE_MESSAGE" = "Bu Mesajı Sil";
@@ -2151,10 +2181,10 @@
 "MESSAGE_REQUEST_VIEW_GROUP_INVITE_PROMPT_FORMAT" = "Qrupa dəvəti %@ göndərib. Digər qrup üzvlərinin sizə yazmasını istəyirsinizmi?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Do you want to let %@ message you? They won’t know you’ve seen their messages until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = " %@ ismarış yazmağa icazə vermək istəyirsiniz? Siz qəbul edənə qədər ismarışlarını gördüyünüzü bilməyəcəklər.";
 
 /* A prompt asking if the user wants to accept a group invite. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_FORMAT" = "Do you want to join the group %@? They won’t know you’ve seen their messages until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_FORMAT" = "%@qrupa qoşulmaq istəyirsiniz? Siz qəbul edənə qədər ismarışlarını gördüyünüzü bilməyəcəklər.";
 
 /* A button used to share your profile with an existing thread. */
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Profilini Paylaş";
@@ -2169,7 +2199,7 @@
 "MESSAGE_REQUESTS_SPLASH_ADD_PROFILE_NAME_BUTTON" = "Profil adı əlavə et";
 
 /* Body text for message requests splash screen */
-"MESSAGE_REQUESTS_SPLASH_BODY" = "You can now choose to ”Accept” or ”Delete“ a new conversation. Names let people know who’s messaging them.";
+"MESSAGE_REQUESTS_SPLASH_BODY" = "Yeni söhbət üçün \"Qəbul et\" və ya \"Sil\"i seçə bilərsiniz. Kimlərin yazdığını bilmək üçün adlar bölməsi var. ";
 
 /* Toast indicating that a profile name has been created. */
 "MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "Profil adınız qeyd olundu.";
@@ -2406,7 +2436,7 @@
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Keç və yeni PİN yarat";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
-"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "If you can’t remember your PIN, you can create a new one. You can register and use your account but you’ll lose some saved settings like your profile information.";
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "PİN yadınızda qalmayıbsa, yenisini yaradın. Qeydiyyatdan keçə bə hesabınızı istifadə edə bilərsiniz , ancaq profil məlumatı kimi bəzi digər quraşdırmalarınız itəcək.";
 
 /* Title for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "PİN əlavə etmə";
@@ -2421,10 +2451,10 @@
 "ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "iPhone qoşun";
 
 /* explanation to the user they're switching from linking to registering flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Tapping “Register iPad” will let you create a brand new Signal account or move an existing account to this iPad. This will disable Signal on any other device currently registered with the same phone number.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "\"iPad qeydiyyatı\"nı basmaqla yeni Signal hesabını yaradacaq və ya əvvəlki hesabınızı bu cihaza köçürə bilərsiniz. Eyni telefon nömrəsi ilə olan digər Signal quraşdırmaları ləğv olunacaq.";
 
 /* explanation to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Tapping “Link iPhone” will let you connect your phone to an existing account. Linking your phone is generally not recommended and will limit some functionality, such as calling.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "\"iPhone Qoş\"u basmaqla telefonunuzu istifadədə olan hesabınıza qoşacaqsınız. Telefonun qoşulçası adətən məsləhət görülmür və zəng etmə kimi funksiyalara təsir edə bilər.";
 
 /* header text indicating to the user they're switching from linking to registering flow */
 "ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "Bu iPad-i qeydiyyatdan keçir";
@@ -2433,7 +2463,7 @@
 "ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Bu İphone qoşun";
 
 /* warning to the user that registering an ipad is not recommended */
-"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Registering this iPad will disable Signal on any other device currently registered with the same phone number.";
+"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "İPadin qeydiyyatından sonra eyni teefon nömrəsindən istifadə edən cihazlardakı Signal işləməyəcək.";
 
 /* warning to the user that linking a phone is not recommended */
 "ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "İPhone qoşulması məsləhət görülmür, çünki əsas fəaliyyətləri məhdudlaşdıracaq.";
@@ -2442,7 +2472,7 @@
 "ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "İcazələri Aktivləşdir";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Notifications let you see when messages arrive and receive updates about new conversation activity.";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "Xəbərdarlıqlar yeni ismarışların gəlməsini və söhbət yeniləmələri haqda fəaliyyəti göstərir.";
 
 /* Title of the 'onboarding permissions' view. */
 "ONBOARDING_PERMISSIONS_TITLE" = "İsmarışa keçin";
@@ -2454,13 +2484,13 @@
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Səhv nömrə";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "You’ve run out of PIN guesses, but you can still access your Signal account by creating a new PIN. For your privacy and security your account will be restored without any saved profile information or settings.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "PİN təxmin etmək sayını keçdiniz, ancaq Signal hesabınıza keçib yeni PİN yarada bilərsiniz. Təhlükəsizliyinizi və məxfiliyiniz üçün hesabınız profil məlumatı və quraşdırması olmadan yenilənəcək.";
 
 /* Label for the 'learn more' link when reglock is disabled in the 'onboarding pin attempts exhausted' view. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "PİN haqda öyrənin";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is enabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_EXPLANATION" = "To protect your privacy and the security of your account, we’ve locked it for 7 days.\n\nAfter 7 days of inactivity, you’ll be able to reregister this phone number without needing your PIN. All content will be wiped.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_EXPLANATION" = "Təhlükəsizlik və məxfiliyinizi qorunması üçün hesabınızı 7 günlük kilidlədik.\n7 gün fəaliyyətsizlikdən sonra PİN tələb olunmadan bu telefon nömrənizi yenidən qydiyyatdan keçirə bilərsiniz. Bütün məlumatlar silinəcək.";
 
 /* Label for the 'learn more' link when reglock is enabled in the 'onboarding pin attempts exhausted' view. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_LEARN_MORE" = "Bağlı hesablar haqda öyrənin";
@@ -2472,7 +2502,7 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "Səhv PİN";
 
 /* Title of the 'onboarding PIN' view. */
-"ONBOARDING_PIN_EXPLANATION" = "Enter the PIN you created for your account. This is different from your SMS verification code.";
+"ONBOARDING_PIN_EXPLANATION" = "Hesabınız üçün yaratdığınız PİNi əlavə edin. O, SMS məlumat kodundan fərqlidir.";
 
 /* Title of the 'onboarding PIN' view. */
 "ONBOARDING_PIN_TITLE" = "PİN yazın";
@@ -2559,16 +2589,16 @@
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "Dəvətnamələr yoxdur.";
 
 /* Title of 're-send invite' button. */
-"PENDING_GROUP_MEMBERS_RESEND_INVITE_1_BUTTON" = "Re-send Invite";
+"PENDING_GROUP_MEMBERS_RESEND_INVITE_1_BUTTON" = "Dəvəti yenidən göndər";
 
 /* Title of 're-send invites' button. */
-"PENDING_GROUP_MEMBERS_RESEND_INVITE_N_BUTTON" = "Re-send Invites";
+"PENDING_GROUP_MEMBERS_RESEND_INVITE_N_BUTTON" = "Dəvətləri yenidən göndər";
 
 /* Title of 'revoke invite' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "Dəvətnaməni ləğv et";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revoke group invite sent by “%@“?";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "“%@“ göndərilən dəvətləri ləğv et?";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "%1$@ “%2$@“ göndərdiyi dəvətləri ləğv edək?";
@@ -2580,13 +2610,13 @@
 "PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "“%@“ üçün qrup dəvətini ləğv edək?";
 
 /* Format for title of 'revoke or re-send invite' confirmation alert. Embeds {{ name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revoke or re-send group invite for “%@“?";
+"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "“%@“ üçün gedən dəvətləri ləğv edək ya yenidən göndərək?";
 
 /* Format for title of 'revoke or re-send invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Revoke or re-send %1$@ invites sent by “%2$@“?";
+"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "%1$@ dəvətlər “%2$@“ ləğv edək ya yenidən göndərək?";
 
 /* Footer for the 'invites by other group members' section of the 'pending group members' view. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Details of people invited by other group members are not shown. If invitees choose to join, their information will be shared with the group at that time. They will not see any messages in the group until they join.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Digər qrup üzvlərinin dəvət etdiyi adamların məlumatları göstərilməyib. Dəvət olunanlar qoşulsalar, məumatları bütün qrupla eyni zamanda paylaşılacaq. Qrupa qoşulmayanadək heç bir ismarı. almayacaqlar.";
 
 /* Title for the 'invites by other group members' section of the 'pending group members' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "Digər qrup üzvlərinin dəvətləri";
@@ -2697,7 +2727,7 @@
 "PIN_CREATION_ERROR_TITLE" = "PİN yaradılmasında xəta";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall Signal.";
+"PIN_CREATION_EXPLANATION" = "PİN Signal məlumatlarını şifrələnmiş halda saxlayır ki, yalnız sizə məxsus olsun. Profiliniz, quraşdırmala və kontaktlar Signal yenidən quraşdırılanda qaytarılacaq.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PİNlər uyğun gəlmir. Bir daha cəhd edin.";
@@ -2766,7 +2796,7 @@
 "PINS_MEGAPHONE_BODY" = "PİN Signal məlumatını şifrələnmiş saxlayır";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Creating a PIN will become mandatory in %ld days.";
+"PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Yadınıza salarıq. PİN yaratmaq %ld gündən sonra məcburi olacaq.";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_TITLE" = "PİN yarat";
@@ -2973,7 +3003,7 @@
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "%@ səs mesajınıza reaksiya gəldi";
 
 /* Body for the megaphone introducing reactions */
-"REACTION_MEGAPHONE_BODY" = "Tap and hold on any message to quickly reply with how you feel.";
+"REACTION_MEGAPHONE_BODY" = "Necə olduğunuzu xəbər vermək üçün istənilən ismarışa basın və saxlayın.";
 
 /* Title for the megaphone introducing reactions */
 "REACTION_MEGAPHONE_TITLE" = "Reaksiyaların təqdimatı";
@@ -2981,8 +3011,11 @@
 /* Text describing the local user in the reaction details pane. */
 "REACTIONS_DETAIL_YOU" = "Sən";
 
+/* Pressing this button marks a thread as read */
+"READ_ACTION" = "Oxundu";
+
 /* Error message indicating that a user can't be selected. */
-"RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "User can't be selected.";
+"RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "İstifadəçi seçilə bilməz.";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "PIN-i unutmuşam.";
@@ -2991,25 +3024,25 @@
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Kömək lazımdır?";
 
 /* Alert body for a forgotten SVR (V2) PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Yaratdığınız PİN 4+ işarədən, həm rəqəm və hərflərdən ibarə t ola bilər. PİNi yada sala bilməsəniz yenidən hesabınızı qeydiyyatdan keçirmək üçün 7 gününüz olacaq.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you can create a new one. You can register and use your account but you’ll lose some saved settings like your profile information.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Yaratdığınız PİN 4+ işarədən, həm rəqəm və hərflərdən ibarə t ola bilər. PİNi yada sala bilməsəniz yenisini yarada bilərsiniz. Hesabınızı yaradıb istifadə edə bilərsiniz, amma bəzi quraşdırmalarınızı və profil məlumatınızı itirəcəksiniz. ";
 
 /* Alert body for a forgotten V1 PIN */
-"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit numeric code you created. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
+"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Yaratdığınız PİN 4+ rəqəmli koddur. PİNi yada sala bilməsəniz yenidən hesabınızı qeydiyyatdan keçirmək üçün 7 gününüz olacaq.";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock disabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "You have %lu attempts remaining. If you run out of attempts, you can create a new PIN. You can register and use your account but you’ll lose some saved settings like your profile information.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "%lu cəhdiniz qalıb. Cəhdlər uğursuz olsa yeni PİN yarada bilərsiniz. Hesabınızı yaradıb istifadə edə bilərsiniz, amma bəzi quraşdırmalarınızı və profil məlumatınızı itirəcəksiniz. ";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock enabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_PLURAL_FORMAT" = "You have %lu attempts remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_PLURAL_FORMAT" = "%lu cəhdiniz qaldı. Cəhdlər uğursuz osa hesabınız kilidlənəcək. 7 fəaliyyətsiz gündən sonra PİN istifadə etmədən qeydiyyatdan keçə bilərsiniz. hesabınız silinəcək və onun bütün məzmunu məhv ediləcək.";
 
 /* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock enabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_SINGLE" = "You have 1 attempt remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_SINGLE" = "1 cəhdiniz qaldı. Cəhdlər uğursuz osa hesabınız kilidlənəcək. 7 fəaliyyətsiz gündən sonra PİN istifadə etmədən qeydiyyatdan keçə bilərsiniz. hesabınız silinəcək və onun bütün məzmunu məhv ediləcək.";
 
 /* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock disabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "You have 1 attempt remaining. If you run out of attempts, you can create a new PIN. You can register and use your account but you’ll lose some saved settings like your profile information.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "1 cəhdiniz qaldı. Cəhdləriniz uğursuz olsa yeni PİN yarada bilərsiniz. Hesabı qeydiyyatdan keçirib istifadə edə bilərsiniz, lakin yadda saxlanılan quraşdırma və hesab məlumatı silinəcək.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Səhv PİN";
@@ -3318,7 +3351,7 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Qoşma kodunu yaratmaq alınmadı";
 
 /* alert message for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Your other device is running a legacy version of Signal that doesn't support scanning iPad QR codes. Please install the latest Signal release and try again.";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Digər cihazınızdakı Signal-ın köhnə versiyasıdır və iPadə QR kodları skan etmək imkanı vermir. Sonuncu Signal-ı yükləyin və yenidən cəhd edin.";
 
 /* alert title for outdated linking device */
 "SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "Skan cihazınızı yeniləyin";
@@ -3339,19 +3372,19 @@
 "SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "Qoşmanı bitir";
 
 /* header text before the user can link this device */
-"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Launch Signal on your phone to link this iPad to your account";
+"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "iPad-i öz hesabınıza qomaq üçün telefonunuzda Signal-ı açın.";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
 "SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "Telefonumda Signal yoxdur...";
 
 /* alert body */
-"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Go to the App Store on your phone, install Signal, complete the registration process, and then you can link your iPad to the same account.";
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Telefonda App Store-a keçin və Signal yükləyin, qeydiyyatı bitirin ki, iPadi eyni hesaba bağlamaya biləsiniz.";
 
 /* alert title */
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Telefonunuza Signal yükləyin";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Tap on your profile picture to open Signal Settings on your phone. Then \"Linked Devices\" and \"Link New Device\" to scan this code with your phone:";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Profil şəklinizə vurun və telefonda Signal quraşdırmalarını açın. Sonra \"Bağlı cihazlar\" və \"Yeni cihaz qoş\" telefonla bu kodu skan edin:";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
 "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "İPad qoşmaq üçün yardım alın";
@@ -3588,19 +3621,19 @@
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "Xəbərdarlıqları söndür";
 
 /* The explanation for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "Make sure you memorize or securely store your PIN as it can’t be recovered. If you forget your PIN, you may lose data when re-registering your Signal account.";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "PİNi yadınızda saxlayın ya təhlükəsiz qeyd edin, çünki onu bərpa etmək mümkün deyil.PİNi unutsanız yeni Signal hesabı qeydiyyatında məlumatları itirə bilərsiniz.";
 
 /* The title for the dialog asking user to confirm their PIN to disable reminders */
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Signal PİNinizi təsdiqləyin";
 
 /* Footer for the 'pin reminder' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_PIN_REMINDER_FOOTER" = "Reminders help you remember your PIN since it can’t be recovered. You’ll be asked less frequently over time.";
+"SETTINGS_PIN_REMINDER_FOOTER" = "Yada salma PİNi unutmamaq üçündür, çünki o bərpa olunmur. Zamanla daha az soruşulacaq.";
 
 /* Label for the 'pin reminder' switch of the privacy settings. */
 "SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "PİN xəbərdarlığı";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall Signal.";
+"SETTINGS_PINS_FOOTER" = "PİN Signal məlumatlarını şifrələnmiş halda saxlayır ki, yalnız sizə məxsus olsun. Profiliniz, quraşdırmala və kontaktlar Signal yenidən quraşdırılanda qaytarılacaq.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "PİN-i dəyiş";
@@ -3611,17 +3644,11 @@
 /* Title for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_TITLE" = "SIGNAL PIN";
 
-/* Label for 'CallKit privacy' preference */
-"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Zəng Edənin Ad və Nömrəsini Göstər";
-
 /* Settings table section footer. */
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "iOS Telefon aplikasiyasının \"Son Daxil Olanlar\" siyahısında zəngləri göstər.";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Zəngləri Son Daxil Olanlarda Göstər";
-
-/* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_TITLE" = "iOS Zəng İnteqrasiyası";
 
 /* Settings table view cell label */
 "SETTINGS_PRIVACY_TITLE" = "Təhlükəsizlik";
@@ -3642,7 +3669,7 @@
 "SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Yandır";
 
 /* Body for the alert confirming that the user wants to turn on registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "If you forget your Signal PIN when registering with Signal again, you’ll be locked out of your account for 7 days.";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Signal qeydiyyatı zamanı Signal PİNini unutsanız heabınız 7 günlük kilidlənəcək.";
 
 /* Title for the alert confirming that the user wants to turn on registration lock. */
 "SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "Qeydiyyat kilidini yandıraq?";
@@ -3657,7 +3684,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Ekran Kilidi Müddəti";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Unlock Signal's screen using Touch ID, Face ID, or your iOS device passcode. You can still answer incoming calls and receive call and message notifications while Screen Lock is enabled. Signal's notification settings allow you to customize the information that is displayed.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Signal ekranını Toxunuş İD, Üz İD və ya cihazın iOS parolu ilə açın. Ekran qorunması aktiv olanda gələn zəng və ismarışları görə və cavablaya bilərsiniz. Signal xəbərdarlıq quraşdırmaları ilə görünəcək məlumatları dəyişə bilərsiniz.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Ekran Kilidi";
@@ -3670,9 +3697,6 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Signal-ın ilkin baxışlarının aplikasiya keçiricisində nümayişinin qarşısını al.";
-
-/* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS-un Zəng İnteqrasiyası sənin Signal zənglərini kilidli ekranda və sistemin zəng tarixçəsində göstərir. Fərdi seçim olaraq əlaqələrinin ad və nömrələrini nümayiş edə bilərsən. iCloud aktiv edilərsə, bu zəng tarixçəsi Apple ilə payşalacaqdır.";
 
 /* Label for the notifications section of conversation settings view. */
 "SETTINGS_SECTION_NOTIFICATIONS" = "Xəbərdarlıqlar";
@@ -3705,7 +3729,7 @@
 "SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Qeydiyyat Kilidi";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "For extra security, turn on registration lock, which will require your Signal PIN to register your phone number with Signal again.";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Əlavə təhlükəsizlik üçün qeydiyyat kilidi qoyun, o Signal PİNini yenidən Signal nömrəsi ilə qeydiyyatdan keçirməyə məcbur edəcək.";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Yazışma İndikatorları";
@@ -3846,10 +3870,10 @@
 "THIS_MESSAGE_WAS_DELETED" = "İsmarış silindi.";
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
-"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Member of %@, %@, and %lu additional groups";
+"THREAD_DETAILS_MORE_MUTUAL_GROUP" = " %@, %@ üzvü, və %lu əlavə qruplar";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "You can add notes for yourself in this conversation. If your account has any linked devices, new notes will be synced.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Söhbətin içində özünüz üçün qeydlər apara bilərsiniz. Hesabınızda bağlı cihazlar varsa yeni qeydlər sinxronlaşacaq.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "%@ üzvləri";
@@ -3921,7 +3945,7 @@
 "UNKNOWN_COUNTRY_NAME" = "Tanınmayan Ölkə";
 
 /* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "One of your devices sent a message that can't be processed or displayed here because it uses a new Signal feature.";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "Cihazlarınızdan birindən gələn ismarış işlənə və ya göstərilə bilməz, çünki Signal-ın yeni imkanından istifadə edir.";
 
 /* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. Embeds {{user's name or phone number}}. */
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "%@sizə mesaj göndərdi, sizdə görünmür, qarşı tərəf yeni Signal istifadə edir.";
@@ -3933,7 +3957,7 @@
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "Signalı indi yeniləyin";
 
 /* Info message recorded in conversation history when local user has received an unknown unknown message from a linked device and has upgraded. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "Updated to the latest version of Signal. You can now receive this message type on your device.";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "Signal-ın son versiyasına yeniləndi. İndi bu növ ismarışı cihazınızda ala biləcəksiniz.";
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. Embeds {{user's name or phone number}}. */
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "Mesajı göndərən %@ dən təkrar  göndərməsini istəyə bilrəsiniz. Artıq Signalınız yenilənmişdir. ";
@@ -3971,6 +3995,9 @@
 /* Label text in device manager for a device with no name */
 "UNNAMED_DEVICE" = "Adsız alət";
 
+/* Pressing this button marks a thread as unread */
+"UNREAD_ACTION" = "Unread";
+
 /* No comment provided by engineer. */
 "UNREGISTER_SIGNAL_FAIL" = "Signaldan qeydiyyatdan çıxmaq alınmadı.";
 
@@ -3990,25 +4017,25 @@
 "UPDATE_GROUP_FAILED" = "Yenilənə bilməz.";
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
-"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "This action couldn’t be completed. Check your internet connection and try again.";
+"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Bu işi bitirmək alınmadı. İnternet qoşulmanızı yoxlayın və bir daha cəhd edin.";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "PİN yaradın";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall Signal.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PİN Signal məlumatlarını şifrələnmiş halda saxlayır ki, yalnız sizə məxsus olsun. Profiliniz, quraşdırmala və kontaktlar Signal yenidən quraşdırılanda qaytarılacaq.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "PİN təqdimatı";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal will soon require iOS 11 or later. Please upgrade in Settings app >> General >> Software Update.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal bir azdan iOS 11 və ya daha yenisini tələb edəcək. Yeniləmə üçün  Tətbiq qruraşdırmaları >> Ümumi >> Proqram yenilənməsi.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "iOS-u Yenilə";
 
 /* An explanation of how usernames work on the username view. */
-"USERNAME_DESCRIPTION" = "Usernames on Signal are optional. If you choose to create a username other Signal users will be able to find you by this username and contact you without knowing your phone number.";
+"USERNAME_DESCRIPTION" = "Signal-da istifadəçi adı məcburi deyil. İsitfadəçi adı yaratsanız digər Signal istifadəçiləri bu adla sizi tapa biləcək və telefon nömrənizi bilmələri tələb olunmayacaq.";
 
 /* Label for the username field in the username view. */
 "USERNAME_FIELD" = "istifadəçi adı";
@@ -4096,6 +4123,9 @@
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Signal Desktop üçün yükləməni bitir.";
+
+/* text indicating the message was remotely deleted by you */
+"YOU_DELETED_THIS_MESSAGE" = "You deleted this message.";
 
 /* Info Message when you disabled disappearing messages. */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Yox olan ismarışları söndürmüsən.";

@@ -108,10 +108,10 @@
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "نسخة قاعدة البيانات غير معروفة.";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "The data transferred from your old device could not be restored. Please send a debug log to support@signal.org so that we can troubleshoot this issue. If you re-install Signal your message history may be lost.";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "تعذرت استعادة البيانات المنقولة من جهازك القديم. يرجى إرسال سِجل الفحص إلى support@signal.org حتى نتمكن من استكشاف هذه المشكلة وإصلاحها. إذا قمت بإعادة تثبيت Signal  قد يتم فقدان سجل رسالاتك.";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Could Not Complete Transfer";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "تعذر إتمام النقل";
 
 /* Text prompting user to edit their profile name. */
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "أدخل إسمك";
@@ -142,9 +142,6 @@
 
 /* Pressing this button moves a thread from the inbox to the archive */
 "ARCHIVE_ACTION" = "ارشفة المحادثة";
-
-/* No comment provided by engineer. */
-"ATTACHMENT" = "مرفق";
 
 /* One-line label indicating the user can add no more text to the attachment caption. */
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "لقد بلغت الحد للنص المرافق.";
@@ -248,6 +245,21 @@
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "ملف غير مدعم؟";
 
+/* Short text label for a audio attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_AUDIO" = "الصوتية";
+
+/* Short text label for a file attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_FILE" = "ملف";
+
+/* Short text label for a gif attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_GIF" = "صورة متحركة";
+
+/* Short text label for a photo attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_PHOTO" = "صورة";
+
+/* Short text label for a video attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_VIDEO" = "فيديو";
+
 /* Short text label for a voice message attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "رسالة صوتية.";
 
@@ -336,10 +348,10 @@
 "BLOCK_LIST_BLOCKED_USERS_SECTION" = "المستخدمون المحظورون";
 
 /* Error message indicating that a conversation can't be blocked because they are already blocked. */
-"BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "Group already blocked.";
+"BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "المجموعة محظورة بالفعل.";
 
 /* Error message indicating that a user can't be blocked because they are already blocked. */
-"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "User already blocked.";
+"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "المستخدم محظور بالفعل.";
 
 /* Button label for the 'unblock' button */
 "BLOCK_LIST_UNBLOCK_BUTTON" = "رفع الحظر";
@@ -466,18 +478,6 @@
 
 /* Accessibility label for muting the microphone */
 "CALL_VIEW_MUTE_LABEL" = "حجب المكرفون.";
-
-/* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "يمكنك تفعيل إدماج مكالمات iOS في إعدادات خصوصية Signal للإجابة على المكالمات الواردة انطلاقا من شاشة قفل جهازك.";
-
-/* Reminder to the user of the benefits of disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "يمكنك تفعيل إدماج مكالمات iOS في إعدادات خصوصية Signal لرؤية اسم و رقم هاتف المكالمات الواردة.";
-
-/* Label for button that dismiss the call view's settings nag. */
-"CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "ليس الآن";
-
-/* Label for button that shows the privacy settings. */
-"CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "اظهار إِعدادات الخصوصية";
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "تغير اتجاه العدسة.";
@@ -798,13 +798,13 @@
 "CONVERSATION_SETTINGS_EDIT_GROUP" = "تحرير الاسم";
 
 /* Label for 'edit membership access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Who Can Edit Membership";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "من يمكنه تحرير العضوية";
 
 /* Label for button that sets 'group membership access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "المشرفون فقط";
 
 /* Description for the 'edit group membership access' alert. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "Choose who can edit group membership:";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "اختر من يمكنه تحرير عضوية المجموعة:";
 
 /* Label for button that sets 'group membership access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "جميع الأعضاء";
@@ -825,7 +825,7 @@
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ عضو";
 
 /* Footer for the 'membership access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "Choose who can edit group membership.";
+"CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "اختر من يمكنه تحرير عضوية المجموعة.";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "كتم";
@@ -1035,103 +1035,103 @@
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "فشل تحديث قائمة الهاتف";
 
 /* The stop action of the dialog asking the user if they want to cancel a device transfer */
-"DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION" = "Stop Transfer";
+"DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION" = "إيقاف التحويل";
 
 /* The message of the dialog asking the user if they want to cancel a device transfer */
-"DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE" = "Closing this window will stop the transfer you have in progress, are you sure you want to proceed?";
+"DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE" = "سيؤدي إغلاق هذه النافذة إلى إيقاف عملية النقل الجارية، هل انت متأكد انك تريد المتابعة؟";
 
 /* The title of the dialog asking the user if they want to cancel a device transfer */
-"DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "Stop Transfer?";
+"DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "هل تريد إيقاف التحويل؟";
 
 /* The explanation for the device transfer 'choice' view */
-"DEVICE_TRANSFER_CHOICE_EXPLANATION" = "If you have your old iOS device, you can securely transfer your account and messages to this device.";
+"DEVICE_TRANSFER_CHOICE_EXPLANATION" = "إذا كان لديك جهازك ال iOS القديم، يمكنك نقل حسابك والرسائل بأمان إلى هذا الجهاز.";
 
 /* The explanation for the device transfer 'choice' view when linking a device */
-"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "If you were previously using Signal on a linked iPad, you can securely transfer your account and messages to this device.";
+"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "إذا كنت تستخدم Signal مسبقًا على جهاز iPad مرتبط، يمكنك نقل حسابك والرسائل بأمان إلى هذا الجهاز.";
 
 /* The body for the device transfer 'choice' view 'register' option */
-"DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "Continue without transferring your account and messages";
+"DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "استمر بدون نقل حسابك ورسائلك";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "Add this iPad as a new linked device without transferring message history";
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "أضف هذا الiPad كجهاز مرتبط جديد دون نقل سجل الرسائل";
 
 /* The title for the device transfer 'choice' view 'register' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "Add as New Device";
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "إضافة كجهاز جديد";
 
 /* The title for the device transfer 'choice' view 'register' option */
-"DEVICE_TRANSFER_CHOICE_REGISTER_TITLE" = "Register without Transferring";
+"DEVICE_TRANSFER_CHOICE_REGISTER_TITLE" = "سجّل بدون تحويل";
 
 /* The title for the device transfer 'choice' view */
-"DEVICE_TRANSFER_CHOICE_TITLE" = "Transfer Account & Messages";
+"DEVICE_TRANSFER_CHOICE_TITLE" = "تحويل الحساب والرسائل";
 
 /* The body for the device transfer 'choice' view 'transfer' option */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Transfer your account and message history from your old iOS device";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "نقل حسابك وسجل الرسائل من جهاز iOS القديم.";
 
 /* The body for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Transfer your account and message history from your old iPad";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "نقل حسابك وسجل الرسائل من جهاز الآيباد القديم.";
 
 /* The title for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "Transfer from another iPad";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "النقل من آيباد آخر.";
 
 /* The title for the device transfer 'choice' view 'transfer' option */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_TITLE" = "Transfer from iOS Device";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_TITLE" = "النقل من جهاز iOS.";
 
 /* A warning for the device transfer 'choice' view indicating you can only have one device registered with your number */
-"DEVICE_TRANSFER_CHOICE_WARNING" = "Continuing will disable Signal on other devices currently registered with the same phone number.";
+"DEVICE_TRANSFER_CHOICE_WARNING" = "الاستمرار سوف يعطل سجنال على الأجهزة الأخرى المسجلة بنفس رقم الهاتف.";
 
 /* An error indicating that we were unable to verify the indentity of the new device to complete the transfer */
-"DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Unable to verify your new device, please try again";
+"DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "لا يمكن تفعيل جهازك الجديد، من فضلك حاول مجددًا.";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_GENERIC" = "The transfer couldn't complete, please ensure your devices are near each other and try again";
+"DEVICE_TRANSFER_ERROR_GENERIC" = "عملية النقل لم تكتمل، من فضلك احرص على أن تكون أجهزتك بالقرب من بعضها ثم حاول مجددًا.";
 
 /* An error indicating the user must scan this code with a linked device to transfer. */
-"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "To set up this iPad as a linked device, you must scan with your old iPad";
+"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "لاعداد جهاز iPad كجهاز مرتبط، يجب إجراء المسح باستخدام جهاز iPad القديم";
 
 /* An error indicating the user must scan this code with a primary device to transfer. */
-"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_PRIMARY" = "To transfer your account, you must scan with your iPhone";
+"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_PRIMARY" = "لنقل حسابك يجب المسح باستخدام iPhone الخاص بك";
 
 /* An error indicating that the user does not have enough free space on their device to complete the transfer */
-"DEVICE_TRANSFER_ERROR_NOT_ENOUGH_SPACE" = "Not enough free space to complete the transfer";
+"DEVICE_TRANSFER_ERROR_NOT_ENOUGH_SPACE" = "لا توجد مساحة خالية كافية لإتمام التحويل";
 
 /* An error indicating the user must update their device before trying to transfer. */
-"DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Update to the latest version of Signal and try again";
+"DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "قم بالتحديث إلى آخر إصدار من Signal وحاول مرة أخرى";
 
 /* The explanation on the action sheet prompting the user if they want to transfer their device. */
-"DEVICE_TRANSFER_PROMPT_EXPLANATION" = "Transfer your Signal account to a new iOS device. Make sure your new device is nearby and turned on.";
+"DEVICE_TRANSFER_PROMPT_EXPLANATION" = "تحويل حساب Signal إلى جهاز iOS جديد. تأكد من أن جهازك الجديد قريب و قيد التشغيل.";
 
 /* The title on the acttion sheet prompting the user if they want to transfer their device. */
-"DEVICE_TRANSFER_PROMPT_TITLE" = "Transfer Account";
+"DEVICE_TRANSFER_PROMPT_TITLE" = "تحويل الحساب";
 
 /* The explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Open Signal on your old device, bring it nearby, and make sure Wi-Fi and Bluetooth are enabled on both devices.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "افتح Signal على جهازك القديم، ضعه قريبا من الجهاز الجديد وتأكد من تمكين Wi-Fi و البلوتوث على كلا الجهازين.";
 
 /* The second explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Position this QR code in the frame of your other device.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "ضع رمز الاستجابة السريعة في إطار جهازك الآخر.";
 
 /* The title for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_TITLE" = "Waiting for Other Device...";
+"DEVICE_TRANSFER_QRCODE_TITLE" = "في انتظار جهاز آخر ...";
 
 /* The explanation on the view that shows receiving progress */
-"DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Keep both devices near each other. Do not turn off either device and keep Signal open. Transfers are end-to-end encrypted.";
+"DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "احتفظ بالجهازين بالقرب من بعضهما البعض. لا تقم بإيقاف تشغيل أي من الجهازين و حافظ على Signal مفتوحا. عمليات النقل المُعمّاة من طرف إلى طرف.";
 
 /* The title on the view that shows receiving progress */
-"DEVICE_TRANSFER_RECEIVING_TITLE" = "Receiving Data";
+"DEVICE_TRANSFER_RECEIVING_TITLE" = "جار استقبال البيانات";
 
 /* Text indicating that we are connecting to the scanned device */
 "DEVICE_TRANSFER_SCANNING_CONNECTING" = "جار الرّبط…";
 
 /* The explanation for the action sheet asking the user to scan the QR code to transfer */
-"DEVICE_TRANSFER_SCANNING_EXPLANATION" = "Position the QR code within the circle";
+"DEVICE_TRANSFER_SCANNING_EXPLANATION" = "ضع رمز الاستجابة السريعة داخل الدائرة";
 
 /* The title for the action sheet asking the user to scan the QR code to transfer */
-"DEVICE_TRANSFER_SCANNING_TITLE" = "Hold Your New Device Up to the Camera";
+"DEVICE_TRANSFER_SCANNING_TITLE" = "أمسك جهازك الجديد أمام الكاميرا";
 
 /* The explanation on the action sheet that shows transfer progress */
-"DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "Keep both devices near each other. Do not turn off either device and keep Signal open.";
+"DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "احتفظ بالجهازين بالقرب من بعضهما البعض. لا تقم بإيقاف تشغيل أي من الجهازين و حافظ على Signal مفتوحًا.";
 
 /* The title on the action sheet that shows transfer progress */
-"DEVICE_TRANSFER_TRANSFERRING_TITLE" = "Transferring Data";
+"DEVICE_TRANSFER_TRANSFERRING_TITLE" = "تحويل البيانات";
 
 /* table cell label in conversation settings */
 "DISAPPEARING_MESSAGES" = "رسائل مخفيّة";
@@ -1204,6 +1204,33 @@
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "لنستخدم Signal";
+
+/* The name for the emoji category 'Activities' */
+"EMOJI_CATEGORY_ACTIVITIES_NAME" = "Activities";
+
+/* The name for the emoji category 'Animals & Nature' */
+"EMOJI_CATEGORY_ANIMALS_NAME" = "Animals & Nature";
+
+/* The name for the emoji category 'Flags' */
+"EMOJI_CATEGORY_FLAGS_NAME" = "Flags";
+
+/* The name for the emoji category 'Food & Drink' */
+"EMOJI_CATEGORY_FOOD_NAME" = "Food & Drink";
+
+/* The name for the emoji category 'Objects' */
+"EMOJI_CATEGORY_OBJECTS_NAME" = "Objects";
+
+/* The name for the emoji category 'Recents' */
+"EMOJI_CATEGORY_RECENTS_NAME" = "مكالمات حديثة";
+
+/* The name for the emoji category 'Smileys & People' */
+"EMOJI_CATEGORY_SMILEYSANDPEOPLE_NAME" = "Smileys & People";
+
+/* The name for the emoji category 'Symbols' */
+"EMOJI_CATEGORY_SYMBOLS_NAME" = "Symbols";
+
+/* The name for the emoji category 'Travel & Places' */
+"EMOJI_CATEGORY_TRAVEL_NAME" = "Travel & Places";
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE1" = "لا أحد من جهات اتصالك لديه Signal.";
@@ -1713,7 +1740,7 @@
 "GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "اختر مشرفا جديدا لهذه المجموعة قبل أن تغادر.";
 
 /* Error message indicating that a member can't be added to a group because they are already in the group. */
-"GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP" = "User already in group.";
+"GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP" = "المستخدم موجود بالفعل في المجموعة.";
 
 /* Error indicating that an error occurred while accepting an invite. */
 "GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "لم يتمكن من قبول الدعوة.";
@@ -2012,11 +2039,14 @@
 /* The title for the action that deletes a message for all users in the conversation. */
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "احذف للجميع";
 
+/* A one-time confirmation that you want to delete for everyone */
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "This message will be permanently deleted for everyone in the conversation. Members will be able to see that you deleted a message.";
+
 /* The title for the action sheet asking who the user wants to delete the message for. */
-"MESSAGE_ACTION_DELETE_FOR_TITLE" = "عمن تريد حذف هذه الرسالة ؟";
+"MESSAGE_ACTION_DELETE_FOR_TITLE" = "Who would you like to delete this message for?";
 
 /* The title for the action that deletes a message for the local user only. */
-"MESSAGE_ACTION_DELETE_FOR_YOU" = "حذفها عنك";
+"MESSAGE_ACTION_DELETE_FOR_YOU" = "Delete for Me";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DELETE_MESSAGE" = "حذف هذه الرسالة";
@@ -2559,16 +2589,16 @@
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "لا وجود لأي دعوات.";
 
 /* Title of 're-send invite' button. */
-"PENDING_GROUP_MEMBERS_RESEND_INVITE_1_BUTTON" = "Re-send Invite";
+"PENDING_GROUP_MEMBERS_RESEND_INVITE_1_BUTTON" = "اعادة إرسال الدعوة";
 
 /* Title of 're-send invites' button. */
-"PENDING_GROUP_MEMBERS_RESEND_INVITE_N_BUTTON" = "Re-send Invites";
+"PENDING_GROUP_MEMBERS_RESEND_INVITE_N_BUTTON" = "اعادة إرسال الدعوات";
 
 /* Title of 'revoke invite' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "أبطِل الدعوة";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revoke group invite sent by “%@“?";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "إبطال الدعوة للمجموعة المرسلة من قبل “%@“?";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "أبطِل %1$@ دعوات مرسلة من طرف \"%2$@\" ؟";
@@ -2580,10 +2610,10 @@
 "PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "أبطِل دعوة \"%@\" إلى المجموعة ؟";
 
 /* Format for title of 'revoke or re-send invite' confirmation alert. Embeds {{ name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revoke or re-send group invite for “%@“?";
+"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "إبطال أو إعادة إرسال الدعوة للمجموعة إلى “%@“?";
 
 /* Format for title of 'revoke or re-send invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Revoke or re-send %1$@ invites sent by “%2$@“?";
+"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "إبطال أو إعادة إرسال %1$@ الدعوات المرسلة من “%2$@“?";
 
 /* Footer for the 'invites by other group members' section of the 'pending group members' view. */
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "لا تظهر تفاصيل الأشخاص المدعوين من قبل أعضاء المجموعة الآخرين. إذا اختار المدعوون الانضمام ،حينها سيتم مشاركة معلوماتهم مع المجموعة. لن يروا أي رسائل في المجموعة حتى ينضموا.";
@@ -2981,8 +3011,11 @@
 /* Text describing the local user in the reaction details pane. */
 "REACTIONS_DETAIL_YOU" = "أنت";
 
+/* Pressing this button marks a thread as read */
+"READ_ACTION" = "قراءة";
+
 /* Error message indicating that a user can't be selected. */
-"RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "User can't be selected.";
+"RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "لا يمكن تحديد المستخدم.";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "نسيتُ رمز PIN للأمان الخاص بي.";
@@ -3360,7 +3393,7 @@
 "SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "قم بالمسح الضوئي للرمز المربع بواسطة هاتفك";
 
 /* header text before the user can transfer to this device */
-"SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "Launch Signal on your old iPad to transfer your account";
+"SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "تشغيل Signal على جهاز iPad القديم الخاص بك لتحويل حسابك";
 
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "لقد تم إعادة تعيين دورة الاتصال الآمنة";
@@ -3585,19 +3618,19 @@
 "SETTINGS_NOTIFICATIONS" = "الإشعارات";
 
 /* The button text for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "Turn Off Reminders";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "أطفيء التذكيرات";
 
 /* The explanation for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "Make sure you memorize or securely store your PIN as it can’t be recovered. If you forget your PIN, you may lose data when re-registering your Signal account.";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "تأكد من حفظ رقم التعريف الشخصي أو تخزينه بشكل آمن لأنه لا يمكن استرداده. إذا نسيت رقم التعريف الشخصي ، فقد تفقد البيانات عند إعادة تسجيل حساب Signal الخاص بك.";
 
 /* The title for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Confirm your Signal PIN";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "تأكيد رقم التعريف الشخصي ل Signal الخاص بك ";
 
 /* Footer for the 'pin reminder' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_PIN_REMINDER_FOOTER" = "Reminders help you remember your PIN since it can’t be recovered. You’ll be asked less frequently over time.";
+"SETTINGS_PIN_REMINDER_FOOTER" = "تساعدك التذكيرات في تذكر رقم التعريف الشخصي لأنه لا يمكن استرداده. سيُطلب منك أقل مرات بمرور الوقت.";
 
 /* Label for the 'pin reminder' switch of the privacy settings. */
-"SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "PIN Reminders";
+"SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "تذكيرات رقم التعريف الشخصي";
 
 /* Footer for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_FOOTER" = "يمكنك الرقم التعريفي الشخصي من حفظ معلوماتك بشكل مُعمَّى في Signal بحيث يمكنك الوصول إليها وحدك. سوف تتم استعادة حسابك وإعداداتك و جهات اتصالك عند إعادة تثبيت Signal.";
@@ -3611,17 +3644,11 @@
 /* Title for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_TITLE" = "رقم SIGNAL التعريفي الشخصي";
 
-/* Label for 'CallKit privacy' preference */
-"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "اظهار أسم المتصل ورقمه";
-
 /* Settings table section footer. */
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "أظهر المكالمات في قائمة \"الحديثة\" في تطبيق هاتف iOS.";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "أظهر المكالمات في الحديثة";
-
-/* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_TITLE" = "نظام التشغيل iOS لدمج المكالمة";
 
 /* Settings table view cell label */
 "SETTINGS_PRIVACY_TITLE" = "الخصوصية";
@@ -3670,9 +3697,6 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "منع ظهور استعراضات Signal في محول البرنامج.";
-
-/* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "يعرض دمج المكالمة التابع لـ iOS مكالمات Signal الهاتفية على الشاشة المقفلة وفي سجل اتصالات النظام. يمكنك أن تختار اظهار أسم المتصل ورقمه. في حال تمكين iCloud يتم تبادل تاريخ المكالمات مع Apple.";
 
 /* Label for the notifications section of conversation settings view. */
 "SETTINGS_SECTION_NOTIFICATIONS" = "الإشعارات";
@@ -3971,6 +3995,9 @@
 /* Label text in device manager for a device with no name */
 "UNNAMED_DEVICE" = "جهاز غير مسمّى";
 
+/* Pressing this button marks a thread as unread */
+"UNREAD_ACTION" = "Unread";
+
 /* No comment provided by engineer. */
 "UNREGISTER_SIGNAL_FAIL" = "فشل إلغاء التسجيل من Signal.";
 
@@ -4096,6 +4123,9 @@
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "إكمال الإعداد على نسخة سطح المكتب من Signal.";
+
+/* text indicating the message was remotely deleted by you */
+"YOU_DELETED_THIS_MESSAGE" = "You deleted this message.";
 
 /* Info Message when you disabled disappearing messages. */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "قمت بتعطيل تخفية الرسائل.";

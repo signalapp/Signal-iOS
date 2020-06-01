@@ -108,7 +108,7 @@
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "తెలియని దత్తాంశమూల వెర్షన్.";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "మీ పాత పరికరం నుండి బదిలీ చేయబడిన డేటా పునరుద్ధరించబడలేదు. దయచేసి డీబగ్ లాగ్‌ను support@signal.org కు పంపండి, తద్వారా మేము ఈ సమస్యను పరిష్కరించుకుంటాము. మీరు సిగ్నల్‌ను తిరిగి ఇన్‌స్టాల్ చేస్తే మీ సందేశ చరిత్ర పోవచ్చు.";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "మీ పాత పరికరం నుండి బదిలీ చేయబడిన డేటా పునరుద్ధరించబడలేదు. దయచేసి డీబగ్ లాగ్‌ను support@signal.org కు పంపండి, తద్వారా మేము ఈ సమస్యను పరిష్కరించుకుంటాము. మీరు Signal ‌ను తిరిగి ఇన్‌స్టాల్ చేస్తే మీ సందేశ చరిత్ర పోవచ్చు.";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "బదిలీని పూర్తి చేయలేకపోయింది";
@@ -142,9 +142,6 @@
 
 /* Pressing this button moves a thread from the inbox to the archive */
 "ARCHIVE_ACTION" = "భద్రపరచు";
-
-/* No comment provided by engineer. */
-"ATTACHMENT" = "జోడింపు";
 
 /* One-line label indicating the user can add no more text to the attachment caption. */
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "శీర్షిక పరిమితి చేరుకుంది.";
@@ -248,6 +245,21 @@
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "మద్దతు లేని పంక్తి";
 
+/* Short text label for a audio attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_AUDIO" = "ఆడియో";
+
+/* Short text label for a file attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_FILE" = "పత్రం";
+
+/* Short text label for a gif attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_GIF" = "గిఫ్";
+
+/* Short text label for a photo attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_PHOTO" = "చిత్రం ";
+
+/* Short text label for a video attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_VIDEO" = "వీడియో";
+
 /* Short text label for a voice message attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "వాయిస్ సందేశం";
 
@@ -336,10 +348,10 @@
 "BLOCK_LIST_BLOCKED_USERS_SECTION" = "నిరోధించిన వినియోగదారులు";
 
 /* Error message indicating that a conversation can't be blocked because they are already blocked. */
-"BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "Group already blocked.";
+"BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "సమూహం ఇప్పటికే బ్లాక్ చేయబడింది.";
 
 /* Error message indicating that a user can't be blocked because they are already blocked. */
-"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "User already blocked.";
+"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "వినియోగదారు ఇప్పటికే బ్లాక్ చేయబడ్డారు.";
 
 /* Button label for the 'unblock' button */
 "BLOCK_LIST_UNBLOCK_BUTTON" = "అనుమతించు";
@@ -466,18 +478,6 @@
 
 /* Accessibility label for muting the microphone */
 "CALL_VIEW_MUTE_LABEL" = "నిశబ్ధం";
-
-/* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "మీ లాక్ స్క్రీన్ నుండి క్రొత్తగా వచ్చిన కాల్‌లకు సమాధానం ఇవ్వడానికి మీరు మీ Signal గోప్యతా సెట్టింగ్‌లలో iOS కాల్ ఇంటిగ్రేషన్‌ను ప్రారంభించవచ్చు.";
-
-/* Reminder to the user of the benefits of disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "క్రొత్తగా వచ్చిన కాల్‌ల కోసం పేరు మరియు ఫోన్ నంబర్‌ను చూడటానికి మీరు మీ Signal గోప్యతా సెట్టింగ్‌లలో iOS కాల్ ఇంటిగ్రేషన్‌ను ప్రారంభించవచ్చు.";
-
-/* Label for button that dismiss the call view's settings nag. */
-"CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "ఇప్పుడు కాదు";
-
-/* Label for button that shows the privacy settings. */
-"CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "గోప్యతా సెట్టింగ్‌లను చూపించు";
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "కెమెరా దిశను మార్చండి";
@@ -798,13 +798,13 @@
 "CONVERSATION_SETTINGS_EDIT_GROUP" = "సరిచేయు";
 
 /* Label for 'edit membership access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Who Can Edit Membership";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "సభ్యత్వాన్ని ఎవరు సవరించగలరు";
 
 /* Label for button that sets 'group membership access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "నిర్వాహకులు మాత్రమే";
 
 /* Description for the 'edit group membership access' alert. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "Choose who can edit group membership:";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "సమూహ సభ్యత్వాన్ని ఎవరు సవరించవచ్చో ఎంచుకోండి:";
 
 /* Label for button that sets 'group membership access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "సభ్యులందరు";
@@ -825,7 +825,7 @@
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@సభ్యులు";
 
 /* Footer for the 'membership access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "Choose who can edit group membership.";
+"CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "సమూహ సభ్యత్వాన్ని ఎవరు సవరించవచ్చో ఎంచుకోండి.";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "నిశబ్ధం";
@@ -1205,6 +1205,33 @@
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "మనం Signal కు మారుదాం";
 
+/* The name for the emoji category 'Activities' */
+"EMOJI_CATEGORY_ACTIVITIES_NAME" = "Activities";
+
+/* The name for the emoji category 'Animals & Nature' */
+"EMOJI_CATEGORY_ANIMALS_NAME" = "Animals & Nature";
+
+/* The name for the emoji category 'Flags' */
+"EMOJI_CATEGORY_FLAGS_NAME" = "Flags";
+
+/* The name for the emoji category 'Food & Drink' */
+"EMOJI_CATEGORY_FOOD_NAME" = "Food & Drink";
+
+/* The name for the emoji category 'Objects' */
+"EMOJI_CATEGORY_OBJECTS_NAME" = "Objects";
+
+/* The name for the emoji category 'Recents' */
+"EMOJI_CATEGORY_RECENTS_NAME" = "Recents";
+
+/* The name for the emoji category 'Smileys & People' */
+"EMOJI_CATEGORY_SMILEYSANDPEOPLE_NAME" = "Smileys & People";
+
+/* The name for the emoji category 'Symbols' */
+"EMOJI_CATEGORY_SYMBOLS_NAME" = "Symbols";
+
+/* The name for the emoji category 'Travel & Places' */
+"EMOJI_CATEGORY_TRAVEL_NAME" = "Travel & Places";
+
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE1" = "మీ పరిచయాలలో ఎవరికీ Signal లేదు.";
 
@@ -1500,16 +1527,16 @@
 "GROUP_LOCAL_USER_INVITE_DECLINED_BY_LOCAL_USER" = "మీరు గుంపుకు ఆహ్వానాన్ని తిరస్కరించారు.";
 
 /* Message indicating that the local user declined an invite to the group. Embeds {{user who invited the local user}}. */
-"GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT" = "You declined an invitation to the group from %@.";
+"GROUP_LOCAL_USER_INVITE_DECLINED_FORMAT" = "మీరు %@ నుండి సమూహానికి ఆహ్వానాన్ని తిరస్కరించారు.";
 
 /* Message indicating that the local user's invite was revoked by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_INVITE_REVOKED_BY_REMOTE_USER_FORMAT" = "%@ revoked your invitation to the group.";
+"GROUP_LOCAL_USER_INVITE_REVOKED_BY_REMOTE_USER_FORMAT" = "%@ గుంపుకు మీ ఆహ్వానాన్ని ఉపసంహరించుకుంది.";
 
 /* Message indicating that the local user's invite was revoked by an unknown user. */
 "GROUP_LOCAL_USER_INVITE_REVOKED_BY_UNKNOWN_USER" = "సమూహానికి మీ ఆహ్వానం ఉపసంహరించబడింది.";
 
 /* Message indicating that the local user was invited to the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT" = "%@ invited you.";
+"GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT" = "%@ మిమ్మల్ని ఆహ్వానించారు.";
 
 /* Message indicating that the local user was invited to the group. */
 "GROUP_LOCAL_USER_INVITED_TO_THE_GROUP" = "మిమ్మల్ని గుంపుకు ఆహ్వానించారు.";
@@ -1518,7 +1545,7 @@
 "GROUP_LOCAL_USER_JOINED_THE_GROUP" = "మీరు సమూహములో చేరారు.";
 
 /* Message indicating that the local user was removed from the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed you.";
+"GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ మిమ్మల్ని తొలగించారు.";
 
 /* Message indicating that the local user was removed from the group by an unknown user. */
 "GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "మీరు గుంపు నుండి తొలగించబడ్డారు.";
@@ -1527,7 +1554,7 @@
 "GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "మీ నిర్వాహక అధికారాలు రద్దు చేయబడ్డాయి.";
 
 /* Message indicating that the local user had their administrator role revoked by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ revoked your admin privileges.";
+"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ మీ నిర్వాహక అధికారాలను ఉపసంహరించుకున్నారు.";
 
 /* Conversation settings table section title */
 "GROUP_MANAGEMENT_SECTION" = "సమూహ నిర్వహణ";
@@ -1545,7 +1572,7 @@
 "GROUP_MEMBER_COUNT_LABEL_1" = "1 సభ్యుడు";
 
 /* Format for the 'group member count' indicator. Embeds {the number of group members}. */
-"GROUP_MEMBER_COUNT_LABEL_FORMAT" = "%@ members";
+"GROUP_MEMBER_COUNT_LABEL_FORMAT" = "%@ సభ్యులు";
 
 /* Label indicating the local user. */
 "GROUP_MEMBER_LOCAL_USER" = "మీరు";
@@ -1575,91 +1602,91 @@
 "GROUP_NAME_PLACEHOLDER" = "సమూహం పేరు (అవసరం)";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "%@ accepted an invitation to the group.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "%@ సమూహానికి ఆహ్వానాన్ని అంగీకరించారు.";
 
 /* Message indicating that a remote user has accepted an invite from the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ accepted your invitation to the group.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ సమూహానికి మీ ఆహ్వానాన్ని అంగీకరించారు.";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{ %1$@ user who accepted their invite, %2$@ user who invited the user}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_REMOTE_USER_FORMAT" = "%1$@ accepted an invitation to the group from %2$@.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_REMOTE_USER_FORMAT" = "%2$@ నుండి సమూహానికి ఆహ్వానాన్ని %1$@ అంగీకరించింది";
 
 /* Message indicating that a remote user was added to the group by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_LOCAL_USER_FORMAT" = "You added %@.";
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_LOCAL_USER_FORMAT" = "మీరు %@ ను జోడించారు";
 
 /* Message indicating that a remote user was added to the group by another user. Embeds {{ %1$@ user who added the user, %2$@ user who was added}}. */
-"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ added %2$@.";
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ జోడించబడింది %2$@.";
 
 /* Message indicating that a remote user was added to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT" = "%@ was added to the group.";
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT" = "%@ గుంపుకు చేర్చబడింది.";
 
 /* Message indicating that a remote user has declined their invite. */
 "GROUP_REMOTE_USER_DECLINED_INVITE" = "1 వ్యక్తి సమూహానికి ఆహ్వానాన్ని తిరస్కరించారు.";
 
 /* Message indicating that a remote user has declined their invite. Embeds {{ user who invited them }}. */
-"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "1 person invited by %@ declined the invitation to the group.";
+"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "%@ ద్వారా ఆహ్వానించబడిన 1 వ్యక్తి సమూహానికి ఆహ్వానాన్ని తిరస్కరించారు.";
 
 /* Message indicating that a remote user has declined an invite to the group from the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ declined your invitation to the group.";
+"GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ గుంపుకు మీ ఆహ్వానాన్ని తిరస్కరించారు.";
 
 /* Message indicating that a remote user was granted administrator role. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR" = "%@ is now an admin";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR" = "%@ ఇప్పుడు అడ్మిన్";
 
 /* Message indicating that a remote user was granted administrator role by local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_LOCAL_USER" = "You made %@ an admin.";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_LOCAL_USER" = "మీరు %@ ను నిర్వాహకుడిగా చేసారు.";
 
 /* Message indicating that a remote user was granted administrator role by another user. Embeds {{ %1$@ user who granted, %2$@ user who was granted administrator role}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ made %2$@ an admin.";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@%2$@ను నిర్వాహకుడిగా చేసింది.";
 
 /* Message indicating that a single remote user's invite was revoked. */
 "GROUP_REMOTE_USER_INVITE_REVOKED_1" = "1 వ్యక్తికి సమూహానికి ఆహ్వానం రద్దు చేయబడింది.";
 
 /* Message indicating that a remote user's invite was revoked by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_BY_LOCAL_USER_FORMAT" = "Invitation to the group was revoked for %@.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_LOCAL_USER_FORMAT" = "గుంపుకు ఆహ్వానం %@ కి రద్దు చేయబడింది.";
 
 /* Message indicating that a single remote user's invite was revoked by a remote user. Embeds {{ user who revoked the invite }}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_1_FORMAT" = "%@ revoked an invitation to the group for 1 person.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_1_FORMAT" = "%@ 1 వ్యక్తి కోసం సమూహానికి ఆహ్వానాన్ని ఉపసంహరించుకుంది.";
 
 /* Message indicating that a group of remote users' invites were revoked by a remote user. Embeds {{ %1$@ user who revoked the invite, %2$@ number of users }}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_N_FORMAT" = "%1$@ revoked an invitation to the group for %2$@ people.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_N_FORMAT" = "%2$@వ్యక్తుల కోసం %1$@ సమూహానికి ఆహ్వానాన్ని రద్దు చేసింది.";
 
 /* Message indicating that a group of remote users' invites were revoked. Embeds {{ number of users }}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_N_FORMAT" = "Invitations to the group were revoked for %@ people.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_N_FORMAT" = "%@ వ్యక్తుల కోసం సమూహానికి ఆహ్వానాలు రద్దు చేయబడ్డాయి.";
 
 /* Message indicating that a single remote user was invited to the group. */
 "GROUP_REMOTE_USER_INVITED_1" = "గుంపుకు 1 వ్యక్తిని ఆహ్వానించారు.";
 
 /* Message indicating that a remote user was invited to the group by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "You invited %@ to the group.";
+"GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "మీరు %@ ను గుంపుకు ఆహ్వానించారు.";
 
 /* Message indicating that a single remote user was invited to the group by the local user. Embeds {{ user who invited the user }}. */
-"GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_1_FORMAT" = "%@ invited 1 person to the group.";
+"GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_1_FORMAT" = "%@ గుంపుకు 1 వ్యక్తిని ఆహ్వానించింది.";
 
 /* Message indicating that a group of remote users were invited to the group by the local user. Embeds {{ %1$@ user who invited the user, %2$@ number of invited users }}. */
-"GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_N_FORMAT" = "%1$@ invited %2$@ people to the group.";
+"GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_N_FORMAT" = "%1$@ గుంపుకు %2$@ మందిని ఆహ్వానించారు.";
 
 /* Message indicating that a group of remote users were invited to the group. Embeds {{number of invited users}}. */
-"GROUP_REMOTE_USER_INVITED_N_FORMAT" = "%@ people were invited to the group.";
+"GROUP_REMOTE_USER_INVITED_N_FORMAT" = "ఈ బృందానికి %@ మందిని ఆహ్వానించారు.";
 
 /* Message indicating that a remote user was added to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "%@ joined the group.";
+"GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "%@ గుంపులో చేరారు.";
 
 /* Message indicating that a remote user has left the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%@ left the group.";
+"GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%@ సమూహాన్ని విడిచిపెట్టారు.";
 
 /* Message indicating that a remote user was removed from the group by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT" = "You removed %@.";
+"GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT" = "మీరు %@ ను తొలగించారు.";
 
 /* Message indicating that the remote user was removed from the group. Embeds {{ %1$@ user who removed the user, %2$@ user who was removed}}. */
-"GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ removed %2$@.";
+"GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ తొలగించబడింది %2$@.";
 
 /* Message indicating that a remote user had their administrator role revoked. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "%@ had their admin privileges revoked.";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "%@ వారి నిర్వాహక అధికారాలను ఉపసంహరించుకుంది.";
 
 /* Message indicating that a remote user had their administrator role revoked by local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_LOCAL_USER" = "You revoked admin privileges from %@.";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_LOCAL_USER" = "మీరు %@ నుండి నిర్వాహక అధికారాలను ఉపసంహరించుకున్నారు.";
 
 /* Message indicating that a remote user had their administrator role revoked by another user. Embeds {{ %1$@ user who revoked, %2$@ user who was granted administrator role}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ revoked admin privileges from %2$@.";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ అడ్మిన్ హక్కులను %2$@ నుండి ఉపసంహరించుకుంది.";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "సమూహం నవీకరించబడింది";
@@ -1671,7 +1698,7 @@
 "GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "మీరు అవతార్ తొలగించారు.";
 
 /* Message indicating that the group's avatar was removed by a remote user. Embeds {{user who removed the avatar}}. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed the avatar.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ అవతార్ తొలగించబడింది.";
 
 /* Message indicating that the group's avatar was changed. */
 "GROUP_UPDATED_AVATAR_UPDATED" = "సమూహ అవతార్‌ను నవీకరించారు.";
@@ -1680,13 +1707,13 @@
 "GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "మీరు అవతార్‌ను నవీకరించారు.";
 
 /* Message indicating that the group's avatar was changed by a remote user. Embeds {{user who changed the avatar}}. */
-"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ updated the avatar.";
+"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ అవతార్ నవీకరించబడింది.";
 
 /* Info message indicating that the group was updated by the local user. */
 "GROUP_UPDATED_BY_LOCAL_USER" = "మీరు ఈ సమూహాన్ని నవీకరించారు.";
 
 /* Info message indicating that the group was updated by another user. Embeds {{remote user name}}. */
-"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ updated the group.";
+"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ సమూహాన్ని నవీకరించారు.";
 
 /* Message indicating that the group's name was removed. */
 "GROUP_UPDATED_NAME_REMOVED" = "సమూహం పేరు తొలగించబడింది.";
@@ -1695,16 +1722,16 @@
 "GROUP_UPDATED_NAME_REMOVED_BY_LOCAL_USER" = "మీరు గుంపు పేరును తొలగించారు.";
 
 /* Message indicating that the group's name was removed by a remote user. Embeds {{user who removed the name}}. */
-"GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed the group name.";
+"GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ సమూహం పేరు తొలగించబడింది.";
 
 /* Message indicating that the group's name was changed by the local user. Embeds {{new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed the group name to “%@“.";
+"GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "మీరు గుంపు పేరును “%@“ గా మార్చారు.";
 
 /* Message indicating that the group's name was changed by a remote user. Embeds {{ %1$@ user who changed the name, %2$@ new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed the group name to “%2$@“.";
+"GROUP_UPDATED_NAME_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ సమూహం పేరును “%2$@“ గా మార్చింది.";
 
 /* Message indicating that the group's name was changed. Embeds {{new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Group name is now “%@”.";
+"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "సమూహం పేరు ఇప్పుడు “%@”.";
 
 /* Message indicating that the local user left the group. */
 "GROUP_YOU_LEFT" = "మీరు సమూహన్ని విడిచిపెట్టారు";
@@ -1713,7 +1740,7 @@
 "GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "మీరు బయలుదేరే ముందు ఈ గుంపు కోసం క్రొత్త నిర్వాహకుడిని ఎంచుకోండి.";
 
 /* Error message indicating that a member can't be added to a group because they are already in the group. */
-"GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP" = "User already in group.";
+"GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP" = "వినియోగదారు ఇప్పటికే సమూహంలో ఉన్నారు.";
 
 /* Error indicating that an error occurred while accepting an invite. */
 "GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "ఆహ్వానాన్ని అంగీకరించలేదు.";
@@ -1722,10 +1749,10 @@
 "GROUPS_INVITE_BLOCK_GROUP" = "సమూహాన్ని బ్లాక్ చేయండి ";
 
 /* Label for 'block group and inviter' button in group invite view. Embeds {{name of user who invited you}}. */
-"GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT" = "Block Group and %@";
+"GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT" = "బ్లాక్ గ్రూప్ మరియు %@";
 
 /* Label for 'block inviter' button in group invite view. Embeds {{name of user who invited you}}. */
-"GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "Block %@";
+"GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "నిరోధించు %@";
 
 /* Message for the 'replace group admin' alert. */
 "GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "మీరు బయలుదేరే ముందు, ఈ గుంపు కోసం క్రొత్త నిర్వాహకుడిని ఎంచుకోండి.";
@@ -1761,7 +1788,7 @@
 "HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "మీ మొదటి సంభాషణను ఇక్కడ ప్రారంభించండి.";
 
 /* Table cell subtitle label for a group the user has been added to. {Embeds inviter name} */
-"HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%@ added you to the group";
+"HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%@ మిమ్మల్ని సమూహానికి చేర్చారు.";
 
 /* Table cell subtitle label for a conversation the user has not accepted. */
 "HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "సందేశ అభ్యర్థన";
@@ -2012,11 +2039,14 @@
 /* The title for the action that deletes a message for all users in the conversation. */
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "అందరికీ తొలగించండి";
 
+/* A one-time confirmation that you want to delete for everyone */
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "This message will be permanently deleted for everyone in the conversation. Members will be able to see that you deleted a message.";
+
 /* The title for the action sheet asking who the user wants to delete the message for. */
-"MESSAGE_ACTION_DELETE_FOR_TITLE" = "మీరు ఈ సందేశాన్ని ఎవరి కోసం తొలగించాలనుకుంటున్నారు?";
+"MESSAGE_ACTION_DELETE_FOR_TITLE" = "Who would you like to delete this message for?";
 
 /* The title for the action that deletes a message for the local user only. */
-"MESSAGE_ACTION_DELETE_FOR_YOU" = "మీ కోసం తొలగించండి";
+"MESSAGE_ACTION_DELETE_FOR_YOU" = "Delete for Me";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DELETE_MESSAGE" = "ఈ సందేశాన్ని తొలగించండి";
@@ -2106,7 +2136,7 @@
 "MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "మీరు ఈ సమూహాన్ని వదిలివేస్తారు మరియు ఇకపై సందేశాలు లేదా నవీకరణలను స్వీకరించరు.";
 
 /* Action sheet title to confirm blocking a group via a message request. Embeds {{group name}} */
-"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "Block and Leave %@?";
+"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "అడ్డగించు మరియు వదిలివేయి %@?";
 
 /* Action sheet action to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "తొలగించండి";
@@ -2133,10 +2163,10 @@
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "నిరోధించు";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Do you want to let %@ message you? You won't receive any messages until you unblock them.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "మీరు %@ సందేశాన్ని పంపించాలనుకుంటున్నారా? మీరు వాటిని అన్‌బ్లాక్ చేసే వరకు మీకు సందేశాలు రావు.";
 
 /* A prompt notifying that the user must unblock this group to continue. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_FORMAT" = "Do you want to let the group %@ message you? You won't receive any messages until you unblock them.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_FORMAT" = "సమూహం %@ మీకు సందేశం ఇవ్వాలనుకుంటున్నారా? మీరు వాటిని అన్‌బ్లాక్ చేసే వరకు మీకు సందేశాలు రావు.";
 
 /* incoming message request button text which deletes a conversation */
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "తొలగించండి";
@@ -2148,7 +2178,7 @@
 "MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT_FORMAT" = "%@ తో మీ సంభాషణను కొనసాగించడానికి మీరు మీ రూపంను తప్పక పంచుకోవాలి.";
 
 /* A prompt for the user to accept or decline an invite to a group. Embeds {{name of user who invited you}}. */
-"MESSAGE_REQUEST_VIEW_GROUP_INVITE_PROMPT_FORMAT" = "You were invited to this group by %@. Do you want to let members of this group message you?";
+"MESSAGE_REQUEST_VIEW_GROUP_INVITE_PROMPT_FORMAT" = "మిమ్మల్ని %@ ద్వారా ఈ గుంపుకు ఆహ్వానించారు. ఈ గుంపులోని సభ్యులు మీకు సందేశం ఇవ్వాలనుకుంటున్నారా?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "మీరు %@ సందేశాన్ని పంపించాలనుకుంటున్నారా? మీరు అంగీకరించే వరకు మీరు వారి సందేశాలను చూశారని వారికి తెలియదు.";
@@ -2550,40 +2580,40 @@
 "PDF_VIEW_TITLE" = "PDF";
 
 /* Format for label indicating the a group member has invited 1 other user to the group. Embeds {{ the name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_MEMBER_INVITED_1_USER_FORMAT" = "%@ invited 1 person";
+"PENDING_GROUP_MEMBERS_MEMBER_INVITED_1_USER_FORMAT" = "%@ 1 వ్యక్తిని ఆహ్వానించింది";
 
 /* Format for label indicating the a group member has invited N other users to the group. Embeds {{ %1$@ name of the inviting group member, %2$@ the number of users they have invited. }}. */
-"PENDING_GROUP_MEMBERS_MEMBER_INVITED_N_USERS_FORMAT" = "%1$@ invited %2$@ people";
+"PENDING_GROUP_MEMBERS_MEMBER_INVITED_N_USERS_FORMAT" = "%1$@ ఆహ్వానించిన %2$@ వ్యక్తులు";
 
 /* Label indicating that a group has no pending members. */
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "చూపించడానికి ఆహ్వానాలు లేవు.";
 
 /* Title of 're-send invite' button. */
-"PENDING_GROUP_MEMBERS_RESEND_INVITE_1_BUTTON" = "Re-send Invite";
+"PENDING_GROUP_MEMBERS_RESEND_INVITE_1_BUTTON" = "ఆహ్వానాన్ని తిరిగి పంపండి";
 
 /* Title of 're-send invites' button. */
-"PENDING_GROUP_MEMBERS_RESEND_INVITE_N_BUTTON" = "Re-send Invites";
+"PENDING_GROUP_MEMBERS_RESEND_INVITE_N_BUTTON" = "ఆహ్వానాలను తిరిగి పంపండి";
 
 /* Title of 'revoke invite' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "ఆహ్వానాన్ని ఉపసంహరించుకోండి";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revoke group invite sent by “%@“?";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "“%@“ పంపిన సమూహ ఆహ్వానాన్ని ఉపసంహరించుకోండి?";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Revoke %1$@ invites sent by “%2$@“?";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "“%2$@“ పంపిన %1$@ ఆహ్వానాలను ఉపసంహరించుకోండి?";
 
 /* Title of 'revoke invites' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_N_BUTTON" = "ఆహ్వానాలను ఉపసంహరించుకోండి";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the invited group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revoke group invite for “%@“?";
+"PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "“%@“ కోసం సమూహ ఆహ్వానాన్ని ఉపసంహరించుకోండి?";
 
 /* Format for title of 'revoke or re-send invite' confirmation alert. Embeds {{ name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revoke or re-send group invite for “%@“?";
+"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "“%@“ కోసం సమూహ ఆహ్వానాన్ని ఉపసంహరించుకోండి లేదా తిరిగి పంపాలా?";
 
 /* Format for title of 'revoke or re-send invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Revoke or re-send %1$@ invites sent by “%2$@“?";
+"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "“%2$@“ పంపిన %1$@ ఆహ్వానాలను ఉపసంహరించుకోండి లేదా తిరిగి పంపాలా?";
 
 /* Footer for the 'invites by other group members' section of the 'pending group members' view. */
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "మిగతా సమూహ సభ్యులచే ఆహ్వానింపబడిన వ్యక్తుల వివరాలు చూపబడవు. ఆ వ్యక్తులు సమూహములో చేరినపుడు వారి వివరాలు పంచబడతాయి. వారు సమూహములో చేరనంత వరకు సమూహములోని సందేశములు చూడలేరు.";
@@ -2934,43 +2964,43 @@
 "QUOTED_REPLY_TYPE_VIDEO" = "వీడియో";
 
 /* The header used to indicate All reactions to a given message. Embeds {{number of reactions}} */
-"REACTION_DETAIL_ALL_FORMAT" = "All · %@";
+"REACTION_DETAIL_ALL_FORMAT" = "అన్ని ·%@";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "మీ సందేశానికి %@ స్పందించింది";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Reacted %@ to your album";
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "మీ ఆల్బమ్‌కు %@ రియాక్ట్ అయ్యింది";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Reacted %@ to your audio";
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "మీ ఆడియోకు %@ రియాక్ట్ అయ్యింది";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Reacted %@ to your contact share";
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "మీ సంప్రదింపు వాటాకు %@ రియాక్ట్ అయ్యింది";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Reacted %@ to your file";
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "మీ ఫైల్‌కు %@ రియాక్ట్ అయ్యింది";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "Reacted %@ to your GIF";
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "మీ GIF కి %@ రియాక్ట్ అయ్యింది";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "Reacted %@ to your photo";
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "మీ ఫోటోకు %@ రియాక్ట్ అయ్యింది";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Reacted %@ to your sticker";
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "మీ స్టిక్కర్‌కు %@ రియాక్ట్ అయ్యింది";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Reacted %@ to: \"%@\"";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "దీనికి %@ ప్రతిస్పందించింది: \"%@\"";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Reacted %@ to your video";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "మీ వీడియోకు %@ రియాక్ట్ అయ్యింది";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Reacted %@ to your view-once media";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "మీ వీక్షణ-ఒకసారి మీడియాకు %@ ను ప్రతిస్పందించారు";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reacted %@ to your voice message";
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "మీ వాయిస్ సందేశానికి %@ రియాక్ట్ అయ్యింది";
 
 /* Body for the megaphone introducing reactions */
 "REACTION_MEGAPHONE_BODY" = "మీకు ఎలా అనిపిస్తుందో త్వరగా సమాధానం ఇవ్వడానికి ఏదైనా సందేశాన్ని నొక్కండి మరియు పట్టుకోండి.";
@@ -2981,8 +3011,11 @@
 /* Text describing the local user in the reaction details pane. */
 "REACTIONS_DETAIL_YOU" = "మీరు";
 
+/* Pressing this button marks a thread as read */
+"READ_ACTION" = "చదవండి";
+
 /* Error message indicating that a user can't be selected. */
-"RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "User can't be selected.";
+"RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "వినియోగదారుని ఎన్నుకోలేరు.";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "నేను పిన్ను మరచిపోయాను.";
@@ -3585,19 +3618,19 @@
 "SETTINGS_NOTIFICATIONS" = "ప్రకటనలు";
 
 /* The button text for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "Turn Off Reminders";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "రిమైండర్‌లను ఆపివేయండి";
 
 /* The explanation for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "Make sure you memorize or securely store your PIN as it can’t be recovered. If you forget your PIN, you may lose data when re-registering your Signal account.";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "మీ పిన్ను తిరిగి పొందలేనందున మీరు గుర్తుంచుకున్నారని లేదా సురక్షితంగా నిల్వ చేశారని నిర్ధారించుకోండి. మీరు మీ పిన్‌ను మరచిపోతే, మీ Signal ఖాతాను తిరిగి నమోదు చేసేటప్పుడు మీరు డేటాను కోల్పోవచ్చు.";
 
 /* The title for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Confirm your Signal PIN";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "మీ Signal పిన్ను నిర్ధారించండి";
 
 /* Footer for the 'pin reminder' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_PIN_REMINDER_FOOTER" = "Reminders help you remember your PIN since it can’t be recovered. You’ll be asked less frequently over time.";
+"SETTINGS_PIN_REMINDER_FOOTER" = "మీ పిన్ను తిరిగి పొందలేనందున దాన్ని గుర్తుంచుకోవడానికి రిమైండర్‌లు మీకు సహాయపడతాయి. కాలక్రమేణా మిమ్మల్ని తక్కువసార్లు అడుగుతారు.";
 
 /* Label for the 'pin reminder' switch of the privacy settings. */
-"SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "PIN Reminders";
+"SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "పిన్ రిమైండర్‌లు";
 
 /* Footer for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_FOOTER" = "పిన్‌లు Signal గుప్తీకరించిన సమాచారాన్ని నిల్వ చేస్తాయి కాబట్టి మీరు మాత్రమే దీన్ని యాక్సెస్ చేయవచ్చు. మీరు Signal ‌ను మళ్లీ ఇన్‌స్టాల్ చేసినప్పుడు మీ ప్రొఫైల్, సెట్టింగ్‌లు మరియు పరిచయాలు పునరుద్ధరించబడతాయి.";
@@ -3611,17 +3644,11 @@
 /* Title for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_TITLE" = "SIGNAL పిన్";
 
-/* Label for 'CallKit privacy' preference */
-"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "కాలర్ పేరు & సంఖ్యను చూపించు";
-
 /* Settings table section footer. */
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "iOS ఫోన్ అనువర్తనంలో \"రీసెంట్స్\" జాబితాలో కాల్‌లను చూపించు.";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "క్రొత్తగా వచ్చిన కాల్స్ చూపించు";
-
-/* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_TITLE" = "iOS కాల్ ఇంటిగ్రేషన్";
 
 /* Settings table view cell label */
 "SETTINGS_PRIVACY_TITLE" = "గోప్యత";
@@ -3670,9 +3697,6 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "అనువర్తన స్విచ్చర్‌లో Signal పూర్వప్రదర్శన కనిపించకుండా నిరోధించండి.";
-
-/* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS కాల్ ఇంటిగ్రేషన్ మీ లాక్ స్క్రీన్‌లో మరియు సిస్టమ్ కాల్ చరిత్రలో Signal కాల్‌లను చూపుతుంది. మీరు ఐచ్ఛికంగా మీ పరిచయం పేరు మరియు సంఖ్యను చూపవచ్చు. iCloud ప్రారంభించబడితే, ఈ కాల్ చరిత్ర Apple తో భాగస్వామ్యం చేయబడుతుంది.";
 
 /* Label for the notifications section of conversation settings view. */
 "SETTINGS_SECTION_NOTIFICATIONS" = "ప్రకటనలు";
@@ -3948,7 +3972,7 @@
 "UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "కనుమరుగవుతున్న సందేశాలు నిలిపివేయబడ్డాయి.";
 
 /* Info Message when an unknown user enabled disappearing messages. Embeds {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
-"UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Disappearing message time was set to %@.";
+"UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "కనుమరుగవుతున్న సందేశ సమయం %@ కు సెట్ చేయబడింది.";
 
 /* Indicates an unknown or unrecognizable value. */
 "UNKNOWN_VALUE" = "తెలియని";
@@ -3970,6 +3994,9 @@
 
 /* Label text in device manager for a device with no name */
 "UNNAMED_DEVICE" = "పేరులేని పరికరం";
+
+/* Pressing this button marks a thread as unread */
+"UNREAD_ACTION" = "Unread";
 
 /* No comment provided by engineer. */
 "UNREGISTER_SIGNAL_FAIL" = "Signal నుండి అంరెజిస్టర్ చేయడంలో విఫలమైంది.";
@@ -4096,6 +4123,9 @@
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Signal Desktop యొక్క పూర్తి స్థాపన ";
+
+/* text indicating the message was remotely deleted by you */
+"YOU_DELETED_THIS_MESSAGE" = "You deleted this message.";
 
 /* Info Message when you disabled disappearing messages. */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "మీరు అదృశ్యమవుతున్న సందేశాలను నిలిపివేసారు";

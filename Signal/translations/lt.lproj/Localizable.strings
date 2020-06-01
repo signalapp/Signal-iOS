@@ -42,25 +42,25 @@
 "ACTION_VIDEO_CALL" = "Vaizdo skambutis";
 
 /* Label for the 'add group member' button. */
-"ADD_GROUP_MEMBERS_ACTION_TITLE_1" = "Pridėti dalyvį";
+"ADD_GROUP_MEMBERS_ACTION_TITLE_1" = "Pridėti narį";
 
 /* Label for the 'add group members' button. */
-"ADD_GROUP_MEMBERS_ACTION_TITLE_N" = "Pridėti dalyvius";
+"ADD_GROUP_MEMBERS_ACTION_TITLE_N" = "Pridėti narius";
 
 /* Format for the message for the 'add group member' confirmation alert.  Embeds {{ the name of the group. }}. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_1_FORMAT" = "Pridėti dalyvį į \"%2$@\"?";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_1_FORMAT" = "Pridėti narį į \"%2$@\"?";
 
 /* Format for the message for the 'add group members' confirmation alert.  Embeds {{ %1$@ number of new members, %2$@ name of the group. }}. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "Pridėti %1$@ dalyvius į \"%2$@\"?";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "Pridėti %1$@ narius į \"%2$@\"?";
 
 /* Title for the 'add group member' confirmation alert. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1" = "Pridėti naują dalyvį";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1" = "Pridėti naują narį";
 
 /* Title for the 'add group members' confirmation alert. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_N" = "Pridėti naujus dalyvius";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_N" = "Pridėti naujus narius";
 
 /* The title for the 'add group members' view. */
-"ADD_GROUP_MEMBERS_VIEW_TITLE" = "Pridėti dalyvius";
+"ADD_GROUP_MEMBERS_VIEW_TITLE" = "Pridėti narius";
 
 /* Message shown in conversation view that offers to share your profile with a group. */
 "ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Ar norėtumėte bendrinti savo profilį su šia grupe?";
@@ -142,9 +142,6 @@
 
 /* Pressing this button moves a thread from the inbox to the archive */
 "ARCHIVE_ACTION" = "Archyvuoti";
-
-/* No comment provided by engineer. */
-"ATTACHMENT" = "Priedas";
 
 /* One-line label indicating the user can add no more text to the attachment caption. */
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Pasiekta paaiškinimo riba.";
@@ -248,6 +245,21 @@
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Nepalaikomas failas";
 
+/* Short text label for a audio attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_AUDIO" = "Garsas";
+
+/* Short text label for a file attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_FILE" = "Failas";
+
+/* Short text label for a gif attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_GIF" = "GIF";
+
+/* Short text label for a photo attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_PHOTO" = "Nuotrauka";
+
+/* Short text label for a video attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_VIDEO" = "Vaizdo įrašai";
+
 /* Short text label for a voice message attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "Balso žinutė";
 
@@ -336,10 +348,10 @@
 "BLOCK_LIST_BLOCKED_USERS_SECTION" = "Užblokuoti naudotojai";
 
 /* Error message indicating that a conversation can't be blocked because they are already blocked. */
-"BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "Group already blocked.";
+"BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "Grupė jau užblokuota.";
 
 /* Error message indicating that a user can't be blocked because they are already blocked. */
-"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "User already blocked.";
+"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "Naudotojas jau užblokuotas.";
 
 /* Button label for the 'unblock' button */
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Atblokuoti";
@@ -348,10 +360,10 @@
 "BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "Galėsite vieni kitiems rašyti žinutes bei skambinti.";
 
 /* Action sheet body when confirming you want to unblock a group */
-"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Esami dalyviai ir vėl galės pridėti jus į grupę.";
+"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Esami nariai ir vėl galės pridėti jus į grupę.";
 
 /* An explanation of what unblocking a group means. */
-"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Grupės dalyviai galės ir vėl jus pridėti į šią grupę.";
+"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Grupės nariai galės ir vėl pridėti jus į šią grupę.";
 
 /* Action sheet title when confirming you want to unblock a group. */
 "BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Atblokuoti šią grupę?";
@@ -381,7 +393,7 @@
 "BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "%@ buvo atblokuota(-as).";
 
 /* Alert body after unblocking a group. */
-"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Dabar, esami dalyviai gali ir vėl pridėti jus į grupę.";
+"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Dabar, esami nariai gali ir vėl pridėti jus į grupę.";
 
 /* Action sheet that will block an unknown user. */
 "BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION" = "Užblokuoti";
@@ -466,18 +478,6 @@
 
 /* Accessibility label for muting the microphone */
 "CALL_VIEW_MUTE_LABEL" = "Nutildyti";
-
-/* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Norėdami užrakto ekrane atsiliepti į gaunamuosius skambučius, galite savo Signal privatumo nustatymuose įjungti iOS skambučių integraciją.";
-
-/* Reminder to the user of the benefits of disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Norėdami užrakto ekrane, gaunamuosiuose skambučiuose matyti vardą ir telefono numerį, galite savo Signal privatumo nustatymuose įjungti iOS skambučių integraciją.";
-
-/* Label for button that dismiss the call view's settings nag. */
-"CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Ne dabar";
-
-/* Label for button that shows the privacy settings. */
-"CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Rodyti privatumo nustatymus";
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Perjungti kameros kryptį";
@@ -594,7 +594,7 @@
 "CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT" = "Saugumo numeris su %@ pasikeitė";
 
 /* No comment provided by engineer. */
-"CONFIRMATION_TITLE" = "Patvirtinti";
+"CONFIRMATION_TITLE" = "Patvirtinkite";
 
 /* Label for a contact's postal address. */
 "CONTACT_ADDRESS" = "Adresas";
@@ -744,7 +744,7 @@
 "CONVERSATION_SETTINGS" = "Pokalbio nustatymai";
 
 /* Label for 'add members' button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_MEMBERS" = "Pridėti dalyvius";
+"CONVERSATION_SETTINGS_ADD_MEMBERS" = "Pridėti narius";
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Pridėti prie esamo adresato";
@@ -792,40 +792,40 @@
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Pasirinkite, kas gali keisti grupės pavadinimą, avatarą bei išnykstančias žinutes:";
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "Visi dalyviai";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "Visi nariai";
 
 /* Label for the 'edit group' button in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_GROUP" = "Taisyti";
 
 /* Label for 'edit membership access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Who Can Edit Membership";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Kas gali keisti narystes";
 
 /* Label for button that sets 'group membership access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Tik administratoriai";
 
 /* Description for the 'edit group membership access' alert. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "Choose who can edit group membership:";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "Pasirinkite, kas gali keisti grupės narystes:";
 
 /* Label for button that sets 'group membership access' to 'members-only'. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "Visi dalyviai";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "Visi nariai";
 
 /* Navbar title when viewing settings for a group thread */
 "CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "Grupės informacija";
 
 /* Label for 'make group admin' button in conversation settings view. */
-"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Make Admin";
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Paskirti administratoriumi";
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
-"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ will be able to remove group members and make other admins.";
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ galės šalinti grupės narius ir paskirti kitus administratorius.";
 
 /* Section title of the 'members' section in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "Dalyviai";
+"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "Nariai";
 
 /* Format for the section title of the 'members' section in conversation settings view. Embeds: {{ the number of group members }}. */
-"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "Dalyvių: %@";
+"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "Narių: %@";
 
 /* Footer for the 'membership access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "Choose who can edit group membership.";
+"CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "Pasirinkite, kas gali keisti grupės narystes.";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Pranešimų išjungimas";
@@ -894,7 +894,7 @@
 "CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "Neįrašyti pakeitimai";
 
 /* Label for 'view all members' button in conversation settings view. */
-"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "Rodyti visus dalyvius";
+"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "Rodyti visus narius";
 
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Šis naudotojas yra jūsų adresatų sąraše";
@@ -924,7 +924,7 @@
 "CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "Šio naudotojo nėra jūsų adresatuose.";
 
 /* button text to delete all items in the current conversation */
-"CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Delete All";
+"CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Ištrinti viską";
 
 /* Indicates that the app is loading more messages in this conversation. */
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Įkeliama daugiau žinučių…";
@@ -1014,7 +1014,7 @@
 "DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Ištrinti visas žinutes";
 
 /* action sheet body. Embeds {{number of selected messages}} which will be deleted. */
-"DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Delete %ld Messages?";
+"DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Ištrinti %ld žinutes(-ių)?";
 
 /* action sheet body */
 "DELETE_SELECTED_SINGLE_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Ištrinti žinutę?";
@@ -1086,7 +1086,7 @@
 "DEVICE_TRANSFER_ERROR_GENERIC" = "Nepavyko užbaigti perkėlimo, įsitikinkite, kad jūsų įrenginiai yra vienas šalia kito ir bandykite dar kartą";
 
 /* An error indicating the user must scan this code with a linked device to transfer. */
-"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "To set up this iPad as a linked device, you must scan with your old iPad";
+"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "Norėdami nustatyti šį iPad kaip susietą įrenginį, privalote nuskenuoti naudodami savo senąjį iPad";
 
 /* An error indicating the user must scan this code with a primary device to transfer. */
 "DEVICE_TRANSFER_ERROR_MODE_MISMATCH_PRIMARY" = "Norėdami perkelti paskyrą, privalote nuskenuoti naudodami savo iPhone";
@@ -1104,16 +1104,16 @@
 "DEVICE_TRANSFER_PROMPT_TITLE" = "Perkelti paskyrą";
 
 /* The explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Open Signal on your old device, bring it nearby, and make sure Wi-Fi and Bluetooth are enabled on both devices.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Atverkite Signal savo senajame įrenginyje, atneškite jį arčiau ir įsitikinkite, kad abiejuose įrenginiuose yra įjungtas belaidis (Wi-Fi) ir Bluetooth ryšys.";
 
 /* The second explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Position this QR code in the frame of your other device.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Patalpinkite šį QR kodą į savo kito įrenginio ekraną.";
 
 /* The title for the device transfer qr code view */
 "DEVICE_TRANSFER_QRCODE_TITLE" = "Laukiama kito įrenginio...";
 
 /* The explanation on the view that shows receiving progress */
-"DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Laikykite abu įrenginius vienas šalia kito. Neišjunkite nei vieno įrenginio ir palikite Signal atvertą. Perkėlimai yra šifruoti ištisiniu būdu.";
+"DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Laikykite abu įrenginius vieną šalia kito. Neišjunkite nei vieno įrenginio ir palikite Signal atvertą. Perkėlimai yra šifruoti ištisiniu būdu.";
 
 /* The title on the view that shows receiving progress */
 "DEVICE_TRANSFER_RECEIVING_TITLE" = "Gaunami duomenys";
@@ -1122,13 +1122,13 @@
 "DEVICE_TRANSFER_SCANNING_CONNECTING" = "Jungiamasi…";
 
 /* The explanation for the action sheet asking the user to scan the QR code to transfer */
-"DEVICE_TRANSFER_SCANNING_EXPLANATION" = "Position the QR code within the circle";
+"DEVICE_TRANSFER_SCANNING_EXPLANATION" = "Patalpinkite QR kodą į apskritimą";
 
 /* The title for the action sheet asking the user to scan the QR code to transfer */
-"DEVICE_TRANSFER_SCANNING_TITLE" = "Hold Your New Device Up to the Camera";
+"DEVICE_TRANSFER_SCANNING_TITLE" = "Laikykite savo naują įrenginį kameros vaizde";
 
 /* The explanation on the action sheet that shows transfer progress */
-"DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "Keep both devices near each other. Do not turn off either device and keep Signal open.";
+"DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "Laikykite abu įrenginius vieną šalia kito. Neišjunkite nei vieno įrenginio ir palikite Signal atvertą.";
 
 /* The title on the action sheet that shows transfer progress */
 "DEVICE_TRANSFER_TRANSFERRING_TITLE" = "Perkeliami duomenys";
@@ -1176,7 +1176,7 @@
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Šis naudotojas negali būti pridėtas į grupę tol, kol neatnaujins Signal programėlės.";
 
 /* Message for 'group full' error alert when a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "Maximum group size of 100 members reached.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "Pasiekta didžiausios grupės iš 100 narių riba.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "Neteisingas avataras.";
@@ -1204,6 +1204,33 @@
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Persijunkime į Signal";
+
+/* The name for the emoji category 'Activities' */
+"EMOJI_CATEGORY_ACTIVITIES_NAME" = "Veiklos";
+
+/* The name for the emoji category 'Animals & Nature' */
+"EMOJI_CATEGORY_ANIMALS_NAME" = "Animals & Nature";
+
+/* The name for the emoji category 'Flags' */
+"EMOJI_CATEGORY_FLAGS_NAME" = "Vėliavos";
+
+/* The name for the emoji category 'Food & Drink' */
+"EMOJI_CATEGORY_FOOD_NAME" = "Food & Drink";
+
+/* The name for the emoji category 'Objects' */
+"EMOJI_CATEGORY_OBJECTS_NAME" = "Objektai";
+
+/* The name for the emoji category 'Recents' */
+"EMOJI_CATEGORY_RECENTS_NAME" = "Recents";
+
+/* The name for the emoji category 'Smileys & People' */
+"EMOJI_CATEGORY_SMILEYSANDPEOPLE_NAME" = "Smileys & People";
+
+/* The name for the emoji category 'Symbols' */
+"EMOJI_CATEGORY_SYMBOLS_NAME" = "Simboliai";
+
+/* The name for the emoji category 'Travel & Places' */
+"EMOJI_CATEGORY_TRAVEL_NAME" = "Travel & Places";
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE1" = "Nei vienas iš jūsų adresatų neturi Signal.";
@@ -1425,10 +1452,10 @@
 "GRDB_MIGRATION_NOTIFICATION_TITLE" = "Optimizuojama duomenų bazė";
 
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed who can edit group info to “%@“.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "Jūs pakeitėte asmenis, kurie gali keisti grupės informaciją į \"%@\".";
 
 /* Message indicating that the access to the group's attributes was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed who can edit group info to “%2$@“.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ pakeitė asmenis, kurie gali keisti grupės informaciją į \"%2$@\".";
 
 /* Message indicating that the access to the group's attributes was changed. Embeds {{new access level}}. */
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "Grupės informaciją gali keisti \"%@\".";
@@ -1440,19 +1467,19 @@
 "GROUP_ACCESS_LEVEL_ANY" = "Bet kuris naudotojas";
 
 /* Description of the 'all members' access level. */
-"GROUP_ACCESS_LEVEL_MEMBER" = "Visi dalyviai";
+"GROUP_ACCESS_LEVEL_MEMBER" = "Visi nariai";
 
 /* Description of the 'unknown' access level. */
 "GROUP_ACCESS_LEVEL_UNKNOWN" = "Nežinoma";
 
 /* Message indicating that the access to the group's members was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed who can edit group membership to “%@“.";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "Jūs pakeitėte asmenis, kurie gali keisti grupės narystes į \"%@\".";
 
 /* Message indicating that the access to the group's members was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed who can edit group membership to “%2$@“.";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ pakeitė asmenis, kurie gali keisti grupės narystes į \"%2$@\".";
 
 /* Message indicating that the access to the group's members was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Group membership can be changed by “%@“.";
+"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Grupės narystes gali keisti \"%@\".";
 
 /* Error indicating that a member cannot be added to a group. */
 "GROUP_CANNOT_ADD_INVALID_MEMBER" = "Šio naudotojo nepavyksta pridėti į grupę.";
@@ -1467,10 +1494,10 @@
 "GROUP_CREATED_BY_UNKNOWN_USER" = "Grupė buvo sukurta.";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
-"GROUP_CREATION_FAILED" = "Ne visus dalyvius pavyko pridėti į grupę. Bakstelėkite, norėdami bandyti dar kartą.";
+"GROUP_CREATION_FAILED" = "Ne visus narius pavyko pridėti į grupę. Bakstelėkite, norėdami bandyti dar kartą.";
 
 /* Format for the message for an alert indicating that a member was invited to a group. Embeds: {{ the number of invites sent. }} */
-"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@ can’t be automatically added to this group by you. They’ve been invited to join, and won’t see any group messages until they accept.";
+"GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "Jūs negalite automatiškai pridėti %@ į šią grupę. Jie yra pakviesti prisijungti prie grupės ir nematys jokių grupėje esančių žinučių tol, kol nepriims kvietimo.";
 
 /* Title for an alert indicating that a member was invited to a group. */
 "GROUP_INVITES_SENT_ALERT_TITLE_1" = "Pakvietimas išsiųstas";
@@ -1479,7 +1506,7 @@
 "GROUP_INVITES_SENT_ALERT_TITLE_N_FORMAT" = "Išsiųsta pakvietimų: %@";
 
 /* Message for an alert indicating that some members were invited to a group. */
-"GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "These users can’t be automatically added to this group by you. They’ve been invited to join, and won’t see any group messages until they accept.";
+"GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "Jūs negalite automatiškai pridėti šių naudotojų į šią grupę. Jie yra pakviesti prisijungti prie grupės ir nematys jokių grupėje esančių žinučių tol, kol nepriims kvietimo.";
 
 /* Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%@ pridėjo jus.";
@@ -1488,7 +1515,7 @@
 "GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR" = "Dabar, esate administratorius.";
 
 /* Message indicating that the local user was granted administrator role by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ padarė jus administratoriumi.";
+"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ paskyrė jus administratoriumi.";
 
 /* Message indicating that the local user accepted an invite to the group. */
 "GROUP_LOCAL_USER_INVITE_ACCEPTED" = "Jūs priėmėte pakvietimą prisijungti prie grupės.";
@@ -1512,7 +1539,7 @@
 "GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT" = "%@ pakvietė jus.";
 
 /* Message indicating that the local user was invited to the group. */
-"GROUP_LOCAL_USER_INVITED_TO_THE_GROUP" = "Jūs buvote pakviesti prisijungti prie grupės.";
+"GROUP_LOCAL_USER_INVITED_TO_THE_GROUP" = "Jūs buvote pakviesti į grupę.";
 
 /* Message indicating that the local user has joined the group. */
 "GROUP_LOCAL_USER_JOINED_THE_GROUP" = "Jūs prisijungėte prie grupės.";
@@ -1539,13 +1566,13 @@
 "GROUP_MEMBER_COUNT_FORMAT" = "%1$@/%2$@";
 
 /* The 'group member count' indicator when there are no members in the group. */
-"GROUP_MEMBER_COUNT_LABEL_0" = "No members";
+"GROUP_MEMBER_COUNT_LABEL_0" = "Nėra narių";
 
 /* The 'group member count' indicator when there is 1 member in the group. */
-"GROUP_MEMBER_COUNT_LABEL_1" = "1 member";
+"GROUP_MEMBER_COUNT_LABEL_1" = "1 narys";
 
 /* Format for the 'group member count' indicator. Embeds {the number of group members}. */
-"GROUP_MEMBER_COUNT_LABEL_FORMAT" = "Dalyvių: %@";
+"GROUP_MEMBER_COUNT_LABEL_FORMAT" = "Narių: %@";
 
 /* Label indicating the local user. */
 "GROUP_MEMBER_LOCAL_USER" = "Jūs";
@@ -1554,16 +1581,16 @@
 "GROUP_MEMBERS_CALL" = "Skambinti";
 
 /* Label indicating that a group has no other members. */
-"GROUP_MEMBERS_NO_OTHER_MEMBERS" = "Nėra dalyvių.";
+"GROUP_MEMBERS_NO_OTHER_MEMBERS" = "Nėra narių.";
 
 /* Label for the button that clears all verification errors in the 'group members' view. */
 "GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "Išvalyti visų patvirtinimus";
 
 /* Label for the 'reset all no-longer-verified group members' confirmation alert. */
-"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE" = "Tai išvalys patvirtinimą visų tų grupės dalyvių, kurių saugumo numeriai nuo paskutinio patvirtinimo yra pasikeitę.";
+"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE" = "Tai išvalys patvirtinimą visų tų grupės narių, kurių saugumo numeriai nuo paskutinio patvirtinimo yra pasikeitę.";
 
 /* Title for the 'members' section of the 'group members' view. */
-"GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Dalyviai";
+"GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Nariai";
 
 /* Title for the 'no longer verified' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_NO_LONGER_VERIFIED" = "Daugiau nebepatvirtinti";
@@ -1587,7 +1614,7 @@
 "GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_LOCAL_USER_FORMAT" = "Jūs pridėjote %@.";
 
 /* Message indicating that a remote user was added to the group by another user. Embeds {{ %1$@ user who added the user, %2$@ user who was added}}. */
-"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ added %2$@.";
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ pridėjo naudotoją %2$@.";
 
 /* Message indicating that a remote user was added to the group. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT" = "Naudotojas %@ buvo pridėtas į grupę.";
@@ -1605,10 +1632,10 @@
 "GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR" = "Dabar, %@ yra administratorius";
 
 /* Message indicating that a remote user was granted administrator role by local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_LOCAL_USER" = "You made %@ an admin.";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_LOCAL_USER" = "Jūs paskyrėte %@ administratoriumi.";
 
 /* Message indicating that a remote user was granted administrator role by another user. Embeds {{ %1$@ user who granted, %2$@ user who was granted administrator role}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ made %2$@ an admin.";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ paskyrė %2$@ administratoriumi.";
 
 /* Message indicating that a single remote user's invite was revoked. */
 "GROUP_REMOTE_USER_INVITE_REVOKED_1" = "1 žmogui buvo panaikintas pakvietimas prisijungti prie grupės.";
@@ -1647,19 +1674,19 @@
 "GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%@ išėjo iš grupės.";
 
 /* Message indicating that a remote user was removed from the group by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT" = "You removed %@.";
+"GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT" = "Jūs pašalinote %@.";
 
 /* Message indicating that the remote user was removed from the group. Embeds {{ %1$@ user who removed the user, %2$@ user who was removed}}. */
-"GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ removed %2$@.";
+"GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ pašalino naudotoją %2$@.";
 
 /* Message indicating that a remote user had their administrator role revoked. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "%@ had their admin privileges revoked.";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "%@ turėtos administratoriaus teisės buvo panaikintos.";
 
 /* Message indicating that a remote user had their administrator role revoked by local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_LOCAL_USER" = "You revoked admin privileges from %@.";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_LOCAL_USER" = "Jūs panaikinote %@ turėtas administratoriaus teises.";
 
 /* Message indicating that a remote user had their administrator role revoked by another user. Embeds {{ %1$@ user who revoked, %2$@ user who was granted administrator role}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ revoked admin privileges from %2$@.";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ panaikino %2$@ turėtas administratoriaus teises.";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Grupė atnaujinta.";
@@ -1710,10 +1737,10 @@
 "GROUP_YOU_LEFT" = "Jūs išėjote iš grupės.";
 
 /* Message for the 'can't replace group admin' alert. */
-"GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Choose a new admin for this group before you leave.";
+"GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Prieš išeidami, pasirinkite šiai grupei naują administratorių.";
 
 /* Error message indicating that a member can't be added to a group because they are already in the group. */
-"GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP" = "User already in group.";
+"GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP" = "Naudotojas jau yra grupėje.";
 
 /* Error indicating that an error occurred while accepting an invite. */
 "GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "Nepavyko priimti pakvietimo.";
@@ -1728,13 +1755,13 @@
 "GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "Užblokuoti %@";
 
 /* Message for the 'replace group admin' alert. */
-"GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "Before you leave, choose a new admin for this group.";
+"GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "Prieš išeidami, pasirinkite šiai grupei naują administratorių.";
 
 /* Title for the 'replace group admin' alert. */
-"GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "Choose New Admin";
+"GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "Pasirinkite naują administratorių";
 
 /* Label for the 'replace group admin' button. */
-"GROUPS_REPLACE_ADMIN_BUTTON" = "Choose new admin";
+"GROUPS_REPLACE_ADMIN_BUTTON" = "Pasirinkti naują administratorių";
 
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Archyvuoti pokalbiai";
@@ -1962,7 +1989,7 @@
 "LINKING_DEVICE_FAILED_TITLE" = "Įrenginio susiejimas nepavyko";
 
 /* table cell label in conversation settings */
-"LIST_GROUP_MEMBERS_ACTION" = "Grupės dalyviai";
+"LIST_GROUP_MEMBERS_ACTION" = "Grupės nariai";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Ieškoti pagal vardą ar adresą";
@@ -2012,11 +2039,14 @@
 /* The title for the action that deletes a message for all users in the conversation. */
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Ištrinti visiems";
 
+/* A one-time confirmation that you want to delete for everyone */
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "This message will be permanently deleted for everyone in the conversation. Members will be able to see that you deleted a message.";
+
 /* The title for the action sheet asking who the user wants to delete the message for. */
-"MESSAGE_ACTION_DELETE_FOR_TITLE" = "Kam norite ištrinti šią žinutę?";
+"MESSAGE_ACTION_DELETE_FOR_TITLE" = "Who would you like to delete this message for?";
 
 /* The title for the action that deletes a message for the local user only. */
-"MESSAGE_ACTION_DELETE_FOR_YOU" = "Ištrinti jums";
+"MESSAGE_ACTION_DELETE_FOR_YOU" = "Delete for Me";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DELETE_MESSAGE" = "Ištrinti šią žinutę";
@@ -2034,7 +2064,7 @@
 "MESSAGE_ACTION_REPLY" = "Atsakyti į šią žinutę";
 
 /* Action sheet accessibility label */
-"MESSAGE_ACTION_SELECT_MESSAGE" = "Select Multiple";
+"MESSAGE_ACTION_SELECT_MESSAGE" = "Pasirinkti kelis";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_SHARE_MEDIA" = "Bendrinti mediją";
@@ -2148,7 +2178,7 @@
 "MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT_FORMAT" = "Norėdami tęsti pokalbį grupėje %@, privalote bendrinti savo profilį.";
 
 /* A prompt for the user to accept or decline an invite to a group. Embeds {{name of user who invited you}}. */
-"MESSAGE_REQUEST_VIEW_GROUP_INVITE_PROMPT_FORMAT" = "%@ pakvietė jus į šią grupę. Ar norite leisti šios grupės dalyviams rašyti jums žinutes?";
+"MESSAGE_REQUEST_VIEW_GROUP_INVITE_PROMPT_FORMAT" = "%@ pakvietė jus į šią grupę. Ar norite leisti šios grupės nariams rašyti jums žinutes?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Ar norite leisti naudotojui %@ rašyti jums žinutes? Šis naudotojas nežinos, kad jūs matėte jo žinutes tol, kol nesutiksite.";
@@ -2217,16 +2247,16 @@
 "MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ daugiau nebėra pažymėta(-s) kaip patvirtinta(-s). Bakstelėkite norėdami matyti parinktis.";
 
 /* Indicates that a single member of this group has been blocked. */
-"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "Jūs užblokavote 1 šios grupės dalyvį";
+"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "Jūs užblokavote 1 šios grupės narį";
 
 /* Indicates that this group conversation has been blocked. */
 "MESSAGES_VIEW_GROUP_BLOCKED" = "Jū užblokavote šią grupę";
 
 /* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
-"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "Jūs užblokavote %@ šios grupės dalyvius";
+"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "Jūs užblokavote %@ šios grupės narius";
 
 /* Indicates that more than one member of this group conversation is no longer verified. */
-"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Daugiau nei vienas šios grupės dalyvis daugiau nebėra pažymėtas kaip patvirtintas. Bakstelėkite, norėdami matyti parinktis.";
+"MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Daugiau nei vienas šios grupės narys daugiau nebėra pažymėtas kaip patvirtintas. Bakstelėkite, norėdami matyti parinktis.";
 
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
 "MESSAGES_VIEW_TITLE_SUBTITLE" = "Bakstelėkite čia, nustatymams rodyti";
@@ -2301,13 +2331,13 @@
 "NEW_GROUP_DEFAULT_TITLE" = "Nauja grupė";
 
 /* An indicator that a user is a member of the new group. */
-"NEW_GROUP_MEMBER_LABEL" = "Dalyvis";
+"NEW_GROUP_MEMBER_LABEL" = "Narys";
 
 /* notification title. Embeds {{author name}} and {{group name}} */
 "NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ į %@";
 
 /* The title for the 'name new group' view. */
-"NEW_GROUP_NAME_GROUP_VIEW_TITLE" = "Name Group";
+"NEW_GROUP_NAME_GROUP_VIEW_TITLE" = "Suteikite grupei pavadinimą";
 
 /* Placeholder text for group name field */
 "NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Suteikti šiam grupės pokalbiui pavadinimą";
@@ -2316,7 +2346,7 @@
 "NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Kiti naudotojai";
 
 /* The title for the 'select members for new group' view. */
-"NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "Select Members";
+"NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "Pasirinkti narius";
 
 /* The alert message if user tries to exit the new group view without saving changes. */
 "NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Ar norėtumėte atmesti šiuos pakeitimus?";
@@ -2406,10 +2436,10 @@
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Praleisti ir sukurti naują PIN kodą";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
-"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "If you can’t remember your PIN, you can create a new one. You can register and use your account but you’ll lose some saved settings like your profile information.";
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Jei negalite prisiminti savo PIN kodo, galite susikurti naują. Galite registruotis ir naudotis savo paskyra, tačiau prarasite kai kuriuos įrašytus nustatymus, kaip pavyzdžiui, savo profilio informaciją.";
 
 /* Title for the skip pin entry action sheet during onboarding. */
-"ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "Skip PIN Entry?";
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "Praleisti PIN kodo įrašą?";
 
 /* Title of the 'onboarding Captcha' view. */
 "ONBOARDING_CAPTCHA_TITLE" = "Pridėkite į savo žinutes lašelį žmogiškumo";
@@ -2454,7 +2484,7 @@
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Neteisingas numeris";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "You’ve run out of PIN guesses, but you can still access your Signal account by creating a new PIN. For your privacy and security your account will be restored without any saved profile information or settings.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "Jums nebeliko PIN kodo spėjimų, bet vis dar galite gauti prieigą prie savo Signal paskyros, susikurdami naują PIN kodą. Siekiant apsaugoti jūsų privatumą, saugumo sumetimais jūsų paskyra bus atkurta be įrašytos profilio informacijos ir įrašytų nustatymų.";
 
 /* Label for the 'learn more' link when reglock is disabled in the 'onboarding pin attempts exhausted' view. */
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "Sužinokite daugiau apie PIN kodus";
@@ -2553,49 +2583,49 @@
 "PENDING_GROUP_MEMBERS_MEMBER_INVITED_1_USER_FORMAT" = "%@ pakvietė 1 žmogų";
 
 /* Format for label indicating the a group member has invited N other users to the group. Embeds {{ %1$@ name of the inviting group member, %2$@ the number of users they have invited. }}. */
-"PENDING_GROUP_MEMBERS_MEMBER_INVITED_N_USERS_FORMAT" = "%1$@ invited %2$@ people";
+"PENDING_GROUP_MEMBERS_MEMBER_INVITED_N_USERS_FORMAT" = "%1$@ pakvietė %2$@ žmones(-ių)";
 
 /* Label indicating that a group has no pending members. */
-"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "No invites to show.";
+"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "Nėra rodytinų pakvietimų.";
 
 /* Title of 're-send invite' button. */
-"PENDING_GROUP_MEMBERS_RESEND_INVITE_1_BUTTON" = "Re-send Invite";
+"PENDING_GROUP_MEMBERS_RESEND_INVITE_1_BUTTON" = "Siųsti pakvietimą iš naujo";
 
 /* Title of 're-send invites' button. */
-"PENDING_GROUP_MEMBERS_RESEND_INVITE_N_BUTTON" = "Re-send Invites";
+"PENDING_GROUP_MEMBERS_RESEND_INVITE_N_BUTTON" = "Siųsti pakvietimus iš naujo";
 
 /* Title of 'revoke invite' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "Panaikinti pakvietimą";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revoke group invite sent by “%@“?";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Panaikinti pakvietimą į grupę, kurį išsiuntė \"%@\"?";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Revoke %1$@ invites sent by “%2$@“?";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Panaikinti %1$@ pakvietimus(-ų), kuriuos išsiuntė \"%2$@\"?";
 
 /* Title of 'revoke invites' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_N_BUTTON" = "Panaikinti pakvietimus";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the invited group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revoke group invite for “%@“?";
+"PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Panaikinti pakvietimą prisijungti prie grupės, skirtą \"%@\"?";
 
 /* Format for title of 'revoke or re-send invite' confirmation alert. Embeds {{ name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revoke or re-send group invite for “%@“?";
+"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Panaikinti ar išsiųsti iš naujo pakvietimą prisijungti prie grupės, skirtą \"%@\"?";
 
 /* Format for title of 'revoke or re-send invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Revoke or re-send %1$@ invites sent by “%2$@“?";
+"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Panaikinti ar išsiųsti iš naujo %1$@ pakvietimus(-ų), kuriuos išsiuntė \"%2$@\"?";
 
 /* Footer for the 'invites by other group members' section of the 'pending group members' view. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Details of people invited by other group members are not shown. If invitees choose to join, their information will be shared with the group at that time. They will not see any messages in the group until they join.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Išsamesnė žmonių, kuriuos pakvietė kiti grupės nariai, informacija nėra rodoma. Jei pakviesti asmenys pasirinks prisijungti, tuomet tuo metu, jų informacija bus pradėta bendrinti su grupe. Kol jie neprisijungs, jie nematys jokių grupėje esančių žinučių.";
 
 /* Title for the 'invites by other group members' section of the 'pending group members' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "Invites by other group members";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "Kitų grupės narių pakvietimai";
 
 /* Title for the 'people you invited' section of the 'pending group members' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "Jūsų pakviesti žmonės";
 
 /* The title for the 'pending group members' view. */
-"PENDING_GROUP_MEMBERS_VIEW_TITLE" = "Pending Group Invites";
+"PENDING_GROUP_MEMBERS_VIEW_TITLE" = "Laukiantys pakvietimai į grupę";
 
 /* Label for view-once messages that have invalid content. */
 "PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "Klaida, apdorojant gaunamą žinutę";
@@ -2697,7 +2727,7 @@
 "PIN_CREATION_ERROR_TITLE" = "PIN kodo sukūrimas nepavyko";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall Signal.";
+"PIN_CREATION_EXPLANATION" = "PIN kodai šifruotu pavidalu saugo informaciją, kuri yra laikoma Signal, taigi, tik jūs galite gauti prieigą prie jos. Jums įdiegus Signal iš naujo, jūsų profilis, nustatymai ir adresatai bus atkurti.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "PIN kodai nesutampa. Bandykite dar kartą.";
@@ -2706,13 +2736,13 @@
 "PIN_CREATION_NUMERIC_HINT" = "PIN kode privalo būti bent 4 skaitmenys";
 
 /* Label indication the user must confirm their PIN. */
-"PIN_CREATION_PIN_CONFIRMATION_HINT" = "Pakartokite PIN";
+"PIN_CREATION_PIN_CONFIRMATION_HINT" = "Pakartokite PIN kodą";
 
 /* Indicates the work we are doing while creating the user's pin */
 "PIN_CREATION_PIN_PROGRESS" = "Kuriamas PIN kodas…";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "You can change your PIN as long as this device is registered.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "Kol šis įrenginys yra registruotas, galite keisti savo PIN kodą.";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_RECREATION_TITLE" = "Keisti PIN kodą";
@@ -2721,7 +2751,7 @@
 "PIN_CREATION_TITLE" = "Susikurti PIN kodą";
 
 /* Label indicating that the attempted PIN is too weak */
-"PIN_CREATION_WEAK_ERROR" = "Choose a stronger PIN";
+"PIN_CREATION_WEAK_ERROR" = "Pasirinkite stipresnį PIN kodą";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "Tam, kad įsimintumėte savo PIN kodą, mes periodiškai prašysime jį įvesti. Bėgant laikui, mes tai darysime rečiau.";
@@ -2763,7 +2793,7 @@
 "PINS_MEGAPHONE_ACTION" = "Susikurkite PIN kodą";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "PINs keep information that’s stored with Signal encrypted";
+"PINS_MEGAPHONE_BODY" = "PIN kodai šifruotu pavidalu saugo informaciją, kuri yra laikoma Signal";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
 "PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Priminsime jums vėliau. PIN kodo sukūrimas po %ld dienų taps privalomu.";
@@ -2981,8 +3011,11 @@
 /* Text describing the local user in the reaction details pane. */
 "REACTIONS_DETAIL_YOU" = "Jūs";
 
+/* Pressing this button marks a thread as read */
+"READ_ACTION" = "Perskaityta";
+
 /* Error message indicating that a user can't be selected. */
-"RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "User can't be selected.";
+"RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "Naudotojas negali būti pasirinktas.";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "Aš pamiršau savo PIN.";
@@ -2991,10 +3024,10 @@
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Reikia pagalbos?";
 
 /* Alert body for a forgotten SVR (V2) PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Jūsų PIN kodas yra keturių ar daugiau skaitmenų kodas, kuris gali būti skaitinis arba tekstinis. Jei negalite prisiminti savo PIN kodo, turėsite laukti 7 dienas, kad užregistruotumėte savo paskyrą iš naujo.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you can create a new one. You can register and use your account but you’ll lose some saved settings like your profile information.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Jūsų PIN kodas yra keturių ar daugiau skaitmenų kodas, kuris gali būti sudarytas iš skaičių arba raidžių ir skaičių. Jei negalite prisiminti savo PIN kodo, galite susikurti naują. Galite registruotis ir naudotis savo paskyra, tačiau prarasite kai kuriuos įrašytus nustatymus, kaip pavyzdžiui, savo profilio informaciją.";
 
 /* Alert body for a forgotten V1 PIN */
 "REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "PIN kodas yra jūsų sukurtas 4 ir daugiau skaitmenų kodas. Jei negalite prisiminti savo PIN kodo, turėsite laukti 7 dienas, kad užregistruotumėte savo paskyrą iš naujo.";
@@ -3102,7 +3135,7 @@
 "REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "Tai nėra teisingas PIN.";
 
 /* The title for the 'replace group admin' view. */
-"REPLACE_ADMIN_VIEW_TITLE" = "Choose New Admin";
+"REPLACE_ADMIN_VIEW_TITLE" = "Pasirinkite naują administratorių";
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "Iš naujo užsiregistruoti push pranešimams";
@@ -3273,10 +3306,10 @@
 "SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_FIVE" = "Štai čia yra instrukcijų žinynas.";
 
 /* This is a message in the cat chat group. */
-"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_FOUR" = "Pictures, please!";
+"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_FOUR" = "Prašome, paveiksliukai!";
 
 /* This is a message after seeing a picture. */
-"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_ONE" = "This is peaceful.";
+"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_ONE" = "Taip ramu.";
 
 /* This is a message in the cat chat group. */
 "SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_THREE" = "Ji vedžioja katiną ant pavadėlio...";
@@ -3285,7 +3318,7 @@
 "SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_TWO" = "🌅 Labas rytas!";
 
 /* This is a message in the 'Rock Climbers' group chat. Please translate to make sense for the translated group name. For example: Which way should we go? */
-"SCREENSHOT_THREAD_GROUP_THREE_MESSAGE_ONE" = "Which route should we take?";
+"SCREENSHOT_THREAD_GROUP_THREE_MESSAGE_ONE" = "Kuriuo maršrutu turėtume eiti?";
 
 /* This is a message. Please include the emoji if possible. */
 "SCREENSHOT_THREAD_GROUP_TWO_MESSAGE_ONE" = "Pasimatysime ten 🤗";
@@ -3588,19 +3621,19 @@
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "Išjungti priminimus";
 
 /* The explanation for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "Make sure you memorize or securely store your PIN as it can’t be recovered. If you forget your PIN, you may lose data when re-registering your Signal account.";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "Įsiminkite arba laikykite savo PIN kodą saugioje vietoje, nes jo neįmanoma atkurti. Jei pamiršite savo PIN kodą, galite prarasti duomenis, kai iš naujo registruosite savo Signal paskyrą.";
 
 /* The title for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Confirm your Signal PIN";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Patvirtinkite savo Signal PIN kodą";
 
 /* Footer for the 'pin reminder' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_PIN_REMINDER_FOOTER" = "Reminders help you remember your PIN since it can’t be recovered. You’ll be asked less frequently over time.";
+"SETTINGS_PIN_REMINDER_FOOTER" = "Priminimai padeda jums įsiminti PIN kodą, nes jo neįmanoma atkurti. Bėgant laikui, jūsų bus klausiama vis rečiau.";
 
 /* Label for the 'pin reminder' switch of the privacy settings. */
 "SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "PIN kodo priminimai";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall Signal.";
+"SETTINGS_PINS_FOOTER" = "PIN kodai šifruotu pavidalu saugo informaciją, kuri yra laikoma Signal, taigi, tik jūs galite gauti prieigą prie jos. Jums įdiegus Signal iš naujo, jūsų profilis, nustatymai ir adresatai bus atkurti.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Keisti PIN kodą";
@@ -3611,17 +3644,11 @@
 /* Title for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_TITLE" = "SIGNAL PIN KODAS";
 
-/* Label for 'CallKit privacy' preference */
-"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Rodyti skambintojo vardą ir numerį";
-
 /* Settings table section footer. */
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "Rodyti skambučius iOS telefono programėlės \"Paskiausiųjų\" sąraše.";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Rodyti skambučius \"Paskiausiųjų\" sąraše";
-
-/* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_TITLE" = "iOS skambučių integracija";
 
 /* Settings table view cell label */
 "SETTINGS_PRIVACY_TITLE" = "Privatumas";
@@ -3642,7 +3669,7 @@
 "SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Įjungti";
 
 /* Body for the alert confirming that the user wants to turn on registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "If you forget your Signal PIN when registering with Signal again, you’ll be locked out of your account for 7 days.";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Jeigu registruodamiesi su Signal, vėl pamiršite savo Signal PIN kodą, tuomet 7 dienoms būsite užblokuoti nuo savo paskyros.";
 
 /* Title for the alert confirming that the user wants to turn on registration lock. */
 "SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "Įjungti registracijos užraktą?";
@@ -3670,9 +3697,6 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Neleisti Signal peržiūroms atsirasti programėlių perjungiklyje.";
-
-/* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS skambučių integracija rodo Signal skambučius jūsų užrakto ekrane ir sistemos skambučių žurnale. Pasirinktinai, gali būti rodomi jūsų adresato vardas ir numeris. Jeigu iCloud yra įjungta, tuomet šis skambučių žurnalas bus bendrinamas su Apple.";
 
 /* Label for the notifications section of conversation settings view. */
 "SETTINGS_SECTION_NOTIFICATIONS" = "Pranešimai";
@@ -3705,7 +3729,7 @@
 "SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Registracijos užraktas";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "For extra security, turn on registration lock, which will require your Signal PIN to register your phone number with Signal again.";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Papildomam saugumui, įjunkite Registracijos užraktą, kuris, norint vėl registruoti šį telefono numerį su Signal, reikalaus Signal PIN kodo.";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Rašymo indikatoriai";
@@ -3846,19 +3870,19 @@
 "THIS_MESSAGE_WAS_DELETED" = "Ši žinutė buvo ištrinta.";
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
-"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "%@, %@ ir dar %lu grupių dalyvis";
+"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "%@, %@ ir dar %lu grupių narys";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
 "THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Šiame pokalbyje galite rašyti sau pastabas. Jeigu yra su paskyra susietų įrenginių, naujos pastabos bus sinchronizuotos.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_ONE_MUTUAL_GROUP" = "%@ grupės dalyvis";
+"THREAD_DETAILS_ONE_MUTUAL_GROUP" = "%@ grupės narys";
 
 /* A string indicating three mutual groups the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_THREE_MUTUAL_GROUP" = "%@, %@ ir %@ grupių dalyvis";
+"THREAD_DETAILS_THREE_MUTUAL_GROUP" = "%@, %@ ir %@ grupių narys";
 
 /* A string indicating two mutual groups the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_TWO_MUTUAL_GROUP" = "%@ ir %@ grupių dalyvis";
+"THREAD_DETAILS_TWO_MUTUAL_GROUP" = "%@ ir %@ grupių narys";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@ dienas(-ų)";
@@ -3971,6 +3995,9 @@
 /* Label text in device manager for a device with no name */
 "UNNAMED_DEVICE" = "Įrenginys be pavadinimo";
 
+/* Pressing this button marks a thread as unread */
+"UNREAD_ACTION" = "Unread";
+
 /* No comment provided by engineer. */
 "UNREGISTER_SIGNAL_FAIL" = "Nepavyko išregistruoti iš Signal.";
 
@@ -3981,7 +4008,7 @@
 "UNSUPPORTED_FEATURE_ERROR" = "Jūsų įrenginys nepalaiko šios ypatybės.";
 
 /* Title for alert indicating that group members can't be removed. */
-"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "Jūs negalite šalinti grupės dalyvius. Jie arba turės išeiti, arba turėsite sukurti naują grupę be tam tikro dalyvio.";
+"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "Jūs negalite šalinti grupės narius. Jie arba turės išeiti, arba turėsite sukurti naują grupę be tam tikro nario.";
 
 /* Title for alert indicating that group members can't be removed. */
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Nepalaikoma";
@@ -3996,13 +4023,13 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Susikurkite PIN kodą";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall Signal.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PIN kodai šifruotu pavidalu saugo informaciją, kuri yra laikoma Signal, taigi, tik jūs galite gauti prieigą prie jos. Jums įdiegus Signal iš naujo, jūsų profilis, nustatymai ir adresatai bus atkurti.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Pristatome PIN kodus";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal will soon require iOS 11 or later. Please upgrade in Settings app >> General >> Software Update.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Greitu metu Signal reikalaus iOS 11 ar naujesnės versijos. Atsinaujinkite perėję į Nustatymų (angl. Settings) programėlę >> Bendra (angl. General) >> Programinės įrangos atnaujinimas (angl. Software Update).";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "Atnaujinkite iOS";
@@ -4096,6 +4123,9 @@
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Užbaikite sąranką darbalaukiui skirtoje Signal programoje.";
+
+/* text indicating the message was remotely deleted by you */
+"YOU_DELETED_THIS_MESSAGE" = "You deleted this message.";
 
 /* Info Message when you disabled disappearing messages. */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Jūs išjungėte išnykstančias žinutes.";

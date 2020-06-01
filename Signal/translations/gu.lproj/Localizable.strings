@@ -143,9 +143,6 @@
 /* Pressing this button moves a thread from the inbox to the archive */
 "ARCHIVE_ACTION" = "આર્કાઇવ";
 
-/* No comment provided by engineer. */
-"ATTACHMENT" = "જોડાણ";
-
 /* One-line label indicating the user can add no more text to the attachment caption. */
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "કેપ્શન મર્યાદા પહોંચી ગઈ.";
 
@@ -247,6 +244,21 @@
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "અસમર્થિત ફાઇલ";
+
+/* Short text label for a audio attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_AUDIO" = "ઓડિયો";
+
+/* Short text label for a file attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_FILE" = "ફાઇલ";
+
+/* Short text label for a gif attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_GIF" = "GIF";
+
+/* Short text label for a photo attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_PHOTO" = "ફોટો";
+
+/* Short text label for a video attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_VIDEO" = "વિડિયો";
 
 /* Short text label for a voice message attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "વૉઈસ મેસેજ";
@@ -466,18 +478,6 @@
 
 /* Accessibility label for muting the microphone */
 "CALL_VIEW_MUTE_LABEL" = "મ્યુટ";
-
-/* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "તમે તમારી લૉક સ્ક્રીનથી આવતા કૉલનો જવાબ આપવા માટે તમારી Signal ગોપનીયતા સેટિંગ્સમાં iOS કૉલ ઈન્ટિગ્રેશનને સક્ષમ કરી શકો છો.";
-
-/* Reminder to the user of the benefits of disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "ઇનકમિંગ કૉલ માટે નામ અને ફોન નંબર જોવા માટે તમે તમારી Signal ગોપનીયતા સેટિંગ્સમાં iOS કૉલ ઈન્ટિગ્રેશનને સક્ષમ કરી શકો છો.";
-
-/* Label for button that dismiss the call view's settings nag. */
-"CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "અત્યારે નહીં";
-
-/* Label for button that shows the privacy settings. */
-"CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "ગોપનીયતા સેટિંગ્સ બતાવો";
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "કૅમેરાની દિશા બદલો";
@@ -1204,6 +1204,33 @@
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "ચાલો Signal પર સ્વિચ કરીએ";
+
+/* The name for the emoji category 'Activities' */
+"EMOJI_CATEGORY_ACTIVITIES_NAME" = "Activities";
+
+/* The name for the emoji category 'Animals & Nature' */
+"EMOJI_CATEGORY_ANIMALS_NAME" = "Animals & Nature";
+
+/* The name for the emoji category 'Flags' */
+"EMOJI_CATEGORY_FLAGS_NAME" = "Flags";
+
+/* The name for the emoji category 'Food & Drink' */
+"EMOJI_CATEGORY_FOOD_NAME" = "Food & Drink";
+
+/* The name for the emoji category 'Objects' */
+"EMOJI_CATEGORY_OBJECTS_NAME" = "Objects";
+
+/* The name for the emoji category 'Recents' */
+"EMOJI_CATEGORY_RECENTS_NAME" = "Recents";
+
+/* The name for the emoji category 'Smileys & People' */
+"EMOJI_CATEGORY_SMILEYSANDPEOPLE_NAME" = "Smileys & People";
+
+/* The name for the emoji category 'Symbols' */
+"EMOJI_CATEGORY_SYMBOLS_NAME" = "Symbols";
+
+/* The name for the emoji category 'Travel & Places' */
+"EMOJI_CATEGORY_TRAVEL_NAME" = "Travel & Places";
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE1" = "તમારા કોઈપણ સંપર્કોમાં Signal નથી.";
@@ -2012,11 +2039,14 @@
 /* The title for the action that deletes a message for all users in the conversation. */
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "દરેક માટે કાઢી નાખો";
 
+/* A one-time confirmation that you want to delete for everyone */
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "This message will be permanently deleted for everyone in the conversation. Members will be able to see that you deleted a message.";
+
 /* The title for the action sheet asking who the user wants to delete the message for. */
-"MESSAGE_ACTION_DELETE_FOR_TITLE" = "તમે આ મેસેજ કોના માટે કાઢી નાખવા માંગો છો?";
+"MESSAGE_ACTION_DELETE_FOR_TITLE" = "Who would you like to delete this message for?";
 
 /* The title for the action that deletes a message for the local user only. */
-"MESSAGE_ACTION_DELETE_FOR_YOU" = "તમારા માટે કાઢી નાખો";
+"MESSAGE_ACTION_DELETE_FOR_YOU" = "Delete for Me";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DELETE_MESSAGE" = "આ મેસેજ કાઢી નાખો";
@@ -2981,6 +3011,9 @@
 /* Text describing the local user in the reaction details pane. */
 "REACTIONS_DETAIL_YOU" = "તમે";
 
+/* Pressing this button marks a thread as read */
+"READ_ACTION" = "વાંચો";
+
 /* Error message indicating that a user can't be selected. */
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "વપરાશકર્તા પસંદ કરી શકાતા નથી.";
 
@@ -3611,17 +3644,11 @@
 /* Title for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_TITLE" = "SIGNAL PIN";
 
-/* Label for 'CallKit privacy' preference */
-"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "કૉલરનું નામ અને નંબર બતાવો";
-
 /* Settings table section footer. */
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "iOS ફોન એપ્લિકેશનમાં \"તાજેતરનાં\" સૂચિમાં કૉલ બતાવો.";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "રિસન્ટ્સના કૉલ બતાવો";
-
-/* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_TITLE" = "iOS કૉલ ઈન્ટિગ્રેશન";
 
 /* Settings table view cell label */
 "SETTINGS_PRIVACY_TITLE" = "ગોપનીયતા";
@@ -3670,9 +3697,6 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "એપ્લિકેશન સ્વિચરમાં દેખાતા Signal પૂર્વાવલોકનોને રોકો.";
-
-/* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS કૉલ ઈન્ટિગ્રેશન તમારી લૉકસ્ક્રીન પર અને સિસ્ટમના કૉલ ઇતિહાસમાં Signal કૉલ બતાવે છે. તમે વૈકલ્પિક રીતે તમારા સંપર્કનું નામ અને નંબર બતાવી શકો છો. જો iCloud સક્ષમ છે, તો આ કૉલ હિસ્ટ્રી Apple સાથે શેર કરવામાં આવશે.";
 
 /* Label for the notifications section of conversation settings view. */
 "SETTINGS_SECTION_NOTIFICATIONS" = "સૂચનાઓ";
@@ -3971,6 +3995,9 @@
 /* Label text in device manager for a device with no name */
 "UNNAMED_DEVICE" = "અનામી ઉપકરણ ";
 
+/* Pressing this button marks a thread as unread */
+"UNREAD_ACTION" = "Unread";
+
 /* No comment provided by engineer. */
 "UNREGISTER_SIGNAL_FAIL" = "Signal થી રજીસ્ટર રદ કરવામાં નિષ્ફળ.";
 
@@ -4096,6 +4123,9 @@
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Signal ડેસ્કટોપ પર પૂર્ણ સેટઅપ.";
+
+/* text indicating the message was remotely deleted by you */
+"YOU_DELETED_THIS_MESSAGE" = "You deleted this message.";
 
 /* Info Message when you disabled disappearing messages. */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "તમે અદૃશ્ય થઈ રહેલા મેસેજ ને અક્ષમ કર્યા.";

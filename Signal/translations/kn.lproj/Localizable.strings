@@ -108,10 +108,10 @@
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "ತಿಳಿದಿಲ್ಲದ ಡೇಟಾಬೇಸ್ ಆವೃತ್ತಿ.";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "The data transferred from your old device could not be restored. Please send a debug log to support@signal.org so that we can troubleshoot this issue. If you re-install Signal your message history may be lost.";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "ನಿಮ್ಮ ಹಳೆಯ ಸಾಧನದಿಂದ ವರ್ಗಾಯಿಸಿದ ಡೇಟಾವನ್ನು ಮರುಸ್ಥಾಪಿಸಲು ಸಾಧ್ಯವಿರುವುದಿಲ್ಲ. support@signal.org ಗೆ ದಯವಿಟ್ಟು ಡೀಬಗ್ ಲಾಗ್ ಅನ್ನು ಕಳುಹಿಸಿ ಇದರಿಂದ ನಾವು ಸಮಸ್ಯೆಯನ್ನು ಪರಿಹರಿಸಲು ಸಾಧ್ಯವಿರುತ್ತದೆ. ನೀವು Signal  ಪುನಃ ಇನ್‌‌ಸ್ಟಾಲ್ ಮಾಡಿದಲ್ಲಿ ಸಂದೇಶದ ಹಿನ್ನೆಲೆಯು ಕಳೆದುಹೋಗಬಹುದು.";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Could Not Complete Transfer";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "ವರ್ಗಾವಣೆಯನ್ನು ಪೂರ್ತಿಗೊಳಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ";
 
 /* Text prompting user to edit their profile name. */
 "APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT" = "ನಿಮ್ಮ ಹೆಸರನ್ನು ನಮೂದಿಸಿ";
@@ -142,9 +142,6 @@
 
 /* Pressing this button moves a thread from the inbox to the archive */
 "ARCHIVE_ACTION" = "ಆರ್ಕೈವ್ ಮಾಡಿ";
-
-/* No comment provided by engineer. */
-"ATTACHMENT" = "ಲಗತ್ತು";
 
 /* One-line label indicating the user can add no more text to the attachment caption. */
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "ಕ್ಯಾಪ್ಷನ್ ಮಿತಿಯನ್ನು ತಲುಪಿದೆ.";
@@ -248,6 +245,21 @@
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "ಬೆಂಬಲಿಸದ ಫೈಲ್";
 
+/* Short text label for a audio attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_AUDIO" = "ಆಡಿಯೋ";
+
+/* Short text label for a file attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_FILE" = "ಫೈಲ್";
+
+/* Short text label for a gif attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_GIF" = "GIF";
+
+/* Short text label for a photo attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_PHOTO" = "ಫೋಟೋ";
+
+/* Short text label for a video attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_VIDEO" = "ವೀಡಿಯೊ";
+
 /* Short text label for a voice message attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "ಧ್ವನಿ ಸಂದೇಶ";
 
@@ -336,10 +348,10 @@
 "BLOCK_LIST_BLOCKED_USERS_SECTION" = "ನಿರ್ಬಂಧಿಸಿದ ಬಳಕೆದಾರರು";
 
 /* Error message indicating that a conversation can't be blocked because they are already blocked. */
-"BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "Group already blocked.";
+"BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "ಗುಂಪನ್ನು ಈಗಾಗಲೇ ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ.";
 
 /* Error message indicating that a user can't be blocked because they are already blocked. */
-"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "User already blocked.";
+"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "ಬಳಕೆದಾರರನ್ನು ಈಗಾಗಲೇ ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ.";
 
 /* Button label for the 'unblock' button */
 "BLOCK_LIST_UNBLOCK_BUTTON" = "ನಿರ್ಬಂಧ ತೆಗೆಯಿರಿ";
@@ -466,18 +478,6 @@
 
 /* Accessibility label for muting the microphone */
 "CALL_VIEW_MUTE_LABEL" = "ಮ್ಯೂಟ್ ಮಾಡಿ";
-
-/* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "ನಿಮ್ಮ ಲಾಕ್ ಸ್ಕ್ರೀನಿನಿಂದ ಒಳಬರುವ ಕರೆಗಳಿಗೆ ಉತ್ತರಿಸಲು ನಿಮ್ಮ Signal ಖಾಸಗಿತನ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನೀವು iOS ಕರೆ ಸಂಯೋಜನೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಬಹುದು.";
-
-/* Reminder to the user of the benefits of disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "ಒಳಬರುವ ಕರೆಗಳಿಗಾಗಿ ಹೆಸರು ಮತ್ತು ಫೋನ್ ಸಂಖ್ಯೆಯನ್ನು ನೋಡಲು ನಿಮ್ಮ Signal ಖಾಸಗಿತನ ಸೆಟ್ಟಿಂಗ್‌ಗಳಲ್ಲಿ ನೀವು iOS ಕರೆ ಸಂಯೋಜನೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಬಹುದು.";
-
-/* Label for button that dismiss the call view's settings nag. */
-"CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "ಈಗಲ್ಲ";
-
-/* Label for button that shows the privacy settings. */
-"CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "ಖಾಸಗಿತನ ಸೆಟ್ಟಿಂಗ್‌ಗಳನ್ನು ತೋರಿಸಿ";
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "ಕ್ಯಾಮರಾ ದಿಕ್ಕು ಬದಲಾಯಿಸಿ";
@@ -798,13 +798,13 @@
 "CONVERSATION_SETTINGS_EDIT_GROUP" = "ತಿದ್ದಿ";
 
 /* Label for 'edit membership access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Who Can Edit Membership";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "ಯಾರು ಸದಸ್ಯತ್ವವನ್ನು ತಿದ್ದಬಹುದು";
 
 /* Label for button that sets 'group membership access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "ಆಡ್ಮಿನ್‌‌ಗಳು ಮಾತ್ರ";
 
 /* Description for the 'edit group membership access' alert. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "Choose who can edit group membership:";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "ಗುಂಪಿನ ಸದಸ್ಯತ್ವವನ್ನು ಯಾರು ತಿದ್ದಬಹುದು ಎಂದು ಆಯ್ಕೆ ಮಾಡಿ:";
 
 /* Label for button that sets 'group membership access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "ಎಲ್ಲಾ ಸದಸ್ಯರು";
@@ -825,7 +825,7 @@
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ ಸದಸ್ಯರು";
 
 /* Footer for the 'membership access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "Choose who can edit group membership.";
+"CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "ಗುಂಪಿನ ಸದಸ್ಯತ್ವವನ್ನು ಯಾರು ತಿದ್ದಬಹುದು ಎಂದು ಆಯ್ಕೆ ಮಾಡಿ.";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "ಮ್ಯೂಟ್ ಮಾಡಿ";
@@ -1035,103 +1035,103 @@
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "ಸಾಧನ ಪಟ್ಟಿಯನ್ನು ನವೀಕರಿಸಲು ವಿಫಲವಾಗಿದೆ.";
 
 /* The stop action of the dialog asking the user if they want to cancel a device transfer */
-"DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION" = "Stop Transfer";
+"DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION" = "ವರ್ಗಾವಣೆ ನಿಲ್ಲಿಸಿ";
 
 /* The message of the dialog asking the user if they want to cancel a device transfer */
-"DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE" = "Closing this window will stop the transfer you have in progress, are you sure you want to proceed?";
+"DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE" = "ಈ ವಿಂಡೋವನ್ನು ಕ್ಲೋಸ್ ಮಾಡುವುದು ನೀವು ಪ್ರಗತಿಯಲ್ಲಿ ಹೊಂದಿರುವ ವರ್ಗಾವಣೆಯನ್ನು ನಿಲ್ಲಿಸುವುದು, ನೀವು ಮುಂದುವರಿಯುವ ಬಗ್ಗೆ ಖಾತ್ರಿಯನ್ನು ಹೊಂದಿದ್ದೀರಾ?";
 
 /* The title of the dialog asking the user if they want to cancel a device transfer */
-"DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "Stop Transfer?";
+"DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "ವರ್ಗಾವಣೆಯನ್ನು ನಿಲ್ಲಿಸುವುದೇ?";
 
 /* The explanation for the device transfer 'choice' view */
-"DEVICE_TRANSFER_CHOICE_EXPLANATION" = "If you have your old iOS device, you can securely transfer your account and messages to this device.";
+"DEVICE_TRANSFER_CHOICE_EXPLANATION" = "ನೀವು ನಿಮ್ಮ ಹಳೆಯ iOS ಸಾಧನವನ್ನು ಹೊಂದಿದ್ದಲ್ಲಿ, ನೀವು ನಿಮ್ಮ ಖಾತೆಯನ್ನು ಮತ್ತು ಸಂದೇಶಗಳನ್ನು ಸುರಕ್ಷಿತವಾಗಿ ಈ ಸಾಧನಕ್ಕೆ ವರ್ಗಾಯಿಸಬಹುದು.";
 
 /* The explanation for the device transfer 'choice' view when linking a device */
-"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "If you were previously using Signal on a linked iPad, you can securely transfer your account and messages to this device.";
+"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "ನೀವು ಹಿಂದೆ Signal ಅನ್ನು ಲಿಂಕ್ ಮಾಡಿರುವ ಐಪ್ಯಾಡ್‌ನಲ್ಲಿ ಬಳಸುತ್ತಿದ್ದಲ್ಲಿ, ನೀವು ನಿಮ್ಮ ಖಾತೆಯನ್ನು ಹಾಗೂ ಸಂದೇಶಗಳನ್ನು ಸುರಕ್ಷಿತವಾಗಿ ವರ್ಗಾಯಿಸಬಹುದು.";
 
 /* The body for the device transfer 'choice' view 'register' option */
-"DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "Continue without transferring your account and messages";
+"DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "ನಿಮ್ಮ ಖಾತೆಗಳನ್ನು ಮತ್ತು ಸಂದೇಶಗಳನ್ನು ವರ್ಗಾಯಿಸದೇ ಮುಂದುವರಿಸಿ";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "Add this iPad as a new linked device without transferring message history";
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "ಸಂದೇಶದ ಹಿನ್ನೆಲೆಯನ್ನು ವರ್ಗಾಯಿಸದೇ ಈ ಐಪ್ಯಾಡ್ ಅನ್ನು ಹೊಸ ಲಿಂಕ್ ಮಾಡಿದ ಸಾಧನವಾಗಿ ಸೇರಿಸಿ";
 
 /* The title for the device transfer 'choice' view 'register' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "Add as New Device";
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "ಹೊಸ ಸಾಧನ ಸೇರಿಸಿ";
 
 /* The title for the device transfer 'choice' view 'register' option */
-"DEVICE_TRANSFER_CHOICE_REGISTER_TITLE" = "Register without Transferring";
+"DEVICE_TRANSFER_CHOICE_REGISTER_TITLE" = "ವರ್ಗಾಯಿಸದೇ ನೋಂದಾಯಿಸಿ";
 
 /* The title for the device transfer 'choice' view */
-"DEVICE_TRANSFER_CHOICE_TITLE" = "Transfer Account & Messages";
+"DEVICE_TRANSFER_CHOICE_TITLE" = "ಖಾತೆ ಮತ್ತು ಸಂದೇಶಗಳನ್ನು ವರ್ಗಾಯಿಸಿ";
 
 /* The body for the device transfer 'choice' view 'transfer' option */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Transfer your account and message history from your old iOS device";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "ನಿಮ್ಮ ಹಳೆಯ iOS ಸಾಧನದಿಂದ ನಿಮ್ಮ ಖಾತೆ ಮತ್ತು ಸಂದೇಶದ ಹಿನ್ನೆಲೆಯನ್ನು ವರ್ಗಾಯಿಸಿ";
 
 /* The body for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Transfer your account and message history from your old iPad";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "ನಿಮ್ಮ ಹಳೆಯ ಐಪ್ಯಾಡ್‌ ನಿಂದ ನಿಮ್ಮ ಖಾತೆ ಮತ್ತು ಸಂದೇಶದ ಹಿನ್ನೆಲೆಯನ್ನು ವರ್ಗಾಯಿಸಿ";
 
 /* The title for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "Transfer from another iPad";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "ಮತ್ತೊಂದು ಐಪ್ಯಾಡ್‌‌ನಿಂದ ವರ್ಗಾಯಿಸಿ";
 
 /* The title for the device transfer 'choice' view 'transfer' option */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_TITLE" = "Transfer from iOS Device";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_TITLE" = "iOS ಸಾಧನದಿಂದ ವರ್ಗಾಯಿಸಿ";
 
 /* A warning for the device transfer 'choice' view indicating you can only have one device registered with your number */
-"DEVICE_TRANSFER_CHOICE_WARNING" = "Continuing will disable Signal on other devices currently registered with the same phone number.";
+"DEVICE_TRANSFER_CHOICE_WARNING" = "ಮುಂದುವರಿಯುವುದು ಇದೇ ಫೋನ್ ಸಂಖ್ಯೆಯೊಂದಿಗೆ ಸದ್ಯ ನೋಂದಾಯಿಸಿದ ಬೇರೆ ಸಾಧನಗಳಲ್ಲಿ Signal ಅನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸುವುದು.";
 
 /* An error indicating that we were unable to verify the indentity of the new device to complete the transfer */
-"DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Unable to verify your new device, please try again";
+"DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "ನಿಮ್ಮ ಹೊಸ ಸಾಧನ ದೃಢೀಕರಿಸಲು ಅಸಮರ್ಥ, ದಯವಿಟ್ಟು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_GENERIC" = "The transfer couldn't complete, please ensure your devices are near each other and try again";
+"DEVICE_TRANSFER_ERROR_GENERIC" = "ವರ್ಗಾವಣೆಯನ್ನು ಪೂರ್ತಿಗೊಳಿಸಲಾಗಲಿಲ್ಲ. ದಯವಿಟ್ಟು ನಿಮ್ಮ ಸಾಧನಗಳು ಪರಸ್ಪರ ಹತ್ತಿರ ಇವೆ ಎನ್ನುವುದನ್ನು ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.";
 
 /* An error indicating the user must scan this code with a linked device to transfer. */
-"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "To set up this iPad as a linked device, you must scan with your old iPad";
+"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "ಐಪ್ಯಾಡ್ ಅನ್ನು ಲಿಂಕ್ ಮಾಡಿದ ಸಾಧನವನ್ನಾಗಿ ಸೆಟಪ್ ಮಾಡಲು, ನೀವು ನಿಮ್ಮ ಹಳೆಯ ಐಪ್ಯಾಡ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಬೇಕು";
 
 /* An error indicating the user must scan this code with a primary device to transfer. */
-"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_PRIMARY" = "To transfer your account, you must scan with your iPhone";
+"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_PRIMARY" = "ನಿಮ್ಮ ಖಾತೆಯನ್ನು ವರ್ಗಾಯಿಸಲು, ನೀವು ನಿಮ್ಮ ಐಫೋನಿನೊಂದಿಗೆ ಸ್ಕ್ಯಾನ್ ಮಾಡಬೇಕು";
 
 /* An error indicating that the user does not have enough free space on their device to complete the transfer */
-"DEVICE_TRANSFER_ERROR_NOT_ENOUGH_SPACE" = "Not enough free space to complete the transfer";
+"DEVICE_TRANSFER_ERROR_NOT_ENOUGH_SPACE" = "ವರ್ಗಾವಣೆಯನ್ನು ಪೂರ್ತಿಗೊಳಿಸಲು ಸಾಕಷ್ಟು ಸ್ಥಳವಿಲ್ಲ";
 
 /* An error indicating the user must update their device before trying to transfer. */
-"DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Update to the latest version of Signal and try again";
+"DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Signal ನ ಇತ್ತೀಚಿನ ಆವೃತ್ತಿಯನ್ನು ಅಪ್‌‌ಡೇಟ್ ಮಾಡಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ";
 
 /* The explanation on the action sheet prompting the user if they want to transfer their device. */
-"DEVICE_TRANSFER_PROMPT_EXPLANATION" = "Transfer your Signal account to a new iOS device. Make sure your new device is nearby and turned on.";
+"DEVICE_TRANSFER_PROMPT_EXPLANATION" = "ನಿಮ್ಮ Signal ಖಾತೆಯನ್ನು ಹೊಸ iOS ಸಾಧನಕ್ಕೆವರ್ಗಾಯಿಸಿ. ನಿಮ್ಮ ಹೊಸ ಸಾಧನ ಹತ್ತಿರವಿದೆ ಮತ್ತು ಆನ್ ಮಾಡಲಾಗಿದೆ ಎನ್ನುವುದನ್ನು ಖಾತ್ರಿಪಡಿಸಿಕೊಳ್ಳಿ.";
 
 /* The title on the acttion sheet prompting the user if they want to transfer their device. */
-"DEVICE_TRANSFER_PROMPT_TITLE" = "Transfer Account";
+"DEVICE_TRANSFER_PROMPT_TITLE" = "ಖಾತೆ ವರ್ಗಾಯಿಸಿ";
 
 /* The explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Open Signal on your old device, bring it nearby, and make sure Wi-Fi and Bluetooth are enabled on both devices.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "ನಿಮ್ಮ ಹಳೆಯ ಸಾಧನದಲ್ಲಿ Signal ಅನ್ನು ತೆರೆಯಿರಿ, ಇದನ್ನು ಹತ್ತಿರ ತನ್ನಿರಿ ಮತ್ತು ವೈಫೈ ಹಾಗೂ ಬ್ಲೂಟೂತ್ ಎರಡೂ ಸಾಧನಗಳಲ್ಲಿಯೂ ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ ಎನ್ನುವುದನ್ನು ಖಾತ್ರಿಪಡಿಸಿಕೊಳ್ಳಿ.";
 
 /* The second explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Position this QR code in the frame of your other device.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "ಈ ಕ್ಯೂಆರ್ ಕೋಡ್‌ನ ಸ್ಥಾನವನ್ನು ನಿಮ್ಮ ಮತ್ತೊಂದು ಸಾಧನದ ಫ್ರೇಮ್‌ನಲ್ಲಿ ಸೂಕ್ತ ಸ್ಥಾನಕ್ಕೆ ತನ್ನಿರಿ.";
 
 /* The title for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_TITLE" = "Waiting for Other Device...";
+"DEVICE_TRANSFER_QRCODE_TITLE" = "ಮತ್ತೊಂದು ಸಾಧನಕ್ಕಾಗಿ ಕಾಯುತ್ತಿದೆ...";
 
 /* The explanation on the view that shows receiving progress */
-"DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Keep both devices near each other. Do not turn off either device and keep Signal open. Transfers are end-to-end encrypted.";
+"DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "ಎರಡೂ ಸಾಧನಗಳನ್ನು ಪರಸ್ಪರ ಹತ್ತಿರ ಇರಿಸಿ. ಯಾವುದೇ ಒಂದು ಸಾಧನವನ್ನು ಆಫ್ ಮಾಡಬೇಡಿ ಮತ್ತು Signal ಅನ್ನು ತೆರೆದೇ ಇರಿಸಿ. ವರ್ಗಾವಣೆಗಳು ಎಂಡ್-ಟು-ಎಂಡ್ ಎನ್‌ಕ್ರಿಪ್ಷನ್ ಹೊಂದಿರುತ್ತವೆ.";
 
 /* The title on the view that shows receiving progress */
-"DEVICE_TRANSFER_RECEIVING_TITLE" = "Receiving Data";
+"DEVICE_TRANSFER_RECEIVING_TITLE" = "ಡೇಟಾ ಪಡೆಯಲಾಗುತ್ತಿದೆ";
 
 /* Text indicating that we are connecting to the scanned device */
 "DEVICE_TRANSFER_SCANNING_CONNECTING" = "ಸಂಪರ್ಕಿಸಲಾಗುತ್ತಿದೆ…";
 
 /* The explanation for the action sheet asking the user to scan the QR code to transfer */
-"DEVICE_TRANSFER_SCANNING_EXPLANATION" = "Position the QR code within the circle";
+"DEVICE_TRANSFER_SCANNING_EXPLANATION" = "ಕ್ಯೂಆರ್‌ ಕೋಡ್ ಅನ್ನು ವೃತ್ತದೊಳಗೆ ಇರಿಸಿ";
 
 /* The title for the action sheet asking the user to scan the QR code to transfer */
-"DEVICE_TRANSFER_SCANNING_TITLE" = "Hold Your New Device Up to the Camera";
+"DEVICE_TRANSFER_SCANNING_TITLE" = "ನಿಮ್ಮ ಹೊಸ ಸಾಧನವನ್ನು ಎತ್ತರಕ್ಕೆ ಕ್ಯಾಮರಾಕ್ಕೆ ಹಿಡಿಯಿರಿ";
 
 /* The explanation on the action sheet that shows transfer progress */
-"DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "Keep both devices near each other. Do not turn off either device and keep Signal open.";
+"DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "ಎರಡೂ ಸಾಧನಗಳನ್ನು ಪರಸ್ಪರ ಹತ್ತಿರ ಇರಿಸಿ. ಯಾವುದೇ ಒಂದು ಸಾಧನವನ್ನು ಆಫ್ ಮಾಡಬೇಡಿ ಮತ್ತು Signal ಅನ್ನು ತೆರೆದೇ ಇರಿಸಿ. ";
 
 /* The title on the action sheet that shows transfer progress */
-"DEVICE_TRANSFER_TRANSFERRING_TITLE" = "Transferring Data";
+"DEVICE_TRANSFER_TRANSFERRING_TITLE" = "ಡೇಟಾ ವರ್ಗಾಯಿಸುತ್ತಿದೆ";
 
 /* table cell label in conversation settings */
 "DISAPPEARING_MESSAGES" = "ಕಣ್ಮರೆಯಾಗುತ್ತಿದೆ ಸಂದೇಶಗಳು";
@@ -1204,6 +1204,33 @@
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Signal ಗೆ ಬದಲಾಯಿಸೋಣ";
+
+/* The name for the emoji category 'Activities' */
+"EMOJI_CATEGORY_ACTIVITIES_NAME" = "Activities";
+
+/* The name for the emoji category 'Animals & Nature' */
+"EMOJI_CATEGORY_ANIMALS_NAME" = "Animals & Nature";
+
+/* The name for the emoji category 'Flags' */
+"EMOJI_CATEGORY_FLAGS_NAME" = "Flags";
+
+/* The name for the emoji category 'Food & Drink' */
+"EMOJI_CATEGORY_FOOD_NAME" = "Food & Drink";
+
+/* The name for the emoji category 'Objects' */
+"EMOJI_CATEGORY_OBJECTS_NAME" = "Objects";
+
+/* The name for the emoji category 'Recents' */
+"EMOJI_CATEGORY_RECENTS_NAME" = "Recents";
+
+/* The name for the emoji category 'Smileys & People' */
+"EMOJI_CATEGORY_SMILEYSANDPEOPLE_NAME" = "Smileys & People";
+
+/* The name for the emoji category 'Symbols' */
+"EMOJI_CATEGORY_SYMBOLS_NAME" = "Symbols";
+
+/* The name for the emoji category 'Travel & Places' */
+"EMOJI_CATEGORY_TRAVEL_NAME" = "Travel & Places";
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE1" = "ನಿಮ್ಮ ಯಾವುದೇ ಸಂಪರ್ಕಗಳಲ್ಲಿಯೂ Signal ಇಲ್ಲ.";
@@ -1713,7 +1740,7 @@
 "GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "ನೀವು ತೊರೆಯುವ ಮೊದಲು ಈ ಗುಂಪಿಗೆ ಹೊಸ ಅಡ್ಮಿನ್ ಆರಿಸಿ.";
 
 /* Error message indicating that a member can't be added to a group because they are already in the group. */
-"GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP" = "User already in group.";
+"GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP" = "ಬಳಕೆದಾರರು ಈಗಾಗಲೇ ಗುಂಪಿನಲ್ಲಿದ್ದಾರೆ.";
 
 /* Error indicating that an error occurred while accepting an invite. */
 "GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "ಆಹ್ವಾನವನ್ನು ಸ್ವೀಕರಿಸಿಲ್ಲ.";
@@ -2012,11 +2039,14 @@
 /* The title for the action that deletes a message for all users in the conversation. */
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "ಪ್ರತಿಯೊಬ್ಬರಿಗಾಗಿ ಅಳಿಸಿ";
 
+/* A one-time confirmation that you want to delete for everyone */
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "This message will be permanently deleted for everyone in the conversation. Members will be able to see that you deleted a message.";
+
 /* The title for the action sheet asking who the user wants to delete the message for. */
-"MESSAGE_ACTION_DELETE_FOR_TITLE" = "ಈ ಸಂದೇಶಕ್ಕಾಗಿ ನೀವು ಯಾರನ್ನು ಅಳಿಸಲು ಬಯಸುತ್ತೀರಿ?";
+"MESSAGE_ACTION_DELETE_FOR_TITLE" = "Who would you like to delete this message for?";
 
 /* The title for the action that deletes a message for the local user only. */
-"MESSAGE_ACTION_DELETE_FOR_YOU" = "ನಿಮಗಾಗಿ ಅಳಿಸಲಾಗಿದೆ";
+"MESSAGE_ACTION_DELETE_FOR_YOU" = "Delete for Me";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DELETE_MESSAGE" = "ಈ ಸಂದೇಶವನ್ನು ಅಳಿಸಿ";
@@ -2559,16 +2589,16 @@
 "PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "ತೋರಿಸಲು ಯಾವುದೇ ಆಹ್ವಾನಗಳಿಲ್ಲ.";
 
 /* Title of 're-send invite' button. */
-"PENDING_GROUP_MEMBERS_RESEND_INVITE_1_BUTTON" = "Re-send Invite";
+"PENDING_GROUP_MEMBERS_RESEND_INVITE_1_BUTTON" = "ಆಮಂತ್ರಣವನ್ನು ಪುನಃ ಕಳುಹಿಸಿ";
 
 /* Title of 're-send invites' button. */
-"PENDING_GROUP_MEMBERS_RESEND_INVITE_N_BUTTON" = "Re-send Invites";
+"PENDING_GROUP_MEMBERS_RESEND_INVITE_N_BUTTON" = "ಆಮಂತ್ರಣಗಳನ್ನು ಪುನಃ ಕಳುಹಿಸಿ";
 
 /* Title of 'revoke invite' button. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "ಆಹ್ವಾನ ಹಿಂತೆಗೆದುಕೊಳ್ಳಿ";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revoke group invite sent by “%@“?";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "\"%@\" ರಿಂದ ಕಳುಹಿಸಿದ ಗುಂಪು ಆಹ್ವಾನಗಳನ್ನು ಹಿಂತೆಗೆದುಕೊಳ್ಳುವುದೇ?";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
 "PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_N_FORMAT" = " %1$@ “%2$@“  ರಿಂದ ಕಳುಹಿಸಿದ ಆಹ್ವಾನಗಳನ್ನು ಹಿಂತೆಗೆದುಕೊಳ್ಳುವುದೇ?";
@@ -2580,10 +2610,10 @@
 "PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = " “%@“ ಗಾಗಿ ಗುಂಪು ಆಹ್ವಾನವನ್ನು ಹಿಂತೆಗೆದುಕೊಳ್ಳುವುದೇ?";
 
 /* Format for title of 'revoke or re-send invite' confirmation alert. Embeds {{ name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revoke or re-send group invite for “%@“?";
+"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "\"%@\" ರಿಂದ ಕಳುಹಿಸಿದ ಗುಂಪು ಆಹ್ವಾನಗಳನ್ನು ಹಿಂತೆಗೆದುಕೊಳ್ಳುವುದೇ ಅಥವಾ ಪುನಃ ಕಳುಹಿಸುವುದೇ?";
 
 /* Format for title of 'revoke or re-send invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Revoke or re-send %1$@ invites sent by “%2$@“?";
+"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "\"%2$@\" ರಿಂದ ಕಳುಹಿಸಿದ %1$@ ಆಹ್ವಾನಗಳನ್ನು ಹಿಂತೆಗೆದುಕೊಳ್ಳುವುದೇ ಅಥವಾ ಪುನಃ ಕಳುಹಿಸುವುದೇ?";
 
 /* Footer for the 'invites by other group members' section of the 'pending group members' view. */
 "PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "ಗುಂಪಿನ ಇತರ ಸದಸ್ಯರು ಆಹ್ವಾನಿಸಿದ ಜನರ ವಿವರಗಳನ್ನು ತೋರಿಸಲಾಗುವುದಿಲ್ಲ. ಆಹ್ವಾನಿತರು ಸೇರಲು ಆರಿಸಿದರೆ, ಅವರ ಮಾಹಿತಿಯನ್ನು ಆ ಸಮಯದಲ್ಲಿ ಗುಂಪಿನೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳಲಾಗುತ್ತದೆ. ಅವರು ಸೇರುವವರೆಗೂ ಅವರು ಗುಂಪಿನಲ್ಲಿ ಯಾವುದೇ ಸಂದೇಶಗಳನ್ನು ನೋಡಲಾಗುವುದಿಲ್ಲ.";
@@ -2981,8 +3011,11 @@
 /* Text describing the local user in the reaction details pane. */
 "REACTIONS_DETAIL_YOU" = "ನೀವು";
 
+/* Pressing this button marks a thread as read */
+"READ_ACTION" = "ಓದಿ";
+
 /* Error message indicating that a user can't be selected. */
-"RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "User can't be selected.";
+"RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "ಬಳಕೆದಾರರನ್ನು ಆಯ್ಕೆ ಮಾಡಲಾಗದು.";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "ನಾನು ನನ್ನ  ಪಿನ್ ಮರೆತಿದ್ದೇನೆ.";
@@ -3360,7 +3393,7 @@
 "SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "ನಿಮ್ಮ ಫೋನ್‌ನೊಂದಿಗೆ ಕ್ಯೂಆರ್‌ ಕೋಡ್ ಅನ್ನು ಸ್ಕ್ಯಾನ್ ಮಾಡಿ";
 
 /* header text before the user can transfer to this device */
-"SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "Launch Signal on your old iPad to transfer your account";
+"SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "ನಿಮ್ಮ ಖಾತೆಯನ್ನು ವರ್ಗಾಯಿಸಲು ನಿಮ್ಮ ಹಳೆಯ ಐಪ್ಯಾಡ್‌ನಲ್ಲಿ Signal ಅನ್ನು ಆರಂಭಿಸಿ";
 
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "ಸುರಕ್ಷಿತ ಅವಧಿ ಮರುಹೊಂದಿಸಲಾಗಿದೆ.";
@@ -3585,19 +3618,19 @@
 "SETTINGS_NOTIFICATIONS" = "ಅಧಿಸೂಚನೆಗಳು";
 
 /* The button text for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "Turn Off Reminders";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "ರಿಮೈಂಡರ್‌‌ಗಳನ್ನು ಆಫ್ ಮಾಡಿ";
 
 /* The explanation for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "Make sure you memorize or securely store your PIN as it can’t be recovered. If you forget your PIN, you may lose data when re-registering your Signal account.";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "ನೀವು ನಿಮ್ಮ ಪಿನ್ ಅನ್ನು ನೆನಪಿನಲ್ಲಿ ಇರಿಸಿಕೊಂಡಿದ್ದೀರಿ ಅಥವಾ ಸುರಕ್ಷಿತವಾಗಿ ಸಂಗ್ರಹಿಸಿದ್ದೀರಿ ಎಂದು ಖಾತ್ರಿಪಡಿಸಿಕೊಳ್ಳಿ, ಏಕೆಂದರೆ ಇದನ್ನು ಹಿಂಪಡೆಯಲು ಸಾಧ್ಯವಿರುವುದಿಲ್ಲ. ನೀವು ಪಿನ್ ಅನ್ನು ಮರೆತಲ್ಲಿ, ನೀವು ನಿಮ್ಮ Signal ಖಾತೆಯನ್ನು ನೋಂದಾಯಿಸುವಾಗ ಡೇಟಾವನ್ನು ಕಳೆದುಕೊಳ್ಳಬಹುದು.";
 
 /* The title for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Confirm your Signal PIN";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "ನಿಮ್ಮ Signal ಪಿನ್ ಅನ್ನು ದೃಡಪಡಿಸಿ";
 
 /* Footer for the 'pin reminder' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_PIN_REMINDER_FOOTER" = "Reminders help you remember your PIN since it can’t be recovered. You’ll be asked less frequently over time.";
+"SETTINGS_PIN_REMINDER_FOOTER" = "ನಿಮ್ಮ ಪಿನ್ ಅನ್ನು ಹಿಂಪಡೆಯಲಾಗದ ಕಾರಣ ಅದನ್ನು ನೆನಪಿಟ್ಟುಕೊಳ್ಳಲು ರಿಮೈಂಡರ್‌ ಗಳು ನಿಮಗೆ ಸಹಾಯ ಮಾಡುತ್ತವೆ. ನಂತರದಲ್ಲಿ ನಿಮಗೆ ಕಡಿಮೆ ಬಾರಿ ಕೇಳಲಾಗುತ್ತದೆ.";
 
 /* Label for the 'pin reminder' switch of the privacy settings. */
-"SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "PIN Reminders";
+"SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "ಪಿನ್ ರಿಮೈಂಡರ್‌‌ಗಳು";
 
 /* Footer for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_FOOTER" = "ಪಿನ್‌ಗಳು Signal ಎನ್‌ಕ್ರಿಪ್ಟ್ ಮಾಡಿದ ಮಾಹಿತಿಯನ್ನು ಸಂಗ್ರಹಿಸಿಡುತ್ತವೆ ಆದ್ದರಿಂದ ನೀವು ಮಾತ್ರ ಅದನ್ನು ಪ್ರವೇಶಿಸಬಹುದು. ನೀವು Signal ಅನ್ನು ಪುನಃ ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿದಾಗ ನಿಮ್ಮ ಪ್ರೊಫೈಲ್, ಸೆಟ್ಟಿಂಗ್‌‌ಗಳು ಮತ್ತು ಸಂಪರ್ಕಗಳು ಪುನಃಸ್ಥಾಪನೆಯಾಗುತ್ತವೆ.";
@@ -3611,17 +3644,11 @@
 /* Title for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_TITLE" = "SIGNAL ಪಿನ್";
 
-/* Label for 'CallKit privacy' preference */
-"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "ಕರೆ ಮಾಡುವವರ ಹೆಸರು ಮತ್ತು ಸಂಖ್ಯೆಯನ್ನು ತೋರಿಸಿ";
-
 /* Settings table section footer. */
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "iOS ಫೋನ್ ಆ್ಯಪ್‌‌‌ನಲ್ಲಿ \"ಇತ್ತೀಚಿನ\" ಪಟ್ಟಿಯಲ್ಲಿ ಕರೆಗಳನ್ನು ತೋರಿಸಿ.";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "ಇತ್ತೀಚಿನದು ನಲ್ಲಿ ಕರೆಗಳನ್ನು ತೋರಿಸಿ";
-
-/* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_TITLE" = "iOS ಕರೆ ಸಂಯೋಜನೆ";
 
 /* Settings table view cell label */
 "SETTINGS_PRIVACY_TITLE" = "ಖಾಸಗಿತನ";
@@ -3670,9 +3697,6 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "ಆ್ಯಪ್ ಸ್ವಿಚರ್‌ನಲ್ಲಿ Signal ಪೂರ್ವವೀಕ್ಷಣೆಗಳು ಕಾಣಿಸಿಕೊಳ್ಳದಂತೆ ತಡೆಯಿರಿ.";
-
-/* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS ಕಾಲ್ ಇಂಟಿಗ್ರೇಷನ್ ನಿಮ್ಮ ಲಾಕ್ ಪರದೆಯಲ್ಲಿ ಮತ್ತು ಸಿಸ್ಟಂನ ಕರೆ ಇತಿಹಾಸದಲ್ಲಿ Signal ಕರೆಗಳನ್ನು ತೋರಿಸುತ್ತದೆ. ನಿಮ್ಮ ಸಂಪರ್ಕದ ಹೆಸರು ಮತ್ತು ಸಂಖ್ಯೆಯನ್ನು ನೀವು ಐಚ್ಛಿಕವಾಗಿ ತೋರಿಸಬಹುದು. iCloud ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿದ್ದರೆ, ಈ ಕರೆ ಇತಿಹಾಸವನ್ನು Apple ನೊಂದಿಗೆ ಹಂಚಿಕೊಳ್ಳಲಾಗುತ್ತದೆ.";
 
 /* Label for the notifications section of conversation settings view. */
 "SETTINGS_SECTION_NOTIFICATIONS" = "ಅಧಿಸೂಚನೆಗಳು";
@@ -3971,6 +3995,9 @@
 /* Label text in device manager for a device with no name */
 "UNNAMED_DEVICE" = "ಹೆಸರಿಸದ ಸಾಧನ";
 
+/* Pressing this button marks a thread as unread */
+"UNREAD_ACTION" = "Unread";
+
 /* No comment provided by engineer. */
 "UNREGISTER_SIGNAL_FAIL" = "Signal ನಿಂದ ನೋಂದಣಿ ತೆಗೆಯಲು ವಿಫಲವಾಗಿದೆ.";
 
@@ -4096,6 +4123,9 @@
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Signal Desktop ಮೇಲೆ ಸೆಟ್‌ಅಪ್ ಪೂರ್ತಿಯಾಗಿದೆ.";
+
+/* text indicating the message was remotely deleted by you */
+"YOU_DELETED_THIS_MESSAGE" = "You deleted this message.";
 
 /* Info Message when you disabled disappearing messages. */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "ನೀವು ಕಣ್ಮರೆಯಾಗುವ ಸಂದೇಶಗಳನ್ನು ನಿಷ್ಕ್ರಿಯಗೊಳಿಸಿದ್ದೀರಿ";

@@ -143,9 +143,6 @@
 /* Pressing this button moves a thread from the inbox to the archive */
 "ARCHIVE_ACTION" = "Архивиране";
 
-/* No comment provided by engineer. */
-"ATTACHMENT" = "Прикачен файл";
-
 /* One-line label indicating the user can add no more text to the attachment caption. */
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Достигнат е лимитът за надписи.";
 
@@ -248,6 +245,21 @@
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Неподдържан вид файл.";
 
+/* Short text label for a audio attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_AUDIO" = "Аудио";
+
+/* Short text label for a file attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_FILE" = "Файл";
+
+/* Short text label for a gif attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_GIF" = "GIF";
+
+/* Short text label for a photo attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_PHOTO" = "Снимка";
+
+/* Short text label for a video attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_VIDEO" = "Видео";
+
 /* Short text label for a voice message attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "Гласово Съобщение";
 
@@ -336,10 +348,10 @@
 "BLOCK_LIST_BLOCKED_USERS_SECTION" = "Блокирани Потребители";
 
 /* Error message indicating that a conversation can't be blocked because they are already blocked. */
-"BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "Group already blocked.";
+"BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "Групата вече е блокирана.";
 
 /* Error message indicating that a user can't be blocked because they are already blocked. */
-"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "User already blocked.";
+"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "Потребителят вече е блокиран.";
 
 /* Button label for the 'unblock' button */
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Отблокиране";
@@ -466,18 +478,6 @@
 
 /* Accessibility label for muting the microphone */
 "CALL_VIEW_MUTE_LABEL" = "Заглуши";
-
-/* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Можете да позволите Интегрирането на повиквания на iOS в настройките за поверителност на Signal, за да приемате входящи повиквания от заключен екран.";
-
-/* Reminder to the user of the benefits of disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Можете да позволите Интегрирането на повиквания на iOS в настройките за поверителност на Signal, за да виждате името и телефонния номер при входящи повиквания.";
-
-/* Label for button that dismiss the call view's settings nag. */
-"CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Не Сега";
-
-/* Label for button that shows the privacy settings. */
-"CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Покажи Настройките за Поверителност";
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Превключете посоката на камерата";
@@ -798,13 +798,13 @@
 "CONVERSATION_SETTINGS_EDIT_GROUP" = "Редакция";
 
 /* Label for 'edit membership access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Who Can Edit Membership";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Кой може да редактира членството";
 
 /* Label for button that sets 'group membership access' to 'administrators-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Само администратори";
 
 /* Description for the 'edit group membership access' alert. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "Choose who can edit group membership:";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "Изберете кой може да редактира членството в групата:";
 
 /* Label for button that sets 'group membership access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "Всички членове";
@@ -825,7 +825,7 @@
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ членове";
 
 /* Footer for the 'membership access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "Choose who can edit group membership.";
+"CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "Изберете кой може да редактира членството в групата.";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Заглуши";
@@ -1204,6 +1204,33 @@
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Нека преминем на Signal";
+
+/* The name for the emoji category 'Activities' */
+"EMOJI_CATEGORY_ACTIVITIES_NAME" = "Activities";
+
+/* The name for the emoji category 'Animals & Nature' */
+"EMOJI_CATEGORY_ANIMALS_NAME" = "Animals & Nature";
+
+/* The name for the emoji category 'Flags' */
+"EMOJI_CATEGORY_FLAGS_NAME" = "Flags";
+
+/* The name for the emoji category 'Food & Drink' */
+"EMOJI_CATEGORY_FOOD_NAME" = "Food & Drink";
+
+/* The name for the emoji category 'Objects' */
+"EMOJI_CATEGORY_OBJECTS_NAME" = "Objects";
+
+/* The name for the emoji category 'Recents' */
+"EMOJI_CATEGORY_RECENTS_NAME" = "Recents";
+
+/* The name for the emoji category 'Smileys & People' */
+"EMOJI_CATEGORY_SMILEYSANDPEOPLE_NAME" = "Smileys & People";
+
+/* The name for the emoji category 'Symbols' */
+"EMOJI_CATEGORY_SYMBOLS_NAME" = "Symbols";
+
+/* The name for the emoji category 'Travel & Places' */
+"EMOJI_CATEGORY_TRAVEL_NAME" = "Travel & Places";
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE1" = "Никой от контактите ви не ползва Signal.";
@@ -1593,148 +1620,148 @@
 "GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT" = "%@ е добавен/а към групата.";
 
 /* Message indicating that a remote user has declined their invite. */
-"GROUP_REMOTE_USER_DECLINED_INVITE" = "1 person declined the invitation to the group.";
+"GROUP_REMOTE_USER_DECLINED_INVITE" = "1 човек е отхвърлил поканата за групата.";
 
 /* Message indicating that a remote user has declined their invite. Embeds {{ user who invited them }}. */
-"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "1 person invited by %@ declined the invitation to the group.";
+"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "1 човек, поканен от %@, е отхвърлил поканата за групата.";
 
 /* Message indicating that a remote user has declined an invite to the group from the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ declined your invitation to the group.";
+"GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ отхвърли вашата покана за групата.";
 
 /* Message indicating that a remote user was granted administrator role. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR" = "%@ is now an admin";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR" = "%@ вече е администратор";
 
 /* Message indicating that a remote user was granted administrator role by local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_LOCAL_USER" = "You made %@ an admin.";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_LOCAL_USER" = "Направихте %@ администратор.";
 
 /* Message indicating that a remote user was granted administrator role by another user. Embeds {{ %1$@ user who granted, %2$@ user who was granted administrator role}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ made %2$@ an admin.";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ направи %2$@ администратор.";
 
 /* Message indicating that a single remote user's invite was revoked. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_1" = "Invitation to the group was revoked for 1 person.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_1" = "Поканата за групата беше оттеглена за 1 човек.";
 
 /* Message indicating that a remote user's invite was revoked by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_BY_LOCAL_USER_FORMAT" = "Invitation to the group was revoked for %@.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_LOCAL_USER_FORMAT" = "Поканата за групата беше оттеглена за %@.";
 
 /* Message indicating that a single remote user's invite was revoked by a remote user. Embeds {{ user who revoked the invite }}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_1_FORMAT" = "%@ revoked an invitation to the group for 1 person.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_1_FORMAT" = "%@ оттегли поканата за групата до 1 човек.";
 
 /* Message indicating that a group of remote users' invites were revoked by a remote user. Embeds {{ %1$@ user who revoked the invite, %2$@ number of users }}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_N_FORMAT" = "%1$@ revoked an invitation to the group for %2$@ people.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_BY_REMOTE_USER_N_FORMAT" = "%1$@ оттегли поканата за групата за %2$@ души.";
 
 /* Message indicating that a group of remote users' invites were revoked. Embeds {{ number of users }}. */
-"GROUP_REMOTE_USER_INVITE_REVOKED_N_FORMAT" = "Invitations to the group were revoked for %@ people.";
+"GROUP_REMOTE_USER_INVITE_REVOKED_N_FORMAT" = "Поканите за групата бяха оттеглени за %@ души.";
 
 /* Message indicating that a single remote user was invited to the group. */
-"GROUP_REMOTE_USER_INVITED_1" = "1 person was invited to the group.";
+"GROUP_REMOTE_USER_INVITED_1" = "1 човек беше поканен в групата.";
 
 /* Message indicating that a remote user was invited to the group by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "You invited %@ to the group.";
+"GROUP_REMOTE_USER_INVITED_BY_LOCAL_USER_FORMAT" = "Вие поканихте %@ в групата.";
 
 /* Message indicating that a single remote user was invited to the group by the local user. Embeds {{ user who invited the user }}. */
-"GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_1_FORMAT" = "%@ invited 1 person to the group.";
+"GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_1_FORMAT" = "%@ покани 1 човек в групата.";
 
 /* Message indicating that a group of remote users were invited to the group by the local user. Embeds {{ %1$@ user who invited the user, %2$@ number of invited users }}. */
-"GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_N_FORMAT" = "%1$@ invited %2$@ people to the group.";
+"GROUP_REMOTE_USER_INVITED_BY_REMOTE_USER_N_FORMAT" = "%1$@ покани %2$@ души в групата.";
 
 /* Message indicating that a group of remote users were invited to the group. Embeds {{number of invited users}}. */
-"GROUP_REMOTE_USER_INVITED_N_FORMAT" = "%@ people were invited to the group.";
+"GROUP_REMOTE_USER_INVITED_N_FORMAT" = "%@ души бяха поканени в групата.";
 
 /* Message indicating that a remote user was added to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "%@ joined the group.";
+"GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "%@ се присъедини към групата.";
 
 /* Message indicating that a remote user has left the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%@ left the group.";
+"GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%@ напусна групата.";
 
 /* Message indicating that a remote user was removed from the group by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT" = "You removed %@.";
+"GROUP_REMOTE_USER_REMOVED_BY_LOCAL_USER_FORMAT" = "Вие отстранихте %@.";
 
 /* Message indicating that the remote user was removed from the group. Embeds {{ %1$@ user who removed the user, %2$@ user who was removed}}. */
-"GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ removed %2$@.";
+"GROUP_REMOTE_USER_REMOVED_FROM_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ отстрани %2$@.";
 
 /* Message indicating that a remote user had their administrator role revoked. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "%@ had their admin privileges revoked.";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR" = "Администраторските права на %@ бяха оттеглени.";
 
 /* Message indicating that a remote user had their administrator role revoked by local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_LOCAL_USER" = "You revoked admin privileges from %@.";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_LOCAL_USER" = "Вие оттеглихте администраторските права на %@.";
 
 /* Message indicating that a remote user had their administrator role revoked by another user. Embeds {{ %1$@ user who revoked, %2$@ user who was granted administrator role}}. */
-"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ revoked admin privileges from %2$@.";
+"GROUP_REMOTE_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ оттегли администраторските права на %2$@.";
 
 /* Info message indicating that the group was updated by an unknown user. */
 "GROUP_UPDATED" = "Групата е обновена.";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED" = "The group avatar was removed.";
+"GROUP_UPDATED_AVATAR_REMOVED" = "Аватарът на групата беше отстранен.";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "You removed the avatar.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "Вие премахнахте аватара.";
 
 /* Message indicating that the group's avatar was removed by a remote user. Embeds {{user who removed the avatar}}. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed the avatar.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ премахна аватара.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED" = "Updated the group avatar.";
+"GROUP_UPDATED_AVATAR_UPDATED" = "Аватарът на групата е актуализиран.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "You updated the avatar.";
+"GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "Вие актуализирахте аватара.";
 
 /* Message indicating that the group's avatar was changed by a remote user. Embeds {{user who changed the avatar}}. */
-"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ updated the avatar.";
+"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ актуализира аватара.";
 
 /* Info message indicating that the group was updated by the local user. */
 "GROUP_UPDATED_BY_LOCAL_USER" = "Обновихте групата.";
 
 /* Info message indicating that the group was updated by another user. Embeds {{remote user name}}. */
-"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ updated the group.";
+"GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ актуализира групата.";
 
 /* Message indicating that the group's name was removed. */
-"GROUP_UPDATED_NAME_REMOVED" = "The group name was removed.";
+"GROUP_UPDATED_NAME_REMOVED" = "Името на групата беше премахнато.";
 
 /* Message indicating that the group's name was removed by the local user. */
-"GROUP_UPDATED_NAME_REMOVED_BY_LOCAL_USER" = "You removed the group name.";
+"GROUP_UPDATED_NAME_REMOVED_BY_LOCAL_USER" = "Вие премахнахте името на групата.";
 
 /* Message indicating that the group's name was removed by a remote user. Embeds {{user who removed the name}}. */
-"GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed the group name.";
+"GROUP_UPDATED_NAME_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ премахна името на групата.";
 
 /* Message indicating that the group's name was changed by the local user. Embeds {{new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed the group name to “%@“.";
+"GROUP_UPDATED_NAME_UPDATED_BY_LOCAL_USER_FORMAT" = "Вие сменихте името на групата на „%@“.";
 
 /* Message indicating that the group's name was changed by a remote user. Embeds {{ %1$@ user who changed the name, %2$@ new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed the group name to “%2$@“.";
+"GROUP_UPDATED_NAME_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ смени името на групата на „%2$@“.";
 
 /* Message indicating that the group's name was changed. Embeds {{new group name}}. */
-"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Group name is now “%@”.";
+"GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Името на групата вече е „%@“.";
 
 /* Message indicating that the local user left the group. */
 "GROUP_YOU_LEFT" = "Вие напуснахте групата.";
 
 /* Message for the 'can't replace group admin' alert. */
-"GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Choose a new admin for this group before you leave.";
+"GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Изберете нов администратор за тази група, преди да напуснете.";
 
 /* Error message indicating that a member can't be added to a group because they are already in the group. */
-"GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP" = "User already in group.";
+"GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP" = "Потребителят вече е в групата.";
 
 /* Error indicating that an error occurred while accepting an invite. */
-"GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "Could not accept invite.";
+"GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "Неуспешно приемане на поканата.";
 
 /* Label for 'block group' button in group invite view. */
 "GROUPS_INVITE_BLOCK_GROUP" = "Блокиране на група";
 
 /* Label for 'block group and inviter' button in group invite view. Embeds {{name of user who invited you}}. */
-"GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT" = "Block Group and %@";
+"GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT" = "Блокиране на групата и %@";
 
 /* Label for 'block inviter' button in group invite view. Embeds {{name of user who invited you}}. */
-"GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "Block %@";
+"GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "Блокиране на %@";
 
 /* Message for the 'replace group admin' alert. */
-"GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "Before you leave, choose a new admin for this group.";
+"GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "Преди да напуснете, изберете нов администратор за тази група.";
 
 /* Title for the 'replace group admin' alert. */
-"GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "Choose New Admin";
+"GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "Изберете нов администратор";
 
 /* Label for the 'replace group admin' button. */
-"GROUPS_REPLACE_ADMIN_BUTTON" = "Choose new admin";
+"GROUPS_REPLACE_ADMIN_BUTTON" = "Изберете нов администратор";
 
 /* Label for 'archived conversations' button. */
 "HOME_VIEW_ARCHIVED_CONVERSATIONS" = "Архивирани разговори";
@@ -1746,28 +1773,28 @@
 "HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Търсене";
 
 /* A prefix indicating that a message preview is a draft */
-"HOME_VIEW_DRAFT_PREFIX" = "Draft: ";
+"HOME_VIEW_DRAFT_PREFIX" = "Чернова:";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 1 Signal contact.  Embeds {{The name of 1 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Some of your contacts are already on Signal, including %@.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_1_CONTACT_FORMAT" = "Някои от контактите ви вече са в Signal, включително %@.";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have 2 Signal contacts.  Embeds {{The names of 2 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Some of your contacts are already on Signal, including %@ and %@";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_2_CONTACTS_FORMAT" = "Някои от контактите ви вече са в Signal, включително %@ и %@";
 
 /* Format string for a label offering to start a new conversation with your contacts, if you have at least 3 Signal contacts.  Embeds {{The names of 3 of your Signal contacts}}. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Some of your contacts are already on Signal, including %@, %@ and %@";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_3_CONTACTS_FORMAT" = "Някои от контактите ви вече са в Signal, включително %@, %@ и %@.";
 
 /* A label offering to start a new conversation with your contacts, if you have no Signal contacts. */
-"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Start your first conversation here.";
+"HOME_VIEW_FIRST_CONVERSATION_OFFER_NO_CONTACTS" = "Започнете първия си разговор тук.";
 
 /* Table cell subtitle label for a group the user has been added to. {Embeds inviter name} */
-"HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%@ added you to the group";
+"HOME_VIEW_MESSAGE_REQUEST_ADDED_TO_GROUP_FORMAT" = "%@ ви добави към групата";
 
 /* Table cell subtitle label for a conversation the user has not accepted. */
-"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Message Request";
+"HOME_VIEW_MESSAGE_REQUEST_CONVERSATION" = "Заявка за съобщение";
 
 /* Format string when search returns no results. Embeds {{search term}} */
-"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "No results found for '%@'";
+"HOME_VIEW_SEARCH_NO_RESULTS_FORMAT" = "Не са намерени резултати за „%@“";
 
 /* Title for the conversation list's 'archive' mode. */
 "HOME_VIEW_TITLE_ARCHIVE" = "Архив";
@@ -1776,25 +1803,25 @@
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
-"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "You can't share more than %@ items.";
+"IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Не можете да споделите повече от %@ елемента.";
 
 /* alert title */
-"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Failed to select attachment.";
+"IMAGE_PICKER_FAILED_TO_PROCESS_ATTACHMENTS" = "Неуспешно избиране на прикачен файл.";
 
 /* Call setup status label */
 "IN_CALL_CONNECTING" = "Свързване...";
 
 /* Call screen label when call was canceled on this device because the call recipient answered on another device. */
-"IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Answered on other device.";
+"IN_CALL_ENDED_BECAUSE_ANSWERED_ELSEWHERE" = "Прието на друго устройство.";
 
 /* Call screen label when call was canceled on this device because the call recipient has a call in progress on another device. */
-"IN_CALL_ENDED_BECAUSE_BUSY_ELSEWHERE" = "Missed because a call in progress on another device.";
+"IN_CALL_ENDED_BECAUSE_BUSY_ELSEWHERE" = "Пропуснато, тъй като се провежда повикване на друго устройство.";
 
 /* Call screen label when call was canceled on this device because the call recipient declined on another device. */
-"IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Declined on other device.";
+"IN_CALL_ENDED_BECAUSE_DECLINED_ELSEWHERE" = "Отхвърлено на друго устройство.";
 
 /* Call setup status label */
-"IN_CALL_RECONNECTING" = "Reconnecting…";
+"IN_CALL_RECONNECTING" = "Повторно свързване…";
 
 /* Call setup status label */
 "IN_CALL_RINGING" = "Повикване...";
@@ -1806,25 +1833,25 @@
 "IN_CALL_TERMINATED" = "Обаждането Приключи.";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "These conversations are archived and will only appear in the Inbox if new messages are received.";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Тези разговори са архивирани и ще се показват във Входящата кутия само ако бъдат получени нови съобщения.";
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "Хайде да добавим нещо в пощенската кутия. Започнете като изпратите съобщение на приятел.";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
-"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "You can enable contacts access in the iOS Settings app to see contact names in your Signal conversation list.";
+"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Можете да активирате достъпа до контакти в приложението за Настройки на iOS, за да виждате имената на контакти в списъка с разговори в Signal.";
 
 /* info message text in conversation view */
-"INCOMING_CALL_ANSWERED" = "Answered Call";
+"INCOMING_CALL_ANSWERED" = "Прието повикване";
 
 /* info message recorded in conversation history when a call was answered from another device */
-"INCOMING_CALL_ANSWERED_ELSEWHERE" = "Answered on other device";
+"INCOMING_CALL_ANSWERED_ELSEWHERE" = "Прието на друго устройство";
 
 /* info message recorded in conversation history when a call was missed due to an active call on another device */
-"INCOMING_CALL_BUSY_ELSEWHERE" = "Missed because a call is in progress on another device";
+"INCOMING_CALL_BUSY_ELSEWHERE" = "Пропуснато, тъй като се провежда повикване на друго устройство";
 
 /* info message recorded in conversation history when a call was declined from another device */
-"INCOMING_CALL_DECLINED_ELSEWHERE" = "Declined on other device";
+"INCOMING_CALL_DECLINED_ELSEWHERE" = "Отхвърлено на друго устройство";
 
 /* info message recorded in conversation history when local user declined a call */
 "INCOMING_DECLINED_CALL" = "Отказахте обаждане";
@@ -1836,10 +1863,10 @@
 "INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "Пропуснато обаждане защото номера за безопасност са променени.";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "You can send or receive synchronized messages from your phone or iPad.  For your security, conversation history isn't transferred to new linked devices.";
+"INFO_MESSAGE_SYNCED_THREAD" = "Можете да изпращате или получавате синхронизирани съобщения от своя телефон или iPad.\nВ името на вашата безопасност хронологията на разговора не се прехвърля на нови свързани устройства.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
-"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ is on Signal!";
+"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ е в Signal!";
 
 /* accessibility label for the button which shows the sticker picker */
 "INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "Стикери";
@@ -1851,7 +1878,7 @@
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Невалиден аудио файл.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "You can enable contacts access in the iOS Settings app to invite your friends to join Signal.";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Можете да дадете достъп до контактите от приложението с Настройки на iOS, за да поканите приятелите си да се присъединят към Signal.";
 
 /* Alert title when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Разреши Достъп до Контактите";
@@ -1866,7 +1893,7 @@
 "INVITE_FRIENDS_PICKER_TITLE" = "Покани Приятели";
 
 /* Alert warning that sending an invite to multiple users will create a group message whose recipients will be able to see each other. */
-"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Inviting multiple users at the same time will start a group message and the recipients will be able to see each other.";
+"INVITE_WARNING_MULTIPLE_INVITES_BY_TEXT" = "Поканването на няколко потребителя наведнъж ще започне групово съобщение, а получателите ще могат да се виждат едни други.";
 
 /* Slider label embeds {{TIME_AMOUNT}}, e.g. '2 hours'. See *_TIME_AMOUNT strings for examples. */
 "KEEP_MESSAGES_DURATION" = "Съобщения изчезват след %@.";
@@ -1875,22 +1902,22 @@
 "KEEP_MESSAGES_FOREVER" = "Съобщенията не изчезват.";
 
 /* A keyboard command to open the current conversation's all media view. */
-"KEY_COMMAND_ALL_MEDIA" = "Go to All Media";
+"KEY_COMMAND_ALL_MEDIA" = "Към всички мултимедийни файлове";
 
 /* A keyboard command to archive the current coversation. */
-"KEY_COMMAND_ARCHIVE" = "Archive Conversation";
+"KEY_COMMAND_ARCHIVE" = "Архивиране на разговор";
 
 /* A keyboard command to open the current conversation's attachment picker. */
-"KEY_COMMAND_ATTACHMENTS" = "Show Attachments";
+"KEY_COMMAND_ATTACHMENTS" = "Показване на прикачени файлове";
 
 /* A keyboard command to open the current conversation's settings. */
-"KEY_COMMAND_CONVERSATION_INFO" = "Go to Conversation Info";
+"KEY_COMMAND_CONVERSATION_INFO" = "Към инфо за разговора";
 
 /* A keyboard command to focus the current conversation's input field. */
-"KEY_COMMAND_FOCUS_COMPOSER" = "Focus Input Bar";
+"KEY_COMMAND_FOCUS_COMPOSER" = "Фокус върху лентата за въвеждане";
 
 /* A keyboard command to open the current conversations GIF picker. */
-"KEY_COMMAND_GIF_SEARCH" = "Go to GIF Search";
+"KEY_COMMAND_GIF_SEARCH" = "Към търсене на GIF";
 
 /* A keyboard command to present the new group dialog. */
 "KEY_COMMAND_NEW_GROUP" = "Нова Група";
@@ -1899,10 +1926,10 @@
 "KEY_COMMAND_NEW_MESSAGE" = "Ново Съобщение";
 
 /* A keyboard command to jump to the next conversation in the list. */
-"KEY_COMMAND_NEXT_CONVERSATION" = "Go to Next Conversation";
+"KEY_COMMAND_NEXT_CONVERSATION" = "Към следващия разговор";
 
 /* A keyboard command to jump to the previous conversation in the list. */
-"KEY_COMMAND_PREVIOUS_CONVERSATION" = "Go to Previous Conversation";
+"KEY_COMMAND_PREVIOUS_CONVERSATION" = "Към предишния разговор";
 
 /* A keyboard command to begin a search on the conversation list. */
 "KEY_COMMAND_SEARCH" = "Търсене";
@@ -1911,10 +1938,10 @@
 "KEY_COMMAND_SETTINGS" = "Настройки";
 
 /* A keyboard command to open the current conversation's sticker picker. */
-"KEY_COMMAND_STICKERS" = "Show Stickers";
+"KEY_COMMAND_STICKERS" = "Показване на стикери";
 
 /* A keyboard command to unarchive the current coversation. */
-"KEY_COMMAND_UNARCHIVE" = "Unarchive Conversation";
+"KEY_COMMAND_UNARCHIVE" = "Разархивиране на разговор";
 
 /* Label for the 'learn more' button. */
 "LEARN_MORE" = "Научи Още";
@@ -1926,16 +1953,16 @@
 "LEAVE_GROUP_ACTION" = "Напускане на Група";
 
 /* Error indicating that a group could not be left. */
-"LEAVE_GROUP_FAILED" = "An error occurred while leaving the group.";
+"LEAVE_GROUP_FAILED" = "Възникна грешка при напускането на групата.";
 
 /* report an invalid linking code */
-"LINK_DEVICE_INVALID_CODE_BODY" = "This QR code is not valid. Please make sure you are scanning the QR code that is displayed on the device you want to link.";
+"LINK_DEVICE_INVALID_CODE_BODY" = "Този QR код е невалиден. Моля, проверете дали сканирате QR кода, показан на устройството, което искате да свържете.";
 
 /* report an invalid linking code */
 "LINK_DEVICE_INVALID_CODE_TITLE" = "Свързването на Устройство се Провали";
 
 /* confirm the users intent to link a new device */
-"LINK_DEVICE_PERMISSION_ALERT_BODY" = "This device will be able to see your groups and contacts, access your conversations, and send messages in your name.";
+"LINK_DEVICE_PERMISSION_ALERT_BODY" = "Това устройство ще може да вижда вашите групи и контакти, да има достъп до разговорите ви и да изпраща съобщения от ваше име.";
 
 /* confirm the users intent to link a new device */
 "LINK_DEVICE_PERMISSION_ALERT_TITLE" = "Да свържа ли устройството?";
@@ -1944,7 +1971,7 @@
 "LINK_DEVICE_RESTART" = "Опитай Отново";
 
 /* QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes */
-"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Scan the QR code that is displayed on the device you want to link.";
+"LINK_DEVICE_SCANNING_INSTRUCTIONS" = "Сканирайте QR кода, показан на устройството, което искате да свържете.";
 
 /* Subheading for 'Link New Device' navigation */
 "LINK_NEW_DEVICE_SUBTITLE" = "Сканирай QR Код";
@@ -1953,7 +1980,7 @@
 "LINK_NEW_DEVICE_TITLE" = "Свържи Ново Устройство";
 
 /* Label for link previews with an unknown host. */
-"LINK_PREVIEW_UNKNOWN_DOMAIN" = "Link Preview";
+"LINK_PREVIEW_UNKNOWN_DOMAIN" = "Преглед на връзка";
 
 /* Menu item and navbar title for the device manager */
 "LINKED_DEVICES_TITLE" = "Свързани Устройства";
@@ -1965,10 +1992,10 @@
 "LIST_GROUP_MEMBERS_ACTION" = "Членове на Групата";
 
 /* A string indicating that the user can search for a location */
-"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Search by name or address";
+"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Търсене по име или адрес";
 
 /* The title for the location picker view */
-"LOCATION_PICKER_TITLE" = "Select Location";
+"LOCATION_PICKER_TITLE" = "Изберете местоположение";
 
 /* No comment provided by engineer. */
 "LOGGING_SECTION" = "Регистри";
@@ -2001,43 +2028,46 @@
 "MEDIA_GALLERY_THIS_MONTH_HEADER" = "Този Месец";
 
 /* button title to snooze a megaphone */
-"MEGAPHONE_REMIND_LATER" = "Remind Me Later";
+"MEGAPHONE_REMIND_LATER" = "Напомняне по-късно";
 
 /* toast indicating that we will remind the user later */
-"MEGAPHONE_WILL_REMIND_LATER" = "We’ll remind you later.";
+"MEGAPHONE_WILL_REMIND_LATER" = "Ще ви напомним по-късно.";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_COPY_TEXT" = "Copy Message Text";
+"MESSAGE_ACTION_COPY_TEXT" = "Копиране на текст на съобщение";
 
 /* The title for the action that deletes a message for all users in the conversation. */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Delete for Everyone";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Изтриване за всички";
+
+/* A one-time confirmation that you want to delete for everyone */
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "This message will be permanently deleted for everyone in the conversation. Members will be able to see that you deleted a message.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
-"MESSAGE_ACTION_DELETE_FOR_TITLE" = "Who do you want to delete this message for?";
+"MESSAGE_ACTION_DELETE_FOR_TITLE" = "Who would you like to delete this message for?";
 
 /* The title for the action that deletes a message for the local user only. */
-"MESSAGE_ACTION_DELETE_FOR_YOU" = "Delete for You";
+"MESSAGE_ACTION_DELETE_FOR_YOU" = "Delete for Me";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_DELETE_MESSAGE" = "Delete This Message";
+"MESSAGE_ACTION_DELETE_MESSAGE" = "Изтриване на това съобщение";
 
 /* accessibility label */
-"MESSAGE_ACTION_DELETE_SELECTED_MESSAGES" = "Delete Selected Messages";
+"MESSAGE_ACTION_DELETE_SELECTED_MESSAGES" = "Изтриване на избраните съобщения";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_DETAILS" = "More Info";
+"MESSAGE_ACTION_DETAILS" = "Повече инфо";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_FORWARD_MESSAGE" = "Forward This Message";
+"MESSAGE_ACTION_FORWARD_MESSAGE" = "Препращане на това съобщение";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_REPLY" = "Reply to This Message";
+"MESSAGE_ACTION_REPLY" = "Отговор на това съобщение";
 
 /* Action sheet accessibility label */
-"MESSAGE_ACTION_SELECT_MESSAGE" = "Select Multiple";
+"MESSAGE_ACTION_SELECT_MESSAGE" = "Избиране на няколко";
 
 /* Action sheet button title */
-"MESSAGE_ACTION_SHARE_MEDIA" = "Share Media";
+"MESSAGE_ACTION_SHARE_MEDIA" = "Споделяне на мултимедия";
 
 /* Title for the 'message approval' dialog. */
 "MESSAGE_APPROVAL_DIALOG_TITLE" = "Съобщение";
@@ -2094,10 +2124,10 @@
 "MESSAGE_REQUEST_BLOCK_ACTION" = "Блокиране";
 
 /* Action sheet action to confirm blocking and deleting a thread via a message request. */
-"MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Block and Delete";
+"MESSAGE_REQUEST_BLOCK_AND_DELETE_ACTION" = "Блокиране и изтриване";
 
 /* Action sheet message to confirm blocking a conversation via a message request. */
-"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Blocked people won’t be able to call you or send you messages.";
+"MESSAGE_REQUEST_BLOCK_CONVERSATION_MESSAGE" = "Блокираните хора няма да могат да ви звънят и да ви изпращат съобщения.";
 
 /* Action sheet title to confirm blocking a contact via a message request. Embeds {{contact name or phone number}} */
 "MESSAGE_REQUEST_BLOCK_CONVERSATION_TITLE_FORMAT" = "Блокирай %@ ?";
@@ -2106,7 +2136,7 @@
 "MESSAGE_REQUEST_BLOCK_GROUP_MESSAGE" = "Ще напуснеш групата и повече няма да получаваш съобщения или обновления от нея.";
 
 /* Action sheet title to confirm blocking a group via a message request. Embeds {{group name}} */
-"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "Block and Leave %@?";
+"MESSAGE_REQUEST_BLOCK_GROUP_TITLE_FORMAT" = "Блокиране и напускане на %@?";
 
 /* Action sheet action to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "Изтрий";
@@ -2118,13 +2148,13 @@
 "MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Изтриване на разговора?";
 
 /* Action sheet action to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Delete and Leave";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Изтриване и напускане";
 
 /* Action sheet message to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "Ще напуснеш групата и тя ще бъде изтрита от всичките ти устройства.";
 
 /* Action sheet title to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Delete and Leave Group?";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Изтриване и напускане на групата?";
 
 /* A button used to accept a user on an incoming message request. */
 "MESSAGE_REQUEST_VIEW_ACCEPT_BUTTON" = "Приемам";
@@ -2133,28 +2163,28 @@
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "Блокиране";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Do you want to let %@ message you? You won't receive any messages until you unblock them.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Искате ли да позволите на %@ да ви изпраща съобщения? Няма да получавате никакви съобщения, преди да го/я разблокирате.";
 
 /* A prompt notifying that the user must unblock this group to continue. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_FORMAT" = "Do you want to let the group %@ message you? You won't receive any messages until you unblock them.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_FORMAT" = "Искате ли да позволите на групата %@ да ви изпраща съобщения? Няма да получавате никакви съобщения, преди да я разблокирате.";
 
 /* incoming message request button text which deletes a conversation */
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Изтрий";
 
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "You must share your profile to continue your conversation with %@.";
+"MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Трябва да споделите профила си, за да продължите своя разговор с %@.";
 
 /* A prompt notifying that the user must share their profile with this group. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT_FORMAT" = "You must share your profile to continue your conversation in %@.";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT_FORMAT" = "Трябва да споделите профила си, за да продължите своя разговор в %@.";
 
 /* A prompt for the user to accept or decline an invite to a group. Embeds {{name of user who invited you}}. */
-"MESSAGE_REQUEST_VIEW_GROUP_INVITE_PROMPT_FORMAT" = "You were invited to this group by %@. Do you want to let members of this group message you?";
+"MESSAGE_REQUEST_VIEW_GROUP_INVITE_PROMPT_FORMAT" = "Бяхте поканени в тази група от %@. Искате ли да позволите на членовете на групата да ви изпращат съобщения?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Do you want to let %@ message you? They won’t know you’ve seen their messages until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Искате ли да позволите на %@ да ви изпраща съобщения? Другата страна няма да знае, че сте видели нейните съобщения, преди да приемете.";
 
 /* A prompt asking if the user wants to accept a group invite. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_FORMAT" = "Do you want to join the group %@? They won’t know you’ve seen their messages until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_FORMAT" = "Искате ли да се присъедините към групата %@? Те няма да знаят, че сте видели съобщенията им, преди да приемете.";
 
 /* A button used to share your profile with an existing thread. */
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Сподели Профил";
@@ -2163,25 +2193,25 @@
 "MESSAGE_REQUEST_VIEW_UNBLOCK_BUTTON" = "Отблокиране";
 
 /* Header for message requests splash screen */
-"MESSAGE_REQUESTS_NAMES_SPLASH_TITLE" = "Introducing Message Requests";
+"MESSAGE_REQUESTS_NAMES_SPLASH_TITLE" = "Представяне на заявки за съобщения";
 
 /* Button to start a create profile name flow from the one time splash screen that appears after upgrading */
-"MESSAGE_REQUESTS_SPLASH_ADD_PROFILE_NAME_BUTTON" = "Add Profile Name";
+"MESSAGE_REQUESTS_SPLASH_ADD_PROFILE_NAME_BUTTON" = "Добавяне на име на профил";
 
 /* Body text for message requests splash screen */
-"MESSAGE_REQUESTS_SPLASH_BODY" = "You can now choose to ”Accept” or ”Delete“ a new conversation. Names let people know who’s messaging them.";
+"MESSAGE_REQUESTS_SPLASH_BODY" = "Вече можете да изберете „Приемане“ или „Изтриване“ на нов разговор. Имената уведомяват хората кой им пише.";
 
 /* Toast indicating that a profile name has been created. */
-"MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "Your profile name has been saved.";
+"MESSAGE_REQUESTS_SPLASH_MEGAPHONE_TOAST" = "Името на профила ви беше запазено.";
 
 /* message status for message delivered to their recipient. */
 "MESSAGE_STATUS_DELIVERED" = "Доставено";
 
 /* message status while message is downloading. */
-"MESSAGE_STATUS_DOWNLOADING" = "Downloading";
+"MESSAGE_STATUS_DOWNLOADING" = "Изтегляне";
 
 /* status message for failed messages */
-"MESSAGE_STATUS_FAILED" = "Sending failed.";
+"MESSAGE_STATUS_FAILED" = "Неуспешно изпращане.";
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED_SHORT" = "Провалено";
@@ -2211,19 +2241,19 @@
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ вече не е отбелязан като проверен. Докоснете за настройки.";
 
 /* Indicates that this 1:1 conversation has been blocked. */
-"MESSAGES_VIEW_CONTACT_BLOCKED" = "You Blocked This User";
+"MESSAGES_VIEW_CONTACT_BLOCKED" = "Блокирахте този потребител";
 
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ вече не е отбелязан като проверен. Докоснете за настройки.";
 
 /* Indicates that a single member of this group has been blocked. */
-"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "You Blocked 1 Member of This Group";
+"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "Блокирахте 1 член на тази група";
 
 /* Indicates that this group conversation has been blocked. */
-"MESSAGES_VIEW_GROUP_BLOCKED" = "You Blocked This Group";
+"MESSAGES_VIEW_GROUP_BLOCKED" = "Блокирахте тази група";
 
 /* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
-"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "You Blocked %@ Members of This Group";
+"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "Блокирахте %@ члена на тази група";
 
 /* Indicates that more than one member of this group conversation is no longer verified. */
 "MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Няколко потребителя вече не са отбелязани като проверени. Докоснете за настройки.";
@@ -2238,28 +2268,28 @@
 "MISSED_CALL" = "Пропуснато обаждане";
 
 /* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "You can enable camera access in the iOS Settings app to make video calls in Signal.";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Можете да дадете достъп до камерата от приложението Настройки на iOS, за да провеждате видео разговори в Signal.";
 
 /* Alert title */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal се нуждае от достъп до камерата ви.";
 
 /* Alert body indicating the user has denied location permissios */
-"MISSING_LOCATION_PERMISSION_MESSAGE" = "You can enable this permission in the iOS Settings app.";
+"MISSING_LOCATION_PERMISSION_MESSAGE" = "Можете да дадете това разрешение от приложението за Настройки на iOS.";
 
 /* Alert title indicating the user has denied location permissios */
-"MISSING_LOCATION_PERMISSION_TITLE" = "Signal requires access to your location for this feature.";
+"MISSING_LOCATION_PERMISSION_TITLE" = "Signal изисква достъп до вашето местоположение, за да работи тази функция.";
 
 /* Alert body when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "You can enable this permission in the iOS Settings app.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Можете да дадете това разрешение от приложението за Настройки на iOS.";
 
 /* Alert title when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal requires access to your photos for this feature.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal изисква достъп до снимките ви за тази функция.";
 
 /* alert title: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_DESC" = "You cannot link any more devices.";
+"MULTIDEVICE_PAIRING_MAX_DESC" = "Не можете да свържете повече устройства.";
 
 /* alert body: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "You have reached the maximum of devices you can currently link with your account. Please remove a device and try again.";
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Достигнахте максималния брой устройства, които можете да свържете с акаунта си към момента. Моля, отстранете някое устройство и опитайте отново.";
 
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "Няма да получавате известия за заглушени разговори.";
@@ -2268,7 +2298,7 @@
 "NAVIGATION_ITEM_SKIP_BUTTON" = "Пропусни";
 
 /* No comment provided by engineer. */
-"NETWORK_ERROR_RECOVERY" = "Please check if you are online and try again.";
+"NETWORK_ERROR_RECOVERY" = "Моля, проверете дали сте онлайн и опитайте отново.";
 
 /* A label the cell that lets you add a new member to a group. */
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Намери по Телефонен Номер";
@@ -2286,16 +2316,16 @@
 "NEW_GROUP_CREATE_BUTTON" = "Създай";
 
 /* Error indicating that a new group could not be created. */
-"NEW_GROUP_CREATION_FAILED" = "New group could not be created.";
+"NEW_GROUP_CREATION_FAILED" = "Неуспешно създаване на нова група.";
 
 /* Error indicating that a new group could not be created due to network connectivity problems. */
-"NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "New group could not be created. Check your internet connection and try again.";
+"NEW_GROUP_CREATION_FAILED_DUE_TO_NETWORK" = "Неуспешно създаване на нова група. Проверете интернет връзката и опитайте отново.";
 
 /* Message for error alert indicating that a group name is required. */
-"NEW_GROUP_CREATION_MISSING_NAME_ALERT_MESSAGE" = "A group name is required.";
+"NEW_GROUP_CREATION_MISSING_NAME_ALERT_MESSAGE" = "Името на групата е задължително.";
 
 /* Title for error alert indicating that a group name is required. */
-"NEW_GROUP_CREATION_MISSING_NAME_ALERT_TITLE" = "Missing Group Name";
+"NEW_GROUP_CREATION_MISSING_NAME_ALERT_TITLE" = "Липсва име на групата";
 
 /* Used in place of the group name when a group has not yet been named. */
 "NEW_GROUP_DEFAULT_TITLE" = "Нова Група";
@@ -2304,10 +2334,10 @@
 "NEW_GROUP_MEMBER_LABEL" = "Член";
 
 /* notification title. Embeds {{author name}} and {{group name}} */
-"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ to %@";
+"NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ до %@";
 
 /* The title for the 'name new group' view. */
-"NEW_GROUP_NAME_GROUP_VIEW_TITLE" = "Name Group";
+"NEW_GROUP_NAME_GROUP_VIEW_TITLE" = "Име на групата";
 
 /* Placeholder text for group name field */
 "NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Избери име за чат групата";
@@ -2316,7 +2346,7 @@
 "NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Други Потребители";
 
 /* The title for the 'select members for new group' view. */
-"NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "Select Members";
+"NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "Изберете членове";
 
 /* The alert message if user tries to exit the new group view without saving changes. */
 "NEW_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Искате ли да откажете тези промени?";
@@ -2343,19 +2373,19 @@
 "NO_SELECTED_CONVERSATION_TITLE" = "Добре дошли в Сигнал";
 
 /* A string prompting the user to send a new mesaage to a user */
-"NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "New message to:";
+"NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "Ново съобщение до:";
 
 /* A string asking the user if they'd like to invite a number to signal via SMS. */
-"NON_CONTACT_TABLE_CELL_SEND_SMS" = "No user found. Invite via SMS?";
+"NON_CONTACT_TABLE_CELL_SEND_SMS" = "Потребителят не е намерен. Ще го поканите ли чрез SMS?";
 
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "\nНапомняне за мен";
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
-"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "You may have received messages while your %@ was restarting.";
+"NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Може да сте получили съобщения, докато вашият %@ се е рестартирал.";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_FOOTER_WARNING" = "Actions include “Mark as Read,” “Reply,” and “Call Back.”";
+"NOTIFICATIONS_FOOTER_WARNING" = "Действията включват „Маркиране като прочетено“, „Отговор“ и „Връщане на повикване“.";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_NONE" = "Няма Име или Съдържание";
@@ -2367,7 +2397,7 @@
 "NOTIFICATIONS_SECTION_SOUNDS" = "Звуци";
 
 /* No comment provided by engineer. */
-"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Name, Content, and Actions";
+"NOTIFICATIONS_SENDER_AND_MESSAGE" = "Име, съдържание и действия";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_SENDER_ONLY" = "Само Име";
@@ -2379,73 +2409,73 @@
 "OK" = "ОК";
 
 /* Label indicating that the 2fa pin is exhausted in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "Incorrect PIN. Attempts exhausted.";
+"ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "Грешен ПИН. Няма повече опити.";
 
 /* Label for the 'create new pin' button when reglock is disabled during onboarding. */
-"ONBOARDING_2FA_CREATE_NEW_PIN" = "Create New PIN";
+"ONBOARDING_2FA_CREATE_NEW_PIN" = "Създаване на нов ПИН";
 
 /* Button asking if the user would like to enter an alphanumeric PIN */
-"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "Enter Alphanumeric PIN";
+"ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "Въведете ПИН с букви и цифри";
 
 /* Button asking if the user would like to enter an numeric PIN */
-"ONBOARDING_2FA_ENTER_NUMERIC" = "Enter Numeric PIN";
+"ONBOARDING_2FA_ENTER_NUMERIC" = "Въведете ПИН с цифри";
 
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Need Help?";
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Трябва ви помощ?";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN" = "Incorrect PIN";
+"ONBOARDING_2FA_INVALID_PIN" = "Грешен ПИН";
 
 /* Label indicating that the 2fa pin is invalid with a retry count other than one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "Incorrect PIN. %lu attempts remaining.";
+"ONBOARDING_2FA_INVALID_PIN_PLURAL_FORMAT" = "Грешен ПИН. Остават %lu опита.";
 
 /* Label indicating that the 2fa pin is invalid with a retry count of one in the 'onboarding 2fa' view. */
-"ONBOARDING_2FA_INVALID_PIN_SINGLE" = "Incorrect PIN. 1 attempt remaining.";
+"ONBOARDING_2FA_INVALID_PIN_SINGLE" = "Грешен ПИН. Остава 1 опит.";
 
 /* Label for the 'skip and create new pin' button when reglock is disabled during onboarding. */
-"ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Skip and Create New Pin";
+"ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Пропускане и създаване на нов ПИН";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
-"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "If you can’t remember your PIN, you can create a new one. You can register and use your account but you’ll lose some saved settings like your profile information.";
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Ако не можете да си спомните своя ПИН, можете да си създадете нов. Можете да се регистрирате и да използвате акаунта си, но ще изгубите някои запазени настройки като например информацията за профила ви.";
 
 /* Title for the skip pin entry action sheet during onboarding. */
-"ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "Skip PIN Entry?";
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "Пропускане на въвеждане на ПИН?";
 
 /* Title of the 'onboarding Captcha' view. */
-"ONBOARDING_CAPTCHA_TITLE" = "Add a touch of humanity to your messages";
+"ONBOARDING_CAPTCHA_TITLE" = "Добавете малко човечност към своите съобщения";
 
 /* button indicating that the user will register their ipad */
-"ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Register iPad";
+"ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Регистриране на iPad";
 
 /* button indicating that the user will link their phone */
-"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Link iPhone";
+"ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Свързване на iPhone";
 
 /* explanation to the user they're switching from linking to registering flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Tapping “Register iPad” will let you create a brand new Signal account or move an existing account to this iPad. This will disable Signal on any other device currently registered with the same phone number.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Докосването на „Регистриране на iPad“ ще ви позволи да създадете чисто нов акаунт в Signal или да преместите вече съществуващ акаунт на този iPad. Това ще деактивира Signal на всички други устройства, текущо регистрирани със същия телефонен номер.";
 
 /* explanation to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Tapping “Link iPhone” will let you connect your phone to an existing account. Linking your phone is generally not recommended and will limit some functionality, such as calling.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "докосването на „Свързване на iPhone\" ще ви позволи да свържете телефона си към вече съществуващ акаунт. Свързването на телефона като цяло не се препоръчва и ще ограничи някои функционалности като например повикванията.";
 
 /* header text indicating to the user they're switching from linking to registering flow */
-"ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "Register this iPad";
+"ONBOARDING_MODE_SWITCH_TITLE_PROVISIONING" = "Регистриране на този iPad";
 
 /* header text indicating to the user they're switching from registering to linking flow */
-"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Link this iPhone";
+"ONBOARDING_MODE_SWITCH_TITLE_REGISTERING" = "Свързване на този iPhone";
 
 /* warning to the user that registering an ipad is not recommended */
-"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Registering this iPad will disable Signal on any other device currently registered with the same phone number.";
+"ONBOARDING_MODE_SWITCH_WARNING_PROVISIONING" = "Регистрирането на този iPad ще деактивира Signal на всички други устройства, текущо регистрирани със същия телефонен номер.";
 
 /* warning to the user that linking a phone is not recommended */
-"ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "Linking your iPhone is not recommended and will limit core functionality.";
+"ONBOARDING_MODE_SWITCH_WARNING_REGISTERING" = "Свързването на вашия iPhone не се препоръчва и ще ограничи основни функционалности.";
 
 /* Label for the 'give access' button in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Enable Permissions";
+"ONBOARDING_PERMISSIONS_ENABLE_PERMISSIONS_BUTTON" = "Даване на разрешения";
 
 /* Explanation in the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_EXPLANATION" = "Notifications let you see when messages arrive and receive updates about new conversation activity.";
+"ONBOARDING_PERMISSIONS_EXPLANATION" = "Известията ви позволяват да виждате кога пристигат съобщенията и да получавате актуализации за нова активност по разговорите.";
 
 /* Title of the 'onboarding permissions' view. */
-"ONBOARDING_PERMISSIONS_TITLE" = "Get the message";
+"ONBOARDING_PERMISSIONS_TITLE" = "Получаване на съобщението";
 
 /* Title of the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_TITLE" = "Въведете телефонния си номер, за да започнете";
@@ -2454,70 +2484,70 @@
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Невалиден номер";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "You’ve run out of PIN guesses, but you can still access your Signal account by creating a new PIN. For your privacy and security your account will be restored without any saved profile information or settings.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_EXPLANATION" = "Нямате повече опити за познаване на ПИН, но пак можете да използвате своя акаунт в Signal, като си създадете нов ПИН. От съображения за вашата сигурност и поверителност, акаунтът ви ще бъде възстановен без запазена информация за профила и настройки.";
 
 /* Label for the 'learn more' link when reglock is disabled in the 'onboarding pin attempts exhausted' view. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "Learn more about PINs";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_LEARN_MORE" = "Научете повече за ПИН-овете";
 
 /* Explanation of the 'onboarding pin attempts exhausted' view when reglock is enabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_EXPLANATION" = "To protect your privacy and the security of your account, we’ve locked it for 7 days.\n\nAfter 7 days of inactivity, you’ll be able to reregister this phone number without needing your PIN. All content will be wiped.";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_EXPLANATION" = "За да защитим сигурността и поверителността на вашия акаунт го заключихме за 7 дни.\n\nСлед 7 дни бездействие ще можете да пререгистрирате този телефонен номер без необходимост от ПИН. Всичкото съдържание ще бъде изтрито.";
 
 /* Label for the 'learn more' link when reglock is enabled in the 'onboarding pin attempts exhausted' view. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_LEARN_MORE" = "Learn more about locked accounts";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_LEARN_MORE" = "Научете повече за заключените акаунти";
 
 /* Title of the 'onboarding pin attempts exhausted' view when reglock is enabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_TITLE" = "Account Locked";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_REGLOCK_TITLE" = "Акаунтът е заключен";
 
 /* Title of the 'onboarding pin attempts exhausted' view when reglock is disabled. */
-"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "Incorrect PIN";
+"ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "Грешен ПИН";
 
 /* Title of the 'onboarding PIN' view. */
-"ONBOARDING_PIN_EXPLANATION" = "Enter the PIN you created for your account. This is different from your SMS verification code.";
+"ONBOARDING_PIN_EXPLANATION" = "Въведете ПИН кода, който сте създали за своя акаунт. Той е различен от кода за потвърждение през SMS.";
 
 /* Title of the 'onboarding PIN' view. */
-"ONBOARDING_PIN_TITLE" = "Enter your PIN";
+"ONBOARDING_PIN_TITLE" = "Въведете своя ПИН";
 
 /* Link to the 'terms and privacy policy' in the 'onboarding splash' view. */
-"ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Terms & Privacy Policy";
+"ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Условия и политика за поверителност";
 
 /* Title of the 'onboarding splash' view. */
-"ONBOARDING_SPLASH_TITLE" = "Take privacy with you.\nBe yourself in every message.";
+"ONBOARDING_SPLASH_TITLE" = "Нека поверителността да бъде с вас.\nБъдете себе си във всяко съобщение.";
 
 /* Label for the link that lets users change their phone number in the onboarding views. */
 "ONBOARDING_VERIFICATION_BACK_LINK" = "Грешен номер?";
 
 /* Format for the label of the 'sent code' label of the 'onboarding verification' view. Embeds {{the time until the code can be resent}}. */
-"ONBOARDING_VERIFICATION_CODE_COUNTDOWN_FORMAT" = "I didn't get a code (available in %@)";
+"ONBOARDING_VERIFICATION_CODE_COUNTDOWN_FORMAT" = "Не получих код (налично след %@)";
 
 /* action sheet item shown after a number of failures to receive a verificaiton SMS during registration */
-"ONBOARDING_VERIFICATION_EMAIL_SIGNAL_SUPPORT" = "Contact Signal Support";
+"ONBOARDING_VERIFICATION_EMAIL_SIGNAL_SUPPORT" = "Връзка с поддръжката на Signal";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_INVALID_CODE" = "This code is incorrect";
+"ONBOARDING_VERIFICATION_INVALID_CODE" = "Този код е грешен";
 
 /* Label for link that can be used when the original code did not arrive. */
-"ONBOARDING_VERIFICATION_ORIGINAL_CODE_MISSING_LINK" = "I didn't get a code";
+"ONBOARDING_VERIFICATION_ORIGINAL_CODE_MISSING_LINK" = "Не получих код";
 
 /* Message for the 'resend code' alert in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_MESSAGE" = "Please ensure that you have cellular service and can receive SMS messages.";
+"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_MESSAGE" = "Моля, уверете се, че имате мобилно покритие и можете да получавате SMS съобщения.";
 
 /* Title for the 'resend code' alert in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_TITLE" = "No code?";
+"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_TITLE" = "Нямате код?";
 
 /* Label for the 'resend code by SMS' button in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_BY_SMS_BUTTON" = "Resend Code";
+"ONBOARDING_VERIFICATION_RESEND_CODE_BY_SMS_BUTTON" = "Изпращане на нов код";
 
 /* Label for the 'resend code by voice' button in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_RESEND_CODE_BY_VOICE_BUTTON" = "Звънни ми вместо това";
 
 /* Label for link that can be used when the resent code did not arrive. */
-"ONBOARDING_VERIFICATION_RESENT_CODE_MISSING_LINK" = "Still no code?";
+"ONBOARDING_VERIFICATION_RESENT_CODE_MISSING_LINK" = "Все още нямате код?";
 
 /* Format for the title of the 'onboarding verification' view. Embeds {{the user's phone number}}. */
-"ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "Enter the code we sent to %@";
+"ONBOARDING_VERIFICATION_TITLE_DEFAULT_FORMAT" = "Въведете кода, който изпратихме на %@";
 
 /* Format for the title of the 'onboarding verification' view after the verification code has been resent. Embeds {{the user's phone number}}. */
-"ONBOARDING_VERIFICATION_TITLE_RESENT_FORMAT" = "We just resent a code to %@";
+"ONBOARDING_VERIFICATION_TITLE_RESENT_FORMAT" = "Току-що изпратихме нов код на %@";
 
 /* Button text which opens the settings app */
 "OPEN_SETTINGS_BUTTON" = "Настройки";
@@ -2544,82 +2574,82 @@
 "OVERSIZE_TEXT_DISPLAY_FORMAT" = "%@…";
 
 /* Error indicating that a PDF could not be displayed. */
-"PDF_VIEW_COULD_NOT_RENDER" = "PDF could not be displayed";
+"PDF_VIEW_COULD_NOT_RENDER" = "Неуспешно показване на PDF";
 
 /* Navbar title for for PDF view. */
 "PDF_VIEW_TITLE" = "PDF";
 
 /* Format for label indicating the a group member has invited 1 other user to the group. Embeds {{ the name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_MEMBER_INVITED_1_USER_FORMAT" = "%@ invited 1 person";
+"PENDING_GROUP_MEMBERS_MEMBER_INVITED_1_USER_FORMAT" = "%@ покани 1 човек";
 
 /* Format for label indicating the a group member has invited N other users to the group. Embeds {{ %1$@ name of the inviting group member, %2$@ the number of users they have invited. }}. */
-"PENDING_GROUP_MEMBERS_MEMBER_INVITED_N_USERS_FORMAT" = "%1$@ invited %2$@ people";
+"PENDING_GROUP_MEMBERS_MEMBER_INVITED_N_USERS_FORMAT" = "%1$@ покани %2$@ души";
 
 /* Label indicating that a group has no pending members. */
-"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "No invites to show.";
+"PENDING_GROUP_MEMBERS_NO_PENDING_MEMBERS" = "Няма покани за показване.";
 
 /* Title of 're-send invite' button. */
-"PENDING_GROUP_MEMBERS_RESEND_INVITE_1_BUTTON" = "Re-send Invite";
+"PENDING_GROUP_MEMBERS_RESEND_INVITE_1_BUTTON" = "Повторно изпращане на покана";
 
 /* Title of 're-send invites' button. */
-"PENDING_GROUP_MEMBERS_RESEND_INVITE_N_BUTTON" = "Re-send Invites";
+"PENDING_GROUP_MEMBERS_RESEND_INVITE_N_BUTTON" = "Повторно изпращане на покани";
 
 /* Title of 'revoke invite' button. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "Revoke Invite";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_1_BUTTON" = "Оттегляне на покана";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revoke group invite sent by “%@“?";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Оттегляне на поканата за група, изпратена от „%@“?";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Revoke %1$@ invites sent by “%2$@“?";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Оттегляне на %1$@ покани, изпратени от „%2$@“?";
 
 /* Title of 'revoke invites' button. */
-"PENDING_GROUP_MEMBERS_REVOKE_INVITE_N_BUTTON" = "Revoke Invites";
+"PENDING_GROUP_MEMBERS_REVOKE_INVITE_N_BUTTON" = "Оттегляне на покани";
 
 /* Format for title of 'revoke invite' confirmation alert. Embeds {{ the name of the invited group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revoke group invite for “%@“?";
+"PENDING_GROUP_MEMBERS_REVOKE_LOCAL_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Оттегляне на поканата за група за „%@“?";
 
 /* Format for title of 'revoke or re-send invite' confirmation alert. Embeds {{ name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Revoke or re-send group invite for “%@“?";
+"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_1_FORMAT" = "Оттегляне или повторно изпращане на покана за група за „%@“?";
 
 /* Format for title of 'revoke or re-send invite' confirmation alert. Embeds {{ %1$@ the number of users they have invited, %2$@ name of the inviting group member. }}. */
-"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Revoke or re-send %1$@ invites sent by “%2$@“?";
+"PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Оттегляне или повторно изпращане на %1$@ покани, изпратени от „%2$@“?";
 
 /* Footer for the 'invites by other group members' section of the 'pending group members' view. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Details of people invited by other group members are not shown. If invitees choose to join, their information will be shared with the group at that time. They will not see any messages in the group until they join.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Не се показват подробности за хората, поканени от други членове на групата. Ако поканените решат да се присъединят, тогава информацията им ще бъде споделена с групата. Те няма да виждат никакви съобщения в групата, преди да се присъединят.";
 
 /* Title for the 'invites by other group members' section of the 'pending group members' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "Invites by other group members";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "Покани от други членове на групата";
 
 /* Title for the 'people you invited' section of the 'pending group members' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "People you invited";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "Поканени от вас хора";
 
 /* The title for the 'pending group members' view. */
-"PENDING_GROUP_MEMBERS_VIEW_TITLE" = "Pending Group Invites";
+"PENDING_GROUP_MEMBERS_VIEW_TITLE" = "Изчакващи покани за група";
 
 /* Label for view-once messages that have invalid content. */
-"PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "Error handling incoming message";
+"PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "Грешка при боравене с входящо съобщение";
 
 /* inbox cell and notification text for an already viewed view-once media message. */
-"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "View-once media";
+"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "Мултимедия за еднократно гледане";
 
 /* Label for outgoing view-once messages. */
 "PER_MESSAGE_EXPIRATION_OUTGOING_MESSAGE" = "Медия";
 
 /* inbox cell and notification text for a view-once photo. */
-"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "View-once photo";
+"PER_MESSAGE_EXPIRATION_PHOTO_PREVIEW" = "Снимка за еднократно гледане";
 
 /* inbox cell and notification text for a view-once video. */
-"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "View-once video";
+"PER_MESSAGE_EXPIRATION_VIDEO_PREVIEW" = "Видео за еднократно гледане";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
-"PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "View Photo";
+"PER_MESSAGE_EXPIRATION_VIEW_PHOTO" = "Виж снимката";
 
 /* Label for view-once messages indicating that user can tap to view the message's contents. */
-"PER_MESSAGE_EXPIRATION_VIEW_VIDEO" = "View Video";
+"PER_MESSAGE_EXPIRATION_VIEW_VIDEO" = "Виж видеото";
 
 /* Label for view-once messages indicating that the local user has viewed the message's contents. */
-"PER_MESSAGE_EXPIRATION_VIEWED" = "Viewed";
+"PER_MESSAGE_EXPIRATION_VIEWED" = "Видяно";
 
 /* A format for a label showing an example phone number. Embeds {{the example phone number}}. */
 "PHONE_NUMBER_EXAMPLE_FORMAT" = "Пример: %@";
@@ -2661,118 +2691,118 @@
 "PHONE_NUMBER_TYPE_WORK_FAX" = "Служебен Факс";
 
 /* alert title, generic error preventing user from capturing a photo */
-"PHOTO_CAPTURE_GENERIC_ERROR" = "Unable to capture image.";
+"PHOTO_CAPTURE_GENERIC_ERROR" = "Неуспешно улавяне на изображение.";
 
 /* alert title */
-"PHOTO_CAPTURE_UNABLE_TO_CAPTURE_IMAGE" = "Unable to capture image.";
+"PHOTO_CAPTURE_UNABLE_TO_CAPTURE_IMAGE" = "Неуспешно улавяне на изображение.";
 
 /* alert title */
-"PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "Failed to configure camera.";
+"PHOTO_CAPTURE_UNABLE_TO_INITIALIZE_CAMERA" = "Неуспешно конфигуриране на камерата.";
 
 /* label for system photo collections which have no name. */
-"PHOTO_PICKER_UNNAMED_COLLECTION" = "Unnamed Album";
+"PHOTO_PICKER_UNNAMED_COLLECTION" = "Безименен албум";
 
 /* Label indicating the user must use at least 4 characters */
-"PIN_CREATION_ALPHANUMERIC_HINT" = "PIN must be at least 4 characters";
+"PIN_CREATION_ALPHANUMERIC_HINT" = "ПИН кодът трябва да е най-малко 4 знака";
 
 /* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_CHANGING_TITLE" = "Change your PIN";
+"PIN_CREATION_CHANGING_TITLE" = "Смяна на ПИН кода ви";
 
 /* Title of the 'pin creation' confirmation view. */
-"PIN_CREATION_CONFIRM_TITLE" = "Confirm your PIN";
+"PIN_CREATION_CONFIRM_TITLE" = "Потвърдете своя ПИН код";
 
 /* The explanation of confirmation in the 'pin creation' view. */
-"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Enter the PIN you just created.";
+"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Въведете току-що създадения ПИН.";
 
 /* Button asking if the user would like to create an alphanumeric PIN */
-"PIN_CREATION_CREATE_ALPHANUMERIC" = "Create Alphanumeric PIN";
+"PIN_CREATION_CREATE_ALPHANUMERIC" = "Създаване на ПИН от букви и цифри";
 
 /* Button asking if the user would like to create an numeric PIN */
-"PIN_CREATION_CREATE_NUMERIC" = "Create Numeric PIN";
+"PIN_CREATION_CREATE_NUMERIC" = "Създаване на ПИН от цифри";
 
 /* Error body indicating that the attempt to create a PIN failed. */
-"PIN_CREATION_ERROR_MESSAGE" = "Your PIN was not saved. We’ll prompt you to create a PIN later.";
+"PIN_CREATION_ERROR_MESSAGE" = "ПИН кодът ви не беше запазен. Ще ви подканим да създадете ПИН по-късно.";
 
 /* Error title indicating that the attempt to create a PIN failed. */
-"PIN_CREATION_ERROR_TITLE" = "PIN Creation Failed";
+"PIN_CREATION_ERROR_TITLE" = "Неуспешно създаване на ПИН";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall Signal.";
+"PIN_CREATION_EXPLANATION" = "ПИН кодовете пазят информацията, съхранена във вашия Signal, шифрирана, за да имате само вие достъп до нея. Вашите настройки, профил и контакти ще бъдат възстановени, когато преинсталирате Signal.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
-"PIN_CREATION_MISMATCH_ERROR" = "PINs don’t match. Try again.";
+"PIN_CREATION_MISMATCH_ERROR" = "ПИН кодовете не съвпадат. Опитайте отново.";
 
 /* Label indicating the user must use at least 4 digits */
-"PIN_CREATION_NUMERIC_HINT" = "PIN must be at least 4 digits";
+"PIN_CREATION_NUMERIC_HINT" = "ПИН кодът трябва да е най-малко 4 цифри";
 
 /* Label indication the user must confirm their PIN. */
-"PIN_CREATION_PIN_CONFIRMATION_HINT" = "Re-enter PIN";
+"PIN_CREATION_PIN_CONFIRMATION_HINT" = "Въведете ПИН отново";
 
 /* Indicates the work we are doing while creating the user's pin */
-"PIN_CREATION_PIN_PROGRESS" = "Creating PIN…";
+"PIN_CREATION_PIN_PROGRESS" = "Създаване на ПИН…";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "You can change your PIN as long as this device is registered.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "Можете да смените ПИН кода си, докато това устройство е регистрирано.";
 
 /* Title of the 'pin creation' recreation view. */
-"PIN_CREATION_RECREATION_TITLE" = "Change your PIN";
+"PIN_CREATION_RECREATION_TITLE" = "Смяна на ПИН кода ви";
 
 /* Title of the 'pin creation' view. */
-"PIN_CREATION_TITLE" = "Create your PIN";
+"PIN_CREATION_TITLE" = "Създаване на ПИН";
 
 /* Label indicating that the attempted PIN is too weak */
-"PIN_CREATION_WEAK_ERROR" = "Choose a stronger PIN";
+"PIN_CREATION_WEAK_ERROR" = "Изберете по-силен ПИН";
 
 /* The explanation for the 'pin reminder' dialog. */
-"PIN_REMINDER_EXPLANATION" = "To help you memorize your PIN, we’ll ask you to enter it periodically. We’ll ask less over time.";
+"PIN_REMINDER_EXPLANATION" = "За да ви помогнем да запомните вашия ПИН код, периодично ще ви молим да го въведете. С времето ще го искаме по-рядко.";
 
 /* Text asking if the user forgot their pin for the 'pin reminder' dialog. */
-"PIN_REMINDER_FORGOT_PIN" = "Forgot your PIN?";
+"PIN_REMINDER_FORGOT_PIN" = "Забравили сте си ПИН кода?";
 
 /* Action text for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_ACTION" = "Verify PIN";
+"PIN_REMINDER_MEGAPHONE_ACTION" = "Потвърждение на ПИН";
 
 /* Body for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_BODY" = "We’ll occasionally ask you to verify your PIN so that you remember it.";
+"PIN_REMINDER_MEGAPHONE_BODY" = "Понякога ще ви молим да потвърдите своя ПИН, за да си го припомняте.";
 
 /* Toast indicating that we'll ask you for your PIN again in 3 days. */
-"PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "We’ll remind you again in a few days.";
+"PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "Ще ви напомним отново след няколко дни.";
 
 /* Title for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_TITLE" = "Verify your Signal PIN";
+"PIN_REMINDER_MEGAPHONE_TITLE" = "Потвърдете своя ПИН за Signal";
 
 /* Toast indicating that we'll ask you for your PIN again tomorrow. */
-"PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "We’ll remind you again tomorrow.";
+"PIN_REMINDER_MEGAPHONE_TOMORROW_TOAST" = "Утре ще ви напомним отново.";
 
 /* Toast indicating that we'll ask you for your PIN again in 2 weeks. */
-"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "We’ll remind you again in a couple weeks.";
+"PIN_REMINDER_MEGAPHONE_TWO_WEEK_TOAST" = "Ще ви напомним отново след няколко седмици.";
 
 /* Toast indicating that we'll ask you for your PIN again in a week. */
-"PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "We’ll remind you again in a week.";
+"PIN_REMINDER_MEGAPHONE_WEEK_TOAST" = "Ще ви напомним отново след една седмица.";
 
 /* Label indicating that the attempted PIN does not match the user's PIN */
-"PIN_REMINDER_MISMATCH_ERROR" = "Invalid PIN, try again.";
+"PIN_REMINDER_MISMATCH_ERROR" = "Невалиден ПИН, опитайте отново.";
 
 /* The title for the 'pin reminder' dialog. */
-"PIN_REMINDER_TITLE" = "Enter your Signal PIN";
+"PIN_REMINDER_TITLE" = "Въведете своя ПИН за Signal";
 
 /* Label indicating that the attempted PIN is too short */
 "PIN_REMINDER_TOO_SHORT_ERROR" = "PIN кодът трябва да е най-малко 4 цифри.";
 
 /* Action text for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_ACTION" = "Create PIN";
+"PINS_MEGAPHONE_ACTION" = "Създаване на ПИН";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "PINs keep information that’s stored with Signal encrypted";
+"PINS_MEGAPHONE_BODY" = "ПИН кодовете пазят информацията, съхранена в Signal, шифрирана";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Creating a PIN will become mandatory in %ld days.";
+"PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Ще ви напомним по-късно. Създаването на ПИН ще стане задължително след %ld дни.";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_TITLE" = "Create a PIN";
+"PINS_MEGAPHONE_TITLE" = "Създайте си ПИН";
 
 /* Toast indicating that a PIN has been created. */
-"PINS_MEGAPHONE_TOAST" = "PIN created. You can change it in settings.";
+"PINS_MEGAPHONE_TOAST" = "ПИН кодът е създаден. Можете да го смените от настройките.";
 
 /* Accessibility label for button to start media playback */
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "Възпроизведи Медиа";
@@ -2811,7 +2841,7 @@
 "PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "Вашият партньор ползва стара версия на Signal. Той трябва да обнови приложението си преди верифициране.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "The scanned code doesn't look like a safety number. Are you both on an up-to-date version of Signal?";
+"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Сканираният код не прилича на номер за сигурност. И двамата ли ползвате актуална версия на Signal?";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
 "PRIVACY_VERIFICATION_INSTRUCTIONS" = "Ако желаете да се провери сигурността на вашето шифроване от край до край с %@, сравнете цифрите по-горе с номерата на тяхното устройство.\n\nИли можете да сканирате кода на техния телефон, или да ги помолите те да сканират вашия.";
@@ -2826,22 +2856,22 @@
 "PROCEED_BUTTON" = "Продължи";
 
 /* Action text for profile name reminder megaphone */
-"PROFILE_NAME_REMINDER_MEGAPHONE_ACTION" = "Get Started";
+"PROFILE_NAME_REMINDER_MEGAPHONE_ACTION" = "Първи стъпки";
 
 /* Body for profile name reminder megaphone when user already has a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_BODY" = "Your profile can now include an optional last name.";
+"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_BODY" = "Профилът ви вече може да включва и фамилно име, ако желаете.";
 
 /* Title for profile name reminder megaphone when user already has a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_TITLE" = "Confirm Your Profile Name";
+"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_TITLE" = "Потвърдете името за профила си";
 
 /* Body for profile name reminder megaphone when user doesn't have a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "This will be displayed when you start a new conversation or share it.";
+"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "Това ще се показва, когато започнете нов разговор или го споделите.";
 
 /* Title for profile name reminder megaphone when user doesn't have a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_TITLE" = "Add a Profile Name";
+"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_TITLE" = "Добавяне на име на профил";
 
 /* Toast indicating that a PIN has been created. */
-"PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "Your profile name has been saved.";
+"PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "Името на профила ви беше запазено.";
 
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Задай снимка на профила";
@@ -2850,31 +2880,31 @@
 "PROFILE_VIEW_CLEAR_AVATAR" = "Премахни снимката";
 
 /* A string indicating that the user can create a username on the profile view. */
-"PROFILE_VIEW_CREATE_USERNAME" = "Create Username";
+"PROFILE_VIEW_CREATE_USERNAME" = "Създаване на потребителско име";
 
 /* Error message shown when user tries to update profile with a family name that is too long. */
-"PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "Your last name is too long.";
+"PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "Фамилното ви име е прекалено дълго.";
 
 /* Error message shown when user tries to update profile without a given name */
-"PROFILE_VIEW_ERROR_GIVEN_NAME_REQUIRED" = "Your first name is required.";
+"PROFILE_VIEW_ERROR_GIVEN_NAME_REQUIRED" = "Собственото име е задължително.";
 
 /* Error message shown when user tries to update profile with a given name that is too long. */
-"PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG" = "Your first name is too long.";
+"PROFILE_VIEW_ERROR_GIVEN_NAME_TOO_LONG" = "Собственото ви име е прекалено дълго.";
 
 /* Default text for the family name field of the profile view. */
-"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "(Optional)";
+"PROFILE_VIEW_FAMILY_NAME_DEFAULT_TEXT" = "(По избор)";
 
 /* Label for the family name field of the profile view. */
-"PROFILE_VIEW_FAMILY_NAME_FIELD" = "Last Name";
+"PROFILE_VIEW_FAMILY_NAME_FIELD" = "Фамилно име";
 
 /* Default text for the given name field of the profile view. */
-"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "(Required)";
+"PROFILE_VIEW_GIVEN_NAME_DEFAULT_TEXT" = "(Задължително)";
 
 /* Label for the given name field of the profile view. */
-"PROFILE_VIEW_GIVEN_NAME_FIELD" = "First Name";
+"PROFILE_VIEW_GIVEN_NAME_FIELD" = "Собствено име";
 
 /* Error shown when the user tries to update their profile when the app is not connected to the internet. */
-"PROFILE_VIEW_NO_CONNECTION" = "Profile can only be updated when connected to the internet.";
+"PROFILE_VIEW_NO_CONNECTION" = "Профилът може да се актуализира, само когато има връзка с интернет.";
 
 /* Description of the user profile. */
 "PROFILE_VIEW_PROFILE_DESCRIPTION" = "Вашия профил в Signal ще е видим за контактите ви, когато инициирате нов разговор, и когато го споделите с други потребители и групи.";
@@ -2886,7 +2916,7 @@
 "PROFILE_VIEW_TITLE" = "Профил";
 
 /* Label for the username field of the profile view. */
-"PROFILE_VIEW_USERNAME_FIELD" = "Username";
+"PROFILE_VIEW_USERNAME_FIELD" = "Потребителско име";
 
 /* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "Маркирай като прочетено";
@@ -2910,13 +2940,13 @@
 "QUOTED_REPLY_AUTHOR_INDICATOR_YOU" = "Отговор до Вас";
 
 /* Footer label that appears below quoted messages when the quoted content was not derived locally. When the local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead show the content specified by the sender. */
-"QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "Original message not found.";
+"QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "Оригиналното съобщение не е намерено.";
 
 /* Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of the message was since deleted. */
-"QUOTED_REPLY_ORIGINAL_MESSAGE_DELETED" = "Original message no longer available.";
+"QUOTED_REPLY_ORIGINAL_MESSAGE_DELETED" = "Оригиналното съобщение вече не е налично.";
 
 /* Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of the message didn't exist when the quote was received. */
-"QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "Original message not found.";
+"QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "Оригиналното съобщение не е намерено.";
 
 /* Indicates this message is a quoted reply to an attachment of unknown type. */
 "QUOTED_REPLY_TYPE_ATTACHMENT" = "Прикачен файл";
@@ -2934,88 +2964,91 @@
 "QUOTED_REPLY_TYPE_VIDEO" = "Видео";
 
 /* The header used to indicate All reactions to a given message. Embeds {{number of reactions}} */
-"REACTION_DETAIL_ALL_FORMAT" = "All · %@";
+"REACTION_DETAIL_ALL_FORMAT" = "Всичките %@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Reacted %@ to your message";
+"REACTION_INCOMING_NOTIFICATION_BODY_FORMAT" = "Реагира с %@ на съобщението ви";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Reacted %@ to your album";
+"REACTION_INCOMING_NOTIFICATION_TO_ALBUM_BODY_FORMAT" = "Реагира с %@ на албума ви";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Reacted %@ to your audio";
+"REACTION_INCOMING_NOTIFICATION_TO_AUDIO_BODY_FORMAT" = "Реагира с %@ на аудиото ви";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Reacted %@ to your contact share";
+"REACTION_INCOMING_NOTIFICATION_TO_CONTACT_SHARE_BODY_FORMAT" = "Реагира с %@ на вашето споделяне на контакт";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Reacted %@ to your file";
+"REACTION_INCOMING_NOTIFICATION_TO_FILE_BODY_FORMAT" = "Реагира с %@ на файла ви";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "Reacted %@ to your GIF";
+"REACTION_INCOMING_NOTIFICATION_TO_GIF_BODY_FORMAT" = "Реагира с %@ на вашия GIF";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "Reacted %@ to your photo";
+"REACTION_INCOMING_NOTIFICATION_TO_PHOTO_BODY_FORMAT" = "Реагира с %@ на снимката ви";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Reacted %@ to your sticker";
+"REACTION_INCOMING_NOTIFICATION_TO_STICKER_MESSAGE_BODY_FORMAT" = "Реагира с %@ на стикера ви";
 
 /* notification body. Embeds {{reaction emoji}} and {{body text}} */
-"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Reacted %@ to: \"%@\"";
+"REACTION_INCOMING_NOTIFICATION_TO_TEXT_MESSAGE_BODY_FORMAT" = "Реагира с %@ на: „%@“";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Reacted %@ to your video";
+"REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Реагира с %@ на видеото ви";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Reacted %@ to your view-once media";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Реагира с %@ на вашата мултимедия за еднократно гледане";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reacted %@ to your voice message";
+"REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Реагира с %@ на вашето гласово съобщение";
 
 /* Body for the megaphone introducing reactions */
-"REACTION_MEGAPHONE_BODY" = "Tap and hold on any message to quickly reply with how you feel.";
+"REACTION_MEGAPHONE_BODY" = "Докоснете и задръжте някое съобщение, за да отговорите бързо с начина, по който се чувствате.";
 
 /* Title for the megaphone introducing reactions */
-"REACTION_MEGAPHONE_TITLE" = "Introducing Reactions";
+"REACTION_MEGAPHONE_TITLE" = "Представяме реакциите";
 
 /* Text describing the local user in the reaction details pane. */
 "REACTIONS_DETAIL_YOU" = "Ти";
 
+/* Pressing this button marks a thread as read */
+"READ_ACTION" = "Прочетено";
+
 /* Error message indicating that a user can't be selected. */
-"RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "User can't be selected.";
+"RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "Потребителят не може да бъде избран.";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "Забравен ПИН.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Need Help?";
+"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Трябва ви помощ?";
 
 /* Alert body for a forgotten SVR (V2) PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Вашият ПИН е създаден от вас код с 4+ цифри, който може да съдържа само цифри или цифри и букви. Ако не можете да си спомните своя ПИН, ще трябва да изчакате 7 дни, за да пререгистрирате акаунта си.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you can create a new one. You can register and use your account but you’ll lose some saved settings like your profile information.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Вашият ПИН е създаден от вас код с 4+ цифри, който може да съдържа само цифри или цифри и букви. Ако не можете да си спомните своя ПИН, можете да си създадете нов. Можете да се регистрирате и да използвате акаунта си, но ще изгубите някои запазени настройки като например информацията за профила ви.";
 
 /* Alert body for a forgotten V1 PIN */
-"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit numeric code you created. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
+"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Вашият ПИН е създаден от вас код с 4+ цифри. Ако не можете да си спомните своя ПИН, ще трябва да изчакате 7 дни, за да пререгистрирате акаунта си.";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock disabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "You have %lu attempts remaining. If you run out of attempts, you can create a new PIN. You can register and use your account but you’ll lose some saved settings like your profile information.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "Остават ви %lu опита. Ако нямате повече опити, можете да си създадете нов ПИН. Можете да се регистрирате и да използвате акаунта си, но ще изгубите някои запазени настройки като например информацията за профила ви.";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock enabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_PLURAL_FORMAT" = "You have %lu attempts remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_PLURAL_FORMAT" = "Остават ви %lu опита. Ако нямате повече опити, акаунтът ви ще бъде заключен. След 7 дни бездействие ще можете да се пререгистрирате без ПИН. Акаунтът ви ще бъде изчистен, а всичкото му съдържание - изтрито.";
 
 /* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock enabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_SINGLE" = "You have 1 attempt remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_SINGLE" = "Остава ви 1 опит. Ако нямате повече опити, акаунтът ви ще бъде заключен. След 7 дни бездействие ще можете да се пререгистрирате без ПИН. Акаунтът ви ще бъде изчистен, а всичкото му съдържание - изтрито.";
 
 /* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock disabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "You have 1 attempt remaining. If you run out of attempts, you can create a new PIN. You can register and use your account but you’ll lose some saved settings like your profile information.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "Остават ви 1 опит. Ако нямате повече опити, можете да си създадете нов ПИН. Можете да се регистрирате и да използвате акаунта си, но ще изгубите някои запазени настройки като например информацията за профила ви.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Incorrect PIN";
+"REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Грешен ПИН";
 
 /* Indicates the work we are doing while verifying the user's pin */
-"REGISTER_2FA_PIN_PROGRESS" = "Verifying PIN…";
+"REGISTER_2FA_PIN_PROGRESS" = "Проверка на ПИН…";
 
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "Изпращане";
@@ -3054,7 +3087,7 @@
 "REGISTRATION_PHONENUMBER_BUTTON" = "Телефонен Номер";
 
 /* No comment provided by engineer. */
-"REGISTRATION_RESTRICTED_MESSAGE" = "You need to register before you can send a message.";
+"REGISTRATION_RESTRICTED_MESSAGE" = "Трябва да се регистрирате, преди да можете да изпратите съобщение.";
 
 /* Alert view title */
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "Проверката е Неуспешна";
@@ -3102,7 +3135,7 @@
 "REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "Това не е коректен ПИН.";
 
 /* The title for the 'replace group admin' view. */
-"REPLACE_ADMIN_VIEW_TITLE" = "Choose New Admin";
+"REPLACE_ADMIN_VIEW_TITLE" = "Изберете нов администратор";
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "Регистрирай Отново";
@@ -3162,142 +3195,142 @@
 "SCREEN_LOCK_UNLOCK_SIGNAL" = "Отключи Signal";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This will have a female profile photo. */
-"SCREENSHOT_NAME_CONTACT_EIGHT" = "Tina Ukuku";
+"SCREENSHOT_NAME_CONTACT_EIGHT" = "Вики Петрова";
 
 /* This is a contact's name. Please keep the nick name Ali and change the last name to a popular lastname in your language. This will have male profile photo. */
-"SCREENSHOT_NAME_CONTACT_FIVE" = "Ali Smith";
+"SCREENSHOT_NAME_CONTACT_FIVE" = "Али Николов";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This profile photo will be either male or female. Choose a unisex name if possible. */
-"SCREENSHOT_NAME_CONTACT_FOUR" = "Artemis Cheng";
+"SCREENSHOT_NAME_CONTACT_FOUR" = "Алекс К.";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. Include two last names if that is represented in your locale. This should be a unique non-public figure's name. This will have a female profile photo. */
-"SCREENSHOT_NAME_CONTACT_NINE" = "Zeus Lehtonen";
+"SCREENSHOT_NAME_CONTACT_NINE" = "Петя Иванова Кирилова";
 
 /* This is a contact's name. A male leadership/presidential position + the sound a cat makes. This will have a cat profile photo. */
 "SCREENSHOT_NAME_CONTACT_ONE" = "Председателят Мяу";
 
 /* This is a contact's name. Please keep a similar unisex first name (Kai) if this name isn't common and only post the last initial. This will have a female profile photo. */
-"SCREENSHOT_NAME_CONTACT_SEVEN" = "Jordan B.";
+"SCREENSHOT_NAME_CONTACT_SEVEN" = "Дани Б.";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This will have a male profile photo. */
-"SCREENSHOT_NAME_CONTACT_SIX" = "Michael Kirk";
+"SCREENSHOT_NAME_CONTACT_SIX" = "Михаил Петров";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This will have a female profile photo. */
-"SCREENSHOT_NAME_CONTACT_TEN" = "Maya Dorai";
+"SCREENSHOT_NAME_CONTACT_TEN" = "Ана Константинова";
 
 /* This is a contact's name. Please keep a similar nickname for Nikola/Nikita/etc in your language and only post the last initial. This profile photo will be either male or female but mostly female. */
-"SCREENSHOT_NAME_CONTACT_THREE" = "Nikki Romanov";
+"SCREENSHOT_NAME_CONTACT_THREE" = "Ники Р.";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This profile photo will be either male or female. */
-"SCREENSHOT_NAME_CONTACT_TWO" = "Myles Larson";
+"SCREENSHOT_NAME_CONTACT_TWO" = "Тони Л.";
 
 /* This is a group chat of family members. Please keep Kirk or replace with a common last name in your locale. Translate 'Family' */
-"SCREENSHOT_NAME_GROUP_FIVE" = "Kirk Family";
+"SCREENSHOT_NAME_GROUP_FIVE" = "Семейство Кирилови";
 
 /* Please include emoji. This is a group name/channel name for pictures of the sun in the sky. */
-"SCREENSHOT_NAME_GROUP_FOUR" = "Sunsets 🌅";
+"SCREENSHOT_NAME_GROUP_FOUR" = "Залези 🌅";
 
 /* This is for a group of people interested in discussing books they've read. */
 "SCREENSHOT_NAME_GROUP_ONE" = "Клуб на читателя";
 
 /* This is group chat name for members talking about cats. Please include the emoji. */
-"SCREENSHOT_NAME_GROUP_SIX" = "Cat Chat 🐈 🐱";
+"SCREENSHOT_NAME_GROUP_SIX" = "Котешки чат 🐈 🐱";
 
 /* Please include emoji. This is a group name for people who climb rocks/climb trees/hike mountains/outside mountaineering. */
-"SCREENSHOT_NAME_GROUP_THREE" = "🧗🏽‍♀️ Rock Climbers";
+"SCREENSHOT_NAME_GROUP_THREE" = "🧗🏽‍♀️ Скално катерене";
 
 /* This is for a group chat for people who want weather updates. */
-"SCREENSHOT_NAME_GROUP_TWO" = "Weather Forecasts";
+"SCREENSHOT_NAME_GROUP_TWO" = "Прогнози за времето";
 
 /* This appears in Signal > Settings. A female leadership/presidential/chairwoman position + female name Freyja or similar spelling. This will have a cat profile photo. */
-"SCREENSHOT_NAME_LOCAL_PROFILE" = "Chairwoman Freya";
+"SCREENSHOT_NAME_LOCAL_PROFILE" = "Председателката Фрея";
 
 /* This is a message expressing support/happiness/awe/shock. */
-"SCREENSHOT_THREAD_DIRECT_FIVE_MESSAGE_ONE" = "Congrats! I can't believe it!";
+"SCREENSHOT_THREAD_DIRECT_FIVE_MESSAGE_ONE" = "Честито! Направо невероятно!";
 
 /* This is a message. */
-"SCREENSHOT_THREAD_DIRECT_FIVE_MESSAGE_THREE" = "See you tomorrow?";
+"SCREENSHOT_THREAD_DIRECT_FIVE_MESSAGE_THREE" = "Ще се видим ли утре?";
 
 /* This is a message. Please include the emoji. */
-"SCREENSHOT_THREAD_DIRECT_FIVE_MESSAGE_TWO" = "Thank you ☺️";
+"SCREENSHOT_THREAD_DIRECT_FIVE_MESSAGE_TWO" = "Благодаря☺️";
 
 /* This is a message. */
-"SCREENSHOT_THREAD_DIRECT_FOUR_MESSAGE_ONE" = "Your wisdom has saved me.";
+"SCREENSHOT_THREAD_DIRECT_FOUR_MESSAGE_ONE" = "Твоята мъдрост ме спаси.";
 
 /* This is a message. Include 'Thanks' + a similar phrase with the :) emoji. */
-"SCREENSHOT_THREAD_DIRECT_FOUR_MESSAGE_TWO" = "Thanks! What a wonderful message to read :)";
+"SCREENSHOT_THREAD_DIRECT_FOUR_MESSAGE_TWO" = "Благодаря! Какво хубаво съобщение :)";
 
 /* This is a message. */
-"SCREENSHOT_THREAD_DIRECT_ONE_MESSAGE_ONE" = "The rain is pouring down and I'm sitting here just listening to it.";
+"SCREENSHOT_THREAD_DIRECT_ONE_MESSAGE_ONE" = "Дъждът се излива, а аз си седя и го слушам.";
 
 /* This is a message. */
-"SCREENSHOT_THREAD_DIRECT_ONE_MESSAGE_TWO" = "That's what I did this morning too.";
+"SCREENSHOT_THREAD_DIRECT_ONE_MESSAGE_TWO" = "И аз така направих сутринта.";
 
 /* This is a message before a call. */
-"SCREENSHOT_THREAD_DIRECT_SEVEN_MESSAGE_ONE" = "Free for a call?";
+"SCREENSHOT_THREAD_DIRECT_SEVEN_MESSAGE_ONE" = "Имаш ли минутка да се чуем?";
 
 /* This is a message. */
-"SCREENSHOT_THREAD_DIRECT_SIX_MESSAGE_ONE" = "Yes!";
+"SCREENSHOT_THREAD_DIRECT_SIX_MESSAGE_ONE" = "Да!";
 
 /* Replace crepes with similar item that you bake or cook i.e. bread, croissants, naan. */
-"SCREENSHOT_THREAD_DIRECT_THREE_MESSAGE_ONE" = "We're making crepes tomorrow";
+"SCREENSHOT_THREAD_DIRECT_THREE_MESSAGE_ONE" = "Утре ще правим мекици";
 
 /* This is a message before an image of mountains + a lake. */
-"SCREENSHOT_THREAD_DIRECT_TWO_MESSAGE_ONE" = "Hey check this out!";
+"SCREENSHOT_THREAD_DIRECT_TWO_MESSAGE_ONE" = "Виж само!";
 
 /* This is a message. */
-"SCREENSHOT_THREAD_DIRECT_TWO_MESSAGE_THREE" = "New Zealand!";
+"SCREENSHOT_THREAD_DIRECT_TWO_MESSAGE_THREE" = "Нова Зеландия!";
 
 /* This is a message after an image of mountains + a lake. */
-"SCREENSHOT_THREAD_DIRECT_TWO_MESSAGE_TWO" = "Whoa where are you!?";
+"SCREENSHOT_THREAD_DIRECT_TWO_MESSAGE_TWO" = "Леле, къде си ти?";
 
 /* This is a message in the group chat of family members. */
-"SCREENSHOT_THREAD_GROUP_FIVE_MESSAGE_ONE" = "Today is ...";
+"SCREENSHOT_THREAD_GROUP_FIVE_MESSAGE_ONE" = "Днес е…";
 
 /* This is a message in the group chat of family members. */
-"SCREENSHOT_THREAD_GROUP_FIVE_MESSAGE_TWO" = "Happy birthday to you. Happy birthday to you!";
+"SCREENSHOT_THREAD_GROUP_FIVE_MESSAGE_TWO" = "Честит рожден ден. Честит рожден ден!";
 
 /* This is a message in the Sunsets group chat. */
-"SCREENSHOT_THREAD_GROUP_FOUR_MESSAGE_ONE" = "It's too cloudy here.";
+"SCREENSHOT_THREAD_GROUP_FOUR_MESSAGE_ONE" = "Тук е много облачно.";
 
 /* 1984 is the book title. The file extension is a text file. */
 "SCREENSHOT_THREAD_GROUP_ONE_FILE_NAME" = "1984.txt";
 
 /* This is for a message in the 'Book Club' group chat */
-"SCREENSHOT_THREAD_GROUP_ONE_MESSAGE_ONE" = "Did you read this yet?";
+"SCREENSHOT_THREAD_GROUP_ONE_MESSAGE_ONE" = "Чели ли сте я?";
 
 /* This is a file name 'Instructions' for the cat chat group. */
-"SCREENSHOT_THREAD_GROUP_SIX_FILE_NAME" = "Instructions.PDF";
+"SCREENSHOT_THREAD_GROUP_SIX_FILE_NAME" = "Инструкции.PDF";
 
 /* This is a message in the cat chat group. */
-"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_FIVE" = "This is the instruction manual.";
+"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_FIVE" = "Това е ръководството с инструкции.";
 
 /* This is a message in the cat chat group. */
-"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_FOUR" = "Pictures, please!";
+"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_FOUR" = "Снимки, моля!";
 
 /* This is a message after seeing a picture. */
-"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_ONE" = "This is peaceful.";
+"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_ONE" = "Колко спокойно изглежда.";
 
 /* This is a message in the cat chat group. */
-"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_THREE" = "She’s walking a cat on a leash...";
+"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_THREE" = "Тя разхожда котка на каишка…";
 
 /* This is a message. */
-"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_TWO" = "🌅 Good Morning!";
+"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_TWO" = "🌅 Добро утро!";
 
 /* This is a message in the 'Rock Climbers' group chat. Please translate to make sense for the translated group name. For example: Which way should we go? */
-"SCREENSHOT_THREAD_GROUP_THREE_MESSAGE_ONE" = "Which route should we take?";
+"SCREENSHOT_THREAD_GROUP_THREE_MESSAGE_ONE" = "По кой маршрут да поемем?";
 
 /* This is a message. Please include the emoji if possible. */
-"SCREENSHOT_THREAD_GROUP_TWO_MESSAGE_ONE" = "See you all there 🤗";
+"SCREENSHOT_THREAD_GROUP_TWO_MESSAGE_ONE" = "Ще се видим там 🤗";
 
 /* This is a message sent with an attachment. */
-"SCREENSHOT_THREAD_GROUP_TWO_MESSAGE_TWO" = "Raining all day";
+"SCREENSHOT_THREAD_GROUP_TWO_MESSAGE_TWO" = "Цял ден вали";
 
 /* An example name for a user we use in the screenshots. */
 "SCREENSHOT_USERNAME_1" = "SCREENSHOT_USERNAME_1";
 
 /* Placeholder text indicating the user can search for contacts by name, username, or phone number. */
-"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "Name, username, or number";
+"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "Име, потребителско име или номер";
 
 /* Placeholder text indicating the user can search for contacts by name or phone number. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Търси по име или номер";
@@ -3315,52 +3348,52 @@
 "SEARCH_SECTION_MESSAGES" = "Съобщения";
 
 /* alert title */
-"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Unable to Fetch Linking Code";
+"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Неуспешно добиване на код за свързване";
 
 /* alert message for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Your other device is running a legacy version of Signal that doesn't support scanning iPad QR codes. Please install the latest Signal release and try again.";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Другото ви устройство е със стара версия на Signal, която не поддържа сканиране на QR кодове на iPad. Моля, инсталирайте най-новата версия на Signal и опитайте отново.";
 
 /* alert title for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "Update Scanning Device";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "Актуализирайте устройството за сканиране";
 
 /* alert title */
-"SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "Failed to Link Your Device";
+"SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "Неуспешно свързване на устройството ви";
 
 /* header text when this device is being added as a secondary */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Choose a name for this device";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Изберете име за това устройство";
 
 /* label text */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "You'll see this name under \"Linked Devices.\"";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "Ще виждате това име под „Свързани устройства“.";
 
 /* text field placeholder */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "Choose a name";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "Изберете име";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "Finish Linking";
+"SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "Завършване на свързването";
 
 /* header text before the user can link this device */
-"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Launch Signal on your phone to link this iPad to your account";
+"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Стартирайте Signal на телефона си, за да свържете този iPad към своя акаунт";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
-"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "I don't have Signal on my phone…";
+"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "Нямам Signal на телефона си…";
 
 /* alert body */
-"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Go to the App Store on your phone, install Signal, complete the registration process, and then you can link your iPad to the same account.";
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Отворете App Store на телефона си, инсталирайте Signal, завършете процеса за регистриране и след това можете да свържете своя iPad към същия акаунт.";
 
 /* alert title */
-"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Install Signal on Your Phone";
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Инсталирайте Signal на телефона си";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Tap on your profile picture to open Signal Settings on your phone. Then \"Linked Devices\" and \"Link New Device\" to scan this code with your phone:";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Докоснете профилната си снимка, за да отворите настройките на Signal на телефона си. След това отворете „Свързани устройства“ и „Свързване на ново устройство“, за да сканирате този код с телефона си:";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
-"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Get help linking your iPad here";
+"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Получете помощ за свързване на вашия iPad тук";
 
 /* header text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Scan the QR Code with your phone";
+"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Сканирайте QR кода с телефона си";
 
 /* header text before the user can transfer to this device */
-"SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "Launch Signal on your old iPad to transfer your account";
+"SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "Стартирайте Signal на стария си iPad, за да прехвърлите акаунта си";
 
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "Безопасната сесия беше прекъсната.";
@@ -3378,22 +3411,22 @@
 "SEND_BUTTON_TITLE" = "Изпрати";
 
 /* notification body */
-"SEND_FAILED_NOTIFICATION_BODY" = "Your message failed to send.";
+"SEND_FAILED_NOTIFICATION_BODY" = "Съобщението ви не беше изпратено успешно.";
 
 /* Alert body after invite failed */
 "SEND_INVITE_FAILURE" = "Изпращането на покана се провали, моля опитайте по-късно.";
 
 /* Alert body after invite succeeded */
-"SEND_INVITE_SUCCESS" = "You invited your friend to use Signal!";
+"SEND_INVITE_SUCCESS" = "Вие поканихте приятел да използва Signal!";
 
 /* alert action, confirming the user wants to exit the media flow and abandon any photos they've taken */
-"SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Discard Media";
+"SEND_MEDIA_CONFIRM_ABANDON_ALBUM" = "Отхвърляне на мултимедия";
 
 /* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_CAMERA" = "Return to Camera";
+"SEND_MEDIA_RETURN_TO_CAMERA" = "Връщане към Камерата";
 
 /* alert action when the user decides not to cancel the media flow after all. */
-"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Return to Media Library";
+"SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Връщане към Мултимедийната библиотека";
 
 /* No comment provided by engineer. */
 "SEND_SMS_CONFIRM_TITLE" = "Покани прияте с не толкова сигурният СМС?";
@@ -3420,7 +3453,7 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Заобикалянето на цензурата е активирано въз основа на телефонния номер на профила Ви.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been manually disabled. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "You have manually disabled censorship circumvention.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "Вие ръчно забранихте заобикалянето на цензура.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "Заобикалянето на цензура може да се активира само когато е свързано към интернет.";
@@ -3441,7 +3474,7 @@
 "SETTINGS_ADVANCED_TITLE" = "Разширени";
 
 /* table cell label */
-"SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Error Logs";
+"SETTINGS_ADVANCED_VIEW_ERROR_LOG" = "Регистри за грешки";
 
 /* The title for the theme section in the appearance settings. */
 "SETTINGS_APPEARANCE_THEME_TITLE" = "Тема";
@@ -3465,19 +3498,19 @@
 "SETTINGS_BACKUP_ENABLING_SWITCH" = "Активиране на резервно копие";
 
 /* Label for iCloud status row in the in the backup settings view. */
-"SETTINGS_BACKUP_ICLOUD_STATUS" = "iCloud Status";
+"SETTINGS_BACKUP_ICLOUD_STATUS" = "Състояние на iCloud";
 
 /* Indicates that the last backup restore failed. */
-"SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "Backup Restore Failed";
+"SETTINGS_BACKUP_IMPORT_STATUS_FAILED" = "Неуспешно възстановяване на резервно копие";
 
 /* Indicates that app is not restoring up. */
-"SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "Backup Restore Idle";
+"SETTINGS_BACKUP_IMPORT_STATUS_IDLE" = "Възстановяването на резервно копие бездейства";
 
 /* Indicates that app is restoring up. */
-"SETTINGS_BACKUP_IMPORT_STATUS_IN_PROGRESS" = "Backup Restore In Progress";
+"SETTINGS_BACKUP_IMPORT_STATUS_IN_PROGRESS" = "Възстановяването на резервно копие се извършва";
 
 /* Indicates that the last backup restore succeeded. */
-"SETTINGS_BACKUP_IMPORT_STATUS_SUCCEEDED" = "Backup Restore Succeeded";
+"SETTINGS_BACKUP_IMPORT_STATUS_SUCCEEDED" = "Възстановяването на резервно копие беше успешно";
 
 /* Label for phase row in the in the backup settings view. */
 "SETTINGS_BACKUP_PHASE" = "Фаза";
@@ -3501,7 +3534,7 @@
 "SETTINGS_BACKUP_STATUS_SUCCEEDED" = "Архивирането е успешно";
 
 /* A label for the 'add phone number' button in the block list table. */
-"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Add Blocked User";
+"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Добавяне на блокиран потребител";
 
 /* A label that indicates the user has no Signal contacts. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Нямате контакти в Signal.";
@@ -3516,22 +3549,22 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Маскирай Обажданията";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Relay all calls through a Signal server to avoid revealing your IP address to your contact. Enabling will reduce call quality.";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Прехвърляйте всички повиквания през сървър на Signal, за да не разкривате своя IP адрес на вашия контакт. Активирането ще влоши качеството на повикването.";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "Изчистване на историята на разговорите";
 
 /* No comment provided by engineer. */
-"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger \n Licensed under the GPLv3";
+"SETTINGS_COPYRIGHT" = "Copyright Signal Messenger \n Лицензирано по GPLv3";
 
 /* No comment provided by engineer. */
 "SETTINGS_DELETE_ACCOUNT_BUTTON" = "Изтрий Профил";
 
 /* Label for 'delete data' button. */
-"SETTINGS_DELETE_DATA_BUTTON" = "Delete All Data";
+"SETTINGS_DELETE_DATA_BUTTON" = "Изтриване на всички данни";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Are you sure you want to delete all history (messages, attachments, calls, etc.)? This action cannot be reverted.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Наистина ли искате да изтриете всички данни (съобщения, прикачени файлове, повиквания и др.)? Това действие не може да бъде отменено.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Изтрий Всичко";
@@ -3555,16 +3588,16 @@
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Звук на съобщението";
 
 /* table cell label */
-"SETTINGS_LEGAL_TERMS_CELL" = "Terms & Privacy Policy";
+"SETTINGS_LEGAL_TERMS_CELL" = "Условия и политика за поверителност";
 
 /* Setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS" = "Send Link Previews";
+"SETTINGS_LINK_PREVIEWS" = "Изпращане на преглед на връзки";
 
 /* Footer for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_FOOTER" = "Previews are supported for Imgur, Instagram, Pinterest, Reddit, and YouTube links.";
+"SETTINGS_LINK_PREVIEWS_FOOTER" = "Прегледът се поддържа за връзки в Imgur, Instagram, Pinterest, Reddit и YouTube.";
 
 /* Header for setting for enabling & disabling link previews. */
-"SETTINGS_LINK_PREVIEWS_HEADER" = "Link Previews";
+"SETTINGS_LINK_PREVIEWS_HEADER" = "Прегледи на връзки";
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Настройки";
@@ -3576,7 +3609,7 @@
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Съдържание на известието";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Contact Joined Signal";
+"SETTINGS_NOTIFICATION_EVENTS_CONTACT_JOINED_SIGNAL" = "Контактът се присъедини към Signal";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_EVENTS_SECTION_TITLE" = "Събития";
@@ -3585,43 +3618,37 @@
 "SETTINGS_NOTIFICATIONS" = "Известия";
 
 /* The button text for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "Turn Off Reminders";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "Изключване на напомняния";
 
 /* The explanation for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "Make sure you memorize or securely store your PIN as it can’t be recovered. If you forget your PIN, you may lose data when re-registering your Signal account.";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "Погрижете се да наизустите или да съхраните на сигурно място вашия ПИН, тъй като той не може да бъде възстановен. Ако забравите ПИН кода си, може да изгубите данните си при пререгистриране на акаунта ви в Signal.";
 
 /* The title for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Confirm your Signal PIN";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Потвърдете своя ПИН за Signal";
 
 /* Footer for the 'pin reminder' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_PIN_REMINDER_FOOTER" = "Reminders help you remember your PIN since it can’t be recovered. You’ll be asked less frequently over time.";
+"SETTINGS_PIN_REMINDER_FOOTER" = "Напомнянията ви помагат да си спомните вашия ПИН код, тъй като няма друг начин да го възстановите. С времето ще получавате по-малко питания.";
 
 /* Label for the 'pin reminder' switch of the privacy settings. */
-"SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "PIN Reminders";
+"SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "Напомняния за ПИН";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall Signal.";
+"SETTINGS_PINS_FOOTER" = "ПИН кодовете пазят информацията, съхранена във вашия Signal, шифрирана, за да имате само вие достъп до нея. Вашите настройки, профил и контакти ще бъдат възстановени, когато преинсталирате Signal.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
-"SETTINGS_PINS_ITEM" = "Change your PIN";
+"SETTINGS_PINS_ITEM" = "Смяна на ПИН кода ви";
 
 /* Label for the 'pins' item of the privacy settings when the user doesn't have a pin. */
-"SETTINGS_PINS_ITEM_CREATE" = "Create a PIN";
+"SETTINGS_PINS_ITEM_CREATE" = "Създайте си ПИН";
 
 /* Title for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_TITLE" = "SIGNAL PIN";
-
-/* Label for 'CallKit privacy' preference */
-"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Покажи Име & Номер";
+"SETTINGS_PINS_TITLE" = "ПИН ЗА SIGNAL";
 
 /* Settings table section footer. */
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "Показване на повиквания в списъка \"Последни\" в iOS.";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Покажи Повикванията в списъка с Последни";
-
-/* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_TITLE" = "iOS Интегрирани Повиквания";
 
 /* Settings table view cell label */
 "SETTINGS_PRIVACY_TITLE" = "Поверителност";
@@ -3633,31 +3660,31 @@
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "Виж и сподели кога съобщенията са били прочетени. Тази настройка е не е задължителна и се прилага за всички разговори.";
 
 /* Action to turn off registration lock */
-"SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Turn Off";
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Изключване";
 
 /* Title for the alert confirming that the user wants to turn off registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "Turn Off Registration Lock?";
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "Деактивиране на заключване на регистрация?";
 
 /* Action to turn on registration lock */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Turn On";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Включване";
 
 /* Body for the alert confirming that the user wants to turn on registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "If you forget your Signal PIN when registering with Signal again, you’ll be locked out of your account for 7 days.";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Ако забравите своя ПИН за Signal, когато се регистрирате отново за Signal, акаунтът ви ще бъде заключен за 7 дни.";
 
 /* Title for the alert confirming that the user wants to turn on registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "Turn On Registration Lock?";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "Активиране на заключване на регистрация?";
 
 /* Label for re-link button. */
-"SETTINGS_RELINK_BUTTON" = "Re-link";
+"SETTINGS_RELINK_BUTTON" = "Повторно свързване";
 
 /* Label for re-registration button. */
-"SETTINGS_REREGISTER_BUTTON" = "Re-register";
+"SETTINGS_REREGISTER_BUTTON" = "Пререгистриране";
 
 /* Label for the 'screen lock activity timeout' setting of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Време за заключване на екрана";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Unlock Signal's screen using Touch ID, Face ID, or your iOS device passcode. You can still answer incoming calls and receive call and message notifications while Screen Lock is enabled. Signal's notification settings allow you to customize the information that is displayed.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Отключете екрана на Signal, като използвате Touch ID, Face ID или паролата за устройството ви с iOS. Можете да отговаряте на входящите повиквания и да получавате известия за съобщения, докато заключването на екрана е активно. Настройките за известяване на Signal ви позволяват да персонализирате информацията, която да се показва.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Заключване на Екрана";
@@ -3670,9 +3697,6 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Забрани превю на данни от Signal при заключен екран.";
-
-/* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "Интегрирането на обажданията с iOS показва Signal повикванията на заключен  екран, както и в историята на обажданията ви. Можете да позволите да се показват номера и името на потребителя. Ако iCloud е включен, историята с обаждания може да бъде споделена с Ейпъл.";
 
 /* Label for the notifications section of conversation settings view. */
 "SETTINGS_SECTION_NOTIFICATIONS" = "Известия";
@@ -3705,25 +3729,25 @@
 "SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Заключване на Регистрация";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "For extra security, turn on registration lock, which will require your Signal PIN to register your phone number with Signal again.";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "За допълнителна сигурност активирайте заключване на регистрация, което ще изисква вашия PIN за Signal, за да можете отново да регистрирате своя телефонен номер със Signal.";
 
 /* Label for the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS" = "Typing Indicators";
+"SETTINGS_TYPING_INDICATORS" = "Индикатори за писане";
 
 /* An explanation of the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS_FOOTER" = "See and share when messages are being typed. This setting is optional and applies to all conversations.";
+"SETTINGS_TYPING_INDICATORS_FOOTER" = "Виждайте кога отсрещната страна пише съобщение и показвайте кога вие пишете. Тази настройка е по избор и важи за всички разговори.";
 
 /* table section label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Скрит изпращач";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Display Indicators";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Показване на индикатори";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "Show a status icon when you select \"More Info\" on messages that were delivered using sealed sender.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "Показва икона за състояние, когато изберете „Още инфо“ на съобщения, доставени от скрит изпращач.";
 
 /* switch label */
-"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Allow from Anyone";
+"SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Позволяване от всички";
 
 /* table section footer */
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS_FOOTER" = "Активиране на скрит изпращач за входящи съобщения от хора, които не са Ваши контакти, и хора скоито не сте споделяли своят профил.";
@@ -3783,7 +3807,7 @@
 "SOUNDS_NONE" = "Никой";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
-"STICKER_MESSAGE_PREVIEW" = "Sticker Message";
+"STICKER_MESSAGE_PREVIEW" = "Съобщение със стикер";
 
 /* Tooltip indicating that a sticker pack was installed. */
 "STICKER_PACK_INSTALLED_TOOLTIP" = "Пакетът със стикери е инсталиран";
@@ -3801,7 +3825,7 @@
 "STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "Получени стикери";
 
 /* Label indicating that one or more known sticker packs failed to load. */
-"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Some sticker packs failed to load";
+"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Неуспешно зареждане на някои пакети стикери";
 
 /* Title for the 'installed stickers' section of the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Инсталирани стикери";
@@ -3819,19 +3843,19 @@
 "STICKERS_MANAGE_VIEW_TITLE" = "Стикери";
 
 /* Default title for sticker packs. */
-"STICKERS_PACK_DEFAULT_TITLE" = "Sticker Pack";
+"STICKERS_PACK_DEFAULT_TITLE" = "Пакет стикери";
 
 /* Title of the 'share sticker pack' view. */
-"STICKERS_PACK_SHARE_VIEW_TITLE" = "Share Sticker Pack";
+"STICKERS_PACK_SHARE_VIEW_TITLE" = "Споделяне на пакет стикери";
 
 /* The default title for the 'sticker pack' view. */
-"STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Sticker Pack";
+"STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Пакет стикери";
 
 /* Label indicating that the sticker pack failed to load. */
-"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "Sticker Pack failed to load";
+"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "Неуспешно зареждане на пакет стикери";
 
 /* Label for the 'uninstall sticker pack' button. */
-"STICKERS_UNINSTALL_BUTTON" = "Uninstall";
+"STICKERS_UNINSTALL_BUTTON" = "Деинсталиране";
 
 /* Alert body after verifying privacy with {{other user's name}} */
 "SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Номерата ви за безопасност с %@ съвпадат. Можете да маркирате този контакт като проверен.";
@@ -3843,22 +3867,22 @@
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Провери Номерата за Безопасност";
 
 /* text indicating the message was remotely deleted */
-"THIS_MESSAGE_WAS_DELETED" = "This message was deleted.";
+"THIS_MESSAGE_WAS_DELETED" = "Това съобщение беше изтрито.";
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
-"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Member of %@, %@, and %lu additional groups";
+"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Член на %@, %@ и още %lu групи";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "You can add notes for yourself in this conversation. If your account has any linked devices, new notes will be synced.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Можете да добавите бележки за себе си в този разговор. Ако акаунтът ви има свързани устройства, новите бележки ще бъдат синхронизирани.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Member of %@";
+"THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Член на %@";
 
 /* A string indicating three mutual groups the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_THREE_MUTUAL_GROUP" = "Member of %@, %@, and %@";
+"THREAD_DETAILS_THREE_MUTUAL_GROUP" = "Член на %@, %@ и %@";
 
 /* A string indicating two mutual groups the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_TWO_MUTUAL_GROUP" = "Member of %@ and %@";
+"THREAD_DETAILS_TWO_MUTUAL_GROUP" = "Член на %@ и %@";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_DAYS" = "%@ дена";
@@ -3918,37 +3942,37 @@
 "UNKNOWN_CONTACT_NAME" = "Непознат Контакт";
 
 /* Label for unknown countries. */
-"UNKNOWN_COUNTRY_NAME" = "Unknown Country";
+"UNKNOWN_COUNTRY_NAME" = "Неизвестна държава";
 
 /* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "One of your devices sent a message that can't be processed or displayed here because it uses a new Signal feature.";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "Едно от устройствата ви изпрати съобщение, което не може да бъде обработено или показано тук, тъй като използва нова функция на Signal.";
 
 /* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. Embeds {{user's name or phone number}}. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "%@ sent you a message that can't be processed or displayed because it uses a new Signal feature.";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "%@ ви изпрати съобщение, което не може да бъде обработено или показано, тъй като използва нова функция на Signal.";
 
 /* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "You received a message that can't be processed or displayed because it uses a new Signal feature.";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "Получихте съобщение, което не може да бъде обработено или показано, тъй като използва нова функция на Signal.";
 
 /* Label for button that lets users upgrade the app. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "Update Signal Now";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "Актуализиране на Signal сега";
 
 /* Info message recorded in conversation history when local user has received an unknown unknown message from a linked device and has upgraded. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "Updated to the latest version of Signal. You can now receive this message type on your device.";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "Signal е актуализирано до най-новата версия. Вече можете да получавате този вид съобщения на устройството си.";
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. Embeds {{user's name or phone number}}. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "You can ask %@ to re-send this message now that you are using an up-to-date version of Signal.";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "Можете да помолите %@ да изпрати съобщението отново, след като вече използвате актуална версия на Signal.";
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "You can ask the sender to re-send this message now that you are using an up-to-date version of Signal.";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "Можете да помолите изпращача да изпрати съобщението отново, след като вече използвате актуална версия на Signal.";
 
 /* Label indicating an unknown user. */
 "UNKNOWN_USER" = "Непознат";
 
 /* Info Message when an unknown user disabled disappearing messages. */
-"UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Disappearing messages were disabled.";
+"UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Изчезващите съобщения са деактивирани.";
 
 /* Info Message when an unknown user enabled disappearing messages. Embeds {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
-"UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Disappearing message time was set to %@.";
+"UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Времето за изчезване на съобщенията е зададено на %@.";
 
 /* Indicates an unknown or unrecognizable value. */
 "UNKNOWN_VALUE" = "Непознат";
@@ -3957,19 +3981,22 @@
 "UNLINK_ACTION" = "Премахни";
 
 /* Alert message to confirm unlinking a device */
-"UNLINK_CONFIRMATION_ALERT_BODY" = "This device will no longer be able to send or receive messages if it is unlinked.";
+"UNLINK_CONFIRMATION_ALERT_BODY" = "Това устройство повече няма да може да изпраща или получава съобщения, ако връзката с него бъде прекъсната.";
 
 /* Alert title for confirming device deletion */
 "UNLINK_CONFIRMATION_ALERT_TITLE" = "Премахни \"%@\"?";
 
 /* Label warning the user that they have been unlinked from their primary device. */
-"UNLINKED_WARNING" = "Device no longer linked. Re-link Signal with your phone to continue messaging.";
+"UNLINKED_WARNING" = "Устройството вече не е свързано. Свържете Signal на телефона си отново, за да продължите да изпращате съобщения.";
 
 /* Alert title when unlinking device fails */
 "UNLINKING_FAILED_ALERT_TITLE" = "Signal не успя да премахне това устройство.";
 
 /* Label text in device manager for a device with no name */
 "UNNAMED_DEVICE" = "Неименувано Устройство";
+
+/* Pressing this button marks a thread as unread */
+"UNREAD_ACTION" = "Unread";
 
 /* No comment provided by engineer. */
 "UNREGISTER_SIGNAL_FAIL" = "Не успяхте да се отпишете от Signal.";
@@ -3984,73 +4011,73 @@
 "UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "Не можете да премахнете членовете на групата. Или ще трябва да напуснат или да създадете нова група без този член.";
 
 /* Title for alert indicating that group members can't be removed. */
-"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Not Supported";
+"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Не се поддържа";
 
 /* Error indicating that a group could not be updated. */
-"UPDATE_GROUP_FAILED" = "Group could not be updated.";
+"UPDATE_GROUP_FAILED" = "Групата не можа да бъде актуализирана.";
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
-"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "This action couldn’t be completed. Check your internet connection and try again.";
+"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Това действие не можа да бъде завършено. Проверете интернет връзката си и опитайте отново.";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Create your PIN";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Създаване на ПИН";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall Signal.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "ПИН кодовете пазят информацията, съхранена във вашия Signal, шифрирана, за да имате само вие достъп до нея. Вашите настройки, профил и контакти ще бъдат възстановени, когато преинсталирате Signal.";
 
 /* Header for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Introducing PINs";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Представяме ПИН кодове";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal will soon require iOS 11 or later. Please upgrade in Settings app >> General >> Software Update.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Signal скоро ще изисква iOS 11 или по-нова версия. Моля, актуализирайте от приложението за Настройки >> Общи >> Софтуерна актуализация.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
 "UPGRADE_IOS_ALERT_TITLE" = "Надстройте iOS";
 
 /* An explanation of how usernames work on the username view. */
-"USERNAME_DESCRIPTION" = "Usernames on Signal are optional. If you choose to create a username other Signal users will be able to find you by this username and contact you without knowing your phone number.";
+"USERNAME_DESCRIPTION" = "Потребителските имена в Signal са по желание. Ако изберете да си създадете потребителско име, другите потребители на Signal ще могат да ви намират по това потребителско име и да се свързват с вас, без да знаят телефонния ви номер.";
 
 /* Label for the username field in the username view. */
-"USERNAME_FIELD" = "Username";
+"USERNAME_FIELD" = "Потребителско име";
 
 /* An error indicating that the supplied username contains disallowed characters. */
-"USERNAME_INVALID_CHARACTERS_ERROR" = "Usernames may only contain a-z, 0-9, and _";
+"USERNAME_INVALID_CHARACTERS_ERROR" = "Потребителските имена може да съдържат само a-z, 0-9 и _";
 
 /* A message indicating that username lookup failed. */
-"USERNAME_LOOKUP_ERROR" = "An error occurred while looking up the username. Please try again later.";
+"USERNAME_LOOKUP_ERROR" = "Възникна грешка при търсене на потребителско име. Моля, опитайте отново по-късно.";
 
 /* A message indicating that the given username is not a registered signal account. Embeds {{username}} */
-"USERNAME_NOT_FOUND_FORMAT" = "%@ is not a Signal user. Make sure you’ve entered the complete username.";
+"USERNAME_NOT_FOUND_FORMAT" = "%@ не е потребител на Signal. Проверете дали сте въвели цялото потребителско име.";
 
 /* A message indicating that the given username was not registered with signal. */
-"USERNAME_NOT_FOUND_TITLE" = "User Not Found";
+"USERNAME_NOT_FOUND_TITLE" = "Потребителят не е намерен";
 
 /* The placeholder for the username text entry in the username view. */
-"USERNAME_PLACEHOLDER" = "Enter a username";
+"USERNAME_PLACEHOLDER" = "Въведете потребителско име";
 
 /* A prefix appeneded to all usernames when displayed */
 "USERNAME_PREFIX" = "@";
 
 /* An error indicating that the supplied username cannot start with a number. */
-"USERNAME_STARTS_WITH_NUMBER_ERROR" = "Usernames may not begin with a number.";
+"USERNAME_STARTS_WITH_NUMBER_ERROR" = "Потребителските имена не могат да започват с цифра.";
 
 /* The title for the username view. */
-"USERNAME_TITLE" = "Username";
+"USERNAME_TITLE" = "Потребителско име";
 
 /* An error indicating that the supplied username is too short. */
-"USERNAME_TOO_SHORT_ERROR" = "Usernames must have at least 4 characters.";
+"USERNAME_TOO_SHORT_ERROR" = "Потребителските имена трябва да имат най-малко 4 знака.";
 
 /* An error indicating that the supplied username is in use by another user. Embeds {{requested username}}. */
-"USERNAME_UNAVAIALBE_ERROR_FORMAT" = "%@ is taken.";
+"USERNAME_UNAVAIALBE_ERROR_FORMAT" = "%@ е заето.";
 
 /* Error moessage shown when a username update fails. */
-"USERNAME_VIEW_ERROR_UPDATE_FAILED" = "Username update failed.";
+"USERNAME_VIEW_ERROR_UPDATE_FAILED" = "Неуспешно актуализиране на потребителско име.";
 
 /* error label near a field */
-"VALIDATION_ERROR_CANNOT_BE_BLANK" = "Device name cannot be blank";
+"VALIDATION_ERROR_CANNOT_BE_BLANK" = "Името на устройството не може да бъде празно";
 
 /* error label near a field */
-"VALIDATION_ERROR_TOO_LONG" = "Device name is too long";
+"VALIDATION_ERROR_TOO_LONG" = "Името на устройството е твърде дълго";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Маркирахте %@ като проверен.";
@@ -4068,19 +4095,19 @@
 "VERIFICATION_STATE_CHANGE_GENERIC" = "Проверката е променена.";
 
 /* Label for button or row which allows users to verify the safety number of another user. */
-"VERIFY_PRIVACY" = "View Safety Number";
+"VERIFY_PRIVACY" = "Вижте номера за сигурност";
 
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
 "VERIFY_PRIVACY_MULTIPLE" = "Преглед на номера за сигурност";
 
 /* Toast alert text shown when tapping on a view-once message that has already been viewed. */
-"VIEW_ONCE_ALREADY_VIEWED_TOAST" = "You already viewed this message.";
+"VIEW_ONCE_ALREADY_VIEWED_TOAST" = "Вече сте видели това съобщение";
 
 /* Tooltip highlighting the view once messages button. */
-"VIEW_ONCE_MESSAGES_TOOLTIP" = "Tap here to make this message disappear after it is viewed.";
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "Докоснете тук, за да изчезне това съобщение, след като бъде видяно:";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
-"VIEW_ONCE_OUTGOING_TOAST" = "Outgoing view-once media files are automatically removed after they are sent.";
+"VIEW_ONCE_OUTGOING_TOAST" = "Изходящите мултимедийни файлове за еднократно гледане се премахват автоматично, след като бъдат изпратени.";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "Плъзни за Отказ";
@@ -4097,11 +4124,14 @@
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Завърши настройките на Signal Desktop.";
 
+/* text indicating the message was remotely deleted by you */
+"YOU_DELETED_THIS_MESSAGE" = "You deleted this message.";
+
 /* Info Message when you disabled disappearing messages. */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Вие сте забранили изчезващи съобщения.";
 
 /* alert body shown when trying to use features in the app before completing registration-related setup. */
-"YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "You must complete setup before proceeding.";
+"YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "Трябва да завършите настройката, преди да продължите.";
 
 /* Info Message when you disabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Вие настроихте изчезващите съобщения за време от %@.";

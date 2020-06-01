@@ -1,5 +1,5 @@
 /* Button text to dismiss missing contacts permission alert */
-"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Hindi ngayon";
+"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Hindi Ngayon";
 
 /* Action sheet item */
 "ACCEPT_NEW_IDENTITY_ACTION" = "Tanggapin ang Bagong Numerong Pangkaligtasan";
@@ -143,9 +143,6 @@
 /* Pressing this button moves a thread from the inbox to the archive */
 "ARCHIVE_ACTION" = "Archive";
 
-/* No comment provided by engineer. */
-"ATTACHMENT" = "Kalakip";
-
 /* One-line label indicating the user can add no more text to the attachment caption. */
 "ATTACHMENT_APPROVAL_CAPTION_LENGTH_LIMIT_REACHED" = "Naabot na ang limitasyon ng caption.";
 
@@ -247,6 +244,21 @@
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "Hindi suportadong File";
+
+/* Short text label for a audio attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_AUDIO" = "Audio";
+
+/* Short text label for a file attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_FILE" = "File";
+
+/* Short text label for a gif attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_GIF" = "GIF";
+
+/* Short text label for a photo attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_PHOTO" = "Larawan";
+
+/* Short text label for a video attachment, used for thread preview and on the lock screen */
+"ATTACHMENT_TYPE_VIDEO" = "Video";
 
 /* Short text label for a voice message attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_VOICE_MESSAGE" = "Voice na Mensahe";
@@ -417,7 +429,7 @@
 "CALL_AGAIN_BUTTON_TITLE" = "Muling Tumawag";
 
 /* Alert message when calling and permissions for microphone are missing */
-"CALL_AUDIO_PERMISSION_MESSAGE" = "Magagawa mong paganahin ang access sa mikropono sa Settings app ng iOS upang makatawag at mag-record ng mga voice na mensahe sa Signal.";
+"CALL_AUDIO_PERMISSION_MESSAGE" = "Maaari mong paganahin ang access sa mikropono sa Settings app ng iOS upang makatawag at mag-record ng mga voice na mensahe sa Signal.";
 
 /* Alert title when calling and permissions for microphone are missing */
 "CALL_AUDIO_PERMISSION_TITLE" = "Kailangan ng Access sa Mikropono";
@@ -466,18 +478,6 @@
 
 /* Accessibility label for muting the microphone */
 "CALL_VIEW_MUTE_LABEL" = "Patahimikin";
-
-/* Reminder to the user of the benefits of enabling CallKit and disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_ALL" = "Maaari mong i-enable ang iOS Call Integration sa privacy settings ng iyong Signal upang masagot mula sa iyong lock screen ang papapasok na mga tawag.";
-
-/* Reminder to the user of the benefits of disabling CallKit privacy. */
-"CALL_VIEW_SETTINGS_NAG_DESCRIPTION_PRIVACY" = "Maaari mong i-enable ang iOS Call Integration sa privacy settings ng iyong Signal upang makita ang pangalan at numero ng telepono ng papapasok na mga tawag.";
-
-/* Label for button that dismiss the call view's settings nag. */
-"CALL_VIEW_SETTINGS_NAG_NOT_NOW_BUTTON" = "Hindi ngayon";
-
-/* Label for button that shows the privacy settings. */
-"CALL_VIEW_SETTINGS_NAG_SHOW_CALL_SETTINGS" = "Ipakita ang Privacy Settings";
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Baguhin ang Direksyon ng Camera";
@@ -564,7 +564,7 @@
 "COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Maghanap ng Username";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
-"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Magagawa mong paganahin ang access sa mga kontak sa Settings app ng iOS upang makita kung sino sa iyong mga kontak ang gumagamit ng Signal.";
+"COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Maaari mong paganahin ang access sa mga kontak sa Settings app ng iOS upang makita kung sino sa iyong mga kontak ang gumagamit ng Signal.";
 
 /* No comment provided by engineer. */
 "CONFIRM_ACCOUNT_DESTRUCTION_TEXT" = "Ire-reset nito ang application sa pamamagitan ng pagbura ng iyong mga mensahe at pagtanggal ng iyong rehistrasyon sa server. Ang app ay magsasara pagkatapos na makumpleto ang prosesong ito.";
@@ -1140,13 +1140,13 @@
 "DISAPPEARING_MESSAGES_CONFIGURATION_GROUP_EXISTING_FORMAT" = "Ang mga mensahe sa pag-uusap na ito ay maglalaho makalipas ang %@.";
 
 /* subheading in conversation settings */
-"DISAPPEARING_MESSAGES_DESCRIPTION" = "Kung naka-enable, ang mga ipinadala at natanggap na mensahe sa pag-uusap na ito ay maglalaho matapos na makita ang mga ito.";
+"DISAPPEARING_MESSAGES_DESCRIPTION" = "Kung gumagana, ang mga ipinadala at natanggap na mensahe sa pag-uusap na ito ay maglalaho matapos na makita ang mga ito.";
 
 /* Accessibility hint that contains current timeout information */
 "DISAPPEARING_MESSAGES_HINT" = "Sa kasalukuyan ang mga mensahe at maglalaho makalipas ang %@";
 
 /* Accessibility label for disappearing messages */
-"DISAPPEARING_MESSAGES_LABEL" = "Mga settings ng mga naglalahong mensahe";
+"DISAPPEARING_MESSAGES_LABEL" = "Mga setting ng mga naglalahong mensahe";
 
 /* Short text to dismiss current modal / actionsheet / screen */
 "DISMISS_BUTTON_TEXT" = "I-dismiss";
@@ -1155,7 +1155,7 @@
 "DOMAIN_FRONTING_COUNTRY_VIEW_SECTION_HEADER" = "Lokasyon ng Censorship Circumvention";
 
 /* Alert body for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Mapapagana mo ang access sa iOS Settings na app.";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Mapapagana mo ang access sa Settings app ng iOS.";
 
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Kailangan ng Signal ng Access sa Kontak upang Ma-edit ang Impormasyon ng Kontak";
@@ -1205,6 +1205,33 @@
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Tayo nang lumipat sa Signal";
 
+/* The name for the emoji category 'Activities' */
+"EMOJI_CATEGORY_ACTIVITIES_NAME" = "Activities";
+
+/* The name for the emoji category 'Animals & Nature' */
+"EMOJI_CATEGORY_ANIMALS_NAME" = "Animals & Nature";
+
+/* The name for the emoji category 'Flags' */
+"EMOJI_CATEGORY_FLAGS_NAME" = "Flags";
+
+/* The name for the emoji category 'Food & Drink' */
+"EMOJI_CATEGORY_FOOD_NAME" = "Food & Drink";
+
+/* The name for the emoji category 'Objects' */
+"EMOJI_CATEGORY_OBJECTS_NAME" = "Objects";
+
+/* The name for the emoji category 'Recents' */
+"EMOJI_CATEGORY_RECENTS_NAME" = "Mga huling natawagan";
+
+/* The name for the emoji category 'Smileys & People' */
+"EMOJI_CATEGORY_SMILEYSANDPEOPLE_NAME" = "Smileys & People";
+
+/* The name for the emoji category 'Symbols' */
+"EMOJI_CATEGORY_SYMBOLS_NAME" = "Symbols";
+
+/* The name for the emoji category 'Travel & Places' */
+"EMOJI_CATEGORY_TRAVEL_NAME" = "Travel & Places";
+
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE1" = "Walang sinuman sa iyong mga kontak ang may Signal.";
 
@@ -1215,10 +1242,10 @@
 "ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "Kumpirmahin ang iyong PIN.";
 
 /* Error indicating that attempt to disable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "Hindi ma-disable ang Registration Lock.";
+"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "Hindi ma-disable ang Lock ng Rehistrasyon.";
 
 /* Error indicating that attempt to enable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "Hindi ma-enable ang Registration Lock.";
+"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "Hindi mapagana ang Lock ng Rehistrasyon.";
 
 /* Label for the 'enable two-factor auth' item in the settings view */
 "ENABLE_2FA_VIEW_DISABLE_2FA" = "Huwag Paganahin";
@@ -1245,7 +1272,7 @@
 "ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "Para sa mas pinaigting na seguridad, paganahin ang Lock PIN ng Rehistrasyon na syang kakailanganin sa susunod na pagkakataong irehistro ang numerong ito sa Signal.";
 
 /* Indicates that user has 'two factor auth pin' enabled. */
-"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Naka-enable ang Lock ng Rehistrasyon. Kakailanganin mong ilagay ang iyong PIN kapag muli mong nirehistro ang numero ng iyong telepono sa Signal.";
+"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Gumagana ang Lock ng Rehistrasyon. Kakailanganin mong ilagay ang iyong PIN kapag muli mong nirehistro ang numero ng iyong telepono sa Signal.";
 
 /* Title for the 'enable two factor auth PIN' views. */
 "ENABLE_2FA_VIEW_TITLE" = "Lock ng Rehistrasyon";
@@ -1812,7 +1839,7 @@
 "INBOX_VIEW_EMPTY_INBOX" = "Bigyan ang iyong inbox ng anumang maisusulat. Magsimula sa pamamagitan ng pagmemensahe sa isang kaibigan.";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
-"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Magagawa mong paganahin ang access sa mga kontak sa Settings app ng iOS upang makita ang pangalan ng iyong mga kontak sa listahan ng pag-uusap sa Signal.";
+"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Maaari mong paganahin ang access sa mga kontak sa Settings app ng iOS upang makita ang pangalan ng iyong mga kontak sa listahan ng pag-uusap sa Signal.";
 
 /* info message text in conversation view */
 "INCOMING_CALL_ANSWERED" = "Nasagot na Tawag";
@@ -1851,7 +1878,7 @@
 "INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE" = "Ang file na audio ay hindi valid.";
 
 /* Alert body when contacts disabled while trying to invite contacts to signal */
-"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Magagawa mong paganahin ang access sa mga kontak sa Settings app ng iOS upang maimbitahan ang iyong mga kaibigan na sumali sa Signal.";
+"INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY" = "Maaari mong paganahin ang access sa mga kontak sa Settings app ng iOS upang maimbitahan ang iyong mga kaibigan na sumali sa Signal.";
 
 /* Alert title when contacts disabled while trying to invite contacts to signal */
 "INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE" = "Pahintulutan ang Access sa Kontak";
@@ -2012,11 +2039,14 @@
 /* The title for the action that deletes a message for all users in the conversation. */
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Burahin para sa Lahat";
 
+/* A one-time confirmation that you want to delete for everyone */
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "This message will be permanently deleted for everyone in the conversation. Members will be able to see that you deleted a message.";
+
 /* The title for the action sheet asking who the user wants to delete the message for. */
-"MESSAGE_ACTION_DELETE_FOR_TITLE" = "Para kanino mo gustong burahin ang mensaheng ito?";
+"MESSAGE_ACTION_DELETE_FOR_TITLE" = "Who would you like to delete this message for?";
 
 /* The title for the action that deletes a message for the local user only. */
-"MESSAGE_ACTION_DELETE_FOR_YOU" = "Burahin para sa'yo.";
+"MESSAGE_ACTION_DELETE_FOR_YOU" = "Delete for Me";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DELETE_MESSAGE" = "Burahin ang Mensaheng Ito";
@@ -2238,19 +2268,19 @@
 "MISSED_CALL" = "Tawag na hindi nasagot";
 
 /* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "Magagawa mong paganahin ang access sa camera sa Settings app ng iOS upang makapag-video call sa Signal.";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Maaari mong paganahin ang access sa camera sa Settings app ng iOS upang makapag-video call sa Signal.";
 
 /* Alert title */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Kailangan ng Signal na ma-access ang iyong camera.";
 
 /* Alert body indicating the user has denied location permissios */
-"MISSING_LOCATION_PERMISSION_MESSAGE" = "Maaari mong paganahin ang pahintulot na ito sa iOS Settings na app.";
+"MISSING_LOCATION_PERMISSION_MESSAGE" = "Maaari mong paganahin ang pahintulot na ito sa Settings app ng iOS.";
 
 /* Alert title indicating the user has denied location permissios */
 "MISSING_LOCATION_PERMISSION_TITLE" = "Kailangan ng Signal ng access sa iyong lokasyon para sa feature na ito.";
 
 /* Alert body when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Maaari mong paganahin ang pahintulot na ito sa iOS Settings na app.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Maaari mong paganahin ang pahintulot na ito sa Settings app ng iOS.";
 
 /* Alert title when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Kailangan ng Signal ng access sa iyong mga larawan para sa feature na ito.";
@@ -2697,7 +2727,7 @@
 "PIN_CREATION_ERROR_TITLE" = "Ang paglikha ng PIN ay nabigo";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall Signal.";
+"PIN_CREATION_EXPLANATION" = "Panapanatiling encrypted ng PIN ang mga impormasyong naka-imbak sa Signal upang ikaw lang ang maka-access nito. Ang iyong profile, mga setting, at kontak ay mare-restore kapag nagre-install ka ng Signal.";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "Hindi nagtugma ang mga PIN. Subukang muli.";
@@ -2724,7 +2754,7 @@
 "PIN_CREATION_WEAK_ERROR" = "Pumili ng mas malakas na PIN";
 
 /* The explanation for the 'pin reminder' dialog. */
-"PIN_REMINDER_EXPLANATION" = "To help you memorize your PIN, we’ll ask you to enter it periodically. We’ll ask less over time.";
+"PIN_REMINDER_EXPLANATION" = "Upang matulungan kang matandaan ang iyong PIN, paminsan-minsan namin itong itatanong sa iyo. Dadalang ito kinalaunan.";
 
 /* Text asking if the user forgot their pin for the 'pin reminder' dialog. */
 "PIN_REMINDER_FORGOT_PIN" = "Nakalimutan ang iyong PIN?";
@@ -2733,10 +2763,10 @@
 "PIN_REMINDER_MEGAPHONE_ACTION" = "Beripikahin ang PIN";
 
 /* Body for PIN reminder megaphone */
-"PIN_REMINDER_MEGAPHONE_BODY" = "We’ll occasionally ask you to verify your PIN so that you remember it.";
+"PIN_REMINDER_MEGAPHONE_BODY" = "Paminsan-minsan naming hihingin sa'yo na iberipika ang iyong PIN para matandaan mo ito.";
 
 /* Toast indicating that we'll ask you for your PIN again in 3 days. */
-"PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "We’ll remind you again in a few days.";
+"PIN_REMINDER_MEGAPHONE_FEW_DAYS_TOAST" = "Paaalalahanan ka naming muli sa loob ng ilang araw.";
 
 /* Title for PIN reminder megaphone */
 "PIN_REMINDER_MEGAPHONE_TITLE" = "Beripikahin ang PIN ng iyong Signal";
@@ -2763,10 +2793,10 @@
 "PINS_MEGAPHONE_ACTION" = "Lumikha ng PIN";
 
 /* Body for PIN megaphone when user doesn't have a PIN */
-"PINS_MEGAPHONE_BODY" = "PINs keep information that’s stored with Signal encrypted";
+"PINS_MEGAPHONE_BODY" = "Panapanatiling encrypted ng PIN ang mga impormasyong naka-imbak sa Signal";
 
 /* Toast indication that the user will be reminded later to setup their PIN. Embeds {{time until mandatory}} */
-"PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "We’ll remind you later. Creating a PIN will become mandatory in %ld days.";
+"PINS_MEGAPHONE_SNOOZE_TOAST_FORMAT" = "Paaalalahanan ka naming muli. Ang paglikha ng PIN ay kakailanganin na sa loob ng %ld araw.";
 
 /* Title for PIN megaphone when user doesn't have a PIN */
 "PINS_MEGAPHONE_TITLE" = "Lumikha ng PIN";
@@ -2778,7 +2808,7 @@
 "PLAY_BUTTON_ACCESSABILITY_LABEL" = "I-play ang Media";
 
 /* Label indicating that the user is not verified. Embeds {{the user's name or phone number}}. */
-"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "You have not marked %@ as verified.";
+"PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "Minarkahan mo si %@ na beripikado.";
 
 /* Badge indicating that the user is verified. */
 "PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Beripikado";
@@ -2793,28 +2823,28 @@
 "PRIVACY_UNVERIFY_BUTTON" = "I-clear ang Beripikasyon";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "This doesn't look like your safety number with %@. Are you verifying the correct contact?";
+"PRIVACY_VERIFICATION_FAILED_I_HAVE_WRONG_KEY_FOR_THEM" = "Mukhang hindi ito ang iyong numerong pangkaligtasan kay %@. Bineberipika mo ba ang tamang kontak?";
 
 /* Alert body */
-"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "The number in your clipboard doesn't look like the correct safety number for this conversation.";
+"PRIVACY_VERIFICATION_FAILED_MISMATCHED_SAFETY_NUMBERS_IN_CLIPBOARD" = "Mukhang ang numero sa iyong clipboard ay hindi ang tamang numerong pangkaligtasan para sa pag-uusap na ito.";
 
 /* Alert body for user error */
-"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Signal couldn't find any safety number in your clipboard. Have you copied it correctly?";
+"PRIVACY_VERIFICATION_FAILED_NO_SAFETY_NUMBERS_IN_CLIPBOARD" = "Walang mahanap sa clipboard na numerong pangkaligtasan ang Signal. Nakopya mo ba ito ng tama? ";
 
 /* Alert body when verifying with {{contact name}} */
-"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Every pair of Signal users shares a distinct safety number. Double-check that %@ is displaying *your* distinct safety number.";
+"PRIVACY_VERIFICATION_FAILED_THEY_HAVE_WRONG_KEY_FOR_ME" = "Ang bawat pares ng user ng Signal ay may isang natatanging numerong pangkaligtasan. Siguraduhing mabuti na %@ ay nagpapakita ng \"iyong\" natatanging numerong pangkaligtasan.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "You're running an old version of Signal. You need to update before you can verify.";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_LOCAL_VERSION" = "Lumang bersyon ng Signal ang iyong ginagamit. Bago ka makapagberipika'y kailangan mong mag-update.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "Your partner is running an old version of Signal. They need to update before you can verify.";
+"PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "Ang iyong kapareha ay gumagamit ng lumang bersyon ng Signal. Kailangan nyang mag-update bago ka magkapagberipika.";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "The scanned code doesn't look like a safety number. Are you both on an up-to-date version of Signal?";
+"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "Ang na-scan na code mukhang hindi isang numerong pangkaligtasan. Pareho ba kayong gumagamit ng pinakahuling bersyon ng Signal?";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
-"PRIVACY_VERIFICATION_INSTRUCTIONS" = "If you wish to verify the security of your end-to-end encryption with %@, compare the numbers above with the numbers on their device.\n\nAlternatively, you can scan the code on their phone, or ask them to scan your code.";
+"PRIVACY_VERIFICATION_INSTRUCTIONS" = "Kung nais mong beripikahin ang seguridad ng iyong encryption na end-to-end kay %@, ikumpara ang mga numero sa itaas sa mga numero sa kanilang device.\n\nMaaari mo ring i-scan ang code sa kanilang phone, o kaya'y ipa-scan sa kanila ang iyong code.";
 
 /* Navbar title */
 "PRIVACY_VERIFICATION_TITLE" = "Beripikahin ang Numerong Pangkaligtasan";
@@ -2874,10 +2904,10 @@
 "PROFILE_VIEW_GIVEN_NAME_FIELD" = "Pangalan";
 
 /* Error shown when the user tries to update their profile when the app is not connected to the internet. */
-"PROFILE_VIEW_NO_CONNECTION" = "Profile can only be updated when connected to the internet.";
+"PROFILE_VIEW_NO_CONNECTION" = "Maaari lamang i-update ang profile kung konektado sa internet.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your Signal Profile will be visible to your contacts, when you initiate new conversations, and when you share it with other users and groups.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Makikita ng iyong mga contact ang Profile mo sa Signal, kapag nagsimula ka ng mga bagong pag-uusap, at kapag ibinahagi mo ito sa ibang mga user at grupo.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "I-save";
@@ -2895,7 +2925,7 @@
 "PUSH_MANAGER_REPLY" = "Tugon";
 
 /* Title of alert shown when push tokens sync job succeeds. */
-"PUSH_REGISTER_SUCCESS" = "Successfully re-registered for push notifications.";
+"PUSH_REGISTER_SUCCESS" = "Matagumpay na nai-rehistrong muli para sa mga push notification.";
 
 /* Used in table section header and alert view title contexts */
 "PUSH_REGISTER_TITLE" = "Push Notifications";
@@ -2973,7 +3003,7 @@
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Nag-react ng %@ sa iyong voice na mensahe";
 
 /* Body for the megaphone introducing reactions */
-"REACTION_MEGAPHONE_BODY" = "Tap and hold on any message to quickly reply with how you feel.";
+"REACTION_MEGAPHONE_BODY" = "Pindutin at huwag bitiwan ang anumang mensahe upang mabilisang makatugon ng kung ano ang iyong nadarama.";
 
 /* Title for the megaphone introducing reactions */
 "REACTION_MEGAPHONE_TITLE" = "Ipinakikilala ang Mga Reaksyon";
@@ -2981,8 +3011,11 @@
 /* Text describing the local user in the reaction details pane. */
 "REACTIONS_DETAIL_YOU" = "Ikaw";
 
+/* Pressing this button marks a thread as read */
+"READ_ACTION" = "Nabasa na";
+
 /* Error message indicating that a user can't be selected. */
-"RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "User can't be selected.";
+"RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "hindi mapili ang user.";
 
 /* Label for 'I forgot my PIN' link in the 2FA registration view. */
 "REGISTER_2FA_FORGOT_PIN" = "Nakalimutan ko ang aking PIN";
@@ -2991,25 +3024,25 @@
 "REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Kailangan ng Tulong?";
 
 /* Alert body for a forgotten SVR (V2) PIN */
-"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
+"REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Ang PIN na iyong nilikha ay isang 4+ na code na maaaring naglalaman ng mga numero, letra o kombinasyon nito. Kung hindi mo matandaan ang iyong PIN, kakailanganin mong maghintay ng 7 araw upang mairehistrong muli ang iyong account.";
 
 /* Alert body for a forgotten SVR (V2) PIN when the user doesn't have reglock */
-"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you can create a new one. You can register and use your account but you’ll lose some saved settings like your profile information.";
+"REGISTER_2FA_FORGOT_SVR_PIN_WITHOUT_REGLOCK_ALERT_MESSAGE" = "Ang PIN na iyong nilikha ay isang 4+ na code na maaaring naglalaman ng mga numero, letra o kombinasyon nito. Kung hindi mo matandaan ang iyong PIN, maaari kang lumikha ng bago. Makakapagrehistro at magagamit mo ang iyong account ngunit mawawala na ang ilang naka-save na mga setting tulad ng iyong profile na impormasyon.";
 
 /* Alert body for a forgotten V1 PIN */
-"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit numeric code you created. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
+"REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Ang PIN na iyong nilikha ay isang 4+ na code na naglalaman ng mga numero. Kung hindi mo matandaan ang iyong PIN, kakailanganin mong maghintay ng 7 araw upang mairehistrong muli ang iyong account.";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock disabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "You have %lu attempts remaining. If you run out of attempts, you can create a new PIN. You can register and use your account but you’ll lose some saved settings like your profile information.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "Mayroon kang %lu pagtatangkang natitira. Kung maubusan ka nito, maaari kang lumikha ng bagong PIN. Makakapag-rehistro ka at magagamit mo ang iyong account ngunit mawawala ang mga naka-save na setting tulad ng iyong profile na impormasyon. ";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock enabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_PLURAL_FORMAT" = "You have %lu attempts remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_PLURAL_FORMAT" = "Mayroon kang %lu pagtatangkang natitira. Kung maubusan ka nito malo-lock ang iyong account. Makalipas ang 7 araw ng kawalang-aktibidad, makakapag-rehistro kang muli ng wala ang iyong PIN. Mawawala ang iyong account at mabubura ang lahat ng laman.";
 
 /* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock enabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_SINGLE" = "You have 1 attempt remaining. If you run out of attempts your account will be locked. After 7 days of inactivity, you can re-register without your PIN. Your account will be wiped and all content deleted.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_SINGLE" = "Mayroon kang 1 pagtatangkang natitira. Kung maubusan ka nito malo-lock ang iyong account. Makalipas ang 7 araw ng kawalang-aktibidad, makakapag-rehistro kang muli ng wala ang iyong PIN. Mawawala ang iyong account at mabubura ang lahat ng laman.";
 
 /* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock disabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "You have 1 attempt remaining. If you run out of attempts, you can create a new PIN. You can register and use your account but you’ll lose some saved settings like your profile information.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "Mayroon kang 1 pagtatangkang natitira. Kung maubusan ka nito, maaari kang lumikha ng bagong PIN. Makakapag-rehistro ka at magagamit mo ang iyong account ngunit mawawala ang mga naka-save na setting tulad ng iyong profile na impormasyon.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "Hindi tama ang PIN";
@@ -3027,13 +3060,13 @@
 "REGISTER_FAILED_TRY_AGAIN" = "Subukang muli";
 
 /* action sheet body */
-"REGISTER_RATE_LIMITING_BODY" = "You have tried too often. Please wait a minute before trying again.";
+"REGISTER_RATE_LIMITING_BODY" = "Madaming beses mo nang sinubukan. Maghintay ng isang minuto bago subukang muli.";
 
 /* No comment provided by engineer. */
-"REGISTER_RATE_LIMITING_ERROR" = "You have tried too often. Please wait a minute before trying again.";
+"REGISTER_RATE_LIMITING_ERROR" = "Madaming beses mo nang sinubukan. Maghintay ng isang minuto bago subukang muli.";
 
 /* Title of alert shown when push tokens sync job fails. */
-"REGISTRATION_BODY" = "Failed to re-register for push notifications.";
+"REGISTRATION_BODY" = "Bigong mai-rehistrong muli para sa mga push notification.";
 
 /* Label for the country code field */
 "REGISTRATION_DEFAULT_COUNTRY_NAME" = "Country Code";
@@ -3045,10 +3078,10 @@
 "REGISTRATION_ERROR" = "May mali sa rehistrasyon";
 
 /* alert body during registration */
-"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "We can't activate your account until you verify the code we sent you.";
+"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Hindi namin maa-activate ang iyong account hanggang iberipika mo ang code na ipinadala namin sa iyo.";
 
 /* No comment provided by engineer. */
-"REGISTRATION_NON_VALID_NUMBER" = "This phone number format is not supported, please contact support.";
+"REGISTRATION_NON_VALID_NUMBER" = "Ang format na ito ng numero ng telepono ay hindi suportado, paki-contact ang support.";
 
 /* Label for the phone number textfield */
 "REGISTRATION_PHONENUMBER_BUTTON" = "Numero ng Telepono";
@@ -3060,10 +3093,10 @@
 "REGISTRATION_VERIFICATION_FAILED_TITLE" = "Nabigo ang Beripikasyon";
 
 /* Error message indicating that registration failed due to a missing or incorrect verification code. */
-"REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "The numbers you submitted don't match what we sent. Want to double check?";
+"REGISTRATION_VERIFICATION_FAILED_WRONG_CODE_DESCRIPTION" = "Ang isinumite mong numero ay hindi nagtugma sa aming pinadala. Maaari mo bang tignang muli? ";
 
 /* Error message indicating that registration failed due to a missing or incorrect 2FA PIN. */
-"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Hindi tama ang Lock PIN ng Rehistrasyon";
+"REGISTRATION_VERIFICATION_FAILED_WRONG_PIN" = "Mali ang Lock PIN ng Rehistrasyon";
 
 /* Message of alert indicating that users needs to enter a valid phone number to register. */
 "REGISTRATION_VIEW_INVALID_PHONE_NUMBER_ALERT_MESSAGE" = "Pakiusap na maglagay ng valid na numero ng telepono upang makapagrehistro.";
@@ -3081,31 +3114,31 @@
 "REJECT_CALL_BUTTON_TITLE" = "Tanggihan";
 
 /* No comment provided by engineer. */
-"RELAY_REGISTERED_ERROR_RECOVERY" = "The phone number you are trying to register has already been registered on another server, please unregister from there and try again.";
+"RELAY_REGISTERED_ERROR_RECOVERY" = "Ang sinusubukan mong irehistrong numero ng telepono ay nairehistro na sa ibang server, paki-tanggal ang kagkakarehistro doon at subukang muli.";
 
 /* Body text for when user is periodically prompted to enter their registration lock PIN */
-"REMINDER_2FA_BODY" = "Ang Lock ng Rehistrasyon ay gumagana para sa iyong numero ng telepono. Upang matulungan kang matandaan ang iyong Lock PIN ng Rehistrasyon, pana-panahong tatanungin ka ni Signal na kumpirmahin ito.";
+"REMINDER_2FA_BODY" = "Ang Lock ng Rehistrasyon ay gumagana para sa numero ng iyong telepono. Upang matulungan kang matandaan ang iyong Lock PIN ng Rehistrasyon, pana-panahong tatanungin ka ni Signal na kumpirmahin ito.";
 
 /* Body header for when user is periodically prompted to enter their registration lock PIN */
 "REMINDER_2FA_BODY_HEADER" = "Paalala:";
 
 /* Alert message explaining what happens if you forget your 'two-factor auth pin' */
-"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Registration Lock helps protect your phone number from unauthorized registration attempts. This feature can be disabled at any time in your Signal privacy settings.";
+"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Tumutulong ang Lock ng Rehistrasyon na protektahan ang numero ng iyong telepono mula sa hindi-otorisadong pagtatangkang rehistrasyon. Maaaring hindi ito paganahin anumang oras sa mga setting ng privacy ng iyong Signal.";
 
 /* Navbar title for when user is periodically prompted to enter their registration lock PIN */
-"REMINDER_2FA_NAV_TITLE" = "Enter Your Registration Lock PIN";
+"REMINDER_2FA_NAV_TITLE" = "Ilagay ang Lock PIN ng iyong Rehistrasyon.";
 
 /* Alert body after wrong guess for 'two-factor auth pin' reminder activity */
-"REMINDER_2FA_WRONG_PIN_ALERT_BODY" = "You can set a new PIN in your privacy settings.";
+"REMINDER_2FA_WRONG_PIN_ALERT_BODY" = "Maaari kang magtakda ng bagong PIN sa mga setting ng iyong privacy.";
 
 /* Alert title after wrong guess for 'two-factor auth pin' reminder activity */
-"REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "That is not the correct PIN.";
+"REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "Hindi ito ang tamang PIN.";
 
 /* The title for the 'replace group admin' view. */
 "REPLACE_ADMIN_VIEW_TITLE" = "Pumili ng Bagong Admin";
 
 /* No comment provided by engineer. */
-"REREGISTER_FOR_PUSH" = "Re-register for push notifications";
+"REREGISTER_FOR_PUSH" = "Magrehistrong muli para sa push notifications.";
 
 /* Generic text for button that retries whatever the last action was. */
 "RETRY_BUTTON_TEXT" = "Subukang muli";
@@ -3120,13 +3153,13 @@
 "SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "Ipadala pa rin";
 
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
-"SAFETY_NUMBER_SHARE_FORMAT" = "Our Signal Safety Number:\n%@";
+"SAFETY_NUMBER_SHARE_FORMAT" = "Ang ating Numerong Pangkaligtasan sa Signal:\n%@";
 
 /* Action sheet heading */
-"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Your safety number with %@ has changed. You may wish to verify it.";
+"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Ang iyong numerong pangkaligtasan kay %@ ay nagbago na. Baka nais mong iberipika ito.";
 
 /* label presented once scanning (camera) view is visible. */
-"SCAN_CODE_INSTRUCTIONS" = "Scan the QR Code on your contact's device.";
+"SCAN_CODE_INSTRUCTIONS" = "I-scan ang QR Code sa device ng iyong kontak.";
 
 /* Title for the 'scan QR code' view. */
 "SCAN_QR_CODE_VIEW_TITLE" = "I-scan ang QR Code";
@@ -3135,25 +3168,25 @@
 "SCREEN_LOCK_ACTIVITY_TIMEOUT_NONE" = "Kagyat";
 
 /* Indicates that an unknown error occurred while using Touch ID/Face ID/Phone Passcode. */
-"SCREEN_LOCK_ENABLE_UNKNOWN_ERROR" = "Authentication could not be accessed.";
+"SCREEN_LOCK_ENABLE_UNKNOWN_ERROR" = "Hindi ma-access ang authentication.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode authentication failed. */
 "SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_FAILED" = "Nabigo ang authentication.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is 'locked out' on this device due to authentication failures. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Too many failed authentication attempts. Please try again later.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_LOCKOUT" = "Napakaraming bigong pagtatangka sa authentication. Paki-subukang muli mamaya.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode are not available on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "You must enable a passcode in your iOS Settings in order to use Screen Lock.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_AVAILABLE" = "Kailangan mong paganahin ang passcode sa settings ng iyong iOS upang magamit ang Screen Lock.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode is not configured on this device. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "You must enable a passcode in your iOS Settings in order to use Screen Lock.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_NOT_ENROLLED" = "Kailangan mong paganahin ang passcode sa settings ng iyong iOS upang magamit ang Screen Lock.";
 
 /* Indicates that Touch ID/Face ID/Phone Passcode passcode is not set. */
-"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "You must enable a passcode in your iOS Settings in order to use Screen Lock.";
+"SCREEN_LOCK_ERROR_LOCAL_AUTHENTICATION_PASSCODE_NOT_SET" = "Kailangan mong paganahin ang passcode sa settings ng iyong iOS upang magamit ang Screen Lock.";
 
 /* Description of how and why Signal iOS uses Touch ID/Face ID/Phone Passcode to unlock 'screen lock'. */
-"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Authenticate to open Signal.";
+"SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK" = "Mag-authenticate upang mabuksan ang Signal.";
 
 /* Title for alert indicating that screen lock could not be unlocked. */
 "SCREEN_LOCK_UNLOCK_FAILED" = "Nabigo ang Authentication.";
@@ -3162,16 +3195,16 @@
 "SCREEN_LOCK_UNLOCK_SIGNAL" = "I-unlock ang Signal";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This will have a female profile photo. */
-"SCREENSHOT_NAME_CONTACT_EIGHT" = "Tina Ukuku";
+"SCREENSHOT_NAME_CONTACT_EIGHT" = "Tina Del Rosario";
 
 /* This is a contact's name. Please keep the nick name Ali and change the last name to a popular lastname in your language. This will have male profile photo. */
-"SCREENSHOT_NAME_CONTACT_FIVE" = "Ali Smith";
+"SCREENSHOT_NAME_CONTACT_FIVE" = "Ali Garcia";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This profile photo will be either male or female. Choose a unisex name if possible. */
 "SCREENSHOT_NAME_CONTACT_FOUR" = "Artemis Cheng";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. Include two last names if that is represented in your locale. This should be a unique non-public figure's name. This will have a female profile photo. */
-"SCREENSHOT_NAME_CONTACT_NINE" = "Zeus Lehtonen";
+"SCREENSHOT_NAME_CONTACT_NINE" = "Zeus Santos";
 
 /* This is a contact's name. A male leadership/presidential position + the sound a cat makes. This will have a cat profile photo. */
 "SCREENSHOT_NAME_CONTACT_ONE" = "Chairman Meow";
@@ -3180,61 +3213,61 @@
 "SCREENSHOT_NAME_CONTACT_SEVEN" = "Jordan B.";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This will have a male profile photo. */
-"SCREENSHOT_NAME_CONTACT_SIX" = "Michael Kirk";
+"SCREENSHOT_NAME_CONTACT_SIX" = "Michael Dalisay";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This will have a female profile photo. */
-"SCREENSHOT_NAME_CONTACT_TEN" = "Maya Dorai";
+"SCREENSHOT_NAME_CONTACT_TEN" = "Maya Mendoza";
 
 /* This is a contact's name. Please keep a similar nickname for Nikola/Nikita/etc in your language and only post the last initial. This profile photo will be either male or female but mostly female. */
-"SCREENSHOT_NAME_CONTACT_THREE" = "Nikki Romanov";
+"SCREENSHOT_NAME_CONTACT_THREE" = "Nikki Bautista";
 
 /* This is a contact's name. Replace the name for a more common name in your locale if this sounds too foreign. This should be a unique non-public figure's name. This profile photo will be either male or female. */
-"SCREENSHOT_NAME_CONTACT_TWO" = "Myles Larson";
+"SCREENSHOT_NAME_CONTACT_TWO" = "Myles Dela Cruz";
 
 /* This is a group chat of family members. Please keep Kirk or replace with a common last name in your locale. Translate 'Family' */
-"SCREENSHOT_NAME_GROUP_FIVE" = "Kirk Family";
+"SCREENSHOT_NAME_GROUP_FIVE" = "Pamilyang Dalisay";
 
 /* Please include emoji. This is a group name/channel name for pictures of the sun in the sky. */
-"SCREENSHOT_NAME_GROUP_FOUR" = "Sunsets 🌅";
+"SCREENSHOT_NAME_GROUP_FOUR" = "Papalubog na mga araw 🌅";
 
 /* This is for a group of people interested in discussing books they've read. */
 "SCREENSHOT_NAME_GROUP_ONE" = "Book Club";
 
 /* This is group chat name for members talking about cats. Please include the emoji. */
-"SCREENSHOT_NAME_GROUP_SIX" = "Cat Chat 🐈 🐱";
+"SCREENSHOT_NAME_GROUP_SIX" = "Huntahang Kapusaan 🐈 🐱";
 
 /* Please include emoji. This is a group name for people who climb rocks/climb trees/hike mountains/outside mountaineering. */
-"SCREENSHOT_NAME_GROUP_THREE" = "🧗🏽‍♀️ Rock Climbers";
+"SCREENSHOT_NAME_GROUP_THREE" = "🧗🏽‍♀️ Akyatan";
 
 /* This is for a group chat for people who want weather updates. */
-"SCREENSHOT_NAME_GROUP_TWO" = "Weather Forecasts";
+"SCREENSHOT_NAME_GROUP_TWO" = "Ulat Panahon";
 
 /* This appears in Signal > Settings. A female leadership/presidential/chairwoman position + female name Freyja or similar spelling. This will have a cat profile photo. */
-"SCREENSHOT_NAME_LOCAL_PROFILE" = "Chairwoman Freya";
+"SCREENSHOT_NAME_LOCAL_PROFILE" = "Chairwoman Maria";
 
 /* This is a message expressing support/happiness/awe/shock. */
-"SCREENSHOT_THREAD_DIRECT_FIVE_MESSAGE_ONE" = "Congrats! I can't believe it!";
+"SCREENSHOT_THREAD_DIRECT_FIVE_MESSAGE_ONE" = "Pagbati! Hindi ako makapaniwala!";
 
 /* This is a message. */
-"SCREENSHOT_THREAD_DIRECT_FIVE_MESSAGE_THREE" = "See you tomorrow?";
+"SCREENSHOT_THREAD_DIRECT_FIVE_MESSAGE_THREE" = "Hanggang bukas?";
 
 /* This is a message. Please include the emoji. */
-"SCREENSHOT_THREAD_DIRECT_FIVE_MESSAGE_TWO" = "Thank you ☺️";
+"SCREENSHOT_THREAD_DIRECT_FIVE_MESSAGE_TWO" = "Salamat ☺️";
 
 /* This is a message. */
-"SCREENSHOT_THREAD_DIRECT_FOUR_MESSAGE_ONE" = "Your wisdom has saved me.";
+"SCREENSHOT_THREAD_DIRECT_FOUR_MESSAGE_ONE" = "Ang dunong mo'y nagligtas sa akin.";
 
 /* This is a message. Include 'Thanks' + a similar phrase with the :) emoji. */
-"SCREENSHOT_THREAD_DIRECT_FOUR_MESSAGE_TWO" = "Thanks! What a wonderful message to read :)";
+"SCREENSHOT_THREAD_DIRECT_FOUR_MESSAGE_TWO" = "Salamat! Isang mensaheng napakagandang basahin :)";
 
 /* This is a message. */
-"SCREENSHOT_THREAD_DIRECT_ONE_MESSAGE_ONE" = "The rain is pouring down and I'm sitting here just listening to it.";
+"SCREENSHOT_THREAD_DIRECT_ONE_MESSAGE_ONE" = "Bumubuhos ang ulan at ako'y nandito't nakaupo lamang at ito'y pinakikinggan.";
 
 /* This is a message. */
-"SCREENSHOT_THREAD_DIRECT_ONE_MESSAGE_TWO" = "That's what I did this morning too.";
+"SCREENSHOT_THREAD_DIRECT_ONE_MESSAGE_TWO" = "Iyan din ang ginawa ko ngayong umaga.";
 
 /* This is a message before a call. */
-"SCREENSHOT_THREAD_DIRECT_SEVEN_MESSAGE_ONE" = "Free for a call?";
+"SCREENSHOT_THREAD_DIRECT_SEVEN_MESSAGE_ONE" = "Libre ka ba para tawagan?";
 
 /* This is a message. */
 "SCREENSHOT_THREAD_DIRECT_SIX_MESSAGE_ONE" = "Oo!";
@@ -3243,52 +3276,52 @@
 "SCREENSHOT_THREAD_DIRECT_THREE_MESSAGE_ONE" = "Gagawa kami ng kakanin bukas";
 
 /* This is a message before an image of mountains + a lake. */
-"SCREENSHOT_THREAD_DIRECT_TWO_MESSAGE_ONE" = "Hey check this out!";
+"SCREENSHOT_THREAD_DIRECT_TWO_MESSAGE_ONE" = "Uy, tignan mo ito!";
 
 /* This is a message. */
-"SCREENSHOT_THREAD_DIRECT_TWO_MESSAGE_THREE" = "New Zealand!";
+"SCREENSHOT_THREAD_DIRECT_TWO_MESSAGE_THREE" = "Nasa New Zealand!";
 
 /* This is a message after an image of mountains + a lake. */
-"SCREENSHOT_THREAD_DIRECT_TWO_MESSAGE_TWO" = "Whoa where are you!?";
+"SCREENSHOT_THREAD_DIRECT_TWO_MESSAGE_TWO" = "Aba, nasaan ka?";
 
 /* This is a message in the group chat of family members. */
-"SCREENSHOT_THREAD_GROUP_FIVE_MESSAGE_ONE" = "Today is ...";
+"SCREENSHOT_THREAD_GROUP_FIVE_MESSAGE_ONE" = "Ngayong araw ay ...";
 
 /* This is a message in the group chat of family members. */
-"SCREENSHOT_THREAD_GROUP_FIVE_MESSAGE_TWO" = "Happy birthday to you. Happy birthday to you!";
+"SCREENSHOT_THREAD_GROUP_FIVE_MESSAGE_TWO" = "Maligayang bati. Maligayang bati!";
 
 /* This is a message in the Sunsets group chat. */
-"SCREENSHOT_THREAD_GROUP_FOUR_MESSAGE_ONE" = "It's too cloudy here.";
+"SCREENSHOT_THREAD_GROUP_FOUR_MESSAGE_ONE" = "Masyadong maulap dito.";
 
 /* 1984 is the book title. The file extension is a text file. */
 "SCREENSHOT_THREAD_GROUP_ONE_FILE_NAME" = "1984.txt";
 
 /* This is for a message in the 'Book Club' group chat */
-"SCREENSHOT_THREAD_GROUP_ONE_MESSAGE_ONE" = "Did you read this yet?";
+"SCREENSHOT_THREAD_GROUP_ONE_MESSAGE_ONE" = "Nabasa mo na ba ito?";
 
 /* This is a file name 'Instructions' for the cat chat group. */
 "SCREENSHOT_THREAD_GROUP_SIX_FILE_NAME" = "Instructions.PDF";
 
 /* This is a message in the cat chat group. */
-"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_FIVE" = "This is the instruction manual.";
+"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_FIVE" = "Ito ang instruction manual.";
 
 /* This is a message in the cat chat group. */
-"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_FOUR" = "Pictures, please!";
+"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_FOUR" = "Mga larawan, pakiusap!";
 
 /* This is a message after seeing a picture. */
-"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_ONE" = "This is peaceful.";
+"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_ONE" = "Ito ay mapayapa.";
 
 /* This is a message in the cat chat group. */
-"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_THREE" = "She’s walking a cat on a leash...";
+"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_THREE" = "Inilalakad n'ya ang pusa hawak ang tali nito...";
 
 /* This is a message. */
-"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_TWO" = "🌅 Good Morning!";
+"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_TWO" = "🌅 Magandang umaga!";
 
 /* This is a message in the 'Rock Climbers' group chat. Please translate to make sense for the translated group name. For example: Which way should we go? */
-"SCREENSHOT_THREAD_GROUP_THREE_MESSAGE_ONE" = "Which route should we take?";
+"SCREENSHOT_THREAD_GROUP_THREE_MESSAGE_ONE" = "Anong ruta ang dapat kong tahakin?";
 
 /* This is a message. Please include the emoji if possible. */
-"SCREENSHOT_THREAD_GROUP_TWO_MESSAGE_ONE" = "See you all there 🤗";
+"SCREENSHOT_THREAD_GROUP_TWO_MESSAGE_ONE" = "Magkita-kita tayo doon 🤗";
 
 /* This is a message sent with an attachment. */
 "SCREENSHOT_THREAD_GROUP_TWO_MESSAGE_TWO" = "Maulan buong araw";
@@ -3297,7 +3330,7 @@
 "SCREENSHOT_USERNAME_1" = "SCREENSHOT_USERNAME_1";
 
 /* Placeholder text indicating the user can search for contacts by name, username, or phone number. */
-"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "Name, username, or number";
+"SEARCH_BY_NAME_OR_USERNAME_OR_NUMBER_PLACEHOLDER_TEXT" = "Pangalan, username, o numero";
 
 /* Placeholder text indicating the user can search for contacts by name or phone number. */
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Maghanap gamit ang pangalan o numero";
@@ -3315,55 +3348,55 @@
 "SEARCH_SECTION_MESSAGES" = "Mga mensahe";
 
 /* alert title */
-"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Unable to Fetch Linking Code";
+"SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Hindi makuha ang Linking Code";
 
 /* alert message for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Your other device is running a legacy version of Signal that doesn't support scanning iPad QR codes. Please install the latest Signal release and try again.";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Ang iba mong device ay gumagamit ng lumang bersyon ng Signal na hindi kayang mag-scan ng mga QR Code ng iPad. Paki-install ang pinakabagong inilabas na Signal at subukang muli.";
 
 /* alert title for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "Update Scanning Device";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "I-update ang Device na Pinang-i-scan";
 
 /* alert title */
-"SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "Failed to Link Your Device";
+"SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN" = "Nabigo na I-link ang Iyong Device";
 
 /* header text when this device is being added as a secondary */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Choose a name for this device";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME" = "Pumili ng pangalan para sa device na ito";
 
 /* label text */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "You'll see this name under \"Linked Devices.\"";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_EXPLANATION" = "Makikita mo ang pangalan na ito sa \"Naka-link na mga Device\"";
 
 /* text field placeholder */
-"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "Choose a name";
+"SECONDARY_ONBOARDING_CHOOSE_DEVICE_NAME_PLACEHOLDER" = "Pumili ng pangalan";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "Finish Linking";
+"SECONDARY_ONBOARDING_COMPLETE_LINKING_PROCESS" = "Tapusin ang Pag-link";
 
 /* header text before the user can link this device */
-"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Launch Signal on your phone to link this iPad to your account";
+"SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "Patakbuhin ang Signal sa iyong telepono para i-link ang iPad na ito sa iyong account";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
 "SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "Wala akong Signal sa aking telepono...";
 
 /* alert body */
-"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Go to the App Store on your phone, install Signal, complete the registration process, and then you can link your iPad to the same account.";
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Pumunta sa App Store ng iyong phone, i-install ang Signal, kumpletuhin ang proseso ng rehistrasyon, at pagkatapos ay ma-i-li-link mo ang iyong iPad sa parehong account.";
 
 /* alert title */
-"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Install Signal on Your Phone";
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "I-install ang Signal sa Iyong Telepono";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Tap on your profile picture to open Signal Settings on your phone. Then \"Linked Devices\" and \"Link New Device\" to scan this code with your phone:";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Pindutin ang larawan ng iyong profile upang buksan ang Settings ng Signal sa iyong telepono. Tapos ay \"Naka-link na mga Device\" at \"Mag-link ng Bagong Device\" para ma-scan ang code na ito gamit ang iyong telepono:";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
-"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Get help linking your iPad here";
+"SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Kumuha dito ng tulong kung paano i-link ang iyong iPad";
 
 /* header text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "Scan the QR Code with your phone";
+"SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "I-scan ang QR Code gamit ang iyong phone";
 
 /* header text before the user can transfer to this device */
-"SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "Launch Signal on your old iPad to transfer your account";
+"SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "Patakbuhin ang Signal sa luma mong iPad para mailipat ang iyong account";
 
 /* No comment provided by engineer. */
-"SECURE_SESSION_RESET" = "Secure session was reset.";
+"SECURE_SESSION_RESET" = "Ang ligtas na session ay na-reset.";
 
 /* Table section header for conversations you haven't recently used. */
 "SELECT_THREAD_TABLE_OTHER_CHATS_TITLE" = "Iba pang mga Kontak";
@@ -3414,19 +3447,19 @@
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_COUNTRY_FORMAT" = "Lokasyon: %@";
 
 /* Table footer for the 'censorship circumvention' section when censorship circumvention can be manually enabled. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "If enabled, Signal will attempt to circumvent censorship. Do not enable this feature unless you are in a location where Signal is censored.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER" = "Kung gumagana, susubukin ng Signal na ikutan ang censorship. Huwag paganahin ang feature na ito maliban na lang kung ika'y nasa lugar na naka-censor ang Signal.";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been auto-enabled based on local phone number. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Censorship circumvention has been activated based on your account's phone number.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_AUTO_ENABLED" = "Ang pag-ikot sa censorship ay pinagana na base sa numero ng telepono ng iyong account. ";
 
 /* Table footer for the 'censorship circumvention' section shown when censorship circumvention has been manually disabled. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "You have manually disabled censorship circumvention.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_MANUALLY_DISABLED" = "Ang pag-ikot sa censorship ay manu-mano mong hindi pinagana.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is not connected to the internet. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "Censorship circumvention can only be activated when connected to the internet.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_NO_CONNECTION" = "Ang pag-ikot sa censorship ay mapapagana lamang kapag kunektado sa internet.";
 
 /* Table footer for the 'censorship circumvention' section shown when the app is connected to the Signal service. */
-"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Censorship circumvention is not necessary; you are already connected to the Signal service.";
+"SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_FOOTER_WEBSOCKET_CONNECTED" = "Ang pag-ikot sa censorship ay hindi kailangan; kunektado ka na sa serbisyo ng Signal.";
 
 /* Table header for the 'censorship circumvention' section. */
 "SETTINGS_ADVANCED_CENSORSHIP_CIRCUMVENTION_HEADER" = "Censorship Circumvention";
@@ -3501,7 +3534,7 @@
 "SETTINGS_BACKUP_STATUS_SUCCEEDED" = "Tagumpay ang Pag-backup";
 
 /* A label for the 'add phone number' button in the block list table. */
-"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Add Blocked User";
+"SETTINGS_BLOCK_LIST_ADD_BUTTON" = "Idagdag ang Naka-block na User";
 
 /* A label that indicates the user has no Signal contacts. */
 "SETTINGS_BLOCK_LIST_NO_CONTACTS" = "Wala kang mga kontak sa Signal.";
@@ -3516,7 +3549,7 @@
 "SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE" = "Laging padaain ang Tawag sa server ng Signal";
 
 /* User settings section footer, a detailed explanation */
-"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Relay all calls through a Signal server to avoid revealing your IP address to your contact. Enabling will reduce call quality.";
+"SETTINGS_CALLING_HIDES_IP_ADDRESS_PREFERENCE_TITLE_DETAIL" = "Padaanin ang lahat ng tawag sa server ng Signal upang maiwasang mailantad sa iyong kontak ang iyong IP address. Mababawasan ang kalidad ng tawag kapag pinagana ito.";
 
 /* No comment provided by engineer. */
 "SETTINGS_CLEAR_HISTORY" = "I-clear ang History ng Pag-uusap";
@@ -3549,7 +3582,7 @@
 "SETTINGS_INVITE_TITLE" = "Imbitahan ang Iyong mga Kaibigan";
 
 /* content of tweet when inviting via twitter - please do not translate URL */
-"SETTINGS_INVITE_TWITTER_TEXT" = "You can reach me using @signalapp. Get it now: https://signal.org/download/";
+"SETTINGS_INVITE_TWITTER_TEXT" = "Makokontak mo ako gamit ang @signalapp. Kuhanin ito ngayon: https://signal.org/download/";
 
 /* Label for settings view that allows user to change the notification sound. */
 "SETTINGS_ITEM_NOTIFICATION_SOUND" = "Tunog ng Mensahe";
@@ -3570,7 +3603,7 @@
 "SETTINGS_NAV_BAR_TITLE" = "Mga Setting";
 
 /* table section footer */
-"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Call and Message notifications can appear while your phone is locked. You may wish to limit what is shown in these notifications.";
+"SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Ang mga notipikasyon ng tawag at mensahe ay maaaring lumabas habang naka-lock ang iyong telepono. Baka nais mong limitahan kung ano ang nakikita sa mga notipikasyong ito.";
 
 /* table section header */
 "SETTINGS_NOTIFICATION_CONTENT_TITLE" = "Nilalaman ng Notipikasyon";
@@ -3585,22 +3618,22 @@
 "SETTINGS_NOTIFICATIONS" = "Mga Notipikasyon";
 
 /* The button text for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "Turn Off Reminders";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "Patayin ang mga Paalala";
 
 /* The explanation for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "Make sure you memorize or securely store your PIN as it can’t be recovered. If you forget your PIN, you may lose data when re-registering your Signal account.";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "Siguraduhing saulado mo o naitabi ng ligtas ang iyong PIN dahil hindi na ito mababawing muli. Kung makalimutan mo ang iyong PIN, maaaring mawala ang iyong mga data kapag nirehistrong muli ang iyong account sa Signal.";
 
 /* The title for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Confirm your Signal PIN";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Kumpirmahin ang PIN ng iyong Signal";
 
 /* Footer for the 'pin reminder' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_PIN_REMINDER_FOOTER" = "Reminders help you remember your PIN since it can’t be recovered. You’ll be asked less frequently over time.";
+"SETTINGS_PIN_REMINDER_FOOTER" = "Dahil hindi na mababawi pa, ang mga paalala ay makakatulong upang matandaan mo ang iyong PIN. Kinalauna'y dadalang ang pagtanong sa iyo nito.";
 
 /* Label for the 'pin reminder' switch of the privacy settings. */
-"SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "PIN Reminders";
+"SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "Paalala ng PIN";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall Signal.";
+"SETTINGS_PINS_FOOTER" = "Panapanatiling encrypted ng PIN ang mga impormasyong naka-imbak sa Signal upang ikaw lang ang maka-access nito. Ang iyong profile, mga setting, at kontak ay mare-restore kapag nagre-install ka ng Signal.";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "Baguhin ang iyong PIN";
@@ -3611,17 +3644,11 @@
 /* Title for the 'PINs' section of the privacy settings. */
 "SETTINGS_PINS_TITLE" = "PIN ng SIGNAL";
 
-/* Label for 'CallKit privacy' preference */
-"SETTINGS_PRIVACY_CALLKIT_PRIVACY_TITLE" = "Ipakita ang Pangalan at Numero ng Tumatawag";
-
 /* Settings table section footer. */
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "Ipakita ang mga tawag na nasa listahan ng  \"Recents\" sa iOS na Telepono";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Ipakita ang mga Tawag sa Recents";
-
-/* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_TITLE" = "Integrasyon ng mga Tawag sa iOS";
 
 /* Settings table view cell label */
 "SETTINGS_PRIVACY_TITLE" = "Privacy";
@@ -3639,13 +3666,13 @@
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "Patayin ang Lock ng Rehistrasyon";
 
 /* Action to turn on registration lock */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Buhayin";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Buksan";
 
 /* Body for the alert confirming that the user wants to turn on registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "If you forget your Signal PIN when registering with Signal again, you’ll be locked out of your account for 7 days.";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "Kung makalimutan mo ang iyong PIN sa Signal kapag nagrehistro kang muli, hindi mo mabubuksan ang iyong account sa Signal sa loob ng 7 araw.";
 
 /* Title for the alert confirming that the user wants to turn on registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "Turn On Registration Lock?";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "Paganahin ang Lock ng Rehistrasyon?";
 
 /* Label for re-link button. */
 "SETTINGS_RELINK_BUTTON" = "Muling I-Link ";
@@ -3657,7 +3684,7 @@
 "SETTINGS_SCREEN_LOCK_ACTIVITY_TIMEOUT" = "Nag-timeout ang Lock ng Screen";
 
 /* Footer for the 'screen lock' section of the privacy settings. */
-"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Unlock Signal's screen using Touch ID, Face ID, or your iOS device passcode. You can still answer incoming calls and receive call and message notifications while Screen Lock is enabled. Signal's notification settings allow you to customize the information that is displayed.";
+"SETTINGS_SCREEN_LOCK_SECTION_FOOTER" = "Buksan ang screen ng Signal gamit ang Touch ID, Face ID, o ang passcode ng iyong iOS Device. Masasagot mo pa rin ang paparating na mga tawag at tumanggap ng mga tawag at mensaheng notipikasyon habang gumagana ang Screen Lock. Ang mga setting ng notipikasyon ng Signal hinahayaan kang baguhin ang mga impormasyong makikita.";
 
 /* Title for the 'screen lock' section of the privacy settings. */
 "SETTINGS_SCREEN_LOCK_SECTION_TITLE" = "Lock ng Screen";
@@ -3669,10 +3696,7 @@
 "SETTINGS_SCREEN_SECURITY" = "Paganahin ang Screen Security";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY_DETAIL" = "Prevent Signal previews from appearing in the app switcher.";
-
-/* Settings table section footer. */
-"SETTINGS_SECTION_CALL_KIT_DESCRIPTION" = "iOS Call Integration shows Signal calls on your lock screen and in the system's call history. You may optionally show your contact's name and number. If iCloud is enabled, this call history will be shared with Apple.";
+"SETTINGS_SCREEN_SECURITY_DETAIL" = "Huwag hayaang lumabas ang mga preview ng Signal sa app switcher.";
 
 /* Label for the notifications section of conversation settings view. */
 "SETTINGS_SECTION_NOTIFICATIONS" = "Mga Notipikasyon";
@@ -3705,13 +3729,13 @@
 "SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Lock ng Rehistrasyon";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
-"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "For extra security, turn on registration lock, which will require your Signal PIN to register your phone number with Signal again.";
+"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Para sa karagdagang seguridad, paganahin ang lock ng rehistrasyon, na kakailanganin ang iyong PIN ng Signal para mai-rehistrong muli ang numero ng iyong telepono sa Signal.";
 
 /* Label for the 'typing indicators' setting. */
 "SETTINGS_TYPING_INDICATORS" = "Typing Indicators";
 
 /* An explanation of the 'typing indicators' setting. */
-"SETTINGS_TYPING_INDICATORS_FOOTER" = "See and share when messages are being typed. This setting is optional and applies to all conversations.";
+"SETTINGS_TYPING_INDICATORS_FOOTER" = "Makita at ibahagi kapag ang mga mensahe ay isinusulat. Ang setting na ito ay opsyonal at may epekto sa lahat ng mga pag-uusap. ";
 
 /* table section label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_SECTION_TITLE" = "Selyado ang Nagpadala";
@@ -3720,7 +3744,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Display Indicators";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "Show a status icon when you select \"More Info\" on messages that were delivered using sealed sender.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "Magpakita ng icon ng status kapag pinili mo ang \"Mas marami pang Info\" sa mga mensahe na naipadala gamit ang sealed sender.";
 
 /* switch label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Payagan ang Mula sa Sinuman";
@@ -3741,49 +3765,49 @@
 "SHARE_ACTION_TWEET" = "Twitter";
 
 /* alert body when sharing file failed because of untrusted/changed identity keys */
-"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Your safety number with %@ has recently changed. You may wish to verify it in the main app before resending.";
+"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Ang iyong numerong pangkaligtasan kay %@ ay kakabago lang. Maaari mong iberipika ito sa main app bago ipadalang muli.";
 
 /* Indicates that the share extension is still loading. */
 "SHARE_EXTENSION_LOADING" = "Naglo-load...";
 
 /* Message indicating that the share extension cannot be used until the user has registered in the main app. */
-"SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Launch the Signal app to register.";
+"SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Patakbuhin ang Signal app upang makapag-rehistro.";
 
 /* Title indicating that the share extension cannot be used until the user has registered in the main app. */
 "SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "Hindi Rehistrado";
 
 /* Message indicating that the share extension cannot be used until the main app has been launched at least once. */
-"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Launch the Signal app to update or register.";
+"SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Patakbuhin ang Signal app upang i-update at makapag-rehistro.";
 
 /* Title indicating that the share extension cannot be used until the main app has been launched at least once. */
 "SHARE_EXTENSION_NOT_YET_MIGRATED_TITLE" = "Hindi Handa";
 
 /* Alert title */
-"SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Unable to Send Attachment";
+"SHARE_EXTENSION_SENDING_FAILURE_TITLE" = "Hindi Maipadala ang Kalakip";
 
 /* Alert title */
 "SHARE_EXTENSION_SENDING_IN_PROGRESS_TITLE" = "Ina-upload...";
 
 /* Shown when trying to share content to a Signal user for the share extension. Followed by failure details. */
-"SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "Unable to Prepare Attachment";
+"SHARE_EXTENSION_UNABLE_TO_BUILD_ATTACHMENT_ALERT_TITLE" = "Hindi Maihanda ang Kalakip";
 
 /* Title for the 'share extension' view. */
-"SHARE_EXTENSION_VIEW_TITLE" = "Share to Signal";
+"SHARE_EXTENSION_VIEW_TITLE" = "Ibahagi sa Signal";
 
 /* Action sheet item */
-"SHOW_SAFETY_NUMBER_ACTION" = "Show Safety Number";
+"SHOW_SAFETY_NUMBER_ACTION" = "Ipakita ang Numerong Pangkaligtasan";
 
 /* notification action */
-"SHOW_THREAD_BUTTON_TITLE" = "Show Conversation";
+"SHOW_THREAD_BUTTON_TITLE" = "Ipakita ang Pag-uusap";
 
 /* body sent to contacts when inviting to Install Signal */
-"SMS_INVITE_BODY" = "I'm inviting you to install Signal! Here is the link:";
+"SMS_INVITE_BODY" = "Iniimbitahan kitang i-install ang Signal. Narito ang link:";
 
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
 "SOUNDS_NONE" = "Wala";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
-"STICKER_MESSAGE_PREVIEW" = "Sticker Message";
+"STICKER_MESSAGE_PREVIEW" = "Sticker na Mensahe";
 
 /* Tooltip indicating that a sticker pack was installed. */
 "STICKER_PACK_INSTALLED_TOOLTIP" = "Naka-install na ang sticker pack";
@@ -3801,7 +3825,7 @@
 "STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "Mga Sticker na Iyong Natanggap";
 
 /* Label indicating that one or more known sticker packs failed to load. */
-"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Some sticker packs failed to load";
+"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Ilang mga sticker pack ang bigong mai-load";
 
 /* Title for the 'installed stickers' section of the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Naka-install na mga Stickers";
@@ -3822,85 +3846,85 @@
 "STICKERS_PACK_DEFAULT_TITLE" = "Sticker Pack";
 
 /* Title of the 'share sticker pack' view. */
-"STICKERS_PACK_SHARE_VIEW_TITLE" = "Share Sticker Pack";
+"STICKERS_PACK_SHARE_VIEW_TITLE" = "Ibahagi ang Sticker Pack";
 
 /* The default title for the 'sticker pack' view. */
 "STICKERS_PACK_VIEW_DEFAULT_TITLE" = "Sticker Pack";
 
 /* Label indicating that the sticker pack failed to load. */
-"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "Sticker Pack failed to load";
+"STICKERS_PACK_VIEW_FAILED_TO_LOAD" = "Bigong mai-load ang Sticker Pack";
 
 /* Label for the 'uninstall sticker pack' button. */
-"STICKERS_UNINSTALL_BUTTON" = "Uninstall";
+"STICKERS_UNINSTALL_BUTTON" = "I-uninstall";
 
 /* Alert body after verifying privacy with {{other user's name}} */
-"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Your safety number with %@ matches. You can mark this contact as verified.";
+"SUCCESSFUL_VERIFICATION_DESCRIPTION" = "Ang iyong numerong pangkaligtasan kay %@ ay nagtugma. Maaari mong markahang beripikado ang knotak na ito.";
 
 /* No comment provided by engineer. */
-"SUCCESSFUL_VERIFICATION_TITLE" = "Safety Number Matches!";
+"SUCCESSFUL_VERIFICATION_TITLE" = "Magtugma ang Numerong Pangkaligtasan!";
 
 /* Label for button to verify a user's safety number. */
 "SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER" = "Beripikahin ang Numerong Pangkaligtasan";
 
 /* text indicating the message was remotely deleted */
-"THIS_MESSAGE_WAS_DELETED" = "This message was deleted.";
+"THIS_MESSAGE_WAS_DELETED" = "Ang mensaheng ito ay nabura na.";
 
 /* A string indicating two mutual groups the user shares with this contact and that there are more unlisted. Embeds {{mutual group name}} */
-"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Member of %@, %@, and %lu additional groups";
+"THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Kasapi ng %@, %@, at %lu karagdagan pang mga grupo";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
 "THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "Maaari kang magdagdag ng mga notes para sa iyong sarili sa pag-uusap na ito. Kung ang iyong account ay may naka-link na mga device, ang bagong mga note may masi-sync.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Member of %@";
+"THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Kasapi ng %@";
 
 /* A string indicating three mutual groups the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_THREE_MUTUAL_GROUP" = "Member of %@, %@, and %@";
+"THREAD_DETAILS_THREE_MUTUAL_GROUP" = "Kasapi ng %@, %@, at %@";
 
 /* A string indicating two mutual groups the user shares with this contact. Embeds {{mutual group name}} */
-"THREAD_DETAILS_TWO_MUTUAL_GROUP" = "Member of %@ and %@";
+"THREAD_DETAILS_TWO_MUTUAL_GROUP" = "Kasapi ng %@ at %@";
 
 /* {{number of days}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 days}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_DAYS" = "%@ days";
+"TIME_AMOUNT_DAYS" = "%@ araw";
 
 /* Label text below navbar button, embeds {{number of days}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5d' not '5 d'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@d";
+"TIME_AMOUNT_DAYS_SHORT_FORMAT" = "%@a";
 
 /* {{number of hours}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 hours}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_HOURS" = "%@ hours";
+"TIME_AMOUNT_HOURS" = "%@ oras";
 
 /* Label text below navbar button, embeds {{number of hours}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5h' not '5 h'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@h";
+"TIME_AMOUNT_HOURS_SHORT_FORMAT" = "%@o";
 
 /* {{number of minutes}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 minutes}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_MINUTES" = "%@ minutes";
+"TIME_AMOUNT_MINUTES" = "%@ minuto";
 
 /* Label text below navbar button, embeds {{number of minutes}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5m' not '5 m'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_MINUTES_SHORT_FORMAT" = "%@m";
 
 /* {{number of seconds}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 seconds}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SECONDS" = "%@ seconds";
+"TIME_AMOUNT_SECONDS" = "%@ segundo";
 
 /* Label text below navbar button, embeds {{number of seconds}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5s' not '5 s'. See other *_TIME_AMOUNT strings */
 "TIME_AMOUNT_SECONDS_SHORT_FORMAT" = "%@s";
 
 /* {{1 day}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 day}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_DAY" = "%@ day";
+"TIME_AMOUNT_SINGLE_DAY" = "%@ araw";
 
 /* {{1 hour}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 hour}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_HOUR" = "%@ hour";
+"TIME_AMOUNT_SINGLE_HOUR" = "%@ oras";
 
 /* {{1 minute}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 minute}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_MINUTE" = "%@ minute";
+"TIME_AMOUNT_SINGLE_MINUTE" = "%@ minuto";
 
 /* {{1 week}} embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{1 week}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_SINGLE_WEEK" = "%@ week";
+"TIME_AMOUNT_SINGLE_WEEK" = "%@ linggo";
 
 /* {{number of weeks}}, embedded in strings, e.g. 'Alice updated disappearing messages expiration to {{5 weeks}}'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_WEEKS" = "%@ weeks";
+"TIME_AMOUNT_WEEKS" = "%@ linggo";
 
 /* Label text below navbar button, embeds {{number of weeks}}. Must be very short, like 1 or 2 characters, The space is intentionally omitted between the text and the embedded duration so that we get, e.g. '5w' not '5 w'. See other *_TIME_AMOUNT strings */
-"TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@w";
+"TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@l";
 
 /* Label for the cancel button in an alert or action sheet. */
 "TXT_CANCEL_TITLE" = "Kanselahin";
@@ -3909,178 +3933,181 @@
 "TXT_DELETE_TITLE" = "Delete";
 
 /* Pressing this button moves an archived thread from the archive back to the inbox */
-"UNARCHIVE_ACTION" = "Unarchive";
+"UNARCHIVE_ACTION" = "I-unarchive";
 
 /* Message shown in conversation view that offers to block an unknown user. */
-"UNKNOWN_CONTACT_BLOCK_OFFER" = "User not in your contacts. Would you like to block this user?";
+"UNKNOWN_CONTACT_BLOCK_OFFER" = "Wala sa iyong mga kontak ang user. Nais mo bang i-block ang user na ito?";
 
 /* Displayed if for some reason we can't determine a contacts phone number *or* name */
-"UNKNOWN_CONTACT_NAME" = "Unknown Contact";
+"UNKNOWN_CONTACT_NAME" = "Hindi tukoy na kontak";
 
 /* Label for unknown countries. */
-"UNKNOWN_COUNTRY_NAME" = "Unknown Country";
+"UNKNOWN_COUNTRY_NAME" = "Hindi Tukoy na Bansa";
 
 /* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "One of your devices sent a message that can't be processed or displayed here because it uses a new Signal feature.";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "Isa sa iyong mga device ay nagpadala ng mensahe na hindi maiproseso o maipakita dahil gumagamit ito ng bagong feature ng Signal.";
 
 /* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. Embeds {{user's name or phone number}}. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "%@ sent you a message that can't be processed or displayed because it uses a new Signal feature.";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "Nagpadala si %@ ng mensahe na hindi maiproseso o maipakita dahil gumagamit ito ng bagong feature ng Signal.";
 
 /* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "You received a message that can't be processed or displayed because it uses a new Signal feature.";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITHOUT_NAME" = "Nakatanggap ka ng mensahe na hindi maiproseso o maipakita dahil gumagamit ito ng bagong feature ng Signal.";
 
 /* Label for button that lets users upgrade the app. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "Update Signal Now";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "I-update ang Signal Ngayon";
 
 /* Info message recorded in conversation history when local user has received an unknown unknown message from a linked device and has upgraded. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "Updated to the latest version of Signal. You can now receive this message type on your device.";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "Na-update sa pinakahuling bersyon ng Signal. Makakatanggap ka na ngayon ng ganitong tipo ng mensahe sa iyong device. ";
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. Embeds {{user's name or phone number}}. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "You can ask %@ to re-send this message now that you are using an up-to-date version of Signal.";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "Maaari mong hingin kay %@ na ipadalang muli ang mensaheng ito ngayong gumagamit ka na ng up-to-date na bersyon ng Signal.";
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "You can ask the sender to re-send this message now that you are using an up-to-date version of Signal.";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITHOUT_NAME" = "Maaari mong hingin sa nagpadala na ipadalang muli ang mensaheng ito ngayong gumagamit ka na ng up-to-date na bersyon ng Signal.";
 
 /* Label indicating an unknown user. */
 "UNKNOWN_USER" = "Hindi alam";
 
 /* Info Message when an unknown user disabled disappearing messages. */
-"UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Disappearing messages were disabled.";
+"UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Ang naglalahong mga mensahe ay naka-disable.";
 
 /* Info Message when an unknown user enabled disappearing messages. Embeds {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
-"UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Disappearing message time was set to %@.";
+"UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Ang oras ng naglalahong mensahe ay nakatakda sa %@.";
 
 /* Indicates an unknown or unrecognizable value. */
 "UNKNOWN_VALUE" = "Hindi tukoy";
 
 /* button title for unlinking a device */
-"UNLINK_ACTION" = "Unlink";
+"UNLINK_ACTION" = "I-unlink";
 
 /* Alert message to confirm unlinking a device */
-"UNLINK_CONFIRMATION_ALERT_BODY" = "This device will no longer be able to send or receive messages if it is unlinked.";
+"UNLINK_CONFIRMATION_ALERT_BODY" = "Hindi na makakapagpadala o makatatanggap ng mensahe ang device na ito kung naka-unlink na ito.";
 
 /* Alert title for confirming device deletion */
-"UNLINK_CONFIRMATION_ALERT_TITLE" = "Unlink \"%@\"?";
+"UNLINK_CONFIRMATION_ALERT_TITLE" = "I-unlink \"%@\"?";
 
 /* Label warning the user that they have been unlinked from their primary device. */
-"UNLINKED_WARNING" = "Device no longer linked. Re-link Signal with your phone to continue messaging.";
+"UNLINKED_WARNING" = "Hindi na naka-link ang device. I-link ang Signal gamit ang iyong telepono upang makapagpatuloy na magpadala ng mensahe.";
 
 /* Alert title when unlinking device fails */
-"UNLINKING_FAILED_ALERT_TITLE" = "Signal was unable to unlink your device.";
+"UNLINKING_FAILED_ALERT_TITLE" = "Hindi nagawang i-unlink ng Signal ang device.";
 
 /* Label text in device manager for a device with no name */
-"UNNAMED_DEVICE" = "Unnamed Device";
+"UNNAMED_DEVICE" = "Device na Walang Pangalan";
+
+/* Pressing this button marks a thread as unread */
+"UNREAD_ACTION" = "Unread";
 
 /* No comment provided by engineer. */
-"UNREGISTER_SIGNAL_FAIL" = "Failed to unregister from Signal.";
+"UNREGISTER_SIGNAL_FAIL" = "Bigo na tanggalin ang rehistro mula sa Signal.";
 
 /* No comment provided by engineer. */
-"UNSUPPORTED_ATTACHMENT" = "Received unsupported attachment type.";
+"UNSUPPORTED_ATTACHMENT" = "Nakatanggap ng hindi suportadong tipo ng kalakip.";
 
 /* No comment provided by engineer. */
-"UNSUPPORTED_FEATURE_ERROR" = "Your device doesn't support this feature.";
+"UNSUPPORTED_FEATURE_ERROR" = "Hindi suportado ng iyong device ang feature na ito.";
 
 /* Title for alert indicating that group members can't be removed. */
-"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "You cannot remove group members. They will either have to leave, or you can create a new group without this member.";
+"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "Hindi ka maaaring magtanggal ng mga kasapi ng grupo. Kakailanganin nilang umalis, o kaya'y maaari kang gumawa ng bagong grupo ng wala ang kasaping ito.";
 
 /* Title for alert indicating that group members can't be removed. */
-"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Not Supported";
+"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Hindi Suportado";
 
 /* Error indicating that a group could not be updated. */
-"UPDATE_GROUP_FAILED" = "Group could not be updated.";
+"UPDATE_GROUP_FAILED" = "Hindi mai-update ang grupo.";
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
-"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "This action couldn’t be completed. Check your internet connection and try again.";
+"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Hindi makumpleto ang aksyon na ito. Pakisuri ang koneksyon ng iyong internet at subukang muli. ";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "Lhain ang iyong PIN";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall Signal.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "Panapanatiling encrypted ng PIN ang mga impormasyong naka-imbak sa Signal upang ikaw lang ang maka-access nito. Ang iyong profile, mga setting, at kontak ay mare-restore kapag nagre-install ka ng Signal.";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "Ipinakikilala ang mga PIN";
 
 /* Message for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_MESSAGE" = "Signal will soon require iOS 11 or later. Please upgrade in Settings app >> General >> Software Update.";
+"UPGRADE_IOS_ALERT_MESSAGE" = "Malapit nang kakailanganin ng Signal ang iOS 11 o mas huli pa. Paki-upgrade sa Settings app >> General >> Software Update.";
 
 /* Title for the alert indicating that user should upgrade iOS. */
-"UPGRADE_IOS_ALERT_TITLE" = "Upgrade iOS";
+"UPGRADE_IOS_ALERT_TITLE" = "I-upgrade ang iOS";
 
 /* An explanation of how usernames work on the username view. */
-"USERNAME_DESCRIPTION" = "Usernames on Signal are optional. If you choose to create a username other Signal users will be able to find you by this username and contact you without knowing your phone number.";
+"USERNAME_DESCRIPTION" = "Ang mga username sa Signal ay opsyonal. Kung piliin mong lumikha ng username ang ibang gumagamit ng Signal ay magagawang hanapin ka gamit ang username na ito at kontakin ka kahit hindi alam ang numero ng iyong telepono.";
 
 /* Label for the username field in the username view. */
 "USERNAME_FIELD" = "Username";
 
 /* An error indicating that the supplied username contains disallowed characters. */
-"USERNAME_INVALID_CHARACTERS_ERROR" = "Usernames may only contain a-z, 0-9, and _";
+"USERNAME_INVALID_CHARACTERS_ERROR" = "Ang mga username ay maaaring maglaman lamang ng a-z, 0-9 at _";
 
 /* A message indicating that username lookup failed. */
-"USERNAME_LOOKUP_ERROR" = "An error occurred while looking up the username. Please try again later.";
+"USERNAME_LOOKUP_ERROR" = "May nangyaring error habang hinahanap ang username. Paki-subukang muli mamaya.";
 
 /* A message indicating that the given username is not a registered signal account. Embeds {{username}} */
-"USERNAME_NOT_FOUND_FORMAT" = "%@ is not a Signal user. Make sure you’ve entered the complete username.";
+"USERNAME_NOT_FOUND_FORMAT" = "Si %@ ay hindi Signal user. Siguruhing nailagay mo ang kumpletong username.";
 
 /* A message indicating that the given username was not registered with signal. */
-"USERNAME_NOT_FOUND_TITLE" = "User Not Found";
+"USERNAME_NOT_FOUND_TITLE" = "Hindi Makita ang User";
 
 /* The placeholder for the username text entry in the username view. */
-"USERNAME_PLACEHOLDER" = "Enter a username";
+"USERNAME_PLACEHOLDER" = "Ilagay ang username";
 
 /* A prefix appeneded to all usernames when displayed */
 "USERNAME_PREFIX" = "@";
 
 /* An error indicating that the supplied username cannot start with a number. */
-"USERNAME_STARTS_WITH_NUMBER_ERROR" = "Usernames may not begin with a number.";
+"USERNAME_STARTS_WITH_NUMBER_ERROR" = "Hindi maaaring magsimula sa numero ang mga username.";
 
 /* The title for the username view. */
 "USERNAME_TITLE" = "Username";
 
 /* An error indicating that the supplied username is too short. */
-"USERNAME_TOO_SHORT_ERROR" = "Usernames must have at least 4 characters.";
+"USERNAME_TOO_SHORT_ERROR" = "Kailangang hindi bababa sa 4 na character ang mga username.";
 
 /* An error indicating that the supplied username is in use by another user. Embeds {{requested username}}. */
-"USERNAME_UNAVAIALBE_ERROR_FORMAT" = "%@ is taken.";
+"USERNAME_UNAVAIALBE_ERROR_FORMAT" = "%@ ay nakuha na.";
 
 /* Error moessage shown when a username update fails. */
-"USERNAME_VIEW_ERROR_UPDATE_FAILED" = "Username update failed.";
+"USERNAME_VIEW_ERROR_UPDATE_FAILED" = "Bigong i-update ang username.";
 
 /* error label near a field */
-"VALIDATION_ERROR_CANNOT_BE_BLANK" = "Device name cannot be blank";
+"VALIDATION_ERROR_CANNOT_BE_BLANK" = "Hindi maaaring walang pangalan ang device.";
 
 /* error label near a field */
-"VALIDATION_ERROR_TOO_LONG" = "Device name is too long";
+"VALIDATION_ERROR_TOO_LONG" = "Masyadong mahaba ang pangalan ng device";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "You marked %@ as not verified.";
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Minarkahan mong hindi beripikado si %@.";
 
 /* Format for info message indicating that the verification state was unverified on another device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "You marked %@ as not verified on another device.";
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "Minarkahan mong hindi beripikado si %@ sa ibang device.";
 
 /* Format for info message indicating that the verification state was verified on this device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "You marked %@ as verified.";
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "Minarkahan mong beripikado si %@.";
 
 /* Format for info message indicating that the verification state was verified on another device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "You marked %@ as verified on another device.";
+"VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_OTHER_DEVICE" = "Minarkahan mong beripikado si %@ sa ibang device.";
 
 /* Generic message indicating that verification state changed for a given user. */
-"VERIFICATION_STATE_CHANGE_GENERIC" = "Verification state changed.";
+"VERIFICATION_STATE_CHANGE_GENERIC" = "Nagbago ang estado ng beripikasyon.";
 
 /* Label for button or row which allows users to verify the safety number of another user. */
-"VERIFY_PRIVACY" = "View Safety Number";
+"VERIFY_PRIVACY" = "Tingnan ang Numerong Pangkaligtasan";
 
 /* Label for button or row which allows users to verify the safety numbers of multiple users. */
-"VERIFY_PRIVACY_MULTIPLE" = "Review Safety Numbers";
+"VERIFY_PRIVACY_MULTIPLE" = "Siyasatin ang mga Numerong Pangkaligtasan";
 
 /* Toast alert text shown when tapping on a view-once message that has already been viewed. */
-"VIEW_ONCE_ALREADY_VIEWED_TOAST" = "You already viewed this message.";
+"VIEW_ONCE_ALREADY_VIEWED_TOAST" = "Nakita mo na ang mensaheng ito.";
 
 /* Tooltip highlighting the view once messages button. */
 "VIEW_ONCE_MESSAGES_TOOLTIP" = "Dito pindutin upang mawala ang mesaheng ito matapos tignan.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
-"VIEW_ONCE_OUTGOING_TOAST" = "Outgoing view-once media files are automatically removed after they are sent.";
+"VIEW_ONCE_OUTGOING_TOAST" = "Ang mga papalabas na view-once na media file ay awtomatikong matatanggal matapos ipadala ang mga ito.";
 
 /* Indicates how to cancel a voice message. */
 "VOICE_MESSAGE_CANCEL_INSTRUCTIONS" = "I-slide o Kanselahin";
@@ -4089,19 +4116,22 @@
 "VOICE_MESSAGE_FILE_NAME" = "Voice na Mensahe";
 
 /* Message for the alert indicating the 'voice message' needs to be held to be held down to record. */
-"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "Tap and hold to record a voice message.";
+"VOICE_MESSAGE_TOO_SHORT_ALERT_MESSAGE" = "Pindutin at huwag bitawan upang mag-record ng voice na mensahe.";
 
 /* Title for the alert indicating the 'voice message' needs to be held to be held down to record. */
 "VOICE_MESSAGE_TOO_SHORT_ALERT_TITLE" = "Voice na Mensahe";
 
 /* Activity indicator title, shown upon returning to the device manager, until you complete the provisioning process on desktop */
-"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Complete setup on Signal Desktop.";
+"WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Kumpletuhin ang setup sa Signal Desktop.";
+
+/* text indicating the message was remotely deleted by you */
+"YOU_DELETED_THIS_MESSAGE" = "You deleted this message.";
 
 /* Info Message when you disabled disappearing messages. */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Ginawa mong hindi gumana ang naglalahong mga mensahe.";
 
 /* alert body shown when trying to use features in the app before completing registration-related setup. */
-"YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "You must complete setup before proceeding.";
+"YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING" = "Kailangan mong kumpletuhin ang setup bago magpatuloy.";
 
 /* Info Message when you disabled disappearing messages. Embeds a {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
 "YOU_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Itinakda mo ang oras ng naglalahong mensahe sa %@.";
