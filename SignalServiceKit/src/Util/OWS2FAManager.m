@@ -3,6 +3,7 @@
 //
 
 #import "OWS2FAManager.h"
+#import "AppReadiness.h"
 #import "NSNotificationCenter+OWS.h"
 #import "OWSRequestFactory.h"
 #import "SSKEnvironment.h"
@@ -66,6 +67,20 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
 
     OWSSingletonAssert();
 
+    [AppReadiness runNowOrWhenAppDidBecomeReadyPolite:^{
+        if (self.mode == OWS2FAMode_V1) {
+            OWSLogInfo(@"Migrating V1 reglock to V2 reglock");
+
+            [self migrateToRegistrationLockV2]
+                .then(^{
+                    OWSLogInfo(@"Successfully migrated to registration lock V2");
+                })
+                .catch(^(NSError *error) {
+                    OWSFailDebug(@"Failed to migrate V1 reglock to V2 reglock: %@", error.localizedDescription);
+                });
+        }
+    }];
+
     return self;
 }
 
@@ -95,6 +110,24 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
         value = [OWS2FAManager.keyValueStore getString:kOWS2FAManager_PinCode transaction:transaction];
     }];
     return value;
+}
+
+- (void)setPinCode:(nullable NSString *)pin transaction:(SDSAnyWriteTransaction *)transaction
+{
+    if (pin.length == 0) {
+        [OWS2FAManager.keyValueStore removeValueForKey:kOWS2FAManager_PinCode transaction:transaction];
+        return;
+    }
+
+    if (OWSKeyBackupService.hasMasterKey) {
+        pin = [OWSKeyBackupService normalizePin:pin];
+    } else {
+        // Convert the pin to arabic numerals, we never want to
+        // operate with pins in other numbering systems.
+        pin = pin.ensureArabicNumerals;
+    }
+
+    [OWS2FAManager.keyValueStore setString:pin key:kOWS2FAManager_PinCode transaction:transaction];
 }
 
 - (OWS2FAMode)mode
@@ -131,26 +164,7 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
 
 - (void)markEnabledWithPin:(NSString *)pin transaction:(SDSAnyWriteTransaction *)transaction
 {
-    OWSAssertDebug(pin.length > 0);
-
-    // We only store the PIN locally if it's a V1 PIN
-    if (!OWSKeyBackupService.hasMasterKey) {
-        // Convert the pin to arabic numerals, we never want to
-        // operate with pins in other numbering systems.
-        [OWS2FAManager.keyValueStore setString:pin.ensureArabicNumerals
-                                           key:kOWS2FAManager_PinCode
-                                   transaction:transaction];
-    }
-
-    [self markEnabledWithTransaction:transaction];
-}
-
-- (void)markEnabledWithTransaction:(SDSAnyWriteTransaction *)transaction
-{
-    if (OWSKeyBackupService.hasMasterKey) {
-        // Remove any old pin when we're migrating
-        [OWS2FAManager.keyValueStore removeValueForKey:kOWS2FAManager_PinCode transaction:transaction];
-    }
+    [self setPinCode:pin transaction:transaction];
 
     // Since we just created this pin, we know it doesn't need migration. Mark it as such.
     [self markLegacyPinAsMigratedWithTransaction:transaction];
@@ -190,7 +204,7 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
                     OWSAssertIsOnMainThread();
 
                     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-                        [self markEnabledWithTransaction:transaction];
+                        [self markEnabledWithPin:pin transaction:transaction];
                     }];
 
                     if (success) {
@@ -244,7 +258,7 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
         {
             [OWSKeyBackupService deleteKeys]
                 .then(^{
-                    [self disableRegistrationLockV2];
+                    return [self disableRegistrationLockV2];
                 })
                 .then(
                     ^() {
@@ -381,14 +395,29 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
 
 - (void)verifyPin:(NSString *)pin result:(void (^_Nonnull)(BOOL))result
 {
+    NSString *pinToMatch = self.pinCode;
+
     switch (self.mode) {
     case OWS2FAMode_V2:
-        [OWSKeyBackupService verifyPin:pin resultHandler:result];
+        if (pinToMatch.length > 0) {
+            result([pinToMatch isEqualToString:[OWSKeyBackupService normalizePin:pin]]);
+        } else {
+            [OWSKeyBackupService verifyPin:pin
+                             resultHandler:^(BOOL isValid) {
+                                 result(isValid);
+
+                                 if (isValid) {
+                                     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                                         [self setPinCode:pin transaction:transaction];
+                                     }];
+                                 }
+                             }];
+        }
         break;
     case OWS2FAMode_V1:
         // Convert the pin to arabic numerals, we never want to
         // operate with pins in other numbering systems.
-        result([self.pinCode.ensureArabicNumerals isEqualToString:pin.ensureArabicNumerals]);
+        result([pinToMatch.ensureArabicNumerals isEqualToString:pin.ensureArabicNumerals]);
         break;
     case OWS2FAMode_Disabled:
         OWSFailDebug(@"unexpectedly attempting to verify pin when 2fa is disabled");

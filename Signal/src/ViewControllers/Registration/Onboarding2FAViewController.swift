@@ -349,6 +349,10 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
             return
         }
 
+        guard let pinToUse = self.pinTextField.text?.ows_stripped() else {
+            return owsFailDebug("Missing 2FA pin")
+        }
+
         databaseStorage.write { transaction in
             // Clear any pending restoration before moving on. At this point we've either
             // successfully restored the user's PIN or the user chose to re-create their PIN.
@@ -356,7 +360,7 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
 
             // If we were successful, also mark the user as having a PIN
             if wasSuccessful {
-                OWS2FAManager.shared().markEnabled(transaction: transaction)
+                OWS2FAManager.shared().markEnabled(pin: pinToUse, transaction: transaction)
             }
         }
 

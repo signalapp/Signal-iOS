@@ -820,9 +820,8 @@ extension MediaPageViewController: MediaPresentationContextProvider {
             return nil
         }
 
-        let presentationFrame = coordinateSpace.convert(mediaView.frame, from: mediaSuperview)
         // TODO better match the corner radius
-        return MediaPresentationContext(mediaView: mediaView, presentationFrame: presentationFrame, cornerRadius: 0)
+        return MediaPresentationContext(mediaView: mediaView, presentationFrame: mediaView.frame, cornerRadius: 0)
     }
 
     func snapshotOverlayView(in coordinateSpace: UICoordinateSpace) -> (UIView, CGRect)? {

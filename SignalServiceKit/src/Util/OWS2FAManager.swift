@@ -74,7 +74,6 @@ extension OWS2FAManager {
             return self.networkManager.makePromise(request: request)
         }.done { _ in
             self.databaseStorage.write { transaction in
-                self.markEnabled(transaction: transaction)
                 OWS2FAManager.keyValueStore().setBool(
                     true,
                     key: OWS2FAManager.isRegistrationLockV2EnabledKey,
@@ -101,7 +100,6 @@ extension OWS2FAManager {
             return self.networkManager.makePromise(request: request)
         }.done { _ in
             self.databaseStorage.write { transaction in
-                self.markDisabled(transaction: transaction)
                 OWS2FAManager.keyValueStore().removeValue(
                     forKey: OWS2FAManager.isRegistrationLockV2EnabledKey,
                     transaction: transaction
@@ -112,6 +110,24 @@ extension OWS2FAManager {
             }.catch { error in
                 Logger.error("Error: \(error)")
             }
+        }
+    }
+
+    @objc
+    @available(swift, obsoleted: 1.0)
+    public func migrateToRegistrationLockV2() -> AnyPromise {
+        return AnyPromise(migrateToRegistrationLockV2())
+    }
+
+    public func migrateToRegistrationLockV2() -> Promise<Void> {
+        guard let pinCode = pinCode else {
+            return Promise(error: OWSAssertionError("tried to migrate to registration lock V2 without legacy PIN"))
+        }
+
+        return firstly {
+            return requestEnable2FA(withPin: pinCode, mode: .V2)
+        }.then {
+            return self.enableRegistrationLockV2()
         }
     }
 }

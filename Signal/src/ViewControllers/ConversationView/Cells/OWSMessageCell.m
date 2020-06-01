@@ -193,13 +193,23 @@ NS_ASSUME_NONNULL_BEGIN
     [messageView configureViews];
     [messageView loadContent];
 
+    // There is a bug with UIStackView where, on ocassion, hidden views
+    // will be rendered (while not effecting layout). In order to work
+    // around this, we also adjust the alpha of the views.
+
     self.selectionView.hidden = !self.delegate.isShowingSelectionUI;
+    self.selectionView.alpha = self.selectionView.hidden ? 0 : 1;
 
     self.selected = [self.delegate isViewItemSelected:self.viewItem];
 
     self.avatarView.hidden = ![self updateAvatarView];
+    self.avatarView.alpha = self.avatarView.hidden ? 0 : 1;
+
     self.reactionCountsView.hidden = ![self updateReactionsView];
+    self.reactionCountsView.alpha = self.reactionCountsView.hidden ? 0 : 1;
+
     self.sendFailureBadgeView.hidden = !self.shouldHaveSendFailureBadge;
+    self.sendFailureBadgeView.alpha = self.sendFailureBadgeView.hidden ? 0 : 1;
 }
 
 - (void)setSelected:(BOOL)selected

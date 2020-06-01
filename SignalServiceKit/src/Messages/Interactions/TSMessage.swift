@@ -114,34 +114,41 @@ public extension TSMessage {
             return .deletedMessageMissing
         }
 
-        guard let incomingMessageToDelete = messageToDelete as? TSIncomingMessage else {
+        if messageToDelete is TSOutgoingMessage, authorAddress.isLocalAddress {
+            messageToDelete.markMessageAsRemotelyDeleted(transaction: transaction)
+            return .success
+        } else if let incomingMessageToDelete = messageToDelete as? TSIncomingMessage {
+            guard let messageToDeleteServerTimestamp = incomingMessageToDelete.serverTimestamp?.uint64Value else {
+                // Older messages might be missing this, but since we only allow deleting for a small
+                // window after you send a message we should generally never hit this path.
+                owsFailDebug("can't delete a message without a serverTimestamp")
+                return .invalidDelete
+            }
+
+            guard messageToDeleteServerTimestamp < serverTimestamp else {
+                owsFailDebug("Can't delete a message from the future.")
+                return .invalidDelete
+            }
+
+            guard serverTimestamp - messageToDeleteServerTimestamp < kDayInMs else {
+                owsFailDebug("Ignoring message delete sent more than a day after the original message")
+                return .invalidDelete
+            }
+
+            incomingMessageToDelete.markMessageAsRemotelyDeleted(transaction: transaction)
+
+            return .success
+        } else {
             owsFailDebug("Only incoming messages can be deleted remotely")
             return .invalidDelete
         }
+    }
 
-        guard let messageToDeleteServerTimestamp = incomingMessageToDelete.serverTimestamp?.uint64Value else {
-            // Older messages might be missing this, but since we only allow deleting for a small
-            // window after you send a message we should generally never hit this path.
-            owsFailDebug("can't delete a message without a serverTimestamp")
-            return .invalidDelete
-        }
-
-        guard messageToDeleteServerTimestamp < serverTimestamp else {
-            owsFailDebug("Can't delete a message from the future.")
-            return .invalidDelete
-        }
-
-        guard serverTimestamp - messageToDeleteServerTimestamp < kDayInMs else {
-            owsFailDebug("Ignoring message delete sent more than a day after the original message")
-            return .invalidDelete
-        }
-
-        incomingMessageToDelete.updateWithRemotelyDeletedAndRemoveRenderableContent(with: transaction)
+    private func markMessageAsRemotelyDeleted(transaction: SDSAnyWriteTransaction) {
+        updateWithRemotelyDeletedAndRemoveRenderableContent(with: transaction)
 
         DispatchQueue.main.async {
-            SSKEnvironment.shared.notificationsManager.cancelNotifications(messageId: incomingMessageToDelete.uniqueId)
+            SSKEnvironment.shared.notificationsManager.cancelNotifications(messageId: self.uniqueId)
         }
-
-        return .success
     }
 }
