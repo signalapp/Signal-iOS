@@ -14,13 +14,20 @@ public extension LokiAPI {
     internal static let snodeFailureThreshold = 2
     
     // MARK: Caching
-    internal static var swarmCache: [String:[LokiAPITarget]] = [:]
+    internal static var swarmCache: [String:[LokiAPITarget]] = [:] // TODO: Make this set based?
     
     internal static func dropSnodeFromSwarmIfNeeded(_ target: LokiAPITarget, hexEncodedPublicKey: String) {
         let swarm = LokiAPI.swarmCache[hexEncodedPublicKey]
         if var swarm = swarm, let index = swarm.firstIndex(of: target) {
             swarm.remove(at: index)
             LokiAPI.swarmCache[hexEncodedPublicKey] = swarm
+            // Dispatch async on the main queue to avoid nested write transactions
+            DispatchQueue.main.async {
+                let storage = OWSPrimaryStorage.shared()
+                storage.dbReadWriteConnection.readWrite { transaction in
+                    storage.setSwarm(swarm, for: hexEncodedPublicKey, in: transaction)
+                }
+            }
         }
     }
     
@@ -96,11 +103,30 @@ public extension LokiAPI {
     }
     
     internal static func getSwarm(for hexEncodedPublicKey: String) -> Promise<[LokiAPITarget]> {
+        if swarmCache[hexEncodedPublicKey] == nil {
+            storage.dbReadConnection.read { transaction in
+                swarmCache[hexEncodedPublicKey] = storage.getSwarm(for: hexEncodedPublicKey, in: transaction)
+            }
+        }
         if let cachedSwarm = swarmCache[hexEncodedPublicKey], cachedSwarm.count >= minimumSwarmSnodeCount {
             return Promise<[LokiAPITarget]> { $0.fulfill(cachedSwarm) }
         } else {
+            print("[Loki] Getting swarm for: \(hexEncodedPublicKey).")
             let parameters: [String:Any] = [ "pubKey" : hexEncodedPublicKey ]
-            return getRandomSnode().then(on: workQueue) { invoke(.getSwarm, on: $0, associatedWith: hexEncodedPublicKey, parameters: parameters) }.map { parseTargets(from: $0) }.get { swarmCache[hexEncodedPublicKey] = $0 }
+            return getRandomSnode().then(on: workQueue) {
+                invoke(.getSwarm, on: $0, associatedWith: hexEncodedPublicKey, parameters: parameters)
+            }.map {
+                parseTargets(from: $0)
+            }.get { swarm in
+                swarmCache[hexEncodedPublicKey] = swarm
+                // Dispatch async on the main queue to avoid nested write transactions
+                DispatchQueue.main.async {
+                    let storage = OWSPrimaryStorage.shared()
+                    storage.dbReadWriteConnection.readWrite { transaction in
+                        storage.setSwarm(swarm, for: hexEncodedPublicKey, in: transaction)
+                    }
+                }
+            }
         }
     }
 

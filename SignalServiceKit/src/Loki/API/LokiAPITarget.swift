@@ -1,4 +1,6 @@
 
+public typealias Snode = LokiAPITarget
+
 /// Either a service node or another client if P2P is enabled.
 public final class LokiAPITarget : NSObject, NSCoding {
     internal let address: String
