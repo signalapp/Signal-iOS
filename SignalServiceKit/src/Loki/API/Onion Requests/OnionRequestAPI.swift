@@ -6,10 +6,10 @@ public enum OnionRequestAPI {
     /// - Note: Must only be modified from `LokiAPI.workQueue`.
     public static var guardSnodes: Set<LokiAPITarget> = []
     /// - Note: Must only be modified from `LokiAPI.workQueue`.
-    public static var paths: [Path] = []
+    public static var paths: [Path] = [] // Not a set to ensure we consistently show the same path to the user
 
     private static var snodePool: Set<LokiAPITarget> {
-        let unreliableSnodes = Set(LokiAPI.failureCount.keys)
+        let unreliableSnodes = Set(LokiAPI.snodeFailureCount.keys)
         return LokiAPI.snodePool.subtracting(unreliableSnodes)
     }
 
@@ -269,13 +269,13 @@ private extension Promise where T == JSON {
             switch statusCode {
             case 0, 400, 500, 503:
                 // The snode is unreachable
-                let oldFailureCount = LokiAPI.failureCount[snode] ?? 0
+                let oldFailureCount = LokiAPI.snodeFailureCount[snode] ?? 0
                 let newFailureCount = oldFailureCount + 1
-                LokiAPI.failureCount[snode] = newFailureCount
+                LokiAPI.snodeFailureCount[snode] = newFailureCount
                 print("[Loki] Couldn't reach snode at: \(snode); setting failure count to \(newFailureCount).")
-                if newFailureCount >= LokiAPI.failureThreshold {
+                if newFailureCount >= LokiAPI.snodeFailureThreshold {
                     print("[Loki] Failure threshold reached for: \(snode); dropping it.")
-                    LokiAPI.dropSnodeIfNeeded(snode, hexEncodedPublicKey: hexEncodedPublicKey) // Remove it from the swarm cache associated with the given public key
+                    LokiAPI.dropSnodeFromSwarmIfNeeded(snode, hexEncodedPublicKey: hexEncodedPublicKey) // Remove it from the swarm cache associated with the given public key
                     LokiAPI.snodePool.remove(snode) // Remove it from the snode pool
                     // Dispatch async on the main queue to avoid nested write transactions
                     DispatchQueue.main.async {
@@ -284,7 +284,7 @@ private extension Promise where T == JSON {
                             storage.dropSnode(snode, in: transaction)
                         }
                     }
-                    LokiAPI.failureCount[snode] = 0
+                    LokiAPI.snodeFailureCount[snode] = 0
                 }
             case 406:
                 print("[Loki] The user's clock is out of sync with the service node network.")
@@ -292,7 +292,7 @@ private extension Promise where T == JSON {
             case 421:
                 // The snode isn't associated with the given public key anymore
                 print("[Loki] Invalidating swarm for: \(hexEncodedPublicKey).")
-                LokiAPI.dropSnodeIfNeeded(snode, hexEncodedPublicKey: hexEncodedPublicKey)
+                LokiAPI.dropSnodeFromSwarmIfNeeded(snode, hexEncodedPublicKey: hexEncodedPublicKey)
             case 432:
                 // The proof of work difficulty is too low
                 if let powDifficulty = json["difficulty"] as? Int {

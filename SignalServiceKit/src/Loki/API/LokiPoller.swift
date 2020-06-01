@@ -84,7 +84,7 @@ public final class LokiPoller : NSObject {
                     self?.pollCount = 0
                 } else {
                     print("[Loki] Polling \(nextSnode) failed; dropping it and switching to next snode.")
-                    LokiAPI.dropSnodeIfNeeded(nextSnode, hexEncodedPublicKey: userHexEncodedPublicKey)
+                    LokiAPI.dropSnodeFromSwarmIfNeeded(nextSnode, hexEncodedPublicKey: userHexEncodedPublicKey)
                 }
                 self?.pollNextSnode(seal: seal)
             }

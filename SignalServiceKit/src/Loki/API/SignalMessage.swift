@@ -3,10 +3,10 @@
 public final class SignalMessage : NSObject {
     @objc public let type: SSKProtoEnvelope.SSKProtoEnvelopeType
     @objc public let timestamp: UInt64
-    @objc public let senderID: String
+    @objc public let senderPublicKey: String
     @objc public let senderDeviceID: UInt32
     @objc public let content: String
-    @objc public let recipientID: String
+    @objc public let recipientPublicKey: String
     @objc(ttl)
     public let objc_ttl: UInt64
     @objc public let isPing: Bool
@@ -17,10 +17,10 @@ public final class SignalMessage : NSObject {
         content: String, recipientID: String, ttl: UInt64, isPing: Bool) {
         self.type = type
         self.timestamp = timestamp
-        self.senderID = senderID
+        self.senderPublicKey = senderID
         self.senderDeviceID = senderDeviceID
         self.content = content
-        self.recipientID = recipientID
+        self.recipientPublicKey = recipientID
         self.objc_ttl = ttl
         self.isPing = isPing
         super.init()

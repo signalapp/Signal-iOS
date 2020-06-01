@@ -33,7 +33,7 @@ public struct LokiMessage {
         do {
             let wrappedMessage = try LokiMessageWrapper.wrap(message: signalMessage)
             let data = wrappedMessage.base64EncodedString()
-            let destination = signalMessage.recipientID
+            let destination = signalMessage.recipientPublicKey
             var ttl = TTLUtilities.fallbackMessageTTL
             if let messageTTL = signalMessage.ttl, messageTTL > 0 { ttl = UInt64(messageTTL) }
             let isPing = signalMessage.isPing

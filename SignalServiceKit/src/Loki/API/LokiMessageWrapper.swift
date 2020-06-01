@@ -31,7 +31,7 @@ public enum LokiMessageWrapper {
     private static func createEnvelope(around message: SignalMessage) throws -> SSKProtoEnvelope {
         do {
             let builder = SSKProtoEnvelope.builder(type: message.type, timestamp: message.timestamp)
-            builder.setSource(message.senderID)
+            builder.setSource(message.senderPublicKey)
             builder.setSourceDevice(message.senderDeviceID)
             if let content = try Data(base64Encoded: message.content) {
                 builder.setContent(content)

@@ -4,18 +4,19 @@ public extension LokiAPI {
     private static var snodeVersion: [LokiAPITarget:String] = [:]
 
     /// Only ever modified from `LokiAPI.errorHandlingQueue` to avoid race conditions.
-    internal static var failureCount: [LokiAPITarget:UInt] = [:]
+    internal static var snodeFailureCount: [LokiAPITarget:UInt] = [:]
 
     // MARK: Settings
-    private static let minimumSnodeCount = 2
-    private static let targetSnodeCount = 3
+    private static let minimumSnodePoolCount = 32
+    private static let minimumSwarmSnodeCount = 2
+    private static let targetSwarmSnodeCount = 3
     
-    internal static let failureThreshold = 2
+    internal static let snodeFailureThreshold = 2
     
     // MARK: Caching
     internal static var swarmCache: [String:[LokiAPITarget]] = [:]
     
-    internal static func dropSnodeIfNeeded(_ target: LokiAPITarget, hexEncodedPublicKey: String) {
+    internal static func dropSnodeFromSwarmIfNeeded(_ target: LokiAPITarget, hexEncodedPublicKey: String) {
         let swarm = LokiAPI.swarmCache[hexEncodedPublicKey]
         if var swarm = swarm, let index = swarm.firstIndex(of: target) {
             swarm.remove(at: index)
@@ -40,12 +41,12 @@ public extension LokiAPI {
     
     // MARK: Internal API
     internal static func getRandomSnode() -> Promise<LokiAPITarget> {
-        if snodePool.isEmpty {
+        if snodePool.count < minimumSnodePoolCount {
             storage.dbReadConnection.read { transaction in
                 snodePool = storage.getSnodePool(in: transaction)
             }
         }
-        if snodePool.isEmpty {
+        if snodePool.count < minimumSnodePoolCount {
             let target = seedNodePool.randomElement()!
             let url = "\(target)/json_rpc"
             let parameters: JSON = [
@@ -95,7 +96,7 @@ public extension LokiAPI {
     }
     
     internal static func getSwarm(for hexEncodedPublicKey: String) -> Promise<[LokiAPITarget]> {
-        if let cachedSwarm = swarmCache[hexEncodedPublicKey], cachedSwarm.count >= minimumSnodeCount {
+        if let cachedSwarm = swarmCache[hexEncodedPublicKey], cachedSwarm.count >= minimumSwarmSnodeCount {
             return Promise<[LokiAPITarget]> { $0.fulfill(cachedSwarm) }
         } else {
             let parameters: [String:Any] = [ "pubKey" : hexEncodedPublicKey ]
@@ -105,7 +106,7 @@ public extension LokiAPI {
 
     internal static func getTargetSnodes(for hexEncodedPublicKey: String) -> Promise<[LokiAPITarget]> {
         // shuffled() uses the system's default random generator, which is cryptographically secure
-        return getSwarm(for: hexEncodedPublicKey).map { Array($0.shuffled().prefix(targetSnodeCount)) }
+        return getSwarm(for: hexEncodedPublicKey).map { Array($0.shuffled().prefix(targetSwarmSnodeCount)) }
     }
 
     internal static func getFileServerProxy() -> Promise<LokiAPITarget> {
@@ -169,13 +170,13 @@ internal extension Promise {
                 switch error.statusCode {
                 case 0, 400, 500, 503:
                     // The snode is unreachable
-                    let oldFailureCount = LokiAPI.failureCount[target] ?? 0
+                    let oldFailureCount = LokiAPI.snodeFailureCount[target] ?? 0
                     let newFailureCount = oldFailureCount + 1
-                    LokiAPI.failureCount[target] = newFailureCount
+                    LokiAPI.snodeFailureCount[target] = newFailureCount
                     print("[Loki] Couldn't reach snode at: \(target); setting failure count to \(newFailureCount).")
-                    if newFailureCount >= LokiAPI.failureThreshold {
+                    if newFailureCount >= LokiAPI.snodeFailureThreshold {
                         print("[Loki] Failure threshold reached for: \(target); dropping it.")
-                        LokiAPI.dropSnodeIfNeeded(target, hexEncodedPublicKey: hexEncodedPublicKey) // Remove it from the swarm cache associated with the given public key
+                        LokiAPI.dropSnodeFromSwarmIfNeeded(target, hexEncodedPublicKey: hexEncodedPublicKey) // Remove it from the swarm cache associated with the given public key
                         LokiAPI.snodePool.remove(target) // Remove it from the snode pool
                         // Dispatch async on the main queue to avoid nested write transactions
                         DispatchQueue.main.async {
@@ -184,7 +185,7 @@ internal extension Promise {
                                 storage.dropSnode(target, in: transaction)
                             }
                         }
-                        LokiAPI.failureCount[target] = 0
+                        LokiAPI.snodeFailureCount[target] = 0
                     }
                 case 406:
                     print("[Loki] The user's clock is out of sync with the service node network.")
@@ -192,7 +193,7 @@ internal extension Promise {
                 case 421:
                     // The snode isn't associated with the given public key anymore
                     print("[Loki] Invalidating swarm for: \(hexEncodedPublicKey).")
-                    LokiAPI.dropSnodeIfNeeded(target, hexEncodedPublicKey: hexEncodedPublicKey)
+                    LokiAPI.dropSnodeFromSwarmIfNeeded(target, hexEncodedPublicKey: hexEncodedPublicKey)
                 case 432:
                     // The PoW difficulty is too low
                     if case LokiHTTPClient.HTTPError.networkError(_, let result, _) = error, let json = result as? JSON, let powDifficulty = json["difficulty"] as? Int {
