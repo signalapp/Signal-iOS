@@ -186,7 +186,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)shouldProcessIncomingMessages
 {
-    return NO;
+    return YES;
 }
 
 @end
