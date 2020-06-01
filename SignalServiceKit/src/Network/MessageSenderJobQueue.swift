@@ -131,6 +131,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
         let operationQueue = OperationQueue()
         operationQueue.name = "DefaultSendingQueue"
         operationQueue.maxConcurrentOperationCount = 1
+        operationQueue.qualityOfService = .userInitiated
 
         return operationQueue
     }()
