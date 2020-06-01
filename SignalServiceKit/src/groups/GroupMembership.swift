@@ -33,7 +33,7 @@ public extension TSGroupMemberRole {
 @objc
 public class GroupMembership: MTLModel {
     // This class is immutable.
-    @objc
+    @objc(_TtCC16SignalServiceKit15GroupMembership11MemberState)
     class MemberState: MTLModel {
         @objc
         var role: TSGroupMemberRole = .normal
