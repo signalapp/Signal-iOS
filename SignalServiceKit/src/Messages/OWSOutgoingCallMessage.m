@@ -162,6 +162,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - TSYapDatabaseObject overrides
 
+- (uint)ttl { return (uint)[LKTTLUtilities getTTLFor:LKMessageTypeCall]; }
+
 - (BOOL)shouldBeSaved
 {
     return NO;

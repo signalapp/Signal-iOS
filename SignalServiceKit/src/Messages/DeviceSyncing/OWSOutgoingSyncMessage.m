@@ -60,6 +60,8 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
+- (uint)ttl { return (uint)[LKTTLUtilities getTTLFor:LKMessageTypeSync]; }
+
 - (BOOL)shouldBeSaved
 {
     return NO;

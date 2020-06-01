@@ -84,6 +84,8 @@ NS_ASSUME_NONNULL_BEGIN
     return contentData;
 }
 
+- (uint)ttl { return (uint)[LKTTLUtilities getTTLFor:LKMessageTypeEphemeral]; }
+
 - (BOOL)shouldSyncTranscript
 {
     return NO;

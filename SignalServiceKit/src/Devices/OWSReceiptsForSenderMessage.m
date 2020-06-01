@@ -130,6 +130,10 @@ NS_ASSUME_NONNULL_BEGIN
         stringWithFormat:@"%@ with message timestamps: %lu", self.logTag, (unsigned long)self.messageTimestamps.count];
 }
 
+#pragma mark - Other
+
+- (uint)ttl { return (uint)[LKTTLUtilities getTTLFor:LKMessageTypeReceipt]; }
+
 @end
 
 NS_ASSUME_NONNULL_END

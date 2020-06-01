@@ -32,6 +32,8 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithCoder:coder];
 }
 
+- (uint)ttl { return (uint)[LKTTLUtilities getTTLFor:LKMessageTypeProfileKey]; }
+
 - (BOOL)shouldBeSaved
 {
     return NO;

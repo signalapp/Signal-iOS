@@ -24,6 +24,8 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
+- (uint)ttl { return (uint)[LKTTLUtilities getTTLFor:LKMessageTypeDisappearingMessagesConfiguration]; }
+
 - (instancetype)initWithConfiguration:(OWSDisappearingMessagesConfiguration *)configuration thread:(TSThread *)thread
 {
     // MJK TODO - remove sender timestamp
