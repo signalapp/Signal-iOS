@@ -19,15 +19,15 @@ final class IP2Country {
     }
 
     // MARK: Implementation
-    static func getCountry(_ ip: String) -> String {
+    func getCountry(_ ip: String) -> String {
         var truncatedIP = ip
         func getCountryInternal() -> String {
-            if let country = countryNamesCache[ip] { return country }
-            if let ipv4TableIndex = ipv4Table.namedColumns["network"]!.firstIndex(where: { $0.starts(with: truncatedIP) }) {
-                let countryID = ipv4Table.namedColumns["registered_country_geoname_id"]![ipv4TableIndex]
-                if let countryNamesTableIndex = countryNamesTable.namedColumns["geoname_id"]!.firstIndex(of: countryID) {
-                    let country = countryNamesTable.namedColumns["country_name"]![countryNamesTableIndex]
-                    countryNamesCache[ip] = country
+            if let country = IP2Country.countryNamesCache[ip] { return country }
+            if let ipv4TableIndex = IP2Country.ipv4Table.namedColumns["network"]!.firstIndex(where: { $0.starts(with: truncatedIP) }) {
+                let countryID = IP2Country.ipv4Table.namedColumns["registered_country_geoname_id"]![ipv4TableIndex]
+                if let countryNamesTableIndex = IP2Country.countryNamesTable.namedColumns["geoname_id"]!.firstIndex(of: countryID) {
+                    let country = IP2Country.countryNamesTable.namedColumns["country_name"]![countryNamesTableIndex]
+                    IP2Country.countryNamesCache[ip] = country
                     return country
                 }
             }
@@ -53,7 +53,7 @@ final class IP2Country {
             guard OnionRequestAPI.paths.count >= OnionRequestAPI.pathCount else { return }
             let pathToDisplay = OnionRequestAPI.paths.first!
             pathToDisplay.forEach { snode in
-                let _ = IP2Country.getCountry(snode.ip) // Preload if needed
+                let _ = self.getCountry(snode.ip) // Preload if needed
             }
             print("[Loki] Finished preloading onion request path countries.")
         }
