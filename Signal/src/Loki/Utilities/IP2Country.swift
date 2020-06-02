@@ -2,9 +2,9 @@ import SwiftCSV
 
 final class IP2Country {
 
-    private static let ipv4Table = try! CSV(name: "GeoLite2-Country-Blocks-IPv4", extension: "csv", bundle: .main, delimiter: ",", encoding: .utf8, loadColumns: true)!
-    private static let countryNamesTable = try! CSV(name: "GeoLite2-Country-Locations-English", extension: "csv", bundle: .main, delimiter: ",", encoding: .utf8, loadColumns: true)!
-    private static var countryNamesCache: [String:String] = [:]
+    private let ipv4Table = try! CSV(name: "GeoLite2-Country-Blocks-IPv4", extension: "csv", bundle: .main, delimiter: ",", encoding: .utf8, loadColumns: true)!
+    private let countryNamesTable = try! CSV(name: "GeoLite2-Country-Locations-English", extension: "csv", bundle: .main, delimiter: ",", encoding: .utf8, loadColumns: true)!
+    private var countryNamesCache: [String:String] = [:]
 
     // MARK: Lifecycle
     static let shared = IP2Country()
@@ -22,12 +22,12 @@ final class IP2Country {
     func getCountry(_ ip: String) -> String {
         var truncatedIP = ip
         func getCountryInternal() -> String {
-            if let country = IP2Country.countryNamesCache[ip] { return country }
-            if let ipv4TableIndex = IP2Country.ipv4Table.namedColumns["network"]!.firstIndex(where: { $0.starts(with: truncatedIP) }) {
-                let countryID = IP2Country.ipv4Table.namedColumns["registered_country_geoname_id"]![ipv4TableIndex]
-                if let countryNamesTableIndex = IP2Country.countryNamesTable.namedColumns["geoname_id"]!.firstIndex(of: countryID) {
-                    let country = IP2Country.countryNamesTable.namedColumns["country_name"]![countryNamesTableIndex]
-                    IP2Country.countryNamesCache[ip] = country
+            if let country = countryNamesCache[ip] { return country }
+            if let ipv4TableIndex = ipv4Table.namedColumns["network"]!.firstIndex(where: { $0.starts(with: truncatedIP) }) {
+                let countryID = ipv4Table.namedColumns["registered_country_geoname_id"]![ipv4TableIndex]
+                if let countryNamesTableIndex = countryNamesTable.namedColumns["geoname_id"]!.firstIndex(of: countryID) {
+                    let country = countryNamesTable.namedColumns["country_name"]![countryNamesTableIndex]
+                    countryNamesCache[ip] = country
                     return country
                 }
             }
