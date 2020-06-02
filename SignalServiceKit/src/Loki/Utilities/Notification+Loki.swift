@@ -23,6 +23,7 @@ public extension Notification.Name {
     // Onion requests
     public static let buildingPaths = Notification.Name("buildingPaths")
     public static let pathsBuilt = Notification.Name("pathsBuilt")
+    public static let onionRequestPathCountriesLoaded = Notification.Name("onionRequestPathCountriesLoaded")
 }
 
 @objc public extension NSNotification {
@@ -49,4 +50,5 @@ public extension Notification.Name {
     // Onion requests
     @objc public static let buildingPaths = Notification.Name.buildingPaths.rawValue as NSString
     @objc public static let pathsBuilt = Notification.Name.pathsBuilt.rawValue as NSString
+    @objc public static let onionRequestPathCountriesLoaded = Notification.Name.onionRequestPathCountriesLoaded.rawValue as NSString
 }

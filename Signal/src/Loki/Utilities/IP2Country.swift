@@ -4,14 +4,14 @@ final class IP2Country {
 
     private let ipv4Table = try! CSV(name: "GeoLite2-Country-Blocks-IPv4", extension: "csv", bundle: .main, delimiter: ",", encoding: .utf8, loadColumns: true)!
     private let countryNamesTable = try! CSV(name: "GeoLite2-Country-Locations-English", extension: "csv", bundle: .main, delimiter: ",", encoding: .utf8, loadColumns: true)!
-    private var countryNamesCache: [String:String] = [:]
+    var countryNamesCache: [String:String] = [:]
 
     // MARK: Lifecycle
     static let shared = IP2Country()
 
     private init() {
-        preloadCountriesIfNeeded()
-        NotificationCenter.default.addObserver(self, selector: #selector(preloadCountriesIfNeeded), name: .pathsBuilt, object: nil)
+        populateCacheIfNeeded()
+        NotificationCenter.default.addObserver(self, selector: #selector(populateCacheIfNeeded), name: .pathsBuilt, object: nil)
     }
 
     deinit {
@@ -19,7 +19,7 @@ final class IP2Country {
     }
 
     // MARK: Implementation
-    func getCountry(_ ip: String) -> String {
+    private func cacheCountry(for ip: String) -> String {
         var truncatedIP = ip
         func getCountryInternal() -> String {
             if let country = countryNamesCache[ip] { return country }
@@ -42,7 +42,7 @@ final class IP2Country {
         return getCountryInternal()
     }
 
-    @objc private func preloadCountriesIfNeeded() {
+    @objc private func populateCacheIfNeeded() {
         DispatchQueue.global(qos: .userInitiated).async {
             if OnionRequestAPI.paths.count < OnionRequestAPI.pathCount {
                 let storage = OWSPrimaryStorage.shared()
@@ -53,7 +53,10 @@ final class IP2Country {
             guard OnionRequestAPI.paths.count >= OnionRequestAPI.pathCount else { return }
             let pathToDisplay = OnionRequestAPI.paths.first!
             pathToDisplay.forEach { snode in
-                let _ = self.getCountry(snode.ip) // Preload if needed
+                let _ = self.cacheCountry(for: snode.ip) // Preload if needed
+            }
+            DispatchQueue.main.async {
+                NotificationCenter.default.post(name: .onionRequestPathCountriesLoaded, object: nil)
             }
             print("[Loki] Finished preloading onion request path countries.")
         }

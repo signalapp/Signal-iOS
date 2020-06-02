@@ -92,6 +92,7 @@ final class PathVC : BaseVC {
         let notificationCenter = NotificationCenter.default
         notificationCenter.addObserver(self, selector: #selector(handleBuildingPathsNotification), name: .buildingPaths, object: nil)
         notificationCenter.addObserver(self, selector: #selector(handlePathsBuiltNotification), name: .pathsBuilt, object: nil)
+        notificationCenter.addObserver(self, selector: #selector(handleOnionRequestPathCountriesLoadedNotification), name: .onionRequestPathCountriesLoaded, object: nil)
     }
 
     deinit {
@@ -101,6 +102,7 @@ final class PathVC : BaseVC {
     // MARK: Updating
     @objc private func handleBuildingPathsNotification() { update() }
     @objc private func handlePathsBuiltNotification() { update() }
+    @objc private func handleOnionRequestPathCountriesLoadedNotification() { update() }
 
     private func update() {
         pathStackView.arrangedSubviews.forEach { $0.removeFromSuperview() }
@@ -155,7 +157,7 @@ final class PathVC : BaseVC {
     }
 
     private func getPathRow(snode: LokiAPITarget, location: LineView.Location, dotAnimationStartDelay: Double, dotAnimationRepeatInterval: Double, isGuardSnode: Bool) -> UIStackView {
-        let country = IP2Country.shared.getCountry(snode.ip)
+        let country = IP2Country.shared.countryNamesCache[snode.ip] ?? "Resolving..."
         let title = isGuardSnode ? NSLocalizedString("Guard Node", comment: "") : NSLocalizedString("Service Node", comment: "")
         return getPathRow(title: title, subtitle: country, location: location, dotAnimationStartDelay: dotAnimationStartDelay, dotAnimationRepeatInterval: dotAnimationRepeatInterval)
     }
