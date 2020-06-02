@@ -88,6 +88,11 @@ public class UIDatabaseObserver: NSObject {
         }
     }
 
+    private static let debounceSnapshotUpdates = true
+    private static let snapshotCoordinationQueue = DispatchQueue(label: "UIDatabaseObserver")
+    private var hasPendingSnapshotUpdate = false
+    private var lastSnapshotUpdateDate: Date?
+
     // This property should only be accessed on the main thread.
     private var lastCheckpointDate: Date?
 
@@ -138,31 +143,78 @@ extension UIDatabaseObserver: TransactionObserver {
     }
 
     public func databaseDidCommit(_ db: Database) {
+
         UIDatabaseObserver.serializedSync {
             for snapshotDelegate in snapshotDelegates {
                 snapshotDelegate.snapshotTransactionDidCommit(db: db)
             }
         }
 
-        DispatchQueue.main.async { [weak self] in
-            guard let self = self else { return }
-            Logger.verbose("databaseSnapshotWillUpdate")
-            for delegate in self.snapshotDelegates {
-                delegate.databaseSnapshotWillUpdate()
-            }
+        if Self.debounceSnapshotUpdates {
+            Self.snapshotCoordinationQueue.sync {
+                guard !self.hasPendingSnapshotUpdate else {
+                    // If there's already a pending snapshot, abort.
+                    return
+                }
 
-            self.latestSnapshot.read { db in
-                do {
-                    try self.fastForwardDatabaseSnapshot(db: db)
-                } catch {
-                    owsFailDebug("\(error)")
+                // Enqueue a pending snapshot.
+                self.hasPendingSnapshotUpdate = true
+
+                if let lastSnapshotUpdateDate = self.lastSnapshotUpdateDate {
+                    let secondsSinceLastUpdate = abs(lastSnapshotUpdateDate.timeIntervalSinceNow)
+                    // Don't update UI more often than 4x/second.
+                    let maxUpdateFrequencySeconds: TimeInterval = 0.25
+                    let delaySeconds = maxUpdateFrequencySeconds - secondsSinceLastUpdate
+                    if delaySeconds > 0 {
+                        Logger.verbose("Updating db snapshot after: \(delaySeconds).")
+                        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + delaySeconds) { [weak self] in
+                            self?.updateSnapshot()
+                        }
+                        return
+                    }
+                }
+                // Update snapshot ASAP.
+                Logger.verbose("Updating db snapshot ASAP.")
+                DispatchQueue.main.async { [weak self] in
+                    self?.updateSnapshot()
                 }
             }
-
-            Logger.verbose("databaseSnapshotDidUpdate")
-            for delegate in self.snapshotDelegates {
-                delegate.databaseSnapshotDidUpdate()
+        } else {
+            // Update snapshot ASAP.
+            Logger.verbose("Updating db snapshot ASAP.")
+            DispatchQueue.main.async { [weak self] in
+                self?.updateSnapshot()
             }
+        }
+    }
+
+    private func updateSnapshot() {
+        AssertIsOnMainThread()
+
+        if Self.debounceSnapshotUpdates {
+            Self.snapshotCoordinationQueue.sync {
+                assert(self.hasPendingSnapshotUpdate)
+                self.hasPendingSnapshotUpdate = false
+                self.lastSnapshotUpdateDate = Date()
+            }
+        }
+
+        Logger.verbose("databaseSnapshotWillUpdate")
+        for delegate in snapshotDelegates {
+            delegate.databaseSnapshotWillUpdate()
+        }
+
+        latestSnapshot.read { db in
+            do {
+                try self.fastForwardDatabaseSnapshot(db: db)
+            } catch {
+                owsFailDebug("\(error)")
+            }
+        }
+
+        Logger.verbose("databaseSnapshotDidUpdate")
+        for delegate in snapshotDelegates {
+            delegate.databaseSnapshotDidUpdate()
         }
     }
 
