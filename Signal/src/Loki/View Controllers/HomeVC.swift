@@ -84,6 +84,10 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
     // MARK: Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        DispatchQueue.global(qos: .userInitiated).async {
+            preload(PathVC.ipv4Table)
+            preload(PathVC.countryNamesTable)
+        }
         SignalApp.shared().homeViewController = self
         setUpGradientBackground()
         if navigationController?.navigationBar != nil {

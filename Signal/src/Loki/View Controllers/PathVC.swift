@@ -1,6 +1,11 @@
 import NVActivityIndicatorView
+import SwiftCSV
 
 final class PathVC : BaseVC {
+
+    static let ipv4Table = try! CSV(name: "GeoLite2-Country-Blocks-IPv4", extension: "csv", bundle: .main, delimiter: ",", encoding: .utf8, loadColumns: true)!
+    static let countryNamesTable = try! CSV(name: "GeoLite2-Country-Locations-English", extension: "csv", bundle: .main, delimiter: ",", encoding: .utf8, loadColumns: true)!
+    static var countryNamesCache: [String:String] = [:]
 
     // MARK: Components
     private lazy var pathStackView: UIStackView = {
@@ -163,13 +168,27 @@ final class PathVC : BaseVC {
     }
 
     private func getPathRow(snode: LokiAPITarget, location: LineView.Location, dotAnimationStartDelay: Double, dotAnimationRepeatInterval: Double, isGuardSnode: Bool) -> UIStackView {
-        var snodeIP = snode.description
-        if snodeIP.hasPrefix("https://") { snodeIP.removeFirst(8) }
-        if let colonIndex = snodeIP.lastIndex(of: ":") {
-            snodeIP = String(snodeIP[snodeIP.startIndex..<colonIndex])
+        var snodeIP = snode.ip
+        func getCountry() -> String {
+            if let country = PathVC.countryNamesCache[snode.address] { return country }
+            if let ipv4TableIndex = PathVC.ipv4Table.namedColumns["network"]!.firstIndex(where: { $0.starts(with: snodeIP) }) {
+                let countryID = PathVC.ipv4Table.namedColumns["registered_country_geoname_id"]![ipv4TableIndex]
+                if let countryNamesTableIndex = PathVC.countryNamesTable.namedColumns["geoname_id"]!.firstIndex(of: countryID) {
+                    let country = PathVC.countryNamesTable.namedColumns["country_name"]![countryNamesTableIndex]
+                    PathVC.countryNamesCache[snode.address] = country
+                    return country
+                }
+            }
+            if snodeIP.contains(".") && !snodeIP.hasSuffix(".") { // The fuzziest we want to go is xxx.x
+                snodeIP.removeLast()
+                if snodeIP.hasSuffix(".") { snodeIP.removeLast() }
+                return getCountry()
+            } else {
+                return "Unknown Country"
+            }
         }
         let title = isGuardSnode ? NSLocalizedString("Guard Node", comment: "") : NSLocalizedString("Service Node", comment: "")
-        return getPathRow(title: title, subtitle: snodeIP, location: location, dotAnimationStartDelay: dotAnimationStartDelay, dotAnimationRepeatInterval: dotAnimationRepeatInterval)
+        return getPathRow(title: title, subtitle: getCountry(), location: location, dotAnimationStartDelay: dotAnimationStartDelay, dotAnimationRepeatInterval: dotAnimationRepeatInterval)
     }
     
     // MARK: Interaction

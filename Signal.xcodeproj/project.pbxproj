@@ -631,6 +631,10 @@
 		C3548F0624456447009433A8 /* PNModeVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3548F0524456447009433A8 /* PNModeVC.swift */; };
 		C3548F0824456AB6009433A8 /* UIView+Wrapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3548F0724456AB6009433A8 /* UIView+Wrapping.swift */; };
 		C354E75A23FE2A7600CE22E3 /* BaseVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = C354E75923FE2A7600CE22E3 /* BaseVC.swift */; };
+		C35E8AA32485C72300ACB629 /* SwiftCSV.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = C35E8AA22485C72300ACB629 /* SwiftCSV.framework */; };
+		C35E8AA82485C85800ACB629 /* GeoLite2-Country-Locations-English.csv in Resources */ = {isa = PBXBuildFile; fileRef = C35E8AA52485C85400ACB629 /* GeoLite2-Country-Locations-English.csv */; };
+		C35E8AA92485C85800ACB629 /* GeoLite2-Country-Blocks-IPv4.csv in Resources */ = {isa = PBXBuildFile; fileRef = C35E8AA62485C85600ACB629 /* GeoLite2-Country-Blocks-IPv4.csv */; };
+		C35E8AAC2485D1FE00ACB629 /* CSVUtilities.swift in Sources */ = {isa = PBXBuildFile; fileRef = C35E8AAB2485D1FE00ACB629 /* CSVUtilities.swift */; };
 		C36B8707243C50C60049991D /* SignalMessaging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 453518921FC63DBF00210559 /* SignalMessaging.framework */; };
 		C3DAB3242480CB2B00725F25 /* SRCopyableLabel.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3DAB3232480CB2A00725F25 /* SRCopyableLabel.swift */; };
 		C3DFFAC623E96F0D0058DAF8 /* Sheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3DFFAC523E96F0D0058DAF8 /* Sheet.swift */; };
@@ -1510,6 +1514,10 @@
 		C3548F0524456447009433A8 /* PNModeVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PNModeVC.swift; sourceTree = "<group>"; };
 		C3548F0724456AB6009433A8 /* UIView+Wrapping.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+Wrapping.swift"; sourceTree = "<group>"; };
 		C354E75923FE2A7600CE22E3 /* BaseVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BaseVC.swift; sourceTree = "<group>"; };
+		C35E8AA22485C72300ACB629 /* SwiftCSV.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftCSV.framework; path = ThirdParty/Carthage/Build/iOS/SwiftCSV.framework; sourceTree = "<group>"; };
+		C35E8AA52485C85400ACB629 /* GeoLite2-Country-Locations-English.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "GeoLite2-Country-Locations-English.csv"; sourceTree = "<group>"; };
+		C35E8AA62485C85600ACB629 /* GeoLite2-Country-Blocks-IPv4.csv */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "GeoLite2-Country-Blocks-IPv4.csv"; sourceTree = "<group>"; };
+		C35E8AAB2485D1FE00ACB629 /* CSVUtilities.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CSVUtilities.swift; sourceTree = "<group>"; };
 		C3DAB3232480CB2A00725F25 /* SRCopyableLabel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SRCopyableLabel.swift; sourceTree = "<group>"; };
 		C3DFFAC523E96F0D0058DAF8 /* Sheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sheet.swift; sourceTree = "<group>"; };
 		C3DFFAC723E970080058DAF8 /* OpenGroupSuggestionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OpenGroupSuggestionSheet.swift; sourceTree = "<group>"; };
@@ -1578,6 +1586,7 @@
 				45847E871E4283C30080EAB3 /* Intents.framework in Frameworks */,
 				4509E79A1DD653700025A59F /* WebRTC.framework in Frameworks */,
 				4520D8D51D417D8E00123472 /* Photos.framework in Frameworks */,
+				C35E8AA32485C72300ACB629 /* SwiftCSV.framework in Frameworks */,
 				4C9CA25D217E676900607C63 /* ZXingObjC.framework in Frameworks */,
 				B6B226971BE4B7D200860F4D /* ContactsUI.framework in Frameworks */,
 				45BD60821DE9547E00A8F436 /* Contacts.framework in Frameworks */,
@@ -2899,6 +2908,7 @@
 			children = (
 				B8544E3223D50E4900299F14 /* AppearanceUtilities.swift */,
 				C31A6C5B247F2CF3001123EF /* CGRect+Utilities.swift */,
+				C35E8AAB2485D1FE00ACB629 /* CSVUtilities.swift */,
 				B84664F4235022F30083A1CD /* MentionUtilities.swift */,
 				B886B4A82398BA1500211ABE /* QRCode.swift */,
 				B8783E9D23EB948D00404FB8 /* UILabel+Interaction.swift */,
@@ -2946,6 +2956,15 @@
 			path = "View Controllers";
 			sourceTree = "<group>";
 		};
+		C35E8AA42485C83B00ACB629 /* CSV */ = {
+			isa = PBXGroup;
+			children = (
+				C35E8AA62485C85600ACB629 /* GeoLite2-Country-Blocks-IPv4.csv */,
+				C35E8AA52485C85400ACB629 /* GeoLite2-Country-Locations-English.csv */,
+			);
+			path = CSV;
+			sourceTree = "<group>";
+		};
 		D221A07E169C9E5E00537ABF = {
 			isa = PBXGroup;
 			children = (
@@ -2974,6 +2993,7 @@
 		D221A08C169C9E5E00537ABF /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				C35E8AA22485C72300ACB629 /* SwiftCSV.framework */,
 				B847570023D568EB00759540 /* SignalServiceKit.framework */,
 				3496955F21A2FC8100DCFE74 /* CloudKit.framework */,
 				4C9CA25C217E676900607C63 /* ZXingObjC.framework */,
@@ -3020,6 +3040,7 @@
 		D221A093169C9E5E00537ABF /* Signal */ = {
 			isa = PBXGroup;
 			children = (
+				C35E8AA42485C83B00ACB629 /* CSV */,
 				34330A581E7875FB00DF2FB9 /* Fonts */,
 				B633C4FD1A1D190B0059AC12 /* Images */,
 				B66DBF4919D5BBC8006EA940 /* Images.xcassets */,
@@ -3480,6 +3501,7 @@
 				34330A5E1E787BD800DF2FB9 /* ElegantIcons.ttf in Resources */,
 				AD83FF451A73426500B5C81A /* audio_pause_button@2x.png in Resources */,
 				45A2F005204473A3002E978A /* NewMessage.aifc in Resources */,
+				C35E8AA92485C85800ACB629 /* GeoLite2-Country-Blocks-IPv4.csv in Resources */,
 				45B74A882044AAB600CD42F8 /* aurora.aifc in Resources */,
 				45B74A742044AAB600CD42F8 /* aurora-quiet.aifc in Resources */,
 				45B74A852044AAB600CD42F8 /* bamboo.aifc in Resources */,
@@ -3497,6 +3519,7 @@
 				45B74A772044AAB600CD42F8 /* hello.aifc in Resources */,
 				4C61819F219E1796009BD6B5 /* typing-animation-dark.gif in Resources */,
 				45B74A7C2044AAB600CD42F8 /* hello-quiet.aifc in Resources */,
+				C35E8AA82485C85800ACB629 /* GeoLite2-Country-Locations-English.csv in Resources */,
 				45B74A792044AAB600CD42F8 /* input.aifc in Resources */,
 				45B74A8C2044AAB600CD42F8 /* input-quiet.aifc in Resources */,
 				45B74A7A2044AAB600CD42F8 /* keys.aifc in Resources */,
@@ -3586,6 +3609,7 @@
 			inputPaths = (
 				"$(SRCROOT)/ThirdParty/WebRTC/Build/WebRTC.framework",
 				"$(SRCROOT)/ThirdParty/Carthage/Build/iOS/ZXingObjC.framework",
+				"$(SRCROOT)/ThirdParty/Carthage/Build/iOS/SwiftCSV.framework",
 			);
 			name = "[Carthage] Copy Frameworks";
 			outputPaths = (
@@ -4187,6 +4211,7 @@
 				45FBC5C81DF8575700E9B410 /* CallKitCallManager.swift in Sources */,
 				4539B5861F79348F007141FF /* PushRegistrationManager.swift in Sources */,
 				45FBC5D11DF8592E00E9B410 /* SignalCall.swift in Sources */,
+				C35E8AAC2485D1FE00ACB629 /* CSVUtilities.swift in Sources */,
 				B8B26C91234D8CBD004ED98C /* MentionCandidateSelectionViewDelegate.swift in Sources */,
 				340FC8BB204DAC8D007AEB0F /* OWSAddToContactViewController.m in Sources */,
 				45F32C232057297A00A300D5 /* MediaPageViewController.swift in Sources */,
