@@ -84,6 +84,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
     // MARK: Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
+        touch(IP2Country.shared)
         SignalApp.shared().homeViewController = self
         setUpGradientBackground()
         if navigationController?.navigationBar != nil {

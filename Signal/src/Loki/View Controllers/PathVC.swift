@@ -1,4 +1,5 @@
 import NVActivityIndicatorView
+import SwiftCSV
 
 final class PathVC : BaseVC {
 
@@ -16,10 +17,10 @@ final class PathVC : BaseVC {
         return result
     }()
 
-    private lazy var rebuildPathButton: Button = {
+    private lazy var learnMoreButton: Button = {
         let result = Button(style: .prominentOutline, size: .large)
-        result.setTitle(NSLocalizedString("Rebuild Path", comment: ""), for: UIControl.State.normal)
-        result.addTarget(self, action: #selector(rebuildPath), for: UIControl.Event.touchUpInside)
+        result.setTitle(NSLocalizedString("Learn More", comment: ""), for: UIControl.State.normal)
+        result.addTarget(self, action: #selector(learnMore), for: UIControl.Event.touchUpInside)
         return result
     }()
 
@@ -39,9 +40,6 @@ final class PathVC : BaseVC {
         let closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "X"), style: .plain, target: self, action: #selector(close))
         closeButton.tintColor = Colors.text
         navigationItem.leftBarButtonItem = closeButton
-        let learnMoreButton = UIBarButtonItem(image: #imageLiteral(resourceName: "QuestionMark").scaled(to: CGSize(width: 24, height: 24)), style: .plain, target: self, action: #selector(learnMore))
-        learnMoreButton.tintColor = Colors.text
-        navigationItem.rightBarButtonItem = learnMoreButton
     }
 
     private func setUpViewHierarchy() {
@@ -49,7 +47,7 @@ final class PathVC : BaseVC {
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = NSLocalizedString("Session hides your IP by bouncing your messages through several Service Nodes in Session’s decentralized network. These are the Service Nodes currently being used by your device:", comment: "")
+        explanationLabel.text = NSLocalizedString("Session hides your IP by bouncing your messages through several Service Nodes in Session’s decentralized network. These are the countries your connection is currently being bounced through:", comment: "")
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping
@@ -67,17 +65,17 @@ final class PathVC : BaseVC {
         pathStackViewContainer.bottomAnchor.constraint(greaterThanOrEqualTo: spinner.bottomAnchor).isActive = true
         spinner.center(in: pathStackViewContainer)
         // Set up rebuild path button
-        let rebuildPathButtonContainer = UIView()
-        rebuildPathButtonContainer.addSubview(rebuildPathButton)
-        rebuildPathButton.pin(.leading, to: .leading, of: rebuildPathButtonContainer, withInset: 80)
-        rebuildPathButton.pin(.top, to: .top, of: rebuildPathButtonContainer)
-        rebuildPathButtonContainer.pin(.trailing, to: .trailing, of: rebuildPathButton, withInset: 80)
-        rebuildPathButtonContainer.pin(.bottom, to: .bottom, of: rebuildPathButton)
+        let learnMoreButtonContainer = UIView()
+        learnMoreButtonContainer.addSubview(learnMoreButton)
+        learnMoreButton.pin(.leading, to: .leading, of: learnMoreButtonContainer, withInset: 80)
+        learnMoreButton.pin(.top, to: .top, of: learnMoreButtonContainer)
+        learnMoreButtonContainer.pin(.trailing, to: .trailing, of: learnMoreButton, withInset: 80)
+        learnMoreButtonContainer.pin(.bottom, to: .bottom, of: learnMoreButton)
         // Set up spacers
         let topSpacer = UIView.vStretchingSpacer()
         let bottomSpacer = UIView.vStretchingSpacer()
         // Set up main stack view
-        let mainStackView = UIStackView(arrangedSubviews: [ explanationLabel, topSpacer, pathStackViewContainer, bottomSpacer, rebuildPathButtonContainer ])
+        let mainStackView = UIStackView(arrangedSubviews: [ explanationLabel, topSpacer, pathStackViewContainer, bottomSpacer, learnMoreButtonContainer ])
         mainStackView.axis = .vertical
         mainStackView.alignment = .fill
         mainStackView.layoutMargins = UIEdgeInsets(top: Values.largeSpacing, left: Values.largeSpacing, bottom: Values.largeSpacing, right: Values.largeSpacing)
@@ -120,18 +118,12 @@ final class PathVC : BaseVC {
             spinner.stopAnimating()
             UIView.animate(withDuration: 0.25) {
                 self.spinner.alpha = 0
-                self.rebuildPathButton.layer.borderColor = Colors.accent.cgColor
-                self.rebuildPathButton.setTitleColor(Colors.accent, for: UIControl.State.normal)
             }
-            rebuildPathButton.isEnabled = true
         } else {
             spinner.startAnimating()
             UIView.animate(withDuration: 0.25) {
                 self.spinner.alpha = 1
-                self.rebuildPathButton.layer.borderColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity).cgColor
-                self.rebuildPathButton.setTitleColor(Colors.text.withAlphaComponent(Values.unimportantElementOpacity), for: UIControl.State.normal)
             }
-            rebuildPathButton.isEnabled = false
         }
     }
 
@@ -163,13 +155,9 @@ final class PathVC : BaseVC {
     }
 
     private func getPathRow(snode: LokiAPITarget, location: LineView.Location, dotAnimationStartDelay: Double, dotAnimationRepeatInterval: Double, isGuardSnode: Bool) -> UIStackView {
-        var snodeIP = snode.description
-        if snodeIP.hasPrefix("https://") { snodeIP.removeFirst(8) }
-        if let colonIndex = snodeIP.lastIndex(of: ":") {
-            snodeIP = String(snodeIP[snodeIP.startIndex..<colonIndex])
-        }
+        let country = IP2Country.getCountry(snode.ip)
         let title = isGuardSnode ? NSLocalizedString("Guard Node", comment: "") : NSLocalizedString("Service Node", comment: "")
-        return getPathRow(title: title, subtitle: snodeIP, location: location, dotAnimationStartDelay: dotAnimationStartDelay, dotAnimationRepeatInterval: dotAnimationRepeatInterval)
+        return getPathRow(title: title, subtitle: country, location: location, dotAnimationStartDelay: dotAnimationStartDelay, dotAnimationRepeatInterval: dotAnimationRepeatInterval)
     }
     
     // MARK: Interaction
@@ -181,19 +169,6 @@ final class PathVC : BaseVC {
         let urlAsString = "https://getsession.org/faq/#onion-routing"
         let url = URL(string: urlAsString)!
         UIApplication.shared.open(url)
-    }
-
-    @objc private func rebuildPath() {
-        // Dispatch async on the main queue to avoid nested write transactions
-        DispatchQueue.main.async {
-            let storage = OWSPrimaryStorage.shared()
-            storage.dbReadWriteConnection.readWrite { transaction in
-                storage.clearOnionRequestPaths(in: transaction)
-            }
-        }
-        OnionRequestAPI.guardSnodes = []
-        OnionRequestAPI.paths = []
-        let _ = OnionRequestAPI.buildPaths()
     }
 }
 

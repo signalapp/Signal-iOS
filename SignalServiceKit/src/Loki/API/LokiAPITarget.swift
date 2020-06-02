@@ -3,10 +3,14 @@ public typealias Snode = LokiAPITarget
 
 /// Either a service node or another client if P2P is enabled.
 public final class LokiAPITarget : NSObject, NSCoding {
-    internal let address: String
-    internal let port: UInt16
+    public let address: String
+    public let port: UInt16
     internal let publicKeySet: KeySet?
-    
+
+    public var ip: String {
+        String(address[address.index(address.startIndex, offsetBy: 8)..<address.endIndex])
+    }
+
     // MARK: Nested Types
     internal enum Method : String {
         /// Only supported by snode targets.
