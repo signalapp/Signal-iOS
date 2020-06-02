@@ -457,6 +457,16 @@ NS_ASSUME_NONNULL_BEGIN
                                          [DebugUIStress makeUnregisteredGroup];
                                      }]];
 
+    [items addObject:[OWSTableItem itemWithTitle:@"Thrash writes 10/second"
+                                     actionBlock:^{
+                                         [DebugUIStress thrashWithMaxWritesPerSecond:10 thread:thread];
+                                     }]];
+
+    [items addObject:[OWSTableItem itemWithTitle:@"Thrash writes 100/second"
+                                     actionBlock:^{
+                                         [DebugUIStress thrashWithMaxWritesPerSecond:100 thread:thread];
+                                     }]];
+
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }
 
@@ -560,6 +570,38 @@ NS_ASSUME_NONNULL_BEGIN
         failure:^(NSError *error) {
             OWSFailDebug(@"Error: %@", error);
         }];
+}
+
++ (void)thrashWithMaxWritesPerSecond:(NSUInteger)maxWritesPerSecond thread:(TSThread *)thread
+{
+    NSString *text = NSUUID.UUID.UUIDString;
+    TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread
+                                                                                              messageBody:text];
+    TSOutgoingMessage *message = [messageBuilder build];
+
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [message anyInsertWithTransaction:transaction];
+    }];
+
+    NSTimeInterval delaySeconds = kSecondInterval / maxWritesPerSecond;
+    __block uint64_t counter = 0;
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        [NSTimer scheduledTimerWithTimeInterval:delaySeconds
+                                        repeats:YES
+                                          block:^(NSTimer *timer) {
+                                              counter = counter + 1;
+                                              OWSLogVerbose(@"counter: %llu", counter);
+                                              [self thrashWritesWithThread:thread message:message];
+                                          }];
+    });
+}
+
++ (void)thrashWritesWithThread:(TSThread *)thread message:(TSOutgoingMessage *)message
+{
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [message updateWithFakeMessageState:TSOutgoingMessageStateSending transaction:transaction];
+        [message updateWithFakeMessageState:TSOutgoingMessageStateFailed transaction:transaction];
+    }];
 }
 
 @end
