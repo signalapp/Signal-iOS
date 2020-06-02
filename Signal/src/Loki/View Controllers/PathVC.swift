@@ -47,7 +47,7 @@ final class PathVC : BaseVC {
         let explanationLabel = UILabel()
         explanationLabel.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
         explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-        explanationLabel.text = NSLocalizedString("Session hides your IP by bouncing your messages through several Service Nodes in Session’s decentralized network. These are the Service Nodes currently being used by your device:", comment: "")
+        explanationLabel.text = NSLocalizedString("Session hides your IP by bouncing your messages through several Service Nodes in Session’s decentralized network. These are the countries your connection is currently being bounced through:", comment: "")
         explanationLabel.numberOfLines = 0
         explanationLabel.textAlignment = .center
         explanationLabel.lineBreakMode = .byWordWrapping
