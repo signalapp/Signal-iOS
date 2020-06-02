@@ -26,7 +26,7 @@ public extension OWSPrimaryStorage {
         return result
     }
 
-    public func dropSnode(_ snode: LokiAPITarget, in transaction: YapDatabaseReadWriteTransaction) {
+    public func dropSnodeFromSnodePool(_ snode: LokiAPITarget, in transaction: YapDatabaseReadWriteTransaction) {
         transaction.removeObject(forKey: snode.description, inCollection: OWSPrimaryStorage.snodePoolCollection)
     }
 
@@ -63,7 +63,7 @@ public extension OWSPrimaryStorage {
 
 
 
-    // MARK: - Onion Request Path
+    // MARK: - Onion Request Paths
     private static let onionRequestPathCollection = "LokiOnionRequestPathCollection"
 
     public func setOnionRequestPaths(_ paths: [OnionRequestAPI.Path], in transaction: YapDatabaseReadWriteTransaction) {
