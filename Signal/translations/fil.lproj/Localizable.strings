@@ -404,6 +404,9 @@
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Ang mga user na naka-block ay hindi magagawang tawagan ka o padalhan ka ng mga mensahe.";
 
+/* Tooltip highlighting the blur image editing tool. */
+"BLUR_TOOLTIP" = "New: Blur faces or draw anywhere to blur.";
+
 /* browse files option from file sharing menu */
 "BROWSE_FILES_BUTTON" = "Mag-browse";
 
@@ -1206,31 +1209,31 @@
 "EMAIL_INVITE_SUBJECT" = "Tayo nang lumipat sa Signal";
 
 /* The name for the emoji category 'Activities' */
-"EMOJI_CATEGORY_ACTIVITIES_NAME" = "Activities";
+"EMOJI_CATEGORY_ACTIVITIES_NAME" = "Mga Aktibidad";
 
 /* The name for the emoji category 'Animals & Nature' */
-"EMOJI_CATEGORY_ANIMALS_NAME" = "Animals & Nature";
+"EMOJI_CATEGORY_ANIMALS_NAME" = "Mga Hayop at Kalikasan";
 
 /* The name for the emoji category 'Flags' */
-"EMOJI_CATEGORY_FLAGS_NAME" = "Flags";
+"EMOJI_CATEGORY_FLAGS_NAME" = "Mga Watawat";
 
 /* The name for the emoji category 'Food & Drink' */
-"EMOJI_CATEGORY_FOOD_NAME" = "Food & Drink";
+"EMOJI_CATEGORY_FOOD_NAME" = "Pagkain at Inumin";
 
 /* The name for the emoji category 'Objects' */
-"EMOJI_CATEGORY_OBJECTS_NAME" = "Objects";
+"EMOJI_CATEGORY_OBJECTS_NAME" = "Mga Bagay";
 
 /* The name for the emoji category 'Recents' */
 "EMOJI_CATEGORY_RECENTS_NAME" = "Mga huling natawagan";
 
 /* The name for the emoji category 'Smileys & People' */
-"EMOJI_CATEGORY_SMILEYSANDPEOPLE_NAME" = "Smileys & People";
+"EMOJI_CATEGORY_SMILEYSANDPEOPLE_NAME" = "Smileys at mga Tao";
 
 /* The name for the emoji category 'Symbols' */
-"EMOJI_CATEGORY_SYMBOLS_NAME" = "Symbols";
+"EMOJI_CATEGORY_SYMBOLS_NAME" = "Mga Simbulo";
 
 /* The name for the emoji category 'Travel & Places' */
-"EMOJI_CATEGORY_TRAVEL_NAME" = "Travel & Places";
+"EMOJI_CATEGORY_TRAVEL_NAME" = "Paglalakbay at mga Lugar";
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE1" = "Walang sinuman sa iyong mga kontak ang may Signal.";
@@ -1802,6 +1805,15 @@
 /* Title for the conversation list's default mode. */
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
+/* The image editor hint that you can draw blur */
+"IMAGE_EDITOR_BLUR_HINT" = "Draw anywhere to blur";
+
+/* The image editor setting to blur faces */
+"IMAGE_EDITOR_BLUR_SETTING" = "Blur faces";
+
+/* A toast indicating that you can blur more faces after detection */
+"IMAGE_EDITOR_BLUR_TOAST" = "Draw to blur additional faces or areas";
+
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Hindi ka maaaring magbahagi ng mahigit sa %@ items.";
 
@@ -2040,13 +2052,13 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Burahin para sa Lahat";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "This message will be permanently deleted for everyone in the conversation. Members will be able to see that you deleted a message.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Ang mensaheng ito ay permanenterng mabubura para sa lahat na kalahok ng pag-uusap. Makikita ng mga kasapi na binura mo ang mensahe.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
-"MESSAGE_ACTION_DELETE_FOR_TITLE" = "Who would you like to delete this message for?";
+"MESSAGE_ACTION_DELETE_FOR_TITLE" = "Para kanino mo gustong burahin ang mensaheng ito?";
 
 /* The title for the action that deletes a message for the local user only. */
-"MESSAGE_ACTION_DELETE_FOR_YOU" = "Delete for Me";
+"MESSAGE_ACTION_DELETE_FOR_YOU" = "Burahin para sa Akin";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DELETE_MESSAGE" = "Burahin ang Mensaheng Ito";
@@ -3996,7 +4008,7 @@
 "UNNAMED_DEVICE" = "Device na Walang Pangalan";
 
 /* Pressing this button marks a thread as unread */
-"UNREAD_ACTION" = "Unread";
+"UNREAD_ACTION" = "Hindi pa Nabasa";
 
 /* No comment provided by engineer. */
 "UNREGISTER_SIGNAL_FAIL" = "Bigo na tanggalin ang rehistro mula sa Signal.";
@@ -4125,7 +4137,7 @@
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Kumpletuhin ang setup sa Signal Desktop.";
 
 /* text indicating the message was remotely deleted by you */
-"YOU_DELETED_THIS_MESSAGE" = "You deleted this message.";
+"YOU_DELETED_THIS_MESSAGE" = "Binura mo ang mensaheng ito.";
 
 /* Info Message when you disabled disappearing messages. */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Ginawa mong hindi gumana ang naglalahong mga mensahe.";

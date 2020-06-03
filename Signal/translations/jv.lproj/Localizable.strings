@@ -1,8 +1,8 @@
 /* Button text to dismiss missing contacts permission alert */
-"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Mangke Mawon";
+"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Mangke";
 
 /* Action sheet item */
-"ACCEPT_NEW_IDENTITY_ACTION" = "Tampi Nomor Keamanan ingkang Enggal";
+"ACCEPT_NEW_IDENTITY_ACTION" = "Tampi Nomor Keamanan Enggal";
 
 /* Accessibility label for attachment. */
 "ACCESSIBILITY_LABEL_ATTACHMENT" = "Lampiran";
@@ -29,7 +29,7 @@
 "ACTION_AUDIO_CALL" = "Telepon Signal";
 
 /* Label for 'invite' button in contact view. */
-"ACTION_INVITE" = "Ajak supados ngginakaken Signal";
+"ACTION_INVITE" = "Ajak ngginakaken Signal";
 
 /* Label for 'send message' button in contact view.
    Label for button that lets you send a message to a contact. */
@@ -54,10 +54,10 @@
 "ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "Minggahaken %1$@ anggota mlebet “%2$@”?";
 
 /* Title for the 'add group member' confirmation alert. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1" = "Minggahaken Anggota ingkang Enggal";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1" = "Minggahaken Anggota Enggal";
 
 /* Title for the 'add group members' confirmation alert. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_N" = "Minggahaken Anggota ingkang Enggal";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_N" = "Minggahaken Anggota Enggal";
 
 /* The title for the 'add group members' view. */
 "ADD_GROUP_MEMBERS_VIEW_TITLE" = "Minggahaken Anggota";
@@ -93,7 +93,7 @@
 "APN_Message" = "Enten Pesen Enggal!";
 
 /* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal mboten saged dibikak. Kirimaken catetan debug datheng support@signal.org supados kita saged ndandosi kalepatan niki.";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal mboten saged dibikak. Kirimaken catetan debug datheng support@signal.org supados kalepatan niki saged didandosi.";
 
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "Enten Kalepatan";
@@ -108,7 +108,7 @@
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Versi Database ingkang Mboten Kasumarepan.";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Data ingkang dikirimaken saking pirantos ingkang dangu mboten saged dipulihaken. Kirimaken catetan debug datheng support@signal.org supados kita saged ndandosi kalepatan niki. Menawi sampeyan masangaken Signal malih, sejarah obrolan sampeyan bakal ngical.";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Data ingkang dikirimaken saking pirantos ingkang dangu mboten saged dipulihaken. Kirimaken catetan debug datheng support@signal.org supados kalepatan niki saged didandosi. Menawi sampeyan masangaken Signal malih, sejarah obrolan sampeyan bakal ngical.";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Mboten Saged Ngerampungaken Pangiriman";
@@ -120,10 +120,10 @@
 "APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "Mangke Mawon";
 
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number}} */
-"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Versi %@ sakmenika sampun enten ing App Store.";
+"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Sakmenika versi %@ sampun enten ing App Store.";
 
 /* Title for the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_TITLE" = "Versi Signal ingkang  Enggal Sampun Enten";
+"APP_UPDATE_NAG_ALERT_TITLE" = "Versi Enggal Signal Enggal Sampun Enten";
 
 /* Label for the 'update' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Enggalaken";
@@ -171,7 +171,7 @@
 "ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "Pesen kangge %@";
 
 /* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Kentunaken";
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Kirimaken";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "Lampiran";
@@ -192,7 +192,7 @@
 "ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Mboten saged marsiaken gambar.";
 
 /* Attachment error message for image attachments in which metadata could not be removed */
-"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Mboten saged ngicalaken metadata saking gambar.";
+"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Mboten saged mbrusak metadata saking gambar.";
 
 /* Attachment error message for image attachments which could not be resized */
 "ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "Mboten saged nggantos ukuran gambar.";
@@ -231,7 +231,7 @@
 "ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Sukani izin Signal mbikak foto ing panatanan supados saged ngirimaken ing mriki.";
 
 /* A string indicating to the user that once they take photos, they'll be able to send them from this view. */
-"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Sepisan sampeyan sampun mendhet foto, sampeyan bakal saged ngirimaken foto kasebut.";
+"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Sepisan sampeyan sampun mendhet foto, foto kasebut bakal saged dikirimaken ing mriki.";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Lampiran";
@@ -243,7 +243,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Damelaken arsip ingkang dipunkompres saking file utawi direktori niki, saksampune cobi kirimaken file utawi direktori kasebut.";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "File ingkang Mboten Didukung";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "File Mboten Didukung";
 
 /* Short text label for a audio attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_AUDIO" = "Suwanten";
@@ -360,16 +360,16 @@
 "BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "Sampeyan bakal saged ngirimaken utawi nampi pesen lan telepon saking panggina niki.";
 
 /* Action sheet body when confirming you want to unblock a group */
-"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Anggota ingkang sampun wonten bakal saged minggahaken sampeyan mlebet grup malih.";
+"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Anggota ingkang sampun wonten bakal saged minggahaken malih sampeyan mlebet grup.";
 
 /* An explanation of what unblocking a group means. */
-"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Anggota grup bakal saged minggahaken sampeyan mlebet grup niki malih.";
+"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Anggota grup bakal saged minggahaken malih sampeyan mlebet grup niki.";
 
 /* Action sheet title when confirming you want to unblock a group. */
 "BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Uculaken Blokiranipun Grup Niki?";
 
 /* A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}. */
-"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Uculaken Blokiran %@?";
+"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Uculaken Blokiranipun %@?";
 
 /* A label for the block button in the block list view */
 "BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Blokir";
@@ -390,10 +390,10 @@
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Enten Kalepatan";
 
 /* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "Blokiran %@ sampun diuculaken.";
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "Blokiranipun %@ sampun diuculaken.";
 
 /* Alert body after unblocking a group. */
-"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Anggota ingkang dangu sakmenika saged minggahaken sampeyan mlebet grup niki malih.";
+"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Anggota ingkang dangu sakmenika saged minggahaken sampeyan malih mlebet grup niki.";
 
 /* Action sheet that will block an unknown user. */
 "BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION" = "Blokir";
@@ -404,8 +404,11 @@
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Panggina ingkang diblokir mboten bakal saged nelepon sampeyan utawi ngirimaken pesen.";
 
+/* Tooltip highlighting the blur image editing tool. */
+"BLUR_TOOLTIP" = "New: Blur faces or draw anywhere to blur.";
+
 /* browse files option from file sharing menu */
-"BROWSE_FILES_BUTTON" = "Telusuri";
+"BROWSE_FILES_BUTTON" = "Telusuraken";
 
 /* Label for 'continue' button. */
 "BUTTON_CONTINUE" = "Lajengaken";
@@ -462,22 +465,22 @@
 "CALL_USER_ALERT_TITLE" = "Telepon?";
 
 /* Accessibility label for accepting incoming calls */
-"CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "Tampi telepon mlebet";
+"CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "Tampi telepon ingkang mlebet";
 
 /* Accessibility label for selection the audio source */
 "CALL_VIEW_AUDIO_SOURCE_LABEL" = "Suwanten";
 
 /* Accessibility label for declining incoming calls */
-"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Tolak telepon mlebet";
+"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Tolak telepon ingkang mlebet";
 
 /* tooltip label when remote party has enabled their video */
-"CALL_VIEW_ENABLE_VIDEO_HINT" = "Tutul kangge ngaktifaken video sampetan";
+"CALL_VIEW_ENABLE_VIDEO_HINT" = "Tutul kangge ngaktifaken video sampeyan";
 
 /* Accessibility label for hang up call */
 "CALL_VIEW_HANGUP_LABEL" = "Rampungaken telepon";
 
 /* Accessibility label for muting the microphone */
-"CALL_VIEW_MUTE_LABEL" = "Bisukan";
+"CALL_VIEW_MUTE_LABEL" = "Bisuaken";
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Gantos Arah Kamera";
@@ -489,10 +492,10 @@
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Gantos dados telepon video";
 
 /* Label for the 'return to call' banner. */
-"CALL_WINDOW_RETURN_TO_CALL" = "Dhemok kangge nelepon balik";
+"CALL_WINDOW_RETURN_TO_CALL" = "Dhemok kangge nelepon bali";
 
 /* notification action */
-"CALLBACK_BUTTON_TITLE" = "Telepon Balik";
+"CALLBACK_BUTTON_TITLE" = "Telepon Bali";
 
 /* The generic name used for calls if CallKit privacy is enabled */
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Panggina Signal";
@@ -525,19 +528,19 @@
 "CHECK_FOR_BACKUP_RESTORE" = "Pulihaken";
 
 /* Error indicating that the app could not determine that user's iCloud account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal mboten saged nentokaken status akun iCloud sampeyan. Bikak Akun iCloud sampeyan ing panatanan aplikasi iOS kangge ndamelaken serep data Signal sampeyan.";
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal mboten saged nentokaken status akun iCloud sampeyan. Bikak Akun iCloud sampeyan ing panatanan aplikasi iOS kangge ndamelaken serep data Signal.";
 
 /* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "Mboten enten Akun iCloud. Bikak Akun iCloud sampeyan ing panatanan aplikasi iOS kangge ndamelaken serep data Signal sampeyan.";
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "Mboten enten Akun iCloud. Bikak Akun iCloud sampeyan ing panatanan aplikasi iOS kangge ndamelaken serep data Signal.";
 
 /* Error indicating that the app was prevented from accessing the user's iCloud account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Signal mboten saged mbikak akun iCloud sampeyan kangge ndamelaken serep. Sukani izin Signal mbikak Akun iCloud sampeyan ing panatanan aplikasi iOS kangge ndamelaken serep data Signal sampeyan.";
+"CLOUDKIT_STATUS_RESTRICTED" = "Signal mboten saged mbikak akun iCloud sampeyan kangge ndamelaken serep. Sukani izin Signal mbikak Akun iCloud sampeyan ing panatanan aplikasi iOS kangge ndamelaken serep data Signal.";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
 "COLOR_PICKER_DEMO_MESSAGE_1" = "Pilih werni kangge pesen ingkang dikirim ing obrolan niki.";
 
 /* The second of two messages demonstrating the chosen conversation color, by rendering this message in an incoming message bubble. */
-"COLOR_PICKER_DEMO_MESSAGE_2" = "Werni kasebut namung saged ditingali sampeyan piyambak.";
+"COLOR_PICKER_DEMO_MESSAGE_2" = "Namung sampeyan ingkang saged ningali werni kasebut.";
 
 /* Modal Sheet title when picking a conversation color. */
 "COLOR_PICKER_SHEET_TITLE" = "Werni Obrolan";
@@ -1206,31 +1209,31 @@
 "EMAIL_INVITE_SUBJECT" = "Ayo ngginakaken Signal";
 
 /* The name for the emoji category 'Activities' */
-"EMOJI_CATEGORY_ACTIVITIES_NAME" = "Activities";
+"EMOJI_CATEGORY_ACTIVITIES_NAME" = "Kagiatan";
 
 /* The name for the emoji category 'Animals & Nature' */
-"EMOJI_CATEGORY_ANIMALS_NAME" = "Animals & Nature";
+"EMOJI_CATEGORY_ANIMALS_NAME" = "Kewan & Alam";
 
 /* The name for the emoji category 'Flags' */
-"EMOJI_CATEGORY_FLAGS_NAME" = "Flags";
+"EMOJI_CATEGORY_FLAGS_NAME" = "Gendera";
 
 /* The name for the emoji category 'Food & Drink' */
-"EMOJI_CATEGORY_FOOD_NAME" = "Food & Drink";
+"EMOJI_CATEGORY_FOOD_NAME" = "Tedhan & Benteran";
 
 /* The name for the emoji category 'Objects' */
-"EMOJI_CATEGORY_OBJECTS_NAME" = "Objects";
+"EMOJI_CATEGORY_OBJECTS_NAME" = "Barang";
 
 /* The name for the emoji category 'Recents' */
-"EMOJI_CATEGORY_RECENTS_NAME" = "Recents";
+"EMOJI_CATEGORY_RECENTS_NAME" = "Paling Enggal";
 
 /* The name for the emoji category 'Smileys & People' */
-"EMOJI_CATEGORY_SMILEYSANDPEOPLE_NAME" = "Smileys & People";
+"EMOJI_CATEGORY_SMILEYSANDPEOPLE_NAME" = "Smiley & Tiyang-Tiyang";
 
 /* The name for the emoji category 'Symbols' */
-"EMOJI_CATEGORY_SYMBOLS_NAME" = "Symbols";
+"EMOJI_CATEGORY_SYMBOLS_NAME" = "Tandha";
 
 /* The name for the emoji category 'Travel & Places' */
-"EMOJI_CATEGORY_TRAVEL_NAME" = "Travel & Places";
+"EMOJI_CATEGORY_TRAVEL_NAME" = "Dolan & Panggen";
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE1" = "Kontak sampeyan mboten enten ingkang ngginakaken Signal.";
@@ -1802,6 +1805,15 @@
 /* Title for the conversation list's default mode. */
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
+/* The image editor hint that you can draw blur */
+"IMAGE_EDITOR_BLUR_HINT" = "Draw anywhere to blur";
+
+/* The image editor setting to blur faces */
+"IMAGE_EDITOR_BLUR_SETTING" = "Blur faces";
+
+/* A toast indicating that you can blur more faces after detection */
+"IMAGE_EDITOR_BLUR_TOAST" = "Draw to blur additional faces or areas";
+
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Sampeyan mboten saged ngunjukaken luwih saking %@ item.";
 
@@ -2040,13 +2052,13 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Brusak kangge Sedaya";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "This message will be permanently deleted for everyone in the conversation. Members will be able to see that you deleted a message.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Pesen niki bakal dibrusak kangge piyambak sedaya ing obrolan niki sacara permanen Anggota sedaya bakal saged ningali menawi sampeyan mbrusaki pesen.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
-"MESSAGE_ACTION_DELETE_FOR_TITLE" = "Who would you like to delete this message for?";
+"MESSAGE_ACTION_DELETE_FOR_TITLE" = "Kangge sinten sampeyan badhe mbrusak pesen niki?";
 
 /* The title for the action that deletes a message for the local user only. */
-"MESSAGE_ACTION_DELETE_FOR_YOU" = "Delete for Me";
+"MESSAGE_ACTION_DELETE_FOR_YOU" = "Kula Mawon";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DELETE_MESSAGE" = "Brusak Pesen Niki";
@@ -3996,7 +4008,7 @@
 "UNNAMED_DEVICE" = "Pirantos Tanpa Nami";
 
 /* Pressing this button marks a thread as unread */
-"UNREAD_ACTION" = "Unread";
+"UNREAD_ACTION" = "Mboten Dipunwaos";
 
 /* No comment provided by engineer. */
 "UNREGISTER_SIGNAL_FAIL" = "Gagal nyandekaken pendaftaran saking Signal.";
@@ -4125,7 +4137,7 @@
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Rampungaken persiyapan ing Signal Desktop.";
 
 /* text indicating the message was remotely deleted by you */
-"YOU_DELETED_THIS_MESSAGE" = "You deleted this message.";
+"YOU_DELETED_THIS_MESSAGE" = "Sampeyan sampun mbrusak pesen niki.";
 
 /* Info Message when you disabled disappearing messages. */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Sampeyan mboten ngaktifaken pesen ngical.";
