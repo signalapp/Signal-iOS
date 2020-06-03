@@ -2,11 +2,11 @@
 
 We typically develop against the latest stable version of Xcode.
 
-As of this writing, that's Xcode 11.4
+As of this writing, that's Xcode 11.5
 
 ## Prerequistes
 
-Install [Carthage](https://github.com/Carthage/Carthage#installing-carthage)
+Install [Carthage](https://github.com/Carthage/Carthage#installing-carthage).
 
 ## 1. Clone
 
