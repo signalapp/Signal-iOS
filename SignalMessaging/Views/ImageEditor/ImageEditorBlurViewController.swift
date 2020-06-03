@@ -11,8 +11,9 @@ public class ImageEditorBlurViewController: OWSViewController {
 
     private let canvasView: ImageEditorCanvasView
 
-    private let autoBlurContainer = UIView()
-    private let autoBlurSwitch = UISwitch()
+    private let bottomControlsContainer = UIView()
+    private let faceBlurContainer = UIView()
+    private let faceBlurSwitch = UISwitch()
 
     // We only want to let users undo changes made in this view.
     // So we snapshot any older "operation id" and prevent
@@ -48,29 +49,51 @@ public class ImageEditorBlurViewController: OWSViewController {
         brushGestureRecognizer.delegate = self
         self.view.addGestureRecognizer(brushGestureRecognizer)
 
-        autoBlurContainer.backgroundColor = .ows_blackAlpha60
-        autoBlurContainer.layoutMargins = UIEdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 8)
+        view.addSubview(bottomControlsContainer)
+        bottomControlsContainer.autoHCenterInSuperview()
+        bottomControlsContainer.autoPinEdge(toSuperviewSafeArea: .bottom, withInset: 16)
 
-        view.addSubview(autoBlurContainer)
-        autoBlurContainer.autoPinEdge(toSuperviewSafeArea: .bottom, withInset: 16)
-        autoBlurContainer.autoHCenterInSuperview()
+        faceBlurContainer.backgroundColor = .ows_blackAlpha60
+        faceBlurContainer.layoutMargins = UIEdgeInsets(top: 6, leading: 16, bottom: 6, trailing: 8)
+
+        bottomControlsContainer.addSubview(faceBlurContainer)
+        faceBlurContainer.autoHCenterInSuperview()
+        faceBlurContainer.autoPinEdge(toSuperviewEdge: .top)
 
         let autoBlurLabel = UILabel()
-        autoBlurLabel.text = NSLocalizedString("IMAGE_EDITOR_AUTO_BLUR_SETTING", comment: "The image editor setting to automatically blur faces")
+        autoBlurLabel.text = NSLocalizedString("IMAGE_EDITOR_BLUR_SETTING", comment: "The image editor setting to blur faces")
         autoBlurLabel.font = .ows_dynamicTypeSubheadlineClamped
         autoBlurLabel.textColor = Theme.darkThemePrimaryColor
 
-        autoBlurContainer.addSubview(autoBlurLabel)
+        faceBlurContainer.addSubview(autoBlurLabel)
         autoBlurLabel.autoPinLeadingToSuperviewMargin()
         autoBlurLabel.autoPinHeightToSuperviewMargins()
 
-        autoBlurSwitch.addTarget(self, action: #selector(didToggleAutoBlur), for: .valueChanged)
-        autoBlurSwitch.isOn = currentAutoBlurItem != nil
+        faceBlurSwitch.addTarget(self, action: #selector(didToggleAutoBlur), for: .valueChanged)
+        faceBlurSwitch.isOn = currentAutoBlurItem != nil
 
-        autoBlurContainer.addSubview(autoBlurSwitch)
-        autoBlurSwitch.autoPinTrailingToSuperviewMargin()
-        autoBlurSwitch.autoPinHeightToSuperviewMargins()
-        autoBlurSwitch.autoPinEdge(.leading, to: .trailing, of: autoBlurLabel, withOffset: 10)
+        faceBlurContainer.addSubview(faceBlurSwitch)
+        faceBlurSwitch.autoPinTrailingToSuperviewMargin()
+        faceBlurSwitch.autoPinHeightToSuperviewMargins()
+        faceBlurSwitch.autoPinEdge(.leading, to: .trailing, of: autoBlurLabel, withOffset: 10)
+
+        let drawAnywhereHint = UILabel()
+        drawAnywhereHint.font = .ows_dynamicTypeCaption1
+        drawAnywhereHint.textColor = Theme.darkThemePrimaryColor
+        drawAnywhereHint.textAlignment = .center
+        drawAnywhereHint.numberOfLines = 0
+        drawAnywhereHint.lineBreakMode = .byWordWrapping
+        drawAnywhereHint.text = NSLocalizedString("IMAGE_EDITOR_BLUR_HINT",
+                                                  comment: "The image editor hint that you can draw blur")
+        drawAnywhereHint.layer.shadowColor = UIColor.black.cgColor
+        drawAnywhereHint.layer.shadowRadius = 2
+        drawAnywhereHint.layer.shadowOpacity = 0.66
+        drawAnywhereHint.layer.shadowOffset = .zero
+
+        bottomControlsContainer.addSubview(drawAnywhereHint)
+        drawAnywhereHint.autoPinEdge(.top, to: .bottom, of: faceBlurContainer, withOffset: 8)
+        drawAnywhereHint.autoPinWidthToSuperviewMargins()
+        drawAnywhereHint.autoPinEdge(toSuperviewEdge: .bottom)
 
         updateNavigationBar()
     }
@@ -90,9 +113,9 @@ public class ImageEditorBlurViewController: OWSViewController {
     public override func viewDidLayoutSubviews() {
         super.viewDidLayoutSubviews()
 
-        view.layoutIfNeeded()
+        faceBlurContainer.layoutIfNeeded()
 
-        autoBlurContainer.layer.cornerRadius = autoBlurContainer.height / 2
+        faceBlurContainer.layer.cornerRadius = faceBlurContainer.height / 2
     }
 
     private func updateNavigationBar() {
@@ -122,7 +145,7 @@ public class ImageEditorBlurViewController: OWSViewController {
     private func updateControls() {
         // Hide controls during blur.
         let hasBlur = currentBlurStroke != nil
-        autoBlurContainer.isHidden = hasBlur
+        bottomControlsContainer.isHidden = hasBlur
     }
 
     @objc
@@ -176,45 +199,68 @@ public class ImageEditorBlurViewController: OWSViewController {
             return
         }
 
-        // TODO: Display a toast on error / no faces detected
-
         let cgOrientation = CGImagePropertyOrientation(srcImage.imageOrientation)
 
-        let request = VNDetectFaceRectanglesRequest { request, error in
-            if let error = error {
-                owsFailDebug("Face Detection Error \(error)")
-                return
+        ModalActivityIndicatorViewController.present(
+            fromViewController: self,
+            canCancel: false,
+            presentationDelay: 0.5
+        ) { modal in
+            func showToast() {
+                let toastController = ToastController(text: NSLocalizedString(
+                    "IMAGE_EDITOR_BLUR_TOAST",
+                    comment: "A toast indicating that you can blur more faces after detection"
+                ))
+                let bottomInset = self.bottomLayoutGuide.length + 90
+                toastController.presentToastView(fromBottomOfView: self.view, inset: bottomInset)
             }
-            // Perform drawing on the main thread.
-            DispatchQueue.main.async {
-                guard let results = request.results as? [VNFaceObservation] else { return }
 
-                Logger.verbose("Detected \(results.count) faces")
-
-                func unitBoundingBox(_ faceObservation: VNFaceObservation) -> CGRect {
-                    var unitRect = faceObservation.boundingBox
-                    unitRect.origin.y = 1 - unitRect.origin.y - unitRect.height
-                    return unitRect
+            func faceDetectionFailed() {
+                DispatchQueue.main.async {
+                    sender.isOn = false
+                    modal.dismiss { showToast() }
                 }
-
-                let autoBlurItem = ImageEditorBlurRegionsItem(
-                    itemId: ImageEditorBlurViewController.autoBlurItemIdentifier,
-                    unitBoundingBoxes: results.map(unitBoundingBox)
-                )
-                self.model.append(item: autoBlurItem)
             }
-        }
-        let imageRequestHandler = VNImageRequestHandler(cgImage: srcCGImage,
-                                                        orientation: cgOrientation,
-                                                        options: [:])
 
-        // Send the requests to the request handler.
-        DispatchQueue.global(qos: .userInitiated).async {
+            let request = VNDetectFaceRectanglesRequest { request, error in
+                if let error = error {
+                    owsFailDebug("Face Detection Error \(error)")
+                    return faceDetectionFailed()
+                }
+                // Perform drawing on the main thread.
+                DispatchQueue.main.async {
+                    guard let results = request.results as? [VNFaceObservation] else {
+                        return faceDetectionFailed()
+                    }
+
+                    Logger.verbose("Detected \(results.count) faces")
+
+                    func unitBoundingBox(_ faceObservation: VNFaceObservation) -> CGRect {
+                        var unitRect = faceObservation.boundingBox
+                        unitRect.origin.y = 1 - unitRect.origin.y - unitRect.height
+                        return unitRect
+                    }
+
+                    let autoBlurItem = ImageEditorBlurRegionsItem(
+                        itemId: ImageEditorBlurViewController.autoBlurItemIdentifier,
+                        unitBoundingBoxes: results.map(unitBoundingBox)
+                    )
+                    self.model.append(item: autoBlurItem)
+
+                    modal.dismiss { showToast() }
+                }
+            }
+
+            let imageRequestHandler = VNImageRequestHandler(cgImage: srcCGImage,
+                                                            orientation: cgOrientation,
+                                                            options: [:])
+
+            // Send the requests to the request handler.
             do {
                 try imageRequestHandler.perform([request])
             } catch let error as NSError {
                 owsFailDebug("Failed to perform image request: \(error)")
-                return
+                return faceDetectionFailed()
             }
         }
     }
@@ -312,7 +358,7 @@ extension ImageEditorBlurViewController: ImageEditorModelObserver {
         updateNavigationBar()
 
         // If we undo/redo, we may remove or re-apply the auto blur
-        autoBlurSwitch.isOn = currentAutoBlurItem != nil
+        faceBlurSwitch.isOn = currentAutoBlurItem != nil
     }
 
     public func imageEditorModelDidChange(changedItemIds: [String]) {
@@ -325,8 +371,8 @@ extension ImageEditorBlurViewController: ImageEditorModelObserver {
 extension ImageEditorBlurViewController: UIGestureRecognizerDelegate {
     @objc public func gestureRecognizer(_ gestureRecognizer: UIGestureRecognizer, shouldReceive touch: UITouch) -> Bool {
         // Ignore touches that begin inside the autoBlurContainer.
-        let location = touch.location(in: autoBlurContainer)
-        return !autoBlurContainer.bounds.contains(location)
+        let location = touch.location(in: bottomControlsContainer)
+        return !bottomControlsContainer.bounds.contains(location)
     }
 }
 

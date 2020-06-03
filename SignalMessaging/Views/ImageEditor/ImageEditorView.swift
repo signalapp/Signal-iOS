@@ -86,6 +86,9 @@ public class ImageEditorView: UIView {
         delegate?.imageEditorUpdateNavigationBar()
     }
 
+    private(set) lazy var blurButton = navigationBarButton(imageName: "image_editor_blur",
+                                                           selector: #selector(didTapBlur))
+
     public func navigationBarItems() -> [UIView] {
         guard !shouldHideControls else {
             return []
@@ -99,10 +102,6 @@ public class ImageEditorView: UIView {
                                              selector: #selector(didTapCrop(sender:)))
         let newTextButton = navigationBarButton(imageName: "image_editor_text",
                                                 selector: #selector(didTapNewText(sender:)))
-
-        // TODO: Put a tooltip on blur button
-        let blurButton = navigationBarButton(imageName: "image_editor_blur",
-                                             selector: #selector(didTapBlur(sender:)))
 
         let buttons: [UIView]
         if model.canUndo() {
@@ -180,7 +179,7 @@ public class ImageEditorView: UIView {
         edit(textItem: textItem, isNewItem: true)
     }
 
-    @objc func didTapBlur(sender: UIButton) {
+    @objc func didTapBlur() {
         Logger.verbose("")
 
         let blurView = ImageEditorBlurViewController(model: model)

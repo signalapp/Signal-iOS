@@ -404,6 +404,9 @@
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Blocked users will not be able to call you or send you messages.";
 
+/* Tooltip highlighting the blur image editing tool. */
+"BLUR_TOOLTIP" = "New: Blur faces or draw anywhere to blur.";
+
 /* browse files option from file sharing menu */
 "BROWSE_FILES_BUTTON" = "Browse";
 
@@ -1802,8 +1805,14 @@
 /* Title for the conversation list's default mode. */
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
-/* The image editor setting to automatically blur faces */
-"IMAGE_EDITOR_AUTO_BLUR_SETTING" = "Auto-blur faces";
+/* The image editor hint that you can draw blur */
+"IMAGE_EDITOR_BLUR_HINT" = "Draw anywhere to blur";
+
+/* The image editor setting to blur faces */
+"IMAGE_EDITOR_BLUR_SETTING" = "Blur faces";
+
+/* A toast indicating that you can blur more faces after detection */
+"IMAGE_EDITOR_BLUR_TOAST" = "Draw to blur additional faces or areas";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "You can't share more than %@ items.";
