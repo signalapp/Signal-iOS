@@ -40,7 +40,7 @@ An Objective-C library for communicating with the Signal messaging service.
 
   s.dependency 'Curve25519Kit'
   s.dependency 'CocoaLumberjack'
-  s.dependency 'CryptoSwift'
+  s.dependency 'CryptoSwift', '~> 1.0'
   s.dependency 'AFNetworking'
   s.dependency 'AxolotlKit'
   s.dependency 'Mantle'
@@ -53,8 +53,7 @@ An Objective-C library for communicating with the Signal messaging service.
   s.dependency 'SwiftProtobuf'
   s.dependency 'SignalCoreKit'
   s.dependency 'SignalMetadataKit'
-
-  s.dependency 'PromiseKit', "~> 6.0"
+  s.dependency 'PromiseKit', '~> 6.0'
 
   s.test_spec 'Tests' do |test_spec|
     test_spec.source_files = 'SignalServiceKit/tests/**/*.{h,m,swift}'
