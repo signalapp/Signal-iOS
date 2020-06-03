@@ -699,6 +699,8 @@
 		88A9729222FA5D4B004B4FBF /* AttachmentFormatPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A9729122FA5D4B004B4FBF /* AttachmentFormatPickerView.swift */; };
 		88A9729422FB4D02004B4FBF /* LocationPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A9729322FB4D02004B4FBF /* LocationPicker.swift */; };
 		88B688B0238F0D1000286F82 /* ReactionsDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B688AF238F0D1000286F82 /* ReactionsDetailSheet.swift */; };
+		88BAE55D2487595B001F00F9 /* ImageEditorBlurViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88BAE55C2487595B001F00F9 /* ImageEditorBlurViewController.swift */; };
+		88BAE55F24875A24001F00F9 /* ImageEditorBlurRegionsItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88BAE55E24875A24001F00F9 /* ImageEditorBlurRegionsItem.swift */; };
 		88BCCC8123837B7D00CE5FE6 /* InteractionReactionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88BCCC8023837B7D00CE5FE6 /* InteractionReactionState.swift */; };
 		88BFD4732335C2B3001797D7 /* waveformLoading.json in Resources */ = {isa = PBXBuildFile; fileRef = 88BFD4722335C2B3001797D7 /* waveformLoading.json */; };
 		88C4E38024635337009C9B97 /* DeviceTransferService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C4E37F24635337009C9B97 /* DeviceTransferService.swift */; };
@@ -1685,6 +1687,8 @@
 		88A9729122FA5D4B004B4FBF /* AttachmentFormatPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentFormatPickerView.swift; sourceTree = "<group>"; };
 		88A9729322FB4D02004B4FBF /* LocationPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationPicker.swift; sourceTree = "<group>"; };
 		88B688AF238F0D1000286F82 /* ReactionsDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReactionsDetailSheet.swift; sourceTree = "<group>"; };
+		88BAE55C2487595B001F00F9 /* ImageEditorBlurViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorBlurViewController.swift; sourceTree = "<group>"; };
+		88BAE55E24875A24001F00F9 /* ImageEditorBlurRegionsItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorBlurRegionsItem.swift; sourceTree = "<group>"; };
 		88BCCC8023837B7D00CE5FE6 /* InteractionReactionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InteractionReactionState.swift; sourceTree = "<group>"; };
 		88BFD4722335C2B3001797D7 /* waveformLoading.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = waveformLoading.json; sourceTree = "<group>"; };
 		88C4E37F24635337009C9B97 /* DeviceTransferService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceTransferService.swift; sourceTree = "<group>"; };
@@ -2537,6 +2541,8 @@
 		34BEDB0C21C405B0007B0EAE /* ImageEditor */ = {
 			isa = PBXGroup;
 			children = (
+				88BAE55E24875A24001F00F9 /* ImageEditorBlurRegionsItem.swift */,
+				88BAE55C2487595B001F00F9 /* ImageEditorBlurViewController.swift */,
 				34080F01222853E30087E99F /* ImageEditorBrushViewController.swift */,
 				34BBC850220B8EEF00857249 /* ImageEditorCanvasView.swift */,
 				34BBC853220C7ADA00857249 /* ImageEditorContents.swift */,
@@ -4520,6 +4526,7 @@
 				341CBFC42405B7C000F15C13 /* GroupsV2Impl+RestoreGroups.swift in Sources */,
 				346129FB1FD5F31400532771 /* OWS101ExistingUsersBlockOnIdentityChange.m in Sources */,
 				34AC09EA211B39B100997B47 /* ModalActivityIndicatorViewController.swift in Sources */,
+				88BAE55F24875A24001F00F9 /* ImageEditorBlurRegionsItem.swift in Sources */,
 				344F248D2007CCD600CFB4F4 /* DisplayableText.swift in Sources */,
 				450998651FD8A34D00D89EB3 /* DeviceSleepManager.swift in Sources */,
 				34AC09EB211B39B100997B47 /* ContactShareApprovalViewController.swift in Sources */,
@@ -4636,6 +4643,7 @@
 				4C948FF72146EB4800349F0D /* BlockListCache.swift in Sources */,
 				4551DB5A205C562300C8AE75 /* Collection+OWS.swift in Sources */,
 				34BBC84F220B8A0100857249 /* ImageEditorCropViewController.swift in Sources */,
+				88BAE55D2487595B001F00F9 /* ImageEditorBlurViewController.swift in Sources */,
 				34AC09ED211B39B100997B47 /* ContactFieldView.swift in Sources */,
 				346129AF1FD1F5D900532771 /* SystemContactsFetcher.swift in Sources */,
 				34AC09E3211B39B100997B47 /* OWSViewController.m in Sources */,

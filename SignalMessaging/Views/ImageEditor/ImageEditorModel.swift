@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -53,6 +53,8 @@ public class ImageEditorModel: NSObject {
 
     private var undoStack = [ImageEditorOperation]()
     private var redoStack = [ImageEditorOperation]()
+
+    var blurredSourceImage: CGImage?
 
     // We don't want to allow editing of images if:
     //

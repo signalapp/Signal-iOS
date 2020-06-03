@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -9,7 +9,10 @@ public class ImageEditorStrokeItem: ImageEditorItem {
     // Until we need to serialize these items,
     // just use UIColor.
     @objc
-    public let color: UIColor
+    public let color: UIColor?
+
+    @objc
+    public let isBlur: Bool
 
     public typealias StrokeSample = ImageEditorSample
 
@@ -22,10 +25,12 @@ public class ImageEditorStrokeItem: ImageEditorItem {
     public let unitStrokeWidth: CGFloat
 
     @objc
-    public init(color: UIColor,
+    public init(color: UIColor? = nil,
+                isBlur: Bool = false,
                 unitSamples: [StrokeSample],
                 unitStrokeWidth: CGFloat) {
         self.color = color
+        self.isBlur = isBlur
         self.unitSamples = unitSamples
         self.unitStrokeWidth = unitStrokeWidth
 
@@ -34,10 +39,12 @@ public class ImageEditorStrokeItem: ImageEditorItem {
 
     @objc
     public init(itemId: String,
-                color: UIColor,
+                color: UIColor? = nil,
+                isBlur: Bool = false,
                 unitSamples: [StrokeSample],
                 unitStrokeWidth: CGFloat) {
         self.color = color
+        self.isBlur = isBlur
         self.unitSamples = unitSamples
         self.unitStrokeWidth = unitStrokeWidth
 

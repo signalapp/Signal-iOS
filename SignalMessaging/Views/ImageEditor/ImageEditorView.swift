@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -100,11 +100,15 @@ public class ImageEditorView: UIView {
         let newTextButton = navigationBarButton(imageName: "image_editor_text",
                                                 selector: #selector(didTapNewText(sender:)))
 
+        // TODO: Put a tooltip on blur button
+        let blurButton = navigationBarButton(imageName: "image_editor_blur",
+                                             selector: #selector(didTapBlur(sender:)))
+
         let buttons: [UIView]
         if model.canUndo() {
-            buttons = [undoButton, newTextButton, brushButton, cropButton]
+            buttons = [undoButton, blurButton, newTextButton, brushButton, cropButton]
         } else {
-            buttons = [newTextButton, brushButton, cropButton]
+            buttons = [blurButton, newTextButton, brushButton, cropButton]
         }
 
         return buttons
@@ -174,6 +178,13 @@ public class ImageEditorView: UIView {
                                                  rotationRadians: rotationRadians)
 
         edit(textItem: textItem, isNewItem: true)
+    }
+
+    @objc func didTapBlur(sender: UIButton) {
+        Logger.verbose("")
+
+        let blurView = ImageEditorBlurViewController(model: model)
+        self.delegate?.imageEditor(presentFullScreenView: blurView, isTransparent: false)
     }
 
     @objc func didTapDone(sender: UIButton) {
@@ -359,79 +370,6 @@ public class ImageEditorView: UIView {
             }
         default:
             movingTextItem = nil
-        }
-    }
-
-    // MARK: - Brush
-
-    // These properties are non-empty while drawing a stroke.
-    private var currentStroke: ImageEditorStrokeItem?
-    private var currentStrokeSamples = [ImageEditorStrokeItem.StrokeSample]()
-
-    @objc
-    public func handleBrushGesture(_ gestureRecognizer: UIGestureRecognizer) {
-        AssertIsOnMainThread()
-
-        let removeCurrentStroke = {
-            if let stroke = self.currentStroke {
-                self.model.remove(item: stroke)
-            }
-            self.currentStroke = nil
-            self.currentStrokeSamples.removeAll()
-        }
-        let tryToAppendStrokeSample = {
-            let view = self.canvasView.gestureReferenceView
-            let viewBounds = view.bounds
-            let locationInView = gestureRecognizer.location(in: view)
-            let newSample = ImageEditorCanvasView.locationImageUnit(forLocationInView: locationInView,
-                                                              viewBounds: viewBounds,
-                                                              model: self.model,
-                                                              transform: self.model.currentTransform())
-
-            if let prevSample = self.currentStrokeSamples.last,
-                prevSample == newSample {
-                // Ignore duplicate samples.
-                return
-            }
-            self.currentStrokeSamples.append(newSample)
-        }
-
-        let strokeColor = currentColor.color
-        // TODO: Tune stroke width.
-        let unitStrokeWidth = ImageEditorStrokeItem.defaultUnitStrokeWidth()
-
-        switch gestureRecognizer.state {
-        case .began:
-            removeCurrentStroke()
-
-            tryToAppendStrokeSample()
-
-            let stroke = ImageEditorStrokeItem(color: strokeColor, unitSamples: currentStrokeSamples, unitStrokeWidth: unitStrokeWidth)
-            model.append(item: stroke)
-            currentStroke = stroke
-
-        case .changed, .ended:
-            tryToAppendStrokeSample()
-
-            guard let lastStroke = self.currentStroke else {
-                owsFailDebug("Missing last stroke.")
-                removeCurrentStroke()
-                return
-            }
-
-            // Model items are immutable; we _replace_ the
-            // stroke item rather than modify it.
-            let stroke = ImageEditorStrokeItem(itemId: lastStroke.itemId, color: strokeColor, unitSamples: currentStrokeSamples, unitStrokeWidth: unitStrokeWidth)
-            model.replace(item: stroke, suppressUndo: true)
-
-            if gestureRecognizer.state == .ended {
-                currentStroke = nil
-                currentStrokeSamples.removeAll()
-            } else {
-                currentStroke = stroke
-            }
-        default:
-            removeCurrentStroke()
         }
     }
 
