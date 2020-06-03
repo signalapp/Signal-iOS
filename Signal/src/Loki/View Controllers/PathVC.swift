@@ -157,7 +157,7 @@ final class PathVC : BaseVC {
     }
 
     private func getPathRow(snode: LokiAPITarget, location: LineView.Location, dotAnimationStartDelay: Double, dotAnimationRepeatInterval: Double, isGuardSnode: Bool) -> UIStackView {
-        let country = IP2Country.shared.countryNamesCache[snode.ip] ?? "Resolving..."
+        let country = IP2Country.isInitialized ? (IP2Country.shared.countryNamesCache[snode.ip] ?? "Resolving...") : "Resolving..."
         let title = isGuardSnode ? NSLocalizedString("Entry Node", comment: "") : NSLocalizedString("Service Node", comment: "")
         return getPathRow(title: title, subtitle: country, location: location, dotAnimationStartDelay: dotAnimationStartDelay, dotAnimationRepeatInterval: dotAnimationRepeatInterval)
     }
