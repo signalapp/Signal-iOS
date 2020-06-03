@@ -14,6 +14,7 @@
 #import <SignalServiceKit/OWSDynamicOutgoingMessage.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
+#import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSGroupThread.h>
 #import <SignalServiceKit/TSThread.h>
 
@@ -21,7 +22,25 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@interface DebugUIStress ()
+
+@property (nonatomic, nullable) NSTimer *thrashTimer;
+
+@end
+
+#pragma mark -
+
 @implementation DebugUIStress
+
++ (instancetype)shared
+{
+    static DebugUIStress *instance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance = [self new];
+    });
+    return instance;
+}
 
 #pragma mark - Dependencies
 
@@ -36,6 +55,11 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+- (SDSDatabaseStorage *)databaseStorage
 {
     return SDSDatabaseStorage.shared;
 }
@@ -457,14 +481,18 @@ NS_ASSUME_NONNULL_BEGIN
                                          [DebugUIStress makeUnregisteredGroup];
                                      }]];
 
+    __weak DebugUIStress *weakSelf = self;
     [items addObject:[OWSTableItem itemWithTitle:@"Thrash writes 10/second"
                                      actionBlock:^{
-                                         [DebugUIStress thrashWithMaxWritesPerSecond:10 thread:thread];
+                                         [weakSelf thrashWithMaxWritesPerSecond:10 thread:thread];
                                      }]];
-
     [items addObject:[OWSTableItem itemWithTitle:@"Thrash writes 100/second"
                                      actionBlock:^{
-                                         [DebugUIStress thrashWithMaxWritesPerSecond:100 thread:thread];
+                                         [weakSelf thrashWithMaxWritesPerSecond:100 thread:thread];
+                                     }]];
+    [items addObject:[OWSTableItem itemWithTitle:@"Stop thrash"
+                                     actionBlock:^{
+                                         [weakSelf stopThrash];
                                      }]];
 
     return [OWSTableSection sectionWithTitle:self.name items:items];
@@ -572,36 +600,85 @@ NS_ASSUME_NONNULL_BEGIN
         }];
 }
 
-+ (void)thrashWithMaxWritesPerSecond:(NSUInteger)maxWritesPerSecond thread:(TSThread *)thread
+- (void)thrashWithMaxWritesPerSecond:(NSUInteger)maxWritesPerSecond thread:(TSThread *)thread
 {
+    NSTimeInterval delaySeconds = kSecondInterval / maxWritesPerSecond;
+    __block uint64_t counter = 0;
+    [self stopThrash];
+    DebugUIStress.shared.thrashTimer = [NSTimer
+        scheduledTimerWithTimeInterval:delaySeconds
+                               repeats:YES
+                                 block:^(NSTimer *timer) {
+                                     counter = counter + 1;
+                                     OWSLogVerbose(@"counter: %llu", counter);
+                                     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                                         [self thrashWritesWithThread:thread];
+                                     });
+                                 }];
+}
+
+- (void)thrashWritesWithThread:(TSThread *)thread
+{
+    __block TSThread *interactionThread = thread;
+    __block TSThread *_Nullable otherThread = nil;
+    BOOL shouldUseOtherThread = arc4random_uniform(2) == 0;
+    if (shouldUseOtherThread) {
+        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            BOOL shouldUseGroupThread = arc4random_uniform(2) == 0;
+            if (shouldUseGroupThread) {
+                NSError *_Nullable error;
+                otherThread =
+                    [GroupManager remoteUpsertExistingGroupV1WithGroupId:[TSGroupModel generateRandomV1GroupId]
+                                                                    name:NSUUID.UUID.UUIDString
+                                                              avatarData:nil
+                                                                 members:@[]
+                                                disappearingMessageToken:nil
+                                                groupUpdateSourceAddress:nil
+                                                       infoMessagePolicy:InfoMessagePolicyAlways
+                                                             transaction:transaction
+                                                                   error:&error]
+                        .groupThread;
+                if (error != nil) {
+                    OWSFailDebug(@"error: %@", error);
+                }
+            } else {
+                SignalServiceAddress *otherAddress = [[SignalServiceAddress alloc] initWithUuid:NSUUID.UUID];
+                otherThread = [TSContactThread getOrCreateThreadWithContactAddress:otherAddress
+                                                                       transaction:transaction];
+            }
+            interactionThread = otherThread;
+        }];
+    }
+
     NSString *text = NSUUID.UUID.UUIDString;
-    TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread
-                                                                                              messageBody:text];
+    TSOutgoingMessageBuilder *messageBuilder =
+        [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:interactionThread messageBody:text];
     TSOutgoingMessage *message = [messageBuilder build];
 
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [message anyInsertWithTransaction:transaction];
     }];
 
-    NSTimeInterval delaySeconds = kSecondInterval / maxWritesPerSecond;
-    __block uint64_t counter = 0;
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [NSTimer scheduledTimerWithTimeInterval:delaySeconds
-                                        repeats:YES
-                                          block:^(NSTimer *timer) {
-                                              counter = counter + 1;
-                                              OWSLogVerbose(@"counter: %llu", counter);
-                                              [self thrashWritesWithThread:thread message:message];
-                                          }];
-    });
-}
-
-+ (void)thrashWritesWithThread:(TSThread *)thread message:(TSOutgoingMessage *)message
-{
     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [message updateWithFakeMessageState:TSOutgoingMessageStateSending transaction:transaction];
         [message updateWithFakeMessageState:TSOutgoingMessageStateFailed transaction:transaction];
     }];
+
+    BOOL shouldDelete = arc4random_uniform(2) == 0;
+    if (shouldDelete) {
+        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            [message anyRemoveWithTransaction:transaction];
+            if (otherThread != nil) {
+                [otherThread anyRemoveWithTransaction:transaction];
+            }
+        }];
+    }
+}
+
+- (void)stopThrash
+{
+    [DebugUIStress.shared.thrashTimer invalidate];
+    DebugUIStress.shared.thrashTimer = nil;
 }
 
 @end
