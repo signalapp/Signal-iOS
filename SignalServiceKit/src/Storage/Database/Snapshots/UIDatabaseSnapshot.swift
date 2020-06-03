@@ -288,6 +288,10 @@ extension UIDatabaseObserver: TransactionObserver {
         // See: https://www.sqlite.org/c3ref/wal_checkpoint_v2.html
         // See: https://www.sqlite.org/wal.html
         let shouldTryToCheckpoint = { () -> Bool in
+            guard !TSAccountManager.sharedInstance().isTransferInProgress else {
+                return false
+            }
+
             guard let lastCheckpointDate = self.lastCheckpointDate else {
                 return true
             }
