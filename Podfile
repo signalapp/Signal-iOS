@@ -108,9 +108,7 @@ def enable_extension_support_for_purelayout(installer)
   installer.pods_project.targets.each do |target|
     if target.name.end_with? "PureLayout"
       target.build_configurations.each do |build_configuration|
-        if build_configuration.build_settings['APPLICATION_EXTENSION_API_ONLY'] == 'YES'
-          build_configuration.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] = ['$(inherited)', 'PURELAYOUT_APP_EXTENSIONS=1']
-        end
+         build_configuration.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= '$(inherited) PURELAYOUT_APP_EXTENSIONS=1'
       end
     end
   end
@@ -142,7 +140,11 @@ def configure_testable_build(installer)
 
       build_configuration.build_settings['OTHER_CFLAGS'] ||= '$(inherited) -DTESTABLE_BUILD'
       build_configuration.build_settings['OTHER_SWIFT_FLAGS'] ||= '$(inherited) -DTESTABLE_BUILD'
-      build_configuration.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= '$(inherited) TESTABLE_BUILD=1'
+      if target.name.end_with? "PureLayout"
+        # Avoid overwriting the PURELAYOUT_APP_EXTENSIONS.
+      else
+       build_configuration.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= '$(inherited) TESTABLE_BUILD=1'
+      end
       build_configuration.build_settings['ENABLE_TESTABILITY'] = 'YES'
       build_configuration.build_settings['ONLY_ACTIVE_ARCH'] = 'YES'
     end
