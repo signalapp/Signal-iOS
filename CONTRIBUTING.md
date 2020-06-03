@@ -2,6 +2,10 @@
 
 Thank you for supporting Session and looking for ways to help. Please note that some conventions here might be a bit different than what you are used to, even if you have contributed to other open source projects before. Reading this document will help you save time and work effectively with the developers and other contributors.
 
+## Where do I start?
+
+The bulk of the Session code can be found under Signal/src/Loki and SignalServiceKit/src/Loki.
+
 
 ## Development ideology
 
@@ -13,6 +17,7 @@ Truths which we believe to be self-evident:
 1. **If it's "like PGP," it's wrong.**  PGP is our guide for what not to do.
 1. **It's an asynchronous world.**  Be wary of anything that is anti-asynchronous: ACKs, protocol confirmations, or any protocol-level "advisory" message.
 1. **There is no such thing as time.**  Protocol ideas that require synchronized clocks are doomed to failure.
+
 
 ## Issues
 
