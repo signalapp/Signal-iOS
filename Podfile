@@ -22,9 +22,7 @@ def shared_pods
   pod 'Curve25519Kit', git: 'https://github.com/signalapp/Curve25519Kit', testspecs: ["Tests"]
   # pod 'Curve25519Kit', path: '../Curve25519Kit', testspecs: ["Tests"]
 
-  # Don't update SignalMetadataKit. There's some Loki specific stuff in there that gets overwritten otherwise.
-  # FIXME: We should fork this, make it work with Cocoapods, and keep it up to date with Signal's repo.
-  # pod 'SignalMetadataKit', git: 'https://github.com/signalapp/SignalMetadataKit', testspecs: ["Tests"]
+  pod 'SignalMetadataKit', git: 'https://github.com/loki-project/session-ios-metadata-kit', testspecs: ["Tests"] # Fork of SignalMetadataKit
   # pod 'SignalMetadataKit', path: '../SignalMetadataKit', testspecs: ["Tests"]
 
   pod 'SignalServiceKit', path: '.', testspecs: ["Tests"] # TODO: Signal moved this into the main repo. We should probably do the same eventually.
