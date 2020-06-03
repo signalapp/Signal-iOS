@@ -818,14 +818,6 @@ CREATE
 ;
 
 CREATE
-    INDEX "index_model_TSInteraction_on_threadUniqueId_recordType_messageType"
-        ON "model_TSInteraction"("threadUniqueId"
-    ,"recordType"
-    ,"messageType"
-)
-;
-
-CREATE
     TABLE
         IF NOT EXISTS "pending_read_receipts" (
             "id" INTEGER PRIMARY KEY AUTOINCREMENT
@@ -839,13 +831,6 @@ CREATE
 CREATE
     INDEX "index_pending_read_receipts_on_threadId"
         ON "pending_read_receipts"("threadId"
-)
-;
-
-CREATE
-    INDEX "index_model_TSInteraction_on_threadUniqueId_and_attachmentIds"
-        ON "model_TSInteraction"("threadUniqueId"
-    ,"attachmentIds"
 )
 ;
 
@@ -879,5 +864,20 @@ CREATE
 CREATE
     INDEX "index_model_TSThread_on_isMarkedUnread"
         ON "model_TSThread"("isMarkedUnread"
+)
+;
+
+CREATE
+    INDEX "index_model_TSInteraction_on_uniqueThreadId_recordType_messageType"
+        ON "model_TSInteraction"("uniqueThreadId"
+    ,"recordType"
+    ,"messageType"
+)
+;
+
+CREATE
+    INDEX "index_model_TSInteraction_on_uniqueThreadId_and_attachmentIds"
+        ON "model_TSInteraction"("uniqueThreadId"
+    ,"attachmentIds"
 )
 ;
