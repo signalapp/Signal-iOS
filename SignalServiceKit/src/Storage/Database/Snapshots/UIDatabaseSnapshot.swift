@@ -88,7 +88,6 @@ public class UIDatabaseObserver: NSObject {
         }
     }
 
-    private static let debounceSnapshotUpdates = true
     private static let snapshotCoordinationQueue = DispatchQueue(label: "UIDatabaseObserver")
     private var hasPendingSnapshotUpdate = false
     private var lastSnapshotUpdateDate: Date?
@@ -150,36 +149,28 @@ extension UIDatabaseObserver: TransactionObserver {
             }
         }
 
-        if Self.debounceSnapshotUpdates {
-            Self.snapshotCoordinationQueue.sync {
-                guard !self.hasPendingSnapshotUpdate else {
-                    // If there's already a pending snapshot, abort.
+        Self.snapshotCoordinationQueue.sync {
+            guard !self.hasPendingSnapshotUpdate else {
+                // If there's already a pending snapshot, abort.
+                return
+            }
+
+            // Enqueue a pending snapshot.
+            self.hasPendingSnapshotUpdate = true
+
+            if let lastSnapshotUpdateDate = self.lastSnapshotUpdateDate {
+                let secondsSinceLastUpdate = abs(lastSnapshotUpdateDate.timeIntervalSinceNow)
+                // Don't update UI more often than Nx/second.
+                let maxUpdateFrequencySeconds: TimeInterval = 1/TimeInterval(5)
+                let delaySeconds = maxUpdateFrequencySeconds - secondsSinceLastUpdate
+                if delaySeconds > 0 {
+                    Logger.verbose("Updating db snapshot after: \(delaySeconds).")
+                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + delaySeconds) { [weak self] in
+                        self?.updateSnapshot()
+                    }
                     return
                 }
-
-                // Enqueue a pending snapshot.
-                self.hasPendingSnapshotUpdate = true
-
-                if let lastSnapshotUpdateDate = self.lastSnapshotUpdateDate {
-                    let secondsSinceLastUpdate = abs(lastSnapshotUpdateDate.timeIntervalSinceNow)
-                    // Don't update UI more often than 4x/second.
-                    let maxUpdateFrequencySeconds: TimeInterval = 0.25
-                    let delaySeconds = maxUpdateFrequencySeconds - secondsSinceLastUpdate
-                    if delaySeconds > 0 {
-                        Logger.verbose("Updating db snapshot after: \(delaySeconds).")
-                        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + delaySeconds) { [weak self] in
-                            self?.updateSnapshot()
-                        }
-                        return
-                    }
-                }
-                // Update snapshot ASAP.
-                Logger.verbose("Updating db snapshot ASAP.")
-                DispatchQueue.main.async { [weak self] in
-                    self?.updateSnapshot()
-                }
             }
-        } else {
             // Update snapshot ASAP.
             Logger.verbose("Updating db snapshot ASAP.")
             DispatchQueue.main.async { [weak self] in
@@ -191,12 +182,10 @@ extension UIDatabaseObserver: TransactionObserver {
     private func updateSnapshot() {
         AssertIsOnMainThread()
 
-        if Self.debounceSnapshotUpdates {
-            Self.snapshotCoordinationQueue.sync {
-                assert(self.hasPendingSnapshotUpdate)
-                self.hasPendingSnapshotUpdate = false
-                self.lastSnapshotUpdateDate = Date()
-            }
+        Self.snapshotCoordinationQueue.sync {
+            assert(self.hasPendingSnapshotUpdate)
+            self.hasPendingSnapshotUpdate = false
+            self.lastSnapshotUpdateDate = Date()
         }
 
         Logger.verbose("databaseSnapshotWillUpdate")
