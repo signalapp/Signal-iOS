@@ -135,6 +135,19 @@ class MessageActionsViewController: UIViewController {
         snapshotFocusedView = snapshotView
     }
 
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+
+        guard let snapshotFocusedView = snapshotFocusedView else { return }
+
+        guard let focusedViewSuperview = focusedView.superview else {
+            return owsFailDebug("focusedViewSuperview was unexpectedly nil")
+        }
+
+        let convertedFrame = view.convert(focusedView.frame, from: focusedViewSuperview)
+        snapshotFocusedView.frame = convertedFrame
+    }
+
     @objc func didTapBackdrop() {
         delegate?.messageActionsViewControllerRequestedDismissal(self, withAction: nil)
     }
