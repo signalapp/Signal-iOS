@@ -25,7 +25,7 @@ def shared_pods
   pod 'SignalMetadataKit', git: 'https://github.com/loki-project/session-ios-metadata-kit', testspecs: ["Tests"] # Fork of SignalMetadataKit
   # pod 'SignalMetadataKit', path: '../SignalMetadataKit', testspecs: ["Tests"]
 
-  pod 'SignalServiceKit', path: '.', testspecs: ["Tests"] # TODO: Signal moved this into the main repo. We should probably do the same eventually.
+  pod 'SignalServiceKit', path: '.', testspecs: ["Tests"]
 
   # Project does not compile with PromiseKit 6.7.1
   # see: https://github.com/mxcl/PromiseKit/issues/990

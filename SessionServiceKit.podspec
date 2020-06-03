@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = "SessionServiceKit"
-  s.version          = "0.9.0"
+  s.version          = "1.0.0"
   s.summary          = "A Swift/Objective-C library for communicating with the Session messaging service."
 
   s.description      = <<-DESC
