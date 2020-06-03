@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -14,6 +14,7 @@ public enum ImageEditorItemType: Int {
     case test
     case stroke
     case text
+    case blurRegions
 }
 
 // MARK: -

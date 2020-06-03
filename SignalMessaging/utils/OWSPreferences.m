@@ -50,6 +50,7 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
 NSString *const OWSPreferencesKeyWasViewOnceTooltipShown = @"OWSPreferencesKeyWasViewOnceTooltipShown";
 NSString *const OWSPreferencesKeyWasDeleteForEveryoneConfirmationShown
     = @"OWSPreferencesKeyWasDeleteForEveryoneConfirmationShown";
+NSString *const OWSPreferencesKeyWasBlurTooltipShown = @"OWSPreferencesKeyWasBlurTooltipShown";
 
 @interface OWSPreferences ()
 
@@ -410,6 +411,16 @@ NSString *const OWSPreferencesKeyWasDeleteForEveryoneConfirmationShown
 - (void)setWasViewOnceTooltipShown
 {
     [self setBool:YES forKey:OWSPreferencesKeyWasViewOnceTooltipShown];
+}
+
+- (BOOL)wasBlurTooltipShown
+{
+    return [self boolForKey:OWSPreferencesKeyWasBlurTooltipShown defaultValue:NO];
+}
+
+- (void)setWasBlurTooltipShown
+{
+    [self setBool:YES forKey:OWSPreferencesKeyWasBlurTooltipShown];
 }
 
 - (BOOL)wasDeleteForEveryoneConfirmationShown

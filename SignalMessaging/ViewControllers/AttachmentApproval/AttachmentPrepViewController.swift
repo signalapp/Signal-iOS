@@ -131,6 +131,8 @@ public class AttachmentPrepViewController: OWSViewController {
 
         prepDelegate?.prepViewControllerUpdateNavigationBar()
         prepDelegate?.prepViewControllerUpdateControls()
+
+        showBlurTooltipIfNecessary()
     }
 
     override public func viewDidAppear(_ animated: Bool) {
@@ -150,6 +152,8 @@ public class AttachmentPrepViewController: OWSViewController {
         updateMinZoomScaleForSize(view.bounds.size)
 
         ensureAttachmentViewScale(animated: false)
+
+        positionBlurTooltip()
     }
 
     // MARK: - Navigation Bar
@@ -227,6 +231,63 @@ public class AttachmentPrepViewController: OWSViewController {
                 self.contentContainer.transform = scale.concatenating(translate)
             }
         }
+    }
+
+    // MARK: - Tooltip
+
+    var preferences: OWSPreferences {
+        return Environment.shared.preferences
+    }
+
+    private var shouldShowBlurTooltip: Bool {
+        guard !preferences.wasBlurTooltipShown() else {
+            return false
+        }
+        return true
+    }
+
+    private var blurTooltip: UIView?
+    private var blurTooltipTailReferenceView: UIView?
+
+    // Show the tooltip if a) it should be shown b) isn't already showing.
+    private func showBlurTooltipIfNecessary() {
+        guard shouldShowBlurTooltip else { return }
+        guard blurTooltip == nil else { return }
+
+        let tailReferenceView = UIView()
+        tailReferenceView.isUserInteractionEnabled = false
+        view.addSubview(tailReferenceView)
+        blurTooltipTailReferenceView = tailReferenceView
+
+        let tooltip = BlurTooltip.present(
+            fromView: view,
+            widthReferenceView: view,
+            tailReferenceView: tailReferenceView
+        ) { [weak self] in
+            self?.removeBlurTooltip()
+            self?.imageEditorView?.didTapBlur()
+        }
+        blurTooltip = tooltip
+
+        preferences.setWasBlurTooltipShown()
+
+        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 5) { [weak self] in
+            self?.removeBlurTooltip()
+        }
+    }
+
+    private func positionBlurTooltip() {
+        guard let blurTooltipTailReferenceView = blurTooltipTailReferenceView else { return }
+        guard let imageEditorView = imageEditorView else { return }
+
+        blurTooltipTailReferenceView.frame = view.convert(imageEditorView.blurButton.frame, from: imageEditorView.blurButton.superview)
+    }
+
+    private func removeBlurTooltip() {
+        blurTooltip?.removeFromSuperview()
+        blurTooltip = nil
+        blurTooltipTailReferenceView?.removeFromSuperview()
+        blurTooltipTailReferenceView = nil
     }
 }
 

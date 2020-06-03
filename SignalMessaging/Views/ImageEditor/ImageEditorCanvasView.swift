@@ -29,10 +29,12 @@ public class ImageEditorCanvasView: UIView {
 
     private let itemIdsToIgnore: [String]
 
-    // We want strokes to be rendered above the image and behind text.
-    private static let brushLayerZ: CGFloat = +1
-    // We want text to be rendered above the image and strokes.
-    private static let textLayerZ: CGFloat = +2
+    // We want blurs to be rendered above the image and behind strokes and text.
+    private static let blurLayerZ: CGFloat = +1
+    // We want strokes to be rendered above the image and blurs and behind text.
+    private static let brushLayerZ: CGFloat = +2
+    // We want text to be rendered above the image, blurs, and strokes.
+    private static let textLayerZ: CGFloat = +3
     // We leave space for 10k items/layers of each type.
     private static let zPositionSpacing: CGFloat = 0.0001
 
@@ -45,6 +47,8 @@ public class ImageEditorCanvasView: UIView {
         super.init(frame: .zero)
 
         model.add(observer: self)
+
+        prepareBlurredImage()
     }
 
     @available(*, unavailable, message: "use other init() instead.")
@@ -377,6 +381,15 @@ public class ImageEditorCanvasView: UIView {
                                     model: model,
                                     transform: transform,
                                     viewSize: viewSize)
+        case .blurRegions:
+            guard let blurRegionsItem = item as? ImageEditorBlurRegionsItem else {
+                owsFailDebug("Item has unexpected type: \(type(of: item)).")
+                return nil
+            }
+            return blurRegionsLayerForItem(item: blurRegionsItem,
+                                           model: model,
+                                           transform: transform,
+                                           viewSize: viewSize)
         }
     }
 
@@ -385,6 +398,19 @@ public class ImageEditorCanvasView: UIView {
                                           transform: ImageEditorTransform,
                                           viewSize: CGSize) -> CALayer? {
         AssertIsOnMainThread()
+
+        let optionalBlurredImageLayer: CALayer?
+        if item.isBlur {
+            guard let blurredImageLayer = blurredImageLayerForItem(model: model, transform: transform, viewSize: viewSize) else {
+                owsFailDebug("Failed to retrieve blurredImageLayer")
+                return nil
+            }
+
+            blurredImageLayer.zPosition = zPositionForItem(item: item, model: model, zPositionBase: blurLayerZ)
+            optionalBlurredImageLayer = blurredImageLayer
+        } else {
+            optionalBlurredImageLayer = nil
+        }
 
         let strokeWidth = ImageEditorStrokeItem.strokeWidth(forUnitStrokeWidth: item.unitStrokeWidth,
                                                             dstSize: viewSize)
@@ -396,11 +422,11 @@ public class ImageEditorCanvasView: UIView {
 
         let shapeLayer = CAShapeLayer()
         shapeLayer.lineWidth = strokeWidth
-        shapeLayer.strokeColor = item.color.cgColor
+        shapeLayer.strokeColor = item.color?.cgColor
         shapeLayer.frame = CGRect(origin: .zero, size: viewSize)
 
-        // Stroke samples are specified in "image unit" coordinates, but
-        // need to be rendered in "canvas" coordinates.  The imageFrame
+        // Blur region origins are specified in "image unit" coordinates,
+        // but need to be rendered in "canvas" coordinates. The imageFrame
         // is the bounds of the image specified in "canvas" coordinates,
         // so to transform we can simply convert from image frame units.
         let imageFrame = ImageEditorCanvasView.imageFrame(forViewSize: viewSize, imageSize: model.srcImageSizePixels, transform: transform)
@@ -472,9 +498,70 @@ public class ImageEditorCanvasView: UIView {
         shapeLayer.fillColor = nil
         shapeLayer.lineCap = CAShapeLayerLineCap.round
         shapeLayer.lineJoin = CAShapeLayerLineJoin.round
-        shapeLayer.zPosition = zPositionForItem(item: item, model: model, zPositionBase: brushLayerZ)
 
-        return shapeLayer
+        if item.isBlur {
+            guard let blurredImageLayer = optionalBlurredImageLayer else {
+                owsFailDebug("Unexpectedly missing blurredImageLayer")
+                return nil
+            }
+
+            shapeLayer.strokeColor = UIColor.black.cgColor
+            blurredImageLayer.mask = shapeLayer
+
+            return blurredImageLayer
+        } else {
+            shapeLayer.zPosition = zPositionForItem(item: item, model: model, zPositionBase: brushLayerZ)
+
+            return shapeLayer
+        }
+    }
+
+    private class func blurRegionsLayerForItem(item: ImageEditorBlurRegionsItem,
+                                               model: ImageEditorModel,
+                                               transform: ImageEditorTransform,
+                                               viewSize: CGSize) -> CALayer? {
+        AssertIsOnMainThread()
+
+        guard !item.unitBoundingBoxes.isEmpty else { return nil }
+
+        guard let blurredImageLayer = blurredImageLayerForItem(model: model, transform: transform, viewSize: viewSize) else {
+            owsFailDebug("Failed to retrieve blurredImageLayer")
+            return nil
+        }
+
+        blurredImageLayer.zPosition = zPositionForItem(item: item, model: model, zPositionBase: blurLayerZ)
+
+        // Stroke samples are specified in "image unit" coordinates, but
+        // need to be rendered in "canvas" coordinates.  The imageFrame
+        // is the bounds of the image specified in "canvas" coordinates,
+        // so to transform we can simply convert from image frame units.
+        let imageFrame = ImageEditorCanvasView.imageFrame(forViewSize: viewSize, imageSize: model.srcImageSizePixels, transform: transform)
+        func transformSampleToPoint(_ unitSample: CGPoint) -> CGPoint {
+            return unitSample.fromUnitCoordinates(viewBounds: imageFrame)
+        }
+
+        let maskingShapeLayer = CAShapeLayer()
+        maskingShapeLayer.frame = CGRect(origin: .zero, size: viewSize)
+
+        let maskingPath = UIBezierPath()
+
+        for unitRect in item.unitBoundingBoxes {
+            var rect = unitRect
+
+            rect.origin = transformSampleToPoint(rect.origin)
+
+            // Rescale normalized coordinates.
+            rect.size.width *= imageFrame.width
+            rect.size.height *= imageFrame.height
+
+            let bezierPath = UIBezierPath(rect: rect)
+            maskingPath.append(bezierPath)
+        }
+
+        maskingShapeLayer.path = maskingPath.cgPath
+        blurredImageLayer.mask = maskingShapeLayer
+
+        return blurredImageLayer
     }
 
     private class func zPositionForItem(item: ImageEditorItem,
@@ -583,6 +670,82 @@ public class ImageEditorCanvasView: UIView {
         }
 
         return result
+    }
+
+    // MARK: - Blur
+
+    private func prepareBlurredImage() {
+        DispatchQueue.global(qos: .userInteractive).async { [weak self] in
+            guard let self = self else { return }
+
+            guard let clampFilter = CIFilter(name: "CIAffineClamp") else {
+                return owsFailDebug("Failed to create blur filter")
+            }
+
+            // we use a very strong blur radius to ensure adequate coverage of large and small faces
+            guard let blurFilter = CIFilter(name: "CIGaussianBlur", parameters: [kCIInputRadiusKey: 30]) else {
+                return owsFailDebug("Failed to create blur filter")
+            }
+
+            guard let srcImage = ImageEditorCanvasView.loadSrcImage(model: self.model), let srcCGImage = srcImage.cgImage else {
+                return owsFailDebug("Could not load src image.")
+            }
+
+            // In order to get a nice edge-to-edge blur, we must apply a clamp filter and *then* the blur filter.
+            let inputImage = CIImage(cgImage: srcCGImage)
+            clampFilter.setDefaults()
+            clampFilter.setValue(inputImage, forKey: kCIInputImageKey)
+
+            guard let clampOutput = clampFilter.outputImage else {
+                return owsFailDebug("Failed to clamp src image")
+            }
+
+            blurFilter.setValue(clampOutput, forKey: kCIInputImageKey)
+
+            guard let blurredOutput = blurFilter.value(forKey: kCIOutputImageKey) as? CIImage else {
+                return owsFailDebug("Failed to blur clamped image")
+            }
+
+            let context = CIContext(options: nil)
+            guard let blurredImage = context.createCGImage(blurredOutput, from: inputImage.extent) else {
+                return owsFailDebug("Failed to create CGImage from blurred output")
+            }
+
+            self.model.blurredSourceImage = blurredImage
+
+            // Once the blur is ready, update any content in case the user already blurred
+            DispatchQueue.main.async { [weak self] in
+                self?.updateAllContent()
+            }
+        }
+    }
+
+    private class func blurredImageLayerForItem(model: ImageEditorModel,
+                                                transform: ImageEditorTransform,
+                                                viewSize: CGSize) -> CALayer? {
+        guard let blurredSourceImage = model.blurredSourceImage else {
+            // If we fail to generate the blur image, or it's not ready yet, use a black mask
+            let layer = CALayer()
+            layer.frame = imageFrame(forViewSize: viewSize, imageSize: model.srcImageSizePixels, transform: transform)
+            layer.backgroundColor = UIColor.black.cgColor
+            return layer
+        }
+
+        // The image layer renders the blurred image in canvas coordinates
+        let blurredImageLayer = CALayer()
+        blurredImageLayer.contents = blurredSourceImage
+        updateImageLayer(imageLayer: blurredImageLayer,
+                         viewSize: viewSize,
+                         imageSize: model.srcImageSizePixels,
+                         transform: transform)
+
+        // The container holds the blurred image, and can be masked using canvas
+        // coordinates to partially blur the image.
+        let blurredImageContainer = CALayer()
+        blurredImageContainer.addSublayer(blurredImageLayer)
+        blurredImageContainer.frame = CGRect(origin: .zero, size: viewSize)
+
+        return blurredImageContainer
     }
 
     // MARK: - Actions

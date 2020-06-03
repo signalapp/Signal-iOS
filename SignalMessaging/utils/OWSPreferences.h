@@ -84,6 +84,9 @@ extern NSString *const OWSPreferencesCallLoggingDidChangeNotification;
 - (BOOL)wasViewOnceTooltipShown;
 - (void)setWasViewOnceTooltipShown;
 
+- (BOOL)wasBlurTooltipShown;
+- (void)setWasBlurTooltipShown;
+
 - (BOOL)wasDeleteForEveryoneConfirmationShown;
 - (void)setWasDeleteForEveryoneConfirmationShown;
 
