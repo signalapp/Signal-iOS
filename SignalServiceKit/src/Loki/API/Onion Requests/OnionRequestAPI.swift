@@ -146,7 +146,9 @@ public enum OnionRequestAPI {
             let storage = OWSPrimaryStorage.shared()
             storage.dbReadConnection.read { transaction in
                 paths = storage.getOnionRequestPaths(in: transaction)
-                guardSnodes.formUnion([ paths[0][0], paths[1][0] ])
+                if paths.count >= pathCount {
+                    guardSnodes.formUnion([ paths[0][0], paths[1][0] ])
+                }
             }
         }
         // randomElement() uses the system's default random generator, which is cryptographically secure
