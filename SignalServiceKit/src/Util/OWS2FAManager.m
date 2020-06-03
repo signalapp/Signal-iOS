@@ -260,18 +260,20 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
                 .then(^{
                     return [self disableRegistrationLockV2];
                 })
-                .then(
-                    ^() {
-                        OWSAssertIsOnMainThread();
+                .ensure(^{
+                    OWSAssertIsOnMainThread();
 
-                        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-                            [self markDisabledWithTransaction:transaction];
-                        }];
+                    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                        [self markDisabledWithTransaction:transaction];
+                    }];
+                })
+                .then(^() {
+                    OWSAssertIsOnMainThread();
 
-                        if (success) {
-                            success();
-                        }
-                    })
+                    if (success) {
+                        success();
+                    }
+                })
                 .catch(^(NSError *error) {
                     OWSAssertIsOnMainThread();
 

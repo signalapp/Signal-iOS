@@ -201,20 +201,11 @@ public class KeyBackupService: NSObject {
             let encryptedMasterKey = try encryptMasterKey(masterKey, encryptionKey: encryptionKey)
 
             return (masterKey, encryptedMasterKey, accessKey)
-        }.then { masterKey, encryptedMasterKey, accessKey in
-            firstly {
-                backupKeyRequest(accessKey: accessKey, encryptedMasterKey: encryptedMasterKey)
-            }.tap {
-                switch $0 {
-                case .fulfilled:
-                    break
-                case .rejected(let error):
-                    Logger.error("recording backupKeyRequest errored: \(error)")
-                    databaseStorage.write {
-                        self.keyValueStore.setBool(true, key: hasBackupKeyRequestFailedIdentifier, transaction: $0)
-                    }
-                }
-            }.map { ($0, masterKey) }
+        }.then { masterKey, encryptedMasterKey, accessKey -> Promise<(KeyBackupProtoBackupResponse, Data)> in
+            backupKeyRequest(
+                accessKey: accessKey,
+                encryptedMasterKey: encryptedMasterKey
+            ).map { ($0, masterKey) }
         }.done(on: .global()) { response, masterKey in
             guard let status = response.status else {
                 owsFailDebug("KBS backup is missing status")
@@ -246,6 +237,11 @@ public class KeyBackupService: NSObject {
                 }
             }
         }.recover { error in
+            Logger.error("recording backupKeyRequest errored: \(error)")
+            databaseStorage.write {
+                self.keyValueStore.setBool(true, key: hasBackupKeyRequestFailedIdentifier, transaction: $0)
+            }
+
             guard let kbsError = error as? KBSError else {
                 owsFailDebug("Unexpectedly surfacing a non KBS error: \(error)")
                 throw error
