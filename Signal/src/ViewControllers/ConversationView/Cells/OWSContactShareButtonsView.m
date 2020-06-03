@@ -1,15 +1,13 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSContactShareButtonsView.h"
 #import "Signal-Swift.h"
-#import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
-#import <SignalMessaging/UIColor+OWS.h>
 #import <SignalServiceKit/OWSContact.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -100,7 +98,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (UIFont *)buttonFont
 {
-    return [UIFont ows_dynamicTypeBodyFont].ows_mediumWeight;
+    return [UIFont ows_dynamicTypeBodyFont].ows_semibold;
 }
 
 + (CGFloat)buttonVMargin
@@ -129,10 +127,10 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"unexpected button state.");
     }
     label.font = OWSContactShareButtonsView.buttonFont;
-    label.textColor = (Theme.isDarkThemeEnabled ? UIColor.ows_whiteColor : UIColor.ows_materialBlueColor);
+    label.textColor = Theme.conversationButtonTextColor;
     label.textAlignment = NSTextAlignmentCenter;
     [self addSubview:label];
-    [label ows_autoPinToSuperviewEdges];
+    [label autoPinEdgesToSuperviewEdges];
     [label autoSetDimension:ALDimensionHeight toSize:OWSContactShareButtonsView.buttonHeight];
 
     self.userInteractionEnabled = YES;

@@ -1,8 +1,12 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
-@class YapDatabaseReadWriteTransaction;
+#import "OWSReadReceiptManager.h"
+
+NS_ASSUME_NONNULL_BEGIN
+
+@class SDSAnyWriteTransaction;
 
 /**
  * Some interactions track read/unread status.
@@ -16,7 +20,7 @@
 @property (nonatomic, readonly, getter=wasRead) BOOL read;
 
 @property (nonatomic, readonly) uint64_t expireStartedAt;
-@property (nonatomic, readonly) uint64_t timestampForSorting;
+@property (nonatomic, readonly) uint64_t sortId;
 @property (nonatomic, readonly) NSString *uniqueThreadId;
 
 
@@ -26,7 +30,10 @@
  * Used both for *responding* to a remote read receipt and in response to the local user's activity.
  */
 - (void)markAsReadAtTimestamp:(uint64_t)readTimestamp
-              sendReadReceipt:(BOOL)sendReadReceipt
-                  transaction:(YapDatabaseReadWriteTransaction *)transaction;
+                       thread:(TSThread *)thread
+                 circumstance:(OWSReadCircumstance)circumstance
+                  transaction:(SDSAnyWriteTransaction *)transaction;
 
 @end
+
+NS_ASSUME_NONNULL_END

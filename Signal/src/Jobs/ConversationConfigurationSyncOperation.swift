@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -11,9 +11,7 @@ class ConversationConfigurationSyncOperation: OWSOperation {
         case assertionError(description: String)
     }
 
-    private var dbConnection: YapDatabaseConnection {
-        return OWSPrimaryStorage.shared().dbReadConnection
-    }
+    // MARK: - Dependencies
 
     private var messageSenderJobQueue: MessageSenderJobQueue {
         return SSKEnvironment.shared.messageSenderJobQueue
@@ -23,9 +21,15 @@ class ConversationConfigurationSyncOperation: OWSOperation {
         return Environment.shared.contactsManager
     }
 
-    private var syncManager: OWSSyncManagerProtocol {
+    private var syncManager: SyncManagerProtocol {
         return SSKEnvironment.shared.syncManager
     }
+
+    private var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
+
+    // MARK: -
 
     private let thread: TSThread
 
@@ -46,17 +50,18 @@ class ConversationConfigurationSyncOperation: OWSOperation {
     }
 
     private func reportAssertionError(description: String) {
-        let error = ColorSyncOperationError.assertionError(description: description)
+        let error: NSError = ColorSyncOperationError.assertionError(description: description) as NSError
+        error.isRetryable = false
         self.reportError(error)
     }
 
     private func sync(contactThread: TSContactThread) {
-        guard let signalAccount: SignalAccount = self.contactsManager.fetchSignalAccount(forRecipientId: contactThread.contactIdentifier()) else {
+        guard let signalAccount: SignalAccount = self.contactsManager.fetchSignalAccount(for: contactThread.contactAddress) else {
             reportAssertionError(description: "unable to find signalAccount")
             return
         }
 
-        syncManager.syncContacts(for: [signalAccount])
+        syncManager.syncContacts(forSignalAccounts: [signalAccount]).retainUntilComplete()
     }
 
     private func sync(groupThread: TSGroupThread) {
@@ -64,23 +69,24 @@ class ConversationConfigurationSyncOperation: OWSOperation {
         // The current implementation works, but seems wasteful.
         // Does desktop handle single group sync correctly?
         // What does Android do?
-        let syncMessage: OWSSyncGroupsMessage = OWSSyncGroupsMessage()
-
-        var dataSource: DataSource?
-        self.dbConnection.read { transaction in
-            guard let messageData: Data = syncMessage.buildPlainTextAttachmentData(with: transaction) else {
-                owsFailDebug("could not serialize sync groups data")
-                return
-            }
-            dataSource = DataSourceValue.dataSource(withSyncMessageData: messageData)
-        }
-
-        guard let attachmentDataSource = dataSource else {
-            self.reportAssertionError(description: "unable to build attachment data source")
+        guard let thread = TSAccountManager.getOrCreateLocalThreadWithSneakyTransaction() else {
+            owsFailDebug("Missing thread.")
             return
         }
+        let syncMessage = OWSSyncGroupsMessage(thread: thread)
+        do {
+            let attachmentDataSource: DataSource = try self.databaseStorage.read { transaction in
+                guard let messageData: Data = syncMessage.buildPlainTextAttachmentData(with: transaction) else {
+                    throw OWSAssertionError("could not serialize sync groups data")
+                }
+                return try DataSourcePath.dataSourceWritingSyncMessageData(messageData)
+            }
 
-        self.sendConfiguration(attachmentDataSource: attachmentDataSource, syncMessage: syncMessage)
+            self.sendConfiguration(attachmentDataSource: attachmentDataSource, syncMessage: syncMessage)
+        } catch {
+            self.reportError(withUndefinedRetry: error)
+            return
+        }
     }
 
     private func sendConfiguration(attachmentDataSource: DataSource, syncMessage: OWSOutgoingSyncMessage) {
@@ -88,8 +94,9 @@ class ConversationConfigurationSyncOperation: OWSOperation {
                                        dataSource: attachmentDataSource,
                                        contentType: OWSMimeTypeApplicationOctetStream,
                                        sourceFilename: nil,
+                                       caption: nil,
+                                       albumMessageId: nil,
                                        isTemporaryAttachment: true)
         self.reportSuccess()
     }
-
 }

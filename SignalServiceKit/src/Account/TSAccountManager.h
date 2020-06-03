@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSConstants.h"
@@ -8,93 +8,121 @@ NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const TSRegistrationErrorDomain;
 extern NSString *const TSRegistrationErrorUserInfoHTTPStatus;
-extern NSString *const RegistrationStateDidChangeNotification;
-extern NSString *const DeregistrationStateDidChangeNotification;
+extern NSNotificationName const NSNotificationNameRegistrationStateDidChange;
+extern NSString *const TSRemoteAttestationAuthErrorKey;
 extern NSString *const kNSNotificationName_LocalNumberDidChange;
 
 @class AnyPromise;
-@class OWSPrimaryStorage;
+@class SDSAnyReadTransaction;
+@class SDSAnyWriteTransaction;
+@class SDSKeyValueStore;
+@class SignalServiceAddress;
 @class TSNetworkManager;
-@class YapDatabaseReadWriteTransaction;
+@class TSRequest;
+
+typedef NS_ENUM(NSUInteger, OWSRegistrationState) {
+    OWSRegistrationState_Unregistered,
+    OWSRegistrationState_PendingBackupRestore,
+    OWSRegistrationState_Registered,
+    OWSRegistrationState_Deregistered,
+    OWSRegistrationState_Reregistering,
+};
 
 @interface TSAccountManager : NSObject
 
-// This property is exposed for testing purposes only.
-#ifdef DEBUG
+@property (nonatomic, readonly) SDSKeyValueStore *keyValueStore;
+
 @property (nonatomic, nullable) NSString *phoneNumberAwaitingVerification;
-#endif
+@property (nonatomic, nullable) NSUUID *uuidAwaitingVerification;
 
 #pragma mark - Initializers
 
-- (instancetype)init NS_UNAVAILABLE;
++ (TSAccountManager *)sharedInstance;
 
-- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage NS_DESIGNATED_INITIALIZER;
+- (void)warmCaches;
 
-+ (instancetype)sharedInstance;
+- (OWSRegistrationState)registrationState;
 
 /**
  *  Returns if a user is registered or not
  *
  *  @return registered or not
  */
-+ (BOOL)isRegistered;
-- (BOOL)isRegistered;
+@property (readonly) BOOL isRegistered;
+@property (readonly) BOOL isRegisteredAndReady;
+
+// useful before account state has been cached, otherwise you should prefer `isRegistered`
+- (BOOL)isRegisteredWithTransaction:(SDSAnyReadTransaction *)transaction NS_SWIFT_NAME(isRegistered(transaction:));
 
 /**
  *  Returns current phone number for this device, which may not yet have been registered.
  *
  *  @return E164 formatted phone number
  */
-+ (nullable NSString *)localNumber;
-- (nullable NSString *)localNumber;
+@property (readonly, nullable) NSString *localNumber;
+@property (readonly, nullable, class) NSString *localNumber;
+
+- (nullable NSString *)localNumberWithTransaction:(SDSAnyReadTransaction *)transaction
+    NS_SWIFT_NAME(localNumber(with:));
+
+@property (readonly, nullable) NSUUID *localUuid;
+
+- (nullable NSUUID *)localUuidWithTransaction:(SDSAnyReadTransaction *)transaction NS_SWIFT_NAME(uuid(with:));
+
+@property (readonly, nullable, class) SignalServiceAddress *localAddress;
+@property (readonly, nullable) SignalServiceAddress *localAddress;
+
++ (nullable SignalServiceAddress *)localAddressWithTransaction:(SDSAnyReadTransaction *)transaction
+    NS_SWIFT_NAME(localAddress(with:));
+- (nullable SignalServiceAddress *)localAddressWithTransaction:(SDSAnyReadTransaction *)transaction
+    NS_SWIFT_NAME(localAddress(with:));
 
 /**
  *  Symmetric key that's used to encrypt message payloads from the server,
  *
  *  @return signaling key
  */
-+ (nullable NSString *)signalingKey;
-- (nullable NSString *)signalingKey;
+- (nullable NSString *)storedSignalingKey;
 
 /**
  *  The server auth token allows the Signal client to connect to the Signal server
  *
  *  @return server authentication token
  */
-+ (nullable NSString *)serverAuthToken;
-- (nullable NSString *)serverAuthToken;
+- (nullable NSString *)storedServerAuthToken;
+- (void)setStoredServerAuthToken:(NSString *)authToken
+                        deviceId:(UInt32)deviceId
+                     transaction:(SDSAnyWriteTransaction *)transaction;
 
 /**
  *  The registration ID is unique to an installation of TextSecure, it allows to know if the app was reinstalled
  *
  *  @return registrationID;
  */
-
-+ (uint32_t)getOrGenerateRegistrationId:(YapDatabaseReadWriteTransaction *)transaction;
 - (uint32_t)getOrGenerateRegistrationId;
-- (uint32_t)getOrGenerateRegistrationId:(YapDatabaseReadWriteTransaction *)transaction;
+- (uint32_t)getOrGenerateRegistrationIdWithTransaction:(SDSAnyWriteTransaction *)transaction;
+
+- (nullable NSString *)storedDeviceName;
+- (void)setStoredDeviceName:(NSString *)deviceName transaction:(SDSAnyWriteTransaction *)transaction;
+
+- (UInt32)storedDeviceId;
+
+/// Onboarding state
+- (BOOL)isOnboarded;
+- (void)setIsOnboarded:(BOOL)isOnboarded transaction:(SDSAnyWriteTransaction *)transaction;
 
 #pragma mark - Register with phone number
 
-+ (void)registerWithPhoneNumber:(NSString *)phoneNumber
-                        success:(void (^)(void))successBlock
-                        failure:(void (^)(NSError *error))failureBlock
-                smsVerification:(BOOL)isSMS;
-
-+ (void)rerequestSMSWithSuccess:(void (^)(void))successBlock failure:(void (^)(NSError *error))failureBlock;
-
-+ (void)rerequestVoiceWithSuccess:(void (^)(void))successBlock failure:(void (^)(NSError *error))failureBlock;
-
-- (void)verifyAccountWithCode:(NSString *)verificationCode
-                          pin:(nullable NSString *)pin
-                      success:(void (^)(void))successBlock
-                      failure:(void (^)(NSError *error))failureBlock;
+- (void)verifyAccountWithRequest:(TSRequest *)request
+                         success:(void (^)(_Nullable id responseObject))successBlock
+                         failure:(void (^)(NSError *error))failureBlock;
 
 // Called once registration is complete - meaning the following have succeeded:
 // - obtained signal server credentials
 // - uploaded pre-keys
 // - uploaded push tokens
 - (void)didRegister;
+- (void)recordUuidForLegacyUser:(NSUUID *)uuid NS_SWIFT_NAME(recordUuidForLegacyUser(_:));
 
 #if TARGET_OS_IPHONE
 
@@ -124,25 +152,33 @@ extern NSString *const kNSNotificationName_LocalNumberDidChange;
 - (BOOL)isDeregistered;
 - (void)setIsDeregistered:(BOOL)isDeregistered;
 
+#pragma mark - Transfer
+
+@property (nonatomic) BOOL isTransferInProgress;
+@property (nonatomic) BOOL wasTransferred;
+
+#pragma mark - Backup
+
+- (BOOL)hasPendingBackupRestoreDecision;
+- (void)setHasPendingBackupRestoreDecision:(BOOL)value;
+
 #pragma mark - Re-registration
 
 // Re-registration is the process of re-registering _with the same phone number_.
 
 // Returns YES on success.
 - (BOOL)resetForReregistration;
-- (NSString *)reregisterationPhoneNumber;
-- (BOOL)isReregistering;
+- (nullable NSString *)reregistrationPhoneNumber;
+@property (nonatomic, readonly) BOOL isReregistering;
 
 #pragma mark - Manual Message Fetch
 
 - (BOOL)isManualMessageFetchEnabled;
-- (AnyPromise *)setIsManualMessageFetchEnabled:(BOOL)value;
+- (void)setIsManualMessageFetchEnabled:(BOOL)value;
 
-#ifdef DEBUG
-- (void)registerForTestsWithLocalNumber:(NSString *)localNumber;
+#ifdef TESTABLE_BUILD
+- (void)registerForTestsWithLocalNumber:(NSString *)localNumber uuid:(NSUUID *)uuid;
 #endif
-
-- (AnyPromise *)updateAccountAttributes;
 
 @end
 

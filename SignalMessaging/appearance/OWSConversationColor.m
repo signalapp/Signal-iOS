@@ -1,10 +1,10 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSConversationColor.h"
 #import "Theme.h"
-#import "UIColor+OWS.h"
+#import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -351,7 +351,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (OWSConversationColor *)defaultConversationColor
 {
-    return [self conversationColorForColorName:kConversationColorName_Default];
+    return [self conversationColorForColorName:ConversationColorNameDefault];
 }
 
 @end

@@ -1,14 +1,17 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "DebugUIMessagesAssetLoader.h"
 #import <AFNetworking/AFHTTPSessionManager.h>
-#import <AFNetworking/AFNetworking.h>
+#import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/Randomness.h>
 #import <SignalServiceKit/MIMETypeUtil.h>
 #import <SignalServiceKit/OWSFileSystem.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAttachment.h>
+
+#ifdef DEBUG
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -151,6 +154,9 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(label.length > 0);
 
     @autoreleasepool {
+        imageSize.width /= UIScreen.mainScreen.scale;
+        imageSize.height /= UIScreen.mainScreen.scale;
+
         CGRect frame = CGRectZero;
         frame.size = imageSize;
         CGFloat smallDimension = MIN(imageSize.width, imageSize.height);
@@ -575,6 +581,51 @@ NS_ASSUME_NONNULL_BEGIN
     return instance;
 }
 
+#pragma mark -
+
++ (void)prepareAssetLoaders:(NSArray<DebugUIMessagesAssetLoader *> *)assetLoaders
+                    success:(dispatch_block_t)success
+                    failure:(dispatch_block_t)failure
+{
+
+    NSMutableArray<AnyPromise *> *promises = [NSMutableArray array];
+    NSMutableArray<NSError *> *errors = [NSMutableArray array];
+
+    for (DebugUIMessagesAssetLoader *assetLoader in assetLoaders) {
+        // Use chained promises to make the code more readable.
+        AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
+            assetLoader.prepareBlock(
+                ^{
+                    // The value doesn't matter, we just need any non-NSError value.
+                    resolve(@(1));
+                },
+                ^{
+                    NSError *error =
+                        [NSError errorWithDomain:@"DebugUI"
+                                            code:0
+                                        userInfo:@{ NSLocalizedDescriptionKey : @"Could not prepare fake assets." }];
+                    @synchronized(errors) {
+                        [errors addObject:error];
+                    }
+                    resolve(error);
+                });
+        }];
+        [promises addObject:promise];
+    }
+
+    // We could use PMKJoin() or PMKWhen().
+    [PMKJoin(promises)
+            .then(^(id value) {
+                success();
+            })
+            .catch(^(id error) {
+                OWSLogError(@"Could not prepare fake asset loaders: %@.", error);
+                failure();
+            }) retainUntilComplete];
+}
+
 @end
 
 NS_ASSUME_NONNULL_END
+
+#endif

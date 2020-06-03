@@ -1,16 +1,16 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSNetworkManager.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-#ifdef DEBUG
+#ifdef TESTABLE_BUILD
 
 @interface OWSFakeNetworkManager : TSNetworkManager
 
-- (instancetype)init;
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
 
 @end
 

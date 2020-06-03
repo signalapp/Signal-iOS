@@ -1,16 +1,18 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "AppSetup.h"
 #import "Environment.h"
+#import "Theme.h"
 #import "VersionMigrations.h"
 #import <AxolotlKit/SessionCipher.h>
 #import <SignalMessaging/OWSDatabaseMigration.h>
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
-#import <SignalServiceKit/ContactDiscoveryService.h>
+#import <SignalMetadataKit/SignalMetadataKit-Swift.h>
 #import <SignalServiceKit/OWS2FAManager.h>
+#import <SignalServiceKit/OWSAttachmentDownloads.h>
 #import <SignalServiceKit/OWSBackgroundTask.h>
 #import <SignalServiceKit/OWSBatchMessageProcessor.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
@@ -47,8 +49,12 @@ NS_ASSUME_NONNULL_BEGIN
         // initializers injected.
         [[OWSBackgroundTaskManager sharedManager] observeNotifications];
 
-        OWSPrimaryStorage *primaryStorage = [[OWSPrimaryStorage alloc] initStorage];
-        [OWSPrimaryStorage protectFiles];
+        StorageCoordinator *storageCoordinator = [StorageCoordinator new];
+        SDSDatabaseStorage *databaseStorage = storageCoordinator.databaseStorage;
+        OWSPrimaryStorage *_Nullable primaryStorage;
+        if (databaseStorage.canLoadYdb) {
+            primaryStorage = databaseStorage.yapPrimaryStorage;
+        }
 
         // AFNetworking (via CFNetworking) spools it's attachments to NSTemporaryDirectory().
         // If you receive a media message while the device is locked, the download will fail if the temporary directory
@@ -60,49 +66,73 @@ NS_ASSUME_NONNULL_BEGIN
         OWSPreferences *preferences = [OWSPreferences new];
 
         TSNetworkManager *networkManager = [[TSNetworkManager alloc] initDefault];
-        OWSContactsManager *contactsManager = [[OWSContactsManager alloc] initWithPrimaryStorage:primaryStorage];
+        OWSContactsManager *contactsManager = [OWSContactsManager new];
+        OWSLinkPreviewManager *linkPreviewManager = [OWSLinkPreviewManager new];
         ContactsUpdater *contactsUpdater = [ContactsUpdater new];
-        OWSMessageSender *messageSender = [[OWSMessageSender alloc] initWithPrimaryStorage:primaryStorage];
-        SSKMessageSenderJobQueue *messageSenderJobQueue = [SSKMessageSenderJobQueue new];
-        OWSProfileManager *profileManager = [[OWSProfileManager alloc] initWithPrimaryStorage:primaryStorage];
-        OWSMessageManager *messageManager = [[OWSMessageManager alloc] initWithPrimaryStorage:primaryStorage];
-        OWSBlockingManager *blockingManager = [[OWSBlockingManager alloc] initWithPrimaryStorage:primaryStorage];
-        OWSIdentityManager *identityManager = [[OWSIdentityManager alloc] initWithPrimaryStorage:primaryStorage];
-        id<OWSUDManager> udManager = [[OWSUDManagerImpl alloc] initWithPrimaryStorage:primaryStorage];
-        OWSMessageDecrypter *messageDecrypter = [[OWSMessageDecrypter alloc] initWithPrimaryStorage:primaryStorage];
-        OWSBatchMessageProcessor *batchMessageProcessor =
-            [[OWSBatchMessageProcessor alloc] initWithPrimaryStorage:primaryStorage];
-        OWSMessageReceiver *messageReceiver = [[OWSMessageReceiver alloc] initWithPrimaryStorage:primaryStorage];
+        OWSMessageSender *messageSender = [OWSMessageSender new];
+        MessageSenderJobQueue *messageSenderJobQueue = [MessageSenderJobQueue new];
+        id<PendingReadReceiptRecorder> pendingReadReceiptRecorder = [MessageRequestReadReceipts new];
+        OWSProfileManager *profileManager = [[OWSProfileManager alloc] initWithDatabaseStorage:databaseStorage];
+        OWSMessageManager *messageManager = [OWSMessageManager new];
+        OWSBlockingManager *blockingManager = [OWSBlockingManager new];
+        OWSIdentityManager *identityManager = [[OWSIdentityManager alloc] initWithDatabaseStorage:databaseStorage];
+        id<RemoteConfigManager> remoteConfigManager = [ServiceRemoteConfigManager new];
+        SSKSessionStore *sessionStore = [SSKSessionStore new];
+        SSKSignedPreKeyStore *signedPreKeyStore = [SSKSignedPreKeyStore new];
+        SSKPreKeyStore *preKeyStore = [SSKPreKeyStore new];
+        id<OWSUDManager> udManager = [OWSUDManagerImpl new];
+        OWSMessageDecrypter *messageDecrypter = [OWSMessageDecrypter new];
+        SSKMessageDecryptJobQueue *messageDecryptJobQueue = [SSKMessageDecryptJobQueue new];
+        OWSBatchMessageProcessor *batchMessageProcessor = [OWSBatchMessageProcessor new];
+        OWSMessageReceiver *messageReceiver = [OWSMessageReceiver new];
+        GroupsV2MessageProcessor *groupsV2MessageProcessor = [GroupsV2MessageProcessor new];
         TSSocketManager *socketManager = [[TSSocketManager alloc] init];
-        TSAccountManager *tsAccountManager = [[TSAccountManager alloc] initWithPrimaryStorage:primaryStorage];
-        OWS2FAManager *ows2FAManager = [[OWS2FAManager alloc] initWithPrimaryStorage:primaryStorage];
-        OWSDisappearingMessagesJob *disappearingMessagesJob =
-            [[OWSDisappearingMessagesJob alloc] initWithPrimaryStorage:primaryStorage];
-        ContactDiscoveryService *contactDiscoveryService = [[ContactDiscoveryService alloc] initDefault];
-        OWSReadReceiptManager *readReceiptManager =
-            [[OWSReadReceiptManager alloc] initWithPrimaryStorage:primaryStorage];
-        OWSOutgoingReceiptManager *outgoingReceiptManager =
-            [[OWSOutgoingReceiptManager alloc] initWithPrimaryStorage:primaryStorage];
-        OWSSyncManager *syncManager = [[OWSSyncManager alloc] initDefault];
+        TSAccountManager *tsAccountManager = [TSAccountManager new];
+        OWS2FAManager *ows2FAManager = [OWS2FAManager new];
+        OWSDisappearingMessagesJob *disappearingMessagesJob = [OWSDisappearingMessagesJob new];
+        OWSReadReceiptManager *readReceiptManager = [OWSReadReceiptManager new];
+        OWSOutgoingReceiptManager *outgoingReceiptManager = [OWSOutgoingReceiptManager new];
+        id<SyncManagerProtocol> syncManager = (id<SyncManagerProtocol>)[[OWSSyncManager alloc] initDefault];
         id<SSKReachabilityManager> reachabilityManager = [SSKReachabilityManagerImpl new];
         id<OWSTypingIndicators> typingIndicators = [[OWSTypingIndicatorsImpl alloc] init];
+        OWSAttachmentDownloads *attachmentDownloads = [[OWSAttachmentDownloads alloc] init];
+        StickerManager *stickerManager = [[StickerManager alloc] init];
+        SignalServiceAddressCache *signalServiceAddressCache = [SignalServiceAddressCache new];
+        AccountServiceClient *accountServiceClient = [AccountServiceClient new];
+        OWSStorageServiceManager *storageServiceManager = OWSStorageServiceManager.shared;
+        SSKPreferences *sskPreferences = [SSKPreferences new];
+        id<GroupsV2> groupsV2 = [GroupsV2Impl new];
+        id<GroupV2Updates> groupV2Updates = [[GroupV2UpdatesImpl alloc] init];
 
         OWSAudioSession *audioSession = [OWSAudioSession new];
-        OWSSounds *sounds = [[OWSSounds alloc] initWithPrimaryStorage:primaryStorage];
+        OWSIncomingContactSyncJobQueue *incomingContactSyncJobQueue = [OWSIncomingContactSyncJobQueue new];
+        OWSIncomingGroupSyncJobQueue *incomingGroupSyncJobQueue = [OWSIncomingGroupSyncJobQueue new];
+        LaunchJobs *launchJobs = [LaunchJobs new];
+        OWSSounds *sounds = [OWSSounds new];
         id<OWSProximityMonitoringManager> proximityMonitoringManager = [OWSProximityMonitoringManagerImpl new];
-        LockInteractionController *lockInteractionController = [[LockInteractionController alloc] initDefault];
         OWSWindowManager *windowManager = [[OWSWindowManager alloc] initDefault];
-        
+        MessageProcessing *messageProcessing = [MessageProcessing new];
+        MessageFetcherJob *messageFetcherJob = [MessageFetcherJob new];
+        BulkProfileFetch *bulkProfileFetch = [BulkProfileFetch new];
+        BulkUUIDLookup *bulkUUIDLookup = [BulkUUIDLookup new];
+        id<VersionedProfiles> versionedProfiles = [VersionedProfilesImpl new];
+
         [Environment setShared:[[Environment alloc] initWithAudioSession:audioSession
-                                               lockInteractionController:lockInteractionController
+                                             incomingContactSyncJobQueue:incomingContactSyncJobQueue
+                                               incomingGroupSyncJobQueue:incomingGroupSyncJobQueue
+                                                              launchJobs:launchJobs
                                                              preferences:preferences
                                               proximityMonitoringManager:proximityMonitoringManager
                                                                   sounds:sounds
                                                            windowManager:windowManager]];
 
+        [SMKEnvironment setShared:[[SMKEnvironment alloc] initWithAccountIdFinder:[OWSAccountIdFinder new]]];
+
         [SSKEnvironment setShared:[[SSKEnvironment alloc] initWithContactsManager:contactsManager
+                                                               linkPreviewManager:linkPreviewManager
                                                                     messageSender:messageSender
                                                             messageSenderJobQueue:messageSenderJobQueue
+                                                       pendingReadReceiptRecorder:pendingReadReceiptRecorder
                                                                    profileManager:profileManager
                                                                    primaryStorage:primaryStorage
                                                                   contactsUpdater:contactsUpdater
@@ -110,20 +140,40 @@ NS_ASSUME_NONNULL_BEGIN
                                                                    messageManager:messageManager
                                                                   blockingManager:blockingManager
                                                                   identityManager:identityManager
+                                                              remoteConfigManager:remoteConfigManager
+                                                                     sessionStore:sessionStore
+                                                                signedPreKeyStore:signedPreKeyStore
+                                                                      preKeyStore:preKeyStore
                                                                         udManager:udManager
                                                                  messageDecrypter:messageDecrypter
+                                                           messageDecryptJobQueue:messageDecryptJobQueue
                                                             batchMessageProcessor:batchMessageProcessor
                                                                   messageReceiver:messageReceiver
+                                                         groupsV2MessageProcessor:groupsV2MessageProcessor
                                                                     socketManager:socketManager
                                                                  tsAccountManager:tsAccountManager
                                                                     ows2FAManager:ows2FAManager
                                                           disappearingMessagesJob:disappearingMessagesJob
-                                                          contactDiscoveryService:contactDiscoveryService
                                                                readReceiptManager:readReceiptManager
                                                            outgoingReceiptManager:outgoingReceiptManager
                                                               reachabilityManager:reachabilityManager
                                                                       syncManager:syncManager
-                                                                 typingIndicators:typingIndicators]];
+                                                                 typingIndicators:typingIndicators
+                                                              attachmentDownloads:attachmentDownloads
+                                                                   stickerManager:stickerManager
+                                                                  databaseStorage:databaseStorage
+                                                        signalServiceAddressCache:signalServiceAddressCache
+                                                             accountServiceClient:accountServiceClient
+                                                            storageServiceManager:storageServiceManager
+                                                               storageCoordinator:storageCoordinator
+                                                                   sskPreferences:sskPreferences
+                                                                         groupsV2:groupsV2
+                                                                   groupV2Updates:groupV2Updates
+                                                                messageProcessing:messageProcessing
+                                                                messageFetcherJob:messageFetcherJob
+                                                                 bulkProfileFetch:bulkProfileFetch
+                                                                   bulkUUIDLookup:bulkUUIDLookup
+                                                                versionedProfiles:versionedProfiles]];
 
         appSpecificSingletonBlock();
 
@@ -132,21 +182,72 @@ NS_ASSUME_NONNULL_BEGIN
         // Register renamed classes.
         [NSKeyedUnarchiver setClass:[OWSUserProfile class] forClassName:[OWSUserProfile collection]];
         [NSKeyedUnarchiver setClass:[OWSDatabaseMigration class] forClassName:[OWSDatabaseMigration collection]];
+        [NSKeyedUnarchiver setClass:[ExperienceUpgrade class] forClassName:[ExperienceUpgrade collection]];
+        [NSKeyedUnarchiver setClass:[ExperienceUpgrade class] forClassName:@"Signal.ExperienceUpgrade"];
+        [NSKeyedUnarchiver setClass:[OWSGroupInfoRequestMessage class] forClassName:@"OWSSyncGroupsRequestMessage"];
+        [NSKeyedUnarchiver setClass:[TSGroupModelV2 class] forClassName:@"TSGroupModelV2"];
 
-        [OWSStorage registerExtensionsWithMigrationBlock:^() {
-            dispatch_async(dispatch_get_main_queue(), ^{
-                // Don't start database migrations until storage is ready.
-                [VersionMigrations performUpdateCheckWithCompletion:^() {
-                    OWSAssertIsOnMainThread();
+        // Prevent device from sleeping during migrations.
+        // This protects long migrations (e.g. the YDB-to-GRDB migration)
+        // from the iOS 13 background crash.
+        //
+        // We can use any object.
+        NSObject *sleepBlockObject = [NSObject new];
+        [DeviceSleepManager.sharedInstance addBlockWithBlockObject:sleepBlockObject];
 
-                    migrationCompletion();
+        dispatch_block_t completionBlock = ^{
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                if (AppSetup.shouldTruncateGrdbWal) {
+                    // Try to truncate GRDB WAL before any readers or writers are
+                    // active.
+                    NSError *_Nullable error;
+                    [databaseStorage.grdbStorage syncTruncatingCheckpointAndReturnError:&error];
+                    if (error != nil) {
+                        OWSFailDebug(@"error: %@", error);
+                    }
+                }
 
-                    OWSAssertDebug(backgroundTask);
-                    backgroundTask = nil;
-                }];
+                dispatch_async(dispatch_get_main_queue(), ^{
+                    [storageCoordinator markStorageSetupAsComplete];
+
+                    // Don't start database migrations until storage is ready.
+                    [VersionMigrations performUpdateCheckWithCompletion:^() {
+                        OWSAssertIsOnMainThread();
+
+                        [DeviceSleepManager.sharedInstance removeBlockWithBlockObject:sleepBlockObject];
+
+                        if (StorageCoordinator.dataStoreForUI == DataStoreGrdb) {
+                            [SSKEnvironment.shared warmCaches];
+                        }
+                        migrationCompletion();
+
+                        OWSAssertDebug(backgroundTask);
+                        backgroundTask = nil;
+                    }];
+                });
             });
-        }];
+        };
+
+        if (databaseStorage.canLoadYdb) {
+            [OWSStorage registerExtensionsWithCompletionBlock:completionBlock];
+        } else {
+            completionBlock();
+        }
     });
+}
+
++ (BOOL)shouldTruncateGrdbWal
+{
+    if (StorageCoordinator.dataStoreForUI != DataStoreGrdb) {
+        return NO;
+    }
+    if (!CurrentAppContext().isMainApp) {
+        return NO;
+    }
+    if (CurrentAppContext().mainApplicationStateOnLaunch == UIApplicationStateBackground) {
+        return NO;
+    }
+    return YES;
 }
 
 @end

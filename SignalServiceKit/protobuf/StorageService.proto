@@ -1,0 +1,116 @@
+//
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//
+
+syntax = "proto3";
+
+// iOS - package name determines class prefix
+package StorageServiceProtos;
+
+message StorageItem {
+  // @required
+  bytes key   = 1;  // Randomly generated 16-byte value
+  // @required
+  bytes value = 2;  // Encrypted serialized bytes
+}
+
+message StorageItems {
+  repeated StorageItem items = 1; // Corresponds to the requested
+                                  // keys that were found
+}
+
+message StorageManifest {
+  // @required
+  uint64 version = 1; // Monotonically increasing value
+  // @required
+  bytes  value   = 2; // Encrypted ManifestRecord bytes
+}
+
+message ReadOperation {
+  repeated bytes readKey = 1;
+}
+
+message WriteOperation {
+           StorageManifest manifest   = 1;
+  repeated StorageItem     insertItem = 2;
+  repeated bytes           deleteKey  = 3;
+           bool            deleteAll  = 4;
+}
+
+message ManifestRecord {
+  message Key {
+    enum Type {
+      UNKNOWN = 0;
+      CONTACT = 1;
+      GROUPV1 = 2;
+      GROUPV2 = 3;
+      ACCOUNT = 4;
+    }
+
+    // @required
+    bytes data = 1;
+    // @required
+    Type  type = 2;
+  }
+
+  // @required
+           uint64 version = 1;
+  repeated Key    keys    = 2;
+}
+
+message StorageRecord {
+  oneof record {
+    ContactRecord contact = 1;
+    GroupV1Record groupV1 = 2;
+    GroupV2Record groupV2 = 3;
+    AccountRecord account = 4;
+  }
+}
+
+message ContactRecord {
+  enum IdentityState {
+    DEFAULT    = 0;
+    VERIFIED   = 1;
+    UNVERIFIED = 2;
+  }
+
+  string        serviceUuid   = 1;
+  string        serviceE164   = 2;
+  bytes         profileKey    = 3;
+  bytes         identityKey   = 4;
+  IdentityState identityState = 5;
+  string        givenName     = 6;
+  string        familyName    = 7;
+  string        username      = 8;
+  bool          blocked       = 9;
+  bool          whitelisted   = 10;
+  bool          archived      = 11;
+}
+
+message GroupV1Record {
+  // @required
+  bytes id          = 1;
+  bool  blocked     = 2;
+  bool  whitelisted = 3;
+  bool  archived    = 4;
+}
+
+message GroupV2Record {
+  // @required
+  bytes masterKey   = 1;
+  bool  blocked     = 2;
+  bool  whitelisted = 3;
+  bool  archived    = 4;
+}
+
+message AccountRecord {
+  bytes  profileKey             = 1;
+  string givenName              = 2;
+  string familyName             = 3;
+  string avatarUrl              = 4;
+  bool   noteToSelfArchived     = 5;
+  bool   readReceipts           = 6;
+  bool   sealedSenderIndicators = 7;
+  bool   typingIndicators       = 8;
+  bool   linkPreviews           = 9;
+}

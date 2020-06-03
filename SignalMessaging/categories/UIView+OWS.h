@@ -1,8 +1,9 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import <PureLayout/PureLayout.h>
+#import <SignalServiceKit/OWSMath.h>
 #import <UIKit/UIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -25,12 +26,11 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 // Pins the width of this view to the width of its superview, with uniform margins.
 - (NSArray<NSLayoutConstraint *> *)autoPinWidthToSuperviewWithMargin:(CGFloat)margin;
 - (NSArray<NSLayoutConstraint *> *)autoPinWidthToSuperview;
+- (NSArray<NSLayoutConstraint *> *)autoPinWidthToSuperviewMargins;
 // Pins the height of this view to the height of its superview, with uniform margins.
 - (NSArray<NSLayoutConstraint *> *)autoPinHeightToSuperviewWithMargin:(CGFloat)margin;
 - (NSArray<NSLayoutConstraint *> *)autoPinHeightToSuperview;
-
-- (NSArray<NSLayoutConstraint *> *)ows_autoPinToSuperviewEdges;
-- (NSArray<NSLayoutConstraint *> *)ows_autoPinToSuperviewMargins;
+- (NSArray<NSLayoutConstraint *> *)autoPinHeightToSuperviewMargins;
 
 - (NSLayoutConstraint *)autoHCenterInSuperview;
 - (NSLayoutConstraint *)autoVCenterInSuperview;
@@ -39,7 +39,9 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 - (void)autoPinHeightToHeightOfView:(UIView *)view;
 
 - (NSLayoutConstraint *)autoPinToSquareAspectRatio;
+- (NSLayoutConstraint *)autoPinToAspectRatioWithSize:(CGSize)size;
 - (NSLayoutConstraint *)autoPinToAspectRatio:(CGFloat)ratio;
+- (NSLayoutConstraint *)autoPinToAspectRatio:(CGFloat)ratio relation:(NSLayoutRelation)relation;
 
 #pragma mark - Content Hugging and Compression Resistance
 
@@ -59,12 +61,12 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 
 #pragma mark - Manual Layout
 
-- (CGFloat)left;
-- (CGFloat)right;
-- (CGFloat)top;
-- (CGFloat)bottom;
-- (CGFloat)width;
-- (CGFloat)height;
+@property (nonatomic, readonly) CGFloat left;
+@property (nonatomic, readonly) CGFloat right;
+@property (nonatomic, readonly) CGFloat top;
+@property (nonatomic, readonly) CGFloat bottom;
+@property (nonatomic, readonly) CGFloat width;
+@property (nonatomic, readonly) CGFloat height;
 
 - (void)centerOnSuperview;
 
@@ -149,55 +151,19 @@ CGFloat ScaleFromIPhone5(CGFloat iPhone5Value);
 
 - (UIView *)addBackgroundViewWithBackgroundColor:(UIColor *)backgroundColor;
 
+- (UIView *)addBackgroundViewWithBackgroundColor:(UIColor *)backgroundColor cornerRadius:(CGFloat)cornerRadius;
+
+- (UIView *)addBorderViewWithColor:(UIColor *)color strokeWidth:(CGFloat)strokeWidth cornerRadius:(CGFloat)cornerRadius;
+
 @end
 
 #pragma mark - Macros
 
-CG_INLINE CGSize CGSizeCeil(CGSize size)
-{
-    return CGSizeMake((CGFloat)ceil(size.width), (CGFloat)ceil(size.height));
-}
-
-CG_INLINE CGSize CGSizeFloor(CGSize size)
-{
-    return CGSizeMake((CGFloat)floor(size.width), (CGFloat)floor(size.height));
-}
-
-CG_INLINE CGSize CGSizeRound(CGSize size)
-{
-    return CGSizeMake((CGFloat)round(size.width), (CGFloat)round(size.height));
-}
-
-CG_INLINE CGSize CGSizeMax(CGSize size1, CGSize size2)
-{
-    return CGSizeMake(MAX(size1.width, size2.width), MAX(size1.height, size2.height));
-}
-
-CG_INLINE CGPoint CGPointAdd(CGPoint left, CGPoint right)
-{
-    return CGPointMake(left.x + right.x, left.y + right.y);
-}
-
-CG_INLINE CGPoint CGPointSubtract(CGPoint left, CGPoint right)
-{
-    return CGPointMake(left.x - right.x, left.y - right.y);
-}
-
-CG_INLINE CGPoint CGPointScale(CGPoint point, CGFloat factor)
-{
-    return CGPointMake(point.x * factor, point.y * factor);
-}
-
-CG_INLINE CGSize CGSizeScale(CGSize size, CGFloat factor)
-{
-    return CGSizeMake(size.width * factor, size.height * factor);
-}
-
-CG_INLINE CGSize CGSizeAdd(CGSize left, CGSize right)
-{
-    return CGSizeMake(left.width + right.width, left.height + right.height);
-}
-
 CGFloat CGHairlineWidth(void);
+
+/// Primarily useful to adjust border widths to
+/// compensate for antialiasing around light
+/// color curves on dark backgrounds.
+CGFloat CGHairlineWidthFraction(CGFloat);
 
 NS_ASSUME_NONNULL_END

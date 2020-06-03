@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -18,7 +18,7 @@ import Foundation
 //         let count: UInt32 = try paramParser.required(key: "count")
 //
 //         // Optional
-//         let last_seen: Date? = try paramParser.optional(key: "last_seen")
+//         let lastSeen: Date? = try paramParser.optional(key: "last_seen")
 //
 //         return Foo(name: name, count: count, isNew: lastSeen == nil)
 //     } catch {
@@ -26,11 +26,11 @@ import Foundation
 //     }
 //
 public class ParamParser {
-    public typealias Key = AnyHashable
+    public typealias Key = String
 
-    let dictionary: Dictionary<Key, Any>
+    let dictionary: [Key: Any]
 
-    public init(dictionary: Dictionary<Key, Any>) {
+    public init(dictionary: [Key: Any]) {
         self.dictionary = dictionary
     }
 
@@ -44,9 +44,22 @@ public class ParamParser {
 
     // MARK: Errors
 
-    public enum ParseError: Error {
+    public enum ParseError: Error, CustomStringConvertible {
         case missingField(Key)
-        case invalidFormat(Key)
+        case invalidFormat(_ key: Key, description: String? = nil)
+
+        public var description: String {
+            switch self {
+            case .missingField(let key):
+                return "ParseError: missing field for \(key)"
+            case .invalidFormat(let key, let description):
+                if let description = description {
+                    return "ParseError: invalid format for \(key) - \(description)"
+                } else {
+                    return "ParseError: invalid format for \(key)"
+                }
+            }
+        }
     }
 
     private func invalid(key: Key) -> ParseError {
@@ -83,6 +96,10 @@ public class ParamParser {
         return typedValue
     }
 
+    public func hasKey(_ key: Key) -> Bool {
+        return dictionary[key] != nil && !(dictionary[key] is NSNull)
+    }
+
     // MARK: FixedWidthIntegers (e.g. Int, Int32, UInt, UInt32, etc.)
 
     // You can't blindly cast accross Integer types, so we need to specify and validate which Int type we want.
@@ -116,15 +133,15 @@ public class ParamParser {
 
     // MARK: Base64 Data
 
-    public func requiredBase64EncodedData(key: Key) throws -> Data {
-        guard let data: Data = try optionalBase64EncodedData(key: key) else {
+    public func requiredBase64EncodedData(key: Key, byteCount: Int? = nil) throws -> Data {
+        guard let data: Data = try optionalBase64EncodedData(key: key, byteCount: byteCount) else {
             throw ParseError.missingField(key)
         }
 
         return data
     }
 
-    public func optionalBase64EncodedData(key: Key) throws -> Data? {
+    public func optionalBase64EncodedData(key: Key, byteCount: Int? = nil) throws -> Data? {
         guard let encodedData: String = try self.optional(key: key) else {
             return nil
         }
@@ -133,10 +150,22 @@ public class ParamParser {
             throw ParseError.invalidFormat(key)
         }
 
+        if let byteCount = byteCount {
+            guard data.count == byteCount else {
+                throw ParseError.invalidFormat(key, description: "expected byteCount: \(byteCount) but found: \(data.count)")
+            }
+        }
+
         guard data.count > 0 else {
             return nil
         }
 
         return data
+    }
+}
+
+extension ParamParser: CustomDebugStringConvertible {
+    public var debugDescription: String {
+        "<ParamParser: \(dictionary)>"
     }
 }

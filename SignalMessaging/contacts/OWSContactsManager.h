@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalServiceKit/Contact.h>
@@ -9,9 +9,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 
+@class AnyPromise;
 @class ImageCache;
-@class OWSPrimaryStorage;
+@class SDSAnyReadTransaction;
+@class SDSKeyValueStore;
 @class SignalAccount;
+@class SignalServiceAddress;
 @class UIFont;
 
 /**
@@ -19,15 +22,12 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
  */
 @interface OWSContactsManager : NSObject <ContactsManagerProtocol>
 
-#pragma mark - Setup
-
-- (instancetype)init NS_UNAVAILABLE;
-
-- (id)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage;
-
 #pragma mark - Accessors
 
+@property (nonatomic, readonly) SDSKeyValueStore *keyValueStore;
+
 @property (nonnull, readonly) ImageCache *avatarCache;
+
 
 @property (atomic, readonly) NSArray<Contact *> *allContacts;
 
@@ -37,10 +37,14 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 @property (atomic, readonly) NSArray<SignalAccount *> *signalAccounts;
 
 // This will return an instance of SignalAccount for _known_ signal accounts.
-- (nullable SignalAccount *)fetchSignalAccountForRecipientId:(NSString *)recipientId;
+- (nullable SignalAccount *)fetchSignalAccountForAddress:(SignalServiceAddress *)address;
+
+- (nullable SignalAccount *)fetchSignalAccountForAddress:(SignalServiceAddress *)address
+                                             transaction:(SDSAnyReadTransaction *)transaction;
+
 // This will always return an instance of SignalAccount.
-- (SignalAccount *)fetchOrBuildSignalAccountForRecipientId:(NSString *)recipientId;
-- (BOOL)hasSignalAccountForRecipientId:(NSString *)recipientId;
+- (SignalAccount *)fetchOrBuildSignalAccountForAddress:(SignalServiceAddress *)address;
+- (BOOL)hasSignalAccountForAddress:(SignalServiceAddress *)address;
 
 #pragma mark - System Contact Fetching
 
@@ -52,6 +56,10 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 @property (nonatomic, readonly) BOOL supportsContactEditing;
 
 @property (atomic, readonly) BOOL isSetup;
+
+// Not set until a contact fetch has completed.
+// Set even if no contacts are found.
+@property (nonatomic, readonly) BOOL hasLoadedContacts;
 
 // Request systems contacts and start syncing changes. The user will see an alert
 // if they haven't previously.
@@ -65,43 +73,46 @@ extern NSString *const OWSContactsManagerSignalAccountsDidChangeNotification;
 // This variant will fetch system contacts if contact access has already been granted,
 // but not prompt for contact access. Also, it will always notify delegates, even if
 // contacts haven't changed, and will clear out any stale cached SignalAccounts
-- (void)userRequestedSystemContactsRefreshWithCompletion:(void (^)(NSError *_Nullable error))completionHandler;
+- (AnyPromise *)userRequestedSystemContactsRefresh;
 
 #pragma mark - Util
 
-- (BOOL)isSystemContact:(NSString *)recipientId;
-- (BOOL)isSystemContactWithSignalAccount:(NSString *)recipientId;
-- (BOOL)hasNameInSystemContactsForRecipientId:(NSString *)recipientId;
-- (NSString *)displayNameForSignalAccount:(SignalAccount *)signalAccount;
+- (BOOL)isSystemContactWithPhoneNumber:(NSString *)phoneNumber;
+- (BOOL)isSystemContactWithAddress:(SignalServiceAddress *)address;
+- (BOOL)isSystemContactWithSignalAccount:(NSString *)phoneNumber;
+- (BOOL)hasNameInSystemContactsForAddress:(SignalServiceAddress *)address;
 
 /**
  * Used for sorting, respects system contacts name sort order preference.
  */
 - (NSString *)comparableNameForSignalAccount:(SignalAccount *)signalAccount;
+- (NSString *)comparableNameForSignalAccount:(SignalAccount *)signalAccount
+                                 transaction:(SDSAnyReadTransaction *)transaction;
+- (NSString *)comparableNameForAddress:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
 
-// Generally we prefer the formattedProfileName over the raw profileName so as to
-// distinguish a profile name apart from a name pulled from the system's contacts.
-// This helps clarify when the remote person chooses a potentially confusing profile name.
-- (nullable NSString *)formattedProfileNameForRecipientId:(NSString *)recipientId;
-- (nullable NSString *)profileNameForRecipientId:(NSString *)recipientId;
-- (nullable NSString *)nameFromSystemContactsForRecipientId:(NSString *)recipientId;
-- (NSString *)stringForConversationTitleWithPhoneIdentifier:(NSString *)recipientId;
+- (nullable UIImage *)systemContactOrSyncedImageForAddress:(nullable SignalServiceAddress *)address;
+- (nullable UIImage *)profileImageForAddressWithSneakyTransaction:(nullable SignalServiceAddress *)address;
+- (nullable NSData *)profileImageDataForAddressWithSneakyTransaction:(nullable SignalServiceAddress *)address;
+- (nullable UIImage *)imageForAddress:(nullable SignalServiceAddress *)address
+                          transaction:(SDSAnyReadTransaction *)transaction;
+- (nullable UIImage *)imageForAddressWithSneakyTransaction:(nullable SignalServiceAddress *)address;
 
-- (nullable UIImage *)systemContactImageForPhoneIdentifier:(nullable NSString *)identifier;
-- (nullable UIImage *)profileImageForPhoneIdentifier:(nullable NSString *)identifier;
-- (nullable NSData *)profileImageDataForPhoneIdentifier:(nullable NSString *)identifier;
+- (void)clearColorNameCache;
 
-- (nullable UIImage *)imageForPhoneIdentifier:(nullable NSString *)identifier;
-- (NSAttributedString *)formattedDisplayNameForSignalAccount:(SignalAccount *)signalAccount font:(UIFont *)font;
-- (NSAttributedString *)formattedFullNameForRecipientId:(NSString *)recipientId font:(UIFont *)font;
-- (NSString *)contactOrProfileNameForPhoneIdentifier:(NSString *)recipientId;
-- (NSAttributedString *)attributedContactOrProfileNameForPhoneIdentifier:(NSString *)recipientId;
-- (NSAttributedString *)attributedContactOrProfileNameForPhoneIdentifier:(NSString *)recipientId
-                                                             primaryFont:(UIFont *)primaryFont
-                                                           secondaryFont:(UIFont *)secondaryFont;
-- (NSAttributedString *)attributedContactOrProfileNameForPhoneIdentifier:(NSString *)recipientId
-                                                       primaryAttributes:(NSDictionary *)primaryAttributes
-                                                     secondaryAttributes:(NSDictionary *)secondaryAttributes;
+// Legacy display name helpers, once the `messageRequests` feature is enabled these can go away.
+- (NSString *)legacyDisplayNameForAddress:(SignalServiceAddress *)address;
+- (NSAttributedString *)attributedLegacyDisplayNameForAddress:(SignalServiceAddress *)address
+                                                  primaryFont:(UIFont *)primaryFont
+                                                secondaryFont:(UIFont *)secondaryFont;
+- (NSAttributedString *)attributedLegacyDisplayNameForAddress:(SignalServiceAddress *)address
+                                            primaryAttributes:(NSDictionary *)primaryAttributes
+                                          secondaryAttributes:(NSDictionary *)secondaryAttributes;
+- (nullable NSString *)formattedProfileNameForAddress:(SignalServiceAddress *)address;
+- (nullable NSString *)formattedProfileNameForAddress:(SignalServiceAddress *)address
+                                          transaction:(SDSAnyReadTransaction *)transaction;
+
+- (nullable NSString *)contactOrProfileNameForAddress:(SignalServiceAddress *)address;
+
 @end
 
 NS_ASSUME_NONNULL_END

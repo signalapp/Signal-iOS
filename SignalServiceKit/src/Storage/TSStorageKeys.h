@@ -1,6 +1,8 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
+
+NS_ASSUME_NONNULL_BEGIN
 
 #ifndef TextSecureKit_TSStorageKeys_h
 #define TextSecureKit_TSStorageKeys_h
@@ -20,7 +22,8 @@
 
 #pragma mark Internal Settings
 
-#define TSStorageInternalSettingsCollection @"TSStorageInternalSettingsCollection"
 #define TSStorageInternalSettingsVersion @"TSLastLaunchedVersion"
 
 #endif
+
+NS_ASSUME_NONNULL_END

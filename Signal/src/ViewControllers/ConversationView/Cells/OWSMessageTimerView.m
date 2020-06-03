@@ -1,11 +1,10 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSMessageTimerView.h"
 #import "ConversationViewController.h"
 #import "OWSMath.h"
-#import "UIColor+OWS.h"
 #import "UIView+OWS.h"
 #import <QuartzCore/QuartzCore.h>
 #import <SignalCoreKit/NSDate+OWS.h>
@@ -56,14 +55,14 @@ const CGFloat kDisappearingMessageIconSize = 12.f;
 {
     self.imageView = [UIImageView new];
     [self addSubview:self.imageView];
-    [self.imageView ows_autoPinToSuperviewEdges];
+    [self.imageView autoPinEdgesToSuperviewEdges];
     [self.imageView autoSetDimension:ALDimensionWidth toSize:kDisappearingMessageIconSize];
     [self.imageView autoSetDimension:ALDimensionHeight toSize:kDisappearingMessageIconSize];
 }
 
 - (void)configureWithExpirationTimestamp:(uint64_t)expirationTimestamp
                   initialDurationSeconds:(uint32_t)initialDurationSeconds
-                               tintColor:(UIColor *)tintColor;
+                               tintColor:(UIColor *)tintColor
 {
     self.expirationTimestamp = expirationTimestamp;
     self.initialDurationSeconds = initialDurationSeconds;

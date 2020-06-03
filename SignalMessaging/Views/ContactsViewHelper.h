@@ -1,15 +1,14 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class Contact;
 @class ContactsViewHelper;
+@class SDSAnyReadTransaction;
 @class SignalAccount;
 @class TSThread;
-
-@protocol CNContactViewControllerDelegate;
 
 @protocol ContactsViewHelperDelegate <NSObject>
 
@@ -21,26 +20,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
-@protocol ContactEditingDelegate <CNContactViewControllerDelegate>
-
-- (void)didFinishEditingContact;
-
-@end
-
 #pragma mark -
 
 @class CNContact;
-@class OWSBlockingManager;
-@class OWSContactsManager;
+@class CNContactViewController;
+@class SignalServiceAddress;
 
 @interface ContactsViewHelper : NSObject
 
 @property (nonatomic, readonly, weak) id<ContactsViewHelperDelegate> delegate;
 
-@property (nonatomic, readonly) OWSContactsManager *contactsManager;
-@property (nonatomic, readonly) OWSBlockingManager *blockingManager;
-
-@property (nonatomic, readonly) NSDictionary<NSString *, SignalAccount *> *signalAccountMap;
 @property (nonatomic, readonly) NSArray<SignalAccount *> *signalAccounts;
 
 // Useful to differentiate between having no signal accounts vs. haven't checked yet
@@ -50,37 +39,38 @@ NS_ASSUME_NONNULL_BEGIN
 // previously denied contact access.
 - (void)presentMissingContactAccessAlertControllerFromViewController:(UIViewController *)viewController;
 
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithDelegate:(id<ContactsViewHelperDelegate>)delegate;
 
-- (nullable SignalAccount *)fetchSignalAccountForRecipientId:(NSString *)recipientId;
-- (SignalAccount *)fetchOrBuildSignalAccountForRecipientId:(NSString *)recipientId;
+- (nullable SignalAccount *)fetchSignalAccountForAddress:(SignalServiceAddress *)address;
+- (SignalAccount *)fetchOrBuildSignalAccountForAddress:(SignalServiceAddress *)address;
 
 // This method is faster than OWSBlockingManager but
 // is only safe to be called on the main thread.
-- (BOOL)isRecipientIdBlocked:(NSString *)recipientId;
+- (BOOL)isSignalServiceAddressBlocked:(SignalServiceAddress *)address;
 
 // This method is faster than OWSBlockingManager but
 // is only safe to be called on the main thread.
 - (BOOL)isThreadBlocked:(TSThread *)thread;
 
 // NOTE: This method uses a transaction.
-- (NSString *)localNumber;
+- (SignalServiceAddress *)localAddress;
 
-- (NSArray<SignalAccount *> *)signalAccountsMatchingSearchString:(NSString *)searchText;
+- (NSArray<SignalAccount *> *)signalAccountsMatchingSearchString:(NSString *)searchText
+                                                     transaction:(SDSAnyReadTransaction *)transaction;
 
+- (void)warmNonSignalContactsCacheAsync;
 - (NSArray<Contact *> *)nonSignalContactsMatchingSearchString:(NSString *)searchText;
 
-- (void)presentContactViewControllerForRecipientId:(NSString *)recipientId
-                                fromViewController:(UIViewController<ContactEditingDelegate> *)fromViewController
-                                   editImmediately:(BOOL)shouldEditImmediately;
+- (nullable CNContactViewController *)contactViewControllerForAddress:(SignalServiceAddress *)address
+                                                      editImmediately:(BOOL)shouldEditImmediately;
 
 // This method can be used to edit existing contacts.
-- (void)presentContactViewControllerForRecipientId:(NSString *)recipientId
-                                fromViewController:(UIViewController<ContactEditingDelegate> *)fromViewController
-                                   editImmediately:(BOOL)shouldEditImmediately
-                            addToExistingCnContact:(CNContact *_Nullable)cnContact;
+- (nullable CNContactViewController *)contactViewControllerForAddress:(SignalServiceAddress *)address
+                                                      editImmediately:(BOOL)shouldEditImmediately
+                                               addToExistingCnContact:(CNContact *_Nullable)existingContact;
 
 + (void)presentMissingContactAccessAlertControllerFromViewController:(UIViewController *)viewController;
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSOutgoingSyncMessage.h"
@@ -10,21 +10,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSReceiptsForSenderMessage : TSOutgoingMessage
 
-- (instancetype)initOutgoingMessageWithTimestamp:(uint64_t)timestamp
-                                        inThread:(nullable TSThread *)thread
-                                     messageBody:(nullable NSString *)body
-                                   attachmentIds:(NSMutableArray<NSString *> *)attachmentIds
-                                expiresInSeconds:(uint32_t)expiresInSeconds
-                                 expireStartedAt:(uint64_t)expireStartedAt
-                                  isVoiceMessage:(BOOL)isVoiceMessage
-                                groupMetaMessage:(TSGroupMetaMessage)groupMetaMessage
-                                   quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                                    contactShare:(nullable OWSContact *)contactShare NS_UNAVAILABLE;
+- (instancetype)initOutgoingMessageWithBuilder:(TSOutgoingMessageBuilder *)outgoingMessageBuilder NS_UNAVAILABLE;
 
-+ (OWSReceiptsForSenderMessage *)deliveryReceiptsForSenderMessageWithThread:(nullable TSThread *)thread
++ (OWSReceiptsForSenderMessage *)deliveryReceiptsForSenderMessageWithThread:(TSThread *)thread
                                                           messageTimestamps:(NSArray<NSNumber *> *)messageTimestamps;
 
-+ (OWSReceiptsForSenderMessage *)readReceiptsForSenderMessageWithThread:(nullable TSThread *)thread
++ (OWSReceiptsForSenderMessage *)readReceiptsForSenderMessageWithThread:(TSThread *)thread
                                                       messageTimestamps:(NSArray<NSNumber *> *)messageTimestamps;
 
 @end

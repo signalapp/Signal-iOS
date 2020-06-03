@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSInvalidIdentityKeyErrorMessage.h"
@@ -7,6 +7,11 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @implementation TSInvalidIdentityKeyErrorMessage
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    return [super initWithCoder:coder];
+}
 
 - (void)throws_acceptNewIdentityKey
 {
@@ -19,10 +24,15 @@ NS_ASSUME_NONNULL_BEGIN
     return nil;
 }
 
-- (NSString *)theirSignalId
+- (SignalServiceAddress *)theirSignalAddress
 {
     OWSAbstractMethod();
     return nil;
+}
+
+- (BOOL)isSpecialMessage
+{
+    return YES;
 }
 
 @end

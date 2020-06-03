@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSStorage.h"
@@ -10,9 +10,11 @@
 #import "OWSFileSystem.h"
 #import "OWSPrimaryStorage.h"
 #import "OWSStorage+Subclass.h"
+#import "SSKEnvironment.h"
 #import "TSAttachmentStream.h"
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/Randomness.h>
+#import <SignalServiceKit/BaseModel.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseAutoView.h>
@@ -25,7 +27,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const StorageIsReadyNotification = @"StorageIsReadyNotification";
 NSString *const OWSResetStorageNotification = @"OWSResetStorageNotification";
 
 static NSString *keychainService = @"TSKeyChainService";
@@ -41,6 +42,60 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
 #pragma mark -
 
+// This macro is only intended to be used within OWSDatabaseConnection.
+#define OWSAssertCanReadYDB()                                                                                          \
+    do {                                                                                                               \
+        /* There's no convenient way to enforce until SSKEnvironment is configured. */                                 \
+        if (!SSKEnvironment.hasShared) {                                                                               \
+            return;                                                                                                    \
+        }                                                                                                              \
+        if (!self.databaseStorage.canReadFromYdb) {                                                                    \
+            OWSLogError(@"storageMode: %@.", SSKFeatureFlags.storageModeDescription);                                  \
+            OWSLogError(                                                                                               \
+                @"StorageCoordinatorState: %@.", NSStringFromStorageCoordinatorState(self.storageCoordinator.state));  \
+            OWSLogError(@"dataStoreForUI: %@.", NSStringForDataStore(StorageCoordinator.dataStoreForUI));              \
+            switch (SSKFeatureFlags.storageModeStrictness) {                                                           \
+                case StorageModeStrictnessFail:                                                                        \
+                    OWSFail(@"Unexpected YDB read.");                                                                  \
+                    break;                                                                                             \
+                case StorageModeStrictnessFailDebug:                                                                   \
+                    OWSFailDebug(@"Unexpected YDB read.");                                                             \
+                    break;                                                                                             \
+                case StorageModeStrictnessLog:                                                                         \
+                    OWSLogError(@"Unexpected YDB read.");                                                              \
+                    break;                                                                                             \
+            }                                                                                                          \
+        }                                                                                                              \
+    } while (NO)
+
+// This macro is only intended to be used within OWSDatabaseConnection.
+#define OWSAssertCanWriteYDB()                                                                                         \
+    do {                                                                                                               \
+        /* There's no convenient way to enforce until SSKEnvironment is configured. */                                 \
+        if (!SSKEnvironment.hasShared) {                                                                               \
+            return;                                                                                                    \
+        }                                                                                                              \
+        if (!self.databaseStorage.canWriteToYdb) {                                                                     \
+            OWSLogError(@"storageMode: %@.", SSKFeatureFlags.storageModeDescription);                                  \
+            OWSLogError(                                                                                               \
+                @"StorageCoordinatorState: %@.", NSStringFromStorageCoordinatorState(self.storageCoordinator.state));  \
+            OWSLogError(@"dataStoreForUI: %@.", NSStringForDataStore(StorageCoordinator.dataStoreForUI));              \
+            switch (SSKFeatureFlags.storageModeStrictness) {                                                           \
+                case StorageModeStrictnessFail:                                                                        \
+                    OWSFail(@"Unexpected YDB write.");                                                                 \
+                    break;                                                                                             \
+                case StorageModeStrictnessFailDebug:                                                                   \
+                    OWSFailDebug(@"Unexpected YDB write.");                                                            \
+                    break;                                                                                             \
+                case StorageModeStrictnessLog:                                                                         \
+                    OWSLogError(@"Unexpected YDB write.");                                                             \
+                    break;                                                                                             \
+            }                                                                                                          \
+        }                                                                                                              \
+    } while (NO)
+
+#pragma mark -
+
 @interface YapDatabaseConnection ()
 
 - (id)initWithDatabase:(YapDatabase *)database;
@@ -50,6 +105,20 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 #pragma mark -
 
 @implementation OWSDatabaseConnection
+
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+- (StorageCoordinator *)storageCoordinator
+{
+    return SSKEnvironment.shared.storageCoordinator;
+}
+
+#pragma mark -
 
 - (id)initWithDatabase:(YapDatabase *)database delegate:(id<OWSDatabaseConnectionDelegate>)delegate
 {
@@ -66,6 +135,37 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
     return self;
 }
 
+- (void)readWithBlock:(void (^)(YapDatabaseReadTransaction *transaction))block
+{
+    OWSAssertCanReadYDB();
+
+    [super readWithBlock:block];
+}
+
+- (void)asyncReadWithBlock:(void (^)(YapDatabaseReadTransaction *transaction))block
+{
+    OWSAssertCanReadYDB();
+
+    [super asyncReadWithBlock:block];
+}
+
+- (void)asyncReadWithBlock:(void (^)(YapDatabaseReadTransaction *transaction))block
+           completionBlock:(nullable dispatch_block_t)completionBlock
+{
+    OWSAssertCanReadYDB();
+
+    [super asyncReadWithBlock:block completionBlock:completionBlock];
+}
+
+- (void)asyncReadWithBlock:(void (^)(YapDatabaseReadTransaction *transaction))block
+           completionQueue:(nullable dispatch_queue_t)completionQueue
+           completionBlock:(nullable dispatch_block_t)completionBlock
+{
+    OWSAssertCanReadYDB();
+
+    [super asyncReadWithBlock:block completionQueue:completionQueue completionBlock:completionBlock];
+}
+
 // Assert that the database is in a ready state (specifically that any sync database
 // view registrations have completed and any async registrations have been started)
 // before creating write transactions.
@@ -75,6 +175,9 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 // Specifically, it causes YDB's "view version" checks to fail.
 - (void)readWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block
 {
+    if (!self.isCleanupConnection) {
+        OWSAssertCanWriteYDB();
+    }
     id<OWSDatabaseConnectionDelegate> delegate = self.delegate;
     OWSAssertDebug(delegate);
     OWSAssertDebug(delegate.areAllRegistrationsComplete);
@@ -102,6 +205,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
                 completionQueue:(nullable dispatch_queue_t)completionQueue
                 completionBlock:(nullable dispatch_block_t)completionBlock
 {
+    OWSAssertCanWriteYDB();
     id<OWSDatabaseConnectionDelegate> delegate = self.delegate;
     OWSAssertDebug(delegate);
     OWSAssertDebug(delegate.areAllRegistrationsComplete);
@@ -186,7 +290,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
 #pragma mark -
 
-@interface OWSUnknownDBObject : TSYapDatabaseObject <NSCoding>
+@interface OWSUnknownDBObject : BaseModel <NSCoding>
 
 @end
 
@@ -216,21 +320,14 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
     return self;
 }
 
-- (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)ydb_saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSFailDebug(@"Tried to save unknown object");
 
     // No-op.
 }
 
-- (void)touchWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
-{
-    OWSFailDebug(@"Tried to touch unknown object");
-
-    // No-op.
-}
-
-- (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)ydb_removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     OWSFailDebug(@"Tried to remove unknown object");
 
@@ -278,7 +375,21 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
 @implementation OWSStorage
 
-- (instancetype)initStorage
+#pragma mark - Dependencies
+
++ (SDSDatabaseStorage *)databaseStorage
+{
+    return SSKEnvironment.shared.databaseStorage;
+}
+
++ (nullable OWSPrimaryStorage *)primaryStorage
+{
+    return SSKEnvironment.shared.primaryStorage;
+}
+
+#pragma mark -
+
+- (instancetype)init
 {
     self = [super init];
 
@@ -365,23 +476,17 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
     OWSAbstractMethod();
 }
 
-+ (void)registerExtensionsWithMigrationBlock:(OWSStorageMigrationBlock)migrationBlock
++ (void)registerExtensionsWithCompletionBlock:(OWSStorageCompletionBlock)completionBlock
 {
-    OWSAssertDebug(migrationBlock);
+    OWSAssertDebug(self.databaseStorage.canLoadYdb);
+    OWSAssertDebug(completionBlock);
 
-    __block OWSBackgroundTask *_Nullable backgroundTask =
-        [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
+    [self.primaryStorage runSyncRegistrations];
 
-    [OWSPrimaryStorage.sharedManager runSyncRegistrations];
-
-    [OWSPrimaryStorage.sharedManager runAsyncRegistrationsWithCompletion:^{
+    [self.primaryStorage runAsyncRegistrationsWithCompletion:^{
         OWSAssertDebug(self.isStorageReady);
 
-        [self postRegistrationCompleteNotification];
-
-        migrationBlock();
-
-        backgroundTask = nil;
+        completionBlock();
     }];
 }
 
@@ -390,33 +495,47 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
     return self.database.registrationConnection;
 }
 
-// Returns YES IFF all registrations are complete.
-+ (void)postRegistrationCompleteNotification
-{
-    OWSAssertDebug(self.isStorageReady);
-
-    OWSLogInfo(@"");
-
-    static dispatch_once_t onceToken;
-    dispatch_once(&onceToken, ^{
-        [[NSNotificationCenter defaultCenter] postNotificationNameAsync:StorageIsReadyNotification
-                                                                 object:nil
-                                                               userInfo:nil];
-    });
-}
-
 + (BOOL)isStorageReady
 {
-    return OWSPrimaryStorage.sharedManager.areAllRegistrationsComplete;
+    if (self.databaseStorage.canLoadYdb && !self.primaryStorage.areAllRegistrationsComplete) {
+        return NO;
+    }
+    return YES;
+}
+
++ (YapDatabaseOptions *)defaultDatabaseOptions
+{
+    YapDatabaseOptions *options = [[YapDatabaseOptions alloc] init];
+    options.corruptAction = YapDatabaseCorruptAction_Fail;
+    options.enableMultiProcessSupport = YES;
+
+    // We leave a portion of the header decrypted so that iOS will recognize the file
+    // as a SQLite database. Otherwise, because the database lives in a shared data container,
+    // and our usage of sqlite's write-ahead logging retains a lock on the database, the OS
+    // would kill the app/share extension as soon as it is backgrounded.
+    options.cipherUnencryptedHeaderLength = kSqliteHeaderLength;
+
+    // If we want to migrate to the new cipher defaults in SQLCipher4+ we'll need to do a one time
+    // migration. See the `PRAGMA cipher_migrate` documentation for details.
+    // https://www.zetetic.net/sqlcipher/sqlcipher-api/#cipher_migrate
+    options.legacyCipherCompatibilityVersion = 3;
+
+    // If any of these asserts fails, we need to verify and update
+    // OWSDatabaseConverter which assumes the values of these options.
+    OWSAssertDebug(options.cipherDefaultkdfIterNumber == 0);
+    OWSAssertDebug(options.kdfIterNumber == 0);
+    OWSAssertDebug(options.cipherPageSize == 0);
+    OWSAssertDebug(options.pragmaPageSize == 0);
+    OWSAssertDebug(options.pragmaJournalSizeLimit == 0);
+    OWSAssertDebug(options.pragmaMMapSize == 0);
+
+    return options;
 }
 
 - (BOOL)tryToLoadDatabase
 {
     __weak OWSStorage *weakSelf = self;
-
-    YapDatabaseOptions *options = [[YapDatabaseOptions alloc] init];
-    options.corruptAction = YapDatabaseCorruptAction_Fail;
-    options.enableMultiProcessSupport = YES;
+    YapDatabaseOptions *options = [self.class defaultDatabaseOptions];
     options.cipherKeySpecBlock = ^{
         // NOTE: It's critical that we don't capture a reference to self
         // (e.g. by using OWSAssertDebug()) or this database will contain a
@@ -431,21 +550,6 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
         OWSCAssertDebug(databaseKeySpec.length == kSQLCipherKeySpecLength);
         return databaseKeySpec;
     };
-
-    // We leave a portion of the header decrypted so that iOS will recognize the file
-    // as a SQLite database. Otherwise, because the database lives in a shared data container,
-    // and our usage of sqlite's write-ahead logging retains a lock on the database, the OS
-    // would kill the app/share extension as soon as it is backgrounded.
-    options.cipherUnencryptedHeaderLength = kSqliteHeaderLength;
-
-    // If any of these asserts fails, we need to verify and update
-    // OWSDatabaseConverter which assumes the values of these options.
-    OWSAssertDebug(options.cipherDefaultkdfIterNumber == 0);
-    OWSAssertDebug(options.kdfIterNumber == 0);
-    OWSAssertDebug(options.cipherPageSize == 0);
-    OWSAssertDebug(options.pragmaPageSize == 0);
-    OWSAssertDebug(options.pragmaJournalSizeLimit == 0);
-    OWSAssertDebug(options.pragmaMMapSize == 0);
 
     // Sanity checking elsewhere asserts we should only regenerate key specs when
     // there is no existing database, so rather than lazily generate in the cipherKeySpecBlock
@@ -637,7 +741,9 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
                               if (!ready) {
                                   OWSFailDebug(@"asyncRegisterExtension failed: %@", extensionName);
                               } else {
-                                  OWSLogVerbose(@"asyncRegisterExtension succeeded: %@", extensionName);
+                                  if (!CurrentAppContext().isRunningTests) {
+                                      OWSLogVerbose(@"asyncRegisterExtension succeeded: %@", extensionName);
+                                  }
                               }
 
                               dispatch_async(dispatch_get_main_queue(), ^{
@@ -662,12 +768,15 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
 + (void)deleteDatabaseFiles
 {
-    [OWSFileSystem deleteFile:[OWSPrimaryStorage legacyDatabaseFilePath]];
-    [OWSFileSystem deleteFile:[OWSPrimaryStorage legacyDatabaseFilePath_SHM]];
-    [OWSFileSystem deleteFile:[OWSPrimaryStorage legacyDatabaseFilePath_WAL]];
-    [OWSFileSystem deleteFile:[OWSPrimaryStorage sharedDataDatabaseFilePath]];
-    [OWSFileSystem deleteFile:[OWSPrimaryStorage sharedDataDatabaseFilePath_SHM]];
-    [OWSFileSystem deleteFile:[OWSPrimaryStorage sharedDataDatabaseFilePath_WAL]];
+    [OWSFileSystem deleteFileIfExists:[OWSPrimaryStorage legacyDatabaseFilePath]];
+    [OWSFileSystem deleteFileIfExists:[OWSPrimaryStorage legacyDatabaseFilePath_SHM]];
+    [OWSFileSystem deleteFileIfExists:[OWSPrimaryStorage legacyDatabaseFilePath_WAL]];
+    [OWSFileSystem deleteFileIfExists:[OWSPrimaryStorage sharedDataDatabaseFilePath]];
+    [OWSFileSystem deleteFileIfExists:[OWSPrimaryStorage sharedDataDatabaseFilePath_SHM]];
+    [OWSFileSystem deleteFileIfExists:[OWSPrimaryStorage sharedDataDatabaseFilePath_WAL]];
+    // NOTE: It's NOT safe to delete OWSPrimaryStorage.legacyDatabaseDirPath
+    //       which is the app document dir.
+    [OWSFileSystem deleteContentsOfDirectory:OWSPrimaryStorage.sharedDataDatabaseDirPath];
 }
 
 - (void)closeStorageForTests
@@ -686,6 +795,8 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
 
 + (void)resetAllStorage
 {
+    OWSLogInfo(@"");
+
     [[NSNotificationCenter defaultCenter] postNotificationName:OWSResetStorageNotification object:nil];
 
     // This might be redundant but in the spirit of thoroughness...
@@ -694,7 +805,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
     [self deleteDBKeys];
 
     if (CurrentAppContext().isMainApp) {
-        [TSAttachmentStream deleteAttachments];
+        [TSAttachmentStream deleteAttachmentsFromDisk];
     }
 
     // TODO: Delete Profiles on Disk?
@@ -808,18 +919,14 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
             [self raiseKeySpecInaccessibleExceptionWithErrorDescription:@"CipherKeySpec inaccessible; not main app."];
         }
 
-        // At this point, either this is a new install so there's no existing password to retrieve
-        // or the keychain has become corrupt.  Either way, we want to get back to a
-        // "known good state" and behave like a new install.
+        // At this point, either:
+        //
+        // * This is a new install so there's no existing password to retrieve.
+        // * The keychain has become corrupt.
         BOOL doesDBExist = [NSFileManager.defaultManager fileExistsAtPath:[self databaseFilePath]];
         if (doesDBExist) {
-            OWSFailDebug(@"Could not load database metadata");
+            OWSFail(@"Could not load database metadata");
             OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotLoadDatabaseSecondAttempt]);
-        }
-
-        if (!CurrentAppContext().isRunningTests) {
-            // Try to reset app by deleting database.
-            [OWSStorage resetAllStorage];
         }
 
         keySpec = [Randomness generateRandomBytes:(int)kSQLCipherKeySpecLength];
@@ -922,13 +1029,6 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
     } else {
         OWSLogWarn(@"Successfully set new keychain value.");
     }
-}
-
-- (void)logFileSizes
-{
-    OWSLogInfo(@"Database file size: %@", [OWSFileSystem fileSizeOfPath:self.databaseFilePath]);
-    OWSLogInfo(@"\t SHM file size: %@", [OWSFileSystem fileSizeOfPath:self.databaseFilePath_SHM]);
-    OWSLogInfo(@"\t WAL file size: %@", [OWSFileSystem fileSizeOfPath:self.databaseFilePath_WAL]);
 }
 
 @end

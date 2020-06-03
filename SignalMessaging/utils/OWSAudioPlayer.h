@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -12,10 +12,12 @@ typedef NS_ENUM(NSInteger, AudioPlaybackState) {
 
 @protocol OWSAudioPlayerDelegate <NSObject>
 
-- (AudioPlaybackState)audioPlaybackState;
-- (void)setAudioPlaybackState:(AudioPlaybackState)state;
+@property (nonatomic) AudioPlaybackState audioPlaybackState;
 
 - (void)setAudioProgress:(CGFloat)progress duration:(CGFloat)duration;
+
+@optional
+- (void)audioPlayerDidFinish;
 
 @end
 
@@ -47,8 +49,10 @@ typedef NS_ENUM(NSUInteger, OWSAudioBehavior) {
 
 - (void)play;
 - (void)pause;
+- (void)setupAudioPlayer;
 - (void)stop;
 - (void)togglePlayState;
+- (void)setCurrentTime:(NSTimeInterval)currentTime;
 
 @end
 

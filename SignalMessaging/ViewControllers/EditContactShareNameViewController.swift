@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -59,7 +59,7 @@ class ContactNameFieldView: UIView {
         let nameLabel = UILabel()
         nameLabel.text = name
         nameLabel.font = UIFont.ows_dynamicTypeBody
-        nameLabel.textColor = UIColor.ows_materialBlue
+        nameLabel.textColor = Theme.accentBlueColor
         nameLabel.lineBreakMode = .byTruncatingTail
         stackView.addArrangedSubview(nameLabel)
         nameLabel.setContentHuggingHigh()
@@ -70,7 +70,7 @@ class ContactNameFieldView: UIView {
             valueView.text = initialValue
         }
         valueView.font = UIFont.ows_dynamicTypeBody
-        valueView.textColor = Theme.primaryColor
+        valueView.textColor = Theme.primaryTextColor
         stackView.addArrangedSubview(valueView)
 
         valueView.addTarget(self, action: #selector(textFieldDidChange), for: .editingChanged)
@@ -134,17 +134,12 @@ public class EditContactShareNameViewController: OWSViewController, ContactNameF
 
     // MARK: Initializers
 
-    @available(*, unavailable, message:"use other constructor instead.")
-    required public init?(coder aDecoder: NSCoder) {
-        notImplemented()
-    }
-
     @objc
     required public init(contactShare: ContactShareViewModel, delegate: EditContactShareNameViewControllerDelegate) {
         self.contactShare = contactShare
         self.delegate = delegate
 
-        super.init(nibName: nil, bundle: nil)
+        super.init()
 
         buildFields()
     }
@@ -176,10 +171,6 @@ public class EditContactShareNameViewController: OWSViewController, ContactNameF
             nameSuffixView,
             organizationNameView
         ]
-    }
-
-    override public var canBecomeFirstResponder: Bool {
-        return true
     }
 
     // MARK: - View Lifecycle

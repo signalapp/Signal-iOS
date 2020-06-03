@@ -1,15 +1,14 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWS2FASettingsViewController.h"
 #import "OWSTableViewController.h"
 #import "Signal-Swift.h"
 #import "SignalMessaging.h"
-#import <SignalMessaging/NSString+OWS.h>
+#import <SignalCoreKit/NSString+OWS.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/SignalMessaging.h>
-#import <SignalMessaging/UIColor+OWS.h>
 #import <SignalMessaging/UIFont+OWS.h>
 #import <SignalMessaging/UIView+OWS.h>
 #import <SignalServiceKit/OWS2FAManager.h>
@@ -21,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak) UIViewController *root2FAViewController;
 
 @property (nonatomic) UITextField *pinTextfield;
+@property (nonatomic) UILabel *errorLabel;
 @property (nonatomic) OWSTableViewController *tableViewController;
 
 @end
@@ -33,9 +33,32 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super viewDidLoad];
 
-    self.view.backgroundColor = [Theme backgroundColor];
+    self.view.backgroundColor = Theme.tableViewBackgroundColor;
+    self.tableViewController.useThemeBackgroundColors = YES;
 
     self.title = NSLocalizedString(@"ENABLE_2FA_VIEW_TITLE", @"Title for the 'enable two factor auth PIN' views.");
+
+    // Note: This affects how the "back" button will look if another
+    //       view is pushed on top of this one, not how the "back"
+    //       button looks when this view is visible.
+    UIBarButtonItem *backButton =
+        [[UIBarButtonItem alloc] initWithTitle:CommonStrings.backButton
+                                         style:UIBarButtonItemStylePlain
+                                        target:self
+                                        action:@selector(backButtonWasPressed)
+                       accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"back")];
+    self.navigationItem.backBarButtonItem = backButton;
+
+    if (self.mode != OWS2FASettingsMode_Status) {
+        UIBarButtonItem *nextButton = [[UIBarButtonItem alloc]
+                      initWithTitle:NSLocalizedString(@"ENABLE_2FA_VIEW_NEXT_BUTTON",
+                                        @"Label for the 'next' button in the 'enable two factor auth' views.")
+                              style:UIBarButtonItemStylePlain
+                             target:self
+                             action:@selector(nextButtonWasPressed)
+            accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"next")];
+        self.navigationItem.rightBarButtonItem = nextButton;
+    }
 
     [self createContents];
 
@@ -84,8 +107,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     // If we're using a table, refresh its contents.
     [self updateTableContents];
-
-    [self updateNavigationItems];
 }
 
 - (void)viewDidAppear:(BOOL)animated
@@ -99,7 +120,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (UILabel *)createLabelWithText:(NSString *)text
 {
     UILabel *label = [UILabel new];
-    label.textColor = [Theme primaryColor];
+    label.textColor = Theme.primaryTextColor;
     label.text = text;
     label.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(14.f, 16.f)];
     label.numberOfLines = 0;
@@ -112,16 +133,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)createPinTextfield
 {
     self.pinTextfield = [OWSTextField new];
-    self.pinTextfield.textColor = [Theme primaryColor];
-    self.pinTextfield.font = [UIFont ows_mediumFontWithSize:ScaleFromIPhone5To7Plus(30.f, 36.f)];
+    self.pinTextfield.textColor = Theme.primaryTextColor;
+    self.pinTextfield.font = [UIFont ows_semiboldFontWithSize:ScaleFromIPhone5To7Plus(30.f, 36.f)];
     self.pinTextfield.textAlignment = NSTextAlignmentCenter;
     self.pinTextfield.keyboardType = UIKeyboardTypeNumberPad;
     self.pinTextfield.delegate = self;
     self.pinTextfield.secureTextEntry = YES;
     self.pinTextfield.textAlignment = NSTextAlignmentCenter;
-    [self.pinTextfield addTarget:self
-                          action:@selector(textFieldDidChange:)
-                forControlEvents:UIControlEventEditingChanged];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _pinTextfield);
     [self.view addSubview:self.pinTextfield];
 }
 
@@ -144,13 +163,16 @@ NS_ASSUME_NONNULL_BEGIN
             : NSLocalizedString(@"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS",
                   @"Indicates that user has 'two factor auth pin' disabled."));
     UILabel *instructionsLabel = [self createLabelWithText:instructions];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, instructionsLabel);
 
     [self createTableView];
 
     [instructionsLabel autoPinToTopLayoutGuideOfViewController:self withInset:kVSpacing];
-    [instructionsLabel autoPinWidthToSuperviewWithMargin:self.hMargin];
+    [instructionsLabel autoPinEdgeToSuperviewSafeArea:ALEdgeLeading withInset:self.hMargin];
+    [instructionsLabel autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing withInset:self.hMargin];
 
-    [self.tableViewController.view autoPinWidthToSuperview];
+    [self.tableViewController.view autoPinEdgeToSuperviewSafeArea:ALEdgeLeading];
+    [self.tableViewController.view autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];
     [self.tableViewController.view autoPinEdge:ALEdgeTop
                                         toEdge:ALEdgeBottom
                                         ofView:instructionsLabel
@@ -187,19 +209,34 @@ NS_ASSUME_NONNULL_BEGIN
     [self createPinTextfield];
 
     [instructionsLabel autoPinTopToSuperviewMarginWithInset:kVSpacing];
-    [instructionsLabel autoPinWidthToSuperviewWithMargin:self.hMargin];
+    [instructionsLabel autoPinEdgeToSuperviewSafeArea:ALEdgeLeading withInset:self.hMargin];
+    [instructionsLabel autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing withInset:self.hMargin];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, instructionsLabel);
 
     [self.pinTextfield autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:instructionsLabel withOffset:kVSpacing];
-    [self.pinTextfield autoPinWidthToSuperviewWithMargin:self.hMargin];
+    [self.pinTextfield autoPinEdgeToSuperviewSafeArea:ALEdgeLeading withInset:self.hMargin];
+    [self.pinTextfield autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing withInset:self.hMargin];
 
     UIView *underscoreView = [UIView new];
     underscoreView.backgroundColor = [UIColor colorWithWhite:0.5 alpha:1.f];
     [self.view addSubview:underscoreView];
     [underscoreView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.pinTextfield withOffset:3];
-    [underscoreView autoPinWidthToSuperviewWithMargin:self.hMargin];
+    [underscoreView autoPinEdgeToSuperviewSafeArea:ALEdgeLeading withInset:self.hMargin];
+    [underscoreView autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing withInset:self.hMargin];
     [underscoreView autoSetDimension:ALDimensionHeight toSize:1.f];
 
-    [self updateNavigationItems];
+    self.errorLabel = [UILabel new];
+    self.errorLabel.font = UIFont.ows_dynamicTypeCaption1ClampedFont;
+    self.errorLabel.textAlignment = NSTextAlignmentCenter;
+    self.errorLabel.textColor = UIColor.ows_accentRedColor;
+    self.errorLabel.numberOfLines = 0;
+    self.errorLabel.lineBreakMode = NSLineBreakByWordWrapping;
+
+    [self.view addSubview:self.errorLabel];
+    [self.errorLabel autoPinWidthToSuperviewWithMargin:16];
+    [self.errorLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:underscoreView withOffset:3];
+
+    self.errorLabel.hidden = YES;
 }
 
 - (void)updateTableContents
@@ -216,17 +253,19 @@ NS_ASSUME_NONNULL_BEGIN
                     addItem:[OWSTableItem disclosureItemWithText:
                                               NSLocalizedString(@"ENABLE_2FA_VIEW_DISABLE_2FA",
                                                   @"Label for the 'enable two-factor auth' item in the settings view")
+                                         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"enable_2fa")
                                                      actionBlock:^{
                                                          [weakSelf tryToDisable2FA];
                                                      }]];
             } else {
-                [section
-                    addItem:[OWSTableItem disclosureItemWithText:
-                                              NSLocalizedString(@"ENABLE_2FA_VIEW_ENABLE_2FA",
-                                                  @"Label for the 'enable two-factor auth' item in the settings view")
-                                                     actionBlock:^{
-                                                         [weakSelf showEnable2FAWorkUI];
-                                                     }]];
+                [section addItem:[OWSTableItem
+                                      disclosureItemWithText:
+                                          NSLocalizedString(@"ENABLE_2FA_VIEW_ENABLE_2FA",
+                                              @"Label for the 'enable two-factor auth' item in the settings view")
+                                     accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"disable_2fa")
+                                                 actionBlock:^{
+                                                     [weakSelf showEnable2FAWorkUI];
+                                                 }]];
             }
             [contents addSection:section];
             self.tableViewController.contents = contents;
@@ -235,40 +274,6 @@ NS_ASSUME_NONNULL_BEGIN
         case OWS2FASettingsMode_SelectPIN:
         case OWS2FASettingsMode_ConfirmPIN:
             return;
-    }
-}
-
-- (BOOL)shouldHaveNextButton
-{
-    switch (self.mode) {
-        case OWS2FASettingsMode_Status:
-            return NO;
-        case OWS2FASettingsMode_SelectPIN:
-        case OWS2FASettingsMode_ConfirmPIN:
-            return [self hasValidPin];
-    }
-}
-
-- (void)updateNavigationItems
-{
-    // Note: This affects how the "back" button will look if another
-    //       view is pushed on top of this one, not how the "back"
-    //       button looks when this view is visible.
-    self.navigationItem.backBarButtonItem =
-        [[UIBarButtonItem alloc] initWithTitle:NSLocalizedString(@"BACK_BUTTON", @"button text for back button")
-                                         style:UIBarButtonItemStylePlain
-                                        target:self
-                                        action:@selector(backButtonWasPressed)];
-
-    if (self.shouldHaveNextButton) {
-        self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc]
-            initWithTitle:NSLocalizedString(@"ENABLE_2FA_VIEW_NEXT_BUTTON",
-                              @"Label for the 'next' button in the 'enable two factor auth' views.")
-                    style:UIBarButtonItemStylePlain
-                   target:self
-                   action:@selector(nextButtonWasPressed)];
-    } else {
-        self.navigationItem.rightBarButtonItem = nil;
     }
 }
 
@@ -282,14 +287,10 @@ NS_ASSUME_NONNULL_BEGIN
               shouldChangeCharactersInRange:range
                           replacementString:insertionText];
 
-    [self updateNavigationItems];
+    // Clear any errors when the user starts typing again.
+    self.errorLabel.hidden = YES;
 
     return NO;
-}
-
-- (void)textFieldDidChange:(id)sender
-{
-    [self updateNavigationItems];
 }
 
 #pragma mark - Events
@@ -301,7 +302,9 @@ NS_ASSUME_NONNULL_BEGIN
             OWSFailDebug(@"status mode should not have a next button.");
             return;
         case OWS2FASettingsMode_SelectPIN: {
-            OWSAssertDebug(self.hasValidPin);
+            if (![self hasValidPin]) {
+                return;
+            }
 
             OWS2FASettingsViewController *vc = [OWS2FASettingsViewController new];
             vc.mode = OWS2FASettingsMode_ConfirmPIN;
@@ -312,17 +315,16 @@ NS_ASSUME_NONNULL_BEGIN
             break;
         }
         case OWS2FASettingsMode_ConfirmPIN: {
-            OWSAssertDebug(self.hasValidPin);
+            if (![self hasValidPin]) {
+                return;
+            }
 
             if ([self.pinTextfield.text isEqualToString:self.candidatePin]) {
                 [self tryToEnable2FA];
             } else {
-                // Clear the PIN so that the user can try again.
-                self.pinTextfield.text = nil;
-
-                [OWSAlerts showErrorAlertWithMessage:
-                               NSLocalizedString(@"ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH",
-                                   @"Error indicating that the entered 'two-factor auth PINs' do not match.")];
+                self.errorLabel.hidden = NO;
+                self.errorLabel.text = NSLocalizedString(@"ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH",
+                    @"Error indicating that the entered 'two-factor auth PINs' do not match.");
             }
             break;
         }
@@ -331,7 +333,23 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)hasValidPin
 {
-    return self.pinTextfield.text.length >= kMin2FAPinLength;
+    if (self.pinTextfield.text.length < kMin2FAPinLength) {
+        self.errorLabel.hidden = NO;
+        self.errorLabel.text = NSLocalizedString(
+            @"ENABLE_2FA_VIEW_PIN_TOO_SHORT", @"Error indicating that the entered 'two-factor auth PIN' is too short.");
+        return NO;
+    }
+
+    if (self.pinTextfield.text.length > kMax2FAv1PinLength) {
+        self.errorLabel.hidden = NO;
+        self.errorLabel.text = NSLocalizedString(
+            @"ENABLE_2FA_VIEW_PIN_TOO_LONG", @"Error indicating that the entered 'two-factor auth PIN' is too long.");
+        return NO;
+    }
+
+    self.errorLabel.hidden = YES;
+
+    return YES;
 }
 
 - (void)showEnable2FAWorkUI
@@ -367,10 +385,10 @@ NS_ASSUME_NONNULL_BEGIN
                               [modalActivityIndicator dismissWithCompletion:^{
                                   [weakSelf updateTableContents];
 
-                                  [OWSAlerts showErrorAlertWithMessage:
-                                                 NSLocalizedString(@"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA",
-                                                     @"Error indicating that attempt to disable 'two-factor "
-                                                     @"auth' failed.")];
+                                  [OWSActionSheets showErrorAlertWithMessage:
+                                                       NSLocalizedString(@"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA",
+                                                           @"Error indicating that attempt to disable 'two-factor "
+                                                           @"auth' failed.")];
                               }];
                           }];
                   }];
@@ -389,6 +407,7 @@ NS_ASSUME_NONNULL_BEGIN
                         canCancel:NO
                   backgroundBlock:^(ModalActivityIndicatorViewController *modalActivityIndicator) {
                       [OWS2FAManager.sharedManager requestEnable2FAWithPin:self.candidatePin
+                          mode:RemoteConfig.kbs ? OWS2FAMode_V2 : OWS2FAMode_V1
                           success:^{
                               [modalActivityIndicator dismissWithCompletion:^{
                                   [weakSelf showCompleteUI];
@@ -403,10 +422,10 @@ NS_ASSUME_NONNULL_BEGIN
 
                                   [weakSelf updateTableContents];
 
-                                  [OWSAlerts showErrorAlertWithMessage:
-                                                 NSLocalizedString(@"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA",
-                                                     @"Error indicating that attempt to enable 'two-factor "
-                                                     @"auth' failed.")];
+                                  [OWSActionSheets showErrorAlertWithMessage:
+                                                       NSLocalizedString(@"ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA",
+                                                           @"Error indicating that attempt to enable 'two-factor "
+                                                           @"auth' failed.")];
                               }];
                           }];
                   }];

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDynamicOutgoingMessage.h"
@@ -18,25 +18,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSDynamicOutgoingMessage
 
-- (instancetype)initWithPlainTextDataBlock:(DynamicOutgoingMessageBlock)block thread:(nullable TSThread *)thread
+- (instancetype)initWithThread:(TSThread *)thread plainTextDataBlock:(DynamicOutgoingMessageBlock)block
 {
-    return [self initWithPlainTextDataBlock:block timestamp:[NSDate ows_millisecondTimeStamp] thread:thread];
+    return [self initWithThread:thread timestamp:[NSDate ows_millisecondTimeStamp] plainTextDataBlock:block];
 }
 
-- (instancetype)initWithPlainTextDataBlock:(DynamicOutgoingMessageBlock)block
-                                 timestamp:(uint64_t)timestamp
-                                    thread:(nullable TSThread *)thread
+// MJK TODO can we remove sender timestamp?
+- (instancetype)initWithThread:(TSThread *)thread
+                     timestamp:(uint64_t)timestamp
+            plainTextDataBlock:(DynamicOutgoingMessageBlock)block
 {
-    self = [super initOutgoingMessageWithTimestamp:timestamp
-                                          inThread:thread
-                                       messageBody:nil
-                                     attachmentIds:[NSMutableArray new]
-                                  expiresInSeconds:0
-                                   expireStartedAt:0
-                                    isVoiceMessage:NO
-                                  groupMetaMessage:TSGroupMetaMessageUnspecified
-                                     quotedMessage:nil
-                                      contactShare:nil];
+    TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
+    messageBuilder.timestamp = timestamp;
+    self = [super initOutgoingMessageWithBuilder:messageBuilder];
 
     if (self) {
         _block = block;
@@ -51,6 +45,8 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient
+                                 thread:(TSThread *)thread
+                            transaction:(SDSAnyReadTransaction *)transaction
 {
     NSData *plainTextData = self.block(recipient);
     OWSAssertDebug(plainTextData);

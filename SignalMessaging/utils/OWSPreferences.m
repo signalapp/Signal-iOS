@@ -1,18 +1,29 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSPreferences.h"
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/NSNotificationCenter+OWS.h>
 #import <SignalServiceKit/NSUserDefaults+OWS.h>
-#import <SignalServiceKit/OWSSyncManagerProtocol.h>
 #import <SignalServiceKit/SSKEnvironment.h>
-#import <SignalServiceKit/TSStorageHeaders.h>
-#import <SignalServiceKit/YapDatabaseConnection+OWS.h>
-#import <SignalServiceKit/YapDatabaseTransaction+OWS.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/StorageCoordinator.h>
+#import <YapDatabase/YapDatabaseTransaction.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+NSString *NSStringForNotificationType(NotificationType value)
+{
+    switch (value) {
+        case NotificationNamePreview:
+            return @"NotificationNamePreview";
+        case NotificationNameNoPreview:
+            return @"NotificationNameNoPreview";
+        case NotificationNoNameNoPreview:
+            return @"NotificationNoNameNoPreview";
+    }
+}
 
 NSString *const OWSPreferencesSignalDatabaseCollection = @"SignalPreferences";
 NSString *const OWSPreferencesCallLoggingDidChangeNotification = @"OWSPreferencesCallLoggingDidChangeNotification";
@@ -20,7 +31,6 @@ NSString *const OWSPreferencesCallLoggingDidChangeNotification = @"OWSPreference
 NSString *const OWSPreferencesKeyScreenSecurity = @"Screen Security Key";
 NSString *const OWSPreferencesKeyEnableDebugLog = @"Debugging Log Enabled Key";
 NSString *const OWSPreferencesKeyNotificationPreviewType = @"Notification Preview Type Key";
-NSString *const OWSPreferencesKeyHasSentAMessage = @"User has sent a message";
 NSString *const OWSPreferencesKeyPlaySoundInForeground = @"NotificationSoundInForeground";
 NSString *const OWSPreferencesKeyLastRecordedPushToken = @"LastRecordedPushToken";
 NSString *const OWSPreferencesKeyLastRecordedVoipToken = @"LastRecordedVoipToken";
@@ -31,11 +41,32 @@ NSString *const OWSPreferencesKeyHasDeclinedNoContactsView = @"hasDeclinedNoCont
 NSString *const OWSPreferencesKeyHasGeneratedThumbnails = @"OWSPreferencesKeyHasGeneratedThumbnails";
 NSString *const OWSPreferencesKeyShouldShowUnidentifiedDeliveryIndicators
     = @"OWSPreferencesKeyShouldShowUnidentifiedDeliveryIndicators";
+NSString *const OWSPreferencesKeyShouldNotifyOfNewAccountKey = @"OWSPreferencesKeyShouldNotifyOfNewAccountKey";
 NSString *const OWSPreferencesKeyIOSUpgradeNagDate = @"iOSUpgradeNagDate";
-NSString *const OWSPreferencesKey_IsReadyForAppExtensions = @"isReadyForAppExtensions_5";
+NSString *const OWSPreferencesKey_IsYdbReadyForAppExtensions = @"isReadyForAppExtensions_5";
+NSString *const OWSPreferencesKey_IsGrdbReadyForAppExtensions = @"IsGrdbReadyForAppExtensions";
+NSString *const OWSPreferencesKey_IsAudibleErrorLoggingEnabled = @"IsAudibleErrorLoggingEnabled";
 NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySystemCallLogEnabled";
+NSString *const OWSPreferencesKeyWasViewOnceTooltipShown = @"OWSPreferencesKeyWasViewOnceTooltipShown";
+
+@interface OWSPreferences ()
+
+@property (atomic, nullable) NSNumber *notificationPreviewTypeCache;
+
+@end
+
+#pragma mark -
 
 @implementation OWSPreferences
+
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark -
 
 - (instancetype)init
 {
@@ -44,6 +75,8 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
         return self;
     }
 
+    _keyValueStore = [[SDSKeyValueStore alloc] initWithCollection:OWSPreferencesSignalDatabaseCollection];
+
     OWSSingletonAssert();
 
     return self;
@@ -51,49 +84,146 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
 
 #pragma mark - Helpers
 
-- (void)clear
+- (void)removeAllValues
 {
     [NSUserDefaults removeAll];
+
+    // We don't need to clear our key-value store; database
+    // storage is cleared otherwise.
 }
 
-- (nullable id)tryGetValueForKey:(NSString *)key
+- (BOOL)hasValueForKey:(NSString *)key
 {
-    OWSAssertDebug(key != nil);
-
-    __block id result;
-    [OWSPrimaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        result = [self tryGetValueForKey:key transaction:transaction];
+    __block BOOL result;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        result = [self.keyValueStore hasValueForKey:key transaction:transaction];
     }];
     return result;
 }
 
-- (nullable id)tryGetValueForKey:(NSString *)key transaction:(YapDatabaseReadTransaction *)transaction
+- (void)removeValueForKey:(NSString *)key
 {
-    OWSAssertDebug(key != nil);
-    return [transaction objectForKey:key inCollection:OWSPreferencesSignalDatabaseCollection];
-}
-
-- (void)setValueForKey:(NSString *)key toValue:(nullable id)value
-{
-    [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [self setValueForKey:key toValue:value transaction:transaction];
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [self.keyValueStore removeValueForKey:key transaction:transaction];
     }];
 }
 
-- (void)setValueForKey:(NSString *)key
-               toValue:(nullable id)value
-           transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (BOOL)boolForKey:(NSString *)key defaultValue:(BOOL)defaultValue
 {
-    OWSAssertDebug(key != nil);
+    __block BOOL result;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        result = [self.keyValueStore getBool:key defaultValue:defaultValue transaction:transaction];
+    }];
+    return result;
+}
 
-    [transaction setObject:value forKey:key inCollection:OWSPreferencesSignalDatabaseCollection];
+- (void)setBool:(BOOL)value forKey:(NSString *)key
+{
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [self.keyValueStore setBool:value key:key transaction:transaction];
+    }];
+}
+
+- (NSUInteger)uintForKey:(NSString *)key defaultValue:(NSUInteger)defaultValue
+{
+    __block NSUInteger result;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        result = [self.keyValueStore getUInt:key defaultValue:defaultValue transaction:transaction];
+    }];
+    return result;
+}
+
+- (void)setUInt:(NSUInteger)value forKey:(NSString *)key
+{
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [self.keyValueStore setUInt:value key:key transaction:transaction];
+    }];
+}
+
+- (nullable NSDate *)dateForKey:(NSString *)key
+{
+    __block NSDate *_Nullable result;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        result = [self.keyValueStore getDate:key transaction:transaction];
+    }];
+    return result;
+}
+
+- (void)setDate:(NSDate *)value forKey:(NSString *)key
+{
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [self.keyValueStore setDate:value key:key transaction:transaction];
+    }];
+}
+
+- (nullable NSString *)stringForKey:(NSString *)key
+{
+    __block NSString *_Nullable result;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        result = [self.keyValueStore getString:key transaction:transaction];
+    }];
+    return result;
+}
+
+- (void)setString:(NSString *)value forKey:(NSString *)key
+{
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [self.keyValueStore setString:value key:key transaction:transaction];
+    }];
 }
 
 #pragma mark - Specific Preferences
 
 + (BOOL)isReadyForAppExtensions
 {
-    NSNumber *preference = [NSUserDefaults.appUserDefaults objectForKey:OWSPreferencesKey_IsReadyForAppExtensions];
+    if (StorageCoordinator.dataStoreForUI == DataStoreGrdb && !self.isGrdbReadyForAppExtensions) {
+        return NO;
+    }
+    return self.isYdbReadyForAppExtensions;
+}
+
++ (BOOL)isYdbReadyForAppExtensions
+{
+    return [self appUserDefaultsFlagWithKey:OWSPreferencesKey_IsYdbReadyForAppExtensions];
+}
+
++ (void)setIsYdbReadyForAppExtensions
+{
+    [self setAppUserDefaultsFlagWithKey:OWSPreferencesKey_IsYdbReadyForAppExtensions];
+}
+
++ (BOOL)isGrdbReadyForAppExtensions
+{
+    return [self appUserDefaultsFlagWithKey:OWSPreferencesKey_IsGrdbReadyForAppExtensions];
+}
+
++ (void)setIsGrdbReadyForAppExtensions
+{
+    [self setAppUserDefaultsFlagWithKey:OWSPreferencesKey_IsGrdbReadyForAppExtensions];
+}
+
++ (BOOL)isAudibleErrorLoggingEnabled
+{
+    NSNumber *_Nullable persistedValue =
+        [NSUserDefaults.appUserDefaults objectForKey:OWSPreferencesKey_IsAudibleErrorLoggingEnabled];
+
+    if (persistedValue == nil) {
+        // default
+        return NO;
+    }
+
+    return persistedValue.boolValue;
+}
+
++ (void)setIsAudibleErrorLoggingEnabled:(BOOL)value
+{
+    [NSUserDefaults.appUserDefaults setObject:@(value) forKey:OWSPreferencesKey_IsAudibleErrorLoggingEnabled];
+    [NSUserDefaults.appUserDefaults synchronize];
+}
+
++ (BOOL)appUserDefaultsFlagWithKey:(NSString *)key
+{
+    NSNumber *preference = [NSUserDefaults.appUserDefaults objectForKey:key];
 
     if (preference) {
         return [preference boolValue];
@@ -102,38 +232,28 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
     }
 }
 
-+ (void)setIsReadyForAppExtensions
++ (void)setAppUserDefaultsFlagWithKey:(NSString *)key
 {
     OWSAssertDebug(CurrentAppContext().isMainApp);
 
-    [NSUserDefaults.appUserDefaults setObject:@(YES) forKey:OWSPreferencesKey_IsReadyForAppExtensions];
+    [NSUserDefaults.appUserDefaults setObject:@(YES) forKey:key];
     [NSUserDefaults.appUserDefaults synchronize];
 }
 
 - (BOOL)screenSecurityIsEnabled
 {
-    NSNumber *preference = [self tryGetValueForKey:OWSPreferencesKeyScreenSecurity];
-    return preference ? [preference boolValue] : YES;
+    return [self boolForKey:OWSPreferencesKeyScreenSecurity defaultValue:YES];
 }
 
-- (void)setScreenSecurity:(BOOL)flag
+- (void)setScreenSecurity:(BOOL)value
 {
-    [self setValueForKey:OWSPreferencesKeyScreenSecurity toValue:@(flag)];
-}
-
-- (BOOL)hasSentAMessage
-{
-    NSNumber *preference = [self tryGetValueForKey:OWSPreferencesKeyHasSentAMessage];
-    if (preference) {
-        return [preference boolValue];
-    } else {
-        return NO;
-    }
+    [self setBool:value forKey:OWSPreferencesKeyScreenSecurity];
 }
 
 + (BOOL)isLoggingEnabled
 {
-    NSNumber *preference = [NSUserDefaults.appUserDefaults objectForKey:OWSPreferencesKeyEnableDebugLog];
+    // See: setIsLoggingEnabled.
+    NSNumber *_Nullable preference = [NSUserDefaults.appUserDefaults objectForKey:OWSPreferencesKeyEnableDebugLog];
 
     if (preference) {
         return [preference boolValue];
@@ -142,67 +262,82 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
     }
 }
 
-+ (void)setIsLoggingEnabled:(BOOL)flag
++ (void)setIsLoggingEnabled:(BOOL)value
 {
     OWSAssertDebug(CurrentAppContext().isMainApp);
 
     // Logging preferences are stored in UserDefaults instead of the database, so that we can (optionally) start
     // logging before the database is initialized. This is important because sometimes there are problems *with* the
     // database initialization, and without logging it would be hard to track down.
-    [NSUserDefaults.appUserDefaults setObject:@(flag) forKey:OWSPreferencesKeyEnableDebugLog];
+    [NSUserDefaults.appUserDefaults setObject:@(value) forKey:OWSPreferencesKeyEnableDebugLog];
     [NSUserDefaults.appUserDefaults synchronize];
-}
-
-- (void)setHasSentAMessage:(BOOL)enabled
-{
-    [self setValueForKey:OWSPreferencesKeyHasSentAMessage toValue:@(enabled)];
 }
 
 - (BOOL)hasDeclinedNoContactsView
 {
-    NSNumber *preference = [self tryGetValueForKey:OWSPreferencesKeyHasDeclinedNoContactsView];
-    // Default to NO.
-    return preference ? [preference boolValue] : NO;
+    return [self boolForKey:OWSPreferencesKeyHasDeclinedNoContactsView defaultValue:NO];
 }
 
 - (void)setHasDeclinedNoContactsView:(BOOL)value
 {
-    [self setValueForKey:OWSPreferencesKeyHasDeclinedNoContactsView toValue:@(value)];
+    [self setBool:value forKey:OWSPreferencesKeyHasDeclinedNoContactsView];
 }
 
 - (BOOL)hasGeneratedThumbnails
 {
-    NSNumber *preference = [self tryGetValueForKey:OWSPreferencesKeyHasGeneratedThumbnails];
-    // Default to NO.
-    return preference ? [preference boolValue] : NO;
+    return [self boolForKey:OWSPreferencesKeyHasGeneratedThumbnails defaultValue:NO];
 }
 
 - (void)setHasGeneratedThumbnails:(BOOL)value
 {
-    [self setValueForKey:OWSPreferencesKeyHasGeneratedThumbnails toValue:@(value)];
+    [self setBool:value forKey:OWSPreferencesKeyHasGeneratedThumbnails];
 }
 
 - (void)setIOSUpgradeNagDate:(NSDate *)value
 {
-    [self setValueForKey:OWSPreferencesKeyIOSUpgradeNagDate toValue:value];
+    [self setDate:value forKey:OWSPreferencesKeyIOSUpgradeNagDate];
 }
 
 - (nullable NSDate *)iOSUpgradeNagDate
 {
-    return [self tryGetValueForKey:OWSPreferencesKeyIOSUpgradeNagDate];
+    return [self dateForKey:OWSPreferencesKeyIOSUpgradeNagDate];
 }
 
 - (BOOL)shouldShowUnidentifiedDeliveryIndicators
 {
-    NSNumber *preference = [self tryGetValueForKey:OWSPreferencesKeyShouldShowUnidentifiedDeliveryIndicators];
-    return preference ? [preference boolValue] : NO;
+    return [self boolForKey:OWSPreferencesKeyShouldShowUnidentifiedDeliveryIndicators defaultValue:NO];
 }
 
-- (void)setShouldShowUnidentifiedDeliveryIndicators:(BOOL)value
+- (BOOL)shouldShowUnidentifiedDeliveryIndicatorsWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    [self setValueForKey:OWSPreferencesKeyShouldShowUnidentifiedDeliveryIndicators toValue:@(value)];
+    return [self.keyValueStore getBool:OWSPreferencesKeyShouldShowUnidentifiedDeliveryIndicators
+                          defaultValue:NO
+                           transaction:transaction];
+}
+
+- (void)setShouldShowUnidentifiedDeliveryIndicatorsAndSendSyncMessage:(BOOL)value
+{
+    [self setBool:value forKey:OWSPreferencesKeyShouldShowUnidentifiedDeliveryIndicators];
 
     [SSKEnvironment.shared.syncManager sendConfigurationSyncMessage];
+    [SSKEnvironment.shared.storageServiceManager recordPendingLocalAccountUpdates];
+}
+
+- (void)setShouldShowUnidentifiedDeliveryIndicators:(BOOL)value transaction:(SDSAnyWriteTransaction *)transaction
+{
+    [self.keyValueStore setBool:value key:OWSPreferencesKeyShouldShowUnidentifiedDeliveryIndicators transaction:transaction];
+}
+
+- (BOOL)shouldNotifyOfNewAccountsWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    return [self.keyValueStore getBool:OWSPreferencesKeyShouldNotifyOfNewAccountKey
+                          defaultValue:YES
+                           transaction:transaction];
+}
+
+- (void)setShouldNotifyOfNewAccounts:(BOOL)newValue transaction:(SDSAnyWriteTransaction *)transaction
+{
+    [self.keyValueStore setBool:newValue key:OWSPreferencesKeyShouldNotifyOfNewAccountKey transaction:transaction];
 }
 
 #pragma mark - Calling
@@ -218,11 +353,10 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
         return NO;
     }
 
-    NSNumber *preference = [self tryGetValueForKey:OWSPreferencesKeySystemCallLogEnabled];
-    return preference ? preference.boolValue : YES;
+    return [self boolForKey:OWSPreferencesKeySystemCallLogEnabled defaultValue:YES];
 }
 
-- (void)setIsSystemCallLogEnabled:(BOOL)flag
+- (void)setIsSystemCallLogEnabled:(BOOL)value
 {
     if (@available(iOS 11, *)) {
         // do nothing
@@ -231,7 +365,7 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
         return;
     }
 
-    [self setValueForKey:OWSPreferencesKeySystemCallLogEnabled toValue:@(flag)];
+    [self setBool:value forKey:OWSPreferencesKeySystemCallLogEnabled];
 }
 
 // In iOS 10.2.1, Apple fixed a bug wherein call history was backed up to iCloud.
@@ -250,13 +384,11 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
 // recent calls list.
 - (void)applyCallLoggingSettingsForLegacyUsersWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    NSNumber *_Nullable callKitPreference =
-        [self tryGetValueForKey:OWSPreferencesKeyCallKitEnabled transaction:transaction];
-    BOOL wasUsingCallKit = callKitPreference ? [callKitPreference boolValue] : YES;
-
-    NSNumber *_Nullable callKitPrivacyPreference =
-        [self tryGetValueForKey:OWSPreferencesKeyCallKitPrivacyEnabled transaction:transaction];
-    BOOL wasUsingCallKitPrivacy = callKitPrivacyPreference ? callKitPrivacyPreference.boolValue : YES;
+    BOOL wasUsingCallKit =
+        [self.keyValueStore getBool:OWSPreferencesKeyCallKitEnabled defaultValue:YES transaction:transaction.asAnyRead];
+    BOOL wasUsingCallKitPrivacy = [self.keyValueStore getBool:OWSPreferencesKeyCallKitPrivacyEnabled
+                                                 defaultValue:YES
+                                                  transaction:transaction.asAnyRead];
 
     BOOL shouldLogCallsInRecents = ^{
         if (wasUsingCallKit && !wasUsingCallKitPrivacy) {
@@ -271,10 +403,11 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
     }();
 
     OWSLogInfo(@"Migrating setting - System Call Log Enabled: %d", shouldLogCallsInRecents);
-    [self setValueForKey:OWSPreferencesKeySystemCallLogEnabled
-                 toValue:@(shouldLogCallsInRecents)
-             transaction:transaction];
-    
+
+    [self.keyValueStore setBool:shouldLogCallsInRecents
+                            key:OWSPreferencesKeySystemCallLogEnabled
+                    transaction:transaction.asAnyWrite];
+
     // We need to reload the callService.callUIAdapter here, but SignalMessaging doesn't know about CallService, so we use
     // notifications to decouple the code. This is admittedly awkward, but it only happens once, and the alternative would
     // be importing all the call related classes into SignalMessaging.
@@ -288,18 +421,17 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
         return YES;
     }
 
-    NSNumber *preference = [self tryGetValueForKey:OWSPreferencesKeyCallKitEnabled];
-    return preference ? [preference boolValue] : YES;
+    return [self boolForKey:OWSPreferencesKeyCallKitEnabled defaultValue:YES];
 }
 
-- (void)setIsCallKitEnabled:(BOOL)flag
+- (void)setIsCallKitEnabled:(BOOL)value
 {
     if (@available(iOS 11, *)) {
         OWSFailDebug(@"CallKit is always enabled for iOS11+");
         return;
     }
 
-    [self setValueForKey:OWSPreferencesKeyCallKitEnabled toValue:@(flag)];
+    [self setBool:value forKey:OWSPreferencesKeyCallKitEnabled];
     // Rev callUIAdaptee to get new setting
 }
 
@@ -310,8 +442,7 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
         return NO;
     }
 
-    NSNumber *preference = [self tryGetValueForKey:OWSPreferencesKeyCallKitEnabled];
-    return preference != nil;
+    return [self hasValueForKey:OWSPreferencesKeyCallKitEnabled];
 }
 
 - (BOOL)isCallKitPrivacyEnabled
@@ -321,23 +452,17 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
         return NO;
     }
 
-    NSNumber *_Nullable preference = [self tryGetValueForKey:OWSPreferencesKeyCallKitPrivacyEnabled];
-    if (preference) {
-        return [preference boolValue];
-    } else {
-        // Private by default.
-        return YES;
-    }
+    return [self boolForKey:OWSPreferencesKeyCallKitPrivacyEnabled defaultValue:YES];
 }
 
-- (void)setIsCallKitPrivacyEnabled:(BOOL)flag
+- (void)setIsCallKitPrivacyEnabled:(BOOL)value
 {
     if (@available(iOS 11, *)) {
         OWSFailDebug(@"CallKit privacy is irrelevant for iOS11+");
         return;
     }
 
-    [self setValueForKey:OWSPreferencesKeyCallKitPrivacyEnabled toValue:@(flag)];
+    [self setBool:value forKey:OWSPreferencesKeyCallKitPrivacyEnabled];
 }
 
 - (BOOL)isCallKitPrivacySet
@@ -347,8 +472,17 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
         return NO;
     }
 
-    NSNumber *preference = [self tryGetValueForKey:OWSPreferencesKeyCallKitPrivacyEnabled];
-    return preference != nil;
+    return [self hasValueForKey:OWSPreferencesKeyCallKitPrivacyEnabled];
+}
+
+- (BOOL)wasViewOnceTooltipShown
+{
+    return [self boolForKey:OWSPreferencesKeyWasViewOnceTooltipShown defaultValue:NO];
+}
+
+- (void)setWasViewOnceTooltipShown
+{
+    [self setBool:YES forKey:OWSPreferencesKeyWasViewOnceTooltipShown];
 }
 
 #pragma mark direct call connectivity (non-TURN)
@@ -357,46 +491,44 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
 
 - (BOOL)doCallsHideIPAddress
 {
-    NSNumber *preference = [self tryGetValueForKey:OWSPreferencesKeyCallsHideIPAddress];
-    return preference ? [preference boolValue] : NO;
+    return [self boolForKey:OWSPreferencesKeyCallsHideIPAddress defaultValue:NO];
 }
 
-- (void)setDoCallsHideIPAddress:(BOOL)flag
+- (void)setDoCallsHideIPAddress:(BOOL)value
 {
-    [self setValueForKey:OWSPreferencesKeyCallsHideIPAddress toValue:@(flag)];
+    [self setBool:value forKey:OWSPreferencesKeyCallsHideIPAddress];
 }
 
 #pragma mark Notification Preferences
 
 - (BOOL)soundInForeground
 {
-    NSNumber *preference = [self tryGetValueForKey:OWSPreferencesKeyPlaySoundInForeground];
-    if (preference) {
-        return [preference boolValue];
-    } else {
-        return YES;
-    }
+    return [self boolForKey:OWSPreferencesKeyPlaySoundInForeground defaultValue:YES];
 }
 
-- (void)setSoundInForeground:(BOOL)enabled
+- (void)setSoundInForeground:(BOOL)value
 {
-    [self setValueForKey:OWSPreferencesKeyPlaySoundInForeground toValue:@(enabled)];
+    [self setBool:value forKey:OWSPreferencesKeyPlaySoundInForeground];
 }
 
-- (void)setNotificationPreviewType:(NotificationType)type
+- (void)setNotificationPreviewType:(NotificationType)value
 {
-    [self setValueForKey:OWSPreferencesKeyNotificationPreviewType toValue:@(type)];
+    [self setUInt:(NSUInteger)value forKey:OWSPreferencesKeyNotificationPreviewType];
+
+    self.notificationPreviewTypeCache = @(value);
 }
 
 - (NotificationType)notificationPreviewType
 {
-    NSNumber *preference = [self tryGetValueForKey:OWSPreferencesKeyNotificationPreviewType];
-
-    if (preference) {
-        return [preference unsignedIntegerValue];
-    } else {
-        return NotificationNamePreview;
+    NSNumber *_Nullable cachedValue = self.notificationPreviewTypeCache;
+    if (cachedValue != nil) {
+        return (NotificationType)cachedValue.unsignedIntegerValue;
     }
+
+    NotificationType result = (NotificationType)[self uintForKey:OWSPreferencesKeyNotificationPreviewType
+                                                    defaultValue:(NSUInteger)NotificationNamePreview];
+    self.notificationPreviewTypeCache = @(result);
+    return result;
 }
 
 - (NSString *)nameForNotificationPreviewType:(NotificationType)notificationType
@@ -418,29 +550,30 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
 
 - (void)setPushToken:(NSString *)value
 {
-    [self setValueForKey:OWSPreferencesKeyLastRecordedPushToken toValue:value];
+    [self setString:value forKey:OWSPreferencesKeyLastRecordedPushToken];
 }
 
 - (nullable NSString *)getPushToken
 {
-    return [self tryGetValueForKey:OWSPreferencesKeyLastRecordedPushToken];
+    return [self stringForKey:OWSPreferencesKeyLastRecordedPushToken];
 }
 
 - (void)setVoipToken:(NSString *)value
 {
-    [self setValueForKey:OWSPreferencesKeyLastRecordedVoipToken toValue:value];
+    [self setString:value forKey:OWSPreferencesKeyLastRecordedVoipToken];
 }
 
 - (nullable NSString *)getVoipToken
 {
-    return [self tryGetValueForKey:OWSPreferencesKeyLastRecordedVoipToken];
+    return [self stringForKey:OWSPreferencesKeyLastRecordedVoipToken];
 }
 
 - (void)unsetRecordedAPNSTokens
 {
     OWSLogWarn(@"Forgetting recorded APNS tokens");
-    [self setValueForKey:OWSPreferencesKeyLastRecordedPushToken toValue:nil];
-    [self setValueForKey:OWSPreferencesKeyLastRecordedVoipToken toValue:nil];
+
+    [self removeValueForKey:OWSPreferencesKeyLastRecordedPushToken];
+    [self removeValueForKey:OWSPreferencesKeyLastRecordedVoipToken];
 }
 
 @end

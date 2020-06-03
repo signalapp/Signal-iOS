@@ -1,17 +1,21 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class TSGroupModel;
+@class OWSConversationSettingsViewController;
+@class TSGroupThread;
 
 @protocol OWSConversationSettingsViewDelegate <NSObject>
 
 - (void)conversationColorWasUpdated;
-- (void)groupWasUpdated:(TSGroupModel *)groupModel;
 
-- (void)popAllConversationSettingsViews;
+- (void)conversationSettingsDidUpdate;
+
+- (void)conversationSettingsDidRequestConversationSearch;
+
+- (void)popAllConversationSettingsViewsWithCompletion:(void (^_Nullable)(void))completionBlock;
 
 @end
 

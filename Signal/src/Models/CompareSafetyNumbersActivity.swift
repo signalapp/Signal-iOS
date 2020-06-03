@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -27,12 +27,12 @@ class CompareSafetyNumbersActivity: UIActivity {
 
     // MARK: UIActivity
 
-    override class var activityCategory: UIActivityCategory {
+    override class var activityCategory: UIActivity.Category {
         get { return .action }
     }
 
-    override var activityType: UIActivityType? {
-        get { return UIActivityType(rawValue: CompareSafetyNumbersActivityType) }
+    override var activityType: UIActivity.ActivityType? {
+        get { return UIActivity.ActivityType(rawValue: CompareSafetyNumbersActivityType) }
     }
 
     override var activityTitle: String? {
@@ -85,13 +85,13 @@ class CompareSafetyNumbersActivity: UIActivity {
     // MARK: Helpers
 
     func numericOnly(string: String?) -> String? {
-        guard (string != nil) else {
+        guard let string = string else {
             return nil
         }
 
         var numericOnly: String?
         if let regex = try? NSRegularExpression(pattern: "\\D", options: .caseInsensitive) {
-            numericOnly = regex.stringByReplacingMatches(in: string!, options: .withTransparentBounds, range: NSRange(location: 0, length: string!.count), withTemplate: "")
+            numericOnly = regex.stringByReplacingMatches(in: string, options: .withTransparentBounds, range: NSRange(location: 0, length: string.utf16.count), withTemplate: "")
         }
 
         return numericOnly

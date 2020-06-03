@@ -1,14 +1,16 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSTableViewController.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class SignalServiceAddress;
+
 @interface OWSAddToContactViewController : OWSTableViewController
 
-- (void)configureWithRecipientId:(NSString *)recipientId;
+- (void)configureWithAddress:(SignalServiceAddress *)address;
 
 @end
 

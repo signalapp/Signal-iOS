@@ -1,22 +1,21 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSAddToContactViewController.h"
+#import <ContactsUI/ContactsUI.h>
 #import <SignalMessaging/ContactsViewHelper.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/UIUtil.h>
-
-@import ContactsUI;
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSAddToContactViewController () <ContactEditingDelegate, ContactsViewHelperDelegate>
+@interface OWSAddToContactViewController () <CNContactViewControllerDelegate, ContactsViewHelperDelegate>
 
-@property (nonatomic) NSString *recipientId;
+@property (nonatomic) SignalServiceAddress *address;
 
-@property (nonatomic, readonly) OWSContactsManager *contactsManager;
 @property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
 
 @end
@@ -24,6 +23,15 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 @implementation OWSAddToContactViewController
+
+#pragma mark - Dependencies
+
+- (OWSContactsManager *)contactsManager
+{
+    return Environment.shared.contactsManager;
+}
+
+#pragma mark -
 
 - (instancetype)init
 {
@@ -37,52 +45,16 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder
-{
-    self = [super initWithCoder:aDecoder];
-    if (!self) {
-        return self;
-    }
-
-    [self commonInit];
-
-    return self;
-}
-
-- (instancetype)initWithNibName:(nullable NSString *)nibNameOrNil bundle:(nullable NSBundle *)nibBundleOrNil
-{
-    self = [super initWithNibName:nibNameOrNil bundle:nibBundleOrNil];
-    if (!self) {
-        return self;
-    }
-
-    [self commonInit];
-
-    return self;
-}
-
 - (void)commonInit
 {
-    _contactsManager = Environment.shared.contactsManager;
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
 }
 
-- (void)configureWithRecipientId:(NSString *)recipientId
+- (void)configureWithAddress:(SignalServiceAddress *)address
 {
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address.isValid);
 
-    _recipientId = recipientId;
-}
-
-#pragma mark - ContactEditingDelegate
-
-- (void)didFinishEditingContact
-{
-    OWSLogDebug(@"");
-    [self dismissViewControllerAnimated:NO
-                             completion:^{
-                                 [self.navigationController popViewControllerAnimated:YES];
-                             }];
+    _address = address;
 }
 
 #pragma mark - CNContactViewControllerDelegate
@@ -90,22 +62,19 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)contactViewController:(CNContactViewController *)viewController
        didCompleteWithContact:(nullable CNContact *)contact
 {
-    if (contact) {
-        // Saving normally returns you to the "Show Contact" view
-        // which we're not interested in, so we skip it here. There is
-        // an unfortunate blip of the "Show Contact" view on slower devices.
-        OWSLogDebug(@"completed editing contact.");
-        [self dismissViewControllerAnimated:NO
-                                 completion:^{
-                                     [self.navigationController popViewControllerAnimated:YES];
-                                 }];
-    } else {
-        OWSLogDebug(@"canceled editing contact.");
-        [self dismissViewControllerAnimated:YES
-                                 completion:^{
-                                     [self.navigationController popViewControllerAnimated:YES];
-                                 }];
+    OWSAssertDebug(self.navigationController);
+
+    // We're done, pop back to the view that presented us.
+
+    NSUInteger selfIndex = [self.navigationController.viewControllers indexOfObject:self];
+    if (selfIndex == NSNotFound) {
+        OWSFailDebug(@"Unexpectedly not in nav hierarchy");
+        return;
     }
+
+    UIViewController *previousVC = self.navigationController.viewControllers[selfIndex - 1];
+
+    [self.navigationController popToViewController:previousVC animated:YES];
 }
 
 #pragma mark - ContactsViewHelperDelegate
@@ -160,13 +129,16 @@ NS_ASSUME_NONNULL_BEGIN
     section.headerTitle = NSLocalizedString(
         @"EDIT_GROUP_CONTACTS_SECTION_TITLE", @"a title for the contacts section of the 'new/update group' view.");
 
-    for (Contact *contact in self.contactsViewHelper.contactsManager.allContacts) {
+    for (Contact *contact in self.contactsManager.allContacts) {
         NSString *_Nullable displayName = [self displayNameForContact:contact];
         if (displayName.length < 1) {
             continue;
         }
 
+        // TODO: Confirm with nancy if this will work.
+        NSString *cellName = [NSString stringWithFormat:@"contact.%@", NSUUID.UUID.UUIDString];
         [section addItem:[OWSTableItem disclosureItemWithText:displayName
+                                      accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, cellName)
                                                   actionBlock:^{
                                                       [weakSelf presentContactViewControllerForContact:contact];
                                                   }]];
@@ -187,21 +159,30 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)presentContactViewControllerForContact:(Contact *)contact
 {
     OWSAssertDebug(contact);
-    OWSAssertDebug(self.recipientId);
+    OWSAssertDebug(self.address.isValid);
 
     if (!self.contactsManager.supportsContactEditing) {
         OWSFailDebug(@"Contact editing not supported");
         return;
     }
-    CNContact *_Nullable cnContact = [self.contactsManager cnContactWithId:contact.cnContactId];
-    if (!cnContact) {
-        OWSFailDebug(@"Could not load system contact.");
+    CNContact *_Nullable cnContact;
+    if (contact.cnContactId != nil) {
+        cnContact = [self.contactsManager cnContactWithId:contact.cnContactId];
+        OWSAssertDebug(cnContact != nil);
+    }
+    CNContactViewController *_Nullable contactViewController =
+        [self.contactsViewHelper contactViewControllerForAddress:self.address
+                                                 editImmediately:YES
+                                          addToExistingCnContact:cnContact];
+
+    if (!contactViewController) {
+        OWSFailDebug(@"Unexpected missing contact VC");
         return;
     }
-    [self.contactsViewHelper presentContactViewControllerForRecipientId:self.recipientId
-                                                     fromViewController:self
-                                                        editImmediately:YES
-                                                 addToExistingCnContact:cnContact];
+
+    contactViewController.delegate = self;
+
+    [self.navigationController pushViewController:contactViewController animated:YES];
 }
 
 @end

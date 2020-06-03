@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -13,22 +13,31 @@ public class SignalServiceProfile: NSObject {
         case invalidProfileName(description: String)
     }
 
-    public let recipientId: String
+    public let address: SignalServiceAddress
     public let identityKey: Data
     public let profileNameEncrypted: Data?
+    public let username: String?
     public let avatarUrlPath: String?
     public let unidentifiedAccessVerifier: Data?
     public let hasUnrestrictedUnidentifiedAccess: Bool
+    public let supportsUUID: Bool
+    public let supportsGroupsV2: Bool
+    public let credential: Data?
 
-    public init(recipientId: String, responseObject: Any?) throws {
-        self.recipientId = recipientId
-
+    public init(address: SignalServiceAddress?, responseObject: Any?) throws {
         guard let params = ParamParser(responseObject: responseObject) else {
             throw ValidationError.invalid(description: "invalid response: \(String(describing: responseObject))")
         }
 
+        if let address = address {
+            self.address = address
+        } else if let uuidString: String = try params.required(key: "uuid") {
+            self.address = SignalServiceAddress(uuidString: uuidString)
+        } else {
+            throw ValidationError.invalid(description: "response or input missing address")
+        }
+
         let identityKeyWithType = try params.requiredBase64EncodedData(key: "identityKey")
-        let kIdentityKeyLength = 33
         guard identityKeyWithType.count == kIdentityKeyLength else {
             throw ValidationError.invalidIdentityKey(description: "malformed identity key \(identityKeyWithType.hexadecimalString) with decoded length: \(identityKeyWithType.count)")
         }
@@ -44,11 +53,40 @@ public class SignalServiceProfile: NSObject {
 
         self.profileNameEncrypted = try params.optionalBase64EncodedData(key: "name")
 
+        self.username = try params.optional(key: "username")
+
         let avatarUrlPath: String? = try params.optional(key: "avatar")
         self.avatarUrlPath = avatarUrlPath
 
         self.unidentifiedAccessVerifier = try params.optionalBase64EncodedData(key: "unidentifiedAccess")
 
         self.hasUnrestrictedUnidentifiedAccess = try params.optional(key: "unrestrictedUnidentifiedAccess") ?? false
+
+        if let capabilities = ParamParser(responseObject: try params.required(key: "capabilities")) {
+            if let value: Bool = try capabilities.optional(key: "uuid") {
+                self.supportsUUID = value
+            } else {
+                if FeatureFlags.uuidCapabilities {
+                    owsFailDebug("Missing uuid capability.")
+                }
+                // The capability has been retired from the service.
+                self.supportsUUID = true
+            }
+            if let value: Bool = try capabilities.optional(key: "gv2") {
+                self.supportsGroupsV2 = value
+            } else {
+                if RemoteConfig.groupsV2CreateGroups {
+                    owsFailDebug("Missing groups v2 capability.")
+                }
+                // The capability has been retired from the service.
+                self.supportsGroupsV2 = true
+            }
+        } else {
+            owsFailDebug("Missing capabilities.")
+            self.supportsUUID = false
+            self.supportsGroupsV2 = false
+        }
+
+        self.credential = try params.optionalBase64EncodedData(key: "credential")
     }
 }

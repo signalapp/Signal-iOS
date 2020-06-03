@@ -1,9 +1,9 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
+#import "MIMETypeUtil.h"
 #import "OWSDevice.h"
-#import "OWSPrimaryStorage.h"
 #import "SSKBaseTestObjC.h"
 #import "TSAttachmentStream.h"
 #import "TSContactThread.h"
@@ -33,109 +33,115 @@
 
 - (void)testDeletingThreadDeletesInteractions
 {
-    TSContactThread *thread =
-        [[TSContactThread alloc] initWithUniqueId:[TSContactThread threadIdFromContactId:@"+13334445555"]];
-    [thread save];
+    TSContactThread *thread = [[TSContactThread alloc]
+        initWithContactAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+13334445555"]];
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [thread anyInsertWithTransaction:transaction];
+    }];
 
-    XCTAssertEqual(0, [thread numberOfInteractions]);
+    [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        XCTAssertEqual(0, [thread numberOfInteractionsWithTransaction:transaction]);
+    }];
 
-    TSIncomingMessage *incomingMessage =
-        [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:10000
-                                                           inThread:thread
-                                                           authorId:@"+12223334444"
-                                                     sourceDeviceId:OWSDevicePrimaryDeviceId
-                                                        messageBody:@"Incoming message body"
-                                                      attachmentIds:@[]
-                                                   expiresInSeconds:0
-                                                      quotedMessage:nil
-                                                       contactShare:nil
-                                                    serverTimestamp:nil
-                                                    wasReceivedByUD:NO];
-    [incomingMessage save];
+    TSIncomingMessageBuilder *incomingMessageBuilder =
+        [TSIncomingMessageBuilder incomingMessageBuilderWithThread:thread messageBody:@"Incoming message body"];
+    incomingMessageBuilder.authorAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+12223334444"];
+    incomingMessageBuilder.timestamp = 10000;
+    TSIncomingMessage *incomingMessage = [incomingMessageBuilder build];
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [incomingMessage anyInsertWithTransaction:transaction];
+    }];
 
-    TSOutgoingMessage *outgoingMessage =
-        [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:20000
-                                                           inThread:thread
-                                                        messageBody:@"outgoing message body"
-                                                      attachmentIds:[NSMutableArray new]
-                                                   expiresInSeconds:0
-                                                    expireStartedAt:0
-                                                     isVoiceMessage:NO
-                                                   groupMetaMessage:TSGroupMetaMessageUnspecified
-                                                      quotedMessage:nil
-                                                       contactShare:nil];
-    [outgoingMessage save];
+    TSOutgoingMessageBuilder *messageBuilder =
+        [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread messageBody:@"outgoing message body"];
+    messageBuilder.timestamp = 20000;
+    TSOutgoingMessage *outgoingMessage = [messageBuilder build];
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [outgoingMessage anyInsertWithTransaction:transaction];
+    }];
 
-    XCTAssertEqual(2, [thread numberOfInteractions]);
+    [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        XCTAssertEqual(2, [thread numberOfInteractionsWithTransaction:transaction]);
+    }];
 
-    [thread remove];
-    XCTAssertEqual(0, [thread numberOfInteractions]);
-    XCTAssertEqual(0, [TSInteraction numberOfKeysInCollection]);
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [thread anyRemoveWithTransaction:transaction];
+    }];
+    [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        XCTAssertEqual(0, [thread numberOfInteractionsWithTransaction:transaction]);
+        XCTAssertEqual(0, [TSInteraction anyCountWithTransaction:transaction]);
+    }];
 }
 
 - (void)testDeletingThreadDeletesAttachmentFiles
 {
-    TSContactThread *thread =
-        [[TSContactThread alloc] initWithUniqueId:[TSContactThread threadIdFromContactId:@"+13334445555"]];
-    [thread save];
+    TSContactThread *thread = [[TSContactThread alloc]
+        initWithContactAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+13334445555"]];
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [thread anyInsertWithTransaction:transaction];
+    }];
 
     // Sanity check
-    XCTAssertEqual(0, [thread numberOfInteractions]);
+    [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        XCTAssertEqual(0, [thread numberOfInteractionsWithTransaction:transaction]);
+    }];
 
-    NSError *error;
-    TSAttachmentStream *incomingAttachment =
-        [[TSAttachmentStream alloc] initWithContentType:@"image/jpeg" byteCount:0 sourceFilename:nil];
-    [incomingAttachment writeData:[NSData new] error:&error];
-    [incomingAttachment save];
+    __block TSAttachmentStream *incomingAttachment;
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        incomingAttachment = [AttachmentStreamFactory createWithContentType:OWSMimeTypeImageJpeg
+                                                                 dataSource:DataSourceValue.emptyDataSource
+                                                                transaction:transaction];
+    }];
 
     // Sanity check
     BOOL incomingFileWasCreated =
         [[NSFileManager defaultManager] fileExistsAtPath:[incomingAttachment originalFilePath]];
     XCTAssert(incomingFileWasCreated);
 
-    TSIncomingMessage *incomingMessage =
-        [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:10000
-                                                           inThread:thread
-                                                           authorId:@"+12223334444"
-                                                     sourceDeviceId:OWSDevicePrimaryDeviceId
-                                                        messageBody:@"incoming message body"
-                                                      attachmentIds:@[ incomingAttachment.uniqueId ]
-                                                   expiresInSeconds:0
-                                                      quotedMessage:nil
-                                                       contactShare:nil
-                                                    serverTimestamp:nil
-                                                    wasReceivedByUD:NO];
-    [incomingMessage save];
+    TSIncomingMessageBuilder *incomingMessageBuilder =
+        [TSIncomingMessageBuilder incomingMessageBuilderWithThread:thread messageBody:@"Incoming message body"];
+    incomingMessageBuilder.authorAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+12223334444"];
+    incomingMessageBuilder.timestamp = 10000;
+    incomingMessageBuilder.attachmentIds = [@[ incomingAttachment.uniqueId ] mutableCopy];
+    TSIncomingMessage *incomingMessage = [incomingMessageBuilder build];
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [incomingMessage anyInsertWithTransaction:transaction];
+    }];
 
-    TSAttachmentStream *outgoingAttachment =
-        [[TSAttachmentStream alloc] initWithContentType:@"image/jpeg" byteCount:0 sourceFilename:nil];
-    [outgoingAttachment writeData:[NSData new] error:&error];
-    [outgoingAttachment save];
+    __block TSAttachmentStream *outgoingAttachment;
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        outgoingAttachment = [AttachmentStreamFactory createWithContentType:OWSMimeTypeImageJpeg
+                                                                 dataSource:DataSourceValue.emptyDataSource
+                                                                transaction:transaction];
+    }];
 
     // Sanity check
     BOOL outgoingFileWasCreated =
         [[NSFileManager defaultManager] fileExistsAtPath:[outgoingAttachment originalFilePath]];
     XCTAssert(outgoingFileWasCreated);
 
-    TSOutgoingMessage *outgoingMessage =
-        [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:10000
-                                                           inThread:thread
-                                                        messageBody:@"outgoing message body"
-                                                      attachmentIds:[@[ outgoingAttachment.uniqueId ] mutableCopy]
-                                                   expiresInSeconds:0
-                                                    expireStartedAt:0
-                                                     isVoiceMessage:NO
-                                                   groupMetaMessage:TSGroupMetaMessageUnspecified
-                                                      quotedMessage:nil
-                                                       contactShare:nil];
-    [outgoingMessage save];
+    TSOutgoingMessageBuilder *messageBuilder =
+        [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread messageBody:@"outgoing message body"];
+    messageBuilder.timestamp = 10000;
+    messageBuilder.attachmentIds = [@[ outgoingAttachment.uniqueId ] mutableCopy];
+    TSOutgoingMessage *outgoingMessage = [messageBuilder build];
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [outgoingMessage anyInsertWithTransaction:transaction];
+    }];
 
     // Sanity check
-    XCTAssertEqual(2, [thread numberOfInteractions]);
+    [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        XCTAssertEqual(2, [thread numberOfInteractionsWithTransaction:transaction]);
+    }];
 
     // Actual Test Follows
-    [thread remove];
-    XCTAssertEqual(0, [thread numberOfInteractions]);
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [thread anyRemoveWithTransaction:transaction];
+    }];
+
+    [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        XCTAssertEqual(0, [thread numberOfInteractionsWithTransaction:transaction]);
+    }];
 
     BOOL incomingFileStillExists =
         [[NSFileManager defaultManager] fileExistsAtPath:[incomingAttachment originalFilePath]];

@@ -2,8 +2,6 @@
 
 We typically develop against the latest stable version of Xcode.
 
-As of this writing, that's Xcode 9.4.
-
 ## 1. Clone
 
 Clone the repo to a working directory:
@@ -12,7 +10,7 @@ Clone the repo to a working directory:
 git clone --recurse-submodules https://github.com/signalapp/Signal-iOS
 ```
 
-Since we make use of submodules, you must use `git clone`, rather than
+Since we make use of sub-modules, you must use `git clone`, rather than
 downloading a prepared zip file from Github.
 
 We recommend you fork the repo on GitHub, then clone your fork:
@@ -35,55 +33,11 @@ To build and configure the libraries Signal uses, just run:
 make dependencies
 ```
 
-If the above fails to run, or you just want to know more about our
-dependency management systems, read the next section, Dependency Details.
-Else if the above completed without error - jump ahead to step 3.
+### Building RingRTC
 
-### Dependency Details
-
-We have a couple of dependency management tools. We use Carthage for
-managing frameworks, but because some of our dependencies are not yet
-framework compatible, we use Cocoapods to manage the remainder in a
-static library.
-
-2.1) [CocoaPods](http://cocoapods.org) is used to manage the dependencies in our static library. Pods are setup easily and are distributed via a ruby gem. Follow the simple instructions on the website to setup. After setup, run the following command from the toplevel directory of Signal-iOS to download the dependencies for Signal-iOS:
-
-```
-pod install
-```
-
-If you are having build issues, first make sure your pods are up to date
-
-```
-pod repo update
-pod install
-```
-
-Occasionally, CocoaPods itself will need to be updated. Do this with
-
-```
-gem update cocoapods
-pod repo update
-pod install
-```
-
-2.2) Framework dependencies are built and managed using [Carthage](https://github.com/Carthage/Carthage). Our prebuilt WebRTC.framework also resides in the Carthage/Build directory.
-
-If you don't have carthage, here are the [install instructions](https://github.com/Carthage/Carthage#installing-carthage).
-
-Once Carthage is installed, run:
-
-```
-// DO NOT run: `carthage update` or `carthage checkout`.
-git submodule update --init
-carthage build --platform iOS
-```
-
-### Building WebRTC
-
-A prebuilt version of WebRTC.framework resides in our Carthage submodule
-and should be installed by the above steps.  However, if you'd like to
-build it from source, see: https://github.com/signalapp/signal-webrtc-ios
+A prebuilt version of WebRTC.framework and the libringrtc static library reside
+in a sub-module and should be installed by the above steps.  However, if you'd 
+like to build it from source, see: https://github.com/signalapp/ringrtc
 
 ## 3. Xcode
 
@@ -114,6 +68,8 @@ Features related to push notifications are known to be not working for
 third-party contributors since Apple's Push Notification service pushes
 will only work with Open Whisper Systems production code signing
 certificate.
+
+Turn on Push Notifications on the Capabilities tab if you want to register a new Signal account using the application installed via XCode.
 
 If you have any other issues, please ask on the [community forum](https://whispersystems.discoursehosting.net/).
 

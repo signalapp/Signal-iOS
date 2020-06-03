@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSQuotedMessageView.h"
@@ -9,7 +9,6 @@
 #import "Signal-Swift.h"
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
-#import <SignalMessaging/UIColor+OWS.h>
 #import <SignalMessaging/UIView+OWS.h>
 #import <SignalServiceKit/TSAttachmentStream.h>
 #import <SignalServiceKit/TSMessage.h>
@@ -66,13 +65,13 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
         displayableQuotedText = [DisplayableText displayableText:quotedMessage.body];
     }
 
-    OWSQuotedMessageView *instance =
-        [[OWSQuotedMessageView alloc] initWithQuotedMessage:quotedMessage
-                                      displayableQuotedText:displayableQuotedText
-                                          conversationStyle:conversationStyle
-                                               isForPreview:YES
-                                                 isOutgoing:YES
-                                               sharpCorners:OWSDirectionalRectCornerAllCorners];
+    OWSQuotedMessageView *instance = [[OWSQuotedMessageView alloc]
+        initWithQuotedMessage:quotedMessage
+        displayableQuotedText:displayableQuotedText
+            conversationStyle:conversationStyle
+                 isForPreview:YES
+                   isOutgoing:YES
+                 sharpCorners:(OWSDirectionalRectCornerBottomLeading | OWSDirectionalRectCornerBottomTrailing)];
     [instance createContents];
     return instance;
 }
@@ -121,7 +120,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 
 - (UIColor *)highlightColor
 {
-    BOOL isQuotingSelf = [NSObject isNullableObject:self.quotedMessage.authorId equalTo:TSAccountManager.localNumber];
+    BOOL isQuotingSelf = self.quotedMessage.authorAddress.isLocalAddress;
     return (isQuotingSelf ? [self.conversationStyle bubbleColorWithIsIncoming:NO]
                           : [self.conversationStyle quotingSelfHighlightColor]);
 }
@@ -130,7 +129,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 
 - (CGFloat)bubbleHMargin
 {
-    return 6.f;
+    return (self.isForPreview ? 0.f : 6.f);
 }
 
 - (CGFloat)hSpacing
@@ -146,11 +145,6 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 - (CGFloat)stripeThickness
 {
     return 4.f;
-}
-
-- (UIColor *)quoteBubbleBackgroundColor
-{
-    return [self.conversationStyle quotedReplyBubbleColorWithIsIncoming:!self.isOutgoing];
 }
 
 - (void)createContents
@@ -189,19 +183,25 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
             maskLayer.path = bezierPath.CGPath;
         }];
     innerBubbleView.layer.mask = maskLayer;
-    innerBubbleView.backgroundColor = self.quoteBubbleBackgroundColor;
+    innerBubbleView.backgroundColor = self.conversationStyle.quotedReplyBubbleColor;
     [self addSubview:innerBubbleView];
     [innerBubbleView autoPinLeadingToSuperviewMarginWithInset:self.bubbleHMargin];
     [innerBubbleView autoPinTrailingToSuperviewMarginWithInset:self.bubbleHMargin];
     [innerBubbleView autoPinTopToSuperviewMargin];
     [innerBubbleView autoPinBottomToSuperviewMargin];
+    [innerBubbleView setContentHuggingHorizontalLow];
+    [innerBubbleView setCompressionResistanceHorizontalLow];
 
     UIStackView *hStackView = [UIStackView new];
     hStackView.axis = UILayoutConstraintAxisHorizontal;
     hStackView.spacing = self.hSpacing;
 
     UIView *stripeView = [UIView new];
-    stripeView.backgroundColor = [self.conversationStyle quotedReplyStripeColorWithIsIncoming:!self.isOutgoing];
+    if (self.isForPreview) {
+        stripeView.backgroundColor = [self.conversationStyle quotedReplyStripeColorWithIsIncoming:YES];
+    } else {
+        stripeView.backgroundColor = [self.conversationStyle quotedReplyStripeColorWithIsIncoming:!self.isOutgoing];
+    }
     [stripeView autoSetDimension:ALDimensionWidth toSize:self.stripeThickness];
     [stripeView setContentHuggingHigh];
     [stripeView setCompressionResistanceHigh];
@@ -212,6 +212,8 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
     vStackView.layoutMargins = UIEdgeInsetsMake(self.textVMargin, 0, self.textVMargin, 0);
     vStackView.layoutMarginsRelativeArrangement = YES;
     vStackView.spacing = self.vSpacing;
+    [vStackView setContentHuggingHorizontalLow];
+    [vStackView setCompressionResistanceHorizontalLow];
     [hStackView addArrangedSubview:vStackView];
 
     UILabel *quotedAuthorLabel = [self configureQuotedAuthorLabel];
@@ -223,8 +225,9 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 
     UILabel *quotedTextLabel = [self configureQuotedTextLabel];
     [vStackView addArrangedSubview:quotedTextLabel];
-    [quotedTextLabel setContentHuggingLow];
-    [quotedTextLabel setCompressionResistanceLow];
+    [quotedTextLabel setContentHuggingHorizontalLow];
+    [quotedTextLabel setCompressionResistanceHorizontalLow];
+    [quotedTextLabel setCompressionResistanceVerticalHigh];
 
     if (self.hasQuotedAttachment) {
         UIView *_Nullable quotedAttachmentView = nil;
@@ -232,7 +235,6 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
         if (thumbnailImage) {
             quotedAttachmentView = [self imageViewForImage:thumbnailImage];
             quotedAttachmentView.clipsToBounds = YES;
-            quotedAttachmentView.backgroundColor = [UIColor whiteColor];
 
             if (self.isVideoAttachment) {
                 UIImage *contentIcon = [UIImage imageNamed:@"attachment_play_button"];
@@ -273,7 +275,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
             quotedAttachmentView = wrapper;
         }
 
-        [quotedAttachmentView autoSetDimension:ALDimensionWidth toSize:self.quotedAttachmentSize];
+        [quotedAttachmentView autoPinToSquareAspectRatio];
         [quotedAttachmentView setContentHuggingHigh];
         [quotedAttachmentView setCompressionResistanceHigh];
         [hStackView addArrangedSubview:quotedAttachmentView];
@@ -287,15 +289,57 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
         [emptyView autoSetDimension:ALDimensionWidth toSize:0.f];
     }
 
-    UIStackView *quoteSourceWrapper = [[UIStackView alloc] initWithArrangedSubviews:@[ hStackView ]];
-    quoteSourceWrapper.axis = UILayoutConstraintAxisVertical;
+    UIView *contentView = hStackView;
+    [contentView setContentHuggingHorizontalLow];
+    [contentView setCompressionResistanceHorizontalLow];
 
     if (self.quotedMessage.isRemotelySourced) {
-        [quoteSourceWrapper addArrangedSubview:[self buildRemoteContentSourceView]];
+        UIStackView *quoteSourceWrapper = [[UIStackView alloc] initWithArrangedSubviews:@[
+            contentView,
+            [self buildRemoteContentSourceView],
+        ]];
+        quoteSourceWrapper.axis = UILayoutConstraintAxisVertical;
+        contentView = quoteSourceWrapper;
+        [contentView setContentHuggingHorizontalLow];
+        [contentView setCompressionResistanceHorizontalLow];
     }
 
-    [innerBubbleView addSubview:quoteSourceWrapper];
-    [quoteSourceWrapper ows_autoPinToSuperviewEdges];
+    if (self.isForPreview) {
+        UIButton *cancelButton = [UIButton buttonWithType:UIButtonTypeCustom];
+        [cancelButton
+            setImage:[[UIImage imageNamed:@"compose-cancel"] imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate]
+            forState:UIControlStateNormal];
+        cancelButton.imageView.tintColor = Theme.secondaryTextAndIconColor;
+        [cancelButton addTarget:self action:@selector(didTapCancel) forControlEvents:UIControlEventTouchUpInside];
+        [cancelButton setContentHuggingHorizontalHigh];
+        [cancelButton setCompressionResistanceHorizontalHigh];
+
+        UIStackView *cancelStack = [[UIStackView alloc] initWithArrangedSubviews:@[ cancelButton ]];
+        cancelStack.axis = UILayoutConstraintAxisHorizontal;
+        cancelStack.alignment = UIStackViewAlignmentTop;
+        cancelStack.layoutMarginsRelativeArrangement = YES;
+        CGFloat hMarginLeading = 0;
+        CGFloat hMarginTrailing = 6;
+        cancelStack.layoutMargins = UIEdgeInsetsMake(6,
+            CurrentAppContext().isRTL ? hMarginTrailing : hMarginLeading,
+            0,
+            CurrentAppContext().isRTL ? hMarginLeading : hMarginTrailing);
+        [cancelStack setContentHuggingHorizontalHigh];
+        [cancelStack setCompressionResistanceHorizontalHigh];
+
+        UIStackView *cancelWrapper = [[UIStackView alloc] initWithArrangedSubviews:@[
+            contentView,
+            cancelStack,
+        ]];
+        cancelWrapper.axis = UILayoutConstraintAxisHorizontal;
+
+        contentView = cancelWrapper;
+        [contentView setContentHuggingHorizontalLow];
+        [contentView setCompressionResistanceHorizontalLow];
+    }
+
+    [innerBubbleView addSubview:contentView];
+    [contentView autoPinEdgesToSuperviewEdges];
 }
 
 - (UIView *)buildRemoteContentSourceView
@@ -306,7 +350,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
     OWSAssertDebug(CGSizeEqualToSize(
         CGSizeMake(kRemotelySourcedContentGlyphLength, kRemotelySourcedContentGlyphLength), glyphImage.size));
     UIImageView *glyphView = [[UIImageView alloc] initWithImage:glyphImage];
-    glyphView.tintColor = Theme.secondaryColor;
+    glyphView.tintColor = Theme.lightThemePrimaryColor;
     [glyphView
         autoSetDimensionsToSize:CGSizeMake(kRemotelySourcedContentGlyphLength, kRemotelySourcedContentGlyphLength)];
 
@@ -411,6 +455,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
     self.quotedTextLabel.numberOfLines = self.isForPreview ? 1 : 2;
     self.quotedTextLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     self.quotedTextLabel.text = text;
+    self.quotedTextLabel.textAlignment = self.displayableQuotedText.displayTextNaturalAlignment;
     self.quotedTextLabel.textColor = textColor;
     self.quotedTextLabel.font = font;
 
@@ -422,7 +467,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
     OWSAssertDebug(self.quoteContentSourceLabel);
 
     self.quoteContentSourceLabel.font = UIFont.ows_dynamicTypeFootnoteFont;
-    self.quoteContentSourceLabel.textColor = Theme.primaryColor;
+    self.quoteContentSourceLabel.textColor = Theme.lightThemePrimaryColor;
     self.quoteContentSourceLabel.text = NSLocalizedString(@"QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE",
         @"Footer label that appears below quoted messages when the quoted content was not derived locally. When the "
         @"local user doesn't have a copy of the message being quoted, e.g. if it had since been deleted, we instead "
@@ -481,20 +526,18 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 {
     OWSAssertDebug(self.quotedAuthorLabel);
 
-    NSString *_Nullable localNumber = [TSAccountManager localNumber];
     NSString *quotedAuthorText;
-    if ([localNumber isEqualToString:self.quotedMessage.authorId]) {
-
-        if (self.isOutgoing) {
-            quotedAuthorText = NSLocalizedString(
-                @"QUOTED_REPLY_AUTHOR_INDICATOR_YOURSELF", @"message header label when quoting yourself");
-        } else {
-            quotedAuthorText = NSLocalizedString(
-                @"QUOTED_REPLY_AUTHOR_INDICATOR_YOU", @"message header label when someone else is quoting you");
-        }
+    if (self.quotedMessage.authorAddress.isLocalAddress) {
+        quotedAuthorText = NSLocalizedString(
+            @"QUOTED_REPLY_AUTHOR_INDICATOR_YOU", @"message header label when someone else is quoting you");
     } else {
         OWSContactsManager *contactsManager = Environment.shared.contactsManager;
-        NSString *quotedAuthor = [contactsManager contactOrProfileNameForPhoneIdentifier:self.quotedMessage.authorId];
+        NSString *quotedAuthor;
+        if (RemoteConfig.messageRequests) {
+            quotedAuthor = [contactsManager displayNameForAddress:self.quotedMessage.authorAddress];
+        } else {
+            quotedAuthor = [contactsManager legacyDisplayNameForAddress:self.quotedMessage.authorAddress];
+        }
         quotedAuthorText = [NSString
             stringWithFormat:
                 NSLocalizedString(@"QUOTED_REPLY_AUTHOR_INDICATOR_FORMAT",
@@ -570,7 +613,7 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 
 - (UIFont *)quotedAuthorFont
 {
-    return UIFont.ows_dynamicTypeSubheadlineFont.ows_mediumWeight;
+    return UIFont.ows_dynamicTypeSubheadlineFont.ows_semibold;
 }
 
 - (UIColor *)quotedAuthorColor
@@ -623,6 +666,11 @@ const CGFloat kRemotelySourcedContentRowSpacing = 3;
 - (CGSize)sizeThatFits:(CGSize)size
 {
     return [self sizeForMaxWidth:CGFLOAT_MAX];
+}
+
+- (void)didTapCancel
+{
+    [self.delegate didCancelQuotedReply];
 }
 
 @end

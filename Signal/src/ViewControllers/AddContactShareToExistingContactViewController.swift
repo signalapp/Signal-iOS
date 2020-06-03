@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -59,7 +59,8 @@ class AddContactShareToExistingContactViewController: ContactsPicker, ContactsPi
         Logger.debug("")
 
         let contactsManager = Environment.shared.contactsManager
-        guard let oldCNContact = contactsManager?.cnContact(withId: oldContact.cnContactId) else {
+        guard let cnContactId = oldContact.cnContactId,
+            let oldCNContact = contactsManager?.cnContact(withId: cnContactId) else {
             owsFailDebug("could not load old CNContact.")
             return
         }
@@ -128,7 +129,7 @@ class AddContactShareToExistingContactViewController: ContactsPicker, ContactsPi
         // We want to pop *this* view *and* the still presented CNContactViewController in a single animation.
         // Note this happens for *cancel* and for *done*. Unfortunately, I don't know of a way to detect the difference
         // between the two, since both just call this method.
-        guard let myIndex = navigationController.viewControllers.index(of: self) else {
+        guard let myIndex = navigationController.viewControllers.firstIndex(of: self) else {
             owsFailDebug("myIndex was unexpectedly nil")
             navigationController.popViewController(animated: true)
             navigationController.popViewController(animated: true)

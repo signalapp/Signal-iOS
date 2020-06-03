@@ -1,11 +1,10 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "MockEnvironment.h"
 #import "OWSBackup.h"
 #import "OWSWindowManager.h"
-#import <SignalMessaging/LockInteractionController.h>
 #import <SignalMessaging/OWSPreferences.h>
 #import <SignalMessaging/OWSSounds.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
@@ -16,26 +15,27 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (MockEnvironment *)activate
 {
-    MockEnvironment *instance = [MockEnvironment new];
+    MockEnvironment *instance = [[MockEnvironment alloc] init];
     [self setShared:instance];
     return instance;
 }
 
 - (instancetype)init
 {
-    OWSPrimaryStorage *primaryStorage = SSKEnvironment.shared.primaryStorage;
-    OWSAssertDebug(primaryStorage);
-
     // TODO: We should probably mock this out.
     OWSAudioSession *audioSession = [OWSAudioSession new];
-    LockInteractionController *lockInteractionController = [[LockInteractionController alloc] initDefault];
+    OWSIncomingContactSyncJobQueue *incomingContactSyncJobQueue = [OWSIncomingContactSyncJobQueue new];
+    OWSIncomingGroupSyncJobQueue *incomingGroupSyncJobQueue = [OWSIncomingGroupSyncJobQueue new];
+    LaunchJobs *launchJobs = [LaunchJobs new];
     OWSPreferences *preferences = [OWSPreferences new];
-    OWSSounds *sounds = [[OWSSounds alloc] initWithPrimaryStorage:primaryStorage];
+    OWSSounds *sounds = [OWSSounds new];
     id<OWSProximityMonitoringManager> proximityMonitoringManager = [OWSProximityMonitoringManagerImpl new];
     OWSWindowManager *windowManager = [[OWSWindowManager alloc] initDefault];
 
     self = [super initWithAudioSession:audioSession
-             lockInteractionController:lockInteractionController
+           incomingContactSyncJobQueue:incomingContactSyncJobQueue
+             incomingGroupSyncJobQueue:incomingGroupSyncJobQueue
+                            launchJobs:launchJobs
                            preferences:preferences
             proximityMonitoringManager:proximityMonitoringManager
                                 sounds:sounds

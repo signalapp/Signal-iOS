@@ -31,15 +31,6 @@ NS_ASSUME_NONNULL_BEGIN
     return CGSizeZero;
 }
 
-- (void)setIsCellVisible:(BOOL)isCellVisible
-{
-    _isCellVisible = isCellVisible;
-
-    if (isCellVisible) {
-        [self layoutIfNeeded];
-    }
-}
-
 // For perf reasons, skip the default implementation which is only relevant for self-sizing cells.
 - (UICollectionViewLayoutAttributes *)preferredLayoutAttributesFittingAttributes:
     (UICollectionViewLayoutAttributes *)layoutAttributes

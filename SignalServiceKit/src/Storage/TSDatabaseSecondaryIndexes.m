@@ -1,10 +1,12 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSDatabaseSecondaryIndexes.h"
 #import "OWSStorage.h"
 #import "TSInteraction.h"
+
+NS_ASSUME_NONNULL_BEGIN
 
 #define TSTimeStampSQLiteIndex @"messagesTimeStamp"
 
@@ -48,3 +50,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

@@ -1,21 +1,29 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class OWSPrimaryStorage;
+@class SDSAnyWriteTransaction;
+@class SDSKeyValueStore;
 @class SSKProtoEnvelope;
+@class SignalServiceAddress;
 
 @interface OWSOutgoingReceiptManager : NSObject
 
-- (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage NS_DESIGNATED_INITIALIZER;
++ (SDSKeyValueStore *)deliveryReceiptStore;
++ (SDSKeyValueStore *)readReceiptStore;
+
 + (instancetype)sharedManager;
 
-- (void)enqueueDeliveryReceiptForEnvelope:(SSKProtoEnvelope *)envelope;
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
 
-- (void)enqueueReadReceiptForEnvelope:(NSString *)messageAuthorId timestamp:(uint64_t)timestamp;
+- (void)enqueueDeliveryReceiptForEnvelope:(SSKProtoEnvelope *)envelope
+                              transaction:(SDSAnyWriteTransaction *)transaction;
+
+- (void)enqueueReadReceiptForAddress:(SignalServiceAddress *)messageAuthorAddress
+                           timestamp:(uint64_t)timestamp
+                         transaction:(SDSAnyWriteTransaction *)transaction;
 
 @end
 

@@ -1,10 +1,10 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationInputTextView.h"
 #import "Signal-Swift.h"
-#import <SignalMessaging/NSString+OWS.h>
+#import <SignalCoreKit/NSString+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -26,12 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
         [self setTranslatesAutoresizingMaskIntoConstraints:NO];
 
         self.delegate = self;
-
-        self.backgroundColor = (Theme.isDarkThemeEnabled ? UIColor.ows_gray90Color : UIColor.ows_gray02Color);
-        self.layer.borderColor
-            = (Theme.isDarkThemeEnabled ? [Theme.primaryColor colorWithAlphaComponent:0.06f].CGColor
-                                        : [Theme.primaryColor colorWithAlphaComponent:0.12f].CGColor);
-        self.layer.borderWidth = 0.5f;
+        self.backgroundColor = nil;
 
         self.scrollIndicatorInsets = UIEdgeInsetsMake(4, 4, 4, 4);
 
@@ -40,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
         self.userInteractionEnabled = YES;
 
         self.font = [UIFont ows_dynamicTypeBodyFont];
-        self.textColor = Theme.primaryColor;
+        self.textColor = Theme.primaryTextColor;
         self.textAlignment = NSTextAlignmentNatural;
 
         self.contentMode = UIViewContentModeRedraw;
@@ -56,7 +51,10 @@ NS_ASSUME_NONNULL_BEGIN
 
         // We need to do these steps _after_ placeholderView is configured.
         self.font = [UIFont ows_dynamicTypeBodyFont];
-        self.textContainerInset = UIEdgeInsetsMake(7.0f, 12.0f, 7.0f, 12.0f);
+        self.textContainer.lineFragmentPadding = 0;
+        self.contentInset = UIEdgeInsetsZero;
+
+        [self updateTextContainerInset];
 
         [self ensurePlaceholderConstraints];
         [self updatePlaceholderVisibility];
@@ -105,20 +103,16 @@ NS_ASSUME_NONNULL_BEGIN
         [NSLayoutConstraint deactivateConstraints:self.placeholderConstraints];
     }
 
-    // We align the location of our placeholder with the text content of
-    // this view.  The only safe way to do that is by measuring the
-    // beginning position.
-    UITextRange *beginningTextRange =
-        [self textRangeFromPosition:self.beginningOfDocument toPosition:self.beginningOfDocument];
-    CGRect beginningTextRect = [self firstRectForRange:beginningTextRange];
+    CGFloat topInset = self.textContainerInset.top;
+    CGFloat leftInset = self.textContainerInset.left;
+    CGFloat rightInset = self.textContainerInset.right;
 
-    CGFloat topInset = beginningTextRect.origin.y;
-    CGFloat leftInset = beginningTextRect.origin.x;
-
-    // we use Left instead of Leading, since it's based on the prior CGRect offset
     self.placeholderConstraints = @[
+        [self.placeholderView autoMatchDimension:ALDimensionWidth
+                                     toDimension:ALDimensionWidth
+                                          ofView:self
+                                      withOffset:-(leftInset + rightInset)],
         [self.placeholderView autoPinEdgeToSuperviewEdge:ALEdgeLeft withInset:leftInset],
-        [self.placeholderView autoPinEdgeToSuperviewEdge:ALEdgeRight],
         [self.placeholderView autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:topInset],
     ];
 }
@@ -128,16 +122,46 @@ NS_ASSUME_NONNULL_BEGIN
     self.placeholderView.hidden = self.text.length > 0;
 }
 
+- (void)updateTextContainerInset
+{
+    if (!self.placeholderView) {
+        return;
+    }
+
+    CGFloat stickerButtonOffset = 30.f;
+    CGFloat leftInset = 12.f;
+    CGFloat rightInset = leftInset;
+
+    // If the placeholder view is visible, we need to offset
+    // the input container to accomodate for the sticker button.
+    if (!self.placeholderView.isHidden) {
+        if (CurrentAppContext().isRTL) {
+            leftInset += stickerButtonOffset;
+        } else {
+            rightInset += stickerButtonOffset;
+        }
+    }
+
+    self.textContainerInset = UIEdgeInsetsMake(7.f, leftInset, 7.f, rightInset);
+}
+
 - (void)setText:(NSString *_Nullable)text
 {
     [super setText:text];
 
     [self updatePlaceholderVisibility];
+    [self updateTextContainerInset];
 }
 
-- (BOOL)canBecomeFirstResponder
+- (BOOL)becomeFirstResponder
 {
-    return YES;
+    BOOL result = [super becomeFirstResponder];
+
+    if (result) {
+        [self.textViewToolbarDelegate textViewDidBecomeFirstResponder:self];
+    }
+
+    return result;
 }
 
 - (BOOL)pasteboardHasPossibleAttachment
@@ -174,6 +198,11 @@ NS_ASSUME_NONNULL_BEGIN
     return [self.text ows_stripped];
 }
 
+- (NSString *)untrimmedText
+{
+    return self.text;
+}
+
 #pragma mark - UITextViewDelegate
 
 - (void)textViewDidChange:(UITextView *)textView
@@ -182,50 +211,56 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(self.textViewToolbarDelegate);
 
     [self updatePlaceholderVisibility];
+    [self updateTextContainerInset];
 
     [self.inputTextViewDelegate textViewDidChange:self];
     [self.textViewToolbarDelegate textViewDidChange:self];
+}
+
+- (void)textViewDidChangeSelection:(UITextView *)textView
+{
+    [self.textViewToolbarDelegate textViewDidChangeSelection:self];
 }
 
 #pragma mark - Key Commands
 
 - (nullable NSArray<UIKeyCommand *> *)keyCommands
 {
-    // We're permissive about what modifier key we accept for the "send message" hotkey.
-    // We accept command-return, option-return.
-    //
-    // We don't support control-return because it doesn't work.
-    //
-    // We don't support shift-return because it is often used for "newline" in other
-    // messaging apps.
+    // We don't define discoverability title for these key commands as they're
+    // considered "default" functionality and shouldn't clutter the shortcut
+    // list that is rendered when you hold down the command key.
+
     return @[
-        [self keyCommandWithInput:@"\r"
-                    modifierFlags:UIKeyModifierCommand
-                           action:@selector(modifiedReturnPressed:)
-             discoverabilityTitle:@"Send Message"],
-        // "Alternate" is option.
-        [self keyCommandWithInput:@"\r"
-                    modifierFlags:UIKeyModifierAlternate
-                           action:@selector(modifiedReturnPressed:)
-             discoverabilityTitle:@"Send Message"],
+        // An unmodified return can only be sent by a hardware keyboard,
+        // return on the software keyboard will not trigger this command.
+        // Return, send message
+        [UIKeyCommand keyCommandWithInput:@"\r" modifierFlags:0 action:@selector(unmodifedReturnPressed:)],
+        // Alt + Return, inserts a new line
+        [UIKeyCommand keyCommandWithInput:@"\r"
+                            modifierFlags:UIKeyModifierAlternate
+                                   action:@selector(modifiedReturnPressed:)],
+        // Shift + Return, inserts a new line
+        [UIKeyCommand keyCommandWithInput:@"\r"
+                            modifierFlags:UIKeyModifierShift
+                                   action:@selector(modifiedReturnPressed:)],
     ];
 }
 
-- (UIKeyCommand *)keyCommandWithInput:(NSString *)input
-                        modifierFlags:(UIKeyModifierFlags)modifierFlags
-                               action:(SEL)action
-                 discoverabilityTitle:(NSString *)discoverabilityTitle
+- (void)unmodifedReturnPressed:(UIKeyCommand *)sender
 {
-    return [UIKeyCommand keyCommandWithInput:input
-                               modifierFlags:modifierFlags
-                                      action:action
-                        discoverabilityTitle:discoverabilityTitle];
+    OWSLogInfo(@"unmodifedReturnPressed: %@", sender.input);
+
+    [self.inputTextViewDelegate inputTextViewSendMessagePressed];
 }
 
 - (void)modifiedReturnPressed:(UIKeyCommand *)sender
 {
     OWSLogInfo(@"modifiedReturnPressed: %@", sender.input);
-    [self.inputTextViewDelegate inputTextViewSendMessagePressed];
+
+    [self replaceRange:self.selectedTextRange withText:@"\n"];
+
+    [self.inputTextViewDelegate textViewDidChange:self];
+    [self.textViewToolbarDelegate textViewDidChange:self];
 }
 
 @end

@@ -1,9 +1,12 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "AppVersion.h"
 #import <SignalServiceKit/NSUserDefaults+OWS.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
+
+NS_ASSUME_NONNULL_BEGIN
 
 NSString *const kNSUserDefaults_FirstAppVersion = @"kNSUserDefaults_FirstAppVersion";
 NSString *const kNSUserDefaults_LastAppVersion = @"kNSUserDefaults_LastVersion";
@@ -12,16 +15,19 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion_MainApp
     = @"kNSUserDefaults_LastCompletedLaunchAppVersion_MainApp";
 NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion_SAE
     = @"kNSUserDefaults_LastCompletedLaunchAppVersion_SAE";
+NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion_NSE
+    = @"kNSUserDefaults_LastCompletedLaunchAppVersion_NSE";
 
 @interface AppVersion ()
 
 @property (atomic) NSString *firstAppVersion;
-@property (atomic) NSString *lastAppVersion;
+@property (atomic, nullable) NSString *lastAppVersion;
 @property (atomic) NSString *currentAppVersion;
 
-@property (atomic) NSString *lastCompletedLaunchAppVersion;
-@property (atomic) NSString *lastCompletedLaunchMainAppVersion;
-@property (atomic) NSString *lastCompletedLaunchSAEAppVersion;
+@property (atomic, nullable) NSString *lastCompletedLaunchAppVersion;
+@property (atomic, nullable) NSString *lastCompletedLaunchMainAppVersion;
+@property (atomic, nullable) NSString *lastCompletedLaunchSAEAppVersion;
+@property (atomic, nullable) NSString *lastCompletedLaunchNSEAppVersion;
 
 @end
 
@@ -57,6 +63,8 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion_SAE
         [[NSUserDefaults appUserDefaults] objectForKey:kNSUserDefaults_LastCompletedLaunchAppVersion_MainApp];
     self.lastCompletedLaunchSAEAppVersion =
         [[NSUserDefaults appUserDefaults] objectForKey:kNSUserDefaults_LastCompletedLaunchAppVersion_SAE];
+    self.lastCompletedLaunchNSEAppVersion =
+        [[NSUserDefaults appUserDefaults] objectForKey:kNSUserDefaults_LastCompletedLaunchAppVersion_NSE];
 
     // Ensure the value for the "first launched version".
     if (!self.firstAppVersion) {
@@ -68,15 +76,55 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion_SAE
     [[NSUserDefaults appUserDefaults] setObject:self.currentAppVersion forKey:kNSUserDefaults_LastAppVersion];
     [[NSUserDefaults appUserDefaults] synchronize];
 
+    [self startupLogging];
+}
+
+- (void)startupLogging
+{
+    // The long version string looks like an IPv4 address.
+    // To prevent the log scrubber from scrubbing it,
+    // we replace . with _.
+    NSString *longVersionString = [[[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]
+        stringByReplacingOccurrencesOfString:@"."
+                                  withString:@"_"];
+
     OWSLogInfo(@"firstAppVersion: %@", self.firstAppVersion);
     OWSLogInfo(@"lastAppVersion: %@", self.lastAppVersion);
-    OWSLogInfo(@"currentAppVersion: %@ (%@)",
-        self.currentAppVersion,
-        [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"]);
+    OWSLogInfo(@"currentAppVersion: %@ (%@)", self.currentAppVersion, longVersionString);
 
     OWSLogInfo(@"lastCompletedLaunchAppVersion: %@", self.lastCompletedLaunchAppVersion);
     OWSLogInfo(@"lastCompletedLaunchMainAppVersion: %@", self.lastCompletedLaunchMainAppVersion);
     OWSLogInfo(@"lastCompletedLaunchSAEAppVersion: %@", self.lastCompletedLaunchSAEAppVersion);
+    OWSLogInfo(@"lastCompletedLaunchNSEAppVersion: %@", self.lastCompletedLaunchNSEAppVersion);
+
+    OWSLogInfo(@"iOS Version: %@ (%@)",
+        [UIDevice currentDevice].systemVersion,
+        [NSString stringFromSysctlKey:@"kern.osversion"]);
+
+    NSString *localeIdentifier = [NSLocale.currentLocale objectForKey:NSLocaleIdentifier];
+    if (localeIdentifier.length > 0) {
+        OWSLogInfo(@"Locale Identifier: %@", localeIdentifier);
+    }
+    NSString *countryCode = [NSLocale.currentLocale objectForKey:NSLocaleCountryCode];
+    if (countryCode.length > 0) {
+        OWSLogInfo(@"Country Code: %@", countryCode);
+    }
+    NSString *languageCode = [NSLocale.currentLocale objectForKey:NSLocaleLanguageCode];
+    if (languageCode.length > 0) {
+        OWSLogInfo(@"Language Code: %@", languageCode);
+    }
+
+    OWSLogInfo(@"Device Model: %@ (%@)", UIDevice.currentDevice.model, [NSString stringFromSysctlKey:@"hw.machine"]);
+
+    NSDictionary<NSString *, NSString *> *buildDetails =
+        [[NSBundle mainBundle] objectForInfoDictionaryKey:@"BuildDetails"];
+    OWSLogInfo(@"WebRTC Commit: %@", buildDetails[@"WebRTCCommit"]);
+    OWSLogInfo(@"Build XCode Version: %@", buildDetails[@"XCodeVersion"]);
+    OWSLogInfo(@"Build OS X Version: %@", buildDetails[@"OSXVersion"]);
+    OWSLogInfo(@"Build Cocoapods Version: %@", buildDetails[@"CocoapodsVersion"]);
+    OWSLogInfo(@"Build Date/Time: %@", buildDetails[@"DateTime"]);
+
+    OWSLogInfo(@"Build Expires in: %ld days", (long)SSKAppExpiry.daysUntilBuildExpiry);
 }
 
 - (void)appLaunchDidComplete
@@ -115,9 +163,22 @@ NSString *const kNSUserDefaults_LastCompletedLaunchAppVersion_SAE
     [self appLaunchDidComplete];
 }
 
+- (void)nseLaunchDidComplete
+{
+    OWSAssertIsOnMainThread();
+
+    self.lastCompletedLaunchNSEAppVersion = self.currentAppVersion;
+    [[NSUserDefaults appUserDefaults] setObject:self.currentAppVersion
+                                         forKey:kNSUserDefaults_LastCompletedLaunchAppVersion_NSE];
+
+    [self appLaunchDidComplete];
+}
+
 - (BOOL)isFirstLaunch
 {
     return self.firstAppVersion != nil;
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

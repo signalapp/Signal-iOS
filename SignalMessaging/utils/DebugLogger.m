@@ -1,9 +1,11 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "DebugLogger.h"
+#import "OWSPreferences.h"
 #import "OWSScrubbingLogFormatter.h"
+#import <AudioToolbox/AudioServices.h>
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/OWSFileSystem.h>
@@ -86,6 +88,32 @@ const NSUInteger kMaxDebugLogFileSize = 1024 * 1024 * 3;
     [DDLog addLogger:DDTTYLogger.sharedInstance];
 }
 
+- (NSURL *)errorLogsDir
+{
+    NSString *logDirPath = [OWSFileSystem.cachesDirectoryPath stringByAppendingPathComponent:@"ErrorLogs"];
+    return [NSURL fileURLWithPath:logDirPath];
+}
+
+- (id<DDLogger>)errorLogger
+{
+    static id<DDLogger> instance;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        id<DDLogFileManager> logFileManager =
+            [[DDLogFileManagerDefault alloc] initWithLogsDirectory:self.errorLogsDir.path
+                                        defaultFileProtectionLevel:@""];
+
+        instance = [[ErrorLogger alloc] initWithLogFileManager:logFileManager];
+    });
+
+    return instance;
+}
+
+- (void)enableErrorReporting
+{
+    [DDLog addLogger:self.errorLogger withLevel:DDLogLevelError];
+}
+
 - (NSArray<NSString *> *)allLogFilePaths
 {
     NSFileManager *fileManager = [NSFileManager defaultManager];
@@ -131,6 +159,25 @@ const NSUInteger kMaxDebugLogFileSize = 1024 * 1024 * 3;
     if (reenableLogging) {
         [self enableFileLogging];
     }
+}
+
+@end
+
+@implementation ErrorLogger
+
+- (void)logMessage:(nonnull DDLogMessage *)logMessage
+{
+    [super logMessage:logMessage];
+    if (OWSPreferences.isAudibleErrorLoggingEnabled) {
+        [self.class playAlertSound];
+    }
+}
+
++ (void)playAlertSound
+{
+    // "choo-choo"
+    const SystemSoundID errorSound = 1023;
+    AudioServicesPlayAlertSound(errorSound);
 }
 
 @end

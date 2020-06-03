@@ -1,11 +1,24 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 import LocalAuthentication
 
-@objc public class OWSScreenLock: NSObject {
+@objc
+public class OWSScreenLock: NSObject {
+
+    // MARK: - Dependencies
+
+    private var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
+
+    private var storageCoordinator: StorageCoordinator {
+        return SSKEnvironment.shared.storageCoordinator
+    }
+
+    // MARK: -
 
     public enum OWSScreenLockOutcome {
         case success
@@ -14,8 +27,10 @@ import LocalAuthentication
         case unexpectedFailure(error:String)
     }
 
-    @objc public let screenLockTimeoutDefault = 15 * kMinuteInterval
-    @objc public let screenLockTimeouts = [
+    @objc
+    public static let screenLockTimeoutDefault = 15 * kMinuteInterval
+    @objc
+    public let screenLockTimeouts = [
         1 * kMinuteInterval,
         5 * kMinuteInterval,
         15 * kMinuteInterval,
@@ -24,14 +39,11 @@ import LocalAuthentication
         0
     ]
 
-    @objc public static let ScreenLockDidChange = Notification.Name("ScreenLockDidChange")
+    @objc
+    public static let ScreenLockDidChange = Notification.Name("ScreenLockDidChange")
 
-    let primaryStorage: OWSPrimaryStorage
-    let dbConnection: YapDatabaseConnection
-
-    private let OWSScreenLock_Collection = "OWSScreenLock_Collection"
-    private let OWSScreenLock_Key_IsScreenLockEnabled = "OWSScreenLock_Key_IsScreenLockEnabled"
-    private let OWSScreenLock_Key_ScreenLockTimeoutSeconds = "OWSScreenLock_Key_ScreenLockTimeoutSeconds"
+    private static let OWSScreenLock_Key_IsScreenLockEnabled = "OWSScreenLock_Key_IsScreenLockEnabled"
+    private static let OWSScreenLock_Key_ScreenLockTimeoutSeconds = "OWSScreenLock_Key_ScreenLockTimeoutSeconds"
 
     // MARK: - Singleton class
 
@@ -39,53 +51,74 @@ import LocalAuthentication
     public static let shared = OWSScreenLock()
 
     private override init() {
-        self.primaryStorage = OWSPrimaryStorage.shared()
-        self.dbConnection = self.primaryStorage.newDatabaseConnection()
-
         super.init()
 
         SwiftSingletons.register(self)
     }
 
+    // MARK: - KV Store
+
+    @objc
+    public let keyValueStore = SDSKeyValueStore(collection: "OWSScreenLock_Collection")
+
     // MARK: - Properties
 
-    @objc public func isScreenLockEnabled() -> Bool {
+    @objc
+    public func isScreenLockEnabled() -> Bool {
         AssertIsOnMainThread()
 
-        if !OWSStorage.isStorageReady() {
+        if !storageCoordinator.isStorageReady {
             owsFailDebug("accessed screen lock state before storage is ready.")
             return false
         }
 
-        return self.dbConnection.bool(forKey: OWSScreenLock_Key_IsScreenLockEnabled, inCollection: OWSScreenLock_Collection, defaultValue: false)
+        return databaseStorage.read { transaction in
+            return self.keyValueStore.getBool(OWSScreenLock.OWSScreenLock_Key_IsScreenLockEnabled,
+                                              defaultValue: false,
+                                              transaction: transaction)
+        }
     }
 
     @objc
     public func setIsScreenLockEnabled(_ value: Bool) {
         AssertIsOnMainThread()
-        assert(OWSStorage.isStorageReady())
+        assert(storageCoordinator.isStorageReady)
 
-        self.dbConnection.setBool(value, forKey: OWSScreenLock_Key_IsScreenLockEnabled, inCollection: OWSScreenLock_Collection)
+        databaseStorage.write { transaction in
+            self.keyValueStore.setBool(value,
+                                       key: OWSScreenLock.OWSScreenLock_Key_IsScreenLockEnabled,
+                                       transaction: transaction)
+        }
 
         NotificationCenter.default.postNotificationNameAsync(OWSScreenLock.ScreenLockDidChange, object: nil)
     }
 
-    @objc public func screenLockTimeout() -> TimeInterval {
+    @objc
+    public func screenLockTimeout() -> TimeInterval {
         AssertIsOnMainThread()
 
-        if !OWSStorage.isStorageReady() {
+        if !storageCoordinator.isStorageReady {
             owsFailDebug("accessed screen lock state before storage is ready.")
             return 0
         }
 
-        return self.dbConnection.double(forKey: OWSScreenLock_Key_ScreenLockTimeoutSeconds, inCollection: OWSScreenLock_Collection, defaultValue: screenLockTimeoutDefault)
+        return databaseStorage.read { transaction in
+            return self.keyValueStore.getDouble(OWSScreenLock.OWSScreenLock_Key_ScreenLockTimeoutSeconds,
+                                                defaultValue: OWSScreenLock.screenLockTimeoutDefault,
+                                                transaction: transaction)
+        }
     }
 
-    @objc public func setScreenLockTimeout(_ value: TimeInterval) {
+    @objc
+    public func setScreenLockTimeout(_ value: TimeInterval) {
         AssertIsOnMainThread()
-        assert(OWSStorage.isStorageReady())
+        assert(storageCoordinator.isStorageReady)
 
-        self.dbConnection.setDouble(value, forKey: OWSScreenLock_Key_ScreenLockTimeoutSeconds, inCollection: OWSScreenLock_Collection)
+        databaseStorage.write { transaction in
+            self.keyValueStore.setDouble(value,
+                                         key: OWSScreenLock.OWSScreenLock_Key_ScreenLockTimeoutSeconds,
+                                         transaction: transaction)
+        }
 
         NotificationCenter.default.postNotificationNameAsync(OWSScreenLock.ScreenLockDidChange, object: nil)
     }
@@ -100,10 +133,11 @@ import LocalAuthentication
     //
     // * Asynchronously.
     // * On the main thread.
-    @objc public func tryToUnlockScreenLock(success: @escaping (() -> Void),
-                                            failure: @escaping ((Error) -> Void),
-                                            unexpectedFailure: @escaping ((Error) -> Void),
-                                            cancel: @escaping (() -> Void)) {
+    @objc
+    public func tryToUnlockScreenLock(success: @escaping (() -> Void),
+                                      failure: @escaping ((Error) -> Void),
+                                      unexpectedFailure: @escaping ((Error) -> Void),
+                                      cancel: @escaping (() -> Void)) {
         AssertIsOnMainThread()
 
         tryToVerifyLocalAuthentication(localizedReason: NSLocalizedString("SCREEN_LOCK_REASON_UNLOCK_SCREEN_LOCK",
@@ -245,6 +279,9 @@ import LocalAuthentication
                 return .unexpectedFailure(error:defaultErrorDescription)
             case .notInteractive:
                 owsFailDebug("context not interactive.")
+                return .unexpectedFailure(error:defaultErrorDescription)
+            @unknown default:
+                owsFailDebug("Unexpected enum value.")
                 return .unexpectedFailure(error:defaultErrorDescription)
             }
         }

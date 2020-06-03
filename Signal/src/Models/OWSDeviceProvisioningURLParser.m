@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDeviceProvisioningURLParser.h"
@@ -32,7 +32,7 @@ NSString *const OWSQueryItemNameEncodedPublicKeyKey = @"pub_key";
                 OWSFailDebug(@"exception: %@", exception);
             }
         } else {
-            OWSLogWarn(@"Unkown query item in provisioning string: %@", queryItem.name);
+            OWSLogWarn(@"Unknown query item in provisioning string: %@", queryItem.name);
         }
     }
 

@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+# e.g. put in whatever passphrase is actually being used
+PASSPHRASE="x'6d66c344496fdcc0165e6d3271bfbe1745eb5225aee52694d7cd412c1957a551cd8c069d53030b03f3827c82cfe60a46'"
+
+BIN_NAME=$0
+
+function usage() {
+    echo "$BIN_NAME <path-to-database>"
+    echo "e.g. $BIN_NAME /Home/Users/foo/Library/Simulator/blah/database/signal.sqlite"
+}
+
+DB_PATH=$1
+if [ -z $DB_PATH ]
+then
+   usage
+   exit 1
+fi
+shift
+
+sqlcipher -cmd "PRAGMA key = \"${PASSPHRASE}\";" \
+          -cmd "PRAGMA cipher_plaintext_header_size = 32;" \
+          $DB_PATH $@

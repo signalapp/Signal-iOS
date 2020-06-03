@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -22,24 +22,36 @@ public class ModalActivityIndicatorViewController: OWSViewController {
 
     var wasDimissed: Bool = false
 
+    private static let kPresentationDelayDefault: TimeInterval = 1
+    private let presentationDelay: TimeInterval
+
     // MARK: Initializers
 
-    @available(*, unavailable, message:"use other constructor instead.")
-    public required init?(coder aDecoder: NSCoder) {
-        notImplemented()
-    }
-
-    public required init(canCancel: Bool) {
+    public required init(canCancel: Bool, presentationDelay: TimeInterval) {
         self.canCancel = canCancel
-        super.init(nibName: nil, bundle: nil)
+        self.presentationDelay = presentationDelay
+
+        super.init()
     }
 
     @objc
     public class func present(fromViewController: UIViewController,
-                              canCancel: Bool, backgroundBlock : @escaping (ModalActivityIndicatorViewController) -> Void) {
+                              canCancel: Bool,
+                              backgroundBlock : @escaping (ModalActivityIndicatorViewController) -> Void) {
+        present(fromViewController: fromViewController,
+                canCancel: canCancel,
+                presentationDelay: kPresentationDelayDefault,
+                backgroundBlock: backgroundBlock)
+    }
+
+    @objc
+    public class func present(fromViewController: UIViewController,
+                              canCancel: Bool,
+                              presentationDelay: TimeInterval,
+                              backgroundBlock : @escaping (ModalActivityIndicatorViewController) -> Void) {
         AssertIsOnMainThread()
 
-        let view = ModalActivityIndicatorViewController(canCancel: canCancel)
+        let view = ModalActivityIndicatorViewController(canCancel: canCancel, presentationDelay: presentationDelay)
         // Present this modal _over_ the current view contents.
         view.modalPresentationStyle = .overFullScreen
         fromViewController.present(view,
@@ -74,7 +86,7 @@ public class ModalActivityIndicatorViewController: OWSViewController {
             : UIColor(white: 0, alpha: 0.25))
         self.view.isOpaque = false
 
-        let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
+        let activityIndicator = UIActivityIndicatorView(style: .whiteLarge)
         self.activityIndicator = activityIndicator
         self.view.addSubview(activityIndicator)
         activityIndicator.autoCenterInSuperview()
@@ -83,18 +95,23 @@ public class ModalActivityIndicatorViewController: OWSViewController {
             let cancelButton = UIButton(type: .custom)
             cancelButton.setTitle(CommonStrings.cancelButton, for: .normal)
             cancelButton.setTitleColor(UIColor.white, for: .normal)
-            cancelButton.backgroundColor = UIColor.ows_darkGray
-            cancelButton.titleLabel?.font = UIFont.ows_mediumFont(withSize: ScaleFromIPhone5To7Plus(18, 22))
+            cancelButton.backgroundColor = UIColor.ows_gray80
+            let font = UIFont.ows_dynamicTypeBody.ows_semibold()
+            cancelButton.titleLabel?.font = font
             cancelButton.layer.cornerRadius = ScaleFromIPhone5To7Plus(4, 5)
             cancelButton.clipsToBounds = true
             cancelButton.addTarget(self, action: #selector(cancelPressed), for: .touchUpInside)
             let buttonWidth = ScaleFromIPhone5To7Plus(140, 160)
-            let buttonHeight = ScaleFromIPhone5To7Plus(40, 50)
+            let buttonHeight = OWSFlatButton.heightForFont(font)
             self.view.addSubview(cancelButton)
             cancelButton.autoHCenterInSuperview()
             cancelButton.autoPinEdge(toSuperviewEdge: .bottom, withInset: 50)
             cancelButton.autoSetDimension(.width, toSize: buttonWidth)
             cancelButton.autoSetDimension(.height, toSize: buttonHeight)
+        }
+
+        guard presentationDelay > 0 else {
+            return
         }
 
         // Hide the modal until the presentation animation completes.
@@ -106,14 +123,17 @@ public class ModalActivityIndicatorViewController: OWSViewController {
 
         self.activityIndicator?.startAnimating()
 
+        guard presentationDelay > 0 else {
+            return
+        }
+
         // Hide the the modal and wait for a second before revealing it,
         // to avoid "blipping" in the modal during short blocking operations.
         //
         // NOTE: It will still intercept user interactions while hidden, as it
         //       should.
-        let kPresentationDelaySeconds = TimeInterval(1)
         self.presentTimer?.invalidate()
-        self.presentTimer = Timer.weakScheduledTimer(withTimeInterval: kPresentationDelaySeconds, target: self, selector: #selector(presentTimerFired), userInfo: nil, repeats: false)
+        self.presentTimer = Timer.weakScheduledTimer(withTimeInterval: presentationDelay, target: self, selector: #selector(presentTimerFired), userInfo: nil, repeats: false)
     }
 
     public override func viewWillDisappear(_ animated: Bool) {

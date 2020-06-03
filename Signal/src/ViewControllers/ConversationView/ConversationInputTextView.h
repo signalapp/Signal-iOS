@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalMessaging/OWSTextView.h>
@@ -14,8 +14,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)inputTextViewSendMessagePressed;
 
-- (void)inputTextViewDidChangeText;
-
 - (void)textViewDidChange:(UITextView *)textView;
 
 @end
@@ -25,6 +23,10 @@ NS_ASSUME_NONNULL_BEGIN
 @protocol ConversationTextViewToolbarDelegate <NSObject>
 
 - (void)textViewDidChange:(UITextView *)textView;
+
+- (void)textViewDidChangeSelection:(UITextView *)textView;
+
+- (void)textViewDidBecomeFirstResponder:(UITextView *)textView;
 
 @end
 
@@ -37,6 +39,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (weak, nonatomic) id<ConversationTextViewToolbarDelegate> textViewToolbarDelegate;
 
 - (NSString *)trimmedText;
+
+- (NSString *)untrimmedText;
 
 @end
 

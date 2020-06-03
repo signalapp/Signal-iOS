@@ -1,17 +1,17 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "VersionMigrations.h"
 #import "Environment.h"
-#import "LockInteractionController.h"
 #import "OWSDatabaseMigrationRunner.h"
-#import "SignalKeyingStorage.h"
+#import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/AppContext.h>
 #import <SignalServiceKit/AppVersion.h>
 #import <SignalServiceKit/NSUserDefaults+OWS.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/OWSRequestFactory.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSNetworkManager.h>
 #import <YapDatabase/YapDatabase.h>
@@ -21,16 +21,23 @@ NS_ASSUME_NONNULL_BEGIN
 #define NEEDS_TO_REGISTER_PUSH_KEY @"Register For Push"
 #define NEEDS_TO_REGISTER_ATTRIBUTES @"Register Attributes"
 
-@interface SignalKeyingStorage (VersionMigrations)
-
-+ (void)storeString:(NSString *)string forKey:(NSString *)key;
-+ (void)storeData:(NSData *)data forKey:(NSString *)key;
-
-@end
-
 @implementation VersionMigrations
 
-#pragma mark Utility methods
+#pragma mark - Dependencies
+
++ (TSAccountManager *)tsAccountManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
+    
+    return SSKEnvironment.shared.tsAccountManager;
+}
+
++ (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark - Utility methods
 
 + (void)performUpdateCheckWithCompletion:(VersionMigrationCompletion)completion
 {
@@ -41,53 +48,68 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(Environment.shared);
     OWSAssertDebug(completion);
 
-    NSString *previousVersion = AppVersion.sharedInstance.lastAppVersion;
+    NSString *_Nullable lastCompletedLaunchAppVersion = AppVersion.sharedInstance.lastCompletedLaunchAppVersion;
     NSString *currentVersion = AppVersion.sharedInstance.currentAppVersion;
 
-    OWSLogInfo(@"Checking migrations. currentVersion: %@, lastRanVersion: %@", currentVersion, previousVersion);
+    OWSLogInfo(@"Checking migrations. currentVersion: %@, lastCompletedLaunchAppVersion: %@",
+        currentVersion,
+        lastCompletedLaunchAppVersion);
 
-    if (!previousVersion) {
+    GRDBSchemaMigrator *grdbSchemaMigrator = [GRDBSchemaMigrator new];
+
+    if (!lastCompletedLaunchAppVersion) {
         OWSLogInfo(@"No previous version found. Probably first launch since install - nothing to migrate.");
-        OWSDatabaseMigrationRunner *runner =
-            [[OWSDatabaseMigrationRunner alloc] initWithPrimaryStorage:[OWSPrimaryStorage sharedManager]];
-        [runner assumeAllExistingMigrationsRun];
+        if (self.databaseStorage.canReadFromGrdb) {
+            [grdbSchemaMigrator runSchemaMigrations];
+        } else {
+            OWSDatabaseMigrationRunner *runner = [OWSDatabaseMigrationRunner new];
+            [runner assumeAllExistingMigrationsRun];
+        }
+
         dispatch_async(dispatch_get_main_queue(), ^{
             completion();
         });
         return;
     }
 
-    if ([self isVersion:previousVersion atLeast:@"1.0.2" andLessThan:@"2.0"]) {
+    if ([self isVersion:lastCompletedLaunchAppVersion atLeast:@"1.0.2" andLessThan:@"2.0"]) {
         OWSLogError(@"Migrating from RedPhone no longer supported. Quitting.");
         // Not translating these as so few are affected.
-        UIAlertController *alertController = [UIAlertController
-            alertControllerWithTitle:@"You must reinstall Signal"
-                             message:
-                                 @"Sorry, your installation is too old for us to update. You'll have to start fresh."
-                      preferredStyle:UIAlertControllerStyleAlert];
+        ActionSheetController *actionSheet = [[ActionSheetController alloc]
+            initWithTitle:@"You must reinstall Signal"
+                  message:@"Sorry, your installation is too old for us to update. You'll have to start fresh."];
 
-        UIAlertAction *quitAction = [UIAlertAction actionWithTitle:@"Quit"
-                                                             style:UIAlertActionStyleDefault
-                                                           handler:^(UIAlertAction *_Nonnull action) {
-                                                               OWSFail(@"Obsolete install.");
-                                                           }];
-        [alertController addAction:quitAction];
+        ActionSheetAction *quitAction = [[ActionSheetAction alloc] initWithTitle:@"Quit"
+                                                                           style:ActionSheetActionStyleDefault
+                                                                         handler:^(ActionSheetAction *_Nonnull action) {
+                                                                             OWSFail(@"Obsolete install.");
+                                                                         }];
+        [actionSheet addAction:quitAction];
 
-        [CurrentAppContext().frontmostViewController presentViewController:alertController animated:YES completion:nil];
+        [CurrentAppContext().frontmostViewController presentActionSheet:actionSheet];
     }
 
-    if ([self isVersion:previousVersion atLeast:@"2.0.0" andLessThan:@"2.1.70"] && [TSAccountManager isRegistered]) {
+    if ([self isVersion:lastCompletedLaunchAppVersion atLeast:@"2.0.0" andLessThan:@"2.1.70"] &&
+        [self.tsAccountManager isRegistered]) {
         [self clearVideoCache];
-        [self blockingAttributesUpdate];
     }
 
-    if ([self isVersion:previousVersion atLeast:@"2.0.0" andLessThan:@"2.3.0"] && [TSAccountManager isRegistered]) {
+    if ([self isVersion:lastCompletedLaunchAppVersion atLeast:@"2.0.0" andLessThan:@"2.3.0"] &&
+        [self.tsAccountManager isRegistered]) {
         [self clearBloomFilterCache];
     }
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [[[OWSDatabaseMigrationRunner alloc] initWithPrimaryStorage:[OWSPrimaryStorage sharedManager]]
-            runAllOutstandingWithCompletion:completion];
+        if (self.databaseStorage.canReadFromGrdb) {
+            [grdbSchemaMigrator runSchemaMigrations];
+            dispatch_async(dispatch_get_main_queue(), ^{
+                completion();
+            });
+        } else {
+            [[[OWSDatabaseMigrationRunner alloc] init] runAllOutstandingWithCompletion:^{
+                completion();
+            }];
+        }
     });
 }
 
@@ -128,49 +150,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-#pragma mark - Update Account Attributes
-
-+ (void)blockingAttributesUpdate
-{
-    LIControllerBlockingOperation blockingOperation = ^BOOL(void) {
-        [[NSUserDefaults appUserDefaults] setObject:@YES forKey:NEEDS_TO_REGISTER_ATTRIBUTES];
-
-        __block dispatch_semaphore_t sema = dispatch_semaphore_create(0);
-
-        __block BOOL success;
-
-        TSRequest *request = [OWSRequestFactory updateAttributesRequest];
-        [[TSNetworkManager sharedManager] makeRequest:request
-            success:^(NSURLSessionDataTask *task, id responseObject) {
-                success = YES;
-                dispatch_semaphore_signal(sema);
-            }
-            failure:^(NSURLSessionDataTask *task, NSError *error) {
-                if (!IsNSErrorNetworkFailure(error)) {
-                    OWSProdError([OWSAnalyticsEvents errorUpdateAttributesRequestFailed]);
-                }
-                success = NO;
-                OWSLogError(@"Updating attributess failed with error: %@", error.description);
-                dispatch_semaphore_signal(sema);
-            }];
-
-
-        dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
-
-        return success;
-    };
-
-    LIControllerRetryBlock retryBlock = [LockInteractionController defaultNetworkRetry];
-
-    [LockInteractionController performBlock:blockingOperation
-                            completionBlock:^{
-                                [[NSUserDefaults appUserDefaults] removeObjectForKey:NEEDS_TO_REGISTER_ATTRIBUTES];
-                                OWSLogWarn(@"Successfully updated attributes.");
-                            }
-                                 retryBlock:retryBlock
-                                usesNetwork:YES];
-}
-
 #pragma mark Upgrading to 2.3.0
 
 // We removed bloom filter contact discovery. Clean up any local bloom filter data.
@@ -184,11 +163,15 @@ NS_ASSUME_NONNULL_BEGIN
         NSError *deleteError;
         if ([fm removeItemAtPath:bloomFilterPath error:&deleteError]) {
             OWSLogInfo(@"Successfully removed bloom filter cache.");
-            [OWSPrimaryStorage.dbReadWriteConnection
-                readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-                    [transaction removeAllObjectsInCollection:@"TSRecipient"];
-                }];
-            OWSLogInfo(@"Removed all TSRecipient records - will be replaced by SignalRecipients at next address sync.");
+
+            if (self.databaseStorage.canLoadYdb) {
+                [OWSPrimaryStorage.dbReadWriteConnection
+                    readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+                        [transaction removeAllObjectsInCollection:@"TSRecipient"];
+                    }];
+                OWSLogInfo(
+                    @"Removed all TSRecipient records - will be replaced by SignalRecipients at next address sync.");
+            }
         } else {
             OWSLogError(@"Failed to remove bloom filter cache with error: %@", deleteError.localizedDescription);
         }

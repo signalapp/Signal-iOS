@@ -1,25 +1,31 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSOperation.h"
-#import "NSError+MessageSending.h"
+#import "NSError+OWSOperation.h"
 #import "NSTimer+OWS.h"
 #import "OWSBackgroundTask.h"
 #import "OWSError.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+NSErrorUserInfoKey const OWSOperationIsRetryableKey = @"OWSOperationIsRetryableKey";
 
 NSString *const OWSOperationKeyIsExecuting = @"isExecuting";
 NSString *const OWSOperationKeyIsFinished = @"isFinished";
 
 @interface OWSOperation ()
 
-@property (nullable) NSError *failingError;
+@property (nonatomic, nullable) NSError *failingError;
 @property (atomic) OWSOperationState operationState;
 @property (nonatomic) OWSBackgroundTask *backgroundTask;
+
+// This property should only be accessed on the main queue.
 @property (nonatomic) NSTimer *_Nullable retryTimer;
-@property (nonatomic, readonly) dispatch_queue_t retryTimerSerialQueue;
+
+@property (nonatomic) NSUInteger errorCount;
 
 @end
 
@@ -34,7 +40,6 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
 
     _operationState = OWSOperationStateNew;
     _backgroundTask = [OWSBackgroundTask backgroundTaskWithLabel:self.logTag];
-    _retryTimerSerialQueue = dispatch_queue_create("SignalServiceKit.OWSOperation.retryTimer", DISPATCH_QUEUE_SERIAL);
 
     // Operations are not retryable by default.
     _remainingRetries = 0;
@@ -44,7 +49,7 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
 
 - (void)dealloc
 {
-    OWSLogDebug(@"in dealloc");
+    OWSLogDebug(@"[%@]", self);
 }
 
 #pragma mark - Subclass Overrides
@@ -111,10 +116,16 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
 
 #pragma mark - NSOperation overrides
 
+- (NSString *)eventId
+{
+    return [NSString stringWithFormat:@"operation-%p", self];
+}
+
 // Do not override this method in a subclass instead, override `run`
 - (void)main
 {
-    OWSLogDebug(@"started.");
+    OWSLogDebug(@"[%@] started: %@", self, self.eventId);
+    [BenchManager startEventWithTitle:[NSString stringWithFormat:@"%@-%p", self, self] eventId:self.eventId];
     NSError *_Nullable preconditionError = [self checkForPreconditionError];
     if (preconditionError) {
         [self failOperationWithError:preconditionError];
@@ -131,18 +142,19 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
 
 - (void)runAnyQueuedRetry
 {
-    __block NSTimer *_Nullable retryTimer;
-    dispatch_sync(self.retryTimerSerialQueue, ^{
-        retryTimer = self.retryTimer;
+    dispatch_async(dispatch_get_main_queue(), ^{
+        NSTimer *_Nullable retryTimer = self.retryTimer;
         self.retryTimer = nil;
         [retryTimer invalidate];
-    });
 
-    if (retryTimer != nil) {
-        [self run];
-    } else {
-        OWSLogVerbose(@"not re-running since operation is already running.");
-    }
+        if (retryTimer != nil) {
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                [self run];
+            });
+        } else {
+            OWSLogVerbose(@"not re-running since operation is already running.");
+        }
+    });
 }
 
 #pragma mark - Public Methods
@@ -150,7 +162,7 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
 // These methods are not intended to be subclassed
 - (void)reportSuccess
 {
-    OWSLogDebug(@"succeeded.");
+    OWSLogDebug(@"[%@] succeeded", self);
     [self didSucceed];
     [self markAsComplete];
 }
@@ -158,7 +170,7 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
 // These methods are not intended to be subclassed
 - (void)reportCancelled
 {
-    OWSLogDebug(@"cancelled.");
+    OWSLogDebug(@"[%@] cancelled", self);
     [self didCancel];
     [self markAsComplete];
 }
@@ -170,6 +182,8 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
         error.isFatal,
         error.isRetryable,
         (unsigned long)self.remainingRetries);
+
+    self.errorCount += 1;
 
     [self didReportError:error];
 
@@ -190,9 +204,17 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
 
     self.remainingRetries--;
 
-    dispatch_sync(self.retryTimerSerialQueue, ^{
+    dispatch_async(dispatch_get_main_queue(), ^{
         OWSAssertDebug(self.retryTimer == nil);
         [self.retryTimer invalidate];
+
+        // The `scheduledTimerWith*` methods add the timer to the current thread's RunLoop.
+        // Since Operations typically run on a background thread, that would mean the background
+        // thread's RunLoop. However, the OS can spin down background threads if there's no work
+        // being done, so we run the risk of the timer's RunLoop being deallocated before it's
+        // fired.
+        //
+        // To ensure the timer's thread sticks around, we schedule it while on the main RunLoop.
         self.retryTimer = [NSTimer weakScheduledTimerWithTimeInterval:self.retryInterval
                                                                target:self
                                                              selector:@selector(runAnyQueuedRetry)
@@ -211,7 +233,7 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
 
 - (void)failOperationWithError:(NSError *)error
 {
-    OWSLogDebug(@"failed terminally.");
+    OWSLogDebug(@"[%@] failed terminally with error: %@", self, error);
     self.failingError = error;
 
     [self didFailWithError:error];
@@ -252,6 +274,8 @@ NSString *const OWSOperationKeyIsFinished = @"isFinished";
 
     [self didChangeValueForKey:OWSOperationKeyIsExecuting];
     [self didChangeValueForKey:OWSOperationKeyIsFinished];
+
+    [BenchManager completeEventWithEventId:self.eventId];
 }
 
 @end

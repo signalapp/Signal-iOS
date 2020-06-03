@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -23,7 +23,8 @@ protocol ContactStoreAdaptee {
 
 public
 class ContactsFrameworkContactStoreAdaptee: NSObject, ContactStoreAdaptee {
-    private let contactStore = CNContactStore()
+    private let contactStoreForLargeRequests = CNContactStore()
+    private let contactStoreForSmallRequests = CNContactStore()
     private var changeHandler: (() -> Void)?
     private var initializedObserver = false
     private var lastSortOrder: CNContactSortOrder?
@@ -41,7 +42,8 @@ class ContactsFrameworkContactStoreAdaptee: NSObject, ContactStoreAdaptee {
     ]
 
     var authorizationStatus: ContactStoreAuthorizationStatus {
-        switch CNContactStore.authorizationStatus(for: CNEntityType.contacts) {
+        let authorizationStatus = CNContactStore.authorizationStatus(for: CNEntityType.contacts)
+        switch authorizationStatus {
         case .notDetermined:
             return .notDetermined
         case .restricted:
@@ -50,6 +52,9 @@ class ContactsFrameworkContactStoreAdaptee: NSObject, ContactStoreAdaptee {
             return .denied
         case .authorized:
              return .authorized
+        @unknown default:
+            owsFailDebug("unexpected value: \(authorizationStatus.rawValue)")
+            return .authorized
         }
     }
 
@@ -64,7 +69,7 @@ class ContactsFrameworkContactStoreAdaptee: NSObject, ContactStoreAdaptee {
 
     @objc
     func didBecomeActive() {
-        AppReadiness.runNowOrWhenAppDidBecomeReady {
+        AppReadiness.runNowOrWhenAppDidBecomeReadyPolite {
             let currentSortOrder = CNContactsUserDefaults.shared().sortOrder
 
             guard currentSortOrder != self.lastSortOrder else {
@@ -88,7 +93,7 @@ class ContactsFrameworkContactStoreAdaptee: NSObject, ContactStoreAdaptee {
     }
 
     func requestAccess(completionHandler: @escaping (Bool, Error?) -> Void) {
-        self.contactStore.requestAccess(for: .contacts, completionHandler: completionHandler)
+        contactStoreForLargeRequests.requestAccess(for: .contacts, completionHandler: completionHandler)
     }
 
     func fetchContacts() -> Result<[Contact], Error> {
@@ -96,11 +101,16 @@ class ContactsFrameworkContactStoreAdaptee: NSObject, ContactStoreAdaptee {
         do {
             let contactFetchRequest = CNContactFetchRequest(keysToFetch: ContactsFrameworkContactStoreAdaptee.allowedContactKeys)
             contactFetchRequest.sortOrder = .userDefault
-            try self.contactStore.enumerateContacts(with: contactFetchRequest) { (contact, _) -> Void in
+            try contactStoreForLargeRequests.enumerateContacts(with: contactFetchRequest) { (contact, _) -> Void in
                 systemContacts.append(contact)
             }
         } catch let error as NSError {
-            owsFailDebug("Failed to fetch contacts with error:\(error)")
+            if error.domain == CNErrorDomain, error.code == CNError.Code.communicationError.rawValue {
+                // this seems occur intermittently, but not uncommonly.
+                Logger.warn("communication error: \(error)")
+            } else {
+                owsFailDebug("Failed to fetch contacts with error:\(error)")
+            }
             return .error(error)
         }
 
@@ -115,7 +125,7 @@ class ContactsFrameworkContactStoreAdaptee: NSObject, ContactStoreAdaptee {
             contactFetchRequest.sortOrder = .userDefault
             contactFetchRequest.predicate = CNContact.predicateForContacts(withIdentifiers: [contactId])
 
-            try self.contactStore.enumerateContacts(with: contactFetchRequest) { (contact, _) -> Void in
+            try self.contactStoreForSmallRequests.enumerateContacts(with: contactFetchRequest) { (contact, _) -> Void in
                 guard result == nil else {
                     owsFailDebug("More than one contact with contact id.")
                     return
@@ -123,6 +133,11 @@ class ContactsFrameworkContactStoreAdaptee: NSObject, ContactStoreAdaptee {
                 result = contact
             }
         } catch let error as NSError {
+            if error.domain == CNErrorDomain && error.code == CNError.communicationError.rawValue {
+                // These errors are transient and can be safely ignored.
+                Logger.error("Communication error: \(error)")
+                return nil
+            }
             owsFailDebug("Failed to fetch contact with error:\(error)")
             return nil
         }
@@ -349,10 +364,12 @@ public class SystemContactsFetcher: NSObject {
             guard let contacts = fetchedContacts else {
                 owsFailDebug("contacts was unexpectedly not set.")
                 completion(nil)
+                return
             }
 
             Logger.info("fetched \(contacts.count) contacts.")
-            let contactsHash  = HashableArray(contacts).hashValue
+
+            let contactsHash = contacts.hashValue
 
             DispatchQueue.main.async {
                 var shouldNotifyDelegate = false
@@ -407,27 +424,5 @@ public class SystemContactsFetcher: NSObject {
         }
 
         return contactStoreAdapter.fetchCNContact(contactId: contactId)
-    }
-}
-
-struct HashableArray<Element: Hashable>: Hashable {
-    var elements: [Element]
-    init(_ elements: [Element]) {
-        self.elements = elements
-    }
-
-    var hashValue: Int {
-        // random generated 32bit number
-        let base = 224712574
-        var position = 0
-        return elements.reduce(base) { (result, element) -> Int in
-            // Make sure change in sort order invalidates hash
-            position += 1
-            return result ^ element.hashValue + position
-        }
-    }
-
-    static func == (lhs: HashableArray, rhs: HashableArray) -> Bool {
-        return lhs.hashValue == rhs.hashValue
     }
 }

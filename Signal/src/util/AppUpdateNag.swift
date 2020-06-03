@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -46,21 +46,27 @@ class AppUpdateNag: NSObject {
             Logger.info("new version available: \(appStoreRecord)")
             self.showUpdateNagIfEnoughTimeHasPassed(appStoreRecord: appStoreRecord)
         }.catch { error in
-            Logger.error("failed with error: \(error)")
+            Logger.warn("failed with error: \(error)")
         }.retainUntilComplete()
     }
 
     // MARK: - Internal
 
-    let kUpgradeNagCollection = "TSStorageManagerAppUpgradeNagCollection"
-    let kLastNagDateKey = "TSStorageManagerAppUpgradeNagDate"
-    let kFirstHeardOfNewVersionDateKey = "TSStorageManagerAppUpgradeFirstHeardOfNewVersionDate"
+    static let kLastNagDateKey = "TSStorageManagerAppUpgradeNagDate"
+    static let kFirstHeardOfNewVersionDateKey = "TSStorageManagerAppUpgradeFirstHeardOfNewVersionDate"
 
-    var dbConnection: YapDatabaseConnection {
-        return OWSPrimaryStorage.shared().dbReadWriteConnection
+    // MARK: - Dependencies
+
+    private var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
     }
 
-    // MARK: Bundle accessors
+    // MARK: - KV Store
+
+    @objc
+    public let keyValueStore = SDSKeyValueStore(collection: "TSStorageManagerAppUpgradeNagCollection")
+
+    // MARK: - Bundle accessors
 
     var bundle: Bundle {
         return Bundle.main
@@ -107,7 +113,7 @@ class AppUpdateNag: NSObject {
             }
         }
 
-        // Only show nag if we are "at rest" in the home view or registration view without any
+        // Only show nag if we are "at rest" in the conversation split or registration view without any
         // alerts or dialogs showing.
         guard let frontmostViewController = UIApplication.shared.frontmostViewController else {
             owsFailDebug("frontmostViewController was unexpectedly nil")
@@ -115,7 +121,7 @@ class AppUpdateNag: NSObject {
         }
 
         switch frontmostViewController {
-        case is HomeViewController, is RegistrationViewController:
+        case is ConversationSplitViewController, is OnboardingSplashViewController:
             self.setLastNagDate(Date())
             self.clearFirstHeardOfNewVersionDate()
             presentUpgradeNag(appStoreRecord: appStoreRecord)
@@ -133,9 +139,9 @@ class AppUpdateNag: NSObject {
         let updateButtonText = NSLocalizedString("APP_UPDATE_NAG_ALERT_UPDATE_BUTTON", comment: "Label for the 'update' button in the 'new app version available' alert.")
         let dismissButtonText = NSLocalizedString("APP_UPDATE_NAG_ALERT_DISMISS_BUTTON", comment: "Label for the 'dismiss' button in the 'new app version available' alert.")
 
-        let alert = UIAlertController(title: title, message: bodyText, preferredStyle: .alert)
+        let alert = ActionSheetController(title: title, message: bodyText)
 
-        let updateAction = UIAlertAction(title: updateButtonText, style: .default) { [weak self] _ in
+        let updateAction = ActionSheetAction(title: updateButtonText, style: .default) { [weak self] _ in
             guard let strongSelf = self else {
                 return
             }
@@ -144,36 +150,51 @@ class AppUpdateNag: NSObject {
         }
 
         alert.addAction(updateAction)
-        alert.addAction(UIAlertAction(title: dismissButtonText, style: .cancel, handler: nil))
+        alert.addAction(ActionSheetAction(title: dismissButtonText, style: .cancel) { _ in
+            Logger.info("dismissed upgrade notice")
+        })
 
-        OWSAlerts.showAlert(alert)
+        OWSActionSheets.showActionSheet(alert)
     }
 
     func showAppStore(appStoreURL: URL) {
+        assert(CurrentAppContext().isMainApp)
+
         Logger.debug("")
-        UIApplication.shared.openURL(appStoreURL)
+
+        UIApplication.shared.open(appStoreURL, options: [:])
     }
 
     // MARK: Storage
 
     var firstHeardOfNewVersionDate: Date? {
-        return self.dbConnection.date(forKey: kFirstHeardOfNewVersionDateKey, inCollection: kUpgradeNagCollection)
+        return self.databaseStorage.read { transaction in
+            return self.keyValueStore.getDate(AppUpdateNag.kFirstHeardOfNewVersionDateKey, transaction: transaction)
+        }
     }
 
     func setFirstHeardOfNewVersionDate(_ date: Date) {
-        self.dbConnection.setDate(date, forKey: kFirstHeardOfNewVersionDateKey, inCollection: kUpgradeNagCollection)
+        self.databaseStorage.write { transaction in
+            self.keyValueStore.setDate(date, key: AppUpdateNag.kFirstHeardOfNewVersionDateKey, transaction: transaction)
+        }
     }
 
     func clearFirstHeardOfNewVersionDate() {
-        self.dbConnection.removeObject(forKey: kFirstHeardOfNewVersionDateKey, inCollection: kUpgradeNagCollection)
+        self.databaseStorage.write { transaction in
+            self.keyValueStore.removeValue(forKey: AppUpdateNag.kFirstHeardOfNewVersionDateKey, transaction: transaction)
+        }
     }
 
     var lastNagDate: Date? {
-        return self.dbConnection.date(forKey: kLastNagDateKey, inCollection: kUpgradeNagCollection)
+        return self.databaseStorage.read { transaction in
+            return self.keyValueStore.getDate(AppUpdateNag.kLastNagDateKey, transaction: transaction)
+        }
     }
 
     func setLastNagDate(_ date: Date) {
-        self.dbConnection.setDate(date, forKey: kLastNagDateKey, inCollection: kUpgradeNagCollection)
+        self.databaseStorage.write { transaction in
+            self.keyValueStore.setDate(date, key: AppUpdateNag.kLastNagDateKey, transaction: transaction)
+        }
     }
 }
 
@@ -203,7 +224,11 @@ class AppStoreVersionService: NSObject {
 
         let (promise, resolver) = Promise<AppStoreRecord>.pending()
 
-        let task = URLSession.ephemeral.dataTask(with: lookupURL) { (data, _, error) in
+        let task = URLSession.ephemeral.dataTask(with: lookupURL) { (data, _, networkError) in
+            if let networkError = networkError {
+                return resolver.reject(networkError)
+            }
+
             guard let data = data else {
                 Logger.warn("data was unexpectedly nil")
                 resolver.reject(OWSErrorMakeUnableToProcessServerResponseError())

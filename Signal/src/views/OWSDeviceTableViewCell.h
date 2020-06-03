@@ -1,4 +1,6 @@
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
+//
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//
 
 #import <SignalServiceKit/OWSDevice.h>
 #import <UIKit/UIKit.h>
@@ -7,9 +9,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSDeviceTableViewCell : UITableViewCell
 
-@property (strong, nonatomic) IBOutlet UILabel *nameLabel;
-@property (strong, nonatomic) IBOutlet UILabel *linkedLabel;
-@property (strong, nonatomic) IBOutlet UILabel *lastSeenLabel;
+@property (nonatomic) UILabel *nameLabel;
+@property (nonatomic) UILabel *linkedLabel;
+@property (nonatomic) UILabel *lastSeenLabel;
 
 - (void)configureWithDevice:(OWSDevice *)device;
 

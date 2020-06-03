@@ -1,9 +1,8 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "BlockListViewController.h"
-#import "AddToBlockListViewController.h"
 #import "BlockListUIUtils.h"
 #import "ContactTableViewCell.h"
 #import "ContactsViewHelper.h"
@@ -19,7 +18,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface BlockListViewController () <ContactsViewHelperDelegate>
+@interface BlockListViewController () <ContactsViewHelperDelegate, AddToBlockListDelegate>
 
 @property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
 
@@ -52,6 +51,9 @@ NS_ASSUME_NONNULL_BEGIN
     self.tableViewController.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableViewController.tableView.estimatedRowHeight = 60;
 
+    self.view.backgroundColor = Theme.tableViewBackgroundColor;
+    self.tableViewController.useThemeBackgroundColors = YES;
+
     [self updateTableContents];
 }
 
@@ -62,7 +64,6 @@ NS_ASSUME_NONNULL_BEGIN
     OWSTableContents *contents = [OWSTableContents new];
 
     __weak BlockListViewController *weakSelf = self;
-    ContactsViewHelper *helper = self.contactsViewHelper;
 
     // "Add" section
 
@@ -72,39 +73,51 @@ NS_ASSUME_NONNULL_BEGIN
 
     [addSection
         addItem:[OWSTableItem
-                    disclosureItemWithText:NSLocalizedString(@"SETTINGS_BLOCK_LIST_ADD_BUTTON",
-                                               @"A label for the 'add phone number' button in the block list table.")
-                               actionBlock:^{
-                                   AddToBlockListViewController *vc = [[AddToBlockListViewController alloc] init];
-                                   [weakSelf.navigationController pushViewController:vc animated:YES];
-                               }]];
+                     disclosureItemWithText:NSLocalizedString(@"SETTINGS_BLOCK_LIST_ADD_BUTTON",
+                                                @"A label for the 'add phone number' button in the block list table.")
+                    accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"add")
+                                actionBlock:^{
+                                    AddToBlockListViewController *vc = [AddToBlockListViewController new];
+                                    vc.delegate = self;
+                                    [weakSelf.navigationController pushViewController:vc animated:YES];
+                                }]];
     [contents addSection:addSection];
 
     // "Blocklist" section
 
-    NSArray<NSString *> *blockedPhoneNumbers =
-        [self.blockingManager.blockedPhoneNumbers sortedArrayUsingSelector:@selector(compare:)];
+    NSMutableSet<SignalServiceAddress *> *blockedAddressesSet = [NSMutableSet new];
+    for (NSString *phoneNumber in self.blockingManager.blockedPhoneNumbers) {
+        [blockedAddressesSet addObject:[[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber]];
+    }
 
-    if (blockedPhoneNumbers.count > 0) {
+    for (NSString *uuidString in self.blockingManager.blockedUUIDs) {
+        [blockedAddressesSet addObject:[[SignalServiceAddress alloc] initWithUuidString:uuidString]];
+    }
+
+    NSArray<SignalServiceAddress *> *blockedAddresses =
+        [blockedAddressesSet.allObjects sortedArrayUsingSelector:@selector(compare:)];
+    if (blockedAddresses.count > 0) {
         OWSTableSection *blockedContactsSection = [OWSTableSection new];
         blockedContactsSection.headerTitle = NSLocalizedString(
             @"BLOCK_LIST_BLOCKED_USERS_SECTION", @"Section header for users that have been blocked");
 
-        for (NSString *phoneNumber in blockedPhoneNumbers) {
+        for (SignalServiceAddress *address in blockedAddresses) {
             [blockedContactsSection
                 addItem:[OWSTableItem
                             itemWithCustomCellBlock:^{
                                 ContactTableViewCell *cell = [ContactTableViewCell new];
-                                [cell configureWithRecipientId:phoneNumber];
+                                [cell configureWithRecipientAddress:address];
+                                cell.accessibilityIdentifier
+                                    = ACCESSIBILITY_IDENTIFIER_WITH_NAME(BlockListViewController, @"user");
                                 return cell;
                             }
                             customRowHeight:UITableViewAutomaticDimension
                             actionBlock:^{
-                                [BlockListUIUtils showUnblockPhoneNumberActionSheet:phoneNumber
-                                                                 fromViewController:weakSelf
-                                                                    blockingManager:helper.blockingManager
-                                                                    contactsManager:helper.contactsManager
-                                                                    completionBlock:nil];
+                                [BlockListUIUtils showUnblockAddressActionSheet:address
+                                                             fromViewController:weakSelf
+                                                                completionBlock:^(BOOL isBlocked) {
+                                                                    [weakSelf updateTableContents];
+                                                                }];
                             }]];
         }
         [contents addSection:blockedContactsSection];
@@ -117,7 +130,7 @@ NS_ASSUME_NONNULL_BEGIN
             @"BLOCK_LIST_BLOCKED_GROUPS_SECTION", @"Section header for groups that have been blocked");
 
         for (TSGroupModel *blockedGroup in blockedGroups) {
-            UIImage *_Nullable image = blockedGroup.groupImage;
+            UIImage *_Nullable image = blockedGroup.groupAvatarImage;
             if (!image) {
                 NSString *conversationColorName =
                     [TSGroupThread defaultConversationColorNameForGroupId:blockedGroup.groupId];
@@ -125,24 +138,21 @@ NS_ASSUME_NONNULL_BEGIN
                                                  conversationColorName:conversationColorName
                                                               diameter:kStandardAvatarSize];
             }
-            NSString *groupName
-                = blockedGroup.groupName.length > 0 ? blockedGroup.groupName : TSGroupThread.defaultGroupName;
-
             [blockedGroupsSection addItem:[OWSTableItem
                                               itemWithCustomCellBlock:^{
                                                   OWSAvatarTableViewCell *cell = [OWSAvatarTableViewCell new];
                                                   [cell configureWithImage:image
-                                                                      text:groupName
+                                                                      text:blockedGroup.groupNameOrDefault
                                                                 detailText:nil];
                                                   return cell;
                                               }
                                               customRowHeight:UITableViewAutomaticDimension
                                               actionBlock:^{
                                                   [BlockListUIUtils showUnblockGroupActionSheet:blockedGroup
-                                                                                    displayName:groupName
                                                                              fromViewController:weakSelf
-                                                                                blockingManager:helper.blockingManager
-                                                                                completionBlock:nil];
+                                                                                completionBlock:^(BOOL isBlocked) {
+                                                                                    [weakSelf updateTableContents];
+                                                                                }];
                                               }]];
         }
         [contents addSection:blockedGroupsSection];
@@ -161,6 +171,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (BOOL)shouldHideLocalNumber
 {
     return YES;
+}
+
+#pragma mark - AddToBlockListDelegate
+
+- (void)addToBlockListComplete
+{
+    [self.navigationController popToViewController:self animated:YES];
 }
 
 @end

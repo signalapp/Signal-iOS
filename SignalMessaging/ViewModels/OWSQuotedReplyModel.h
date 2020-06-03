@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalServiceKit/TSQuotedMessage.h>
@@ -8,16 +8,17 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol ConversationViewItem;
 
+@class SDSAnyReadTransaction;
+@class SignalServiceAddress;
 @class TSAttachmentPointer;
 @class TSAttachmentStream;
 @class TSMessage;
-@class YapDatabaseReadTransaction;
 
 // View model which has already fetched any attachments.
 @interface OWSQuotedReplyModel : NSObject
 
 @property (nonatomic, readonly) uint64_t timestamp;
-@property (nonatomic, readonly) NSString *authorId;
+@property (nonatomic, readonly) SignalServiceAddress *authorAddress;
 @property (nonatomic, readonly, nullable) TSAttachmentStream *attachmentStream;
 @property (nonatomic, readonly, nullable) TSAttachmentPointer *thumbnailAttachmentPointer;
 @property (nonatomic, readonly) BOOL thumbnailDownloadFailed;
@@ -36,15 +37,16 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly, nullable) NSString *sourceFilename;
 @property (nonatomic, readonly, nullable) UIImage *thumbnailImage;
 
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
 // Used for persisted quoted replies, both incoming and outgoing.
 + (instancetype)quotedReplyWithQuotedMessage:(TSQuotedMessage *)quotedMessage
-                                 transaction:(YapDatabaseReadTransaction *)transaction;
+                                 transaction:(SDSAnyReadTransaction *)transaction;
 
 // Builds a not-yet-sent QuotedReplyModel
 + (nullable instancetype)quotedReplyForSendingWithConversationViewItem:(id<ConversationViewItem>)conversationItem
-                                                           transaction:(YapDatabaseReadTransaction *)transaction;
+                                                           transaction:(SDSAnyReadTransaction *)transaction;
 
 - (TSQuotedMessage *)buildQuotedMessageForSending;
 

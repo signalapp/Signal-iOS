@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSErrorMessage.h"
@@ -7,14 +7,54 @@
 #import "OWSMessageManager.h"
 #import "SSKEnvironment.h"
 #import "TSContactThread.h"
-#import "TSErrorMessage_privateConstructor.h"
 #import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <YapDatabase/YapDatabaseConnection.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSUInteger TSErrorMessageSchemaVersion = 1;
+NSUInteger TSErrorMessageSchemaVersion = 2;
+
+@interface ThreadlessErrorMessage ()
+
+@property (nonatomic, readonly) TSErrorMessageType errorType;
+
+@end
+
+#pragma mark -
+
+@implementation ThreadlessErrorMessage
+
+- (instancetype)initWithErrorType:(TSErrorMessageType)errorType
+{
+    self = [super init];
+    if (!self) {
+        return self;
+    }
+
+    _errorType = errorType;
+
+    return self;
+}
+
++ (ThreadlessErrorMessage *)corruptedMessageInUnknownThread
+{
+    return [[self alloc] initWithErrorType:TSErrorMessageInvalidMessage];
+}
+
+- (NSString *)previewTextWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    switch (_errorType) {
+        case TSErrorMessageInvalidMessage:
+            return NSLocalizedString(@"ERROR_MESSAGE_INVALID_MESSAGE", @"");
+        default:
+            OWSFailDebug(@"Unknown error type.");
+            return NSLocalizedString(@"ERROR_MESSAGE_UNKNOWN_ERROR", @"");
+    }
+}
+
+@end
+
+#pragma mark -
 
 @interface TSErrorMessage ()
 
@@ -39,6 +79,14 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
         _read = YES;
     }
 
+    if (self.errorMessageSchemaVersion == 1) {
+        NSString *_Nullable phoneNumber = [coder decodeObjectForKey:@"recipientId"];
+        if (phoneNumber) {
+            _recipientAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber];
+            OWSAssertDebug(_recipientAddress.isValid);
+        }
+    }
+
     _errorMessageSchemaVersion = TSErrorMessageSchemaVersion;
 
     if (self.isDynamicInteraction) {
@@ -49,25 +97,19 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
 }
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSThread *)thread
+                           thread:(TSThread *)thread
                 failedMessageType:(TSErrorMessageType)errorMessageType
-                      recipientId:(nullable NSString *)recipientId
+                          address:(nullable SignalServiceAddress *)address
 {
-    self = [super initMessageWithTimestamp:timestamp
-                                  inThread:thread
-                               messageBody:nil
-                             attachmentIds:@[]
-                          expiresInSeconds:0
-                           expireStartedAt:0
-                             quotedMessage:nil
-                              contactShare:nil];
-
+    self = [super initMessageWithBuilder:[TSMessageBuilder messageBuilderWithThread:thread
+                                                                          timestamp:timestamp
+                                                                        messageBody:nil]];
     if (!self) {
         return self;
     }
 
     _errorType = errorMessageType;
-    _recipientId = recipientId;
+    _recipientAddress = address;
     _errorMessageSchemaVersion = TSErrorMessageSchemaVersion;
 
     if (self.isDynamicInteraction) {
@@ -77,34 +119,116 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
     return self;
 }
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSThread *)thread
-                failedMessageType:(TSErrorMessageType)errorMessageType
+- (instancetype)initWithThread:(TSThread *)thread
+             failedMessageType:(TSErrorMessageType)errorMessageType
+                       address:(nullable SignalServiceAddress *)address
 {
-    return [self initWithTimestamp:timestamp inThread:thread failedMessageType:errorMessageType recipientId:nil];
+    self = [super initMessageWithBuilder:[TSMessageBuilder messageBuilderWithThread:thread messageBody:nil]];
+    if (!self) {
+        return self;
+    }
+
+    _errorType = errorMessageType;
+    _recipientAddress = address;
+    _errorMessageSchemaVersion = TSErrorMessageSchemaVersion;
+
+    if (self.isDynamicInteraction) {
+        self.read = YES;
+    }
+
+    return self;
+}
+
+- (instancetype)initWithThread:(TSThread *)thread failedMessageType:(TSErrorMessageType)errorMessageType
+{
+    return [self initWithThread:thread failedMessageType:errorMessageType address:nil];
 }
 
 - (instancetype)initWithEnvelope:(SSKProtoEnvelope *)envelope
-                 withTransaction:(YapDatabaseReadWriteTransaction *)transaction
+                 withTransaction:(SDSAnyWriteTransaction *)transaction
                failedMessageType:(TSErrorMessageType)errorMessageType
 {
-    TSContactThread *contactThread =
-        [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
+    TSContactThread *contactThread = [TSContactThread getOrCreateThreadWithContactAddress:envelope.sourceAddress
+                                                                              transaction:transaction];
 
-    return [self initWithTimestamp:envelope.timestamp inThread:contactThread failedMessageType:errorMessageType];
+    // Legit usage of senderTimestamp. We don't actually currently surface it in the UI, but it serves as
+    // a reference to the envelope which we failed to process.
+    return [self initWithTimestamp:envelope.timestamp
+                            thread:contactThread
+                 failedMessageType:errorMessageType
+                           address:nil];
 }
 
-- (instancetype)initWithFailedMessageType:(TSErrorMessageType)errorMessageType
+// --- CODE GENERATION MARKER
+
+// This snippet is generated by /Scripts/sds_codegen/sds_generate.py. Do not manually edit it, instead run `sds_codegen.sh`.
+
+// clang-format off
+
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
+           receivedAtTimestamp:(uint64_t)receivedAtTimestamp
+                        sortId:(uint64_t)sortId
+                     timestamp:(uint64_t)timestamp
+                uniqueThreadId:(NSString *)uniqueThreadId
+                 attachmentIds:(NSArray<NSString *> *)attachmentIds
+                          body:(nullable NSString *)body
+                  contactShare:(nullable OWSContact *)contactShare
+               expireStartedAt:(uint64_t)expireStartedAt
+                     expiresAt:(uint64_t)expiresAt
+              expiresInSeconds:(unsigned int)expiresInSeconds
+            isViewOnceComplete:(BOOL)isViewOnceComplete
+             isViewOnceMessage:(BOOL)isViewOnceMessage
+                   linkPreview:(nullable OWSLinkPreview *)linkPreview
+                messageSticker:(nullable MessageSticker *)messageSticker
+                 quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+  storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
+            wasRemotelyDeleted:(BOOL)wasRemotelyDeleted
+                     errorType:(TSErrorMessageType)errorType
+                          read:(BOOL)read
+              recipientAddress:(nullable SignalServiceAddress *)recipientAddress
 {
-    return [self initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:nil failedMessageType:errorMessageType];
+    self = [super initWithGrdbId:grdbId
+                        uniqueId:uniqueId
+             receivedAtTimestamp:receivedAtTimestamp
+                          sortId:sortId
+                       timestamp:timestamp
+                  uniqueThreadId:uniqueThreadId
+                   attachmentIds:attachmentIds
+                            body:body
+                    contactShare:contactShare
+                 expireStartedAt:expireStartedAt
+                       expiresAt:expiresAt
+                expiresInSeconds:expiresInSeconds
+              isViewOnceComplete:isViewOnceComplete
+               isViewOnceMessage:isViewOnceMessage
+                     linkPreview:linkPreview
+                  messageSticker:messageSticker
+                   quotedMessage:quotedMessage
+    storedShouldStartExpireTimer:storedShouldStartExpireTimer
+              wasRemotelyDeleted:wasRemotelyDeleted];
+    
+    if (!self) {
+        return self;
+    }
+    
+    _errorType = errorType;
+    _read = read;
+    _recipientAddress = recipientAddress;
+    
+    return self;
 }
+
+// clang-format on
+
+// --- CODE GENERATION MARKER
 
 - (OWSInteractionType)interactionType
 {
     return OWSInteractionType_Error;
 }
 
-- (NSString *)previewTextWithTransaction:(YapDatabaseReadTransaction *)transaction
+- (NSString *)previewTextWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     switch (_errorType) {
         case TSErrorMessageNoSession:
@@ -120,20 +244,19 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
         case TSErrorMessageWrongTrustedIdentityKey:
             return NSLocalizedString(@"ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY", @"");
         case TSErrorMessageNonBlockingIdentityChange: {
-            if (self.recipientId) {
+            if (self.recipientAddress) {
                 NSString *messageFormat = NSLocalizedString(@"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE_FORMAT",
                     @"Shown when signal users safety numbers changed, embeds the user's {{name or phone number}}");
 
                 NSString *recipientDisplayName =
-                    [SSKEnvironment.shared.contactsManager displayNameForPhoneIdentifier:self.recipientId
-                                                                             transaction:transaction];
+                    [SSKEnvironment.shared.contactsManager displayNameForAddress:self.recipientAddress
+                                                                     transaction:transaction];
                 return [NSString stringWithFormat:messageFormat, recipientDisplayName];
             } else {
-                // recipientId will be nil for legacy errors
+                // address will be nil for legacy errors
                 return NSLocalizedString(
                     @"ERROR_MESSAGE_NON_BLOCKING_IDENTITY_CHANGE", @"Shown when signal users safety numbers changed");
             }
-            break;
         }
         case TSErrorMessageUnknownContactBlockOffer:
             return NSLocalizedString(@"UNKNOWN_CONTACT_BLOCK_OFFER",
@@ -142,26 +265,22 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
             return NSLocalizedString(@"GROUP_CREATION_FAILED",
                 @"Message shown in conversation view that indicates there were issues with group creation.");
         default:
-            return NSLocalizedString(@"ERROR_MESSAGE_UNKNOWN_ERROR", @"");
+            OWSFailDebug(@"failure: unknown error type");
             break;
     }
+    return NSLocalizedString(@"ERROR_MESSAGE_UNKNOWN_ERROR", @"");
 }
 
 + (instancetype)corruptedMessageWithEnvelope:(SSKProtoEnvelope *)envelope
-                             withTransaction:(YapDatabaseReadWriteTransaction *)transaction
+                             withTransaction:(SDSAnyWriteTransaction *)transaction
 {
     return [[self alloc] initWithEnvelope:envelope
                           withTransaction:transaction
                         failedMessageType:TSErrorMessageInvalidMessage];
 }
 
-+ (instancetype)corruptedMessageInUnknownThread
-{
-    return [[self alloc] initWithFailedMessageType:TSErrorMessageInvalidMessage];
-}
-
 + (instancetype)invalidVersionWithEnvelope:(SSKProtoEnvelope *)envelope
-                           withTransaction:(YapDatabaseReadWriteTransaction *)transaction
+                           withTransaction:(SDSAnyWriteTransaction *)transaction
 {
     return [[self alloc] initWithEnvelope:envelope
                           withTransaction:transaction
@@ -169,7 +288,7 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
 }
 
 + (instancetype)invalidKeyExceptionWithEnvelope:(SSKProtoEnvelope *)envelope
-                                withTransaction:(YapDatabaseReadWriteTransaction *)transaction
+                                withTransaction:(SDSAnyWriteTransaction *)transaction
 {
     return [[self alloc] initWithEnvelope:envelope
                           withTransaction:transaction
@@ -177,18 +296,18 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
 }
 
 + (instancetype)missingSessionWithEnvelope:(SSKProtoEnvelope *)envelope
-                           withTransaction:(YapDatabaseReadWriteTransaction *)transaction
+                           withTransaction:(SDSAnyWriteTransaction *)transaction
 {
-    return
-        [[self alloc] initWithEnvelope:envelope withTransaction:transaction failedMessageType:TSErrorMessageNoSession];
+    return [[self alloc] initWithEnvelope:envelope
+                          withTransaction:transaction
+                        failedMessageType:TSErrorMessageNoSession];
 }
 
-+ (instancetype)nonblockingIdentityChangeInThread:(TSThread *)thread recipientId:(NSString *)recipientId
++ (instancetype)nonblockingIdentityChangeInThread:(TSThread *)thread address:(SignalServiceAddress *)address
 {
-    return [[self alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                  inThread:thread
-                         failedMessageType:TSErrorMessageNonBlockingIdentityChange
-                               recipientId:recipientId];
+    return [[self alloc] initWithThread:thread
+                      failedMessageType:TSErrorMessageNonBlockingIdentityChange
+                                address:address];
 }
 
 #pragma mark - OWSReadTracking
@@ -204,21 +323,32 @@ NSUInteger TSErrorMessageSchemaVersion = 1;
 }
 
 - (void)markAsReadAtTimestamp:(uint64_t)readTimestamp
-              sendReadReceipt:(BOOL)sendReadReceipt
-                  transaction:(YapDatabaseReadWriteTransaction *)transaction
+                       thread:(TSThread *)thread
+                 circumstance:(OWSReadCircumstance)circumstance
+                  transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
 
-    if (_read) {
+    if (self.read) {
         return;
     }
 
     OWSLogDebug(@"marking as read uniqueId: %@ which has timestamp: %llu", self.uniqueId, self.timestamp);
-    _read = YES;
-    [self saveWithTransaction:transaction];
-    [self touchThreadWithTransaction:transaction];
 
-    // Ignore sendReadReceipt - it doesn't apply to error messages.
+    [self anyUpdateErrorMessageWithTransaction:transaction
+                                         block:^(TSErrorMessage *message) {
+                                             message.read = YES;
+                                         }];
+
+    // Ignore `circumstance` - we never send read receipts for error messages.
+}
+
+- (BOOL)isSpecialMessage
+{
+    if (self.errorType == TSErrorMessageNonBlockingIdentityChange) {
+        return YES;
+    }
+    return [super isSpecialMessage];
 }
 
 @end

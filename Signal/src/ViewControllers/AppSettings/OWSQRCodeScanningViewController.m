@@ -1,10 +1,9 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSQRCodeScanningViewController.h"
 #import "OWSBezierPathView.h"
-#import "UIColor+OWS.h"
 #import "UIView+OWS.h"
 
 NS_ASSUME_NONNULL_BEGIN
@@ -29,18 +28,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)init
 {
     self = [super init];
-    if (!self) {
-        return self;
-    }
-
-    _captureEnabled = NO;
-
-    return self;
-}
-
-- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder
-{
-    self = [super initWithCoder:aDecoder];
     if (!self) {
         return self;
     }
@@ -75,7 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
         layer.opacity = 0.5f;
     }];
     [self.view addSubview:maskingView];
-    [maskingView ows_autoPinToSuperviewEdges];
+    [maskingView autoPinEdgesToSuperviewEdges];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -93,6 +80,11 @@ NS_ASSUME_NONNULL_BEGIN
     [self stopCapture];
 }
 
+- (void)viewWillLayoutSubviews
+{
+    self.capture.layer.frame = self.view.bounds;
+}
+
 - (void)startCapture
 {
     self.captureEnabled = YES;
@@ -101,10 +93,10 @@ NS_ASSUME_NONNULL_BEGIN
             self.capture = [[ZXCapture alloc] init];
             self.capture.camera = self.capture.back;
             self.capture.focusMode = AVCaptureFocusModeContinuousAutoFocus;
-            self.capture.layer.frame = self.view.bounds;
             self.capture.delegate = self;
 
             dispatch_async(dispatch_get_main_queue(), ^{
+                self.capture.layer.frame = self.view.bounds;
                 [self.view.layer addSublayer:self.capture.layer];
                 [self.view bringSubviewToFront:self.maskingView];
                 [self.capture start];

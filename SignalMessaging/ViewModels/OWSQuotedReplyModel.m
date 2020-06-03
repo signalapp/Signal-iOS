@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSQuotedReplyModel.h"
@@ -23,7 +23,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) TSQuotedMessageContentSource bodySource;
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         authorId:(NSString *)authorId
+                    authorAddress:(SignalServiceAddress *)authorAddress
                              body:(nullable NSString *)body
                        bodySource:(TSQuotedMessageContentSource)bodySource
                    thumbnailImage:(nullable UIImage *)thumbnailImage
@@ -41,7 +41,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Initializers
 
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         authorId:(NSString *)authorId
+                    authorAddress:(SignalServiceAddress *)authorAddress
                              body:(nullable NSString *)body
                        bodySource:(TSQuotedMessageContentSource)bodySource
                    thumbnailImage:(nullable UIImage *)thumbnailImage
@@ -57,7 +57,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _timestamp = timestamp;
-    _authorId = authorId;
+    _authorAddress = authorAddress;
     _body = body;
     _bodySource = bodySource;
     _thumbnailImage = thumbnailImage;
@@ -73,7 +73,7 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Factory Methods
 
 + (instancetype)quotedReplyWithQuotedMessage:(TSQuotedMessage *)quotedMessage
-                                 transaction:(YapDatabaseReadTransaction *)transaction
+                                 transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(quotedMessage.quotedAttachments.count <= 1);
     OWSAttachmentInfo *attachmentInfo = quotedMessage.quotedAttachments.firstObject;
@@ -83,7 +83,7 @@ NS_ASSUME_NONNULL_BEGIN
     TSAttachmentPointer *attachmentPointer;
     if (attachmentInfo.thumbnailAttachmentStreamId) {
         TSAttachment *attachment =
-            [TSAttachment fetchObjectWithUniqueID:attachmentInfo.thumbnailAttachmentStreamId transaction:transaction];
+            [TSAttachment anyFetchWithUniqueId:attachmentInfo.thumbnailAttachmentStreamId transaction:transaction];
 
         TSAttachmentStream *attachmentStream;
         if ([attachment isKindOfClass:[TSAttachmentStream class]]) {
@@ -93,7 +93,7 @@ NS_ASSUME_NONNULL_BEGIN
     } else if (attachmentInfo.thumbnailAttachmentPointerId) {
         // download failed, or hasn't completed yet.
         TSAttachment *attachment =
-            [TSAttachment fetchObjectWithUniqueID:attachmentInfo.thumbnailAttachmentPointerId transaction:transaction];
+            [TSAttachment anyFetchWithUniqueId:attachmentInfo.thumbnailAttachmentPointerId transaction:transaction];
 
         if ([attachment isKindOfClass:[TSAttachmentPointer class]]) {
             attachmentPointer = (TSAttachmentPointer *)attachment;
@@ -104,7 +104,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     return [[self alloc] initWithTimestamp:quotedMessage.timestamp
-                                  authorId:quotedMessage.authorId
+                             authorAddress:quotedMessage.authorAddress
                                       body:quotedMessage.body
                                 bodySource:quotedMessage.bodySource
                             thumbnailImage:thumbnailImage
@@ -116,7 +116,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 + (nullable instancetype)quotedReplyForSendingWithConversationViewItem:(id<ConversationViewItem>)conversationItem
-                                                           transaction:(YapDatabaseReadTransaction *)transaction;
+                                                           transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(conversationItem);
     OWSAssertDebug(transaction);
@@ -132,18 +132,35 @@ NS_ASSUME_NONNULL_BEGIN
 
     uint64_t timestamp = message.timestamp;
 
-    NSString *_Nullable authorId = ^{
+    SignalServiceAddress *_Nullable authorAddress = ^{
         if ([message isKindOfClass:[TSOutgoingMessage class]]) {
-            return [TSAccountManager localNumber];
+            return [TSAccountManager localAddressWithTransaction:transaction];
         } else if ([message isKindOfClass:[TSIncomingMessage class]]) {
-            return [(TSIncomingMessage *)message authorId];
+            return [(TSIncomingMessage *)message authorAddress];
         } else {
             OWSFailDebug(@"Unexpected message type: %@", message.class);
-            return (NSString * _Nullable) nil;
+            return (SignalServiceAddress * _Nullable) nil;
         }
     }();
-    OWSAssertDebug(authorId.length > 0);
-    
+    OWSAssertDebug(authorAddress.isValid);
+
+    if (message.isViewOnceMessage) {
+        // We construct a quote that does not include any of the
+        // quoted message's renderable content.
+        NSString *body
+            = NSLocalizedString(@"PER_MESSAGE_EXPIRATION_NOT_VIEWABLE", @"inbox cell and notification text for an already viewed view-once media message.");
+        return [[self alloc] initWithTimestamp:timestamp
+                                 authorAddress:authorAddress
+                                          body:body
+                                    bodySource:TSQuotedMessageContentSourceLocal
+                                thumbnailImage:nil
+                                   contentType:nil
+                                sourceFilename:nil
+                              attachmentStream:nil
+                    thumbnailAttachmentPointer:nil
+                       thumbnailDownloadFailed:NO];
+    }
+
     if (conversationItem.contactShare) {
         ContactShareViewModel *contactShare = conversationItem.contactShare;
         
@@ -152,7 +169,7 @@ NS_ASSUME_NONNULL_BEGIN
         // thumbnails. Until we address that we want to be consistent about neither showing nor sending the
         // contactShare avatar in the quoted reply.
         return [[self alloc] initWithTimestamp:timestamp
-                                      authorId:authorId
+                                 authorAddress:authorAddress
                                           body:[@"👤 " stringByAppendingString:contactShare.displayName]
                                     bodySource:TSQuotedMessageContentSourceLocal
                                 thumbnailImage:nil
@@ -163,11 +180,40 @@ NS_ASSUME_NONNULL_BEGIN
                        thumbnailDownloadFailed:NO];
     }
 
+    if (conversationItem.stickerInfo || conversationItem.stickerAttachment) {
+        if (!conversationItem.stickerInfo || !conversationItem.stickerAttachment) {
+            OWSFailDebug(@"Incomplete sticker message.");
+            return nil;
+        }
+
+        TSAttachmentStream *quotedAttachment = conversationItem.stickerAttachment;
+        NSData *_Nullable stickerData = [NSData dataWithContentsOfFile:quotedAttachment.originalFilePath];
+        if (!stickerData) {
+            OWSFailDebug(@"Couldn't load sticker data.");
+            return nil;
+        }
+        UIImage *_Nullable thumbnailImage = [stickerData stillForWebpData];
+        if (!thumbnailImage) {
+            OWSFailDebug(@"Couldn't generate thumbnail for sticker.");
+            return nil;
+        }
+
+        return [[self alloc] initWithTimestamp:timestamp
+                                 authorAddress:authorAddress
+                                          body:nil
+                                    bodySource:TSQuotedMessageContentSourceLocal
+                                thumbnailImage:thumbnailImage
+                                   contentType:quotedAttachment.contentType
+                                sourceFilename:quotedAttachment.sourceFilename
+                              attachmentStream:quotedAttachment
+                    thumbnailAttachmentPointer:nil
+                       thumbnailDownloadFailed:NO];
+    }
+
     NSString *_Nullable quotedText = message.body;
     BOOL hasText = quotedText.length > 0;
-    BOOL hasAttachment = NO;
 
-    TSAttachment *_Nullable attachment = [message attachmentsWithTransaction:transaction].firstObject;
+    TSAttachment *_Nullable attachment = [message bodyAttachmentsWithTransaction:transaction].firstObject;
     TSAttachmentStream *quotedAttachment;
     if (attachment && [attachment isKindOfClass:[TSAttachmentStream class]]) {
 
@@ -213,21 +259,31 @@ NS_ASSUME_NONNULL_BEGIN
             }
         } else {
             quotedAttachment = attachmentStream;
-            hasAttachment = YES;
         }
     }
 
+    if (!quotedAttachment && conversationItem.linkPreview && conversationItem.linkPreviewAttachment &&
+        [conversationItem.linkPreviewAttachment isKindOfClass:[TSAttachmentStream class]]) {
+
+        quotedAttachment = (TSAttachmentStream *)conversationItem.linkPreviewAttachment;
+    }
+
+    BOOL hasAttachment = quotedAttachment != nil;
     if (!hasText && !hasAttachment) {
         OWSFailDebug(@"quoted message has neither text nor attachment");
         quotedText = @"";
         hasText = YES;
     }
 
+    UIImage *_Nullable thumbnailImage;
+    if (quotedAttachment.isValidVisualMedia) {
+        thumbnailImage = quotedAttachment.thumbnailImageSmallSync;
+    }
     return [[self alloc] initWithTimestamp:timestamp
-                                  authorId:authorId
+                             authorAddress:authorAddress
                                       body:quotedText
                                 bodySource:TSQuotedMessageContentSourceLocal
-                            thumbnailImage:quotedAttachment.thumbnailImageSmallSync
+                            thumbnailImage:thumbnailImage
                                contentType:quotedAttachment.contentType
                             sourceFilename:quotedAttachment.sourceFilename
                           attachmentStream:quotedAttachment
@@ -241,8 +297,9 @@ NS_ASSUME_NONNULL_BEGIN
 {
     NSArray *attachments = self.attachmentStream ? @[ self.attachmentStream ] : @[];
 
+    // Legit usage of senderTimestamp to reference existing message
     return [[TSQuotedMessage alloc] initWithTimestamp:self.timestamp
-                                             authorId:self.authorId
+                                        authorAddress:self.authorAddress
                                                  body:self.body
                           quotedAttachmentsForSending:attachments];
 }

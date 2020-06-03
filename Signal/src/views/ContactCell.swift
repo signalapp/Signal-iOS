@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -21,7 +21,7 @@ class ContactCell: UITableViewCell {
     var contact: Contact?
     var showsWhenSelected: Bool = false
 
-    override init(style: UITableViewCellStyle, reuseIdentifier: String?) {
+    override init(style: UITableViewCell.CellStyle, reuseIdentifier: String?) {
         self.contactImageView = AvatarImageView()
         self.textStackView = UIStackView()
         self.titleLabel = UILabel()
@@ -31,12 +31,12 @@ class ContactCell: UITableViewCell {
 
         super.init(style: style, reuseIdentifier: reuseIdentifier)
 
-        selectionStyle = UITableViewCellSelectionStyle.none
+        selectionStyle = UITableViewCell.SelectionStyle.none
 
         textStackView.axis = .vertical
         textStackView.addArrangedSubview(titleLabel)
 
-        contactImageView.autoSetDimensions(to: CGSize(width: CGFloat(ContactCell.kAvatarDiameter), height: CGFloat(ContactCell.kAvatarDiameter)))
+        contactImageView.autoSetDimensions(to: CGSize(square: CGFloat(ContactCell.kAvatarDiameter)))
 
         let contentColumns: UIStackView = UIStackView(arrangedSubviews: [contactImageView, textStackView])
         contentColumns.axis = .horizontal
@@ -46,7 +46,7 @@ class ContactCell: UITableViewCell {
         self.contentView.addSubview(contentColumns)
         contentColumns.autoPinEdgesToSuperviewMargins()
 
-        NotificationCenter.default.addObserver(self, selector: #selector(self.didChangePreferredContentSize), name: NSNotification.Name.UIContentSizeCategoryDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.didChangePreferredContentSize), name: UIContentSizeCategory.didChangeNotification, object: nil)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -72,16 +72,16 @@ class ContactCell: UITableViewCell {
 
     func configure(contact: Contact, subtitleType: SubtitleCellValue, showsWhenSelected: Bool, contactsManager: OWSContactsManager) {
 
-        OWSTableItem.configureCell(self)
-
         self.contact = contact
         self.showsWhenSelected = showsWhenSelected
 
-        self.titleLabel.textColor = Theme.primaryColor
-        self.subtitleLabel.textColor = Theme.secondaryColor
+        if let cnContactId = contact.cnContactId,
+            let cnContact = contactsManager.cnContact(withId: cnContactId) {
+            titleLabel.attributedText = cnContact.formattedFullName(font: titleLabel.font)
+        } else {
+            titleLabel.text = contact.fullName
+        }
 
-        let cnContact = contactsManager.cnContact(withId: contact.cnContactId)
-        titleLabel.attributedText = cnContact?.formattedFullName(font: titleLabel.font)
         updateSubtitle(subtitleType: subtitleType, contact: contact)
 
         if let contactImage = contactsManager.avatarImage(forCNContactId: contact.cnContactId) {
@@ -94,7 +94,11 @@ class ContactCell: UITableViewCell {
                 contactIdForDeterminingBackgroundColor = contact.fullName
             }
 
-            let avatarBuilder = OWSContactAvatarBuilder(nonSignalName: contact.fullName,
+            var nameComponents = PersonNameComponents()
+            nameComponents.givenName = contact.firstName
+            nameComponents.familyName = contact.lastName
+
+            let avatarBuilder = OWSContactAvatarBuilder(nonSignalNameComponents: nameComponents,
                                                         colorSeed: contactIdForDeterminingBackgroundColor,
                                                         diameter: ContactCell.kAvatarDiameter)
 
@@ -125,6 +129,15 @@ class ContactCell: UITableViewCell {
             }
         }
     }
+
+    override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+
+        titleLabel.textColor = Theme.primaryTextColor
+        subtitleLabel.textColor = Theme.secondaryTextAndIconColor
+
+        OWSTableItem.configureCell(self)
+    }
 }
 
 fileprivate extension CNContact {
@@ -136,13 +149,13 @@ fileprivate extension CNContact {
 
         let boldDescriptor = font.fontDescriptor.withSymbolicTraits(.traitBold)
         let boldAttributes = [
-            NSAttributedStringKey.font: UIFont(descriptor: boldDescriptor!, size: 0)
+            NSAttributedString.Key.font: UIFont(descriptor: boldDescriptor!, size: 0)
         ]
 
         if let attributedName = CNContactFormatter.attributedString(from: self, style: .fullName, defaultAttributes: nil) {
             let highlightedName = attributedName.mutableCopy() as! NSMutableAttributedString
             highlightedName.enumerateAttributes(in: NSRange(location: 0, length: highlightedName.length), options: [], using: { (attrs, range, _) in
-                if let property = attrs[NSAttributedStringKey(rawValue: CNContactPropertyAttribute)] as? String, property == keyToHighlight {
+                if let property = attrs[NSAttributedString.Key(rawValue: CNContactPropertyAttribute)] as? String, property == keyToHighlight {
                     highlightedName.addAttributes(boldAttributes, range: range)
                 }
             })

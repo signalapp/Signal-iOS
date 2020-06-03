@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSLinkedDevicesTableViewController.h"
@@ -10,22 +10,19 @@
 #import <SignalServiceKit/NSTimer+OWS.h>
 #import <SignalServiceKit/OWSDevice.h>
 #import <SignalServiceKit/OWSDevicesService.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
-#import <SignalServiceKit/TSDatabaseView.h>
-#import <YapDatabase/YapDatabase.h>
-#import <YapDatabase/YapDatabaseViewConnection.h>
-#import <YapDatabase/YapDatabaseViewMappings.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSLinkedDevicesTableViewController ()
+@interface OWSLinkedDevicesTableViewController () <SDSDatabaseStorageObserver>
 
-@property (nonatomic) YapDatabaseConnection *dbConnection;
-@property (nonatomic) YapDatabaseViewMappings *deviceMappings;
+@property (nonatomic) NSArray<OWSDevice *> *devices;
+
 @property (nonatomic) NSTimer *pollingRefreshTimer;
 @property (nonatomic) BOOL isExpectingMoreDevices;
 
 @end
+
+#pragma mark -
 
 int const OWSLinkedDevicesTableViewControllerSectionExistingDevices = 0;
 int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
@@ -34,40 +31,39 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
 
 - (void)dealloc
 {
+    OWSLogVerbose(@"");
+
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
+
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark - UIViewController overrides
 
 - (void)viewDidLoad
 {
     [super viewDidLoad];
 
-    self.view.backgroundColor = Theme.backgroundColor;
-
     self.title = NSLocalizedString(@"LINKED_DEVICES_TITLE", @"Menu item and navbar title for the device manager");
+
+    self.view.backgroundColor = Theme.tableViewBackgroundColor;
+    self.tableView.backgroundColor = Theme.tableViewBackgroundColor;
+    self.tableView.separatorColor = Theme.cellSeparatorColor;
 
     self.isExpectingMoreDevices = NO;
     self.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableView.estimatedRowHeight = 60;
-    self.tableView.separatorColor = Theme.cellSeparatorColor;
-
+    [self.tableView registerClass:[UITableViewCell class] forCellReuseIdentifier:@"AddNewDevice"];
+    [self.tableView registerClass:[OWSDeviceTableViewCell class] forCellReuseIdentifier:@"ExistingDevice"];
     [self.tableView applyScrollViewInsetsFix];
 
-    self.dbConnection = [[OWSPrimaryStorage sharedManager] newDatabaseConnection];
-    [self.dbConnection beginLongLivedReadTransaction];
-    self.deviceMappings = [[YapDatabaseViewMappings alloc] initWithGroups:@[ TSSecondaryDevicesGroup ]
-                                                                     view:TSSecondaryDevicesDatabaseViewExtensionName];
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        [self.deviceMappings updateWithTransaction:transaction];
-    }];
+    [self.databaseStorage addDatabaseStorageObserver:self];
 
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(yapDatabaseModified:)
-                                                 name:YapDatabaseModifiedNotification
-                                               object:OWSPrimaryStorage.sharedManager.dbNotificationObject];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(yapDatabaseModifiedExternally:)
-                                                 name:YapDatabaseModifiedExternallyNotification
-                                               object:nil];
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(deviceListUpdateSucceeded:)
                                                  name:NSNotificationName_DeviceListUpdateSucceeded
@@ -84,7 +80,74 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
     self.refreshControl = [UIRefreshControl new];
     [self.refreshControl addTarget:self action:@selector(refreshDevices) forControlEvents:UIControlEventValueChanged];
 
-    [self setupEditButton];
+    [self updateDeviceList];
+}
+
+- (void)traitCollectionDidChange:(nullable UITraitCollection *)previousTraitCollection
+{
+    [super traitCollectionDidChange:previousTraitCollection];
+
+    self.view.backgroundColor = Theme.backgroundColor;
+    self.tableView.separatorColor = Theme.cellSeparatorColor;
+    [self.tableView reloadSections:[NSIndexSet indexSetWithIndex:OWSLinkedDevicesTableViewControllerSectionAddDevice]
+                  withRowAnimation:UITableViewRowAnimationNone];
+}
+
+#pragma mark - SDSDatabaseStorageObserver
+
+- (void)databaseStorageDidUpdateWithChange:(SDSDatabaseStorageChange *)change
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(AppReadiness.isAppReady);
+
+    if (![change didUpdateModelWithCollection:OWSDevice.collection]) {
+        return;
+    }
+
+    [self updateDeviceList];
+}
+
+- (void)databaseStorageDidUpdateExternally
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(AppReadiness.isAppReady);
+
+    [self updateDeviceList];
+}
+
+- (void)databaseStorageDidReset
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(AppReadiness.isAppReady);
+
+    [self updateDeviceList];
+}
+
+#pragma mark -
+
+- (void)updateDeviceList
+{
+    OWSAssertIsOnMainThread();
+
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        NSArray<OWSDevice *> *devices = [OWSDevice anyFetchAllWithTransaction:transaction];
+        devices = [devices filter:^(OWSDevice *device) {
+            return !device.isPrimaryDevice;
+        }];
+        devices = [devices sortedArrayUsingComparator:^(OWSDevice *device1, OWSDevice *device2) {
+            return [device2.createdAt compare:device1.createdAt];
+        }];
+        self.devices = devices;
+    }];
+
+    // Don't show edit button for an empty table
+    if (self.devices.count > 0) {
+        self.navigationItem.rightBarButtonItem = self.editButtonItem;
+    } else {
+        self.navigationItem.rightBarButtonItem = nil;
+    }
+
+    [self.tableView reloadData];
 }
 
 - (void)viewWillAppear:(BOOL)animated
@@ -106,17 +169,7 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
     [self.pollingRefreshTimer invalidate];
 }
 
-// Don't show edit button for an empty table
-- (void)setupEditButton
-{
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        if ([OWSDevice hasSecondaryDevicesWithTransaction:transaction]) {
-            self.navigationItem.rightBarButtonItem = self.editButtonItem;
-        } else {
-            self.navigationItem.rightBarButtonItem = nil;
-        }
-    }];
-}
+#pragma mark -
 
 - (void)expectMoreDevices
 {
@@ -173,23 +226,19 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
     NSString *alertTitle = NSLocalizedString(
         @"DEVICE_LIST_UPDATE_FAILED_TITLE", @"Alert title that can occur when viewing device manager.");
 
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:alertTitle
-                                                                             message:error.localizedDescription
-                                                                      preferredStyle:UIAlertControllerStyleAlert];
+    ActionSheetController *alert = [[ActionSheetController alloc] initWithTitle:alertTitle
+                                                                        message:error.localizedDescription];
 
-    UIAlertAction *retryAction = [UIAlertAction actionWithTitle:[CommonStrings retryButton]
-                                                          style:UIAlertActionStyleDefault
-                                                        handler:^(UIAlertAction *action) {
-                                                            [self refreshDevices];
-                                                        }];
-    [alertController addAction:retryAction];
-
-    UIAlertAction *dismissAction =
-        [UIAlertAction actionWithTitle:CommonStrings.dismissButton style:UIAlertActionStyleCancel handler:nil];
-    [alertController addAction:dismissAction];
+    ActionSheetAction *retryAction = [[ActionSheetAction alloc] initWithTitle:[CommonStrings retryButton]
+                                                                        style:ActionSheetActionStyleDefault
+                                                                      handler:^(ActionSheetAction *action) {
+                                                                          [self refreshDevices];
+                                                                      }];
+    [alert addAction:retryAction];
+    [alert addAction:OWSActionSheets.dismissAction];
 
     [self.refreshControl endRefreshing];
-    [self presentViewController:alertController animated:YES completion:nil];
+    [self presentActionSheet:alert];
 }
 
 - (void)deviceListUpdateModifiedDeviceList:(NSNotification *)notification
@@ -206,76 +255,6 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
 
 #pragma mark - Table view data source
 
-- (void)yapDatabaseModifiedExternally:(NSNotification *)notification
-{
-    OWSAssertIsOnMainThread();
-
-    // External database modifications can't be converted into incremental updates,
-    // so rebuild everything.  This is expensive and usually isn't necessary, but
-    // there's no alternative.
-    [self.dbConnection beginLongLivedReadTransaction];
-    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        [self.deviceMappings updateWithTransaction:transaction];
-    }];
-
-    [self.tableView reloadData];
-}
-
-- (void)yapDatabaseModified:(NSNotification *)notification
-{
-    OWSAssertIsOnMainThread();
-
-    OWSLogVerbose(@"");
-
-    NSArray *notifications = [self.dbConnection beginLongLivedReadTransaction];
-    [self setupEditButton];
-
-    if ([notifications count] == 0) {
-        return; // already processed commit
-    }
-
-    NSArray *rowChanges;
-    [[self.dbConnection ext:TSSecondaryDevicesDatabaseViewExtensionName] getSectionChanges:nil
-                                                                                rowChanges:&rowChanges
-                                                                          forNotifications:notifications
-                                                                              withMappings:self.deviceMappings];
-    if (rowChanges.count == 0) {
-        // There aren't any changes that affect our tableView!
-        return;
-    }
-
-    [self.tableView beginUpdates];
-
-    for (YapDatabaseViewRowChange *rowChange in rowChanges) {
-        switch (rowChange.type) {
-            case YapDatabaseViewChangeDelete: {
-                [self.tableView deleteRowsAtIndexPaths:@[ rowChange.indexPath ]
-                                      withRowAnimation:UITableViewRowAnimationAutomatic];
-                break;
-            }
-            case YapDatabaseViewChangeInsert: {
-                [self.tableView insertRowsAtIndexPaths:@[ rowChange.newIndexPath ]
-                                      withRowAnimation:UITableViewRowAnimationAutomatic];
-                break;
-            }
-            case YapDatabaseViewChangeMove: {
-                [self.tableView deleteRowsAtIndexPaths:@[ rowChange.indexPath ]
-                                      withRowAnimation:UITableViewRowAnimationAutomatic];
-                [self.tableView insertRowsAtIndexPaths:@[ rowChange.newIndexPath ]
-                                      withRowAnimation:UITableViewRowAnimationAutomatic];
-                break;
-            }
-            case YapDatabaseViewChangeUpdate: {
-                [self.tableView reloadRowsAtIndexPaths:@[ rowChange.indexPath ]
-                                      withRowAnimation:UITableViewRowAnimationNone];
-                break;
-            }
-        }
-    }
-
-    [self.tableView endUpdates];
-}
-
 - (NSInteger)numberOfSectionsInTableView:(UITableView *)tableView
 {
     return 2;
@@ -285,7 +264,7 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
 {
     switch (section) {
         case OWSLinkedDevicesTableViewControllerSectionExistingDevices:
-            return (NSInteger)[self.deviceMappings numberOfItemsInSection:(NSUInteger)section];
+            return (NSInteger)self.devices.count;
         case OWSLinkedDevicesTableViewControllerSectionAddDevice:
             return 1;
         default:
@@ -303,26 +282,38 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
             if (!granted) {
                 return;
             }
-            [self performSegueWithIdentifier:@"LinkDeviceSegue" sender:self];
+            [self showLinkNewDeviceView];
         }];
     }
+}
+
+- (void)showLinkNewDeviceView
+{
+    OWSLinkDeviceViewController *vc = [OWSLinkDeviceViewController new];
+    vc.linkedDevicesTableViewController = self;
+    [self.navigationController pushViewController:vc animated:YES];
 }
 
 - (UITableViewCell *)tableView:(UITableView *)tableView cellForRowAtIndexPath:(NSIndexPath *)indexPath
 {
     if (indexPath.section == OWSLinkedDevicesTableViewControllerSectionAddDevice) {
-        UITableViewCell *cell = [tableView dequeueReusableCellWithIdentifier:@"AddNewDevice" forIndexPath:indexPath];
+        UITableViewCell *cell =
+            [[UITableViewCell alloc] initWithStyle:UITableViewCellStyleSubtitle reuseIdentifier:@"AddNewDevice"];
         [OWSTableItem configureCell:cell];
         cell.textLabel.text
             = NSLocalizedString(@"LINK_NEW_DEVICE_TITLE", @"Navigation title when scanning QR code to add new device.");
         cell.detailTextLabel.text
             = NSLocalizedString(@"LINK_NEW_DEVICE_SUBTITLE", @"Subheading for 'Link New Device' navigation");
+        cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
+        cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(OWSLinkedDevicesTableViewController, @"add");
+        cell.backgroundColor = Theme.tableCellBackgroundColor;
         return cell;
     } else if (indexPath.section == OWSLinkedDevicesTableViewControllerSectionExistingDevices) {
         OWSDeviceTableViewCell *cell =
             [tableView dequeueReusableCellWithIdentifier:@"ExistingDevice" forIndexPath:indexPath];
         OWSDevice *device = [self deviceForRowAtIndexPath:indexPath];
         [cell configureWithDevice:device];
+        cell.backgroundColor = Theme.tableCellBackgroundColor;
         return cell;
     } else {
         OWSLogError(@"Unknown section: %@", indexPath);
@@ -332,18 +323,14 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
 
 - (nullable OWSDevice *)deviceForRowAtIndexPath:(NSIndexPath *)indexPath
 {
-    if (indexPath.section == OWSLinkedDevicesTableViewControllerSectionExistingDevices) {
-        __block OWSDevice *device;
-        [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            device = [[transaction extension:TSSecondaryDevicesDatabaseViewExtensionName]
-                objectAtIndexPath:indexPath
-                     withMappings:self.deviceMappings];
-        }];
+    NSUInteger index = (NSUInteger)indexPath.row;
 
-        return device;
-    }
+    OWSAssertDebug(index >= 0);
+    OWSAssertDebug(index < self.devices.count);
 
-    return nil;
+    OWSDevice *_Nullable device = self.devices[index];
+    OWSAssertDebug(device != nil);
+    return device;
 }
 
 - (BOOL)tableView:(UITableView *)tableView canEditRowAtIndexPath:(NSIndexPath *)indexPath
@@ -367,7 +354,10 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
             touchedUnlinkControlForDevice:device
                                   success:^{
                                       OWSLogInfo(@"Removing unlinked device with deviceId: %ld", (long)device.deviceId);
-                                      [device remove];
+                                      [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                                          [device anyRemoveWithTransaction:transaction];
+                                      }];
+                                      [self updateDeviceList];
                                   }];
     }
 }
@@ -376,27 +366,26 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
 {
     NSString *confirmationTitleFormat
         = NSLocalizedString(@"UNLINK_CONFIRMATION_ALERT_TITLE", @"Alert title for confirming device deletion");
-    NSString *confirmationTitle = [NSString stringWithFormat:confirmationTitleFormat, device.name];
+    NSString *confirmationTitle = [NSString stringWithFormat:confirmationTitleFormat, device.displayName];
     NSString *confirmationMessage
         = NSLocalizedString(@"UNLINK_CONFIRMATION_ALERT_BODY", @"Alert message to confirm unlinking a device");
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:confirmationTitle
-                                                                             message:confirmationMessage
-                                                                      preferredStyle:UIAlertControllerStyleAlert];
+    ActionSheetController *alert = [[ActionSheetController alloc] initWithTitle:confirmationTitle
+                                                                        message:confirmationMessage];
 
-    [alertController addAction:[OWSAlerts cancelAction]];
+    [alert addAction:[OWSActionSheets cancelAction]];
 
-    UIAlertAction *unlinkAction =
-        [UIAlertAction actionWithTitle:NSLocalizedString(@"UNLINK_ACTION", "button title for unlinking a device")
-                                 style:UIAlertActionStyleDestructive
-                               handler:^(UIAlertAction *action) {
-                                   dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                                       [self unlinkDevice:device success:successCallback];
-                                   });
-                               }];
-    [alertController addAction:unlinkAction];
+    ActionSheetAction *unlinkAction = [[ActionSheetAction alloc]
+        initWithTitle:NSLocalizedString(@"UNLINK_ACTION", "button title for unlinking a device")
+                style:ActionSheetActionStyleDestructive
+              handler:^(ActionSheetAction *action) {
+                  dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                      [self unlinkDevice:device success:successCallback];
+                  });
+              }];
+    [alert addAction:unlinkAction];
 
     dispatch_async(dispatch_get_main_queue(), ^{
-        [self presentViewController:alertController animated:YES completion:nil];
+        [self presentActionSheet:alert];
     });
 }
 
@@ -407,32 +396,23 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
                             failure:^(NSError *error) {
                                 NSString *title = NSLocalizedString(
                                     @"UNLINKING_FAILED_ALERT_TITLE", @"Alert title when unlinking device fails");
-                                UIAlertController *alertController =
-                                    [UIAlertController alertControllerWithTitle:title
-                                                                        message:error.localizedDescription
-                                                                 preferredStyle:UIAlertControllerStyleAlert];
+                                ActionSheetController *alert =
+                                    [[ActionSheetController alloc] initWithTitle:title
+                                                                         message:error.localizedDescription];
 
-                                UIAlertAction *retryAction =
-                                    [UIAlertAction actionWithTitle:[CommonStrings retryButton]
-                                                             style:UIAlertActionStyleDefault
-                                                           handler:^(UIAlertAction *aaction) {
-                                                               [self unlinkDevice:device success:successCallback];
-                                                           }];
-                                [alertController addAction:retryAction];
-                                [alertController addAction:[OWSAlerts cancelAction]];
+                                ActionSheetAction *retryAction = [[ActionSheetAction alloc]
+                                    initWithTitle:[CommonStrings retryButton]
+                                            style:ActionSheetActionStyleDefault
+                                          handler:^(ActionSheetAction *aaction) {
+                                              [self unlinkDevice:device success:successCallback];
+                                          }];
+                                [alert addAction:retryAction];
+                                [alert addAction:[OWSActionSheets cancelAction]];
 
                                 dispatch_async(dispatch_get_main_queue(), ^{
-                                    [self presentViewController:alertController animated:YES completion:nil];
+                                    [self presentActionSheet:alert];
                                 });
                             }];
-}
-
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(nullable id)sender
-{
-    if ([segue.destinationViewController isKindOfClass:[OWSLinkDeviceViewController class]]) {
-        OWSLinkDeviceViewController *controller = (OWSLinkDeviceViewController *)segue.destinationViewController;
-        controller.linkedDevicesTableViewController = self;
-    }
 }
 
 @end

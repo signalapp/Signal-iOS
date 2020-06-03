@@ -1,24 +1,37 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 
-protocol HapticAdapter {
+protocol SelectionHapticFeedbackAdapter {
     func selectionChanged()
 }
 
-class LegacyHapticAdapter: NSObject, HapticAdapter {
+class SelectionHapticFeedback: SelectionHapticFeedbackAdapter {
+    let adapter: SelectionHapticFeedbackAdapter
 
-    // MARK: HapticAdapter
+    init() {
+        if #available(iOS 10, *) {
+            adapter = ModernSelectionHapticFeedbackAdapter()
+        } else {
+            adapter = LegacySelectionHapticFeedbackAdapter()
+        }
+    }
 
+    func selectionChanged() {
+        adapter.selectionChanged()
+    }
+}
+
+class LegacySelectionHapticFeedbackAdapter: NSObject, SelectionHapticFeedbackAdapter {
     func selectionChanged() {
         // do nothing
     }
 }
 
 @available(iOS 10, *)
-class FeedbackGeneratorHapticAdapter: NSObject, HapticAdapter {
+class ModernSelectionHapticFeedbackAdapter: NSObject, SelectionHapticFeedbackAdapter {
     let selectionFeedbackGenerator: UISelectionFeedbackGenerator
 
     override init() {
@@ -34,18 +47,111 @@ class FeedbackGeneratorHapticAdapter: NSObject, HapticAdapter {
     }
 }
 
-class HapticFeedback: HapticAdapter {
-    let adapter: HapticAdapter
+@objc
+enum NotificationHapticFeedbackType: Int {
+    case error, success, warning
+}
 
-    init() {
+@available(iOS 10.0, *)
+extension NotificationHapticFeedbackType {
+    var uiNotificationFeedbackType: UINotificationFeedbackGenerator.FeedbackType {
+        switch self {
+        case .error: return .error
+        case .success: return .success
+        case .warning: return .warning
+        }
+    }
+}
+
+protocol NotificationHapticFeedbackAdapter {
+    func notificationOccurred(_ notificationType: NotificationHapticFeedbackType)
+}
+
+@objc
+class NotificationHapticFeedback: NSObject, NotificationHapticFeedbackAdapter {
+
+    let adapter: NotificationHapticFeedbackAdapter
+
+    override init() {
         if #available(iOS 10, *) {
-            adapter = FeedbackGeneratorHapticAdapter()
+            adapter = ModernNotificationHapticFeedbackAdapter()
         } else {
-            adapter = LegacyHapticAdapter()
+            adapter = LegacyNotificationHapticFeedbackAdapter()
         }
     }
 
-    func selectionChanged() {
-        adapter.selectionChanged()
+    @objc
+    func notificationOccurred(_ notificationType: NotificationHapticFeedbackType) {
+        adapter.notificationOccurred(notificationType)
+    }
+}
+
+@available(iOS 10.0, *)
+class ModernNotificationHapticFeedbackAdapter: NotificationHapticFeedbackAdapter {
+    let feedbackGenerator = UINotificationFeedbackGenerator()
+
+    init() {
+        feedbackGenerator.prepare()
+    }
+
+    func notificationOccurred(_ notificationType: NotificationHapticFeedbackType) {
+        feedbackGenerator.notificationOccurred(notificationType.uiNotificationFeedbackType)
+        feedbackGenerator.prepare()
+    }
+}
+
+class LegacyNotificationHapticFeedbackAdapter: NotificationHapticFeedbackAdapter {
+    func notificationOccurred(_ notificationType: NotificationHapticFeedbackType) {
+        vibrate()
+    }
+
+    private func vibrate() {
+        AudioServicesPlaySystemSound(kSystemSoundID_Vibrate)
+    }
+}
+
+protocol ImpactHapticFeedbackAdapter {
+    func impactOccurred()
+}
+
+@objc
+class ImpactHapticFeedback: NSObject, ImpactHapticFeedbackAdapter {
+    let adapter: ImpactHapticFeedbackAdapter
+
+    @objc
+    override init() {
+        if #available(iOS 10, *) {
+            adapter = ModernImpactHapticFeedbackAdapter()
+        } else {
+            adapter = LegacyImpactHapticFeedbackAdapter()
+        }
+    }
+
+    @objc
+    func impactOccurred() {
+        adapter.impactOccurred()
+    }
+}
+
+class LegacyImpactHapticFeedbackAdapter: NSObject, ImpactHapticFeedbackAdapter {
+    func impactOccurred() {
+        // do nothing
+    }
+}
+
+@available(iOS 10, *)
+class ModernImpactHapticFeedbackAdapter: NSObject, ImpactHapticFeedbackAdapter {
+    let impactFeedbackGenerator: UIImpactFeedbackGenerator
+
+    override init() {
+        impactFeedbackGenerator = UIImpactFeedbackGenerator()
+        impactFeedbackGenerator.prepare()
+    }
+
+    // MARK: HapticAdapter
+
+    func impactOccurred() {
+        impactFeedbackGenerator.impactOccurred()
+        impactFeedbackGenerator.prepare()
     }
 }

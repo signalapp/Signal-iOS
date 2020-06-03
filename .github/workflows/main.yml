@@ -1,0 +1,82 @@
+name: CI
+
+on: [pull_request]
+
+jobs:
+  build_and_test:
+    name: Build and Test
+
+    runs-on: macOS-latest
+
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v2
+
+      - name: Initialize workflow variables
+        id: vars
+        shell: bash
+        run: |
+          # check for ACCESS_TOKEN availability (work-around for inaccessible 'secrets' object for 'if'; see <https://github.community/t5/GitHub-Actions/jobs-lt-job-id-gt-if-does-not-work-with-env-secrets/m-p/38549>)
+          if [ -z $ACCESS_TOKEN ]; then unset HAS_ACCESS_TOKEN ; else HAS_ACCESS_TOKEN='true' ; fi
+          echo ::set-output name=HAS_ACCESS_TOKEN::${HAS_ACCESS_TOKEN}
+        env:
+          ACCESS_TOKEN: "${{ secrets.ACCESS_TOKEN }}"
+
+      # Checkout private pods repo iff we have an access token to read private repos
+      - name: Checkout Private Pods
+        uses: actions/checkout@v2
+        # if: secrets.ACCESS_TOKEN (not supported {yet?}; see <https://github.community/t5/GitHub-Actions/jobs-lt-job-id-gt-if-does-not-work-with-env-secrets/m-p/38549>)
+        if: steps.vars.outputs.HAS_ACCESS_TOKEN
+        with:
+          repository: signalapp/signal-pods-private
+          token: ${{ secrets.ACCESS_TOKEN }}
+          path: Pods
+
+      - name: Initialize Submodules
+        run: make dependencies
+
+      - name: Setup Ruby
+        uses: actions/setup-ruby@v1
+        with:
+          ruby-version: 2.6
+
+      - name: Cache Bundle Install
+        uses: actions/cache@v1
+        with:
+          path: vendor/bundle
+          key: ${{ runner.os }}-gems-${{ hashFiles('**/Gemfile.lock') }}
+          restore-keys: |
+            ${{ runner.os }}-gems-
+
+      - name: Bundle Install
+        run: |
+          bundle config path vendor/bundle
+          bundle install --jobs 4 --retry 3
+
+      - name: Build and Test
+        run: |
+          function formatFailures() {
+            grep '<failure message' fastlane/test_output/report.junit | sed -E "s/^.*<failure message='(.*)'>(.*):([0-9]+)<\/failure>/::error file=\2,line=\3::\1/" | sed -E 's/&quot;/"/g'
+            exit 1
+          }
+
+          fastlane scan --scheme Signal --output_types junit || formatFailures
+
+  lint:
+    name: Lint
+
+    runs-on: macOS-latest
+
+    steps:
+      - uses: actions/checkout@v1
+
+      - name: Install Dependencies
+        run: brew install swiftlint clang-format
+
+      - name: Lint files changed in the PR
+        run: |
+          python Scripts/precommit.py --ref origin/${{ github.base_ref }}
+
+          # https://help.github.com/en/actions/reference/development-tools-for-github-actions#logging-commands
+          git diff --name-only | sed -E 's/(.*)/::error file=\1::Incorrectly formatted (clang-format)/'
+          git diff --quiet || exit 1

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalMessaging/OWSViewController.h>
@@ -29,6 +29,9 @@ extern const CGFloat kOWSTable_DefaultCellHeight;
 @property (nonatomic, nullable) NSString *headerTitle;
 @property (nonatomic, nullable) NSString *footerTitle;
 
+@property (nonatomic, nullable) NSAttributedString *headerAttributedTitle;
+@property (nonatomic, nullable) NSAttributedString *footerAttributedTitle;
+
 @property (nonatomic, nullable) UIView *customHeaderView;
 @property (nonatomic, nullable) UIView *customFooterView;
 @property (nonatomic, nullable) NSNumber *customHeaderHeight;
@@ -37,6 +40,8 @@ extern const CGFloat kOWSTable_DefaultCellHeight;
 + (OWSTableSection *)sectionWithTitle:(nullable NSString *)title items:(NSArray<OWSTableItem *> *)items;
 
 - (void)addItem:(OWSTableItem *)item;
+
+- (void)addItems:(NSArray<OWSTableItem *> *)items;
 
 - (NSUInteger)itemCount;
 
@@ -47,6 +52,7 @@ extern const CGFloat kOWSTable_DefaultCellHeight;
 typedef void (^OWSTableActionBlock)(void);
 typedef void (^OWSTableSubPageBlock)(UIViewController *viewController);
 typedef UITableViewCell *_Nonnull (^OWSTableCustomCellBlock)(void);
+typedef BOOL (^OWSTableSwitchBlock)(void);
 
 @interface OWSTableItem : NSObject
 
@@ -72,14 +78,32 @@ typedef UITableViewCell *_Nonnull (^OWSTableCustomCellBlock)(void);
 + (OWSTableItem *)disclosureItemWithText:(NSString *)text actionBlock:(nullable OWSTableActionBlock)actionBlock;
 
 + (OWSTableItem *)disclosureItemWithText:(NSString *)text
+                 accessibilityIdentifier:(nullable NSString *)accessibilityIdentifier
+                             actionBlock:(nullable OWSTableActionBlock)actionBlock;
+
++ (OWSTableItem *)disclosureItemWithText:(NSString *)text
                               detailText:(NSString *)detailText
+                             actionBlock:(nullable OWSTableActionBlock)actionBlock;
+
++ (OWSTableItem *)disclosureItemWithText:(NSString *)text
+                              detailText:(NSString *)detailText
+                 accessibilityIdentifier:(nullable NSString *)accessibilityIdentifier
                              actionBlock:(nullable OWSTableActionBlock)actionBlock;
 
 + (OWSTableItem *)disclosureItemWithText:(NSString *)text
                          customRowHeight:(CGFloat)customRowHeight
                              actionBlock:(nullable OWSTableActionBlock)actionBlock;
 
++ (OWSTableItem *)disclosureItemWithText:(NSString *)text
+                 accessibilityIdentifier:(nullable NSString *)accessibilityIdentifier
+                         customRowHeight:(CGFloat)customRowHeight
+                             actionBlock:(nullable OWSTableActionBlock)actionBlock;
+
 + (OWSTableItem *)checkmarkItemWithText:(NSString *)text actionBlock:(nullable OWSTableActionBlock)actionBlock;
+
++ (OWSTableItem *)checkmarkItemWithText:(NSString *)text
+                accessibilityIdentifier:(nullable NSString *)accessibilityIdentifier
+                            actionBlock:(nullable OWSTableActionBlock)actionBlock;
 
 + (OWSTableItem *)itemWithText:(NSString *)text
                    actionBlock:(nullable OWSTableActionBlock)actionBlock
@@ -93,6 +117,10 @@ typedef UITableViewCell *_Nonnull (^OWSTableCustomCellBlock)(void);
 
 + (OWSTableItem *)actionItemWithText:(NSString *)text actionBlock:(nullable OWSTableActionBlock)actionBlock;
 
++ (OWSTableItem *)actionItemWithText:(NSString *)text
+             accessibilityIdentifier:(nullable NSString *)accessibilityIdentifier
+                         actionBlock:(nullable OWSTableActionBlock)actionBlock;
+
 + (OWSTableItem *)softCenterLabelItemWithText:(NSString *)text;
 
 + (OWSTableItem *)softCenterLabelItemWithText:(NSString *)text customRowHeight:(CGFloat)customRowHeight;
@@ -101,11 +129,23 @@ typedef UITableViewCell *_Nonnull (^OWSTableCustomCellBlock)(void);
 
 + (OWSTableItem *)labelItemWithText:(NSString *)text accessoryText:(NSString *)accessoryText;
 
-+ (OWSTableItem *)switchItemWithText:(NSString *)text isOn:(BOOL)isOn target:(id)target selector:(SEL)selector;
++ (OWSTableItem *)longDisclosureItemWithText:(NSString *)text actionBlock:(nullable OWSTableActionBlock)actionBlock;
 
 + (OWSTableItem *)switchItemWithText:(NSString *)text
-                                isOn:(BOOL)isOn
-                           isEnabled:(BOOL)isEnabled
+                           isOnBlock:(OWSTableSwitchBlock)isOnBlock
+                              target:(id)target
+                            selector:(SEL)selector;
+
++ (OWSTableItem *)switchItemWithText:(NSString *)text
+                           isOnBlock:(OWSTableSwitchBlock)isOnBlock
+                      isEnabledBlock:(OWSTableSwitchBlock)isEnabledBlock
+                              target:(id)target
+                            selector:(SEL)selector;
+
++ (OWSTableItem *)switchItemWithText:(NSString *)text
+             accessibilityIdentifier:(nullable NSString *)accessibilityIdentifier
+                           isOnBlock:(OWSTableSwitchBlock)isOnBlock
+                      isEnabledBlock:(OWSTableSwitchBlock)isEnabledBlock
                               target:(id)target
                             selector:(SEL)selector;
 
@@ -133,9 +173,17 @@ typedef UITableViewCell *_Nonnull (^OWSTableCustomCellBlock)(void);
 
 @property (nonatomic) UITableViewStyle tableViewStyle;
 
+@property (nonatomic) BOOL useThemeBackgroundColors;
+
+@property (nonatomic, nullable) UIColor *customSectionHeaderFooterBackgroundColor;
+
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
+
 #pragma mark - Presentation
 
 - (void)presentFromViewController:(UIViewController *)fromViewController;
+
+- (void)applyTheme;
 
 @end
 

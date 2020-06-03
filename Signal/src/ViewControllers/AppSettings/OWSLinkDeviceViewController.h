@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSQRCodeScanningViewController.h"
@@ -9,9 +9,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class OWSLinkedDevicesTableViewController;
 
-@interface OWSLinkDeviceViewController : OWSViewController <OWSQRScannerDelegate>
+@interface OWSLinkDeviceViewController : OWSViewController
 
-@property OWSLinkedDevicesTableViewController *linkedDevicesTableViewController;
+@property (nonatomic, weak) OWSLinkedDevicesTableViewController *linkedDevicesTableViewController;
 
 - (void)controller:(OWSQRCodeScanningViewController *)controller didDetectQRCodeWithString:(NSString *)string;
 

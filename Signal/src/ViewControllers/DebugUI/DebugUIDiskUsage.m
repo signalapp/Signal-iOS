@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "DebugUIDiskUsage.h"
@@ -7,13 +7,20 @@
 #import "OWSTableViewController.h"
 #import "Signal-Swift.h"
 #import <SignalCoreKit/NSDate+OWS.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
-#import <SignalServiceKit/TSDatabaseView.h>
 #import <SignalServiceKit/TSInteraction.h>
+
+#ifdef DEBUG
 
 NS_ASSUME_NONNULL_BEGIN
 
 @implementation DebugUIDiskUsage
+
+#pragma mark - Dependencies
+
++ (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
 
 #pragma mark - Factory Methods
 
@@ -47,18 +54,16 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)saveAllAttachments
 {
-    OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
-    [primaryStorage.newDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         NSMutableArray<TSAttachmentStream *> *attachmentStreams = [NSMutableArray new];
-        [transaction enumerateKeysAndObjectsInCollection:TSAttachmentStream.collection
-                                              usingBlock:^(NSString *key, TSAttachment *attachment, BOOL *stop) {
-                                                  if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
-                                                      return;
-                                                  }
-                                                  TSAttachmentStream *attachmentStream
-                                                      = (TSAttachmentStream *)attachment;
-                                                  [attachmentStreams addObject:attachmentStream];
-                                              }];
+        [TSAttachment anyEnumerateWithTransaction:transaction
+                                            block:^(TSAttachment *attachment, BOOL *stop) {
+                                                if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
+                                                    return;
+                                                }
+                                                TSAttachmentStream *attachmentStream = (TSAttachmentStream *)attachment;
+                                                [attachmentStreams addObject:attachmentStream];
+                                            }];
 
         OWSLogInfo(@"Saving %zd attachment streams.", attachmentStreams.count);
 
@@ -66,7 +71,10 @@ NS_ASSUME_NONNULL_BEGIN
         // For performance, we want to upgrade all existing attachment streams in
         // a single transaction.
         for (TSAttachmentStream *attachmentStream in attachmentStreams) {
-            [attachmentStream saveWithTransaction:transaction];
+            [attachmentStream anyUpdateWithTransaction:transaction
+                                                 block:^(TSAttachment *attachment){
+                                                     // Do nothing, rewriting is sufficient.
+                                                 }];
         }
     }];
 }
@@ -78,35 +86,28 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)deleteOldMessages:(NSTimeInterval)maxAgeSeconds
 {
-    OWSPrimaryStorage *primaryStorage = [OWSPrimaryStorage sharedManager];
-    [primaryStorage.newDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-        NSMutableArray<NSString *> *threadIds = [NSMutableArray new];
-        YapDatabaseViewTransaction *interactionsByThread = [transaction ext:TSMessageDatabaseViewExtensionName];
-        [interactionsByThread enumerateGroupsUsingBlock:^(NSString *group, BOOL *stop) {
-            [threadIds addObject:group];
-        }];
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        NSArray<NSString *> *threadIds = [TSThread anyAllUniqueIdsWithTransaction:transaction];
         NSMutableArray<TSInteraction *> *interactionsToDelete = [NSMutableArray new];
         for (NSString *threadId in threadIds) {
-            [interactionsByThread enumerateKeysAndObjectsInGroup:threadId
-                                                      usingBlock:^(NSString *collection,
-                                                          NSString *key,
-                                                          TSInteraction *interaction,
-                                                          NSUInteger index,
-                                                          BOOL *stop) {
-                                                          NSTimeInterval ageSeconds
-                                                              = fabs(interaction.dateForSorting.timeIntervalSinceNow);
-                                                          if (ageSeconds < maxAgeSeconds) {
-                                                              *stop = YES;
-                                                              return;
-                                                          }
-                                                          [interactionsToDelete addObject:interaction];
-                                                      }];
+            InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:threadId];
+            NSError *error;
+            [interactionFinder
+                enumerateRecentInteractionsWithTransaction:transaction
+                                                     error:&error
+                                                     block:^(TSInteraction *interaction, BOOL *stop) {
+                                                         NSTimeInterval ageSeconds
+                                                             = fabs(interaction.receivedAtDate.timeIntervalSinceNow);
+                                                         if (ageSeconds >= maxAgeSeconds) {
+                                                             [interactionsToDelete addObject:interaction];
+                                                         }
+                                                     }];
         }
 
         OWSLogInfo(@"Deleting %zd interactions.", interactionsToDelete.count);
 
         for (TSInteraction *interaction in interactionsToDelete) {
-            [interaction removeWithTransaction:transaction];
+            [interaction anyRemoveWithTransaction:transaction];
         }
     }];
 }
@@ -114,3 +115,5 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 NS_ASSUME_NONNULL_END
+
+#endif

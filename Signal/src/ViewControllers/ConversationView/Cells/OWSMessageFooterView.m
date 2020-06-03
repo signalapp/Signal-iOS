@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSMessageFooterView.h"
@@ -16,48 +16,47 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) UILabel *timestampLabel;
 @property (nonatomic) UIImageView *statusIndicatorImageView;
 @property (nonatomic) OWSMessageTimerView *messageTimerView;
+@property (nonatomic) UIStackView *contentStack;
+@property (nonatomic) UIView *leadingSpacer;
+@property (nonatomic) UIView *trailingSpacer;
 
 @end
 
 @implementation OWSMessageFooterView
 
 // `[UIView init]` invokes `[self initWithFrame:...]`.
-- (instancetype)initWithFrame:(CGRect)frame
+- (instancetype)init
 {
-    if (self = [super initWithFrame:frame]) {
-        [self commontInit];
+    if (self = [super initWithFrame:CGRectZero]) {
+        [self commonInit];
     }
 
     return self;
 }
 
-- (void)commontInit
+- (void)commonInit
 {
     // Ensure only called once.
     OWSAssertDebug(!self.timestampLabel);
 
-    self.layoutMargins = UIEdgeInsetsZero;
-
-    self.axis = UILayoutConstraintAxisHorizontal;
-    self.alignment = UIStackViewAlignmentCenter;
-    self.distribution = UIStackViewDistributionEqualSpacing;
-
-    UIStackView *leftStackView = [UIStackView new];
-    leftStackView.axis = UILayoutConstraintAxisHorizontal;
-    leftStackView.spacing = self.hSpacing;
-    leftStackView.alignment = UIStackViewAlignmentCenter;
-    [self addArrangedSubview:leftStackView];
-    [leftStackView setContentHuggingHigh];
-
     self.timestampLabel = [OWSLabel new];
-    [leftStackView addArrangedSubview:self.timestampLabel];
-
+    self.timestampLabel.textAlignment = self.textAlignmentUnnatural;
     self.messageTimerView = [OWSMessageTimerView new];
-    [self.messageTimerView setContentHuggingHigh];
-    [leftStackView addArrangedSubview:self.messageTimerView];
-
     self.statusIndicatorImageView = [UIImageView new];
-    [self addArrangedSubview:self.statusIndicatorImageView];
+
+    UIStackView *contentStack = [[UIStackView alloc]
+        initWithArrangedSubviews:@[ self.timestampLabel, self.messageTimerView, self.statusIndicatorImageView ]];
+    self.contentStack = contentStack;
+    contentStack.axis = UILayoutConstraintAxisHorizontal;
+    contentStack.alignment = UIStackViewAlignmentCenter;
+    contentStack.spacing = self.hSpacing;
+
+    self.leadingSpacer = [UIView hStretchingSpacer];
+    self.trailingSpacer = [UIView hStretchingSpacer];
+
+    [self addArrangedSubview:self.leadingSpacer];
+    [self addArrangedSubview:self.contentStack];
+    [self addArrangedSubview:self.trailingSpacer];
 
     self.userInteractionEnabled = NO;
 }
@@ -69,8 +68,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGFloat)hSpacing
 {
-    // TODO: Review constant.
-    return 8.f;
+    return 4;
 }
 
 - (CGFloat)maxImageWidth
@@ -86,24 +84,30 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - Load
 
 - (void)configureWithConversationViewItem:(id<ConversationViewItem>)viewItem
-                        isOverlayingMedia:(BOOL)isOverlayingMedia
                         conversationStyle:(ConversationStyle *)conversationStyle
                                isIncoming:(BOOL)isIncoming
+                        isOverlayingMedia:(BOOL)isOverlayingMedia
+                          isOutsideBubble:(BOOL)isOutsideBubble
 {
     OWSAssertDebug(viewItem);
     OWSAssertDebug(conversationStyle);
+
+    self.leadingSpacer.hidden = isIncoming;
+    self.trailingSpacer.hidden = !isIncoming;
 
     [self configureLabelsWithConversationViewItem:viewItem];
 
     UIColor *textColor;
     if (isOverlayingMedia) {
         textColor = [UIColor whiteColor];
+    } else if (isOutsideBubble) {
+        textColor = Theme.secondaryTextAndIconColor;
     } else {
         textColor = [conversationStyle bubbleSecondaryTextColorWithIsIncoming:isIncoming];
     }
     self.timestampLabel.textColor = textColor;
 
-    if (viewItem.isExpiringMessage) {
+    if (viewItem.hasPerConversationExpiration) {
         TSMessage *message = (TSMessage *)viewItem.interaction;
         uint64_t expirationTimestamp = message.expiresAt;
         uint32_t expiresInSeconds = message.expiresInSeconds;
@@ -115,12 +119,14 @@ NS_ASSUME_NONNULL_BEGIN
         self.messageTimerView.hidden = YES;
     }
 
+    NSString *_Nullable accessibilityLabel;
     if (viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)viewItem.interaction;
 
         UIImage *_Nullable statusIndicatorImage = nil;
         MessageReceiptStatus messageStatus =
             [MessageRecipientStatusUtils recipientStatusWithOutgoingMessage:outgoingMessage];
+        accessibilityLabel = [MessageRecipientStatusUtils receiptMessageWithOutgoingMessage:outgoingMessage];
         switch (messageStatus) {
             case MessageReceiptStatusUploading:
             case MessageReceiptStatusSending:
@@ -142,14 +148,15 @@ NS_ASSUME_NONNULL_BEGIN
                 break;
         }
 
-        if (statusIndicatorImage) {
-            [self showStatusIndicatorWithIcon:statusIndicatorImage textColor:textColor];
-        } else {
+        if (statusIndicatorImage == nil || outgoingMessage.wasRemotelyDeleted) {
             [self hideStatusIndicator];
+        } else {
+            [self showStatusIndicatorWithIcon:statusIndicatorImage textColor:textColor];
         }
     } else {
         [self hideStatusIndicator];
     }
+    self.accessibilityLabel = accessibilityLabel;
 }
 
 - (void)showStatusIndicatorWithIcon:(UIImage *)icon textColor:(UIColor *)textColor
@@ -157,20 +164,12 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(icon.size.width <= self.maxImageWidth);
     self.statusIndicatorImageView.image = [icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
     self.statusIndicatorImageView.tintColor = textColor;
-    [self.statusIndicatorImageView setContentHuggingHigh];
-    self.spacing = self.hSpacing;
+    self.statusIndicatorImageView.hidden = NO;
 }
 
 - (void)hideStatusIndicator
 {
-    // If there's no status indicator, we want the other
-    // footer contents to "cling to the leading edge".
-    // Instead of hiding the status indicator view,
-    // we clear its contents and let it stretch to fill
-    // the available space.
-    self.statusIndicatorImageView.image = nil;
-    [self.statusIndicatorImageView setContentHuggingLow];
-    self.spacing = 0;
+    self.statusIndicatorImageView.hidden = YES;
 }
 
 - (void)animateSpinningIcon
@@ -232,13 +231,15 @@ NS_ASSUME_NONNULL_BEGIN
     result.width = timestampLabelWidth;
     if (viewItem.interaction.interactionType == OWSInteractionType_OutgoingMessage) {
         if (![self isFailedOutgoingMessage:viewItem]) {
-            result.width += (self.maxImageWidth + self.hSpacing);
+            result.width += self.maxImageWidth;
         }
     }
 
-    if (viewItem.isExpiringMessage) {
-        result.width += ([OWSMessageTimerView measureSize].width + self.hSpacing);
+    if (viewItem.hasPerConversationExpiration) {
+        result.width += [OWSMessageTimerView measureSize].width;
     }
+
+    result.width += MAX(0, (self.contentStack.arrangedSubviews.count - 1) * self.contentStack.spacing);
 
     return CGSizeCeil(result);
 }

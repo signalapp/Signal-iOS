@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationViewLayout.h"
@@ -10,9 +10,12 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface ConversationViewLayout ()
 
+@property (nonatomic) CGFloat lastViewWidth;
 @property (nonatomic) CGSize contentSize;
 
 @property (nonatomic, readonly) NSMutableDictionary<NSNumber *, UICollectionViewLayoutAttributes *> *itemAttributesMap;
+@property (nonatomic, nullable) UICollectionViewLayoutAttributes *headerLayoutAttributes;
+@property (nonatomic, nullable) UICollectionViewLayoutAttributes *footerLayoutAttributes;
 
 // This dirty flag may be redundant with logic in UICollectionViewLayout,
 // but it can't hurt and it ensures that we can safely & cheaply call
@@ -66,6 +69,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.contentSize = CGSizeZero;
     [self.itemAttributesMap removeAllObjects];
     self.hasLayout = NO;
+    self.lastViewWidth = 0.f;
 }
 
 - (void)prepareLayout
@@ -88,10 +92,8 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.hasLayout) {
         return;
     }
+    [self clearState];
     self.hasLayout = YES;
-
-    // TODO: Remove this log statement after we've reduced the invalidation churn.
-    OWSLogVerbose(@"prepareLayout");
 
     [self prepareLayoutOfItems];
 }
@@ -102,7 +104,21 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSArray<id<ConversationViewLayoutItem>> *layoutItems = self.delegate.layoutItems;
 
-    CGFloat y = self.conversationStyle.contentMarginTop + self.delegate.layoutHeaderHeight;
+    CGFloat y = 0;
+
+    if (layoutItems.count == 0) {
+        self.headerLayoutAttributes = nil;
+    } else {
+        NSIndexPath *headerIndexPath = [NSIndexPath indexPathForRow:0 inSection:0];
+        UICollectionViewLayoutAttributes *headerLayoutAttributes = [UICollectionViewLayoutAttributes
+            layoutAttributesForSupplementaryViewOfKind:UICollectionElementKindSectionHeader
+                                         withIndexPath:headerIndexPath];
+
+        headerLayoutAttributes.frame = CGRectMake(0, y, viewWidth, self.delegate.layoutHeaderHeight);
+        self.headerLayoutAttributes = headerLayoutAttributes;
+    }
+    y += self.delegate.layoutHeaderHeight;
+    y += self.conversationStyle.contentMarginTop;
     CGFloat contentBottom = y;
 
     NSInteger row = 0;
@@ -134,15 +150,40 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     contentBottom += self.conversationStyle.contentMarginBottom;
+
+    if (layoutItems.count == 0) {
+        self.footerLayoutAttributes = nil;
+    } else {
+        NSIndexPath *footerIndexPath = [NSIndexPath indexPathForRow:(NSInteger)layoutItems.count - 1 inSection:0];
+        UICollectionViewLayoutAttributes *footerLayoutAttributes = [UICollectionViewLayoutAttributes
+            layoutAttributesForSupplementaryViewOfKind:UICollectionElementKindSectionFooter
+                                         withIndexPath:footerIndexPath];
+
+        footerLayoutAttributes.frame = CGRectMake(0, contentBottom, viewWidth, self.delegate.layoutFooterHeight);
+        self.footerLayoutAttributes = footerLayoutAttributes;
+        contentBottom += self.delegate.layoutFooterHeight;
+    }
+
     self.contentSize = CGSizeMake(viewWidth, contentBottom);
+    self.lastViewWidth = viewWidth;
 }
 
 - (nullable NSArray<__kindof UICollectionViewLayoutAttributes *> *)layoutAttributesForElementsInRect:(CGRect)rect
 {
     NSMutableArray<UICollectionViewLayoutAttributes *> *result = [NSMutableArray new];
+    if (self.headerLayoutAttributes != nil) {
+        if (CGRectIntersectsRect(rect, self.headerLayoutAttributes.frame)) {
+            [result addObject:self.headerLayoutAttributes];
+        }
+    }
     for (UICollectionViewLayoutAttributes *itemAttributes in self.itemAttributesMap.allValues) {
         if (CGRectIntersectsRect(rect, itemAttributes.frame)) {
             [result addObject:itemAttributes];
+        }
+    }
+    if (self.footerLayoutAttributes != nil) {
+        if (CGRectIntersectsRect(rect, self.footerLayoutAttributes.frame)) {
+            [result addObject:self.footerLayoutAttributes];
         }
     }
     return result;
@@ -153,6 +194,18 @@ NS_ASSUME_NONNULL_BEGIN
     return self.itemAttributesMap[@(indexPath.row)];
 }
 
+- (nullable UICollectionViewLayoutAttributes *)layoutAttributesForSupplementaryViewOfKind:(NSString *)elementKind
+                                                                              atIndexPath:(NSIndexPath *)indexPath
+{
+    if ([elementKind isEqualToString:UICollectionElementKindSectionHeader]) {
+        return self.headerLayoutAttributes;
+    } else if ([elementKind isEqualToString:UICollectionElementKindSectionFooter]) {
+        return self.footerLayoutAttributes;
+    } else {
+        return nil;
+    }
+}
+
 - (CGSize)collectionViewContentSize
 {
     return self.contentSize;
@@ -160,7 +213,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)shouldInvalidateLayoutForBoundsChange:(CGRect)newBounds
 {
-    return self.collectionView.bounds.size.width != newBounds.size.width;
+    return self.lastViewWidth != newBounds.size.width;
 }
 
 @end

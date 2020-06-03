@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDatabaseMigrationRunner.h"
@@ -19,48 +19,86 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSDatabaseMigrationRunner
 
-- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
 {
-    self = [super init];
-    if (!self) {
-        return self;
-    }
-
-    _primaryStorage = primaryStorage;
-
-    return self;
+    return SDSDatabaseStorage.shared;
 }
+
+#pragma mark -
 
 // This should all migrations which do NOT qualify as safeBlockingMigrations:
 - (NSArray<OWSDatabaseMigration *> *)allMigrations
 {
-    OWSPrimaryStorage *primaryStorage = OWSPrimaryStorage.sharedManager;
-    return @[
-        [[OWS100RemoveTSRecipientsMigration alloc] initWithPrimaryStorage:primaryStorage],
-        [[OWS102MoveLoggingPreferenceToUserDefaults alloc] initWithPrimaryStorage:primaryStorage],
-        [[OWS103EnableVideoCalling alloc] initWithPrimaryStorage:primaryStorage],
-        [[OWS104CreateRecipientIdentities alloc] initWithPrimaryStorage:primaryStorage],
-        [[OWS105AttachmentFilePaths alloc] initWithPrimaryStorage:primaryStorage],
-        [[OWS106EnsureProfileComplete alloc] initWithPrimaryStorage:primaryStorage],
-        [[OWS107LegacySounds alloc] initWithPrimaryStorage:primaryStorage],
-        [[OWS108CallLoggingPreference alloc] initWithPrimaryStorage:primaryStorage],
-        [[OWS109OutgoingMessageState alloc] initWithPrimaryStorage:primaryStorage],
-        [[OWS111UDAttributesMigration alloc] initWithPrimaryStorage:primaryStorage],
-        [[OWS112TypingIndicatorsMigration alloc] initWithPrimaryStorage:primaryStorage],
+    NSArray<OWSDatabaseMigration *> *prodMigrations = @[
+        [[OWS100RemoveTSRecipientsMigration alloc] init],
+        [[OWS102MoveLoggingPreferenceToUserDefaults alloc] init],
+        [[OWS103EnableVideoCalling alloc] init],
+        [[OWS104CreateRecipientIdentities alloc] init],
+        [[OWS105AttachmentFilePaths alloc] init],
+        [[OWS106EnsureProfileComplete alloc] init],
+        [[OWS107LegacySounds alloc] init],
+        [[OWS108CallLoggingPreference alloc] init],
+        [[OWS109OutgoingMessageState alloc] init],
+        [OWS110SortIdMigration new],
+        [[OWS111UDAttributesMigration alloc] init],
+        [[OWS112TypingIndicatorsMigration alloc] init],
+        [[OWS113MultiAttachmentMediaMessages alloc] init],
+        [[OWS114RemoveDynamicInteractions alloc] init],
+        [OWS115EnsureProfileAvatars new],
+        [OWS116UpdatePrekeys new]
     ];
+
+    if (StorageCoordinator.dataStoreForUI == DataStoreGrdb) {
+        return [prodMigrations arrayByAddingObjectsFromArray:@ [[OWS1XXGRDBMigration new]]];
+    } else {
+        return prodMigrations;
+    }
 }
 
 - (void)assumeAllExistingMigrationsRun
 {
-    for (OWSDatabaseMigration *migration in self.allMigrations) {
-        OWSLogInfo(@"Skipping migration on new install: %@", migration);
-        [migration save];
-    }
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        for (OWSDatabaseMigration *migration in self.allMigrations) {
+            OWSLogInfo(@"Skipping migration on new install: %@", migration);
+
+            [migration markAsCompleteWithTransaction:transaction];
+        }
+    }];
 }
 
 - (void)runAllOutstandingWithCompletion:(OWSDatabaseMigrationCompletion)completion
 {
+    [self removeUnknownMigrations];
+
     [self runMigrations:[self.allMigrations mutableCopy] completion:completion];
+}
+
+// Some users (especially internal users) will move back and forth between
+// app versions.  Whenever they move "forward" in the version history, we
+// want them to re-run any new migrations. Therefore, when they move "backward"
+// in the version history, we cull any unknown migrations.
+- (void)removeUnknownMigrations
+{
+    NSMutableSet<NSString *> *knownMigrationIds = [NSMutableSet new];
+    for (OWSDatabaseMigration *migration in self.allMigrations) {
+        [knownMigrationIds addObject:migration.migrationId];
+    }
+
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        NSArray<NSString *> *savedMigrationIds =
+            [OWSDatabaseMigration allCompleteMigrationIdsWithTransaction:transaction];
+
+        NSMutableSet<NSString *> *unknownMigrationIds = [NSMutableSet new];
+        [unknownMigrationIds addObjectsFromArray:savedMigrationIds];
+        [unknownMigrationIds minusSet:knownMigrationIds];
+
+        for (NSString *unknownMigrationId in unknownMigrationIds) {
+            OWSLogInfo(@"Culling unknown migration: %@", unknownMigrationId);
+            [OWSDatabaseMigration markMigrationIdAsIncomplete:unknownMigrationId transaction:transaction];
+        }
+    }];
 }
 
 // Run migrations serially to:
@@ -86,14 +124,16 @@ NS_ASSUME_NONNULL_BEGIN
     [migrations removeObjectAtIndex:0];
 
     // If migration has already been run, skip it.
-    if ([OWSDatabaseMigration fetchObjectWithUniqueID:migration.uniqueId] != nil) {
+    if (migration.isCompleteWithSneakyTransaction) {
         [self runMigrations:migrations completion:completion];
         return;
     }
 
-    OWSLogInfo(@"Running migration: %@", migration);
+    OWSLogInfo(@"Running migration: %@ %@", migration, migration.migrationId);
+
     [migration runUpWithCompletion:^{
-        OWSLogInfo(@"Migration complete: %@", migration);
+        OWSLogInfo(@"Migration complete: %@ %@", migration, migration.migrationId);
+
         [self runMigrations:migrations completion:completion];
     }];
 }

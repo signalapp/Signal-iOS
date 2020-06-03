@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "NotificationSettingsOptionsViewController.h"
@@ -12,7 +12,9 @@
 - (void)viewDidLoad
 {
     [super viewDidLoad];
-    
+
+    self.useThemeBackgroundColors = YES;
+
     [self updateTableContents];
 }
 
@@ -40,6 +42,9 @@
                                  if (selectedNotifType == notificationType) {
                                      cell.accessoryType = UITableViewCellAccessoryCheckmark;
                                  }
+                                 cell.accessibilityIdentifier
+                                     = ACCESSIBILITY_IDENTIFIER_WITH_NAME(NotificationSettingsOptionsViewController,
+                                         NSStringForNotificationType(notificationType));
                                  return cell;
                              }
                              actionBlock:^{

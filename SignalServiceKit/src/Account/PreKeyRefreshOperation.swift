@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -17,11 +17,15 @@ public class RefreshPreKeysOperation: OWSOperation {
     }
 
     private var accountServiceClient: AccountServiceClient {
-        return AccountServiceClient.shared
+        return SSKEnvironment.shared.accountServiceClient
     }
 
-    private var primaryStorage: OWSPrimaryStorage {
-        return OWSPrimaryStorage.shared()
+    private var signedPreKeyStore: SSKSignedPreKeyStore {
+        return SSKEnvironment.shared.signedPreKeyStore
+    }
+
+    private var preKeyStore: SSKPreKeyStore {
+        return SSKEnvironment.shared.preKeyStore
     }
 
     private var identityKeyManager: OWSIdentityManager {
@@ -31,7 +35,7 @@ public class RefreshPreKeysOperation: OWSOperation {
     public override func run() {
         Logger.debug("")
 
-        guard tsAccountManager.isRegistered() else {
+        guard tsAccountManager.isRegistered else {
             Logger.debug("skipping - not registered")
             return
         }
@@ -40,33 +44,34 @@ public class RefreshPreKeysOperation: OWSOperation {
             self.accountServiceClient.getPreKeysCount()
         }.then(on: DispatchQueue.global()) { preKeysCount -> Promise<Void> in
             Logger.debug("preKeysCount: \(preKeysCount)")
-            guard preKeysCount < kEphemeralPreKeysMinimumCount || self.primaryStorage.currentSignedPrekeyId() == nil else {
+            guard preKeysCount < kEphemeralPreKeysMinimumCount || self.signedPreKeyStore.currentSignedPrekeyId() == nil else {
                 Logger.debug("Available keys sufficient: \(preKeysCount)")
                 return Promise.value(())
             }
 
             let identityKey: Data = self.identityKeyManager.identityKeyPair()!.publicKey
-            let signedPreKeyRecord: SignedPreKeyRecord = self.primaryStorage.generateRandomSignedRecord()
-            let preKeyRecords: [PreKeyRecord] = self.primaryStorage.generatePreKeyRecords()
+            let signedPreKeyRecord: SignedPreKeyRecord = self.signedPreKeyStore.generateRandomSignedRecord()
+            let preKeyRecords: [PreKeyRecord] = self.preKeyStore.generatePreKeyRecords()
 
-            self.primaryStorage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
-            self.primaryStorage.storePreKeyRecords(preKeyRecords)
+            self.signedPreKeyStore.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
+            self.preKeyStore.storePreKeyRecords(preKeyRecords)
 
             return firstly {
                 self.accountServiceClient.setPreKeys(identityKey: identityKey, signedPreKeyRecord: signedPreKeyRecord, preKeyRecords: preKeyRecords)
             }.done {
                 signedPreKeyRecord.markAsAcceptedByService()
-                self.primaryStorage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
-                self.primaryStorage.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
+                self.signedPreKeyStore.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
+                self.signedPreKeyStore.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
 
                 TSPreKeyManager.clearPreKeyUpdateFailureCount()
                 TSPreKeyManager.clearSignedPreKeyRecords()
+                TSPreKeyManager.cullPreKeyRecords()
             }
         }.done {
             Logger.debug("done")
             self.reportSuccess()
         }.catch { error in
-            self.reportError(error)
+            self.reportError(withUndefinedRetry: error)
         }.retainUntilComplete()
     }
 
@@ -75,21 +80,19 @@ public class RefreshPreKeysOperation: OWSOperation {
     }
 
     override public func didFail(error: Error) {
-        switch error {
-        case let networkManagerError as NetworkManagerError:
-            guard !networkManagerError.isNetworkError else {
-                Logger.debug("don't report SPK rotation failure w/ network error")
-                return
-            }
-
-            guard networkManagerError.statusCode >= 400 && networkManagerError.statusCode <= 599 else {
-                Logger.debug("don't report SPK rotation failure w/ non application error")
-                return
-            }
-
-            TSPreKeyManager.incrementPreKeyUpdateFailureCount()
-        default:
-            Logger.debug("don't report SPK rotation failure w/ non NetworkManager error: \(error)")
+        guard !IsNetworkConnectivityFailure(error) else {
+            Logger.debug("don't report PK rotation failure w/ network error")
+            return
         }
+        guard let statusCode = error.httpStatusCode else {
+            Logger.debug("don't report PK rotation failure w/ non NetworkManager error: \(error)")
+            return
+        }
+        guard statusCode >= 400 && statusCode <= 599 else {
+            Logger.debug("don't report PK rotation failure w/ non application error")
+            return
+        }
+
+        TSPreKeyManager.incrementPreKeyUpdateFailureCount()
     }
 }

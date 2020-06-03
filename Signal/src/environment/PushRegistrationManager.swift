@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -21,8 +21,12 @@ public enum PushRegistrationError: Error {
 
     // MARK: - Dependencies
 
-    private var pushManager: PushManager {
-        return PushManager.shared()
+    private var messageFetcherJob: MessageFetcherJob {
+        return SSKEnvironment.shared.messageFetcherJob
+    }
+
+    private var notificationPresenter: NotificationPresenter {
+        return AppEnvironment.shared.notificationPresenter
     }
 
     // MARK: - Singleton class
@@ -40,9 +44,6 @@ public enum PushRegistrationError: Error {
         SwiftSingletons.register(self)
     }
 
-    private var userNotificationSettingsPromise: Promise<Void>?
-    private var userNotificationSettingsResolver: Resolver<Void>?
-
     private var vanillaTokenPromise: Promise<Data>?
     private var vanillaTokenResolver: Resolver<Data>?
 
@@ -50,14 +51,16 @@ public enum PushRegistrationError: Error {
     private var voipTokenPromise: Promise<Data>?
     private var voipTokenResolver: Resolver<Data>?
 
+    public var preauthChallengeResolver: Resolver<String>?
+
     // MARK: Public interface
 
     public func requestPushTokens() -> Promise<(pushToken: String, voipToken: String)> {
         Logger.info("")
 
         return firstly {
-            self.registerUserNotificationSettings()
-        }.then { () -> Promise<(pushToken: String, voipToken: String)> in
+            return self.registerUserNotificationSettings()
+        }.then { (_) -> Promise<(pushToken: String, voipToken: String)> in
             guard !Platform.isSimulator else {
                 throw PushRegistrationError.pushNotSupported(description: "Push not supported on simulators")
             }
@@ -68,21 +71,6 @@ public enum PushRegistrationError: Error {
                 }
             }
         }
-    }
-
-    // Notification registration is confirmed via AppDelegate
-    // Before this occurs, it is not safe to assume push token requests will be acknowledged.
-    // 
-    // e.g. in the case that Background Fetch is disabled, token requests will be ignored until
-    // we register user notification settings.
-    @objc
-    public func didRegisterUserNotificationSettings() {
-        guard let userNotificationSettingsResolver = self.userNotificationSettingsResolver else {
-            owsFailDebug("promise completion in \(#function) unexpectedly nil")
-            return
-        }
-
-        userNotificationSettingsResolver.fulfill(())
     }
 
     // MARK: Vanilla push token
@@ -114,7 +102,17 @@ public enum PushRegistrationError: Error {
     public func pushRegistry(_ registry: PKPushRegistry, didReceiveIncomingPushWith payload: PKPushPayload, for type: PKPushType) {
         Logger.info("")
         assert(type == .voIP)
-        self.pushManager.application(UIApplication.shared, didReceiveRemoteNotification: payload.dictionaryPayload)
+        AppReadiness.runNowOrWhenAppDidBecomeReady {
+            AssertIsOnMainThread()
+            if let preauthChallengeResolver = self.preauthChallengeResolver,
+                let challenge = payload.dictionaryPayload["challenge"] as? String {
+                Logger.info("received preauth challenge")
+                preauthChallengeResolver.fulfill(challenge)
+                self.preauthChallengeResolver = nil
+            } else {
+                self.messageFetcherJob.run().promise.retainUntilComplete()
+            }
+        }
     }
 
     public func pushRegistry(_ registry: PKPushRegistry, didUpdate credentials: PKPushCredentials, for type: PKPushType) {
@@ -138,26 +136,11 @@ public enum PushRegistrationError: Error {
     // MARK: helpers
 
     // User notification settings must be registered *before* AppDelegate will
-    // return any requested push tokens. We don't consider the notifications settings registration
-    // *complete*  until AppDelegate#didRegisterUserNotificationSettings is called.
-    private func registerUserNotificationSettings() -> Promise<Void> {
-        AssertIsOnMainThread()
-
-        guard self.userNotificationSettingsPromise == nil else {
-            let promise = self.userNotificationSettingsPromise!
-            Logger.info("already registered user notification settings")
-            return promise
-        }
-
-        let (promise, resolver) = Promise<Void>.pending()
-        self.userNotificationSettingsPromise = promise
-        self.userNotificationSettingsResolver = resolver
-
+    // return any requested push tokens.
+    public func registerUserNotificationSettings() -> Promise<Void> {
         Logger.info("registering user notification settings")
 
-        UIApplication.shared.registerUserNotificationSettings(self.pushManager.userNotificationSettings)
-
-        return promise
+        return notificationPresenter.registerNotificationSettings()
     }
 
     /**
@@ -171,17 +154,21 @@ public enum PushRegistrationError: Error {
 
         // Only affects users who have disabled both: background refresh *and* notifications
         guard UIApplication.shared.backgroundRefreshStatus == .denied else {
+            Logger.info("has backgroundRefreshStatus != .denied, not susceptible to push registration failure")
             return false
         }
 
         guard let notificationSettings = UIApplication.shared.currentUserNotificationSettings else {
+            owsFailDebug("notificationSettings was unexpectedly nil.")
             return false
         }
 
         guard notificationSettings.types == [] else {
+            Logger.info("notificationSettings was not empty, not susceptible to push registration failure.")
             return false
         }
 
+        Logger.info("background refresh and notifications were disabled. Device is susceptible to push registration failure.")
         return true
     }
 
@@ -203,11 +190,11 @@ public enum PushRegistrationError: Error {
 
         UIApplication.shared.registerForRemoteNotifications()
 
-        let kTimeout: TimeInterval = 10
-        let timeout: Promise<Data> = after(seconds: kTimeout).map { throw PushRegistrationError.timeout }
-        let promiseWithTimeout: Promise<Data> = race(promise, timeout)
-
-        return promiseWithTimeout.recover { error -> Promise<Data> in
+        return firstly {
+            promise.timeout(seconds: 10, description: "Register for vanilla push token") {
+                PushRegistrationError.timeout
+            }
+        }.recover { error -> Promise<Data> in
             switch error {
             case PushRegistrationError.timeout:
                 if self.isSusceptibleToFailedPushRegistration {
@@ -215,6 +202,7 @@ public enum PushRegistrationError: Error {
                     // so the user doesn't remain indefinitely hung for no good reason.
                     throw PushRegistrationError.pushNotSupported(description: "Device configuration disallows push notifications")
                 } else {
+                    Logger.info("Push registration is taking a while. Continuing to wait since this configuration is not known to fail push registration.")
                     // Sometimes registration can just take a while.
                     // If we're not on a device known to be susceptible to push registration failure,
                     // just return the original promise.

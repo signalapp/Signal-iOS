@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -61,9 +61,9 @@ class SAELoadViewController: UIViewController {
                                                                 action: #selector(cancelPressed))
         self.navigationItem.title = "Signal"
 
-        self.view.backgroundColor = UIColor.ows_signalBrandBlue
+        self.view.backgroundColor = Theme.launchScreenBackground
 
-        let activityIndicator = UIActivityIndicatorView(activityIndicatorStyle: .whiteLarge)
+        let activityIndicator = UIActivityIndicatorView(style: .whiteLarge)
         self.activityIndicator = activityIndicator
         self.view.addSubview(activityIndicator)
         activityIndicator.autoCenterInSuperview()
@@ -80,7 +80,7 @@ class SAELoadViewController: UIViewController {
 
         let label = UILabel()
         label.textColor = UIColor.white
-        label.font = UIFont.ows_mediumFont(withSize: 18)
+        label.font = UIFont.ows_semiboldFont(withSize: 18)
         label.text = NSLocalizedString("SHARE_EXTENSION_LOADING",
                                        comment: "Indicates that the share extension is still loading.")
         self.view.addSubview(label)

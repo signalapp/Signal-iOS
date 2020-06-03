@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSConversationSettingsViewDelegate.h"
@@ -10,19 +10,20 @@ NS_ASSUME_NONNULL_BEGIN
 @class TSGroupThread;
 
 typedef NS_ENUM(NSUInteger, UpdateGroupMode) {
-    UpdateGroupMode_Default = 0,
-    UpdateGroupMode_EditGroupName,
-    UpdateGroupMode_EditGroupAvatar,
+    UpdateGroupModeDefault = 0,
+    UpdateGroupModeEditGroupName,
+    UpdateGroupModeEditGroupAvatar,
 };
 
+// GroupsV2 TODO: Remove this VC.
 @interface UpdateGroupViewController : OWSViewController
 
 @property (nonatomic, weak) id<OWSConversationSettingsViewDelegate> conversationSettingsViewDelegate;
 
-// This property _must_ be set before the view is presented.
-@property (nonatomic) TSGroupThread *thread;
++ (instancetype)new NS_UNAVAILABLE;
+- (instancetype)init NS_UNAVAILABLE;
 
-@property (nonatomic) UpdateGroupMode mode;
+- (instancetype)initWithGroupThread:(TSGroupThread *)groupThread mode:(UpdateGroupMode)mode NS_DESIGNATED_INITIALIZER;
 
 @end
 

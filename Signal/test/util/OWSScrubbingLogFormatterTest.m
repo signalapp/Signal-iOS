@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSScrubbingLogFormatter.h"
@@ -69,21 +69,50 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+- (void)testIOS13DataScrubbed
+{
+    NSDictionary<NSString *, NSString *> *expectedOutputs = @{
+        @"{length = 32, bytes = 0x0123456789a23def2323456789ab1234}" : @"[ REDACTED_DATA:01... ]",
+        @"My data is: {length = 32, bytes = 0x0123456789a23def2323456789ab1223}" :
+            @"My data is: [ REDACTED_DATA:01... ]",
+        @"My data is {length = 32, bytes = 0x1234567089a23def2323456789ab1223} their data is {length = 16, bytes = "
+        @"0x8765432189ab1234}" : @"My data is [ REDACTED_DATA:12... ] their data is [ REDACTED_DATA:87... ]"
+    };
+
+    OWSScrubbingLogFormatter *formatter = [OWSScrubbingLogFormatter new];
+
+    // Other formatters add a dynamic date prefix to log lines. We truncate that when comparing our expected output.
+    NSUInteger datePrefixLength = [formatter formatLogMessage:[self messageWithString:@""]].length;
+
+    for (NSString *input in expectedOutputs) {
+
+        NSString *rawActual = [formatter formatLogMessage:[self messageWithString:input]];
+
+        // strip out dynamic date portion of log line
+        NSString *actual =
+            [rawActual substringWithRange:NSMakeRange(datePrefixLength, rawActual.length - datePrefixLength)];
+
+        NSString *expected = expectedOutputs[input];
+
+        XCTAssertEqualObjects(expected, actual);
+    }
+}
+
 - (void)testPhoneNumbersScrubbed
 {
     NSArray<NSString *> *phoneStrings = @[
-        @"+13331231234 ",
-        @"+4113331231234",
-        @"+13331231234 something something +13331231234",
-    ];
-
+                                          @"+13331231234 ",
+                                          @"+4113331231234",
+                                          @"+13331231234 something something +13331231234",
+                                          ];
+    
     for (NSString *phoneString in phoneStrings) {
         OWSScrubbingLogFormatter *formatter = [OWSScrubbingLogFormatter new];
         NSString *messageText = [NSString stringWithFormat:@"My phone number is %@", phoneString];
         NSString *actual = [formatter formatLogMessage:[self messageWithString:messageText]];
         NSRange redactedRange = [actual rangeOfString:@"My phone number is [ REDACTED_PHONE_NUMBER:xxx234 ]"];
         XCTAssertNotEqual(NSNotFound, redactedRange.location, "Failed to redact phone string: %@", phoneString);
-
+        
         NSRange phoneNumberRange = [actual rangeOfString:phoneString];
         XCTAssertEqual(NSNotFound, phoneNumberRange.location, "Failed to redact phone string: %@", phoneString);
     }
@@ -141,6 +170,41 @@ NS_ASSUME_NONNULL_BEGIN
             XCTAssertEqual(NSNotFound, ipAddressRange.location, "Failed to redact IP address: %@", unredactedMessage);
         }
     }
+}
+
+- (void)testUUIDsScrubbed_Random
+{
+    NSArray<NSString *> *uuidStrings = @[
+                                         NSUUID.UUID.UUIDString,
+                                         NSUUID.UUID.UUIDString,
+                                         NSUUID.UUID.UUIDString,
+                                         NSUUID.UUID.UUIDString,
+                                         ];
+    
+    for (NSString *uuidString in uuidStrings) {
+        OWSScrubbingLogFormatter *formatter = [OWSScrubbingLogFormatter new];
+        NSString *messageText = [NSString stringWithFormat:@"My UUID is %@", uuidString];
+        NSString *actual = [formatter formatLogMessage:[self messageWithString:messageText]];
+        NSRange redactedRange = [actual rangeOfString:@"My UUID is [ REDACTED_UUID:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx"];
+        XCTAssertNotEqual(NSNotFound, redactedRange.location, "Failed to redact UUID string: %@", uuidString);
+        
+        NSRange uuidRange = [actual rangeOfString:uuidString];
+        XCTAssertEqual(NSNotFound, uuidRange.location, "Failed to redact UUID string: %@", uuidString);
+    }
+}
+
+- (void)testUUIDsScrubbed_Specific
+{
+    NSString *uuidString = @"BAF1768C-2A25-4D8F-83B7-A89C59C98748";
+    OWSScrubbingLogFormatter *formatter = [OWSScrubbingLogFormatter new];
+    NSString *messageText = [NSString stringWithFormat:@"My UUID is %@", uuidString];
+    NSString *actual = [formatter formatLogMessage:[self messageWithString:messageText]];
+    OWSLogVerbose(@"actual: %@", actual);
+    NSRange redactedRange = [actual rangeOfString:@"My UUID is [ REDACTED_UUID:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx48 ]"];
+    XCTAssertNotEqual(NSNotFound, redactedRange.location, "Failed to redact UUID string: %@", uuidString);
+    
+    NSRange uuidRange = [actual rangeOfString:uuidString];
+    XCTAssertEqual(NSNotFound, uuidRange.location, "Failed to redact UUID string: %@", uuidString);
 }
 
 @end

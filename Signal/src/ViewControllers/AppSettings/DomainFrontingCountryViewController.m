@@ -1,11 +1,10 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "DomainFrontingCountryViewController.h"
 #import "OWSCountryMetadata.h"
 #import "OWSTableViewController.h"
-#import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <SignalMessaging/Theme.h>
@@ -32,7 +31,8 @@ NS_ASSUME_NONNULL_BEGIN
     self.title = NSLocalizedString(
         @"CENSORSHIP_CIRCUMVENTION_COUNTRY_VIEW_TITLE", @"Title for the 'censorship circumvention country' view.");
 
-    self.view.backgroundColor = Theme.backgroundColor;
+    self.view.backgroundColor = Theme.tableViewBackgroundColor;
+    self.tableViewController.useThemeBackgroundColors = YES;
 
     [self createViews];
 }
@@ -41,7 +41,8 @@ NS_ASSUME_NONNULL_BEGIN
 {
     _tableViewController = [OWSTableViewController new];
     [self.view addSubview:self.tableViewController.view];
-    [_tableViewController.view autoPinWidthToSuperview];
+    [self.tableViewController.view autoPinEdgeToSuperviewSafeArea:ALEdgeLeading];
+    [self.tableViewController.view autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];
     [_tableViewController.view autoPinToTopLayoutGuideOfViewController:self withInset:0];
     [_tableViewController.view autoPinToBottomLayoutGuideOfViewController:self withInset:0];
 

@@ -1,38 +1,23 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSUnknownContactBlockOfferMessage.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSUnknownContactBlockOfferMessage ()
-
-@property (nonatomic) NSString *contactId;
-
-@end
-
 #pragma mark -
 
+// This is a deprecated class, we're keeping it around to avoid YapDB serialization errors
+// TODO - remove this class, clean up existing instances, ensure any missed ones don't explode (UnknownDBObject)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wdeprecated-implementations"
 @implementation OWSUnknownContactBlockOfferMessage
+#pragma clang diagnostic pop
 
-+ (instancetype)unknownContactBlockOfferMessage:(uint64_t)timestamp
-                                         thread:(TSThread *)thread
-                                      contactId:(NSString *)contactId
-{
-    return [[OWSUnknownContactBlockOfferMessage alloc] initWithTimestamp:timestamp thread:thread contactId:contactId];
-}
+// --- CODE GENERATION MARKER
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp thread:(TSThread *)thread contactId:(NSString *)contactId
-{
-    self = [super initWithTimestamp:timestamp inThread:thread failedMessageType:TSErrorMessageUnknownContactBlockOffer];
-
-    if (self) {
-        _contactId = contactId;
-    }
-
-    return self;
-}
+// --- CODE GENERATION MARKER
 
 - (BOOL)shouldUseReceiptDateForSorting
 {

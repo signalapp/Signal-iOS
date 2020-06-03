@@ -1,22 +1,21 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "UpdateGroupViewController.h"
-#import "AddToGroupViewController.h"
 #import "AvatarViewHelper.h"
 #import "OWSNavigationController.h"
 #import "Signal-Swift.h"
 #import "ViewControllerUtils.h"
+#import <PromiseKit/AnyPromise.h>
 #import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalCoreKit/NSString+OWS.h>
 #import <SignalMessaging/BlockListUIUtils.h>
 #import <SignalMessaging/ContactTableViewCell.h>
 #import <SignalMessaging/ContactsViewHelper.h>
 #import <SignalMessaging/Environment.h>
-#import <SignalMessaging/NSString+OWS.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/OWSTableViewController.h>
-#import <SignalMessaging/SignalKeyingStorage.h>
 #import <SignalMessaging/UIUtil.h>
 #import <SignalMessaging/UIView+OWS.h>
 #import <SignalMessaging/UIViewController+OWS.h>
@@ -30,26 +29,31 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface UpdateGroupViewController () <UIImagePickerControllerDelegate,
     UITextFieldDelegate,
-    ContactsViewHelperDelegate,
     AvatarViewHelperDelegate,
-    AddToGroupViewControllerDelegate,
-    OWSTableViewControllerDelegate,
+    RecipientPickerDelegate,
     UINavigationControllerDelegate,
     OWSNavigationView>
+
+@property (nonatomic, readonly) TSGroupThread *thread;
+@property (nonatomic, readonly) UpdateGroupMode mode;
 
 @property (nonatomic, readonly) OWSMessageSender *messageSender;
 @property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
 @property (nonatomic, readonly) AvatarViewHelper *avatarViewHelper;
 
-@property (nonatomic, readonly) OWSTableViewController *tableViewController;
+@property (nonatomic, readonly) RecipientPickerViewController *recipientPicker;
 @property (nonatomic, readonly) AvatarImageView *avatarView;
+@property (nonatomic, readonly) UIImageView *cameraImageView;
 @property (nonatomic, readonly) UITextField *groupNameTextField;
 
-@property (nonatomic, nullable) UIImage *groupAvatar;
-@property (nonatomic, nullable) NSSet<NSString *> *previousMemberRecipientIds;
-@property (nonatomic) NSMutableSet<NSString *> *memberRecipientIds;
+@property (nonatomic) TSGroupModel *oldGroupModel;
+@property (nonatomic, nullable) NSData *groupAvatarData;
+@property (nonatomic, nullable) NSSet<PickedRecipient *> *previousMemberRecipients;
+@property (nonatomic) NSMutableSet<PickedRecipient *> *memberRecipients;
 
-@property (nonatomic) BOOL hasUnsavedChanges;
+// If there are unsaved changes, this group model reflects them.
+// If not, it is nil.
+@property (nonatomic, nullable) TSGroupModel *unsavedChangeGroupModel;
 
 @end
 
@@ -57,24 +61,28 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation UpdateGroupViewController
 
-- (instancetype)init
+#pragma mark - Dependencies
+
+- (TSAccountManager *)tsAccountManager
 {
+    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
+
+    return SSKEnvironment.shared.tsAccountManager;
+}
+
+#pragma mark -
+
+- (instancetype)initWithGroupThread:(TSGroupThread *)groupThread mode:(UpdateGroupMode)mode
+{
+    OWSAssertDebug(groupThread);
+
     self = [super init];
     if (!self) {
         return self;
     }
 
-    [self commonInit];
-
-    return self;
-}
-
-- (nullable instancetype)initWithCoder:(NSCoder *)aDecoder
-{
-    self = [super initWithCoder:aDecoder];
-    if (!self) {
-        return self;
-    }
+    _thread = groupThread;
+    _mode = mode;
 
     [self commonInit];
 
@@ -84,11 +92,10 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)commonInit
 {
     _messageSender = SSKEnvironment.shared.messageSender;
-    _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
     _avatarViewHelper = [AvatarViewHelper new];
     _avatarViewHelper.delegate = self;
 
-    self.memberRecipientIds = [NSMutableSet new];
+    self.memberRecipients = [NSMutableSet new];
 }
 
 #pragma mark - View Lifecycle
@@ -97,14 +104,14 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super loadView];
 
-    OWSAssertDebug(self.thread);
-    OWSAssertDebug(self.thread.groupModel);
-    OWSAssertDebug(self.thread.groupModel.groupMemberIds);
-
     self.view.backgroundColor = Theme.backgroundColor;
 
-    [self.memberRecipientIds addObjectsFromArray:self.thread.groupModel.groupMemberIds];
-    self.previousMemberRecipientIds = [NSSet setWithArray:self.thread.groupModel.groupMemberIds];
+    [self.memberRecipients
+        addObjectsFromArray:[self.thread.groupModel.groupMembers map:^(SignalServiceAddress *address) {
+            return [PickedRecipient forAddress:address];
+        }]];
+    self.previousMemberRecipients = [self.memberRecipients copy];
+    self.oldGroupModel = self.thread.groupModel;
 
     self.title = NSLocalizedString(@"EDIT_GROUP_DEFAULT_TITLE", @"The navbar title for the 'update group' view.");
 
@@ -116,23 +123,34 @@ NS_ASSUME_NONNULL_BEGIN
     [firstSection autoPinWidthToSuperview];
     [firstSection autoPinToTopLayoutGuideOfViewController:self withInset:0];
 
-    _tableViewController = [OWSTableViewController new];
-    _tableViewController.delegate = self;
-    [self.view addSubview:self.tableViewController.view];
-    [_tableViewController.view autoPinWidthToSuperview];
-    [_tableViewController.view autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:firstSection];
-    [self autoPinViewToBottomOfViewControllerOrKeyboard:self.tableViewController.view avoidNotch:NO];
-    self.tableViewController.tableView.rowHeight = UITableViewAutomaticDimension;
-    self.tableViewController.tableView.estimatedRowHeight = 60;
+    _recipientPicker = [RecipientPickerViewController new];
+    self.recipientPicker.delegate = self;
+    self.recipientPicker.shouldShowGroups = NO;
+    self.recipientPicker.allowsSelectingUnregisteredPhoneNumbers = NO;
+    self.recipientPicker.shouldShowAlphabetSlider = NO;
+    self.recipientPicker.pickedRecipients = self.memberRecipients.allObjects;
 
-    [self updateTableContents];
+    [self addChildViewController:self.recipientPicker];
+    [self.view addSubview:self.recipientPicker.view];
+    [self.recipientPicker.view autoPinEdgeToSuperviewSafeArea:ALEdgeLeading];
+    [self.recipientPicker.view autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];
+    [self.recipientPicker.view autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:firstSection];
+    [self.recipientPicker.view autoPinEdgeToSuperviewEdge:ALEdgeBottom];
 }
 
-- (void)setHasUnsavedChanges:(BOOL)hasUnsavedChanges
+- (void)updateHasUnsavedChanges
 {
-    _hasUnsavedChanges = hasUnsavedChanges;
+    TSGroupModel *_Nullable newGroupModel = [self buildNewGroupModelIfHasUnsavedChanges];
+    BOOL didChange = ![NSObject isNullableObject:newGroupModel equalTo:self.unsavedChangeGroupModel];
+    self.unsavedChangeGroupModel = newGroupModel;
+    if (didChange) {
+        [self updateNavigationBar];
+    }
+}
 
-    [self updateNavigationBar];
+- (BOOL)hasUnsavedChanges
+{
+    return self.unsavedChangeGroupModel != nil;
 }
 
 - (void)updateNavigationBar
@@ -142,7 +160,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                          @"The title for the 'update group' button.")
                                                style:UIBarButtonItemStylePlain
                                               target:self
-                                              action:@selector(updateGroupPressed)]
+                                              action:@selector(updateGroupPressed)
+                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"update")]
             : nil);
 }
 
@@ -151,17 +170,17 @@ NS_ASSUME_NONNULL_BEGIN
     [super viewDidAppear:animated];
 
     switch (self.mode) {
-        case UpdateGroupMode_EditGroupName:
+        case UpdateGroupModeEditGroupName:
             [self.groupNameTextField becomeFirstResponder];
             break;
-        case UpdateGroupMode_EditGroupAvatar:
+        case UpdateGroupModeEditGroupAvatar:
             [self showChangeAvatarUI];
             break;
         default:
             break;
     }
     // Only perform these actions the first time the view appears.
-    self.mode = UpdateGroupMode_Default;
+    _mode = UpdateGroupModeDefault;
 }
 
 - (UIView *)firstSectionHeader
@@ -185,15 +204,34 @@ NS_ASSUME_NONNULL_BEGIN
     [threadInfoView addSubview:avatarView];
     [avatarView autoVCenterInSuperview];
     [avatarView autoPinLeadingToSuperviewMargin];
-    [avatarView autoSetDimension:ALDimensionWidth toSize:kLargeAvatarSize];
-    [avatarView autoSetDimension:ALDimensionHeight toSize:kLargeAvatarSize];
-    _groupAvatar = self.thread.groupModel.groupImage;
+    [avatarView autoSetDimension:ALDimensionWidth toSize:kMediumAvatarSize];
+    [avatarView autoSetDimension:ALDimensionHeight toSize:kMediumAvatarSize];
+    _groupAvatarData = self.thread.groupModel.groupAvatarData;
+
+    UIImageView *cameraImageView = [UIImageView new];
+    [cameraImageView setTemplateImageName:@"camera-outline-24" tintColor:Theme.secondaryTextAndIconColor];
+    [threadInfoView addSubview:cameraImageView];
+
+    [cameraImageView autoSetDimensionsToSize:CGSizeMake(32, 32)];
+    cameraImageView.contentMode = UIViewContentModeCenter;
+    cameraImageView.backgroundColor = Theme.backgroundColor;
+    cameraImageView.layer.cornerRadius = 16;
+    cameraImageView.layer.shadowColor =
+        [(Theme.isDarkThemeEnabled ? Theme.darkThemeWashColor : Theme.primaryTextColor) CGColor];
+    cameraImageView.layer.shadowOffset = CGSizeMake(1, 1);
+    cameraImageView.layer.shadowOpacity = 0.5;
+    cameraImageView.layer.shadowRadius = 4;
+
+    [cameraImageView autoPinTrailingToEdgeOfView:avatarView];
+    [cameraImageView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:avatarView];
+    _cameraImageView = cameraImageView;
+
     [self updateAvatarView];
 
     UITextField *groupNameTextField = [OWSTextField new];
     _groupNameTextField = groupNameTextField;
     self.groupNameTextField.text = [self.thread.groupModel.groupName ows_stripped];
-    groupNameTextField.textColor = [Theme primaryColor];
+    groupNameTextField.textColor = Theme.primaryTextColor;
     groupNameTextField.font = [UIFont ows_dynamicTypeTitle2Font];
     groupNameTextField.placeholder
         = NSLocalizedString(@"NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT", @"Placeholder text for group name field");
@@ -205,10 +243,12 @@ NS_ASSUME_NONNULL_BEGIN
     [groupNameTextField autoVCenterInSuperview];
     [groupNameTextField autoPinTrailingToSuperviewMargin];
     [groupNameTextField autoPinLeadingToTrailingEdgeOfView:avatarView offset:16.f];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, groupNameTextField);
 
     [avatarView
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(avatarTouched:)]];
     avatarView.userInteractionEnabled = YES;
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, avatarView);
 
     return firstSectionHeader;
 }
@@ -227,150 +267,41 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-#pragma mark - Table Contents
-
-- (void)updateTableContents
+- (void)addRecipient:(PickedRecipient *)recipient
 {
-    OWSAssertDebug(self.thread);
+    OWSAssertDebug(recipient.address.isValid);
 
-    OWSTableContents *contents = [OWSTableContents new];
-
-    __weak UpdateGroupViewController *weakSelf = self;
-    ContactsViewHelper *contactsViewHelper = self.contactsViewHelper;
-
-    // Group Members
-
-    OWSTableSection *section = [OWSTableSection new];
-    section.headerTitle = NSLocalizedString(
-        @"EDIT_GROUP_MEMBERS_SECTION_TITLE", @"a title for the members section of the 'new/update group' view.");
-
-    [section addItem:[OWSTableItem
-                         disclosureItemWithText:NSLocalizedString(@"EDIT_GROUP_MEMBERS_ADD_MEMBER",
-                                                    @"Label for the cell that lets you add a new member to a group.")
-                                customRowHeight:UITableViewAutomaticDimension
-                                    actionBlock:^{
-                                        AddToGroupViewController *viewController = [AddToGroupViewController new];
-                                        viewController.addToGroupDelegate = weakSelf;
-                                        [weakSelf.navigationController pushViewController:viewController animated:YES];
-                                    }]];
-
-    NSMutableSet *memberRecipientIds = [self.memberRecipientIds mutableCopy];
-    [memberRecipientIds removeObject:[contactsViewHelper localNumber]];
-    for (NSString *recipientId in [memberRecipientIds.allObjects sortedArrayUsingSelector:@selector(compare:)]) {
-        [section
-            addItem:[OWSTableItem
-                        itemWithCustomCellBlock:^{
-                            UpdateGroupViewController *strongSelf = weakSelf;
-                            OWSCAssertDebug(strongSelf);
-
-                            ContactTableViewCell *cell = [ContactTableViewCell new];
-                            BOOL isPreviousMember = [strongSelf.previousMemberRecipientIds containsObject:recipientId];
-                            BOOL isBlocked = [contactsViewHelper isRecipientIdBlocked:recipientId];
-                            if (isPreviousMember) {
-                                if (isBlocked) {
-                                    cell.accessoryMessage = NSLocalizedString(
-                                        @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
-                                } else {
-                                    cell.selectionStyle = UITableViewCellSelectionStyleNone;
-                                }
-                            } else {
-                                // In the "members" section, we label "new" members as such when editing an existing
-                                // group.
-                                //
-                                // The only way a "new" member could be blocked is if we blocked them on a linked device
-                                // while in this dialog.  We don't need to worry about that edge case.
-                                cell.accessoryMessage = NSLocalizedString(@"EDIT_GROUP_NEW_MEMBER_LABEL",
-                                    @"An indicator that a user is a new member of the group.");
-                            }
-
-                            [cell configureWithRecipientId:recipientId];
-                            return cell;
-                        }
-                        customRowHeight:UITableViewAutomaticDimension
-                        actionBlock:^{
-                            SignalAccount *_Nullable signalAccount =
-                                [contactsViewHelper fetchSignalAccountForRecipientId:recipientId];
-                            BOOL isPreviousMember = [weakSelf.previousMemberRecipientIds containsObject:recipientId];
-                            BOOL isBlocked = [contactsViewHelper isRecipientIdBlocked:recipientId];
-                            if (isPreviousMember) {
-                                if (isBlocked) {
-                                    if (signalAccount) {
-                                        [weakSelf showUnblockAlertForSignalAccount:signalAccount];
-                                    } else {
-                                        [weakSelf showUnblockAlertForRecipientId:recipientId];
-                                    }
-                                } else {
-                                    [OWSAlerts
-                                        showAlertWithTitle:
-                                            NSLocalizedString(@"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE",
-                                                @"Title for alert indicating that group members can't be removed.")
-                                                   message:NSLocalizedString(
-                                                               @"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE",
-                                                               @"Title for alert indicating that group members can't "
-                                                               @"be removed.")];
-                                }
-                            } else {
-                                [weakSelf removeRecipientId:recipientId];
-                            }
-                        }]];
+    if (![self canAddOrInviteMemberWithOldGroupModel:self.oldGroupModel address:recipient.address]) {
+        [OWSActionSheets showActionSheetWithTitle:NSLocalizedString(@"GROUP_CANNOT_ADD_INVALID_MEMBER",
+                                                      @"Error indicating that a member cannot be added to a group.")];
+    } else {
+        [self.memberRecipients addObject:recipient];
+        self.recipientPicker.pickedRecipients = self.memberRecipients.allObjects;
+        [self updateHasUnsavedChanges];
     }
-    [contents addSection:section];
-
-    self.tableViewController.contents = contents;
 }
 
-- (void)showUnblockAlertForSignalAccount:(SignalAccount *)signalAccount
+- (void)removeRecipient:(PickedRecipient *)recipient
 {
-    OWSAssertDebug(signalAccount);
+    OWSAssertDebug(recipient.address.isValid);
 
-    __weak UpdateGroupViewController *weakSelf = self;
-    [BlockListUIUtils showUnblockSignalAccountActionSheet:signalAccount
-                                       fromViewController:self
-                                          blockingManager:self.contactsViewHelper.blockingManager
-                                          contactsManager:self.contactsViewHelper.contactsManager
-                                          completionBlock:^(BOOL isBlocked) {
-                                              if (!isBlocked) {
-                                                  [weakSelf updateTableContents];
-                                              }
-                                          }];
-}
-
-- (void)showUnblockAlertForRecipientId:(NSString *)recipientId
-{
-    OWSAssertDebug(recipientId.length > 0);
-
-    __weak UpdateGroupViewController *weakSelf = self;
-    [BlockListUIUtils showUnblockPhoneNumberActionSheet:recipientId
-                                     fromViewController:self
-                                        blockingManager:self.contactsViewHelper.blockingManager
-                                        contactsManager:self.contactsViewHelper.contactsManager
-                                        completionBlock:^(BOOL isBlocked) {
-                                            if (!isBlocked) {
-                                                [weakSelf updateTableContents];
-                                            }
-                                        }];
-}
-
-- (void)removeRecipientId:(NSString *)recipientId
-{
-    OWSAssertDebug(recipientId.length > 0);
-
-    [self.memberRecipientIds removeObject:recipientId];
-    [self updateTableContents];
+    [self.memberRecipients removeObject:recipient];
+    self.recipientPicker.pickedRecipients = self.memberRecipients.allObjects;
+    [self updateHasUnsavedChanges];
 }
 
 #pragma mark - Methods
 
-- (void)updateGroup
+- (void)updateGroupWithNewGroupModel:(TSGroupModel *)newGroupModel
 {
     OWSAssertDebug(self.conversationSettingsViewDelegate);
 
-    NSString *groupName = [self.groupNameTextField.text ows_stripped];
-    TSGroupModel *groupModel = [[TSGroupModel alloc] initWithTitle:groupName
-                                                         memberIds:self.memberRecipientIds.allObjects
-                                                             image:self.groupAvatar
-                                                           groupId:self.thread.groupModel.groupId];
-    [self.conversationSettingsViewDelegate groupWasUpdated:groupModel];
+    id<OWSConversationSettingsViewDelegate> _Nullable delegate = self.conversationSettingsViewDelegate;
+    if (delegate == nil) {
+        OWSFailDebug(@"Missing delegate.");
+        return;
+    }
+    [self updateGroupThreadWithOldGroupModel:self.oldGroupModel newGroupModel:newGroupModel delegate:delegate];
 }
 
 #pragma mark - Group Avatar
@@ -382,77 +313,110 @@ NS_ASSUME_NONNULL_BEGIN
     [self.avatarViewHelper showChangeAvatarUI];
 }
 
-- (void)setGroupAvatar:(nullable UIImage *)groupAvatar
+- (void)setGroupAvatarData:(nullable NSData *)groupAvatarData
 {
     OWSAssertIsOnMainThread();
 
-    _groupAvatar = groupAvatar;
-
-    self.hasUnsavedChanges = YES;
+    _groupAvatarData = groupAvatarData;
 
     [self updateAvatarView];
+
+    [self updateHasUnsavedChanges];
 }
 
 - (void)updateAvatarView
 {
-    UIImage *_Nullable groupAvatar = self.groupAvatar;
-    if (!groupAvatar) {
-        groupAvatar = [[[OWSGroupAvatarBuilder alloc] initWithThread:self.thread diameter:kLargeAvatarSize] build];
+    UIImage *_Nullable groupAvatar;
+    if (self.groupAvatarData.length > 0) {
+        groupAvatar = [UIImage imageWithData:self.groupAvatarData];
     }
+    self.cameraImageView.hidden = groupAvatar != nil;
+
+    if (!groupAvatar) {
+        groupAvatar = [[[OWSGroupAvatarBuilder alloc] initWithThread:self.thread diameter:kMediumAvatarSize] build];
+    }
+
     self.avatarView.image = groupAvatar;
 }
 
 #pragma mark - Event Handling
 
+- (nullable TSGroupModel *)buildNewGroupModelIfHasUnsavedChanges
+{
+    [self.groupNameTextField acceptAutocorrectSuggestion];
+
+    NSString *_Nullable newTitle = self.groupNameTextField.text.ows_stripped;
+    NSData *_Nullable newAvatarData = self.groupAvatarData;
+    NSArray<SignalServiceAddress *> *memberList = [self.memberRecipients.allObjects map:^(PickedRecipient *recipient) {
+        OWSAssertDebug(recipient.address.isValid);
+        return recipient.address;
+    }];
+    NSMutableSet<SignalServiceAddress *> *memberSet = [NSMutableSet setWithArray:memberList];
+    [memberSet addObject:self.tsAccountManager.localAddress];
+    TSGroupModel *newGroupModel = [self buildNewGroupModelWithOldGroupModel:self.oldGroupModel
+                                                                   newTitle:newTitle
+                                                              newAvatarData:newAvatarData
+                                                                  v1Members:memberSet];
+    if ([self.oldGroupModel isEqualToGroupModel:newGroupModel ignoreRevision:YES]) {
+        return nil;
+    }
+    return newGroupModel;
+}
+
 - (void)backButtonPressed
 {
     [self.groupNameTextField resignFirstResponder];
 
-    if (!self.hasUnsavedChanges) {
+    if (self.unsavedChangeGroupModel == nil) {
         // If user made no changes, return to conversation settings view.
         [self.navigationController popViewControllerAnimated:YES];
         return;
     }
+    TSGroupModel *newGroupModel = self.unsavedChangeGroupModel;
 
-    UIAlertController *controller = [UIAlertController
-        alertControllerWithTitle:NSLocalizedString(@"EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE",
-                                     @"The alert title if user tries to exit update group view without saving changes.")
-                         message:
-                             NSLocalizedString(@"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE",
-                                 @"The alert message if user tries to exit update group view without saving changes.")
-                  preferredStyle:UIAlertControllerStyleAlert];
-    [controller
-        addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"ALERT_SAVE",
-                                                     @"The label for the 'save' button in action sheets.")
-                                           style:UIAlertActionStyleDefault
-                                         handler:^(UIAlertAction *action) {
-                                             OWSAssertDebug(self.conversationSettingsViewDelegate);
+    ActionSheetController *alert = [[ActionSheetController alloc]
+        initWithTitle:NSLocalizedString(@"EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE",
+                          @"The alert title if user tries to exit update group view without saving changes.")
+              message:NSLocalizedString(@"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE",
+                          @"The alert message if user tries to exit update group view without saving changes.")];
+    [alert addAction:[[ActionSheetAction alloc] initWithTitle:NSLocalizedString(@"ALERT_SAVE",
+                                                                  @"The label for the 'save' button in action sheets.")
+                                      accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"save")
+                                                        style:ActionSheetActionStyleDefault
+                                                      handler:^(ActionSheetAction *action) {
+                                                          OWSAssertDebug(self.conversationSettingsViewDelegate);
 
-                                             [self updateGroup];
-
-                                             [self.conversationSettingsViewDelegate popAllConversationSettingsViews];
+                                                          [self updateGroupWithNewGroupModel:newGroupModel];
+                                                      }]];
+    [alert addAction:[[ActionSheetAction alloc]
+                                   initWithTitle:NSLocalizedString(@"ALERT_DONT_SAVE",
+                                                     @"The label for the 'don't save' button in action sheets.")
+                         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"dont_save")
+                                           style:ActionSheetActionStyleDestructive
+                                         handler:^(ActionSheetAction *action) {
+                                             [self.navigationController popViewControllerAnimated:YES];
                                          }]];
-    [controller addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"ALERT_DONT_SAVE",
-                                                             @"The label for the 'don't save' button in action sheets.")
-                                                   style:UIAlertActionStyleDestructive
-                                                 handler:^(UIAlertAction *action) {
-                                                     [self.navigationController popViewControllerAnimated:YES];
-                                                 }]];
-    [self presentViewController:controller animated:YES completion:nil];
+    [self presentActionSheet:alert];
 }
 
 - (void)updateGroupPressed
 {
     OWSAssertDebug(self.conversationSettingsViewDelegate);
 
-    [self updateGroup];
+    if (self.unsavedChangeGroupModel == nil) {
+        OWSFailDebug(@"This button should not be enabled if there are no unsaved changes.");
+        // If user made no changes, return to conversation settings view.
+        [self.navigationController popViewControllerAnimated:YES];
+        return;
+    }
+    TSGroupModel *newGroupModel = self.unsavedChangeGroupModel;
 
-    [self.conversationSettingsViewDelegate popAllConversationSettingsViews];
+    [self updateGroupWithNewGroupModel:newGroupModel];
 }
 
 - (void)groupNameDidChange:(id)sender
 {
-    self.hasUnsavedChanges = YES;
+    [self updateHasUnsavedChanges];
 }
 
 #pragma mark - Text Field Delegate
@@ -463,28 +427,9 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
-#pragma mark - OWSTableViewControllerDelegate
-
-- (void)tableViewWillBeginDragging
-{
-    [self.groupNameTextField resignFirstResponder];
-}
-
-#pragma mark - ContactsViewHelperDelegate
-
-- (void)contactsViewHelperDidUpdateContacts
-{
-    [self updateTableContents];
-}
-
-- (BOOL)shouldHideLocalNumber
-{
-    return YES;
-}
-
 #pragma mark - AvatarViewHelperDelegate
 
-- (NSString *)avatarActionSheetTitle
+- (nullable NSString *)avatarActionSheetTitle
 {
     return NSLocalizedString(
         @"NEW_GROUP_ADD_PHOTO_ACTION", @"Action Sheet title prompting the user for a group avatar");
@@ -495,7 +440,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
     OWSAssertDebug(image);
 
-    self.groupAvatar = image;
+    self.groupAvatarData = [TSGroupModel dataForGroupAvatar:image];
 }
 
 - (UIViewController *)fromViewController
@@ -508,20 +453,118 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
-#pragma mark - AddToGroupViewControllerDelegate
+#pragma mark - RecipientPickerDelegate
 
-- (void)recipientIdWasAdded:(NSString *)recipientId
+- (void)recipientPicker:(RecipientPickerViewController *)recipientPickerViewController
+     didSelectRecipient:(PickedRecipient *)recipient
 {
-    [self.memberRecipientIds addObject:recipientId];
-    self.hasUnsavedChanges = YES;
-    [self updateTableContents];
+    OWSAssertDebug(recipient.address.isValid);
+
+    __weak __typeof(self) weakSelf;
+    BOOL isPreviousMember = [self.previousMemberRecipients containsObject:recipient];
+    BOOL isCurrentMember = [self.memberRecipients containsObject:recipient];
+    BOOL isBlocked = [self.recipientPicker.contactsViewHelper isSignalServiceAddressBlocked:recipient.address];
+    if (isPreviousMember) {
+        [OWSActionSheets
+            showActionSheetWithTitle:NSLocalizedString(@"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE",
+                                         @"Title for alert indicating that group members can't be removed.")
+                             message:NSLocalizedString(@"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE",
+                                         @"Title for alert indicating that group members can't "
+                                         @"be removed.")];
+    } else if (isCurrentMember) {
+        [self removeRecipient:recipient];
+    } else if (isBlocked) {
+        [BlockListUIUtils showUnblockAddressActionSheet:recipient.address
+                                     fromViewController:self
+                                        completionBlock:^(BOOL isStillBlocked) {
+                                            if (!isStillBlocked) {
+                                                [weakSelf addRecipient:recipient];
+                                                [weakSelf.navigationController popToViewController:self animated:YES];
+                                            }
+                                        }];
+    } else {
+        BOOL didShowSNAlert = [SafetyNumberConfirmationAlert
+            presentAlertIfNecessaryWithAddress:recipient.address
+                              confirmationText:NSLocalizedString(@"SAFETY_NUMBER_CHANGED_CONFIRM_"
+                                                                 @"ADD_TO_GROUP_ACTION",
+                                                   @"button title to confirm adding "
+                                                   @"a recipient to a group when "
+                                                   @"their safety "
+                                                   @"number has recently changed")
+                                    completion:^(BOOL didConfirmIdentity) {
+                                        if (didConfirmIdentity) {
+                                            [weakSelf addRecipient:recipient];
+                                            [weakSelf.navigationController popToViewController:self animated:YES];
+                                        }
+                                    }];
+        if (didShowSNAlert) {
+            return;
+        }
+
+        [self addRecipient:recipient];
+        [self.navigationController popToViewController:self animated:YES];
+    }
 }
 
-- (BOOL)isRecipientGroupMember:(NSString *)recipientId
+- (RecipientPickerRecipientState)recipientPicker:(RecipientPickerViewController *)recipientPickerViewController
+                              canSelectRecipient:(PickedRecipient *)recipient
 {
-    OWSAssertDebug(recipientId.length > 0);
+    return RecipientPickerRecipientStateCanBeSelected;
+}
 
-    return [self.memberRecipientIds containsObject:recipientId];
+- (void)recipientPicker:(RecipientPickerViewController *)recipientPickerViewController
+    willRenderRecipient:(PickedRecipient *)recipient
+{
+    // Do nothing.
+}
+
+- (AnyPromise *)recipientPicker:(RecipientPickerViewController *)recipientPickerViewController
+       prepareToSelectRecipient:(PickedRecipient *)recipient
+{
+    OWSFailDebug(@"This method should not called.");
+    return [AnyPromise promiseWithValue:@(1)];
+}
+
+- (void)recipientPicker:(RecipientPickerViewController *)recipientPickerViewController
+    showInvalidRecipientAlert:(PickedRecipient *)recipient
+{
+    OWSFailDebug(@"Unexpected error.");
+}
+
+- (nullable NSString *)recipientPicker:(RecipientPickerViewController *)recipientPickerViewController
+          accessoryMessageForRecipient:(PickedRecipient *)recipient
+{
+    OWSAssertDebug(recipient.address.isValid);
+
+    BOOL isPreviousMember = [self.previousMemberRecipients containsObject:recipient];
+    BOOL isCurrentMember = [self.memberRecipients containsObject:recipient];
+    BOOL isBlocked = [self.recipientPicker.contactsViewHelper isSignalServiceAddressBlocked:recipient.address];
+
+    if (isCurrentMember && !isPreviousMember) {
+        return NSLocalizedString(
+            @"EDIT_GROUP_NEW_MEMBER_LABEL", @"An indicator that a user is a new member of the group.");
+    } else if (isBlocked) {
+        return MessageStrings.conversationIsBlocked;
+    } else if (isCurrentMember) {
+        return NSLocalizedString(@"NEW_GROUP_MEMBER_LABEL", @"An indicator that a user is a member of the new group.");
+    } else {
+        return nil;
+    }
+}
+
+- (void)recipientPickerTableViewWillBeginDragging:(RecipientPickerViewController *)recipientPickerViewController
+{
+    [self.groupNameTextField resignFirstResponder];
+}
+
+- (void)recipientPickerNewGroupButtonWasPressed
+{
+    OWSFailDebug(@"Invalid action.");
+}
+
+- (NSArray<UIView *> *)recipientPickerCustomHeaderViews
+{
+    return @[];
 }
 
 #pragma mark - OWSNavigationView

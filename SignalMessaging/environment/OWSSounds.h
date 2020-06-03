@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSAudioPlayer.h"
@@ -32,7 +32,7 @@ typedef NS_ENUM(NSUInteger, OWSSound) {
     OWSSound_CallConnecting,
     OWSSound_CallOutboundRinging,
     OWSSound_CallBusy,
-    OWSSound_CallFailure,
+    OWSSound_CallEnded,
 
     // Other
     OWSSound_MessageSent,
@@ -41,19 +41,18 @@ typedef NS_ENUM(NSUInteger, OWSSound) {
 };
 
 @class OWSAudioPlayer;
-@class OWSPrimaryStorage;
+@class SDSAnyWriteTransaction;
+@class SDSKeyValueStore;
 @class TSThread;
-@class YapDatabaseReadWriteTransaction;
 
 @interface OWSSounds : NSObject
 
-- (instancetype)init NS_UNAVAILABLE;
-
-- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage NS_DESIGNATED_INITIALIZER;
++ (SDSKeyValueStore *)keyValueStore;
 
 + (NSString *)displayNameForSound:(OWSSound)sound;
 
 + (nullable NSString *)filenameForSound:(OWSSound)sound;
++ (nullable NSString *)filenameForSound:(OWSSound)sound quiet:(BOOL)quiet;
 
 #pragma mark - Notifications
 
@@ -61,7 +60,7 @@ typedef NS_ENUM(NSUInteger, OWSSound) {
 
 + (OWSSound)globalNotificationSound;
 + (void)setGlobalNotificationSound:(OWSSound)sound;
-+ (void)setGlobalNotificationSound:(OWSSound)sound transaction:(YapDatabaseReadWriteTransaction *)transaction;
++ (void)setGlobalNotificationSound:(OWSSound)sound transaction:(SDSAnyWriteTransaction *)transaction;
 
 + (OWSSound)notificationSoundForThread:(TSThread *)thread;
 + (SystemSoundID)systemSoundIDForSound:(OWSSound)sound quiet:(BOOL)quiet;

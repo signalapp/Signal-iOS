@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSNavigationController.h"
@@ -67,6 +67,14 @@ NS_ASSUME_NONNULL_BEGIN
     [super viewDidLoad];
 
     self.interactivePopGestureRecognizer.delegate = self;
+}
+
+- (BOOL)prefersStatusBarHidden
+{
+    if (self.ows_prefersStatusBarHidden) {
+        return self.ows_prefersStatusBarHidden.boolValue;
+    }
+    return [super prefersStatusBarHidden];
 }
 
 #pragma mark - UINavigationBarDelegate
@@ -150,11 +158,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIStatusBarStyle)preferredStatusBarStyle
 {
-    if (OWSWindowManager.sharedManager.hasCall) {
+    if (!CurrentAppContext().isMainApp) {
+        return super.preferredStatusBarStyle;
+    } else if (OWSWindowManager.sharedManager.hasCall) {
         // Status bar is overlaying the green "call banner"
         return UIStatusBarStyleLightContent;
     } else {
-        return (Theme.isDarkThemeEnabled ? UIStatusBarStyleLightContent : super.preferredStatusBarStyle);
+        UIViewController *presentedViewController = self.presentedViewController;
+        if (presentedViewController != nil && !presentedViewController.isBeingDismissed) {
+            return presentedViewController.preferredStatusBarStyle;
+        } else {
+            return (Theme.isDarkThemeEnabled ? UIStatusBarStyleLightContent : super.preferredStatusBarStyle);
+        }
     }
 }
 
@@ -165,7 +180,9 @@ NS_ASSUME_NONNULL_BEGIN
     [UIView setAnimationsEnabled:NO];
 
     if (@available(iOS 11.0, *)) {
-        if (OWSWindowManager.sharedManager.hasCall) {
+        if (!CurrentAppContext().isMainApp) {
+            self.additionalSafeAreaInsets = UIEdgeInsetsZero;
+        } else if (OWSWindowManager.sharedManager.hasCall) {
             self.additionalSafeAreaInsets = UIEdgeInsetsMake(20, 0, 0, 0);
         } else {
             self.additionalSafeAreaInsets = UIEdgeInsetsZero;
@@ -190,7 +207,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations
 {
-    return UIInterfaceOrientationMaskPortrait;
+    if (self.delegate != nil
+        && [self.delegate respondsToSelector:@selector(navigationControllerSupportedInterfaceOrientations:)]) {
+        return [self.delegate navigationControllerSupportedInterfaceOrientations:self];
+    } else if (self.visibleViewController) {
+        return self.visibleViewController.supportedInterfaceOrientations;
+    } else {
+        return UIDevice.currentDevice.defaultSupportedOrienations;
+    }
 }
 
 @end

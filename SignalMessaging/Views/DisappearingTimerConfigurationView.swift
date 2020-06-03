@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -26,24 +26,6 @@ public class DisappearingTimerConfigurationView: UIView {
         }
     }
 
-    override public var frame: CGRect {
-        didSet {
-            Logger.verbose("\(oldValue) -> \(frame)")
-        }
-    }
-
-    override public var bounds: CGRect {
-        didSet {
-            Logger.verbose("\(oldValue) -> \(bounds)")
-        }
-    }
-
-    override public func layoutSubviews() {
-        let oldFrame = self.frame
-        super.layoutSubviews()
-        Logger.verbose("Frame: \(oldFrame) -> \(self.frame)")
-    }
-
     private let imageView: UIImageView
     private let label: UILabel
     private var pressGesture: UILongPressGestureRecognizer!
@@ -54,7 +36,7 @@ public class DisappearingTimerConfigurationView: UIView {
 
     @objc
     public init(durationSeconds: UInt32) {
-        self.imageView = UIImageView(image: #imageLiteral(resourceName: "ic_timer"))
+        self.imageView = UIImageView(image: Theme.iconImage(.settingsTimer))
         imageView.contentMode = .scaleAspectFit
 
         self.label = UILabel()

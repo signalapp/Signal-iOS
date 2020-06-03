@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "MIMETypeUtil.h"
@@ -23,9 +23,12 @@ NSString *const OWSMimeTypeImageTiff1 = @"image/tiff";
 NSString *const OWSMimeTypeImageTiff2 = @"image/x-tiff";
 NSString *const OWSMimeTypeImageBmp1 = @"image/bmp";
 NSString *const OWSMimeTypeImageBmp2 = @"image/x-windows-bmp";
+NSString *const OWSMimeTypeImageWebp = @"image/webp";
+NSString *const OWSMimeTypePdf = @"application/pdf";
 NSString *const OWSMimeTypeOversizeTextMessage = @"text/x-signal-plain";
 NSString *const OWSMimeTypeUnknownForTests = @"unknown/mimetype";
 NSString *const OWSMimeTypeApplicationZip = @"application/zip";
+NSString *const OWSMimeTypeProtobuf = @"application/x-protobuf";
 
 NSString *const kOversizeTextAttachmentUTI = @"org.whispersystems.oversize-text-attachment";
 NSString *const kOversizeTextAttachmentFileExtension = @"txt";
@@ -43,7 +46,8 @@ NSString *const kSyncMessageFileExtension = @"bin";
             @"video/3gpp2" : @"3g2",
             @"video/mp4" : @"mp4",
             @"video/quicktime" : @"mov",
-            @"video/x-m4v" : @"m4v"
+            @"video/x-m4v" : @"m4v",
+            @"video/mpeg" : @"mpg",
         };
     });
     return result;
@@ -70,7 +74,7 @@ NSString *const kSyncMessageFileExtension = @"bin";
             @"audio/aiff" : @"aiff",
             @"audio/x-aiff" : @"aiff",
             @"audio/3gpp2" : @"3g2",
-            @"audio/3gpp" : @"3gp"
+            @"audio/3gpp" : @"3gp",
         };
     });
     return result;
@@ -87,7 +91,8 @@ NSString *const kSyncMessageFileExtension = @"bin";
             @"image/tiff" : @"tif",
             @"image/x-tiff" : @"tif",
             @"image/bmp" : @"bmp",
-            @"image/x-windows-bmp" : @"bmp"
+            @"image/x-windows-bmp" : @"bmp",
+            OWSMimeTypeImageWebp : @"webp",
         };
     });
     return result;
@@ -128,7 +133,9 @@ NSString *const kSyncMessageFileExtension = @"bin";
             @"mp4" : @"video/mp4",
             @"mov" : @"video/quicktime",
             @"mqv" : @"video/quicktime",
-            @"m4v" : @"video/x-m4v"
+            @"m4v" : @"video/x-m4v",
+            @"mpg" : @"video/mpeg",
+            @"mpeg" : @"video/mpeg",
         };
     });
     return result;
@@ -150,8 +157,6 @@ NSString *const kSyncMessageFileExtension = @"bin";
             @"mp3" : @"audio/mp3",
             @"swa" : @"audio/mp3",
             @"mp4" : @"audio/mp4",
-            @"mpeg" : @"audio/mpeg",
-            @"mpg" : @"audio/mpeg",
             @"wav" : @"audio/wav",
             @"bwf" : @"audio/wav",
             @"m4a" : @"audio/x-m4a",
@@ -177,7 +182,8 @@ NSString *const kSyncMessageFileExtension = @"bin";
             @"jpeg" : @"image/jpeg",
             @"jpg" : @"image/jpeg",
             @"tif" : @"image/tiff",
-            @"tiff" : @"image/tiff"
+            @"tiff" : @"image/tiff",
+            @"webp" : OWSMimeTypeImageWebp,
         };
     });
     return result;
@@ -277,6 +283,23 @@ NSString *const kSyncMessageFileExtension = @"bin";
 
 + (BOOL)isAudio:(NSString *)contentType {
     return [MIMETypeUtil isSupportedAudioMIMEType:contentType];
+}
+
++ (BOOL)isVisualMedia:(NSString *)contentType
+{
+    if ([self isImage:contentType]) {
+        return YES;
+    }
+
+    if ([self isVideo:contentType]) {
+        return YES;
+    }
+
+    if ([self isAnimated:contentType]) {
+        return YES;
+    }
+
+    return NO;
 }
 
 + (nullable NSString *)filePathForAttachment:(NSString *)uniqueId

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "MockEnvironment.h"
@@ -9,11 +9,18 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class SDSAnyReadTransaction;
+@class SDSAnyWriteTransaction;
+
 @interface SignalBaseTest : XCTestCase
 
-- (void)readWithBlock:(void (^)(YapDatabaseReadTransaction *transaction))block;
+@property (nonatomic, readonly, nullable) OWSPrimaryStorage *primaryStorage;
 
-- (void)readWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block;
+- (void)readWithBlock:(void (^)(SDSAnyReadTransaction *transaction))block;
+- (void)writeWithBlock:(void (^)(SDSAnyWriteTransaction *transaction))block;
+
+- (void)yapReadWithBlock:(void (^)(YapDatabaseReadTransaction *transaction))block;
+- (void)yapWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block;
 
 @end
 

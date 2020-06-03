@@ -1,18 +1,20 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalMessaging/OWSViewController.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class SignalServiceAddress;
+
 @interface FingerprintViewScanController : OWSViewController
 
-- (void)configureWithRecipientId:(NSString *)recipientId NS_SWIFT_NAME(configure(recipientId:));
+- (void)configureWithRecipientAddress:(SignalServiceAddress *)address NS_SWIFT_NAME(configure(recipientAddress:));
 
 + (void)showVerificationSucceeded:(UIViewController *)viewController
                       identityKey:(NSData *)identityKey
-                      recipientId:(NSString *)recipientId
+                 recipientAddress:(SignalServiceAddress *)address
                       contactName:(NSString *)contactName
                               tag:(NSString *)tag;
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSAudioPlayer.h"
@@ -7,6 +7,8 @@
 #import <AVFoundation/AVFoundation.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/NSTimer+OWS.h>
+
+@import MediaPlayer;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -95,55 +97,98 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)applicationDidEnterBackground:(NSNotification *)notification
 {
+    if (self.supportsBackgroundPlayback) {
+        return;
+    }
+
     [self stop];
+}
+
+- (BOOL)supportsBackgroundPlayback
+{
+    return self.audioActivity.supportsBackgroundPlayback;
+}
+
+- (void)updateNowPlayingInfo
+{
+    // Only update the now playing info if the activity supports background playback
+    if (!self.supportsBackgroundPlayback) {
+        return;
+    }
+
+    MPNowPlayingInfoCenter.defaultCenter.nowPlayingInfo = @{
+        MPMediaItemPropertyTitle : self.audioActivity.backgroundPlaybackName,
+        MPMediaItemPropertyPlaybackDuration : @(self.audioPlayer.duration),
+        MPNowPlayingInfoPropertyElapsedPlaybackTime : @(self.audioPlayer.currentTime)
+    };
+}
+
+- (void)setupRemoteCommandCenter
+{
+    // Only setup the command if the activity supports background playback
+    if (!self.supportsBackgroundPlayback) {
+        return;
+    }
+
+    __weak __typeof(self) weakSelf = self;
+
+    MPRemoteCommandCenter *commandCenter = MPRemoteCommandCenter.sharedCommandCenter;
+    [commandCenter.playCommand setEnabled:YES];
+    [commandCenter.playCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent *event) {
+        [weakSelf play];
+        return MPRemoteCommandHandlerStatusSuccess;
+    }];
+
+    [commandCenter.pauseCommand setEnabled:YES];
+    [commandCenter.pauseCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(MPRemoteCommandEvent *event) {
+        [weakSelf pause];
+        return MPRemoteCommandHandlerStatusSuccess;
+    }];
+
+    if (@available(iOS 9.1, *)) {
+        [commandCenter.changePlaybackPositionCommand setEnabled:YES];
+        [commandCenter.changePlaybackPositionCommand addTargetWithHandler:^MPRemoteCommandHandlerStatus(
+            MPRemoteCommandEvent *event) {
+            OWSAssertDebug([event isKindOfClass:[MPChangePlaybackPositionCommandEvent class]]);
+            MPChangePlaybackPositionCommandEvent *playbackChangeEvent = (MPChangePlaybackPositionCommandEvent *)event;
+            [weakSelf setCurrentTime:playbackChangeEvent.positionTime];
+            return MPRemoteCommandHandlerStatusSuccess;
+        }];
+    }
+
+    [self updateNowPlayingInfo];
+}
+
+- (void)teardownRemoteCommandCenter
+{
+    // If there's nothing left that wants background playback, disable lockscreen / control center controls
+    if (!self.audioSession.wantsBackgroundPlayback) {
+        MPRemoteCommandCenter *commandCenter = MPRemoteCommandCenter.sharedCommandCenter;
+        [commandCenter.playCommand setEnabled:NO];
+        [commandCenter.pauseCommand setEnabled:NO];
+
+        if (@available(iOS 9.1, *)) {
+            [commandCenter.changePlaybackPositionCommand setEnabled:NO];
+        }
+
+        MPNowPlayingInfoCenter.defaultCenter.nowPlayingInfo = @{};
+    }
 }
 
 #pragma mark - Methods
 
 - (void)play
 {
-
-    // get current audio activity
-    OWSAssertIsOnMainThread();
-    [self playWithAudioActivity:self.audioActivity];
-}
-
-- (void)playWithAudioActivity:(OWSAudioActivity *)audioActivity
-{
     OWSAssertIsOnMainThread();
 
-    BOOL success = [self.audioSession startAudioActivity:audioActivity];
+    BOOL success = [self.audioSession startAudioActivity:self.audioActivity];
     OWSAssertDebug(success);
 
-    OWSAssertDebug(self.mediaUrl);
-    OWSAssertDebug([self.delegate audioPlaybackState] != AudioPlaybackState_Playing);
+    [self setupAudioPlayer];
 
-    [self.audioPlayerPoller invalidate];
+    [self setupRemoteCommandCenter];
 
     self.delegate.audioPlaybackState = AudioPlaybackState_Playing;
-
-    if (!self.audioPlayer) {
-        NSError *error;
-        self.audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:self.mediaUrl error:&error];
-        if (error) {
-            OWSLogError(@"error: %@", error);
-            [self stop];
-
-            if ([error.domain isEqualToString:NSOSStatusErrorDomain]
-                && (error.code == kAudioFileInvalidFileError || error.code == kAudioFileStreamError_InvalidFile)) {
-                [OWSAlerts
-                    showErrorAlertWithMessage:NSLocalizedString(@"INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE",
-                                                  @"Message for the alert indicating that an audio file is invalid.")];
-            }
-
-            return;
-        }
-        self.audioPlayer.delegate = self;
-        if (self.isLooping) {
-            self.audioPlayer.numberOfLoops = -1;
-        }
-    }
-
     [self.audioPlayer play];
     [self.audioPlayerPoller invalidate];
     self.audioPlayerPoller = [NSTimer weakScheduledTimerWithTimeInterval:.05f
@@ -164,9 +209,48 @@ NS_ASSUME_NONNULL_BEGIN
     [self.audioPlayer pause];
     [self.audioPlayerPoller invalidate];
     [self.delegate setAudioProgress:(CGFloat)[self.audioPlayer currentTime] duration:(CGFloat)[self.audioPlayer duration]];
+    [self updateNowPlayingInfo];
 
     [self endAudioActivities];
     [DeviceSleepManager.sharedInstance removeBlockWithBlockObject:self];
+}
+
+- (void)setupAudioPlayer
+{
+    OWSAssertIsOnMainThread();
+
+    if (self.delegate.audioPlaybackState != AudioPlaybackState_Stopped) {
+        return;
+    }
+
+    OWSAssertDebug(self.mediaUrl);
+
+    if (!self.audioPlayer) {
+        NSError *error;
+        self.audioPlayer = [[AVAudioPlayer alloc] initWithContentsOfURL:self.mediaUrl error:&error];
+        if (error) {
+            OWSLogError(@"error: %@", error);
+            [self stop];
+
+            if ([error.domain isEqualToString:NSOSStatusErrorDomain]
+                && (error.code == kAudioFileInvalidFileError || error.code == kAudioFileStreamError_InvalidFile)) {
+                [OWSActionSheets
+                    showErrorAlertWithMessage:NSLocalizedString(@"INVALID_AUDIO_FILE_ALERT_ERROR_MESSAGE",
+                                                  @"Message for the alert indicating that an audio file is invalid.")];
+            }
+
+            return;
+        }
+        self.audioPlayer.delegate = self;
+        [self.audioPlayer prepareToPlay];
+        if (self.isLooping) {
+            self.audioPlayer.numberOfLoops = -1;
+        }
+    }
+
+    if (self.delegate.audioPlaybackState == AudioPlaybackState_Stopped) {
+        self.delegate.audioPlaybackState = AudioPlaybackState_Paused;
+    }
 }
 
 - (void)stop
@@ -180,6 +264,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self endAudioActivities];
     [DeviceSleepManager.sharedInstance removeBlockWithBlockObject:self];
+    [self teardownRemoteCommandCenter];
 }
 
 - (void)endAudioActivities
@@ -194,8 +279,18 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.delegate.audioPlaybackState == AudioPlaybackState_Playing) {
         [self pause];
     } else {
-        [self playWithAudioActivity:self.audioActivity];
+        [self play];
     }
+}
+
+- (void)setCurrentTime:(NSTimeInterval)currentTime
+{
+    self.audioPlayer.currentTime = currentTime;
+
+    [self.delegate setAudioProgress:(CGFloat)[self.audioPlayer currentTime]
+                           duration:(CGFloat)[self.audioPlayer duration]];
+
+    [self updateNowPlayingInfo];
 }
 
 #pragma mark - Events
@@ -215,6 +310,10 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
 
     [self stop];
+
+    if ([self.delegate respondsToSelector:@selector(audioPlayerDidFinish)]) {
+        [self.delegate audioPlayerDidFinish];
+    }
 }
 
 @end

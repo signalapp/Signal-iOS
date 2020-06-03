@@ -1,12 +1,10 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN
-
-extern NSString *const StorageIsReadyNotification;
 
 @class YapDatabaseExtension;
 
@@ -21,7 +19,9 @@ extern NSString *const StorageIsReadyNotification;
 @interface OWSDatabaseConnection : YapDatabaseConnection
 
 @property (atomic, weak) id<OWSDatabaseConnectionDelegate> delegate;
+@property (atomic) BOOL isCleanupConnection;
 
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithDatabase:(YapDatabase *)database
                         delegate:(id<OWSDatabaseConnectionDelegate>)delegate NS_DESIGNATED_INITIALIZER;
@@ -32,6 +32,7 @@ extern NSString *const StorageIsReadyNotification;
 
 @interface OWSDatabase : YapDatabase
 
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
 - (id)initWithPath:(NSString *)inPath
@@ -44,12 +45,11 @@ extern NSString *const StorageIsReadyNotification;
 
 #pragma mark -
 
-typedef void (^OWSStorageMigrationBlock)(void);
+typedef void (^OWSStorageCompletionBlock)(void);
 
 @interface OWSStorage : NSObject
 
-- (instancetype)init NS_UNAVAILABLE;
-- (instancetype)initStorage NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
 
 // Returns YES if _ALL_ storage classes have completed both their
 // sync _AND_ async view registrations.
@@ -58,8 +58,8 @@ typedef void (^OWSStorageMigrationBlock)(void);
 // This object can be used to filter database notifications.
 @property (nonatomic, readonly, nullable) id dbNotificationObject;
 
-// migrationBlock will be invoked _off_ the main thread.
-+ (void)registerExtensionsWithMigrationBlock:(OWSStorageMigrationBlock)migrationBlock;
+// completionBlock will be invoked _off_ the main thread.
++ (void)registerExtensionsWithCompletionBlock:(OWSStorageCompletionBlock)completionBlock;
 
 #ifdef DEBUG
 - (void)closeStorageForTests;
@@ -68,6 +68,8 @@ typedef void (^OWSStorageMigrationBlock)(void);
 + (void)resetAllStorage;
 
 - (YapDatabaseConnection *)newDatabaseConnection;
+
++ (YapDatabaseOptions *)defaultDatabaseOptions;
 
 #pragma mark - Extension Registration
 
@@ -107,7 +109,10 @@ typedef void (^OWSStorageMigrationBlock)(void);
 
 + (void)storeDatabaseCipherKeySpec:(NSData *)cipherKeySpecData;
 
-- (void)logFileSizes;
+#pragma mark - Reset
+
++ (void)deleteDatabaseFiles;
++ (void)deleteDBKeys;
 
 @end
 

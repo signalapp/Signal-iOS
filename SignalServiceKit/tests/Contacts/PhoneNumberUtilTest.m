@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "PhoneNumberUtil.h"
@@ -9,9 +9,9 @@
 
 @end
 
-@implementation PhoneNumberUtilTest
+#pragma mark -
 
-#ifdef BROKEN_TESTS
+@implementation PhoneNumberUtilTest
 
 - (void)testQueryMatching
 {
@@ -37,9 +37,7 @@
 
 - (void)testTranslateCursorPosition
 {
-    XCTAssertThrows([PhoneNumberUtil translateCursorPosition:0 from:nil to:@"" stickingRightward:true]);
-    XCTAssertThrows([PhoneNumberUtil translateCursorPosition:0 from:@"" to:nil stickingRightward:true]);
-    XCTAssertThrows([PhoneNumberUtil translateCursorPosition:1 from:@"" to:@"" stickingRightward:true]);
+    XCTAssertEqual(0, [PhoneNumberUtil translateCursorPosition:0 from:@"" to:@"" stickingRightward:true]);
 
     XCTAssertEqual(0, [PhoneNumberUtil translateCursorPosition:0 from:@"" to:@"" stickingRightward:true]);
     XCTAssertEqual(0, [PhoneNumberUtil translateCursorPosition:0 from:@"12" to:@"1" stickingRightward:true]);
@@ -152,7 +150,7 @@
     // Invalid country code.
     XCTAssertEqualObjects([PhoneNumberUtil callingCodeFromCountryCode:@"EK"], @"+0");
     XCTAssertEqualObjects([PhoneNumberUtil callingCodeFromCountryCode:@"ZZZ"], @"+0");
-    XCTAssertEqualObjects([PhoneNumberUtil callingCodeFromCountryCode:nil], @"+0");
+    XCTAssertEqualObjects([PhoneNumberUtil callingCodeFromCountryCode:@""], @"+0");
 }
 
 - (void)testCountryNameFromCountryCode
@@ -162,7 +160,7 @@
     // Invalid country code.
     XCTAssertEqualObjects([PhoneNumberUtil countryNameFromCountryCode:@"EK"], @"EK");
     XCTAssertEqualObjects([PhoneNumberUtil countryNameFromCountryCode:@"ZZZ"], @"ZZZ");
-    XCTAssertThrows([PhoneNumberUtil countryNameFromCountryCode:nil]);
+    XCTAssertTrue([PhoneNumberUtil countryNameFromCountryCode:@""].length > 0);
 }
 
 - (void)testCountryCodesForSearchTerm
@@ -203,7 +201,5 @@
     XCTAssertFalse([[PhoneNumberUtil countryCodesForSearchTerm:@" +123 "] containsObject:@"GB"]);
     XCTAssertFalse([[PhoneNumberUtil countryCodesForSearchTerm:@" +444 "] containsObject:@"GB"]);
 }
-
-#endif
 
 @end

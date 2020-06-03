@@ -1,19 +1,15 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "DebugUIMessagesAction.h"
-#import <SignalServiceKit/OWSPrimaryStorage.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
+
+#ifdef DEBUG
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class DebugUIMessagesSingleAction;
-
-@interface DebugUIMessagesAction ()
-
-@end
-
-#pragma mark -
 
 @interface DebugUIMessagesSingleAction ()
 
@@ -28,6 +24,15 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 @implementation DebugUIMessagesAction
+
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark -
 
 - (DebugUIMessagesSingleAction *)nextActionToPerform
 {
@@ -74,8 +79,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     __block NSUInteger count = countParam;
-    [OWSPrimaryStorage.sharedManager.newDatabaseConnection readWriteWithBlock:^(
-        YapDatabaseReadWriteTransaction *transaction) {
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *_Nonnull transaction) {
         NSUInteger batchSize = 0;
         while (count > 0) {
             NSUInteger index = count;
@@ -286,3 +290,5 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 NS_ASSUME_NONNULL_END
+
+#endif

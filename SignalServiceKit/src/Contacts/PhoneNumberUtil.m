@@ -1,11 +1,13 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "PhoneNumberUtil.h"
 #import "ContactsManagerProtocol.h"
 #import "FunctionalUtil.h"
 #import <libPhoneNumber_iOS/NBPhoneNumber.h>
+
+NS_ASSUME_NONNULL_BEGIN
 
 @interface PhoneNumberUtil ()
 
@@ -80,9 +82,13 @@
 }
 
 // country code -> country name
-+ (NSString *)countryNameFromCountryCode:(NSString *)countryCode {
-    OWSAssertDebug(countryCode);
++ (nullable NSString *)countryNameFromCountryCode:(NSString *)countryCode
+{
+    OWSAssertDebug(countryCode != nil);
 
+    if (countryCode.length < 1) {
+        return NSLocalizedString(@"UNKNOWN_VALUE", "Indicates an unknown or unrecognizable value.");
+    }
     NSDictionary *countryCodeComponent = @{NSLocaleCountryCode : countryCode};
     NSString *identifier               = [NSLocale localeIdentifierFromComponents:countryCodeComponent];
     NSString *countryName = [NSLocale.currentLocale displayNameForKey:NSLocaleIdentifier value:identifier];
@@ -98,6 +104,10 @@
 // country code -> calling code
 + (NSString *)callingCodeFromCountryCode:(NSString *)countryCode
 {
+    if (countryCode.length < 1) {
+        return @"+0";
+    }
+
     if ([countryCode isEqualToString:@"AQ"]) {
         // Antarctica
         return @"+672";
@@ -467,7 +477,7 @@
 }
 
 // search term -> country codes
-+ (NSArray *)countryCodesForSearchTerm:(NSString *)searchTerm {
++ (NSArray *)countryCodesForSearchTerm:(nullable NSString *)searchTerm {
     searchTerm = [searchTerm stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
 
     NSArray *countryCodes = NSLocale.ISOCountryCodes;
@@ -520,6 +530,9 @@
     OWSAssertDebug(source != nil);
     OWSAssertDebug(target != nil);
     OWSAssertDebug(offset <= source.length);
+    if (source == nil || target == nil || offset > source.length) {
+        return 0;
+    }
 
     NSUInteger n = source.length;
     NSUInteger m = target.length;
@@ -602,3 +615,5 @@
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

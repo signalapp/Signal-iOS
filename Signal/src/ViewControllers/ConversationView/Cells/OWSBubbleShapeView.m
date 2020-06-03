@@ -23,7 +23,8 @@ typedef NS_ENUM(NSUInteger, OWSBubbleShapeViewMode) {
 @property (nonatomic) CAShapeLayer *shapeLayer;
 @property (nonatomic) CAShapeLayer *maskLayer;
 
-@property (nonatomic, weak) OWSBubbleView *bubbleView;
+@property (nonatomic, nullable, weak) OWSBubbleView *bubbleView;
+@property (nonatomic) BOOL isConfigured;
 
 @end
 
@@ -33,7 +34,6 @@ typedef NS_ENUM(NSUInteger, OWSBubbleShapeViewMode) {
 
 - (void)configure
 {
-    self.mode = OWSBubbleShapeViewMode_Draw;
     self.opaque = NO;
     self.backgroundColor = [UIColor clearColor];
     self.layoutMargins = UIEdgeInsetsZero;
@@ -42,12 +42,15 @@ typedef NS_ENUM(NSUInteger, OWSBubbleShapeViewMode) {
     [self.layer addSublayer:self.shapeLayer];
 
     self.maskLayer = [CAShapeLayer new];
-}
 
+    self.isConfigured = YES;
+
+    [self updateLayers];
+}
 
 - (instancetype)initDraw
 {
-    self = [super init];
+    self = [super initWithFrame:CGRectZero];
     if (!self) {
         return self;
     }
@@ -61,7 +64,7 @@ typedef NS_ENUM(NSUInteger, OWSBubbleShapeViewMode) {
 
 - (instancetype)initShadow
 {
-    self = [super init];
+    self = [super initWithFrame:CGRectZero];
     if (!self) {
         return self;
     }
@@ -75,7 +78,7 @@ typedef NS_ENUM(NSUInteger, OWSBubbleShapeViewMode) {
 
 - (instancetype)initClip
 {
-    self = [super init];
+    self = [super initWithFrame:CGRectZero];
     if (!self) {
         return self;
     }
@@ -89,7 +92,7 @@ typedef NS_ENUM(NSUInteger, OWSBubbleShapeViewMode) {
 
 - (instancetype)initInnerShadowWithColor:(UIColor *)color radius:(CGFloat)radius opacity:(float)opacity
 {
-    self = [super init];
+    self = [super initWithFrame:CGRectZero];
     if (!self) {
         return self;
     }
@@ -100,7 +103,6 @@ typedef NS_ENUM(NSUInteger, OWSBubbleShapeViewMode) {
     _innerShadowOpacity = opacity;
 
     [self configure];
-    [self updateLayers];
 
     return self;
 }
@@ -176,13 +178,22 @@ typedef NS_ENUM(NSUInteger, OWSBubbleShapeViewMode) {
     [self updateLayers];
 }
 
+- (void)setBubbleView:(nullable OWSBubbleView *)bubbleView
+{
+    _bubbleView = bubbleView;
+
+    [self updateLayers];
+}
+
 - (void)updateLayers
 {
     if (!self.shapeLayer) {
         return;
     }
-
     if (!self.bubbleView) {
+        return;
+    }
+    if (!self.isConfigured) {
         return;
     }
 

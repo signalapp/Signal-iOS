@@ -1,22 +1,31 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalMessaging/OWSViewController.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class HomeViewController;
+@class ConversationListViewController;
+@class SDSKeyValueStore;
+
+typedef NS_ENUM(NSInteger, ProfileViewMode) {
+    ProfileViewMode_AppSettings = 0,
+    ProfileViewMode_Registration,
+    ProfileViewMode_ExperienceUpgrade,
+};
 
 @interface ProfileViewController : OWSViewController
 
++ (SDSKeyValueStore *)keyValueStore;
+
+- (instancetype)initWithMode:(ProfileViewMode)profileViewMode
+           completionHandler:(void (^)(ProfileViewController *))completionHandler;
+
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
 + (BOOL)shouldDisplayProfileViewOnLaunch;
-
-+ (void)presentForAppSettings:(UINavigationController *)navigationController;
-+ (void)presentForRegistration:(UINavigationController *)navigationController;
-+ (void)presentForUpgradeOrNag:(HomeViewController *)fromViewController NS_SWIFT_NAME(presentForUpgradeOrNag(from:));
 
 @end
 

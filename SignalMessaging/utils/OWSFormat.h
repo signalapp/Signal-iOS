@@ -1,14 +1,15 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSFormat : NSObject
 
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-+ (NSString *)formatInt:(int)value;
+@property (nonatomic, class, readonly) NSNumberFormatter *defaultNumberFormatter;
 
 + (NSString *)formatFileSize:(unsigned long)fileSize;
 

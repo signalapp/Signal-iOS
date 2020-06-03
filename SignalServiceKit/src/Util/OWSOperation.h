@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -11,6 +11,8 @@ typedef NS_ENUM(NSInteger, OWSOperationState) {
     OWSOperationStateExecuting,
     OWSOperationStateFinished
 };
+
+extern NSErrorUserInfoKey const OWSOperationIsRetryableKey;
 
 // A base class for implementing retryable operations.
 // To utilize the retryable behavior:
@@ -24,7 +26,9 @@ typedef NS_ENUM(NSInteger, OWSOperationState) {
 // any of the errors were fatal. Fatal errors trump retryable errors.
 @interface OWSOperation : NSOperation
 
-@property (readonly, nullable) NSError *failingError;
+@property (nonatomic, readonly, nullable) NSError *failingError;
+
+@property (nonatomic, readonly) NSUInteger errorCount;
 
 // Defaults to 0, set to greater than 0 in init if you'd like the operation to be retryable.
 @property NSUInteger remainingRetries;
@@ -81,7 +85,7 @@ typedef NS_ENUM(NSInteger, OWSOperationState) {
 //
 // If the error is terminal, and you want to avoid retry, report an error with `error.isFatal = YES` otherwise the
 // operation will retry if possible.
-- (void)reportError:(NSError *)error;
+- (void)reportError:(NSError *)error NS_REFINED_FOR_SWIFT;
 
 @end
 

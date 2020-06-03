@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -26,7 +26,7 @@ class ByteParserTest: SignalBaseTest {
     }
 
     func testGetShort_littleEndian() {
-        let data = Data(bytes: [0x01, 0x00, 0x00, 0x01, 0x01, 0x01 ])
+        let data = Data([0x01, 0x00, 0x00, 0x01, 0x01, 0x01])
         let parser = ByteParser(data: data, littleEndian: true)
         XCTAssertNotNil(parser)
         XCTAssertFalse(parser.hasError)
@@ -45,7 +45,7 @@ class ByteParserTest: SignalBaseTest {
     }
 
     func testGetShort_bigEndian() {
-        let data = Data(bytes: [0x01, 0x00, 0x00, 0x01, 0x01, 0x01 ])
+        let data = Data([0x01, 0x00, 0x00, 0x01, 0x01, 0x01])
         let parser = ByteParser(data: data, littleEndian: false)
         XCTAssertNotNil(parser)
         XCTAssertFalse(parser.hasError)
@@ -73,7 +73,7 @@ class ByteParserTest: SignalBaseTest {
     }
 
     func testGetInt_littleEndian() {
-        let data = Data(bytes: [0x01, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x01, 0x01, 0x00, 0x00 ])
+        let data = Data([0x01, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x01, 0x01, 0x00, 0x00])
         let parser = ByteParser(data: data, littleEndian: true)
         XCTAssertNotNil(parser)
         XCTAssertFalse(parser.hasError)
@@ -92,7 +92,7 @@ class ByteParserTest: SignalBaseTest {
     }
 
     func testGetInt_bigEndian() {
-        let data = Data(bytes: [0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x01 ])
+        let data = Data([0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x01, 0x01])
         let parser = ByteParser(data: data, littleEndian: false)
         XCTAssertNotNil(parser)
         XCTAssertFalse(parser.hasError)
@@ -120,7 +120,7 @@ class ByteParserTest: SignalBaseTest {
     }
 
     func testGetLong_littleEndian() {
-        let data = Data(bytes: [0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00 ])
+        let data = Data([0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00])
         let parser = ByteParser(data: data, littleEndian: true)
         XCTAssertNotNil(parser)
         XCTAssertFalse(parser.hasError)
@@ -139,7 +139,7 @@ class ByteParserTest: SignalBaseTest {
     }
 
     func testGetLong_bigEndian() {
-        let data = Data(bytes: [0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01 ])
+        let data = Data([0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01, 0x01])
         let parser = ByteParser(data: data, littleEndian: false)
         XCTAssertNotNil(parser)
         XCTAssertFalse(parser.hasError)
@@ -167,7 +167,7 @@ class ByteParserTest: SignalBaseTest {
     }
 
     func testReadZero() {
-        let data = Data(bytes: [0x00, 0x01, 0x00, 0x00, 0x01, 0x00])
+        let data = Data([0x00, 0x01, 0x00, 0x00, 0x01, 0x00])
         let parser = ByteParser(data: data, littleEndian: true)
         XCTAssertNotNil(parser)
         XCTAssertFalse(parser.hasError)
@@ -198,21 +198,21 @@ class ByteParserTest: SignalBaseTest {
     }
 
     func testReadBytes() {
-        let data = Data(bytes: [0x00, 0x01, 0x02, 0x03, 0x04, 0x05])
+        let data = Data([0x00, 0x01, 0x02, 0x03, 0x04, 0x05])
         let parser = ByteParser(data: data, littleEndian: true)
         XCTAssertNotNil(parser)
         XCTAssertFalse(parser.hasError)
 
-        XCTAssertEqual(Data(bytes: [0x00 ]), parser.readBytes(1))
+        XCTAssertEqual(Data([0x00]), parser.readBytes(1))
         XCTAssertFalse(parser.hasError)
 
-        XCTAssertEqual(Data(bytes: [0x01 ]), parser.readBytes(1))
+        XCTAssertEqual(Data([0x01]), parser.readBytes(1))
         XCTAssertFalse(parser.hasError)
 
-        XCTAssertEqual(Data(bytes: [0x02, 0x03]), parser.readBytes(2))
+        XCTAssertEqual(Data([0x02, 0x03]), parser.readBytes(2))
         XCTAssertFalse(parser.hasError)
 
-        XCTAssertEqual(Data(bytes: [0x04, 0x05]), parser.readBytes(2))
+        XCTAssertEqual(Data([0x04, 0x05]), parser.readBytes(2))
         XCTAssertFalse(parser.hasError)
 
         XCTAssertNil(parser.readBytes(1))

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWS102MoveLoggingPreferenceToUserDefaults.h"
@@ -25,7 +25,7 @@ static NSString *const OWS102MoveLoggingPreferenceToUserDefaultsMigrationId = @"
     OWSLogWarn(@"[OWS102MoveLoggingPreferenceToUserDefaultsMigrationId] copying existing logging preference to "
                @"NSUserDefaults");
 
-    NSNumber *existingValue =
+    NSNumber *_Nullable existingValue =
         [transaction objectForKey:OWSPreferencesKeyEnableDebugLog inCollection:OWSPreferencesSignalDatabaseCollection];
 
     if (existingValue) {

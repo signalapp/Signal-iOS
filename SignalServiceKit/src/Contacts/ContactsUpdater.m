@@ -1,10 +1,9 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "ContactsUpdater.h"
 #import "OWSError.h"
-#import "OWSPrimaryStorage.h"
 #import "OWSRequestFactory.h"
 #import "PhoneNumber.h"
 #import "SSKEnvironment.h"
@@ -12,7 +11,6 @@
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/Threading.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -25,6 +23,15 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 @implementation ContactsUpdater
+
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark -
 
 + (instancetype)sharedUpdater {
     OWSAssertDebug(SSKEnvironment.shared.contactsUpdater);
@@ -77,14 +84,19 @@ NS_ASSUME_NONNULL_BEGIN
         }];
 }
 
-- (void)contactIntersectionWithSet:(NSSet<NSString *> *)recipientIdsToLookup
+- (void)contactIntersectionWithSet:(NSSet<NSString *> *)phoneNumbersToLookup
                            success:(void (^)(NSSet<SignalRecipient *> *recipients))success
                            failure:(void (^)(NSError *error))failure
 {
-    OWSLegacyContactDiscoveryOperation *operation =
-        [[OWSLegacyContactDiscoveryOperation alloc] initWithRecipientIdsToLookup:recipientIdsToLookup.allObjects];
-
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        NSMutableSet<SignalRecipient *> *registeredRecipients = [NSMutableSet new];
+        if (SSKFeatureFlags.useOnlyModernContactDiscovery) {
+            OWSFailDebug(@"failure: TODO");
+        }
+
+        OWSLegacyContactDiscoveryOperation *operation =
+            [[OWSLegacyContactDiscoveryOperation alloc] initWithPhoneNumbersToLookup:phoneNumbersToLookup.allObjects];
+
         NSArray<NSOperation *> *operationAndDependencies = [operation.dependencies arrayByAddingObject:operation];
         [self.contactIntersectionQueue addOperations:operationAndDependencies waitUntilFinished:YES];
 
@@ -93,23 +105,22 @@ NS_ASSUME_NONNULL_BEGIN
             return;
         }
 
-        NSSet<NSString *> *registeredRecipientIds = operation.registeredRecipientIds;
-
-        NSMutableSet<SignalRecipient *> *recipients = [NSMutableSet new];
-        [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            for (NSString *recipientId in recipientIdsToLookup) {
-                if ([registeredRecipientIds containsObject:recipientId]) {
-                    SignalRecipient *recipient =
-                        [SignalRecipient markRecipientAsRegisteredAndGet:recipientId transaction:transaction];
-                    [recipients addObject:recipient];
+        NSSet<NSString *> *registeredPhoneNumbers = operation.registeredPhoneNumbers;
+        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            for (NSString *phoneNumber in phoneNumbersToLookup) {
+                SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber];
+                if ([registeredPhoneNumbers containsObject:phoneNumber]) {
+                    SignalRecipient *recipient = [SignalRecipient markRecipientAsRegisteredAndGet:address
+                                                                                      transaction:transaction];
+                    [registeredRecipients addObject:recipient];
                 } else {
-                    [SignalRecipient markRecipientAsUnregistered:recipientId transaction:transaction];
+                    [SignalRecipient markRecipientAsUnregistered:address transaction:transaction];
                 }
             }
         }];
 
         dispatch_async(dispatch_get_main_queue(), ^{
-            success([recipients copy]);
+            success([registeredRecipients copy]);
         });
     });
 }

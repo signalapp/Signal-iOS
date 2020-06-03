@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSOutgoingNullMessage.h"
@@ -24,16 +24,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithContactThread:(TSContactThread *)contactThread
          verificationStateSyncMessage:(OWSVerificationStateSyncMessage *)verificationStateSyncMessage
 {
-    self = [super initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                          inThread:contactThread
-                                       messageBody:nil
-                                     attachmentIds:[NSMutableArray new]
-                                  expiresInSeconds:0
-                                   expireStartedAt:0
-                                    isVoiceMessage:NO
-                                  groupMetaMessage:TSGroupMetaMessageUnspecified
-                                     quotedMessage:nil
-                                      contactShare:nil];
+    TSOutgoingMessageBuilder *messageBuilder =
+        [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:contactThread];
+    self = [super initOutgoingMessageWithBuilder:messageBuilder];
     if (!self) {
         return self;
     }
@@ -46,6 +39,8 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark - override TSOutgoingMessage
 
 - (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient
+                                 thread:(TSThread *)thread
+                            transaction:(SDSAnyReadTransaction *)transaction
 {
     SSKProtoNullMessageBuilder *nullMessageBuilder = [SSKProtoNullMessage builder];
 

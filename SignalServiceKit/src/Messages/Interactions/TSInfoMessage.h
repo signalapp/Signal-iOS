@@ -1,11 +1,13 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSReadTracking.h"
 #import "TSMessage.h"
 
 NS_ASSUME_NONNULL_BEGIN
+
+@class SignalServiceAddress;
 
 @interface TSInfoMessage : TSMessage <OWSReadTracking>
 
@@ -21,45 +23,105 @@ typedef NS_ENUM(NSInteger, TSInfoMessageType) {
     TSInfoMessageVerificationStateChange,
     TSInfoMessageAddUserToProfileWhitelistOffer,
     TSInfoMessageAddGroupToProfileWhitelistOffer,
+    TSInfoMessageUnknownProtocolVersion,
+    TSInfoMessageUserJoinedSignal,
+    TSInfoMessageSyncedThread
 };
 
-+ (instancetype)userNotRegisteredMessageInThread:(TSThread *)thread recipientId:(NSString *)recipientId;
 
-@property (atomic, readonly) TSInfoMessageType messageType;
-@property (atomic, readonly, nullable) NSString *customMessage;
-@property (atomic, readonly, nullable) NSString *unregisteredRecipientId;
+typedef NSString *InfoMessageUserInfoKey NS_STRING_ENUM;
 
-- (instancetype)initMessageWithTimestamp:(uint64_t)timestamp
-                                inThread:(nullable TSThread *)thread
-                             messageBody:(nullable NSString *)body
-                           attachmentIds:(NSArray<NSString *> *)attachmentIds
-                        expiresInSeconds:(uint32_t)expiresInSeconds
-                         expireStartedAt:(uint64_t)expireStartedAt
-                           quotedMessage:(nullable TSQuotedMessage *)quotedMessage
-                            contactShare:(nullable OWSContact *)contact NS_UNAVAILABLE;
+extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyOldGroupModel;
+extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyNewGroupModel;
+extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyOldDisappearingMessageToken;
+extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyNewDisappearingMessageToken;
+extern InfoMessageUserInfoKey const InfoMessageUserInfoKeyGroupUpdateSourceAddress;
 
-- (instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
++ (instancetype)userNotRegisteredMessageInThread:(TSThread *)thread address:(SignalServiceAddress *)address;
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(TSThread *)contact
-                      messageType:(TSInfoMessageType)infoMessage NS_DESIGNATED_INITIALIZER;
+@property (nonatomic, readonly) TSInfoMessageType messageType;
+@property (nonatomic, readonly, nullable) NSString *customMessage;
+@property (nonatomic, readonly, nullable) NSDictionary<InfoMessageUserInfoKey, id> *infoMessageUserInfo;
+@property (nonatomic, readonly, nullable) SignalServiceAddress *unregisteredAddress;
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(TSThread *)thread
-                      messageType:(TSInfoMessageType)infoMessage
-                    customMessage:(NSString *)customMessage;
+- (instancetype)initMessageWithBuilder:(TSMessageBuilder *)messageBuilder NS_UNAVAILABLE;
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(TSThread *)thread
-                      messageType:(TSInfoMessageType)infoMessage
-          unregisteredRecipientId:(NSString *)unregisteredRecipientId;
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                        uniqueId:(NSString *)uniqueId
+             receivedAtTimestamp:(uint64_t)receivedAtTimestamp
+                          sortId:(uint64_t)sortId
+                       timestamp:(uint64_t)timestamp
+                  uniqueThreadId:(NSString *)uniqueThreadId
+                   attachmentIds:(NSArray<NSString *> *)attachmentIds
+                            body:(nullable NSString *)body
+                    contactShare:(nullable OWSContact *)contactShare
+                 expireStartedAt:(uint64_t)expireStartedAt
+                       expiresAt:(uint64_t)expiresAt
+                expiresInSeconds:(unsigned int)expiresInSeconds
+              isViewOnceComplete:(BOOL)isViewOnceComplete
+               isViewOnceMessage:(BOOL)isViewOnceMessage
+                     linkPreview:(nullable OWSLinkPreview *)linkPreview
+                  messageSticker:(nullable MessageSticker *)messageSticker
+                   quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+    storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
+              wasRemotelyDeleted:(BOOL)wasRemotelyDeleted NS_UNAVAILABLE;
 
-- (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         inThread:(nullable TSThread *)thread
-                      messageBody:(nullable NSString *)body
-                    attachmentIds:(NSArray<NSString *> *)attachmentIds
-                 expiresInSeconds:(uint32_t)expiresInSeconds
-                  expireStartedAt:(uint64_t)expireStartedAt NS_UNAVAILABLE;
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithThread:(TSThread *)contact messageType:(TSInfoMessageType)infoMessage NS_DESIGNATED_INITIALIZER;
+
+// Convenience initializer which is neither "designated" nor "unavailable".
+- (instancetype)initWithThread:(TSThread *)thread
+                   messageType:(TSInfoMessageType)infoMessage
+                 customMessage:(NSString *)customMessage;
+
+// Convenience initializer which is neither "designated" nor "unavailable".
+- (instancetype)initWithThread:(TSThread *)thread
+                   messageType:(TSInfoMessageType)infoMessage
+           infoMessageUserInfo:(NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo;
+
+// Convenience initializer which is neither "designated" nor "unavailable".
+- (instancetype)initWithThread:(TSThread *)thread
+                   messageType:(TSInfoMessageType)infoMessage
+           unregisteredAddress:(SignalServiceAddress *)unregisteredAddress;
+
+// --- CODE GENERATION MARKER
+
+// This snippet is generated by /Scripts/sds_codegen/sds_generate.py. Do not manually edit it, instead run `sds_codegen.sh`.
+
+// clang-format off
+
+- (instancetype)initWithGrdbId:(int64_t)grdbId
+                      uniqueId:(NSString *)uniqueId
+           receivedAtTimestamp:(uint64_t)receivedAtTimestamp
+                        sortId:(uint64_t)sortId
+                     timestamp:(uint64_t)timestamp
+                uniqueThreadId:(NSString *)uniqueThreadId
+                 attachmentIds:(NSArray<NSString *> *)attachmentIds
+                          body:(nullable NSString *)body
+                  contactShare:(nullable OWSContact *)contactShare
+               expireStartedAt:(uint64_t)expireStartedAt
+                     expiresAt:(uint64_t)expiresAt
+              expiresInSeconds:(unsigned int)expiresInSeconds
+            isViewOnceComplete:(BOOL)isViewOnceComplete
+             isViewOnceMessage:(BOOL)isViewOnceMessage
+                   linkPreview:(nullable OWSLinkPreview *)linkPreview
+                messageSticker:(nullable MessageSticker *)messageSticker
+                 quotedMessage:(nullable TSQuotedMessage *)quotedMessage
+  storedShouldStartExpireTimer:(BOOL)storedShouldStartExpireTimer
+            wasRemotelyDeleted:(BOOL)wasRemotelyDeleted
+                 customMessage:(nullable NSString *)customMessage
+           infoMessageUserInfo:(nullable NSDictionary<InfoMessageUserInfoKey, id> *)infoMessageUserInfo
+                   messageType:(TSInfoMessageType)messageType
+                          read:(BOOL)read
+           unregisteredAddress:(nullable SignalServiceAddress *)unregisteredAddress
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp:sortId:timestamp:uniqueThreadId:attachmentIds:body:contactShare:expireStartedAt:expiresAt:expiresInSeconds:isViewOnceComplete:isViewOnceMessage:linkPreview:messageSticker:quotedMessage:storedShouldStartExpireTimer:wasRemotelyDeleted:customMessage:infoMessageUserInfo:messageType:read:unregisteredAddress:));
+
+// clang-format on
+
+// --- CODE GENERATION MARKER
+
+- (NSString *)systemMessageTextWithTransaction:(SDSAnyReadTransaction *)transaction;
 
 @end
 

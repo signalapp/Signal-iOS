@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -10,25 +10,26 @@ import SignalMessaging
 import WebRTC
 
 protocol CallUIAdaptee {
-    var notificationsAdapter: CallNotificationsAdapter { get }
+    var notificationPresenter: NotificationPresenter { get }
     var callService: CallService { get }
     var hasManualRinger: Bool { get }
 
-    func startOutgoingCall(handle: String) -> SignalCall
+    func startOutgoingCall(call: SignalCall)
     func reportIncomingCall(_ call: SignalCall, callerName: String)
     func reportMissedCall(_ call: SignalCall, callerName: String)
     func answerCall(localId: UUID)
     func answerCall(_ call: SignalCall)
-    func declineCall(localId: UUID)
-    func declineCall(_ call: SignalCall)
     func recipientAcceptedCall(_ call: SignalCall)
+    func localHangupCall(localId: UUID)
     func localHangupCall(_ call: SignalCall)
     func remoteDidHangupCall(_ call: SignalCall)
     func remoteBusy(_ call: SignalCall)
+    func didAnswerElsewhere(call: SignalCall)
+    func didDeclineElsewhere(call: SignalCall)
     func failCall(_ call: SignalCall, error: CallError)
     func setIsMuted(call: SignalCall, isMuted: Bool)
     func setHasLocalVideo(call: SignalCall, hasLocalVideo: Bool)
-    func startAndShowOutgoingCall(recipientId: String, hasLocalVideo: Bool)
+    func startAndShowOutgoingCall(address: SignalServiceAddress, hasLocalVideo: Bool)
 }
 
 // Shared default implementations
@@ -40,7 +41,7 @@ extension CallUIAdaptee {
         callViewController.modalTransitionStyle = .crossDissolve
 
         if CallViewController.kShowCallViewOnSeparateWindow {
-            OWSWindowManager.shared().startCall(callViewController)
+            OWSWindowManager.shared.startCall(callViewController)
         } else {
             guard let presentingViewController = UIApplication.shared.frontmostViewControllerIgnoringAlerts else {
                 owsFailDebug("view controller unexpectedly nil")
@@ -49,10 +50,10 @@ extension CallUIAdaptee {
 
             if let presentedViewController = presentingViewController.presentedViewController {
                 presentedViewController.dismiss(animated: false) {
-                    presentingViewController.present(callViewController, animated: true)
+                    presentingViewController.presentFullScreen(callViewController, animated: true)
                 }
             } else {
-                presentingViewController.present(callViewController, animated: true)
+                presentingViewController.presentFullScreen(callViewController, animated: true)
             }
         }
     }
@@ -60,18 +61,23 @@ extension CallUIAdaptee {
     internal func reportMissedCall(_ call: SignalCall, callerName: String) {
         AssertIsOnMainThread()
 
-        notificationsAdapter.presentMissedCall(call, callerName: callerName)
+        notificationPresenter.presentMissedCall(call, callerName: callerName)
     }
 
-    internal func startAndShowOutgoingCall(recipientId: String, hasLocalVideo: Bool) {
+    internal func startAndShowOutgoingCall(address: SignalServiceAddress, hasLocalVideo: Bool) {
         AssertIsOnMainThread()
 
-        guard self.callService.call == nil else {
-            owsFailDebug("unexpectedly found an existing call when trying to start outgoing call: \(recipientId)")
+        guard let call = self.callService.buildOutgoingCallIfAvailable(address: address) else {
+            // @integration This is not unexpected, it could happen if Bob tries
+            // to start an outgoing call at the same moment Alice has already
+            // sent him an Offer that is being processed.
+            Logger.info("found an existing call when trying to start outgoing call: \(address)")
             return
         }
 
-        let call = self.startOutgoingCall(handle: recipientId)
+        Logger.debug("")
+
+        startOutgoingCall(call: call)
         call.hasLocalVideo = hasLocalVideo
         self.showCall(call)
     }
@@ -83,50 +89,80 @@ extension CallUIAdaptee {
  */
 @objc public class CallUIAdapter: NSObject, CallServiceObserver {
 
-    private let adaptee: CallUIAdaptee
     private let contactsManager: OWSContactsManager
-    internal let audioService: CallAudioService
     internal let callService: CallService
 
-    public required init(callService: CallService, contactsManager: OWSContactsManager, notificationsAdapter: CallNotificationsAdapter) {
-        AssertIsOnMainThread()
+    private var notificationPresenter: NotificationPresenter {
+        return AppEnvironment.shared.notificationPresenter
+    }
 
-        self.contactsManager = contactsManager
-        self.callService = callService
+    var preferences: OWSPreferences {
+        return Environment.shared.preferences
+    }
 
+    lazy var adaptee: CallUIAdaptee = {
         if Platform.isSimulator {
             // CallKit doesn't seem entirely supported in simulator.
             // e.g. you can't receive calls in the call screen.
             // So we use the non-CallKit call UI.
             Logger.info("choosing non-callkit adaptee for simulator.")
-            adaptee = NonCallKitCallUIAdaptee(callService: callService, notificationsAdapter: notificationsAdapter)
+            return NonCallKitCallUIAdaptee(callService: callService, notificationPresenter: notificationPresenter)
+        } else if CallUIAdapter.isCallkitDisabledForLocale {
+            Logger.info("choosing non-callkit adaptee due to locale.")
+            return NonCallKitCallUIAdaptee(callService: callService, notificationPresenter: notificationPresenter)
         } else if #available(iOS 11, *) {
             Logger.info("choosing callkit adaptee for iOS11+")
-            let showNames = Environment.shared.preferences.notificationPreviewType() != .noNameNoPreview
-            let useSystemCallLog = Environment.shared.preferences.isSystemCallLogEnabled()
+            let showNames = preferences.notificationPreviewType() != .noNameNoPreview
+            let useSystemCallLog = preferences.isSystemCallLogEnabled()
 
-            adaptee = CallKitCallUIAdaptee(callService: callService, contactsManager: contactsManager, notificationsAdapter: notificationsAdapter, showNamesOnCallScreen: showNames, useSystemCallLog: useSystemCallLog)
-        } else if #available(iOS 10.0, *), Environment.shared.preferences.isCallKitEnabled() {
+            return CallKitCallUIAdaptee(callService: callService, contactsManager: contactsManager, notificationPresenter: notificationPresenter, showNamesOnCallScreen: showNames, useSystemCallLog: useSystemCallLog)
+        } else if #available(iOS 10.0, *), preferences.isCallKitEnabled() {
             Logger.info("choosing callkit adaptee for iOS10")
-            let hideNames = Environment.shared.preferences.isCallKitPrivacyEnabled() || Environment.shared.preferences.notificationPreviewType() == .noNameNoPreview
+            let hideNames = preferences.isCallKitPrivacyEnabled() || preferences.notificationPreviewType() == .noNameNoPreview
             let showNames = !hideNames
 
             // All CallKit calls use the system call log on iOS10
             let useSystemCallLog = true
 
-            adaptee = CallKitCallUIAdaptee(callService: callService, contactsManager: contactsManager, notificationsAdapter: notificationsAdapter, showNamesOnCallScreen: showNames, useSystemCallLog: useSystemCallLog)
+            return CallKitCallUIAdaptee(callService: callService, contactsManager: contactsManager, notificationPresenter: notificationPresenter, showNamesOnCallScreen: showNames, useSystemCallLog: useSystemCallLog)
         } else {
             Logger.info("choosing non-callkit adaptee")
-            adaptee = NonCallKitCallUIAdaptee(callService: callService, notificationsAdapter: notificationsAdapter)
+            return NonCallKitCallUIAdaptee(callService: callService, notificationPresenter: notificationPresenter)
         }
+    }()
 
-        audioService = CallAudioService(handleRinging: adaptee.hasManualRinger)
+    lazy var audioService: CallAudioService = {
+        return CallAudioService(handleRinging: adaptee.hasManualRinger)
+    }()
+
+    public required init(callService: CallService, contactsManager: OWSContactsManager) {
+        AssertIsOnMainThread()
+
+        self.contactsManager = contactsManager
+        self.callService = callService
 
         super.init()
 
         // We cannot assert singleton here, because this class gets rebuilt when the user changes relevant call settings
+        AppReadiness.runNowOrWhenAppDidBecomeReady {
+            callService.addObserverAndSyncState(observer: self)
+        }
+    }
 
-        callService.addObserverAndSyncState(observer: self)
+    @objc
+    public static var isCallkitDisabledForLocale: Bool {
+        let locale = Locale.current
+        guard let regionCode = locale.regionCode else {
+            if !Platform.isSimulator { owsFailDebug("Missing region code.") }
+            return false
+        }
+
+        // Apple has stopped approving apps that use CallKit functionality in mainland China.
+        // When the "CN" region is enabled, this check simply switches to the same pre-CallKit
+        // interface that is still used by everyone on iOS 9.
+        //
+        // For further reference: https://forums.developer.apple.com/thread/103083
+        return regionCode == "CN"
     }
 
     // MARK: Dependencies
@@ -140,25 +176,29 @@ extension CallUIAdaptee {
     internal func reportIncomingCall(_ call: SignalCall, thread: TSContactThread) {
         AssertIsOnMainThread()
 
-        // make sure we don't terminate audio session during call
-        audioSession.startAudioActivity(call.audioActivity)
+        Logger.info("remoteAddress: \(call.remoteAddress)")
 
-        let callerName = self.contactsManager.displayName(forPhoneIdentifier: call.remotePhoneNumber)
+        // make sure we don't terminate audio session during call
+        _ = audioSession.startAudioActivity(call.audioActivity)
+
+        let callerName = self.contactsManager.displayName(for: call.remoteAddress)
+
+        Logger.verbose("callerName: \(callerName)")
+
         adaptee.reportIncomingCall(call, callerName: callerName)
     }
 
     internal func reportMissedCall(_ call: SignalCall) {
         AssertIsOnMainThread()
 
-        let callerName = self.contactsManager.displayName(forPhoneIdentifier: call.remotePhoneNumber)
+        let callerName = self.contactsManager.displayName(for: call.remoteAddress)
         adaptee.reportMissedCall(call, callerName: callerName)
     }
 
-    internal func startOutgoingCall(handle: String) -> SignalCall {
+    internal func startOutgoingCall(call: SignalCall) {
         AssertIsOnMainThread()
 
-        let call = adaptee.startOutgoingCall(handle: handle)
-        return call
+        adaptee.startOutgoingCall(call: call)
     }
 
     @objc public func answerCall(localId: UUID) {
@@ -173,30 +213,23 @@ extension CallUIAdaptee {
         adaptee.answerCall(call)
     }
 
-    @objc public func declineCall(localId: UUID) {
+    internal func didTerminateCall(_ call: SignalCall?, hasCallInProgress: Bool) {
         AssertIsOnMainThread()
 
-        adaptee.declineCall(localId: localId)
-    }
-
-    internal func declineCall(_ call: SignalCall) {
-        AssertIsOnMainThread()
-
-        adaptee.declineCall(call)
-    }
-
-    internal func didTerminateCall(_ call: SignalCall?) {
-        AssertIsOnMainThread()
-
+        // If the call we're terminating was terminated due to "busy", we still have a call in
+        // progress, otherwise, we terminate the audio.
+        if !hasCallInProgress {
+            self.audioSession.isRTCAudioEnabled = false
+        }
         if let call = call {
             self.audioSession.endAudioActivity(call.audioActivity)
         }
     }
 
-    @objc public func startAndShowOutgoingCall(recipientId: String, hasLocalVideo: Bool) {
+    @objc public func startAndShowOutgoingCall(address: SignalServiceAddress, hasLocalVideo: Bool) {
         AssertIsOnMainThread()
 
-        adaptee.startAndShowOutgoingCall(recipientId: recipientId, hasLocalVideo: hasLocalVideo)
+        adaptee.startAndShowOutgoingCall(address: address, hasLocalVideo: hasLocalVideo)
     }
 
     internal func recipientAcceptedCall(_ call: SignalCall) {
@@ -215,6 +248,20 @@ extension CallUIAdaptee {
         AssertIsOnMainThread()
 
         adaptee.remoteBusy(call)
+    }
+
+    internal func didAnswerElsewhere(call: SignalCall) {
+        adaptee.didAnswerElsewhere(call: call)
+    }
+
+    internal func didDeclineElsewhere(call: SignalCall) {
+        adaptee.didDeclineElsewhere(call: call)
+    }
+
+    internal func localHangupCall(localId: UUID) {
+        AssertIsOnMainThread()
+
+        adaptee.localHangupCall(localId: localId)
     }
 
     internal func localHangupCall(_ call: SignalCall) {

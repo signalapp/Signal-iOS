@@ -1,8 +1,9 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
+import PromiseKit
 
 @objc
 public class OWS2FAReminderViewController: UIViewController, PinEntryViewDelegate {
@@ -27,7 +28,7 @@ public class OWS2FAReminderViewController: UIViewController, PinEntryViewDelegat
     }
 
     override public func loadView() {
-        assert(ows2FAManager.pinCode != nil)
+        assert(ows2FAManager.is2FAEnabled())
 
         self.navigationItem.title = NSLocalizedString("REMINDER_2FA_NAV_TITLE", comment: "Navbar title for when user is periodically prompted to enter their registration lock PIN")
 
@@ -44,9 +45,9 @@ public class OWS2FAReminderViewController: UIViewController, PinEntryViewDelegat
         let instructionsTextHeader = NSLocalizedString("REMINDER_2FA_BODY_HEADER", comment: "Body header for when user is periodically prompted to enter their registration lock PIN")
         let instructionsTextBody = NSLocalizedString("REMINDER_2FA_BODY", comment: "Body text for when user is periodically prompted to enter their registration lock PIN")
 
-        let attributes = [NSAttributedStringKey.font: pinEntryView.boldLabelFont]
+        let attributes = [NSAttributedString.Key.font: pinEntryView.boldLabelFont]
 
-        let attributedInstructionsText = NSAttributedString(string: instructionsTextHeader, attributes: attributes).rtlSafeAppend(" ").rtlSafeAppend(instructionsTextBody)
+        let attributedInstructionsText = NSAttributedString(string: instructionsTextHeader, attributes: attributes) + " " + instructionsTextBody
 
         pinEntryView.attributedInstructionsText = attributedInstructionsText
 
@@ -60,18 +61,33 @@ public class OWS2FAReminderViewController: UIViewController, PinEntryViewDelegat
     // MARK: PinEntryViewDelegate
     public func pinEntryView(_ entryView: PinEntryView, submittedPinCode pinCode: String) {
         Logger.info("")
-        if checkResult(pinCode: pinCode) {
-            didSubmitCorrectPin()
-        } else {
-            didSubmitWrongPin()
+
+        ows2FAManager.verifyPin(pinCode) { success in
+            if success {
+                self.didSubmitCorrectPin()
+            } else {
+                self.didSubmitWrongPin()
+            }
         }
     }
 
     //textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
     public func pinEntryView(_ entryView: PinEntryView, pinCodeDidChange pinCode: String) {
         // optimistically match, without having to press "done"
-        if checkResult(pinCode: pinCode) {
-            didSubmitCorrectPin()
+        ows2FAManager.verifyPin(pinCode) { success in
+
+            if success {
+                self.didSubmitCorrectPin()
+
+            // We have a legacy pin that may have been truncated to 16 characters.
+            } else if self.ows2FAManager.needsLegacyPinMigration(), pinCode.count > kLegacyTruncated2FAv1PinLength {
+                let truncatedPinCode = pinCode.substring(to: Int(kLegacyTruncated2FAv1PinLength))
+                self.ows2FAManager.verifyPin(truncatedPinCode) { success in
+                    if success {
+                        self.didSubmitCorrectPin()
+                    }
+                }
+            }
         }
     }
 
@@ -79,7 +95,7 @@ public class OWS2FAReminderViewController: UIViewController, PinEntryViewDelegat
         Logger.info("")
         let alertBody = NSLocalizedString("REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE",
                                           comment: "Alert message explaining what happens if you forget your 'two-factor auth pin'")
-        OWSAlerts.showAlert(title: nil, message: alertBody)
+        OWSActionSheets.showActionSheet(title: nil, message: alertBody)
     }
 
     // MARK: Helpers
@@ -91,14 +107,26 @@ public class OWS2FAReminderViewController: UIViewController, PinEntryViewDelegat
         self.dismiss(animated: true)
     }
 
-    private func checkResult(pinCode: String) -> Bool {
-        return pinCode == ows2FAManager.pinCode
-    }
-
     private func didSubmitCorrectPin() {
         Logger.info("noWrongGuesses: \(noWrongGuesses)")
 
-        self.dismiss(animated: true)
+        // Migrate to 2FA v2 if they've proved they know their pin
+        if let pinCode = ows2FAManager.pinCode, RemoteConfig.kbs, ows2FAManager.mode == .V1 {
+            // enabling 2fa v2 automatically disables v1 on the server
+            ModalActivityIndicatorViewController.present(fromViewController: self, canCancel: false) { _ in
+                self.ows2FAManager.enable2FAV2Promise(with: pinCode)
+                    .ensure {
+                        self.presentingViewController?.dismiss(animated: true)
+                    }.catch { error in
+                        // We don't need to bubble this up to the user, since they
+                        // don't know / care that something is changing in this moment.
+                        // We can try and migrate them again during their next reminder.
+                        owsFailDebug("Unexpected error \(error) while migrating to reg lock v2")
+                    }.retainUntilComplete()
+            }
+        } else {
+            self.dismiss(animated: true)
+        }
 
         OWS2FAManager.shared().updateRepetitionInterval(withWasSuccessful: noWrongGuesses)
     }
@@ -111,7 +139,21 @@ public class OWS2FAReminderViewController: UIViewController, PinEntryViewDelegat
                                           comment: "Alert title after wrong guess for 'two-factor auth pin' reminder activity")
         let alertBody = NSLocalizedString("REMINDER_2FA_WRONG_PIN_ALERT_BODY",
                                           comment: "Alert body after wrong guess for 'two-factor auth pin' reminder activity")
-        OWSAlerts.showAlert(title: alertTitle, message: alertBody)
+        OWSActionSheets.showActionSheet(title: alertTitle, message: alertBody)
         self.pinEntryView.clearText()
+    }
+}
+
+extension OWS2FAManager {
+    func enable2FAV2Promise(with pin: String) -> Promise<Void> {
+        return Promise { resolver in
+            requestEnable2FA(withPin: pin,
+                             mode: .V2,
+                             success: {
+                resolver.fulfill(())
+            }, failure: { error in
+                resolver.reject(error)
+            })
+        }
     }
 }

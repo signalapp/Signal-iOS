@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -14,9 +14,8 @@ public class OWSMessageSend: NSObject {
     @objc
     public let message: TSOutgoingMessage
 
-    // thread may be nil if message is an OWSOutgoingSyncMessage.
     @objc
-    public let thread: TSThread?
+    public let thread: TSThread
 
     @objc
     public let recipient: SignalRecipient
@@ -32,16 +31,13 @@ public class OWSMessageSend: NSObject {
     public var hasWebsocketSendFailed = false
 
     @objc
-    public var udAccess: OWSUDAccess?
+    public var udSendingAccess: OWSUDSendingAccess?
 
     @objc
-    public var senderCertificate: SMKSenderCertificate?
+    public let localAddress: SignalServiceAddress
 
     @objc
-    public let localNumber: String
-
-    @objc
-    public let isLocalNumber: Bool
+    public let isLocalAddress: Bool
 
     @objc
     public let success: () -> Void
@@ -51,26 +47,18 @@ public class OWSMessageSend: NSObject {
 
     @objc
     public init(message: TSOutgoingMessage,
-                thread: TSThread?,
+                thread: TSThread,
                 recipient: SignalRecipient,
-                senderCertificate: SMKSenderCertificate?,
-                udAccess: OWSUDAccess?,
-                localNumber: String,
+                udSendingAccess: OWSUDSendingAccess?,
+                localAddress: SignalServiceAddress,
                 success: @escaping () -> Void,
                 failure: @escaping (Error) -> Void) {
         self.message = message
         self.thread = thread
         self.recipient = recipient
-        self.localNumber = localNumber
-        self.senderCertificate = senderCertificate
-        self.udAccess = udAccess
-
-        if let recipientId = recipient.uniqueId {
-            self.isLocalNumber = localNumber == recipientId
-        } else {
-            owsFailDebug("SignalRecipient missing recipientId")
-            self.isLocalNumber = false
-        }
+        self.localAddress = localAddress
+        self.udSendingAccess = udSendingAccess
+        self.isLocalAddress = recipient.address.isLocalAddress
 
         self.success = success
         self.failure = failure
@@ -78,18 +66,18 @@ public class OWSMessageSend: NSObject {
 
     @objc
     public var isUDSend: Bool {
-        return udAccess != nil && senderCertificate != nil
+        return udSendingAccess != nil
     }
 
     @objc
     public func disableUD() {
-        Logger.verbose("\(recipient.recipientId)")
-        udAccess = nil
+        Logger.verbose("\(recipient.address)")
+        udSendingAccess = nil
     }
 
     @objc
     public func setHasUDAuthFailed() {
-        Logger.verbose("\(recipient.recipientId)")
+        Logger.verbose("\(recipient.address)")
         // We "fail over" to non-UD sends after auth errors sending via UD.
         disableUD()
     }

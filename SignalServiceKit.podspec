@@ -21,9 +21,7 @@ An Objective-C library for communicating with the Signal messaging service.
   s.source           = { :git => "https://github.com/signalapp/SignalServiceKit.git", :tag => s.version.to_s }
   s.social_media_url = 'https://twitter.com/FredericJacobs'
 
-  s.platform     = :ios, '9.0'
-  #s.ios.deployment_target = '9.0'
-  #s.osx.deployment_target = '10.9'
+  s.platform     = :ios, '10.0'
   s.requires_arc = true
   s.source_files = 'SignalServiceKit/src/**/*.{h,m,mm,swift}'
 
@@ -34,17 +32,21 @@ An Objective-C library for communicating with the Signal messaging service.
   s.compiler_flags = "-fcxx-modules"
 
   s.prefix_header_file = 'SignalServiceKit/src/TSPrefix.h'
-  s.xcconfig = { 'OTHER_CFLAGS' => '$(inherited) -DSQLITE_HAS_CODEC' }
+  s.xcconfig = { 'OTHER_CFLAGS' => '$(inherited) -DSQLITE_HAS_CODEC',
+                 'USER_HEADER_SEARCH_PATHS' => '$(inherited) $(SRCROOT)/libwebp/src'   }
 
-  s.resources = ["SignalServiceKit/Resources/Certificates/*"]
+  s.resources = [
+    "SignalServiceKit/Resources/Certificates/*", 
+    "SignalServiceKit/Resources/schema.sql"
+  ]
 
   s.dependency 'Curve25519Kit'
   s.dependency 'CocoaLumberjack'
-  s.dependency 'AFNetworking'
+  s.dependency 'AFNetworking/NSURLSession'
   s.dependency 'AxolotlKit'
   s.dependency 'Mantle'
   s.dependency 'YapDatabase/SQLCipher'
-  s.dependency 'SocketRocket'
+  s.dependency 'Starscream'
   s.dependency 'libPhoneNumber-iOS'
   s.dependency 'GRKOpenSSLFramework'
   s.dependency 'SAMKeychain'
@@ -52,10 +54,15 @@ An Objective-C library for communicating with the Signal messaging service.
   s.dependency 'SwiftProtobuf'
   s.dependency 'SignalCoreKit'
   s.dependency 'SignalMetadataKit'
-
+  s.dependency 'GRDB.swift/SQLCipher'
+  s.dependency 'libwebp'
   s.dependency 'PromiseKit', "~> 6.0"
+  s.dependency 'YYImage/WebP'
+  s.dependency 'blurhash'
+  s.dependency 'Argon2'
 
   s.test_spec 'Tests' do |test_spec|
     test_spec.source_files = 'SignalServiceKit/tests/**/*.{h,m,swift}'
+    test_spec.resources = 'SignalServiceKit/tests/**/*.json'
   end
 end

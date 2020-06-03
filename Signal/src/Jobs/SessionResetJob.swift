@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -10,7 +10,7 @@ import SignalServiceKit
 public class SessionResetJobQueue: NSObject, JobQueue {
 
     @objc(addContactThread:transaction:)
-    public func add(contactThread: TSContactThread, transaction: YapDatabaseReadWriteTransaction) {
+    public func add(contactThread: TSContactThread, transaction: SDSAnyWriteTransaction) {
         let jobRecord = OWSSessionResetJobRecord(contactThread: contactThread, label: self.jobRecordLabel)
         self.add(jobRecord: jobRecord, transaction: transaction)
     }
@@ -18,16 +18,20 @@ public class SessionResetJobQueue: NSObject, JobQueue {
     // MARK: JobQueue
 
     public typealias DurableOperationType = SessionResetOperation
-    public let jobRecordLabel: String = "SessionReset"
+    @objc
+    public static let jobRecordLabel: String = "SessionReset"
+    public var jobRecordLabel: String {
+        return type(of: self).jobRecordLabel
+    }
     public static let maxRetries: UInt = 10
     public let requiresInternet: Bool = true
-    public var runningOperations: [SessionResetOperation] = []
+    public var runningOperations = AtomicArray<SessionResetOperation>()
 
     @objc
     public override init() {
         super.init()
 
-        AppReadiness.runNowOrWhenAppWillBecomeReady {
+        AppReadiness.runNowOrWhenAppDidBecomeReady {
             self.setup()
         }
     }
@@ -37,9 +41,9 @@ public class SessionResetJobQueue: NSObject, JobQueue {
         defaultSetup()
     }
 
-    public var isSetup: Bool = false
+    public var isSetup = AtomicBool(false)
 
-    public func didMarkAsReady(oldJobRecord: JobRecordType, transaction: YapDatabaseReadWriteTransaction) {
+    public func didMarkAsReady(oldJobRecord: JobRecordType, transaction: SDSAnyWriteTransaction) {
         // no special handling
     }
 
@@ -54,8 +58,8 @@ public class SessionResetJobQueue: NSObject, JobQueue {
         return self.operationQueue
     }
 
-    public func buildOperation(jobRecord: OWSSessionResetJobRecord, transaction: YapDatabaseReadTransaction) throws -> SessionResetOperation {
-        guard let contactThread = TSThread.fetch(uniqueId: jobRecord.contactThreadId, transaction: transaction) as? TSContactThread else {
+    public func buildOperation(jobRecord: OWSSessionResetJobRecord, transaction: SDSAnyReadTransaction) throws -> SessionResetOperation {
+        guard let contactThread = TSThread.anyFetch(uniqueId: jobRecord.contactThreadId, transaction: transaction) as? TSContactThread else {
             throw JobError.obsolete(description: "thread for session reset no longer exists")
         }
 
@@ -78,8 +82,8 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
     // MARK: 
 
     let contactThread: TSContactThread
-    var recipientId: String {
-        return contactThread.contactIdentifier()
+    var recipientAddress: SignalServiceAddress {
+        return contactThread.contactAddress
     }
 
     @objc public required init(contactThread: TSContactThread, jobRecord: OWSSessionResetJobRecord) {
@@ -89,16 +93,16 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
 
     // MARK: Dependencies
 
-    var dbConnection: YapDatabaseConnection {
-        return SSKEnvironment.shared.primaryStorage.dbReadWriteConnection
-    }
-
-    var primaryStorage: OWSPrimaryStorage {
-        return SSKEnvironment.shared.primaryStorage
+    var sessionStore: SSKSessionStore {
+        return SSKEnvironment.shared.sessionStore
     }
 
     var messageSender: MessageSender {
         return SSKEnvironment.shared.messageSender
+    }
+
+    var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
     }
 
     // MARK: 
@@ -109,39 +113,38 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
         assert(self.durableOperationDelegate != nil)
 
         if firstAttempt {
-            self.dbConnection.readWrite { transaction in
-                Logger.info("deleting sessions for recipient: \(self.recipientId)")
-                self.primaryStorage.deleteAllSessions(forContact: self.recipientId, protocolContext: transaction)
+            self.databaseStorage.write { transaction in
+                Logger.info("deleting sessions for recipient: \(self.recipientAddress)")
+                self.sessionStore.deleteAllSessions(for: self.recipientAddress, transaction: transaction)
             }
             firstAttempt = false
         }
 
-        let endSessionMessage = EndSessionMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: self.contactThread)
+        let endSessionMessage = EndSessionMessage(thread: self.contactThread)
 
         firstly {
-            return self.messageSender.sendPromise(message: endSessionMessage)
+            return self.messageSender.sendMessage(.promise, endSessionMessage.asPreparer)
         }.done {
             Logger.info("successfully sent EndSessionMessage.")
-            self.dbConnection.readWrite { transaction in
+            self.databaseStorage.write { transaction in
                 // Archive the just-created session since the recipient should delete their corresponding
                 // session upon receiving and decrypting our EndSession message.
                 // Otherwise if we send another message before them, they wont have the session to decrypt it.
-                self.primaryStorage.archiveAllSessions(forContact: self.recipientId, protocolContext: transaction)
+                self.sessionStore.archiveAllSessions(for: self.recipientAddress, transaction: transaction)
 
-                let message = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(),
-                                            in: self.contactThread,
+                let message = TSInfoMessage(thread: self.contactThread,
                                             messageType: TSInfoMessageType.typeSessionDidEnd)
-                message.save(with: transaction)
+                message.anyInsert(transaction: transaction)
             }
             self.reportSuccess()
         }.catch { error in
             Logger.error("sending error: \(error.localizedDescription)")
-            self.reportError(error)
+            self.reportError(withUndefinedRetry: error)
         }.retainUntilComplete()
     }
 
     override public func didSucceed() {
-        self.dbConnection.readWrite { transaction in
+        self.databaseStorage.write { transaction in
             self.durableOperationDelegate?.durableOperationDidSucceed(self, transaction: transaction)
         }
     }
@@ -149,7 +152,7 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
     override public func didReportError(_ error: Error) {
         Logger.debug("remainingRetries: \(self.remainingRetries)")
 
-        self.dbConnection.readWrite { transaction in
+        self.databaseStorage.write { transaction in
             self.durableOperationDelegate?.durableOperation(self, didReportError: error, transaction: transaction)
         }
     }
@@ -173,7 +176,7 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
 
     override public func didFail(error: Error) {
         Logger.error("failed to send EndSessionMessage with error: \(error.localizedDescription)")
-        self.dbConnection.readWrite { transaction in
+        self.databaseStorage.write { transaction in
             self.durableOperationDelegate?.durableOperation(self, didFailWithError: error, transaction: transaction)
 
             // Even though this is the failure handler - which means probably the recipient didn't receive the message
@@ -184,7 +187,7 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
             // Archive the just-created session since the recipient should delete their corresponding
             // session upon receiving and decrypting our EndSession message.
             // Otherwise if we send another message before them, they wont have the session to decrypt it.
-            self.primaryStorage.archiveAllSessions(forContact: self.recipientId, protocolContext: transaction)
+            self.sessionStore.archiveAllSessions(for: self.recipientAddress, transaction: transaction)
         }
     }
 }

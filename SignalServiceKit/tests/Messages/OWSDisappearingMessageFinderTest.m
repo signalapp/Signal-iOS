@@ -1,24 +1,26 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "MockSSKEnvironment.h"
 #import "OWSDisappearingMessagesFinder.h"
-#import "OWSPrimaryStorage.h"
 #import "SSKBaseTestObjC.h"
 #import "TSContactThread.h"
-#import "TSMessage.h"
+#import "TSIncomingMessage.h"
+#import "TSOutgoingMessage.h"
 #import "TestAppContext.h"
 #import <SignalCoreKit/NSDate+OWS.h>
+#import <SignalServiceKit/SSKAccessors+SDS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SignalServiceKit/StorageCoordinator.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSDisappearingMessagesFinder (Testing)
 
-- (NSArray<TSMessage *> *)fetchExpiredMessagesWithTransaction:(YapDatabaseReadTransaction *)transaction;
+- (NSArray<TSMessage *> *)fetchExpiredMessagesWithTransaction:(SDSAnyReadTransaction *)transaction;
 - (NSArray<TSMessage *> *)fetchUnstartedExpiringMessagesInThread:(TSThread *)thread
-                                                     transaction:(YapDatabaseReadTransaction *)transaction;
+                                                     transaction:(SDSAnyReadTransaction *)transaction;
 
 @end
 
@@ -27,7 +29,6 @@ NS_ASSUME_NONNULL_BEGIN
 @interface OWSDisappearingMessageFinderTest : SSKBaseTestObjC
 
 @property (nonatomic, nullable) OWSDisappearingMessagesFinder *finder;
-@property (nonatomic, nullable) TSThread *thread;
 @property (nonatomic) uint64_t now;
 
 @end
@@ -36,117 +37,274 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSDisappearingMessageFinderTest
 
-#ifdef BROKEN_TESTS
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SSKEnvironment.shared.databaseStorage;
+}
+
+- (StorageCoordinator *)storageCoordinator
+{
+    return SSKEnvironment.shared.storageCoordinator;
+}
+
+#pragma mark -
 
 - (void)setUp
 {
     [super setUp];
 
-    // TODO: This shouldn't be necessary.
-    //    [OWSDisappearingMessagesFinder blockingRegisterDatabaseExtensions:self.primaryStorage];
-
-    self.thread = [TSContactThread getOrCreateThreadWithContactId:@"fake-thread-id"];
     self.now = [NSDate ows_millisecondTimeStamp];
 
     // Test subject
     self.finder = [OWSDisappearingMessagesFinder new];
 }
 
-- (void)tearDown
+- (SignalServiceAddress *)localAddress
 {
-    self.dbConnection = nil;
-
-    [super tearDown];
+    return [[SignalServiceAddress alloc] initWithPhoneNumber:@"+13334445555"];
 }
 
-- (TSMessage *)messageWithBody:(NSString *)body
-              expiresInSeconds:(uint32_t)expiresInSeconds
-               expireStartedAt:(uint64_t)expireStartedAt
+- (SignalServiceAddress *)otherAddress
 {
-    return [[TSMessage alloc] initMessageWithTimestamp:1
-                                              inThread:self.thread
-                                           messageBody:body
-                                         attachmentIds:@[]
-                                      expiresInSeconds:expiresInSeconds
-                                       expireStartedAt:expireStartedAt
-                                         quotedMessage:nil
-                                          contactShare:nil];
+    return [[SignalServiceAddress alloc] initWithPhoneNumber:@"+12223334444"];
+}
+
+- (TSThread *)threadWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    return [TSContactThread getOrCreateThreadWithContactAddress:self.otherAddress transaction:transaction];
+}
+
+- (TSIncomingMessage *)incomingMessageWithBody:(NSString *)body
+                              expiresInSeconds:(uint32_t)expiresInSeconds
+                               expireStartedAt:(uint64_t)expireStartedAt
+{
+    return [self incomingMessageWithBody:body
+                        expiresInSeconds:expiresInSeconds
+                         expireStartedAt:expireStartedAt
+                              markAsRead:NO];
+}
+
+- (TSIncomingMessage *)incomingMessageWithBody:(NSString *)body
+                              expiresInSeconds:(uint32_t)expiresInSeconds
+                               expireStartedAt:(uint64_t)expireStartedAt
+                                    markAsRead:(BOOL)markAsRead
+{
+    // It only makes sense to "mark as read" if expiration hasn't started,
+    // since we don't start expiration for unread incoming messages.
+    OWSAssertDebug(!markAsRead || expireStartedAt == 0);
+
+    __block TSIncomingMessage *message;
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        TSThread *thread = [self threadWithTransaction:transaction];
+
+        TSIncomingMessageBuilder *incomingMessageBuilder =
+            [TSIncomingMessageBuilder incomingMessageBuilderWithThread:thread messageBody:body];
+        incomingMessageBuilder.timestamp = 1;
+        incomingMessageBuilder.authorAddress = self.otherAddress;
+        incomingMessageBuilder.expiresInSeconds = expiresInSeconds;
+        message = [incomingMessageBuilder build];
+        [message anyInsertWithTransaction:transaction];
+
+        if (expireStartedAt > 0) {
+            [message markAsReadAtTimestamp:expireStartedAt
+                                    thread:thread
+                              circumstance:OWSReadCircumstanceReadOnLinkedDevice
+                               transaction:transaction];
+        } else if (markAsRead) {
+            [message markAsReadAtTimestamp:self.now - 1000
+                                    thread:thread
+                              circumstance:OWSReadCircumstanceReadOnLinkedDevice
+                               transaction:transaction];
+        }
+    }];
+    return message;
+}
+
+- (TSOutgoingMessage *)outgoingMessageWithBody:(NSString *)body
+                              expiresInSeconds:(uint32_t)expiresInSeconds
+                               expireStartedAt:(uint64_t)expireStartedAt
+{
+    __block TSOutgoingMessage *message;
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        TSThread *thread = [self threadWithTransaction:transaction];
+
+        TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread
+                                                                                                  messageBody:body];
+        messageBuilder.expiresInSeconds = expiresInSeconds;
+        messageBuilder.expireStartedAt = expireStartedAt;
+        message = [messageBuilder build];
+        [message anyInsertWithTransaction:transaction];
+    }];
+    return message;
 }
 
 - (void)testExpiredMessages
 {
-    TSMessage *expiredMessage1 = [[TSMessage alloc] initMessageWithTimestamp:1
-                                                                    inThread:self.thread
-                                                                 messageBody:@"expiredMessage1"
-                                                               attachmentIds:@[]
-                                                            expiresInSeconds:1
-                                                             expireStartedAt:self.now - 20000
-                                                               quotedMessage:nil
-                                                                contactShare:nil];
-    [expiredMessage1 save];
+    TSMessage *expiredMessage1 = [self incomingMessageWithBody:@"expiredMessage1"
+                                              expiresInSeconds:2
+                                               expireStartedAt:self.now - 2001];
+    TSMessage *expiredMessage2 = [self incomingMessageWithBody:@"expiredMessage2"
+                                              expiresInSeconds:1
+                                               expireStartedAt:self.now - 20000];
 
-    TSMessage *expiredMessage2 =
-        [self messageWithBody:@"expiredMessage2" expiresInSeconds:2 expireStartedAt:self.now - 2001];
-    [expiredMessage2 save];
+    __unused TSMessage *notYetExpiredMessage = [self incomingMessageWithBody:@"notYetExpiredMessage"
+                                                            expiresInSeconds:20
+                                                             expireStartedAt:self.now - 10000];
 
-    TSMessage *notYetExpiredMessage =
-        [self messageWithBody:@"notYetExpiredMessage" expiresInSeconds:20 expireStartedAt:self.now - 10000];
-    [notYetExpiredMessage save];
+    __unused TSMessage *unreadExpiringMessage = [self incomingMessageWithBody:@"unreadExpiringMessage"
+                                                             expiresInSeconds:10
+                                                              expireStartedAt:0];
 
-    TSMessage *unreadExpiringMessage =
-        [self messageWithBody:@"unereadExpiringMessage" expiresInSeconds:10 expireStartedAt:0];
-    [unreadExpiringMessage save];
+    __unused TSMessage *unExpiringMessage = [self incomingMessageWithBody:@"unexpiringMessage"
+                                                         expiresInSeconds:0
+                                                          expireStartedAt:0];
 
-    TSMessage *unExpiringMessage = [self messageWithBody:@"unexpiringMessage" expiresInSeconds:0 expireStartedAt:0];
-    [unExpiringMessage save];
+    __unused TSMessage *unExpiringMessage2 = [self incomingMessageWithBody:@"unexpiringMessage2"
+                                                          expiresInSeconds:0
+                                                           expireStartedAt:0];
 
-    TSMessage *unExpiringMessage2 = [self messageWithBody:@"unexpiringMessage2" expiresInSeconds:0 expireStartedAt:0];
-    [unExpiringMessage2 save];
-
-    __block NSArray<TSMessage *> *actualMessages;
-    [self readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        actualMessages = [self.finder fetchExpiredMessagesWithTransaction:transaction];
+    NSMutableSet<NSString *> *actualMessageIds = [NSMutableSet new];
+    [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        for (TSMessage *message in [self.finder fetchExpiredMessagesWithTransaction:transaction]) {
+            [actualMessageIds addObject:message.uniqueId];
+        }
     }];
 
-    NSArray<TSMessage *> *expectedMessages = @[ expiredMessage1, expiredMessage2 ];
-    XCTAssertEqualObjects(expectedMessages, actualMessages);
+    NSSet<NSString *> *expectedMessageIds = [NSSet setWithArray:@[
+        expiredMessage1.uniqueId,
+        expiredMessage2.uniqueId,
+    ]];
+    XCTAssertEqualObjects(expectedMessageIds, actualMessageIds);
 }
 
 - (void)testUnstartedExpiredMessagesForThread
 {
-    TSMessage *expiredMessage =
-        [self messageWithBody:@"expiredMessage2" expiresInSeconds:2 expireStartedAt:self.now - 2001];
-    [expiredMessage save];
+    TSMessage *expiredIncomingMessage = [self incomingMessageWithBody:@"incoming expiredMessage"
+                                                     expiresInSeconds:2
+                                                      expireStartedAt:self.now - 2001];
+    TSMessage *notYetExpiredIncomingMessage = [self incomingMessageWithBody:@"incoming notYetExpiredMessage"
+                                                           expiresInSeconds:20
+                                                            expireStartedAt:self.now - 10000];
+    TSMessage *unreadExpiringIncomingMessage = [self incomingMessageWithBody:@"incoming unreadExpiringMessage"
+                                                            expiresInSeconds:10
+                                                             expireStartedAt:0];
+    TSMessage *readExpiringIncomingMessage = [self incomingMessageWithBody:@"incoming readExpiringMessage"
+                                                          expiresInSeconds:10
+                                                           expireStartedAt:0
+                                                                markAsRead:YES];
+    TSMessage *unExpiringIncomingMessage = [self incomingMessageWithBody:@"incoming unexpiringMessage"
+                                                        expiresInSeconds:0
+                                                         expireStartedAt:0];
+    TSMessage *unExpiringIncomingMessage2 = [self incomingMessageWithBody:@"incoming unexpiringMessage2"
+                                                         expiresInSeconds:0
+                                                          expireStartedAt:0];
 
-    TSMessage *notYetExpiredMessage =
-        [self messageWithBody:@"notYetExpiredMessage" expiresInSeconds:20 expireStartedAt:self.now - 10000];
-    [notYetExpiredMessage save];
+    TSMessage *expiredOutgoingMessage = [self outgoingMessageWithBody:@"outgoing expiredMessage"
+                                                     expiresInSeconds:2
+                                                      expireStartedAt:self.now - 2001];
+    TSMessage *notYetExpiredOutgoingMessage = [self outgoingMessageWithBody:@"outgoing notYetExpiredMessage"
+                                                           expiresInSeconds:20
+                                                            expireStartedAt:self.now - 10000];
+    TSMessage *expiringUnsentOutgoingMessage = [self outgoingMessageWithBody:@"expiringUnsentOutgoingMessage"
+                                                            expiresInSeconds:10
+                                                             expireStartedAt:0];
+    TSOutgoingMessage *expiringSentOutgoingMessage = [self outgoingMessageWithBody:@"expiringSentOutgoingMessage"
+                                                                  expiresInSeconds:10
+                                                                   expireStartedAt:0];
+    TSOutgoingMessage *expiringDeliveredOutgoingMessage =
+        [self outgoingMessageWithBody:@"expiringDeliveredOutgoingMessage" expiresInSeconds:10 expireStartedAt:0];
+    TSOutgoingMessage *expiringDeliveredAndReadOutgoingMessage =
+        [self outgoingMessageWithBody:@"expiringDeliveredAndReadOutgoingMessage" expiresInSeconds:10 expireStartedAt:0];
+    TSMessage *unExpiringOutgoingMessage = [self outgoingMessageWithBody:@"outgoing unexpiringMessage"
+                                                        expiresInSeconds:0
+                                                         expireStartedAt:0];
+    TSMessage *unExpiringOutgoingMessage2 = [self outgoingMessageWithBody:@"outgoing unexpiringMessage2"
+                                                         expiresInSeconds:0
+                                                          expireStartedAt:0];
 
-    TSMessage *unreadExpiringMessage =
-        [self messageWithBody:@"unereadExpiringMessage" expiresInSeconds:10 expireStartedAt:0];
-    [unreadExpiringMessage save];
-
-    TSMessage *unExpiringMessage = [self messageWithBody:@"unexpiringMessage" expiresInSeconds:0 expireStartedAt:0];
-    [unExpiringMessage save];
-
-    TSMessage *unExpiringMessage2 = [self messageWithBody:@"unexpiringMessage2" expiresInSeconds:0 expireStartedAt:0];
-    [unExpiringMessage2 save];
-
-    __block NSArray<TSMessage *> *actualMessages;
-    [self readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        actualMessages = [self.finder fetchUnstartedExpiringMessagesInThread:self.thread
-                                                                 transaction:transaction];
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        // Mark outgoing message as "sent", "delivered" or "delivered and read" using production methods.
+        [expiringSentOutgoingMessage updateWithSentRecipient:self.otherAddress wasSentByUD:NO transaction:transaction];
+        [expiringDeliveredOutgoingMessage updateWithDeliveredRecipient:self.otherAddress
+                                                     deliveryTimestamp:nil
+                                                           transaction:transaction];
+        uint64_t nowMs = [NSDate ows_millisecondTimeStamp];
+        [expiringDeliveredAndReadOutgoingMessage updateWithReadRecipient:self.otherAddress
+                                                           readTimestamp:nowMs
+                                                             transaction:transaction];
     }];
 
-    NSArray<TSMessage *> *expectedMessages = @[ unreadExpiringMessage ];
-    XCTAssertEqualObjects(expectedMessages, actualMessages);
+    NSArray<TSMessage *> *shouldBeExpiringMessages = @[
+        expiredIncomingMessage,
+        notYetExpiredIncomingMessage,
+        readExpiringIncomingMessage,
+
+        expiringSentOutgoingMessage,
+        expiringDeliveredOutgoingMessage,
+        expiringDeliveredAndReadOutgoingMessage,
+        expiredOutgoingMessage,
+        notYetExpiredOutgoingMessage,
+    ];
+    NSArray<TSMessage *> *shouldNotBeExpiringMessages = @[
+        unreadExpiringIncomingMessage,
+        unExpiringIncomingMessage,
+        unExpiringIncomingMessage2,
+
+        expiringUnsentOutgoingMessage,
+        unExpiringOutgoingMessage,
+        unExpiringOutgoingMessage2,
+    ];
+
+    NSMutableSet<NSString *> *actualMessageIds = [NSMutableSet new];
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        for (TSMessage *oldMessage in shouldBeExpiringMessages) {
+            NSString *messageId = oldMessage.uniqueId;
+            BOOL shouldBeExpiring = YES;
+            TSMessage *_Nullable message = [TSMessage anyFetchMessageWithUniqueId:messageId transaction:transaction];
+            XCTAssertNotNil(message);
+            if (message == nil) {
+                OWSLogVerbose(@"Missing message: %@ %@", messageId, oldMessage.body);
+                continue;
+            }
+            if (shouldBeExpiring != [message shouldStartExpireTimer]) {
+                OWSLogVerbose(@"!shouldBeExpiring: %@ %@", messageId, oldMessage.body);
+            }
+            XCTAssertEqual(shouldBeExpiring, [message shouldStartExpireTimer]);
+            XCTAssertEqual(shouldBeExpiring, message.storedShouldStartExpireTimer);
+            XCTAssertTrue(message.expiresAt > 0);
+        }
+        for (TSMessage *oldMessage in shouldNotBeExpiringMessages) {
+            NSString *messageId = oldMessage.uniqueId;
+            BOOL shouldBeExpiring = NO;
+            TSMessage *_Nullable message = [TSMessage anyFetchMessageWithUniqueId:messageId transaction:transaction];
+            XCTAssertNotNil(message);
+            if (message == nil) {
+                OWSLogVerbose(@"Missing message: %@ %@", messageId, oldMessage.body);
+                continue;
+            }
+            XCTAssertEqual(shouldBeExpiring, [message shouldStartExpireTimer]);
+            XCTAssertEqual(shouldBeExpiring, message.storedShouldStartExpireTimer);
+            XCTAssertEqual(0, message.expiresAt);
+        }
+
+        TSThread *thread = [self threadWithTransaction:transaction];
+
+        for (TSMessage *message in
+            [self.finder fetchUnstartedExpiringMessagesInThread:thread transaction:transaction]) {
+            [actualMessageIds addObject:message.uniqueId];
+        }
+    }];
+
+    XCTAssertEqualObjects([NSSet set], actualMessageIds);
 }
 
-- (NSNumber *)nextExpirationTimestamp
+- (nullable NSNumber *)nextExpirationTimestamp
 {
-    __block NSNumber *nextExpirationTimestamp;
+    __block NSNumber *_Nullable nextExpirationTimestamp;
 
-    [self readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+    [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
         XCTAssertNotNil(self.finder);
         nextExpirationTimestamp = [self.finder nextExpirationTimestampWithTransaction:transaction];
     }];
@@ -160,30 +318,29 @@ NS_ASSUME_NONNULL_BEGIN
 
     XCTAssertNil(self.nextExpirationTimestamp);
 
-    TSMessage *unExpiringMessage = [self messageWithBody:@"unexpiringMessage" expiresInSeconds:0 expireStartedAt:0];
-    [unExpiringMessage save];
+    __unused TSMessage *unExpiringMessage = [self incomingMessageWithBody:@"unexpiringMessage"
+                                                         expiresInSeconds:0
+                                                          expireStartedAt:0];
     XCTAssertNil(self.nextExpirationTimestamp);
 }
 
 - (void)testNextExpirationTimestampNotNilWithUpcomingExpiringMessages
 {
-    TSMessage *soonToExpireMessage =
-        [self messageWithBody:@"soonToExpireMessage" expiresInSeconds:10 expireStartedAt:self.now - 9000];
-    [soonToExpireMessage save];
+    __unused TSMessage *soonToExpireMessage = [self incomingMessageWithBody:@"soonToExpireMessage"
+                                                           expiresInSeconds:10
+                                                            expireStartedAt:self.now - 9000];
 
     XCTAssertNotNil(self.nextExpirationTimestamp);
     XCTAssertEqual(self.now + 1000, [self.nextExpirationTimestamp unsignedLongLongValue]);
 
     // expired message should take precedence
-    TSMessage *expiredMessage =
-        [self messageWithBody:@"expiredMessage" expiresInSeconds:10 expireStartedAt:self.now - 11000];
-    [expiredMessage save];
+    __unused TSMessage *expiredMessage = [self incomingMessageWithBody:@"expiredMessage"
+                                                      expiresInSeconds:10
+                                                       expireStartedAt:self.now - 11000];
 
     XCTAssertNotNil(self.nextExpirationTimestamp);
     XCTAssertEqual(self.now - 1000, [self.nextExpirationTimestamp unsignedLongLongValue]);
 }
-
-#endif
 
 @end
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -19,37 +19,46 @@ import SignalMessaging
 
     // MARK: - Dependencies
 
-    private var contactsManager : OWSContactsManager
-    {
+    private var contactsManager: OWSContactsManager {
         return Environment.shared.contactsManager
     }
 
-    private var contactsUpdater : ContactsUpdater
-    {
+    private var contactsUpdater: ContactsUpdater {
         return SSKEnvironment.shared.contactsUpdater
+    }
+
+    private var tsAccountManager: TSAccountManager {
+        return .sharedInstance()
     }
 
     // MARK: -
 
     /**
-     * |handle| is a user formatted phone number, e.g. from a system contacts entry
+     * |address| is a SignalServiceAddress
      */
-    @discardableResult @objc public func initiateCall(handle: String) -> Bool {
-        Logger.info("with handle: \(handle)")
+    @discardableResult
+    @objc
+    public func initiateCall(address: SignalServiceAddress) -> Bool {
+        Logger.info("with address: \(address)")
 
-        guard let recipientId = PhoneNumber(fromE164: handle)?.toE164() else {
-            Logger.warn("unable to parse signalId from phone number: \(handle)")
-            return false
-        }
+        guard address.isValid else { return false }
 
-        return initiateCall(recipientId: recipientId, isVideo: false)
+        return initiateCall(address: address, isVideo: false)
     }
 
     /**
-     * |recipientId| is a e164 formatted phone number.
+     * |address| is a SignalServiceAddress.
      */
-    @discardableResult @objc public func initiateCall(recipientId: String,
-        isVideo: Bool) -> Bool {
+    @discardableResult
+    @objc
+    public func initiateCall(address: SignalServiceAddress, isVideo: Bool) -> Bool {
+        guard tsAccountManager.isOnboarded() else {
+            Logger.warn("aborting due to user not being onboarded.")
+            OWSActionSheets.showActionSheet(title: NSLocalizedString("YOU_MUST_COMPLETE_ONBOARDING_BEFORE_PROCEEDING",
+                                                                     comment: "alert body shown when trying to use features in the app before completing registration-related setup."))
+            return false
+        }
+
         guard let callUIAdapter = AppEnvironment.shared.callService.callUIAdapter else {
             owsFailDebug("missing callUIAdapter")
             return false
@@ -59,36 +68,25 @@ import SignalMessaging
             return false
         }
 
-        let showedAlert = SafetyNumberConfirmationAlert.presentAlertIfNecessary(recipientId: recipientId,
+        let showedAlert = SafetyNumberConfirmationAlert.presentAlertIfNecessary(address: address,
                                                                                 confirmationText: CallStrings.confirmAndCallButtonTitle,
-                                                                                contactsManager: self.contactsManager,
                                                                                 completion: { didConfirmIdentity in
                                                                                     if didConfirmIdentity {
-                                                                                        _ = self.initiateCall(recipientId: recipientId, isVideo: isVideo)
+                                                                                        _ = self.initiateCall(address: address, isVideo: isVideo)
                                                                                     }
         })
         guard !showedAlert else {
             return false
         }
 
-        // Check for microphone permissions
-        // Alternative way without prompting for permissions:
-        // if AVAudioSession.sharedInstance().recordPermission() == .denied {
-        frontmostViewController.ows_ask(forMicrophonePermissions: { [weak self] granted in
-            // Success callback; camera permissions are granted.
-
-            guard let strongSelf = self else {
-                return
-            }
-
-            // Here the permissions are either granted or denied
+        frontmostViewController.ows_askForMicrophonePermissions { granted in
             guard granted == true else {
                 Logger.warn("aborting due to missing microphone permissions.")
-                OWSAlerts.showNoMicrophonePermissionAlert()
+                frontmostViewController.ows_showNoMicrophonePermissionActionSheet()
                 return
             }
-            callUIAdapter.startAndShowOutgoingCall(recipientId: recipientId, hasLocalVideo: isVideo)
-        })
+            callUIAdapter.startAndShowOutgoingCall(address: address, hasLocalVideo: isVideo)
+        }
 
         return true
     }

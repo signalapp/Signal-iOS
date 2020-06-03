@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -27,23 +27,27 @@ public class TypingIndicatorInteraction: TSInteraction {
 
     @available(*, unavailable, message:"use other constructor instead.")
     @objc
-    public required init(dictionary dictionaryValue: [AnyHashable: Any]!) throws {
+    public required init(dictionary dictionaryValue: [String: Any]!) throws {
         notImplemented()
     }
 
     @objc
-    public let recipientId: String
+    public let address: SignalServiceAddress
 
     @objc
-    public init(thread: TSThread, timestamp: UInt64, recipientId: String) {
-        self.recipientId = recipientId
+    public init(thread: TSThread, timestamp: UInt64, address: SignalServiceAddress) {
+        self.address = address
 
-        super.init(interactionWithUniqueId: TypingIndicatorInteraction.TypingIndicatorId,
-            timestamp: timestamp, in: thread)
+        super.init(uniqueId: TypingIndicatorInteraction.TypingIndicatorId,
+            timestamp: timestamp, thread: thread)
+    }
+
+    public override var shouldBeSaved: Bool {
+        return false
     }
 
     @objc
-    public override func save(with transaction: YapDatabaseReadWriteTransaction!) {
+    public override func anyWillInsert(with transaction: SDSAnyWriteTransaction) {
         owsFailDebug("The transient interaction should not be saved in the database.")
     }
 }

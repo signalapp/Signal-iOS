@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -12,31 +12,31 @@ public class RotateSignedPreKeyOperation: OWSOperation {
     }
 
     private var accountServiceClient: AccountServiceClient {
-        return AccountServiceClient.shared
+        return SSKEnvironment.shared.accountServiceClient
     }
 
-    private var primaryStorage: OWSPrimaryStorage {
-        return OWSPrimaryStorage.shared()
+    private var signedPreKeyStore: SSKSignedPreKeyStore {
+        return SSKEnvironment.shared.signedPreKeyStore
     }
 
     public override func run() {
         Logger.debug("")
 
-        guard tsAccountManager.isRegistered() else {
+        guard tsAccountManager.isRegistered else {
             Logger.debug("skipping - not registered")
             return
         }
 
-        let signedPreKeyRecord: SignedPreKeyRecord = self.primaryStorage.generateRandomSignedRecord()
+        let signedPreKeyRecord: SignedPreKeyRecord = self.signedPreKeyStore.generateRandomSignedRecord()
 
-        self.primaryStorage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
+        self.signedPreKeyStore.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
         firstly {
             return self.accountServiceClient.setSignedPreKey(signedPreKeyRecord)
         }.done(on: DispatchQueue.global()) {
             Logger.info("Successfully uploaded signed PreKey")
             signedPreKeyRecord.markAsAcceptedByService()
-            self.primaryStorage.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
-            self.primaryStorage.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
+            self.signedPreKeyStore.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
+            self.signedPreKeyStore.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
 
             TSPreKeyManager.clearPreKeyUpdateFailureCount()
             TSPreKeyManager.clearSignedPreKeyRecords()
@@ -44,26 +44,24 @@ public class RotateSignedPreKeyOperation: OWSOperation {
             Logger.debug("done")
             self.reportSuccess()
         }.catch { error in
-            self.reportError(error)
+            self.reportError(withUndefinedRetry: error)
         }.retainUntilComplete()
     }
 
     override public func didFail(error: Error) {
-        switch error {
-        case let networkManagerError as NetworkManagerError:
-            guard !networkManagerError.isNetworkError else {
-                Logger.debug("don't report SPK rotation failure w/ network error")
-                return
-            }
-
-            guard networkManagerError.statusCode >= 400 && networkManagerError.statusCode <= 599 else {
-                Logger.debug("don't report SPK rotation failure w/ non application error")
-                return
-            }
-
-            TSPreKeyManager.incrementPreKeyUpdateFailureCount()
-        default:
-            Logger.debug("don't report SPK rotation failure w/ non NetworkManager error: \(error)")
+        guard !IsNetworkConnectivityFailure(error) else {
+            Logger.debug("don't report SPK rotation failure w/ network error")
+            return
         }
+        guard let statusCode = error.httpStatusCode else {
+            Logger.debug("don't report SPK rotation failure w/ non NetworkManager error: \(error)")
+            return
+        }
+        guard statusCode >= 400 && statusCode <= 599 else {
+            Logger.debug("don't report SPK rotation failure w/ non application error")
+            return
+        }
+
+        TSPreKeyManager.incrementPreKeyUpdateFailureCount()
     }
 }

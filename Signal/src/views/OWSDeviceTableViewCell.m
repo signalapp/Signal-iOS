@@ -1,25 +1,55 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDeviceTableViewCell.h"
 #import "DateUtil.h"
 #import <SignalMessaging/OWSTableViewController.h>
+#import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/Theme.h>
+#import <SignalMessaging/UIFont+OWS.h>
+#import <SignalMessaging/UIView+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSDeviceTableViewCell
 
+- (instancetype)initWithStyle:(UITableViewCellStyle)style reuseIdentifier:(nullable NSString *)reuseIdentifier
+{
+    if (self = [super initWithStyle:style reuseIdentifier:reuseIdentifier]) {
+        [self configure];
+    }
+    return self;
+}
+
+- (void)configure
+{
+    self.preservesSuperviewLayoutMargins = YES;
+    self.contentView.preservesSuperviewLayoutMargins = YES;
+
+    self.nameLabel = [UILabel new];
+    self.linkedLabel = [UILabel new];
+    self.lastSeenLabel = [UILabel new];
+
+    UIStackView *stackView = [[UIStackView alloc] initWithArrangedSubviews:@[
+        self.nameLabel,
+        self.linkedLabel,
+        self.lastSeenLabel,
+    ]];
+    stackView.axis = UILayoutConstraintAxisVertical;
+    stackView.alignment = UIStackViewAlignmentLeading;
+    stackView.spacing = 2;
+    [self.contentView addSubview:stackView];
+    [stackView autoPinEdgesToSuperviewMargins];
+}
+
 - (void)configureWithDevice:(OWSDevice *)device
 {
     OWSAssertDebug(device);
 
-    [OWSTableItem configureCell:self];
-
-    self.nameLabel.textColor = Theme.primaryColor;
-    self.linkedLabel.textColor = Theme.secondaryColor;
-    self.lastSeenLabel.textColor = Theme.secondaryColor;
+    self.nameLabel.font = OWSTableItem.primaryLabelFont;
+    self.linkedLabel.font = UIFont.ows_dynamicTypeCaption1Font;
+    self.lastSeenLabel.font = UIFont.ows_dynamicTypeCaption1Font;
 
     self.nameLabel.text = device.displayName;
 
@@ -43,6 +73,17 @@ NS_ASSUME_NONNULL_BEGIN
 
     self.lastSeenLabel.text =
         [NSString stringWithFormat:lastSeenFormatString, [DateUtil.dateFormatter stringFromDate:displayedLastSeenAt]];
+}
+
+- (void)traitCollectionDidChange:(nullable UITraitCollection *)previousTraitCollection
+{
+    [super traitCollectionDidChange:previousTraitCollection];
+
+    [OWSTableItem configureCell:self];
+
+    self.nameLabel.textColor = Theme.primaryTextColor;
+    self.linkedLabel.textColor = Theme.secondaryTextAndIconColor;
+    self.lastSeenLabel.textColor = Theme.secondaryTextAndIconColor;
 }
 
 @end

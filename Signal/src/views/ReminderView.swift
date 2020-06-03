@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -40,7 +40,7 @@ class ReminderView: UIView {
         notImplemented()
     }
 
-    private init(mode: ReminderViewMode,
+    init(mode: ReminderViewMode,
          text: String, tapAction: Action?) {
         self.mode = mode
         self.tapAction = tapAction
@@ -63,16 +63,16 @@ class ReminderView: UIView {
     func setupSubviews() {
         let textColor: UIColor
         let iconColor: UIColor
-        switch (mode) {
+        switch mode {
         case .nag:
             self.backgroundColor = UIColor.ows_reminderYellow
             textColor = UIColor.ows_gray90
             iconColor = UIColor.ows_gray60
         case .explanation:
             // TODO: Theme, review with design.
-            self.backgroundColor = Theme.offBackgroundColor
-            textColor = Theme.primaryColor
-            iconColor = Theme.secondaryColor
+            self.backgroundColor = Theme.washColor
+            textColor = Theme.primaryTextColor
+            iconColor = Theme.secondaryTextAndIconColor
         }
         self.clipsToBounds = true
 
@@ -86,7 +86,7 @@ class ReminderView: UIView {
 
         self.addSubview(container)
         container.layoutMargins = UIEdgeInsets(top: 12, left: 16, bottom: 12, right: 16)
-        container.ows_autoPinToSuperviewEdges()
+        container.autoPinEdgesToSuperviewEdges()
 
         // Label
         label.font = UIFont.ows_dynamicTypeSubheadline

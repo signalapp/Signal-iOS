@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -26,27 +26,33 @@ public class ConversationStyle: NSObject {
 
     @objc public var headerGutterLeading: CGFloat = 28
     @objc public var headerGutterTrailing: CGFloat = 28
+    @objc public let headerViewDateHeaderVMargin: CGFloat = 23
 
     // These are the gutters used by "full width" views
     // like "contact offer" and "info message".
     @objc public var fullWidthGutterLeading: CGFloat = 0
     @objc public var fullWidthGutterTrailing: CGFloat = 0
 
-    @objc public var errorGutterTrailing: CGFloat = 0
+    @objc static public let groupMessageAvatarDiameter: CGFloat = 28
+    @objc static public let selectionViewWidth: CGFloat = 24
+    @objc static public let messageStackSpacing: CGFloat = 8
+    @objc static public let defaultMessageSpacing: CGFloat = 12
+    @objc static public let compactMessageSpacing: CGFloat = 2
 
     @objc public var contentWidth: CGFloat {
         return viewWidth - (gutterLeading + gutterTrailing)
     }
 
-    @objc public var fullWidthContentWidth: CGFloat {
-       return viewWidth - (fullWidthGutterLeading + fullWidthGutterTrailing)
+    @objc public var selectableCenteredContentWidth: CGFloat {
+        return viewWidth - (fullWidthGutterLeading + fullWidthGutterTrailing) - (Self.selectionViewWidth + Self.messageStackSpacing) * 2
     }
 
     @objc public var headerViewContentWidth: CGFloat {
         return viewWidth - (headerGutterLeading + headerGutterTrailing)
     }
 
-    @objc public var maxMessageWidth: CGFloat = 0
+    @objc public private(set) var maxMessageWidth: CGFloat = 0
+    @objc public private(set) var maxMediaMessageWidth: CGFloat = 0
 
     @objc public var textInsetTop: CGFloat = 0
     @objc public var textInsetBottom: CGFloat = 0
@@ -72,7 +78,7 @@ public class ConversationStyle: NSObject {
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(uiContentSizeCategoryDidChange),
-                                               name: NSNotification.Name.UIContentSizeCategoryDidChange,
+                                               name: UIContentSizeCategory.didChangeNotification,
                                                object: nil)
     }
 
@@ -90,20 +96,23 @@ public class ConversationStyle: NSObject {
 
     @objc
     public func updateProperties() {
-        if thread.isGroupThread() {
-            gutterLeading = 52
-            gutterTrailing = 16
-        } else {
-            gutterLeading = 16
-            gutterTrailing = 16
-        }
-        fullWidthGutterLeading = 16
-        fullWidthGutterTrailing = 16
+        gutterLeading = thread.isGroupThread ? 12 : 16
+        gutterTrailing = 16
+
+        fullWidthGutterLeading = thread.isGroupThread ? 12 : 16
+        fullWidthGutterTrailing = thread.isGroupThread ? 12 : 16
         headerGutterLeading = 28
         headerGutterTrailing = 28
-        errorGutterTrailing = 16
 
-        maxMessageWidth = floor(contentWidth - 32)
+        maxMessageWidth = contentWidth - (Self.selectionViewWidth + Self.messageStackSpacing)
+        if thread.isGroupThread {
+            maxMessageWidth -= (Self.groupMessageAvatarDiameter + Self.messageStackSpacing)
+        }
+
+        // This upper bound should have no effect in portrait orientation.
+        // It limits body media size in landscape.
+        let kMaxBodyMediaSize: CGFloat = 350
+        maxMediaMessageWidth = floor(min(maxMessageWidth, kMaxBodyMediaSize))
 
         let messageTextFont = UIFont.ows_dynamicTypeBody
 
@@ -116,11 +125,6 @@ public class ConversationStyle: NSObject {
         // (e.g. the descender) in the top margin. Note that UIFont.descender is a
         // negative value.
         textInsetBottom = max(0, round(baseFontOffset - abs(messageTextFont.descender)))
-
-        if _isDebugAssertConfiguration(), UIFont.ows_dynamicTypeBody.pointSize == 17 {
-            assert(textInsetTop == 7)
-            assert(textInsetBottom == 7)
-        }
 
         textInsetHorizontal = 12
 
@@ -142,17 +146,17 @@ public class ConversationStyle: NSObject {
 
     @objc
     private static var defaultBubbleColorIncoming: UIColor {
-        return Theme.isDarkThemeEnabled ? UIColor.ows_gray75 : UIColor.ows_messageBubbleLightGray
+        return Theme.isDarkThemeEnabled ? UIColor.ows_gray75 : UIColor.ows_gray05
     }
 
     @objc
-    public let bubbleColorOutgoingFailed = UIColor.ows_darkSkyBlue
+    public let bubbleColorOutgoingFailed = UIColor.ows_accentBlue
 
     @objc
-    public let bubbleColorOutgoingSending = UIColor.ows_darkSkyBlue
+    public let bubbleColorOutgoingSending = UIColor.ows_accentBlue
 
     @objc
-    public let bubbleColorOutgoingSent = UIColor.ows_darkSkyBlue
+    public let bubbleColorOutgoingSent = UIColor.ows_accentBlue
 
     @objc
     public let dateBreakTextColor = UIColor.ows_gray60
@@ -191,8 +195,18 @@ public class ConversationStyle: NSObject {
     }
 
     @objc
+    public static var bubbleSecondaryTextColorIncoming: UIColor {
+        return Theme.isDarkThemeEnabled ? .ows_gray25 : .ows_gray60
+    }
+
+    @objc
     public static var bubbleTextColorOutgoing: UIColor {
         return Theme.isDarkThemeEnabled ? UIColor.ows_gray05 : UIColor.ows_white
+    }
+
+    @objc
+    public static var bubbleSecondaryTextColorOutgoing: UIColor {
+        return Theme.isDarkThemeEnabled ? .ows_whiteAlpha60 : .ows_whiteAlpha80
     }
 
     @objc
@@ -218,21 +232,19 @@ public class ConversationStyle: NSObject {
 
     @objc
     public func bubbleSecondaryTextColor(isIncoming: Bool) -> UIColor {
-        return bubbleTextColor(isIncoming: isIncoming).withAlphaComponent(0.7)
+        if isIncoming {
+            return ConversationStyle.bubbleSecondaryTextColorIncoming
+        } else {
+            return ConversationStyle.bubbleSecondaryTextColorOutgoing
+        }
     }
 
     @objc
-    public func quotedReplyBubbleColor(isIncoming: Bool) -> UIColor {
+    public var quotedReplyBubbleColor: UIColor {
         if Theme.isDarkThemeEnabled {
-            if isIncoming {
-                return UIColor(rgbHex: 0x1976D2).withAlphaComponent(0.75)
-            } else {
-                return UIColor.ows_black.withAlphaComponent(0.4)
-            }
-        } else if isIncoming {
-            return bubbleColorOutgoingSent.withAlphaComponent(0.25)
+            return .ows_signalBlueDark
         } else {
-            return ConversationStyle.defaultBubbleColorIncoming.withAlphaComponent(0.75)
+            return .ows_accentBlueTint
         }
     }
 
@@ -240,14 +252,14 @@ public class ConversationStyle: NSObject {
     public func quotedReplyStripeColor(isIncoming: Bool) -> UIColor {
         if Theme.isDarkThemeEnabled {
             if isIncoming {
-                return UIColor(rgbHex: 0x1976D2)
+                return .ows_accentBlueTint
             } else {
-                return UIColor.ows_black
+                return .ows_black
             }
         } else if isIncoming {
-            return bubbleColorOutgoingSent
+            return .ows_accentBlue
         } else {
-            return UIColor.white
+            return .ows_white
         }
     }
 
@@ -273,7 +285,10 @@ public class ConversationStyle: NSObject {
 
     @objc
     public func quotedReplyAttachmentColor() -> UIColor {
-        // TODO:
-        return Theme.middleGrayColor
+        if Theme.isDarkThemeEnabled {
+            return UIColor.ows_gray05
+        } else {
+            return UIColor.ows_gray90
+        }
     }
 }

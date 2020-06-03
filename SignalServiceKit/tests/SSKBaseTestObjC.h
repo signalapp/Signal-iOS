@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalServiceKit/MockSSKEnvironment.h>
@@ -8,13 +8,18 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class SDSAnyReadTransaction;
+@class SDSAnyWriteTransaction;
+
 #ifdef DEBUG
 
 @interface SSKBaseTestObjC : XCTestCase
 
-- (void)readWithBlock:(void (^)(YapDatabaseReadTransaction *transaction))block;
+- (void)readWithBlock:(void (^)(SDSAnyReadTransaction *transaction))block;
+- (void)writeWithBlock:(void (^)(SDSAnyWriteTransaction *transaction))block;
 
-- (void)readWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block;
+- (void)yapReadWithBlock:(void (^)(YapDatabaseReadTransaction *transaction))block;
+- (void)yapWriteWithBlock:(void (^)(YapDatabaseReadWriteTransaction *transaction))block;
 
 @end
 

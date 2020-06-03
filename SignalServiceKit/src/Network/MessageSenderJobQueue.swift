@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -21,15 +21,13 @@ import Foundation
 ///
 /// Both respect the `error.isRetryable` convention to be sure we don't keep retrying in some situations
 /// (e.g. rate limiting)
-
-@objc(SSKMessageSenderJobQueue)
 public class MessageSenderJobQueue: NSObject, JobQueue {
 
     @objc
     public override init() {
         super.init()
 
-        AppReadiness.runNowOrWhenAppWillBecomeReady {
+        AppReadiness.runNowOrWhenAppDidBecomeReadyPolite {
             self.setup()
         }
     }
@@ -37,53 +35,46 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
     // MARK: 
 
     @objc(addMessage:transaction:)
-    public func add(message: TSOutgoingMessage, transaction: YapDatabaseReadWriteTransaction) {
+    public func add(message: OutgoingMessagePreparer, transaction: SDSAnyWriteTransaction) {
         self.add(message: message, removeMessageAfterSending: false, transaction: transaction)
     }
 
-    @objc(addMediaMessage:dataSource:contentType:sourceFilename:isTemporaryAttachment:)
-    public func add(mediaMessage: TSOutgoingMessage, dataSource: DataSource, contentType: String, sourceFilename: String?, isTemporaryAttachment: Bool) {
-        let attachmentInfo = OutgoingAttachmentInfo(dataSource: dataSource, contentType: contentType, sourceFilename: sourceFilename)
-        add(mediaMessage: mediaMessage, attachmentInfos: [attachmentInfo], isTemporaryAttachment: isTemporaryAttachment)
+    @objc(addMediaMessage:dataSource:contentType:sourceFilename:caption:albumMessageId:isTemporaryAttachment:)
+    public func add(mediaMessage: TSOutgoingMessage, dataSource: DataSource, contentType: String, sourceFilename: String?, caption: String?, albumMessageId: String?, isTemporaryAttachment: Bool) {
+        let attachmentInfo = OutgoingAttachmentInfo(dataSource: dataSource, contentType: contentType, sourceFilename: sourceFilename, caption: caption, albumMessageId: albumMessageId)
+        let message = OutgoingMessagePreparer(mediaMessage, unsavedAttachmentInfos: [attachmentInfo])
+        add(message: message, isTemporaryAttachment: isTemporaryAttachment)
     }
 
-    @objc(addMediaMessage:attachmentInfos:isTemporaryAttachment:)
-    public func add(mediaMessage: TSOutgoingMessage, attachmentInfos: [OutgoingAttachmentInfo], isTemporaryAttachment: Bool) {
-        OutgoingMessagePreparer.prepareAttachments(attachmentInfos,
-                                                  inMessage: mediaMessage,
-                                                  completionHandler: { error in
-                                                    if let error = error {
-                                                        self.dbConnection.readWrite { transaction in
-                                                            mediaMessage.update(sendingError: error, transaction: transaction)
-                                                        }
-                                                    } else {
-                                                        self.dbConnection.readWrite { transaction in
-                                                            self.add(message: mediaMessage, removeMessageAfterSending: isTemporaryAttachment, transaction: transaction)
-                                                        }
-                                                    }
-        })
-    }
+    @objc(addMessage:isTemporaryAttachment:)
+    public func add(message: OutgoingMessagePreparer, isTemporaryAttachment: Bool) {
+        databaseStorage.asyncWrite { transaction in
+            self.add(message: message,
+                     removeMessageAfterSending: isTemporaryAttachment,
+                     transaction: transaction)
 
-    private func add(message: TSOutgoingMessage, removeMessageAfterSending: Bool, transaction: YapDatabaseReadWriteTransaction) {
-        assert(AppReadiness.isAppReady())
-
-        let jobRecord: SSKMessageSenderJobRecord
-        do {
-            jobRecord = try SSKMessageSenderJobRecord(message: message, removeMessageAfterSending: false, label: self.jobRecordLabel)
-        } catch {
-            owsFailDebug("failed to build job: \(error)")
-            return
         }
-        self.add(jobRecord: jobRecord, transaction: transaction)
+    }
+
+    private func add(message: OutgoingMessagePreparer, removeMessageAfterSending: Bool, transaction: SDSAnyWriteTransaction) {
+        assert(AppReadiness.isAppReady() || CurrentAppContext().isRunningTests)
+        do {
+            let messageRecord = try message.prepareMessage(transaction: transaction)
+            let jobRecord = try SSKMessageSenderJobRecord(message: messageRecord, removeMessageAfterSending: removeMessageAfterSending, label: self.jobRecordLabel, transaction: transaction)
+            self.add(jobRecord: jobRecord, transaction: transaction)
+        } catch {
+            message.unpreparedMessage.update(sendingError: error, transaction: transaction)
+        }
     }
 
     // MARK: JobQueue
 
     public typealias DurableOperationType = MessageSenderOperation
+    @objc
     public static let jobRecordLabel: String = "MessageSender"
-    public static let maxRetries: UInt = 10
+    public static let maxRetries: UInt = 30
     public let requiresInternet: Bool = true
-    public var runningOperations: [MessageSenderOperation] = []
+    public var runningOperations = AtomicArray<MessageSenderOperation>()
 
     public var jobRecordLabel: String {
         return type(of: self).jobRecordLabel
@@ -94,19 +85,19 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
         defaultSetup()
     }
 
-    public var isSetup: Bool = false
+    public var isSetup = AtomicBool(false)
 
-    public func didMarkAsReady(oldJobRecord: SSKMessageSenderJobRecord, transaction: YapDatabaseReadWriteTransaction) {
-        if let messageId = oldJobRecord.messageId, let message = TSOutgoingMessage.fetch(uniqueId: messageId, transaction: transaction) {
-            message.updateWithMarkingAllUnsentRecipientsAsSending(with: transaction)
+    public func didMarkAsReady(oldJobRecord: SSKMessageSenderJobRecord, transaction: SDSAnyWriteTransaction) {
+        if let messageId = oldJobRecord.messageId, let message = TSOutgoingMessage.anyFetch(uniqueId: messageId, transaction: transaction) as? TSOutgoingMessage {
+            message.updateAllUnsentRecipientsAsSending(transaction: transaction)
         }
     }
 
-    public func buildOperation(jobRecord: SSKMessageSenderJobRecord, transaction: YapDatabaseReadTransaction) throws -> MessageSenderOperation {
+    public func buildOperation(jobRecord: SSKMessageSenderJobRecord, transaction: SDSAnyReadTransaction) throws -> MessageSenderOperation {
         let message: TSOutgoingMessage
         if let invisibleMessage = jobRecord.invisibleMessage {
             message = invisibleMessage
-        } else if let messageId = jobRecord.messageId, let fetchedMessage = TSOutgoingMessage.fetch(uniqueId: messageId, transaction: transaction) {
+        } else if let messageId = jobRecord.messageId, let fetchedMessage = TSOutgoingMessage.anyFetch(uniqueId: messageId, transaction: transaction) as? TSOutgoingMessage {
             message = fetchedMessage
         } else {
             assert(jobRecord.messageId != nil)
@@ -144,6 +135,27 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
 
         return existingQueue
     }
+
+    @objc
+    public static func enumerateEnqueuedInteractions(transaction: SDSAnyReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) {
+
+        let finder = AnyJobRecordFinder<SSKMessageSenderJobRecord>()
+        finder.enumerateJobRecords(label: self.jobRecordLabel, transaction: transaction) { job, stop in
+            if let interaction = job.invisibleMessage {
+                block(interaction, stop)
+                return
+            }
+            guard let messageId = job.messageId else {
+                return
+            }
+            guard let interaction = TSInteraction.anyFetch(uniqueId: messageId, transaction: transaction) else {
+                // Interaction may have been deleted.
+                Logger.warn("Missing interaction")
+                return
+            }
+            block(interaction, stop)
+        }
+    }
 }
 
 public class MessageSenderOperation: OWSOperation, DurableOperation {
@@ -174,21 +186,24 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
         return SSKEnvironment.shared.messageSender
     }
 
-    var dbConnection: YapDatabaseConnection {
-        return SSKEnvironment.shared.primaryStorage.dbReadWriteConnection
+    var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
     }
 
     // MARK: OWSOperation
 
     override public func run() {
-        self.messageSender.send(message, success: reportSuccess, failure: reportError)
+        self.messageSender.sendMessage(message.asPreparer,
+                                       success: reportSuccess,
+                                       failure: reportError(withUndefinedRetry:))
     }
 
     override public func didSucceed() {
-        self.dbConnection.readWrite { transaction in
+        databaseStorage.write { transaction in
             self.durableOperationDelegate?.durableOperationDidSucceed(self, transaction: transaction)
             if self.jobRecord.removeMessageAfterSending {
-                self.message.remove(with: transaction)
+                self.message.anyRemove(transaction: transaction)
+                self.message.removeTemporaryAttachments(with: transaction)
             }
         }
     }
@@ -196,16 +211,12 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
     override public func didReportError(_ error: Error) {
         Logger.debug("remainingRetries: \(self.remainingRetries)")
 
-        self.dbConnection.readWrite { transaction in
+        databaseStorage.write { transaction in
             self.durableOperationDelegate?.durableOperation(self, didReportError: error, transaction: transaction)
         }
     }
 
     override public func retryInterval() -> TimeInterval {
-        guard !CurrentAppContext().isRunningTests else {
-            return 0
-        }
-
         // Arbitrary backoff factor...
         // With backOffFactor of 1.9
         // try  1 delay:  0.00s
@@ -215,19 +226,20 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
         // ...
         // try 11 delay: 61.31s
         let backoffFactor = 1.9
-        let maxBackoff = kHourInterval
+        let maxBackoff = 15 * kMinuteInterval
 
         let seconds = 0.1 * min(maxBackoff, pow(backoffFactor, Double(self.jobRecord.failureCount)))
         return seconds
     }
 
     override public func didFail(error: Error) {
-        self.dbConnection.readWrite { transaction in
+        databaseStorage.write { transaction in
             self.durableOperationDelegate?.durableOperation(self, didFailWithError: error, transaction: transaction)
 
             self.message.update(sendingError: error, transaction: transaction)
+
             if self.jobRecord.removeMessageAfterSending {
-                self.message.remove(with: transaction)
+                self.message.anyRemove(transaction: transaction)
             }
         }
     }

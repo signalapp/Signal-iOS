@@ -1,8 +1,9 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
+import PromiseKit
 
 // There's no UTI type for webp!
 enum GiphyFormat {
@@ -29,15 +30,14 @@ extension GiphyError: LocalizedError {
 // They vary in content size (i.e. width,  height), 
 // format (.jpg, .gif, .mp4, webp, etc.),
 // quality, etc.
-@objc class GiphyRendition: NSObject {
+@objc class GiphyRendition: ProxiedContentAssetDescription {
     let format: GiphyFormat
     let name: String
     let width: UInt
     let height: UInt
     let fileSize: UInt
-    let url: NSURL
 
-    init(format: GiphyFormat,
+    init?(format: GiphyFormat,
          name: String,
          width: UInt,
          height: UInt,
@@ -48,10 +48,12 @@ extension GiphyError: LocalizedError {
         self.width = width
         self.height = height
         self.fileSize = fileSize
-        self.url = url
+
+        let fileExtension = GiphyRendition.fileExtension(forFormat: format)
+        super.init(url: url, fileExtension: fileExtension)
     }
 
-    public var fileExtension: String {
+    private class func fileExtension(forFormat format: GiphyFormat) -> String {
         switch format {
         case .gif:
             return "gif"
@@ -278,66 +280,68 @@ extension GiphyError: LocalizedError {
         NotificationCenter.default.removeObserver(self)
     }
 
-    private let kGiphyBaseURL = "https://api.giphy.com/"
+    private let kGiphyBaseURL = URL(string: "https://api.giphy.com/")!
 
-    public class func giphySessionConfiguration() -> URLSessionConfiguration {
-        let configuration = URLSessionConfiguration.ephemeral
-        let proxyHost = "giphy-proxy-production.whispersystems.org"
-        let proxyPort = 80
-        configuration.connectionProxyDictionary = [
-            "HTTPEnable": 1,
-            "HTTPProxy": proxyHost,
-            "HTTPPort": proxyPort,
-            "HTTPSEnable": 1,
-            "HTTPSProxy": proxyHost,
-            "HTTPSPort": proxyPort
-        ]
-        return configuration
-    }
-
-    private func giphyAPISessionManager() -> AFHTTPSessionManager? {
-        guard let baseUrl = NSURL(string: kGiphyBaseURL) else {
-            Logger.error("Invalid base URL.")
-            return nil
-        }
-        let sessionManager = AFHTTPSessionManager(baseURL: baseUrl as URL,
-                                                  sessionConfiguration: GiphyAPI.giphySessionConfiguration())
-        sessionManager.requestSerializer = AFJSONRequestSerializer()
-        sessionManager.responseSerializer = AFJSONResponseSerializer()
-
-        return sessionManager
+    private func giphyAPISessionManager() -> AFHTTPSessionManager {
+        return ContentProxy.jsonSessionManager(baseUrl: kGiphyBaseURL)
     }
 
     // MARK: Search
 
-    public func search(query: String, success: @escaping (([GiphyImageInfo]) -> Void), failure: @escaping ((NSError?) -> Void)) {
-        guard let sessionManager = giphyAPISessionManager() else {
-            Logger.error("Couldn't create session manager.")
-            failure(nil)
-            return
-        }
-        guard NSURL(string: kGiphyBaseURL) != nil else {
-            Logger.error("Invalid base URL.")
-            failure(nil)
-            return
-        }
+    // This is the Signal iOS API key.
+    let kGiphyApiKey = "ZsUpUm2L6cVbvei347EQNp7HrROjbOdc"
+    let kGiphyPageSize = 100
 
-        // This is the Signal iOS API key.
-        let kGiphyApiKey = "ZsUpUm2L6cVbvei347EQNp7HrROjbOdc"
-        let kGiphyPageSize = 100
+    public func trending() -> Promise<[GiphyImageInfo]> {
+        let sessionManager = giphyAPISessionManager()
+
+        let urlString = "/v1/gifs/trending?api_key=\(kGiphyApiKey)&limit=\(kGiphyPageSize)"
+
+        return Promise { resolver in
+            guard ContentProxy.configureSessionManager(sessionManager: sessionManager, forUrl: urlString) else {
+                throw OWSAssertionError("Could not configure trending")
+            }
+
+            sessionManager.get(urlString,
+                               parameters: [:],
+                               progress: nil,
+                               success: { _, value in
+                                Logger.info("pending request succeeded")
+                                guard let imageInfos = self.parseGiphyImages(responseJson: value) else {
+                                    resolver.reject(OWSAssertionError("unable to parse trending images"))
+                                    return
+                                }
+                                resolver.fulfill(imageInfos)
+            },
+                               failure: { _, error in
+                                Logger.error("trending request failed: \(error)")
+                                resolver.reject(error)
+            })
+        }
+    }
+
+    public func search(query: String, success: @escaping (([GiphyImageInfo]) -> Void), failure: @escaping ((NSError?) -> Void)) {
+        let sessionManager = giphyAPISessionManager()
+
         let kGiphyPageOffset = 0
         guard let queryEncoded = query.addingPercentEncoding(withAllowedCharacters: .urlPathAllowed) else {
-            Logger.error("Could not URL encode query: \(query).")
+            owsFailDebug("Could not URL encode query: \(query).")
             failure(nil)
             return
         }
         let urlString = "/v1/gifs/search?api_key=\(kGiphyApiKey)&offset=\(kGiphyPageOffset)&limit=\(kGiphyPageSize)&q=\(queryEncoded)"
 
+        guard ContentProxy.configureSessionManager(sessionManager: sessionManager, forUrl: urlString) else {
+            owsFailDebug("Could not configure query: \(query).")
+            failure(nil)
+            return
+        }
+
         sessionManager.get(urlString,
-                           parameters: {},
+                           parameters: [:],
                            progress: nil,
                            success: { _, value in
-                            Logger.error("search request succeeded")
+                            Logger.info("search request succeeded")
                             guard let imageInfos = self.parseGiphyImages(responseJson: value) else {
                                 failure(nil)
                                 return

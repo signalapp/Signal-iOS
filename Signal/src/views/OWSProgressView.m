@@ -1,10 +1,10 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSProgressView.h"
-#import <SignalMessaging/OWSMath.h>
 #import <SignalMessaging/UIView+OWS.h>
+#import <SignalServiceKit/OWSMath.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -104,7 +104,7 @@ NS_ASSUME_NONNULL_BEGIN
     CGFloat baseProgress = borderThickness * 2;
     CGFloat minProgress = baseProgress;
     CGFloat maxProgress = MAX(0, self.bounds.size.width - baseProgress);
-    progressRect.size.width = CGFloatLerp(minProgress, maxProgress, self.progress);
+    progressRect.size.width = CGFloatLerp(minProgress, maxProgress, CGFloatClamp01(self.progress));
     UIBezierPath *progressPath = [UIBezierPath bezierPathWithRoundedRect:progressRect cornerRadius:cornerRadius];
     self.progressLayer.path = progressPath.CGPath;
     self.progressLayer.fillColor = self.color.CGColor;

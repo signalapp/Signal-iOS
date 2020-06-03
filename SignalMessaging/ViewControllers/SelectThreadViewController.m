@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "SelectThreadViewController.h"
@@ -7,22 +7,20 @@
 #import "ContactTableViewCell.h"
 #import "ContactsViewHelper.h"
 #import "Environment.h"
-#import "NewNonContactConversationViewController.h"
 #import "OWSContactsManager.h"
 #import "OWSSearchBar.h"
 #import "OWSTableViewController.h"
 #import "ThreadViewHelper.h"
-#import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
-#import <SignalCoreKit/NSString+SSK.h>
+#import <SignalCoreKit/NSString+OWS.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/PhoneNumber.h>
 #import <SignalServiceKit/SignalAccount.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSThread.h>
-#import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -30,12 +28,12 @@ NS_ASSUME_NONNULL_BEGIN
     ThreadViewHelperDelegate,
     ContactsViewHelperDelegate,
     UISearchBarDelegate,
-    NewNonContactConversationViewControllerDelegate>
+    FindByPhoneNumberDelegate,
+    SDSDatabaseStorageObserver>
 
 @property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
-@property (nonatomic, readonly) ConversationSearcher *conversationSearcher;
+@property (nonatomic, readonly) FullTextSearcher *fullTextSearcher;
 @property (nonatomic, readonly) ThreadViewHelper *threadViewHelper;
-@property (nonatomic, readonly) YapDatabaseConnection *uiDatabaseConnection;
 
 @property (nonatomic, readonly) OWSTableViewController *tableViewController;
 
@@ -46,6 +44,15 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 @implementation SelectThreadViewController
+
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark -
 
 - (void)loadView
 {
@@ -59,23 +66,11 @@ NS_ASSUME_NONNULL_BEGIN
     self.view.backgroundColor = Theme.backgroundColor;
 
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
-    _conversationSearcher = ConversationSearcher.shared;
+    _fullTextSearcher = FullTextSearcher.shared;
     _threadViewHelper = [ThreadViewHelper new];
     _threadViewHelper.delegate = self;
 
-    _uiDatabaseConnection = [[OWSPrimaryStorage sharedManager] newDatabaseConnection];
-#ifdef DEBUG
-    _uiDatabaseConnection.permittedTransactions = YDB_AnyReadTransaction;
-#endif
-    [_uiDatabaseConnection beginLongLivedReadTransaction];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(yapDatabaseModified:)
-                                                 name:YapDatabaseModifiedNotification
-                                               object:OWSPrimaryStorage.sharedManager.dbNotificationObject];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(yapDatabaseModifiedExternally:)
-                                                 name:YapDatabaseModifiedExternallyNotification
-                                               object:nil];
+    [self.databaseStorage addDatabaseStorageObserver:self];
 
     [self createViews];
 
@@ -106,29 +101,39 @@ NS_ASSUME_NONNULL_BEGIN
     // Table
     _tableViewController = [OWSTableViewController new];
     _tableViewController.delegate = self;
+    _tableViewController.customSectionHeaderFooterBackgroundColor = Theme.backgroundColor;
     [self.view addSubview:self.tableViewController.view];
-    [_tableViewController.view autoPinWidthToSuperview];
+    [self.tableViewController.view autoPinEdgeToSuperviewSafeArea:ALEdgeLeading];
+    [self.tableViewController.view autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];
     [_tableViewController.view autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:header];
     [_tableViewController.view autoPinEdgeToSuperviewEdge:ALEdgeBottom];
     self.tableViewController.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableViewController.tableView.estimatedRowHeight = 60;
 }
 
-- (void)yapDatabaseModifiedExternally:(NSNotification *)notification
+#pragma mark - SDSDatabaseStorageObserver
+
+- (void)databaseStorageDidUpdateWithChange:(SDSDatabaseStorageChange *)change
 {
     OWSAssertIsOnMainThread();
+    OWSAssertDebug(AppReadiness.isAppReady);
 
-    OWSLogVerbose(@"");
-
-    [self.uiDatabaseConnection beginLongLivedReadTransaction];
     [self updateTableContents];
 }
 
-- (void)yapDatabaseModified:(NSNotification *)notification
+- (void)databaseStorageDidUpdateExternally
 {
     OWSAssertIsOnMainThread();
-    
-    [self.uiDatabaseConnection beginLongLivedReadTransaction];
+    OWSAssertDebug(AppReadiness.isAppReady);
+
+    [self updateTableContents];
+}
+
+- (void)databaseStorageDidReset
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(AppReadiness.isAppReady);
+
     [self updateTableContents];
 }
 
@@ -173,10 +178,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                          @"A label the cell that lets you add a new member to a group.")
                                      customRowHeight:UITableViewAutomaticDimension
                                          actionBlock:^{
-                                             NewNonContactConversationViewController *viewController =
-                                                 [NewNonContactConversationViewController new];
-                                             viewController.nonContactConversationDelegate = weakSelf;
-                                             viewController.isPresentedInNavigationController = YES;
+                                             FindByPhoneNumberViewController *viewController =
+                                                 [[FindByPhoneNumberViewController alloc] initWithDelegate:weakSelf
+                                                                                                buttonText:nil
+                                                                                  requiresRegisteredNumber:YES];
                                              [weakSelf.navigationController pushViewController:viewController
                                                                                       animated:YES];
                                          }]];
@@ -186,7 +191,12 @@ NS_ASSUME_NONNULL_BEGIN
     OWSTableSection *recentChatsSection = [OWSTableSection new];
     recentChatsSection.headerTitle = NSLocalizedString(
         @"SELECT_THREAD_TABLE_RECENT_CHATS_TITLE", @"Table section header for recently active conversations");
-    for (TSThread *thread in [self filteredThreadsWithSearchText]) {
+
+    __block NSArray<TSThread *> *filteredThreads;
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        filteredThreads = [self filteredThreadsWithTransaction:transaction];
+    }];
+    for (TSThread *thread in filteredThreads) {
         [recentChatsSection
             addItem:[OWSTableItem
                         itemWithCustomCellBlock:^{
@@ -194,38 +204,39 @@ NS_ASSUME_NONNULL_BEGIN
                             OWSCAssertDebug(strongSelf);
 
                             // To be consistent with the threads (above), we use ContactTableViewCell
-                            // instead of HomeViewCell to present contacts and threads.
+                            // instead of ConversationListCell to present contacts and threads.
                             ContactTableViewCell *cell = [ContactTableViewCell new];
 
                             BOOL isBlocked = [helper isThreadBlocked:thread];
                             if (isBlocked) {
-                                cell.accessoryMessage = NSLocalizedString(
-                                    @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
+                                cell.accessoryMessage = MessageStrings.conversationIsBlocked;
                             }
 
-                            [cell configureWithThread:thread];
+                            [strongSelf.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+                                [cell configureWithThread:thread transaction:transaction];
 
-                            if (!cell.hasAccessoryText) {
-                                // Don't add a disappearing messages indicator if we've already added a "blocked" label.
-                                __block OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration;
-                                [self.uiDatabaseConnection
-                                    readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
-                                        disappearingMessagesConfiguration = [OWSDisappearingMessagesConfiguration
-                                            fetchObjectWithUniqueID:thread.uniqueId
-                                                        transaction:transaction];
-                                    }];
+                                if (!cell.hasAccessoryText) {
+                                    // Don't add a disappearing messages indicator if we've already added a "blocked"
+                                    // label.
+                                    __block OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration;
 
-                                if (disappearingMessagesConfiguration && disappearingMessagesConfiguration.isEnabled) {
-                                    DisappearingTimerConfigurationView *disappearingTimerConfigurationView =
-                                        [[DisappearingTimerConfigurationView alloc]
-                                            initWithDurationSeconds:disappearingMessagesConfiguration.durationSeconds];
+                                    disappearingMessagesConfiguration =
+                                        [thread disappearingMessagesConfigurationWithTransaction:transaction];
 
-                                    disappearingTimerConfigurationView.tintColor = Theme.middleGrayColor;
-                                    [disappearingTimerConfigurationView autoSetDimensionsToSize:CGSizeMake(44, 44)];
+                                    if (disappearingMessagesConfiguration
+                                        && disappearingMessagesConfiguration.isEnabled) {
+                                        DisappearingTimerConfigurationView *disappearingTimerConfigurationView =
+                                            [[DisappearingTimerConfigurationView alloc]
+                                                initWithDurationSeconds:disappearingMessagesConfiguration
+                                                                            .durationSeconds];
 
-                                    [cell ows_setAccessoryView:disappearingTimerConfigurationView];
+                                        disappearingTimerConfigurationView.tintColor = Theme.middleGrayColor;
+                                        [disappearingTimerConfigurationView autoSetDimensionsToSize:CGSizeMake(44, 44)];
+
+                                        [cell ows_setAccessoryView:disappearingTimerConfigurationView];
+                                    }
                                 }
-                            }
+                            }];
 
                             return cell;
                         }
@@ -241,8 +252,6 @@ NS_ASSUME_NONNULL_BEGIN
                                 [BlockListUIUtils
                                     showUnblockThreadActionSheet:thread
                                               fromViewController:strongSelf
-                                                 blockingManager:helper.blockingManager
-                                                 contactsManager:helper.contactsManager
                                                  completionBlock:^(BOOL isStillBlocked) {
                                                      if (!isStillBlocked) {
                                                          [strongSelf.selectThreadViewDelegate threadWasSelected:thread];
@@ -263,21 +272,21 @@ NS_ASSUME_NONNULL_BEGIN
     OWSTableSection *otherContactsSection = [OWSTableSection new];
     otherContactsSection.headerTitle = NSLocalizedString(
         @"SELECT_THREAD_TABLE_OTHER_CHATS_TITLE", @"Table section header for conversations you haven't recently used.");
-    NSArray<SignalAccount *> *filteredSignalAccounts = [self filteredSignalAccountsWithSearchText];
+    __block NSArray<SignalAccount *> *filteredSignalAccounts;
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        filteredSignalAccounts = [self filteredSignalAccountsWithTransaction:transaction];
+    }];
+
     for (SignalAccount *signalAccount in filteredSignalAccounts) {
         [otherContactsSection
             addItem:[OWSTableItem
                         itemWithCustomCellBlock:^{
-                            SelectThreadViewController *strongSelf = weakSelf;
-                            OWSCAssertDebug(strongSelf);
-
                             ContactTableViewCell *cell = [ContactTableViewCell new];
-                            BOOL isBlocked = [helper isRecipientIdBlocked:signalAccount.recipientId];
+                            BOOL isBlocked = [helper isSignalServiceAddressBlocked:signalAccount.recipientAddress];
                             if (isBlocked) {
-                                cell.accessoryMessage = NSLocalizedString(
-                                    @"CONTACT_CELL_IS_BLOCKED", @"An indicator that a contact has been blocked.");
+                                cell.accessoryMessage = MessageStrings.conversationIsBlocked;
                             }
-                            [cell configureWithRecipientId:signalAccount.recipientId];
+                            [cell configureWithRecipientAddress:signalAccount.recipientAddress];
                             return cell;
                         }
                         customRowHeight:UITableViewAutomaticDimension
@@ -309,14 +318,12 @@ NS_ASSUME_NONNULL_BEGIN
 
     ContactsViewHelper *helper = self.contactsViewHelper;
 
-    if ([helper isRecipientIdBlocked:signalAccount.recipientId]
+    if ([helper isSignalServiceAddressBlocked:signalAccount.recipientAddress]
         && ![self.selectThreadViewDelegate canSelectBlockedContact]) {
 
         __weak SelectThreadViewController *weakSelf = self;
         [BlockListUIUtils showUnblockSignalAccountActionSheet:signalAccount
                                            fromViewController:self
-                                              blockingManager:helper.blockingManager
-                                              contactsManager:helper.contactsManager
                                               completionBlock:^(BOOL isBlocked) {
                                                   if (!isBlocked) {
                                                       [weakSelf signalAccountWasSelected:signalAccount];
@@ -326,8 +333,9 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     __block TSThread *thread = nil;
-    [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        thread = [TSContactThread getOrCreateThreadWithContactId:signalAccount.recipientId transaction:transaction];
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        thread = [TSContactThread getOrCreateThreadWithContactAddress:signalAccount.recipientAddress
+                                                          transaction:transaction];
     }];
     OWSAssertDebug(thread);
 
@@ -336,34 +344,36 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - Filter
 
-- (NSArray<TSThread *> *)filteredThreadsWithSearchText
+- (NSArray<TSThread *> *)filteredThreadsWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     NSString *searchTerm = [[self.searchBar text] ows_stripped];
 
-    return [self.conversationSearcher filterThreads:self.threadViewHelper.threads withSearchText:searchTerm];
+    return [self.fullTextSearcher filterThreads:self.threadViewHelper.threads
+                                 withSearchText:searchTerm
+                                    transaction:transaction];
 }
 
-- (NSArray<SignalAccount *> *)filteredSignalAccountsWithSearchText
+- (NSArray<SignalAccount *> *)filteredSignalAccountsWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     // We don't want to show a 1:1 thread with Alice and Alice's contact,
     // so we de-duplicate by recipientId.
     NSArray<TSThread *> *threads = self.threadViewHelper.threads;
-    NSMutableSet *contactIdsToIgnore = [NSMutableSet new];
+    NSMutableSet<SignalServiceAddress *> *contactAddressesToIgnore = [NSMutableSet new];
     for (TSThread *thread in threads) {
         if ([thread isKindOfClass:[TSContactThread class]]) {
             TSContactThread *contactThread = (TSContactThread *)thread;
-            [contactIdsToIgnore addObject:contactThread.contactIdentifier];
+            [contactAddressesToIgnore addObject:contactThread.contactAddress];
         }
     }
 
     NSString *searchString = self.searchBar.text;
     NSArray<SignalAccount *> *matchingAccounts =
-        [self.contactsViewHelper signalAccountsMatchingSearchString:searchString];
+        [self.contactsViewHelper signalAccountsMatchingSearchString:searchString transaction:transaction];
 
     return [matchingAccounts
         filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(SignalAccount *signalAccount,
                                         NSDictionary<NSString *, id> *_Nullable bindings) {
-            return ![contactIdsToIgnore containsObject:signalAccount.recipientId];
+            return ![contactAddressesToIgnore containsObject:signalAccount.recipientAddress];
         }]];
 }
 
@@ -401,11 +411,12 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
-#pragma mark - NewNonContactConversationViewControllerDelegate
+#pragma mark - FindByPhoneNumberDelegate
 
-- (void)recipientIdWasSelected:(NSString *)recipientId
+- (void)findByPhoneNumber:(FindByPhoneNumberViewController *)findByPhoneNumber
+         didSelectAddress:(SignalServiceAddress *)address
 {
-    SignalAccount *signalAccount = [self.contactsViewHelper fetchOrBuildSignalAccountForRecipientId:recipientId];
+    SignalAccount *signalAccount = [self.contactsViewHelper fetchOrBuildSignalAccountForAddress:address];
     [self signalAccountWasSelected:signalAccount];
 }
 

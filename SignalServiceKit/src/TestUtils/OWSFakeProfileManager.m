@@ -1,22 +1,28 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSFakeProfileManager.h"
 #import "TSThread.h"
 #import <SignalCoreKit/Cryptography.h>
 #import <SignalCoreKit/NSData+OWS.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-#ifdef DEBUG
+#ifdef TESTABLE_BUILD
 
 @interface OWSFakeProfileManager ()
 
-@property (nonatomic, readonly) NSMutableDictionary<NSString *, OWSAES256Key *> *profileKeys;
-@property (nonatomic, readonly) NSMutableSet<NSString *> *recipientWhitelist;
+@property (nonatomic, readonly) NSMutableDictionary<SignalServiceAddress *, OWSAES256Key *> *profileKeys;
+@property (nonatomic, readonly) NSMutableSet<SignalServiceAddress *> *recipientWhitelist;
 @property (nonatomic, readonly) NSMutableSet<NSString *> *threadWhitelist;
 @property (nonatomic, readonly) OWSAES256Key *localProfileKey;
+@property (nonatomic, nullable) NSString *localGivenName;
+@property (nonatomic, nullable) NSString *localFamilyName;
+@property (nonatomic, nullable) NSString *localFullName;
+@property (nonatomic, nullable) NSString *localUsername;
+@property (nonatomic, nullable) NSData *localProfileAvatarData;
 
 @end
 
@@ -25,6 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation OWSFakeProfileManager
 
 @synthesize localProfileKey = _localProfileKey;
+@synthesize userProfileReadCache = _userProfileReadCache;
 
 - (instancetype)init
 {
@@ -36,6 +43,8 @@ NS_ASSUME_NONNULL_BEGIN
     _profileKeys = [NSMutableDictionary new];
     _recipientWhitelist = [NSMutableSet new];
     _threadWhitelist = [NSMutableSet new];
+    _userProfileReadCache = [UserProfileReadCache new];
+    _stubbedUuidCapabilitiesMap = [NSMutableDictionary new];
 
     return self;
 }
@@ -48,36 +57,226 @@ NS_ASSUME_NONNULL_BEGIN
     return _localProfileKey;
 }
 
-- (void)setProfileKeyData:(NSData *)profileKey forRecipientId:(NSString *)recipientId
+- (void)setProfileKeyData:(NSData *)profileKey
+               forAddress:(SignalServiceAddress *)address
+      wasLocallyInitiated:(BOOL)wasLocallyInitiated
+              transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAES256Key *_Nullable key = [OWSAES256Key keyWithData:profileKey];
     OWSAssert(key);
-    self.profileKeys[recipientId] = key;
+    self.profileKeys[address] = key;
 }
 
-- (nullable NSData *)profileKeyDataForRecipientId:(NSString *)recipientId
+- (void)fillInMissingProfileKeys:(NSDictionary<SignalServiceAddress *, NSData *> *)profileKeys
 {
-    return self.profileKeys[recipientId].keyData;
+    for (SignalServiceAddress *address in profileKeys) {
+        if (self.profileKeys[address] != nil) {
+            continue;
+        }
+        NSData *_Nullable profileKeyData = profileKeys[address];
+        OWSAssertDebug(profileKeyData);
+        OWSAES256Key *_Nullable key = [OWSAES256Key keyWithData:profileKeyData];
+        self.profileKeys[address] = key;
+    }
 }
 
-- (BOOL)isUserInProfileWhitelist:(NSString *)recipientId
+- (void)setProfileGivenName:(nullable NSString *)givenName
+                 familyName:(nullable NSString *)familyName
+                 forAddress:(SignalServiceAddress *)address
+        wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                transaction:(SDSAnyWriteTransaction *)transaction
 {
-    return [self.recipientWhitelist containsObject:recipientId];
+    // Do nothing.
 }
 
-- (BOOL)isThreadInProfileWhitelist:(TSThread *)thread
+- (void)setProfileGivenName:(nullable NSString *)firstName
+                 familyName:(nullable NSString *)lastName
+              avatarUrlPath:(nullable NSString *)avatarUrlPath
+                 forAddress:(nonnull SignalServiceAddress *)address
+        wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                transaction:(nonnull SDSAnyWriteTransaction *)transaction
+{
+    // Do nothing.
+}
+
+- (nullable NSString *)fullNameForAddress:(SignalServiceAddress *)address
+                              transaction:(SDSAnyReadTransaction *)transaction
+{
+    return @"some fake profile name";
+}
+
+- (nullable NSData *)profileKeyDataForAddress:(SignalServiceAddress *)address
+                                  transaction:(SDSAnyReadTransaction *)transaction
+{
+    return self.profileKeys[address].keyData;
+}
+
+- (BOOL)isUserInProfileWhitelist:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction
+{
+    return [self.recipientWhitelist containsObject:address];
+}
+
+- (BOOL)isThreadInProfileWhitelist:(TSThread *)thread transaction:(SDSAnyReadTransaction *)transaction
 {
     return [self.threadWhitelist containsObject:thread.uniqueId];
 }
 
-- (void)addUserToProfileWhitelist:(NSString *)recipientId
+- (void)addUserToProfileWhitelist:(SignalServiceAddress *)address
 {
-    [self.recipientWhitelist addObject:recipientId];
+    [self.recipientWhitelist addObject:address];
+}
+
+- (void)addUserToProfileWhitelist:(nonnull SignalServiceAddress *)address
+              wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                      transaction:(nonnull SDSAnyWriteTransaction *)transaction
+{
+    [self.recipientWhitelist addObject:address];
+}
+
+- (void)addUsersToProfileWhitelist:(NSArray<SignalServiceAddress *> *)addresses
+{
+    [self.recipientWhitelist addObjectsFromArray:addresses];
+}
+
+- (void)removeUserFromProfileWhitelist:(SignalServiceAddress *)address
+{
+    [self.recipientWhitelist removeObject:address];
+}
+
+- (void)removeUserFromProfileWhitelist:(nonnull SignalServiceAddress *)address
+                   wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                           transaction:(nonnull SDSAnyWriteTransaction *)transaction
+{
+    [self.recipientWhitelist removeObject:address];
+}
+
+- (BOOL)isGroupIdInProfileWhitelist:(NSData *)groupId transaction:(SDSAnyReadTransaction *)transaction
+{
+    return [self.threadWhitelist containsObject:groupId.hexadecimalString];
 }
 
 - (void)addGroupIdToProfileWhitelist:(NSData *)groupId
 {
     [self.threadWhitelist addObject:groupId.hexadecimalString];
+}
+
+- (void)addGroupIdToProfileWhitelist:(nonnull NSData *)groupId
+                 wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                         transaction:(nonnull SDSAnyWriteTransaction *)transaction
+{
+    [self.threadWhitelist addObject:groupId.hexadecimalString];
+}
+
+- (void)removeGroupIdFromProfileWhitelist:(NSData *)groupId
+{
+    [self.threadWhitelist removeObject:groupId.hexadecimalString];
+}
+
+- (void)removeGroupIdFromProfileWhitelist:(nonnull NSData *)groupId
+                      wasLocallyInitiated:(BOOL)wasLocallyInitiated
+                              transaction:(nonnull SDSAnyWriteTransaction *)transaction
+{
+    [self.threadWhitelist removeObject:groupId.hexadecimalString];
+}
+
+- (void)addThreadToProfileWhitelist:(TSThread *)thread
+{
+    if (thread.isGroupThread) {
+        TSGroupThread *groupThread = (TSGroupThread *)thread;
+        [self addGroupIdToProfileWhitelist:groupThread.groupModel.groupId];
+    } else {
+        TSContactThread *contactThread = (TSContactThread *)thread;
+        [self addUserToProfileWhitelist:contactThread.contactAddress];
+    }
+}
+
+- (void)addThreadToProfileWhitelist:(TSThread *)thread transaction:(SDSAnyWriteTransaction *)transaction
+{
+    if (thread.isGroupThread) {
+        TSGroupThread *groupThread = (TSGroupThread *)thread;
+        [self addGroupIdToProfileWhitelist:groupThread.groupModel.groupId];
+    } else {
+        TSContactThread *contactThread = (TSContactThread *)thread;
+        [self addUserToProfileWhitelist:contactThread.contactAddress];
+    }
+}
+
+- (void)fetchAndUpdateLocalUsersProfile
+{
+    // Do nothing.
+}
+
+- (AnyPromise *)fetchLocalUsersProfilePromise
+{
+    // Do nothing.
+    return [AnyPromise promiseWithValue:nil];
+}
+
+- (void)updateProfileForAddress:(nonnull SignalServiceAddress *)address
+{
+    // Do nothing.
+}
+
+- (AnyPromise *)updateProfileForAddressPromise:(SignalServiceAddress *)address
+{
+    return [AnyPromise promiseWithValue:@(1)];
+}
+
+- (AnyPromise *)updateProfileForAddressPromise:(SignalServiceAddress *)address
+                                   mainAppOnly:(BOOL)mainAppOnly
+                              ignoreThrottling:(BOOL)ignoreThrottling
+{
+    return [AnyPromise promiseWithValue:@(1)];
+}
+
+- (void)warmCaches
+{
+    // Do nothing.
+}
+
+- (BOOL)recipientAddressIsUuidCapable:(nonnull SignalServiceAddress *)address
+                          transaction:(nonnull SDSAnyReadTransaction *)transaction
+{
+    NSNumber *_Nullable capability = self.stubbedUuidCapabilitiesMap[address];
+    if (capability == nil) {
+        OWSFailDebug(@"unknown address %@ must be added to stubbedUuidCapabilitiesMap.", address);
+        return NO;
+    }
+    return capability.boolValue;
+}
+
+- (BOOL)hasLocalProfile
+{
+    return (self.localGivenName.length > 0 || self.localProfileAvatarImage != nil);
+}
+
+- (BOOL)hasProfileName
+{
+    return self.localGivenName.length > 0;
+}
+
+- (nullable UIImage *)localProfileAvatarImage
+{
+    NSData *_Nullable data = self.localProfileAvatarData;
+    if (data == nil) {
+        return nil;
+    }
+
+    return [UIImage imageWithData:data];
+}
+
+- (BOOL)localProfileExistsWithTransaction:(nonnull SDSAnyReadTransaction *)transaction
+{
+    return self.hasLocalProfile;
+}
+
+- (void)updateProfileForAddress:(SignalServiceAddress *)address
+           profileNameEncrypted:(nullable NSData *)profileNameEncrypted
+                       username:(nullable NSString *)username
+                  isUuidCapable:(BOOL)isUuidCapable
+                  avatarUrlPath:(nullable NSString *)avatarUrlPath
+{
+    // Do nothing.
 }
 
 @end

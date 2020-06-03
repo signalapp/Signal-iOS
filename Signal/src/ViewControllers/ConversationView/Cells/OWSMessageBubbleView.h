@@ -1,29 +1,21 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
+
+#import "OWSMessageView.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class ContactShareViewModel;
-@class ConversationStyle;
-
-@protocol ConversationViewItem;
-
 @class OWSContact;
+@class OWSLayerView;
+@class OWSLinkPreview;
+@class OWSMessageFooterView;
 @class OWSQuotedReplyModel;
+@class StickerPackInfo;
 @class TSAttachmentPointer;
 @class TSAttachmentStream;
 @class TSOutgoingMessage;
-
-typedef NS_ENUM(NSUInteger, OWSMessageGestureLocation) {
-    // Message text, etc.
-    OWSMessageGestureLocation_Default,
-    OWSMessageGestureLocation_OversizeText,
-    OWSMessageGestureLocation_Media,
-    OWSMessageGestureLocation_QuotedReply,
-};
-
-extern const UIDataDetectorTypes kOWSAllowedDataDetectorTypes;
 
 @protocol OWSMessageBubbleViewDelegate
 
@@ -37,15 +29,23 @@ extern const UIDataDetectorTypes kOWSAllowedDataDetectorTypes;
 
 - (void)didTapAudioViewItem:(id<ConversationViewItem>)viewItem attachmentStream:(TSAttachmentStream *)attachmentStream;
 
+- (void)didScrubAudioViewItem:(id<ConversationViewItem>)viewItem
+                       toTime:(NSTimeInterval)time
+             attachmentStream:(TSAttachmentStream *)attachmentStream;
+
+- (void)didTapPdfForItem:(id<ConversationViewItem>)viewItem attachmentStream:(TSAttachmentStream *)attachmentStream;
+
 - (void)didTapTruncatedTextMessage:(id<ConversationViewItem>)conversationItem;
 
-- (void)didTapFailedIncomingAttachment:(id<ConversationViewItem>)viewItem
-                     attachmentPointer:(TSAttachmentPointer *)attachmentPointer;
+- (void)didTapFailedIncomingAttachment:(id<ConversationViewItem>)viewItem;
+- (void)didTapPendingMessageRequestIncomingAttachment:(id<ConversationViewItem>)viewItem;
 
 - (void)didTapConversationItem:(id<ConversationViewItem>)viewItem quotedReply:(OWSQuotedReplyModel *)quotedReply;
 - (void)didTapConversationItem:(id<ConversationViewItem>)viewItem
                                  quotedReply:(OWSQuotedReplyModel *)quotedReply
     failedThumbnailDownloadAttachmentPointer:(TSAttachmentPointer *)attachmentPointer;
+
+- (void)didTapConversationItem:(id<ConversationViewItem>)viewItem linkPreview:(OWSLinkPreview *)linkPreview;
 
 - (void)didTapContactShareViewItem:(id<ConversationViewItem>)viewItem;
 
@@ -56,49 +56,25 @@ extern const UIDataDetectorTypes kOWSAllowedDataDetectorTypes;
 - (void)didTapShowAddToContactUIForContactShare:(ContactShareViewModel *)contactShare
     NS_SWIFT_NAME(didTapShowAddToContactUI(forContactShare:));
 
+- (void)didTapStickerPack:(StickerPackInfo *)stickerPackInfo NS_SWIFT_NAME(didTapStickerPack(_:));
+
+@property (nonatomic, readonly, nullable) NSString *lastSearchedText;
+
 @end
 
 #pragma mark -
 
-@interface OWSMessageBubbleView : UIView
-
-@property (nonatomic, nullable) id<ConversationViewItem> viewItem;
-
-@property (nonatomic) ConversationStyle *conversationStyle;
-
-@property (nonatomic) NSCache *cellMediaCache;
+@interface OWSMessageBubbleView : OWSMessageView
 
 @property (nonatomic, nullable, readonly) UIView *bodyMediaView;
-
+@property (nonatomic, nullable, readonly) OWSLayerView *bodyMediaGradientView;
+@property (nonatomic, readonly) OWSMessageFooterView *footerView;
 @property (nonatomic, weak) id<OWSMessageBubbleViewDelegate> delegate;
 
-- (instancetype)init NS_UNAVAILABLE;
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
 
-- (instancetype)initWithFrame:(CGRect)frame NS_DESIGNATED_INITIALIZER;
-
-- (instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
-
-- (void)configureViews;
-
-- (void)loadContent;
-- (void)unloadContent;
-
-- (CGSize)measureSize;
-
-- (void)prepareForReuse;
-
-+ (NSDictionary *)senderNamePrimaryAttributes;
-+ (NSDictionary *)senderNameSecondaryAttributes;
-
-#pragma mark - Gestures
-
-- (OWSMessageGestureLocation)gestureLocationForLocation:(CGPoint)locationInMessageBubble;
-
-// This only needs to be called when we use the cell _outside_ the context
-// of a conversation view message cell.
-- (void)addTapGestureHandler;
-
-- (void)handleTapGesture:(UITapGestureRecognizer *)sender;
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_UNAVAILABLE;
+- (instancetype)initWithFrame:(CGRect)frame NS_UNAVAILABLE;
 
 @end
 

@@ -1,44 +1,70 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
 
 extern NSString *const NSNotificationName_2FAStateDidChange;
 
+extern const NSUInteger kMin2FAPinLength;
+extern const NSUInteger kMin2FAv2PinLength;
+extern const NSUInteger kMax2FAv1PinLength;
+extern const NSUInteger kLegacyTruncated2FAv1PinLength;
+
 typedef void (^OWS2FASuccess)(void);
 typedef void (^OWS2FAFailure)(NSError *error);
 
-@class OWSPrimaryStorage;
+typedef NS_CLOSED_ENUM(NSUInteger, OWS2FAMode) {
+    OWS2FAMode_Disabled = 0,
+    OWS2FAMode_V1,
+    OWS2FAMode_V2,
+};
+
+@class SDSAnyReadTransaction;
+@class SDSAnyWriteTransaction;
+@class SDSKeyValueStore;
 
 // This class can be safely accessed and used from any thread.
 @interface OWS2FAManager : NSObject
 
-- (instancetype)init NS_UNAVAILABLE;
++ (SDSKeyValueStore *)keyValueStore;
 
-- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
 
 + (instancetype)sharedManager;
 
 @property (nullable, nonatomic, readonly) NSString *pinCode;
+@property (nonatomic, readonly) OWS2FAMode mode;
+@property (nonatomic, readonly) BOOL isDueForV1Reminder;
+@property (nonatomic, readonly) NSTimeInterval repetitionInterval;
 
 - (BOOL)is2FAEnabled;
-- (BOOL)isDueForReminder;
+- (BOOL)needsLegacyPinMigration;
+- (void)verifyPin:(NSString *)pin result:(void (^_Nonnull)(BOOL))result;
+
+- (BOOL)isDueForV2ReminderWithTransaction:(SDSAnyReadTransaction *)transaction
+    NS_SWIFT_NAME(isDueForV2Reminder(transaction:));
 
 // Request with service
 - (void)requestEnable2FAWithPin:(NSString *)pin
+                           mode:(OWS2FAMode)mode
                         success:(nullable OWS2FASuccess)success
                         failure:(nullable OWS2FAFailure)failure;
-
-// Sore local settings if, used during registration
-- (void)mark2FAAsEnabledWithPin:(NSString *)pin;
 
 - (void)disable2FAWithSuccess:(nullable OWS2FASuccess)success failure:(nullable OWS2FAFailure)failure;
 
 - (void)updateRepetitionIntervalWithWasSuccessful:(BOOL)wasSuccessful;
 
+- (void)markEnabledWithPin:(NSString *)pin
+               transaction:(SDSAnyWriteTransaction *)transaction NS_SWIFT_NAME(markEnabled(pin:transaction:));
+- (void)markEnabledWithTransaction:(SDSAnyWriteTransaction *)transaction NS_SWIFT_NAME(markEnabled(transaction:));
+- (void)markDisabledWithTransaction:(SDSAnyWriteTransaction *)transaction NS_SWIFT_NAME(markDisabled(transaction:));
+
+@property (nonatomic, readonly) BOOL areRemindersEnabled;
+- (void)setAreRemindersEnabled:(BOOL)areRemindersEnabled transaction:(SDSAnyWriteTransaction *)transaction;
+
 // used for testing
-- (void)setDefaultRepetitionInterval;
+- (void)setDefaultRepetitionIntervalWithTransaction:(SDSAnyWriteTransaction *)transaction;
 
 @end
 

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSLinkDeviceViewController.h"
@@ -16,11 +16,10 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSLinkDeviceViewController ()
+@interface OWSLinkDeviceViewController () <OWSQRScannerDelegate>
 
-@property (nonatomic) YapDatabaseConnection *dbConnection;
-@property (nonatomic) IBOutlet UIView *qrScanningView;
-@property (nonatomic) IBOutlet UILabel *scanningInstructionsLabel;
+@property (nonatomic) UIView *qrScanningView;
+@property (nonatomic) UILabel *scanningInstructionsLabel;
 @property (nonatomic) OWSQRCodeScanningViewController *qrScanningController;
 @property (nonatomic, readonly) OWSReadReceiptManager *readReceiptManager;
 
@@ -32,16 +31,47 @@ NS_ASSUME_NONNULL_BEGIN
 {
     [super viewDidLoad];
 
-    self.dbConnection = [[OWSPrimaryStorage sharedManager] newDatabaseConnection];
+    UIImage *heroImage = [UIImage imageNamed:@"ic_devices_ios"];
+    OWSAssertDebug(heroImage);
+    UIImageView *heroImageView = [[UIImageView alloc] initWithImage:heroImage];
+    [heroImageView autoSetDimensionsToSize:heroImage.size];
 
-    // HACK to get full width preview layer
-    CGRect oldFrame = self.qrScanningView.frame;
-    self.qrScanningView.frame = CGRectMake(
-        oldFrame.origin.x, oldFrame.origin.y, self.view.frame.size.width, self.view.frame.size.height / 2.0f - 32.0f);
-    // END HACK to get full width preview layer
-
+    self.scanningInstructionsLabel = [UILabel new];
     self.scanningInstructionsLabel.text = NSLocalizedString(@"LINK_DEVICE_SCANNING_INSTRUCTIONS",
         @"QR Scanning screen instructions, placed alongside a camera view for scanning QR Codes");
+    self.scanningInstructionsLabel.font = UIFont.ows_dynamicTypeCaption1Font;
+    self.scanningInstructionsLabel.numberOfLines = 0;
+    self.scanningInstructionsLabel.lineBreakMode = NSLineBreakByWordWrapping;
+    self.scanningInstructionsLabel.textAlignment = NSTextAlignmentCenter;
+
+    self.qrScanningController = [OWSQRCodeScanningViewController new];
+    self.qrScanningController.scanDelegate = self;
+    [self.view addSubview:self.qrScanningController.view];
+    [self.qrScanningController.view autoPinEdgeToSuperviewEdge:ALEdgeLeading];
+    [self.qrScanningController.view autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
+    [self.qrScanningController.view autoPinToTopLayoutGuideOfViewController:self withInset:0.f];
+    [self.qrScanningController.view autoPinToSquareAspectRatio];
+
+    UIView *bottomView = [UIView new];
+    [self.view addSubview:bottomView];
+    [bottomView autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:self.qrScanningController.view];
+    [bottomView autoPinEdgeToSuperviewEdge:ALEdgeLeading];
+    [bottomView autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
+    [bottomView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+
+    UIStackView *bottomStack = [[UIStackView alloc] initWithArrangedSubviews:@[
+        heroImageView,
+        self.scanningInstructionsLabel,
+    ]];
+    bottomStack.axis = UILayoutConstraintAxisVertical;
+    bottomStack.alignment = UIStackViewAlignmentCenter;
+    bottomStack.spacing = 2;
+    bottomStack.layoutMarginsRelativeArrangement = YES;
+    bottomStack.layoutMargins = UIEdgeInsetsMake(20, 20, 20, 20);
+    [bottomView addSubview:bottomStack];
+    [bottomStack autoPinWidthToSuperview];
+    [bottomStack autoVCenterInSuperview];
+
     self.title
         = NSLocalizedString(@"LINK_NEW_DEVICE_TITLE", "Navigation title when scanning QR code to add new device.");
 }
@@ -75,29 +105,29 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-- (void)viewWillAppear:(BOOL)animated
-{
-    [super viewWillAppear:animated];
-}
-
 - (void)viewDidAppear:(BOOL)animated
 {
     [super viewDidAppear:animated];
-    [self.qrScanningController startCapture];
-}
 
-- (void)prepareForSegue:(UIStoryboardSegue *)segue sender:(nullable id)sender
-{
-    if ([segue.identifier isEqualToString:@"embedDeviceQRScanner"]) {
-        OWSQRCodeScanningViewController *qrScanningController
-            = (OWSQRCodeScanningViewController *)segue.destinationViewController;
-        qrScanningController.scanDelegate = self;
-        self.qrScanningController = qrScanningController;
+    if (!UIDevice.currentDevice.isIPad) {
+        [UIDevice.currentDevice ows_setOrientation:UIDeviceOrientationPortrait];
     }
+
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.qrScanningController startCapture];
+    });
 }
 
+- (void)traitCollectionDidChange:(nullable UITraitCollection *)previousTraitCollection
+{
+    [super traitCollectionDidChange:previousTraitCollection];
 
-// pragma mark - OWSQRScannerDelegate
+    self.view.backgroundColor = Theme.backgroundColor;
+    self.scanningInstructionsLabel.textColor = Theme.primaryTextColor;
+}
+
+#pragma mark - OWSQRScannerDelegate
+
 - (void)controller:(OWSQRCodeScanningViewController *)controller didDetectQRCodeWithString:(NSString *)string
 {
     OWSDeviceProvisioningURLParser *parser = [[OWSDeviceProvisioningURLParser alloc] initWithProvisioningURL:string];
@@ -107,57 +137,55 @@ NS_ASSUME_NONNULL_BEGIN
         NSString *title = NSLocalizedString(@"LINK_DEVICE_INVALID_CODE_TITLE", @"report an invalid linking code");
         NSString *body = NSLocalizedString(@"LINK_DEVICE_INVALID_CODE_BODY", @"report an invalid linking code");
 
-        UIAlertController *alertController =
-            [UIAlertController alertControllerWithTitle:title message:body preferredStyle:UIAlertControllerStyleAlert];
+        ActionSheetController *actionSheet = [[ActionSheetController alloc] initWithTitle:title message:body];
 
-        UIAlertAction *cancelAction =
-            [UIAlertAction actionWithTitle:CommonStrings.cancelButton
-                                     style:UIAlertActionStyleCancel
-                                   handler:^(UIAlertAction *action) {
-                                       dispatch_async(dispatch_get_main_queue(), ^{
-                                           [self.navigationController popViewControllerAnimated:YES];
-                                       });
-                                   }];
-        [alertController addAction:cancelAction];
+        ActionSheetAction *cancelAction =
+            [[ActionSheetAction alloc] initWithTitle:CommonStrings.cancelButton
+                                               style:ActionSheetActionStyleCancel
+                                             handler:^(ActionSheetAction *action) {
+                                                 dispatch_async(dispatch_get_main_queue(), ^{
+                                                     [self popToLinkedDeviceList];
+                                                 });
+                                             }];
+        [actionSheet addAction:cancelAction];
 
-        UIAlertAction *proceedAction =
-            [UIAlertAction actionWithTitle:NSLocalizedString(@"LINK_DEVICE_RESTART", @"attempt another linking")
-                                     style:UIAlertActionStyleDefault
-                                   handler:^(UIAlertAction *action) {
-                                       [self.qrScanningController startCapture];
-                                   }];
-        [alertController addAction:proceedAction];
+        ActionSheetAction *proceedAction = [[ActionSheetAction alloc]
+            initWithTitle:NSLocalizedString(@"LINK_DEVICE_RESTART", @"attempt another linking")
+                    style:ActionSheetActionStyleDefault
+                  handler:^(ActionSheetAction *action) {
+                      [self.qrScanningController startCapture];
+                  }];
+        [actionSheet addAction:proceedAction];
 
-        [self presentViewController:alertController animated:YES completion:nil];
+        [self presentActionSheet:actionSheet];
     } else {
         NSString *title = NSLocalizedString(
             @"LINK_DEVICE_PERMISSION_ALERT_TITLE", @"confirm the users intent to link a new device");
         NSString *linkingDescription
             = NSLocalizedString(@"LINK_DEVICE_PERMISSION_ALERT_BODY", @"confirm the users intent to link a new device");
 
-        UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title
-                                                                                 message:linkingDescription
-                                                                          preferredStyle:UIAlertControllerStyleAlert];
+        ActionSheetController *actionSheet = [[ActionSheetController alloc] initWithTitle:title
+                                                                                  message:linkingDescription];
 
-        UIAlertAction *cancelAction =
-            [UIAlertAction actionWithTitle:CommonStrings.cancelButton
-                                     style:UIAlertActionStyleCancel
-                                   handler:^(UIAlertAction *action) {
-                                       dispatch_async(dispatch_get_main_queue(), ^{
-                                           [self.navigationController popViewControllerAnimated:YES];
-                                       });
-                                   }];
-        [alertController addAction:cancelAction];
+        ActionSheetAction *cancelAction =
+            [[ActionSheetAction alloc] initWithTitle:CommonStrings.cancelButton
+                                               style:ActionSheetActionStyleCancel
+                                             handler:^(ActionSheetAction *action) {
+                                                 dispatch_async(dispatch_get_main_queue(), ^{
+                                                     [self popToLinkedDeviceList];
+                                                 });
+                                             }];
+        [actionSheet addAction:cancelAction];
 
-        UIAlertAction *proceedAction =
-            [UIAlertAction actionWithTitle:NSLocalizedString(@"CONFIRM_LINK_NEW_DEVICE_ACTION", @"Button text")
-                                     style:UIAlertActionStyleDefault
-                                   handler:^(UIAlertAction *action) {
-                                       [self provisionWithParser:parser];
-                                   }];
-        [alertController addAction:proceedAction];
+        ActionSheetAction *proceedAction = [[ActionSheetAction alloc]
+            initWithTitle:NSLocalizedString(@"CONFIRM_LINK_NEW_DEVICE_ACTION", @"Button text")
+                    style:ActionSheetActionStyleDefault
+                  handler:^(ActionSheetAction *action) {
+                      [self provisionWithParser:parser];
+                  }];
+        [actionSheet addAction:proceedAction];
 
-        [self presentViewController:alertController animated:YES completion:nil];
+        [self presentActionSheet:actionSheet];
     }
 }
 
@@ -170,7 +198,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(identityKeyPair);
     NSData *myPublicKey = identityKeyPair.publicKey;
     NSData *myPrivateKey = identityKeyPair.privateKey;
-    NSString *accountIdentifier = [TSAccountManager localNumber];
+    SignalServiceAddress *accountAddress = [TSAccountManager localAddress];
     NSData *myProfileKeyData = self.profileManager.localProfileKey.keyData;
     BOOL areReadReceiptsEnabled = self.readReceiptManager.areReadReceiptsEnabled;
 
@@ -178,7 +206,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                              myPrivateKey:myPrivateKey
                                                                            theirPublicKey:parser.publicKey
                                                                    theirEphemeralDeviceId:parser.ephemeralDeviceId
-                                                                        accountIdentifier:accountIdentifier
+                                                                           accountAddress:accountAddress
                                                                                profileKey:myProfileKeyData
                                                                       readReceiptsEnabled:areReadReceiptsEnabled];
 
@@ -187,7 +215,7 @@ NS_ASSUME_NONNULL_BEGIN
             OWSLogInfo(@"Successfully provisioned device.");
             dispatch_async(dispatch_get_main_queue(), ^{
                 [self.linkedDevicesTableViewController expectMoreDevices];
-                [self.navigationController popToViewController:self.linkedDevicesTableViewController animated:YES];
+                [self popToLinkedDeviceList];
 
                 // The service implementation of the socket connection caches the linked device state,
                 // so all sync message sends will fail on the socket until it is cycled.
@@ -195,46 +223,58 @@ NS_ASSUME_NONNULL_BEGIN
 
                 // Fetch the local profile to determine if all
                 // linked devices support UD.
-                [self.profileManager fetchLocalUsersProfile];
+                [self.profileManager fetchAndUpdateLocalUsersProfile];
             });
         }
         failure:^(NSError *error) {
             OWSLogError(@"Failed to provision device with error: %@", error);
             dispatch_async(dispatch_get_main_queue(), ^{
-                [self presentViewController:[self retryAlertControllerWithError:error
-                                                                     retryBlock:^{
-                                                                         [self provisionWithParser:parser];
-                                                                     }]
-                                   animated:YES
-                                 completion:nil];
+                [self presentActionSheet:[self retryActionSheetControllerWithError:error
+                                                                        retryBlock:^{
+                                                                            [self provisionWithParser:parser];
+                                                                        }]];
             });
         }];
 }
 
-- (UIAlertController *)retryAlertControllerWithError:(NSError *)error retryBlock:(void (^)(void))retryBlock
+- (ActionSheetController *)retryActionSheetControllerWithError:(NSError *)error retryBlock:(void (^)(void))retryBlock
 {
     NSString *title = NSLocalizedString(@"LINKING_DEVICE_FAILED_TITLE", @"Alert Title");
-    UIAlertController *alertController = [UIAlertController alertControllerWithTitle:title
-                                                                             message:error.localizedDescription
-                                                                      preferredStyle:UIAlertControllerStyleAlert];
+    ActionSheetController *actionSheet = [[ActionSheetController alloc] initWithTitle:title
+                                                                              message:error.localizedDescription];
 
-    UIAlertAction *retryAction = [UIAlertAction actionWithTitle:[CommonStrings retryButton]
-                                                          style:UIAlertActionStyleDefault
-                                                        handler:^(UIAlertAction *action) {
-                                                            retryBlock();
-                                                        }];
-    [alertController addAction:retryAction];
+    ActionSheetAction *retryAction = [[ActionSheetAction alloc] initWithTitle:[CommonStrings retryButton]
+                                                                        style:ActionSheetActionStyleDefault
+                                                                      handler:^(ActionSheetAction *action) {
+                                                                          retryBlock();
+                                                                      }];
+    [actionSheet addAction:retryAction];
 
-    UIAlertAction *cancelAction =
-        [UIAlertAction actionWithTitle:CommonStrings.cancelButton
-                                 style:UIAlertActionStyleCancel
-                               handler:^(UIAlertAction *action) {
-                                   dispatch_async(dispatch_get_main_queue(), ^{
-                                       [self dismissViewControllerAnimated:YES completion:nil];
-                                   });
-                               }];
-    [alertController addAction:cancelAction];
-    return alertController;
+    ActionSheetAction *cancelAction = [[ActionSheetAction alloc] initWithTitle:CommonStrings.cancelButton
+                                                                         style:ActionSheetActionStyleCancel
+                                                                       handler:^(ActionSheetAction *action) {
+                                                                           dispatch_async(dispatch_get_main_queue(), ^{
+                                                                               [self dismissViewControllerAnimated:YES
+                                                                                                        completion:nil];
+                                                                           });
+                                                                       }];
+    [actionSheet addAction:cancelAction];
+    return actionSheet;
+}
+
+- (void)popToLinkedDeviceList
+{
+    [self.navigationController popViewControllerWithAnimated:YES
+                                                  completion:^{
+                                                      [UIViewController attemptRotationToDeviceOrientation];
+                                                  }];
+}
+
+#pragma mark - Orientation
+
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
+{
+    return UIDevice.currentDevice.isIPad ? UIInterfaceOrientationMaskAll : UIInterfaceOrientationMaskPortrait;
 }
 
 @end

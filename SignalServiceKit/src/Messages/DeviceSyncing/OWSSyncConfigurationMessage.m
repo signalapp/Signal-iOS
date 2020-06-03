@@ -1,8 +1,9 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSSyncConfigurationMessage.h"
+#import <SignalServiceKit/OWSProvisioningMessage.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -12,15 +13,19 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BOOL areReadReceiptsEnabled;
 @property (nonatomic, readonly) BOOL showUnidentifiedDeliveryIndicators;
 @property (nonatomic, readonly) BOOL showTypingIndicators;
+@property (nonatomic, readonly) BOOL sendLinkPreviews;
 
 @end
 
 @implementation OWSSyncConfigurationMessage
 
-- (instancetype)initWithReadReceiptsEnabled:(BOOL)areReadReceiptsEnabled
-         showUnidentifiedDeliveryIndicators:(BOOL)showUnidentifiedDeliveryIndicators
-                       showTypingIndicators:(BOOL)showTypingIndicators {
-    self = [super init];
+- (instancetype)initWithThread:(TSThread *)thread
+                   readReceiptsEnabled:(BOOL)areReadReceiptsEnabled
+    showUnidentifiedDeliveryIndicators:(BOOL)showUnidentifiedDeliveryIndicators
+                  showTypingIndicators:(BOOL)showTypingIndicators
+                      sendLinkPreviews:(BOOL)sendLinkPreviews
+{
+    self = [super initWithThread:thread];
     if (!self) {
         return nil;
     }
@@ -28,6 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
     _areReadReceiptsEnabled = areReadReceiptsEnabled;
     _showUnidentifiedDeliveryIndicators = showUnidentifiedDeliveryIndicators;
     _showTypingIndicators = showTypingIndicators;
+    _sendLinkPreviews = sendLinkPreviews;
 
     return self;
 }
@@ -37,12 +43,14 @@ NS_ASSUME_NONNULL_BEGIN
     return [super initWithCoder:coder];
 }
 
-- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilder
+- (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilderWithTransaction:(SDSAnyReadTransaction *)transaction;
 {
     SSKProtoSyncMessageConfigurationBuilder *configurationBuilder = [SSKProtoSyncMessageConfiguration builder];
     configurationBuilder.readReceipts = self.areReadReceiptsEnabled;
     configurationBuilder.unidentifiedDeliveryIndicators = self.showUnidentifiedDeliveryIndicators;
     configurationBuilder.typingIndicators = self.showTypingIndicators;
+    configurationBuilder.linkPreviews = self.sendLinkPreviews;
+    configurationBuilder.provisioningVersion = OWSProvisioningVersion;
 
     NSError *error;
     SSKProtoSyncMessageConfiguration *_Nullable configurationProto = [configurationBuilder buildAndReturnError:&error];

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -7,47 +7,57 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * The users privacy preference for what kind of content to show in lock screen notifications.
  */
-typedef NS_ENUM(NSUInteger, NotificationType) {
+typedef NS_CLOSED_ENUM(NSUInteger, NotificationType){
     NotificationNoNameNoPreview,
     NotificationNameNoPreview,
     NotificationNamePreview,
 };
+
+NSString *NSStringForNotificationType(NotificationType value);
 
 // Used when migrating logging to NSUserDefaults.
 extern NSString *const OWSPreferencesSignalDatabaseCollection;
 extern NSString *const OWSPreferencesKeyEnableDebugLog;
 extern NSString *const OWSPreferencesCallLoggingDidChangeNotification;
 
+@class SDSAnyReadTransaction;
+@class SDSAnyWriteTransaction;
+@class SDSKeyValueStore;
 @class YapDatabaseReadWriteTransaction;
 
 @interface OWSPreferences : NSObject
 
+@property (nonatomic, readonly) SDSKeyValueStore *keyValueStore;
+
 #pragma mark - Helpers
 
-- (nullable id)tryGetValueForKey:(NSString *)key;
-- (void)setValueForKey:(NSString *)key toValue:(nullable id)value;
-- (void)clear;
+- (void)removeAllValues;
 
 #pragma mark - Specific Preferences
 
 + (BOOL)isReadyForAppExtensions;
-+ (void)setIsReadyForAppExtensions;
 
-- (BOOL)hasSentAMessage;
-- (void)setHasSentAMessage:(BOOL)enabled;
++ (BOOL)isYdbReadyForAppExtensions;
++ (void)setIsYdbReadyForAppExtensions;
+
++ (BOOL)isGrdbReadyForAppExtensions;
++ (void)setIsGrdbReadyForAppExtensions;
+
++ (BOOL)isAudibleErrorLoggingEnabled;
++ (void)setIsAudibleErrorLoggingEnabled:(BOOL)value;
 
 + (BOOL)isLoggingEnabled;
-+ (void)setIsLoggingEnabled:(BOOL)flag;
++ (void)setIsLoggingEnabled:(BOOL)value;
 
 - (BOOL)screenSecurityIsEnabled;
-- (void)setScreenSecurity:(BOOL)flag;
+- (void)setScreenSecurity:(BOOL)value;
 
 - (NotificationType)notificationPreviewType;
 - (void)setNotificationPreviewType:(NotificationType)type;
 - (NSString *)nameForNotificationPreviewType:(NotificationType)notificationType;
 
 - (BOOL)soundInForeground;
-- (void)setSoundInForeground:(BOOL)enabled;
+- (void)setSoundInForeground:(BOOL)value;
 
 - (BOOL)hasDeclinedNoContactsView;
 - (void)setHasDeclinedNoContactsView:(BOOL)value;
@@ -59,32 +69,45 @@ extern NSString *const OWSPreferencesCallLoggingDidChangeNotification;
 - (void)setHasGeneratedThumbnails:(BOOL)value;
 
 - (BOOL)shouldShowUnidentifiedDeliveryIndicators;
-- (void)setShouldShowUnidentifiedDeliveryIndicators:(BOOL)value;
+- (BOOL)shouldShowUnidentifiedDeliveryIndicatorsWithTransaction:(SDSAnyReadTransaction *)transaction
+    NS_SWIFT_NAME(shouldShowUnidentifiedDeliveryIndicators(transaction:));
+- (void)setShouldShowUnidentifiedDeliveryIndicatorsAndSendSyncMessage:(BOOL)value;
+- (void)setShouldShowUnidentifiedDeliveryIndicators:(BOOL)value transaction:(SDSAnyWriteTransaction *)transaction;
+
+- (BOOL)shouldNotifyOfNewAccountsWithTransaction:(SDSAnyReadTransaction *)transaction
+    NS_SWIFT_NAME(shouldNotifyOfNewAccounts(transaction:));
+
+- (void)setShouldNotifyOfNewAccounts:(BOOL)newValue
+                         transaction:(SDSAnyWriteTransaction *)transaction
+    NS_SWIFT_NAME(shouldNotifyOfNewAccounts(_:transaction:));
+
+- (BOOL)wasViewOnceTooltipShown;
+- (void)setWasViewOnceTooltipShown;
 
 #pragma mark Callkit
 
 - (BOOL)isSystemCallLogEnabled;
-- (void)setIsSystemCallLogEnabled:(BOOL)flag;
+- (void)setIsSystemCallLogEnabled:(BOOL)value;
 
 #pragma mark - Legacy CallKit settings
 
 - (void)applyCallLoggingSettingsForLegacyUsersWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 - (BOOL)isCallKitEnabled;
-- (void)setIsCallKitEnabled:(BOOL)flag;
+- (void)setIsCallKitEnabled:(BOOL)value;
 
 // Returns YES IFF isCallKitEnabled has been set by user.
 - (BOOL)isCallKitEnabledSet;
 
 - (BOOL)isCallKitPrivacyEnabled;
-- (void)setIsCallKitPrivacyEnabled:(BOOL)flag;
+- (void)setIsCallKitPrivacyEnabled:(BOOL)value;
 // Returns YES IFF isCallKitPrivacyEnabled has been set by user.
 - (BOOL)isCallKitPrivacySet;
 
 #pragma mark direct call connectivity (non-TURN)
 
 - (BOOL)doCallsHideIPAddress;
-- (void)setDoCallsHideIPAddress:(BOOL)flag;
+- (void)setDoCallsHideIPAddress:(BOOL)value;
 
 #pragma mark - Push Tokens
 

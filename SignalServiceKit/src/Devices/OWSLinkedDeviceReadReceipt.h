@@ -1,25 +1,27 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSYapDatabaseObject.h"
+#import <Mantle/MTLModel.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSLinkedDeviceReadReceipt : TSYapDatabaseObject
+@class SDSAnyReadTransaction;
+@class SignalServiceAddress;
 
-@property (nonatomic, readonly) NSString *senderId;
+@interface OWSLinkedDeviceReadReceipt : MTLModel
+
+@property (nonatomic, readonly) SignalServiceAddress *senderAddress;
 @property (nonatomic, readonly) uint64_t messageIdTimestamp;
 @property (nonatomic, readonly) uint64_t readTimestamp;
 
-- (instancetype)initWithSenderId:(NSString *)senderId
-              messageIdTimestamp:(uint64_t)messageIdtimestamp
-                   readTimestamp:(uint64_t)readTimestamp;
++ (instancetype)new NS_UNAVAILABLE;
+- (instancetype)init NS_UNAVAILABLE;
 
-+ (nullable OWSLinkedDeviceReadReceipt *)findLinkedDeviceReadReceiptWithSenderId:(NSString *)senderId
-                                                              messageIdTimestamp:(uint64_t)messageIdTimestamp
-                                                                     transaction:
-                                                                         (YapDatabaseReadTransaction *)transaction;
+- (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithSenderAddress:(SignalServiceAddress *)address
+                   messageIdTimestamp:(uint64_t)messageIdtimestamp
+                        readTimestamp:(uint64_t)readTimestamp NS_DESIGNATED_INITIALIZER;
 
 @end
 

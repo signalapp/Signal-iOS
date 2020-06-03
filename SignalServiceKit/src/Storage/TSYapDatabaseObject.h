@@ -1,17 +1,39 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import <Mantle/MTLModel+NSCoding.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class OWSPrimaryStorage;
-@class YapDatabaseConnection;
+@class SDSAnyWriteTransaction;
+@class SDSDatabaseStorage;
 @class YapDatabaseReadTransaction;
 @class YapDatabaseReadWriteTransaction;
 
-@interface TSYapDatabaseObject : MTLModel
+@protocol SDSRecordDelegate
+
+- (void)updateRowId:(int64_t)rowId;
+
+@end
+
+#pragma mark -
+
+
+@interface TSYapDatabaseObject : MTLModel <SDSRecordDelegate>
+
+/**
+ *  The unique identifier of the stored object
+ */
+@property (nonatomic, readonly) NSString *uniqueId;
+
+// This property should only ever be accesssed within a GRDB write transaction.
+@property (atomic, readonly, nullable) NSNumber *grdbId;
+
+@property (nonatomic, readonly) SDSDatabaseStorage *databaseStorage;
+@property (class, nonatomic, readonly) SDSDatabaseStorage *databaseStorage;
+
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
 
 /**
  *  Initializes a new database object with a unique identifier
@@ -20,8 +42,10 @@ NS_ASSUME_NONNULL_BEGIN
  *
  *  @return Initialized object
  */
-- (instancetype)init NS_DESIGNATED_INITIALIZER;
-- (instancetype)initWithUniqueId:(NSString *_Nullable)uniqueId NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithUniqueId:(NSString *)uniqueId NS_DESIGNATED_INITIALIZER;
+
+- (instancetype)initWithGrdbId:(int64_t)grdbId uniqueId:(NSString *)uniqueId NS_DESIGNATED_INITIALIZER;
+
 - (nullable instancetype)initWithCoder:(NSCoder *)coder NS_DESIGNATED_INITIALIZER;
 
 /**
@@ -31,132 +55,40 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (NSString *)collection;
 
-/**
- * Get the number of keys in the models collection. Be aware that if there
- * are multiple object types in this collection that the count will include
- * the count of other objects in the same collection.
- *
- * @return The number of keys in the classes collection.
- */
-+ (NSUInteger)numberOfKeysInCollection;
-+ (NSUInteger)numberOfKeysInCollectionWithTransaction:(YapDatabaseReadTransaction *)transaction;
+// This method should only ever be called within a GRDB write transaction.
+- (void)clearRowId;
 
-/**
- * Removes all objects in the classes collection.
- */
-+ (void)removeAllObjectsInCollection;
+#pragma mark -
 
-/**
- * A memory intesive method to get all objects in the collection. You should prefer using enumeration over this method
- * whenever feasible. See `enumerateObjectsInCollectionUsingBlock`
- *
- * @return All objects in the classes collection.
- */
-+ (NSArray *)allObjectsInCollection;
+// GRDB TODO: As a perf optimization, we could only call these
+//            methods for certain kinds of models which we could
+//            detect at compile time.
+@property (nonatomic, readonly) BOOL shouldBeSaved;
 
-/**
- * Enumerates all objects in collection.
- */
-+ (void)enumerateCollectionObjectsUsingBlock:(void (^)(id obj, BOOL *stop))block;
-+ (void)enumerateCollectionObjectsWithTransaction:(YapDatabaseReadTransaction *)transaction
-                                       usingBlock:(void (^)(id object, BOOL *stop))block;
+@property (class, nonatomic, readonly) BOOL shouldBeIndexedForFTS;
 
-/**
- * @return Shared database connections for reading and writing.
- */
-- (YapDatabaseConnection *)dbReadConnection;
-+ (YapDatabaseConnection *)dbReadConnection;
-- (YapDatabaseConnection *)dbReadWriteConnection;
-+ (YapDatabaseConnection *)dbReadWriteConnection;
+#pragma mark - Data Store Write Hooks
 
-- (OWSPrimaryStorage *)primaryStorage;
-+ (OWSPrimaryStorage *)primaryStorage;
+- (void)anyWillInsertWithTransaction:(SDSAnyWriteTransaction *)transaction;
+- (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction;
+- (void)anyWillUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction;
+- (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction;
+- (void)anyWillRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction;
+- (void)anyDidRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction;
 
-/**
- *  Fetches the object with the provided identifier
- *
- *  @param uniqueID    Unique identifier of the entry in a collection
- *  @param transaction Transaction used for fetching the object
- *
- *  @return Instance of the object or nil if non-existent
- */
-+ (nullable instancetype)fetchObjectWithUniqueID:(NSString *)uniqueID
-                                     transaction:(YapDatabaseReadTransaction *)transaction
-    NS_SWIFT_NAME(fetch(uniqueId:transaction:));
-+ (nullable instancetype)fetchObjectWithUniqueID:(NSString *)uniqueID NS_SWIFT_NAME(fetch(uniqueId:));
+#pragma mark - YDB Deprecation
 
-/**
- * Saves the object with the shared readWrite connection.
- *
- * This method will block if another readWrite transaction is open.
- */
-- (void)save;
-
-/**
- * Assign the latest persisted values from the database.
- */
-- (void)reloadWithTransaction:(YapDatabaseReadTransaction *)transaction;
-- (void)reload;
-
-/**
- * Saves the object with the shared readWrite connection - does not block.
- *
- * Be mindful that this method may clobber other changes persisted
- * while waiting to open the readWrite transaction.
- *
- * @param completionBlock is called on the main thread
- */
-- (void)saveAsyncWithCompletionBlock:(void (^_Nullable)(void))completionBlock;
-
-/**
- *  Saves the object with the provided transaction
- *
- *  @param transaction Database transaction
- */
-- (void)saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
-
-/**
- * `touch` is a cheap way to fire a YapDatabaseModified notification to redraw anythign depending on the model.
- */
-- (void)touch;
-- (void)touchWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
-
-/**
- *  The unique identifier of the stored object
- */
-@property (nonatomic, nullable) NSString *uniqueId;
-
-- (void)removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
-- (void)remove;
-
-#pragma mark Update With...
-
-// This method is used by "updateWith..." methods.
-//
-// This model may be updated from many threads. We don't want to save
-// our local copy (this instance) since it may be out of date.  We also
-// want to avoid re-saving a model that has been deleted.  Therefore, we
-// use "updateWith..." methods to:
-//
-// a) Update a property of this instance.
-// b) If a copy of this model exists in the database, load an up-to-date copy,
-//    and update and save that copy.
-// b) If a copy of this model _DOES NOT_ exist in the database, do _NOT_ save
-//    this local instance.
-//
-// After "updateWith...":
-//
-// a) Any copy of this model in the database will have been updated.
-// b) The local property on this instance will always have been updated.
-// c) Other properties on this instance may be out of date.
-//
-// All mutable properties of this class have been made read-only to
-// prevent accidentally modifying them directly.
-//
-// This isn't a perfect arrangement, but in practice this will prevent
-// data loss and will resolve all known issues.
-- (void)applyChangeToSelfAndLatestCopy:(YapDatabaseReadWriteTransaction *)transaction
-                           changeBlock:(void (^)(id))changeBlock;
+// These ydb_ methods should only be used before
+// and during the ydb-to-grdb migration.
++ (void)ydb_enumerateCollectionObjectsWithTransaction:(YapDatabaseReadTransaction *)transaction
+                                           usingBlock:(void (^)(id object, BOOL *stop))block;
++ (nullable instancetype)ydb_fetchObjectWithUniqueID:(NSString *)uniqueID
+                                         transaction:(YapDatabaseReadTransaction *)transaction
+    NS_SWIFT_NAME(ydb_fetch(uniqueId:transaction:));
+- (void)ydb_reloadWithTransaction:(YapDatabaseReadTransaction *)transaction;
+- (void)ydb_reloadWithTransaction:(YapDatabaseReadTransaction *)transaction ignoreMissing:(BOOL)ignoreMissing;
+- (void)ydb_saveWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)ydb_removeWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 
 @end
 

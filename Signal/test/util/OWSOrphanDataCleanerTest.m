@@ -1,11 +1,10 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSOrphanDataCleaner.h"
 #import "SignalBaseTest.h"
 #import <SignalServiceKit/OWSDevice.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/TSAttachmentStream.h>
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSIncomingMessage.h>
@@ -32,9 +31,6 @@
 - (void)setUp
 {
     [super setUp];
-    // Register views, etc.
-    [OWSPrimaryStorage registerExtensionsWithMigrationBlock:^{
-    }];
 
     // Set up initial conditions & Sanity check
     XCTAssertEqual(0, [self numberOfItemsInAttachmentsFolder]);
@@ -72,16 +68,12 @@
 - (TSIncomingMessage *)createIncomingMessageWithThread:(TSThread *)thread
                                          attachmentIds:(NSArray<NSString *> *)attachmentIds
 {
-    TSIncomingMessage *incomingMessage =
-        [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:1
-                                                           inThread:thread
-                                                           authorId:@"fake-author-id"
-                                                     sourceDeviceId:OWSDevicePrimaryDeviceId
-                                                        messageBody:@"footch"
-                                                      attachmentIds:attachmentIds
-                                                   expiresInSeconds:0
-                                                      quotedMessage:nil
-                                                       contactShare:nil];
+    TSIncomingMessageBuilder *incomingMessageBuilder =
+        [TSIncomingMessageBuilder incomingMessageBuilderWithThread:thread messageBody:@"Test body"];
+    incomingMessageBuilder.authorAddress = [[SignalServiceAddress alloc] initWithPhoneNumber:@"fake-author-id"];
+    incomingMessageBuilder.timestamp = 1;
+    incomingMessageBuilder.attachmentIds = attachmentIds;
+    TSIncomingMessage *incomingMessage = [incomingMessageBuilder build];
     [incomingMessage save];
 
     return incomingMessage;
@@ -91,7 +83,7 @@
 {
     NSError *error;
     TSAttachmentStream *attachmentStream =
-        [[TSAttachmentStream alloc] initWithContentType:@"image/jpeg" byteCount:12 sourceFilename:nil];
+        [[TSAttachmentStream alloc] initWithContentType:OWSMimeTypeImageJpeg byteCount:12 sourceFilename:nil];
     [attachmentStream writeData:[NSData new] error:&error];
 
     XCTAssertNil(error);
@@ -220,7 +212,7 @@
 {
     NSError *error;
     TSAttachmentStream *attachmentStream =
-        [[TSAttachmentStream alloc] initWithContentType:@"image/jpeg" byteCount:0 sourceFilename:nil];
+        [[TSAttachmentStream alloc] initWithContentType:OWSMimeTypeImageJpeg byteCount:0 sourceFilename:nil];
     [attachmentStream writeData:[NSData new] error:&error];
     // Intentionally not saved, because we want a lingering file.
 

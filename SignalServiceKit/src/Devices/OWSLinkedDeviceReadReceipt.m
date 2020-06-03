@@ -1,29 +1,40 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSLinkedDeviceReadReceipt.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
+NSUInteger const OWSLinkedDeviceReadReceiptSchemaVersion = 1;
+
+@interface OWSLinkedDeviceReadReceipt ()
+
+@property (nonatomic, nullable, readonly) NSString *senderPhoneNumber;
+@property (nonatomic, nullable, readonly) NSString *senderUUID;
+@property (nonatomic, readonly) NSUInteger linkedDeviceReadReceiptSchemaVersion;
+
+@end
+
 @implementation OWSLinkedDeviceReadReceipt
 
-- (instancetype)initWithSenderId:(NSString *)senderId
-              messageIdTimestamp:(uint64_t)messageIdTimestamp
-                   readTimestamp:(uint64_t)readTimestamp
+- (instancetype)initWithSenderAddress:(SignalServiceAddress *)address
+                   messageIdTimestamp:(uint64_t)messageIdTimestamp
+                        readTimestamp:(uint64_t)readTimestamp
 {
-    OWSAssertDebug(senderId.length > 0 && messageIdTimestamp > 0);
+    OWSAssertDebug(address.isValid && messageIdTimestamp > 0);
 
-    NSString *receiptId =
-        [OWSLinkedDeviceReadReceipt uniqueIdForSenderId:senderId messageIdTimestamp:messageIdTimestamp];
-    self = [super initWithUniqueId:receiptId];
+    self = [super init];
     if (!self) {
         return self;
     }
 
-    _senderId = senderId;
+    _senderPhoneNumber = address.phoneNumber;
+    _senderUUID = address.uuidString;
     _messageIdTimestamp = messageIdTimestamp;
     _readTimestamp = readTimestamp;
+    _linkedDeviceReadReceiptSchemaVersion = OWSLinkedDeviceReadReceiptSchemaVersion;
 
     return self;
 }
@@ -50,25 +61,19 @@ NS_ASSUME_NONNULL_BEGIN
         _readTimestamp = _messageIdTimestamp;
     }
 
+    if (_linkedDeviceReadReceiptSchemaVersion < 1) {
+        _senderPhoneNumber = [coder decodeObjectForKey:@"senderId"];
+        OWSAssertDebug(_senderPhoneNumber);
+    }
+
+    _linkedDeviceReadReceiptSchemaVersion = OWSLinkedDeviceReadReceiptSchemaVersion;
+
     return self;
 }
 
-+ (NSString *)uniqueIdForSenderId:(NSString *)senderId messageIdTimestamp:(uint64_t)messageIdTimestamp
+- (SignalServiceAddress *)senderAddress
 {
-    OWSAssertDebug(senderId.length > 0 && messageIdTimestamp > 0);
-
-    return [NSString stringWithFormat:@"%@-%llu", senderId, messageIdTimestamp];
-}
-
-+ (nullable OWSLinkedDeviceReadReceipt *)findLinkedDeviceReadReceiptWithSenderId:(NSString *)senderId
-                                                              messageIdTimestamp:(uint64_t)messageIdTimestamp
-                                                                     transaction:
-                                                                         (YapDatabaseReadTransaction *)transaction
-{
-    OWSAssertDebug(transaction);
-    NSString *receiptId =
-        [OWSLinkedDeviceReadReceipt uniqueIdForSenderId:senderId messageIdTimestamp:messageIdTimestamp];
-    return [OWSLinkedDeviceReadReceipt fetchObjectWithUniqueID:receiptId transaction:transaction];
+    return [[SignalServiceAddress alloc] initWithUuidString:self.senderUUID phoneNumber:self.senderPhoneNumber];
 }
 
 @end

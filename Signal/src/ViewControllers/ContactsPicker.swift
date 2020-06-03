@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 //  Originally based on EPContacts
@@ -39,24 +39,6 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
         return Environment.shared.contactsManager
     }
 
-    // HACK: Though we don't have an input accessory view, the VC we are presented above (ConversationVC) does.
-    // If the app is backgrounded and then foregrounded, when OWSWindowManager calls mainWindow.makeKeyAndVisible
-    // the ConversationVC's inputAccessoryView will appear *above* us unless we'd previously become first responder.
-    override public var canBecomeFirstResponder: Bool {
-        Logger.debug("")
-        return true
-    }
-
-    override public func becomeFirstResponder() -> Bool {
-        Logger.debug("")
-        return super.becomeFirstResponder()
-    }
-
-    override public func resignFirstResponder() -> Bool {
-        Logger.debug("")
-        return super.resignFirstResponder()
-    }
-
     private let collation = UILocalizedIndexedCollation.current()
     public var collationForTests: UILocalizedIndexedCollation {
         get {
@@ -83,11 +65,7 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
     required public init(allowsMultipleSelection: Bool, subtitleCellType: SubtitleCellValue) {
         self.allowsMultipleSelection = allowsMultipleSelection
         self.subtitleCellType = subtitleCellType
-        super.init(nibName: nil, bundle: nil)
-    }
-
-    required public init?(coder aDecoder: NSCoder) {
-        notImplemented()
+        super.init()
     }
 
     // MARK: - Lifecycle Methods
@@ -96,10 +74,12 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
         self.view = UIView()
         let tableView = UITableView()
         self.tableView = tableView
-        self.tableView.separatorColor = Theme.cellSeparatorColor
 
         view.addSubview(tableView)
-        tableView.autoPinEdgesToSuperviewEdges()
+        tableView.autoPinEdge(toSuperviewEdge: .top)
+        tableView.autoPinEdge(toSuperviewEdge: .bottom)
+        tableView.autoPinEdge(toSuperviewSafeArea: .leading)
+        tableView.autoPinEdge(toSuperviewSafeArea: .trailing)
         tableView.delegate = self
         tableView.dataSource = self
 
@@ -114,14 +94,11 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
     override open func viewDidLoad() {
         super.viewDidLoad()
 
-        self.view.backgroundColor = Theme.backgroundColor
-        self.tableView.backgroundColor = Theme.backgroundColor
-
         searchBar.placeholder = NSLocalizedString("INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER", comment: "Search")
 
         // Auto size cells for dynamic type
         tableView.estimatedRowHeight = 60.0
-        tableView.rowHeight = UITableViewAutomaticDimension
+        tableView.rowHeight = UITableView.automaticDimension
         tableView.estimatedRowHeight = 60
 
         tableView.allowsMultipleSelection = allowsMultipleSelection
@@ -133,7 +110,15 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
         reloadContacts()
         updateSearchResults(searchText: "")
 
-        NotificationCenter.default.addObserver(self, selector: #selector(self.didChangePreferredContentSize), name: NSNotification.Name.UIContentSizeCategoryDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(self.didChangePreferredContentSize), name: UIContentSizeCategory.didChangeNotification, object: nil)
+    }
+
+    public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
+        super.traitCollectionDidChange(previousTraitCollection)
+
+        view.backgroundColor = Theme.backgroundColor
+        tableView.backgroundColor = Theme.backgroundColor
+        tableView.separatorColor = Theme.cellSeparatorColor
     }
 
     @objc
@@ -169,11 +154,11 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
                 let title = NSLocalizedString("INVITE_FLOW_REQUIRES_CONTACT_ACCESS_TITLE", comment: "Alert title when contacts disabled while trying to invite contacts to signal")
                 let body = NSLocalizedString("INVITE_FLOW_REQUIRES_CONTACT_ACCESS_BODY", comment: "Alert body when contacts disabled while trying to invite contacts to signal")
 
-                let alert = UIAlertController(title: title, message: body, preferredStyle: UIAlertControllerStyle.alert)
+                let alert = ActionSheetController(title: title, message: body)
 
                 let dismissText = CommonStrings.cancelButton
 
-                let cancelAction = UIAlertAction(title: dismissText, style: .cancel, handler: {  _ in
+                let cancelAction = ActionSheetAction(title: dismissText, style: .cancel, handler: {  _ in
                     let error = NSError(domain: "contactsPickerErrorDomain", code: 1, userInfo: [NSLocalizedDescriptionKey: "No Contacts Access"])
                     self.contactsPickerDelegate?.contactsPicker(self, contactFetchDidFail: error)
                     errorHandler(error)
@@ -181,12 +166,12 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
                 alert.addAction(cancelAction)
 
                 let settingsText = CommonStrings.openSettingsButton
-                let openSettingsAction = UIAlertAction(title: settingsText, style: .default, handler: { (_) in
+                let openSettingsAction = ActionSheetAction(title: settingsText, style: .default, handler: { (_) in
                     UIApplication.shared.openSystemSettings()
                 })
                 alert.addAction(openSettingsAction)
 
-                self.present(alert, animated: true, completion: nil)
+                self.presentActionSheet(alert)
 
             case CNAuthorizationStatus.notDetermined:
                 //This case means the user is prompted for the first time for allowing contacts
@@ -213,6 +198,9 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
                 } catch let error as NSError {
                     Logger.error("Failed to fetch contacts with error:\(error)")
                 }
+        @unknown default:
+            errorHandler(OWSAssertionError("Unexpected enum value"))
+            break
         }
     }
 
@@ -261,7 +249,7 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
 
         // Make sure we preserve selection across tableView.reloadData which happens when toggling between 
         // search controller
-        if (isSelected) {
+        if isSelected {
             self.tableView.selectRow(at: indexPath, animated: false, scrollPosition: .none)
         } else {
             self.tableView.deselectRow(at: indexPath, animated: false)
@@ -285,7 +273,7 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
         let cell = tableView.cellForRow(at: indexPath) as! ContactCell
         let selectedContact = cell.contact!
 
-        guard (contactsPickerDelegate == nil || contactsPickerDelegate!.contactsPicker(self, shouldSelectContact: selectedContact)) else {
+        guard contactsPickerDelegate == nil || contactsPickerDelegate!.contactsPicker(self, shouldSelectContact: selectedContact) else {
             self.tableView.deselectRow(at: indexPath, animated: false)
             return
         }
@@ -325,6 +313,10 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
         }
     }
 
+    public func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        searchBar.resignFirstResponder()
+    }
+
     // MARK: - Button Actions
 
     @objc func onTouchCancelButton() {
@@ -338,6 +330,10 @@ public class ContactsPicker: OWSViewController, UITableViewDelegate, UITableView
     // MARK: - Search Actions
     open func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
         updateSearchResults(searchText: searchText)
+    }
+
+    public func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
+        searchBar.resignFirstResponder()
     }
 
     open func updateSearchResults(searchText: String) {

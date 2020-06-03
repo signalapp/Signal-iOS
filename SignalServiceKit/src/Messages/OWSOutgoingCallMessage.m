@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSOutgoingCallMessage.h"
@@ -13,20 +13,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSOutgoingCallMessage
 
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark -
+
 - (instancetype)initWithThread:(TSThread *)thread
 {
-    // These records aren't saved, but their timestamp is used in the event
-    // of a failing message send to insert the error at the appropriate place.
-    self = [super initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                          inThread:thread
-                                       messageBody:nil
-                                     attachmentIds:[NSMutableArray new]
-                                  expiresInSeconds:0
-                                   expireStartedAt:0
-                                    isVoiceMessage:NO
-                                  groupMetaMessage:TSGroupMetaMessageUnspecified
-                                     quotedMessage:nil
-                                      contactShare:nil];
+    TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
+    self = [super initOutgoingMessageWithBuilder:messageBuilder];
     if (!self) {
         return self;
     }
@@ -34,7 +33,9 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-- (instancetype)initWithThread:(TSThread *)thread offerMessage:(SSKProtoCallMessageOffer *)offerMessage
+- (instancetype)initWithThread:(TSThread *)thread
+                  offerMessage:(SSKProtoCallMessageOffer *)offerMessage
+           destinationDeviceId:(nullable NSNumber *)destinationDeviceId
 {
     self = [self initWithThread:thread];
     if (!self) {
@@ -42,11 +43,14 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _offerMessage = offerMessage;
+    _destinationDeviceId = destinationDeviceId;
 
     return self;
 }
 
-- (instancetype)initWithThread:(TSThread *)thread answerMessage:(SSKProtoCallMessageAnswer *)answerMessage
+- (instancetype)initWithThread:(TSThread *)thread
+                 answerMessage:(SSKProtoCallMessageAnswer *)answerMessage
+           destinationDeviceId:(nullable NSNumber *)destinationDeviceId
 {
     self = [self initWithThread:thread];
     if (!self) {
@@ -54,24 +58,14 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _answerMessage = answerMessage;
-
-    return self;
-}
-
-- (instancetype)initWithThread:(TSThread *)thread iceUpdateMessage:(SSKProtoCallMessageIceUpdate *)iceUpdateMessage
-{
-    self = [self initWithThread:thread];
-    if (!self) {
-        return self;
-    }
-
-    _iceUpdateMessages = @[ iceUpdateMessage ];
+    _destinationDeviceId = destinationDeviceId;
 
     return self;
 }
 
 - (instancetype)initWithThread:(TSThread *)thread
              iceUpdateMessages:(NSArray<SSKProtoCallMessageIceUpdate *> *)iceUpdateMessages
+           destinationDeviceId:(nullable NSNumber *)destinationDeviceId
 {
     self = [self initWithThread:thread];
     if (!self) {
@@ -79,11 +73,29 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _iceUpdateMessages = iceUpdateMessages;
+    _destinationDeviceId = destinationDeviceId;
 
     return self;
 }
 
-- (instancetype)initWithThread:(TSThread *)thread hangupMessage:(SSKProtoCallMessageHangup *)hangupMessage
+- (instancetype)initWithThread:(TSThread *)thread
+           legacyHangupMessage:(SSKProtoCallMessageHangup *)legacyHangupMessage
+           destinationDeviceId:(nullable NSNumber *)destinationDeviceId
+{
+    self = [self initWithThread:thread];
+    if (!self) {
+        return self;
+    }
+
+    _legacyHangupMessage = legacyHangupMessage;
+    _destinationDeviceId = destinationDeviceId;
+
+    return self;
+}
+
+- (instancetype)initWithThread:(TSThread *)thread
+                 hangupMessage:(SSKProtoCallMessageHangup *)hangupMessage
+           destinationDeviceId:(nullable NSNumber *)destinationDeviceId
 {
     self = [self initWithThread:thread];
     if (!self) {
@@ -91,11 +103,14 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _hangupMessage = hangupMessage;
+    _destinationDeviceId = destinationDeviceId;
 
     return self;
 }
 
-- (instancetype)initWithThread:(TSThread *)thread busyMessage:(SSKProtoCallMessageBusy *)busyMessage
+- (instancetype)initWithThread:(TSThread *)thread
+                   busyMessage:(SSKProtoCallMessageBusy *)busyMessage
+           destinationDeviceId:(nullable NSNumber *)destinationDeviceId
 {
     self = [self initWithThread:thread];
     if (!self) {
@@ -103,6 +118,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _busyMessage = busyMessage;
+    _destinationDeviceId = destinationDeviceId;
 
     return self;
 }
@@ -122,12 +138,14 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient
+                                 thread:(TSThread *)thread
+                            transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(recipient);
 
     SSKProtoContentBuilder *builder = [SSKProtoContent builder];
-    [builder setCallMessage:[self buildCallMessage:recipient.recipientId]];
-    
+    builder.callMessage = [self buildCallMessage:recipient.address thread:thread transaction:transaction];
+
     NSError *error;
     NSData *_Nullable data = [builder buildSerializedDataAndReturnError:&error];
     if (error || !data) {
@@ -137,7 +155,9 @@ NS_ASSUME_NONNULL_BEGIN
     return data;
 }
 
-- (nullable SSKProtoCallMessage *)buildCallMessage:(NSString *)recipientId
+- (nullable SSKProtoCallMessage *)buildCallMessage:(SignalServiceAddress *)address
+                                            thread:(TSThread *)thread
+                                       transaction:(SDSAnyReadTransaction *)transaction
 {
     SSKProtoCallMessageBuilder *builder = [SSKProtoCallMessage builder];
 
@@ -153,6 +173,10 @@ NS_ASSUME_NONNULL_BEGIN
         [builder setIceUpdate:self.iceUpdateMessages];
     }
 
+    if (self.legacyHangupMessage) {
+        [builder setLegacyHangup:self.legacyHangupMessage];
+    }
+    
     if (self.hangupMessage) {
         [builder setHangup:self.hangupMessage];
     }
@@ -161,7 +185,17 @@ NS_ASSUME_NONNULL_BEGIN
         [builder setBusy:self.busyMessage];
     }
 
-    [ProtoUtils addLocalProfileKeyIfNecessary:self.thread recipientId:recipientId callMessageBuilder:builder];
+    if (self.destinationDeviceId) {
+        [builder setDestinationDeviceID:self.destinationDeviceId.unsignedIntValue];
+    }
+
+    [ProtoUtils addLocalProfileKeyIfNecessary:thread
+                                      address:address
+                           callMessageBuilder:builder
+                                  transaction:transaction];
+
+    // All call messages must indicate multi-ring capability.
+    [builder setSupportsMultiRing:YES];
 
     NSError *error;
     SSKProtoCallMessage *_Nullable result = [builder buildAndReturnError:&error];
@@ -189,7 +223,9 @@ NS_ASSUME_NONNULL_BEGIN
     } else if (self.answerMessage) {
         payload = @"answerMessage";
     } else if (self.iceUpdateMessages.count > 0) {
-        payload = @"iceUpdateMessage";
+        payload = [NSString stringWithFormat:@"iceUpdateMessages: %lu", (unsigned long)self.iceUpdateMessages.count];
+    } else if (self.legacyHangupMessage) {
+        payload = @"legacyHangupMessage";
     } else if (self.hangupMessage) {
         payload = @"hangupMessage";
     } else if (self.busyMessage) {

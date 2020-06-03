@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSProvisioningMessage.h"
@@ -11,11 +11,14 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+NSString *const OWSUserAgent = @"OWI";
+uint32_t const OWSProvisioningVersion = 1;
+
 @interface OWSProvisioningMessage ()
 
 @property (nonatomic, readonly) NSData *myPublicKey;
 @property (nonatomic, readonly) NSData *myPrivateKey;
-@property (nonatomic, readonly) NSString *accountIdentifier;
+@property (nonatomic, readonly) SignalServiceAddress *accountAddress;
 @property (nonatomic, readonly) NSData *theirPublicKey;
 @property (nonatomic, readonly) NSData *profileKey;
 @property (nonatomic, readonly) BOOL areReadReceiptsEnabled;
@@ -28,7 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithMyPublicKey:(NSData *)myPublicKey
                        myPrivateKey:(NSData *)myPrivateKey
                      theirPublicKey:(NSData *)theirPublicKey
-                  accountIdentifier:(NSString *)accountIdentifier
+                     accountAddress:(SignalServiceAddress *)accountAddress
                          profileKey:(NSData *)profileKey
                 readReceiptsEnabled:(BOOL)areReadReceiptsEnabled
                    provisioningCode:(NSString *)provisioningCode
@@ -41,7 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
     _myPublicKey = myPublicKey;
     _myPrivateKey = myPrivateKey;
     _theirPublicKey = theirPublicKey;
-    _accountIdentifier = accountIdentifier;
+    _accountAddress = accountAddress;
     _profileKey = profileKey;
     _areReadReceiptsEnabled = areReadReceiptsEnabled;
     _provisioningCode = provisioningCode;
@@ -52,13 +55,27 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable NSData *)buildEncryptedMessageBody
 {
     ProvisioningProtoProvisionMessageBuilder *messageBuilder =
-        [ProvisioningProtoProvisionMessage builderWithIdentityKeyPublic:self.myPublicKey
+        [ProvisioningProtoProvisionMessage builderWithIdentityKeyPublic:[self.myPublicKey prependKeyType]
                                                      identityKeyPrivate:self.myPrivateKey
-                                                                 number:self.accountIdentifier
                                                        provisioningCode:self.provisioningCode
-                                                              userAgent:@"OWI"
-                                                             profileKey:self.profileKey
-                                                           readReceipts:self.areReadReceiptsEnabled];
+                                                             profileKey:self.profileKey];
+
+    messageBuilder.userAgent = OWSUserAgent;
+    messageBuilder.readReceipts = self.areReadReceiptsEnabled;
+    messageBuilder.provisioningVersion = OWSProvisioningVersion;
+
+    NSString *_Nullable phoneNumber = self.accountAddress.phoneNumber;
+    if (!phoneNumber) {
+        OWSFailDebug(@"phone number unexpectedly missing");
+        return nil;
+    }
+    messageBuilder.number = phoneNumber;
+
+    NSString *_Nullable uuidString = self.accountAddress.uuidString;
+    if (uuidString) {
+        // TODO UUID: Eventually, this should be mandatory.
+        messageBuilder.uuid = uuidString;
+    }
 
     NSError *error;
     NSData *_Nullable plainTextProvisionMessage = [messageBuilder buildSerializedDataAndReturnError:&error];

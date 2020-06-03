@@ -1,8 +1,0 @@
-//  Copyright © 2016 Open Whisper Systems. All rights reserved.
-
-#ifndef TSKitiOSTestApp_Prefix_pch
-#define TSKitiOSTestApp_Prefix_pch
-
-#import <Foundation/Foundation.h>
-
-#endif /* TSKitiOSTestApp_Prefix_pch */

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "AppContext.h"
@@ -43,7 +43,7 @@ void SetCurrentAppContext(id<AppContext> appContext)
     currentAppContext = appContext;
 }
 
-#ifdef DEBUG
+#ifdef TESTABLE_BUILD
 void ClearCurrentAppContextForTests()
 {
     currentAppContext = nil;

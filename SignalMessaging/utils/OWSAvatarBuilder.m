@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSAvatarBuilder.h"
@@ -8,14 +8,17 @@
 #import "TSContactThread.h"
 #import "TSGroupThread.h"
 #import "Theme.h"
-#import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
+#import <SignalMessaging/SignalMessaging-Swift.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
+const NSUInteger kSmallAvatarSize = 40;
 const NSUInteger kStandardAvatarSize = 48;
-const NSUInteger kLargeAvatarSize = 68;
+const NSUInteger kMediumAvatarSize = 68;
+const NSUInteger kLargeAvatarSize = 96;
 
 typedef void (^OWSAvatarDrawBlock)(CGContextRef context);
 
@@ -30,9 +33,9 @@ typedef void (^OWSAvatarDrawBlock)(CGContextRef context);
     if ([thread isKindOfClass:[TSContactThread class]]) {
         TSContactThread *contactThread = (TSContactThread *)thread;
         ConversationColorName colorName = thread.conversationColorName;
-        avatarBuilder = [[OWSContactAvatarBuilder alloc] initWithSignalId:contactThread.contactIdentifier
-                                                                colorName:colorName
-                                                                 diameter:diameter];
+        avatarBuilder = [[OWSContactAvatarBuilder alloc] initWithAddress:contactThread.contactAddress
+                                                               colorName:colorName
+                                                                diameter:diameter];
     } else if ([thread isKindOfClass:[TSGroupThread class]]) {
         avatarBuilder = [[OWSGroupAvatarBuilder alloc] initWithThread:(TSGroupThread *)thread diameter:diameter];
     } else {
@@ -78,7 +81,7 @@ typedef void (^OWSAvatarDrawBlock)(CGContextRef context);
 {
     // Adapt the font size to reflect the diameter.
     CGFloat fontSize = 20.f * diameter / kStandardAvatarSize;
-    return [UIFont ows_mediumFontWithSize:fontSize];
+    return [UIFont ows_semiboldFontWithSize:fontSize];
 }
 
 + (nullable UIImage *)avatarImageWithInitials:(NSString *)initials
@@ -188,7 +191,7 @@ typedef void (^OWSAvatarDrawBlock)(CGContextRef context);
     UIImage *_Nullable image = UIGraphicsGetImageFromCurrentImageContext();
 
     UIGraphicsEndImageContext();
-
+    
     return image;
 }
 

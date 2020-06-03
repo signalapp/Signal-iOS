@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "DataSource.h"
@@ -9,13 +9,12 @@ NS_ASSUME_NONNULL_BEGIN
 extern const NSUInteger kOversizeTextMessageSizeThreshold;
 
 @class OWSBlockingManager;
-@class OWSPrimaryStorage;
+@class OutgoingMessagePreparer;
+@class SDSAnyWriteTransaction;
 @class TSAttachmentStream;
-@class TSInvalidIdentityKeySendingErrorMessage;
 @class TSNetworkManager;
 @class TSOutgoingMessage;
 @class TSThread;
-@class YapDatabaseReadWriteTransaction;
 
 @protocol ContactsManagerProtocol;
 
@@ -36,15 +35,23 @@ typedef void (^RetryableFailureHandler)(NSError *_Nonnull error);
 NS_SWIFT_NAME(OutgoingAttachmentInfo)
 @interface OWSOutgoingAttachmentInfo : NSObject
 
-@property (nonatomic, readonly) DataSource *dataSource;
+@property (nonatomic, readonly) id<DataSource>dataSource;
 @property (nonatomic, readonly) NSString *contentType;
 @property (nonatomic, readonly, nullable) NSString *sourceFilename;
+@property (nonatomic, readonly, nullable) NSString *caption;
+@property (nonatomic, readonly, nullable) NSString *albumMessageId;
 
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
-- (instancetype)initWithDataSource:(DataSource *)dataSource
+- (instancetype)initWithDataSource:(id<DataSource>)dataSource
                        contentType:(NSString *)contentType
-                    sourceFilename:(nullable NSString *)sourceFilename NS_DESIGNATED_INITIALIZER;
+                    sourceFilename:(nullable NSString *)sourceFilename
+                           caption:(nullable NSString *)caption
+                    albumMessageId:(nullable NSString *)albumMessageId NS_DESIGNATED_INITIALIZER;
+
+- (nullable TSAttachmentStream *)asStreamConsumingDataSourceWithIsVoiceMessage:(BOOL)isVoiceMessage
+                                                                         error:(NSError **)error;
 
 @end
 
@@ -53,15 +60,13 @@ NS_SWIFT_NAME(OutgoingAttachmentInfo)
 NS_SWIFT_NAME(MessageSender)
 @interface OWSMessageSender : NSObject
 
-- (instancetype)init NS_UNAVAILABLE;
-
-- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage NS_DESIGNATED_INITIALIZER;
+- (instancetype)init NS_DESIGNATED_INITIALIZER;
 
 /**
  * Send and resend text messages or resend messages with existing attachments.
  * If you haven't yet created the attachment, see the `sendAttachment:` variants.
  */
-- (void)sendMessage:(TSOutgoingMessage *)message
+- (void)sendMessage:(OutgoingMessagePreparer *)outgoingMessagePreparer
             success:(void (^)(void))successHandler
             failure:(void (^)(NSError *error))failureHandler;
 
@@ -69,9 +74,10 @@ NS_SWIFT_NAME(MessageSender)
  * Takes care of allocating and uploading the attachment, then sends the message.
  * Only necessary to call once. If sending fails, retry with `sendMessage:`.
  */
-- (void)sendAttachment:(DataSource *)dataSource
+- (void)sendAttachment:(id<DataSource>)dataSource
            contentType:(NSString *)contentType
         sourceFilename:(nullable NSString *)sourceFilename
+        albumMessageId:(nullable NSString *)albumMessageId
              inMessage:(TSOutgoingMessage *)outgoingMessage
                success:(void (^)(void))successHandler
                failure:(void (^)(NSError *error))failureHandler;
@@ -80,7 +86,7 @@ NS_SWIFT_NAME(MessageSender)
  * Same as `sendAttachment:`, but deletes the local copy of the attachment after sending.
  * Used for sending sync request data, not for user visible attachments.
  */
-- (void)sendTemporaryAttachment:(DataSource *)dataSource
+- (void)sendTemporaryAttachment:(id<DataSource>)dataSource
                     contentType:(NSString *)contentType
                       inMessage:(TSOutgoingMessage *)outgoingMessage
                         success:(void (^)(void))successHandler
@@ -90,19 +96,17 @@ NS_SWIFT_NAME(MessageSender)
 
 #pragma mark -
 
-@interface OutgoingMessagePreparer : NSObject
+@interface OutgoingMessagePreparerHelper : NSObject
 
 /// Persists all necessary data to disk before sending, e.g. generate thumbnails
-+ (void)prepareMessageForSending:(TSOutgoingMessage *)message
-      quotedThumbnailAttachments:(NSArray<TSAttachmentStream *> **)outQuotedThumbnailAttachments
-    contactShareAvatarAttachment:(TSAttachmentStream **)outContactShareAvatarAttachment
-                     transaction:(YapDatabaseReadWriteTransaction *)transaction;
++ (NSArray<NSString *> *)prepareMessageForSending:(TSOutgoingMessage *)message
+                                      transaction:(SDSAnyWriteTransaction *)transaction;
 
 /// Writes attachment to disk and applies original filename to message attributes
-+ (void)prepareAttachments:(NSArray<OWSOutgoingAttachmentInfo *> *)attachmentInfos
-                 inMessage:(TSOutgoingMessage *)outgoingMessage
-         completionHandler:(void (^)(NSError *_Nullable error))completionHandler
-    NS_SWIFT_NAME(prepareAttachments(_:inMessage:completionHandler:));
++ (BOOL)insertAttachments:(NSArray<OWSOutgoingAttachmentInfo *> *)attachmentInfos
+               forMessage:(TSOutgoingMessage *)outgoingMessage
+              transaction:(SDSAnyWriteTransaction *)transaction
+                    error:(NSError **)error;
 
 @end
 

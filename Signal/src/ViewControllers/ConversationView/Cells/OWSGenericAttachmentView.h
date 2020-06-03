@@ -1,15 +1,19 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class ConversationStyle;
-@class TSAttachmentStream;
+@class TSAttachment;
+
+@protocol ConversationViewItem;
 
 @interface OWSGenericAttachmentView : UIStackView
 
-- (instancetype)initWithAttachment:(TSAttachmentStream *)attachmentStream isIncoming:(BOOL)isIncoming;
+- (instancetype)initWithAttachment:(TSAttachment *)attachment
+                        isIncoming:(BOOL)isIncoming
+                          viewItem:(id<ConversationViewItem>)viewItem;
 
 - (void)createContentsWithConversationStyle:(ConversationStyle *)conversationStyle;
 

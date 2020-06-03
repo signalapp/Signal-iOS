@@ -7,6 +7,7 @@
 	<key>com.apple.security.application-groups</key>
 	<array>
 		<string>group.org.whispersystems.signal.group</string>
+		<string>group.org.whispersystems.signal.group.staging</string>
 	</array>
 	<key>keychain-access-groups</key>
 	<array>

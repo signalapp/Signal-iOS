@@ -1,9 +1,11 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import <YapDatabase/YapDatabaseSecondaryIndex.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
+
+NS_ASSUME_NONNULL_BEGIN
 
 @interface TSDatabaseSecondaryIndexes : NSObject
 
@@ -16,3 +18,5 @@
                       usingTransaction:(YapDatabaseReadTransaction *)transaction;
 
 @end
+
+NS_ASSUME_NONNULL_END

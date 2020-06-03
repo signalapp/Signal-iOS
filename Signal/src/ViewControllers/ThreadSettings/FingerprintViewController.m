@@ -1,12 +1,11 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "FingerprintViewController.h"
 #import "FingerprintViewScanController.h"
 #import "OWSBezierPathView.h"
 #import "Signal-Swift.h"
-#import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <SignalCoreKit/NSDate+OWS.h>
@@ -17,9 +16,11 @@
 #import <SignalServiceKit/OWSFingerprint.h>
 #import <SignalServiceKit/OWSFingerprintBuilder.h>
 #import <SignalServiceKit/OWSIdentityManager.h>
-#import <SignalServiceKit/OWSPrimaryStorage+SessionStore.h>
+#import <SignalServiceKit/SSKSessionStore.h>
 #import <SignalServiceKit/TSAccountManager.h>
 #import <SignalServiceKit/TSInfoMessage.h>
+
+@import SafariServices;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -72,7 +73,7 @@ typedef void (^CustomLayoutBlock)(void);
 
 @interface FingerprintViewController () <OWSCompareSafetyNumbersActivityDelegate>
 
-@property (nonatomic) NSString *recipientId;
+@property (nonatomic) SignalServiceAddress *address;
 @property (nonatomic) NSData *identityKey;
 @property (nonatomic) TSAccountManager *accountManager;
 @property (nonatomic) OWSFingerprint *fingerprint;
@@ -89,25 +90,34 @@ typedef void (^CustomLayoutBlock)(void);
 
 @implementation FingerprintViewController
 
-+ (void)presentFromViewController:(UIViewController *)viewController recipientId:(NSString *)recipientId
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
 {
-    OWSAssertDebug(recipientId.length > 0);
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark -
+
++ (void)presentFromViewController:(UIViewController *)viewController address:(SignalServiceAddress *)address
+{
+    OWSAssertDebug(address.isValid);
 
     OWSRecipientIdentity *_Nullable recipientIdentity =
-        [[OWSIdentityManager sharedManager] recipientIdentityForRecipientId:recipientId];
+        [[OWSIdentityManager sharedManager] recipientIdentityForAddress:address];
     if (!recipientIdentity) {
-        [OWSAlerts showAlertWithTitle:NSLocalizedString(@"CANT_VERIFY_IDENTITY_ALERT_TITLE",
-                                          @"Title for alert explaining that a user cannot be verified.")
-                              message:NSLocalizedString(@"CANT_VERIFY_IDENTITY_ALERT_MESSAGE",
-                                          @"Message for alert explaining that a user cannot be verified.")];
+        [OWSActionSheets showActionSheetWithTitle:NSLocalizedString(@"CANT_VERIFY_IDENTITY_ALERT_TITLE",
+                                                      @"Title for alert explaining that a user cannot be verified.")
+                                          message:NSLocalizedString(@"CANT_VERIFY_IDENTITY_ALERT_MESSAGE",
+                                                      @"Message for alert explaining that a user cannot be verified.")];
         return;
     }
 
     FingerprintViewController *fingerprintViewController = [FingerprintViewController new];
-    [fingerprintViewController configureWithRecipientId:recipientId];
+    [fingerprintViewController configureWithAddress:address];
     OWSNavigationController *navigationController =
         [[OWSNavigationController alloc] initWithRootViewController:fingerprintViewController];
-    [viewController presentViewController:navigationController animated:YES completion:nil];
+    [viewController presentFormSheetViewController:navigationController animated:YES completion:nil];
 }
 
 - (instancetype)init
@@ -134,21 +144,21 @@ typedef void (^CustomLayoutBlock)(void);
 {
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(identityStateDidChange:)
-                                                 name:kNSNotificationName_IdentityStateDidChange
+                                                 name:kNSNotificationNameIdentityStateDidChange
                                                object:nil];
 }
 
-- (void)configureWithRecipientId:(NSString *)recipientId
+- (void)configureWithAddress:(SignalServiceAddress *)address
 {
-    OWSAssertDebug(recipientId.length > 0);
+    OWSAssertDebug(address.isValid);
 
-    self.recipientId = recipientId;
+    self.address = address;
 
     OWSContactsManager *contactsManager = Environment.shared.contactsManager;
-    self.contactName = [contactsManager displayNameForPhoneIdentifier:recipientId];
+    self.contactName = [contactsManager displayNameForAddress:address];
 
     OWSRecipientIdentity *_Nullable recipientIdentity =
-        [[OWSIdentityManager sharedManager] recipientIdentityForRecipientId:recipientId];
+        [[OWSIdentityManager sharedManager] recipientIdentityForAddress:address];
     OWSAssertDebug(recipientIdentity);
     // By capturing the identity key when we enter these views, we prevent the edge case
     // where the user verifies a key that we learned about while this view was open.
@@ -156,8 +166,8 @@ typedef void (^CustomLayoutBlock)(void);
 
     OWSFingerprintBuilder *builder =
         [[OWSFingerprintBuilder alloc] initWithAccountManager:self.accountManager contactsManager:contactsManager];
-    self.fingerprint =
-        [builder fingerprintWithTheirSignalId:recipientId theirIdentityKey:recipientIdentity.identityKey];
+    self.fingerprint = [builder fingerprintWithTheirSignalAddress:address
+                                                 theirIdentityKey:recipientIdentity.identityKey];
 }
 
 - (void)loadView
@@ -169,10 +179,13 @@ typedef void (^CustomLayoutBlock)(void);
     self.navigationItem.leftBarButtonItem =
         [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop
                                                       target:self
-                                                      action:@selector(closeButton)];
-    self.shareButton = [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction
-                                                                     target:self
-                                                                     action:@selector(didTapShareButton)];
+                                                      action:@selector(closeButton)
+                                     accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"stop")];
+    self.shareButton =
+        [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemAction
+                                                      target:self
+                                                      action:@selector(didTapShareButton)
+                                     accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"share")];
     self.navigationItem.rightBarButtonItem = self.shareButton;
 
     [self createViews];
@@ -190,9 +203,10 @@ typedef void (^CustomLayoutBlock)(void);
     [self.view addSubview:verifyUnverifyButton];
     [verifyUnverifyButton autoPinWidthToSuperview];
     [verifyUnverifyButton autoPinToBottomLayoutGuideOfViewController:self withInset:0];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, verifyUnverifyButton);
 
     UIView *verifyUnverifyPillbox = [UIView new];
-    verifyUnverifyPillbox.backgroundColor = [UIColor ows_materialBlueColor];
+    verifyUnverifyPillbox.backgroundColor = UIColor.ows_accentBlueColor;
     verifyUnverifyPillbox.layer.cornerRadius = 3.f;
     verifyUnverifyPillbox.clipsToBounds = YES;
     [verifyUnverifyButton addSubview:verifyUnverifyPillbox];
@@ -202,7 +216,7 @@ typedef void (^CustomLayoutBlock)(void);
 
     UILabel *verifyUnverifyButtonLabel = [UILabel new];
     self.verifyUnverifyButtonLabel = verifyUnverifyButtonLabel;
-    verifyUnverifyButtonLabel.font = [UIFont ows_mediumFontWithSize:ScaleFromIPhone5To7Plus(14.f, 20.f)];
+    verifyUnverifyButtonLabel.font = [UIFont ows_semiboldFontWithSize:ScaleFromIPhone5To7Plus(14.f, 20.f)];
     verifyUnverifyButtonLabel.textColor = [UIColor whiteColor];
     verifyUnverifyButtonLabel.textAlignment = NSTextAlignmentCenter;
     [verifyUnverifyPillbox addSubview:verifyUnverifyButtonLabel];
@@ -217,16 +231,16 @@ typedef void (^CustomLayoutBlock)(void);
     [self.view addSubview:learnMoreButton];
     [learnMoreButton autoPinWidthToSuperview];
     [learnMoreButton autoPinEdge:ALEdgeBottom toEdge:ALEdgeTop ofView:verifyUnverifyButton withOffset:0];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, learnMoreButton);
 
     UILabel *learnMoreLabel = [UILabel new];
     learnMoreLabel.attributedText = [[NSAttributedString alloc]
-        initWithString:NSLocalizedString(@"PRIVACY_SAFETY_NUMBERS_LEARN_MORE",
-                           @"Label for a link to more information about safety numbers and verification.")
+        initWithString:CommonStrings.learnMore
             attributes:@{
                 NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid),
             }];
     learnMoreLabel.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(13.f, 16.f)];
-    learnMoreLabel.textColor = [UIColor ows_materialBlueColor];
+    learnMoreLabel.textColor = Theme.accentBlueColor;
     learnMoreLabel.textAlignment = NSTextAlignmentCenter;
     [learnMoreButton addSubview:learnMoreLabel];
     [learnMoreLabel autoPinWidthToSuperviewWithMargin:16.f];
@@ -239,7 +253,7 @@ typedef void (^CustomLayoutBlock)(void);
     UILabel *instructionsLabel = [UILabel new];
     instructionsLabel.text = [NSString stringWithFormat:instructionsFormat, self.contactName];
     instructionsLabel.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(11.f, 14.f)];
-    instructionsLabel.textColor = Theme.secondaryColor;
+    instructionsLabel.textColor = Theme.secondaryTextAndIconColor;
     instructionsLabel.textAlignment = NSTextAlignmentCenter;
     instructionsLabel.numberOfLines = 0;
     instructionsLabel.lineBreakMode = NSLineBreakByWordWrapping;
@@ -251,7 +265,8 @@ typedef void (^CustomLayoutBlock)(void);
     UILabel *fingerprintLabel = [UILabel new];
     fingerprintLabel.text = self.fingerprint.displayableText;
     fingerprintLabel.font = [UIFont fontWithName:@"Menlo-Regular" size:ScaleFromIPhone5To7Plus(20.f, 23.f)];
-    fingerprintLabel.textColor = Theme.secondaryColor;
+    fingerprintLabel.textAlignment = NSTextAlignmentCenter;
+    fingerprintLabel.textColor = Theme.secondaryTextAndIconColor;
     fingerprintLabel.numberOfLines = 3;
     fingerprintLabel.lineBreakMode = NSLineBreakByTruncatingTail;
     fingerprintLabel.adjustsFontSizeToFitWidth = YES;
@@ -265,6 +280,7 @@ typedef void (^CustomLayoutBlock)(void);
                            toEdge:ALEdgeTop
                            ofView:instructionsLabel
                        withOffset:-ScaleFromIPhone5To7Plus(8.f, 15.f)];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, fingerprintLabel);
 
     // Fingerprint Image
     CustomLayoutView *fingerprintView = [CustomLayoutView new];
@@ -278,16 +294,17 @@ typedef void (^CustomLayoutBlock)(void);
         addGestureRecognizer:[[UITapGestureRecognizer alloc] initWithTarget:self
                                                                      action:@selector(fingerprintViewTapped:)]];
     fingerprintView.userInteractionEnabled = YES;
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, fingerprintView);
 
     OWSBezierPathView *fingerprintCircle = [OWSBezierPathView new];
     [fingerprintCircle setConfigureShapeLayerBlock:^(CAShapeLayer *layer, CGRect bounds) {
-        layer.fillColor = Theme.offBackgroundColor.CGColor;
+        layer.fillColor = Theme.washColor.CGColor;
         CGFloat size = MIN(bounds.size.width, bounds.size.height);
         CGRect circle = CGRectMake((bounds.size.width - size) * 0.5f, (bounds.size.height - size) * 0.5f, size, size);
         layer.path = [UIBezierPath bezierPathWithOvalInRect:circle].CGPath;
     }];
     [fingerprintView addSubview:fingerprintCircle];
-    [fingerprintCircle ows_autoPinToSuperviewEdges];
+    [fingerprintCircle autoPinEdgesToSuperviewEdges];
 
     UIImageView *fingerprintImageView = [UIImageView new];
     fingerprintImageView.image = self.fingerprint.image;
@@ -298,8 +315,8 @@ typedef void (^CustomLayoutBlock)(void);
 
     UILabel *scanLabel = [UILabel new];
     scanLabel.text = NSLocalizedString(@"PRIVACY_TAP_TO_SCAN", @"Button that shows the 'scan with camera' view.");
-    scanLabel.font = [UIFont ows_mediumFontWithSize:ScaleFromIPhone5To7Plus(14.f, 16.f)];
-    scanLabel.textColor = Theme.secondaryColor;
+    scanLabel.font = [UIFont ows_semiboldFontWithSize:ScaleFromIPhone5To7Plus(14.f, 16.f)];
+    scanLabel.textColor = Theme.secondaryTextAndIconColor;
     [scanLabel sizeToFit];
     [fingerprintView addSubview:scanLabel];
 
@@ -316,8 +333,8 @@ typedef void (^CustomLayoutBlock)(void);
     // Verification State
     UILabel *verificationStateLabel = [UILabel new];
     self.verificationStateLabel = verificationStateLabel;
-    verificationStateLabel.font = [UIFont ows_mediumFontWithSize:ScaleFromIPhone5To7Plus(16.f, 20.f)];
-    verificationStateLabel.textColor = Theme.secondaryColor;
+    verificationStateLabel.font = [UIFont ows_semiboldFontWithSize:ScaleFromIPhone5To7Plus(16.f, 20.f)];
+    verificationStateLabel.textColor = Theme.secondaryTextAndIconColor;
     verificationStateLabel.textAlignment = NSTextAlignmentCenter;
     verificationStateLabel.numberOfLines = 0;
     verificationStateLabel.lineBreakMode = NSLineBreakByWordWrapping;
@@ -340,10 +357,10 @@ typedef void (^CustomLayoutBlock)(void);
 
 - (void)updateVerificationStateLabel
 {
-    OWSAssertDebug(self.recipientId.length > 0);
+    OWSAssertDebug(self.address.isValid);
 
-    BOOL isVerified = [[OWSIdentityManager sharedManager] verificationStateForRecipientId:self.recipientId]
-        == OWSVerificationStateVerified;
+    BOOL isVerified =
+        [[OWSIdentityManager sharedManager] verificationStateForAddress:self.address] == OWSVerificationStateVerified;
 
     if (isVerified) {
         NSMutableAttributedString *labelText = [NSMutableAttributedString new];
@@ -421,6 +438,10 @@ typedef void (^CustomLayoutBlock)(void);
         }
     };
 
+    if (activityController.popoverPresentationController) {
+        activityController.popoverPresentationController.barButtonItem = self.shareButton;
+    }
+
     // This value was extracted by inspecting `activityType` in the activityController.completionHandler
     NSString *const iCloudActivityType = @"com.apple.CloudDocsUI.AddToiCloudDrive";
     activityController.excludedActivityTypes = @[
@@ -450,7 +471,7 @@ typedef void (^CustomLayoutBlock)(void);
 {
     [FingerprintViewScanController showVerificationSucceeded:self
                                                  identityKey:self.identityKey
-                                                 recipientId:self.recipientId
+                                            recipientAddress:self.address
                                                  contactName:self.contactName
                                                          tag:self.logTag];
 }
@@ -482,16 +503,18 @@ typedef void (^CustomLayoutBlock)(void);
 - (void)showScanner
 {
     FingerprintViewScanController *scanView = [FingerprintViewScanController new];
-    [scanView configureWithRecipientId:self.recipientId];
+    [scanView configureWithRecipientAddress:self.address];
     [self.navigationController pushViewController:scanView animated:YES];
 }
 
 - (void)learnMoreButtonTapped:(UIGestureRecognizer *)gestureRecognizer
 {
     if (gestureRecognizer.state == UIGestureRecognizerStateRecognized) {
-        NSString *learnMoreURL = @"https://support.signal.org/hc/en-us/articles/"
-                                 @"213134107";
-        [[UIApplication sharedApplication] openURL:[NSURL URLWithString:learnMoreURL]];
+        NSString *learnMoreURL = @"https://support.signal.org/hc/articles/213134107";
+
+        SFSafariViewController *safariVC =
+            [[SFSafariViewController alloc] initWithURL:[NSURL URLWithString:learnMoreURL]];
+        [self presentViewController:safariVC animated:YES completion:nil];
     }
 }
 
@@ -512,20 +535,19 @@ typedef void (^CustomLayoutBlock)(void);
 - (void)verifyUnverifyButtonTapped:(UIGestureRecognizer *)gestureRecognizer
 {
     if (gestureRecognizer.state == UIGestureRecognizerStateRecognized) {
-        [OWSPrimaryStorage.sharedManager.newDatabaseConnection
-            readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                BOOL isVerified = [[OWSIdentityManager sharedManager] verificationStateForRecipientId:self.recipientId
-                                                                                          transaction:transaction]
-                    == OWSVerificationStateVerified;
+        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            BOOL isVerified =
+                [[OWSIdentityManager sharedManager] verificationStateForAddress:self.address transaction:transaction]
+                == OWSVerificationStateVerified;
 
-                OWSVerificationState newVerificationState
-                    = (isVerified ? OWSVerificationStateDefault : OWSVerificationStateVerified);
-                [[OWSIdentityManager sharedManager] setVerificationState:newVerificationState
-                                                             identityKey:self.identityKey
-                                                             recipientId:self.recipientId
-                                                   isUserInitiatedChange:YES
-                                                             transaction:transaction];
-            }];
+            OWSVerificationState newVerificationState
+                = (isVerified ? OWSVerificationStateDefault : OWSVerificationStateVerified);
+            [[OWSIdentityManager sharedManager] setVerificationState:newVerificationState
+                                                         identityKey:self.identityKey
+                                                             address:self.address
+                                               isUserInitiatedChange:YES
+                                                         transaction:transaction];
+        }];
 
         [self dismissViewControllerAnimated:YES completion:nil];
     }
@@ -538,6 +560,13 @@ typedef void (^CustomLayoutBlock)(void);
     OWSAssertIsOnMainThread();
 
     [self updateVerificationStateLabel];
+}
+
+#pragma mark - Orientation
+
+- (UIInterfaceOrientationMask)supportedInterfaceOrientations
+{
+    return UIDevice.currentDevice.isIPad ? UIInterfaceOrientationMaskAll : UIInterfaceOrientationMaskPortrait;
 }
 
 @end

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -33,15 +33,6 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
 
     @objc
     public var videoPlayButton: UIImageView?
-
-    @objc
-    public var playbackState = AudioPlaybackState.stopped {
-        didSet {
-            AssertIsOnMainThread()
-
-            ensureButtonState()
-        }
-    }
 
     @objc
     public var audioProgressSeconds: CGFloat = 0
@@ -138,8 +129,8 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         let audioPlayButton = UIButton()
         self.audioPlayButton = audioPlayButton
         setAudioIconToPlay()
-        audioPlayButton.imageView?.layer.minificationFilter = kCAFilterTrilinear
-        audioPlayButton.imageView?.layer.magnificationFilter = kCAFilterTrilinear
+        audioPlayButton.imageView?.layer.minificationFilter = .trilinear
+        audioPlayButton.imageView?.layer.magnificationFilter = .trilinear
         audioPlayButton.addTarget(self, action: #selector(audioPlayButtonPressed), for: .touchUpInside)
         let buttonSize = createHeroViewSize()
         audioPlayButton.autoSetDimension(.width, toSize: buttonSize)
@@ -221,8 +212,8 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         }
 
         let imageView = UIImageView(image: image)
-        imageView.layer.minificationFilter = kCAFilterTrilinear
-        imageView.layer.magnificationFilter = kCAFilterTrilinear
+        imageView.layer.minificationFilter = .trilinear
+        imageView.layer.magnificationFilter = .trilinear
         let aspectRatio = image.size.width / image.size.height
         addSubviewWithScaleAspectFitLayout(view: imageView, aspectRatio: aspectRatio)
         contentView = imageView
@@ -243,8 +234,8 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         }
 
         let imageView = UIImageView(image: image)
-        imageView.layer.minificationFilter = kCAFilterTrilinear
-        imageView.layer.magnificationFilter = kCAFilterTrilinear
+        imageView.layer.minificationFilter = .trilinear
+        imageView.layer.magnificationFilter = .trilinear
         let aspectRatio = image.size.width / image.size.height
         addSubviewWithScaleAspectFitLayout(view: imageView, aspectRatio: aspectRatio)
         contentView = imageView
@@ -307,13 +298,13 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
         let image = UIImage(named: imageName)
         assert(image != nil)
         let imageView = UIImageView(image: image)
-        imageView.layer.minificationFilter = kCAFilterTrilinear
-        imageView.layer.magnificationFilter = kCAFilterTrilinear
+        imageView.layer.minificationFilter = .trilinear
+        imageView.layer.magnificationFilter = .trilinear
         imageView.layer.shadowColor = UIColor.black.cgColor
-        let shadowScaling = 5.0
+        let shadowScaling: CGFloat = 5.0
         imageView.layer.shadowRadius = CGFloat(2.0 * shadowScaling)
         imageView.layer.shadowOpacity = 0.25
-        imageView.layer.shadowOffset = CGSize(width: 0.75 * shadowScaling, height: 0.75 * shadowScaling)
+        imageView.layer.shadowOffset = CGSize(square: 0.75 * shadowScaling)
         imageView.autoSetDimension(.width, toSize: imageSize)
         imageView.autoSetDimension(.height, toSize: imageSize)
 
@@ -332,7 +323,7 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
     private var controlTintColor: UIColor {
         switch mode {
         case .small, .large:
-            return UIColor.ows_materialBlue
+            return Theme.accentBlueColor
         case .attachmentApproval:
             return UIColor.white
         }
@@ -398,16 +389,17 @@ public class MediaMessageView: UIView, OWSAudioPlayerDelegate {
 
     // MARK: - OWSAudioPlayerDelegate
 
-    public func audioPlaybackState() -> AudioPlaybackState {
-        return playbackState
-    }
+    @objc
+    public var audioPlaybackState = AudioPlaybackState.stopped {
+        didSet {
+            AssertIsOnMainThread()
 
-    public func setAudioPlaybackState(_ value: AudioPlaybackState) {
-        playbackState = value
+            ensureButtonState()
+        }
     }
 
     private func ensureButtonState() {
-        if playbackState == .playing {
+        if audioPlaybackState == .playing {
             setAudioIconToPause()
         } else {
             setAudioIconToPlay()

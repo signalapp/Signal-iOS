@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -10,7 +10,7 @@ protocol QuotedReplyPreviewDelegate: class {
 }
 
 @objc
-class QuotedReplyPreview: UIView {
+class QuotedReplyPreview: UIView, OWSQuotedMessageViewDelegate {
     @objc
     public weak var delegate: QuotedReplyPreviewDelegate?
 
@@ -19,8 +19,13 @@ class QuotedReplyPreview: UIView {
     private var quotedMessageView: OWSQuotedMessageView?
     private var heightConstraint: NSLayoutConstraint!
 
-    @objc
-    required init?(coder aDecoder: NSCoder) {
+    @available(*, unavailable, message:"use other constructor instead.")
+    required init(coder aDecoder: NSCoder) {
+        notImplemented()
+    }
+
+    @available(*, unavailable, message:"use other constructor instead.")
+    override init(frame: CGRect) {
         notImplemented()
     }
 
@@ -35,46 +40,33 @@ class QuotedReplyPreview: UIView {
 
         updateContents()
 
-        NotificationCenter.default.addObserver(self, selector: #selector(contentSizeCategoryDidChange), name: .UIContentSizeCategoryDidChange, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(contentSizeCategoryDidChange), name: UIContentSizeCategory.didChangeNotification, object: nil)
     }
+
+    private let draftMarginTop: CGFloat = 6
 
     func updateContents() {
         subviews.forEach { $0.removeFromSuperview() }
+
+        let hMargin: CGFloat = 6
+        self.layoutMargins = UIEdgeInsets(top: draftMarginTop,
+                                          left: hMargin,
+                                          bottom: 0,
+                                          right: hMargin)
 
         // We instantiate quotedMessageView late to ensure that it is updated
         // every time contentSizeCategoryDidChange (i.e. when dynamic type
         // sizes changes).
         let quotedMessageView = OWSQuotedMessageView(forPreview: quotedReply, conversationStyle: conversationStyle)
+        quotedMessageView.delegate = self
         self.quotedMessageView = quotedMessageView
-
+        quotedMessageView.setContentHuggingHorizontalLow()
+        quotedMessageView.setCompressionResistanceHorizontalLow()
         quotedMessageView.backgroundColor = .clear
-
-        let cancelButton: UIButton = UIButton(type: .custom)
-
-        let buttonImage: UIImage = #imageLiteral(resourceName: "quoted-message-cancel").withRenderingMode(.alwaysTemplate)
-        cancelButton.setImage(buttonImage, for: .normal)
-        cancelButton.imageView?.tintColor = Theme.secondaryColor
-        cancelButton.addTarget(self, action: #selector(didTapCancel), for: .touchUpInside)
-
-        self.layoutMargins = .zero
-
         self.addSubview(quotedMessageView)
-        self.addSubview(cancelButton)
-
-        quotedMessageView.autoPinEdges(toSuperviewMarginsExcludingEdge: .trailing)
-        cancelButton.autoPinEdges(toSuperviewMarginsExcludingEdge: .leading)
-        cancelButton.autoPinEdge(.leading, to: .trailing, of: quotedMessageView)
-
-        cancelButton.autoSetDimensions(to: CGSize(width: 40, height: 40))
+        quotedMessageView.autoPinEdgesToSuperviewMargins()
 
         updateHeight()
-    }
-
-    // MARK: Actions
-
-    @objc
-    func didTapCancel(_ sender: Any) {
-        self.delegate?.quotedReplyPreviewDidPressCancel(self)
     }
 
     // MARK: Sizing
@@ -85,12 +77,22 @@ class QuotedReplyPreview: UIView {
             return
         }
         let size = quotedMessageView.size(forMaxWidth: CGFloat.infinity)
-        self.heightConstraint.constant = size.height
+        self.heightConstraint.constant = size.height + draftMarginTop
     }
 
     @objc func contentSizeCategoryDidChange(_ notification: Notification) {
         Logger.debug("")
 
         updateContents()
+    }
+
+    // MARK: - OWSQuotedMessageViewDelegate
+
+    @objc public func didTapQuotedReply(_ quotedReply: OWSQuotedReplyModel, failedThumbnailDownloadAttachmentPointer attachmentPointer: TSAttachmentPointer) {
+        // Do nothing.
+    }
+
+    @objc public func didCancelQuotedReply() {
+        self.delegate?.quotedReplyPreviewDidPressCancel(self)
     }
 }

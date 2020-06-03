@@ -1,16 +1,15 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSSystemMessageCell.h"
 #import "ConversationViewItem.h"
-#import "OWSMessageHeaderView.h"
 #import "Signal-Swift.h"
-#import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
+#import <SignalServiceKit/OWSUnknownProtocolVersionMessage.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
 #import <SignalServiceKit/TSCall.h>
 #import <SignalServiceKit/TSErrorMessage.h>
@@ -24,6 +23,7 @@ typedef void (^SystemMessageActionBlock)(void);
 
 @property (nonatomic) NSString *title;
 @property (nonatomic) SystemMessageActionBlock block;
+@property (nonatomic) NSString *accessibilityIdentifier;
 
 @end
 
@@ -31,11 +31,14 @@ typedef void (^SystemMessageActionBlock)(void);
 
 @implementation SystemMessageAction
 
-+ (SystemMessageAction *)actionWithTitle:(NSString *)title block:(SystemMessageActionBlock)block
++ (SystemMessageAction *)actionWithTitle:(NSString *)title
+                                   block:(SystemMessageActionBlock)block
+                 accessibilityIdentifier:(NSString *)accessibilityIdentifier
 {
     SystemMessageAction *action = [SystemMessageAction new];
     action.title = title;
     action.block = block;
+    action.accessibilityIdentifier = accessibilityIdentifier;
     return action;
 }
 
@@ -43,23 +46,35 @@ typedef void (^SystemMessageActionBlock)(void);
 
 #pragma mark -
 
-@interface OWSSystemMessageCell ()
+@interface OWSSystemMessageCell () <UIGestureRecognizerDelegate>
 
 @property (nonatomic) UIImageView *iconView;
 @property (nonatomic) UILabel *titleLabel;
 @property (nonatomic) UIButton *button;
-@property (nonatomic) UIStackView *vStackView;
+@property (nonatomic) UIStackView *contentStackView;
 @property (nonatomic) UIView *cellBackgroundView;
-@property (nonatomic) OWSMessageHeaderView *headerView;
-@property (nonatomic) NSLayoutConstraint *headerViewHeightConstraint;
 @property (nonatomic) NSArray<NSLayoutConstraint *> *layoutConstraints;
 @property (nonatomic, nullable) SystemMessageAction *action;
+@property (nonatomic) MessageSelectionView *selectionView;
+@property (nonatomic, readonly) UITapGestureRecognizer *contentViewTapGestureRecognizer;
+@property (nonatomic) UIView *iconSpacer;
+@property (nonatomic) UIView *buttonSpacer;
 
 @end
 
 #pragma mark -
 
 @implementation OWSSystemMessageCell
+
+- (instancetype)init
+{
+    return [self initWithFrame:CGRectZero];
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    return [self initWithFrame:CGRectZero];
+}
 
 // `[UIView init]` invokes `[self initWithFrame:...]`.
 - (instancetype)initWithFrame:(CGRect)frame
@@ -79,54 +94,69 @@ typedef void (^SystemMessageActionBlock)(void);
     self.contentView.layoutMargins = UIEdgeInsetsZero;
     self.layoutConstraints = @[];
 
-    self.headerView = [OWSMessageHeaderView new];
-    self.headerViewHeightConstraint = [self.headerView autoSetDimension:ALDimensionHeight toSize:0];
-
     self.iconView = [UIImageView new];
     [self.iconView autoSetDimension:ALDimensionWidth toSize:self.iconSize];
     [self.iconView autoSetDimension:ALDimensionHeight toSize:self.iconSize];
     [self.iconView setContentHuggingHigh];
+
+    self.selectionView = [MessageSelectionView new];
+    _contentViewTapGestureRecognizer =
+        [[UITapGestureRecognizer alloc] initWithTarget:self action:@selector(handleContentViewTapGesture:)];
+    self.contentViewTapGestureRecognizer.delegate = self;
+    [self.contentView addGestureRecognizer:self.contentViewTapGestureRecognizer];
 
     self.titleLabel = [UILabel new];
     self.titleLabel.numberOfLines = 0;
     self.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
     self.titleLabel.textAlignment = NSTextAlignmentCenter;
 
-    UIStackView *contentStackView = [[UIStackView alloc] initWithArrangedSubviews:@[
-        self.iconView,
-        self.titleLabel,
-    ]];
-    contentStackView.axis = UILayoutConstraintAxisVertical;
-    contentStackView.spacing = self.iconVSpacing;
-    contentStackView.alignment = UIStackViewAlignmentCenter;
-
     self.button = [UIButton buttonWithType:UIButtonTypeCustom];
-    [self.button setTitleColor:[UIColor ows_darkSkyBlueColor] forState:UIControlStateNormal];
     self.button.titleLabel.textAlignment = NSTextAlignmentCenter;
     self.button.layer.cornerRadius = 4.f;
     [self.button addTarget:self action:@selector(buttonWasPressed:) forControlEvents:UIControlEventTouchUpInside];
     [self.button autoSetDimension:ALDimensionHeight toSize:self.buttonHeight];
 
-    self.vStackView = [[UIStackView alloc] initWithArrangedSubviews:@[
-        contentStackView,
+    self.iconSpacer = [UIView spacerWithHeight:self.iconVSpacing];
+    self.buttonSpacer = [UIView spacerWithHeight:self.buttonVSpacing];
+
+    UIStackView *vStackView = [[UIStackView alloc] initWithArrangedSubviews:@[
+        self.iconView,
+        self.iconSpacer,
+        self.titleLabel,
+        self.buttonSpacer,
         self.button,
     ]];
-    self.vStackView.axis = UILayoutConstraintAxisVertical;
-    self.vStackView.spacing = self.buttonVSpacing;
-    self.vStackView.alignment = UIStackViewAlignmentCenter;
-    self.vStackView.layoutMarginsRelativeArrangement = YES;
+    vStackView.axis = UILayoutConstraintAxisVertical;
+    vStackView.alignment = UIStackViewAlignmentCenter;
+
+    UIStackView *selectionViewWrapper =
+        [[UIStackView alloc] initWithArrangedSubviews:@[ self.selectionView, [UIView hStretchingSpacer] ]];
+    UIView *trailingCenteredPadding = [UIView hStretchingSpacer];
+    UIStackView *contentStackView =
+        [[UIStackView alloc] initWithArrangedSubviews:@[ selectionViewWrapper, vStackView, trailingCenteredPadding ]];
+
+    // center the vstack with padding views.
+    // It's tricky because we don't want the vStack to move when revealing the
+    // selectionView.
+    [trailingCenteredPadding autoMatchDimension:ALDimensionWidth
+                                    toDimension:ALDimensionWidth
+                                         ofView:selectionViewWrapper];
+
+    contentStackView.axis = UILayoutConstraintAxisHorizontal;
+    contentStackView.spacing = ConversationStyle.messageStackSpacing;
+    contentStackView.layoutMarginsRelativeArrangement = YES;
+    self.contentStackView = contentStackView;
 
     self.cellBackgroundView = [UIView new];
     self.cellBackgroundView.layer.cornerRadius = 5.f;
     [self.contentView addSubview:self.cellBackgroundView];
 
-    UIStackView *cellStackView = [[UIStackView alloc] initWithArrangedSubviews:@[ self.headerView, self.vStackView ]];
-    cellStackView.axis = UILayoutConstraintAxisVertical;
-    [self.contentView addSubview:cellStackView];
-    [cellStackView autoPinEdgesToSuperviewEdges];
+    [self.contentView addSubview:contentStackView];
+    [contentStackView autoPinEdgesToSuperviewEdges];
 
     UILongPressGestureRecognizer *longPress =
         [[UILongPressGestureRecognizer alloc] initWithTarget:self action:@selector(handleLongPressGesture:)];
+    longPress.delegate = self;
     [self addGestureRecognizer:longPress];
 }
 
@@ -150,12 +180,6 @@ typedef void (^SystemMessageActionBlock)(void);
     return 20.f;
 }
 
-- (void)configureFonts
-{
-    // Update cell to reflect changes in dynamic text.
-    self.titleLabel.font = UIFont.ows_dynamicTypeSubheadlineFont;
-}
-
 + (NSString *)cellReuseIdentifier
 {
     return NSStringFromClass([self class]);
@@ -169,6 +193,7 @@ typedef void (^SystemMessageActionBlock)(void);
     self.cellBackgroundView.backgroundColor = [Theme backgroundColor];
 
     [self.button setBackgroundColor:Theme.conversationButtonBackgroundColor];
+    [self.button setTitleColor:Theme.conversationButtonTextColor forState:UIControlStateNormal];
 
     TSInteraction *interaction = self.viewItem.interaction;
 
@@ -177,11 +202,15 @@ typedef void (^SystemMessageActionBlock)(void);
     UIImage *_Nullable icon = [self iconForInteraction:interaction];
     if (icon) {
         self.iconView.image = [icon imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
-        self.iconView.hidden = NO;
         self.iconView.tintColor = [self iconColorForInteraction:interaction];
+        self.iconView.hidden = NO;
+        self.iconSpacer.hidden = NO;
     } else {
         self.iconView.hidden = YES;
+        self.iconSpacer.hidden = YES;
     }
+
+    self.selectionView.hidden = !self.delegate.isShowingSelectionUI;
 
     self.titleLabel.textColor = [self textColor];
     [self applyTitleForInteraction:interaction label:self.titleLabel];
@@ -189,30 +218,21 @@ typedef void (^SystemMessageActionBlock)(void);
 
     if (self.action) {
         [self.button setTitle:self.action.title forState:UIControlStateNormal];
-        UIFont *buttonFont = UIFont.ows_dynamicTypeSubheadlineFont.ows_mediumWeight;
+        UIFont *buttonFont = UIFont.ows_dynamicTypeSubheadlineFont.ows_semibold;
         self.button.titleLabel.font = buttonFont;
+        self.button.accessibilityIdentifier = self.action.accessibilityIdentifier;
         self.button.hidden = NO;
+        self.buttonSpacer.hidden = NO;
     } else {
+        self.button.accessibilityIdentifier = nil;
         self.button.hidden = YES;
+        self.buttonSpacer.hidden = YES;
     }
     CGSize buttonSize = [self.button sizeThatFits:CGSizeZero];
 
     [NSLayoutConstraint deactivateConstraints:self.layoutConstraints];
 
-    if (self.viewItem.hasCellHeader) {
-        self.headerView.hidden = NO;
-
-        CGFloat headerHeight =
-            [self.headerView measureWithConversationViewItem:self.viewItem conversationStyle:self.conversationStyle]
-                .height;
-
-        [self.headerView loadForDisplayWithViewItem:self.viewItem conversationStyle:self.conversationStyle];
-        self.headerViewHeightConstraint.constant = headerHeight;
-    } else {
-        self.headerView.hidden = YES;
-    }
-
-    self.vStackView.layoutMargins = UIEdgeInsetsMake(self.topVMargin,
+    self.contentStackView.layoutMargins = UIEdgeInsetsMake(self.topVMargin,
         self.conversationStyle.fullWidthGutterLeading,
         self.bottomVMargin,
         self.conversationStyle.fullWidthGutterLeading);
@@ -221,8 +241,8 @@ typedef void (^SystemMessageActionBlock)(void);
         [self.titleLabel autoSetDimension:ALDimensionWidth toSize:titleSize.width],
         [self.button autoSetDimension:ALDimensionWidth toSize:buttonSize.width + self.buttonHPadding * 2.f],
 
-        [self.cellBackgroundView autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.vStackView],
-        [self.cellBackgroundView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.vStackView],
+        [self.cellBackgroundView autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.contentStackView],
+        [self.cellBackgroundView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.contentStackView],
         // Text in vStackView might flow right up to the edges, so only use half the gutter.
         [self.cellBackgroundView autoPinEdgeToSuperviewEdge:ALEdgeLeading
                                                   withInset:self.conversationStyle.fullWidthGutterLeading * 0.5f],
@@ -231,16 +251,67 @@ typedef void (^SystemMessageActionBlock)(void);
     ];
 }
 
+- (void)setIsCellVisible:(BOOL)isCellVisible
+{
+    BOOL didChange = self.isCellVisible != isCellVisible;
+
+    [super setIsCellVisible:isCellVisible];
+
+    if (!didChange) {
+        return;
+    }
+
+    if (isCellVisible) {
+        self.selectionView.hidden = !self.delegate.isShowingSelectionUI;
+    } else {
+        self.selectionView.hidden = YES;
+    }
+}
+
+- (void)setSelected:(BOOL)selected
+{
+    [super setSelected:selected];
+
+    // cellBackgroundView is helpful to focus on the interaction while message actions are
+    // presented, but we don't want it to obscure the "selected" background tint.
+    self.cellBackgroundView.hidden = selected;
+
+    self.selectionView.isSelected = selected;
+}
+
+- (void)handleContentViewTapGesture:(UITapGestureRecognizer *)sender
+{
+    OWSAssertDebug(self.delegate);
+    if (self.delegate.isShowingSelectionUI) {
+        if (self.isSelected) {
+            [self.delegate conversationCell:self didDeselectViewItem:self.viewItem];
+        } else {
+            [self.delegate conversationCell:self didSelectViewItem:self.viewItem];
+        }
+    }
+}
+
+#pragma mark - UIGestureRecognizerDelegate
+
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
+{
+    if (self.delegate.isShowingSelectionUI) {
+        return self.contentViewTapGestureRecognizer == gestureRecognizer;
+    } else {
+        return YES;
+    }
+}
+
 - (UIColor *)textColor
 {
-    return Theme.secondaryColor;
+    return Theme.secondaryTextAndIconColor;
 }
 
 - (UIColor *)iconColorForInteraction:(TSInteraction *)interaction
 {
     // "Phone", "Shield" and "Hourglass" icons have a lot of "ink" so they
     // are less dark for balance.
-    return Theme.secondaryColor;
+    return Theme.secondaryTextAndIconColor;
 }
 
 - (nullable UIImage *)iconForInteraction:(TSInteraction *)interaction
@@ -271,9 +342,18 @@ typedef void (^SystemMessageActionBlock)(void);
             case TSInfoMessageAddToContactsOffer:
             case TSInfoMessageAddUserToProfileWhitelistOffer:
             case TSInfoMessageAddGroupToProfileWhitelistOffer:
+                return nil;
             case TSInfoMessageTypeGroupUpdate:
             case TSInfoMessageTypeGroupQuit:
-                return nil;
+                return [Theme iconImage:ThemeIconGroupMessage];
+            case TSInfoMessageUnknownProtocolVersion:
+                OWSAssertDebug([interaction isKindOfClass:[OWSUnknownProtocolVersionMessage class]]);
+                if ([interaction isKindOfClass:[OWSUnknownProtocolVersionMessage class]]) {
+                    OWSUnknownProtocolVersionMessage *message = (OWSUnknownProtocolVersionMessage *)interaction;
+                    result = [UIImage imageNamed:(message.isProtocolVersionUnknown ? @"message_status_failed"
+                                                                                   : @"check-circle-outline-28")];
+                }
+                break;
             case TSInfoMessageTypeDisappearingMessagesUpdate: {
                 BOOL areDisappearingMessagesEnabled = YES;
                 if ([interaction isKindOfClass:[OWSDisappearingConfigurationUpdateInfoMessage class]]) {
@@ -282,9 +362,8 @@ typedef void (^SystemMessageActionBlock)(void);
                 } else {
                     OWSFailDebug(@"unexpected interaction type: %@", interaction.class);
                 }
-                result = (areDisappearingMessagesEnabled
-                        ? [UIImage imageNamed:@"system_message_disappearing_messages"]
-                        : [UIImage imageNamed:@"system_message_disappearing_messages_disabled"]);
+                result = (areDisappearingMessagesEnabled ? [Theme iconImage:ThemeIconSettingsTimer]
+                                                         : [Theme iconImage:ThemeIconSettingsTimerDisabled]);
                 break;
             }
             case TSInfoMessageVerificationStateChange:
@@ -296,11 +375,17 @@ typedef void (^SystemMessageActionBlock)(void);
                         return nil;
                     }
                 }
-                result = [UIImage imageNamed:@"system_message_verified"];
+                result = [UIImage imageNamed:@"check-circle-outline-28"];
+                break;
+            case TSInfoMessageUserJoinedSignal:
+                result = [UIImage imageNamed:@"emoji-heart-filled-28"];
+                break;
+            case TSInfoMessageSyncedThread:
+                result = [Theme iconImage:ThemeIconInfo];
                 break;
         }
     } else if ([interaction isKindOfClass:[TSCall class]]) {
-        result = [UIImage imageNamed:@"system_message_call"];
+        result = [Theme iconImage:ThemeIconPhone];
     } else {
         OWSFailDebug(@"Unknown interaction type: %@", [interaction class]);
         return nil;
@@ -316,9 +401,23 @@ typedef void (^SystemMessageActionBlock)(void);
     OWSAssertDebug(label);
     OWSAssertDebug(self.viewItem.systemMessageText.length > 0);
 
-    [self configureFonts];
+    NSMutableAttributedString *labelText =
+        [[NSMutableAttributedString alloc] initWithString:self.viewItem.systemMessageText
+                                               attributes:@{
+                                                   NSFontAttributeName : UIFont.ows_dynamicTypeSubheadlineFont,
+                                               }];
 
-    label.text = self.viewItem.systemMessageText;
+    if (self.shouldShowTimestamp) {
+        NSString *timestampText = [DateUtil formatMessageTimestamp:interaction.timestamp];
+        [labelText appendAttributedString:[[NSAttributedString alloc] initWithString:@"\n"]];
+        [labelText appendAttributedString:[[NSAttributedString alloc]
+                                              initWithString:timestampText.localizedUppercaseString
+                                                  attributes:@{
+                                                      NSFontAttributeName : UIFont.ows_dynamicTypeCaption1Font,
+                                                  }]];
+    }
+
+    label.attributedText = labelText;
 }
 
 - (CGFloat)topVMargin
@@ -341,12 +440,17 @@ typedef void (^SystemMessageActionBlock)(void);
     return 20.f;
 }
 
+- (BOOL)shouldShowTimestamp
+{
+    return self.viewItem.interaction.interactionType == OWSInteractionType_Call;
+}
+
 - (CGSize)titleSize
 {
     OWSAssertDebug(self.conversationStyle);
     OWSAssertDebug(self.viewItem);
 
-    CGFloat maxTitleWidth = (CGFloat)floor(self.conversationStyle.fullWidthContentWidth);
+    CGFloat maxTitleWidth = (CGFloat)floor(self.conversationStyle.selectableCenteredContentWidth);
     return [self.titleLabel sizeThatFits:CGSizeMake(maxTitleWidth, CGFLOAT_MAX)];
 }
 
@@ -358,12 +462,6 @@ typedef void (^SystemMessageActionBlock)(void);
     TSInteraction *interaction = self.viewItem.interaction;
 
     CGSize result = CGSizeMake(self.conversationStyle.viewWidth, 0);
-
-    if (self.viewItem.hasCellHeader) {
-        result.height +=
-            [self.headerView measureWithConversationViewItem:self.viewItem conversationStyle:self.conversationStyle]
-                .height;
-    }
 
     UIImage *_Nullable icon = [self iconForInteraction:interaction];
     if (icon) {
@@ -409,31 +507,34 @@ typedef void (^SystemMessageActionBlock)(void);
 
     __weak OWSSystemMessageCell *weakSelf = self;
     switch (message.errorType) {
-        case TSErrorMessageInvalidKeyException:
-            return nil;
         case TSErrorMessageNonBlockingIdentityChange:
             return [SystemMessageAction
-                actionWithTitle:NSLocalizedString(@"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER",
-                                    @"Label for button to verify a user's safety number.")
-                          block:^{
-                              [weakSelf.delegate tappedNonBlockingIdentityChangeForRecipientId:message.recipientId];
-                          }];
+                        actionWithTitle:NSLocalizedString(@"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER",
+                                            @"Label for button to verify a user's safety number.")
+                                  block:^{
+                                      [weakSelf.delegate
+                                          tappedNonBlockingIdentityChangeForAddress:message.recipientAddress];
+                                  }
+                accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"verify_safety_number")];
         case TSErrorMessageWrongTrustedIdentityKey:
             return [SystemMessageAction
-                actionWithTitle:NSLocalizedString(@"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER",
-                                    @"Label for button to verify a user's safety number.")
-                          block:^{
-                              [weakSelf.delegate
-                                  tappedInvalidIdentityKeyErrorMessage:(TSInvalidIdentityKeyErrorMessage *)message];
-                          }];
+                        actionWithTitle:NSLocalizedString(@"SYSTEM_MESSAGE_ACTION_VERIFY_SAFETY_NUMBER",
+                                            @"Label for button to verify a user's safety number.")
+                                  block:^{
+                                      [weakSelf.delegate
+                                          tappedInvalidIdentityKeyErrorMessage:(TSInvalidIdentityKeyErrorMessage *)
+                                                                                   message];
+                                  }
+                accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"verify_safety_number")];
+        case TSErrorMessageInvalidKeyException:
         case TSErrorMessageMissingKeyId:
         case TSErrorMessageNoSession:
-            return nil;
         case TSErrorMessageInvalidMessage:
             return [SystemMessageAction actionWithTitle:NSLocalizedString(@"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON", @"")
                                                   block:^{
                                                       [weakSelf.delegate tappedCorruptedMessage:message];
-                                                  }];
+                                                  }
+                                accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"reset_session")];
         case TSErrorMessageDuplicateMessage:
         case TSErrorMessageInvalidVersion:
             return nil;
@@ -444,19 +545,20 @@ typedef void (^SystemMessageActionBlock)(void);
             return [SystemMessageAction actionWithTitle:CommonStrings.retryButton
                                                   block:^{
                                                       [weakSelf.delegate resendGroupUpdateForErrorMessage:message];
-                                                  }];
+                                                  }
+                                accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"retry")];
     }
 
     OWSLogWarn(@"Unhandled tap for error message:%@", message);
     return nil;
 }
 
-- (nullable SystemMessageAction *)actionForInfoMessage:(TSInfoMessage *)message
+- (nullable SystemMessageAction *)actionForInfoMessage:(TSInfoMessage *)infoMessage
 {
-    OWSAssertDebug(message);
+    OWSAssertDebug(infoMessage);
 
     __weak OWSSystemMessageCell *weakSelf = self;
-    switch (message.messageType) {
+    switch (infoMessage.messageType) {
         case TSInfoMessageUserNotRegistered:
         case TSInfoMessageTypeSessionDidEnd:
             return nil;
@@ -479,23 +581,50 @@ typedef void (^SystemMessageActionBlock)(void);
             return nil;
         case TSInfoMessageTypeGroupQuit:
             return nil;
+        case TSInfoMessageUnknownProtocolVersion: {
+            if (![infoMessage isKindOfClass:[OWSUnknownProtocolVersionMessage class]]) {
+                OWSFailDebug(@"Unexpected message type.");
+                return nil;
+            }
+            OWSUnknownProtocolVersionMessage *message = (OWSUnknownProtocolVersionMessage *)infoMessage;
+            if (message.isProtocolVersionUnknown) {
+                return [SystemMessageAction
+                            actionWithTitle:NSLocalizedString(@"UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON",
+                                                @"Label for button that lets users upgrade the app.")
+                                      block:^{
+                                          [weakSelf showUpgradeAppUI];
+                                      }
+                    accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"show_upgrade_app_ui")];
+            }
+            return nil;
+        }
         case TSInfoMessageTypeDisappearingMessagesUpdate:
-            return [SystemMessageAction actionWithTitle:NSLocalizedString(@"CONVERSATION_SETTINGS_TAP_TO_CHANGE",
-                                                            @"Label for button that opens conversation settings.")
-                                                  block:^{
-                                                      [weakSelf.delegate showConversationSettings];
-                                                  }];
+            if ([self.delegate conversationCellHasPendingMessageRequest:self]) {
+                return nil;
+            }
+            return [SystemMessageAction
+                        actionWithTitle:NSLocalizedString(@"CONVERSATION_SETTINGS_TAP_TO_CHANGE",
+                                            @"Label for button that opens conversation settings.")
+                                  block:^{
+                                      [weakSelf.delegate showConversationSettings];
+                                  }
+                accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"show_conversation_settings")];
         case TSInfoMessageVerificationStateChange:
             return [SystemMessageAction
-                actionWithTitle:NSLocalizedString(@"SHOW_SAFETY_NUMBER_ACTION", @"Action sheet item")
-                          block:^{
-                              [weakSelf.delegate
-                                  showFingerprintWithRecipientId:((OWSVerificationStateChangeMessage *)message)
-                                                                     .recipientId];
-                          }];
+                        actionWithTitle:NSLocalizedString(@"SHOW_SAFETY_NUMBER_ACTION", @"Action sheet item")
+                                  block:^{
+                                      [weakSelf.delegate
+                                          showFingerprintWithAddress:((OWSVerificationStateChangeMessage *)infoMessage)
+                                                                         .recipientAddress];
+                                  }
+                accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"show_safety_number")];
+        case TSInfoMessageUserJoinedSignal:
+            return nil;
+        case TSInfoMessageSyncedThread:
+            return nil;
     }
 
-    OWSLogInfo(@"Unhandled tap for info message: %@", message);
+    OWSLogInfo(@"Unhandled tap for info message: %@", infoMessage);
     return nil;
 }
 
@@ -509,18 +638,29 @@ typedef void (^SystemMessageActionBlock)(void);
         case RPRecentCallTypeIncomingMissed:
         case RPRecentCallTypeIncomingMissedBecauseOfChangedIdentity:
         case RPRecentCallTypeIncomingDeclined:
+        case RPRecentCallTypeIncomingAnsweredElsewhere:
+        case RPRecentCallTypeIncomingDeclinedElsewhere:
+        case RPRecentCallTypeIncomingBusyElsewhere:
+            if ([self.delegate conversationCellHasPendingMessageRequest:self]) {
+                return nil;
+            }
             return
                 [SystemMessageAction actionWithTitle:NSLocalizedString(@"CALLBACK_BUTTON_TITLE", @"notification action")
                                                block:^{
                                                    [weakSelf.delegate handleCallTap:call];
-                                               }];
+                                               }
+                             accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"call_back")];
         case RPRecentCallTypeOutgoing:
         case RPRecentCallTypeOutgoingMissed:
+            if ([self.delegate conversationCellHasPendingMessageRequest:self]) {
+                return nil;
+            }
             return [SystemMessageAction actionWithTitle:NSLocalizedString(@"CALL_AGAIN_BUTTON_TITLE",
                                                             @"Label for button that lets users call a contact again.")
                                                   block:^{
                                                       [weakSelf.delegate handleCallTap:call];
-                                                  }];
+                                                  }
+                                accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"call_again")];
         case RPRecentCallTypeOutgoingIncomplete:
         case RPRecentCallTypeIncomingIncomplete:
             return nil;
@@ -533,11 +673,7 @@ typedef void (^SystemMessageActionBlock)(void);
 {
     OWSAssertDebug(self.delegate);
 
-    if ([self isGestureInCellHeader:longPress]) {
-        return;
-    }
-
-    TSInteraction *interaction = self.viewItem.interaction;
+    __unused TSInteraction *interaction = self.viewItem.interaction;
     OWSAssertDebug(interaction);
 
     if (longPress.state == UIGestureRecognizerStateBegan) {
@@ -545,26 +681,28 @@ typedef void (^SystemMessageActionBlock)(void);
     }
 }
 
-- (BOOL)isGestureInCellHeader:(UIGestureRecognizer *)sender
-{
-    OWSAssertDebug(self.viewItem);
-
-    if (!self.viewItem.hasCellHeader) {
-        return NO;
-    }
-
-    CGPoint location = [sender locationInView:self];
-    CGPoint headerBottom = [self convertPoint:CGPointMake(0, self.headerView.height) fromView:self.headerView];
-    return location.y <= headerBottom.y;
-}
-
 - (void)buttonWasPressed:(id)sender
 {
-    if (!self.action.block) {
+    if (self.delegate.isShowingSelectionUI) {
+        // While in select mode, any actions should be superseded by the tap gesture.
+        // TODO - this is kind of a hack. A better approach might be to disable the button
+        // when delegate.isShowingSelectionUI changes, but that requires some additional plumbing.
+        if (self.isSelected) {
+            [self.delegate conversationCell:self didDeselectViewItem:self.viewItem];
+        } else {
+            [self.delegate conversationCell:self didSelectViewItem:self.viewItem];
+        }
+    } else if (!self.action.block) {
         OWSFailDebug(@"Missing action");
     } else {
         self.action.block();
     }
+}
+
+- (void)showUpgradeAppUI
+{
+    NSString *url = @"https://itunes.apple.com/us/app/signal-private-messenger/id874139669?mt=8";
+    [UIApplication.sharedApplication openURL:[NSURL URLWithString:url] options:@{} completionHandler:nil];
 }
 
 #pragma mark - Reuse
@@ -574,6 +712,8 @@ typedef void (^SystemMessageActionBlock)(void);
     [super prepareForReuse];
 
     self.action = nil;
+    self.selectionView.alpha = 1.0;
+    self.selected = NO;
 }
 
 @end

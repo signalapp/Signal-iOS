@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSSounds.h"
@@ -7,12 +7,9 @@
 #import "OWSAudioPlayer.h"
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/OWSFileSystem.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSThread.h>
-#import <SignalServiceKit/YapDatabaseConnection+OWS.h>
-#import <YapDatabase/YapDatabase.h>
 
-NSString *const kOWSSoundsStorageNotificationCollection = @"kOWSSoundsStorageNotificationCollection";
 NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlobalNotificationKey";
 
 @interface OWSSystemSound : NSObject
@@ -20,10 +17,13 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
 @property (nonatomic, readonly) SystemSoundID soundID;
 @property (nonatomic, readonly) NSURL *soundURL;
 
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 - (instancetype)initWithURL:(NSURL *)url NS_DESIGNATED_INITIALIZER;
 
 @end
+
+#pragma mark -
 
 @implementation OWSSystemSound
 
@@ -58,7 +58,6 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
 
 @interface OWSSounds ()
 
-@property (nonatomic, readonly) YapDatabaseConnection *dbConnection;
 @property (nonatomic, readonly) AnyLRUCache *cachedSystemSounds;
 
 @end
@@ -67,6 +66,20 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
 
 @implementation OWSSounds
 
+#pragma mark - Dependencies
+
++ (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+#pragma mark -
+
 + (instancetype)sharedManager
 {
     OWSAssertDebug(Environment.shared.sounds);
@@ -74,7 +87,7 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
     return Environment.shared.sounds;
 }
 
-- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage
+- (instancetype)init
 {
     self = [super init];
 
@@ -82,16 +95,18 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
         return self;
     }
 
-    OWSAssertDebug(primaryStorage);
-
-    _dbConnection = primaryStorage.newDatabaseConnection;
-
     // Don't store too many sounds in memory. Most users will only use 1 or 2 sounds anyway.
     _cachedSystemSounds = [[AnyLRUCache alloc] initWithMaxSize:4];
 
     OWSSingletonAssert();
 
     return self;
+}
+
++ (SDSKeyValueStore *)keyValueStore
+{
+    NSString *const kOWSSoundsStorageNotificationCollection = @"kOWSSoundsStorageNotificationCollection";
+    return [[SDSKeyValueStore alloc] initWithCollection:kOWSSoundsStorageNotificationCollection];
 }
 
 + (NSArray<NSNumber *> *)allNotificationSounds
@@ -161,8 +176,8 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
             return @"Call Outboung Ringing";
         case OWSSound_CallBusy:
             return @"Call Busy";
-        case OWSSound_CallFailure:
-            return @"Call Failure";
+        case OWSSound_CallEnded:
+            return @"Call Ended";
         case OWSSound_MessageSent:
             return @"Message Sent";
 
@@ -220,12 +235,12 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
 
             // Calls
         case OWSSound_CallConnecting:
-            return @"sonarping.mp3";
+            return @"ringback_tone_ansi.caf";
         case OWSSound_CallOutboundRinging:
             return @"ringback_tone_ansi.caf";
         case OWSSound_CallBusy:
             return @"busy_tone_ansi.caf";
-        case OWSSound_CallFailure:
+        case OWSSound_CallEnded:
             return @"end_call_tone_cept.caf";
         case OWSSound_MessageSent:
             return @"message_sent.aiff";
@@ -279,9 +294,10 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
 
 + (OWSSound)globalNotificationSound
 {
-    OWSSounds *instance = OWSSounds.sharedManager;
-    NSNumber *_Nullable value = [instance.dbConnection objectForKey:kOWSSoundsStorageGlobalNotificationKey
-                                                       inCollection:kOWSSoundsStorageNotificationCollection];
+    __block NSNumber *_Nullable value;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        value = [self.keyValueStore getNSNumber:kOWSSoundsStorageGlobalNotificationKey transaction:transaction];
+    }];
     // Default to the global default.
     return (value ? (OWSSound)value.intValue : [self defaultNotificationSound]);
 }
@@ -293,17 +309,17 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
 
 - (void)setGlobalNotificationSound:(OWSSound)sound
 {
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         [self setGlobalNotificationSound:sound transaction:transaction];
     }];
 }
 
-+ (void)setGlobalNotificationSound:(OWSSound)sound transaction:(YapDatabaseReadWriteTransaction *)transaction
++ (void)setGlobalNotificationSound:(OWSSound)sound transaction:(SDSAnyWriteTransaction *)transaction
 {
     [self.sharedManager setGlobalNotificationSound:sound transaction:transaction];
 }
 
-- (void)setGlobalNotificationSound:(OWSSound)sound transaction:(YapDatabaseReadWriteTransaction *)transaction
+- (void)setGlobalNotificationSound:(OWSSound)sound transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(transaction);
 
@@ -345,37 +361,35 @@ NSString *const kOWSSoundsStorageGlobalNotificationKey = @"kOWSSoundsStorageGlob
         return;
     }
 
-    [transaction setObject:@(sound)
-                    forKey:kOWSSoundsStorageGlobalNotificationKey
-              inCollection:kOWSSoundsStorageNotificationCollection];
+    [OWSSounds.keyValueStore setUInt:sound key:kOWSSoundsStorageGlobalNotificationKey transaction:transaction];
 }
 
 + (OWSSound)notificationSoundForThread:(TSThread *)thread
 {
-    OWSSounds *instance = OWSSounds.sharedManager;
-    NSNumber *_Nullable value =
-        [instance.dbConnection objectForKey:thread.uniqueId inCollection:kOWSSoundsStorageNotificationCollection];
+    __block NSNumber *_Nullable value;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        value = [self.keyValueStore getNSNumber:thread.uniqueId transaction:transaction];
+    }];
     // Default to the "global" notification sound, which in turn will default to the global default.
     return (value ? (OWSSound)value.intValue : [self globalNotificationSound]);
 }
 
 + (void)setNotificationSound:(OWSSound)sound forThread:(TSThread *)thread
 {
-    OWSSounds *instance = OWSSounds.sharedManager;
-    [instance.dbConnection setObject:@(sound)
-                              forKey:thread.uniqueId
-                        inCollection:kOWSSoundsStorageNotificationCollection];
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [self.keyValueStore setUInt:sound key:thread.uniqueId transaction:transaction];
+    }];
 }
 
 #pragma mark - AudioPlayer
 
 + (BOOL)shouldAudioPlayerLoopForSound:(OWSSound)sound
 {
-    return (sound == OWSSound_CallConnecting || sound == OWSSound_CallOutboundRinging);
+    return (sound == OWSSound_CallConnecting || sound == OWSSound_CallOutboundRinging
+        || sound == OWSSound_DefaultiOSIncomingRingtone);
 }
 
-+ (nullable OWSAudioPlayer *)audioPlayerForSound:(OWSSound)sound
-                                 audioBehavior:(OWSAudioBehavior)audioBehavior;
++ (nullable OWSAudioPlayer *)audioPlayerForSound:(OWSSound)sound audioBehavior:(OWSAudioBehavior)audioBehavior
 {
     NSURL *_Nullable soundURL = [OWSSounds soundURLForSound:sound quiet:NO];
     if (!soundURL) {

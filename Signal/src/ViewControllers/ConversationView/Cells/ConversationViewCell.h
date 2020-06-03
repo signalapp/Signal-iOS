@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -8,7 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class ConversationViewCell;
 @class OWSContactOffersInteraction;
 @class OWSContactsManager;
-@class TSAttachmentPointer;
+@class SignalServiceAddress;
 @class TSAttachmentStream;
 @class TSCall;
 @class TSErrorMessage;
@@ -22,19 +22,42 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol ConversationViewCellDelegate <NSObject>
 
-- (void)conversationCell:(ConversationViewCell *)cell didLongpressTextViewItem:(id<ConversationViewItem>)viewItem;
-- (void)conversationCell:(ConversationViewCell *)cell didLongpressMediaViewItem:(id<ConversationViewItem>)viewItem;
-- (void)conversationCell:(ConversationViewCell *)cell didLongpressQuoteViewItem:(id<ConversationViewItem>)viewItem;
+- (void)conversationCell:(ConversationViewCell *)cell
+            shouldAllowReply:(BOOL)shouldAllowReply
+    didLongpressTextViewItem:(id<ConversationViewItem>)viewItem;
+- (void)conversationCell:(ConversationViewCell *)cell
+             shouldAllowReply:(BOOL)shouldAllowReply
+    didLongpressMediaViewItem:(id<ConversationViewItem>)viewItem;
+- (void)conversationCell:(ConversationViewCell *)cell
+             shouldAllowReply:(BOOL)shouldAllowReply
+    didLongpressQuoteViewItem:(id<ConversationViewItem>)viewItem;
 - (void)conversationCell:(ConversationViewCell *)cell
     didLongpressSystemMessageViewItem:(id<ConversationViewItem>)viewItem;
+- (void)conversationCell:(ConversationViewCell *)cell
+        shouldAllowReply:(BOOL)shouldAllowReply
+     didLongpressSticker:(id<ConversationViewItem>)viewItem;
+- (void)conversationCell:(ConversationViewCell *)cell didReplyToItem:(id<ConversationViewItem>)viewItem;
+- (void)conversationCell:(ConversationViewCell *)cell didTapAvatar:(id<ConversationViewItem>)viewItem;
+- (BOOL)conversationCell:(ConversationViewCell *)cell shouldAllowReplyForItem:(id<ConversationViewItem>)viewItem;
+- (void)conversationCell:(ConversationViewCell *)cell didChangeLongpress:(id<ConversationViewItem>)viewItem;
+- (void)conversationCell:(ConversationViewCell *)cell didEndLongpress:(id<ConversationViewItem>)viewItem;
+- (void)conversationCell:(ConversationViewCell *)cell didTapReactions:(id<ConversationViewItem>)viewItem;
+- (BOOL)conversationCellHasPendingMessageRequest:(ConversationViewCell *)cell;
+
+#pragma mark - Selection
+
+@property (nonatomic, readonly) BOOL isShowingSelectionUI;
+- (BOOL)isViewItemSelected:(id<ConversationViewItem>)viewItem;
+- (void)conversationCell:(ConversationViewCell *)cell didSelectViewItem:(id<ConversationViewItem>)viewItem;
+- (void)conversationCell:(ConversationViewCell *)cell didDeselectViewItem:(id<ConversationViewItem>)viewItem;
 
 #pragma mark - System Cell
 
-- (void)tappedNonBlockingIdentityChangeForRecipientId:(nullable NSString *)signalId;
+- (void)tappedNonBlockingIdentityChangeForAddress:(nullable SignalServiceAddress *)address;
 - (void)tappedInvalidIdentityKeyErrorMessage:(TSInvalidIdentityKeyErrorMessage *)errorMessage;
 - (void)tappedCorruptedMessage:(TSErrorMessage *)message;
 - (void)resendGroupUpdateForErrorMessage:(TSErrorMessage *)message;
-- (void)showFingerprintWithRecipientId:(NSString *)recipientId;
+- (void)showFingerprintWithAddress:(SignalServiceAddress *)address;
 - (void)showConversationSettings;
 - (void)handleCallTap:(TSCall *)call;
 
@@ -43,10 +66,6 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)tappedUnknownContactBlockOfferMessage:(OWSContactOffersInteraction *)interaction;
 - (void)tappedAddToContactsOfferMessage:(OWSContactOffersInteraction *)interaction;
 - (void)tappedAddToProfileWhitelistOfferMessage:(OWSContactOffersInteraction *)interaction;
-
-#pragma mark - Formatting
-
-- (NSAttributedString *)attributedContactOrProfileNameForPhoneIdentifier:(NSString *)recipientId;
 
 #pragma mark - Caching
 
@@ -90,5 +109,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (CGSize)cellSize;
 
 @end
+
+@class MessageSelectionView;
+
+@protocol SelectableConversationCell <NSObject>
+
+@property (nonatomic, readonly) MessageSelectionView *selectionView;
+
+@end
+
 
 NS_ASSUME_NONNULL_END

@@ -1,14 +1,11 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSMessageSender.h"
-#import "NSError+MessageSending.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSError.h"
-#import "OWSFakeContactsManager.h"
 #import "OWSFakeNetworkManager.h"
-#import "OWSPrimaryStorage.h"
+#import "OWSMessageSender.h"
 #import "OWSUploadOperation.h"
 #import "SSKBaseTestObjC.h"
 #import "TSAccountManager.h"
@@ -28,10 +25,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface OWSUploadOperation (Testing)
 
-- (instancetype)initWithAttachmentId:(NSString *)attachmentId
-                        dbConnection:(YapDatabaseConnection *)dbConnection
-                      networkManager:(TSNetworkManager *)networkManager;
-
 @end
 
 #pragma mark -
@@ -40,7 +33,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic) OWSUploadOperation *uploadingService;
 
-- (void)sendMessageToService:(TSOutgoingMessage *)message
+- (void)sendMessageToService:(OutgoingMessagePreparer *)message
                      success:(void (^)(void))successHandler
                      failure:(RetryableFailureHandler)failureHandler;
 
@@ -52,7 +45,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSArray<NSDictionary *> *)deviceMessages:(TSOutgoingMessage *)message
                                forRecipient:(SignalRecipient *)recipient
-                                   inThread:(TSThread *)thread
+                                     thread:(TSThread *)thread
 {
     OWSLogInfo(@"[OWSFakeMessagesManager] Faking deviceMessages.");
     return @[];
@@ -81,21 +74,6 @@ NS_ASSUME_NONNULL_BEGIN
 #pragma mark -
 
 @implementation OWSFakeUploadingService
-
-- (instancetype)initWithAttachmentId:(NSString *)attachmentId
-                        dbConnection:(YapDatabaseConnection *)dbConnection
-                       shouldSucceed:(BOOL)shouldSucceed
-{
-    self =
-        [super initWithAttachmentId:attachmentId dbConnection:dbConnection networkManager:[OWSFakeNetworkManager new]];
-    if (!self) {
-        return self;
-    }
-
-    _shouldSucceed = shouldSucceed;
-
-    return self;
-}
 
 - (void)uploadAttachmentStream:(TSAttachmentStream *)attachmentStream
                        message:(TSOutgoingMessage *)outgoingMessage
@@ -198,14 +176,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@interface TSAccountManager (Testing)
-
-- (void)storeLocalNumber:(NSString *)localNumber;
-
-@end
-
-#pragma mark -
-
 @interface OWSMessageSenderTest : SSKBaseTestObjC
 
 @property (nonatomic) TSThread *thread;
@@ -232,7 +202,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.thread save];
 
     self.unexpiringMessage = [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:1
-                                                                                inThread:self.thread
+                                                                                  thread:self.thread
                                                                              messageBody:@"outgoing message"
                                                                            attachmentIds:[NSMutableArray new]
                                                                         expiresInSeconds:0
@@ -240,11 +210,12 @@ NS_ASSUME_NONNULL_BEGIN
                                                                           isVoiceMessage:NO
                                                                         groupMetaMessage:TSGroupMetaMessageUnspecified
                                                                            quotedMessage:nil
-                                                                            contactShare:nil];
+                                                                            contactShare:nil
+                                                                             linkPreview:nil];
     [self.unexpiringMessage save];
 
     self.expiringMessage = [[TSOutgoingMessage alloc] initOutgoingMessageWithTimestamp:1
-                                                                              inThread:self.thread
+                                                                                thread:self.thread
                                                                            messageBody:@"outgoing message"
                                                                          attachmentIds:[NSMutableArray new]
                                                                       expiresInSeconds:30
@@ -252,29 +223,32 @@ NS_ASSUME_NONNULL_BEGIN
                                                                         isVoiceMessage:NO
                                                                       groupMetaMessage:TSGroupMetaMessageUnspecified
                                                                          quotedMessage:nil
-                                                                          contactShare:nil];
+                                                                          contactShare:nil
+                                                                           linkPreview:nil];
     [self.expiringMessage save];
 
-    OWSPrimaryStorage *storageManager = [OWSPrimaryStorage sharedManager];
     OWSFakeContactsManager *contactsManager = [OWSFakeContactsManager new];
 
     // Successful Sending
     TSNetworkManager *successfulNetworkManager = [[OWSMessageSenderFakeNetworkManager alloc] initWithSuccess:YES];
     self.successfulMessageSender = [[OWSMessageSender alloc] initWithNetworkManager:successfulNetworkManager
-                                                                     primaryStorage:primaryStorage
                                                                     contactsManager:contactsManager];
 
     // Unsuccessful Sending
     TSNetworkManager *unsuccessfulNetworkManager = [[OWSMessageSenderFakeNetworkManager alloc] initWithSuccess:NO];
     self.unsuccessfulMessageSender = [[OWSMessageSender alloc] initWithNetworkManager:unsuccessfulNetworkManager
-                                                                       primaryStorage:primaryStorage
                                                                       contactsManager:contactsManager];
 }
 
 - (void)testExpiringMessageTimerStartsOnSuccessWhenDisappearingMessagesEnabled
 {
-    [[[OWSDisappearingMessagesConfiguration alloc] initWithThreadId:self.thread.uniqueId enabled:YES durationSeconds:10]
-        save];
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        OWSDisappearingMessagesConfiguration *configuration =
+            [self.thread disappearingMessagesDurationWithTransaction:transaction];
+        configuration = [configuration copyAsEnabledWithDurationSeconds:10];
+
+        [configuration anyUpsertWithTransaction:transaction];
+    }];
 
     OWSMessageSender *messageSender = self.successfulMessageSender;
 
@@ -284,9 +258,15 @@ NS_ASSUME_NONNULL_BEGIN
     XCTestExpectation *messageStartedExpiration = [self expectationWithDescription:@"messageStartedExpiration"];
     [messageSender sendMessage:self.expiringMessage
         success:^() {
-            //FIXME remove sleep hack in favor of expiringMessage completion handler
-            sleep(2);
-            if (self.expiringMessage.expiresAt > 0) {
+            __block TSMessage *_Nullable reloadedMessage;
+            [self readWithBlock:^(SDSAnyReadTransaction *transaction) {
+                reloadedMessage = [TSMessage anyFetchMessageWithUniqueId:self.expiringMessage.uniqueId
+                                                             transaction:transaction];
+            }];
+            if (reloadedMessage == nil) {
+                XCTFail(@"Couldn't reload message.");
+                return;
+            } else if (reloadedMessage.hasPerConversationExpirationStarted) {
                 [messageStartedExpiration fulfill];
             } else {
                 XCTFail(@"Message expiration was supposed to start.");
@@ -304,15 +284,20 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)testExpiringMessageTimerDoesNotStartsWhenDisabled
 {
-    [[[OWSDisappearingMessagesConfiguration alloc] initWithThreadId:self.thread.uniqueId enabled:NO durationSeconds:10]
-        save];
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        OWSDisappearingMessagesConfiguration *configuration =
+            [self.thread disappearingMessagesDurationWithTransaction:transaction];
+        configuration = [configuration copyAsEnabledWithDurationSeconds:10];
+
+        [configuration anyUpsertWithTransaction:transaction];
+    }];
 
     OWSMessageSender *messageSender = self.successfulMessageSender;
 
     XCTestExpectation *messageDidNotStartExpiration = [self expectationWithDescription:@"messageDidNotStartExpiration"];
     [messageSender sendMessageToService:self.unexpiringMessage
         success:^() {
-            if (self.unexpiringMessage.isExpiringMessage || self.unexpiringMessage.expiresAt > 0) {
+            if (self.unexpiringMessage.hasPerConversationExpiration || self.unexpiringMessage.expiresAt > 0) {
                 XCTFail(@"Message expiration was not supposed to start.");
             } else {
                 [messageDidNotStartExpiration fulfill];
@@ -380,8 +365,9 @@ NS_ASSUME_NONNULL_BEGIN
     OWSMessageSender *messageSender = self.successfulMessageSender;
     messageSender.uploadingService = [[OWSFakeUploadingService alloc] initWithSuccess:YES];
 
+    TSOutgoingMessageBuilder *messageBuilder = [[TSOutgoingMessageBuilder alloc] init];
     TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:1
-                                                                     inThread:self.thread
+                                                                       thread:self.thread
                                                                   messageBody:@"We want punks in the palace."];
 
     XCTestExpectation *markedAsSent = [self expectationWithDescription:@"markedAsSent"];
@@ -409,7 +395,7 @@ NS_ASSUME_NONNULL_BEGIN
     messageSender.uploadingService = [[OWSFakeUploadingService alloc] initWithSuccess:YES];
 
     TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:1
-                                                                     inThread:self.thread
+                                                                       thread:self.thread
                                                                   messageBody:@"We want punks in the palace."];
 
     XCTestExpectation *markedAsUnsent = [self expectationWithDescription:@"markedAsUnsent"];
@@ -435,7 +421,7 @@ NS_ASSUME_NONNULL_BEGIN
     messageSender.uploadingService = [[OWSFakeUploadingService alloc] initWithSuccess:YES];
 
     TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:1
-                                                                     inThread:self.thread
+                                                                       thread:self.thread
                                                                   messageBody:@"We want punks in the palace."];
 
     XCTestExpectation *markedAsUnsent = [self expectationWithDescription:@"markedAsUnsent"];
@@ -464,7 +450,7 @@ NS_ASSUME_NONNULL_BEGIN
     messageSender.uploadingService = [[OWSFakeUploadingService alloc] initWithSuccess:NO];
 
     TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:1
-                                                                     inThread:self.thread
+                                                                       thread:self.thread
                                                                   messageBody:@"We want punks in the palace."];
 
     XCTestExpectation *markedAsUnsent = [self expectationWithDescription:@"markedAsUnsent"];
@@ -490,21 +476,24 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSMessageSender *messageSender = self.successfulMessageSender;
 
-
-    NSData *groupIdData = [Cryptography generateRandomBytes:32];
     SignalRecipient *successfulRecipient =
         [[SignalRecipient alloc] initWithTextSecureIdentifier:@"successful-recipient-id" relay:nil];
     SignalRecipient *successfulRecipient2 =
         [[SignalRecipient alloc] initWithTextSecureIdentifier:@"successful-recipient-id2" relay:nil];
 
-    TSGroupModel *groupModel = [[TSGroupModel alloc]
-        initWithTitle:@"group title"
-            memberIds:[@[ successfulRecipient.uniqueId, successfulRecipient2.uniqueId ] mutableCopy]
-                image:nil
-              groupId:groupIdData];
-    TSGroupThread *groupThread = [TSGroupThread getOrCreateThreadWithGroupModel:groupModel];
+    __block TSGroupThread *thread;
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        thread = [GroupManager createGroupForTestsObjcWithMembers:@[
+            successfulRecipient.address,
+            successfulRecipient2.address,
+        ]
+                                                             name:@"group title"
+                                                       avatarData:nil
+                                                      transaction:transaction];
+    }];
+
     TSOutgoingMessage *message = [[TSOutgoingMessage alloc] initWithTimestamp:1
-                                                                     inThread:groupThread
+                                                                       thread:groupThread
                                                                   messageBody:@"We want punks in the palace."];
 
     XCTestExpectation *markedAsSent = [self expectationWithDescription:@"markedAsSent"];
@@ -515,7 +504,6 @@ NS_ASSUME_NONNULL_BEGIN
             } else {
                 XCTFail(@"Unexpected message state");
             }
-
         }
         failure:^(NSError *_Nonnull error) {
             XCTFail(@"sendMessage should not fail.");
@@ -532,7 +520,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSMessageSender *messageSender = self.successfulMessageSender;
 
     NSError *error;
-    NSArray<SignalRecipient *> *recipients = [messageSender getRecipients:@[ recipient.uniqueId ] error:&error];
+    NSArray<SignalRecipient *> *recipients = [messageSender getRecipients:@[ recipient.address ] error:&error];
 
     XCTAssertNil(error);
     XCTAssertEqualObjects(recipient, recipients.firstObject);

@@ -1,11 +1,14 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
 
 @objc(OWSTypingIndicators)
 public protocol TypingIndicators: class {
+    @objc
+    var keyValueStore: SDSKeyValueStore { get }
+
     @objc
     func didStartTypingOutgoingInput(inThread thread: TSThread)
 
@@ -16,25 +19,28 @@ public protocol TypingIndicators: class {
     func didSendOutgoingMessage(inThread thread: TSThread)
 
     @objc
-    func didReceiveTypingStartedMessage(inThread thread: TSThread, recipientId: String, deviceId: UInt)
+    func didReceiveTypingStartedMessage(inThread thread: TSThread, address: SignalServiceAddress, deviceId: UInt)
 
     @objc
-    func didReceiveTypingStoppedMessage(inThread thread: TSThread, recipientId: String, deviceId: UInt)
+    func didReceiveTypingStoppedMessage(inThread thread: TSThread, address: SignalServiceAddress, deviceId: UInt)
 
     @objc
-    func didReceiveIncomingMessage(inThread thread: TSThread, recipientId: String, deviceId: UInt)
+    func didReceiveIncomingMessage(inThread thread: TSThread, address: SignalServiceAddress, deviceId: UInt)
 
-    // Returns the recipient id of the user who should currently be shown typing for a given thread.
+    // Returns the address of the user who should currently be shown typing for a given thread.
     //
     // If no one is typing in that thread, returns nil.
     // If multiple users are typing in that thread, returns the user to show.
     //
     // TODO: Use this method.
     @objc
-    func typingRecipientId(forThread thread: TSThread) -> String?
+    func typingAddress(forThread thread: TSThread) -> SignalServiceAddress?
 
     @objc
-    func setTypingIndicatorsEnabled(value: Bool)
+    func setTypingIndicatorsEnabledAndSendSyncMessage(value: Bool)
+
+    @objc
+    func setTypingIndicatorsEnabled(value: Bool, transaction: SDSAnyWriteTransaction)
 
     @objc
     func areTypingIndicatorsEnabled() -> Bool
@@ -45,13 +51,25 @@ public protocol TypingIndicators: class {
 @objc(OWSTypingIndicatorsImpl)
 public class TypingIndicatorsImpl: NSObject, TypingIndicators {
 
+    // MARK: - Dependencies
+
+    private var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
+
+    // MARK: -
+
     @objc
     public static let typingIndicatorStateDidChange = Notification.Name("typingIndicatorStateDidChange")
 
-    private let kDatabaseCollection = "TypingIndicators"
     private let kDatabaseKey_TypingIndicatorsEnabled = "kDatabaseKey_TypingIndicatorsEnabled"
 
     private var _areTypingIndicatorsEnabled = false
+
+    @objc
+    public let keyValueStore = SDSKeyValueStore(collection: "TypingIndicators")
+
+    private let serialQueue = DispatchQueue(label: "org.signal.typingIndicators")
 
     public override init() {
         super.init()
@@ -64,37 +82,68 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
     private func setup() {
         AssertIsOnMainThread()
 
-        _areTypingIndicatorsEnabled = primaryStorage.dbReadConnection.bool(forKey: kDatabaseKey_TypingIndicatorsEnabled, inCollection: kDatabaseCollection, defaultValue: true)
+        databaseStorage.read { transaction in
+            self.warmCache(transaction: transaction)
+        }
+    }
+
+    private func warmCache(transaction: SDSAnyReadTransaction) {
+        AssertIsOnMainThread()
+
+        let enabled = keyValueStore.getBool(kDatabaseKey_TypingIndicatorsEnabled,
+                                                                defaultValue: true,
+                                                                transaction: transaction)
+
+        serialQueue.sync {
+            _areTypingIndicatorsEnabled = enabled
+        }
     }
 
     // MARK: - Dependencies
 
-    private var primaryStorage: OWSPrimaryStorage {
-        return SSKEnvironment.shared.primaryStorage
-    }
-
-    private var syncManager: OWSSyncManagerProtocol {
+    private var syncManager: SyncManagerProtocol {
         return SSKEnvironment.shared.syncManager
     }
 
     // MARK: -
 
     @objc
-    public func setTypingIndicatorsEnabled(value: Bool) {
-        AssertIsOnMainThread()
+    public func setTypingIndicatorsEnabledAndSendSyncMessage(value: Bool) {
+        serialQueue.sync {
+            Logger.info("\(_areTypingIndicatorsEnabled) -> \(value)")
+            _areTypingIndicatorsEnabled = value
+        }
 
-        _areTypingIndicatorsEnabled = value
-
-        primaryStorage.dbReadWriteConnection.setBool(value, forKey: kDatabaseKey_TypingIndicatorsEnabled, inCollection: kDatabaseCollection)
+        databaseStorage.write { transaction in
+            self.keyValueStore.setBool(value,
+                                       key: self.kDatabaseKey_TypingIndicatorsEnabled,
+                                       transaction: transaction)
+        }
 
         syncManager.sendConfigurationSyncMessage()
+
+        SSKEnvironment.shared.storageServiceManager.recordPendingLocalAccountUpdates()
+
+        NotificationCenter.default.postNotificationNameAsync(TypingIndicatorsImpl.typingIndicatorStateDidChange, object: nil)
+    }
+
+    @objc
+    public func setTypingIndicatorsEnabled(value: Bool, transaction: SDSAnyWriteTransaction) {
+        serialQueue.sync {
+            Logger.info("\(_areTypingIndicatorsEnabled) -> \(value)")
+            _areTypingIndicatorsEnabled = value
+        }
+
+        keyValueStore.setBool(value,
+                              key: kDatabaseKey_TypingIndicatorsEnabled,
+                              transaction: transaction)
+
+        NotificationCenter.default.postNotificationNameAsync(TypingIndicatorsImpl.typingIndicatorStateDidChange, object: nil)
     }
 
     @objc
     public func areTypingIndicatorsEnabled() -> Bool {
-        AssertIsOnMainThread()
-
-        return _areTypingIndicatorsEnabled
+        return serialQueue.sync { _areTypingIndicatorsEnabled }
     }
 
     // MARK: -
@@ -130,31 +179,38 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
     }
 
     @objc
-    public func didReceiveTypingStartedMessage(inThread thread: TSThread, recipientId: String, deviceId: UInt) {
+    public func didReceiveTypingStartedMessage(inThread thread: TSThread, address: SignalServiceAddress, deviceId: UInt) {
         AssertIsOnMainThread()
-        let incomingIndicators = ensureIncomingIndicators(forThread: thread, recipientId: recipientId, deviceId: deviceId)
+        Logger.info("")
+        let incomingIndicators = ensureIncomingIndicators(forThread: thread, address: address, deviceId: deviceId)
         incomingIndicators.didReceiveTypingStartedMessage()
     }
 
     @objc
-    public func didReceiveTypingStoppedMessage(inThread thread: TSThread, recipientId: String, deviceId: UInt) {
+    public func didReceiveTypingStoppedMessage(inThread thread: TSThread, address: SignalServiceAddress, deviceId: UInt) {
         AssertIsOnMainThread()
-        let incomingIndicators = ensureIncomingIndicators(forThread: thread, recipientId: recipientId, deviceId: deviceId)
+        Logger.info("")
+        let incomingIndicators = ensureIncomingIndicators(forThread: thread, address: address, deviceId: deviceId)
         incomingIndicators.didReceiveTypingStoppedMessage()
     }
 
     @objc
-    public func didReceiveIncomingMessage(inThread thread: TSThread, recipientId: String, deviceId: UInt) {
+    public func didReceiveIncomingMessage(inThread thread: TSThread, address: SignalServiceAddress, deviceId: UInt) {
         AssertIsOnMainThread()
-        let incomingIndicators = ensureIncomingIndicators(forThread: thread, recipientId: recipientId, deviceId: deviceId)
+        Logger.info("")
+        let incomingIndicators = ensureIncomingIndicators(forThread: thread, address: address, deviceId: deviceId)
         incomingIndicators.didReceiveIncomingMessage()
     }
 
     @objc
-    public func typingRecipientId(forThread thread: TSThread) -> String? {
+    public func typingAddress(forThread thread: TSThread) -> SignalServiceAddress? {
         AssertIsOnMainThread()
 
-        var firstRecipientId: String?
+        guard areTypingIndicatorsEnabled() else {
+            return nil
+        }
+
+        var firstAddress: SignalServiceAddress?
         var firstTimestamp: UInt64?
 
         let threadKey = incomingIndicatorsKey(forThread: thread)
@@ -176,10 +232,10 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
                 // prefer the one that started typing first.
                 continue
             }
-            firstRecipientId = incomingIndicators.recipientId
+            firstAddress = incomingIndicators.address
             firstTimestamp = startedTypingTimestamp
         }
-        return firstRecipientId
+        return firstAddress
     }
 
     // MARK: -
@@ -190,15 +246,11 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
     private func ensureOutgoingIndicators(forThread thread: TSThread) -> OutgoingIndicators? {
         AssertIsOnMainThread()
 
-        guard let threadId = thread.uniqueId else {
-            owsFailDebug("Thread missing id")
-            return nil
-        }
-        if let outgoingIndicators = outgoingIndicatorsMap[threadId] {
+        if let outgoingIndicators = outgoingIndicatorsMap[thread.uniqueId] {
             return outgoingIndicators
         }
         let outgoingIndicators = OutgoingIndicators(delegate: self, thread: thread)
-        outgoingIndicatorsMap[threadId] = outgoingIndicators
+        outgoingIndicatorsMap[thread.uniqueId] = outgoingIndicators
         return outgoingIndicators
     }
 
@@ -231,26 +283,20 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
             if sendRefreshTimer == nil {
                 // If the user types a character into the compose box, and the sendRefresh timer isn’t running:
 
-                // Send a ACTION=TYPING message.
                 sendTypingMessageIfNecessary(forThread: thread, action: .started)
-                // Start the sendRefresh timer for 10 seconds
+
                 sendRefreshTimer?.invalidate()
                 sendRefreshTimer = Timer.weakScheduledTimer(withTimeInterval: 10,
                                                             target: self,
                                                             selector: #selector(OutgoingIndicators.sendRefreshTimerDidFire),
                                                             userInfo: nil,
                                                             repeats: false)
-                // Start the sendPause timer for 5 seconds
             } else {
                 // If the user types a character into the compose box, and the sendRefresh timer is running:
-
-                // Send nothing
-                // Cancel the sendPause timer
-                // Start the sendPause timer for 5 seconds again
             }
 
             sendPauseTimer?.invalidate()
-            sendPauseTimer = Timer.weakScheduledTimer(withTimeInterval: 5,
+            sendPauseTimer = Timer.weakScheduledTimer(withTimeInterval: 3,
                                                       target: self,
                                                       selector: #selector(OutgoingIndicators.sendPauseTimerDidFire),
                                                       userInfo: nil,
@@ -260,12 +306,11 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
         func didStopTypingOutgoingInput() {
             AssertIsOnMainThread()
 
-            // Send ACTION=STOPPED message.
             sendTypingMessageIfNecessary(forThread: thread, action: .stopped)
-            // Cancel the sendRefresh timer
+
             sendRefreshTimer?.invalidate()
             sendRefreshTimer = nil
-            // Cancel the sendPause timer
+
             sendPauseTimer?.invalidate()
             sendPauseTimer = nil
         }
@@ -274,14 +319,11 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
         func sendPauseTimerDidFire() {
             AssertIsOnMainThread()
 
-            // If the sendPause timer fires:
-
-            // Send ACTION=STOPPED message.
             sendTypingMessageIfNecessary(forThread: thread, action: .stopped)
-            // Cancel the sendRefresh timer
+
             sendRefreshTimer?.invalidate()
             sendRefreshTimer = nil
-            // Cancel the sendPause timer
+
             sendPauseTimer?.invalidate()
             sendPauseTimer = nil
         }
@@ -290,13 +332,9 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
         func sendRefreshTimerDidFire() {
             AssertIsOnMainThread()
 
-            // If the sendRefresh timer fires:
-
-            // Send ACTION=TYPING message
             sendTypingMessageIfNecessary(forThread: thread, action: .started)
-            // Cancel the sendRefresh timer
+
             sendRefreshTimer?.invalidate()
-            // Start the sendRefresh timer for 10 seconds again
             sendRefreshTimer = Timer.weakScheduledTimer(withTimeInterval: 10,
                                                         target: self,
                                                         selector: #selector(sendRefreshTimerDidFire),
@@ -307,12 +345,9 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
         func didSendOutgoingMessage() {
             AssertIsOnMainThread()
 
-            // If the user sends the message:
-
-            // Cancel the sendRefresh timer
             sendRefreshTimer?.invalidate()
             sendRefreshTimer = nil
-            // Cancel the sendPause timer
+
             sendPauseTimer?.invalidate()
             sendPauseTimer = nil
         }
@@ -332,35 +367,39 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
             }
 
             let message = TypingIndicatorMessage(thread: thread, action: action)
-            messageSender.sendPromise(message: message).retainUntilComplete()
+            messageSender.sendMessage(.promise, message.asPreparer).retainUntilComplete()
         }
     }
 
     // MARK: -
 
     // Map of (thread id)-to-(recipient id and device id)-to-IncomingIndicators.
-    private var incomingIndicatorsMap = [String: [String: IncomingIndicators]]()
+    private var incomingIndicatorsMap = [String: [AddressWithDeviceId: IncomingIndicators]]()
+    private struct AddressWithDeviceId: Hashable {
+        let address: SignalServiceAddress
+        let deviceId: UInt
+    }
 
     private func incomingIndicatorsKey(forThread thread: TSThread) -> String {
         return String(describing: thread.uniqueId)
     }
 
-    private func incomingIndicatorsKey(recipientId: String, deviceId: UInt) -> String {
-        return "\(recipientId) \(deviceId)"
+    private func incomingIndicatorsKey(address: SignalServiceAddress, deviceId: UInt) -> AddressWithDeviceId {
+        return AddressWithDeviceId(address: address, deviceId: deviceId)
     }
 
-    private func ensureIncomingIndicators(forThread thread: TSThread, recipientId: String, deviceId: UInt) -> IncomingIndicators {
+    private func ensureIncomingIndicators(forThread thread: TSThread, address: SignalServiceAddress, deviceId: UInt) -> IncomingIndicators {
         AssertIsOnMainThread()
 
         let threadKey = incomingIndicatorsKey(forThread: thread)
-        let deviceKey = incomingIndicatorsKey(recipientId: recipientId, deviceId: deviceId)
+        let deviceKey = incomingIndicatorsKey(address: address, deviceId: deviceId)
         guard let deviceMap = incomingIndicatorsMap[threadKey] else {
-            let incomingIndicators = IncomingIndicators(delegate: self, thread: thread, recipientId: recipientId, deviceId: deviceId)
+            let incomingIndicators = IncomingIndicators(delegate: self, thread: thread, address: address, deviceId: deviceId)
             incomingIndicatorsMap[threadKey] = [deviceKey: incomingIndicators]
             return incomingIndicators
         }
         guard let incomingIndicators = deviceMap[deviceKey] else {
-            let incomingIndicators = IncomingIndicators(delegate: self, thread: thread, recipientId: recipientId, deviceId: deviceId)
+            let incomingIndicators = IncomingIndicators(delegate: self, thread: thread, address: address, deviceId: deviceId)
             var deviceMapCopy = deviceMap
             deviceMapCopy[deviceKey] = incomingIndicators
             incomingIndicatorsMap[threadKey] = deviceMapCopy
@@ -373,7 +412,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
     private class IncomingIndicators {
         private weak var delegate: TypingIndicators?
         private let thread: TSThread
-        fileprivate let recipientId: String
+        fileprivate let address: SignalServiceAddress
         private let deviceId: UInt
         private var displayTypingTimer: Timer?
         fileprivate var startedTypingTimestamp: UInt64?
@@ -392,21 +431,16 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
         }
 
         init(delegate: TypingIndicators, thread: TSThread,
-             recipientId: String, deviceId: UInt) {
+             address: SignalServiceAddress, deviceId: UInt) {
             self.delegate = delegate
             self.thread = thread
-            self.recipientId = recipientId
+            self.address = address
             self.deviceId = deviceId
         }
 
         func didReceiveTypingStartedMessage() {
             AssertIsOnMainThread()
 
-            // If the client receives a ACTION=TYPING message:
-            //
-            // Cancel the displayTyping timer for that (sender, device)
-            // Display the typing indicator for that (sender, device)
-            // Set the displayTyping timer for 15 seconds
             displayTypingTimer?.invalidate()
             displayTypingTimer = Timer.weakScheduledTimer(withTimeInterval: 15,
                                                           target: self,
@@ -460,11 +494,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
             guard delegate.areTypingIndicatorsEnabled() else {
                 return
             }
-            guard let threadId = thread.uniqueId else {
-                owsFailDebug("Thread is missing id.")
-                return
-            }
-            NotificationCenter.default.postNotificationNameAsync(TypingIndicatorsImpl.typingIndicatorStateDidChange, object: threadId)
+            NotificationCenter.default.postNotificationNameAsync(TypingIndicatorsImpl.typingIndicatorStateDidChange, object: thread.uniqueId)
         }
     }
 }

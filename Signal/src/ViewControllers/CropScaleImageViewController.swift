@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -42,7 +42,7 @@ import SignalMessaging
     //
     // TODO: We could make this a parameter.
     var dstSizePixels: CGSize {
-        return CGSize(width: 210, height: 210)
+        return CGSize(square: 210)
     }
     var dstAspectRatio: CGFloat {
         return dstSizePixels.width / dstSizePixels.height
@@ -73,16 +73,11 @@ import SignalMessaging
 
     // MARK: Initializers
 
-    @available(*, unavailable, message:"use other constructor instead.")
-    required init?(coder aDecoder: NSCoder) {
-        notImplemented()
-    }
-
     @objc required init(srcImage: UIImage, successCompletion : @escaping (UIImage) -> Void) {
         // normalized() can be slightly expensive but in practice this is fine.
         self.srcImage = srcImage.normalized()
         self.successCompletion = successCompletion
-        super.init(nibName: nil, bundle: nil)
+        super.init()
 
         configureCropAndScale()
     }
@@ -99,7 +94,7 @@ import SignalMessaging
 
         srcImageSizePoints = srcImage.size
         guard
-            (srcImageSizePoints.width > 0 && srcImageSizePoints.height > 0) else {
+            srcImageSizePoints.width > 0 && srcImageSizePoints.height > 0 else {
                 return
         }
 
@@ -184,7 +179,7 @@ import SignalMessaging
             path.usesEvenOddFillRule = true
 
             layer.path = path.cgPath
-            layer.fillRule = kCAFillRuleEvenOdd
+            layer.fillRule = .evenOdd
             layer.fillColor = UIColor.black.cgColor
             layer.opacity = 0.7
         }
@@ -193,7 +188,7 @@ import SignalMessaging
         let titleLabel = UILabel()
         titleLabel.textColor = UIColor.white
         titleLabel.textAlignment = .center
-        titleLabel.font = UIFont.ows_mediumFont(withSize: ScaleFromIPhone5(16))
+        titleLabel.font = UIFont.ows_semiboldFont(withSize: ScaleFromIPhone5(16))
         titleLabel.text = NSLocalizedString("CROP_SCALE_IMAGE_VIEW_TITLE",
                                             comment: "Title for the 'crop/scale image' dialog.")
         contentView.addSubview(titleLabel)
@@ -275,7 +270,7 @@ import SignalMessaging
         // The size of the image view (should be full screen).
         let imageViewSizePoints = imageView.frame.size
         guard
-            (imageViewSizePoints.width > 0 && imageViewSizePoints.height > 0) else {
+            imageViewSizePoints.width > 0 && imageViewSizePoints.height > 0 else {
                 return
         }
         // The frame of the crop circle within the image view.
@@ -341,7 +336,7 @@ import SignalMessaging
     var lastPinchScale: CGFloat = 1.0
 
     @objc func handlePinch(sender: UIPinchGestureRecognizer) {
-        switch (sender.state) {
+        switch sender.state {
         case .possible:
             break
         case .began:
@@ -390,6 +385,11 @@ import SignalMessaging
             srcTranslation = srcTranslationAtPinchStart
             imageScale = imageScaleAtPinchStart
             break
+        @unknown default:
+            owsFailDebug("Unexpected enum value.")
+            srcTranslation = srcTranslationAtPinchStart
+            imageScale = imageScaleAtPinchStart
+            break
         }
 
         updateImageLayout()
@@ -398,7 +398,7 @@ import SignalMessaging
     var srcTranslationAtPanStart: CGPoint = CGPoint.zero
 
     @objc func handlePan(sender: UIPanGestureRecognizer) {
-        switch (sender.state) {
+        switch sender.state {
         case .possible:
             break
         case .began:
@@ -419,6 +419,11 @@ import SignalMessaging
                                      y: srcTranslationAtPanStart.y + gestureTranslation.y * -viewToSrcRatio)
             break
         case .cancelled, .failed:
+            srcTranslation
+                = srcTranslationAtPanStart
+            break
+        @unknown default:
+            owsFailDebug("Unexpected enum value.")
             srcTranslation
                 = srcTranslationAtPanStart
             break
@@ -444,8 +449,7 @@ import SignalMessaging
         cancelButton.autoPinEdge(toSuperviewEdge: .bottom)
         cancelButton.autoPinEdge(toSuperviewEdge: .left)
 
-        let doneButton = createButton(title: NSLocalizedString("BUTTON_DONE",
-                                                               comment: "Label for generic done button."),
+        let doneButton = createButton(title: CommonStrings.doneButton,
                                       action: #selector(donePressed))
         buttonRow.addSubview(doneButton)
         doneButton.autoPinEdge(toSuperviewEdge: .top)
@@ -454,7 +458,7 @@ import SignalMessaging
     }
 
     private func createButton(title: String, action: Selector) -> UIButton {
-        let buttonFont = UIFont.ows_mediumFont(withSize: ScaleFromIPhone5To7Plus(18, 22))
+        let buttonFont = UIFont.ows_semiboldFont(withSize: ScaleFromIPhone5To7Plus(18, 22))
         let buttonWidth = ScaleFromIPhone5To7Plus(110, 140)
         let buttonHeight = ScaleFromIPhone5To7Plus(35, 45)
 
@@ -491,15 +495,18 @@ import SignalMessaging
         let dstScale: CGFloat = 1.0 // The size is specified in pixels, not in points.
         UIGraphicsBeginImageContextWithOptions(dstSizePixels, !hasAlpha, dstScale)
 
-        let context = UIGraphicsGetCurrentContext()
-        context!.interpolationQuality = .high
+        guard let context = UIGraphicsGetCurrentContext() else {
+            owsFailDebug("could not generate dst image.")
+            return nil
+        }
+        context.interpolationQuality = .high
 
         let imageViewFrame = imageRenderRect(forDstSize: dstSizePixels)
         srcImage.draw(in: imageViewFrame)
 
-        let scaledImage = UIGraphicsGetImageFromCurrentImageContext()
-        if scaledImage == nil {
+        guard let scaledImage = UIGraphicsGetImageFromCurrentImageContext() else {
             owsFailDebug("could not generate dst image.")
+            return nil
         }
         UIGraphicsEndImageContext()
         return scaledImage

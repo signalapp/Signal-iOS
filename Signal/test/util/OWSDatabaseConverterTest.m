@@ -1,13 +1,13 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "OWSDatabaseConverterTest.h"
+#import "SignalBaseTest.h"
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalCoreKit/Randomness.h>
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/OWSStorage.h>
-#import <SignalServiceKit/YapDatabaseConnection+OWS.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseCryptoUtils.h>
 #import <YapDatabase/YapDatabasePrivate.h>
@@ -34,6 +34,12 @@ NS_ASSUME_NONNULL_BEGIN
 @interface YapDatabaseCryptoUtils (OWSDatabaseConverterTest)
 
 + (NSData *)readFirstNBytesOfDatabaseFile:(NSString *)filePath byteCount:(NSUInteger)byteCount;
+
+@end
+
+#pragma mark -
+
+@interface OWSDatabaseConverterTest : SignalBaseTest
 
 @end
 
@@ -101,6 +107,7 @@ NS_ASSUME_NONNULL_BEGIN
             };
             options.cipherUnencryptedHeaderLength = kSqliteHeaderLength;
         }
+        options.legacyCipherCompatibilityVersion = 3;
 
         OWSAssertDebug(options.cipherDefaultkdfIterNumber == 0);
         OWSAssertDebug(options.kdfIterNumber == 0);
@@ -166,6 +173,11 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(!strongDatabase);
 }
 
+- (SDSKeyValueStore *)keyValueStore
+{
+    return [[SDSKeyValueStore alloc] initWithCollection:@"test_collection_name"];
+}
+
 - (void)createTestDatabase:(NSString *)databaseFilePath
           databasePassword:(NSData *_Nullable)databasePassword
               databaseSalt:(NSData *_Nullable)databaseSalt
@@ -185,7 +197,9 @@ NS_ASSUME_NONNULL_BEGIN
                                         label:@"mid-creation"];
 
                 YapDatabaseConnection *dbConnection = database.newConnection;
-                [dbConnection setObject:@(YES) forKey:@"test_key_name" inCollection:@"test_collection_name"];
+                [dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                    [self.keyValueStore setBool:YES key:@"test_key_name" transaction:transaction.asAnyWrite];
+                }];
                 [dbConnection flushTransactionsWithCompletionQueue:dispatch_get_main_queue() completionBlock:nil];
             }];
 
@@ -215,8 +229,12 @@ NS_ASSUME_NONNULL_BEGIN
           databaseKeySpec:databaseKeySpec
             databaseBlock:^(YapDatabase *database) {
                 YapDatabaseConnection *dbConnection = database.newConnection;
-                id _Nullable value = [dbConnection objectForKey:@"test_key_name" inCollection:@"test_collection_name"];
-                isValid = [@(YES) isEqual:value];
+                __block BOOL value;
+                [dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+                    value =
+                        [self.keyValueStore getBool:@"test_key_name" defaultValue:NO transaction:transaction.asAnyRead];
+                }];
+                isValid = YES == value;
             }];
 
     OWSAssertDebug([[NSFileManager defaultManager] fileExistsAtPath:databaseFilePath]);
@@ -317,6 +335,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSError *_Nullable error = [YapDatabaseCryptoUtils convertDatabaseIfNecessary:databaseFilePath
                                                                  databasePassword:databasePassword
+                                                                          options:OWSStorage.defaultDatabaseOptions
                                                                   recordSaltBlock:recordSaltBlock];
     if (error) {
         OWSLogError(@"error: %@", error);
@@ -358,6 +377,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSError *_Nullable error = [YapDatabaseCryptoUtils convertDatabaseIfNecessary:databaseFilePath
                                                                  databasePassword:databasePassword
+                                                                          options:OWSStorage.defaultDatabaseOptions
                                                                   recordSaltBlock:recordSaltBlock];
     if (error) {
         OWSLogError(@"error: %@", error);
@@ -398,6 +418,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSError *_Nullable error = [YapDatabaseCryptoUtils convertDatabaseIfNecessary:databaseFilePath
                                                                  databasePassword:databasePassword
+                                                                          options:OWSStorage.defaultDatabaseOptions
                                                                   recordSaltBlock:recordSaltBlock];
 
     XCTAssertNotNil(error);
@@ -450,6 +471,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSError *_Nullable error = [YapDatabaseCryptoUtils convertDatabaseIfNecessary:databaseFilePath
                                                                  databasePassword:databasePassword
+                                                                          options:OWSStorage.defaultDatabaseOptions
                                                                   recordSaltBlock:recordSaltBlock];
     if (error) {
         OWSLogError(@"error: %@", error);
@@ -469,7 +491,11 @@ NS_ASSUME_NONNULL_BEGIN
           databaseKeySpec:databaseKeySpec
             databaseBlock:^(YapDatabase *database) {
                 YapDatabaseConnection *dbConnection = database.newConnection;
-                isValid = [dbConnection numberOfKeysInCollection:@"test_collection_name"] == kItemCount;
+                __block NSUInteger keyCount;
+                [dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+                    keyCount = [self.keyValueStore numberOfKeysWithTransaction:transaction.asAnyRead];
+                }];
+                isValid = keyCount == kItemCount;
             }];
     XCTAssertTrue(isValid);
 }
@@ -493,6 +519,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSError *_Nullable error = [YapDatabaseCryptoUtils convertDatabaseIfNecessary:databaseFilePath
                                                                  databasePassword:databasePassword
+                                                                          options:OWSStorage.defaultDatabaseOptions
                                                                   recordSaltBlock:recordSaltBlock];
     if (error) {
         OWSLogError(@"error: %@", error);
@@ -526,6 +553,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSError *_Nullable error = [YapDatabaseCryptoUtils convertDatabaseIfNecessary:databaseFilePath
                                                                  databasePassword:databasePassword
+                                                                          options:OWSStorage.defaultDatabaseOptions
                                                                   recordSaltBlock:recordSaltBlock];
     if (error) {
         OWSLogError(@"error: %@", error);

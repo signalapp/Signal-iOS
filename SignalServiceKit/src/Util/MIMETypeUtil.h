@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -13,7 +13,10 @@ extern NSString *const OWSMimeTypeImageTiff1;
 extern NSString *const OWSMimeTypeImageTiff2;
 extern NSString *const OWSMimeTypeImageBmp1;
 extern NSString *const OWSMimeTypeImageBmp2;
+extern NSString *const OWSMimeTypeImageWebp;
+extern NSString *const OWSMimeTypePdf;
 extern NSString *const OWSMimeTypeOversizeTextMessage;
+extern NSString *const OWSMimeTypeProtobuf;
 extern NSString *const OWSMimeTypeUnknownForTests;
 
 extern NSString *const kOversizeTextAttachmentUTI;
@@ -42,6 +45,7 @@ extern NSString *const kSyncMessageFileExtension;
 + (BOOL)isImage:(NSString *)contentType;
 + (BOOL)isVideo:(NSString *)contentType;
 + (BOOL)isAudio:(NSString *)contentType;
++ (BOOL)isVisualMedia:(NSString *)contentType;
 
 // filename is optional and should not be trusted.
 + (nullable NSString *)filePathForAttachment:(NSString *)uniqueId

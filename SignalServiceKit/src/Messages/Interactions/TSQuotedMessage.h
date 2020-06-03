@@ -1,18 +1,18 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import <Mantle/MTLModel.h>
-#import <SignalServiceKit/TSYapDatabaseObject.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class SDSAnyWriteTransaction;
 @class SSKProtoDataMessage;
+@class SignalServiceAddress;
 @class TSAttachment;
 @class TSAttachmentStream;
 @class TSQuotedMessage;
 @class TSThread;
-@class YapDatabaseReadWriteTransaction;
 
 @interface OWSAttachmentInfo : MTLModel
 
@@ -31,6 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 // References an already downloaded or locally generated thumbnail file
 @property (atomic, nullable) NSString *thumbnailAttachmentStreamId;
 
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithAttachmentId:(nullable NSString *)attachmentId
@@ -39,7 +40,15 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithAttachmentStream:(TSAttachmentStream *)attachmentStream;
 
+- (instancetype)initWithAttachmentId:(nullable NSString *)attachmentId
+                         contentType:(NSString *)contentType
+                      sourceFilename:(NSString *)sourceFilename
+        thumbnailAttachmentPointerId:(nullable NSString *)thumbnailAttachmentPointerId
+         thumbnailAttachmentStreamId:(nullable NSString *)thumbnailAttachmentStreamId NS_DESIGNATED_INITIALIZER;
+
 @end
+
+#pragma mark -
 
 typedef NS_ENUM(NSUInteger, TSQuotedMessageContentSource) {
     TSQuotedMessageContentSourceUnknown,
@@ -50,7 +59,7 @@ typedef NS_ENUM(NSUInteger, TSQuotedMessageContentSource) {
 @interface TSQuotedMessage : MTLModel
 
 @property (nonatomic, readonly) uint64_t timestamp;
-@property (nonatomic, readonly) NSString *authorId;
+@property (nonatomic, readonly) SignalServiceAddress *authorAddress;
 @property (nonatomic, readonly) TSQuotedMessageContentSource bodySource;
 
 // This property should be set IFF we are quoting a text message
@@ -79,27 +88,28 @@ typedef NS_ENUM(NSUInteger, TSQuotedMessageContentSource) {
 
 // Before sending, persist a thumbnail attachment derived from the quoted attachment
 - (NSArray<TSAttachmentStream *> *)createThumbnailAttachmentsIfNecessaryWithTransaction:
-    (YapDatabaseReadWriteTransaction *)transaction;
+    (SDSAnyWriteTransaction *)transaction;
 
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
 // used when receiving quoted messages
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         authorId:(NSString *)authorId
+                    authorAddress:(SignalServiceAddress *)authorAddress
                              body:(NSString *_Nullable)body
                        bodySource:(TSQuotedMessageContentSource)bodySource
     receivedQuotedAttachmentInfos:(NSArray<OWSAttachmentInfo *> *)attachmentInfos;
 
 // used when sending quoted messages
 - (instancetype)initWithTimestamp:(uint64_t)timestamp
-                         authorId:(NSString *)authorId
+                    authorAddress:(SignalServiceAddress *)authorAddress
                              body:(NSString *_Nullable)body
       quotedAttachmentsForSending:(NSArray<TSAttachment *> *)attachments;
 
 
 + (nullable instancetype)quotedMessageForDataMessage:(SSKProtoDataMessage *)dataMessage
                                               thread:(TSThread *)thread
-                                         transaction:(YapDatabaseReadWriteTransaction *)transaction;
+                                         transaction:(SDSAnyWriteTransaction *)transaction;
 
 @end
 

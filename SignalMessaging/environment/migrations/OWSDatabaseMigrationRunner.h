@@ -6,13 +6,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 typedef void (^OWSDatabaseMigrationCompletion)(void);
 
-@class OWSPrimaryStorage;
-
 @interface OWSDatabaseMigrationRunner : NSObject
-
-- (instancetype)initWithPrimaryStorage:(OWSPrimaryStorage *)primaryStorage;
-
-@property (nonatomic, readonly) OWSPrimaryStorage *primaryStorage;
 
 /**
  * Run any outstanding version migrations.

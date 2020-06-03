@@ -1,13 +1,11 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
 
 @objc
 public class AvatarImageView: UIImageView {
-
-    private let shadowLayer = CAShapeLayer()
 
     public init() {
         super.init(frame: .zero)
@@ -24,7 +22,7 @@ public class AvatarImageView: UIImageView {
         self.configureView()
     }
 
-    override init(image: UIImage?) {
+    public override init(image: UIImage?) {
         super.init(image: image)
         self.configureView()
     }
@@ -32,36 +30,16 @@ public class AvatarImageView: UIImageView {
     func configureView() {
         self.autoPinToSquareAspectRatio()
 
-        self.layer.minificationFilter = kCAFilterTrilinear
-        self.layer.magnificationFilter = kCAFilterTrilinear
+        self.layer.minificationFilter = .trilinear
+        self.layer.magnificationFilter = .trilinear
         self.layer.masksToBounds = true
-
-        self.layer.addSublayer(self.shadowLayer)
 
         self.contentMode = .scaleToFill
     }
 
     override public func layoutSubviews() {
-        self.layer.cornerRadius = self.frame.size.width / 2
-
-        // Inner shadow.
-        // This should usually not be visible; it is used to distinguish
-        // profile pics from the background if they are similar.
-        self.shadowLayer.frame = self.bounds
-        self.shadowLayer.masksToBounds = true
-        let shadowBounds = self.bounds
-        let shadowPath = UIBezierPath(ovalIn: shadowBounds)
-        // This can be any value large enough to cast a sufficiently large shadow.
-        let shadowInset: CGFloat = -3
-        shadowPath.append(UIBezierPath(rect: shadowBounds.insetBy(dx: shadowInset, dy: shadowInset)))
-        // This can be any color since the fill should be clipped.
-        self.shadowLayer.fillColor = UIColor.black.cgColor
-        self.shadowLayer.path = shadowPath.cgPath
-        self.shadowLayer.fillRule = kCAFillRuleEvenOdd
-        self.shadowLayer.shadowColor = (Theme.isDarkThemeEnabled ? UIColor.white : UIColor.black).cgColor
-        self.shadowLayer.shadowRadius = 0.5
-        self.shadowLayer.shadowOpacity = 0.15
-        self.shadowLayer.shadowOffset = .zero
+        super.layoutSubviews()
+        layer.cornerRadius = frame.size.width / 2
     }
 }
 
@@ -69,12 +47,20 @@ public class AvatarImageView: UIImageView {
 @objc
 public class ConversationAvatarImageView: AvatarImageView {
 
+    // MARK: - Dependencies
+
+    private var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
+
+    // MARK: -
+
     let thread: TSThread
     let diameter: UInt
     let contactsManager: OWSContactsManager
 
     // nil if group avatar
-    let recipientId: String?
+    let recipientAddress: SignalServiceAddress?
 
     // nil if contact avatar
     let groupThreadId: String?
@@ -86,28 +72,30 @@ public class ConversationAvatarImageView: AvatarImageView {
 
         switch thread {
         case let contactThread as TSContactThread:
-            self.recipientId = contactThread.contactIdentifier()
+            self.recipientAddress = contactThread.contactAddress
             self.groupThreadId = nil
         case let groupThread as TSGroupThread:
-            self.recipientId = nil
+            self.recipientAddress = nil
             self.groupThreadId = groupThread.uniqueId
         default:
             owsFailDebug("unexpected thread type: \(thread)")
-            self.recipientId = nil
+            self.recipientAddress = nil
             self.groupThreadId = nil
         }
 
         super.init(frame: .zero)
 
-        if recipientId != nil {
-            NotificationCenter.default.addObserver(self, selector: #selector(handleOtherUsersProfileChanged(notification:)), name: NSNotification.Name(rawValue: kNSNotificationName_OtherUsersProfileDidChange), object: nil)
+        if recipientAddress != nil {
+            NotificationCenter.default.addObserver(self, selector: #selector(handleOtherUsersProfileChanged(notification:)), name: .otherUsersProfileDidChange, object: nil)
 
-            NotificationCenter.default.addObserver(self, selector: #selector(handleSignalAccountsChanged(notification:)), name: NSNotification.Name.OWSContactsManagerSignalAccountsDidChange, object: nil)
+            NotificationCenter.default.addObserver(self, selector: #selector(handleSignalAccountsChanged(notification:)), name: .OWSContactsManagerSignalAccountsDidChange, object: nil)
         }
 
         if groupThreadId != nil {
             NotificationCenter.default.addObserver(self, selector: #selector(handleGroupAvatarChanged(notification:)), name: .TSGroupThreadAvatarChanged, object: nil)
         }
+
+        NotificationCenter.default.addObserver(self, selector: #selector(themeDidChange), name: .ThemeDidChange, object: nil)
 
         // TODO group avatar changed
         self.updateImage()
@@ -115,6 +103,10 @@ public class ConversationAvatarImageView: AvatarImageView {
 
     required public init?(coder aDecoder: NSCoder) {
         notImplemented()
+    }
+
+    @objc func themeDidChange() {
+        updateImage()
     }
 
     @objc func handleSignalAccountsChanged(notification: Notification) {
@@ -129,18 +121,18 @@ public class ConversationAvatarImageView: AvatarImageView {
     @objc func handleOtherUsersProfileChanged(notification: Notification) {
         Logger.debug("")
 
-        guard let changedRecipientId = notification.userInfo?[kNSNotificationKey_ProfileRecipientId] as? String else {
-            owsFailDebug("recipientId was unexpectedly nil")
+        guard let changedAddress = notification.userInfo?[kNSNotificationKey_ProfileAddress] as? SignalServiceAddress else {
+            owsFailDebug("changedAddress was unexpectedly nil")
             return
         }
 
-        guard let recipientId = self.recipientId else {
+        guard let recipientAddress = self.recipientAddress else {
             // shouldn't call this for group threads
-            owsFailDebug("contactId was unexpectedly nil")
+            owsFailDebug("recipientAddress was unexpectedly nil")
             return
         }
 
-        guard recipientId == changedRecipientId else {
+        guard recipientAddress == changedAddress else {
             // not this avatar
             return
         }
@@ -167,7 +159,9 @@ public class ConversationAvatarImageView: AvatarImageView {
             return
         }
 
-        thread.reload()
+        databaseStorage.read { transaction in
+            self.thread.anyReload(transaction: transaction)
+        }
 
         self.updateImage()
     }
@@ -176,5 +170,40 @@ public class ConversationAvatarImageView: AvatarImageView {
         Logger.debug("updateImage")
 
         self.image = OWSAvatarBuilder.buildImage(thread: thread, diameter: diameter)
+    }
+}
+
+@objc
+public class AvatarImageButton: UIButton {
+
+    // MARK: - Button Overrides
+
+    override public func layoutSubviews() {
+        super.layoutSubviews()
+
+        layer.cornerRadius = frame.size.width / 2
+    }
+
+    override public func setImage(_ image: UIImage?, for state: UIControl.State) {
+        ensureViewConfigured()
+        super.setImage(image, for: state)
+    }
+
+    // MARK: Private
+
+    var hasBeenConfigured = false
+    func ensureViewConfigured() {
+        guard !hasBeenConfigured else {
+            return
+        }
+        hasBeenConfigured = true
+
+        autoPinToSquareAspectRatio()
+
+        layer.minificationFilter = .trilinear
+        layer.magnificationFilter = .trilinear
+        layer.masksToBounds = true
+
+        contentMode = .scaleToFill
     }
 }

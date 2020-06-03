@@ -1,40 +1,35 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationViewController.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class AccountManager;
-@class CallService;
-@class CallUIAdapter;
-@class HomeViewController;
-@class NotificationsManager;
-@class OWSMessageFetcherJob;
-@class OWSNavigationController;
-@class OWSWebRTCCallMessageHandler;
-@class OutboundCallInitiator;
+@class OnboardingController;
+@class SignalServiceAddress;
 @class TSThread;
 
 @interface SignalApp : NSObject
 
-@property (nonatomic, nullable, weak) HomeViewController *homeViewController;
-@property (nonatomic, nullable, weak) OWSNavigationController *signUpFlowNavigationController;
-
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
 + (instancetype)sharedApp;
 
 - (void)setup;
 
+@property (nonatomic, readonly) BOOL hasSelectedThread;
+
 #pragma mark - Conversation Presentation
 
-- (void)presentConversationForRecipientId:(NSString *)recipientId animated:(BOOL)isAnimated;
+- (void)showNewConversationView;
 
-- (void)presentConversationForRecipientId:(NSString *)recipientId
-                                   action:(ConversationViewAction)action
-                                 animated:(BOOL)isAnimated;
+- (void)presentConversationForAddress:(SignalServiceAddress *)address animated:(BOOL)isAnimated;
+
+- (void)presentConversationForAddress:(SignalServiceAddress *)address
+                               action:(ConversationViewAction)action
+                             animated:(BOOL)isAnimated;
 
 - (void)presentConversationForThreadId:(NSString *)threadId animated:(BOOL)isAnimated;
 
@@ -47,11 +42,16 @@ NS_ASSUME_NONNULL_BEGIN
                       focusMessageId:(nullable NSString *)focusMessageId
                             animated:(BOOL)isAnimated;
 
+- (void)presentConversationAndScrollToFirstUnreadMessageForThreadId:(NSString *)threadId animated:(BOOL)isAnimated;
+
 #pragma mark - Methods
 
 + (void)resetAppData;
 
-+ (void)clearAllNotifications;
+- (void)showOnboardingView:(OnboardingController *)onboardingController;
+- (void)showConversationSplitView;
+- (void)ensureRootViewController:(NSTimeInterval)launchStartedAt;
+- (BOOL)receivedVerificationCode:(NSString *)verificationCode;
 
 @end
 

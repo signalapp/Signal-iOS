@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "AppSettingsViewController.h"
@@ -13,7 +13,6 @@
 #import "OWSNavigationController.h"
 #import "PrivacySettingsTableViewController.h"
 #import "ProfileViewController.h"
-#import "PushManager.h"
 #import "RegistrationUtils.h"
 #import "Signal-Swift.h"
 #import <SignalMessaging/Environment.h>
@@ -25,6 +24,7 @@
 @interface AppSettingsViewController ()
 
 @property (nonatomic, readonly) OWSContactsManager *contactsManager;
+@property (nonatomic, nullable) OWSInviteFlow *inviteFlow;
 
 @end
 
@@ -56,17 +56,19 @@
     return self;
 }
 
-- (instancetype)initWithCoder:(NSCoder *)aDecoder
+- (void)dealloc
 {
-    self = [super initWithCoder:aDecoder];
-    if (!self) {
-        return self;
-    }
-
-    _contactsManager = Environment.shared.contactsManager;
-
-    return self;
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
+
+#pragma mark - Dependencies
+
+- (TSAccountManager *)tsAccountManager
+{
+    return TSAccountManager.sharedInstance;
+}
+
+#pragma mark - UIViewController
 
 - (void)loadView
 {
@@ -84,7 +86,8 @@
     self.navigationItem.leftBarButtonItem =
         [[UIBarButtonItem alloc] initWithBarButtonSystemItem:UIBarButtonSystemItemStop
                                                       target:self
-                                                      action:@selector(dismissWasPressed:)];
+                                                      action:@selector(dismissWasPressed:)
+                                     accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"dismiss")];
     [self updateRightBarButtonForTheme];
     [self observeNotifications];
 
@@ -98,11 +101,6 @@
     [super viewWillAppear:animated];
 
     [self updateTableContents];
-}
-
-- (void)dealloc
-{
-    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark - Table Contents
@@ -128,117 +126,103 @@
                              [weakSelf showProfile];
                          }]];
 
-    if (OWSSignalService.sharedInstance.isCensorshipCircumventionActive) {
-        [section
-            addItem:[OWSTableItem disclosureItemWithText:
-                                      NSLocalizedString(@"NETWORK_STATUS_CENSORSHIP_CIRCUMVENTION_ACTIVE",
-                                          @"Indicates to the user that censorship circumvention has been activated.")
-                                             actionBlock:^{
-                                                 [weakSelf showAdvanced];
-                                             }]];
-    } else {
-        [section addItem:[OWSTableItem
-                             itemWithCustomCellBlock:^{
-                                 UITableViewCell *cell = [OWSTableItem newCell];
-                                 cell.textLabel.text = NSLocalizedString(@"NETWORK_STATUS_HEADER", @"");
-                                 cell.selectionStyle = UITableViewCellSelectionStyleNone;
-                                 UILabel *accessoryLabel = [UILabel new];
-                                 if (TSAccountManager.sharedInstance.isDeregistered) {
-                                     accessoryLabel.text = NSLocalizedString(@"NETWORK_STATUS_DEREGISTERED",
-                                         @"Error indicating that this device is no longer registered.");
-                                     accessoryLabel.textColor = [UIColor ows_redColor];
-                                 } else {
-                                     switch (TSSocketManager.shared.highestSocketState) {
-                                         case OWSWebSocketStateClosed:
-                                             accessoryLabel.text = NSLocalizedString(@"NETWORK_STATUS_OFFLINE", @"");
-                                             accessoryLabel.textColor = [UIColor ows_redColor];
-                                             break;
-                                         case OWSWebSocketStateConnecting:
-                                             accessoryLabel.text = NSLocalizedString(@"NETWORK_STATUS_CONNECTING", @"");
-                                             accessoryLabel.textColor = [UIColor ows_yellowColor];
-                                             break;
-                                         case OWSWebSocketStateOpen:
-                                             accessoryLabel.text = NSLocalizedString(@"NETWORK_STATUS_CONNECTED", @"");
-                                             accessoryLabel.textColor = [UIColor ows_greenColor];
-                                             break;
-                                     }
-                                 }
-                                 [accessoryLabel sizeToFit];
-                                 cell.accessoryView = accessoryLabel;
-                                 return cell;
-                             }
-                                         actionBlock:nil]];
-    }
-
     [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_INVITE_TITLE",
                                                               @"Settings table view cell label")
+                                  accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"invite")
                                               actionBlock:^{
                                                   [weakSelf showInviteFlow];
                                               }]];
+
+    // Starting with iOS 13, show an appearance section to allow setting the app theme
+    // to match the "system" dark/light mode settings and to adjust the app specific
+    // language settings.
+    if (@available(iOS 13, *)) {
+        [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_APPEARANCE_TITLE",
+                                                                  @"The title for the appearance settings.")
+                                      accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"appearance")
+                                                  actionBlock:^{
+                                                      [weakSelf showAppearance];
+                                                  }]];
+    }
+
     [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_PRIVACY_TITLE",
                                                               @"Settings table view cell label")
+                                  accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"privacy")
                                               actionBlock:^{
                                                   [weakSelf showPrivacy];
                                               }]];
     [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_NOTIFICATIONS", nil)
+                                  accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"notifications")
                                               actionBlock:^{
                                                   [weakSelf showNotifications];
                                               }]];
-    [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"LINKED_DEVICES_TITLE",
-                                                              @"Menu item and navbar title for the device manager")
-                                              actionBlock:^{
-                                                  [weakSelf showLinkedDevices];
-                                              }]];
+
+    // There's actually nothing AFAIK preventing linking another linked device from an
+    // existing linked device, but maybe it's not something we want to expose until
+    // after unifying the other experiences between secondary/primary devices.
+    if (self.tsAccountManager.isRegisteredPrimaryDevice) {
+        [section
+            addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"LINKED_DEVICES_TITLE",
+                                                             @"Menu item and navbar title for the device manager")
+                                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"linked_devices")
+                                             actionBlock:^{
+                                                 [weakSelf showLinkedDevices];
+                                             }]];
+    }
     [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_ADVANCED_TITLE", @"")
+                                  accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"advanced")
                                               actionBlock:^{
                                                   [weakSelf showAdvanced];
                                               }]];
-    // Show backup UI in debug builds OR if backup has already been enabled.
-    //
-    // NOTE: Backup format is not yet finalized and backups are not yet
-    //       properly encrypted, so these debug backups should only be
-    //       done on test devices and will not be usable if/when we ship
-    //       backup to production.
-    //
-    // TODO: Always show backup when we go to production.
     BOOL isBackupEnabled = [OWSBackup.sharedManager isBackupEnabled];
-    BOOL showBackup = isBackupEnabled;
-    SUPPRESS_DEADSTORE_WARNING(showBackup);
-#ifdef DEBUG
-    showBackup = YES;
-#endif
+    BOOL showBackup = (OWSBackup.isFeatureEnabled && isBackupEnabled);
     if (showBackup) {
         [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_BACKUP",
                                                                   @"Label for the backup view in app settings.")
+                                      accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"backup")
                                                   actionBlock:^{
                                                       [weakSelf showBackup];
                                                   }]];
     }
     [section addItem:[OWSTableItem disclosureItemWithText:NSLocalizedString(@"SETTINGS_ABOUT", @"")
+                                  accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"about")
                                               actionBlock:^{
                                                   [weakSelf showAbout];
                                               }]];
 
 #ifdef USE_DEBUG_UI
     [section addItem:[OWSTableItem disclosureItemWithText:@"Debug UI"
+                                  accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"debugui")
                                               actionBlock:^{
                                                   [weakSelf showDebugUI];
                                               }]];
 #endif
 
-    if (TSAccountManager.sharedInstance.isDeregistered) {
-        [section addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"SETTINGS_REREGISTER_BUTTON",
-                                                                  @"Label for re-registration button.")
-                                                     selector:@selector(reregisterUser)
-                                                        color:[UIColor ows_materialBlueColor]]];
+    if (self.tsAccountManager.isDeregistered) {
+        [section
+            addItem:[self destructiveButtonItemWithTitle:self.tsAccountManager.isPrimaryDevice
+                              ? NSLocalizedString(@"SETTINGS_REREGISTER_BUTTON", @"Label for re-registration button.")
+                              : NSLocalizedString(@"SETTINGS_RELINK_BUTTON", @"Label for re-link button.")
+                                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"reregister")
+                                                selector:@selector(reregisterUser)
+                                                   color:Theme.accentBlueColor]];
         [section addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"SETTINGS_DELETE_DATA_BUTTON",
                                                                   @"Label for 'delete data' button.")
+                                      accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"delete_data")
                                                      selector:@selector(deleteUnregisterUserData)
-                                                        color:[UIColor ows_destructiveRedColor]]];
+                                                        color:UIColor.ows_accentRedColor]];
+    } else if (self.tsAccountManager.isRegisteredPrimaryDevice) {
+        [section
+            addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"SETTINGS_DELETE_ACCOUNT_BUTTON", @"")
+                                 accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"delete_account")
+                                                selector:@selector(unregisterUser)
+                                                   color:UIColor.ows_accentRedColor]];
     } else {
-        [section addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"SETTINGS_DELETE_ACCOUNT_BUTTON", @"")
-                                                     selector:@selector(unregisterUser)
-                                                        color:[UIColor ows_destructiveRedColor]]];
+        [section addItem:[self destructiveButtonItemWithTitle:NSLocalizedString(@"SETTINGS_DELETE_DATA_BUTTON",
+                                                                  @"Label for 'delete data' button.")
+                                      accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"delete_data")
+                                                     selector:@selector(deleteLinkedData)
+                                                        color:UIColor.ows_accentRedColor]];
     }
 
     [contents addSection:section];
@@ -246,9 +230,13 @@
     self.contents = contents;
 }
 
-- (OWSTableItem *)destructiveButtonItemWithTitle:(NSString *)title selector:(SEL)selector color:(UIColor *)color
+- (OWSTableItem *)destructiveButtonItemWithTitle:(NSString *)title
+                         accessibilityIdentifier:(NSString *)accessibilityIdentifier
+                                        selector:(SEL)selector
+                                           color:(UIColor *)color
 {
-    return [OWSTableItem
+    __weak AppSettingsViewController *weakSelf = self;
+   return [OWSTableItem
         itemWithCustomCellBlock:^{
             UITableViewCell *cell = [OWSTableItem newCell];
             cell.preservesSuperviewLayoutMargins = YES;
@@ -260,12 +248,13 @@
                                                               font:[OWSFlatButton fontForHeight:kButtonHeight]
                                                         titleColor:[UIColor whiteColor]
                                                    backgroundColor:color
-                                                            target:self
+                                                            target:weakSelf
                                                           selector:selector];
             [cell.contentView addSubview:button];
             [button autoSetDimension:ALDimensionHeight toSize:kButtonHeight];
             [button autoVCenterInSuperview];
             [button autoPinLeadingAndTrailingToSuperviewMargin];
+            button.accessibilityIdentifier = accessibilityIdentifier;
 
             return cell;
         }
@@ -282,20 +271,31 @@
 
     UIImage *_Nullable localProfileAvatarImage = [OWSProfileManager.sharedManager localProfileAvatarImage];
     UIImage *avatarImage = (localProfileAvatarImage
-            ?: [[[OWSContactAvatarBuilder alloc] initForLocalUserWithDiameter:kLargeAvatarSize] buildDefaultImage]);
+            ?: [[[OWSContactAvatarBuilder alloc] initForLocalUserWithDiameter:kMediumAvatarSize] buildDefaultImage]);
     OWSAssertDebug(avatarImage);
 
     AvatarImageView *avatarView = [[AvatarImageView alloc] initWithImage:avatarImage];
     [cell.contentView addSubview:avatarView];
     [avatarView autoVCenterInSuperview];
     [avatarView autoPinLeadingToSuperviewMargin];
-    [avatarView autoSetDimension:ALDimensionWidth toSize:kLargeAvatarSize];
-    [avatarView autoSetDimension:ALDimensionHeight toSize:kLargeAvatarSize];
+    [avatarView autoSetDimension:ALDimensionWidth toSize:kMediumAvatarSize];
+    [avatarView autoSetDimension:ALDimensionHeight toSize:kMediumAvatarSize];
 
     if (!localProfileAvatarImage) {
-        UIImage *cameraImage = [UIImage imageNamed:@"settings-avatar-camera"];
-        UIImageView *cameraImageView = [[UIImageView alloc] initWithImage:cameraImage];
+        UIImageView *cameraImageView = [UIImageView new];
+        [cameraImageView setTemplateImageName:@"camera-outline-24" tintColor:Theme.secondaryTextAndIconColor];
         [cell.contentView addSubview:cameraImageView];
+
+        [cameraImageView autoSetDimensionsToSize:CGSizeMake(32, 32)];
+        cameraImageView.contentMode = UIViewContentModeCenter;
+        cameraImageView.backgroundColor = Theme.backgroundColor;
+        cameraImageView.layer.cornerRadius = 16;
+        cameraImageView.layer.shadowColor =
+            [(Theme.isDarkThemeEnabled ? Theme.darkThemeWashColor : Theme.primaryTextColor) CGColor];
+        cameraImageView.layer.shadowOffset = CGSizeMake(1, 1);
+        cameraImageView.layer.shadowOpacity = 0.5;
+        cameraImageView.layer.shadowRadius = 4;
+
         [cameraImageView autoPinTrailingToEdgeOfView:avatarView];
         [cameraImageView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:avatarView];
     }
@@ -306,15 +306,15 @@
     [nameView autoPinLeadingToTrailingEdgeOfView:avatarView offset:16.f];
 
     UILabel *titleLabel = [UILabel new];
-    NSString *_Nullable localProfileName = [OWSProfileManager.sharedManager localProfileName];
+    NSString *_Nullable localProfileName = [OWSProfileManager.sharedManager localFullName];
     if (localProfileName.length > 0) {
         titleLabel.text = localProfileName;
-        titleLabel.textColor = [Theme primaryColor];
+        titleLabel.textColor = Theme.primaryTextColor;
         titleLabel.font = [UIFont ows_dynamicTypeTitle2Font];
     } else {
         titleLabel.text = NSLocalizedString(
             @"APP_SETTINGS_EDIT_PROFILE_NAME_PROMPT", @"Text prompting user to edit their profile name.");
-        titleLabel.textColor = [UIColor ows_materialBlueColor];
+        titleLabel.textColor = Theme.accentBlueColor;
         titleLabel.font = [UIFont ows_dynamicTypeHeadlineFont];
     }
     titleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
@@ -322,18 +322,29 @@
     [titleLabel autoPinEdgeToSuperviewEdge:ALEdgeTop];
     [titleLabel autoPinWidthToSuperview];
 
+    __block UIView *lastTitleView = titleLabel;
     const CGFloat kSubtitlePointSize = 12.f;
-    UILabel *subtitleLabel = [UILabel new];
-    subtitleLabel.textColor = [Theme secondaryColor];
-    subtitleLabel.font = [UIFont ows_regularFontWithSize:kSubtitlePointSize];
-    subtitleLabel.attributedText = [[NSAttributedString alloc]
-        initWithString:[PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:[TSAccountManager
-                                                                                                       localNumber]]];
-    subtitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
-    [nameView addSubview:subtitleLabel];
-    [subtitleLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:titleLabel];
-    [subtitleLabel autoPinLeadingToSuperviewMargin];
-    [subtitleLabel autoPinEdgeToSuperviewEdge:ALEdgeBottom];
+    void (^addSubtitle)(NSString *) = ^(NSString *subtitle) {
+        UILabel *subtitleLabel = [UILabel new];
+        subtitleLabel.textColor = Theme.secondaryTextAndIconColor;
+        subtitleLabel.font = [UIFont ows_regularFontWithSize:kSubtitlePointSize];
+        subtitleLabel.text = subtitle;
+        subtitleLabel.lineBreakMode = NSLineBreakByTruncatingTail;
+        [nameView addSubview:subtitleLabel];
+        [subtitleLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeBottom ofView:lastTitleView];
+        [subtitleLabel autoPinLeadingToSuperviewMargin];
+        lastTitleView = subtitleLabel;
+    };
+
+    addSubtitle(
+        [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:[TSAccountManager localNumber]]);
+
+    NSString *_Nullable username = [OWSProfileManager.sharedManager localUsername];
+    if (username.length > 0) {
+        addSubtitle([CommonFormats formatUsername:username]);
+    }
+
+    [lastTitleView autoPinEdgeToSuperviewEdge:ALEdgeBottom];
 
     UIImage *disclosureImage = [UIImage imageNamed:(CurrentAppContext().isRTL ? @"NavBarBack" : @"NavBarBackRTL")];
     OWSAssertDebug(disclosureImage);
@@ -347,19 +358,27 @@
     [disclosureButton setContentCompressionResistancePriority:(UILayoutPriorityDefaultHigh + 1)
                                                       forAxis:UILayoutConstraintAxisHorizontal];
 
+    cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"profile");
+
     return cell;
 }
 
 - (void)showInviteFlow
 {
-    OWSInviteFlow *inviteFlow =
-        [[OWSInviteFlow alloc] initWithPresentingViewController:self contactsManager:self.contactsManager];
-    [self presentViewController:inviteFlow.actionSheetController animated:YES completion:nil];
+    OWSInviteFlow *inviteFlow = [[OWSInviteFlow alloc] initWithPresentingViewController:self];
+    self.inviteFlow = inviteFlow;
+    [inviteFlow presentWithIsAnimated:YES completion:nil];
 }
 
 - (void)showPrivacy
 {
     PrivacySettingsTableViewController *vc = [[PrivacySettingsTableViewController alloc] init];
+    [self.navigationController pushViewController:vc animated:YES];
+}
+
+- (void)showAppearance
+{
+    AppearanceSettingsTableViewController *vc = [AppearanceSettingsTableViewController new];
     [self.navigationController pushViewController:vc animated:YES];
 }
 
@@ -371,14 +390,18 @@
 
 - (void)showLinkedDevices
 {
-    OWSLinkedDevicesTableViewController *vc =
-        [[UIStoryboard main] instantiateViewControllerWithIdentifier:@"OWSLinkedDevicesTableViewController"];
+    OWSLinkedDevicesTableViewController *vc = [OWSLinkedDevicesTableViewController new];
     [self.navigationController pushViewController:vc animated:YES];
 }
 
 - (void)showProfile
 {
-    [ProfileViewController presentForAppSettings:self.navigationController];
+    ProfileViewController *profileVC =
+        [[ProfileViewController alloc] initWithMode:ProfileViewMode_AppSettings
+                                  completionHandler:^(ProfileViewController *completedVC) {
+                                      [completedVC.navigationController popViewControllerAnimated:YES];
+                                  }];
+    [self.navigationController pushViewController:profileVC animated:YES];
 }
 
 - (void)showAdvanced
@@ -399,10 +422,12 @@
     [self.navigationController pushViewController:vc animated:YES];
 }
 
+#ifdef USE_DEBUG_UI
 - (void)showDebugUI
 {
     [DebugUITableViewController presentDebugUIFromViewController:self];
 }
+#endif
 
 - (void)dismissWasPressed:(id)sender
 {
@@ -416,6 +441,21 @@
     [self showDeleteAccountUI:YES];
 }
 
+- (void)deleteLinkedData
+{
+    ActionSheetController *actionSheet =
+        [[ActionSheetController alloc] initWithTitle:NSLocalizedString(@"CONFIRM_DELETE_LINKED_DATA_TITLE", @"")
+                                             message:NSLocalizedString(@"CONFIRM_DELETE_LINKED_DATA_TEXT", @"")];
+    [actionSheet addAction:[[ActionSheetAction alloc] initWithTitle:NSLocalizedString(@"PROCEED_BUTTON", @"")
+                                                              style:ActionSheetActionStyleDestructive
+                                                            handler:^(ActionSheetAction *action) {
+                                                                [SignalApp resetAppData];
+                                                            }]];
+    [actionSheet addAction:[OWSActionSheets cancelAction]];
+
+    [self presentActionSheet:actionSheet];
+}
+
 - (void)deleteUnregisterUserData
 {
     [self showDeleteAccountUI:NO];
@@ -423,18 +463,19 @@
 
 - (void)showDeleteAccountUI:(BOOL)isRegistered
 {
-    UIAlertController *alertController =
-        [UIAlertController alertControllerWithTitle:NSLocalizedString(@"CONFIRM_ACCOUNT_DESTRUCTION_TITLE", @"")
-                                            message:NSLocalizedString(@"CONFIRM_ACCOUNT_DESTRUCTION_TEXT", @"")
-                                     preferredStyle:UIAlertControllerStyleAlert];
-    [alertController addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"PROCEED_BUTTON", @"")
-                                                        style:UIAlertActionStyleDestructive
-                                                      handler:^(UIAlertAction *action) {
-                                                          [self deleteAccount:isRegistered];
-                                                      }]];
-    [alertController addAction:[OWSAlerts cancelAction]];
+    __weak AppSettingsViewController *weakSelf = self;
 
-    [self presentViewController:alertController animated:YES completion:nil];
+    ActionSheetController *actionSheet =
+        [[ActionSheetController alloc] initWithTitle:NSLocalizedString(@"CONFIRM_ACCOUNT_DESTRUCTION_TITLE", @"")
+                                             message:NSLocalizedString(@"CONFIRM_ACCOUNT_DESTRUCTION_TEXT", @"")];
+    [actionSheet addAction:[[ActionSheetAction alloc] initWithTitle:NSLocalizedString(@"PROCEED_BUTTON", @"")
+                                                              style:ActionSheetActionStyleDestructive
+                                                            handler:^(ActionSheetAction *action) {
+                                                                [weakSelf deleteAccount:isRegistered];
+                                                            }]];
+    [actionSheet addAction:[OWSActionSheets cancelAction]];
+
+    [self presentActionSheet:actionSheet];
 }
 
 - (void)deleteAccount:(BOOL)isRegistered
@@ -451,8 +492,9 @@
                               failure:^(NSError *error) {
                                   dispatch_async(dispatch_get_main_queue(), ^{
                                       [modalActivityIndicator dismissWithCompletion:^{
-                                          [OWSAlerts
-                                              showAlertWithTitle:NSLocalizedString(@"UNREGISTER_SIGNAL_FAIL", @"")];
+                                          [OWSActionSheets
+                                              showActionSheetWithTitle:NSLocalizedString(
+                                                                           @"UNREGISTER_SIGNAL_FAIL", @"")];
                                       }];
                                   });
                               }];
@@ -483,39 +525,44 @@
                                                         target:self
                                                         action:@selector(didPressEnableDarkTheme:)];
     }
+    barButtonItem.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"dark_theme");
     return barButtonItem;
 }
 
 - (void)didPressEnableDarkTheme:(id)sender
 {
-    [Theme setIsDarkThemeEnabled:YES];
+    [Theme setCurrentTheme:ThemeMode_Dark];
     [self updateRightBarButtonForTheme];
     [self updateTableContents];
 }
 
 - (void)didPressDisableDarkTheme:(id)sender
 {
-    [Theme setIsDarkThemeEnabled:NO];
+    [Theme setCurrentTheme:ThemeMode_Light];
     [self updateRightBarButtonForTheme];
     [self updateTableContents];
 }
 
 - (void)updateRightBarButtonForTheme
 {
+    if (@available(iOS 13, *)) {
+        // Don't show the moon button in iOS 13+, theme settings are now in a menu
+        return;
+    }
     self.navigationItem.rightBarButtonItem = [self darkThemeBarButton];
 }
 
-#pragma mark - Socket Status Notifications
+#pragma mark - Notifications
 
 - (void)observeNotifications
 {
     [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(socketStateDidChange)
-                                                 name:kNSNotification_OWSWebSocketStateDidChange
+                                             selector:@selector(localProfileDidChange:)
+                                                 name:kNSNotificationNameLocalProfileDidChange
                                                object:nil];
 }
 
-- (void)socketStateDidChange
+- (void)localProfileDidChange:(id)notification
 {
     OWSAssertIsOnMainThread();
 

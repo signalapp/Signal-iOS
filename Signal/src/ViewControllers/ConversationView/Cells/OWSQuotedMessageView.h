@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSBubbleView.h"
@@ -18,12 +18,15 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)didTapQuotedReply:(OWSQuotedReplyModel *)quotedReply
     failedThumbnailDownloadAttachmentPointer:(TSAttachmentPointer *)attachmentPointer;
 
+- (void)didCancelQuotedReply;
+
 @end
 
 @interface OWSQuotedMessageView : UIView
 
 @property (nonatomic, nullable, weak) id<OWSQuotedMessageViewDelegate> delegate;
 
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
 // Only needs to be called if we're going to render this instance.

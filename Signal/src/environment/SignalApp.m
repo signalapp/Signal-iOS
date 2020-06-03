@@ -1,19 +1,26 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "SignalApp.h"
+#import "AppDelegate.h"
 #import "ConversationViewController.h"
-#import "HomeViewController.h"
 #import "Signal-Swift.h"
 #import <SignalCoreKit/Threading.h>
 #import <SignalMessaging/DebugLogger.h>
 #import <SignalMessaging/Environment.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSContactThread.h>
 #import <SignalServiceKit/TSGroupThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
+
+@interface SignalApp ()
+
+@property (nonatomic, nullable, weak) ConversationSplitViewController *conversationSplitViewController;
+@property (nonatomic) BOOL hasInitialRootViewController;
+
+@end
 
 @implementation SignalApp
 
@@ -40,7 +47,31 @@ NS_ASSUME_NONNULL_BEGIN
     return self;
 }
 
-#pragma mark - Singletons
+#pragma mark - Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
++ (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+- (TSAccountManager *)tsAccountManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
+
+    return SSKEnvironment.shared.tsAccountManager;
+}
+
+- (OWSBackup *)backup
+{
+    return AppEnvironment.shared.backup;
+}
+
+#pragma mark -
 
 - (void)setup {
     [[NSNotificationCenter defaultCenter] addObserver:self
@@ -49,22 +80,26 @@ NS_ASSUME_NONNULL_BEGIN
                                                object:nil];
 }
 
-#pragma mark - View Convenience Methods
-
-- (void)presentConversationForRecipientId:(NSString *)recipientId animated:(BOOL)isAnimated
+- (BOOL)hasSelectedThread
 {
-    [self presentConversationForRecipientId:recipientId action:ConversationViewActionNone animated:(BOOL)isAnimated];
+    return self.conversationSplitViewController.selectedThread != nil;
 }
 
-- (void)presentConversationForRecipientId:(NSString *)recipientId
-                                   action:(ConversationViewAction)action
-                                 animated:(BOOL)isAnimated
+#pragma mark - View Convenience Methods
+
+- (void)presentConversationForAddress:(SignalServiceAddress *)address animated:(BOOL)isAnimated
+{
+    [self presentConversationForAddress:address action:ConversationViewActionNone animated:(BOOL)isAnimated];
+}
+
+- (void)presentConversationForAddress:(SignalServiceAddress *)address
+                               action:(ConversationViewAction)action
+                             animated:(BOOL)isAnimated
 {
     __block TSThread *thread = nil;
-    [OWSPrimaryStorage.dbReadWriteConnection
-        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            thread = [TSContactThread getOrCreateThreadWithContactId:recipientId transaction:transaction];
-        }];
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        thread = [TSContactThread getOrCreateThreadWithContactAddress:address transaction:transaction];
+    }];
     [self presentConversationForThread:thread action:action animated:(BOOL)isAnimated];
 }
 
@@ -72,7 +107,10 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(threadId.length > 0);
 
-    TSThread *thread = [TSThread fetchObjectWithUniqueID:threadId];
+    __block TSThread *_Nullable thread;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        thread = [TSThread anyFetchWithUniqueId:threadId transaction:transaction];
+    }];
     if (thread == nil) {
         OWSFailDebug(@"unable to find thread with id: %@", threadId);
         return;
@@ -97,6 +135,7 @@ NS_ASSUME_NONNULL_BEGIN
                             animated:(BOOL)isAnimated
 {
     OWSAssertIsOnMainThread();
+    OWSAssertDebug(self.conversationSplitViewController);
 
     OWSLogInfo(@"");
 
@@ -106,21 +145,59 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     DispatchMainThreadSafe(^{
-        UIViewController *frontmostVC = [[UIApplication sharedApplication] frontmostViewController];
-
-        if ([frontmostVC isKindOfClass:[ConversationViewController class]]) {
-            ConversationViewController *conversationVC = (ConversationViewController *)frontmostVC;
-            if ([conversationVC.thread.uniqueId isEqualToString:thread.uniqueId]) {
-                [conversationVC popKeyBoard];
+        if (self.conversationSplitViewController.visibleThread) {
+            if ([self.conversationSplitViewController.visibleThread.uniqueId isEqualToString:thread.uniqueId]) {
+                [self.conversationSplitViewController.selectedConversationViewController popKeyBoard];
                 return;
             }
         }
 
-        [self.homeViewController presentThread:thread action:action focusMessageId:focusMessageId animated:isAnimated];
+        [self.conversationSplitViewController presentThread:thread
+                                                     action:action
+                                             focusMessageId:focusMessageId
+                                                   animated:isAnimated];
     });
 }
 
-- (void)didChangeCallLoggingPreference:(NSNotification *)notitication
+- (void)presentConversationAndScrollToFirstUnreadMessageForThreadId:(NSString *)threadId animated:(BOOL)isAnimated
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(threadId.length > 0);
+    OWSAssertDebug(self.conversationSplitViewController);
+
+    OWSLogInfo(@"");
+
+    __block TSThread *_Nullable thread;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        thread = [TSThread anyFetchWithUniqueId:threadId transaction:transaction];
+    }];
+    if (thread == nil) {
+        OWSFailDebug(@"unable to find thread with id: %@", threadId);
+        return;
+    }
+
+    DispatchMainThreadSafe(^{
+        // If there's a presented blocking splash, but the user is trying to open a thread,
+        // dismiss it. We'll try again next time they open the app. We don't want to block
+        // them from accessing their conversations.
+        [ExperienceUpgradeManager dismissSplashWithoutCompletingIfNecessary];
+
+        if (self.conversationSplitViewController.visibleThread) {
+            if ([self.conversationSplitViewController.visibleThread.uniqueId isEqualToString:thread.uniqueId]) {
+                [self.conversationSplitViewController.selectedConversationViewController
+                    scrollToFirstUnreadMessage:isAnimated];
+                return;
+            }
+        }
+
+        [self.conversationSplitViewController presentThread:thread
+                                                     action:ConversationViewActionNone
+                                             focusMessageId:nil
+                                                   animated:isAnimated];
+    });
+}
+
+- (void)didChangeCallLoggingPreference:(NSNotification *)notification
 {
     [AppEnvironment.shared.callService createCallUIAdapter];
 }
@@ -130,30 +207,120 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)resetAppData
 {
     // This _should_ be wiped out below.
-    OWSLogError(@"");
+    OWSLogInfo(@"");
     [DDLog flushLog];
 
-    [OWSStorage resetAllStorage];
+    [self.databaseStorage resetAllStorage];
     [OWSUserProfile resetProfileStorage];
-    [Environment.shared.preferences clear];
-
-    [self clearAllNotifications];
+    [Environment.shared.preferences removeAllValues];
+    [AppEnvironment.shared.notificationPresenter clearAllNotifications];
+    [OWSFileSystem deleteContentsOfDirectory:[OWSFileSystem appSharedDataDirectoryPath]];
+    [OWSFileSystem deleteContentsOfDirectory:[OWSFileSystem appDocumentDirectoryPath]];
+    [OWSFileSystem deleteContentsOfDirectory:[OWSFileSystem cachesDirectoryPath]];
+    [OWSFileSystem deleteContentsOfDirectory:OWSTemporaryDirectory()];
+    [OWSFileSystem deleteContentsOfDirectory:NSTemporaryDirectory()];
 
     [DebugLogger.sharedLogger wipeLogs];
-    OWSFail(@"App data reset.");
+    exit(0);
 }
 
-+ (void)clearAllNotifications
+- (void)showConversationSplitView
 {
-    OWSLogInfo(@"clearAllNotifications.");
+    ConversationSplitViewController *splitViewController = [ConversationSplitViewController new];
 
-    // This will cancel all "scheduled" local notifications that haven't
-    // been presented yet.
-    [UIApplication.sharedApplication cancelAllLocalNotifications];
-    // To clear all already presented local notifications, we need to
-    // set the app badge number to zero after setting it to a non-zero value.
-    [UIApplication sharedApplication].applicationIconBadgeNumber = 1;
-    [UIApplication sharedApplication].applicationIconBadgeNumber = 0;
+    AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+    appDelegate.window.rootViewController = splitViewController;
+
+    self.conversationSplitViewController = splitViewController;
+}
+
+- (void)showOnboardingView:(OnboardingController *)onboardingController
+{
+    OnboardingNavigationController *navController =
+        [[OnboardingNavigationController alloc] initWithOnboardingController:onboardingController];
+
+#if TESTABLE_BUILD
+    AccountManager *accountManager = AppEnvironment.shared.accountManager;
+    UITapGestureRecognizer *registerGesture =
+        [[UITapGestureRecognizer alloc] initWithTarget:accountManager action:@selector(fakeRegistration)];
+    registerGesture.numberOfTapsRequired = 8;
+    [navController.view addGestureRecognizer:registerGesture];
+#else
+    UITapGestureRecognizer *submitLogGesture = [[UITapGestureRecognizer alloc] initWithTarget:[Pastelog class]
+                                                                                       action:@selector(submitLogs)];
+    submitLogGesture.numberOfTapsRequired = 8;
+    [navController.view addGestureRecognizer:submitLogGesture];
+#endif
+
+    AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+    appDelegate.window.rootViewController = navController;
+
+    self.conversationSplitViewController = nil;
+}
+
+- (void)showBackupRestoreView
+{
+    BackupRestoreViewController *backupRestoreVC = [BackupRestoreViewController new];
+    OWSNavigationController *navController =
+        [[OWSNavigationController alloc] initWithRootViewController:backupRestoreVC];
+
+    AppDelegate *appDelegate = (AppDelegate *)[UIApplication sharedApplication].delegate;
+    appDelegate.window.rootViewController = navController;
+
+    self.conversationSplitViewController = nil;
+}
+
+- (void)ensureRootViewController:(NSTimeInterval)launchStartedAt
+{
+    OWSAssertIsOnMainThread();
+
+    OWSLogInfo(@"ensureRootViewController");
+
+    if (!AppReadiness.isAppReady || self.hasInitialRootViewController) {
+        return;
+    }
+    self.hasInitialRootViewController = YES;
+
+    NSTimeInterval startupDuration = CACurrentMediaTime() - launchStartedAt;
+    OWSLogInfo(@"Presenting app %.2f seconds after launch started.", startupDuration);
+
+    OnboardingController *onboarding = [OnboardingController new];
+    if (onboarding.isComplete) {
+        [onboarding markAsOnboarded];
+
+        if (self.backup.hasPendingRestoreDecision) {
+            [self showBackupRestoreView];
+        } else {
+            [self showConversationSplitView];
+        }
+    } else {
+        [self showOnboardingView:onboarding];
+    }
+
+    [AppUpdateNag.sharedInstance showAppUpgradeNagIfNecessary];
+
+    [UIViewController attemptRotationToDeviceOrientation];
+}
+
+- (BOOL)receivedVerificationCode:(NSString *)verificationCode
+{
+    UIViewController *frontmostVC = CurrentAppContext().frontmostViewController;
+    if (![frontmostVC isKindOfClass:[OnboardingVerificationViewController class]]) {
+        OWSLogWarn(@"Not the verification view controller we expected. Got %@ instead", frontmostVC.class);
+        return NO;
+    }
+
+    OnboardingVerificationViewController *verificationVC = (OnboardingVerificationViewController *)frontmostVC;
+    [verificationVC setVerificationCodeAndTryToVerify:verificationCode];
+    return YES;
+}
+
+- (void)showNewConversationView
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(self.conversationSplitViewController);
+
+    [self.conversationSplitViewController showNewConversationView];
 }
 
 @end

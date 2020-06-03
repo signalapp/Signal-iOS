@@ -1,9 +1,9 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
-#import "TSGroupThread.h"
 #import "SSKBaseTestObjC.h"
+#import "TSGroupThread.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -15,7 +15,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)testHasSafetyNumbers
 {
-    TSGroupThread *groupThread = [TSGroupThread new];
+    TSGroupThread *groupThread = [[TSGroupThread alloc] initWithDictionary:@{} error:nil];
     XCTAssertFalse(groupThread.hasSafetyNumbers);
 }
 

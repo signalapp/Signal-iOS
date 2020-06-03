@@ -1,14 +1,13 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSContactOffersCell.h"
 #import "ConversationViewItem.h"
 #import "Signal-Swift.h"
-#import <SignalMessaging/OWSContactOffersInteraction.h>
-#import <SignalMessaging/UIColor+OWS.h>
 #import <SignalMessaging/UIFont+OWS.h>
 #import <SignalMessaging/UIView+OWS.h>
+#import <SignalServiceKit/OWSContactOffersInteraction.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -20,6 +19,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) UIButton *blockButton;
 @property (nonatomic) NSArray<NSLayoutConstraint *> *layoutConstraints;
 @property (nonatomic) UIStackView *stackView;
+@property (nonatomic) UIStackView *buttonStackView;
 
 @end
 
@@ -27,17 +27,27 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSContactOffersCell
 
+- (instancetype)init
+{
+    return [self initWithFrame:CGRectZero];
+}
+
+- (nullable instancetype)initWithCoder:(NSCoder *)coder
+{
+    return [self initWithFrame:CGRectZero];
+}
+
 // `[UIView init]` invokes `[self initWithFrame:...]`.
 - (instancetype)initWithFrame:(CGRect)frame
 {
     if (self = [super initWithFrame:frame]) {
-        [self commontInit];
+        [self commonInit];
     }
 
     return self;
 }
 
-- (void)commontInit
+- (void)commonInit
 {
     OWSAssertDebug(!self.titleLabel);
 
@@ -56,22 +66,22 @@ NS_ASSUME_NONNULL_BEGIN
             NSLocalizedString(@"CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER",
                 @"Message shown in conversation view that offers to add an unknown user to your phone's contacts.")
                      selector:@selector(addToContacts)];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _addToContactsButton);
     self.addToProfileWhitelistButton = [self
         createButtonWithTitle:NSLocalizedString(@"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER",
                                   @"Message shown in conversation view that offers to share your profile with a user.")
                      selector:@selector(addToProfileWhitelist)];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _addToProfileWhitelistButton);
     self.blockButton =
         [self createButtonWithTitle:NSLocalizedString(@"CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER",
                                         @"Message shown in conversation view that offers to block an unknown user.")
                            selector:@selector(block)];
+    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _blockButton);
 
-    UIStackView *buttonStackView = [[UIStackView alloc] initWithArrangedSubviews:@[
-        self.addToContactsButton,
-        self.addToProfileWhitelistButton,
-        self.blockButton,
-    ]];
+    UIStackView *buttonStackView = [[UIStackView alloc] initWithArrangedSubviews:self.buttons];
     buttonStackView.axis = UILayoutConstraintAxisVertical;
     buttonStackView.spacing = self.vSpacing;
+    self.buttonStackView = buttonStackView;
 
     self.stackView = [[UIStackView alloc] initWithArrangedSubviews:@[
         self.titleLabel,
@@ -87,7 +97,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     self.titleLabel.font = UIFont.ows_dynamicTypeSubheadlineFont;
 
-    UIFont *buttonFont = UIFont.ows_dynamicTypeSubheadlineFont.ows_mediumWeight;
+    UIFont *buttonFont = UIFont.ows_dynamicTypeSubheadlineFont.ows_semibold;
     self.addToContactsButton.titleLabel.font = buttonFont;
     self.addToProfileWhitelistButton.titleLabel.font = buttonFont;
     self.blockButton.titleLabel.font = buttonFont;
@@ -120,13 +130,9 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self configureFonts];
 
-    self.titleLabel.textColor = Theme.secondaryColor;
-    for (UIButton *button in @[
-             self.addToContactsButton,
-             self.addToProfileWhitelistButton,
-             self.blockButton,
-         ]) {
-        [button setTitleColor:[UIColor ows_signalBlueColor] forState:UIControlStateNormal];
+    self.titleLabel.textColor = Theme.secondaryTextAndIconColor;
+    for (UIButton *button in self.buttons) {
+        [button setTitleColor:Theme.conversationButtonTextColor forState:UIControlStateNormal];
         [button setBackgroundColor:Theme.conversationButtonBackgroundColor];
     }
 
@@ -151,6 +157,35 @@ NS_ASSUME_NONNULL_BEGIN
                                          withInset:self.conversationStyle.fullWidthGutterLeading],
         [self.stackView autoPinEdgeToSuperviewEdge:ALEdgeTrailing
                                          withInset:self.conversationStyle.fullWidthGutterTrailing],
+    ];
+
+    // This hack fixes a bug that I don't understand.
+    //
+    // On an iPhone 5C running iOS 10.3.3,
+    //
+    // * Alice is a contact for which we should show some but not all contact offer buttons.
+    // * Delete thread with Alice.
+    // * Send yourself a message from Alice.
+    // * Open conversation with Alice.
+    //
+    // Expected: Some (but not all) offer buttons are displayed.
+    // Observed: All offer buttons are displayed, in a cramped layout.
+    for (UIButton *button in self.buttons) {
+        [button removeFromSuperview];
+    }
+    for (UIButton *button in self.buttons) {
+        if (!button.hidden) {
+            [self.buttonStackView addArrangedSubview:button];
+        }
+    }
+}
+
+- (NSArray<UIButton *> *)buttons
+{
+    return @[
+        self.addToContactsButton,
+        self.addToProfileWhitelistButton,
+        self.blockButton,
     ];
 }
 

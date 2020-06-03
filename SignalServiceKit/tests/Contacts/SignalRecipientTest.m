@@ -1,26 +1,21 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
-#import "SignalRecipient.h"
 #import "MockSSKEnvironment.h"
-#import "OWSPrimaryStorage.h"
 #import "SSKBaseTestObjC.h"
+#import "SignalRecipient.h"
 #import "TSAccountManager.h"
 #import "TestAppContext.h"
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
-@interface TSAccountManager (Testing)
-
-- (void)storeLocalNumber:(NSString *)localNumber;
-
-@end
-
 @interface SignalRecipientTest : SSKBaseTestObjC
 
-@property (nonatomic) NSString *localNumber;
+@property (nonatomic) SignalServiceAddress *localAddress;
 
 @end
+
+#pragma mark -
 
 @implementation SignalRecipientTest
 
@@ -28,8 +23,8 @@
 {
     [super setUp];
 
-    self.localNumber = @"+13231231234";
-    [[TSAccountManager sharedInstance] storeLocalNumber:self.localNumber];
+    [[TSAccountManager sharedInstance] registerForTestsWithLocalNumber:@"+13231231234" uuid:[NSUUID new]];
+    self.localAddress = TSAccountManager.localAddress;
 }
 
 - (void)tearDown
@@ -40,12 +35,24 @@
 - (void)testSelfRecipientWithExistingRecord
 {
     // Sanity Check
-    XCTAssertNotNil(self.localNumber);
+    XCTAssertNotNil(self.localAddress);
 
-    [self readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-        [SignalRecipient markRecipientAsRegisteredAndGet:self.localNumber transaction:transaction];
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [SignalRecipient markRecipientAsRegisteredAndGet:self.localAddress transaction:transaction];
 
-        XCTAssertTrue([SignalRecipient isRegisteredRecipient:self.localNumber transaction:transaction]);
+        XCTAssertTrue([SignalRecipient isRegisteredRecipient:self.localAddress transaction:transaction]);
+    }];
+}
+
+- (void)testRecipientWithExistingRecord
+{
+    // Sanity Check
+    XCTAssertNotNil(self.localAddress);
+    SignalServiceAddress *recipient = [[SignalServiceAddress alloc] initWithPhoneNumber:@"+15551231234"];
+    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [SignalRecipient markRecipientAsRegisteredAndGet:recipient transaction:transaction];
+
+        XCTAssertTrue([SignalRecipient isRegisteredRecipient:recipient transaction:transaction]);
     }];
 }
 

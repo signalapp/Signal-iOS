@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -61,13 +61,13 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
             return
         }
         guard phoneNumbers.count > 1 else {
-            let recipientId = phoneNumbers.first!
-            SignalApp.shared().presentConversation(forRecipientId: recipientId, action: action, animated: true)
+            let address = SignalServiceAddress(phoneNumber: phoneNumbers.first!)
+            SignalApp.shared().presentConversation(for: address, action: action, animated: true)
             return
         }
 
-        showPhoneNumberPicker(phoneNumbers: phoneNumbers, fromViewController: fromViewController, completion: { (recipientId) in
-            SignalApp.shared().presentConversation(forRecipientId: recipientId, action: action, animated: true)
+        showPhoneNumberPicker(phoneNumbers: phoneNumbers, fromViewController: fromViewController, completion: { phoneNumber in
+            SignalApp.shared().presentConversation(for: SignalServiceAddress(phoneNumber: phoneNumber), action: action, animated: true)
         })
     }
 
@@ -77,7 +77,7 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
 
         guard MFMessageComposeViewController.canSendText() else {
             Logger.info("Device cannot send text")
-            OWSAlerts.showErrorAlert(message: NSLocalizedString("UNSUPPORTED_FEATURE_ERROR", comment: ""))
+            OWSActionSheets.showErrorAlert(message: NSLocalizedString("UNSUPPORTED_FEATURE_ERROR", comment: ""))
             return
         }
         let phoneNumbers = contactShare.e164PhoneNumbers()
@@ -86,8 +86,7 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
             return
         }
 
-        let inviteFlow =
-            InviteFlow(presentingViewController: fromViewController, contactsManager: contactsManager)
+        let inviteFlow = InviteFlow(presentingViewController: fromViewController)
         inviteFlow.sendSMSTo(phoneNumbers: phoneNumbers)
     }
 
@@ -95,36 +94,36 @@ public class ContactShareViewHelper: NSObject, CNContactViewControllerDelegate {
     func showAddToContacts(contactShare: ContactShareViewModel, fromViewController: UIViewController) {
         Logger.info("")
 
-        let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        let actionSheet = ActionSheetController(title: nil, message: nil)
 
-        actionSheet.addAction(UIAlertAction(title: NSLocalizedString("CONVERSATION_SETTINGS_NEW_CONTACT",
+        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("CONVERSATION_SETTINGS_NEW_CONTACT",
                                                                      comment: "Label for 'new contact' button in conversation settings view."),
                                             style: .default) { _ in
                                                 self.didPressCreateNewContact(contactShare: contactShare, fromViewController: fromViewController)
         })
-        actionSheet.addAction(UIAlertAction(title: NSLocalizedString("CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT",
+        actionSheet.addAction(ActionSheetAction(title: NSLocalizedString("CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT",
                                                                      comment: "Label for 'new contact' button in conversation settings view."),
                                             style: .default) { _ in
                                                 self.didPressAddToExistingContact(contactShare: contactShare, fromViewController: fromViewController)
         })
-        actionSheet.addAction(OWSAlerts.cancelAction)
+        actionSheet.addAction(OWSActionSheets.cancelAction)
 
-        fromViewController.present(actionSheet, animated: true)
+        fromViewController.presentActionSheet(actionSheet)
     }
 
     private func showPhoneNumberPicker(phoneNumbers: [String], fromViewController: UIViewController, completion :@escaping ((String) -> Void)) {
 
-        let actionSheet = UIAlertController(title: nil, message: nil, preferredStyle: .actionSheet)
+        let actionSheet = ActionSheetController(title: nil, message: nil)
 
         for phoneNumber in phoneNumbers {
-            actionSheet.addAction(UIAlertAction(title: PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: phoneNumber),
+            actionSheet.addAction(ActionSheetAction(title: PhoneNumber.bestEffortLocalizedPhoneNumber(withE164: phoneNumber),
                                                           style: .default) { _ in
                                                             completion(phoneNumber)
             })
         }
-        actionSheet.addAction(OWSAlerts.cancelAction)
+        actionSheet.addAction(OWSActionSheets.cancelAction)
 
-        fromViewController.present(actionSheet, animated: true)
+        fromViewController.presentActionSheet(actionSheet)
     }
 
     func didPressCreateNewContact(contactShare: ContactShareViewModel, fromViewController: UIViewController) {

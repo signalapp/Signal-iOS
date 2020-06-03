@@ -1,10 +1,9 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "PinEntryView.h"
 #import "Signal-Swift.h"
-#import <SignalMessaging/UIColor+OWS.h>
 #import <SignalMessaging/UIFont+OWS.h>
 #import <SignalMessaging/UIView+OWS.h>
 #import <SignalMessaging/ViewControllerUtils.h>
@@ -41,13 +40,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIFont *)boldLabelFont
 {
-    return [UIFont ows_boldFontWithSize:ScaleFromIPhone5To7Plus(14.f, 16.f)];
+    return [UIFont ows_semiboldFontWithSize:ScaleFromIPhone5To7Plus(14.f, 16.f)];
 }
 
 - (UILabel *)createLabelWithText:(nullable NSString *)text
 {
     UILabel *label = [UILabel new];
-    label.textColor = [Theme primaryColor];
+    label.textColor = Theme.primaryTextColor;
     label.text = text;
     label.font = self.labelFont;
     label.numberOfLines = 0;
@@ -59,14 +58,14 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)createPinTextfield
 {
-    if (UIDevice.currentDevice.isShorterThanIPhone5) {
+    if (UIDevice.currentDevice.isIPhone5OrShorter) {
         self.pinTextfield = [DismissableTextField new];
     } else {
         self.pinTextfield = [OWSTextField new];
     }
 
-    self.pinTextfield.textColor = [Theme primaryColor];
-    self.pinTextfield.font = [UIFont ows_mediumFontWithSize:ScaleFromIPhone5To7Plus(30.f, 36.f)];
+    self.pinTextfield.textColor = Theme.primaryTextColor;
+    self.pinTextfield.font = [UIFont ows_semiboldFontWithSize:ScaleFromIPhone5To7Plus(30.f, 36.f)];
     self.pinTextfield.textAlignment = NSTextAlignmentCenter;
     self.pinTextfield.keyboardType = UIKeyboardTypeNumberPad;
     self.pinTextfield.delegate = self;
@@ -78,13 +77,13 @@ NS_ASSUME_NONNULL_BEGIN
 - (UILabel *)createForgotLink
 {
     UILabel *label = [UILabel new];
-    label.textColor = [UIColor ows_materialBlueColor];
+    label.textColor = Theme.accentBlueColor;
     NSString *text = NSLocalizedString(
         @"REGISTER_2FA_FORGOT_PIN", @"Label for 'I forgot my PIN' link in the 2FA registration view.");
     label.attributedText = [[NSAttributedString alloc]
         initWithString:text
             attributes:@{
-                NSForegroundColorAttributeName : [UIColor ows_materialBlueColor],
+                NSForegroundColorAttributeName : Theme.accentBlueColor,
                 NSUnderlineStyleAttributeName : @(NSUnderlineStyleSingle | NSUnderlinePatternSolid)
             }];
     label.font = [UIFont ows_regularFontWithSize:ScaleFromIPhone5To7Plus(14.f, 16.f)];
@@ -101,14 +100,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)createSubmitButton
 {
     const CGFloat kSubmitButtonHeight = 47.f;
-    // NOTE: We use ows_signalBrandBlueColor instead of ows_materialBlueColor
+    // NOTE: We use ows_accentBlueColor instead of ows_accentBlueColor
     //       throughout the onboarding flow to be consistent with the headers.
     OWSFlatButton *submitButton =
         [OWSFlatButton buttonWithTitle:NSLocalizedString(@"REGISTER_2FA_SUBMIT_BUTTON",
                                            @"Label for 'submit' button in the 2FA registration view.")
                                   font:[OWSFlatButton fontForHeight:kSubmitButtonHeight]
                             titleColor:[UIColor whiteColor]
-                       backgroundColor:[UIColor ows_signalBrandBlueColor]
+                       backgroundColor:UIColor.ows_accentBlueColor
                                 target:self
                               selector:@selector(submitButtonWasPressed)];
     self.submitButton = submitButton;
@@ -186,7 +185,7 @@ NS_ASSUME_NONNULL_BEGIN
     return NO;
 }
 
-- (void)updateIsSubmitEnabled;
+- (void)updateIsSubmitEnabled
 {
     [self.submitButton setEnabled:self.hasValidPin];
 }

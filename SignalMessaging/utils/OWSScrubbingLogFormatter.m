@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSScrubbingLogFormatter.h"
@@ -24,6 +24,24 @@ NS_ASSUME_NONNULL_BEGIN
     return regex;
 }
 
+- (NSRegularExpression *)uuidRegex
+{
+    static NSRegularExpression *regex = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        // Example: AF112388-9F3D-4EBA-A321-CCE01BA2C85D
+        NSError *error;
+        regex = [NSRegularExpression
+            regularExpressionWithPattern:
+                @"[\\da-f]{8}\\-[\\da-f]{4}\\-[\\da-f]{4}\\-[\\da-f]{4}\\-[\\da-f]{10}([\\da-f]{2})"
+                                 options:NSRegularExpressionCaseInsensitive
+                                   error:&error];
+        if (error || !regex) {
+            OWSFail(@"could not compile regular expression: %@", error);
+        }
+    });
+    return regex;
+}
 - (NSRegularExpression *)dataRegex
 {
     static NSRegularExpression *regex = nil;
@@ -33,6 +51,22 @@ NS_ASSUME_NONNULL_BEGIN
         regex = [NSRegularExpression regularExpressionWithPattern:@"<([\\da-f]{2})[\\da-f]{6}( [\\da-f]{8})*>"
                                                           options:NSRegularExpressionCaseInsensitive
                                                             error:&error];
+        if (error || !regex) {
+            OWSFail(@"could not compile regular expression: %@", error);
+        }
+    });
+    return regex;
+}
+- (NSRegularExpression *)ios13DataRegex
+{
+    static NSRegularExpression *regex = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSError *error;
+        regex = [NSRegularExpression
+            regularExpressionWithPattern:@"\\{length = \\d+, bytes = 0x([\\da-f]{2})([\\da-f]{2})*\\}"
+                                 options:NSRegularExpressionCaseInsensitive
+                                   error:&error];
         if (error || !regex) {
             OWSFail(@"could not compile regular expression: %@", error);
         }
@@ -67,6 +101,11 @@ NS_ASSUME_NONNULL_BEGIN
                                                        range:NSMakeRange(0, [logString length])
                                                 withTemplate:@"[ REDACTED_PHONE_NUMBER:xxx$1 ]"];
 
+    NSRegularExpression *uuidRegex = self.uuidRegex;
+    logString = [uuidRegex stringByReplacingMatchesInString:logString
+                                                    options:0
+                                                      range:NSMakeRange(0, [logString length])
+                                               withTemplate:@"[ REDACTED_UUID:xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxx$1 ]"];
 
     // We capture only the first two characters of the hex string for logging.
     // example log line: "Called someFunction with nsData: <01234567 89abcdef>"
@@ -76,6 +115,16 @@ NS_ASSUME_NONNULL_BEGIN
                                                     options:0
                                                       range:NSMakeRange(0, [logString length])
                                                withTemplate:@"[ REDACTED_DATA:$1... ]"];
+
+    // On iOS 13, when built with the 13 SDK, NSData's description has changed
+    // and needs to be scrubbed specifically.
+    // example log line: "Called someFunction with nsData: {length = 8, bytes = 0x0123456789abcdef}"
+    //  scrubbed output: "Called someFunction with nsData: [ REDACTED_DATA:96 ]"
+    NSRegularExpression *ios13DataRegex = self.ios13DataRegex;
+    logString = [ios13DataRegex stringByReplacingMatchesInString:logString
+                                                         options:0
+                                                           range:NSMakeRange(0, [logString length])
+                                                    withTemplate:@"[ REDACTED_DATA:$1... ]"];
 
     NSRegularExpression *ipV4AddressRegex = self.ipV4AddressRegex;
     logString = [ipV4AddressRegex stringByReplacingMatchesInString:logString

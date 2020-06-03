@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSReceiptsForSenderMessage.h"
@@ -21,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSReceiptsForSenderMessage
 
-+ (OWSReceiptsForSenderMessage *)deliveryReceiptsForSenderMessageWithThread:(nullable TSThread *)thread
++ (OWSReceiptsForSenderMessage *)deliveryReceiptsForSenderMessageWithThread:(TSThread *)thread
                                                           messageTimestamps:(NSArray<NSNumber *> *)messageTimestamps
 {
     return [[OWSReceiptsForSenderMessage alloc] initWithThread:thread
@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                    receiptType:SSKProtoReceiptMessageTypeDelivery];
 }
 
-+ (OWSReceiptsForSenderMessage *)readReceiptsForSenderMessageWithThread:(nullable TSThread *)thread
++ (OWSReceiptsForSenderMessage *)readReceiptsForSenderMessageWithThread:(TSThread *)thread
                                                       messageTimestamps:(NSArray<NSNumber *> *)messageTimestamps
 {
     return [[OWSReceiptsForSenderMessage alloc] initWithThread:thread
@@ -37,20 +37,12 @@ NS_ASSUME_NONNULL_BEGIN
                                                    receiptType:SSKProtoReceiptMessageTypeRead];
 }
 
-- (instancetype)initWithThread:(nullable TSThread *)thread
+- (instancetype)initWithThread:(TSThread *)thread
              messageTimestamps:(NSArray<NSNumber *> *)messageTimestamps
                    receiptType:(SSKProtoReceiptMessageType)receiptType
 {
-    self = [super initOutgoingMessageWithTimestamp:[NSDate ows_millisecondTimeStamp]
-                                          inThread:thread
-                                       messageBody:nil
-                                     attachmentIds:[NSMutableArray new]
-                                  expiresInSeconds:0
-                                   expireStartedAt:0
-                                    isVoiceMessage:NO
-                                  groupMetaMessage:TSGroupMetaMessageUnspecified
-                                     quotedMessage:nil
-                                      contactShare:nil];
+    TSOutgoingMessageBuilder *messageBuilder = [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread];
+    self = [super initOutgoingMessageWithBuilder:messageBuilder];
     if (!self) {
         return self;
     }
@@ -76,10 +68,12 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient
+                                 thread:(TSThread *)thread
+                            transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(recipient);
 
-    SSKProtoReceiptMessage *_Nullable receiptMessage = [self buildReceiptMessage:recipient.recipientId];
+    SSKProtoReceiptMessage *_Nullable receiptMessage = [self buildReceiptMessage];
     if (!receiptMessage) {
         OWSFailDebug(@"could not build protobuf.");
         return nil;
@@ -97,9 +91,10 @@ NS_ASSUME_NONNULL_BEGIN
     return contentData;
 }
 
-- (nullable SSKProtoReceiptMessage *)buildReceiptMessage:(NSString *)recipientId
+- (nullable SSKProtoReceiptMessage *)buildReceiptMessage
 {
-    SSKProtoReceiptMessageBuilder *builder = [SSKProtoReceiptMessage builderWithType:self.receiptType];
+    SSKProtoReceiptMessageBuilder *builder = [SSKProtoReceiptMessage builder];
+    [builder setType:self.receiptType];
 
     OWSAssertDebug(self.messageTimestamps.count > 0);
     for (NSNumber *messageTimestamp in self.messageTimestamps) {

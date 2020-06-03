@@ -1,13 +1,16 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "DebugUISessionState.h"
 #import "OWSTableViewController.h"
 #import "Signal-Swift.h"
 #import <SignalServiceKit/OWSIdentityManager.h>
-#import <SignalServiceKit/OWSPrimaryStorage+SessionStore.h>
+#import <SignalServiceKit/SSKSessionStore.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TSContactThread.h>
+
+#ifdef DEBUG
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -17,6 +20,25 @@ NS_ASSUME_NONNULL_BEGIN
 {
     return @"Session State";
 }
+
+#pragma mark -  Dependencies
+
+- (SDSDatabaseStorage *)databaseStorage
+{
+    return SDSDatabaseStorage.shared;
+}
+
+- (SSKSessionStore *)sessionStore
+{
+    return SSKEnvironment.shared.sessionStore;
+}
+
+- (OWSSessionResetJobQueue *)sessionResetJobQueue
+{
+    return AppEnvironment.shared.sessionResetJobQueue;
+}
+
+#pragma mark -
 
 - (nullable OWSTableSection *)sectionForThread:(nullable TSThread *)threadParameter
 {
@@ -30,16 +52,18 @@ NS_ASSUME_NONNULL_BEGIN
                             }],
             [OWSTableItem itemWithTitle:@"Log All Sessions"
                             actionBlock:^{
-                                [[OWSPrimaryStorage sharedManager] printAllSessions];
+                                [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+                                    [self.sessionStore printAllSessionsWithTransaction:transaction];
+                                }];
                             }],
             [OWSTableItem itemWithTitle:@"Toggle Key Change"
                             actionBlock:^{
                                 OWSLogError(@"Flipping identity Key. Flip again to return.");
 
                                 OWSIdentityManager *identityManager = [OWSIdentityManager sharedManager];
-                                NSString *recipientId = [thread contactIdentifier];
+                                SignalServiceAddress *address = thread.contactAddress;
 
-                                NSData *currentKey = [identityManager identityKeyForRecipientId:recipientId];
+                                NSData *currentKey = [identityManager identityKeyForAddress:address];
                                 NSMutableData *flippedKey = [NSMutableData new];
                                 const char *currentKeyBytes = currentKey.bytes;
                                 for (NSUInteger i = 0; i < currentKey.length; i++) {
@@ -47,95 +71,49 @@ NS_ASSUME_NONNULL_BEGIN
                                     [flippedKey appendBytes:&xorByte length:1];
                                 }
                                 OWSAssertDebug(flippedKey.length == currentKey.length);
-                                [identityManager saveRemoteIdentity:flippedKey recipientId:recipientId];
+                                [identityManager saveRemoteIdentity:flippedKey address:address];
                             }],
             [OWSTableItem itemWithTitle:@"Delete all sessions"
                             actionBlock:^{
-                                [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                                    [[OWSPrimaryStorage sharedManager]
-                                        deleteAllSessionsForContact:thread.contactIdentifier
-                                                    protocolContext:transaction];
+                                [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                                    [self.sessionStore deleteAllSessionsForAddress:thread.contactAddress
+                                                                       transaction:transaction];
                                 }];
                             }],
             [OWSTableItem itemWithTitle:@"Archive all sessions"
                             actionBlock:^{
-                                [self.dbConnection
-                                    readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                                        [[OWSPrimaryStorage sharedManager]
-                                            archiveAllSessionsForContact:thread.contactIdentifier
-                                                         protocolContext:transaction];
-                                    }];
+                                [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                                    [self.sessionStore archiveAllSessionsForAddress:thread.contactAddress
+                                                                        transaction:transaction];
+                                }];
                             }],
             [OWSTableItem itemWithTitle:@"Send session reset"
                             actionBlock:^{
-                                [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                                [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
                                     [self.sessionResetJobQueue addContactThread:thread transaction:transaction];
                                 }];
                             }],
         ]];
     }
 
-#if DEBUG
-    [items addObjectsFromArray:@[
-        [OWSTableItem itemWithTitle:@"Clear Session and Identity Store"
-                        actionBlock:^{
-                            [DebugUISessionState clearSessionAndIdentityStore];
-                        }],
-        [OWSTableItem itemWithTitle:@"Snapshot Session and Identity Store"
-                        actionBlock:^{
-                            [DebugUISessionState snapshotSessionAndIdentityStore];
-                        }],
-        [OWSTableItem itemWithTitle:@"Restore Session and Identity Store"
-                        actionBlock:^{
-                            [DebugUISessionState restoreSessionAndIdentityStore];
-                        }]
-    ]];
-#endif
+    [items addObjectsFromArray:@[ [OWSTableItem itemWithTitle:@"Clear Session and Identity Store"
+                                                  actionBlock:^{
+                                                      [self clearSessionAndIdentityStore];
+                                                  }] ]];
 
     return [OWSTableSection sectionWithTitle:self.name items:items];
 }
 
-#pragma mark - Dependencies
-
-- (OWSSessionResetJobQueue *)sessionResetJobQueue
+- (void)clearSessionAndIdentityStore
 {
-    return AppEnvironment.shared.sessionResetJobQueue;
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        [self.sessionStore resetSessionStore:transaction];
+        [[OWSIdentityManager sharedManager] clearIdentityState:transaction];
+    }];
 }
-
-- (YapDatabaseConnection *)dbConnection
-{
-    return SSKEnvironment.shared.primaryStorage.dbReadWriteConnection;
-}
-
-#if DEBUG
-+ (void)clearSessionAndIdentityStore
-{
-    [OWSPrimaryStorage.sharedManager.newDatabaseConnection
-        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [[OWSPrimaryStorage sharedManager] resetSessionStore:transaction];
-            [[OWSIdentityManager sharedManager] clearIdentityState:transaction];
-        }];
-}
-
-+ (void)snapshotSessionAndIdentityStore
-{
-    [OWSPrimaryStorage.sharedManager.newDatabaseConnection
-        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [[OWSPrimaryStorage sharedManager] snapshotSessionStore:transaction];
-            [[OWSIdentityManager sharedManager] snapshotIdentityState:transaction];
-        }];
-}
-
-+ (void)restoreSessionAndIdentityStore
-{
-    [OWSPrimaryStorage.sharedManager.newDatabaseConnection
-        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [[OWSPrimaryStorage sharedManager] restoreSessionStore:transaction];
-            [[OWSIdentityManager sharedManager] restoreIdentityState:transaction];
-        }];
-}
-#endif
 
 @end
 
 NS_ASSUME_NONNULL_END
+
+#endif

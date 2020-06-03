@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSFormat.h"
@@ -8,7 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation OWSFormat
 
-+ (NSString *)formatInt:(int)value
++ (NSNumberFormatter *)defaultNumberFormatter
 {
     static NSNumberFormatter *formatter = nil;
     static dispatch_once_t onceToken;
@@ -16,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
         formatter = [NSNumberFormatter new];
         formatter.numberStyle = NSNumberFormatterNoStyle;
     });
-    return [formatter stringFromNumber:@(value)];
+    return formatter;
 }
 
 + (NSString *)formatFileSize:(unsigned long)fileSize

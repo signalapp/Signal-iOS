@@ -4,14 +4,10 @@
 <dict>
 	<key>BuildDetails</key>
 	<dict>
-		<key>CarthageVersion</key>
-		<string>0.31.1</string>
-		<key>CocoapodsVersion</key>
-		<string>1.5.3</string>
 		<key>OSXVersion</key>
-		<string>10.13.6</string>
+		<string>10.15.4</string>
 		<key>WebRTCCommit</key>
-		<string>ca71024b4993ba95e3e6b8d0758004cffc54ddaf M70</string>
+		<string>c0191ff8d06c8051e7d180bd630b438844789cbf Production build of v2.0.2</string>
 	</dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
@@ -32,7 +28,7 @@
 	<key>CFBundlePackageType</key>
 	<string>APPL</string>
 	<key>CFBundleShortVersionString</key>
-	<string>2.32.0</string>
+	<string>3.9.1</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
 	<key>CFBundleURLTypes</key>
@@ -49,13 +45,13 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>2.32.0.2</string>
+	<string>3.9.1.1</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LOGS_EMAIL</key>
-	<string>support@whispersystems.org</string>
+	<string>support@signal.org</string>
 	<key>LOGS_URL</key>
-	<string>https://github.com/WhisperSystems/Signal-iOS/issues</string>
+	<string>https://github.com/signalapp/Signal-iOS/issues</string>
 	<key>LSApplicationCategoryType</key>
 	<string>public.app-category.social-networking</string>
 	<key>LSRequiresIPhoneOS</key>
@@ -71,7 +67,21 @@
 				<key>NSThirdPartyExceptionRequiresForwardSecrecy</key>
 				<false/>
 			</dict>
-			<key>api-staging.directory.signal.org </key>
+			<key>api-staging.backup.signal.org</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+				<key>NSThirdPartyExceptionRequiresForwardSecrecy</key>
+				<false/>
+			</dict>
+			<key>api-staging.directory.signal.org</key>
+			<dict>
+				<key>NSExceptionAllowsInsecureHTTPLoads</key>
+				<true/>
+				<key>NSThirdPartyExceptionRequiresForwardSecrecy</key>
+				<false/>
+			</dict>
+			<key>api.backup.signal.org</key>
 			<dict>
 				<key>NSExceptionAllowsInsecureHTTPLoads</key>
 				<true/>
@@ -109,6 +119,8 @@
 	<string>Signal uses your contacts to find users you know. We do not store your contacts on the server.</string>
 	<key>NSFaceIDUsageDescription</key>
 	<string>Signal's Screen Lock uses Face ID.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Signal needs access to your location in order to share your current location.</string>
 	<key>NSMicrophoneUsageDescription</key>
 	<string>Signal needs access to your microphone to make and receive phone calls and record voice messages.</string>
 	<key>NSPhotoLibraryAddUsageDescription</key>
@@ -150,6 +162,15 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
+	</array>
+	<key>UISupportedInterfaceOrientations~ipad</key>
+	<array>
+		<string>UIInterfaceOrientationPortraitUpsideDown</string>
+		<string>UIInterfaceOrientationPortrait</string>
+		<string>UIInterfaceOrientationLandscapeLeft</string>
+		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<true/>

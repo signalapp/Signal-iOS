@@ -1,8 +1,10 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
+
+@class SignalServiceAddress;
 
 extern NSString *const OWSSignalServiceKitErrorDomain;
 
@@ -51,18 +53,27 @@ typedef NS_ENUM(NSInteger, OWSErrorCode) {
     OWSErrorCodeProfileUpdateFailed = 777424,
     OWSErrorCodeAvatarWriteFailed = 777425,
     OWSErrorCodeAvatarUploadFailed = 777426,
+    OWSErrorCodeNoSessionForTransientMessage,
+    OWSErrorCodeUploadFailed,
+    OWSErrorCodeInvalidStickerData,
+    OWSErrorCodeAttachmentDownloadFailed,
+    OWSErrorCodeAppExpired,
+    OWSErrorCodeMissingLocalThread,
+    OWSErrorCodeContactSyncFailed,
+    OWSErrorCodeAppDeregistered,
+    OWSErrorCodeRegistrationTransferAvailable
 };
 
-extern NSString *const OWSErrorRecipientIdentifierKey;
+extern NSString *const OWSErrorRecipientAddressKey;
 
 extern NSError *OWSErrorWithCodeDescription(OWSErrorCode code, NSString *description);
-extern NSError *OWSErrorMakeUntrustedIdentityError(NSString *description, NSString *recipientId);
+extern NSError *OWSErrorWithUserInfo(OWSErrorCode code, NSDictionary *userInfo);
+extern NSError *OWSErrorMakeUntrustedIdentityError(NSString *description, SignalServiceAddress *address);
 extern NSError *OWSErrorMakeUnableToProcessServerResponseError(void);
 extern NSError *OWSErrorMakeFailedToSendOutgoingMessageError(void);
 extern NSError *OWSErrorMakeNoSuchSignalRecipientError(void);
-extern NSError *OWSErrorMakeAssertionError(NSString *description);
+extern NSError *OWSErrorMakeAssertionError(NSString *descriptionFormat, ...);
 extern NSError *OWSErrorMakeMessageSendDisabledDueToPreKeyUpdateFailuresError(void);
 extern NSError *OWSErrorMakeMessageSendFailedDueToBlockListError(void);
-extern NSError *OWSErrorMakeWriteAttachmentDataError(void);
 
 NS_ASSUME_NONNULL_END

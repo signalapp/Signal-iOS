@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSRequest.h"
@@ -7,6 +7,10 @@
 #import "TSConstants.h"
 #import <SignalCoreKit/NSData+OWS.h>
 #import <SignalMetadataKit/SignalMetadataKit-Swift.h>
+#import <SignalServiceKit/SSKEnvironment.h>
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
+
+NS_ASSUME_NONNULL_BEGIN
 
 @implementation TSRequest
 
@@ -74,6 +78,13 @@
     return [[TSRequest alloc] initWithURL:url method:method parameters:parameters];
 }
 
+#pragma mark - Dependencies
+
+- (TSAccountManager *)tsAccountManager
+{
+    return SSKEnvironment.shared.tsAccountManager;
+}
+
 #pragma mark - Authorization
 
 - (void)setAuthUsername:(nullable NSString *)authUsername
@@ -94,22 +105,38 @@
     }
 }
 
-- (NSString *)authUsername
+- (nullable NSString *)authUsername
 {
     OWSAssertDebug(self.shouldHaveAuthorizationHeaders);
 
     @synchronized(self) {
-        return (_authUsername ?: [TSAccountManager localNumber]);
+        NSString *_Nullable result = (_authUsername ?: self.tsAccountManager.storedServerUsername);
+        if (result.length < 1) {
+            OWSLogVerbose(@"%@", self.debugDescription);
+        }
+        OWSAssertDebug(result.length > 0);
+        return result;
     }
 }
 
-- (NSString *)authPassword
+- (nullable NSString *)authPassword
 {
     OWSAssertDebug(self.shouldHaveAuthorizationHeaders);
 
     @synchronized(self) {
-        return (_authPassword ?: [TSAccountManager serverAuthToken]);
+        NSString *_Nullable result = (_authPassword ?: self.tsAccountManager.storedServerAuthToken);
+        if (result.length < 1) {
+            OWSLogVerbose(@"%@", self.debugDescription);
+        }
+        OWSAssertDebug(result.length > 0);
+        return result;
     }
+}
+
+- (NSString *)description {
+    return [NSString stringWithFormat:@"{ %@: %@ }", self.HTTPMethod, self.URL];
 }
 
 @end
+
+NS_ASSUME_NONNULL_END

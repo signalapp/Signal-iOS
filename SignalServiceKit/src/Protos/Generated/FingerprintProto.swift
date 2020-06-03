@@ -1,8 +1,9 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
+import SignalCoreKit
 
 // WARNING: This code is generated. Only edit within the markers.
 
@@ -12,48 +13,64 @@ public enum FingerprintProtoError: Error {
 
 // MARK: - FingerprintProtoLogicalFingerprint
 
-@objc public class FingerprintProtoLogicalFingerprint: NSObject {
+@objc
+public class FingerprintProtoLogicalFingerprint: NSObject {
 
     // MARK: - FingerprintProtoLogicalFingerprintBuilder
 
-    @objc public class func builder(identityData: Data) -> FingerprintProtoLogicalFingerprintBuilder {
+    @objc
+    public class func builder(identityData: Data) -> FingerprintProtoLogicalFingerprintBuilder {
         return FingerprintProtoLogicalFingerprintBuilder(identityData: identityData)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc public func asBuilder() -> FingerprintProtoLogicalFingerprintBuilder {
+    @objc
+    public func asBuilder() -> FingerprintProtoLogicalFingerprintBuilder {
         let builder = FingerprintProtoLogicalFingerprintBuilder(identityData: identityData)
         return builder
     }
 
-    @objc public class FingerprintProtoLogicalFingerprintBuilder: NSObject {
+    @objc
+    public class FingerprintProtoLogicalFingerprintBuilder: NSObject {
 
         private var proto = FingerprintProtos_LogicalFingerprint()
 
-        @objc fileprivate override init() {}
+        @objc
+        fileprivate override init() {}
 
-        @objc fileprivate init(identityData: Data) {
+        @objc
+        fileprivate init(identityData: Data) {
             super.init()
 
             setIdentityData(identityData)
         }
 
-        @objc public func setIdentityData(_ valueParam: Data) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setIdentityData(_ valueParam: Data?) {
+            guard let valueParam = valueParam else { return }
             proto.identityData = valueParam
         }
 
-        @objc public func build() throws -> FingerprintProtoLogicalFingerprint {
+        public func setIdentityData(_ valueParam: Data) {
+            proto.identityData = valueParam
+        }
+
+        @objc
+        public func build() throws -> FingerprintProtoLogicalFingerprint {
             return try FingerprintProtoLogicalFingerprint.parseProto(proto)
         }
 
-        @objc public func buildSerializedData() throws -> Data {
+        @objc
+        public func buildSerializedData() throws -> Data {
             return try FingerprintProtoLogicalFingerprint.parseProto(proto).serializedData()
         }
     }
 
     fileprivate let proto: FingerprintProtos_LogicalFingerprint
 
-    @objc public let identityData: Data
+    @objc
+    public let identityData: Data
 
     private init(proto: FingerprintProtos_LogicalFingerprint,
                  identityData: Data) {
@@ -66,7 +83,8 @@ public enum FingerprintProtoError: Error {
         return try self.proto.serializedData()
     }
 
-    @objc public class func parseData(_ serializedData: Data) throws -> FingerprintProtoLogicalFingerprint {
+    @objc
+    public class func parseData(_ serializedData: Data) throws -> FingerprintProtoLogicalFingerprint {
         let proto = try FingerprintProtos_LogicalFingerprint(serializedData: serializedData)
         return try parseProto(proto)
     }
@@ -86,7 +104,8 @@ public enum FingerprintProtoError: Error {
         return result
     }
 
-    @objc public override var debugDescription: String {
+    @objc
+    public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -94,13 +113,15 @@ public enum FingerprintProtoError: Error {
 #if DEBUG
 
 extension FingerprintProtoLogicalFingerprint {
-    @objc public func serializedDataIgnoringErrors() -> Data? {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
         return try! self.serializedData()
     }
 }
 
 extension FingerprintProtoLogicalFingerprint.FingerprintProtoLogicalFingerprintBuilder {
-    @objc public func buildIgnoringErrors() -> FingerprintProtoLogicalFingerprint? {
+    @objc
+    public func buildIgnoringErrors() -> FingerprintProtoLogicalFingerprint? {
         return try! self.build()
     }
 }
@@ -109,27 +130,33 @@ extension FingerprintProtoLogicalFingerprint.FingerprintProtoLogicalFingerprintB
 
 // MARK: - FingerprintProtoLogicalFingerprints
 
-@objc public class FingerprintProtoLogicalFingerprints: NSObject {
+@objc
+public class FingerprintProtoLogicalFingerprints: NSObject {
 
     // MARK: - FingerprintProtoLogicalFingerprintsBuilder
 
-    @objc public class func builder(version: UInt32, localFingerprint: FingerprintProtoLogicalFingerprint, remoteFingerprint: FingerprintProtoLogicalFingerprint) -> FingerprintProtoLogicalFingerprintsBuilder {
+    @objc
+    public class func builder(version: UInt32, localFingerprint: FingerprintProtoLogicalFingerprint, remoteFingerprint: FingerprintProtoLogicalFingerprint) -> FingerprintProtoLogicalFingerprintsBuilder {
         return FingerprintProtoLogicalFingerprintsBuilder(version: version, localFingerprint: localFingerprint, remoteFingerprint: remoteFingerprint)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc public func asBuilder() -> FingerprintProtoLogicalFingerprintsBuilder {
+    @objc
+    public func asBuilder() -> FingerprintProtoLogicalFingerprintsBuilder {
         let builder = FingerprintProtoLogicalFingerprintsBuilder(version: version, localFingerprint: localFingerprint, remoteFingerprint: remoteFingerprint)
         return builder
     }
 
-    @objc public class FingerprintProtoLogicalFingerprintsBuilder: NSObject {
+    @objc
+    public class FingerprintProtoLogicalFingerprintsBuilder: NSObject {
 
         private var proto = FingerprintProtos_LogicalFingerprints()
 
-        @objc fileprivate override init() {}
+        @objc
+        fileprivate override init() {}
 
-        @objc fileprivate init(version: UInt32, localFingerprint: FingerprintProtoLogicalFingerprint, remoteFingerprint: FingerprintProtoLogicalFingerprint) {
+        @objc
+        fileprivate init(version: UInt32, localFingerprint: FingerprintProtoLogicalFingerprint, remoteFingerprint: FingerprintProtoLogicalFingerprint) {
             super.init()
 
             setVersion(version)
@@ -137,34 +164,54 @@ extension FingerprintProtoLogicalFingerprint.FingerprintProtoLogicalFingerprintB
             setRemoteFingerprint(remoteFingerprint)
         }
 
-        @objc public func setVersion(_ valueParam: UInt32) {
+        @objc
+        public func setVersion(_ valueParam: UInt32) {
             proto.version = valueParam
         }
 
-        @objc public func setLocalFingerprint(_ valueParam: FingerprintProtoLogicalFingerprint) {
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setLocalFingerprint(_ valueParam: FingerprintProtoLogicalFingerprint?) {
+            guard let valueParam = valueParam else { return }
             proto.localFingerprint = valueParam.proto
         }
 
-        @objc public func setRemoteFingerprint(_ valueParam: FingerprintProtoLogicalFingerprint) {
+        public func setLocalFingerprint(_ valueParam: FingerprintProtoLogicalFingerprint) {
+            proto.localFingerprint = valueParam.proto
+        }
+
+        @objc
+        @available(swift, obsoleted: 1.0)
+        public func setRemoteFingerprint(_ valueParam: FingerprintProtoLogicalFingerprint?) {
+            guard let valueParam = valueParam else { return }
             proto.remoteFingerprint = valueParam.proto
         }
 
-        @objc public func build() throws -> FingerprintProtoLogicalFingerprints {
+        public func setRemoteFingerprint(_ valueParam: FingerprintProtoLogicalFingerprint) {
+            proto.remoteFingerprint = valueParam.proto
+        }
+
+        @objc
+        public func build() throws -> FingerprintProtoLogicalFingerprints {
             return try FingerprintProtoLogicalFingerprints.parseProto(proto)
         }
 
-        @objc public func buildSerializedData() throws -> Data {
+        @objc
+        public func buildSerializedData() throws -> Data {
             return try FingerprintProtoLogicalFingerprints.parseProto(proto).serializedData()
         }
     }
 
     fileprivate let proto: FingerprintProtos_LogicalFingerprints
 
-    @objc public let version: UInt32
+    @objc
+    public let version: UInt32
 
-    @objc public let localFingerprint: FingerprintProtoLogicalFingerprint
+    @objc
+    public let localFingerprint: FingerprintProtoLogicalFingerprint
 
-    @objc public let remoteFingerprint: FingerprintProtoLogicalFingerprint
+    @objc
+    public let remoteFingerprint: FingerprintProtoLogicalFingerprint
 
     private init(proto: FingerprintProtos_LogicalFingerprints,
                  version: UInt32,
@@ -181,7 +228,8 @@ extension FingerprintProtoLogicalFingerprint.FingerprintProtoLogicalFingerprintB
         return try self.proto.serializedData()
     }
 
-    @objc public class func parseData(_ serializedData: Data) throws -> FingerprintProtoLogicalFingerprints {
+    @objc
+    public class func parseData(_ serializedData: Data) throws -> FingerprintProtoLogicalFingerprints {
         let proto = try FingerprintProtos_LogicalFingerprints(serializedData: serializedData)
         return try parseProto(proto)
     }
@@ -213,7 +261,8 @@ extension FingerprintProtoLogicalFingerprint.FingerprintProtoLogicalFingerprintB
         return result
     }
 
-    @objc public override var debugDescription: String {
+    @objc
+    public override var debugDescription: String {
         return "\(proto)"
     }
 }
@@ -221,13 +270,15 @@ extension FingerprintProtoLogicalFingerprint.FingerprintProtoLogicalFingerprintB
 #if DEBUG
 
 extension FingerprintProtoLogicalFingerprints {
-    @objc public func serializedDataIgnoringErrors() -> Data? {
+    @objc
+    public func serializedDataIgnoringErrors() -> Data? {
         return try! self.serializedData()
     }
 }
 
 extension FingerprintProtoLogicalFingerprints.FingerprintProtoLogicalFingerprintsBuilder {
-    @objc public func buildIgnoringErrors() -> FingerprintProtoLogicalFingerprints? {
+    @objc
+    public func buildIgnoringErrors() -> FingerprintProtoLogicalFingerprints? {
         return try! self.build()
     }
 }

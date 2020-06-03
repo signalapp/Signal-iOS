@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -30,14 +30,14 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
 
         let jobQueue = MessageSenderJobQueue()
         jobQueue.setup()
-        self.readWrite { transaction in
-            jobQueue.add(message: message, transaction: transaction)
+        self.write { transaction in
+            jobQueue.add(message: message.asPreparer, transaction: transaction)
         }
 
         self.wait(for: [expectation], timeout: 0.1)
     }
 
-    func test_waitsForReady() {
+    func test_waitsForSetup() {
         let message: TSOutgoingMessage = OutgoingMessageFactory().create()
 
         let sentBeforeReadyExpectation = sentExpectation(message: message)
@@ -45,8 +45,8 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
 
         let jobQueue = MessageSenderJobQueue()
 
-        self.readWrite { transaction in
-            jobQueue.add(message: message, transaction: transaction)
+        self.write { transaction in
+            jobQueue.add(message: message.asPreparer, transaction: transaction)
         }
 
         self.wait(for: [sentBeforeReadyExpectation], timeout: 0.1)
@@ -64,10 +64,10 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         let message3: TSOutgoingMessage = OutgoingMessageFactory().create()
 
         let jobQueue = MessageSenderJobQueue()
-        self.readWrite { transaction in
-            jobQueue.add(message: message1, transaction: transaction)
-            jobQueue.add(message: message2, transaction: transaction)
-            jobQueue.add(message: message3, transaction: transaction)
+        self.write { transaction in
+            jobQueue.add(message: message1.asPreparer, transaction: transaction)
+            jobQueue.add(message: message2.asPreparer, transaction: transaction)
+            jobQueue.add(message: message3.asPreparer, transaction: transaction)
         }
 
         let sendGroup = DispatchGroup()
@@ -83,12 +83,20 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
 
         jobQueue.setup()
 
-        switch sendGroup.wait(timeout: .now() + 1.0) {
-        case .timedOut:
-            XCTFail("timed out waiting for sends")
-        case .success:
-            XCTAssertEqual([message1, message2, message3].map { $0.uniqueId }, sentMessages.map { $0.uniqueId })
+        let expectation = self.expectation(description: "sent messages")
+        // Block on self.wait(), use sendGroup.wait() off the main thread.
+        // self.wait() will process the main run loop.
+        DispatchQueue.global().async {
+            switch sendGroup.wait(timeout: .now() + 1.0) {
+            case .timedOut:
+                XCTFail("timed out waiting for sends")
+            case .success:
+                expectation.fulfill()
+            }
         }
+        self.wait(for: [expectation], timeout: 1.0)
+
+        XCTAssertEqual([message1, message2, message3].map { $0.uniqueId }, sentMessages.map { $0.uniqueId })
     }
 
     func test_sendingInvisibleMessage() {
@@ -97,8 +105,8 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
 
         let message = OutgoingMessageFactory().buildDeliveryReceipt()
         let expectation = sentExpectation(message: message)
-        self.readWrite { transaction in
-            jobQueue.add(message: message, transaction: transaction)
+        self.write { transaction in
+            jobQueue.add(message: message.asPreparer, transaction: transaction)
         }
 
         self.wait(for: [expectation], timeout: 0.1)
@@ -108,13 +116,13 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         let message: TSOutgoingMessage = OutgoingMessageFactory().create()
 
         let jobQueue = MessageSenderJobQueue()
-        self.readWrite { transaction in
-            jobQueue.add(message: message, transaction: transaction)
+        self.write { transaction in
+            jobQueue.add(message: message.asPreparer, transaction: transaction)
         }
 
-        let finder = JobRecordFinder()
+        let finder = AnyJobRecordFinder()
         var readyRecords: [SSKJobRecord] = []
-        self.readWrite { transaction in
+        self.read { transaction in
             readyRecords = finder.allRecords(label: MessageSenderJobQueue.jobRecordLabel, status: .ready, transaction: transaction)
         }
         XCTAssertEqual(1, readyRecords.count)
@@ -127,14 +135,14 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         error.isRetryable = true
         self.messageSender.stubbedFailingError = error
         let expectation = sentExpectation(message: message) {
-            jobQueue.isSetup = false
+            jobQueue.isSetup.set(false)
         }
 
         jobQueue.setup()
         self.wait(for: [expectation], timeout: 0.1)
 
-        self.readWrite { transaction in
-            jobRecord.reload(with: transaction)
+        self.read { transaction in
+            jobRecord.anyReload(transaction: transaction)
         }
 
         XCTAssertEqual(1, jobRecord.failureCount)
@@ -143,39 +151,53 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         let retryCount: UInt = MessageSenderJobQueue.maxRetries
         (1..<retryCount).forEach { _ in
             let expectedResend = sentExpectation(message: message)
+            // Manually kick queue restart.
+            //
+            // OWSOperation uses an NSTimer backed retry mechanism, but NSTimer's are not fired
+            // during `self.wait(for:,timeout:` unless the timer was scheduled on the
+            // `RunLoop.main`.
+            //
+            // We could move the timer to fire on the main RunLoop (and have the selector dispatch
+            // back to a background queue), but the production code is simpler if we just manually
+            // kick every retry in the test case.            
+            XCTAssertNotNil(jobQueue.runAnyQueuedRetry())
             self.wait(for: [expectedResend], timeout: 0.1)
         }
 
         // Verify one retry left
-        self.readWrite { transaction in
-            jobRecord.reload(with: transaction)
+        self.read { transaction in
+            jobRecord.anyReload(transaction: transaction)
         }
         XCTAssertEqual(retryCount, jobRecord.failureCount)
         XCTAssertEqual(.running, jobRecord.status)
 
         // Verify final send fails permanently
         let expectedFinalResend = sentExpectation(message: message)
+        XCTAssertNotNil(jobQueue.runAnyQueuedRetry())
         self.wait(for: [expectedFinalResend], timeout: 0.1)
 
-        self.readWrite { transaction in
-            jobRecord.reload(with: transaction)
+        self.read { transaction in
+            jobRecord.anyReload(transaction: transaction)
         }
 
         XCTAssertEqual(retryCount + 1, jobRecord.failureCount)
         XCTAssertEqual(.permanentlyFailed, jobRecord.status)
+
+        // No remaining retries
+        XCTAssertNil(jobQueue.runAnyQueuedRetry())
     }
 
     func test_permanentFailure() {
         let message: TSOutgoingMessage = OutgoingMessageFactory().create()
 
         let jobQueue = MessageSenderJobQueue()
-        self.readWrite { transaction in
-            jobQueue.add(message: message, transaction: transaction)
+        self.write { transaction in
+            jobQueue.add(message: message.asPreparer, transaction: transaction)
         }
 
-        let finder = JobRecordFinder()
+        let finder = AnyJobRecordFinder()
         var readyRecords: [SSKJobRecord] = []
-        self.readWrite { transaction in
+        self.read { transaction in
             readyRecords = finder.allRecords(label: MessageSenderJobQueue.jobRecordLabel, status: .ready, transaction: transaction)
         }
         XCTAssertEqual(1, readyRecords.count)
@@ -188,13 +210,13 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         error.isRetryable = false
         self.messageSender.stubbedFailingError = error
         let expectation = sentExpectation(message: message) {
-            jobQueue.isSetup = false
+            jobQueue.isSetup.set(false)
         }
         jobQueue.setup()
-        self.wait(for: [expectation], timeout: 0.1)
+        self.wait(for: [expectation], timeout: 1)
 
-        self.readWrite { transaction in
-            jobRecord.reload(with: transaction)
+        self.read { transaction in
+            jobRecord.anyReload(transaction: transaction)
         }
 
         XCTAssertEqual(1, jobRecord.failureCount)
@@ -207,7 +229,7 @@ class MessageSenderJobQueueTest: SSKBaseTestSwift {
         let expectation = self.expectation(description: "sent message")
 
         messageSender.sendMessageWasCalledBlock = { [weak messageSender] sentMessage in
-            guard sentMessage == message else {
+            guard sentMessage.uniqueId == message.uniqueId else {
                 XCTFail("unexpected sentMessage: \(sentMessage)")
                 return
             }

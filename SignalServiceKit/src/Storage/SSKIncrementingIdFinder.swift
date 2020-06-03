@@ -7,7 +7,8 @@ import Foundation
 @objc
 public class SSKIncrementingIdFinder: NSObject {
 
-    private static let collectionName = "IncrementingIdCollection"
+    @objc
+    public static let collectionName = "IncrementingIdCollection"
 
     @objc
     public class func previousId(key: String, transaction: YapDatabaseReadTransaction) -> UInt64 {
@@ -21,7 +22,6 @@ public class SSKIncrementingIdFinder: NSObject {
         let nextId: UInt64 = previousId + 1
 
         transaction.setObject(nextId, forKey: key, inCollection: collectionName)
-        Logger.debug("key: \(key) nextId: \(nextId)")
         return nextId
     }
 }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -10,11 +10,17 @@ NS_ASSUME_NONNULL_BEGIN
 - (UIImage *)resizedWithQuality:(CGInterpolationQuality)quality rate:(CGFloat)rate;
 
 - (nullable UIImage *)resizedWithMaxDimensionPoints:(CGFloat)maxDimensionPoints;
+- (nullable UIImage *)resizedWithMaxDimensionPixels:(CGFloat)maxDimensionPixels;
 - (nullable UIImage *)resizedImageToSize:(CGSize)dstSize;
 - (UIImage *)resizedImageToFillPixelSize:(CGSize)boundingSize;
 
 + (UIImage *)imageWithColor:(UIColor *)color;
 + (UIImage *)imageWithColor:(UIColor *)color size:(CGSize)size;
++ (nullable NSData *)validJpegDataFromAvatarData:(NSData *)avatarData;
+
+- (size_t)pixelWidth;
+- (size_t)pixelHeight;
+- (CGSize)pixelSize;
 
 @end
 

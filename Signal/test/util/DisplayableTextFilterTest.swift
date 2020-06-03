@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -105,5 +105,61 @@ class DisplayableTextTest: SignalBaseTest {
         // Excessive diacritics
         XCTAssertFalse("H҉̸̧͘͠A͢͞V̛̛I̴̸N͏̕͏G҉̵͜͏͢ ̧̧́T̶̛͘͡R̸̵̨̢̀O̷̡U͡҉B̶̛͢͞L̸̸͘͢͟É̸ ̸̛͘͏R͟È͠͞A̸͝Ḑ̕͘͜I̵͘҉͜͞N̷̡̢͠G̴͘͠ ͟͞T͏̢́͡È̀X̕҉̢̀T̢͠?̕͏̢͘͢".containsOnlyEmoji)
         XCTAssertFalse("L̷̳͔̲͝Ģ̵̮̯̤̩̙͍̬̟͉̹̘̹͍͈̮̦̰̣͟͝O̶̴̮̻̮̗͘͡!̴̷̟͓͓".containsOnlyEmoji)
+    }
+
+    func test_shouldAllowLinkification() {
+        func assertLinkifies(_ text: String, file: StaticString = #file, line: UInt = #line) {
+            let displayableText = DisplayableText.displayableText(text)
+            XCTAssert(displayableText.shouldAllowLinkification, "was not linkifiable text: \(text)", file: file, line: line)
+        }
+
+        func assertNotLinkifies(_ text: String, file: StaticString = #file, line: UInt = #line) {
+            let displayableText = DisplayableText.displayableText(text)
+            XCTAssertFalse(displayableText.shouldAllowLinkification, "was linkifiable text: \(text)", file: file, line: line)
+        }
+
+        // some basic happy paths
+        assertLinkifies("foo google.com")
+        assertLinkifies("google.com/foo")
+        assertLinkifies("blah google.com/foo")
+        assertLinkifies("foo http://google.com")
+        assertLinkifies("foo https://google.com")
+
+        // cyrillic host with ascii tld
+        assertNotLinkifies("foo http://asĸ.com")
+        assertNotLinkifies("http://asĸ.com")
+        assertNotLinkifies("asĸ.com")
+
+        // Mixed latin and cyrillic text, but it's not a link
+        // (nothing to linkify, but there's nothing illegal here)
+        assertLinkifies("asĸ")
+
+        // Cyrillic host with cyrillic TLD
+        assertLinkifies("http://кц.рф")
+        assertLinkifies("https://кц.рф")
+        assertLinkifies("кц.рф")
+        assertLinkifies("https://кц.рф/foo")
+        assertLinkifies("https://кц.рф/кц")
+        assertLinkifies("https://кц.рф/кцfoo")
+
+        // ascii text outside of the link, with cyrillic host + cyrillic domain
+        assertLinkifies("some text: кц.рф")
+
+        // Mixed ascii/cyrillic text outside of the link, with cyrillic host + cyrillic domain
+        assertLinkifies("asĸ кц.рф")
+
+        assertLinkifies("google.com")
+        assertLinkifies("foo.google.com")
+        assertLinkifies("https://foo.google.com")
+        assertLinkifies("https://foo.google.com/some/path.html")
+
+        assertNotLinkifies("asĸ.com")
+        assertNotLinkifies("https://кц.cфm")
+        assertNotLinkifies("https://google.cфm")
+
+        assertLinkifies("кц.рф")
+        assertLinkifies("кц.рф/some/path")
+        assertLinkifies("https://кц.рф/some/path")
+        assertNotLinkifies("http://foo.кц.рф")
     }
 }

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "DebugUIPage.h"
@@ -8,8 +8,8 @@
 //
 // To show the DebugUI in production builds, comment out the #ifdef and #endif
 #ifdef DEBUG
+
 #define USE_DEBUG_UI
-#endif
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -25,3 +25,5 @@ NS_ASSUME_NONNULL_BEGIN
 @end
 
 NS_ASSUME_NONNULL_END
+
+#endif

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -7,13 +7,13 @@ import PromiseKit
 import SignalServiceKit
 
 @objc
-public class OWS106EnsureProfileComplete: OWSDatabaseMigration {
+public class OWS106EnsureProfileComplete: YDBDatabaseMigration {
 
     private static var sharedCompleteRegistrationFixerJob: CompleteRegistrationFixerJob?
 
     // increment a similar constant for each migration.
     @objc
-    class func migrationId() -> String {
+    public override class var migrationId: String {
         return "106"
     }
 
@@ -24,7 +24,8 @@ public class OWS106EnsureProfileComplete: OWSDatabaseMigration {
 
             if (didSucceed) {
                 Logger.info("Completed. Saving.")
-                self.save()
+
+                self.markAsCompleteWithSneakyTransaction()
             } else {
                 Logger.error("Failed.")
             }
@@ -44,6 +45,14 @@ public class OWS106EnsureProfileComplete: OWSDatabaseMigration {
      */
     private class CompleteRegistrationFixerJob: NSObject {
 
+        // MARK: - Dependencies
+
+        private var tsAccountManager: TSAccountManager {
+            return TSAccountManager.sharedInstance()
+        }
+
+        // MARK: -
+
         // Duration between retries if update fails.
         let kRetryInterval: TimeInterval = 5
 
@@ -54,7 +63,7 @@ public class OWS106EnsureProfileComplete: OWSDatabaseMigration {
         }
 
         func start() {
-            guard TSAccountManager.isRegistered() else {
+            guard tsAccountManager.isRegistered else {
                 self.completionHandler(true)
                 return
             }
@@ -81,19 +90,20 @@ public class OWS106EnsureProfileComplete: OWSDatabaseMigration {
         }
 
         func ensureProfileComplete() -> Promise<Void> {
-            guard let localRecipientId = TSAccountManager.localNumber() else {
+            guard let localAddress = TSAccountManager.localAddress, localAddress.isValid else {
                 // local app doesn't think we're registered, so nothing to worry about.
                 return Promise.value(())
             }
 
             return firstly {
-                ProfileFetcherJob().getProfile(recipientId: localRecipientId)
+                return ProfileFetcherJob.fetchAndUpdateProfilePromise(address: localAddress,
+                                                                      ignoreThrottling: true)
             }.done { _ in
-                Logger.info("verified recipient profile is in good shape: \(localRecipientId)")
+                Logger.info("verified recipient profile is in good shape: \(localAddress)")
             }.recover { error -> Promise<Void> in
                 switch error {
                 case SignalServiceProfile.ValidationError.invalidIdentityKey(let description):
-                    Logger.warn("detected incomplete profile for \(localRecipientId) error: \(description)")
+                    Logger.warn("detected incomplete profile for \(localAddress) error: \(description)")
 
                     let (promise, resolver) = Promise<Void>.pending()
                     // This is the error condition we're looking for. Update prekeys to properly set the identity key, completing registration.

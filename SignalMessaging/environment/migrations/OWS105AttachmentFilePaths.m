@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWS105AttachmentFilePaths.h"
@@ -38,7 +38,8 @@ static NSString *const OWS105AttachmentFilePathsMigrationId = @"105";
     // For performance, we want to upgrade all existing attachment streams in
     // a single transaction.
     for (TSAttachmentStream *attachmentStream in attachmentStreams) {
-        [attachmentStream saveWithTransaction:transaction];
+        // NOTE: Use legacy save.
+        [attachmentStream ydb_saveWithTransaction:transaction];
     }
 }
 

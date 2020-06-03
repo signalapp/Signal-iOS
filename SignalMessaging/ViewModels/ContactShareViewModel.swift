@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -40,7 +40,7 @@ public class ContactShareViewModel: NSObject {
     }
 
     @objc
-    public convenience init(contactShareRecord: OWSContact, transaction: YapDatabaseReadTransaction) {
+    public convenience init(contactShareRecord: OWSContact, transaction: SDSAnyReadTransaction) {
         if let avatarAttachment = contactShareRecord.avatarAttachment(with: transaction) as? TSAttachmentStream {
             self.init(contactShareRecord: contactShareRecord, avatarImageData: avatarAttachment.validStillImageData())
         } else {
@@ -63,7 +63,7 @@ public class ContactShareViewModel: NSObject {
             colorSeed = firstRecipientId
         }
 
-        let avatarBuilder = OWSContactAvatarBuilder(nonSignalName: displayName,
+        let avatarBuilder = OWSContactAvatarBuilder(nonSignalNameComponents: name.components,
                                                     colorSeed: colorSeed,
                                                     diameter: UInt(diameter))
         // Note: we use buildDefaultImage() and not build() so that contact
@@ -164,5 +164,11 @@ public class ContactShareViewModel: NSObject {
 
         // If we want to keep the avatar image, the caller will need to re-apply it.
         return ContactShareViewModel(contactShareRecord: newDbRecord, avatarImageData: nil)
+    }
+
+    @objc
+    public func copyForResending() -> ContactShareViewModel {
+        let newDbRecord = dbRecord.copy() as! OWSContact
+        return ContactShareViewModel(contactShareRecord: newDbRecord, avatarImageData: avatarImageData)
     }
 }

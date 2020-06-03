@@ -1,32 +1,50 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class OWSReaction;
+@class SDSAnyReadTransaction;
+@class SDSAnyWriteTransaction;
 @class TSErrorMessage;
 @class TSIncomingMessage;
+@class TSInfoMessage;
+@class TSOutgoingMessage;
 @class TSThread;
-@class YapDatabaseReadTransaction;
-@class YapDatabaseReadWriteTransaction;
+@class ThreadlessErrorMessage;
 
 @protocol ContactsManagerProtocol;
 
 @protocol NotificationsProtocol <NSObject>
 
 - (void)notifyUserForIncomingMessage:(TSIncomingMessage *)incomingMessage
-                            inThread:(TSThread *)thread
-                     contactsManager:(id<ContactsManagerProtocol>)contactsManager
-                         transaction:(YapDatabaseReadTransaction *)transaction;
+                              thread:(TSThread *)thread
+                         transaction:(SDSAnyReadTransaction *)transaction;
 
-- (void)notifyUserForErrorMessage:(TSErrorMessage *)error
+- (void)notifyUserForReaction:(OWSReaction *)reaction
+            onOutgoingMessage:(TSOutgoingMessage *)message
+                       thread:(TSThread *)thread
+                  transaction:(SDSAnyReadTransaction *)transaction;
+
+- (void)notifyUserForErrorMessage:(TSErrorMessage *)errorMessage
                            thread:(TSThread *)thread
-                      transaction:(YapDatabaseReadWriteTransaction *)transaction;
+                      transaction:(SDSAnyWriteTransaction *)transaction;
 
-- (void)notifyUserForThreadlessErrorMessage:(TSErrorMessage *)error
-                                transaction:(YapDatabaseReadWriteTransaction *)transaction;
+- (void)notifyUserForInfoMessage:(TSInfoMessage *)infoMessage
+                          thread:(TSThread *)thread
+                      wantsSound:(BOOL)wantsSound
+                     transaction:(SDSAnyWriteTransaction *)transaction;
+
+- (void)notifyUserForThreadlessErrorMessage:(ThreadlessErrorMessage *)errorMessage
+                                transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)clearAllNotifications;
+
+- (void)cancelNotificationsForMessageId:(NSString *)uniqueMessageId NS_SWIFT_NAME(cancelNotifications(messageId:));
+- (void)cancelNotificationsForReactionId:(NSString *)uniqueReactionId NS_SWIFT_NAME(cancelNotifications(reactionId:));
+
+- (void)notifyUserForGRDBMigration;
 
 @end
 

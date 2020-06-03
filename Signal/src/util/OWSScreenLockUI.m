@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSScreenLockUI.h"
@@ -361,15 +361,15 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    [OWSAlerts showAlertWithTitle:NSLocalizedString(@"SCREEN_LOCK_UNLOCK_FAILED",
-                                      @"Title for alert indicating that screen lock could not be unlocked.")
-                          message:message
-                      buttonTitle:nil
-                     buttonAction:^(UIAlertAction *action) {
-                         // After the alert, update the UI.
-                         [self ensureUI];
-                     }
-               fromViewController:self.screenBlockingWindow.rootViewController];
+    [OWSActionSheets showActionSheetWithTitle:NSLocalizedString(@"SCREEN_LOCK_UNLOCK_FAILED",
+                                                  @"Title for alert indicating that screen lock could not be unlocked.")
+                                      message:message
+                                  buttonTitle:nil
+                                 buttonAction:^(ActionSheetAction *action) {
+                                     // After the alert, update the UI.
+                                     [self ensureUI];
+                                 }
+                           fromViewController:self.screenBlockingWindow.rootViewController];
 }
 
 // 'Screen Blocking' window obscures the app screen:
@@ -381,11 +381,11 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertIsOnMainThread();
     OWSAssertDebug(rootWindow);
 
-    UIWindow *window = [[UIWindow alloc] initWithFrame:rootWindow.bounds];
+    UIWindow *window = [[OWSWindow alloc] initWithFrame:rootWindow.bounds];
     window.hidden = NO;
     window.windowLevel = UIWindowLevel_Background;
     window.opaque = YES;
-    window.backgroundColor = UIColor.ows_materialBlueColor;
+    window.backgroundColor = Theme.launchScreenBackgroundColor;
 
     ScreenLockViewController *viewController = [ScreenLockViewController new];
     viewController.delegate = self;

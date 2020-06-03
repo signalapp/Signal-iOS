@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -138,6 +138,9 @@ private struct OWSThumbnailRequest {
         guard canThumbnailAttachment(attachment: attachment) else {
             throw OWSThumbnailError.failure(description: "Cannot thumbnail attachment.")
         }
+
+        let isWebp = attachment.contentType == OWSMimeTypeImageWebp
+
         let thumbnailPath = attachment.path(forThumbnailDimensionPoints: thumbnailRequest.thumbnailDimensionPoints)
         if FileManager.default.fileExists(atPath: thumbnailPath) {
             guard let image = UIImage(contentsOfFile: thumbnailPath) else {
@@ -157,22 +160,45 @@ private struct OWSThumbnailRequest {
         }
         let maxDimension = CGFloat(thumbnailRequest.thumbnailDimensionPoints)
         let thumbnailImage: UIImage
-        if attachment.isImage || attachment.isAnimated {
+        if isWebp {
+            thumbnailImage = try OWSMediaUtils.thumbnail(forWebpAtPath: originalFilePath, maxDimension: maxDimension)
+        } else if attachment.isImage || attachment.isAnimated {
             thumbnailImage = try OWSMediaUtils.thumbnail(forImageAtPath: originalFilePath, maxDimension: maxDimension)
         } else if attachment.isVideo {
             thumbnailImage = try OWSMediaUtils.thumbnail(forVideoAtPath: originalFilePath, maxDimension: maxDimension)
         } else {
             throw OWSThumbnailError.assertionFailure(description: "Invalid attachment type.")
         }
-        guard let thumbnailData = UIImageJPEGRepresentation(thumbnailImage, 0.85) else {
-            throw OWSThumbnailError.failure(description: "Could not convert thumbnail to JPEG.")
+        let thumbnailData: Data
+        if isWebp {
+            guard let pngThumbnailData = thumbnailImage.pngData() else {
+                throw OWSThumbnailError.failure(description: "Could not convert thumbnail to PNG.")
+            }
+            thumbnailData = pngThumbnailData
+        } else {
+            guard let jpegThumbnailData = thumbnailImage.jpegData(compressionQuality: 0.85) else {
+                throw OWSThumbnailError.failure(description: "Could not convert thumbnail to JPEG.")
+            }
+            thumbnailData = jpegThumbnailData
         }
         do {
-            try thumbnailData.write(to: URL(fileURLWithPath: thumbnailPath), options: .atomicWrite)
+            try thumbnailData.write(to: URL(fileURLWithPath: thumbnailPath), options: .atomic)
         } catch let error as NSError {
             throw OWSThumbnailError.externalError(description: "File write failed: \(thumbnailPath), \(error)", underlyingError: error)
         }
         OWSFileSystem.protectFileOrFolder(atPath: thumbnailPath)
         return OWSLoadedThumbnail(image: thumbnailImage, data: thumbnailData)
+    }
+
+    @objc
+    public class func thumbnailFileExtension(forContentType contentType: String) -> String {
+        let isWebp = contentType == OWSMimeTypeImageWebp
+        return isWebp ? "png" : "jpg"
+    }
+
+    @objc
+    public class func thumbnailMimetype(forContentType contentType: String) -> String {
+        let isWebp = contentType == OWSMimeTypeImageWebp
+        return isWebp ? OWSMimeTypeImagePng : OWSMimeTypeImageJpeg
     }
 }

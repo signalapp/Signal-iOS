@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSConversationSettingsViewDelegate.h"
@@ -8,16 +8,16 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class TSThread;
-@class YapDatabaseConnection;
+@class ThreadViewModel;
 
+// GroupsV2 TODO: Remove this VC.
 @interface OWSConversationSettingsViewController : OWSTableViewController
 
 @property (nonatomic, weak) id<OWSConversationSettingsViewDelegate> conversationSettingsViewDelegate;
 
 @property (nonatomic) BOOL showVerificationOnAppear;
 
-- (void)configureWithThread:(TSThread *)thread uiDatabaseConnection:(YapDatabaseConnection *)uiDatabaseConnection;
+- (void)configureWithThreadViewModel:(ThreadViewModel *)threadViewModel;
 
 @end
 

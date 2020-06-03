@@ -1,21 +1,23 @@
 //
-//  Copyright (c) 2017 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
 
 @class OWSDeviceProvisioningCodeService;
 @class OWSDeviceProvisioningService;
+@class SignalServiceAddress;
 
 @interface OWSDeviceProvisioner : NSObject
 
++ (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
 
 - (instancetype)initWithMyPublicKey:(NSData *)myPublicKey
                        myPrivateKey:(NSData *)myPrivateKey
                      theirPublicKey:(NSData *)theirPublicKey
              theirEphemeralDeviceId:(NSString *)ephemeralDeviceId
-                  accountIdentifier:(NSString *)accountIdentifier
+                     accountAddress:(SignalServiceAddress *)accountAddress
                          profileKey:(NSData *)profileKey
                 readReceiptsEnabled:(BOOL)areReadReceiptsEnabled
             provisioningCodeService:(OWSDeviceProvisioningCodeService *)provisioningCodeService
@@ -25,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
                        myPrivateKey:(NSData *)myPrivateKey
                      theirPublicKey:(NSData *)theirPublicKey
              theirEphemeralDeviceId:(NSString *)ephemeralDeviceId
-                  accountIdentifier:(NSString *)accountIdentifier
+                     accountAddress:(SignalServiceAddress *)accountAddress
                          profileKey:(NSData *)profileKey
                 readReceiptsEnabled:(BOOL)areReadReceiptsEnabled;
 
