@@ -66,5 +66,5 @@ Build and Run and you are ready to go!
 
 Features related to push notifications are known to be not working for
 third-party contributors since Apple's Push Notification service pushes
-will only work with Open Whisper Systems production code signing
+will only work with the Session production code signing
 certificate.
