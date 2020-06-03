@@ -7,19 +7,19 @@
 #
 
 Pod::Spec.new do |s|
-  s.name             = "SignalServiceKit"
+  s.name             = "SessionServiceKit"
   s.version          = "0.9.0"
-  s.summary          = "An Objective-C library for communicating with the Signal messaging service."
+  s.summary          = "A Swift/Objective-C library for communicating with the Session messaging service."
 
   s.description      = <<-DESC
-An Objective-C library for communicating with the Signal messaging service.
+A Swift/Objective-C library for communicating with the Session messaging service.
   DESC
 
-  s.homepage         = "https://github.com/signalapp/SignalServiceKit"
+  s.homepage         = "https://github.com/loki-project/session-ios"
   s.license          = 'GPLv3'
-  s.author           = { "Frederic Jacobs" => "github@fredericjacobs.com" }
-  s.source           = { :git => "https://github.com/signalapp/SignalServiceKit.git", :tag => s.version.to_s }
-  s.social_media_url = 'https://twitter.com/FredericJacobs'
+  s.author           = { "Niels Andriesse" => "niels@loki.network" }
+  s.source           = { :git => "https://github.com/loki-project/session-ios", :tag => s.version.to_s }
+  s.social_media_url = 'https://getsession.org/'
 
   s.platform     = :ios, '10.0'
   #s.ios.deployment_target = '9.0'
@@ -52,7 +52,7 @@ An Objective-C library for communicating with the Signal messaging service.
   s.dependency 'Reachability'
   s.dependency 'SwiftProtobuf'
   s.dependency 'SignalCoreKit'
-  s.dependency 'SignalMetadataKit'
+  s.dependency 'SessionMetadataKit'
   s.dependency 'PromiseKit', '~> 6.0'
 
   s.test_spec 'Tests' do |test_spec|
