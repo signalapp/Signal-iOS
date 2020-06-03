@@ -482,7 +482,6 @@ private struct GRDBStorage {
         }
         configuration.defaultTransactionKind = .immediate
         configuration.allowsUnsafeTransactions = true
-        configuration.acceptsDoubleQuotedStringLiterals = true
         return configuration
     }
 }
