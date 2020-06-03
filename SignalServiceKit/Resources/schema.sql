@@ -821,7 +821,7 @@ CREATE
 
 CREATE
     INDEX "index_model_TSInteraction_on_threadUniqueId_recordType_messageType"
-        ON "model_TSInteraction"("threadUniqueId"
+        ON "model_TSInteraction"("uniqueThreadId"
     ,"recordType"
     ,"messageType"
 )
@@ -846,7 +846,7 @@ CREATE
 
 CREATE
     INDEX "index_model_TSInteraction_on_threadUniqueId_and_attachmentIds"
-        ON "model_TSInteraction"("threadUniqueId"
+        ON "model_TSInteraction"("uniqueThreadId"
     ,"attachmentIds"
 )
 ;
