@@ -42,7 +42,7 @@ A Swift/Objective-C library for communicating with the Session messaging service
   s.dependency 'CocoaLumberjack'
   s.dependency 'CryptoSwift', '~> 1.0'
   s.dependency 'AFNetworking'
-  s.dependency 'SessionAxolotlKit', '~> 1.0.0'
+  s.dependency 'SessionAxolotlKit', '~> 1.0.1'
   s.dependency 'Mantle'
   s.dependency 'YapDatabase/SQLCipher'
   s.dependency 'Starscream'
