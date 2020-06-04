@@ -240,6 +240,8 @@ public class AttachmentPrepViewController: OWSViewController {
     }
 
     private var shouldShowBlurTooltip: Bool {
+        guard imageEditorView != nil else { return false }
+
         guard !preferences.wasBlurTooltipShown() else {
             return false
         }
