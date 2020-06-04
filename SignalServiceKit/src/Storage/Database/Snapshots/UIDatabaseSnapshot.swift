@@ -88,6 +88,9 @@ public class UIDatabaseObserver: NSObject {
         }
     }
 
+    // This property should only be accessed on the main thread.
+    private var lastCheckpointDate: Date?
+
     init(pool: DatabasePool) throws {
         self.pool = pool
         self.latestSnapshot = try pool.makeSnapshot()
@@ -202,21 +205,31 @@ extension UIDatabaseObserver: TransactionObserver {
         //
         //   We periodically try to perform a restart checkpoint which
         //   can limit WAL size when truncation isn't possible.
-        //
-        // Run checkpoints after 1/3 of writes.
-        let checkpointFrequencyPercentage = 33
-        let checkpointRandom = arc4random_uniform(100)
-        let shouldTryToCheckpoint = checkpointRandom < checkpointFrequencyPercentage && !TSAccountManager.sharedInstance().isTransferInProgress
+        let shouldTryToCheckpoint = { () -> Bool in
+            guard !TSAccountManager.sharedInstance().isTransferInProgress else {
+                return false
+            }
+            guard let lastCheckpointDate = lastCheckpointDate else {
+                return true
+            }
+            let maxCheckpointFrequency: TimeInterval = 0.1
+            guard abs(lastCheckpointDate.timeIntervalSinceNow) >= maxCheckpointFrequency else {
+                Logger.verbose("Skipping checkpoint due to frequency")
+                return false
+            }
+            return true
+        }()
         if shouldTryToCheckpoint {
-            // Run restart checkpoints after 1/100 of writes.
-            let checkpointFrequencyPercentage = 1
-            let shouldDoRestartCheckpoint = checkpointRandom < checkpointFrequencyPercentage
+            // Run restart checkpoints after 1/N of writes.
+            let restartCheckpointFraction: UInt32 = 30
+            let shouldDoRestartCheckpoint = arc4random_uniform(restartCheckpointFraction) == 0
             do {
                 let mode: Database.CheckpointMode = shouldDoRestartCheckpoint ? .restart : .passive
                 try self.checkpoint(mode: mode)
             } catch {
                 owsFailDebug("error \(error)")
             }
+            lastCheckpointDate = Date()
         }
 
         // [3] open a new transaction from the current db state
