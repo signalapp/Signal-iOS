@@ -134,11 +134,13 @@ final class JoinPublicChatVC : BaseVC, UIPageViewControllerDataSource, UIPageVie
         let channelID: UInt64 = 1
         let urlAsString = url.absoluteString
         let displayName = OWSProfileManager.shared().localProfileName()
-        // TODO: Profile picture & profile key
+        let profilePictureURL = OWSProfileManager.shared().profilePictureURL()
+        let profileKey = OWSProfileManager.shared().localProfileKey().keyData
         LokiPublicChatManager.shared.addChat(server: urlAsString, channel: channelID)
         .done(on: .main) { [weak self] _ in
             let _ = LokiPublicChatAPI.getMessages(for: channelID, on: urlAsString)
             let _ = LokiPublicChatAPI.setDisplayName(to: displayName, on: urlAsString)
+            let _ = LokiPublicChatAPI.setProfilePictureURL(to: profilePictureURL, using: profileKey, on: urlAsString)
             let _ = LokiPublicChatAPI.join(channelID, on: urlAsString)
             let syncManager = SSKEnvironment.shared.syncManager
             let _ = syncManager.syncAllOpenGroups()
