@@ -13,13 +13,13 @@ def shared_pods
   pod 'SessionCoreKit', git: 'https://github.com/loki-project/session-ios-core-kit.git', testspecs: ["Tests"] # Fork of SignalCoreKit
   # pod 'SignalCoreKit', path: '../SignalCoreKit', testspecs: ["Tests"]
 
-  pod 'AxolotlKit', git: 'https://github.com/signalapp/SignalProtocolKit.git', branch: 'master', testspecs: ["Tests"]
+  pod 'SessionAxolotlKit', git: 'https://github.com/loki-project/session-ios-protocol-kit.git', branch: 'master', testspecs: ["Tests"] # Fork of AxolotlKit
   # pod 'AxolotlKit', path: '../SignalProtocolKit', testspecs: ["Tests"]
 
-  pod 'HKDFKit', git: 'https://github.com/signalapp/HKDFKit.git', testspecs: ["Tests"]
+  pod 'SessionHKDFKit', git: 'https://github.com/nielsandriesse/session-ios-hkdf-kit.git', testspecs: ["Tests"] # Fork of HKDFKit
   # pod 'HKDFKit', path: '../HKDFKit', testspecs: ["Tests"]
 
-  pod 'Curve25519Kit', git: 'https://github.com/signalapp/Curve25519Kit', testspecs: ["Tests"]
+  pod 'SessionCurve25519Kit', git: 'https://github.com/loki-project/session-ios-curve25519-kit', testspecs: ["Tests"] # Fork of Curve25519Kit
   # pod 'Curve25519Kit', path: '../Curve25519Kit', testspecs: ["Tests"]
 
   pod 'SessionMetadataKit', git: 'https://github.com/loki-project/session-ios-metadata-kit', testspecs: ["Tests"] # Fork of SignalMetadataKit
