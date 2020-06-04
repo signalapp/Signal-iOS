@@ -22,10 +22,10 @@ def shared_pods
   pod 'Curve25519Kit', git: 'https://github.com/signalapp/Curve25519Kit', testspecs: ["Tests"]
   # pod 'Curve25519Kit', path: '../Curve25519Kit', testspecs: ["Tests"]
 
-  pod 'SignalMetadataKit', git: 'https://github.com/loki-project/session-ios-metadata-kit', testspecs: ["Tests"] # Fork of SignalMetadataKit
+  pod 'SessionMetadataKit', git: 'https://github.com/loki-project/session-ios-metadata-kit', testspecs: ["Tests"] # Fork of SignalMetadataKit
   # pod 'SignalMetadataKit', path: '../SignalMetadataKit', testspecs: ["Tests"]
 
-  pod 'SignalServiceKit', path: '.', testspecs: ["Tests"]
+  pod 'SessionServiceKit', path: '.', testspecs: ["Tests"]
 
   # Project does not compile with PromiseKit 6.7.1
   # see: https://github.com/mxcl/PromiseKit/issues/990
