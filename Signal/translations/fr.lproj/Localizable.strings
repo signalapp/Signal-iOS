@@ -405,7 +405,7 @@
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Les utilisateurs bloqués ne pourront ni vous appeler ni vous envoyer des messages.";
 
 /* Tooltip highlighting the blur image editing tool. */
-"BLUR_TOOLTIP" = "New: Blur faces or draw anywhere to blur.";
+"BLUR_TOOLTIP" = "Nouveau : Rendez les visages flous ou dessinez n’importe où pour les rendre flous.";
 
 /* browse files option from file sharing menu */
 "BROWSE_FILES_BUTTON" = "Parcourir";
@@ -1806,13 +1806,13 @@
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* The image editor hint that you can draw blur */
-"IMAGE_EDITOR_BLUR_HINT" = "Draw anywhere to blur";
+"IMAGE_EDITOR_BLUR_HINT" = "Dessinez n’importe où pour rendre flou.";
 
 /* The image editor setting to blur faces */
-"IMAGE_EDITOR_BLUR_SETTING" = "Blur faces";
+"IMAGE_EDITOR_BLUR_SETTING" = "Rendre les visages flous";
 
 /* A toast indicating that you can blur more faces after detection */
-"IMAGE_EDITOR_BLUR_TOAST" = "Draw to blur additional faces or areas";
+"IMAGE_EDITOR_BLUR_TOAST" = "Dessinez pour rendre d’autres visages et zones flous";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Vous ne pouvez pas partager plus de %@ éléments.";
@@ -3024,7 +3024,7 @@
 "REACTIONS_DETAIL_YOU" = "Vous";
 
 /* Pressing this button marks a thread as read */
-"READ_ACTION" = "Lue";
+"READ_ACTION" = "Lu";
 
 /* Error message indicating that a user can't be selected. */
 "RECIPIENT_PICKER_ERROR_USER_CANNOT_BE_SELECTED" = "Impossible de sélectionner l’utilisateur.";
@@ -4008,7 +4008,7 @@
 "UNNAMED_DEVICE" = "Appareil sans nom";
 
 /* Pressing this button marks a thread as unread */
-"UNREAD_ACTION" = "Non lue";
+"UNREAD_ACTION" = "Non lu";
 
 /* No comment provided by engineer. */
 "UNREGISTER_SIGNAL_FAIL" = "Échec de désinscription de Signal.";

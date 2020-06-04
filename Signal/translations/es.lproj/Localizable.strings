@@ -405,7 +405,7 @@
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Las personas bloqueadas no podrán llamarte ni enviarte mensajes.";
 
 /* Tooltip highlighting the blur image editing tool. */
-"BLUR_TOOLTIP" = "New: Blur faces or draw anywhere to blur.";
+"BLUR_TOOLTIP" = "Nuevo: Enturbia caras o partes de la foto.";
 
 /* browse files option from file sharing menu */
 "BROWSE_FILES_BUTTON" = "Seleccionar";
@@ -564,7 +564,7 @@
 "COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "Buscar número de teléfono";
 
 /* Table section header for username search when composing a new message */
-"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Buscar por alias (nombre de usuario)";
+"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Buscar por alias (nombre de usuari*)";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "Al activar el acceso a los contactos en «Ajustes» de iOS puedes saber quién usa Signal. Tus contactos no se guardarán en el servidor de Signal.";
@@ -1806,13 +1806,13 @@
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* The image editor hint that you can draw blur */
-"IMAGE_EDITOR_BLUR_HINT" = "Draw anywhere to blur";
+"IMAGE_EDITOR_BLUR_HINT" = "Toca sobre una parte de la foto para enturbiar";
 
 /* The image editor setting to blur faces */
-"IMAGE_EDITOR_BLUR_SETTING" = "Blur faces";
+"IMAGE_EDITOR_BLUR_SETTING" = "Enturbiar caras";
 
 /* A toast indicating that you can blur more faces after detection */
-"IMAGE_EDITOR_BLUR_TOAST" = "Draw to blur additional faces or areas";
+"IMAGE_EDITOR_BLUR_TOAST" = "Toca sobre una parte de la foto para enturbiar más caras o zonas";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "No se pueden compartir más de %@ objetos.";
@@ -2892,7 +2892,7 @@
 "PROFILE_VIEW_CLEAR_AVATAR" = "Eliminar foto";
 
 /* A string indicating that the user can create a username on the profile view. */
-"PROFILE_VIEW_CREATE_USERNAME" = "Crear alias (nombre de usuario)";
+"PROFILE_VIEW_CREATE_USERNAME" = "Crear alias (nombre de usuari*)";
 
 /* Error message shown when user tries to update profile with a family name that is too long. */
 "PROFILE_VIEW_ERROR_FAMILY_NAME_TOO_LONG" = "Tu apellido es demasiado largo.";
@@ -2928,7 +2928,7 @@
 "PROFILE_VIEW_TITLE" = "Perfil";
 
 /* Label for the username field of the profile view. */
-"PROFILE_VIEW_USERNAME_FIELD" = "Alias (nombre de usuario)";
+"PROFILE_VIEW_USERNAME_FIELD" = "Alias (nombre de usuari*)";
 
 /* Notification action button title */
 "PUSH_MANAGER_MARKREAD" = "Marcar como leído";
@@ -4050,7 +4050,7 @@
 "USERNAME_DESCRIPTION" = "Los alias de Signal (nombre de usuari*) son opcionales. Si decides crear un alias, otras personas podrán encontrarte en Signal por ese nombre y ponerse en contacto contigo sin conocer tu número de teléfono.";
 
 /* Label for the username field in the username view. */
-"USERNAME_FIELD" = "Alias (nombre de usuario)";
+"USERNAME_FIELD" = "Alias";
 
 /* An error indicating that the supplied username contains disallowed characters. */
 "USERNAME_INVALID_CHARACTERS_ERROR" = "El alias sólo puede contener a-Z, 0-9 y _";
@@ -4065,7 +4065,7 @@
 "USERNAME_NOT_FOUND_TITLE" = "Persona no encontrada";
 
 /* The placeholder for the username text entry in the username view. */
-"USERNAME_PLACEHOLDER" = "Introduce alias (nombre de usuario)";
+"USERNAME_PLACEHOLDER" = "Introduce alias (nombre de usuari*)";
 
 /* A prefix appeneded to all usernames when displayed */
 "USERNAME_PREFIX" = "@";
@@ -4074,7 +4074,7 @@
 "USERNAME_STARTS_WITH_NUMBER_ERROR" = "El alias no puede comenzar por un número.";
 
 /* The title for the username view. */
-"USERNAME_TITLE" = "Alias (nombre de usuario)";
+"USERNAME_TITLE" = "Alias (nombre de usuari*)";
 
 /* An error indicating that the supplied username is too short. */
 "USERNAME_TOO_SHORT_ERROR" = "El alias debe contener al menos 4 caracteres.";
