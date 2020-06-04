@@ -683,16 +683,20 @@ public class ImageEditorCanvasView: UIView {
             }
 
             // we use a very strong blur radius to ensure adequate coverage of large and small faces
-            guard let blurFilter = CIFilter(name: "CIGaussianBlur", parameters: [kCIInputRadiusKey: 30]) else {
+            guard let blurFilter = CIFilter(name: "CIGaussianBlur", parameters: [kCIInputRadiusKey: 25]) else {
                 return owsFailDebug("Failed to create blur filter")
             }
 
-            guard let srcImage = ImageEditorCanvasView.loadSrcImage(model: self.model), let srcCGImage = srcImage.cgImage else {
+            guard let srcImage = ImageEditorCanvasView.loadSrcImage(model: self.model) else {
                 return owsFailDebug("Could not load src image.")
             }
 
+            guard let resizedImage = srcImage.resized(withMaxDimensionPixels: 300), let resizedCGImage = resizedImage.cgImage else {
+                return owsFailDebug("Failed to downsize image for blur")
+            }
+
             // In order to get a nice edge-to-edge blur, we must apply a clamp filter and *then* the blur filter.
-            let inputImage = CIImage(cgImage: srcCGImage)
+            let inputImage = CIImage(cgImage: resizedCGImage)
             clampFilter.setDefaults()
             clampFilter.setValue(inputImage, forKey: kCIInputImageKey)
 
