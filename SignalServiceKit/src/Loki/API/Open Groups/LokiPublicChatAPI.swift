@@ -395,12 +395,13 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
                 print("[Loki] Couldn't parse info for public chat channel with ID: \(channel) on server: \(server) from: \(rawResponse).")
                 throw LokiDotNetAPIError.parsingFailed
             }
+            let profilePictureURL = info["avatar"] as? String
             let storage = OWSPrimaryStorage.shared()
             storage.dbReadWriteConnection.readWrite { transaction in
                 storage.setUserCount(memberCount, forPublicChatWithID: "\(server).\(channel)", in: transaction)
             }
             // TODO: Use this to update open group names as needed
-            return LokiPublicChatInfo(displayName: displayName, memberCount: memberCount)
+            return LokiPublicChatInfo(displayName: displayName, profilePictureURL: profilePictureURL, memberCount: memberCount)
         }
     }
 
