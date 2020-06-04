@@ -18,7 +18,7 @@ A Swift/Objective-C library for communicating with the Session messaging service
   s.homepage         = "https://github.com/loki-project/session-ios"
   s.license          = 'GPLv3'
   s.author           = { "Niels Andriesse" => "niels@loki.network" }
-  s.source           = { :git => "https://github.com/loki-project/session-ios", :tag => s.version.to_s }
+  s.source           = { :git => "https://github.com/loki-project/session-ios.git", :tag => s.version.to_s }
   s.social_media_url = 'https://getsession.org/'
 
   s.platform     = :ios, '10.0'
@@ -51,7 +51,7 @@ A Swift/Objective-C library for communicating with the Session messaging service
   s.dependency 'SAMKeychain'
   s.dependency 'Reachability'
   s.dependency 'SwiftProtobuf'
-  s.dependency 'SignalCoreKit'
+  s.dependency 'SessionCoreKit'
   s.dependency 'SessionMetadataKit'
   s.dependency 'PromiseKit', '~> 6.0'
 

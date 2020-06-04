@@ -10,7 +10,7 @@ def shared_pods
   # OWS Pods
   ###
 
-  pod 'SignalCoreKit', git: 'https://github.com/signalapp/SignalCoreKit.git', testspecs: ["Tests"]
+  pod 'SessionCoreKit', git: 'https://github.com/loki-project/session-ios-core-kit.git', testspecs: ["Tests"] # Fork of SignalCoreKit
   # pod 'SignalCoreKit', path: '../SignalCoreKit', testspecs: ["Tests"]
 
   pod 'AxolotlKit', git: 'https://github.com/signalapp/SignalProtocolKit.git', branch: 'master', testspecs: ["Tests"]
