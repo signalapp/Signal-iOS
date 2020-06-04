@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "RemoteAttestationSigningCertificate.h"
@@ -98,7 +98,7 @@ NSError *RemoteAttestationSigningCertificateErrorMake(RemoteAttestationSigningCe
     for (NSData *certificateDerData in certificateDerDatas) {
         SecCertificateRef certificate = SecCertificateCreateWithData(NULL, (__bridge CFDataRef)(certificateDerData));
         if (!certificate) {
-            OWSFailDebug(@"Could not create SecCertificate.");
+            OWSFailDebug(@"Could not create SecCertificate %@.", certificateDerData.base64EncodedString);
             *error = RemoteAttestationSigningCertificateErrorMake(
                 RemoteAttestationSigningCertificateError_AssertionError, @"Could not create SecCertificate.");
             return nil;
