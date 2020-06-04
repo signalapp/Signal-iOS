@@ -1,9 +1,10 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "SignalBaseTest.h"
 #import "Environment.h"
+#import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TestAppContext.h>
@@ -43,6 +44,8 @@ NS_ASSUME_NONNULL_BEGIN
     SetCurrentAppContext([TestAppContext new]);
     [MockSSKEnvironment activate];
     [MockEnvironment activate];
+
+    ((MockSSKEnvironment *)SSKEnvironment.shared).groupsV2 = [GroupsV2Impl new];
 
     self.ydbConnection = [SSKEnvironment.shared.primaryStorage newDatabaseConnection];
 }

@@ -389,7 +389,6 @@ public class GroupThreadFactory: NSObject, Factory {
         let thread = try! GroupManager.createGroupForTests(members: memberAddressesBuilder(),
                                                            name: titleBuilder(),
                                                            avatarData: groupAvatarDataBuilder(),
-                                                           groupId: groupIdBuilder(),
                                                            groupsVersion: groupsVersionBuilder(),
                                                            transaction: transaction)
 
@@ -415,12 +414,6 @@ public class GroupThreadFactory: NSObject, Factory {
     @objc
     public var titleBuilder: () -> String? = {
         return CommonGenerator.words(count: 3)
-    }
-
-    @objc
-    public var groupIdBuilder: () -> Data = {
-        // GroupsV2 TODO: Handle groups v2.
-        return Randomness.generateRandomBytes(Int32(kGroupIdLengthV1))
     }
 
     @objc

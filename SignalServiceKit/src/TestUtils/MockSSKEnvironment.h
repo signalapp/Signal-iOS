@@ -38,6 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) StickerManager *stickerManager;
 @property (nonatomic) SDSDatabaseStorage *databaseStorage;
 @property (nonatomic) AccountServiceClient *accountServiceClient;
+@property (nonatomic) id<GroupsV2> groupsV2;
 
 @end
 

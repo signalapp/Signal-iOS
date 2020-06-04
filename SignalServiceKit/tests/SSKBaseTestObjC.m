@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "SSKBaseTestObjC.h"
@@ -28,6 +28,8 @@ NS_ASSUME_NONNULL_BEGIN
     SetCurrentAppContext([TestAppContext new]);
 
     [MockSSKEnvironment activate];
+    
+    [GroupManager forceV1Groups];
 }
 
 - (void)tearDown
