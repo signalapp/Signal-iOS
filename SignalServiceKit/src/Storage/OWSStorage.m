@@ -256,7 +256,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
     if ([name isEqualToString:@"TSRecipient"]) {
         OWSLogError(@"Could not decode object: %@", name);
     } else {
-        OWSFailDebug(@"Could not decode object: %@", name);
+        NSLog(@"Could not decode object: %@", name);
     }
     OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotDecodeClass]);
     return [OWSUnknownDBObject class];
