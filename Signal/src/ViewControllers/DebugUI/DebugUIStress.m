@@ -5,6 +5,7 @@
 #import "DebugUIStress.h"
 #import "OWSMessageSender.h"
 #import "OWSTableViewController.h"
+#import "Signal-Swift.h"
 #import "SignalApp.h"
 #import "ThreadUtil.h"
 #import <SignalCoreKit/Cryptography.h>
@@ -470,10 +471,22 @@ NS_ASSUME_NONNULL_BEGIN
 
     if ([thread isKindOfClass:[TSGroupThread class]]) {
         TSGroupThread *groupThread = (TSGroupThread *)thread;
-        [items addObject:[OWSTableItem itemWithTitle:@"Hallucinate twin group"
+        [items addObject:[OWSTableItem itemWithTitle:@"Clone as v1/v2 group"
                                          actionBlock:^{
-                                             [DebugUIStress hallucinateTwinGroup:groupThread];
-                                         }]];
+            [DebugUIStress cloneAsV1orV2Group:groupThread];
+        }]];
+        [items addObject:[OWSTableItem itemWithTitle:@"Clone as v1 group"
+                                         actionBlock:^{
+            [DebugUIStress cloneAsV1Group:groupThread];
+        }]];
+        [items addObject:[OWSTableItem itemWithTitle:@"Clone as v2 group"
+                                         actionBlock:^{
+            [DebugUIStress cloneAsV2Group:groupThread];
+        }]];
+        [items addObject:[OWSTableItem itemWithTitle:@"Add debug members to group"
+                                         actionBlock:^{
+            [DebugUIStress addDebugMembersToGroup:groupThread];
+        }]];
     }
 
     [items addObject:[OWSTableItem itemWithTitle:@"Make group w. unregistered users"
@@ -545,25 +558,6 @@ NS_ASSUME_NONNULL_BEGIN
                                                                         plainTextDataBlock:block];
 
     [self sendStressMessage:message];
-}
-
-// Creates a new group (by cloning the current group) without informing the,
-// other members. This can be used to test "group info requests", etc.
-+ (void)hallucinateTwinGroup:(TSGroupThread *)groupThread
-{
-    NSString *groupName = [groupThread.groupModel.groupName stringByAppendingString:@" Copy"];
-    [GroupManager localCreateNewGroupObjcWithMembers:groupThread.groupModel.groupMembers
-        groupId:nil
-        name:groupName
-        avatarData:groupThread.groupModel.groupAvatarData
-        newGroupSeed:nil
-        shouldSendMessage:NO
-        success:^(TSGroupThread *thread) {
-            [SignalApp.sharedApp presentConversationForThread:thread animated:YES];
-        }
-        failure:^(NSError *error) {
-            OWSFailDebug(@"Error: %@", error);
-        }];
 }
 
 + (void)makeUnregisteredGroup
