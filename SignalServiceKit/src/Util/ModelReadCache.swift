@@ -14,13 +14,21 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: AnyObject
 
     // MARK: -
 
+    class ValueBox: NSObject {
+        let value: ValueType?
+
+        init(value: ValueType?) {
+            self.value = value
+        }
+    }
+
     // This property should only be accessed on serialQueue.
     //
     // TODO: We could tune the size of this cache.
     //       NSCache's default behavior is opaque.
     //       We're currently only using this to cache
     //       small models, but that could change.
-    private let nscache = NSCache<KeyType, ValueType>()
+    private let nscache = NSCache<KeyType, ValueBox>()
 
     typealias ReadBlock = (KeyType, SDSAnyReadTransaction) -> ValueType?
     private let readBlock: ReadBlock
@@ -55,15 +63,20 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: AnyObject
             if !isExcluded(key: key),
                 canUseCache(transaction: transaction) {
                 // Update cache.
-                nscache.setObject(value, forKey: key)
+                nscache.setObject(ValueBox(value: value), forKey: key)
             }
             return value
+        }
+        if !isExcluded(key: key),
+            canUseCache(transaction: transaction) {
+            // Update cache.
+            nscache.setObject(ValueBox(value: nil), forKey: key)
         }
         return nil
     }
 
     // This method should only be called within performSync().
-    private func cachedValue(for key: KeyType) -> ValueType? {
+    private func cachedValue(for key: KeyType) -> ValueBox? {
         guard !isExcluded(key: key) else {
             // Read excluded.
             return nil
@@ -74,7 +87,7 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: AnyObject
     func getValue(for key: KeyType, transaction: SDSAnyReadTransaction) -> ValueType? {
         return performSync {
             if let cachedValue = self.cachedValue(for: key) {
-                return cachedValue
+                return cachedValue.value
             }
             return self.readValue(for: key, transaction: transaction)
         }
@@ -82,11 +95,10 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: AnyObject
 
     func getValueWithSneakyTransaction(for key: KeyType) -> ValueType? {
         // We avoid opening a read transaction if possible.
-        let cachedValue = performSync {
+        if let cachedValue = (performSync {
             return self.cachedValue(for: key)
-        }
-        if let value = cachedValue {
-            return value
+        }) {
+            return cachedValue.value
         }
 
         // We avoid opening a transaction within performSync() to avoid deadlock.
@@ -120,9 +132,9 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: AnyObject
             // so we could also update this when we remove
             // the exclusion.
             if let value = value {
-                nscache.setObject(value, forKey: key)
+                nscache.setObject(ValueBox(value: value), forKey: key)
             } else {
-                nscache.removeObject(forKey: key)
+                nscache.setObject(ValueBox(value: nil), forKey: key)
             }
             // Protect the cache from being corrupted by reads
             // by excluding the key until the write transaction
