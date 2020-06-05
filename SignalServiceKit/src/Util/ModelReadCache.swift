@@ -14,7 +14,7 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: AnyObject
 
     // MARK: -
 
-    class ValueBox: NSObject {
+    class ValueBox {
         let value: ValueType?
 
         init(value: ValueType?) {
