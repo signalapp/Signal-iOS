@@ -1,4 +1,4 @@
-import Curve25519Kit
+import SessionCurve25519Kit
 import PromiseKit
 
 @objc (LKDeviceLinkingSession)

@@ -16,7 +16,7 @@
 #import "TSOutgoingMessage.h"
 #import "TSQuotedMessage.h"
 #import "TSThread.h"
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SessionServiceKit/SignalServiceKit-Swift.h>
 #import "OWSPrimaryStorage+Loki.h"
 
 NS_ASSUME_NONNULL_BEGIN

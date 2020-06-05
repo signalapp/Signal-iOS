@@ -8,7 +8,7 @@
 #import "Session-Swift.h"
 #import "SignalApp.h"
 #import <Contacts/Contacts.h>
-#import <SignalCoreKit/Randomness.h>
+#import <SessionCoreKit/Randomness.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -11,8 +11,8 @@
 #import <SignalMessaging/UIColor+OWS.h>
 #import <SignalMessaging/UIFont+OWS.h>
 #import <SignalMessaging/UIView+OWS.h>
-#import <SignalServiceKit/NSString+SSK.h>
-#import <SignalServiceKit/OWS2FAManager.h>
+#import <SessionServiceKit/NSString+SSK.h>
+#import <SessionServiceKit/OWS2FAManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

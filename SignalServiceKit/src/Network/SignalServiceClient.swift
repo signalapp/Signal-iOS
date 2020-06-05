@@ -4,7 +4,7 @@
 
 import Foundation
 import PromiseKit
-import SignalMetadataKit
+import SessionMetadataKit
 
 public typealias RecipientIdentifier = String
 

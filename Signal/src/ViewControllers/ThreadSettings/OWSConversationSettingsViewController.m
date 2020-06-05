@@ -15,8 +15,8 @@
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import "UpdateGroupViewController.h"
-#import <Curve25519Kit/Curve25519.h>
-#import <SignalCoreKit/NSDate+OWS.h>
+#import <SessionCurve25519Kit/Curve25519.h>
+#import <SessionCoreKit/NSDate+OWS.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSAvatarBuilder.h>
 #import <SignalMessaging/OWSContactsManager.h>
@@ -25,13 +25,13 @@
 #import <SignalMessaging/OWSUserProfile.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/UIUtil.h>
-#import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
-#import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
-#import <SignalServiceKit/OWSMessageSender.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
-#import <SignalServiceKit/TSGroupThread.h>
-#import <SignalServiceKit/TSOutgoingMessage.h>
-#import <SignalServiceKit/TSThread.h>
+#import <SessionServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
+#import <SessionServiceKit/OWSDisappearingMessagesConfiguration.h>
+#import <SessionServiceKit/OWSMessageSender.h>
+#import <SessionServiceKit/OWSPrimaryStorage.h>
+#import <SessionServiceKit/TSGroupThread.h>
+#import <SessionServiceKit/TSOutgoingMessage.h>
+#import <SessionServiceKit/TSThread.h>
 
 @import ContactsUI;
 

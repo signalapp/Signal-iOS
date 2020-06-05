@@ -8,7 +8,7 @@
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSPreferences.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
-#import <SignalServiceKit/TSAccountManager.h>
+#import <SessionServiceKit/TSAccountManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -4,12 +4,12 @@
 
 // Anything used by Swift outside of the framework must be imported.
 #import <Reachability/Reachability.h>
-#import <SignalServiceKit/ContactsManagerProtocol.h>
-#import <SignalServiceKit/NotificationsProtocol.h>
-#import <SignalServiceKit/OWSFileSystem.h>
-#import <SignalServiceKit/OWSOperation.h>
-#import <SignalServiceKit/OWSSyncManagerProtocol.h>
-#import <SignalServiceKit/SSKJobRecord.h>
-#import <SignalServiceKit/TSOutgoingMessage.h>
-#import <SignalServiceKit/TSYapDatabaseObject.h>
-#import <SignalServiceKit/LKGroupUtilities.h>
+#import <SessionServiceKit/ContactsManagerProtocol.h>
+#import <SessionServiceKit/NotificationsProtocol.h>
+#import <SessionServiceKit/OWSFileSystem.h>
+#import <SessionServiceKit/OWSOperation.h>
+#import <SessionServiceKit/OWSSyncManagerProtocol.h>
+#import <SessionServiceKit/SSKJobRecord.h>
+#import <SessionServiceKit/TSOutgoingMessage.h>
+#import <SessionServiceKit/TSYapDatabaseObject.h>
+#import <SessionServiceKit/LKGroupUtilities.h>

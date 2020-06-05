@@ -19,7 +19,7 @@ def shared_pods
   pod 'SessionHKDFKit', git: 'https://github.com/nielsandriesse/session-ios-hkdf-kit.git', testspecs: ["Tests"] # Fork of HKDFKit
   # pod 'HKDFKit', path: '../HKDFKit', testspecs: ["Tests"]
 
-  pod 'SessionCurve25519Kit', git: 'https://github.com/loki-project/session-ios-curve25519-kit', testspecs: ["Tests"] # Fork of Curve25519Kit
+  pod 'SessionCurve25519Kit', git: 'https://github.com/loki-project/session-ios-curve-25519-kit', testspecs: ["Tests"] # Fork of Curve25519Kit
   # pod 'Curve25519Kit', path: '../Curve25519Kit', testspecs: ["Tests"]
 
   pod 'SessionMetadataKit', git: 'https://github.com/loki-project/session-ios-metadata-kit', testspecs: ["Tests"] # Fork of SignalMetadataKit

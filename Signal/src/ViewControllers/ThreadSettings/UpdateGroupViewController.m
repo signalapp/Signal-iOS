@@ -8,7 +8,7 @@
 #import "OWSNavigationController.h"
 #import "Session-Swift.h"
 #import "ViewControllerUtils.h"
-#import <SignalCoreKit/NSDate+OWS.h>
+#import <SessionCoreKit/NSDate+OWS.h>
 #import <SignalMessaging/BlockListUIUtils.h>
 #import <SignalMessaging/ContactTableViewCell.h>
 #import <SignalMessaging/ContactsViewHelper.h>
@@ -19,12 +19,12 @@
 #import <SignalMessaging/UIUtil.h>
 #import <SignalMessaging/UIView+OWS.h>
 #import <SignalMessaging/UIViewController+OWS.h>
-#import <SignalServiceKit/NSString+SSK.h>
-#import <SignalServiceKit/OWSMessageSender.h>
-#import <SignalServiceKit/SignalAccount.h>
-#import <SignalServiceKit/TSGroupModel.h>
-#import <SignalServiceKit/TSGroupThread.h>
-#import <SignalServiceKit/TSOutgoingMessage.h>
+#import <SessionServiceKit/NSString+SSK.h>
+#import <SessionServiceKit/OWSMessageSender.h>
+#import <SessionServiceKit/SignalAccount.h>
+#import <SessionServiceKit/TSGroupModel.h>
+#import <SessionServiceKit/TSGroupThread.h>
+#import <SessionServiceKit/TSOutgoingMessage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

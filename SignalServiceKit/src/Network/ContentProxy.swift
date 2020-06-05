@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import SignalCoreKit
+import SessionCoreKit
 
 @objc
 public class ContentProxy: NSObject {

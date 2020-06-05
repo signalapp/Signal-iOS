@@ -9,7 +9,7 @@
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <SignalMessaging/Theme.h>
-#import <SignalServiceKit/OWSSignalService.h>
+#import <SessionServiceKit/OWSSignalService.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

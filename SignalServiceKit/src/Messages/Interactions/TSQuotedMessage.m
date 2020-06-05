@@ -11,7 +11,7 @@
 #import "TSInteraction.h"
 #import "TSOutgoingMessage.h"
 #import "TSThread.h"
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SessionServiceKit/SignalServiceKit-Swift.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 
 NS_ASSUME_NONNULL_BEGIN

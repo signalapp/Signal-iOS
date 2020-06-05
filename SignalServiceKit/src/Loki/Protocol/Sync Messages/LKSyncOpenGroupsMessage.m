@@ -1,6 +1,6 @@
 #import "LKSyncOpenGroupsMessage.h"
 #import "OWSPrimaryStorage.h"
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SessionServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

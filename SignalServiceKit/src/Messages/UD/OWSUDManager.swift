@@ -4,8 +4,8 @@
 
 import Foundation
 import PromiseKit
-import SignalMetadataKit
-import SignalCoreKit
+import SessionMetadataKit
+import SessionCoreKit
 
 public enum OWSUDError: Error {
     case assertionError(description: String)

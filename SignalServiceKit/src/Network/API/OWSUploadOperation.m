@@ -13,9 +13,9 @@
 #import "SSKEnvironment.h"
 #import "TSAttachmentStream.h"
 #import "TSNetworkManager.h"
-#import <SignalCoreKit/Cryptography.h>
+#import <SessionCoreKit/Cryptography.h>
 #import <YapDatabase/YapDatabaseConnection.h>
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SessionServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

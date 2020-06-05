@@ -9,8 +9,8 @@
 #import "TSContactThread.h"
 #import "TSGroupModel.h"
 #import "TSGroupThread.h"
-#import <SignalCoreKit/NSDate+OWS.h>
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SessionCoreKit/NSDate+OWS.h>
+#import <SessionServiceKit/SignalServiceKit-Swift.h>
 #import "OWSPrimaryStorage.h"
 
 NS_ASSUME_NONNULL_BEGIN

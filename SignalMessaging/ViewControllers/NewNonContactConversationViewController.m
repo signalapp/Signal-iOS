@@ -6,7 +6,7 @@
 #import "BlockListUIUtils.h"
 #import "ContactsViewHelper.h"
 #import <SignalMessaging/OWSContactsManager.h>
-#import <SignalServiceKit/SignalAccount.h>
+#import <SessionServiceKit/SignalAccount.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

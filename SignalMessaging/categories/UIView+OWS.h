@@ -3,7 +3,7 @@
 //
 
 #import <PureLayout/PureLayout.h>
-#import <SignalServiceKit/OWSMath.h>
+#import <SessionServiceKit/OWSMath.h>
 #import <UIKit/UIKit.h>
 
 NS_ASSUME_NONNULL_BEGIN

@@ -1,5 +1,5 @@
 import Foundation
-import SignalServiceKit
+import SessionServiceKit
 
 @objc
 public class LK001UpdateFriendRequestStatusStorage : OWSDatabaseMigration {

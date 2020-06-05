@@ -4,9 +4,9 @@
 
 import Foundation
 import XCTest
-import Curve25519Kit
+import SessionCurve25519Kit
 
-@testable import SignalServiceKit
+@testable import SessionServiceKit
 
 class DeviceNamesTest: SSKBaseTestSwift {
 

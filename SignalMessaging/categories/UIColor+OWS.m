@@ -4,7 +4,7 @@
 
 #import "UIColor+OWS.h"
 #import "OWSMath.h"
-#import <SignalCoreKit/Cryptography.h>
+#import <SessionCoreKit/Cryptography.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

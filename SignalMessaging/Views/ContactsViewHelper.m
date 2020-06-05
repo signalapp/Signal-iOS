@@ -7,13 +7,13 @@
 #import "UIUtil.h"
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
-#import <SignalServiceKit/AppContext.h>
-#import <SignalServiceKit/Contact.h>
-#import <SignalServiceKit/NSString+SSK.h>
-#import <SignalServiceKit/OWSBlockingManager.h>
-#import <SignalServiceKit/PhoneNumber.h>
-#import <SignalServiceKit/SignalAccount.h>
-#import <SignalServiceKit/TSAccountManager.h>
+#import <SessionServiceKit/AppContext.h>
+#import <SessionServiceKit/Contact.h>
+#import <SessionServiceKit/NSString+SSK.h>
+#import <SessionServiceKit/OWSBlockingManager.h>
+#import <SessionServiceKit/PhoneNumber.h>
+#import <SessionServiceKit/SignalAccount.h>
+#import <SessionServiceKit/TSAccountManager.h>
 
 @import ContactsUI;
 

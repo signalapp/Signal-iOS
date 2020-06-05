@@ -15,11 +15,11 @@
 #import <MessageUI/MessageUI.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/UIUtil.h>
-#import <SignalServiceKit/AppVersion.h>
-#import <SignalServiceKit/PhoneNumberUtil.h>
-#import <SignalServiceKit/SignalAccount.h>
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <SignalServiceKit/TSAccountManager.h>
+#import <SessionServiceKit/AppVersion.h>
+#import <SessionServiceKit/PhoneNumberUtil.h>
+#import <SessionServiceKit/SignalAccount.h>
+#import <SessionServiceKit/SignalServiceKit-Swift.h>
+#import <SessionServiceKit/TSAccountManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

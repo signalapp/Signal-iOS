@@ -5,7 +5,7 @@
 #import "OWSBackgroundTask.h"
 #import "AppContext.h"
 #import "NSTimer+OWS.h"
-#import <SignalCoreKit/Threading.h>
+#import <SessionCoreKit/Threading.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

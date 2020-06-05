@@ -2,8 +2,8 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import <SignalServiceKit/Contact.h>
-#import <SignalServiceKit/ContactsManagerProtocol.h>
+#import <SessionServiceKit/Contact.h>
+#import <SessionServiceKit/ContactsManagerProtocol.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

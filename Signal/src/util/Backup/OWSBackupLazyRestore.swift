@@ -4,7 +4,7 @@
 
 import Foundation
 import PromiseKit
-import SignalServiceKit
+import SessionServiceKit
 
 @objc(OWSBackupLazyRestore)
 public class BackupLazyRestore: NSObject {

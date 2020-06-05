@@ -3,10 +3,10 @@
 //
 
 #import "OWS103EnableVideoCalling.h"
-#import <SignalServiceKit/OWSRequestFactory.h>
-#import <SignalServiceKit/SSKEnvironment.h>
-#import <SignalServiceKit/TSAccountManager.h>
-#import <SignalServiceKit/TSNetworkManager.h>
+#import <SessionServiceKit/OWSRequestFactory.h>
+#import <SessionServiceKit/SSKEnvironment.h>
+#import <SessionServiceKit/TSAccountManager.h>
+#import <SessionServiceKit/TSNetworkManager.h>
 
 // Increment a similar constant for every future DBMigration
 static NSString *const OWS103EnableVideoCallingMigrationId = @"103";

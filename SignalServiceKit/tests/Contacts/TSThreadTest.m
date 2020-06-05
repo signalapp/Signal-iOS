@@ -10,7 +10,7 @@
 #import "TSIncomingMessage.h"
 #import "TSOutgoingMessage.h"
 #import "TestAppContext.h"
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SessionServiceKit/SignalServiceKit-Swift.h>
 
 @interface TSThreadTest : SSKBaseTestObjC
 

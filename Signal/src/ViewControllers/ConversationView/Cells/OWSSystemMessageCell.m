@@ -11,10 +11,10 @@
 #import "UIView+OWS.h"
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
-#import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
-#import <SignalServiceKit/TSCall.h>
-#import <SignalServiceKit/TSErrorMessage.h>
-#import <SignalServiceKit/TSInfoMessage.h>
+#import <SessionServiceKit/OWSVerificationStateChangeMessage.h>
+#import <SessionServiceKit/TSCall.h>
+#import <SessionServiceKit/TSErrorMessage.h>
+#import <SessionServiceKit/TSInfoMessage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

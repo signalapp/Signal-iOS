@@ -9,17 +9,17 @@
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
-#import <SignalCoreKit/NSDate+OWS.h>
+#import <SessionCoreKit/NSDate+OWS.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/UIUtil.h>
-#import <SignalServiceKit/OWSError.h>
-#import <SignalServiceKit/OWSFingerprint.h>
-#import <SignalServiceKit/OWSFingerprintBuilder.h>
-#import <SignalServiceKit/OWSIdentityManager.h>
-#import <SignalServiceKit/OWSPrimaryStorage+SessionStore.h>
-#import <SignalServiceKit/TSAccountManager.h>
-#import <SignalServiceKit/TSInfoMessage.h>
+#import <SessionServiceKit/OWSError.h>
+#import <SessionServiceKit/OWSFingerprint.h>
+#import <SessionServiceKit/OWSFingerprintBuilder.h>
+#import <SessionServiceKit/OWSIdentityManager.h>
+#import <SessionServiceKit/OWSPrimaryStorage+SessionStore.h>
+#import <SessionServiceKit/TSAccountManager.h>
+#import <SessionServiceKit/TSInfoMessage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

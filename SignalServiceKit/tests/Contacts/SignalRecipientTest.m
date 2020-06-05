@@ -8,7 +8,7 @@
 #import "SignalRecipient.h"
 #import "TSAccountManager.h"
 #import "TestAppContext.h"
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SessionServiceKit/SignalServiceKit-Swift.h>
 
 @interface TSAccountManager (Testing)
 

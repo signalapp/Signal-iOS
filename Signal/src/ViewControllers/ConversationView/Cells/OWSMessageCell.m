@@ -7,7 +7,7 @@
 #import "OWSMessageBubbleView.h"
 #import "OWSMessageHeaderView.h"
 #import "Session-Swift.h"
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SessionServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

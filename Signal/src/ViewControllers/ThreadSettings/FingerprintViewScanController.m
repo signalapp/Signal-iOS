@@ -12,10 +12,10 @@
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/UIUtil.h>
-#import <SignalServiceKit/OWSError.h>
-#import <SignalServiceKit/OWSFingerprint.h>
-#import <SignalServiceKit/OWSFingerprintBuilder.h>
-#import <SignalServiceKit/OWSIdentityManager.h>
+#import <SessionServiceKit/OWSError.h>
+#import <SessionServiceKit/OWSFingerprint.h>
+#import <SessionServiceKit/OWSFingerprintBuilder.h>
+#import <SessionServiceKit/OWSIdentityManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

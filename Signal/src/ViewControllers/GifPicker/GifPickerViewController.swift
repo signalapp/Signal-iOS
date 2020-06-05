@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import SignalServiceKit
+import SessionServiceKit
 import Reachability
 import SignalMessaging
 import PromiseKit

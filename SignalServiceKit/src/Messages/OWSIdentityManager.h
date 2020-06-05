@@ -3,7 +3,7 @@
 //
 
 #import "OWSRecipientIdentity.h"
-#import <AxolotlKit/IdentityKeyStore.h>
+#import <SessionAxolotlKit/IdentityKeyStore.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

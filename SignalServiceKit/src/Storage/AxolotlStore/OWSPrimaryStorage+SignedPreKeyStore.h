@@ -3,7 +3,7 @@
 //
 
 #import "OWSPrimaryStorage.h"
-#import <AxolotlKit/SignedPreKeyStore.h>
+#import <SessionAxolotlKit/SignedPreKeyStore.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

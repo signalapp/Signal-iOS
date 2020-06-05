@@ -8,9 +8,9 @@
 #import "OWSBackupImportJob.h"
 #import "Session-Swift.h"
 #import <PromiseKit/AnyPromise.h>
-#import <SignalCoreKit/Randomness.h>
-#import <SignalServiceKit/OWSIdentityManager.h>
-#import <SignalServiceKit/YapDatabaseConnection+OWS.h>
+#import <SessionCoreKit/Randomness.h>
+#import <SessionServiceKit/OWSIdentityManager.h>
+#import <SessionServiceKit/YapDatabaseConnection+OWS.h>
 
 @import CloudKit;
 
