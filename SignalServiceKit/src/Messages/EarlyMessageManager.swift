@@ -30,7 +30,7 @@ public class EarlyMessageManager: NSObject {
         }
     }
 
-    private static let maxQueuedPerMessage = 5
+    private static let maxQueuedPerMessage = 100
     private static let maxQueuedMessages = 100
     private static let maxEarlyEnvelopeSize = 1024
 
