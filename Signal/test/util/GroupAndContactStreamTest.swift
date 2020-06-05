@@ -321,7 +321,6 @@ class GroupAndContactStreamTest: SignalBaseTest {
 }
 
 class TestContactsManager: NSObject, ContactsManagerProtocol {
-    let signalAccountReadCache = SignalAccountReadCache()
 
     func comparableName(for signalAccount: SignalAccount, transaction: SDSAnyReadTransaction) -> String {
         return signalAccount.recipientAddress.stringForDisplay
@@ -395,6 +394,6 @@ class TestContactsManager: NSObject, ContactsManagerProtocol {
     func avatarImage(forCNContactId contactId: String?) -> UIImage? {
         return nil
     }
-    
+
     var unknownUserLabel: String = "unknown"
 }

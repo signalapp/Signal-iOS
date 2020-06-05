@@ -62,6 +62,16 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
     return SSKEnvironment.shared.sessionStore;
 }
 
++ (SignalRecipientReadCache *)signalRecipientReadCache
+{
+    return SSKEnvironment.shared.modelReadCaches.signalRecipientReadCache;
+}
+
+- (SignalRecipientReadCache *)signalRecipientReadCache
+{
+    return SSKEnvironment.shared.modelReadCaches.signalRecipientReadCache;
+}
+
 #pragma mark -
 
 + (instancetype)getOrBuildUnsavedRecipientForAddress:(SignalServiceAddress *)address
@@ -171,12 +181,11 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
 {
     OWSAssertDebug(transaction);
     OWSAssertDebug(address.isValid);
-    SignalRecipient *_Nullable signalRecipient = [self.recipientFinder signalRecipientForAddress:address
-                                                                                     transaction:transaction];
+    SignalRecipient *_Nullable signalRecipient =
+        [self.signalRecipientReadCache getSignalRecipientForAddress:address transaction:transaction];
     if (mustHaveDevices && signalRecipient.devices.count < 1) {
         return nil;
     }
-
     return signalRecipient;
 }
 
@@ -454,6 +463,27 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
         // Remove the contact from our social graph
         [self.storageServiceManager recordPendingDeletionsWithDeletedAccountIds:@[ recipient.accountId ]];
     }
+}
+
+- (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [super anyDidInsertWithTransaction:transaction];
+
+    [self.signalRecipientReadCache didInsertOrUpdateSignalRecipient:self transaction:transaction];
+}
+
+- (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [super anyDidUpdateWithTransaction:transaction];
+
+    [self.signalRecipientReadCache didInsertOrUpdateSignalRecipient:self transaction:transaction];
+}
+
+- (void)anyDidRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [super anyDidRemoveWithTransaction:transaction];
+
+    [self.signalRecipientReadCache didRemoveSignalRecipient:self transaction:transaction];
 }
 
 @end

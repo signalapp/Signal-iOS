@@ -276,8 +276,8 @@ public class SignalAccountReadCache: NSObject {
         cache = ModelReadCache(keyBlock: {
             $0.recipientAddress
         },
-            readBlock: { (address, transaction) in
-            return accountFinder.signalAccount(for: address, transaction: transaction)
+                               readBlock: { (address, transaction) in
+                                return accountFinder.signalAccount(for: address, transaction: transaction)
         })
     }
 
@@ -300,4 +300,54 @@ public class SignalAccountReadCache: NSObject {
     public func didInsertOrUpdate(signalAccount: SignalAccount, transaction: SDSAnyWriteTransaction) {
         cache.didInsertOrUpdate(value: signalAccount, transaction: transaction)
     }
+}
+
+// MARK: -
+
+@objc
+public class SignalRecipientReadCache: NSObject {
+    private let cache: ModelReadCache<SignalServiceAddress, SignalRecipient>
+
+    @objc
+    public override init() {
+        let recipientFinder = AnySignalRecipientFinder()
+        cache = ModelReadCache(keyBlock: {
+            $0.address
+        },
+                               readBlock: { (address, transaction) in
+                                return recipientFinder.signalRecipient(for: address, transaction: transaction)
+        })
+    }
+
+    @objc(getSignalRecipientForAddress:transaction:)
+    public func getSignalRecipient(address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> SignalRecipient? {
+        return cache.getValue(for: address, transaction: transaction)
+    }
+
+    @objc
+    public func getSignalRecipientWithSneakyTransaction(address: SignalServiceAddress) -> SignalRecipient? {
+        return cache.getValueWithSneakyTransaction(for: address)
+    }
+
+    @objc(didRemoveSignalRecipient:transaction:)
+    public func didRemove(signalRecipient: SignalRecipient, transaction: SDSAnyWriteTransaction) {
+        cache.didRemove(value: signalRecipient, transaction: transaction)
+    }
+
+    @objc(didInsertOrUpdateSignalRecipient:transaction:)
+    public func didInsertOrUpdate(signalRecipient: SignalRecipient, transaction: SDSAnyWriteTransaction) {
+        cache.didInsertOrUpdate(value: signalRecipient, transaction: transaction)
+    }
+}
+
+// MARK: -
+
+@objc
+public class ModelReadCaches: NSObject {
+    // UserProfileReadCache is only used within the profile manager.
+
+    @objc
+    public let signalAccountReadCache = SignalAccountReadCache()
+    @objc
+    public let signalRecipientReadCache = SignalRecipientReadCache()
 }
