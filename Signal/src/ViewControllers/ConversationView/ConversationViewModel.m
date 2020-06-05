@@ -468,18 +468,11 @@ NS_ASSUME_NONNULL_BEGIN
         [diffUpdatedItemIds addObject:OWSThreadDetailsInteraction.ThreadDetailsId];
     }
 
-    if (diffAddedItemIds.count < 1 && diffRemovedItemIds.count < 1 && diffUpdatedItemIds.count < 1) {
-        // This probably isn't an error; presumably the modifications
-        // occurred outside the load window.
-        OWSLogDebug(@"Empty diff.");
-        [self.delegate conversationViewModelDidUpdateWithSneakyTransaction:ConversationUpdate.minorUpdate];
-        return;
-    }
-
     for (TSOutgoingMessage *unsavedOutgoingMessage in self.unsavedOutgoingMessages) {
         BOOL isFound = ([diff.addedItemIds containsObject:unsavedOutgoingMessage.uniqueId] ||
             [diff.removedItemIds containsObject:unsavedOutgoingMessage.uniqueId] ||
-            [diff.updatedItemIds containsObject:unsavedOutgoingMessage.uniqueId]);
+            [diff.updatedItemIds containsObject:unsavedOutgoingMessage.uniqueId] ||
+            [updatedInteractionIds containsObject:unsavedOutgoingMessage.uniqueId]);
         if (isFound) {
             // Convert the "insert" to an "update".
             if ([diffAddedItemIds containsObject:unsavedOutgoingMessage.uniqueId]) {
@@ -493,6 +486,14 @@ NS_ASSUME_NONNULL_BEGIN
             [unsavedOutgoingMessages removeObject:unsavedOutgoingMessage];
             self.unsavedOutgoingMessages = [unsavedOutgoingMessages copy];
         }
+    }
+
+    if (diffAddedItemIds.count < 1 && diffRemovedItemIds.count < 1 && diffUpdatedItemIds.count < 1) {
+        // This probably isn't an error; presumably the modifications
+        // occurred outside the load window.
+        OWSLogDebug(@"Empty diff.");
+        [self.delegate conversationViewModelDidUpdateWithSneakyTransaction:ConversationUpdate.minorUpdate];
+        return;
     }
 
     NSArray<NSString *> *oldItemIdList = self.viewState.interactionIds;
@@ -1148,7 +1149,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
         [interactions addObject:interaction];
         if ([interactionIds containsObject:interaction.uniqueId]) {
-            OWSFailDebug(@"Duplicate interaction: %@", interaction.uniqueId);
+            OWSFailDebug(@"Duplicate interaction(1): %@", interaction.uniqueId);
             continue;
         }
         [interactionIds addObject:interaction.uniqueId];
@@ -1194,7 +1195,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (self.unsavedOutgoingMessages.count > 0) {
         for (TSOutgoingMessage *outgoingMessage in self.unsavedOutgoingMessages) {
             if ([interactionIds containsObject:outgoingMessage.uniqueId]) {
-                OWSFailDebug(@"Duplicate interaction: %@", outgoingMessage.uniqueId);
+                OWSFailDebug(@"Duplicate interaction(2): %@", outgoingMessage.uniqueId);
                 continue;
             }
             tryToAddViewItemForInteraction(outgoingMessage);
