@@ -4,43 +4,117 @@
 
 import Foundation
 
-enum AtomicError: Error {
+@objc
+public enum AtomicError: Int, Error {
     case invalidTransition
 }
 
 // MARK: -
 
+private class Atomics {
+    // All instances can share a single queue.
+    fileprivate static let serialQueue = DispatchQueue(label: "Atomics")
+}
+
+// MARK: -
+
+// Provides Objective-C compatibility for the most common atomic value type.
 @objc
 public class AtomicBool: NSObject {
-    private var value: Bool
+    private let value = AtomicValue<Bool>(false)
 
     @objc
     public required init(_ value: Bool) {
-        self.value = value
+        self.value.set(value)
     }
-
-    // All instances can share a single queue.
-    private static let serialQueue = DispatchQueue(label: "AtomicBool")
 
     @objc
     public func get() -> Bool {
-        return AtomicBool.serialQueue.sync {
-            return self.value
-        }
+        return value.get()
     }
 
     @objc
     public func set(_ value: Bool) {
-        return AtomicBool.serialQueue.sync {
-            self.value = value
-        }
+        self.value.set(value)
     }
 
     // Sets value to "toValue" IFF it currently has "fromValue",
     // otherwise throws.
     @objc
     public func transition(from fromValue: Bool, to toValue: Bool) throws {
-        return try AtomicBool.serialQueue.sync {
+        return try value.transition(from: fromValue, to: toValue)
+    }
+}
+
+// MARK: -
+
+@objc
+public class AtomicUInt: NSObject {
+    private let value = AtomicValue<UInt>(0)
+
+    @objc
+    public required init(_ value: UInt = 0) {
+        self.value.set(value)
+    }
+
+    @objc
+    public func get() -> UInt {
+        return value.get()
+    }
+
+    @objc
+    public func set(_ value: UInt) {
+        self.value.set(value)
+    }
+
+    @discardableResult
+    @objc
+    public func increment() -> UInt {
+        return value.map { $0 + 1 }
+    }
+}
+
+// MARK: -
+
+public class AtomicValue<T> {
+    private var value: T
+
+    public required init(_ value: T) {
+        self.value = value
+    }
+
+    fileprivate var serialQueue: DispatchQueue {
+        return Atomics.serialQueue
+    }
+
+    public func get() -> T {
+        return serialQueue.sync {
+            return self.value
+        }
+    }
+
+    public func set(_ value: T) {
+        serialQueue.sync {
+            self.value = value
+        }
+    }
+
+    fileprivate func map(_ block: @escaping (T) -> T) -> T {
+        return serialQueue.sync {
+            let newValue = block(self.value)
+            self.value = newValue
+            return newValue
+        }
+    }
+}
+
+// MARK: -
+
+extension AtomicValue where T: Equatable {
+    // Sets value to "toValue" IFF it currently has "fromValue",
+    // otherwise throws.
+    public func transition(from fromValue: T, to toValue: T) throws {
+        return try serialQueue.sync {
             guard self.value == fromValue else {
                 throw AtomicError.invalidTransition
             }
