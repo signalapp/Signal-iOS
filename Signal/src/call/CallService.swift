@@ -215,9 +215,12 @@ extension SignalCall: CallManagerCallReference { }
         }
         call.callRecord = callRecord
 
+        // Get the current local device Id, must be valid for lifetime of the call.
+        let localDeviceId = TSAccountManager.sharedInstance().storedDeviceId()
+
         do {
             // TODO - once the "call as type" feature lands, set the type appropriately
-            try callManager.placeCall(call: call, callMediaType: .audioCall)
+            try callManager.placeCall(call: call, callMediaType: .audioCall, localDevice: localDeviceId)
         } catch {
             self.handleFailedCall(failedCall: call, error: error)
         }
@@ -447,10 +450,8 @@ extension SignalCall: CallManagerCallReference { }
 
         newCall.backgroundTask = backgroundTask
 
-        // TODO - once clients have a reliable way of detecting envelope age, we can pass through
-        // a timestamp. Until then, we assume envelopes are brand new so as to never fail calls
-        // from a mis-aligned clock
-        let timestamp = UInt64(Date().timeIntervalSince1970 * 1000)
+        // TODO - Need to calculate the "message age" when ready
+        let messageAgeSec: UInt64 = 0
 
         let callMediaType: CallMediaType
         switch callType {
@@ -460,10 +461,12 @@ extension SignalCall: CallManagerCallReference { }
         case .offerNeedPermission: callMediaType = .audioCall
         }
 
+        // Get the current local device Id, must be valid for lifetime of the call.
+        let localDeviceId = TSAccountManager.sharedInstance().storedDeviceId()
         let isPrimaryDevice = TSAccountManager.sharedInstance().isPrimaryDevice
 
         do {
-            try callManager.receivedOffer(call: newCall, sourceDevice: sourceDevice, callId: callId, sdp: sdp, timestamp: timestamp, callMediaType: callMediaType, remoteSupportsMultiRing: supportsMultiRing, isLocalDevicePrimary: isPrimaryDevice)
+            try callManager.receivedOffer(call: newCall, sourceDevice: sourceDevice, callId: callId, sdp: sdp, messageAgeSec: messageAgeSec, callMediaType: callMediaType, localDevice: localDeviceId, remoteSupportsMultiRing: supportsMultiRing, isLocalDevicePrimary: isPrimaryDevice)
         } catch {
             handleFailedCall(failedCall: newCall, error: error)
         }
@@ -550,7 +553,7 @@ extension SignalCall: CallManagerCallReference { }
 
     // MARK: - Call Manager Events
 
-    public func callManager(_ callManager: CallManager<SignalCall, CallService>, shouldStartCall call: SignalCall, callId: UInt64, isOutgoing: Bool) {
+    public func callManager(_ callManager: CallManager<SignalCall, CallService>, shouldStartCall call: SignalCall, callId: UInt64, isOutgoing: Bool, callMediaType: CallMediaType) {
         AssertIsOnMainThread()
         Logger.info("call: \(call)")
 
@@ -593,11 +596,8 @@ extension SignalCall: CallManagerCallReference { }
 
             let useTurnOnly = isUnknownCaller || Environment.shared.preferences.doCallsHideIPAddress()
 
-            // Get the current local device Id, must be valid for lifetime of the call.
-            let localDeviceId = TSAccountManager.sharedInstance().storedDeviceId()
-
             // Tell the Call Manager to proceed with its active call.
-            try self.callManager.proceed(callId: callId, iceServers: iceServers, hideIp: useTurnOnly, localDevice: localDeviceId, remoteDeviceList: deviceList, enableForking: true)
+            try self.callManager.proceed(callId: callId, iceServers: iceServers, hideIp: useTurnOnly, remoteDeviceList: deviceList, enableForking: true)
         }.catch { error in
             owsFailDebug("\(error)")
             guard call === self.currentCall else {
