@@ -1,6 +1,6 @@
 #import "LKSessionRestoreMessage.h"
-#import <SignalCoreKit/NSDate+OWS.h>
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SessionCoreKit/NSDate+OWS.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 
 @implementation LKSessionRestoreMessage
 

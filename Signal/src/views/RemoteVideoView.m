@@ -7,7 +7,7 @@
 #import "UIView+OWS.h"
 #import <MetalKit/MetalKit.h>
 #import <PureLayout/PureLayout.h>
-#import <SignalCoreKit/Threading.h>
+#import <SessionCoreKit/Threading.h>
 #import <WebRTC/RTCEAGLVideoView.h>
 #import <WebRTC/RTCMTLVideoView.h>
 #import <WebRTC/RTCVideoRenderer.h>

@@ -10,7 +10,7 @@
 #import "TSAccountManager.h"
 #import "TSNetworkManager.h"
 #import "YapDatabaseConnection+OWS.h"
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

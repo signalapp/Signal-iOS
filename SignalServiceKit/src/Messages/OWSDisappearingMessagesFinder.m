@@ -8,7 +8,7 @@
 #import "TSMessage.h"
 #import "TSOutgoingMessage.h"
 #import "TSThread.h"
-#import <SignalCoreKit/NSDate+OWS.h>
+#import <SessionCoreKit/NSDate+OWS.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseQuery.h>
 #import <YapDatabase/YapDatabaseSecondaryIndex.h>

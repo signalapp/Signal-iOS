@@ -18,18 +18,18 @@
 #import "TSGroupThread.h"
 #import "ViewControllerUtils.h"
 #import <PromiseKit/AnyPromise.h>
-#import <SignalCoreKit/NSDate+OWS.h>
-#import <SignalCoreKit/Threading.h>
-#import <SignalCoreKit/iOSVersions.h>
+#import <SessionCoreKit/NSDate+OWS.h>
+#import <SessionCoreKit/Threading.h>
+#import <SessionCoreKit/iOSVersions.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/OWSFormat.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/Theme.h>
 #import <SignalMessaging/UIUtil.h>
-#import <SignalServiceKit/OWSMessageSender.h>
-#import <SignalServiceKit/OWSMessageUtils.h>
-#import <SignalServiceKit/TSAccountManager.h>
-#import <SignalServiceKit/TSOutgoingMessage.h>
+#import <SessionServiceKit/OWSMessageSender.h>
+#import <SessionServiceKit/OWSMessageUtils.h>
+#import <SessionServiceKit/TSAccountManager.h>
+#import <SessionServiceKit/TSOutgoingMessage.h>
 #import <StoreKit/StoreKit.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseViewChange.h>
@@ -352,7 +352,7 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
 
     [self createFirstConversationCueView];
     [self.view addSubview:self.firstConversationCueView];
-    [self.firstConversationCueView autoPinToTopLayoutGuideOfViewController:self withInset:0.f];
+    [self.firstConversationCueView autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.view withOffset:0.0f];
     // This inset bakes in assumptions about UINavigationBar layout, but I'm not sure
     // there's a better way to do it, since it isn't safe to use iOS auto layout with
     // UINavigationBar contents.
@@ -660,7 +660,7 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
     if (@available(iOS 11, *)) {
         [searchResultsController.view autoPinTopToSuperviewMarginWithInset:56];
     } else {
-        [searchResultsController.view autoPinToTopLayoutGuideOfViewController:self withInset:40];
+        [searchResultsController.view autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.view withOffset:40.0f];
     }
     searchResultsController.view.hidden = YES;
 

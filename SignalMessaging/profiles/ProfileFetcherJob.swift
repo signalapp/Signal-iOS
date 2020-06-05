@@ -4,8 +4,8 @@
 
 import Foundation
 import PromiseKit
-import SignalServiceKit
-import SignalMetadataKit
+import SessionServiceKit
+import SessionMetadataKit
 
 @objc
 public class ProfileFetcherJob: NSObject {

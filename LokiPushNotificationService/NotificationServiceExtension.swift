@@ -1,5 +1,5 @@
 import UserNotifications
-import SignalServiceKit
+import SessionServiceKit
 import SignalMessaging
 
 final class NotificationServiceExtension : UNNotificationServiceExtension {

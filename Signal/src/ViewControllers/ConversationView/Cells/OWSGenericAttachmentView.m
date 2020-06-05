@@ -10,9 +10,9 @@
 #import "ViewControllerUtils.h"
 #import <SignalMessaging/OWSFormat.h>
 #import <SignalMessaging/UIColor+OWS.h>
-#import <SignalServiceKit/MimeTypeUtil.h>
-#import <SignalServiceKit/NSString+SSK.h>
-#import <SignalServiceKit/TSAttachmentStream.h>
+#import <SessionServiceKit/MimeTypeUtil.h>
+#import <SessionServiceKit/NSString+SSK.h>
+#import <SessionServiceKit/TSAttachmentStream.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

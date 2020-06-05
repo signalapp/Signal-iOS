@@ -12,9 +12,9 @@
 #import "YapDatabaseConnection.h"
 #import "YapDatabaseTransaction.h"
 #import <Mantle/MTLValueTransformer.h>
-#import <SignalCoreKit/NSDate+OWS.h>
-#import <SignalServiceKit/OWSIdentityManager.h>
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SessionCoreKit/NSDate+OWS.h>
+#import <SessionServiceKit/OWSIdentityManager.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

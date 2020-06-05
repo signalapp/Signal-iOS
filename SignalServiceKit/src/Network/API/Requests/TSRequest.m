@@ -5,8 +5,8 @@
 #import "TSRequest.h"
 #import "TSAccountManager.h"
 #import "TSConstants.h"
-#import <SignalCoreKit/NSData+OWS.h>
-#import <SignalMetadataKit/SignalMetadataKit-Swift.h>
+#import <SessionCoreKit/NSData+OWS.h>
+#import <SessionMetadataKit/SessionMetadataKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

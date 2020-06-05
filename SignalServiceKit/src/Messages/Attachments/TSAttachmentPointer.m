@@ -5,8 +5,8 @@
 #import "TSAttachmentPointer.h"
 #import "OWSBackupFragment.h"
 #import "TSAttachmentStream.h"
-#import <SignalServiceKit/MimeTypeUtil.h>
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SessionServiceKit/MimeTypeUtil.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 

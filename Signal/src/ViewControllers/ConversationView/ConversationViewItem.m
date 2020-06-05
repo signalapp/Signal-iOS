@@ -11,12 +11,12 @@
 #import "Session-Swift.h"
 #import "AnyPromise.h"
 #import <SignalMessaging/OWSUnreadIndicator.h>
-#import <SignalServiceKit/NSData+Image.h>
-#import <SignalServiceKit/NSString+SSK.h>
-#import <SignalServiceKit/OWSContact.h>
-#import <SignalServiceKit/TSInteraction.h>
-#import <SignalServiceKit/SSKEnvironment.h>
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SessionServiceKit/NSData+Image.h>
+#import <SessionServiceKit/NSString+SSK.h>
+#import <SessionServiceKit/OWSContact.h>
+#import <SessionServiceKit/TSInteraction.h>
+#import <SessionServiceKit/SSKEnvironment.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

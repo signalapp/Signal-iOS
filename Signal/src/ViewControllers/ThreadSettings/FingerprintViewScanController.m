@@ -12,10 +12,10 @@
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/UIUtil.h>
-#import <SignalServiceKit/OWSError.h>
-#import <SignalServiceKit/OWSFingerprint.h>
-#import <SignalServiceKit/OWSFingerprintBuilder.h>
-#import <SignalServiceKit/OWSIdentityManager.h>
+#import <SessionServiceKit/OWSError.h>
+#import <SessionServiceKit/OWSFingerprint.h>
+#import <SessionServiceKit/OWSFingerprintBuilder.h>
+#import <SessionServiceKit/OWSIdentityManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -74,7 +74,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.qrScanningController.scanDelegate = self;
     [self.view addSubview:self.qrScanningController.view];
     [self.qrScanningController.view autoPinWidthToSuperview];
-    [self.qrScanningController.view autoPinToTopLayoutGuideOfViewController:self withInset:0];
+    [self.qrScanningController.view autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.view withOffset:0.0f];
 
     UIView *footer = [UIView new];
     footer.backgroundColor = [UIColor colorWithWhite:0.25f alpha:1.f];
@@ -94,7 +94,7 @@ NS_ASSUME_NONNULL_BEGIN
     [footer addSubview:cameraInstructionLabel];
     [cameraInstructionLabel autoPinWidthToSuperviewWithMargin:ScaleFromIPhone5To7Plus(16.f, 30.f)];
     CGFloat instructionsVMargin = ScaleFromIPhone5To7Plus(10.f, 20.f);
-    [cameraInstructionLabel autoPinToBottomLayoutGuideOfViewController:self withInset:instructionsVMargin];
+    [cameraInstructionLabel autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.view withOffset:instructionsVMargin];
     [cameraInstructionLabel autoPinEdgeToSuperviewEdge:ALEdgeTop withInset:instructionsVMargin];
 }
 

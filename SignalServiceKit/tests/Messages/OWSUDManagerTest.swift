@@ -4,9 +4,9 @@
 
 import XCTest
 import Foundation
-import SignalCoreKit
-import SignalMetadataKit
-@testable import SignalServiceKit
+import SessionCoreKit
+import SessionMetadataKit
+@testable import SessionServiceKit
 
 class MockCertificateValidator: NSObject, SMKCertificateValidator {
     @objc public func throwswrapped_validate(senderCertificate: SMKSenderCertificate, validationTime: UInt64) throws {

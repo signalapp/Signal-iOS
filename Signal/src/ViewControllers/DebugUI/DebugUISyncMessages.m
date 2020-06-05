@@ -7,26 +7,26 @@
 #import "OWSTableViewController.h"
 #import "Session-Swift.h"
 #import "ThreadUtil.h"
-#import <AxolotlKit/PreKeyBundle.h>
+#import <SessionAxolotlKit/PreKeyBundle.h>
 #import <PromiseKit/AnyPromise.h>
-#import <SignalCoreKit/Randomness.h>
+#import <SessionCoreKit/Randomness.h>
 #import <SignalMessaging/Environment.h>
-#import <SignalServiceKit/OWSBatchMessageProcessor.h>
-#import <SignalServiceKit/OWSBlockingManager.h>
-#import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
-#import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
-#import <SignalServiceKit/OWSPrimaryStorage+SessionStore.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
-#import <SignalServiceKit/OWSReadReceiptManager.h>
-#import <SignalServiceKit/OWSSyncGroupsMessage.h>
-#import <SignalServiceKit/OWSSyncGroupsRequestMessage.h>
-#import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <SignalServiceKit/TSCall.h>
-#import <SignalServiceKit/TSDatabaseView.h>
-#import <SignalServiceKit/TSIncomingMessage.h>
-#import <SignalServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
-#import <SignalServiceKit/TSThread.h>
+#import <SessionServiceKit/OWSBatchMessageProcessor.h>
+#import <SessionServiceKit/OWSBlockingManager.h>
+#import <SessionServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
+#import <SessionServiceKit/OWSDisappearingMessagesConfiguration.h>
+#import <SessionServiceKit/OWSPrimaryStorage+SessionStore.h>
+#import <SessionServiceKit/OWSPrimaryStorage.h>
+#import <SessionServiceKit/OWSReadReceiptManager.h>
+#import <SessionServiceKit/OWSSyncGroupsMessage.h>
+#import <SessionServiceKit/OWSSyncGroupsRequestMessage.h>
+#import <SessionServiceKit/OWSVerificationStateChangeMessage.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
+#import <SessionServiceKit/TSCall.h>
+#import <SessionServiceKit/TSDatabaseView.h>
+#import <SessionServiceKit/TSIncomingMessage.h>
+#import <SessionServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
+#import <SessionServiceKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

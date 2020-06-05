@@ -50,19 +50,19 @@
 #import "LKDeviceLinkMessage.h"
 #import "LKUnlinkDeviceMessage.h"
 #import "LKAddressMessage.h"
-#import <AxolotlKit/AxolotlExceptions.h>
-#import <AxolotlKit/CipherMessage.h>
-#import <AxolotlKit/PreKeyBundle.h>
-#import <AxolotlKit/SessionBuilder.h>
-#import <AxolotlKit/SessionCipher.h>
+#import <SessionAxolotlKit/AxolotlExceptions.h>
+#import <SessionAxolotlKit/CipherMessage.h>
+#import <SessionAxolotlKit/PreKeyBundle.h>
+#import <SessionAxolotlKit/SessionBuilder.h>
+#import <SessionAxolotlKit/SessionCipher.h>
 #import <PromiseKit/AnyPromise.h>
-#import <SignalCoreKit/NSData+OWS.h>
-#import <SignalCoreKit/NSDate+OWS.h>
-#import <SignalCoreKit/SCKExceptionWrapper.h>
-#import <SignalCoreKit/Threading.h>
-#import <SignalMetadataKit/SignalMetadataKit-Swift.h>
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <SignalServiceKit/ProfileManagerProtocol.h>
+#import <SessionCoreKit/NSData+OWS.h>
+#import <SessionCoreKit/NSDate+OWS.h>
+#import <SessionCoreKit/SCKExceptionWrapper.h>
+#import <SessionCoreKit/Threading.h>
+#import <SessionMetadataKit/SessionMetadataKit-Swift.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
+#import <SessionServiceKit/ProfileManagerProtocol.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

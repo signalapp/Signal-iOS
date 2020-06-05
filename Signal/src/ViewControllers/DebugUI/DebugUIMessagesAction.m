@@ -3,7 +3,7 @@
 //
 
 #import "DebugUIMessagesAction.h"
-#import <SignalServiceKit/OWSPrimaryStorage.h>
+#import <SessionServiceKit/OWSPrimaryStorage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

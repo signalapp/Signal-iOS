@@ -6,7 +6,7 @@
 #import "Session-Swift.h"
 #import <AVFoundation/AVFoundation.h>
 #import <Photos/Photos.h>
-#import <SignalCoreKit/Threading.h>
+#import <SessionCoreKit/Threading.h>
 #import <SignalMessaging/UIUtil.h>
 
 NS_ASSUME_NONNULL_BEGIN

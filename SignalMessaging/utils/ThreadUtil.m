@@ -8,24 +8,24 @@
 #import "OWSQuotedReplyModel.h"
 #import "OWSUnreadIndicator.h"
 #import "TSUnreadIndicatorInteraction.h"
-#import <SignalCoreKit/NSDate+OWS.h>
-#import <SignalCoreKit/SignalCoreKit-Swift.h>
+#import <SessionCoreKit/NSDate+OWS.h>
+#import <SessionCoreKit/SessionCoreKit-Swift.h>
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
-#import <SignalServiceKit/OWSAddToContactsOfferMessage.h>
-#import <SignalServiceKit/OWSAddToProfileWhitelistOfferMessage.h>
-#import <SignalServiceKit/OWSBlockingManager.h>
-#import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
-#import <SignalServiceKit/OWSMessageSender.h>
-#import <SignalServiceKit/OWSUnknownContactBlockOfferMessage.h>
-#import <SignalServiceKit/TSAccountManager.h>
-#import <SignalServiceKit/TSCall.h>
-#import <SignalServiceKit/TSContactThread.h>
-#import <SignalServiceKit/TSDatabaseView.h>
-#import <SignalServiceKit/TSIncomingMessage.h>
-#import <SignalServiceKit/TSInvalidIdentityKeyErrorMessage.h>
-#import <SignalServiceKit/TSOutgoingMessage.h>
-#import <SignalServiceKit/TSThread.h>
+#import <SessionServiceKit/OWSAddToContactsOfferMessage.h>
+#import <SessionServiceKit/OWSAddToProfileWhitelistOfferMessage.h>
+#import <SessionServiceKit/OWSBlockingManager.h>
+#import <SessionServiceKit/OWSDisappearingMessagesConfiguration.h>
+#import <SessionServiceKit/OWSMessageSender.h>
+#import <SessionServiceKit/OWSUnknownContactBlockOfferMessage.h>
+#import <SessionServiceKit/TSAccountManager.h>
+#import <SessionServiceKit/TSCall.h>
+#import <SessionServiceKit/TSContactThread.h>
+#import <SessionServiceKit/TSDatabaseView.h>
+#import <SessionServiceKit/TSIncomingMessage.h>
+#import <SessionServiceKit/TSInvalidIdentityKeyErrorMessage.h>
+#import <SessionServiceKit/TSOutgoingMessage.h>
+#import <SessionServiceKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

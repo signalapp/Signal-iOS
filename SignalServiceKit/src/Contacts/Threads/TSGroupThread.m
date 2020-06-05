@@ -4,11 +4,11 @@
 
 #import "TSGroupThread.h"
 #import "TSAttachmentStream.h"
-#import <SignalCoreKit/NSData+OWS.h>
-#import <SignalServiceKit/TSAccountManager.h>
+#import <SessionCoreKit/NSData+OWS.h>
+#import <SessionServiceKit/TSAccountManager.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 #import "OWSPrimaryStorage.h"
 
 NS_ASSUME_NONNULL_BEGIN

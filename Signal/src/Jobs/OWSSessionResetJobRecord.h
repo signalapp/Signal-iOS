@@ -2,7 +2,7 @@
 //  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
 //
 
-#import <SignalServiceKit/SSKJobRecord.h>
+#import <SessionServiceKit/SSKJobRecord.h>
 
 @class TSContactThread;
 

@@ -8,8 +8,8 @@
 #import "SSKEnvironment.h"
 #import "TSContactThread.h"
 #import "TSErrorMessage_privateConstructor.h"
-#import <SignalCoreKit/NSDate+OWS.h>
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SessionCoreKit/NSDate+OWS.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 
 NS_ASSUME_NONNULL_BEGIN

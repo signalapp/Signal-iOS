@@ -3,7 +3,7 @@
 //
 
 #import "OWSAvatarBuilder.h"
-#import <SignalServiceKit/TSThread.h>
+#import <SessionServiceKit/TSThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

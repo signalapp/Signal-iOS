@@ -10,13 +10,13 @@
 #import "TSAccountManager.h"
 #import "TSConstants.h"
 #import "TSRequest.h"
-#import <AxolotlKit/NSData+keyVersionByte.h>
-#import <AxolotlKit/SignedPreKeyRecord.h>
-#import <Curve25519Kit/Curve25519.h>
-#import <SignalCoreKit/Cryptography.h>
-#import <SignalCoreKit/NSData+OWS.h>
-#import <SignalMetadataKit/SignalMetadataKit-Swift.h>
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SessionAxolotlKit/NSData+keyVersionByte.h>
+#import <SessionAxolotlKit/SignedPreKeyRecord.h>
+#import <SessionCurve25519Kit/Curve25519.h>
+#import <SessionCoreKit/Cryptography.h>
+#import <SessionCoreKit/NSData+OWS.h>
+#import <SessionMetadataKit/SessionMetadataKit-Swift.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

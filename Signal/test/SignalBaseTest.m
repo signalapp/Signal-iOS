@@ -4,8 +4,8 @@
 
 #import "SignalBaseTest.h"
 #import "Environment.h"
-#import <SignalServiceKit/OWSPrimaryStorage.h>
-#import <SignalServiceKit/TestAppContext.h>
+#import <SessionServiceKit/OWSPrimaryStorage.h>
+#import <SessionServiceKit/TestAppContext.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -9,7 +9,7 @@
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <SignalMessaging/Theme.h>
-#import <SignalServiceKit/OWSSignalService.h>
+#import <SessionServiceKit/OWSSignalService.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -43,8 +43,8 @@ NS_ASSUME_NONNULL_BEGIN
     [self.view addSubview:self.tableViewController.view];
     [self.tableViewController.view autoPinEdgeToSuperviewSafeArea:ALEdgeLeading];
     [self.tableViewController.view autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];
-    [_tableViewController.view autoPinToTopLayoutGuideOfViewController:self withInset:0];
-    [_tableViewController.view autoPinToBottomLayoutGuideOfViewController:self withInset:0];
+    [_tableViewController.view autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.view withOffset:0.0f];
+    [_tableViewController.view autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.view withOffset:0.0f];
 
     [self updateTableContents];
 }

@@ -7,9 +7,9 @@
 #import "OWSProgressView.h"
 #import <SignalMessaging/UIFont+OWS.h>
 #import <SignalMessaging/UIView+OWS.h>
-#import <SignalServiceKit/AppContext.h>
-#import <SignalServiceKit/OWSUploadOperation.h>
-#import <SignalServiceKit/TSAttachmentStream.h>
+#import <SessionServiceKit/AppContext.h>
+#import <SessionServiceKit/OWSUploadOperation.h>
+#import <SessionServiceKit/TSAttachmentStream.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

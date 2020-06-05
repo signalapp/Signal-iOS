@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import SignalServiceKit
+import SessionServiceKit
 import SignalMessaging
 
 final class NotificationServiceExtensionContext : NSObject, AppContext {

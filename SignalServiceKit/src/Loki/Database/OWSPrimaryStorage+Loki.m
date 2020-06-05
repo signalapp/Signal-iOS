@@ -9,9 +9,9 @@
 #import "TSPreKeyManager.h"
 #import "YapDatabaseConnection+OWS.h"
 #import "YapDatabaseTransaction+OWS.h"
-#import <AxolotlKit/NSData+keyVersionByte.h>
+#import <SessionAxolotlKit/NSData+keyVersionByte.h>
 #import "NSObject+Casting.h"
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 
 @implementation OWSPrimaryStorage (Loki)
 

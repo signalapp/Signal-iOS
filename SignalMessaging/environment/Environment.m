@@ -4,8 +4,8 @@
 
 #import "Environment.h"
 #import "OWSPreferences.h"
-#import <SignalServiceKit/AppContext.h>
-#import <SignalServiceKit/SSKEnvironment.h>
+#import <SessionServiceKit/AppContext.h>
+#import <SessionServiceKit/SSKEnvironment.h>
 
 static Environment *sharedEnvironment = nil;
 

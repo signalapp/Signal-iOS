@@ -5,7 +5,7 @@
 import Foundation
 import XCTest
 
-@testable import SignalServiceKit
+@testable import SessionServiceKit
 
 class TestJobRecord: SSKJobRecord {
 

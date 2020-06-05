@@ -5,9 +5,9 @@
 #import "ProtoUtils.h"
 #import "SSKEnvironment.h"
 #import "SignalRecipient.h"
-#import <SignalCoreKit/NSData+OWS.h>
-#import <SignalCoreKit/NSDate+OWS.h>
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SessionCoreKit/NSData+OWS.h>
+#import <SessionCoreKit/NSDate+OWS.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 
 @implementation LKDeviceLinkMessage
 

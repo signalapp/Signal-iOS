@@ -3,8 +3,8 @@
 //
 
 #import "OWSDatabaseMigration.h"
-#import <SignalServiceKit/OWSPrimaryStorage.h>
-#import <SignalServiceKit/SSKEnvironment.h>
+#import <SessionServiceKit/OWSPrimaryStorage.h>
+#import <SessionServiceKit/SSKEnvironment.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

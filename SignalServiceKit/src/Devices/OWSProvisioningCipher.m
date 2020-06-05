@@ -4,9 +4,9 @@
 
 #import "OWSProvisioningCipher.h"
 #import <CommonCrypto/CommonCrypto.h>
-#import <Curve25519Kit/Curve25519.h>
-#import <HKDFKit/HKDFKit.h>
-#import <SignalCoreKit/Cryptography.h>
+#import <SessionCurve25519Kit/Curve25519.h>
+#import <SessionHKDFKit/HKDFKit.h>
+#import <SessionCoreKit/Cryptography.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

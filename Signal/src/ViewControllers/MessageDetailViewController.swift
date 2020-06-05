@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import SignalServiceKit
+import SessionServiceKit
 import SignalMessaging
 
 @objc
@@ -176,7 +176,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
         scrollView.autoPinWidthToSuperview(withMargin: 0)
 
         if scrollView.applyInsetsFix() {
-            scrollView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
+            scrollView.autoPinEdge(.top, to: .top, of: view)
         } else {
             scrollView.autoPinEdge(toSuperviewEdge: .top)
         }
@@ -196,7 +196,7 @@ class MessageDetailViewController: OWSViewController, MediaGalleryDataSourceDele
             view.addSubview(footer)
             footer.autoPinWidthToSuperview(withMargin: 0)
             footer.autoPinEdge(.top, to: .bottom, of: scrollView)
-            footer.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
+            footer.autoPinEdge(.bottom, to: .bottom, of: view)
 
             footer.items = [
                 UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),

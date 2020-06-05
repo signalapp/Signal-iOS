@@ -6,7 +6,7 @@ import UIKit
 
 import SignalMessaging
 import PureLayout
-import SignalServiceKit
+import SessionServiceKit
 import PromiseKit
 
 @objc

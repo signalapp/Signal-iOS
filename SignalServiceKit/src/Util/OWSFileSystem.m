@@ -5,7 +5,7 @@
 #import "OWSFileSystem.h"
 #import "OWSError.h"
 #import "TSConstants.h"
-#import <SignalCoreKit/NSDate+OWS.h>
+#import <SessionCoreKit/NSDate+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -6,11 +6,11 @@
 #import "SignalBaseTest.h"
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
-#import <SignalServiceKit/MIMETypeUtil.h>
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <SignalServiceKit/TSAttachmentStream.h>
-#import <SignalServiceKit/TSContactThread.h>
-#import <SignalServiceKit/TSOutgoingMessage.h>
+#import <SessionServiceKit/MIMETypeUtil.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
+#import <SessionServiceKit/TSAttachmentStream.h>
+#import <SessionServiceKit/TSContactThread.h>
+#import <SessionServiceKit/TSOutgoingMessage.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 
 /*

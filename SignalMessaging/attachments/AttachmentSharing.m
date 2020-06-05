@@ -4,9 +4,9 @@
 
 #import "AttachmentSharing.h"
 #import "UIUtil.h"
-#import <SignalCoreKit/Threading.h>
-#import <SignalServiceKit/AppContext.h>
-#import <SignalServiceKit/TSAttachmentStream.h>
+#import <SessionCoreKit/Threading.h>
+#import <SessionServiceKit/AppContext.h>
+#import <SessionServiceKit/TSAttachmentStream.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

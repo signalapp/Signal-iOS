@@ -4,9 +4,9 @@
 
 #import "ShareAppExtensionContext.h"
 #import <SignalMessaging/UIViewController+OWS.h>
-#import <SignalServiceKit/OWSStorage.h>
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <SignalServiceKit/TSConstants.h>
+#import <SessionServiceKit/OWSStorage.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
+#import <SessionServiceKit/TSConstants.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

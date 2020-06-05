@@ -5,7 +5,7 @@
 #import "SAEScreenLockViewController.h"
 #import "UIColor+OWS.h"
 #import <SignalMessaging/SignalMessaging-Swift.h>
-#import <SignalServiceKit/AppContext.h>
+#import <SessionServiceKit/AppContext.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

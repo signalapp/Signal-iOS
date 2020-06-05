@@ -9,7 +9,7 @@
 #import "SSKBaseTestObjC.h"
 #import "TSContactThread.h"
 #import "TSMessage.h"
-#import <SignalCoreKit/NSDate+OWS.h>
+#import <SessionCoreKit/NSDate+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

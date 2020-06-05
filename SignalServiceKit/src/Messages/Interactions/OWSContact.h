@@ -3,7 +3,7 @@
 //
 
 #import <Mantle/MTLModel.h>
-#import <SignalServiceKit/ContactsManagerProtocol.h>
+#import <SessionServiceKit/ContactsManagerProtocol.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

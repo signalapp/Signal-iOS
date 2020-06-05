@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import SignalServiceKit
+import SessionServiceKit
 
 @objc
 public protocol ContactShareApprovalViewControllerDelegate: class {
@@ -368,7 +368,7 @@ public class ContactShareApprovalViewController: OWSViewController, EditContactS
         scrollView.layoutMargins = .zero
         scrollView.autoPinEdge(toSuperviewSafeArea: .leading)
         scrollView.autoPinEdge(toSuperviewSafeArea: .trailing)
-        scrollView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
+        scrollView.autoPinEdge(.top, to: .top, of: view)
         scrollView.autoPinEdge(toSuperviewEdge: .bottom)
 
         let fieldsView = createFieldsView()

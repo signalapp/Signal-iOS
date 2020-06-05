@@ -4,10 +4,10 @@
 
 #import "OWSFingerprint.h"
 #import "OWSError.h"
-#import <AxolotlKit/NSData+keyVersionByte.h>
+#import <SessionAxolotlKit/NSData+keyVersionByte.h>
 #import <CommonCrypto/CommonDigest.h>
-#import <SignalCoreKit/NSData+OWS.h>
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SessionCoreKit/NSData+OWS.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 #import <UIKit/UIImage.h>
 
 NS_ASSUME_NONNULL_BEGIN

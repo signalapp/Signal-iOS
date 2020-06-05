@@ -12,8 +12,8 @@
 #import "TSAttachmentStream.h"
 #import "TSQuotedMessage.h"
 #import "TSThread.h"
-#import <SignalCoreKit/NSDate+OWS.h>
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SessionCoreKit/NSDate+OWS.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 #import "OWSPrimaryStorage+Loki.h"

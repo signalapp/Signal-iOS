@@ -4,10 +4,10 @@
 
 #import "OWSProvisioningMessage.h"
 #import "OWSProvisioningCipher.h"
-#import <AxolotlKit/NSData+keyVersionByte.h>
-#import <Curve25519Kit/Curve25519.h>
-#import <HKDFKit/HKDFKit.h>
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SessionAxolotlKit/NSData+keyVersionByte.h>
+#import <SessionCurve25519Kit/Curve25519.h>
+#import <SessionHKDFKit/HKDFKit.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import SignalServiceKit
+import SessionServiceKit
 
 enum ExperienceUpgradeId: String {
     case videoCalling = "001",

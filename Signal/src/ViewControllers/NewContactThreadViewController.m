@@ -15,11 +15,11 @@
 #import <MessageUI/MessageUI.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/UIUtil.h>
-#import <SignalServiceKit/AppVersion.h>
-#import <SignalServiceKit/PhoneNumberUtil.h>
-#import <SignalServiceKit/SignalAccount.h>
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <SignalServiceKit/TSAccountManager.h>
+#import <SessionServiceKit/AppVersion.h>
+#import <SessionServiceKit/PhoneNumberUtil.h>
+#import <SessionServiceKit/SignalAccount.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
+#import <SessionServiceKit/TSAccountManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -157,7 +157,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.view addSubview:self.noSignalContactsView];
     [self.noSignalContactsView autoPinWidthToSuperview];
     [self.noSignalContactsView autoPinEdgeToSuperviewEdge:ALEdgeTop];
-    [self.noSignalContactsView autoPinToBottomLayoutGuideOfViewController:self withInset:0];
+    [self.noSignalContactsView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.view withOffset:0.0f];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, _noSignalContactsView);
 
     UIRefreshControl *pullToRefreshView = [UIRefreshControl new];

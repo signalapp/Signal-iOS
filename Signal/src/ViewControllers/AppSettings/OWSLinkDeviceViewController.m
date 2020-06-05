@@ -6,13 +6,13 @@
 #import "OWSDeviceProvisioningURLParser.h"
 #import "OWSLinkedDevicesTableViewController.h"
 #import "Session-Swift.h"
-#import <SignalCoreKit/Cryptography.h>
+#import <SessionCoreKit/Cryptography.h>
 #import <SignalMessaging/OWSProfileManager.h>
-#import <SignalServiceKit/OWSDevice.h>
-#import <SignalServiceKit/OWSDeviceProvisioner.h>
-#import <SignalServiceKit/OWSIdentityManager.h>
-#import <SignalServiceKit/OWSReadReceiptManager.h>
-#import <SignalServiceKit/TSAccountManager.h>
+#import <SessionServiceKit/OWSDevice.h>
+#import <SessionServiceKit/OWSDeviceProvisioner.h>
+#import <SessionServiceKit/OWSIdentityManager.h>
+#import <SessionServiceKit/OWSReadReceiptManager.h>
+#import <SessionServiceKit/TSAccountManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -55,7 +55,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.view addSubview:self.qrScanningController.view];
     [self.qrScanningController.view autoPinEdgeToSuperviewEdge:ALEdgeLeading];
     [self.qrScanningController.view autoPinEdgeToSuperviewEdge:ALEdgeTrailing];
-    [self.qrScanningController.view autoPinToTopLayoutGuideOfViewController:self withInset:0.f];
+    [self.qrScanningController.view autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.view];
     [self.qrScanningController.view autoPinToSquareAspectRatio];
 
     UIView *bottomView = [UIView new];

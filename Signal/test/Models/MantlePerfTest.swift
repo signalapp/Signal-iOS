@@ -4,7 +4,7 @@
 
 import XCTest
 @testable import SignalMessaging
-@testable import SignalServiceKit
+@testable import SessionServiceKit
 
 class MantlePerfTest: SignalBaseTest {
 

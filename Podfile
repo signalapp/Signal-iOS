@@ -10,24 +10,22 @@ def shared_pods
   # OWS Pods
   ###
 
-  pod 'SignalCoreKit', git: 'https://github.com/signalapp/SignalCoreKit.git', testspecs: ["Tests"]
+  pod 'SessionCoreKit', git: 'https://github.com/loki-project/session-ios-core-kit.git', testspecs: ["Tests"] # Fork of SignalCoreKit
   # pod 'SignalCoreKit', path: '../SignalCoreKit', testspecs: ["Tests"]
 
-  pod 'AxolotlKit', git: 'https://github.com/signalapp/SignalProtocolKit.git', branch: 'master', testspecs: ["Tests"]
+  pod 'SessionAxolotlKit', git: 'https://github.com/loki-project/session-ios-protocol-kit.git', branch: 'master', testspecs: ["Tests"] # Fork of AxolotlKit
   # pod 'AxolotlKit', path: '../SignalProtocolKit', testspecs: ["Tests"]
 
-  pod 'HKDFKit', git: 'https://github.com/signalapp/HKDFKit.git', testspecs: ["Tests"]
+  pod 'SessionHKDFKit', git: 'https://github.com/nielsandriesse/session-ios-hkdf-kit.git', testspecs: ["Tests"] # Fork of HKDFKit
   # pod 'HKDFKit', path: '../HKDFKit', testspecs: ["Tests"]
 
-  pod 'Curve25519Kit', git: 'https://github.com/signalapp/Curve25519Kit', testspecs: ["Tests"]
+  pod 'SessionCurve25519Kit', git: 'https://github.com/loki-project/session-ios-curve-25519-kit', testspecs: ["Tests"] # Fork of Curve25519Kit
   # pod 'Curve25519Kit', path: '../Curve25519Kit', testspecs: ["Tests"]
 
-  # Don't update SignalMetadataKit. There's some Loki specific stuff in there that gets overwritten otherwise.
-  # FIXME: We should fork this, make it work with Cocoapods, and keep it up to date with Signal's repo.
-  # pod 'SignalMetadataKit', git: 'https://github.com/signalapp/SignalMetadataKit', testspecs: ["Tests"]
+  pod 'SessionMetadataKit', git: 'https://github.com/loki-project/session-ios-metadata-kit', testspecs: ["Tests"] # Fork of SignalMetadataKit
   # pod 'SignalMetadataKit', path: '../SignalMetadataKit', testspecs: ["Tests"]
 
-  pod 'SignalServiceKit', path: '.', testspecs: ["Tests"] # TODO: Signal moved this into the main repo. We should probably do the same eventually.
+  pod 'SessionServiceKit', path: '.', testspecs: ["Tests"]
 
   # Project does not compile with PromiseKit 6.7.1
   # see: https://github.com/mxcl/PromiseKit/issues/990
@@ -60,8 +58,8 @@ def shared_pods
   # third party pods
   ###
 
-  pod 'AFNetworking', inhibit_warnings: true
-  pod 'PureLayout', :inhibit_warnings => true
+  pod 'AFNetworking', '~> 3.2.1', inhibit_warnings: true
+  pod 'PureLayout', '~> 3.1.4', :inhibit_warnings => true
   pod 'Reachability', :inhibit_warnings => true
   pod 'YYImage', :inhibit_warnings => true
 end
@@ -75,7 +73,7 @@ target 'Signal' do
   # Loki third party pods
   ###
 
-  pod 'GCDWebServer', '~> 3.0', :inhibit_warnings => true # TODO: We can probably ditch this as we're not doing P2P anymore
+  pod 'GCDWebServer', '~> 3.5.2', :inhibit_warnings => true # TODO: We can probably ditch this as we're not doing P2P anymore
   pod 'FeedKit', '~> 8.1', :inhibit_warnings => true
   pod 'CryptoSwift', '~> 1.0', :inhibit_warnings => true
   pod 'NVActivityIndicatorView', '~> 4.7', :inhibit_warnings => true

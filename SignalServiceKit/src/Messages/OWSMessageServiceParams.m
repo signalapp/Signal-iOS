@@ -4,7 +4,7 @@
 
 #import "OWSMessageServiceParams.h"
 #import "TSConstants.h"
-#import <SignalCoreKit/NSData+OWS.h>
+#import <SessionCoreKit/NSData+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

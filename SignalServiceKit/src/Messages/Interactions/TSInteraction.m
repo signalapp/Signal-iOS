@@ -5,8 +5,8 @@
 #import "TSInteraction.h"
 #import "TSDatabaseSecondaryIndexes.h"
 #import "TSThread.h"
-#import <SignalCoreKit/NSDate+OWS.h>
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SessionCoreKit/NSDate+OWS.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

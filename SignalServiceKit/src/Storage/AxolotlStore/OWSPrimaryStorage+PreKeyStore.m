@@ -6,9 +6,9 @@
 #import "OWSPrimaryStorage+keyFromIntLong.h"
 #import "TSStorageKeys.h"
 #import "YapDatabaseConnection+OWS.h"
-#import <AxolotlKit/AxolotlExceptions.h>
-#import <AxolotlKit/SessionBuilder.h>
-#import <SignalCoreKit/Cryptography.h>
+#import <SessionAxolotlKit/AxolotlExceptions.h>
+#import <SessionAxolotlKit/SessionBuilder.h>
+#import <SessionCoreKit/Cryptography.h>
 
 #define OWSPrimaryStoragePreKeyStoreCollection @"TSStorageManagerPreKeyStoreCollection"
 #define TSNextPrekeyIdKey @"TSStorageInternalSettingsNextPreKeyId"

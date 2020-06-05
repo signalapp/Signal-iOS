@@ -10,7 +10,7 @@
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/UIColor+OWS.h>
-#import <SignalServiceKit/OWSContact.h>
+#import <SessionServiceKit/OWSContact.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

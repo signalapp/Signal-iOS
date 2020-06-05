@@ -7,15 +7,15 @@
 #import "OWSDatabaseMigrationRunner.h"
 #import "SignalKeyingStorage.h"
 #import <SignalMessaging/SignalMessaging-Swift.h>
-#import <SignalServiceKit/AppContext.h>
-#import <SignalServiceKit/AppVersion.h>
-#import <SignalServiceKit/NSUserDefaults+OWS.h>
-#import <SignalServiceKit/OWSPrimaryStorage+Loki.h>
-#import <SignalServiceKit/OWSRequestFactory.h>
-#import <SignalServiceKit/TSAccountManager.h>
-#import <SignalServiceKit/TSNetworkManager.h>
-#import <SignalServiceKit/TSThread.h>
-#import <SignalServiceKit/TSGroupThread.h>
+#import <SessionServiceKit/AppContext.h>
+#import <SessionServiceKit/AppVersion.h>
+#import <SessionServiceKit/NSUserDefaults+OWS.h>
+#import <SessionServiceKit/OWSPrimaryStorage+Loki.h>
+#import <SessionServiceKit/OWSRequestFactory.h>
+#import <SessionServiceKit/TSAccountManager.h>
+#import <SessionServiceKit/TSNetworkManager.h>
+#import <SessionServiceKit/TSThread.h>
+#import <SessionServiceKit/TSGroupThread.h>
 #import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN

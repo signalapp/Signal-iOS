@@ -8,10 +8,10 @@
 #import "NotificationsProtocol.h"
 #import "OWSIdentityManager.h"
 #import "SSKEnvironment.h"
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
-#import <SignalMetadataKit/SignalMetadataKit-Swift.h>
+#import <SessionMetadataKit/SessionMetadataKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

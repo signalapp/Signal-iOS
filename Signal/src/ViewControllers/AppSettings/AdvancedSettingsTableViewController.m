@@ -13,7 +13,7 @@
 #import <Reachability/Reachability.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSPreferences.h>
-#import <SignalServiceKit/OWSSignalService.h>
+#import <SessionServiceKit/OWSSignalService.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

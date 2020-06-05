@@ -47,8 +47,8 @@
 #import <ContactsUI/CNContactViewController.h>
 #import <MobileCoreServices/UTCoreTypes.h>
 #import <PromiseKit/AnyPromise.h>
-#import <SignalCoreKit/NSDate+OWS.h>
-#import <SignalCoreKit/Threading.h>
+#import <SessionCoreKit/NSDate+OWS.h>
+#import <SessionCoreKit/Threading.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactOffersInteraction.h>
 #import <SignalMessaging/OWSContactsManager.h>
@@ -60,35 +60,35 @@
 #import <SignalMessaging/ThreadUtil.h>
 #import <SignalMessaging/UIUtil.h>
 #import <SignalMessaging/UIViewController+OWS.h>
-#import <SignalServiceKit/Contact.h>
-#import <SignalServiceKit/ContactsUpdater.h>
-#import <SignalServiceKit/MimeTypeUtil.h>
-#import <SignalServiceKit/NSString+SSK.h>
-#import <SignalServiceKit/NSTimer+OWS.h>
-#import <SignalServiceKit/OWSAddToContactsOfferMessage.h>
-#import <SignalServiceKit/OWSAddToProfileWhitelistOfferMessage.h>
-#import <SignalServiceKit/OWSAttachmentDownloads.h>
-#import <SignalServiceKit/OWSBlockingManager.h>
-#import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
-#import <SignalServiceKit/OWSIdentityManager.h>
-#import <SignalServiceKit/OWSMessageManager.h>
-#import <SignalServiceKit/OWSMessageSender.h>
-#import <SignalServiceKit/OWSMessageUtils.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
-#import <SignalServiceKit/OWSPrimaryStorage+Loki.h>
-#import <SignalServiceKit/OWSReadReceiptManager.h>
-#import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <SignalServiceKit/TSAccountManager.h>
-#import <SignalServiceKit/TSGroupModel.h>
-#import <SignalServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
-#import <SignalServiceKit/TSNetworkManager.h>
-#import <SignalServiceKit/TSQuotedMessage.h>
+#import <SessionServiceKit/Contact.h>
+#import <SessionServiceKit/ContactsUpdater.h>
+#import <SessionServiceKit/MimeTypeUtil.h>
+#import <SessionServiceKit/NSString+SSK.h>
+#import <SessionServiceKit/NSTimer+OWS.h>
+#import <SessionServiceKit/OWSAddToContactsOfferMessage.h>
+#import <SessionServiceKit/OWSAddToProfileWhitelistOfferMessage.h>
+#import <SessionServiceKit/OWSAttachmentDownloads.h>
+#import <SessionServiceKit/OWSBlockingManager.h>
+#import <SessionServiceKit/OWSDisappearingMessagesConfiguration.h>
+#import <SessionServiceKit/OWSIdentityManager.h>
+#import <SessionServiceKit/OWSMessageManager.h>
+#import <SessionServiceKit/OWSMessageSender.h>
+#import <SessionServiceKit/OWSMessageUtils.h>
+#import <SessionServiceKit/OWSPrimaryStorage.h>
+#import <SessionServiceKit/OWSPrimaryStorage+Loki.h>
+#import <SessionServiceKit/OWSReadReceiptManager.h>
+#import <SessionServiceKit/OWSVerificationStateChangeMessage.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
+#import <SessionServiceKit/TSAccountManager.h>
+#import <SessionServiceKit/TSGroupModel.h>
+#import <SessionServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
+#import <SessionServiceKit/TSNetworkManager.h>
+#import <SessionServiceKit/TSQuotedMessage.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseAutoView.h>
 #import <YapDatabase/YapDatabaseViewChange.h>
 #import <YapDatabase/YapDatabaseViewConnection.h>
-#import <SignalMetaDataKit/SignalMetadataKit-Swift.h>
+#import <SessionMetadataKit/SessionMetadataKit-Swift.h>
 
 @import Photos;
 
@@ -1205,7 +1205,7 @@ typedef enum : NSUInteger {
     bannerView.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"banner_close");
 
     [self.view addSubview:bannerView];
-    [bannerView autoPinToTopLayoutGuideOfViewController:self withInset:10];
+    [bannerView autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.view withOffset:10.0f];
     [bannerView autoHCenterInSuperview];
 
     CGFloat labelDesiredWidth = [label sizeThatFits:CGSizeZero].width;

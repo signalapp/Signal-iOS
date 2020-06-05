@@ -94,7 +94,7 @@ public class Onboarding2FAViewController: OnboardingBaseViewController {
         stackView.isLayoutMarginsRelativeArrangement = true
         view.addSubview(stackView)
         stackView.autoPinWidthToSuperview()
-        stackView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
+        stackView.autoPinEdge(.top, to: .top, of: view)
         autoPinView(toBottomOfViewControllerOrKeyboard: stackView, avoidNotch: true)
 
         // Ensure whitespace is balanced, so inputs are vertically centered.

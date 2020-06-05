@@ -53,8 +53,8 @@ public class OWS2FAReminderViewController: UIViewController, PinEntryViewDelegat
         view.addSubview(pinEntryView)
 
         pinEntryView.autoPinWidthToSuperview(withMargin: 20)
-        pinEntryView.autoPin(toTopLayoutGuideOf: self, withInset: ScaleFromIPhone5(16))
-        pinEntryView.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
+        pinEntryView.autoPinEdge(.top, to: .top, of: view, withOffset: ScaleFromIPhone5(16))
+        pinEntryView.autoPinEdge(.bottom, to: .bottom, of: view)
     }
 
     // MARK: PinEntryViewDelegate

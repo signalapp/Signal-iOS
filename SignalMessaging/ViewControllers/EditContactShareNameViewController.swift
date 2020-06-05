@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import SignalServiceKit
+import SessionServiceKit
 
 @objc
 public protocol ContactNameFieldViewDelegate: class {
@@ -257,7 +257,7 @@ public class EditContactShareNameViewController: OWSViewController, ContactNameF
         self.view.addSubview(scrollView)
         scrollView.layoutMargins = .zero
         scrollView.autoPinWidthToSuperview()
-        scrollView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
+        scrollView.autoPinEdge(.top, to: .top, of: view)
         scrollView.autoPinEdge(toSuperviewEdge: .bottom)
 
         let fieldsView = createFieldsView()
