@@ -393,6 +393,24 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
 
 // MARK: -
 
+private func dbQueryLog(_ value: String) {
+    if SDSDatabaseStorage.shouldLogDBQueries {
+        func filter(_ input: String) -> String {
+            var result = input
+
+            while let matchRange = result.range(of: "x'[0-9a-f\n]*'", options: .regularExpression) {
+                let charCount = input.distance(from: matchRange.lowerBound, to: matchRange.upperBound)
+                let byteCount = Int64(charCount) / 2
+                let formattedByteCount = ByteCountFormatter.string(fromByteCount: byteCount, countStyle: .memory)
+                result = result.replacingCharacters(in: matchRange, with: "x'<\(formattedByteCount)>'")
+            }
+
+            return result
+        }
+        Logger.info(filter(value))
+    }
+}
+
 private struct GRDBStorage {
 
     let pool: DatabasePool
@@ -433,21 +451,7 @@ private struct GRDBStorage {
         configuration.readonly = false
         configuration.foreignKeysEnabled = true // Default is already true
         configuration.trace = { logString in
-            if SDSDatabaseStorage.shouldLogDBQueries {
-                func filter(_ input: String) -> String {
-                    var result = input
-
-                    while let matchRange = result.range(of: "x'[0-9a-f\n]*'", options: .regularExpression) {
-                        let charCount = input.distance(from: matchRange.lowerBound, to: matchRange.upperBound)
-                        let byteCount = Int64(charCount) / 2
-                        let formattedByteCount = ByteCountFormatter.string(fromByteCount: byteCount, countStyle: .memory)
-                        result = result.replacingCharacters(in: matchRange, with: "x'<\(formattedByteCount)>'")
-                    }
-
-                    return result
-                }
-                Logger.info(filter(logString))
-            }
+            dbQueryLog(logString)
         }
         // Useful when your app opens multiple databases
         configuration.label = (isForCheckpointingQueue
