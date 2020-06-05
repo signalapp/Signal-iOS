@@ -80,7 +80,8 @@ public class UIDatabaseObserver: NSObject {
         _snapshotDelegates = _snapshotDelegates.filter { $0.value != nil} + [Weak(value: snapshotDelegate)]
     }
 
-    let pool: DatabasePool
+    private let pool: DatabasePool
+    private let checkpointingQueue: DatabaseQueue?
 
     internal var latestSnapshot: DatabaseSnapshot {
         didSet {
@@ -95,9 +96,11 @@ public class UIDatabaseObserver: NSObject {
     // This property should only be accessed on the main thread.
     private var lastCheckpointDate: Date?
 
-    init(pool: DatabasePool) throws {
+    init(pool: DatabasePool, checkpointingQueue: DatabaseQueue?) throws {
         self.pool = pool
+        self.checkpointingQueue = checkpointingQueue
         self.latestSnapshot = try pool.makeSnapshot()
+
         super.init()
 
         NotificationCenter.default.addObserver(self,
@@ -221,15 +224,49 @@ extension UIDatabaseObserver: TransactionObserver {
     // See: https://github.com/groue/GRDB.swift/issues/619
     func fastForwardDatabaseSnapshot(db: Database) throws {
         AssertIsOnMainThread()
+
         // [1] end the old transaction from the old db state
         try db.commit()
 
         // [2] Checkpoint the WAL
-        // Checkpointing is the process of moving data from the WAL back into the main database file.
-        // Without it, the WAL will grow indefinitely.
+        checkpointIfNecessary()
+
+        // [3] open a new transaction from the current db state
+        try db.beginTransaction(.deferred)
+
+        // [4] do *any* read to acquire non-deferred read lock
+        _ = try Row.fetchCursor(db, sql: "SELECT rootpage FROM sqlite_master LIMIT 1").next()
+    }
+
+    private func checkpointIfNecessary() {
+        AssertIsOnMainThread()
+
+        guard let checkpointingQueue = checkpointingQueue else {
+            // We only checkpoint in the main app;
+            // checkpointingQueue will not be set in the app extensions.
+            assert(!CurrentAppContext().isMainApp)
+            return
+        }
+        assert(CurrentAppContext().isMainApp)
+
+        // Checkpointing is the process of integrating the WAL into the main database file.
+        // Without it, the WAL will grow indefinitely. A large WAL affects read performance.
         //
-        // Checkpointing has several flavors, including `passive` which opportunistically checkpoints
-        // what it can without requiring blocking of reads or writes.
+        // Checkpointing has several flavors: passive, full, restart, truncate.
+        //
+        // * Passive checkpoints abort immediately if there are any database
+        //   readers or writers. This makes them "cheap" in the sense that
+        //   they won't block the main thread for long.
+        //   However they only integrate WAL contents, they don't "restart" or
+        //   "truncate" so they don't inherently limit WAL growth. We use them
+        //   because they're cheap and they help our other checkpoints cheaper
+        //   by ensuring that most of the WAL is integrated at any given time.
+        // * Full/Restart/Truncate checkpoints will block using the busy-handler.
+        //   We use truncate checkpoints since they truncate the WAL file.
+        //   See GRDBStorage.buildConfiguration for our busy-handler (aka busyMode callback).
+        //   It aborts after ~50ms.
+        //   These checkpoints are more expensive and will block the main thread
+        //   while they do their work but will limit WAL growth.
         //
         // SQLite's default auto-checkpointing uses `passive` checkpointing, but because our
         // DatabaseSnapshot maintains a long running read transaction, passive checkpointing can
@@ -240,18 +277,24 @@ extension UIDatabaseObserver: TransactionObserver {
         // *right here*, between committing the last transaction and starting the next one.
         //
         // Solution:
-        //   Perform an explicit passive checkpoint sync after every write.
-        //   It will probably not succeed often in truncating the database, but
-        //   we only need it to succeed periodically. This might have an
-        //   unacceptable perf cost, and it might not succeed often enough.
         //
-        //   We periodically try to perform a restart checkpoint which
-        //   can limit WAL size when truncation isn't possible.
+        // * Perform passive checkpoints often to ensure WAL contents are mostly integrated
+        //   at any given time.
+        // * Perform truncate checkpoints sometimes to limit WAL size.
+        // * Limit checkpoint frequency by time so that heavy write activity won't bog down
+        //   the main thread.
+        // * Perform checkpoints using a dedicated GRDB DatabaseQueue so that checkpoints
+        //   don't block on writes. GRDB DatabasePool serializes writes on a queue that
+        //   doesn't honor the busy mode. This also makes the checkpoints very likely to succeed.
+        //
+        // See: https://www.sqlite.org/c3ref/wal_checkpoint_v2.html
+        // See: https://www.sqlite.org/wal.html
         let shouldTryToCheckpoint = { () -> Bool in
             guard !TSAccountManager.sharedInstance().isTransferInProgress else {
                 return false
             }
-            guard let lastCheckpointDate = lastCheckpointDate else {
+
+            guard let lastCheckpointDate = self.lastCheckpointDate else {
                 return true
             }
             let maxCheckpointFrequency: TimeInterval = 0.1
@@ -261,40 +304,27 @@ extension UIDatabaseObserver: TransactionObserver {
             }
             return true
         }()
-        if shouldTryToCheckpoint {
-            // Run restart checkpoints after 1/N of writes.
-            let restartCheckpointFraction: UInt32 = 30
-            let shouldDoRestartCheckpoint = arc4random_uniform(restartCheckpointFraction) == 0
-            do {
-                let mode: Database.CheckpointMode = shouldDoRestartCheckpoint ? .restart : .passive
-                try self.checkpoint(mode: mode)
-            } catch {
-                owsFailDebug("error \(error)")
-            }
-            lastCheckpointDate = Date()
-        }
-
-        // [3] open a new transaction from the current db state
-        try db.beginTransaction(.deferred)
-
-        // [4] do *any* read to acquire non-deferred read lock
-        _ = try Row.fetchCursor(db, sql: "SELECT rootpage FROM sqlite_master LIMIT 1").next()
-    }
-
-    private static let isRunningCheckpoint = AtomicBool(false)
-
-    func checkpoint(mode: Database.CheckpointMode) throws {
-        do {
-            try UIDatabaseObserver.isRunningCheckpoint.transition(from: false, to: true)
-        } catch {
-            Logger.warn("Skipping checkpoint; already running checkpoint.")
+        guard shouldTryToCheckpoint else {
             return
         }
-        defer {
-            UIDatabaseObserver.isRunningCheckpoint.set(false)
-        }
 
-        let result = try GRDBDatabaseStorageAdapter.checkpoint(pool: pool, mode: mode)
+        // Run truncate checkpoints after 1/N of writes.
+        let shouldDoTruncateCheckpoint = arc4random_uniform(10) == 0
+        let mode: Database.CheckpointMode = shouldDoTruncateCheckpoint ? .truncate : .passive
+        do {
+            try checkpoint(mode: mode,
+                           checkpointingQueue: checkpointingQueue)
+        } catch {
+            owsFailDebug("error \(error)")
+        }
+        lastCheckpointDate = Date()
+    }
+
+    func checkpoint(mode: Database.CheckpointMode,
+                    checkpointingQueue: DatabaseQueue) throws {
+        AssertIsOnMainThread()
+
+        let result = try GRDBDatabaseStorageAdapter.checkpoint(checkpointingQueue: checkpointingQueue, mode: mode)
 
         let pageSize: Int32 = 4 * 1024
         let walFileSizeBytes = result.walSizePages * pageSize
