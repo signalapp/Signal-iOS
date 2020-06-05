@@ -93,6 +93,7 @@ NS_ASSUME_NONNULL_BEGIN
                                             [self.messageSenderJobQueue addMessage:outgoingMessagePreparer
                                                                        transaction:writeTransaction];
                                         },
+                                        // Completion:
                                         benchmarkCompletion);
                                 }];
 

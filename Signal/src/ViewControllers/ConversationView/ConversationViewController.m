@@ -3311,6 +3311,7 @@ typedef enum : NSUInteger {
                 [contactShare.dbRecord saveAvatarImage:contactShare.avatarImage transaction:transaction];
             }
         },
+        // Completion:
         ^{
             TSOutgoingMessage *message = [ThreadUtil enqueueMessageWithContactShare:contactShare.dbRecord
                                                                              thread:self.thread];

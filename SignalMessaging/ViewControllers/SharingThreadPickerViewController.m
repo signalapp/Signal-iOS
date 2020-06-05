@@ -378,6 +378,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
                     [contactShare.dbRecord saveAvatarImage:contactShare.avatarImage transaction:transaction];
                 }
             },
+            // Completion:
             ^{
                 __block TSOutgoingMessage *outgoingMessage = nil;
                 outgoingMessage = [ThreadUtil sendMessageNonDurablyWithContactShare:contactShare.dbRecord
@@ -609,6 +610,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
                 }
             }
         },
+        // Completion:
         ^{
             [self resendMessage:message fromViewController:fromViewController];
         });
