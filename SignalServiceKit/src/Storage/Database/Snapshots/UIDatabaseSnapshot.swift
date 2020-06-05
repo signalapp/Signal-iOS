@@ -297,7 +297,7 @@ extension UIDatabaseObserver: TransactionObserver {
             guard let lastCheckpointDate = self.lastCheckpointDate else {
                 return true
             }
-            let maxCheckpointFrequency: TimeInterval = 0.1
+            let maxCheckpointFrequency: TimeInterval = 0.25
             guard abs(lastCheckpointDate.timeIntervalSinceNow) >= maxCheckpointFrequency else {
                 Logger.verbose("Skipping checkpoint due to frequency")
                 return false
