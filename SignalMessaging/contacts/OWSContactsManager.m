@@ -52,8 +52,6 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
 @implementation OWSContactsManager
 
-@synthesize signalAccountReadCache = _signalAccountReadCache;
-
 #pragma mark - Dependencies
 
 - (SDSDatabaseStorage *)databaseStorage
@@ -64,6 +62,11 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 - (OWSProfileManager *)profileManager
 {
     return OWSProfileManager.sharedManager;
+}
+
+- (SignalAccountReadCache *)signalAccountReadCache
+{
+    return SSKEnvironment.shared.modelReadCaches.signalAccountReadCache;
 }
 
 #pragma mark -
@@ -83,7 +86,6 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
     _allContacts = @[];
     _allContactsMap = @{};
-    _signalAccountReadCache = [SignalAccountReadCache new];
     _signalAccounts = @[];
     _systemContactsFetcher = [SystemContactsFetcher new];
     _systemContactsFetcher.delegate = self;
