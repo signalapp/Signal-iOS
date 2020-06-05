@@ -96,6 +96,15 @@ public final class SyncMessagesProtocol : NSObject {
         let hexEncodedPublicKey = envelope.source!
         return LokiDatabaseUtilities.isUserLinkedDevice(hexEncodedPublicKey, transaction: transaction)
     }
+    
+    @objc(addForceSyncMessageTimestamp:from:)
+    public static func addForceSyncMessageTimestamp(_ timestamp: UInt64, from hexEncodedPublicKey: String) {
+        var timestamps: Set<UInt64> = syncMessageTimestamps[hexEncodedPublicKey] ?? []
+        if timestamps.contains(timestamp) {
+            timestamps.remove(timestamp)
+        }
+        syncMessageTimestamps[hexEncodedPublicKey] = timestamps
+    }
 
     // TODO: We should probably look at why sync messages are being duplicated rather than doing this
     @objc(isDuplicateSyncMessage:fromHexEncodedPublicKey:)

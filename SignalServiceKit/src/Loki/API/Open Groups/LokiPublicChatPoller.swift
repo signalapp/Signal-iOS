@@ -150,6 +150,7 @@ public final class LokiPublicChatPoller : NSObject {
                     if !wasSentByCurrentUser {
                         content.setDataMessage(try! dataMessage.build())
                     } else {
+                        SyncMessagesProtocol.addForceSyncMessageTimestamp(message.timestamp, from: senderHexEncodedPublicKey)
                         let syncMessageSentBuilder = SSKProtoSyncMessageSent.builder()
                         syncMessageSentBuilder.setMessage(try! dataMessage.build())
                         syncMessageSentBuilder.setDestination(userHexEncodedPublicKey)
