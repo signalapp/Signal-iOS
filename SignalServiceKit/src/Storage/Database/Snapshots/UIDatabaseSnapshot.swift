@@ -244,9 +244,11 @@ extension UIDatabaseObserver: TransactionObserver {
         guard let checkpointingQueue = checkpointingQueue else {
             // We only checkpoint in the main app;
             // checkpointingQueue will not be set in the app extensions.
-            assert(CurrentAppContext().isMainApp)
+            assert(!CurrentAppContext().isMainApp)
             return
         }
+        assert(CurrentAppContext().isMainApp)
+
         // Checkpointing is the process of integrating the WAL into the main database file.
         // Without it, the WAL will grow indefinitely. A large WAL affects read performance.
         //
