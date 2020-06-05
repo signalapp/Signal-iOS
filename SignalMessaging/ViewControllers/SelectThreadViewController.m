@@ -333,10 +333,10 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     __block TSThread *thread = nil;
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         thread = [TSContactThread getOrCreateThreadWithContactAddress:signalAccount.recipientAddress
                                                           transaction:transaction];
-    }];
+    });
     OWSAssertDebug(thread);
 
     [self.selectThreadViewDelegate threadWasSelected:thread];

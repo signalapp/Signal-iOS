@@ -13,7 +13,10 @@ public class SDSTransactable: NSObject {
         owsFail("Method should be implemented by subclasses.")
     }
 
-    public func write(block: @escaping (SDSAnyWriteTransaction) -> Void) {
+    public func write(file: String = #file,
+                      function: String = #function,
+                      line: Int = #line,
+                      block: @escaping (SDSAnyWriteTransaction) -> Void) {
         owsFail("Method should be implemented by subclasses.")
     }
 }
@@ -38,17 +41,38 @@ public extension SDSTransactable {
         }
     }
 
-    func asyncWrite(block: @escaping (SDSAnyWriteTransaction) -> Void) {
-        asyncWrite(block: block, completion: { })
+    func asyncWrite(file: String = #file,
+                    function: String = #function,
+                    line: Int = #line,
+                    block: @escaping (SDSAnyWriteTransaction) -> Void) {
+        asyncWrite(file: file,
+                   function: function,
+                   line: line,
+                   block: block,
+                   completion: { })
     }
 
-    func asyncWrite(block: @escaping (SDSAnyWriteTransaction) -> Void, completion: @escaping () -> Void) {
-        asyncWrite(block: block, completionQueue: .main, completion: completion)
+    func asyncWrite(file: String = #file,
+                    function: String = #function,
+                    line: Int = #line,
+                    block: @escaping (SDSAnyWriteTransaction) -> Void, completion: @escaping () -> Void) {
+        asyncWrite(file: file,
+                   function: function,
+                   line: line,
+                   block: block,
+                   completionQueue: .main,
+                   completion: completion)
     }
 
-    func asyncWrite(block: @escaping (SDSAnyWriteTransaction) -> Void, completionQueue: DispatchQueue, completion: @escaping () -> Void) {
+    func asyncWrite(file: String = #file,
+                    function: String = #function,
+                    line: Int = #line,
+                    block: @escaping (SDSAnyWriteTransaction) -> Void, completionQueue: DispatchQueue, completion: @escaping () -> Void) {
         DispatchQueue.global().async {
-            self.write(block: block)
+            self.write(file: file,
+                       function: function,
+                       line: line,
+                       block: block)
 
             completionQueue.async(execute: completion)
         }
@@ -88,19 +112,33 @@ public extension SDSTransactable {
         return AnyPromise(write(.promise, block) as Promise<Void>)
     }
 
-    func write<T>(_: PMKNamespacer, _ block: @escaping (SDSAnyWriteTransaction) -> T) -> Promise<T> {
+    func write<T>(_: PMKNamespacer,
+                  file: String = #file,
+                  function: String = #function,
+                  line: Int = #line,
+                  _ block: @escaping (SDSAnyWriteTransaction) -> T) -> Promise<T> {
         return Promise { resolver in
             DispatchQueue.global().async {
-                resolver.fulfill(self.write(block: block))
+                resolver.fulfill(self.write(file: file,
+                                            function: function,
+                                            line: line,
+                                            block: block))
             }
         }
     }
 
-    func write<T>(_: PMKNamespacer, _ block: @escaping (SDSAnyWriteTransaction) throws -> T) -> Promise<T> {
+    func write<T>(_: PMKNamespacer,
+                  file: String = #file,
+                  function: String = #function,
+                  line: Int = #line,
+                  _ block: @escaping (SDSAnyWriteTransaction) throws -> T) -> Promise<T> {
         return Promise { resolver in
             DispatchQueue.global().async {
                 do {
-                    resolver.fulfill(try self.write(block: block))
+                    resolver.fulfill(try self.write(file: file,
+                                                    function: function,
+                                                    line: line,
+                                                    block: block))
                 } catch {
                     resolver.reject(error)
                 }
@@ -141,19 +179,29 @@ public extension SDSTransactable {
     }
 
     @discardableResult
-    func write<T>(block: @escaping (SDSAnyWriteTransaction) -> T) -> T {
+    func write<T>(file: String = #file,
+                  function: String = #function,
+                  line: Int = #line,
+                  block: @escaping (SDSAnyWriteTransaction) -> T) -> T {
         var value: T!
-        write { (transaction) in
+        write(file: file,
+              function: function,
+              line: line) { (transaction) in
             value = block(transaction)
         }
         return value
     }
 
     @discardableResult
-    func write<T>(block: @escaping (SDSAnyWriteTransaction) throws -> T) throws -> T {
+    func write<T>(file: String = #file,
+                  function: String = #function,
+                  line: Int = #line,
+                  block: @escaping (SDSAnyWriteTransaction) throws -> T) throws -> T {
         var value: T!
         var thrown: Error?
-        write { (transaction) in
+        write(file: file,
+              function: function,
+              line: line) { (transaction) in
             do {
                 value = try block(transaction)
             } catch {

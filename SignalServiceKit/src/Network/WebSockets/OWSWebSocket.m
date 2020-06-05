@@ -812,11 +812,11 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
             }
 
             if (!success) {
-                [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
                     ThreadlessErrorMessage *errorMessage = [ThreadlessErrorMessage corruptedMessageInUnknownThread];
                     [self.notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
                                                                        transaction:transaction];
-                }];
+                });
             }
 
             dispatch_async(dispatch_get_main_queue(), ^{

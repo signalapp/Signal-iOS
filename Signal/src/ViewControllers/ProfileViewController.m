@@ -88,11 +88,11 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     _profileViewMode = profileViewMode;
     _completionHandler = completionHandler;
 
-    [ProfileViewController.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *transaction) {
         [ProfileViewController.keyValueStore setDate:[NSDate new]
                                                  key:kProfileView_LastPresentedDate
                                          transaction:transaction];
-    }];
+    });
 
     return self;
 }
@@ -574,11 +574,11 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 
                                   // Clear the profile name experience upgrade if the user edits their profile name,
                                   // even if they didn't dismiss the reminder directly.
-                                  [ProfileViewController.databaseStorage
-                                      asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                                  DatabaseStorageAsyncWrite(
+                                      SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *transaction) {
                                           [ExperienceUpgradeManager
                                               clearProfileNameReminderWithTransaction:transaction.unwrapGrdbWrite];
-                                      }];
+                                      });
                               }];
                           })
                           .catch(^(NSError *error) {

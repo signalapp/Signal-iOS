@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "SSKPreKeyStore.h"
@@ -92,22 +92,22 @@ NSString *const TSNextPrekeyIdKey = @"TSStorageInternalSettingsNextPreKeyId";
             preKeyId++;
         }
 
-        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
             [self.metadataStore setInt:preKeyId key:TSNextPrekeyIdKey transaction:transaction];
-        }];
+        });
     }
     return preKeyRecords;
 }
 
 - (void)storePreKeyRecords:(NSArray<PreKeyRecord *> *)preKeyRecords
 {
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         for (PreKeyRecord *record in preKeyRecords) {
             [self.keyStore setPreKeyRecord:record
                                     forKey:[SDSKeyValueStore keyWithInt:record.Id]
                                transaction:transaction];
         }
-    }];
+    });
 }
 
 - (nullable PreKeyRecord *)loadPreKey:(int)preKeyId
@@ -121,9 +121,9 @@ NSString *const TSNextPrekeyIdKey = @"TSStorageInternalSettingsNextPreKeyId";
 
 - (void)storePreKey:(int)preKeyId preKeyRecord:(PreKeyRecord *)record
 {
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [self.keyStore setPreKeyRecord:record forKey:[SDSKeyValueStore keyWithInt:preKeyId] transaction:transaction];
-    }];
+    });
 }
 
 - (void)removePreKey:(int)preKeyId

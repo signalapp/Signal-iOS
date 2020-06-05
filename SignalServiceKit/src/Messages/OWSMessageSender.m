@@ -441,7 +441,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         // unorthodox.
         __block NSError *error;
         __block TSOutgoingMessage *message;
-        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
             message = [outgoingMessagePreparer prepareMessageWithTransaction:transaction error:&error];
             if (error != nil) {
                 return;
@@ -452,7 +452,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 OWSAssertDebug([message.body lengthOfBytesUsingEncoding:NSUTF8StringEncoding]
                     <= kOversizeTextMessageSizeThreshold);
             }
-        }];
+        });
 
         if (error != nil) {
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
@@ -493,10 +493,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
         OWSLogDebug(@"Removing successful temporary attachment message with attachment ids: %@", message.attachmentIds);
 
-        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
             [message anyRemoveWithTransaction:transaction];
             [message removeTemporaryAttachmentsWithTransaction:transaction];
-        }];
+        });
     };
 
     void (^failureWithDeleteHandler)(NSError *error) = ^(NSError *error) {
@@ -504,10 +504,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
         OWSLogDebug(@"Removing failed temporary attachment message with attachment ids: %@", message.attachmentIds);
 
-        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
             [message anyRemoveWithTransaction:transaction];
             [message removeTemporaryAttachmentsWithTransaction:transaction];
-        }];
+        });
     };
 
     [self sendAttachment:dataSource
@@ -682,12 +682,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         AnyPromise *sendPromise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
             __block OWSUDSendingAccess *_Nullable udSendingAccess;
             if (senderCertificate != nil && !recipient.address.isLocalAddress) {
-                [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
                     udSendingAccess = [self.udManager udSendingAccessForAddress:recipient.address
                                                               requireSyncAccess:YES
                                                               senderCertificate:senderCertificate
                                                                     transaction:transaction];
-                }];
+                });
             }
 
             OWSMessageSend *messageSend = [[OWSMessageSend alloc] initWithMessage:message
@@ -814,12 +814,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         [NSMutableSet setWithArray:message.sendingRecipientAddresses];
     [obsoleteRecipientAddresses minusSet:[NSSet setWithArray:recipientAddresses]];
     if (obsoleteRecipientAddresses.count > 0) {
-        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
             for (SignalServiceAddress *obsoleteAddress in obsoleteRecipientAddresses) {
                 // Mark this recipient as "skipped".
                 [message updateWithSkippedRecipient:obsoleteAddress transaction:transaction];
             }
-        }];
+        });
     }
 
     if (recipientAddresses.count < 1) {
@@ -900,9 +900,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 - (nullable TSThread *)threadForMessageWithSneakyTransaction:(TSMessage *)message
 {
     __block TSThread *_Nullable thread = nil;
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         thread = [self threadForMessage:message transaction:transaction];
-    }];
+    });
     return thread;
 }
 
@@ -929,7 +929,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                       message:(TSOutgoingMessage *)message
                        thread:(TSThread *)thread
 {
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         if (thread.isGroupThread) {
             // Mark as "skipped" group members who no longer have signal accounts.
             [message updateWithSkippedRecipient:recipient.address transaction:transaction];
@@ -947,7 +947,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         // TODO: Should we deleteAllSessionsForContact here?
         //       If so, we'll need to avoid doing a prekey fetch every
         //       time we try to send a message to an unregistered user.
-    }];
+    });
 }
 
 - (nullable NSArray<NSDictionary *> *)deviceMessagesForMessageSend:(OWSMessageSend *)messageSend
@@ -1171,9 +1171,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
             dispatch_async([OWSDispatch sendingQueue], ^{
                 // This emulates the completion logic of an actual successful send (see below).
-                [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
                     [message updateWithSkippedRecipient:messageSend.localAddress transaction:transaction];
-                }];
+                });
                 messageSend.success();
             });
 
@@ -1315,7 +1315,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     }
 
     dispatch_async([OWSDispatch sendingQueue], ^{
-        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
             [messageSend.message updateWithSentRecipient:messageSend.recipient.address
                                              wasSentByUD:wasSentByUD
                                              transaction:transaction];
@@ -1323,7 +1323,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             // If we've just delivered a message to a user, we know they
             // have a valid Signal account.
             [SignalRecipient markRecipientAsRegisteredAndGet:recipient.address transaction:transaction];
-        }];
+        });
 
         messageSend.success();
     });
@@ -1476,8 +1476,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
     }
 
-    [self.databaseStorage
-        writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(
+        SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *transaction) {
             if (extraDevices.count < 1 && missingDevices.count < 1) {
                 OWSProdFail([OWSAnalyticsEvents messageSenderErrorNoMissingOrExtraDevices]);
             }
@@ -1498,7 +1498,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                 completionHandler();
             });
-        }];
+        });
 }
 
 - (void)handleMessageSentLocally:(TSOutgoingMessage *)message
@@ -1519,19 +1519,19 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         if (contactThread && contactThread.contactAddress.isLocalAddress && !isSyncMessage) {
             OWSAssertDebug(message.recipientAddresses.count == 1);
             // Don't mark self-sent messages as read (or sent) until the sync transcript is sent.
-            [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
                 for (SignalServiceAddress *sendingAddress in message.sendingRecipientAddresses) {
                     [message updateWithReadRecipient:sendingAddress
                                        readTimestamp:message.timestamp
                                          transaction:transaction];
                 }
-            }];
+            });
         }
 
         successParam();
     };
 
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         if (!message.shouldBeSaved) {
             // We don't need to do this work for transient messages.
             return;
@@ -1544,7 +1544,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
         TSOutgoingMessage *latestMessage = (TSOutgoingMessage *)latestCopy;
         [ViewOnceMessages completeIfNecessaryWithMessage:latestMessage transaction:transaction];
-    }];
+    });
 
     if (!message.shouldSyncTranscript) {
         return success();
@@ -1559,9 +1559,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     [self sendSyncTranscriptForMessage:message
                      isRecipientUpdate:isRecipientUpdate
                                success:^{
-                                   [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                                   DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
                                        [message updateWithHasSyncedTranscript:YES transaction:transaction];
-                                   }];
+                                   });
 
                                    success();
                                }
@@ -1579,13 +1579,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     __block TSThread *_Nullable localThread;
     __block TSThread *_Nullable messageThread;
     __block SignalRecipient *recipient;
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         localThread = [TSAccountManager getOrCreateLocalThreadWithTransaction:transaction];
 
         messageThread = [self threadForMessage:message transaction:transaction];
 
         recipient = [SignalRecipient markRecipientAsRegisteredAndGet:localAddress transaction:transaction];
-    }];
+    });
     if (localThread == nil) {
         OWSFailDebug(@"Missing local thread.");
         return;
@@ -1662,7 +1662,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
             __block NSDictionary *_Nullable messageDict;
             __block NSException *encryptionException;
-            [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
                 @try {
                     messageDict = [self throws_encryptedMessageForMessageSend:messageSend
                                                                      deviceId:deviceId
@@ -1671,7 +1671,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 } @catch (NSException *exception) {
                     encryptionException = exception;
                 }
-            }];
+            });
 
             if (encryptionException) {
                 OWSLogInfo(@"Exception during encryption: %@", encryptionException);
@@ -1685,11 +1685,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             }
         } @catch (NSException *exception) {
             if ([exception.name isEqualToString:OWSMessageSenderInvalidDeviceException]) {
-                [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
                     [recipient updateRegisteredRecipientWithDevicesToAdd:nil
                                                          devicesToRemove:@[ deviceId ]
                                                              transaction:transaction];
-                }];
+                });
             } else {
                 @throw exception;
             }
@@ -1711,11 +1711,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     NSString *accountId = messageSend.recipient.accountId;
 
     __block BOOL hasSession;
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         hasSession = [self.sessionStore containsSessionForAddress:recipientAddress
                                                          deviceId:[deviceId intValue]
                                                       transaction:transaction];
-    }];
+    });
     if (hasSession) {
         return;
     }
@@ -1764,13 +1764,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                               identityKeyStore:self.identityManager
                                                                    recipientId:accountId
                                                                       deviceId:[deviceId intValue]];
-        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
             @try {
                 [builder throws_processPrekeyBundle:bundle protocolContext:transaction];
             } @catch (NSException *caughtException) {
                 exception = caughtException;
             }
-        }];
+        });
         if (exception) {
             if ([exception.name isEqualToString:UntrustedIdentityKeyException]) {
                 OWSRaiseExceptionWithUserInfo(UntrustedIdentityKeyException,
@@ -1946,12 +1946,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             return;
         }
 
-        [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
             for (NSUInteger i = 0; i < [devices count]; i++) {
                 int deviceNumber = [devices[i] intValue];
                 [self.sessionStore deleteSessionForAddress:address deviceId:deviceNumber transaction:transaction];
             }
-        }];
+        });
         completionHandler();
     });
 }

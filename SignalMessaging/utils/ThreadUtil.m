@@ -84,15 +84,16 @@ NS_ASSUME_NONNULL_BEGIN
 
     [BenchManager benchAsyncWithTitle:@"Saving outgoing message"
                                 block:^(void (^benchmarkCompletion)(void)) {
-                                    [self.databaseStorage
-                                        asyncWriteWithBlock:^(SDSAnyWriteTransaction *writeTransaction) {
+                                    DatabaseStorageAsyncWriteWithCompletion(
+                                        SDSDatabaseStorage.shared,
+                                        ^(SDSAnyWriteTransaction *writeTransaction) {
                                             [outgoingMessagePreparer
                                                 insertMessageWithLinkPreviewDraft:linkPreviewDraft
                                                                       transaction:writeTransaction];
                                             [self.messageSenderJobQueue addMessage:outgoingMessagePreparer
                                                                        transaction:writeTransaction];
-                                        }
-                                                 completion:benchmarkCompletion];
+                                        },
+                                        benchmarkCompletion);
                                 }];
 
     return outgoingMessagePreparer.unpreparedMessage;
@@ -193,7 +194,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(stickerDraft != nil);
     OWSAssertDebug(thread != nil);
 
-    [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         MessageSticker *_Nullable messageSticker = [self messageStickerForStickerDraft:stickerDraft
                                                                            transaction:transaction];
         if (!messageSticker) {
@@ -205,7 +206,7 @@ NS_ASSUME_NONNULL_BEGIN
         [message updateWithMessageSticker:messageSticker transaction:transaction];
         
         [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
-    }];
+    });
 }
 
 // MARK: Non-Durable Sending
@@ -248,7 +249,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                 quotedReplyModel:quotedReplyModel
                                                      transaction:transaction];
 
-    [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *writeTransaction) {
+    DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *writeTransaction) {
         [outgoingMessagePreparer insertMessageWithLinkPreviewDraft:nil transaction:writeTransaction];
 
         [messageSender sendMessage:outgoingMessagePreparer
@@ -262,7 +263,7 @@ NS_ASSUME_NONNULL_BEGIN
                     completion(error);
                 });
             }];
-    }];
+    });
 
     return outgoingMessagePreparer.unpreparedMessage;
 }
@@ -325,7 +326,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSLogInfo(@"");
 
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [TSThread anyRemoveAllWithInstantationWithTransaction:transaction];
         [TSInteraction anyRemoveAllWithInstantationWithTransaction:transaction];
         [TSAttachment anyRemoveAllWithInstantationWithTransaction:transaction];
@@ -334,7 +335,7 @@ NS_ASSUME_NONNULL_BEGIN
         // Deleting attachments above should be enough to remove any gallery items, but
         // we redunantly clean up *all* gallery items to be safe.
         [AnyMediaGalleryFinder didRemoveAllContentWithTransaction:transaction];
-    }];
+    });
     [TSAttachmentStream deleteAttachmentsFromDisk];
 }
 

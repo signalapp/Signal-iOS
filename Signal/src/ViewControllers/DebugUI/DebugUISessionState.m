@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "DebugUISessionState.h"
@@ -75,23 +75,23 @@ NS_ASSUME_NONNULL_BEGIN
                             }],
             [OWSTableItem itemWithTitle:@"Delete all sessions"
                             actionBlock:^{
-                                [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                                DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
                                     [self.sessionStore deleteAllSessionsForAddress:thread.contactAddress
                                                                        transaction:transaction];
-                                }];
+                                });
                             }],
             [OWSTableItem itemWithTitle:@"Archive all sessions"
                             actionBlock:^{
-                                [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                                DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
                                     [self.sessionStore archiveAllSessionsForAddress:thread.contactAddress
                                                                         transaction:transaction];
-                                }];
+                                });
                             }],
             [OWSTableItem itemWithTitle:@"Send session reset"
                             actionBlock:^{
-                                [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                                DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
                                     [self.sessionResetJobQueue addContactThread:thread transaction:transaction];
-                                }];
+                                });
                             }],
         ]];
     }
@@ -106,10 +106,10 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)clearSessionAndIdentityStore
 {
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [self.sessionStore resetSessionStore:transaction];
         [[OWSIdentityManager sharedManager] clearIdentityState:transaction];
-    }];
+    });
 }
 
 @end

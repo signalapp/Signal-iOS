@@ -574,9 +574,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)didToggleLinkPreviewsEnabled:(UISwitch *)sender
 {
     OWSLogInfo(@"toggled to: %@", (sender.isOn ? @"ON" : @"OFF"));
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [SSKPreferences setAreLinkPreviewsEnabledAndSendSyncMessage:sender.isOn transaction:transaction];
-    }];
+    });
 }
 
 - (void)show2FASettings
@@ -690,9 +690,9 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)arePINRemindersEnabledDidChange:(UISwitch *)sender
 {
     if (sender.isOn) {
-        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
             [OWS2FAManager.sharedManager setAreRemindersEnabled:YES transaction:transaction];
-        }];
+        });
     } else {
         OWSPinConfirmationViewController *pinConfirmationVC = [[OWSPinConfirmationViewController alloc]
                 initWithTitle:NSLocalizedString(@"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE",
@@ -705,9 +705,9 @@ NS_ASSUME_NONNULL_BEGIN
                            @"The button text for the dialog asking user to confirm their PIN to disable reminders".)
             completionHandler:^(BOOL confirmed) {
                 if (confirmed) {
-                    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
                         [OWS2FAManager.sharedManager setAreRemindersEnabled:NO transaction:transaction];
-                    }];
+                    });
 
                     [ExperienceUpgradeManager dismissPINReminderIfNecessary];
                 } else {

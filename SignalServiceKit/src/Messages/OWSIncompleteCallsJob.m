@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSIncompleteCallsJob.h"
@@ -82,7 +82,7 @@ static NSString *const OWSIncompleteCallsJobCallTypeIndex = @"index_calls_on_cal
     OWSAssertDebug(CurrentAppContext().appLaunchTime);
     uint64_t cutoffTimestamp = [NSDate ows_millisecondsSince1970ForDate:CurrentAppContext().appLaunchTime];
 
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [self
             enumerateIncompleteCallsWithBlock:^(TSCall *call) {
                 if (call.timestamp > cutoffTimestamp) {
@@ -105,7 +105,7 @@ static NSString *const OWSIncompleteCallsJobCallTypeIndex = @"index_calls_on_cal
                 count++;
             }
                                   transaction:transaction];
-    }];
+    });
 
     OWSLogInfo(@"Marked %u calls as missed", count);
 }

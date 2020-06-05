@@ -1268,9 +1268,9 @@ void uncaughtExceptionHandler(NSException *exception)
     if ([self.tsAccountManager isRegistered]) {
         OWSLogInfo(@"localAddress: %@", [self.tsAccountManager localAddress]);
 
-        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
             [ExperienceUpgradeFinder markAllCompleteForNewUserWithTransaction:transaction.unwrapGrdbWrite];
-        }];
+        });
 
         // Start running the disappearing messages job in case the newly registered user
         // enables this feature

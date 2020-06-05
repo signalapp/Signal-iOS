@@ -172,9 +172,9 @@ NSString *const ThemeKeyCurrentMode = @"ThemeKeyCurrentMode";
 {
     OWSAssertIsOnMainThread();
 
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [Theme.keyValueStore setUInt:mode key:ThemeKeyCurrentMode transaction:transaction];
-    }];
+    });
 
     NSNumber *previousMode = self.isDarkThemeEnabledNumber;
 

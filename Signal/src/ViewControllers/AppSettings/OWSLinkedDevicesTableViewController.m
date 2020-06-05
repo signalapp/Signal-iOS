@@ -354,9 +354,10 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
             touchedUnlinkControlForDevice:device
                                   success:^{
                                       OWSLogInfo(@"Removing unlinked device with deviceId: %ld", (long)device.deviceId);
-                                      [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-                                          [device anyRemoveWithTransaction:transaction];
-                                      }];
+                                      DatabaseStorageWrite(
+                                          self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+                                              [device anyRemoveWithTransaction:transaction];
+                                          });
                                       [self updateDeviceList];
                                   }];
     }

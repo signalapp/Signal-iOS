@@ -416,7 +416,7 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
                 && !message.isViewOnceMessage) {
                 OWSLogInfo(@"Not queueing visual media download for thread with pending message request");
 
-                [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
                     [attachmentPointer
                         anyUpdateAttachmentPointerWithTransaction:transaction
                                                             block:^(TSAttachmentPointer *pointer) {
@@ -425,7 +425,7 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
                                                                         = TSAttachmentPointerStatePendingMessageRequest;
                                                                 }
                                                             }];
-                }];
+                });
 
                 continue;
             }
@@ -516,7 +516,7 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
         }
 
         __block TSAttachmentPointer *_Nullable attachmentPointer;
-        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
             // Fetch latest to ensure we don't overwrite an attachment stream, resurrect an attachment, etc.
             attachmentPointer =
                 [TSAttachmentPointer anyFetchAttachmentPointerWithUniqueId:job.attachmentId transaction:transaction];
@@ -539,7 +539,7 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
             if (job.message != nil) {
                 [self reloadAndTouchLatestVersionOfMessage:job.message transaction:transaction];
             }
-        }];
+        });
 
         if (!attachmentPointer) {
             // Abort.
@@ -552,7 +552,7 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
             success:^(TSAttachmentStream *attachmentStream) {
                 OWSLogVerbose(@"Attachment download succeeded.");
 
-                [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
                     TSAttachmentPointer *_Nullable existingAttachment =
                         [TSAttachmentPointer anyFetchAttachmentPointerWithUniqueId:attachmentStream.uniqueId
                                                                        transaction:transaction];
@@ -569,7 +569,7 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
                     if (job.message != nil) {
                         [self reloadAndTouchLatestVersionOfMessage:job.message transaction:transaction];
                     }
-                }];
+                });
 
                 job.success(attachmentStream);
 
@@ -582,7 +582,7 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
             failure:^(NSError *error) {
                 OWSLogError(@"Attachment download failed with error: %@", error);
 
-                [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
                     // Fetch latest to ensure we don't overwrite an attachment stream, resurrect an attachment, etc.
                     TSAttachmentPointer *_Nullable attachmentPointer =
                         [TSAttachmentPointer anyFetchAttachmentPointerWithUniqueId:job.attachmentId
@@ -600,7 +600,7 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
                     if (job.message != nil) {
                         [self reloadAndTouchLatestVersionOfMessage:job.message transaction:transaction];
                     }
-                }];
+                });
 
                 @synchronized(self) {
                     [self.downloadingJobMap removeObjectForKey:job.attachmentId];

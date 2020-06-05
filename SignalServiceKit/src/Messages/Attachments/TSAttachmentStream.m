@@ -713,7 +713,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     OWSAssertDebug(changeBlock);
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
             // We load a new instance before using anyUpdateWithTransaction()
             // since it isn't thread-safe to mutate the current instance async.
             TSAttachmentStream *_Nullable latestInstance =
@@ -731,7 +731,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
                                                                block:^(TSAttachmentStream *attachmentStream) {
                                                                    changeBlock(attachmentStream);
                                                                }];
-        }];
+        });
 
         if (completion != nil) {
             completion();

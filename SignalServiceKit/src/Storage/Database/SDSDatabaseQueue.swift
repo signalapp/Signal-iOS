@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -113,19 +113,40 @@ public class SDSAnyDatabaseQueue: SDSTransactable, SDSDatabaseQueue {
         }
     }
 
+    func write(block: @escaping (SDSAnyWriteTransaction) -> Void) {
+        write(file: #file,
+              function: #function,
+              line: #line,
+              block: block)
+    }
+
     @objc
-    public override func write(block: @escaping (SDSAnyWriteTransaction) -> Void) {
+    public override func write(file: String = #file,
+                               function: String = #function,
+                               line: Int = #line,
+                               block: @escaping (SDSAnyWriteTransaction) -> Void) {
+
+        let benchTitle = "Slow Write Transaction \(SDSDatabaseStorage.owsFormatLogMessage(file: file, function: function, line: line))"
+
         switch databaseStorage.dataStoreForWrites {
         case .grdb:
             guard let grdbDatabaseQueue = grdbDatabaseQueue else {
                 owsFail("Missing grdbDatabaseQueue.")
             }
-            grdbDatabaseQueue.write { block($0.asAnyWrite) }
+            grdbDatabaseQueue.write { transaction in
+                Bench(title: benchTitle, logIfLongerThan: 0.1) {
+                    block(transaction.asAnyWrite)
+                }
+            }
         case .ydb:
             guard let yapDatabaseQueue = yapDatabaseQueue else {
                 owsFail("Missing grdbDatabaseQueue.")
             }
-            yapDatabaseQueue.write { block($0.asAnyWrite) }
+            yapDatabaseQueue.write { transaction in
+                Bench(title: benchTitle, logIfLongerThan: 0.1) {
+                    block(transaction.asAnyWrite)
+                }
+            }
         }
 
         crossProcess.notifyChangedAsync()

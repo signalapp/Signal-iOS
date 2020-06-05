@@ -187,9 +187,9 @@ __attribute__((deprecated)) @interface TSInvalidIdentityKeyReceivingErrorMessage
         // Here we remove the existing error message because handleReceivedEnvelope will either
         //  1.) succeed and create a new successful message in the thread or...
         //  2.) fail and create a new identical error message in the thread.
-        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
             [errorMessage anyRemoveWithTransaction:transaction];
-        }];
+        });
     }
 }
 

@@ -212,7 +212,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     BOOL showUnidentifiedDeliveryIndicators = Environment.shared.preferences.shouldShowUnidentifiedDeliveryIndicators;
     BOOL showTypingIndicators = self.typingIndicators.areTypingIndicatorsEnabled;
 
-    [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         TSThread *_Nullable thread = [TSAccountManager getOrCreateLocalThreadWithTransaction:transaction];
         if (thread == nil) {
             OWSFailDebug(@"Missing thread.");
@@ -229,7 +229,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                                                sendLinkPreviews:sendLinkPreviews];
 
         [self.messageSenderJobQueue addMessage:syncConfigurationMessage.asPreparer transaction:transaction];
-    }];
+    });
 }
 
 - (void)processIncomingConfigurationSyncMessage:(SSKProtoSyncMessageConfiguration *)syncMessage transaction:(SDSAnyWriteTransaction *)transaction
@@ -411,11 +411,13 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                                                         OWSLogInfo(@"Successfully sent contacts sync message.");
                                                         
                                                         if (messageHash != nil) {
-                                                            [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-                                                                [OWSSyncManager.keyValueStore setData:messageHash
-                                                                                                  key:kSyncManagerLastContactSyncKey
-                                                                                          transaction:transaction];
-                                                            }];
+                                                            DatabaseStorageWrite(self.databaseStorage,
+                                                                ^(SDSAnyWriteTransaction *transaction) {
+                                                                    [OWSSyncManager.keyValueStore
+                                                                            setData:messageHash
+                                                                                key:kSyncManagerLastContactSyncKey
+                                                                        transaction:transaction];
+                                                                });
                                                         }
                                                         
                                                         dispatch_async(self.serialQueue, ^{
@@ -471,7 +473,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
         return;
     }
 
-    [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         TSThread *_Nullable thread = [TSAccountManager getOrCreateLocalThreadWithTransaction:transaction];
         if (thread == nil) {
             OWSFailDebug(@"Missing thread.");
@@ -482,7 +484,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
             [[OWSSyncFetchLatestMessage alloc] initWithThread:thread fetchType:fetchType];
 
         [self.messageSenderJobQueue addMessage:syncFetchLatestMessage.asPreparer transaction:transaction];
-    }];
+    });
 }
 
 - (void)processIncomingFetchLatestSyncMessage:(SSKProtoSyncMessageFetchLatest *)syncMessage

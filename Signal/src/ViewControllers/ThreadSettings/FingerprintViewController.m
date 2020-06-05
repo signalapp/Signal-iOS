@@ -535,7 +535,7 @@ typedef void (^CustomLayoutBlock)(void);
 - (void)verifyUnverifyButtonTapped:(UIGestureRecognizer *)gestureRecognizer
 {
     if (gestureRecognizer.state == UIGestureRecognizerStateRecognized) {
-        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
             BOOL isVerified =
                 [[OWSIdentityManager sharedManager] verificationStateForAddress:self.address transaction:transaction]
                 == OWSVerificationStateVerified;
@@ -547,7 +547,7 @@ typedef void (^CustomLayoutBlock)(void);
                                                              address:self.address
                                                isUserInitiatedChange:YES
                                                          transaction:transaction];
-        }];
+        });
 
         [self dismissViewControllerAnimated:YES completion:nil];
     }

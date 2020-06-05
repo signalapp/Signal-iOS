@@ -67,8 +67,8 @@ static NSString *const OWSFailedAttachmentDownloadsJobAttachmentStateIndex = @"i
 - (void)runSync
 {
     __block uint count = 0;
-    [self.databaseStorage
-        writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(
+        self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
             [self enumerateAttemptingOutAttachmentsWithBlock:^(TSAttachmentPointer *attachment) {
                 // sanity check
                 if (attachment.state == TSAttachmentPointerStateFailed) {
@@ -98,7 +98,7 @@ static NSString *const OWSFailedAttachmentDownloadsJobAttachmentStateIndex = @"i
 
             }
                                                  transaction:transaction];
-        }];
+        });
 
     if (count > 0) {
         OWSLogDebug(@"Marked %u attachments as failed", count);

@@ -612,7 +612,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
 
     DispatchMainThreadSafe(^{
         __block TSThread *thread = nil;
-        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
             thread = [TSContactThread getOrCreateThreadWithContactAddress:recipientAddress transaction:transaction];
         }];
         [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
@@ -621,7 +621,7 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
                               quotedReplyModel:nil
                               linkPreviewDraft:nil
                                    transaction:transaction];
-        }];
+        });
     });
 
     // Also copy to pasteboard.

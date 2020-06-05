@@ -289,13 +289,13 @@ NSNotificationName const kNSNotificationNameMessageProcessingDidFlushQueue
 
     __block NSArray<OWSMessageContentJob *> *processedJobs;
     __block NSUInteger jobCount;
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         processedJobs = [self processJobs:batchJobs transaction:transaction];
         
         [self.finder removeJobsWithUniqueIds:processedJobs.uniqueIds transaction:transaction];
         
         jobCount = [self.finder jobCountWithTransaction:transaction];
-    }];
+    });
 
     OWSAssertDebug(backgroundTask);
     backgroundTask = nil;
