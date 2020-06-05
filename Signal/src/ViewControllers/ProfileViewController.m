@@ -100,7 +100,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     UIView *contentView = [UIView containerView];
     contentView.backgroundColor = Theme.backgroundColor;
     [self.view addSubview:contentView];
-    [contentView autoPinToTopLayoutGuideOfViewController:self withInset:0];
+    [contentView autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.view withOffset:0.0f];
     [contentView autoPinWidthToSuperview];
 
     const CGFloat fontSizePoints = ScaleFromIPhone5To7Plus(16.f, 20.f);

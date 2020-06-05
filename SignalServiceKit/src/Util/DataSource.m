@@ -8,7 +8,7 @@
 #import "OWSFileSystem.h"
 #import <SessionCoreKit/NSString+OWS.h>
 #import <SessionCoreKit/iOSVersions.h>
-#import <SessionServiceKit/SignalServiceKit-Swift.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

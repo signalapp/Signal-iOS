@@ -49,7 +49,7 @@ import SignalMessaging
         super.init(coder: coder)
     }
 
-    @objc public required init(dictionary dictionaryValue: [AnyHashable: Any]!) throws {
+    @objc public required init(dictionary dictionaryValue: [String: Any]!) throws {
         // This is the unfortunate seam between strict swift and fast-and-loose objc
         // we can't leave these properties nil, since we really "don't know" that the superclass
         // will assign them.

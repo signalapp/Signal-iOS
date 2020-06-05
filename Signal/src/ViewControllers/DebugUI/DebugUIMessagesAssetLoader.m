@@ -9,7 +9,7 @@
 #import <SessionCoreKit/Randomness.h>
 #import <SessionServiceKit/MIMETypeUtil.h>
 #import <SessionServiceKit/OWSFileSystem.h>
-#import <SessionServiceKit/SignalServiceKit-Swift.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 #import <SessionServiceKit/TSAttachment.h>
 
 NS_ASSUME_NONNULL_BEGIN

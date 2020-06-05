@@ -8,7 +8,7 @@
 #import <SessionServiceKit/TSAccountManager.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
-#import <SessionServiceKit/SignalServiceKit-Swift.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 #import "OWSPrimaryStorage.h"
 
 NS_ASSUME_NONNULL_BEGIN

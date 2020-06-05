@@ -19,7 +19,7 @@
 #import "YapDatabaseConnection+OWS.h"
 #import <SessionCoreKit/NSDate+OWS.h>
 #import <SessionCoreKit/Threading.h>
-#import <SessionServiceKit/SignalServiceKit-Swift.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN

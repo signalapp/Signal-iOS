@@ -78,7 +78,7 @@
 #import <SessionServiceKit/OWSPrimaryStorage+Loki.h>
 #import <SessionServiceKit/OWSReadReceiptManager.h>
 #import <SessionServiceKit/OWSVerificationStateChangeMessage.h>
-#import <SessionServiceKit/SignalServiceKit-Swift.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 #import <SessionServiceKit/TSAccountManager.h>
 #import <SessionServiceKit/TSGroupModel.h>
 #import <SessionServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
@@ -88,7 +88,7 @@
 #import <YapDatabase/YapDatabaseAutoView.h>
 #import <YapDatabase/YapDatabaseViewChange.h>
 #import <YapDatabase/YapDatabaseViewConnection.h>
-#import <SessionMetadataKit/SignalMetadataKit-Swift.h>
+#import <SessionMetadataKit/SessionMetadataKit-Swift.h>
 
 @import Photos;
 
@@ -1205,7 +1205,7 @@ typedef enum : NSUInteger {
     bannerView.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"banner_close");
 
     [self.view addSubview:bannerView];
-    [bannerView autoPinToTopLayoutGuideOfViewController:self withInset:10];
+    [bannerView autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.view withOffset:10.0f];
     [bannerView autoHCenterInSuperview];
 
     CGFloat labelDesiredWidth = [label sizeThatFits:CGSizeZero].width;

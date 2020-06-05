@@ -20,7 +20,7 @@
 #import <Reachability/Reachability.h>
 #import <SessionCoreKit/NSData+OWS.h>
 #import <SessionCoreKit/Randomness.h>
-#import <SessionServiceKit/SignalServiceKit-Swift.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN

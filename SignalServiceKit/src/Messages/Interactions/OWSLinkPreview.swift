@@ -109,7 +109,7 @@ public class OWSLinkPreview: MTLModel {
     }
 
     @objc
-    public required init(dictionary dictionaryValue: [AnyHashable: Any]!) throws {
+    public required init(dictionary dictionaryValue: [String: Any]!) throws {
         try super.init(dictionary: dictionaryValue)
     }
 

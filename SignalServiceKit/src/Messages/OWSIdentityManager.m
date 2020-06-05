@@ -26,7 +26,7 @@
 #import <SessionAxolotlKit/NSData+keyVersionByte.h>
 #import <SessionCurve25519Kit/Curve25519.h>
 #import <SessionCoreKit/NSDate+OWS.h>
-#import <SessionServiceKit/SignalServiceKit-Swift.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN

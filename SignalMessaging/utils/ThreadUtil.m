@@ -9,7 +9,7 @@
 #import "OWSUnreadIndicator.h"
 #import "TSUnreadIndicatorInteraction.h"
 #import <SessionCoreKit/NSDate+OWS.h>
-#import <SessionCoreKit/SignalCoreKit-Swift.h>
+#import <SessionCoreKit/SessionCoreKit-Swift.h>
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SessionServiceKit/OWSAddToContactsOfferMessage.h>

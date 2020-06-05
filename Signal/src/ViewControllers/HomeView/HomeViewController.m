@@ -352,7 +352,7 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
 
     [self createFirstConversationCueView];
     [self.view addSubview:self.firstConversationCueView];
-    [self.firstConversationCueView autoPinToTopLayoutGuideOfViewController:self withInset:0.f];
+    [self.firstConversationCueView autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.view withOffset:0.0f];
     // This inset bakes in assumptions about UINavigationBar layout, but I'm not sure
     // there's a better way to do it, since it isn't safe to use iOS auto layout with
     // UINavigationBar contents.
@@ -660,7 +660,7 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
     if (@available(iOS 11, *)) {
         [searchResultsController.view autoPinTopToSuperviewMarginWithInset:56];
     } else {
-        [searchResultsController.view autoPinToTopLayoutGuideOfViewController:self withInset:40];
+        [searchResultsController.view autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.view withOffset:40.0f];
     }
     searchResultsController.view.hidden = YES;
 

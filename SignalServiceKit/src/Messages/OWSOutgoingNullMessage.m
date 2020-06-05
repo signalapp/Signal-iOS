@@ -7,7 +7,7 @@
 #import "TSContactThread.h"
 #import <SessionCoreKit/Cryptography.h>
 #import <SessionCoreKit/NSDate+OWS.h>
-#import <SessionServiceKit/SignalServiceKit-Swift.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

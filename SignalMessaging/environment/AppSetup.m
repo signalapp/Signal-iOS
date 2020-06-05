@@ -24,7 +24,7 @@
 #import <SessionServiceKit/OWSReadReceiptManager.h>
 #import <SessionServiceKit/OWSStorage.h>
 #import <SessionServiceKit/SSKEnvironment.h>
-#import <SessionServiceKit/SignalServiceKit-Swift.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 #import <SessionServiceKit/TSSocketManager.h>
 
 NS_ASSUME_NONNULL_BEGIN

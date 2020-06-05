@@ -6,7 +6,7 @@
 #import "TSAccountManager.h"
 #import "TSConstants.h"
 #import <SessionCoreKit/NSData+OWS.h>
-#import <SessionMetadataKit/SignalMetadataKit-Swift.h>
+#import <SessionMetadataKit/SessionMetadataKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

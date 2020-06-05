@@ -20,7 +20,7 @@
 #import <SessionServiceKit/LKSyncOpenGroupsMessage.h>
 #import <SessionServiceKit/SSKEnvironment.h>
 #import <SessionServiceKit/SignalAccount.h>
-#import <SessionServiceKit/SignalServiceKit-Swift.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 #import <SessionServiceKit/TSAccountManager.h>
 #import <SessionServiceKit/YapDatabaseConnection+OWS.h>
 #import <SessionServiceKit/TSContactThread.h>

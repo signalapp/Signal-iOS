@@ -11,7 +11,7 @@
 #import "YapDatabaseTransaction+OWS.h"
 #import <SessionAxolotlKit/NSData+keyVersionByte.h>
 #import "NSObject+Casting.h"
-#import <SessionServiceKit/SignalServiceKit-Swift.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 
 @implementation OWSPrimaryStorage (Loki)
 

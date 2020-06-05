@@ -259,7 +259,7 @@ NS_ASSUME_NONNULL_BEGIN
         self.videoProgressBar = videoProgressBar;
         [self.view addSubview:videoProgressBar];
         [videoProgressBar autoPinWidthToSuperview];
-        [videoProgressBar autoPinToTopLayoutGuideOfViewController:self withInset:0];
+        [videoProgressBar autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.view withOffset:0.0f];
         CGFloat kVideoProgressBarHeight = 44;
         [videoProgressBar autoSetDimension:ALDimensionHeight toSize:kVideoProgressBarHeight];
 

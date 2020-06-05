@@ -8,7 +8,7 @@
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "TSGroupModel.h"
 #import "TSGroupThread.h"
-#import <SessionServiceKit/SignalServiceKit-Swift.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

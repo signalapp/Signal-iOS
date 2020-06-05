@@ -7,7 +7,7 @@
 #import "SignalRecipient.h"
 #import <SessionCoreKit/NSData+OWS.h>
 #import <SessionCoreKit/NSDate+OWS.h>
-#import <SessionServiceKit/SignalServiceKit-Swift.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 
 @implementation LKDeviceLinkMessage
 

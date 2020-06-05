@@ -19,7 +19,7 @@
 #import "TSErrorMessage.h"
 #import "TSYapDatabaseObject.h"
 #import <SessionCoreKit/Threading.h>
-#import <SessionServiceKit/SignalServiceKit-Swift.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 #import <YapDatabase/YapDatabaseAutoView.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 #import <YapDatabase/YapDatabaseTransaction.h>

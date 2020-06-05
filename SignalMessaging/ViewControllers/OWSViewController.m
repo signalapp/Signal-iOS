@@ -124,7 +124,7 @@ UIInterfaceOrientationMask DefaultUIInterfaceOrientationMask(void)
 
     self.bottomLayoutView = view;
     if (avoidNotch) {
-        self.bottomLayoutConstraint = [view autoPinToBottomLayoutGuideOfViewController:self withInset:0.f];
+        self.bottomLayoutConstraint = [view autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.view withOffset:0];
     } else {
         self.bottomLayoutConstraint = [view autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.view];
     }

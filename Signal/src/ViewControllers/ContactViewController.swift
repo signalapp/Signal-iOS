@@ -167,7 +167,7 @@ class ContactViewController: OWSViewController, ContactShareViewHelperDelegate {
 
         let topView = createTopView()
         rootView.addSubview(topView)
-        topView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
+        topView.autoPinEdge(.top, to: .top, of: view)
         topView.autoPinWidthToSuperview()
 
         // This view provides a background "below the fold".

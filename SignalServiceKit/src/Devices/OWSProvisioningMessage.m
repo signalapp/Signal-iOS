@@ -7,7 +7,7 @@
 #import <SessionAxolotlKit/NSData+keyVersionByte.h>
 #import <SessionCurve25519Kit/Curve25519.h>
 #import <SessionHKDFKit/HKDFKit.h>
-#import <SessionServiceKit/SignalServiceKit-Swift.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -21,7 +21,7 @@
 #import <SessionServiceKit/OWSSyncGroupsMessage.h>
 #import <SessionServiceKit/OWSSyncGroupsRequestMessage.h>
 #import <SessionServiceKit/OWSVerificationStateChangeMessage.h>
-#import <SessionServiceKit/SignalServiceKit-Swift.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 #import <SessionServiceKit/TSCall.h>
 #import <SessionServiceKit/TSDatabaseView.h>
 #import <SessionServiceKit/TSIncomingMessage.h>

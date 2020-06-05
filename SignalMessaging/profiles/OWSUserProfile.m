@@ -12,7 +12,7 @@
 #import <SessionServiceKit/OWSFileSystem.h>
 #import <SessionServiceKit/OWSPrimaryStorage.h>
 #import <SessionServiceKit/SSKEnvironment.h>
-#import <SessionServiceKit/SignalServiceKit-Swift.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 #import <SessionServiceKit/TSAccountManager.h>
 #import <YapDatabase/YapDatabaseConnection.h>
 #import <YapDatabase/YapDatabaseTransaction.h>

@@ -165,7 +165,7 @@ class GifPickerViewController: OWSViewController, UISearchBarDelegate, UICollect
 
         self.view.addSubview(searchBar)
         searchBar.autoPinWidthToSuperview()
-        searchBar.autoPin(toTopLayoutGuideOf: self, withInset: 0)
+        searchBar.autoPinEdge(.top, to: .top, of: view)
 
         self.collectionView.delegate = self
         self.collectionView.dataSource = self

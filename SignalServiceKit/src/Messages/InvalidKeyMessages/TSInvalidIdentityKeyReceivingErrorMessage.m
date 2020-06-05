@@ -15,7 +15,7 @@
 #import "TSErrorMessage_privateConstructor.h"
 #import <SessionAxolotlKit/NSData+keyVersionByte.h>
 #import <SessionAxolotlKit/PreKeyWhisperMessage.h>
-#import <SessionServiceKit/SignalServiceKit-Swift.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
 
 NS_ASSUME_NONNULL_BEGIN

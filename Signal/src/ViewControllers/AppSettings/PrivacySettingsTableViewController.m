@@ -13,7 +13,7 @@
 #import <SessionServiceKit/NSString+SSK.h>
 #import <SessionServiceKit/OWS2FAManager.h>
 #import <SessionServiceKit/OWSReadReceiptManager.h>
-#import <SessionServiceKit/SignalServiceKit-Swift.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -7,7 +7,7 @@
 #import <MobileCoreServices/MobileCoreServices.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SessionServiceKit/MIMETypeUtil.h>
-#import <SessionServiceKit/SignalServiceKit-Swift.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 #import <SessionServiceKit/TSAttachmentStream.h>
 #import <SessionServiceKit/TSContactThread.h>
 #import <SessionServiceKit/TSOutgoingMessage.h>

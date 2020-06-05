@@ -112,7 +112,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     [self.view addSubview:header];
     [header autoPinWidthToSuperview];
-    [header autoPinToTopLayoutGuideOfViewController:self withInset:0];
+    [header autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.view withOffset:0.0f];
     [header setCompressionResistanceVerticalHigh];
     [header setContentHuggingVerticalHigh];
      */

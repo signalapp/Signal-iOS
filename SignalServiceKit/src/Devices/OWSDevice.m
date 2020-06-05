@@ -14,7 +14,7 @@
 #import <Mantle/MTLValueTransformer.h>
 #import <SessionCoreKit/NSDate+OWS.h>
 #import <SessionServiceKit/OWSIdentityManager.h>
-#import <SessionServiceKit/SignalServiceKit-Swift.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

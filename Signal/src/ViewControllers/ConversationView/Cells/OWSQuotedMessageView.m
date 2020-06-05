@@ -13,7 +13,7 @@
 #import <SignalMessaging/UIView+OWS.h>
 #import <SessionServiceKit/TSAttachmentStream.h>
 #import <SessionServiceKit/TSMessage.h>
-#import <SessionServiceKit/SignalServiceKit-Swift.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

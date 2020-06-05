@@ -58,8 +58,8 @@ def shared_pods
   # third party pods
   ###
 
-  pod 'AFNetworking', inhibit_warnings: true
-  pod 'PureLayout', :inhibit_warnings => true
+  pod 'AFNetworking', '~> 3.2.1', inhibit_warnings: true
+  pod 'PureLayout', '~> 3.1.4', :inhibit_warnings => true
   pod 'Reachability', :inhibit_warnings => true
   pod 'YYImage', :inhibit_warnings => true
 end
@@ -73,7 +73,7 @@ target 'Signal' do
   # Loki third party pods
   ###
 
-  pod 'GCDWebServer', '~> 3.0', :inhibit_warnings => true # TODO: We can probably ditch this as we're not doing P2P anymore
+  pod 'GCDWebServer', '~> 3.5.2', :inhibit_warnings => true # TODO: We can probably ditch this as we're not doing P2P anymore
   pod 'FeedKit', '~> 8.1', :inhibit_warnings => true
   pod 'CryptoSwift', '~> 1.0', :inhibit_warnings => true
   pod 'NVActivityIndicatorView', '~> 4.7', :inhibit_warnings => true

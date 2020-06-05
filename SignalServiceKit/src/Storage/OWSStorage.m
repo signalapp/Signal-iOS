@@ -13,7 +13,7 @@
 #import "TSAttachmentStream.h"
 #import <SessionCoreKit/NSData+OWS.h>
 #import <SessionCoreKit/Randomness.h>
-#import <SessionServiceKit/SignalServiceKit-Swift.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseAutoView.h>
 #import <YapDatabase/YapDatabaseCrossProcessNotification.h>

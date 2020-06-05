@@ -35,7 +35,7 @@ final class ScanQRCodeWrapperVC : BaseVC {
         view.addSubview(scanQRCodeVCView)
         scanQRCodeVCView.pin(.leading, to: .leading, of: view)
         scanQRCodeVCView.pin(.trailing, to: .trailing, of: view)
-        scanQRCodeVCView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
+        scanQRCodeVCView.autoPinEdge(.top, to: .top, of: view)
         scanQRCodeVCView.autoPinToSquareAspectRatio()
         // Set up bottom view
         let bottomView = UIView()

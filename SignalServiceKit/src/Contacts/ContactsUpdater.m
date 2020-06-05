@@ -11,7 +11,7 @@
 #import "TSNetworkManager.h"
 #import <SessionCoreKit/Cryptography.h>
 #import <SessionCoreKit/Threading.h>
-#import <SessionServiceKit/SignalServiceKit-Swift.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN

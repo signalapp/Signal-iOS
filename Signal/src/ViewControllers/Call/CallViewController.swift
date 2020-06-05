@@ -527,8 +527,8 @@
 //            leaveCallViewButton.autoPinEdge(toSuperviewMargin: .top)
 //            contactNameLabel.autoPinEdge(toSuperviewMargin: .top)
 //        } else {
-//            leaveCallViewButton.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-//            contactNameLabel.autoPin(toTopLayoutGuideOf: self, withInset: 0)
+//            leaveCallViewButton.autoPinEdge(.top, to: .top, of: view)
+//            contactNameLabel.autoPinEdge(.top, to: .top, of: view)
 //        }
 //
 //        contactNameLabel.autoPinEdge(.leading, to: .trailing, of: leaveCallViewButton, withOffset: 8, relation: .greaterThanOrEqual)

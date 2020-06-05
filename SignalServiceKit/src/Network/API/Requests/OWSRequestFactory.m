@@ -15,8 +15,8 @@
 #import <SessionCurve25519Kit/Curve25519.h>
 #import <SessionCoreKit/Cryptography.h>
 #import <SessionCoreKit/NSData+OWS.h>
-#import <SessionMetadataKit/SignalMetadataKit-Swift.h>
-#import <SessionServiceKit/SignalServiceKit-Swift.h>
+#import <SessionMetadataKit/SessionMetadataKit-Swift.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

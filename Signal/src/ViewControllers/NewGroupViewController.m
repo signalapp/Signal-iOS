@@ -127,7 +127,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.view addSubview:firstSection];
     [firstSection autoSetDimension:ALDimensionHeight toSize:100.f];
     [firstSection autoPinWidthToSuperview];
-    [firstSection autoPinToTopLayoutGuideOfViewController:self withInset:0];
+    [firstSection autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.view withOffset:0.0f];
 
     _tableViewController = [OWSTableViewController new];
     _tableViewController.delegate = self;

@@ -39,7 +39,7 @@
 #import <SessionServiceKit/OWSPrimaryStorage+Calling.h>
 #import <SessionServiceKit/OWSReadReceiptManager.h>
 #import <SessionServiceKit/SSKEnvironment.h>
-#import <SessionServiceKit/SignalServiceKit-Swift.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 #import <SessionServiceKit/TSAccountManager.h>
 #import <SessionServiceKit/TSDatabaseView.h>
 #import <SessionServiceKit/TSPreKeyManager.h>

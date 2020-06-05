@@ -60,8 +60,8 @@
 #import <SessionCoreKit/NSDate+OWS.h>
 #import <SessionCoreKit/SCKExceptionWrapper.h>
 #import <SessionCoreKit/Threading.h>
-#import <SessionMetadataKit/SignalMetadataKit-Swift.h>
-#import <SessionServiceKit/SignalServiceKit-Swift.h>
+#import <SessionMetadataKit/SessionMetadataKit-Swift.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 #import <SessionServiceKit/ProfileManagerProtocol.h>
 
 NS_ASSUME_NONNULL_BEGIN

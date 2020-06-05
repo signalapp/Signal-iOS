@@ -13,7 +13,7 @@
 #import <SignalMessaging/Environment.h>
 #import <SessionServiceKit/OWSDynamicOutgoingMessage.h>
 #import <SessionServiceKit/OWSPrimaryStorage.h>
-#import <SessionServiceKit/SignalServiceKit-Swift.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 #import <SessionServiceKit/TSAccountManager.h>
 #import <SessionServiceKit/TSGroupThread.h>
 #import <SessionServiceKit/TSThread.h>

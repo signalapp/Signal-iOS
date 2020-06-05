@@ -27,8 +27,8 @@
 #import <SessionCoreKit/NSData+OWS.h>
 #import <SessionCoreKit/Randomness.h>
 #import <SessionCoreKit/SCKExceptionWrapper.h>
-#import <SessionMetadataKit/SignalMetadataKit-Swift.h>
-#import <SessionServiceKit/SignalServiceKit-Swift.h>
+#import <SessionMetadataKit/SessionMetadataKit-Swift.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

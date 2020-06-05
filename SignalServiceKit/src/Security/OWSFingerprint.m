@@ -7,7 +7,7 @@
 #import <SessionAxolotlKit/NSData+keyVersionByte.h>
 #import <CommonCrypto/CommonDigest.h>
 #import <SessionCoreKit/NSData+OWS.h>
-#import <SessionServiceKit/SignalServiceKit-Swift.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 #import <UIKit/UIImage.h>
 
 NS_ASSUME_NONNULL_BEGIN
