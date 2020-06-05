@@ -465,7 +465,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 {
     // Clear out so we re-initialize if we ever re-run the "on launch" logic,
     // such as after a completed database transfer.
-    self.areReadReceiptsEnabledCached = NO;
+    self.areReadReceiptsEnabledCached = nil;
 
     [self areReadReceiptsEnabled];
 }
@@ -473,7 +473,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 - (BOOL)areReadReceiptsEnabled
 {
     // We don't need to worry about races around this cached value.
-    if (!self.areReadReceiptsEnabledCached) {
+    if (self.areReadReceiptsEnabledCached == nil) {
         [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
             self.areReadReceiptsEnabledCached =
                 @([OWSReadReceiptManager.keyValueStore getBool:OWSReadReceiptManagerAreReadReceiptsEnabled
