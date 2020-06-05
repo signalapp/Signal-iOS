@@ -679,6 +679,7 @@
 		888C828323D795FA0059464B /* pinCreationInProgress.json in Resources */ = {isa = PBXBuildFile; fileRef = 888C828023D795FA0059464B /* pinCreationInProgress.json */; };
 		888F188623AC5A9E000780E9 /* SignalMessaging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 453518921FC63DBF00210559 /* SignalMessaging.framework */; };
 		88905E9E229CCA96004E4234 /* ExpirationNagView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88905E9D229CCA96004E4234 /* ExpirationNagView.swift */; };
+		889C8A8D248831AC00C3D3D8 /* BlurTooltip.swift in Sources */ = {isa = PBXBuildFile; fileRef = 889C8A8C248831AC00C3D3D8 /* BlurTooltip.swift */; };
 		88A357B923639384009D6B9A /* MemberActionSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A357B823639384009D6B9A /* MemberActionSheet.swift */; };
 		88A4CC09246CB0960082211F /* OnboardingTransferChoiceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A4CC08246CB0960082211F /* OnboardingTransferChoiceViewController.swift */; };
 		88A4CC0C246CC54E0082211F /* OnboardingTransferQRCodeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A4CC0B246CC54E0082211F /* OnboardingTransferQRCodeViewController.swift */; };
@@ -699,6 +700,8 @@
 		88A9729222FA5D4B004B4FBF /* AttachmentFormatPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A9729122FA5D4B004B4FBF /* AttachmentFormatPickerView.swift */; };
 		88A9729422FB4D02004B4FBF /* LocationPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A9729322FB4D02004B4FBF /* LocationPicker.swift */; };
 		88B688B0238F0D1000286F82 /* ReactionsDetailSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88B688AF238F0D1000286F82 /* ReactionsDetailSheet.swift */; };
+		88BAE55D2487595B001F00F9 /* ImageEditorBlurViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88BAE55C2487595B001F00F9 /* ImageEditorBlurViewController.swift */; };
+		88BAE55F24875A24001F00F9 /* ImageEditorBlurRegionsItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88BAE55E24875A24001F00F9 /* ImageEditorBlurRegionsItem.swift */; };
 		88BCCC8123837B7D00CE5FE6 /* InteractionReactionState.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88BCCC8023837B7D00CE5FE6 /* InteractionReactionState.swift */; };
 		88BFD4732335C2B3001797D7 /* waveformLoading.json in Resources */ = {isa = PBXBuildFile; fileRef = 88BFD4722335C2B3001797D7 /* waveformLoading.json */; };
 		88C4E38024635337009C9B97 /* DeviceTransferService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88C4E37F24635337009C9B97 /* DeviceTransferService.swift */; };
@@ -1636,6 +1639,7 @@
 		887889AB247E09B7001B5FCF /* kk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = kk; path = translations/kk.lproj/Localizable.strings; sourceTree = "<group>"; };
 		887889AF247F2E72001B5FCF /* Emoji+Category.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Emoji+Category.swift"; sourceTree = "<group>"; };
 		887889B0247F2E72001B5FCF /* Emoji.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Emoji.swift; sourceTree = "<group>"; };
+		887B6B2324895F1F0075EBC7 /* eu */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = eu; path = translations/eu.lproj/Localizable.strings; sourceTree = "<group>"; };
 		887CD4762472FEA500FDD265 /* DeviceTransferOperation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceTransferOperation.swift; sourceTree = "<group>"; };
 		887CD47A247304B600FDD265 /* DeviceTransferService+URL.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DeviceTransferService+URL.swift"; sourceTree = "<group>"; };
 		887CD47C2473051D00FDD265 /* DeviceTransferService+Manifest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DeviceTransferService+Manifest.swift"; sourceTree = "<group>"; };
@@ -1660,6 +1664,7 @@
 		888C827F23D795F90059464B /* pinCreationFail.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = pinCreationFail.json; sourceTree = "<group>"; };
 		888C828023D795FA0059464B /* pinCreationInProgress.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = pinCreationInProgress.json; sourceTree = "<group>"; };
 		88905E9D229CCA96004E4234 /* ExpirationNagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpirationNagView.swift; sourceTree = "<group>"; };
+		889C8A8C248831AC00C3D3D8 /* BlurTooltip.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BlurTooltip.swift; sourceTree = "<group>"; };
 		88A357B823639384009D6B9A /* MemberActionSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemberActionSheet.swift; sourceTree = "<group>"; };
 		88A358252363FF63009D6B9A /* mr */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = mr; path = translations/mr.lproj/Localizable.strings; sourceTree = "<group>"; };
 		88A358262364020B009D6B9A /* uk */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = uk; path = translations/uk.lproj/Localizable.strings; sourceTree = "<group>"; };
@@ -1685,6 +1690,8 @@
 		88A9729122FA5D4B004B4FBF /* AttachmentFormatPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AttachmentFormatPickerView.swift; sourceTree = "<group>"; };
 		88A9729322FB4D02004B4FBF /* LocationPicker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocationPicker.swift; sourceTree = "<group>"; };
 		88B688AF238F0D1000286F82 /* ReactionsDetailSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReactionsDetailSheet.swift; sourceTree = "<group>"; };
+		88BAE55C2487595B001F00F9 /* ImageEditorBlurViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorBlurViewController.swift; sourceTree = "<group>"; };
+		88BAE55E24875A24001F00F9 /* ImageEditorBlurRegionsItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ImageEditorBlurRegionsItem.swift; sourceTree = "<group>"; };
 		88BCCC8023837B7D00CE5FE6 /* InteractionReactionState.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InteractionReactionState.swift; sourceTree = "<group>"; };
 		88BFD4722335C2B3001797D7 /* waveformLoading.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = waveformLoading.json; sourceTree = "<group>"; };
 		88C4E37F24635337009C9B97 /* DeviceTransferService.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DeviceTransferService.swift; sourceTree = "<group>"; };
@@ -2537,6 +2544,8 @@
 		34BEDB0C21C405B0007B0EAE /* ImageEditor */ = {
 			isa = PBXGroup;
 			children = (
+				88BAE55E24875A24001F00F9 /* ImageEditorBlurRegionsItem.swift */,
+				88BAE55C2487595B001F00F9 /* ImageEditorBlurViewController.swift */,
 				34080F01222853E30087E99F /* ImageEditorBrushViewController.swift */,
 				34BBC850220B8EEF00857249 /* ImageEditorCanvasView.swift */,
 				34BBC853220C7ADA00857249 /* ImageEditorContents.swift */,
@@ -2591,6 +2600,7 @@
 				34C758DC228DD81C00802527 /* StickerTooltip.swift */,
 				34123C5D239AA3E900782788 /* TooltipView.swift */,
 				34123C5F239AA93A00782788 /* ViewOnceTooltip.swift */,
+				889C8A8C248831AC00C3D3D8 /* BlurTooltip.swift */,
 			);
 			path = Tooltips;
 			sourceTree = "<group>";
@@ -3898,6 +3908,7 @@
 				af,
 				jv,
 				kk,
+				eu,
 			);
 			mainGroup = D221A07E169C9E5E00537ABF;
 			productRefGroup = D221A08A169C9E5E00537ABF /* Products */;
@@ -4520,6 +4531,7 @@
 				341CBFC42405B7C000F15C13 /* GroupsV2Impl+RestoreGroups.swift in Sources */,
 				346129FB1FD5F31400532771 /* OWS101ExistingUsersBlockOnIdentityChange.m in Sources */,
 				34AC09EA211B39B100997B47 /* ModalActivityIndicatorViewController.swift in Sources */,
+				88BAE55F24875A24001F00F9 /* ImageEditorBlurRegionsItem.swift in Sources */,
 				344F248D2007CCD600CFB4F4 /* DisplayableText.swift in Sources */,
 				450998651FD8A34D00D89EB3 /* DeviceSleepManager.swift in Sources */,
 				34AC09EB211B39B100997B47 /* ContactShareApprovalViewController.swift in Sources */,
@@ -4587,6 +4599,7 @@
 				340872DA22397FEB00CB25B0 /* AttachmentTextView.swift in Sources */,
 				34FDB29221FF986600A01202 /* UIView+OWS.swift in Sources */,
 				34035D7A2367747400F5215A /* VideoEditorModel.swift in Sources */,
+				889C8A8D248831AC00C3D3D8 /* BlurTooltip.swift in Sources */,
 				347B83FB243779270019A52C /* OWSFormat.swift in Sources */,
 				34BBC859220C7ADA00857249 /* ImageEditorStrokeItem.swift in Sources */,
 				451F8A351FD710DE005CB9DA /* Searcher.swift in Sources */,
@@ -4636,6 +4649,7 @@
 				4C948FF72146EB4800349F0D /* BlockListCache.swift in Sources */,
 				4551DB5A205C562300C8AE75 /* Collection+OWS.swift in Sources */,
 				34BBC84F220B8A0100857249 /* ImageEditorCropViewController.swift in Sources */,
+				88BAE55D2487595B001F00F9 /* ImageEditorBlurViewController.swift in Sources */,
 				34AC09ED211B39B100997B47 /* ContactFieldView.swift in Sources */,
 				346129AF1FD1F5D900532771 /* SystemContactsFetcher.swift in Sources */,
 				34AC09E3211B39B100997B47 /* OWSViewController.m in Sources */,
@@ -5150,6 +5164,7 @@
 				887889A7247718DE001B5FCF /* af */,
 				887889A8247718F7001B5FCF /* jv */,
 				887889AB247E09B7001B5FCF /* kk */,
+				887B6B2324895F1F0075EBC7 /* eu */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";

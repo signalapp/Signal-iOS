@@ -1,8 +1,8 @@
 /* Button text to dismiss missing contacts permission alert */
-"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Mangke Mawon";
+"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "Mangke";
 
 /* Action sheet item */
-"ACCEPT_NEW_IDENTITY_ACTION" = "Tampi Nomor Keamanan ingkang Enggal";
+"ACCEPT_NEW_IDENTITY_ACTION" = "Tampi Nomor Keamanan Enggal";
 
 /* Accessibility label for attachment. */
 "ACCESSIBILITY_LABEL_ATTACHMENT" = "Lampiran";
@@ -29,7 +29,7 @@
 "ACTION_AUDIO_CALL" = "Telepon Signal";
 
 /* Label for 'invite' button in contact view. */
-"ACTION_INVITE" = "Ajak supados ngginakaken Signal";
+"ACTION_INVITE" = "Ajak ngginakaken Signal";
 
 /* Label for 'send message' button in contact view.
    Label for button that lets you send a message to a contact. */
@@ -54,10 +54,10 @@
 "ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "Minggahaken %1$@ anggota mlebet “%2$@”?";
 
 /* Title for the 'add group member' confirmation alert. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1" = "Minggahaken Anggota ingkang Enggal";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1" = "Minggahaken Anggota Enggal";
 
 /* Title for the 'add group members' confirmation alert. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_N" = "Minggahaken Anggota ingkang Enggal";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_N" = "Minggahaken Anggota Enggal";
 
 /* The title for the 'add group members' view. */
 "ADD_GROUP_MEMBERS_VIEW_TITLE" = "Minggahaken Anggota";
@@ -93,7 +93,7 @@
 "APN_Message" = "Enten Pesen Enggal!";
 
 /* Message for the 'app launch failed' alert. */
-"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal mboten saged dibikak. Kirimaken catetan debug datheng support@signal.org supados kita saged ndandosi kalepatan niki.";
+"APP_LAUNCH_FAILURE_ALERT_MESSAGE" = "Signal mboten saged dibikak. Kirimaken catetan debug datheng support@signal.org supados kalepatan niki saged didandosi.";
 
 /* Title for the 'app launch failed' alert. */
 "APP_LAUNCH_FAILURE_ALERT_TITLE" = "Enten Kalepatan";
@@ -108,7 +108,7 @@
 "APP_LAUNCH_FAILURE_INVALID_DATABASE_VERSION_TITLE" = "Versi Database ingkang Mboten Kasumarepan.";
 
 /* Error indicating that the app could not restore transferred data. */
-"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Data ingkang dikirimaken saking pirantos ingkang dangu mboten saged dipulihaken. Kirimaken catetan debug datheng support@signal.org supados kita saged ndandosi kalepatan niki. Menawi sampeyan masangaken Signal malih, sejarah obrolan sampeyan bakal ngical.";
+"APP_LAUNCH_FAILURE_RESTORE_FAILED_MESSAGE" = "Data ingkang dikirimaken saking pirantos ingkang dangu mboten saged dipulihaken. Kirimaken catetan debug datheng support@signal.org supados kalepatan niki saged didandosi. Menawi sampeyan masangaken Signal malih, sejarah obrolan sampeyan bakal ngical.";
 
 /* Error indicating that the app could not restore transferred data. */
 "APP_LAUNCH_FAILURE_RESTORE_FAILED_TITLE" = "Mboten Saged Ngerampungaken Pangiriman";
@@ -120,10 +120,10 @@
 "APP_UPDATE_NAG_ALERT_DISMISS_BUTTON" = "Mangke Mawon";
 
 /* Message format for the 'new app version available' alert. Embeds: {{The latest app version number}} */
-"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Versi %@ sakmenika sampun enten ing App Store.";
+"APP_UPDATE_NAG_ALERT_MESSAGE_FORMAT" = "Sakmenika versi %@ sampun enten ing App Store.";
 
 /* Title for the 'new app version available' alert. */
-"APP_UPDATE_NAG_ALERT_TITLE" = "Versi Signal ingkang  Enggal Sampun Enten";
+"APP_UPDATE_NAG_ALERT_TITLE" = "Versi Enggal Signal Enggal Sampun Enten";
 
 /* Label for the 'update' button in the 'new app version available' alert. */
 "APP_UPDATE_NAG_ALERT_UPDATE_BUTTON" = "Enggalaken";
@@ -171,7 +171,7 @@
 "ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "Pesen kangge %@";
 
 /* Label for 'send' button in the 'attachment approval' dialog. */
-"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Kentunaken";
+"ATTACHMENT_APPROVAL_SEND_BUTTON" = "Kirimaken";
 
 /* Generic filename for an attachment with no known name */
 "ATTACHMENT_DEFAULT_FILENAME" = "Lampiran";
@@ -192,7 +192,7 @@
 "ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE" = "Mboten saged marsiaken gambar.";
 
 /* Attachment error message for image attachments in which metadata could not be removed */
-"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Mboten saged ngicalaken metadata saking gambar.";
+"ATTACHMENT_ERROR_COULD_NOT_REMOVE_METADATA" = "Mboten saged mbrusak metadata saking gambar.";
 
 /* Attachment error message for image attachments which could not be resized */
 "ATTACHMENT_ERROR_COULD_NOT_RESIZE_IMAGE" = "Mboten saged nggantos ukuran gambar.";
@@ -231,7 +231,7 @@
 "ATTACHMENT_KEYBOARD_NO_PHOTO_ACCESS" = "Sukani izin Signal mbikak foto ing panatanan supados saged ngirimaken ing mriki.";
 
 /* A string indicating to the user that once they take photos, they'll be able to send them from this view. */
-"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Sepisan sampeyan sampun mendhet foto, sampeyan bakal saged ngirimaken foto kasebut.";
+"ATTACHMENT_KEYBOARD_NO_PHOTOS" = "Sepisan sampeyan sampun mendhet foto, foto kasebut bakal saged dikirimaken ing mriki.";
 
 /* Accessibility label for attaching photos */
 "ATTACHMENT_LABEL" = "Lampiran";
@@ -243,7 +243,7 @@
 "ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_BODY" = "Damelaken arsip ingkang dipunkompres saking file utawi direktori niki, saksampune cobi kirimaken file utawi direktori kasebut.";
 
 /* Alert title when picking a document fails because user picked a directory/bundle */
-"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "File ingkang Mboten Didukung";
+"ATTACHMENT_PICKER_DOCUMENTS_PICKED_DIRECTORY_FAILED_ALERT_TITLE" = "File Mboten Didukung";
 
 /* Short text label for a audio attachment, used for thread preview and on the lock screen */
 "ATTACHMENT_TYPE_AUDIO" = "Suwanten";
@@ -360,16 +360,16 @@
 "BLOCK_LIST_UNBLOCK_CONTACT_MESSAGE" = "Sampeyan bakal saged ngirimaken utawi nampi pesen lan telepon saking panggina niki.";
 
 /* Action sheet body when confirming you want to unblock a group */
-"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Anggota ingkang sampun wonten bakal saged minggahaken sampeyan mlebet grup malih.";
+"BLOCK_LIST_UNBLOCK_GROUP_BODY" = "Anggota ingkang sampun wonten bakal saged minggahaken malih sampeyan mlebet grup.";
 
 /* An explanation of what unblocking a group means. */
-"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Anggota grup bakal saged minggahaken sampeyan mlebet grup niki malih.";
+"BLOCK_LIST_UNBLOCK_GROUP_MESSAGE" = "Anggota grup bakal saged minggahaken malih sampeyan mlebet grup niki.";
 
 /* Action sheet title when confirming you want to unblock a group. */
 "BLOCK_LIST_UNBLOCK_GROUP_TITLE" = "Uculaken Blokiranipun Grup Niki?";
 
 /* A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}. */
-"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Uculaken Blokiran %@?";
+"BLOCK_LIST_UNBLOCK_TITLE_FORMAT" = "Uculaken Blokiranipun %@?";
 
 /* A label for the block button in the block list view */
 "BLOCK_LIST_VIEW_BLOCK_BUTTON" = "Blokir";
@@ -390,10 +390,10 @@
 "BLOCK_LIST_VIEW_CANT_BLOCK_SELF_ALERT_TITLE" = "Enten Kalepatan";
 
 /* Alert title after unblocking a group or 1:1 chat. Embeds the {{conversation title}}. */
-"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "Blokiran %@ sampun diuculaken.";
+"BLOCK_LIST_VIEW_UNBLOCKED_ALERT_TITLE_FORMAT" = "Blokiranipun %@ sampun diuculaken.";
 
 /* Alert body after unblocking a group. */
-"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Anggota ingkang dangu sakmenika saged minggahaken sampeyan mlebet grup niki malih.";
+"BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Anggota ingkang dangu sakmenika saged minggahaken sampeyan malih mlebet grup niki.";
 
 /* Action sheet that will block an unknown user. */
 "BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION" = "Blokir";
@@ -404,8 +404,11 @@
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Panggina ingkang diblokir mboten bakal saged nelepon sampeyan utawi ngirimaken pesen.";
 
+/* Tooltip highlighting the blur image editing tool. */
+"BLUR_TOOLTIP" = "Enggal: Bluraken rai utawi gambaraken theng pundi mawon kangge ngebluraken.";
+
 /* browse files option from file sharing menu */
-"BROWSE_FILES_BUTTON" = "Telusuri";
+"BROWSE_FILES_BUTTON" = "Telusuraken";
 
 /* Label for 'continue' button. */
 "BUTTON_CONTINUE" = "Lajengaken";
@@ -462,22 +465,22 @@
 "CALL_USER_ALERT_TITLE" = "Telepon?";
 
 /* Accessibility label for accepting incoming calls */
-"CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "Tampi telepon mlebet";
+"CALL_VIEW_ACCEPT_INCOMING_CALL_LABEL" = "Tampi telepon ingkang mlebet";
 
 /* Accessibility label for selection the audio source */
 "CALL_VIEW_AUDIO_SOURCE_LABEL" = "Suwanten";
 
 /* Accessibility label for declining incoming calls */
-"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Tolak telepon mlebet";
+"CALL_VIEW_DECLINE_INCOMING_CALL_LABEL" = "Tolak telepon ingkang mlebet";
 
 /* tooltip label when remote party has enabled their video */
-"CALL_VIEW_ENABLE_VIDEO_HINT" = "Tutul kangge ngaktifaken video sampetan";
+"CALL_VIEW_ENABLE_VIDEO_HINT" = "Tutul kangge ngaktifaken video sampeyan";
 
 /* Accessibility label for hang up call */
 "CALL_VIEW_HANGUP_LABEL" = "Rampungaken telepon";
 
 /* Accessibility label for muting the microphone */
-"CALL_VIEW_MUTE_LABEL" = "Bisukan";
+"CALL_VIEW_MUTE_LABEL" = "Bisuaken";
 
 /* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Gantos Arah Kamera";
@@ -489,10 +492,10 @@
 "CALL_VIEW_SWITCH_TO_VIDEO_LABEL" = "Gantos dados telepon video";
 
 /* Label for the 'return to call' banner. */
-"CALL_WINDOW_RETURN_TO_CALL" = "Dhemok kangge nelepon balik";
+"CALL_WINDOW_RETURN_TO_CALL" = "Dhemok kangge nelepon bali";
 
 /* notification action */
-"CALLBACK_BUTTON_TITLE" = "Telepon Balik";
+"CALLBACK_BUTTON_TITLE" = "Telepon Bali";
 
 /* The generic name used for calls if CallKit privacy is enabled */
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Panggina Signal";
@@ -525,19 +528,19 @@
 "CHECK_FOR_BACKUP_RESTORE" = "Pulihaken";
 
 /* Error indicating that the app could not determine that user's iCloud account status */
-"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal mboten saged nentokaken status akun iCloud sampeyan. Bikak Akun iCloud sampeyan ing panatanan aplikasi iOS kangge ndamelaken serep data Signal sampeyan.";
+"CLOUDKIT_STATUS_COULD_NOT_DETERMINE" = "Signal mboten saged nentokaken status akun iCloud sampeyan. Bikak Akun iCloud sampeyan ing panatanan aplikasi iOS kangge ndamelaken serep data Signal.";
 
 /* Error indicating that user does not have an iCloud account. */
-"CLOUDKIT_STATUS_NO_ACCOUNT" = "Mboten enten Akun iCloud. Bikak Akun iCloud sampeyan ing panatanan aplikasi iOS kangge ndamelaken serep data Signal sampeyan.";
+"CLOUDKIT_STATUS_NO_ACCOUNT" = "Mboten enten Akun iCloud. Bikak Akun iCloud sampeyan ing panatanan aplikasi iOS kangge ndamelaken serep data Signal.";
 
 /* Error indicating that the app was prevented from accessing the user's iCloud account. */
-"CLOUDKIT_STATUS_RESTRICTED" = "Signal mboten saged mbikak akun iCloud sampeyan kangge ndamelaken serep. Sukani izin Signal mbikak Akun iCloud sampeyan ing panatanan aplikasi iOS kangge ndamelaken serep data Signal sampeyan.";
+"CLOUDKIT_STATUS_RESTRICTED" = "Signal mboten saged mbikak akun iCloud sampeyan kangge ndamelaken serep. Sukani izin Signal mbikak Akun iCloud sampeyan ing panatanan aplikasi iOS kangge ndamelaken serep data Signal.";
 
 /* The first of two messages demonstrating the chosen conversation color, by rendering this message in an outgoing message bubble. */
 "COLOR_PICKER_DEMO_MESSAGE_1" = "Pilih werni kangge pesen ingkang dikirim ing obrolan niki.";
 
 /* The second of two messages demonstrating the chosen conversation color, by rendering this message in an incoming message bubble. */
-"COLOR_PICKER_DEMO_MESSAGE_2" = "Werni kasebut namung saged ditingali sampeyan piyambak.";
+"COLOR_PICKER_DEMO_MESSAGE_2" = "Namung sampeyan ingkang saged ningali werni kasebut.";
 
 /* Modal Sheet title when picking a conversation color. */
 "COLOR_PICKER_SHEET_TITLE" = "Werni Obrolan";
@@ -606,7 +609,7 @@
 "CONTACT_CELL_IS_NO_LONGER_VERIFIED" = "Dereng Diverifikasi";
 
 /* No comment provided by engineer. */
-"CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Nomer ingkang Mboten Kadaftar";
+"CONTACT_DETAIL_COMM_TYPE_INSECURE" = "Nomer Mboten Kadaftar";
 
 /* Label for the 'edit name' button in the contact share approval view. */
 "CONTACT_EDIT_NAME_BUTTON" = "Atur";
@@ -621,7 +624,7 @@
 "CONTACT_FIELD_ADDRESS_COUNTRY" = "Nagari";
 
 /* Label for the 'neighborhood' field of a contact's address. */
-"CONTACT_FIELD_ADDRESS_NEIGHBORHOOD" = "Panggen Tilar";
+"CONTACT_FIELD_ADDRESS_NEIGHBORHOOD" = "Daerah";
 
 /* Label for the 'pobox' field of a contact's address. */
 "CONTACT_FIELD_ADDRESS_POBOX" = "P.O. Box";
@@ -687,7 +690,7 @@
 "CONTACT_SUPPORT_PROMPT_ERROR_TRY_AGAIN" = "Cobi Malih";
 
 /* Alert body */
-"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Catetan debug sampeyan bakal mbiantu kita ndandosi masalah niki luwih gelis. Sampeyan mboten wajib ngirimaken catetan kasebut.";
+"CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_MESSAGE" = "Catetan debug sampeyan bakal mbiantu Signal ndandosi masalah niki luwih gelis. Sampeyan mboten wajib ngirimaken catetan kasebut.";
 
 /* Alert title */
 "CONTACT_SUPPORT_PROMPT_TO_INCLUDE_DEBUG_LOG_TITLE" = "Kirimaken Catetan Debug?";
@@ -747,7 +750,7 @@
 "CONVERSATION_SETTINGS_ADD_MEMBERS" = "Minggahaken anggota";
 
 /* Label for 'new contact' button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Minggahaken datheng Obrolan ingkang Sampun Enten";
+"CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Minggahaken datheng Kontak ingkang Sampun Enten";
 
 /* button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Minggahaken datheng Kontak Sistem";
@@ -759,7 +762,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "Sedaya";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Pileh sinten ingkang saged nggantos nami grup, avatan, lan pangatur waktu pesen ngical.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Pileh sinten ingkang saged nggantos nami grup, avatar, lan pangatur waktu pesen ngical.";
 
 /* Footer text for the 'block and leave' section of conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER" = "Sampeyan bakalan mboten saged nampi pesen utawi pangenggalan saking grup niki malih.";
@@ -789,7 +792,7 @@
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Admin Mawon";
 
 /* Description for the 'edit group attributes access' alert. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Pileh sinten ingkang saged nggantos nami grup, avatan, lan pangatur waktu pesen ngical:";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Pileh sinten ingkang saged nggantos nami grup, avatar, lan pangatur waktu pesen ngical:";
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "Anggota Sedaya";
@@ -816,7 +819,7 @@
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Dadosaken Admin";
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
-"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ bakal saged ngicalaken anggota grup lan nunjuk anggota benten dados admin.";
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ bakal saged ngicalaken lan nunjuk anggota grup dados admin.";
 
 /* Section title of the 'members' section in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "Anggota";
@@ -828,10 +831,10 @@
 "CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "Pileh sinten ingkang saged ngatur keanggotaan grup.";
 
 /* Title of the 'mute this thread' action sheet. */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Bisukan";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "Bisuaken";
 
 /* label for 'mute thread' cell in conversation settings */
-"CONVERSATION_SETTINGS_MUTE_LABEL" = "Bisukan";
+"CONVERSATION_SETTINGS_MUTE_LABEL" = "Bisuaken";
 
 /* Indicates that the current thread is not muted. */
 "CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "Mboten dibisuaken";
@@ -867,16 +870,16 @@
 "CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "Icalaken %@ saking grup?";
 
 /* Label for 'revoke group admin' button in conversation settings view. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Uculaken Saking Admin";
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Uculaken Status Admin";
 
 /* Format for title for 'revoke group admin' confirmation alert. Embeds {user to revoke admin status from}. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Uculaken %@ saking admin grup?";
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Uculaken status admin grup saking %@?";
 
 /* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
 "CONVERSATION_SETTINGS_SEARCH" = "Padosi Obrolan";
 
 /* Label for button that opens conversation settings. */
-"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Katuk kagem Nggantos";
+"CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Ketuk kagem Nggantos";
 
 /* Label for 'unblock group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Uculaken Blokiran Grup";
@@ -885,10 +888,10 @@
 "CONVERSATION_SETTINGS_UNBLOCK_USER" = "Uculaken Blokiran Panggina";
 
 /* Label for button to unmute a thread. */
-"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Ungelaken";
+"CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Sandekaken Bisu";
 
 /* The alert message if user tries to exit conversation settings view without saving changes. */
-"CONVERSATION_SETTINGS_UNSAVED_CHANGES_MESSAGE" = "Sampean kersa nyimpen owah-owahan ingkang sampeyan damil ing obrolan niki?";
+"CONVERSATION_SETTINGS_UNSAVED_CHANGES_MESSAGE" = "Sampean kersa nyimpen owah-owahan ingkang sampeyan damel ing obrolan niki?";
 
 /* The alert title if user tries to exit conversation settings view without saving changes. */
 "CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "Owah-Owahan Dereng Disimpen";
@@ -930,13 +933,13 @@
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Ngunggahi Pesen-Pesen Bentenipun...";
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
-"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Tutul Kangge Sakpepakipun";
+"CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Tutul kangge Sakpepakipun";
 
 /* Message shown in conversation view that offers to block an unknown user. */
 "CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "Blokir Panggina Niki";
 
 /* ActionSheet title */
-"CORRUPTED_SESSION_DESCRIPTION" = "Sampeyan taksih saged nampi pesen saking %@, saksampune ngatur malih sesi sampeyan, nanging mboten bakal saged mulihaken pesen-pesen ingkang sampun risak.";
+"CORRUPTED_SESSION_DESCRIPTION" = "Sampeyan taksih saged nampi pesen saking %@ saksampune ngatur malih sesi sampeyan, nanging mboten bakal saged mulihaken pesen-pesen ingkang sampun risak.";
 
 /* No comment provided by engineer. */
 "COUNTRYCODE_SELECT_TITLE" = "Pileh Kode Nagari";
@@ -945,7 +948,7 @@
 "CROP_SCALE_IMAGE_VIEW_TITLE" = "Pindhah lan Skalakaken";
 
 /* Subtitle shown while the app is updating its database. */
-"DATABASE_VIEW_OVERLAY_SUBTITLE" = "Proses niki betah wektu sawetara menit.";
+"DATABASE_VIEW_OVERLAY_SUBTITLE" = "Tumindhak niki betah wektu sawetara menit.";
 
 /* Title shown while the app is updating its database. */
 "DATABASE_VIEW_OVERLAY_TITLE" = "Ngoptimalaken Database";
@@ -960,7 +963,7 @@
 "DATE_NOW" = "Sakmenika";
 
 /* The current day. */
-"DATE_TODAY" = "Dinten niki";
+"DATE_TODAY" = "Dinten Niki";
 
 /* The day before today. */
 "DATE_YESTERDAY" = "Wingi";
@@ -969,7 +972,7 @@
 "DEBUG_LOG_ALERT_COULD_NOT_COPY_LOGS" = "Mboten saged nyalin catetan.";
 
 /* Error indicating that the debug logs could not be packaged. */
-"DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "Mboten saged maketaken catetan.";
+"DEBUG_LOG_ALERT_COULD_NOT_PACKAGE_LOGS" = "Mboten saged ngempalaken catetan.";
 
 /* Error indicating that a debug log could not be uploaded. */
 "DEBUG_LOG_ALERT_ERROR_UPLOADING_LOG" = "Mboten saged ngunggah catetan.";
@@ -1038,7 +1041,7 @@
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION" = "Kendelaken Pangiriman";
 
 /* The message of the dialog asking the user if they want to cancel a device transfer */
-"DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE" = "Nutup jendhela niki bakal ngendalaken pangiriman ingkang taksih ditumindakaken, sampeyan sampun mantep badhe nutup?";
+"DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE" = "Nutup jendhela niki bakal ngendelaken pangiriman ingkang taksih ditumindakaken, sampeyan sampun mantep badhe nutup?";
 
 /* The title of the dialog asking the user if they want to cancel a device transfer */
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "Kendelaken Pangiriman?";
@@ -1065,10 +1068,10 @@
 "DEVICE_TRANSFER_CHOICE_TITLE" = "Pindhahaken Akun & Pesen";
 
 /* The body for the device transfer 'choice' view 'transfer' option */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Pindhahaken sejarah pesen lan akun sampeyan saking pirantos iOS ingkang dangu";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Pindhahaken sejarah pesen lan akun saking pirantos iOS dangu sampeyan";
 
 /* The body for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Pindhahaken sejarah pesen lan akun sampeyan saking iPad ingkang dangu";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Pindhahaken sejarah pesen lan akun saking iPad dangu sampeyan";
 
 /* The title for the device transfer 'choice' view 'transfer' option when linking a device */
 "DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "Pindhahaken saking iPad benten";
@@ -1077,10 +1080,10 @@
 "DEVICE_TRANSFER_CHOICE_TRANSFER_TITLE" = "Pindhahaken saking Pirantos iOS";
 
 /* A warning for the device transfer 'choice' view indicating you can only have one device registered with your number */
-"DEVICE_TRANSFER_CHOICE_WARNING" = "Menawi terus, Signal ing pirantos benten ingkang didaftaraken kangge nomer telepon ingkang sami bakal dinonaktifaken.";
+"DEVICE_TRANSFER_CHOICE_WARNING" = "Menawi terus, Signal ing pirantos benten ingkang didaftaraken kangge nomer telepon niki bakal dinonaktifaken.";
 
 /* An error indicating that we were unable to verify the indentity of the new device to complete the transfer */
-"DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Mboten saged ngeverifikasi pirantos enggal sampeyan, cobi malih";
+"DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Verifikasi pirantos enggal mboten saged ditumindakaken, cobi malih";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
 "DEVICE_TRANSFER_ERROR_GENERIC" = "Pamindhahan mboten saged dirampungaken, celakaken pirantos-pirantos sampeyan lan cobi malih";
@@ -1095,16 +1098,16 @@
 "DEVICE_TRANSFER_ERROR_NOT_ENOUGH_SPACE" = "Mboten cekap ruangan kangge ngerampungaken pamindhahan";
 
 /* An error indicating the user must update their device before trying to transfer. */
-"DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Enggalaken Signal dados versi paling enggal lan cobi malih";
+"DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Enggalaken versi Signal lan cobi malih";
 
 /* The explanation on the action sheet prompting the user if they want to transfer their device. */
-"DEVICE_TRANSFER_PROMPT_EXPLANATION" = "Pindhahaken akun Signal sampeyan datheng pirantos iOS ingkang enggal. Aktifaken lan celakaken pirantos sampeyan.";
+"DEVICE_TRANSFER_PROMPT_EXPLANATION" = "Pindhahaken akun Signal datheng pirantos iOS enggal sampeyan. Aktifaken lan celakaken pirantos sampeyan.";
 
 /* The title on the acttion sheet prompting the user if they want to transfer their device. */
 "DEVICE_TRANSFER_PROMPT_TITLE" = "Pindhahaken Akun";
 
 /* The explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Bikak Signal kangge pirantos sampeyan ingkang dangu, celakaken, lan aktifaken Wi-Fi ugi Bluetooth ing pirantos-pirantos kasebut.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Bikak Signal kangge pirantos dangu sampeyan, celakaken, lan aktifaken Wi-Fi ugi Bluetooth ing pirantos-pirantos kasebut.";
 
 /* The second explanation for the device transfer qr code view */
 "DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Panggenaken kode QR ing bingkai pirantos bentenipun.";
@@ -1119,13 +1122,13 @@
 "DEVICE_TRANSFER_RECEIVING_TITLE" = "Nampi Data";
 
 /* Text indicating that we are connecting to the scanned device */
-"DEVICE_TRANSFER_SCANNING_CONNECTING" = "Taksih ngehubungaken…";
+"DEVICE_TRANSFER_SCANNING_CONNECTING" = "Taksih ngubungaken…";
 
 /* The explanation for the action sheet asking the user to scan the QR code to transfer */
 "DEVICE_TRANSFER_SCANNING_EXPLANATION" = "Panggenaken kode QR ing lebetipun bunderan";
 
 /* The title for the action sheet asking the user to scan the QR code to transfer */
-"DEVICE_TRANSFER_SCANNING_TITLE" = "Panggenaken Pirantos ingkang Enggal Celak Kamera";
+"DEVICE_TRANSFER_SCANNING_TITLE" = "Panggenaken Pirantos Enggal Sampeyan Celak Kamera";
 
 /* The explanation on the action sheet that shows transfer progress */
 "DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "Celakaken kapindo pirantos. Ampun nonaktifaken pirantos-pirantos kasebut lan jagi supados Signal tetep kabikak.";
@@ -1176,7 +1179,7 @@
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "Panggina niki mboten saged diminggahaken mlebet grup sakderengipun panggina kasebut ngenggali Signal.";
 
 /* Message for 'group full' error alert when a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "Wates 100 anggota grup sampun dicekapi.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "Wates 100 anggota grup sampun cekap.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
 "EDIT_GROUP_ERROR_INVALID_AVATAR" = "Avatar mboten valid.";
@@ -1185,13 +1188,13 @@
 "EDIT_GROUP_GROUP_NAME" = "Nami Grup";
 
 /* An indicator that a user is a new member of the group. */
-"EDIT_GROUP_NEW_MEMBER_LABEL" = "Diminggahaken";
+"EDIT_GROUP_NEW_MEMBER_LABEL" = "Dipunminggahaken";
 
 /* The title for the 'update group' button. */
 "EDIT_GROUP_UPDATE_BUTTON" = "Enggalaken";
 
 /* The alert message if user tries to exit update group view without saving changes. */
-"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Sampean kersa nyimpen owah-owahan ingkang sampeyan damil ing grup niki?";
+"EDIT_GROUP_VIEW_UNSAVED_CHANGES_MESSAGE" = "Sampean kersa nyimpen owah-owahan ingkang sampeyan damel ing grup niki?";
 
 /* The alert title if user tries to exit update group view without saving changes. */
 "EDIT_GROUP_VIEW_UNSAVED_CHANGES_TITLE" = "Owah-Owahan Dereng Disimpen";
@@ -1200,37 +1203,37 @@
 "EDIT_ITEM_COPY_ACTION" = "Salin";
 
 /* body of email sent to contacts when inviting to install Signal. Embeds {{link to install Signal}} and {{link to the Signal home page}} */
-"EMAIL_INVITE_BODY" = "Punten,\n\nSakmenika kula ngginakaken Signal supados obrolan kula ing iPhone tetep kejagi rahasianipun. Kula ngerekomendasiaken supados sampeyan ugi ngginakaken Signal, dadosipun tiyang benten mboten saged maosi pesen utawi mirengaken telepon kita.\n\nSignal kasedhiya ing iPhones lan Android. Sampeyan saged manggih Signal ing: %@\n\nSignal dipunradikan sami kados aplikasi pesen bentinipun. Sampeyan saged ngirimaken gambar lan video, nelepon, lan ndamel obrolan grup. Utaminipun, mboten enten ingkang saged ningali obrolan kasebut, tiyang-tiyang ingkang ndameli Signal ugi mboten saged!\n\nMenawi kersa, sampeyan saged maosi babagan Sistem Open Whisper, tiyang-tiyang ingkang ndameli Signal, dipunmriki: %@";
+"EMAIL_INVITE_BODY" = "Punten,\n\nSakmenika kula ngginakaken Signal supados obrolan kula ing iPhone tetep kejagi rahasianipun. Kula ngerekomendasiaken supados sampeyan ugi ngginakaken Signal, dadosipun tiyang benten mboten saged maosi pesen utawi mirengaken telepon kita.\n\nSignal kasedhiya ing iPhones lan Android. Sampeyan saged manggih Signal ing: %@\n\nSignal dipunradikaken sami kados aplikasi pesen bentinipun. Sampeyan saged ngirimaken gambar lan video, nelepon, lan ndamel obrolan grup. Utaminipun, mboten enten ingkang saged ningali obrolan kasebut, tiyang-tiyang ingkang ndameli Signal ugi mboten saged!\n\nMenawi kersa, sampeyan saged maosi babagan Sistem Open Whisper, tiyang-tiyang ingkang ndamel Signal, dipunmriki: %@";
 
 /* subject of email sent to contacts when inviting to install Signal */
 "EMAIL_INVITE_SUBJECT" = "Ayo ngginakaken Signal";
 
 /* The name for the emoji category 'Activities' */
-"EMOJI_CATEGORY_ACTIVITIES_NAME" = "Activities";
+"EMOJI_CATEGORY_ACTIVITIES_NAME" = "Kagiatan";
 
 /* The name for the emoji category 'Animals & Nature' */
-"EMOJI_CATEGORY_ANIMALS_NAME" = "Animals & Nature";
+"EMOJI_CATEGORY_ANIMALS_NAME" = "Kewan & Alam";
 
 /* The name for the emoji category 'Flags' */
-"EMOJI_CATEGORY_FLAGS_NAME" = "Flags";
+"EMOJI_CATEGORY_FLAGS_NAME" = "Gendera";
 
 /* The name for the emoji category 'Food & Drink' */
-"EMOJI_CATEGORY_FOOD_NAME" = "Food & Drink";
+"EMOJI_CATEGORY_FOOD_NAME" = "Tedhan & Benteran";
 
 /* The name for the emoji category 'Objects' */
-"EMOJI_CATEGORY_OBJECTS_NAME" = "Objects";
+"EMOJI_CATEGORY_OBJECTS_NAME" = "Barang";
 
 /* The name for the emoji category 'Recents' */
-"EMOJI_CATEGORY_RECENTS_NAME" = "Recents";
+"EMOJI_CATEGORY_RECENTS_NAME" = "Paling Enggal";
 
 /* The name for the emoji category 'Smileys & People' */
-"EMOJI_CATEGORY_SMILEYSANDPEOPLE_NAME" = "Smileys & People";
+"EMOJI_CATEGORY_SMILEYSANDPEOPLE_NAME" = "Smiley & Tiyang-Tiyang";
 
 /* The name for the emoji category 'Symbols' */
-"EMOJI_CATEGORY_SYMBOLS_NAME" = "Symbols";
+"EMOJI_CATEGORY_SYMBOLS_NAME" = "Tandha";
 
 /* The name for the emoji category 'Travel & Places' */
-"EMOJI_CATEGORY_TRAVEL_NAME" = "Travel & Places";
+"EMOJI_CATEGORY_TRAVEL_NAME" = "Dolan & Panggen";
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE1" = "Kontak sampeyan mboten enten ingkang ngginakaken Signal.";
@@ -1266,7 +1269,7 @@
 "ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "PIN betah paling sekedhik 4 digit.";
 
 /* Indicates that user should select a 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Serataken PIN Kunci Pendaftaran. Sampeyan bakal dipuntedha supados nyerataken PIN kasebut malih kala ndaftaraken nomer telepon niki ing Signal.";
+"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Serataken PIN Kunci Pendaftaran. Sampeyan bakal dipuntedha supados nyerataken malih PIN kasebut kala ndaftaraken nomer telepon niki ing Signal.";
 
 /* Indicates that user has 'two factor auth pin' disabled. */
 "ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "Supados keamananipun maksimal, aktifaken PIN Kunci Pendaftaran ingkang bakal dipuntedha kala nyobi ndaftaraken malih nomer telepon niki ing Signal.";
@@ -1278,13 +1281,13 @@
 "ENABLE_2FA_VIEW_TITLE" = "Kunci Pendaftaran";
 
 /* Call setup status label */
-"END_CALL_RESPONDER_IS_BUSY" = "Taksih ribet";
+"END_CALL_RESPONDER_IS_BUSY" = "Taksih Ribet";
 
 /* Call setup status label */
 "END_CALL_UNCATEGORIZED_FAILURE" = "Telepon Gagal.";
 
 /* Label indicating that this OS version is no longer supported. */
-"END_OF_LIFE_OS_WARNING" = "Fitur Signal ingkang paling enggal mboten saged ditumindakaken dening versi iOS sakmenika. Enggalaken pirantos sampeyan supados sampeyan mangke saged nampi pangenggalan Signal.";
+"END_OF_LIFE_OS_WARNING" = "Fitur Signal ingkang paling enggal mboten saged ditumindakaken dening versi iOS niki. Enggalaken pirantos sampeyan supados saged nampi pangenggalan Signal.";
 
 /* Error indicating that the phone's contacts could not be retrieved. */
 "ERROR_COULD_NOT_FETCH_CONTACTS" = "Mboten saged ngakses kontak.";
@@ -1296,7 +1299,7 @@
 "ERROR_DESCRIPTION_CLIENT_SENDING_FAILURE" = "Gagal ngirimaken pesen.";
 
 /* Error message indicating that message send is disabled due to prekey update failures */
-"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Mboten saged ngirimaken amargi data prekey basi.";
+"ERROR_DESCRIPTION_MESSAGE_SEND_DISABLED_PREKEY_UPDATE_FAILURES" = "Mboten saged ngirimaken amargi data prekey sampun basi.";
 
 /* Error message indicating that message send failed due to block list */
 "ERROR_DESCRIPTION_MESSAGE_SEND_FAILED_DUE_TO_BLOCK_LIST" = "Gagal ngirimaken pesen amargi panggina sampun sampeyan blokir.";
@@ -1317,7 +1320,7 @@
 "ERROR_DESCRIPTION_RESPONSE_FAILED" = "Wangsulan saking ladosan mboten valid.";
 
 /* Error message when attempting to send message */
-"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Pirantos niki mboten didaftaraken kangge nomer telepon sampeyan malih. Cobi pasangaken Signal malih.";
+"ERROR_DESCRIPTION_SENDING_UNAUTHORIZED" = "Pirantos niki sampun mboten didaftaraken kangge nomer telepon sampeyan. Cobi pasangaken Signal malih.";
 
 /* Generic server error */
 "ERROR_DESCRIPTION_SERVER_FAILURE" = "Enten Kalepatan ing Server. Cobi malih mangke. ";
@@ -1344,7 +1347,7 @@
 "ERROR_MESSAGE_INVALID_MESSAGE" = "Pesen ingkang ditampi mboten disinkronisasiaken.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_VERSION" = "Pesen ingkang ditampi mboten gathuk kaliyan versi ingkang diginakaken sakmenika.";
+"ERROR_MESSAGE_INVALID_VERSION" = "Pesen ingkang ditampi mboten gathuk kaliyan versi niki.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_NO_SESSION" = "Sesi kangge kontak niki mboten kasedhiya.";
@@ -1365,43 +1368,43 @@
 "ERROR_NETWORK_FAILURE" = "Enten Kalepatan Jaringan";
 
 /* Error indicating a send failure due to a delinked application. */
-"ERROR_SENDING_DELINKED" = "Pirantos sampeyan sampun mboten ditautaken malih. Cobi tautaken malih supados sampeyan mangke saged ngirimaken pesen.";
+"ERROR_SENDING_DELINKED" = "Pirantos sampeyan sampun mboten ditautaken. Cobi tautaken malih supados saged ngirimaken pesen.";
 
 /* Error indicating a send failure due to a deregistered application. */
-"ERROR_SENDING_DEREGISTERED" = "Pirantos sampeyan sampun mboten didaftaraken malih. Cobi daftaraken malih supados sampeyan mangke saged ngirimaken pesen.";
+"ERROR_SENDING_DEREGISTERED" = "Pirantos sampeyan sampun mboten didaftaraken. Cobi daftaraken malih supados saged ngirimaken pesen.";
 
 /* Error indicating a send failure due to an expired application. */
-"ERROR_SENDING_EXPIRED" = "Versi Signal sampeyan sampun kadaluwarsa. Enggalaken supados sampeyan mangke saged ngirimaken pesen.";
+"ERROR_SENDING_EXPIRED" = "Versi Signal sampeyan sampun basi. Enggalaken supados saged ngirimaken pesen.";
 
 /* Format string for 'unregistered user' error. Embeds {{the unregistered user's name or signal id}}. */
 "ERROR_UNREGISTERED_USER_FORMAT" = "Panggina ingkang Mboten Kadaftar: %@";
 
 /* Label notifying the user that the app has expired. */
-"EXPIRATION_ERROR" = "Versi Signal sampeyan sampun kadaluwarsa! Pesen-pesen bakalan mboten saged dikirimaken malih. Tutul kangge ngenggalaken Signal dados versi paling enggal.";
+"EXPIRATION_ERROR" = "Versi Signal sampeyan sampun basi! Pesen-pesen bakalan mboten saged dikirimaken malih. Tutul kangge ngenggalaken versi Signal.";
 
 /* Label warning the user that the app will expire soon. */
-"EXPIRATION_WARNING_SOON" = "Versi Signal sampeyan bakal kedaluwaran saksampune %d dinten. Tutul kangge ngenggalaken dados versi paling enggal.";
+"EXPIRATION_WARNING_SOON" = "Versi Signal sampeyan bakal basi saksampune %d dinten. Tutul kangge ngenggalaken versi Signal sampeyan.";
 
 /* Label warning the user that the app will expire today. */
-"EXPIRATION_WARNING_TODAY" = "Versi Signal sampeyan bakal kedaluwarsa dinten niki, Ketuk kagem ngenggalaken dados versi paling enggal.";
+"EXPIRATION_WARNING_TODAY" = "Versi Signal sampeyan bakal basi dinten niki, Ketuk kagem ngenggalaken versi Signal sampeyan.";
 
 /* action sheet header when re-sending message which failed because of too many attempts */
 "FAILED_SENDING_BECAUSE_RATE_LIMIT" = "Kekathahan kagagalan kaliyan kontak niki. Cobi malih mangke.";
 
 /* action sheet header when re-sending message which failed because of untrusted identity keys */
-"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Nomer keamanan sampeyan kaliyan %@ nembe digantos. Kadosipun sampeyan kersa ngeverifikasi sakderengipun  ngirimaken pesen niki malih.";
+"FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_KEY" = "Nomer keamanan sampeyan kaliyan %@ nembe digantos. Kadosipun sampeyan kersa ngeverifikasi sakderengipun ngirimaken malih pesen niki.";
 
 /* alert title */
 "FAILED_VERIFICATION_TITLE" = "Verifikasi Nomer Keamanan Gagal!";
 
 /* Button that marks user as verified after a successful fingerprint scan. */
-"FINGERPRINT_SCAN_VERIFY_BUTTON" = "Tandhai Sampun Diverifikasiaken";
+"FINGERPRINT_SCAN_VERIFY_BUTTON" = "Tandhai Dados Sampun Diverifikasiaken";
 
 /* No comment provided by engineer. */
-"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Atur Sesi Malih";
+"FINGERPRINT_SHRED_KEYMATERIAL_BUTTON" = "Atur Malih Sesi";
 
 /* Accessibility label for finishing new group */
-"FINISH_GROUP_CREATION_LABEL" = "Grup dipundamelaken";
+"FINISH_GROUP_CREATION_LABEL" = "Grup sampun dipundamelaken";
 
 /* Label and title for 'contact forwarding' views. */
 "FORWARD_CONTACT" = "Terusaken Kontak";
@@ -1446,7 +1449,7 @@
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Serataken tembung kunci";
 
 /* Body message of notification shown during GRDB migration indicating that user may need to open app to view their content. */
-"GRDB_MIGRATION_NOTIFICATION_BODY" = "Enten pengoptimalan database lan pandandosan kinerja ing versi Signal niki. Kadosipun sampeyan betah mbikak aplikasi kangge ngerampungaken tumindak kasebut.";
+"GRDB_MIGRATION_NOTIFICATION_BODY" = "Enten pangoptimalan database lan pandandosan kinerja ing versi Signal niki. Kadosipun sampeyan betah mbikak aplikasi kangge ngerampungaken tumindak kasebut.";
 
 /* Title of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_TITLE" = "Ngoptimalaken Database";
@@ -1593,7 +1596,7 @@
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Anggota";
 
 /* Title for the 'no longer verified' section of the 'group members' view. */
-"GROUP_MEMBERS_SECTION_TITLE_NO_LONGER_VERIFIED" = "Mboten Ditandhai Dados Dipunverifikasi Malih";
+"GROUP_MEMBERS_SECTION_TITLE_NO_LONGER_VERIFIED" = "Mboten Ditandhai Malih Dados Dipunverifikasi";
 
 /* Button label for the 'send message to group member' button */
 "GROUP_MEMBERS_SEND_MESSAGE" = "Pesen";
@@ -1668,7 +1671,7 @@
 "GROUP_REMOTE_USER_INVITED_N_FORMAT" = "%@ rencang diajak mlebet grup.";
 
 /* Message indicating that a remote user was added to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "%@ mlebet ing grup.";
+"GROUP_REMOTE_USER_JOINED_GROUP_FORMAT" = "%@ mlebet grup.";
 
 /* Message indicating that a remote user has left the group. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_LEFT_GROUP_FORMAT" = "%@ medal saking grup.";
@@ -1710,13 +1713,13 @@
 "GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ ngenggalaken avatar.";
 
 /* Info message indicating that the group was updated by the local user. */
-"GROUP_UPDATED_BY_LOCAL_USER" = "Sampeyan nembe ngenggalaken grup.";
+"GROUP_UPDATED_BY_LOCAL_USER" = "Sampeyan ngenggalaken grup.";
 
 /* Info message indicating that the group was updated by another user. Embeds {{remote user name}}. */
 "GROUP_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ ngenggalaken grup.";
 
 /* Message indicating that the group's name was removed. */
-"GROUP_UPDATED_NAME_REMOVED" = "Nami grup sampun dibrusak.";
+"GROUP_UPDATED_NAME_REMOVED" = "Nami grup dibrusak.";
 
 /* Message indicating that the group's name was removed by the local user. */
 "GROUP_UPDATED_NAME_REMOVED_BY_LOCAL_USER" = "Sampeyan mbrusak nami grup.";
@@ -1734,10 +1737,10 @@
 "GROUP_UPDATED_NAME_UPDATED_FORMAT" = "Sakmenika nami grup dados “%@”.";
 
 /* Message indicating that the local user left the group. */
-"GROUP_YOU_LEFT" = "Sampeyan sampun kesah saking grup.";
+"GROUP_YOU_LEFT" = "Sampeyan sampun medal saking grup.";
 
 /* Message for the 'can't replace group admin' alert. */
-"GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Pileh admin enggal kangge grup niki sakderengipun sampeyan medal.";
+"GROUPS_CANT_REPLACE_ADMIN_ALERT_MESSAGE" = "Pileh admin enggal kangge grup niki sakderengipun medal.";
 
 /* Error message indicating that a member can't be added to a group because they are already in the group. */
 "GROUPS_ERROR_MEMBER_ALREADY_IN_GROUP" = "Panggina sampun enten ing grup.";
@@ -1755,7 +1758,7 @@
 "GROUPS_INVITE_BLOCK_INVITER_FORMAT" = "Blokir %@";
 
 /* Message for the 'replace group admin' alert. */
-"GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "Sakderengipun sampeyan medal, pileh admin ingkang enggal kangge grup niki.";
+"GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "Sakderengipun medal, pileh admin ingkang enggal kangge grup niki.";
 
 /* Title for the 'replace group admin' alert. */
 "GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "Pileh Admin Enggal";
@@ -1770,7 +1773,7 @@
 "HOME_VIEW_BLOCKED_CONVERSATION" = "Diblokir";
 
 /* Placeholder text for search bar which filters conversations. */
-"HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Pados";
+"HOME_VIEW_CONVERSATION_SEARCHBAR_PLACEHOLDER" = "Padosi";
 
 /* A prefix indicating that a message preview is a draft */
 "HOME_VIEW_DRAFT_PREFIX" = "Draf: ";
@@ -1801,6 +1804,15 @@
 
 /* Title for the conversation list's default mode. */
 "HOME_VIEW_TITLE_INBOX" = "Signal";
+
+/* The image editor hint that you can draw blur */
+"IMAGE_EDITOR_BLUR_HINT" = "Gambaraken theng pundi mawon kangge ngebluraken";
+
+/* The image editor setting to blur faces */
+"IMAGE_EDITOR_BLUR_SETTING" = "Bluraken rainipun";
+
+/* A toast indicating that you can blur more faces after detection */
+"IMAGE_EDITOR_BLUR_TOAST" = "Gambaraken kangge ngebluraken rai utawi daerah bentenipun";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Sampeyan mboten saged ngunjukaken luwih saking %@ item.";
@@ -1836,7 +1848,7 @@
 "INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "Obrolan niki dipunarsipaken lan bakal muncul ing Inbox mawon menawi enten pesen enggal ingkang ditampi.";
 
 /* Message shown in the conversation list when the inbox is empty. */
-"INBOX_VIEW_EMPTY_INBOX" = "Sukakna dhemokan ingkang pribadi kagem kothak mlebetipun sampeyan. Awiti kagem ngirimaken pesen datheng kancanipun sampeyan.";
+"INBOX_VIEW_EMPTY_INBOX" = "Sukani prakawis ingkang pribadi kagem kothak mlebetipun sampeyan. Awiti kagem ngirimaken pesen datheng kancanipun sampeyan.";
 
 /* Multi-line label explaining how to show names instead of phone numbers in your inbox */
 "INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Sampeyan saged ngaktifaken akses kontak ing panatanan aplikasi iOS kangge ningali nami kontak ing daftar obrolan Signal sampeyan.";
@@ -1863,7 +1875,7 @@
 "INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "Mboten diangkat amargi nomer keamananipun sampun digantos.";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
-"INFO_MESSAGE_SYNCED_THREAD" = "Sampeyan saged ngirim utawi nampi pesen ingkang dipunsinkronasi saking telepon utawi iPad.\nSupados aman, sejarah obrolan mboten dipindhahaken datheng pirantos ingkang ditautaken.";
+"INFO_MESSAGE_SYNCED_THREAD" = "Sampeyan saged ngirim utawi nampi pesen ingkang dipunsinkronasi saking telepon utawi iPad.\nSupados aman, sejarah obrolan mboten dipindhahaken datheng pirantos ingkang dipuntautaken.";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
 "INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@ sampun ngginakaken Signal!";
@@ -1887,7 +1899,7 @@
 "INVITE_FRIENDS_CONTACT_TABLE_BUTTON" = "Ajak Rencang-Rencang Ngginakaken Signal";
 
 /* Search */
-"INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Pados";
+"INVITE_FRIENDS_PICKER_SEARCHBAR_PLACEHOLDER" = "Padosi";
 
 /* Navbar title */
 "INVITE_FRIENDS_PICKER_TITLE" = "Ajak Rencang-Rencang";
@@ -1899,7 +1911,7 @@
 "KEEP_MESSAGES_DURATION" = "Pesen ngical saksampune %@.";
 
 /* Slider label when disappearing messages is off */
-"KEEP_MESSAGES_FOREVER" = "Pesen ampun ngical.";
+"KEEP_MESSAGES_FOREVER" = "Pesen mboten bakal ngical.";
 
 /* A keyboard command to open the current conversation's all media view. */
 "KEY_COMMAND_ALL_MEDIA" = "Bikak Media Sedaya";
@@ -1932,7 +1944,7 @@
 "KEY_COMMAND_PREVIOUS_CONVERSATION" = "Bikak Obrolan Saderengipun";
 
 /* A keyboard command to begin a search on the conversation list. */
-"KEY_COMMAND_SEARCH" = "Pados";
+"KEY_COMMAND_SEARCH" = "Padosi";
 
 /* A keyboard command to present the application settings dialog. */
 "KEY_COMMAND_SETTINGS" = "Panatanan";
@@ -1941,7 +1953,7 @@
 "KEY_COMMAND_STICKERS" = "Tampilaken Stiker";
 
 /* A keyboard command to unarchive the current coversation. */
-"KEY_COMMAND_UNARCHIVE" = "Obrolan ingkang Mboten Diarsipaken";
+"KEY_COMMAND_UNARCHIVE" = "Sandekaken Pangarsipan Obrolan";
 
 /* Label for the 'learn more' button. */
 "LEARN_MORE" = "Sapepakipun";
@@ -1992,7 +2004,7 @@
 "LIST_GROUP_MEMBERS_ACTION" = "Anggota Grup";
 
 /* A string indicating that the user can search for a location */
-"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Padosi kangge nami utawi alamat";
+"LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Padosi ngginakaken nami utawi alamat";
 
 /* The title for the location picker view */
 "LOCATION_PICKER_TITLE" = "Pileh Lokasi";
@@ -2040,13 +2052,13 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Brusak kangge Sedaya";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "This message will be permanently deleted for everyone in the conversation. Members will be able to see that you deleted a message.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Pesen niki bakal dibrusak kangge piyambak sedaya ing obrolan niki sacara permanen Anggota sedaya bakal saged ningali menawi sampeyan mbrusaki pesen.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
-"MESSAGE_ACTION_DELETE_FOR_TITLE" = "Who would you like to delete this message for?";
+"MESSAGE_ACTION_DELETE_FOR_TITLE" = "Kangge sinten sampeyan badhe mbrusak pesen niki?";
 
 /* The title for the action that deletes a message for the local user only. */
-"MESSAGE_ACTION_DELETE_FOR_YOU" = "Delete for Me";
+"MESSAGE_ACTION_DELETE_FOR_YOU" = "Kula Mawon";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DELETE_MESSAGE" = "Brusak Pesen Niki";
@@ -2112,10 +2124,10 @@
 "MESSAGE_METADATA_VIEW_SENDER" = "Pangirim";
 
 /* Label for the 'sent date & time' field of the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_SENT_DATE_TIME" = "Dipunkentunaken";
+"MESSAGE_METADATA_VIEW_SENT_DATE_TIME" = "Dikirimaken";
 
 /* Label for the original filename of any attachment in the 'message metadata' view. */
-"MESSAGE_METADATA_VIEW_SOURCE_FILENAME" = "Filename";
+"MESSAGE_METADATA_VIEW_SOURCE_FILENAME" = "Nami File";
 
 /* Title for the 'message metadata' view. */
 "MESSAGE_METADATA_VIEW_TITLE" = "Pesen";
@@ -2142,7 +2154,7 @@
 "MESSAGE_REQUEST_DELETE_CONVERSATION_ACTION" = "Brusak";
 
 /* Action sheet message to confirm deleting a conversation via a message request. */
-"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "Obrolan niki bakal dibrusak saking pirantos sedayanipun sampeyan.";
+"MESSAGE_REQUEST_DELETE_CONVERSATION_MESSAGE" = "Obrolan niki bakal dibrusak saking pirantos sampeyan sedayanipun.";
 
 /* Action sheet title to confirm deleting a conversation via a message request. */
 "MESSAGE_REQUEST_DELETE_CONVERSATION_TITLE" = "Brusak Obrolan?";
@@ -2151,7 +2163,7 @@
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_ACTION" = "Brusak lan Medal";
 
 /* Action sheet message to confirm deleting a group via a message request. */
-"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "Sampeyan bakal medal saking grup niki. Grup bakal dibrusak saking pirantos sedayanipun sampeyan.";
+"MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_MESSAGE" = "Sampeyan bakal medal saking grup niki. Grup bakal dibrusak saking pirantos sampeyan sedayanipun.";
 
 /* Action sheet title to confirm deleting a group via a message request. */
 "MESSAGE_REQUEST_LEAVE_AND_DELETE_GROUP_TITLE" = "Brusak lan Medal Saking Grup?";
@@ -2223,13 +2235,13 @@
 "MESSAGE_STATUS_RECIPIENT_SKIPPED" = "Dilewati";
 
 /* Label indicating that a message failed to send. */
-"MESSAGE_STATUS_SEND_FAILED" = "Pangentunan Sande";
+"MESSAGE_STATUS_SEND_FAILED" = "Pangiriman Gagal";
 
 /* message status while message is sending. */
-"MESSAGE_STATUS_SENDING" = "Ngentunaken…";
+"MESSAGE_STATUS_SENDING" = "Ngirimaken…";
 
 /* status message for sent messages */
-"MESSAGE_STATUS_SENT" = "Dipunkentunaken";
+"MESSAGE_STATUS_SENT" = "Dipunkirimaken";
 
 /* status message while attachment is uploading */
 "MESSAGE_STATUS_UPLOADING" = "Ngunggah...";
@@ -2247,19 +2259,19 @@
 "MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ mboten ditandhai malih dados dipunverifikasi. Tutul kangge pilehan.";
 
 /* Indicates that a single member of this group has been blocked. */
-"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "Sampeyan Mblokir 1 Anggota Grup Niki";
+"MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "Sampeyan Mblokir 1 Anggota saking Grup Niki";
 
 /* Indicates that this group conversation has been blocked. */
 "MESSAGES_VIEW_GROUP_BLOCKED" = "Sampeyan Mblokir Grup Niki";
 
 /* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
-"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "Sampeyan Mblokir %@ Anggota Grup Niki";
+"MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "Sampeyan Mblokir %@ Anggota saking Grup Niki";
 
 /* Indicates that more than one member of this group conversation is no longer verified. */
 "MESSAGES_VIEW_N_MEMBERS_NO_LONGER_VERIFIED" = "Luwih saking setunggal anggota grup niki mboten ditandhai malih dados dipunverifikasi. Tutul kangge pilehan.";
 
 /* The subtitle for the messages view title indicates that the title can be tapped to access settings for this conversation. */
-"MESSAGES_VIEW_TITLE_SUBTITLE" = "Ketuk ing mriki kagem setelan";
+"MESSAGES_VIEW_TITLE_SUBTITLE" = "Ketuk ing mriki kangge ngatur";
 
 /* Indicator that separates read from unread messages. */
 "MESSAGES_VIEW_UNREAD_INDICATOR" = "Pesen Enggal";
@@ -2268,7 +2280,7 @@
 "MISSED_CALL" = "Telepon ingkang mboten diangkat";
 
 /* Alert body */
-"MISSING_CAMERA_PERMISSION_MESSAGE" = "Sampeyan sagen ngaktifaken akses kamera ing Panatanan aplikasi iOS kangge ngawiti telepon video ngginakaken Signal.";
+"MISSING_CAMERA_PERMISSION_MESSAGE" = "Sampeyan saged ngaktifaken akses kamera ing Panatanan aplikasi iOS kangge ngawiti telepon video ngginakaken Signal.";
 
 /* Alert title */
 "MISSING_CAMERA_PERMISSION_TITLE" = "Signal betah akses kamera.";
@@ -2277,19 +2289,19 @@
 "MISSING_LOCATION_PERMISSION_MESSAGE" = "Sampeyan saged nyukani izin ing Panatanan aplikasi iOS.";
 
 /* Alert title indicating the user has denied location permissios */
-"MISSING_LOCATION_PERMISSION_TITLE" = "Kangge fitur niki, Signal betah akses lokasi.";
+"MISSING_LOCATION_PERMISSION_TITLE" = "Signal betah akses lokasi kangge fitur niki.";
 
 /* Alert body when user has previously denied media library access */
 "MISSING_MEDIA_LIBRARY_PERMISSION_MESSAGE" = "Sampeyan saged nyukani izin ing Panatanan aplikasi iOS.";
 
 /* Alert title when user has previously denied media library access */
-"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Kangge fitur niki, Signal betah akses foto.";
+"MISSING_MEDIA_LIBRARY_PERMISSION_TITLE" = "Signal betah akses foto kangge fitur niki.";
 
 /* alert title: cannot link - reached max linked devices */
 "MULTIDEVICE_PAIRING_MAX_DESC" = "Sampeyan mboten saged nautaken pirantos malih.";
 
 /* alert body: cannot link - reached max linked devices */
-"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Wates jumlah pirantos ingkang ditautaken kaliyan akun sampeyan sampun kebak. Icalaken salah setunggalipun pirantos lan cobi malih.";
+"MULTIDEVICE_PAIRING_MAX_RECOVERY" = "Wates jumlah pirantos ingkang ditautaken kaliyan akun sampeyan sampun cekap. Icalaken salah setunggalipun pirantos lan cobi malih.";
 
 /* An explanation of the consequences of muting a thread. */
 "MUTE_BEHAVIOR_EXPLANATION" = "Sampeyan mboten bakal nampi panedahan kangge obrolan ingkang dibisuaken.";
@@ -2304,7 +2316,7 @@
 "NEW_CONVERSATION_FIND_BY_PHONE_NUMBER" = "Padosi kangge Nomor Telepon";
 
 /* Action Sheet title prompting the user for a group avatar */
-"NEW_GROUP_ADD_PHOTO_ACTION" = "Atus Foto Grup";
+"NEW_GROUP_ADD_PHOTO_ACTION" = "Atur Foto Grup";
 
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "Grup Enggal";
@@ -2313,7 +2325,7 @@
 "NEW_GROUP_BUTTON_LABEL" = "Grup Enggal";
 
 /* The title for the 'create group' button. */
-"NEW_GROUP_CREATE_BUTTON" = "Damel";
+"NEW_GROUP_CREATE_BUTTON" = "Damelaken";
 
 /* Error indicating that a new group could not be created. */
 "NEW_GROUP_CREATION_FAILED" = "Mboten saged ndamel grup enggal.";
@@ -2343,7 +2355,7 @@
 "NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Minggahaken nami kangge obrolan grup niki";
 
 /* a title for the selected section of the 'recipient picker' view. */
-"NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Panggina Bentenipun";
+"NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Panggina Benten";
 
 /* The title for the 'select members for new group' view. */
 "NEW_GROUP_SELECT_MEMBERS_VIEW_TITLE" = "Pileh Anggota";
@@ -2358,7 +2370,7 @@
 "new_message" = "Pesen Enggal";
 
 /* A label for the 'add by phone number' button in the 'new non-contact conversation' view */
-"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Pados";
+"NEW_NONCONTACT_CONVERSATION_VIEW_BUTTON" = "Padosi";
 
 /* Title for the 'new non-contact conversation' view. */
 "NEW_NONCONTACT_CONVERSATION_VIEW_TITLE" = "Padosi Panggina";
@@ -2370,13 +2382,13 @@
 "NO_SELECTED_CONVERSATION_DESCRIPTION" = "Pileh kontak utawi grup ingkang badhe diawiti obrolanipun.";
 
 /* Title welcoming to the app */
-"NO_SELECTED_CONVERSATION_TITLE" = "Sugeng Rawuh ing Signal";
+"NO_SELECTED_CONVERSATION_TITLE" = "Sugeng Rawuh theng Signal";
 
 /* A string prompting the user to send a new mesaage to a user */
 "NON_CONTACT_TABLE_CELL_NEW_MESSAGE" = "Pesen enggal kangge:";
 
 /* A string asking the user if they'd like to invite a number to signal via SMS. */
-"NON_CONTACT_TABLE_CELL_SEND_SMS" = "Mboten enten panggina ingkang dipunpanggihaken. Ajak saking SMS?";
+"NON_CONTACT_TABLE_CELL_SEND_SMS" = "Mboten enten panggina ingkang dipunpanggihaken. Ajak liwat SMS?";
 
 /* Label for 1:1 conversation with yourself. */
 "NOTE_TO_SELF" = "Catetan pribadi";
@@ -2421,7 +2433,7 @@
 "ONBOARDING_2FA_ENTER_NUMERIC" = "Serataken PIN Numerik";
 
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Madosi Bantuan?";
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Betah Bantuan?";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN" = "PIN klintu";
@@ -2436,13 +2448,13 @@
 "ONBOARDING_2FA_SKIP_AND_CREATE_NEW_PIN" = "Liwati lan Damelaken PIN Enggal";
 
 /* Explanation for the skip pin entry action sheet during onboarding. */
-"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Menawi mboten eling PIN sampeyan, sampeyan saged ndamel PIN enggal. Sampeyan saged ndaftar lan ngginakaken akun sampeyan, nanging panatanan ingkang dipunsimpen kados informasi profil bakal ngical.";
+"ONBOARDING_2FA_SKIP_PIN_ENTRY_MESSAGE" = "Menawi kesupen, sampeyan saged ndamel PIN enggal. Sampeyan saged ndaftar lan ngginakaken akun sampeyan, nanging panatanan ingkang dipunsimpen kados informasi profil bakal ngical.";
 
 /* Title for the skip pin entry action sheet during onboarding. */
 "ONBOARDING_2FA_SKIP_PIN_ENTRY_TITLE" = "Liwati PIN Mlebet?";
 
 /* Title of the 'onboarding Captcha' view. */
-"ONBOARDING_CAPTCHA_TITLE" = "Minggahaken sentuhan personal ing pesen sampeyan";
+"ONBOARDING_CAPTCHA_TITLE" = "Minggahaken prakawis ingkang personal ing pesen sampeyan";
 
 /* button indicating that the user will register their ipad */
 "ONBOARDING_MODE_SWITCH_BUTTON_PROVISIONING" = "Daftaraken iPad";
@@ -2451,7 +2463,7 @@
 "ONBOARDING_MODE_SWITCH_BUTTON_REGISTERING" = "Tautaken iPhone";
 
 /* explanation to the user they're switching from linking to registering flow */
-"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Nutul \"Daftaraken iPad\" bakalan ndamel akun Signal enggal utawi mindhahaken akun dangu sampeyang datheng iPad. Tumindak niki bakal ngenonaktifaktifaken Signal ing pirantos benteinpun ingkang sakmenika didaftaraken kangge nomer telepon ingkang sami.";
+"ONBOARDING_MODE_SWITCH_EXPLANATION_PROVISIONING" = "Nutul \"Daftaraken iPad\" bakalan ndamel akun Signal enggal utawi mindhahaken akun dangu sampeyan datheng iPad. Tumindak niki bakal ngenonaktifaktifaken Signal ing pirantos benteinpun ingkang sakmenika didaftaraken kangge nomer telepon ingkang sami.";
 
 /* explanation to the user they're switching from registering to linking flow */
 "ONBOARDING_MODE_SWITCH_EXPLANATION_REGISTERING" = "Nutul \"Tautaken iPhone\" bakalan ngubungaken telepon kaliyan akun dangu sampeyan. Nautaken telepon biyasanipun mboten direkomendasiaken ugi bakalan ngewatesi fungsionalitasipun, umpami mawon nelepon.";
@@ -2478,7 +2490,7 @@
 "ONBOARDING_PERMISSIONS_TITLE" = "Tampi pesenipun";
 
 /* Title of the 'onboarding phone number' view. */
-"ONBOARDING_PHONE_NUMBER_TITLE" = "Serataken nomer teleponipun sampeyan kagem ngawiti";
+"ONBOARDING_PHONE_NUMBER_TITLE" = "Serataken nomer telepon sampeyan kagem ngawiti";
 
 /* Label indicating that the phone number is invalid in the 'onboarding phone number' view. */
 "ONBOARDING_PHONE_NUMBER_VALIDATION_WARNING" = "Nomeripun klintu";
@@ -2502,7 +2514,7 @@
 "ONBOARDING_PIN_ATTEMPTS_EXHAUSTED_TITLE" = "PIN klintu";
 
 /* Title of the 'onboarding PIN' view. */
-"ONBOARDING_PIN_EXPLANATION" = "Serataken PIN ingkang dipundamelaken kagem akun sampeyan. PIN niki beda kaliyan kode verifikasi SMS sampeyan.";
+"ONBOARDING_PIN_EXPLANATION" = "Serataken PIN ingkang dipundamelaken kagem akun sampeyan. PIN niki beda kaliyan kode verifikasi SMS.";
 
 /* Title of the 'onboarding PIN' view. */
 "ONBOARDING_PIN_TITLE" = "Serataken PIN sampeyan";
@@ -2511,7 +2523,7 @@
 "ONBOARDING_SPLASH_TERM_AND_PRIVACY_POLICY" = "Kebijakan Privasi & Ketentuan";
 
 /* Title of the 'onboarding splash' view. */
-"ONBOARDING_SPLASH_TITLE" = "Simpen kerahasiaan sampeyan.\nDadosa piyambakipun sampeyan kala ngobrol.";
+"ONBOARDING_SPLASH_TITLE" = "Simpen kerahasiaan sampeyan.\nDadosa piyambakipun sampeyan ingkang asli kala ngobrol.";
 
 /* Label for the link that lets users change their phone number in the onboarding views. */
 "ONBOARDING_VERIFICATION_BACK_LINK" = "Salah nomer?";
@@ -2520,7 +2532,7 @@
 "ONBOARDING_VERIFICATION_CODE_COUNTDOWN_FORMAT" = "Kula mboten nampi kode (kasedhiya ing %@)";
 
 /* action sheet item shown after a number of failures to receive a verificaiton SMS during registration */
-"ONBOARDING_VERIFICATION_EMAIL_SIGNAL_SUPPORT" = "Hubungaken Dukungan Signal";
+"ONBOARDING_VERIFICATION_EMAIL_SIGNAL_SUPPORT" = "Hubungi Dukungan Signal";
 
 /* Label indicating that the verification code is incorrect in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_INVALID_CODE" = "Kode niki klintu";
@@ -2529,13 +2541,13 @@
 "ONBOARDING_VERIFICATION_ORIGINAL_CODE_MISSING_LINK" = "Kula mboten nampi kode";
 
 /* Message for the 'resend code' alert in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_MESSAGE" = "Pastiaken jarengan telepon sampeyan sae lan saged nampi pesen SMS.";
+"ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_MESSAGE" = "Pastiaken jaringan telepon sampeyan sae lan saged nampi pesen SMS.";
 
 /* Title for the 'resend code' alert in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_RESEND_CODE_ALERT_TITLE" = "Mboten enten kode?";
 
 /* Label for the 'resend code by SMS' button in the 'onboarding verification' view. */
-"ONBOARDING_VERIFICATION_RESEND_CODE_BY_SMS_BUTTON" = "Kirimaken Kodenipun Malih";
+"ONBOARDING_VERIFICATION_RESEND_CODE_BY_SMS_BUTTON" = "Kirimaken Malih Kodenipun";
 
 /* Label for the 'resend code by voice' button in the 'onboarding verification' view. */
 "ONBOARDING_VERIFICATION_RESEND_CODE_BY_VOICE_BUTTON" = "Telepon Kula Mawon";
@@ -2559,7 +2571,7 @@
 "OTHER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "%@ ngatur supados pesen ngical saksampune %@.";
 
 /* Label warning the user that the Signal service may be down. */
-"OUTAGE_WARNING" = "Enten masalah teknis ing SIgnal. Kami ngupadosaken kagem ndandosi masalah kasebut sagelis mungkin.";
+"OUTAGE_WARNING" = "Enten masalah teknis ing Signal. Kami bakal ndandosi masalah kasebut sagelis mungkin.";
 
 /* info message text in conversation view */
 "OUTGOING_CALL" = "Telepon medal";
@@ -2628,7 +2640,7 @@
 "PENDING_GROUP_MEMBERS_VIEW_TITLE" = "Ajakan Grup ingkang Katundha";
 
 /* Label for view-once messages that have invalid content. */
-"PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "Sande nangani pesen ingkang mlebet";
+"PER_MESSAGE_EXPIRATION_INVALID_CONTENT" = "Enten kalepatan kala nangani pesen mlebet";
 
 /* inbox cell and notification text for an already viewed view-once media message. */
 "PER_MESSAGE_EXPIRATION_NOT_VIEWABLE" = "Media ingkang saged ditingali pisan mawon";
@@ -2811,7 +2823,7 @@
 "PRIVACY_IDENTITY_IS_NOT_VERIFIED_FORMAT" = "Sampeyan mboten nandhai %@ dados dipunverifikasi.";
 
 /* Badge indicating that the user is verified. */
-"PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Pun diverifikasi";
+"PRIVACY_IDENTITY_IS_VERIFIED_BADGE" = "Dipunverifikasi";
 
 /* Label indicating that the user is verified. Embeds {{the user's name or phone number}}. */
 "PRIVACY_IDENTITY_IS_VERIFIED_FORMAT" = "%@ dipunverifikasi.";
@@ -2850,7 +2862,7 @@
 "PRIVACY_VERIFICATION_TITLE" = "Verifikasi Nomer Keamanan";
 
 /* Button that lets user mark another user's identity as verified. */
-"PRIVACY_VERIFY_BUTTON" = "Tandhai Sampun Diverifikasiaken";
+"PRIVACY_VERIFY_BUTTON" = "Tandhai dados Dipunverifikasi";
 
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Lanjutaken";
@@ -2943,7 +2955,7 @@
 "QUOTED_REPLY_CONTENT_FROM_REMOTE_SOURCE" = "Pesen asli mboten saged kepanggih.";
 
 /* Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of the message was since deleted. */
-"QUOTED_REPLY_ORIGINAL_MESSAGE_DELETED" = "Pesen asli sampun mboten kasedhiya malih.";
+"QUOTED_REPLY_ORIGINAL_MESSAGE_DELETED" = "Pesen asli sampun mboten kasedhiya.";
 
 /* Toast alert text shown when tapping on a quoted message which we cannot scroll to because the local copy of the message didn't exist when the quote was received. */
 "QUOTED_REPLY_ORIGINAL_MESSAGE_REMOTELY_SOURCED" = "Pesen asli mboten saged kepanggih.";
@@ -2997,7 +3009,7 @@
 "REACTION_INCOMING_NOTIFICATION_TO_VIDEO_BODY_FORMAT" = "Nganggepi video sampeyan kangge %@";
 
 /* notification body. Embeds {{reaction emoji}} */
-"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Nganggepi media sampeyaningkang saged ditingali sepisan mawon kangge %@";
+"REACTION_INCOMING_NOTIFICATION_TO_VIEW_ONCE_MESSAGE_BODY_FORMAT" = "Nganggepi media sampeyan ingkang saged ditingali sepisan mawon kangge %@";
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Nganggepi pesen suwanten sampeyan kangge %@";
@@ -3021,7 +3033,7 @@
 "REGISTER_2FA_FORGOT_PIN" = "Kula kesupen PIN kula.";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Madosi Bantuan?";
+"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Betah Bantuan?";
 
 /* Alert body for a forgotten SVR (V2) PIN */
 "REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "PIN ngrupikaken kode 4+ digit ingkang sampeyan damel, numerik utawi alfanumerik. Menawi sampeyan kesupen PIN kasebut, sampeyan betah nengga ngantos 7 dinten kangge ndaftaraken malih akun sampeyan.";
@@ -3078,7 +3090,7 @@
 "REGISTRATION_ERROR" = "Kalepatan Pendaftaran";
 
 /* alert body during registration */
-"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Signal mboten sgaed ngaktifaken akun sampeyan ngantos kode ingkang Signal kirimaken sampeyan verifikasi.";
+"REGISTRATION_ERROR_BLANK_VERIFICATION_CODE" = "Signal mboten sgaed ngaktifaken akun sampeyan ngantos kode ingkang dikirimaken kaliyan Signal dipunverifikasi.";
 
 /* No comment provided by engineer. */
 "REGISTRATION_NON_VALID_NUMBER" = "Format nomer telepon niki mboten didukung. Cobi hubungi Bantuan.";
@@ -3255,7 +3267,7 @@
 "SCREENSHOT_THREAD_DIRECT_FIVE_MESSAGE_TWO" = "Matur nuwun ☺️";
 
 /* This is a message. */
-"SCREENSHOT_THREAD_DIRECT_FOUR_MESSAGE_ONE" = "Kula aman mawon amargi kabijaksanaanipun sampeyan.";
+"SCREENSHOT_THREAD_DIRECT_FOUR_MESSAGE_ONE" = "Kula sae-sae mawon amargi kabijaksanaanipun sampeyan.";
 
 /* This is a message. Include 'Thanks' + a similar phrase with the :) emoji. */
 "SCREENSHOT_THREAD_DIRECT_FOUR_MESSAGE_TWO" = "Matur nuwun, kula seneng sanget maosipun :)";
@@ -3336,7 +3348,7 @@
 "SEARCH_BYNAMEORNUMBER_PLACEHOLDER_TEXT" = "Padosi kangge nami utawi nomer";
 
 /* placeholder text in an empty search field */
-"SEARCH_FIELD_PLACE_HOLDER_TEXT" = "Pados";
+"SEARCH_FIELD_PLACE_HOLDER_TEXT" = "Padosi";
 
 /* section header for search results that match a contact who doesn't have an existing conversation */
 "SEARCH_SECTION_CONTACTS" = "Kontak Bentenipun";
@@ -3351,7 +3363,7 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Mboten Saged Mendhet Kode Panautan";
 
 /* alert message for outdated linking device */
-"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Pirantos ingkang benten numindakaken versi warisan Signal ingkang mboten ndukung pangescanan kode QR iPad. Pasang versi Signal paling enggal lan cobi malih.";
+"SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Pirantos ingkang benten numindakaken versi warisan Signal ingkang mboten ndukung pangescanan kode QR iPad. Pasang versi enggal Signal lan cobi malih.";
 
 /* alert title for outdated linking device */
 "SECONDARY_LINKING_ERROR_OLD_VERSION_TITLE" = "Ngenggali Pirantos Pangescanan";
@@ -3378,13 +3390,13 @@
 "SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "Kula mboten gadhah Signal ing telepon kula...";
 
 /* alert body */
-"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Bikak App Store ing telepon sampeyan, pasang Signal, rampungaken proses pendaftaran, lajeng, sampeyan saged nautaken iPad ngginakaken akun ingkang sami.";
+"SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "Bikak App Store ing telepon sampeyan, pasang Signal, rampungaken proses pendaftaran, lajengipun sampeyan saged nautaken iPad ngginakaken akun ingkang sami.";
 
 /* alert title */
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_TITLE" = "Pasang Signal ing Telepon Sampeyan";
 
 /* body text while displaying a QR code which, when scanned, will link this device. */
-"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Tutul gambar profil kangge mbikak Panatanan Signal ing telepon sampeyan. Lajeng, \"Pirantos ingkang Ditautaken\" lan \"Tautaken Pirantos Enggal\" kangge ngescan kode niki ngginakaken telepon sampeyan:";
+"SECONDARY_ONBOARDING_SCAN_CODE_BODY" = "Tutul gambar profil kangge mbikak Panatanan Signal ing telepon sampeyan. Lajengipun \"Pirantos ingkang Ditautaken\" lan \"Tautaken Pirantos Enggal\" kangge ngescan kode niki ngginakaken telepon sampeyan:";
 
 /* Link text for page with troubleshooting info shown on the QR scanning screen */
 "SECONDARY_ONBOARDING_SCAN_CODE_HELP_TEXT" = "Padosi bantuan babagan nautaken iPad ing mriki";
@@ -3408,7 +3420,7 @@
 "SEND_AGAIN_BUTTON" = "Kirimaken Malih";
 
 /* Label for the button to send a message */
-"SEND_BUTTON_TITLE" = "Kentunaken";
+"SEND_BUTTON_TITLE" = "Kirimaken";
 
 /* notification body */
 "SEND_FAILED_NOTIFICATION_BODY" = "Pesen gagal dikirimaken.";
@@ -3429,7 +3441,7 @@
 "SEND_MEDIA_RETURN_TO_MEDIA_LIBRARY" = "Bikak Perpustakaan Media Malih";
 
 /* No comment provided by engineer. */
-"SEND_SMS_CONFIRM_TITLE" = "Ajak rencang kangge SMS ingkang mboten aman?";
+"SEND_SMS_CONFIRM_TITLE" = "Ajak rencang liwat SMS ingkang mboten aman?";
 
 /* No comment provided by engineer. */
 "SEND_SMS_INVITE_TITLE" = "Kersa ngajak nomer-nomer niki kangge nyobi Signal:";
@@ -3564,13 +3576,13 @@
 "SETTINGS_DELETE_DATA_BUTTON" = "Brusak Data-Data Sedaya";
 
 /* Alert message before user confirms clearing history */
-"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Sampun mantep badhe mbruaski sejarahipun sedaya (pesen, lampiran, telepon, bentenipun)? Tumindak niki mboten saged dipulihaken.";
+"SETTINGS_DELETE_HISTORYLOG_CONFIRMATION" = "Sampun mantep badhe mbruask sejarahipun sedaya (pesen, lampiran, telepon, bentenipun)? Tumindak niki mboten saged dipulihaken.";
 
 /* Confirmation text for button which deletes all message, calling, attachments, etc. */
 "SETTINGS_DELETE_HISTORYLOG_CONFIRMATION_BUTTON" = "Brusak Sedayanipun";
 
 /* No comment provided by engineer. */
-"SETTINGS_HELP_HEADER" = "Pitulungan";
+"SETTINGS_HELP_HEADER" = "Bantuan";
 
 /* Section header */
 "SETTINGS_HISTORYLOG_TITLE" = "Brusak Sejarah Obrolan";
@@ -3645,7 +3657,7 @@
 "SETTINGS_PINS_TITLE" = "PIN SIGNAL";
 
 /* Settings table section footer. */
-"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "Tampilaken telepon ing dagtar \"Paling Enggal\" ing aplikasi iOS Phone.";
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "Tampilaken telepon ing daftar \"Paling Enggal\" ing aplikasi iOS Phone.";
 
 /* Short table cell label */
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Tampilaken Telepon ing Paling Enggal";
@@ -3765,7 +3777,7 @@
 "SHARE_ACTION_TWEET" = "Twitter";
 
 /* alert body when sharing file failed because of untrusted/changed identity keys */
-"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Nomer keamanan sampeyan kaliyan %@ nembe digantos. Kadosipun sampeyan kersa numindakaken verifikasi ing aplikasi utami sakderengipun ngirimaken pesen niki malih.";
+"SHARE_EXTENSION_FAILED_SENDING_BECAUSE_UNTRUSTED_IDENTITY_FORMAT" = "Nomer keamanan sampeyan kaliyan %@ nembe digantos. Kadosipun sampeyan kersa numindakaken verifikasi ing aplikasi utami sakderengipun ngirimaken malih pesen niki.";
 
 /* Indicates that the share extension is still loading. */
 "SHARE_EXTENSION_LOADING" = "Ngunggahi...";
@@ -3774,7 +3786,7 @@
 "SHARE_EXTENSION_NOT_REGISTERED_MESSAGE" = "Bikak aplikasi Signal kangge ndaftar.";
 
 /* Title indicating that the share extension cannot be used until the user has registered in the main app. */
-"SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "Mboten Dipundaftaraken";
+"SHARE_EXTENSION_NOT_REGISTERED_TITLE" = "Dereng Didaftaraken";
 
 /* Message indicating that the share extension cannot be used until the main app has been launched at least once. */
 "SHARE_EXTENSION_NOT_YET_MIGRATED_MESSAGE" = "Bikak aplikasi Signal kangge ngenggalaken utawi ndaftar.";
@@ -3804,7 +3816,7 @@
 "SMS_INVITE_BODY" = "Kula badhe ngajak sampeyan supados ngginakaken Signal! Niki tautanipun:";
 
 /* Label for the 'no sound' option that allows users to disable sounds for notifications, etc. */
-"SOUNDS_NONE" = "Mboten wonten";
+"SOUNDS_NONE" = "Mboten enten";
 
 /* Preview text shown in notifications and conversation list for sticker messages. */
 "STICKER_MESSAGE_PREVIEW" = "Pesen Stiker";
@@ -3825,7 +3837,7 @@
 "STICKERS_MANAGE_VIEW_AVAILABLE_KNOWN_PACKS_SECTION_TITLE" = "Stiker ingkang Sampeyan Tampi";
 
 /* Label indicating that one or more known sticker packs failed to load. */
-"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Enteng paket stiker ingkang gagal diunggah";
+"STICKERS_MANAGE_VIEW_FAILED_KNOWN_PACKS" = "Enten paket stiker ingkang gagal diunggah";
 
 /* Title for the 'installed stickers' section of the 'manage stickers' view. */
 "STICKERS_MANAGE_VIEW_INSTALLED_PACKS_SECTION_TITLE" = "Stiker ingkang Dipunpasang";
@@ -3927,7 +3939,7 @@
 "TIME_AMOUNT_WEEKS_SHORT_FORMAT" = "%@m";
 
 /* Label for the cancel button in an alert or action sheet. */
-"TXT_CANCEL_TITLE" = "Sande";
+"TXT_CANCEL_TITLE" = "Sandekaken";
 
 /* Label for the delete button in an alert or action sheet. */
 "TXT_DELETE_TITLE" = "Brusak";
@@ -3945,7 +3957,7 @@
 "UNKNOWN_COUNTRY_NAME" = "Nagari Mboten Kasumarepan";
 
 /* Info message recorded in conversation history when local user receives an unknown message from a linked device and needs to upgrade. */
-"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "Salah satunggal pirantos sampeuan ngirimaken pesen ingkang mboten saged diproses utawi ditampilaken amargi pesen kasebut ngginakaken fitur enggal saking Signal.";
+"UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_FROM_LINKED_DEVICE" = "Salah satunggal pirantosipun sampeyan ngirimaken pesen ingkang mboten saged diproses utawi ditampilaken amargi pesen kasebut ngginakaken fitur enggal saking Signal.";
 
 /* Info message recorded in conversation history when local user receives an unknown message and needs to upgrade. Embeds {{user's name or phone number}}. */
 "UNKNOWN_PROTOCOL_VERSION_NEED_TO_UPGRADE_WITH_NAME_FORMAT" = "%@ ngirimaken pesen ingkang mboten saged diproses utawi ditampilaken amargi pesen kasebut ngginakaken fitur enggal saking Signal.";
@@ -3957,7 +3969,7 @@
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_BUTTON" = "Enggalaken Signal Sakmenika";
 
 /* Info message recorded in conversation history when local user has received an unknown unknown message from a linked device and has upgraded. */
-"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "Dipunenggalaken dados versi Signal paling enggal. Sakmenika sampeyan saged nampi jenis pesen niki ing pirantos sampeyan.";
+"UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_FROM_LINKED_DEVICE" = "Dipunenggalaken dados versi enggal Signal. Sakmenika sampeyan saged nampi jenis pesen niki ing pirantos sampeyan.";
 
 /* Info message recorded in conversation history when local user has received an unknown message and has upgraded. Embeds {{user's name or phone number}}. */
 "UNKNOWN_PROTOCOL_VERSION_UPGRADE_COMPLETE_WITH_NAME_FORMAT" = "Sampeyan saged nedhakaken %@ supados ngirimaken malih pesen niki saksampune sampeyan ngginakaken versi Signal paling enggal.";
@@ -3996,7 +4008,7 @@
 "UNNAMED_DEVICE" = "Pirantos Tanpa Nami";
 
 /* Pressing this button marks a thread as unread */
-"UNREAD_ACTION" = "Unread";
+"UNREAD_ACTION" = "Mboten Dipunwaos";
 
 /* No comment provided by engineer. */
 "UNREGISTER_SIGNAL_FAIL" = "Gagal nyandekaken pendaftaran saking Signal.";
@@ -4080,10 +4092,10 @@
 "VALIDATION_ERROR_TOO_LONG" = "Nami pirantos kedhawan";
 
 /* Format for info message indicating that the verification state was unverified on this device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Sampeyan nandhai %@ dados mboten dipunverifikasi.";
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_LOCAL" = "Sampeyan nandhai %@ dados dereng diverifikasi.";
 
 /* Format for info message indicating that the verification state was unverified on another device. Embeds {{user's name or phone number}}. */
-"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "Sampeyan nandhai %@ dados mboten dipunverifikasi ing pirantos benten.";
+"VERIFICATION_STATE_CHANGE_FORMAT_NOT_VERIFIED_OTHER_DEVICE" = "Sampeyan nandhai %@ dados dereng diverifikasi ing pirantos benten.";
 
 /* Format for info message indicating that the verification state was verified on this device. Embeds {{user's name or phone number}}. */
 "VERIFICATION_STATE_CHANGE_FORMAT_VERIFIED_LOCAL" = "Sampeyan nandhai %@ dados dipunverifikasi.";
@@ -4104,7 +4116,7 @@
 "VIEW_ONCE_ALREADY_VIEWED_TOAST" = "Sampeyan sampun maos pesen niki.";
 
 /* Tooltip highlighting the view once messages button. */
-"VIEW_ONCE_MESSAGES_TOOLTIP" = "Tutul ing mriki kagem ndadosaken pesen niki ngical saksampune dininggali.";
+"VIEW_ONCE_MESSAGES_TOOLTIP" = "Tutul ing mriki supados pesen niki ngical saksampune diwaos.";
 
 /* Toast alert text shown when tapping on a view-once message that you have sent. */
 "VIEW_ONCE_OUTGOING_TOAST" = "Media ingkang saged ditingali sepisan mawon bakal dibrusak sacara otomatis saksampune dikirimaken.";
@@ -4125,7 +4137,7 @@
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Rampungaken persiyapan ing Signal Desktop.";
 
 /* text indicating the message was remotely deleted by you */
-"YOU_DELETED_THIS_MESSAGE" = "You deleted this message.";
+"YOU_DELETED_THIS_MESSAGE" = "Sampeyan sampun mbrusak pesen niki.";
 
 /* Info Message when you disabled disappearing messages. */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Sampeyan mboten ngaktifaken pesen ngical.";

@@ -1433,8 +1433,15 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                                                           handler:^(UIContextualAction *action,
                                                               __kindof UIView *sourceView,
                                                               void (^completionHandler)(BOOL)) {
-                                                              [self markAsReadIndexPath:indexPath];
                                                               completionHandler(YES);
+                                                              // We delay here so the animation can play out before we
+                                                              // reload the cell
+                                                              dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
+                                                                                 (int64_t)(0.65 * NSEC_PER_SEC)),
+                                                                  dispatch_get_main_queue(),
+                                                                  ^{
+                                                                      [self markAsReadIndexPath:indexPath];
+                                                                  });
                                                           }];
 
                 readAction.backgroundColor = UIColor.ows_accentBlueColor;
@@ -1451,8 +1458,15 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                                                           handler:^(UIContextualAction *action,
                                                               __kindof UIView *sourceView,
                                                               void (^completionHandler)(BOOL)) {
-                                                              [self markAsUnreadIndexPath:indexPath];
                                                               completionHandler(YES);
+                                                              // We delay here so the animation can play out before we
+                                                              // reload the cell
+                                                              dispatch_after(dispatch_time(DISPATCH_TIME_NOW,
+                                                                                 (int64_t)(0.65 * NSEC_PER_SEC)),
+                                                                  dispatch_get_main_queue(),
+                                                                  ^{
+                                                                      [self markAsUnreadIndexPath:indexPath];
+                                                                  });
                                                           }];
 
                 unreadAction.backgroundColor = UIColor.ows_accentBlueColor;

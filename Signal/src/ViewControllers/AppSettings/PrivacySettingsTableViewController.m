@@ -188,23 +188,25 @@ NS_ASSUME_NONNULL_BEGIN
                                              }]];
         [contents addSection:pinsSection];
 
-        OWSTableSection *reminderSection = [OWSTableSection new];
-        reminderSection.footerTitle = NSLocalizedString(@"SETTINGS_PIN_REMINDER_FOOTER",
-            @"Footer for the 'pin reminder' section of the privacy settings when Signal PINs are available.");
-        [reminderSection
-            addItem:[OWSTableItem
-                        switchItemWithText:NSLocalizedString(@"SETTINGS_PIN_REMINDER_SWITCH_LABEL",
-                                               @"Label for the 'pin reminder' switch of the privacy settings.")
-                        accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"2fa"]
-                        isOnBlock:^{
-                            return OWS2FAManager.sharedManager.areRemindersEnabled;
-                        }
-                        isEnabledBlock:^{
-                            return YES;
-                        }
-                        target:self
-                        selector:@selector(arePINRemindersEnabledDidChange:)]];
-        [contents addSection:reminderSection];
+        if ([OWS2FAManager.sharedManager is2FAEnabled]) {
+            OWSTableSection *reminderSection = [OWSTableSection new];
+            reminderSection.footerTitle = NSLocalizedString(@"SETTINGS_PIN_REMINDER_FOOTER",
+                @"Footer for the 'pin reminder' section of the privacy settings when Signal PINs are available.");
+            [reminderSection
+                addItem:[OWSTableItem
+                            switchItemWithText:NSLocalizedString(@"SETTINGS_PIN_REMINDER_SWITCH_LABEL",
+                                                   @"Label for the 'pin reminder' switch of the privacy settings.")
+                            accessibilityIdentifier:[NSString stringWithFormat:@"settings.privacy.%@", @"2fa"]
+                            isOnBlock:^{
+                                return OWS2FAManager.sharedManager.areRemindersEnabled;
+                            }
+                            isEnabledBlock:^{
+                                return YES;
+                            }
+                            target:self
+                            selector:@selector(arePINRemindersEnabledDidChange:)]];
+            [contents addSection:reminderSection];
+        }
 
         OWSTableSection *registrationLockSection = [OWSTableSection new];
         registrationLockSection.footerTitle = NSLocalizedString(@"SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER",

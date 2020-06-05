@@ -817,6 +817,11 @@ public class OnboardingController: NSObject {
 
                 } else {
                     // We've restored our keys, we can now re-run this method to post our registration token
+                    // We need to first mark reglock as enabled so we know to include the reglock token in our
+                    // registration attempt.
+                    self.databaseStorage.write { transaction in
+                        self.ows2FAManager.markRegistrationLockV2Enabled(transaction: transaction)
+                    }
                     self.submitVerification(fromViewController: fromViewController, completion: completion)
                 }
             }.catch { error in
@@ -913,7 +918,10 @@ public class OnboardingController: NSObject {
 
             // Since we were told we need 2fa, clear out any stored KBS keys so we can
             // do a fresh verification.
-            SDSDatabaseStorage.shared.write { KeyBackupService.clearKeys(transaction: $0) }
+            SDSDatabaseStorage.shared.write { transaction in
+                KeyBackupService.clearKeys(transaction: transaction)
+                self.ows2FAManager.markRegistrationLockV2Disabled(transaction: transaction)
+            }
 
             completion(.invalid2FAPin)
 

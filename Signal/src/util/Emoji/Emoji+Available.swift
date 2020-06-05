@@ -3,6 +3,7 @@
 //
 
 extension Emoji {
+    static let availableSerialQueue = DispatchQueue(label: "EmojiAvailable")
     static var availableCache = [Emoji: Bool]()
 
     static func warmAvailableCache() {
@@ -12,9 +13,9 @@ extension Emoji {
     /// Indicates whether the given emoji is available on this iOS
     /// version. We cache the availability in memory.
     var available: Bool {
-        guard let available = Emoji.availableCache[self] else {
+        guard let available = Emoji.availableSerialQueue.sync(execute: { Emoji.availableCache[self] }) else {
             let available = rawValue.isUnicodeStringAvailable
-            Emoji.availableCache[self] = available
+            Emoji.availableSerialQueue.sync { Emoji.availableCache[self] = available }
             return available
         }
 
