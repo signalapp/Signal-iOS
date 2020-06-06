@@ -1114,7 +1114,11 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 {
     OWSAssertDebug(address);
 
-    return [self.signalAccountReadCache getSignalAccountWithSneakyTransactionWithAddress:address];
+    __block SignalAccount *_Nullable result;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        result = [self.signalAccountReadCache getSignalAccountWithAddress:address transaction:transaction];
+    }];
+    return result;
 }
 
 - (nullable SignalAccount *)fetchSignalAccountForAddress:(SignalServiceAddress *)address

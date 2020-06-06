@@ -9,10 +9,14 @@ import GRDB
 
 @objc
 public class GRDBReadTransaction: NSObject {
+
     public let database: Database
 
-    init(database: Database) {
+    public let isUIRead: Bool
+
+    init(database: Database, isUIRead: Bool) {
         self.database = database
+        self.isUIRead = isUIRead
     }
 
     @objc
@@ -25,6 +29,11 @@ public class GRDBReadTransaction: NSObject {
 
 @objc
 public class GRDBWriteTransaction: GRDBReadTransaction {
+
+    init(database: Database) {
+        super.init(database: database, isUIRead: false)
+    }
+
     @objc
     public var asAnyWrite: SDSAnyWriteTransaction {
         return SDSAnyWriteTransaction(.grdbWrite(self))
@@ -82,6 +91,16 @@ public class SDSAnyReadTransaction: NSObject, SPKProtocolReadContext {
             return yapRead
         case .grdbRead:
             return nil
+        }
+    }
+
+    @objc
+    public var isUIRead: Bool {
+        switch readTransaction {
+        case .yapRead:
+            return false
+        case .grdbRead(let grdbRead):
+            return grdbRead.isUIRead
         }
     }
 }

@@ -300,7 +300,7 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
         AssertIsOnMainThread()
         try latestSnapshot.read { database in
             try autoreleasepool {
-                try block(GRDBReadTransaction(database: database))
+                try block(GRDBReadTransaction(database: database, isUIRead: true))
             }
         }
     }
@@ -310,7 +310,7 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
         assertCanRead()
         return try pool.read { database in
             try autoreleasepool {
-                return try block(GRDBReadTransaction(database: database))
+                return try block(GRDBReadTransaction(database: database, isUIRead: false))
             }
         }
     }
@@ -338,7 +338,7 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
         AssertIsOnMainThread()
         latestSnapshot.read { database in
             autoreleasepool {
-                block(GRDBReadTransaction(database: database))
+                block(GRDBReadTransaction(database: database, isUIRead: true))
             }
         }
     }
@@ -348,7 +348,7 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
         assertCanRead()
         try pool.read { database in
             autoreleasepool {
-                block(GRDBReadTransaction(database: database))
+                block(GRDBReadTransaction(database: database, isUIRead: false))
             }
         }
     }
