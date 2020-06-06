@@ -36,7 +36,6 @@
 #import "OWSBezierPathView.h"
 #import "OWSBubbleShapeView.h"
 #import "OWSBubbleView.h"
-#import "OWSConversationSettingsViewController.h"
 #import "OWSDatabaseMigration.h"
 #import "OWSMessageBubbleView.h"
 #import "OWSMessageCell.h"
@@ -54,9 +53,7 @@
 #import "ProfileViewController.h"
 #import "RecipientPickerViewController.h"
 #import "RemoteVideoView.h"
-#import "ShowGroupMembersViewController.h"
 #import "SignalApp.h"
-#import "UpdateGroupViewController.h"
 #import "ViewControllerUtils.h"
 #import <AxolotlKit/NSData+keyVersionByte.h>
 #import <PureLayout/PureLayout.h>

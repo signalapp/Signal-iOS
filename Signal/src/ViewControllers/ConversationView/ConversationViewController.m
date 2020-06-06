@@ -20,8 +20,6 @@
 #import "FingerprintViewController.h"
 #import "OWSAudioPlayer.h"
 #import "OWSContactOffersCell.h"
-#import "OWSConversationSettingsViewController.h"
-#import "OWSConversationSettingsViewDelegate.h"
 #import "OWSDisappearingMessagesJob.h"
 #import "OWSMath.h"
 #import "OWSMessageCell.h"
@@ -105,7 +103,7 @@ typedef enum : NSUInteger {
     ContactsPickerDelegate,
     ContactShareViewHelperDelegate,
     DisappearingTimerConfigurationViewDelegate,
-    OWSConversationSettingsViewDelegate,
+    ConversationSettingsViewDelegate,
     ConversationHeaderViewDelegate,
     ConversationViewLayoutDelegate,
     ConversationViewCellDelegate,
@@ -1731,18 +1729,10 @@ typedef enum : NSUInteger {
 
 - (UIViewController *)buildConversationSettingsView:(BOOL)showVerificationOnAppear
 {
-    BOOL shouldUseNewView = YES;
-    if (shouldUseNewView) {
-        ConversationSettingsViewController *settingsVC =
-            [[ConversationSettingsViewController alloc] initWithThreadViewModel:self.threadViewModel];
-        settingsVC.conversationSettingsViewDelegate = self;
-        return settingsVC;
-    } else {
-        OWSConversationSettingsViewController *settingsVC = [OWSConversationSettingsViewController new];
-        settingsVC.conversationSettingsViewDelegate = self;
-        [settingsVC configureWithThreadViewModel:self.threadViewModel];
-        return settingsVC;
-    }
+    ConversationSettingsViewController *settingsVC =
+        [[ConversationSettingsViewController alloc] initWithThreadViewModel:self.threadViewModel];
+    settingsVC.conversationSettingsViewDelegate = self;
+    return settingsVC;
 }
 
 - (void)showConversationSettingsAndShowVerification:(BOOL)showVerification
@@ -4155,7 +4145,7 @@ typedef enum : NSUInteger {
     self.isUserScrolling = NO;
 }
 
-#pragma mark - OWSConversationSettingsViewDelegate
+#pragma mark - ConversationSettingsViewDelegate
 
 - (void)resendGroupUpdateForErrorMessage:(TSErrorMessage *)message
 {
