@@ -38,6 +38,9 @@ func AssertIsOnUIDatabaseObserverSerialQueue() {
 @objc
 public class UIDatabaseObserver: NSObject {
 
+    @objc
+    public static let didUpdateUIDatabaseSnapshotNotification = Notification.Name("didUpdateUIDatabaseSnapshot")
+
     public static let kMaxIncrementalRowChanges = 200
 
     private lazy var nonModelTables: Set<String> = Set([MediaGalleryRecord.databaseTableName, PendingReadReceiptRecord.databaseTableName])
@@ -292,6 +295,10 @@ extension UIDatabaseObserver: TransactionObserver {
                 owsFailDebug("\(error)")
             }
         }
+
+        // We post this notification sync so that the read model caches
+        // can discard their contents.
+        NotificationCenter.default.post(name: Self.didUpdateUIDatabaseSnapshotNotification, object: nil)
 
         Logger.verbose("databaseSnapshotDidUpdate")
         for delegate in snapshotDelegates {
