@@ -1720,7 +1720,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
                 } else if (!encryptedData) {
                     OWSLogError(@"avatar encrypted data for %@ could not be read.", userProfile.address);
                 } else if (!decryptedData) {
-                    OWSLogError(@"avatar data for %@ could not be decrypted.", userProfile.address);
+                    OWSLogInfo(@"avatar data for %@ could not be decrypted.", userProfile.address);
                 } else if (!image) {
                     OWSLogError(@"avatar image for %@ could not be loaded with error: %@", userProfile.address, error);
                 } else {

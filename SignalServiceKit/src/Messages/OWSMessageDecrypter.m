@@ -292,11 +292,14 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                         successBlock(result, transaction);
                     }
                     failureBlock:^(NSError *_Nullable error) {
-                        OWSLogError(@"decrypting unidentified sender message from address: %@ failed "
-                                    @"with error: %@",
-                            envelopeAddress(envelope),
-                            error);
-                        OWSProdError([OWSAnalyticsEvents messageManagerErrorCouldNotHandleUnidentifiedSenderMessage]);
+                        if (error.code != OWSErrorCodeFailedToDecryptDuplicateMessage) {
+                            OWSLogError(@"decrypting unidentified sender message from address: %@ failed "
+                                        @"with error: %@",
+                                envelopeAddress(envelope),
+                                error);
+                            OWSProdError(
+                                [OWSAnalyticsEvents messageManagerErrorCouldNotHandleUnidentifiedSenderMessage]);
+                        }
                         failureBlock();
                     }];
                 // Return to avoid double-acknowledging.
@@ -544,8 +547,15 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                     [self processException:underlyingException envelope:identifiedEnvelope];
                     NSString *errorDescription = [NSString
                         stringWithFormat:@"Exception while decrypting ud message: %@", underlyingException.description];
-                    OWSLogError(@"%@", errorDescription);
-                    NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptMessage, errorDescription);
+                    NSError *error;
+                    if ([underlyingException.name isEqualToString:DuplicateMessageException]) {
+                        OWSLogInfo(@"%@", errorDescription);
+                        error = OWSErrorWithCodeDescription(
+                            OWSErrorCodeFailedToDecryptDuplicateMessage, errorDescription);
+                    } else {
+                        OWSLogError(@"%@", errorDescription);
+                        error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptMessage, errorDescription);
+                    }
                     failureBlock(error);
                 });
                 return;
