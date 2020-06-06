@@ -6,3 +6,7 @@ file_filter = <lang>.lproj/Localizable.strings
 source_file = en.lproj/Localizable.strings
 source_lang = en
 
+[signal-ios.infopliststrings]
+file_filter = <lang>.lproj/InfoPlist.strings
+source_file = en.lproj/InfoPlist.strings
+source_lang = en

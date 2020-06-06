@@ -1,0 +1,8 @@
+NSAppleMusicUsageDescription = "Signalはメディアファイルを再生するためにApple Musicを利用します。";
+NSCameraUsageDescription = "Signalはビデオ通話と写真撮影のためにカメラを利用します。";
+NSContactsUsageDescription = "Signalは他のユーザーを探すために連絡先にアクセスします。連絡先の情報はサーバーには保存されません。";
+NSFaceIDUsageDescription = "Signalの画面ロックはFace IDを利用します。";
+NSLocationWhenInUseUsageDescription = "Signalは現在地を共有するために位置情報を利用します。";
+NSMicrophoneUsageDescription = "Signalは通話とメッセージを録音するためにマイクを利用します。";
+NSPhotoLibraryAddUsageDescription = "Signalは写真をフォトライブラリに保存します。";
+NSPhotoLibraryUsageDescription = "Signalは送信する写真をフォトライブラリから選択できるようにします。";
