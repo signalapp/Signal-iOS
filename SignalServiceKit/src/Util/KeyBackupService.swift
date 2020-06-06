@@ -177,7 +177,7 @@ public class KeyBackupService: NSObject {
                     store(masterKey, pinType: PinType(forPin: pin), encodedVerificationString: encodedVerificationString, transaction: transaction)
                 }
             }
-        }.recover { error in
+        }.recover(on: .global()) { error in
             guard let kbsError = error as? KBSError else {
                 owsFailDebug("Unexpectedly surfacing a non KBS error \(error)")
                 throw error
@@ -236,7 +236,7 @@ public class KeyBackupService: NSObject {
                     store(masterKey, pinType: PinType(forPin: pin), encodedVerificationString: encodedVerificationString, transaction: transaction)
                 }
             }
-        }.recover { error in
+        }.recover(on: .global()) { error in
             Logger.error("recording backupKeyRequest errored: \(error)")
             databaseStorage.write {
                 self.keyValueStore.setBool(true, key: hasBackupKeyRequestFailedIdentifier, transaction: $0)

@@ -69,7 +69,7 @@ public struct ContactDiscoveryService {
                                             data: try params.requiredBase64EncodedData(key: "data"),
                                             iv: try params.requiredBase64EncodedData(key: "iv", byteCount: 12),
                                             mac: try params.requiredBase64EncodedData(key: "mac", byteCount: 16))
-            }.recover { error -> Promise<IntersectionResponse> in
+            }.recover(on: .global()) { error -> Promise<IntersectionResponse> in
                 guard !IsNetworkConnectivityFailure(error) else {
                     Logger.warn("Network error: \(error)")
                     throw error
