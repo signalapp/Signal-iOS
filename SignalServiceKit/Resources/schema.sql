@@ -202,12 +202,6 @@ CREATE
 ;
 
 CREATE
-    INDEX "index_model_TSAttachment_on_uniqueId"
-        ON "model_TSAttachment"("uniqueId"
-)
-;
-
-CREATE
     TABLE
         IF NOT EXISTS "model_SSKJobRecord" (
             "id" INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL
@@ -225,6 +219,7 @@ CREATE
             ,"removeMessageAfterSending" INTEGER
             ,"threadId" TEXT
             ,"attachmentId" TEXT
+            ,"isMediaMessage" BOOLEAN
         )
 ;
 
@@ -863,5 +858,12 @@ CREATE
     INDEX "index_model_OWSReaction_on_uniqueMessageId_and_read"
         ON "model_OWSReaction"("uniqueMessageId"
     ,"read"
+)
+;
+
+CREATE
+    INDEX "index_model_TSAttachment_on_uniqueId_and_contentType"
+        ON "model_TSAttachment"("uniqueId"
+    ,"contentType"
 )
 ;

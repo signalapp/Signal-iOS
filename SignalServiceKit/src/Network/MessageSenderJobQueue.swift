@@ -108,6 +108,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
     }
 
     var senderQueues: [String: OperationQueue] = [:]
+    var mediaSenderQueues: [String: OperationQueue] = [:]
     let defaultQueue: OperationQueue = {
         let operationQueue = OperationQueue()
         operationQueue.name = "DefaultSendingQueue"
@@ -123,17 +124,31 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
             return defaultQueue
         }
 
-        guard let existingQueue = senderQueues[threadId] else {
-            let operationQueue = OperationQueue()
-            operationQueue.name = "SendingQueue:\(threadId)"
-            operationQueue.maxConcurrentOperationCount = 1
+        if jobRecord.isMediaMessage {
+            guard let existingQueue = mediaSenderQueues[threadId] else {
+                let operationQueue = OperationQueue()
+                operationQueue.name = "MediaSendingQueue:\(threadId)"
+                operationQueue.maxConcurrentOperationCount = 1
 
-            senderQueues[threadId] = operationQueue
+                mediaSenderQueues[threadId] = operationQueue
 
-            return operationQueue
+                return operationQueue
+            }
+
+            return existingQueue
+        } else {
+            guard let existingQueue = senderQueues[threadId] else {
+                let operationQueue = OperationQueue()
+                operationQueue.name = "SendingQueue:\(threadId)"
+                operationQueue.maxConcurrentOperationCount = 1
+
+                senderQueues[threadId] = operationQueue
+
+                return operationQueue
+            }
+
+            return existingQueue
         }
-
-        return existingQueue
     }
 
     @objc
