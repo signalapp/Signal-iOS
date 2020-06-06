@@ -54,7 +54,7 @@ class ExperienceUpgradeManager: NSObject {
         // Track that we've successfully presented this experience upgrade once, or that it was not
         // needed to be presented.
         // If it was already marked as viewed, this will do nothing.
-        databaseStorage.write { transaction in
+        databaseStorage.asyncWrite { transaction in
             ExperienceUpgradeFinder.markAsViewed(experienceUpgrade: next, transaction: transaction.unwrapGrdbWrite)
         }
 
