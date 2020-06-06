@@ -1731,7 +1731,7 @@ typedef enum : NSUInteger {
 
 - (UIViewController *)buildConversationSettingsView:(BOOL)showVerificationOnAppear
 {
-    BOOL shouldUseNewView = RemoteConfig.groupsV2CreateGroups || self.thread.isGroupV2Thread;
+    BOOL shouldUseNewView = YES;
     if (shouldUseNewView) {
         ConversationSettingsViewController *settingsVC =
             [[ConversationSettingsViewController alloc] initWithThreadViewModel:self.threadViewModel];
