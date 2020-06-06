@@ -18,7 +18,7 @@ extension FeatureBuild {
     }
 }
 
-let build: FeatureBuild = .production
+let build: FeatureBuild = .beta
 
 // MARK: -
 
