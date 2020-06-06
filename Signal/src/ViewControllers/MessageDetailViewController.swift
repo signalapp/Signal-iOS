@@ -561,7 +561,7 @@ class MessageDetailViewController: OWSViewController {
                 throw DetailViewError.messageWasDeleted
             }
             self.message = newMessage
-            self.attachments = newMessage.mediaAttachments(with: transaction)
+            self.attachments = newMessage.mediaAttachments(with: transaction.unwrapGrdbRead)
         }
     }
 

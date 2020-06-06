@@ -69,6 +69,7 @@ public class GRDBSchemaMigrator: NSObject {
         case removeEarlyReceiptTables
         case addReadToReactions
         case addIsMarkedUnreadToThreads
+        case addIsMediaMessageToMessageSenderJobQueue
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -608,6 +609,20 @@ public class GRDBSchemaMigrator: NSObject {
             } catch {
                 owsFail("Error: \(error)")
             }
+        }
+
+        migrator.registerMigration(MigrationId.addIsMediaMessageToMessageSenderJobQueue.rawValue) { db in
+            try db.alter(table: "model_SSKJobRecord") { (table: TableAlteration) -> Void in
+                table.add(column: "isMediaMessage", .boolean)
+            }
+
+            try db.drop(index: "index_model_TSAttachment_on_uniqueId")
+
+            try db.create(
+                index: "index_model_TSAttachment_on_uniqueId_and_contentType",
+                on: "model_TSAttachment",
+                columns: ["uniqueId", "contentType"]
+            )
         }
 
         // MARK: - Schema Migration Insertion Point

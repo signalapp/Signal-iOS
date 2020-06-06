@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "TSQuotedMessage.h"
@@ -195,7 +195,7 @@ NS_ASSUME_NONNULL_BEGIN
                                 receivedQuotedAttachmentInfos:@[]];
         }
 
-        NSString *localText = [quotedMessage bodyTextWithTransaction:transaction];
+        NSString *localText = [quotedMessage bodyTextWithTransaction:transaction.unwrapGrdbRead];
         if (localText.length > 0) {
             body = localText;
         }
@@ -290,7 +290,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     TSAttachment *_Nullable attachmentToQuote = nil;
     if (quotedMessage.attachmentIds.count > 0) {
-        attachmentToQuote = [quotedMessage bodyAttachmentsWithTransaction:transaction].firstObject;
+        attachmentToQuote = [quotedMessage bodyAttachmentsWithTransaction:transaction.unwrapGrdbRead].firstObject;
     } else if (quotedMessage.linkPreview && quotedMessage.linkPreview.imageAttachmentId.length > 0) {
         attachmentToQuote =
             [TSAttachment anyFetchWithUniqueId:quotedMessage.linkPreview.imageAttachmentId transaction:transaction];

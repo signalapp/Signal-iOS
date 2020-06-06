@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
                                         userInfo:@{ NSDebugDescriptionErrorKey : @"message wasn't saved" }];
             return nil;
         }
-        _isMediaMessage = [message mediaAttachmentsWithTransaction:transaction.unwrapGrdbRead].count > 0;
+        _isMediaMessage = [message hasMediaAttachmentsWithTransaction:transaction.unwrapGrdbRead];
         _invisibleMessage = nil;
     } else {
         _messageId = nil;
