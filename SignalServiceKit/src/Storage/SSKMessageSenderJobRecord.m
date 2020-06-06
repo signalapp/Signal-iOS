@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "SSKMessageSenderJobRecord.h"
@@ -38,6 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
                                         userInfo:@{ NSDebugDescriptionErrorKey : @"message wasn't saved" }];
             return nil;
         }
+        _isMediaMessage = [message mediaAttachmentsWithTransaction:transaction.unwrapGrdbRead].count > 0;
         _invisibleMessage = nil;
     } else {
         _messageId = nil;
@@ -63,6 +64,7 @@ NS_ASSUME_NONNULL_BEGIN
                           sortId:(unsigned long long)sortId
                           status:(SSKJobRecordStatus)status
                 invisibleMessage:(nullable TSOutgoingMessage *)invisibleMessage
+                  isMediaMessage:(BOOL)isMediaMessage
                        messageId:(nullable NSString *)messageId
        removeMessageAfterSending:(BOOL)removeMessageAfterSending
                         threadId:(nullable NSString *)threadId
@@ -79,6 +81,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     _invisibleMessage = invisibleMessage;
+    _isMediaMessage = isMediaMessage;
     _messageId = messageId;
     _removeMessageAfterSending = removeMessageAfterSending;
     _threadId = threadId;
