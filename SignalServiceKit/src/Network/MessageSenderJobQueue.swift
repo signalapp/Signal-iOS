@@ -93,6 +93,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
         }
     }
 
+    private var lastNonMediaOperationPerThread = [String: Weak<MessageSenderOperation>]()
     public func buildOperation(jobRecord: SSKMessageSenderJobRecord, transaction: SDSAnyReadTransaction) throws -> MessageSenderOperation {
         let message: TSOutgoingMessage
         if let invisibleMessage = jobRecord.invisibleMessage {
@@ -104,7 +105,25 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
             throw JobError.obsolete(description: "message no longer exists")
         }
 
-        return MessageSenderOperation(message: message, jobRecord: jobRecord)
+        let operation = MessageSenderOperation(message: message, jobRecord: jobRecord)
+
+        // Media messages run on their own queue to not block future non-media sends,
+        // but should not start sending until all previous operations have executed.
+        // We can gurantee this by depending on the last queued operation for the thread.
+        //
+        // For example, if you send text messages A, B and then media message C
+        // message C should never send before A and B. However, if you send text
+        // messages A, B, then media message C, followed by text message D, D cannot
+        // send before A and B, but CAN send before C.
+        if jobRecord.isMediaMessage {
+            if let lastNonMediaOperation = lastNonMediaOperationPerThread[message.uniqueThreadId]?.value {
+                operation.addDependency(lastNonMediaOperation)
+            }
+        } else {
+            lastNonMediaOperationPerThread[message.uniqueThreadId] = Weak(value: operation)
+        }
+
+        return operation
     }
 
     var senderQueues: [String: OperationQueue] = [:]
