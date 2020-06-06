@@ -27,7 +27,6 @@
 #import "DebugUITableViewController.h"
 #import "FingerprintViewController.h"
 #import "MediaDetailViewController.h"
-#import "NewGroupViewController.h"
 #import "NotificationSettingsViewController.h"
 #import "OWSAddToContactViewController.h"
 #import "OWSAnyTouchGestureRecognizer.h"

@@ -215,8 +215,6 @@
 		3496957221A301A100DCFE74 /* OWSBackup.m in Sources */ = {isa = PBXBuildFile; fileRef = 3496956921A301A100DCFE74 /* OWSBackup.m */; };
 		3496957321A301A100DCFE74 /* OWSBackupJob.m in Sources */ = {isa = PBXBuildFile; fileRef = 3496956A21A301A100DCFE74 /* OWSBackupJob.m */; };
 		3496957421A301A100DCFE74 /* OWSBackupAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3496956B21A301A100DCFE74 /* OWSBackupAPI.swift */; };
-		34995F182411838D00C70546 /* NewGroupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34995F142411838C00C70546 /* NewGroupViewController.swift */; };
-		34995F1A2411838D00C70546 /* NewGroupViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 34995F162411838C00C70546 /* NewGroupViewController.m */; };
 		34995F1B2411838D00C70546 /* NewGroupMembersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 34995F172411838C00C70546 /* NewGroupMembersViewController.swift */; };
 		3499998122EF1E2100654932 /* SearcherTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3499997E22EF1E2100654932 /* SearcherTest.swift */; };
 		3499998222EF1E2100654932 /* GRDBFullTextSearcherTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3499997F22EF1E2100654932 /* GRDBFullTextSearcherTest.swift */; };
@@ -1136,9 +1134,6 @@
 		3496956B21A301A100DCFE74 /* OWSBackupAPI.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OWSBackupAPI.swift; sourceTree = "<group>"; };
 		3496956C21A301A100DCFE74 /* OWSBackupImportJob.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSBackupImportJob.h; sourceTree = "<group>"; };
 		3496956D21A301A100DCFE74 /* OWSBackupIO.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSBackupIO.h; sourceTree = "<group>"; };
-		34995F132411838C00C70546 /* NewGroupViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NewGroupViewController.h; sourceTree = "<group>"; };
-		34995F142411838C00C70546 /* NewGroupViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewGroupViewController.swift; sourceTree = "<group>"; };
-		34995F162411838C00C70546 /* NewGroupViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = NewGroupViewController.m; sourceTree = "<group>"; };
 		34995F172411838C00C70546 /* NewGroupMembersViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewGroupMembersViewController.swift; sourceTree = "<group>"; };
 		3499997E22EF1E2100654932 /* SearcherTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SearcherTest.swift; sourceTree = "<group>"; };
 		3499997F22EF1E2100654932 /* GRDBFullTextSearcherTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GRDBFullTextSearcherTest.swift; sourceTree = "<group>"; };
@@ -2424,9 +2419,6 @@
 				3465947B2433B77700E5C510 /* NewGroupMembersBar.swift */,
 				34995F172411838C00C70546 /* NewGroupMembersViewController.swift */,
 				3465947F2434D49F00E5C510 /* NewGroupState.swift */,
-				34995F132411838C00C70546 /* NewGroupViewController.h */,
-				34995F162411838C00C70546 /* NewGroupViewController.m */,
-				34995F142411838C00C70546 /* NewGroupViewController.swift */,
 			);
 			path = NewGroupView;
 			sourceTree = "<group>";
@@ -4723,7 +4715,6 @@
 				34D3E57B245A189D00F5E4A1 /* DebugUIScreenshots.swift in Sources */,
 				454A84042059C787008B8C75 /* MediaTileViewController.swift in Sources */,
 				340FC8B4204DAC8D007AEB0F /* OWSBackupSettingsViewController.m in Sources */,
-				34995F1A2411838D00C70546 /* NewGroupViewController.m in Sources */,
 				34D1F0871F8678AA0066283D /* ConversationViewItem.m in Sources */,
 				88F8195C238375C7007914E8 /* ReactionCountsView.swift in Sources */,
 				4CD675C722E7D393008010D2 /* MediaPresentationContext.swift in Sources */,
@@ -4833,7 +4824,6 @@
 				34BECE301F7ABCF800D7438D /* GifPickerLayout.swift in Sources */,
 				343A65951FC47D5E000477A1 /* DebugUISyncMessages.m in Sources */,
 				88D23D1223CEBFB200B0E74B /* UserNotificationActionHandler.swift in Sources */,
-				34995F182411838D00C70546 /* NewGroupViewController.swift in Sources */,
 				4C63550222F15A6700A8ECE6 /* ThemeHeaderView.swift in Sources */,
 				45C0DC1E1E69011F00E04C47 /* UIStoryboard+OWS.swift in Sources */,
 				4556FA681F54AA9500AF40DD /* DebugUIProfile.swift in Sources */,
