@@ -96,7 +96,7 @@ public class RequestMaker: NSObject {
     @objc
     public func makeRequestObjc() -> AnyPromise {
         let promise = makeRequest()
-            .recover(on: DispatchQueue.global()) { (error: Error) -> Promise<RequestMakerResult> in
+            .recover(on: .global()) { (error: Error) -> Promise<RequestMakerResult> in
                 switch error {
                 case NetworkManagerError.taskError(_, let underlyingError):
                     throw underlyingError
@@ -142,7 +142,7 @@ public class RequestMaker: NSObject {
                                    failure: { (statusCode: Int, responseData: Data?, error: Error) in
                                     resolver.reject(RequestMakerError.websocketRequestError(statusCode: statusCode, responseData: responseData, underlyingError: error))
                     })
-                }.recover { (error: Error) -> Promise<RequestMakerResult> in
+                }.recover(on: .global()) { (error: Error) -> Promise<RequestMakerResult> in
                     if error.httpStatusCode == 413 {
                         // We've hit rate limit; don't retry.
                         throw error
@@ -195,7 +195,7 @@ public class RequestMaker: NSObject {
                     return RequestMakerResult(responseObject: networkManagerResult.responseObject,
                                               wasSentByUD: isUDRequest,
                                               wasSentByWebsocket: false)
-                }.recover { (error: Error) -> Promise<RequestMakerResult> in
+                }.recover(on: .global()) { (error: Error) -> Promise<RequestMakerResult> in
                     if error.httpStatusCode == 413 {
                         // We've hit rate limit; don't retry.
                         throw error

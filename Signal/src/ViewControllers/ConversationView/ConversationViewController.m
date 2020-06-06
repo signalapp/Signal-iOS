@@ -20,8 +20,6 @@
 #import "FingerprintViewController.h"
 #import "OWSAudioPlayer.h"
 #import "OWSContactOffersCell.h"
-#import "OWSConversationSettingsViewController.h"
-#import "OWSConversationSettingsViewDelegate.h"
 #import "OWSDisappearingMessagesJob.h"
 #import "OWSMath.h"
 #import "OWSMessageCell.h"
@@ -105,7 +103,7 @@ typedef enum : NSUInteger {
     ContactsPickerDelegate,
     ContactShareViewHelperDelegate,
     DisappearingTimerConfigurationViewDelegate,
-    OWSConversationSettingsViewDelegate,
+    ConversationSettingsViewDelegate,
     ConversationHeaderViewDelegate,
     ConversationViewLayoutDelegate,
     ConversationViewCellDelegate,
@@ -214,8 +212,6 @@ typedef enum : NSUInteger {
 @property (nonatomic) MessageActionsToolbar *selectionToolbar;
 @property (nonatomic, readonly) SelectionHighlightView *selectionHighlightView;
 @property (nonatomic) NSDictionary<NSString *, id<ConversationViewItem>> *selectedItems;
-
-@property (nonatomic, nullable) NSNumber *contentOffsetWhenBackgrounded;
 
 @end
 
@@ -723,30 +719,12 @@ typedef enum : NSUInteger {
 {
     [self startReadTimer];
     [self updateCellsVisible];
-
-    // This works around a bug that was introduced around the time we introduced
-    // windowed conversation rendering. When not scrolled to the bottom, if the
-    // app is backgrounded and then foregrounded, the scroll position will jump
-    // to the top of the currently loaded conversation. In order to avoid this
-    // we store the content offset when we enter the background and restore it
-    // when we re-enter the foreground. This bug does *not* occur when the app
-    // just becomes inactive, only when the app is fully backgrounded.
-    if (self.contentOffsetWhenBackgrounded) {
-        CGPoint contentOffset = self.collectionView.contentOffset;
-        contentOffset.y = [self.contentOffsetWhenBackgrounded floatValue];
-        self.collectionView.contentOffset = contentOffset;
-        self.contentOffsetWhenBackgrounded = nil;
-    }
 }
 
 - (void)applicationDidEnterBackground:(NSNotification *)notification
 {
     [self updateCellsVisible];
     [self.cellMediaCache removeAllObjects];
-
-    if (!self.isScrolledToBottom) {
-        self.contentOffsetWhenBackgrounded = @(self.collectionView.contentOffset.y);
-    }
 }
 
 - (void)applicationWillResignActive:(NSNotification *)notification
@@ -1731,18 +1709,10 @@ typedef enum : NSUInteger {
 
 - (UIViewController *)buildConversationSettingsView:(BOOL)showVerificationOnAppear
 {
-    BOOL shouldUseNewView = RemoteConfig.groupsV2CreateGroups || self.thread.isGroupV2Thread;
-    if (shouldUseNewView) {
-        ConversationSettingsViewController *settingsVC =
-            [[ConversationSettingsViewController alloc] initWithThreadViewModel:self.threadViewModel];
-        settingsVC.conversationSettingsViewDelegate = self;
-        return settingsVC;
-    } else {
-        OWSConversationSettingsViewController *settingsVC = [OWSConversationSettingsViewController new];
-        settingsVC.conversationSettingsViewDelegate = self;
-        [settingsVC configureWithThreadViewModel:self.threadViewModel];
-        return settingsVC;
-    }
+    ConversationSettingsViewController *settingsVC =
+        [[ConversationSettingsViewController alloc] initWithThreadViewModel:self.threadViewModel];
+    settingsVC.conversationSettingsViewDelegate = self;
+    return settingsVC;
 }
 
 - (void)showConversationSettingsAndShowVerification:(BOOL)showVerification
@@ -4155,7 +4125,7 @@ typedef enum : NSUInteger {
     self.isUserScrolling = NO;
 }
 
-#pragma mark - OWSConversationSettingsViewDelegate
+#pragma mark - ConversationSettingsViewDelegate
 
 - (void)resendGroupUpdateForErrorMessage:(TSErrorMessage *)message
 {

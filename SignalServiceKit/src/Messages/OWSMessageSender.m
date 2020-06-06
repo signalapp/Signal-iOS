@@ -194,6 +194,8 @@ void AssertIsOnSendingQueue()
     _successHandler = successHandler;
     _failureHandler = failureHandler;
 
+    self.queuePriority = [OWSMessageSender queuePriorityForMessage:message];
+
     return self;
 }
 
@@ -1952,6 +1954,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }];
         completionHandler();
     });
+}
+
++ (NSOperationQueuePriority)queuePriorityForMessage:(TSOutgoingMessage *)message
+{
+    return message.hasRenderableContent ? NSOperationQueuePriorityHigh : NSOperationQueuePriorityNormal;
 }
 
 @end

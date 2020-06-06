@@ -62,9 +62,16 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
+- (void)setContentOffset:(CGPoint)contentOffset animated:(BOOL)animated
+{
+    [super setContentOffset:contentOffset animated:animated];
+
+    return;
+}
+
 - (void)setContentOffset:(CGPoint)contentOffset
 {
-    if (self.contentSize.height < 1 && CGPointEqualToPoint(CGPointZero, contentOffset)) {
+    if (self.contentSize.height < 1 && contentOffset.y <= 0) {
         // [UIScrollView _adjustContentOffsetIfNecessary] resets the content
         // offset to zero under a number of undocumented conditions.  We don't
         // want this behavior; we want fine-grained control over the default
