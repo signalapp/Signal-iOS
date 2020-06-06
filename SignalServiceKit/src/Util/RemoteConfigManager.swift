@@ -227,9 +227,9 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
 
         if RemoteConfig.messageRequests {
             guard hasEpoch else {
-                try grdbStorage.write { transaction in
-                    let maxId = GRDBInteractionFinder.maxRowId(transaction: transaction)
-                    SSKPreferences.setMessageRequestInteractionIdEpoch(maxId, transaction: transaction)
+                databaseStorage.write { transaction in
+                    let maxId = GRDBInteractionFinder.maxRowId(transaction: transaction.unwrapGrdbWrite)
+                    SSKPreferences.setMessageRequestInteractionIdEpoch(maxId, transaction: transaction.unwrapGrdbWrite)
                 }
                 return
             }
@@ -237,8 +237,8 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
             guard !hasEpoch else {
                 // Possible the flag was toggled on and then back off. We want to clear the recorded
                 // epoch so it can be reset the *next* time the flag is toggled back on.
-                try grdbStorage.write {
-                    SSKPreferences.setMessageRequestInteractionIdEpoch(nil, transaction: $0)
+                databaseStorage.write {
+                    SSKPreferences.setMessageRequestInteractionIdEpoch(nil, transaction: $0.unwrapGrdbWrite)
                 }
                 return
             }

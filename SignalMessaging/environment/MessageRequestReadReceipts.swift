@@ -23,6 +23,10 @@ public class MessageRequestReadReceipts: NSObject, PendingReadReceiptRecorder {
 
     // MARK: - Depenencies
 
+    var databaseStorage: SDSDatabaseStorage {
+        return SSKEnvironment.shared.databaseStorage
+    }
+
     var grdbStorage: GRDBDatabaseStorageAdapter {
         return SDSDatabaseStorage.shared.grdbStorage
     }
@@ -95,11 +99,9 @@ public class MessageRequestReadReceipts: NSObject, PendingReadReceiptRecorder {
             return
         }
 
-        DispatchQueue.global().async {
+        databaseStorage.asyncWrite { transaction in
             do {
-                try self.grdbStorage.write { transaction in
-                    try self.enqueue(pendingReceipts: pendingReceipts, transaction: transaction)
-                }
+                try self.enqueue(pendingReceipts: pendingReceipts, transaction: transaction.unwrapGrdbWrite)
             } catch {
                 owsFailDebug("error: \(error)")
             }
@@ -121,11 +123,9 @@ public class MessageRequestReadReceipts: NSObject, PendingReadReceiptRecorder {
             return
         }
 
-        DispatchQueue.global().async {
+        self.databaseStorage.asyncWrite { transaction in
             do {
-                try self.grdbStorage.write { transaction in
-                    try self.finder.delete(pendingReceipts: pendingReceipts, transaction: transaction)
-                }
+                try self.finder.delete(pendingReceipts: pendingReceipts, transaction: transaction.unwrapGrdbWrite)
             } catch {
                 owsFailDebug("error: \(error)")
             }
