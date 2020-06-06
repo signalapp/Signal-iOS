@@ -79,6 +79,10 @@ extension NewGroupMembersViewController: GroupMemberViewDelegate {
         return true
     }
 
+    func groupMemberViewShouldShowMemberCount() -> Bool {
+        return RemoteConfig.groupsV2CreateGroups
+    }
+
     func groupMemberViewGroupMemberCountForDisplay() -> Int {
         return groupMemberViewGroupMemberCount(withSelf: false)
     }
@@ -89,6 +93,9 @@ extension NewGroupMembersViewController: GroupMemberViewDelegate {
     }
 
     func groupMemberViewIsGroupFull() -> Bool {
+        guard RemoteConfig.groupsV2CreateGroups else {
+            return false
+        }
         return groupMemberViewGroupMemberCount(withSelf: true) >= GroupManager.maxGroupMemberCount
     }
 
