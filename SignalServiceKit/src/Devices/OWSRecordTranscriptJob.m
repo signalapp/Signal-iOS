@@ -67,6 +67,11 @@ NS_ASSUME_NONNULL_BEGIN
     return SSKEnvironment.shared.tsAccountManager;
 }
 
++ (EarlyMessageManager *)earlyMessageManager
+{
+    return SSKEnvironment.shared.earlyMessageManager;
+}
+
 #pragma mark -
 
 + (void)processIncomingSentMessageTranscript:(OWSIncomingSentMessageTranscript *)transcript
@@ -234,7 +239,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                      expirationStartedAt:transcript.expirationStartedAt
                                                              transaction:transaction];
 
-    [OWSEarlyMessageManager applyPendingMessagesFor:outgoingMessage transaction:transaction];
+    [self.earlyMessageManager applyPendingMessagesFor:outgoingMessage transaction:transaction];
 
     if (outgoingMessage.isViewOnceMessage) {
         // To be extra-conservative, always mark

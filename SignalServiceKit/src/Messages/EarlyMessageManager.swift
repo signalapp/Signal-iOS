@@ -4,7 +4,7 @@
 
 import Foundation
 
-@objc(OWSEarlyMessageManager)
+@objc
 public class EarlyMessageManager: NSObject {
     private struct MessageIdentifier: Hashable {
         let timestamp: UInt64
@@ -34,19 +34,42 @@ public class EarlyMessageManager: NSObject {
     private static let maxQueuedMessages = 100
     private static let maxEarlyEnvelopeSize = 1024
 
-    private static let serialQueue = DispatchQueue(label: "EarlyMessageManager")
-    private static var pendingEnvelopes = OrderedDictionary<MessageIdentifier, [EarlyEnvelope]>()
-    private static var pendingReceipts =  OrderedDictionary<MessageIdentifier, [EarlyReceipt]>()
+    private let serialQueue = DispatchQueue(label: "EarlyMessageManager")
+    private var pendingEnvelopes = OrderedDictionary<MessageIdentifier, [EarlyEnvelope]>()
+    private var pendingReceipts =  OrderedDictionary<MessageIdentifier, [EarlyReceipt]>()
+
+    public override init() {
+        super.init()
+
+        SwiftSingletons.register(self)
+
+        // Listen for memory warnings to evacuate the caches
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(didReceiveMemoryWarning),
+            name: UIApplication.didReceiveMemoryWarningNotification,
+            object: nil
+        )
+    }
 
     @objc
-    public static func recordEarlyEnvelope(
+    func didReceiveMemoryWarning() {
+        Logger.error("Dropping all early messages due to memory warning.")
+        serialQueue.sync {
+            pendingEnvelopes = OrderedDictionary()
+            pendingReceipts = OrderedDictionary()
+        }
+    }
+
+    @objc
+    public func recordEarlyEnvelope(
         _ envelope: SSKProtoEnvelope,
         plainTextData: Data?,
         wasReceivedByUD: Bool,
         associatedMessageTimestamp: UInt64,
         associatedMessageAuthor: SignalServiceAddress
     ) {
-        guard plainTextData?.count ?? 0 <= maxEarlyEnvelopeSize else {
+        guard plainTextData?.count ?? 0 <= Self.maxEarlyEnvelopeSize else {
             return owsFailDebug("unexpectedly tried to record an excessively large early envelope")
         }
 
@@ -54,7 +77,7 @@ public class EarlyMessageManager: NSObject {
         serialQueue.sync {
             var envelopes = pendingEnvelopes[identifier] ?? []
 
-            while envelopes.count >= maxQueuedPerMessage, let droppedEarlyEnvelope = envelopes.first {
+            while envelopes.count >= Self.maxQueuedPerMessage, let droppedEarlyEnvelope = envelopes.first {
                 envelopes.remove(at: 0)
                 owsFailDebug("Dropping early envelope \(droppedEarlyEnvelope.envelope.timestamp) for message \(identifier) due to excessive early envelopes.")
             }
@@ -62,7 +85,7 @@ public class EarlyMessageManager: NSObject {
             envelopes.append(EarlyEnvelope(envelope: envelope, plainTextData: plainTextData, wasReceivedByUD: wasReceivedByUD))
             pendingEnvelopes[identifier] = envelopes
 
-            while pendingEnvelopes.count >= maxQueuedMessages, let droppedEarlyIdentifier = pendingEnvelopes.orderedKeys.first {
+            while pendingEnvelopes.count >= Self.maxQueuedMessages, let droppedEarlyIdentifier = pendingEnvelopes.orderedKeys.first {
                 pendingEnvelopes.remove(key: droppedEarlyIdentifier)
                 owsFailDebug("Dropping all early envelopes for message \(droppedEarlyIdentifier) due to excessive early messages.")
             }
@@ -70,7 +93,7 @@ public class EarlyMessageManager: NSObject {
     }
 
     @objc
-    public static func recordEarlyReceiptForOutgoingMessage(
+    public func recordEarlyReceiptForOutgoingMessage(
         type: SSKProtoReceiptMessageType,
         sender: SignalServiceAddress,
         timestamp: UInt64,
@@ -88,7 +111,7 @@ public class EarlyMessageManager: NSObject {
     }
 
     @objc
-    public static func recordEarlyReadReceiptFromLinkedDevice(
+    public func recordEarlyReadReceiptFromLinkedDevice(
         timestamp: UInt64,
         associatedMessageTimestamp: UInt64,
         associatedMessageAuthor: SignalServiceAddress
@@ -100,7 +123,7 @@ public class EarlyMessageManager: NSObject {
         )
     }
 
-    private static func recordEarlyReceipt(
+    private func recordEarlyReceipt(
         _ earlyReceipt: EarlyReceipt,
         associatedMessageTimestamp: UInt64,
         associatedMessageAuthor: SignalServiceAddress
@@ -109,7 +132,7 @@ public class EarlyMessageManager: NSObject {
         serialQueue.sync {
             var receipts = pendingReceipts[identifier] ?? []
 
-            while receipts.count >= maxQueuedPerMessage, let droppedEarlyReceipt = receipts.first {
+            while receipts.count >= Self.maxQueuedPerMessage, let droppedEarlyReceipt = receipts.first {
                 receipts.remove(at: 0)
                 owsFailDebug("Dropping early receipt \(droppedEarlyReceipt) for message \(identifier) due to excessive early receipts.")
             }
@@ -117,7 +140,7 @@ public class EarlyMessageManager: NSObject {
             receipts.append(earlyReceipt)
             pendingReceipts[identifier] = receipts
 
-            while pendingReceipts.count >= maxQueuedMessages, let droppedEarlyIdentifier = pendingReceipts.orderedKeys.first {
+            while pendingReceipts.count >= Self.maxQueuedMessages, let droppedEarlyIdentifier = pendingReceipts.orderedKeys.first {
                 pendingReceipts.remove(key: droppedEarlyIdentifier)
                 owsFailDebug("Dropping all early envelopes for message \(droppedEarlyIdentifier) due to excessive early messages.")
             }
@@ -125,7 +148,7 @@ public class EarlyMessageManager: NSObject {
     }
 
     @objc
-    public static func applyPendingMessages(for message: TSMessage, transaction: SDSAnyWriteTransaction) {
+    public func applyPendingMessages(for message: TSMessage, transaction: SDSAnyWriteTransaction) {
         var earlyReceipts: [EarlyReceipt]?
         var earlyEnvelopes: [EarlyEnvelope]?
 
