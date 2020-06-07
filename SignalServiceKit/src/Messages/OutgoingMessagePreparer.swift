@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import PromiseKit
@@ -46,6 +46,28 @@ public class OutgoingMessagePreparer: NSObject {
         }
     }
 
+    @objc
+    public var canBePreparedWithoutTransaction: Bool {
+        assert(!didCompletePrep)
+
+        guard unsavedAttachmentInfos.isEmpty else {
+            return false
+        }
+
+        return !OutgoingMessagePreparerHelper.doesMessageNeedsToBePrepared(message)
+    }
+
+    @objc
+    public func prepareMessageWithoutTransaction() -> TSOutgoingMessage {
+        assert(!didCompletePrep)
+        assert(canBePreparedWithoutTransaction)
+
+        self.savedAttachmentIds = []
+        didCompletePrep = true
+        return message
+    }
+
+    // NOTE: Any changes to this method should be reflected in canBePreparedWithoutTransaction.
     @objc
     public func prepareMessage(transaction: SDSAnyWriteTransaction) throws -> TSOutgoingMessage {
         assert(!didCompletePrep)

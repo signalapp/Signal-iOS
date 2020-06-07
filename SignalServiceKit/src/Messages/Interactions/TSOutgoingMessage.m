@@ -759,6 +759,16 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                                           }];
 }
 
+- (BOOL)hasFailedRecipients
+{
+    for (TSOutgoingMessageRecipientState *recipientState in self.recipientAddressStates.allValues) {
+        if (recipientState.state == OWSOutgoingMessageRecipientStateFailed) {
+            return YES;
+        }
+    }
+    return NO;
+}
+
 - (void)updateAllUnsentRecipientsAsSendingWithTransaction:(SDSAnyWriteTransaction *)transaction;
 {
     OWSAssertDebug(transaction);
@@ -766,7 +776,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     [self
         anyUpdateOutgoingMessageWithTransaction:transaction
                                           block:^(TSOutgoingMessage *message) {
-                                              // Mark any "sending" recipients as "failed."
+                                              // Mark any "failed" recipients as "sending."
                                               for (TSOutgoingMessageRecipientState *recipientState in message
                                                        .recipientAddressStates.allValues) {
                                                   if (recipientState.state == OWSOutgoingMessageRecipientStateFailed) {
