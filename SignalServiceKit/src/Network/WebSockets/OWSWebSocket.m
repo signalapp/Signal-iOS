@@ -126,7 +126,11 @@ NSNotificationName const NSNotificationWebSocketStateDidChange = @"NSNotificatio
         self.hasCompleted = YES;
     }
 
-    OWSLogError(@"didFailWithStatusCode: %zd, %@", statusCode, error);
+    if (statusCode != 404) {
+        OWSLogError(@"didFailWithStatusCode: %zd, %@", statusCode, error);
+    } else {
+        OWSLogVerbose(@"didFailWithStatusCode: %zd, %@", statusCode, error);
+    }
 
     OWSAssertDebug(self.success);
     OWSAssertDebug(self.failure);
