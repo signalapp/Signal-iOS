@@ -109,6 +109,7 @@ NS_ASSUME_NONNULL_BEGIN
     BulkUUIDLookup *bulkUUIDLookup = [BulkUUIDLookup new];
     id<VersionedProfiles> versionedProfiles = [MockVersionedProfiles new];
     ModelReadCaches *modelReadCaches = [ModelReadCaches new];
+    EarlyMessageManager *earlyMessageManager = [EarlyMessageManager new];
 
     self = [super initWithContactsManager:contactsManager
                        linkPreviewManager:linkPreviewManager
@@ -156,7 +157,8 @@ NS_ASSUME_NONNULL_BEGIN
                          bulkProfileFetch:bulkProfileFetch
                            bulkUUIDLookup:bulkUUIDLookup
                         versionedProfiles:versionedProfiles
-                          modelReadCaches:modelReadCaches];
+                          modelReadCaches:modelReadCaches
+                      earlyMessageManager:earlyMessageManager];
 
     if (!self) {
         return nil;

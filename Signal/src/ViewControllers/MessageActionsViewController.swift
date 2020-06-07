@@ -59,6 +59,7 @@ protocol MessageActionsViewControllerDelegate: class {
     func messageActionsViewControllerRequestedDismissal(_ messageActionsViewController: MessageActionsViewController, withReaction: String, isRemoving: Bool)
     func messageActionsViewController(_ messageActionsViewController: MessageActionsViewController,
                                       shouldShowReactionPickerForInteraction: TSInteraction) -> Bool
+    func messageActionsViewControllerRequestedKeyboardDismissal(_ messageActionsViewController: MessageActionsViewController, focusedView: ConversationViewCell)
 }
 
 @objc
@@ -88,6 +89,8 @@ class MessageActionsViewController: UIViewController {
         super.init(nibName: nil, bundle: nil)
 
         self.actionsToolbar.actionDelegate = self
+
+        NotificationCenter.default.addObserver(self, selector: #selector(keyboardFrameWillChange), name: UIResponder.keyboardWillChangeFrameNotification, object: nil)
     }
 
     required init?(coder aDecoder: NSCoder) {
@@ -135,9 +138,7 @@ class MessageActionsViewController: UIViewController {
         snapshotFocusedView = snapshotView
     }
 
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-
+    func updateSnapshotPosition() {
         guard let snapshotFocusedView = snapshotFocusedView else { return }
 
         guard let focusedViewSuperview = focusedView.superview else {
@@ -146,6 +147,27 @@ class MessageActionsViewController: UIViewController {
 
         let convertedFrame = view.convert(focusedView.frame, from: focusedViewSuperview)
         snapshotFocusedView.frame = convertedFrame
+    }
+
+    @objc func keyboardFrameWillChange(notification: Notification) {
+        guard let userInfo = notification.userInfo,
+            let animationDuration = userInfo[UIResponder.keyboardAnimationDurationUserInfoKey] as? TimeInterval,
+            let rawAnimationCurve = userInfo[UIResponder.keyboardAnimationCurveUserInfoKey] as? Int,
+            let animationCurve = UIView.AnimationCurve(rawValue: rawAnimationCurve) else {
+                return owsFailDebug("keyboard notification missing expected userInfo properties")
+        }
+
+        // If the keyboard frame changes (likely due to a first responder change)
+        // we need to make sure the snapshot of the latest message updates its
+        // position and stays on top of the original message. We want this to
+        // animate alongside the keyboard animation, so we use old-school UIView
+        // animation route in order to set the appropriate curve.
+        UIView.beginAnimations("messageActionKeyboardStateChange", context: nil)
+        UIView.setAnimationBeginsFromCurrentState(true)
+        UIView.setAnimationCurve(animationCurve)
+        UIView.setAnimationDuration(animationDuration)
+        updateSnapshotPosition()
+        UIView.commitAnimations()
     }
 
     @objc func didTapBackdrop() {
@@ -353,6 +375,17 @@ class MessageActionsViewController: UIViewController {
         }
         picker.backdropView = backdropView
         anyReactionPicker = picker
+
+        // Presenting the emoji picker causes the conversation view controller
+        // to lose first responder status. This is expected. Unfortunately, to
+        // do a bug with window wrangling it doesn't properly become first responder
+        // again when all is done. Instead, we get into a broken state half way
+        // between the keyboad being presented and not. This results in the user
+        // being unable to send messages. In order to work around this, we notify
+        // the CVC we're going to present so it can manually resign first responder
+        // status ahead of time. This allows the user to return to a good state
+        // after posting a custom reaction.
+        delegate?.messageActionsViewControllerRequestedKeyboardDismissal(self, focusedView: focusedView)
 
         present(picker, animated: true)
         quickReactionPicker?.playDismissalAnimation(duration: 0.2) {

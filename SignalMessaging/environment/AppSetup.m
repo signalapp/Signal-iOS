@@ -117,6 +117,7 @@ NS_ASSUME_NONNULL_BEGIN
         BulkUUIDLookup *bulkUUIDLookup = [BulkUUIDLookup new];
         id<VersionedProfiles> versionedProfiles = [VersionedProfilesImpl new];
         ModelReadCaches *modelReadCaches = [ModelReadCaches new];
+        EarlyMessageManager *earlyMessageManager = [EarlyMessageManager new];
 
         [Environment setShared:[[Environment alloc] initWithAudioSession:audioSession
                                              incomingContactSyncJobQueue:incomingContactSyncJobQueue
@@ -175,7 +176,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                                  bulkProfileFetch:bulkProfileFetch
                                                                    bulkUUIDLookup:bulkUUIDLookup
                                                                 versionedProfiles:versionedProfiles
-                                                                  modelReadCaches:modelReadCaches]];
+                                                                  modelReadCaches:modelReadCaches
+                                                              earlyMessageManager:earlyMessageManager]];
 
         appSpecificSingletonBlock();
 

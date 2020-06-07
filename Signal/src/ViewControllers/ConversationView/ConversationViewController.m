@@ -2070,14 +2070,18 @@ typedef enum : NSUInteger {
         completion:nil];
 }
 
-- (void)setupMessageActionsStateForCell:(ConversationViewCell *)cell
+- (void)updateMessageActionsStateForCell:(ConversationViewCell *)cell
 {
     // While presenting message actions, cache the original content offset.
     // This allows us to restore the user to their original scroll position
     // when they dismiss the menu.
     self.messageActionsOriginalContentOffset = self.collectionView.contentOffset;
-
     self.messageActionsOriginalFocusY = [self.view convertPoint:cell.frame.origin fromView:self.collectionView].y;
+}
+
+- (void)setupMessageActionsStateForCell:(ConversationViewCell *)cell
+{
+    [self updateMessageActionsStateForCell:cell];
 
     // While the menu actions are presented, temporarily use extra content
     // inset padding so that interactions near the top or bottom of the

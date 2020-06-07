@@ -511,6 +511,17 @@ extension ConversationViewController {
 }
 
 extension ConversationViewController: MessageActionsViewControllerDelegate {
+    func messageActionsViewControllerRequestedKeyboardDismissal(_ messageActionsViewController: MessageActionsViewController, focusedView: ConversationViewCell) {
+        dismissKeyBoard()
+
+        // After dismissing the keyboard, it's important we update the message actions
+        // state. We keep track of the content offset at the time of presenting a message
+        // action to ensure that new messages / typing indicators don't cause the
+        // focused message to move. That offset is now different since the focused message
+        // may be repositioning.
+        updateMessageActionsState(for: focusedView)
+    }
+
     func messageActionsViewControllerRequestedDismissal(_ messageActionsViewController: MessageActionsViewController, withAction action: MessageAction?) {
 
         let sender: UIView? = {

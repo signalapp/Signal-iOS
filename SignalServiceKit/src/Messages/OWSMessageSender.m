@@ -211,7 +211,7 @@ void AssertIsOnSendingQueue()
     // Sanity check preconditions
     if (self.message.hasAttachments) {
         [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-            for (TSAttachment *attachment in [self.message allAttachmentsWithTransaction:transaction]) {
+            for (TSAttachment *attachment in [self.message allAttachmentsWithTransaction:transaction.unwrapGrdbRead]) {
                 if (![attachment isKindOfClass:[TSAttachmentStream class]]) {
                     error = OWSErrorMakeFailedToSendOutgoingMessageError();
                     break;

@@ -10,6 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
  *  Abstract message class.
  */
 
+@class GRDBReadTransaction;
 @class MessageSticker;
 @class OWSContact;
 @class OWSLinkPreview;
@@ -94,10 +95,11 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 // --- CODE GENERATION MARKER
 
 - (BOOL)hasAttachments;
-- (NSArray<TSAttachment *> *)bodyAttachmentsWithTransaction:(SDSAnyReadTransaction *)transaction;
-- (NSArray<TSAttachment *> *)mediaAttachmentsWithTransaction:(SDSAnyReadTransaction *)transaction;
-- (nullable TSAttachment *)oversizeTextAttachmentWithTransaction:(SDSAnyReadTransaction *)transaction;
-- (NSArray<TSAttachment *> *)allAttachmentsWithTransaction:(SDSAnyReadTransaction *)transaction;
+- (NSArray<TSAttachment *> *)bodyAttachmentsWithTransaction:(GRDBReadTransaction *)transaction;
+- (BOOL)hasMediaAttachmentsWithTransaction:(GRDBReadTransaction *)transaction;
+- (NSArray<TSAttachment *> *)mediaAttachmentsWithTransaction:(GRDBReadTransaction *)transaction;
+- (nullable TSAttachment *)oversizeTextAttachmentWithTransaction:(GRDBReadTransaction *)transaction;
+- (NSArray<TSAttachment *> *)allAttachmentsWithTransaction:(GRDBReadTransaction *)transaction;
 
 - (void)removeAttachment:(TSAttachment *)attachment
              transaction:(SDSAnyWriteTransaction *)transaction NS_SWIFT_NAME(removeAttachment(_:transaction:));
@@ -108,8 +110,8 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 
 - (void)setQuotedMessageThumbnailAttachmentStream:(TSAttachmentStream *)attachmentStream;
 
-- (nullable NSString *)oversizeTextWithTransaction:(SDSAnyReadTransaction *)transaction;
-- (nullable NSString *)bodyTextWithTransaction:(SDSAnyReadTransaction *)transaction;
+- (nullable NSString *)oversizeTextWithTransaction:(GRDBReadTransaction *)transaction;
+- (nullable NSString *)bodyTextWithTransaction:(GRDBReadTransaction *)transaction;
 
 - (BOOL)shouldStartExpireTimer;
 
