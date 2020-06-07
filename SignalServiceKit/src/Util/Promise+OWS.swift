@@ -111,3 +111,20 @@ public extension Guarantee where T == Void {
         timeout(seconds: seconds, substituteValue: ())
     }
 }
+
+// MARK: -
+
+public func firstly<U: Thenable>(on dispatchQueue: DispatchQueue,
+                                 execute body: @escaping () throws -> U) -> Promise<U.T> {
+    let (promise, resolver) = Promise<U.T>.pending()
+    dispatchQueue.async {
+        firstly {
+            return try body()
+        }.done { value in
+            resolver.fulfill(value)
+        }.catch { error in
+            resolver.reject(error)
+        }
+    }
+    return promise
+}
