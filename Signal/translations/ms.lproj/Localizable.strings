@@ -764,17 +764,20 @@
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Pilih siapa yang boleh edit nama, avatar dan pemasa mesej hilang kumpulan.";
 
-/* Footer text for the 'block and leave' section of conversation settings view. */
+/* Footer text for the 'block and leave' section of contact conversation settings view. */
+"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "You will no longer receive messages or updates from this user.";
+
+/* Footer text for the 'block and leave' section of group conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER" = "Anda tidak akan menerima mesej dan kemas kini daripada kumpulan ini.";
 
 /* Label for 'block group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_GROUP" = "Sekat Kumpulan";
 
 /* table cell label in conversation settings */
-"CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "Sekat Kumpulan Ini";
+"CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "CONVERSATION_SETTINGS_BLOCK_THIS_GROUP";
 
 /* table cell label in conversation settings */
-"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Sekat Pengguna Ini";
+"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "CONVERSATION_SETTINGS_BLOCK_THIS_USER";
 
 /* Label for 'block user' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_USER" = "Sekat Pengguna";
@@ -813,7 +816,7 @@
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "Semua Ahli";
 
 /* Navbar title when viewing settings for a group thread */
-"CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "Info Kumpulan";
+"CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "CONVERSATION_SETTINGS_GROUP_INFO_TITLE";
 
 /* Label for 'make group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Jadikan Pentadbir";
@@ -1164,7 +1167,7 @@
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal memerlukan akses kenalan untuk edit butiran kenalan";
 
 /* table cell label in conversation settings */
-"EDIT_GROUP_ACTION" = "Edit Kumpulan";
+"EDIT_GROUP_ACTION" = "EDIT_GROUP_ACTION";
 
 /* The 'clear avatar' button in the 'edit group' view. */
 "EDIT_GROUP_CLEAR_AVATAR" = "Keluarkan Avatar";
@@ -1186,9 +1189,6 @@
 
 /* Label for the group name in the 'edit group' view. */
 "EDIT_GROUP_GROUP_NAME" = "Nama Kumpulan";
-
-/* An indicator that a user is a new member of the group. */
-"EDIT_GROUP_NEW_MEMBER_LABEL" = "Ditambah";
 
 /* The title for the 'update group' button. */
 "EDIT_GROUP_UPDATE_BUTTON" = "Kemas Kini";
@@ -1484,9 +1484,6 @@
 /* Message indicating that the access to the group's members was changed. Embeds {{new access level}}. */
 "GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Keahlian kumpulan boleh diubah oleh “%@“.";
 
-/* Error indicating that a member cannot be added to a group. */
-"GROUP_CANNOT_ADD_INVALID_MEMBER" = "Pengguna ini tidak boleh ditambah kepada kumpulan.";
-
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "Anda mencipta kumpulan.";
 
@@ -1560,7 +1557,7 @@
 "GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ membatalkan keistimewaan pentadbir anda.";
 
 /* Conversation settings table section title */
-"GROUP_MANAGEMENT_SECTION" = "Pengurusan Kumpulan";
+"GROUP_MANAGEMENT_SECTION" = "GROUP_MANAGEMENT_SECTION";
 
 /* Label indicating that a group member is an admin. */
 "GROUP_MEMBER_ADMIN_INDICATOR" = "Pentadbir";
@@ -1586,17 +1583,8 @@
 /* Label indicating that a group has no other members. */
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "Tiada ahli.";
 
-/* Label for the button that clears all verification errors in the 'group members' view. */
-"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "Kosongkan Pengesahan untuk Semua";
-
-/* Label for the 'reset all no-longer-verified group members' confirmation alert. */
-"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE" = "Ini akan mengosongkan pengesahan semua ahli kumpulan yang nombor keselamatannya telah berubah sejak ia disahkan kali terakhir.";
-
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Ahli";
-
-/* Title for the 'no longer verified' section of the 'group members' view. */
-"GROUP_MEMBERS_SECTION_TITLE_NO_LONGER_VERIFIED" = "Tidak Lagi Ditanda sebagai Disahkan";
 
 /* Button label for the 'send message to group member' button */
 "GROUP_MEMBERS_SEND_MESSAGE" = "Mesej";
@@ -2001,7 +1989,7 @@
 "LINKING_DEVICE_FAILED_TITLE" = "Gagal Memaut Peranti";
 
 /* table cell label in conversation settings */
-"LIST_GROUP_MEMBERS_ACTION" = "Ahli Kumpulan";
+"LIST_GROUP_MEMBERS_ACTION" = "LIST_GROUP_MEMBERS_ACTION";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Cari mengikut nama atau alamat";
@@ -2321,9 +2309,6 @@
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "Kumpulan Baru";
 
-/* Accessibility label for the new group button */
-"NEW_GROUP_BUTTON_LABEL" = "Kumpulan Baru";
-
 /* The title for the 'create group' button. */
 "NEW_GROUP_CREATE_BUTTON" = "Cipta";
 
@@ -2342,17 +2327,11 @@
 /* Used in place of the group name when a group has not yet been named. */
 "NEW_GROUP_DEFAULT_TITLE" = "Kumpulan Baru";
 
-/* An indicator that a user is a member of the new group. */
-"NEW_GROUP_MEMBER_LABEL" = "Ahli";
-
 /* notification title. Embeds {{author name}} and {{group name}} */
 "NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ kepada %@";
 
 /* The title for the 'name new group' view. */
 "NEW_GROUP_NAME_GROUP_VIEW_TITLE" = "Nama Kumpulan";
-
-/* Placeholder text for group name field */
-"NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Namakan kumpulan sembang ini";
 
 /* a title for the selected section of the 'recipient picker' view. */
 "NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Pengguna Lain";
@@ -3711,7 +3690,7 @@
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Halang pratonton Signal daripada muncul di penukar aplikasi.";
 
 /* Label for the notifications section of conversation settings view. */
-"SETTINGS_SECTION_NOTIFICATIONS" = "Pemberitahuan";
+"SETTINGS_SECTION_NOTIFICATIONS" = "SETTINGS_SECTION_NOTIFICATIONS";
 
 /* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "Bunyi";
@@ -4018,12 +3997,6 @@
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_FEATURE_ERROR" = "Peranti anda tidak menyokong ciri ini.";
-
-/* Title for alert indicating that group members can't be removed. */
-"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "Anda tidak boleh mengalih keluar ahli kumpulan. Mereka sama ada perlu meninggalkan, atau anda boleh membuat kumpulan baru tanpa ahli tersebut.";
-
-/* Title for alert indicating that group members can't be removed. */
-"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "Tidak Disokong";
 
 /* Error indicating that a group could not be updated. */
 "UPDATE_GROUP_FAILED" = "Kumpulan tidak dapat dikemas kini.";

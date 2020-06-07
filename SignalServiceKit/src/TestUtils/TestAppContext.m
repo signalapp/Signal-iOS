@@ -189,6 +189,11 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
+- (BOOL)hasUI
+{
+    return YES;
+}
+
 @end
 
 #endif

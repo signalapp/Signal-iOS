@@ -19,6 +19,8 @@ protocol GroupMemberViewDelegate: class {
 
     func groupMemberViewCanAddRecipient(_ recipient: PickedRecipient) -> Bool
 
+    func groupMemberViewShouldShowMemberCount() -> Bool
+
     func groupMemberViewGroupMemberCountForDisplay() -> Int
 
     func groupMemberViewIsGroupFull() -> Bool
@@ -147,10 +149,16 @@ public class BaseGroupMemberViewController: OWSViewController {
             memberCountWrapper.isHidden = true
             return
         }
+        guard let groupMemberViewDelegate = groupMemberViewDelegate,
+            groupMemberViewDelegate.groupMemberViewShouldShowMemberCount() else {
+            memberCountWrapper.isHidden = true
+            return
+        }
+
         memberCountWrapper.isHidden = false
         let format = NSLocalizedString("GROUP_MEMBER_COUNT_FORMAT",
                                        comment: "Format string for the group member count indicator. Embeds {{ %1$@ the number of members in the group, %2$@ the maximum number of members in the group. }}.")
-        let memberCount = groupMemberViewDelegate?.groupMemberViewGroupMemberCountForDisplay() ?? 0
+        let memberCount = groupMemberViewDelegate.groupMemberViewGroupMemberCountForDisplay()
 
         memberCountLabel.text = String(format: format,
                                        OWSFormat.formatInt(memberCount),

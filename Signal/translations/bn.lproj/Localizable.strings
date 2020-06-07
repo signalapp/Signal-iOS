@@ -764,17 +764,20 @@
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "গ্রুপের নাম, ছবি এবং অদৃশ্য বার্তাগুলির সময়কাল কে সম্পাদনা করতে পারবে তা চয়ন করুন।";
 
-/* Footer text for the 'block and leave' section of conversation settings view. */
+/* Footer text for the 'block and leave' section of contact conversation settings view. */
+"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "You will no longer receive messages or updates from this user.";
+
+/* Footer text for the 'block and leave' section of group conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER" = "আপনি আর এই গ্রুপ থেকে বার্তা বা আপডেট পাবেন না।";
 
 /* Label for 'block group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_GROUP" = "গ্রুপ অবরুদ্ধ করুন";
 
 /* table cell label in conversation settings */
-"CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "এই গ্রুপটিকে অবরুদ্ধ করুন";
+"CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "CONVERSATION_SETTINGS_BLOCK_THIS_GROUP";
 
 /* table cell label in conversation settings */
-"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "এই ব্যবহারকারীকে অবরুদ্ধ করুন";
+"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "CONVERSATION_SETTINGS_BLOCK_THIS_USER";
 
 /* Label for 'block user' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_USER" = "ব্যবহারকারী অবরুদ্ধ করুন";
@@ -813,7 +816,7 @@
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "সকল সদস্য";
 
 /* Navbar title when viewing settings for a group thread */
-"CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "গ্রুপের তথ্য";
+"CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "CONVERSATION_SETTINGS_GROUP_INFO_TITLE";
 
 /* Label for 'make group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "প্রশাসক করুন";
@@ -1164,7 +1167,7 @@
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "পরিচিতির তথ্য সম্পাদনা করতে Signal  এর পরিচিতি অ্যাক্সেস প্রয়োজন";
 
 /* table cell label in conversation settings */
-"EDIT_GROUP_ACTION" = "গ্রুপ সম্পাদনা";
+"EDIT_GROUP_ACTION" = "EDIT_GROUP_ACTION";
 
 /* The 'clear avatar' button in the 'edit group' view. */
 "EDIT_GROUP_CLEAR_AVATAR" = "প্রোফাইল থেকে ছবি সরান";
@@ -1186,9 +1189,6 @@
 
 /* Label for the group name in the 'edit group' view. */
 "EDIT_GROUP_GROUP_NAME" = "গ্রুপের নাম";
-
-/* An indicator that a user is a new member of the group. */
-"EDIT_GROUP_NEW_MEMBER_LABEL" = "যোগ করা হয়েছে";
 
 /* The title for the 'update group' button. */
 "EDIT_GROUP_UPDATE_BUTTON" = "আপডেট";
@@ -1484,9 +1484,6 @@
 /* Message indicating that the access to the group's members was changed. Embeds {{new access level}}. */
 "GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "গ্রুপের সদস্যতা \"%@\" দ্বারা পরিবর্তন করা যেতে পারে।";
 
-/* Error indicating that a member cannot be added to a group. */
-"GROUP_CANNOT_ADD_INVALID_MEMBER" = "এই ব্যবহারকারীকে গ্রুপে যোগ করা যাবে না।";
-
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "আপনি গ্রুপ তৈরি করেছেন।";
 
@@ -1560,7 +1557,7 @@
 "GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ আপনার প্রশাসনের সুবিধাগুলি বাতিল করেছে।";
 
 /* Conversation settings table section title */
-"GROUP_MANAGEMENT_SECTION" = "গ্রুপ ম্যানেজমেন্ট";
+"GROUP_MANAGEMENT_SECTION" = "GROUP_MANAGEMENT_SECTION";
 
 /* Label indicating that a group member is an admin. */
 "GROUP_MEMBER_ADMIN_INDICATOR" = "প্রশাসক";
@@ -1586,17 +1583,8 @@
 /* Label indicating that a group has no other members. */
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "কোন সদস্য নেই";
 
-/* Label for the button that clears all verification errors in the 'group members' view. */
-"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "সবার জন্য যাচাইকরণ সাফ করুন";
-
-/* Label for the 'reset all no-longer-verified group members' confirmation alert. */
-"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE" = "এটি এমন সমস্ত গ্রুপের সদস্যদের যাচাইকরণ পরিষ্কার করবে যার সুরক্ষা নম্বরগুলি শেষ বার যাচাই করা হওয়ার পরে পরিবর্তিত হয়েছে।";
-
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "সদস্যগণ";
-
-/* Title for the 'no longer verified' section of the 'group members' view. */
-"GROUP_MEMBERS_SECTION_TITLE_NO_LONGER_VERIFIED" = "এখন পর্যন্ত যাচাইকৃত হিসাবে চিহ্নিত করা হয়নি";
 
 /* Button label for the 'send message to group member' button */
 "GROUP_MEMBERS_SEND_MESSAGE" = "বার্তা";
@@ -2001,7 +1989,7 @@
 "LINKING_DEVICE_FAILED_TITLE" = "ডিভাইস সংযুক্তি ব্যর্থ";
 
 /* table cell label in conversation settings */
-"LIST_GROUP_MEMBERS_ACTION" = "গ্রুপের সদস্যগণ";
+"LIST_GROUP_MEMBERS_ACTION" = "LIST_GROUP_MEMBERS_ACTION";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "নাম বা ঠিকানা অনুসন্ধান করুন";
@@ -2321,9 +2309,6 @@
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "নতুন গ্রুপ";
 
-/* Accessibility label for the new group button */
-"NEW_GROUP_BUTTON_LABEL" = "নতুন গ্রুপ";
-
 /* The title for the 'create group' button. */
 "NEW_GROUP_CREATE_BUTTON" = "সৃষ্টি করুন";
 
@@ -2342,17 +2327,11 @@
 /* Used in place of the group name when a group has not yet been named. */
 "NEW_GROUP_DEFAULT_TITLE" = "নতুন গ্রুপ";
 
-/* An indicator that a user is a member of the new group. */
-"NEW_GROUP_MEMBER_LABEL" = "সদস্য";
-
 /* notification title. Embeds {{author name}} and {{group name}} */
 "NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ থেকে %@";
 
 /* The title for the 'name new group' view. */
 "NEW_GROUP_NAME_GROUP_VIEW_TITLE" = "গ্রুপের নাম দিন";
-
-/* Placeholder text for group name field */
-"NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "এই গ্রুপ চ্যাটের নাম দিন";
 
 /* a title for the selected section of the 'recipient picker' view. */
 "NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "অন্যান্য ব্যবহারকারীগণ";
@@ -3711,7 +3690,7 @@
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "অ্যাপ পরিবর্তন তালিকা থেকে Signal এর পূর্বরূপগুলি  উপস্থিত হওয়া আটকান।";
 
 /* Label for the notifications section of conversation settings view. */
-"SETTINGS_SECTION_NOTIFICATIONS" = "বিজ্ঞপ্তিগুলি";
+"SETTINGS_SECTION_NOTIFICATIONS" = "SETTINGS_SECTION_NOTIFICATIONS";
 
 /* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "শব্দসমূহ";
@@ -4018,12 +3997,6 @@
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_FEATURE_ERROR" = "আপনার ডিভাইস এই বৈশিষ্ট্য সমর্থন করে না।";
-
-/* Title for alert indicating that group members can't be removed. */
-"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "আপনি গ্রুপ সদস্যদের অপসারণ করতে পারবেন না। তাদের হয় চলে যেতে হবে, অথবা আপনি এই সদস্য ছাড়া একটি নতুন গ্রুপ তৈরি করতে পারেন।";
-
-/* Title for alert indicating that group members can't be removed. */
-"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "সমর্থিত নয়";
 
 /* Error indicating that a group could not be updated. */
 "UPDATE_GROUP_FAILED" = "গ্রুপ আপডেট করা যায়নি।";

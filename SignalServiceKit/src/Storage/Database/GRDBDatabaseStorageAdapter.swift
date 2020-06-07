@@ -336,6 +336,12 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
     public func uiRead(block: @escaping (GRDBReadTransaction) -> Void) throws {
         assertCanRead()
         AssertIsOnMainThread()
+
+        guard CurrentAppContext().hasUI else {
+            // Never do uiReads in the NSE.
+            return try read(block: block)
+        }
+
         latestSnapshot.read { database in
             autoreleasepool {
                 block(GRDBReadTransaction(database: database, isUIRead: true))

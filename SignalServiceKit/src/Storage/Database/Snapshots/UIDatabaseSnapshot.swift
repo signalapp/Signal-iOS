@@ -92,12 +92,13 @@ public class UIDatabaseObserver: NSObject {
         }
     }
 
-    private static let snapshotCoordinationQueue = DispatchQueue(label: "UIDatabaseObserver")
-    private var hasPendingSnapshotUpdate = false
+    private let hasPendingSnapshotUpdate = AtomicBool(false)
     private var lastSnapshotUpdateDate: Date?
 
     // This property should only be accessed on the main thread.
     private var lastCheckpointDate: Date?
+
+    private var displayLink: CADisplayLink?
 
     init(pool: DatabasePool, checkpointingQueue: DatabaseQueue?) throws {
         self.pool = pool
@@ -110,6 +111,64 @@ public class UIDatabaseObserver: NSObject {
                                                selector: #selector(didReceiveCrossProcessNotification),
                                                name: SDSDatabaseStorage.didReceiveCrossProcessNotification,
                                                object: nil)
+
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(self.applicationStateDidChange),
+                                               name: .OWSApplicationDidEnterBackground,
+                                               object: nil)
+        NotificationCenter.default.addObserver(self,
+                                               selector: #selector(applicationStateDidChange),
+                                               name: .OWSApplicationWillEnterForeground,
+                                               object: nil)
+
+        AppReadiness.runNowOrWhenAppDidBecomeReady {
+            self.ensureDisplayLink()
+        }
+    }
+
+    private func ensureDisplayLink() {
+        guard CurrentAppContext().hasUI else {
+            // The NSE never does uiReads, we can skip the display link.
+            return
+        }
+
+        let shouldBeActive: Bool = {
+            guard AppReadiness.isAppReady() else {
+                return false
+            }
+            guard !CurrentAppContext().isInBackground() else {
+                return false
+            }
+            return true
+        }()
+
+        if shouldBeActive {
+            if let displayLink = displayLink {
+                displayLink.isPaused = false
+            } else {
+                let link = CADisplayLink(target: self, selector: #selector(displayLinkDidFire))
+                link.preferredFramesPerSecond = 60
+                link.add(to: .main, forMode: .default)
+                assert(!link.isPaused)
+                displayLink = link
+            }
+        } else {
+            displayLink?.isPaused = true
+        }
+    }
+
+    @objc
+    func displayLinkDidFire() {
+        AssertIsOnMainThread()
+
+        updateSnapshotIfNecessary()
+    }
+
+    @objc
+    func applicationStateDidChange(_ notification: Notification) {
+        AssertIsOnMainThread()
+
+        ensureDisplayLink()
     }
 
     @objc
@@ -155,45 +214,49 @@ extension UIDatabaseObserver: TransactionObserver {
             }
         }
 
-        Self.snapshotCoordinationQueue.sync {
-            guard !self.hasPendingSnapshotUpdate else {
-                // If there's already a pending snapshot, abort.
+        // Enqueue the update.
+        hasPendingSnapshotUpdate.set(true)
+        // Try to update immediately.
+        DispatchQueue.main.async { [weak self] in
+            self?.updateSnapshotIfNecessary()
+        }
+    }
+
+    private func updateSnapshotIfNecessary() {
+        AssertIsOnMainThread()
+
+        do {
+            // We only want to update the snapshot if we the flag needs to be cleared.
+            try hasPendingSnapshotUpdate.transition(from: true, to: false)
+        } catch {
+            switch error {
+            case AtomicError.invalidTransition:
+                // If there's no new database changes, we don't need to update the snapshot.
+                break
+            default:
+                owsFailDebug("Error: \(error)")
+            }
+            return
+        }
+
+        if let lastSnapshotUpdateDate = self.lastSnapshotUpdateDate {
+            let secondsSinceLastUpdate = abs(lastSnapshotUpdateDate.timeIntervalSinceNow)
+            // Don't update UI more often than Nx/second.
+            let maxUpdatesPerSecond: UInt = 10
+            let maxUpdateFrequencySeconds: TimeInterval = 1 / TimeInterval(maxUpdatesPerSecond)
+            guard secondsSinceLastUpdate >= maxUpdateFrequencySeconds else {
+                // Don't update the snapshot yet; we've updated the snapshot recently.
                 return
             }
-
-            // Enqueue a pending snapshot.
-            self.hasPendingSnapshotUpdate = true
-
-            if let lastSnapshotUpdateDate = self.lastSnapshotUpdateDate {
-                let secondsSinceLastUpdate = abs(lastSnapshotUpdateDate.timeIntervalSinceNow)
-                // Don't update UI more often than Nx/second.
-                let maxUpdatesPerSecond: UInt = 5
-                let maxUpdateFrequencySeconds: TimeInterval = 1 / TimeInterval(maxUpdatesPerSecond)
-                let delaySeconds = maxUpdateFrequencySeconds - secondsSinceLastUpdate
-                if delaySeconds > 0 {
-                    Logger.verbose("Updating db snapshot after: \(delaySeconds).")
-                    DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + delaySeconds) { [weak self] in
-                        self?.updateSnapshot()
-                    }
-                    return
-                }
-            }
-            // Update snapshot ASAP.
-            Logger.verbose("Updating db snapshot ASAP.")
-            DispatchQueue.main.async { [weak self] in
-                self?.updateSnapshot()
-            }
         }
+
+        // Update the snapshot now.
+        lastSnapshotUpdateDate = Date()
+        updateSnapshot()
     }
 
     private func updateSnapshot() {
         AssertIsOnMainThread()
-
-        Self.snapshotCoordinationQueue.sync {
-            assert(self.hasPendingSnapshotUpdate)
-            self.hasPendingSnapshotUpdate = false
-            self.lastSnapshotUpdateDate = Date()
-        }
 
         Logger.verbose("databaseSnapshotWillUpdate")
         for delegate in snapshotDelegates {
