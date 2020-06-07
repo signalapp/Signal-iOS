@@ -238,6 +238,10 @@ extension AddGroupMembersViewController: GroupMemberViewDelegate {
         }
     }
 
+    func groupMemberViewShouldShowMemberCount() -> Bool {
+        return groupThread.isGroupV2Thread
+    }
+
     func groupMemberViewGroupMemberCountForDisplay() -> Int {
         return (oldGroupModel.groupMembership.pendingAndNonPendingMemberCount +
                 newRecipientSet.count)
