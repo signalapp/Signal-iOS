@@ -139,13 +139,18 @@ public class GRDBSchemaMigrator: NSObject {
     }()
 
     private func registerSchemaMigrations(migrator: inout DatabaseMigrator) {
+
+        // The migration blocks should never throw. If we introduce a crashing
+        // migration, we want the crash logs reflect where it occurred.
+
         migrator.registerMigration(MigrationId.createInitialSchema.rawValue) { _ in
             owsFail("This migration should have already been run by the last YapDB migration.")
             // try createV1Schema(db: db)
         }
 
         migrator.registerMigration(MigrationId.signalAccount_add_contactAvatars.rawValue) { database in
-            let sql = """
+            do {
+                let sql = """
                 DROP TABLE "model_SignalAccount";
                 CREATE
                     TABLE
@@ -162,11 +167,15 @@ public class GRDBSchemaMigrator: NSObject {
                             ,"recipientUUID" TEXT
                         );
             """
-            try database.execute(sql: sql)
+                try database.execute(sql: sql)
+            } catch {
+                owsFail("Error: \(error)")
+            }
         }
 
         migrator.registerMigration(MigrationId.signalAccount_add_contactAvatars_indices.rawValue) { db in
-            let sql = """
+            do {
+                let sql = """
                 CREATE
                     INDEX IF NOT EXISTS "index_model_SignalAccount_on_uniqueId"
                         ON "model_SignalAccount"("uniqueId"
@@ -185,90 +194,109 @@ public class GRDBSchemaMigrator: NSObject {
                 )
                 ;
             """
-            try db.execute(sql: sql)
+                try db.execute(sql: sql)
+            } catch {
+                owsFail("Error: \(error)")
+            }
         }
 
         migrator.registerMigration(MigrationId.jobRecords_add_attachmentId.rawValue) { db in
-            try db.alter(table: "model_SSKJobRecord") { (table: TableAlteration) -> Void in
-                table.add(column: "attachmentId", .text)
+            do {
+                try db.alter(table: "model_SSKJobRecord") { (table: TableAlteration) -> Void in
+                    table.add(column: "attachmentId", .text)
+                }
+            } catch {
+                owsFail("Error: \(error)")
             }
         }
 
         migrator.registerMigration(MigrationId.createMediaGalleryItems.rawValue) { db in
-            try db.create(table: "media_gallery_items") { table in
-                table.column("attachmentId", .integer)
-                    .notNull()
-                    .unique()
-                table.column("albumMessageId", .integer)
-                    .notNull()
-                table.column("threadId", .integer)
-                    .notNull()
-                table.column("originalAlbumOrder", .integer)
-                    .notNull()
+            do {
+                try db.create(table: "media_gallery_items") { table in
+                    table.column("attachmentId", .integer)
+                        .notNull()
+                        .unique()
+                    table.column("albumMessageId", .integer)
+                        .notNull()
+                    table.column("threadId", .integer)
+                        .notNull()
+                    table.column("originalAlbumOrder", .integer)
+                        .notNull()
+                }
+
+                try db.create(index: "index_media_gallery_items_for_gallery",
+                              on: "media_gallery_items",
+                              columns: ["threadId", "albumMessageId", "originalAlbumOrder"])
+
+                try db.create(index: "index_media_gallery_items_on_attachmentId",
+                              on: "media_gallery_items",
+                              columns: ["attachmentId"])
+
+                // Creating gallery records here can crash since it's run in the middle of schema migrations.
+                // It instead has been moved to a separate Data Migration.
+                // see: "dataMigration_populateGalleryItems"
+                // try createInitialGalleryRecords(transaction: GRDBWriteTransaction(database: db))
+            } catch {
+                owsFail("Error: \(error)")
             }
-
-            try db.create(index: "index_media_gallery_items_for_gallery",
-                          on: "media_gallery_items",
-                          columns: ["threadId", "albumMessageId", "originalAlbumOrder"])
-
-            try db.create(index: "index_media_gallery_items_on_attachmentId",
-                          on: "media_gallery_items",
-                          columns: ["attachmentId"])
-
-            // Creating gallery records here can crash since it's run in the middle of schema migrations.
-            // It instead has been moved to a separate Data Migration.
-            // see: "dataMigration_populateGalleryItems"
-            // try createInitialGalleryRecords(transaction: GRDBWriteTransaction(database: db))
         }
 
         migrator.registerMigration(MigrationId.createReaction.rawValue) { db in
-            try db.create(table: "model_OWSReaction") { table in
-                table.autoIncrementedPrimaryKey("id")
-                    .notNull()
-                table.column("recordType", .integer)
-                    .notNull()
-                table.column("uniqueId", .text)
-                    .notNull()
-                    .unique(onConflict: .fail)
-                table.column("emoji", .text)
-                    .notNull()
-                table.column("reactorE164", .text)
-                table.column("reactorUUID", .text)
-                table.column("receivedAtTimestamp", .integer)
-                    .notNull()
-                table.column("sentAtTimestamp", .integer)
-                    .notNull()
-                table.column("uniqueMessageId", .text)
-                    .notNull()
+            do {
+                try db.create(table: "model_OWSReaction") { table in
+                    table.autoIncrementedPrimaryKey("id")
+                        .notNull()
+                    table.column("recordType", .integer)
+                        .notNull()
+                    table.column("uniqueId", .text)
+                        .notNull()
+                        .unique(onConflict: .fail)
+                    table.column("emoji", .text)
+                        .notNull()
+                    table.column("reactorE164", .text)
+                    table.column("reactorUUID", .text)
+                    table.column("receivedAtTimestamp", .integer)
+                        .notNull()
+                    table.column("sentAtTimestamp", .integer)
+                        .notNull()
+                    table.column("uniqueMessageId", .text)
+                        .notNull()
+                }
+                try db.create(index: "index_model_OWSReaction_on_uniqueId",
+                              on: "model_OWSReaction",
+                              columns: ["uniqueId"])
+                try db.create(index: "index_model_OWSReaction_on_uniqueMessageId_and_reactorE164",
+                              on: "model_OWSReaction",
+                              columns: ["uniqueMessageId", "reactorE164"])
+                try db.create(index: "index_model_OWSReaction_on_uniqueMessageId_and_reactorUUID",
+                              on: "model_OWSReaction",
+                              columns: ["uniqueMessageId", "reactorUUID"])
+            } catch {
+                owsFail("Error: \(error)")
             }
-            try db.create(index: "index_model_OWSReaction_on_uniqueId",
-                          on: "model_OWSReaction",
-                          columns: ["uniqueId"])
-            try db.create(index: "index_model_OWSReaction_on_uniqueMessageId_and_reactorE164",
-                          on: "model_OWSReaction",
-                          columns: ["uniqueMessageId", "reactorE164"])
-            try db.create(index: "index_model_OWSReaction_on_uniqueMessageId_and_reactorUUID",
-                          on: "model_OWSReaction",
-                          columns: ["uniqueMessageId", "reactorUUID"])
         }
 
         migrator.registerMigration(MigrationId.dedupeSignalRecipients.rawValue) { db in
-            try autoreleasepool {
-                try dedupeSignalRecipients(transaction: GRDBWriteTransaction(database: db).asAnyWrite)
+            do {
+                try autoreleasepool {
+                    try dedupeSignalRecipients(transaction: GRDBWriteTransaction(database: db).asAnyWrite)
+                }
+
+                try db.drop(index: "index_signal_recipients_on_recipientPhoneNumber")
+                try db.drop(index: "index_signal_recipients_on_recipientUUID")
+
+                try db.create(index: "index_signal_recipients_on_recipientPhoneNumber",
+                              on: "model_SignalRecipient",
+                              columns: ["recipientPhoneNumber"],
+                              unique: true)
+
+                try db.create(index: "index_signal_recipients_on_recipientUUID",
+                              on: "model_SignalRecipient",
+                              columns: ["recipientUUID"],
+                              unique: true)
+            } catch {
+                owsFail("Error: \(error)")
             }
-
-            try db.drop(index: "index_signal_recipients_on_recipientPhoneNumber")
-            try db.drop(index: "index_signal_recipients_on_recipientUUID")
-
-            try db.create(index: "index_signal_recipients_on_recipientPhoneNumber",
-                          on: "model_SignalRecipient",
-                          columns: ["recipientPhoneNumber"],
-                          unique: true)
-
-            try db.create(index: "index_signal_recipients_on_recipientUUID",
-                          on: "model_SignalRecipient",
-                          columns: ["recipientUUID"],
-                          unique: true)
         }
 
         // Creating gallery records here can crash since it's run in the middle of schema migrations.
@@ -280,225 +308,305 @@ public class GRDBSchemaMigrator: NSObject {
         // }
 
         migrator.registerMigration(MigrationId.unreadThreadInteractions.rawValue) { db in
-            try db.create(index: "index_interactions_on_threadId_read_and_id",
-                          on: "model_TSInteraction",
-                          columns: ["uniqueThreadId", "read", "id"],
-                          unique: true)
+            do {
+                try db.create(index: "index_interactions_on_threadId_read_and_id",
+                              on: "model_TSInteraction",
+                              columns: ["uniqueThreadId", "read", "id"],
+                              unique: true)
+            } catch {
+                owsFail("Error: \(error)")
+            }
         }
 
         migrator.registerMigration(MigrationId.createFamilyName.rawValue) { db in
-            try db.alter(table: "model_OWSUserProfile", body: { alteration in
-                alteration.add(column: "familyName", .text)
-            })
+            do {
+                try db.alter(table: "model_OWSUserProfile", body: { alteration in
+                    alteration.add(column: "familyName", .text)
+                })
+            } catch {
+                owsFail("Error: \(error)")
+            }
         }
 
         migrator.registerMigration(MigrationId.createIndexableFTSTable.rawValue) { db in
-            try Bench(title: MigrationId.createIndexableFTSTable.rawValue, logInProduction: true) {
-                try db.create(table: "indexable_text") { table in
-                    table.autoIncrementedPrimaryKey("id")
-                        .notNull()
-                    table.column("collection", .text)
-                        .notNull()
-                    table.column("uniqueId", .text)
-                        .notNull()
-                    table.column("ftsIndexableContent", .text)
-                        .notNull()
+            do {
+                try Bench(title: MigrationId.createIndexableFTSTable.rawValue, logInProduction: true) {
+                    try db.create(table: "indexable_text") { table in
+                        table.autoIncrementedPrimaryKey("id")
+                            .notNull()
+                        table.column("collection", .text)
+                            .notNull()
+                        table.column("uniqueId", .text)
+                            .notNull()
+                        table.column("ftsIndexableContent", .text)
+                            .notNull()
+                    }
+
+                    try db.create(index: "index_indexable_text_on_collection_and_uniqueId",
+                                  on: "indexable_text",
+                                  columns: ["collection", "uniqueId"],
+                                  unique: true)
+
+                    try db.create(virtualTable: "indexable_text_fts", using: FTS5()) { table in
+                        // We could use FTS5TokenizerDescriptor.porter(wrapping: FTS5TokenizerDescriptor.unicode61())
+                        //
+                        // Porter does stemming (e.g. "hunting" will match "hunter").
+                        // unicode61 will remove diacritics (e.g. "senor" will match "señor").
+                        //
+                        // GRDB TODO: Should we do stemming?
+                        let tokenizer = FTS5TokenizerDescriptor.unicode61()
+                        table.tokenizer = tokenizer
+
+                        table.synchronize(withTable: "indexable_text")
+
+                        // I thought leveraging the prefix-index feature would speed up as-you-type
+                        // searching, but my measurements showed no substantive change.
+                        // table.prefixes = [2, 4]
+
+                        table.column("ftsIndexableContent")
+                    }
+
+                    // Copy over existing indexable content so we don't have to regenerate content from every indexed object.
+                    try db.execute(sql: "INSERT INTO indexable_text (collection, uniqueId, ftsIndexableContent) SELECT collection, uniqueId, ftsIndexableContent FROM signal_grdb_fts")
+                    try db.drop(table: "signal_grdb_fts")
                 }
-
-                try db.create(index: "index_indexable_text_on_collection_and_uniqueId",
-                              on: "indexable_text",
-                              columns: ["collection", "uniqueId"],
-                              unique: true)
-
-                try db.create(virtualTable: "indexable_text_fts", using: FTS5()) { table in
-                    // We could use FTS5TokenizerDescriptor.porter(wrapping: FTS5TokenizerDescriptor.unicode61())
-                    //
-                    // Porter does stemming (e.g. "hunting" will match "hunter").
-                    // unicode61 will remove diacritics (e.g. "senor" will match "señor").
-                    //
-                    // GRDB TODO: Should we do stemming?
-                    let tokenizer = FTS5TokenizerDescriptor.unicode61()
-                    table.tokenizer = tokenizer
-
-                    table.synchronize(withTable: "indexable_text")
-
-                    // I thought leveraging the prefix-index feature would speed up as-you-type
-                    // searching, but my measurements showed no substantive change.
-                    // table.prefixes = [2, 4]
-
-                    table.column("ftsIndexableContent")
-                }
-
-                // Copy over existing indexable content so we don't have to regenerate content from every indexed object.
-                try db.execute(sql: "INSERT INTO indexable_text (collection, uniqueId, ftsIndexableContent) SELECT collection, uniqueId, ftsIndexableContent FROM signal_grdb_fts")
-                try db.drop(table: "signal_grdb_fts")
+            } catch {
+                owsFail("Error: \(error)")
             }
         }
 
         migrator.registerMigration(MigrationId.dropContactQuery.rawValue) { db in
-            try db.drop(table: "model_OWSContactQuery")
+            do {
+                try db.drop(table: "model_OWSContactQuery")
+            } catch {
+                owsFail("Error: \(error)")
+            }
         }
 
         migrator.registerMigration(MigrationId.indexFailedJob.rawValue) { db in
-            // index this query:
-            //      SELECT \(interactionColumn: .uniqueId)
-            //      FROM \(InteractionRecord.databaseTableName)
-            //      WHERE \(interactionColumn: .storedMessageState) = ?
-            try db.create(index: "index_interaction_on_storedMessageState",
-                          on: "model_TSInteraction",
-                          columns: ["storedMessageState"])
+            do {
+                // index this query:
+                //      SELECT \(interactionColumn: .uniqueId)
+                //      FROM \(InteractionRecord.databaseTableName)
+                //      WHERE \(interactionColumn: .storedMessageState) = ?
+                try db.create(index: "index_interaction_on_storedMessageState",
+                              on: "model_TSInteraction",
+                              columns: ["storedMessageState"])
 
-            // index this query:
-            //      SELECT \(interactionColumn: .uniqueId)
-            //      FROM \(InteractionRecord.databaseTableName)
-            //      WHERE \(interactionColumn: .recordType) = ?
-            //      AND (
-            //          \(interactionColumn: .callType) = ?
-            //          OR \(interactionColumn: .callType) = ?
-            //      )
-            try db.create(index: "index_interaction_on_recordType_and_callType",
-                          on: "model_TSInteraction",
-                          columns: ["recordType", "callType"])
+                // index this query:
+                //      SELECT \(interactionColumn: .uniqueId)
+                //      FROM \(InteractionRecord.databaseTableName)
+                //      WHERE \(interactionColumn: .recordType) = ?
+                //      AND (
+                //          \(interactionColumn: .callType) = ?
+                //          OR \(interactionColumn: .callType) = ?
+                //      )
+                try db.create(index: "index_interaction_on_recordType_and_callType",
+                              on: "model_TSInteraction",
+                              columns: ["recordType", "callType"])
+            } catch {
+                owsFail("Error: \(error)")
+            }
         }
 
         migrator.registerMigration(MigrationId.groupsV2MessageJobs.rawValue) { db in
-            try db.create(table: "model_IncomingGroupsV2MessageJob") { table in
-                table.autoIncrementedPrimaryKey("id")
-                    .notNull()
-                table.column("recordType", .integer)
-                    .notNull()
-                table.column("uniqueId", .text)
-                    .notNull()
-                    .unique(onConflict: .fail)
-                table.column("createdAt", .double)
-                    .notNull()
-                table.column("envelopeData", .blob)
-                    .notNull()
-                table.column("plaintextData", .blob)
-                table.column("wasReceivedByUD", .integer)
-                    .notNull()
+            do {
+                try db.create(table: "model_IncomingGroupsV2MessageJob") { table in
+                    table.autoIncrementedPrimaryKey("id")
+                        .notNull()
+                    table.column("recordType", .integer)
+                        .notNull()
+                    table.column("uniqueId", .text)
+                        .notNull()
+                        .unique(onConflict: .fail)
+                    table.column("createdAt", .double)
+                        .notNull()
+                    table.column("envelopeData", .blob)
+                        .notNull()
+                    table.column("plaintextData", .blob)
+                    table.column("wasReceivedByUD", .integer)
+                        .notNull()
+                }
+                try db.create(index: "index_model_IncomingGroupsV2MessageJob_on_uniqueId", on: "model_IncomingGroupsV2MessageJob", columns: ["uniqueId"])
+            } catch {
+                owsFail("Error: \(error)")
             }
-            try db.create(index: "index_model_IncomingGroupsV2MessageJob_on_uniqueId", on: "model_IncomingGroupsV2MessageJob", columns: ["uniqueId"])
         }
 
         migrator.registerMigration(MigrationId.addUserInfoToInteractions.rawValue) { db in
-            try db.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
-                table.add(column: "infoMessageUserInfo", .blob)
+            do {
+                try db.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
+                    table.add(column: "infoMessageUserInfo", .blob)
+                }
+            } catch {
+                owsFail("Error: \(error)")
             }
         }
 
         migrator.registerMigration(MigrationId.recreateExperienceUpgradeWithNewColumns.rawValue) { db in
-            // It's safe to just throw away old experience upgrade data since
-            // there are no campaigns actively running that we need to preserve
-            try db.drop(table: "model_ExperienceUpgrade")
-            try db.create(table: "model_ExperienceUpgrade", body: { table in
-                table.autoIncrementedPrimaryKey("id")
-                    .notNull()
-                table.column("recordType", .integer)
-                    .notNull()
-                table.column("uniqueId", .text)
-                    .notNull()
-                    .unique(onConflict: .fail)
-                table.column("firstViewedTimestamp", .double)
-                    .notNull()
-                table.column("lastSnoozedTimestamp", .double)
-                    .notNull()
-                table.column("isComplete", .boolean)
-                    .notNull()
-            })
+            do {
+                // It's safe to just throw away old experience upgrade data since
+                // there are no campaigns actively running that we need to preserve
+                try db.drop(table: "model_ExperienceUpgrade")
+                try db.create(table: "model_ExperienceUpgrade", body: { table in
+                    table.autoIncrementedPrimaryKey("id")
+                        .notNull()
+                    table.column("recordType", .integer)
+                        .notNull()
+                    table.column("uniqueId", .text)
+                        .notNull()
+                        .unique(onConflict: .fail)
+                    table.column("firstViewedTimestamp", .double)
+                        .notNull()
+                    table.column("lastSnoozedTimestamp", .double)
+                        .notNull()
+                    table.column("isComplete", .boolean)
+                        .notNull()
+                })
+            } catch {
+                owsFail("Error: \(error)")
+            }
         }
 
         migrator.registerMigration(MigrationId.recreateExperienceUpgradeIndex.rawValue) { db in
-            try db.create(index: "index_model_ExperienceUpgrade_on_uniqueId", on: "model_ExperienceUpgrade", columns: ["uniqueId"])
+            do {
+                try db.create(index: "index_model_ExperienceUpgrade_on_uniqueId", on: "model_ExperienceUpgrade", columns: ["uniqueId"])
+            } catch {
+                owsFail("Error: \(error)")
+            }
         }
 
         migrator.registerMigration(MigrationId.indexInfoMessageOnType_v2.rawValue) { db in
-            // cleanup typo in index name that was released to a small number of internal testflight users
-            try db.execute(sql: "DROP INDEX IF EXISTS index_model_TSInteraction_on_threadUniqueId_recordType_messagType")
+            do {
+                // cleanup typo in index name that was released to a small number of internal testflight users
+                try db.execute(sql: "DROP INDEX IF EXISTS index_model_TSInteraction_on_threadUniqueId_recordType_messagType")
 
-            try db.create(index: "index_model_TSInteraction_on_threadUniqueId_recordType_messageType",
-                          on: "model_TSInteraction",
-                          columns: ["threadUniqueId", "recordType", "messageType"])
+                try db.create(index: "index_model_TSInteraction_on_threadUniqueId_recordType_messageType",
+                              on: "model_TSInteraction",
+                              columns: ["threadUniqueId", "recordType", "messageType"])
+            } catch {
+                owsFail("Error: \(error)")
+            }
         }
 
         migrator.registerMigration(MigrationId.createPendingReadReceipts.rawValue) { db in
-            try db.create(table: "pending_read_receipts") { table in
-                table.autoIncrementedPrimaryKey("id")
-                table.column("threadId", .integer).notNull()
-                table.column("messageTimestamp", .integer).notNull()
-                table.column("authorPhoneNumber", .text)
-                table.column("authorUuid", .text)
+            do {
+                try db.create(table: "pending_read_receipts") { table in
+                    table.autoIncrementedPrimaryKey("id")
+                    table.column("threadId", .integer).notNull()
+                    table.column("messageTimestamp", .integer).notNull()
+                    table.column("authorPhoneNumber", .text)
+                    table.column("authorUuid", .text)
+                }
+                try db.create(index: "index_pending_read_receipts_on_threadId",
+                              on: "pending_read_receipts",
+                              columns: ["threadId"])
+            } catch {
+                owsFail("Error: \(error)")
             }
-            try db.create(index: "index_pending_read_receipts_on_threadId",
-                          on: "pending_read_receipts",
-                          columns: ["threadId"])
         }
 
         migrator.registerMigration(MigrationId.createInteractionAttachmentIdsIndex.rawValue) { db in
-            try db.create(index: "index_model_TSInteraction_on_threadUniqueId_and_attachmentIds",
-                          on: "model_TSInteraction",
-                          columns: ["threadUniqueId", "attachmentIds"])
+            do {
+                try db.create(index: "index_model_TSInteraction_on_threadUniqueId_and_attachmentIds",
+                              on: "model_TSInteraction",
+                              columns: ["threadUniqueId", "attachmentIds"])
+            } catch {
+                owsFail("Error: \(error)")
+            }
         }
 
         migrator.registerMigration(MigrationId.addIsUuidCapableToUserProfiles.rawValue) { db in
-            try db.alter(table: "model_OWSUserProfile") { (table: TableAlteration) -> Void in
-                table.add(column: "isUuidCapable", .boolean).notNull().defaults(to: false)
+            do {
+                try db.alter(table: "model_OWSUserProfile") { (table: TableAlteration) -> Void in
+                    table.add(column: "isUuidCapable", .boolean).notNull().defaults(to: false)
+                }
+            } catch {
+                owsFail("Error: \(error)")
             }
         }
 
         migrator.registerMigration(MigrationId.uploadTimestamp.rawValue) { db in
-            try db.alter(table: "model_TSAttachment") { (table: TableAlteration) -> Void in
-                table.add(column: "uploadTimestamp", .integer).notNull().defaults(to: 0)
+            do {
+                try db.alter(table: "model_TSAttachment") { (table: TableAlteration) -> Void in
+                    table.add(column: "uploadTimestamp", .integer).notNull().defaults(to: 0)
+                }
+            } catch {
+                owsFail("Error: \(error)")
             }
         }
 
         migrator.registerMigration(MigrationId.addRemoteDeleteToInteractions.rawValue) { db in
-            try db.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
-                table.add(column: "wasRemotelyDeleted", .boolean)
+            do {
+                try db.alter(table: "model_TSInteraction") { (table: TableAlteration) -> Void in
+                    table.add(column: "wasRemotelyDeleted", .boolean)
+                }
+            } catch {
+                owsFail("Error: \(error)")
             }
         }
 
         migrator.registerMigration(MigrationId.cdnKeyAndCdnNumber.rawValue) { db in
-            try db.alter(table: "model_TSAttachment") { (table: TableAlteration) -> Void in
-                table.add(column: "cdnKey", .text).notNull().defaults(to: "")
-                table.add(column: "cdnNumber", .integer).notNull().defaults(to: 0)
+            do {
+                try db.alter(table: "model_TSAttachment") { (table: TableAlteration) -> Void in
+                    table.add(column: "cdnKey", .text).notNull().defaults(to: "")
+                    table.add(column: "cdnNumber", .integer).notNull().defaults(to: 0)
+                }
+            } catch {
+                owsFail("Error: \(error)")
             }
         }
 
         migrator.registerMigration(MigrationId.addGroupIdToGroupsV2IncomingMessageJobs.rawValue) { db in
-            try db.alter(table: "model_IncomingGroupsV2MessageJob") { (table: TableAlteration) -> Void in
-                table.add(column: "groupId", .blob)
+            do {
+                try db.alter(table: "model_IncomingGroupsV2MessageJob") { (table: TableAlteration) -> Void in
+                    table.add(column: "groupId", .blob)
+                }
+                try db.create(index: "index_model_IncomingGroupsV2MessageJob_on_groupId_and_id",
+                              on: "model_IncomingGroupsV2MessageJob",
+                              columns: ["groupId", "id"])
+            } catch {
+                owsFail("Error: \(error)")
             }
-            try db.create(index: "index_model_IncomingGroupsV2MessageJob_on_groupId_and_id",
-                          on: "model_IncomingGroupsV2MessageJob",
-                          columns: ["groupId", "id"])
         }
 
         migrator.registerMigration(MigrationId.removeEarlyReceiptTables.rawValue) { db in
-            try db.drop(table: "model_TSRecipientReadReceipt")
-            try db.drop(table: "model_OWSLinkedDeviceReadReceipt")
+            do {
+                try db.drop(table: "model_TSRecipientReadReceipt")
+                try db.drop(table: "model_OWSLinkedDeviceReadReceipt")
 
-            let transaction = GRDBWriteTransaction(database: db).asAnyWrite
-            let viewOnceStore = SDSKeyValueStore(collection: "viewOnceMessages")
-            viewOnceStore.removeAll(transaction: transaction)
+                let transaction = GRDBWriteTransaction(database: db).asAnyWrite
+                let viewOnceStore = SDSKeyValueStore(collection: "viewOnceMessages")
+                viewOnceStore.removeAll(transaction: transaction)
+            } catch {
+                owsFail("Error: \(error)")
+            }
         }
 
         migrator.registerMigration(MigrationId.addReadToReactions.rawValue) { db in
-            try db.alter(table: "model_OWSReaction") { (table: TableAlteration) -> Void in
-                table.add(column: "read", .boolean).notNull().defaults(to: false)
+            do {
+                try db.alter(table: "model_OWSReaction") { (table: TableAlteration) -> Void in
+                    table.add(column: "read", .boolean).notNull().defaults(to: false)
+                }
+
+                try db.create(index: "index_model_OWSReaction_on_uniqueMessageId_and_read",
+                              on: "model_OWSReaction",
+                              columns: ["uniqueMessageId", "read"])
+
+                // Mark existing reactions as read
+                try db.execute(sql: "UPDATE model_OWSReaction SET read = 1")
+            } catch {
+                owsFail("Error: \(error)")
             }
-
-            try db.create(index: "index_model_OWSReaction_on_uniqueMessageId_and_read",
-                          on: "model_OWSReaction",
-                          columns: ["uniqueMessageId", "read"])
-
-            // Mark existing reactions as read
-            try db.execute(sql: "UPDATE model_OWSReaction SET read = 1")
         }
 
         migrator.registerMigration(MigrationId.addIsMarkedUnreadToThreads.rawValue) { db in
-            try db.alter(table: "model_TSThread") { (table: TableAlteration) -> Void in
-                table.add(column: "isMarkedUnread", .boolean).notNull().defaults(to: false)
+            do {
+                try db.alter(table: "model_TSThread") { (table: TableAlteration) -> Void in
+                    table.add(column: "isMarkedUnread", .boolean).notNull().defaults(to: false)
+                }
+            } catch {
+                owsFail("Error: \(error)")
             }
         }
 
@@ -506,8 +614,16 @@ public class GRDBSchemaMigrator: NSObject {
     }
 
     func registerDataMigrations(migrator: inout DatabaseMigrator) {
+
+        // The migration blocks should never throw. If we introduce a crashing
+        // migration, we want the crash logs reflect where it occurred.
+
         migrator.registerMigration(MigrationId.dataMigration_populateGalleryItems.rawValue) { db in
-            try createInitialGalleryRecords(transaction: GRDBWriteTransaction(database: db))
+            do {
+                try createInitialGalleryRecords(transaction: GRDBWriteTransaction(database: db))
+            } catch {
+                owsFail("Error: \(error)")
+            }
         }
 
         migrator.registerMigration(MigrationId.dataMigration_markOnboardedUsers_v2.rawValue) { db in
@@ -534,7 +650,11 @@ public class GRDBSchemaMigrator: NSObject {
         }
 
         migrator.registerMigration(MigrationId.dataMigration_markAllInteractionsAsNotDeleted.rawValue) { db in
-            try db.execute(sql: "UPDATE model_TSInteraction SET wasRemotelyDeleted = 0")
+            do {
+                try db.execute(sql: "UPDATE model_TSInteraction SET wasRemotelyDeleted = 0")
+            } catch {
+                owsFail("Error: \(error)")
+            }
         }
     }
 }
@@ -985,7 +1105,7 @@ private func createV1Schema(db: Database) throws {
                   columns: [
                     InteractionRecord.columnName(.threadUniqueId),
                     InteractionRecord.columnName(.id)
-        ])
+    ])
 
     // Durable Job Queue
 
@@ -1006,20 +1126,20 @@ private func createV1Schema(db: Database) throws {
                   columns: [
                     InteractionRecord.columnName(.isViewOnceMessage),
                     InteractionRecord.columnName(.isViewOnceComplete)
-        ])
+    ])
     try db.create(index: "index_key_value_store_on_collection_and_key",
                   on: SDSKeyValueStore.table.tableName,
                   columns: [
                     SDSKeyValueStore.collectionColumn.columnName,
                     SDSKeyValueStore.keyColumn.columnName
-        ])
+    ])
     try db.create(index: "index_interactions_on_recordType_and_threadUniqueId_and_errorType",
                   on: InteractionRecord.databaseTableName,
                   columns: [
                     InteractionRecord.columnName(.recordType),
                     InteractionRecord.columnName(.threadUniqueId),
                     InteractionRecord.columnName(.errorType)
-        ])
+    ])
 
     // Media Gallery Indices
     try db.create(index: "index_attachments_on_albumMessageId",
@@ -1032,7 +1152,7 @@ private func createV1Schema(db: Database) throws {
                   columns: [
                     InteractionRecord.columnName(.threadUniqueId),
                     InteractionRecord.columnName(.uniqueId)
-        ])
+    ])
 
     // Signal Account Indices
     try db.create(
@@ -1109,7 +1229,7 @@ private func createV1Schema(db: Database) throws {
                     InteractionRecord.columnName(.timestamp),
                     InteractionRecord.columnName(.sourceDeviceId),
                     InteractionRecord.columnName(.authorUUID)
-        ])
+    ])
 
     try db.create(index: "index_interactions_on_timestamp_sourceDeviceId_and_authorPhoneNumber",
                   on: InteractionRecord.databaseTableName,
@@ -1117,14 +1237,14 @@ private func createV1Schema(db: Database) throws {
                     InteractionRecord.columnName(.timestamp),
                     InteractionRecord.columnName(.sourceDeviceId),
                     InteractionRecord.columnName(.authorPhoneNumber)
-        ])
+    ])
     try db.create(index: "index_interactions_unread_counts",
                   on: InteractionRecord.databaseTableName,
                   columns: [
                     InteractionRecord.columnName(.read),
                     InteractionRecord.columnName(.threadUniqueId),
                     InteractionRecord.columnName(.recordType)
-        ])
+    ])
 
     // Disappearing Messages
     try db.create(index: "index_interactions_on_expiresInSeconds_and_expiresAt",
@@ -1132,7 +1252,7 @@ private func createV1Schema(db: Database) throws {
                   columns: [
                     InteractionRecord.columnName(.expiresAt),
                     InteractionRecord.columnName(.expiresInSeconds)
-        ])
+    ])
     try db.create(index: "index_interactions_on_threadUniqueId_storedShouldStartExpireTimer_and_expiresAt",
                   on: InteractionRecord.databaseTableName,
                   columns: [
@@ -1140,7 +1260,7 @@ private func createV1Schema(db: Database) throws {
                     InteractionRecord.columnName(.expireStartedAt),
                     InteractionRecord.columnName(.storedShouldStartExpireTimer),
                     InteractionRecord.columnName(.threadUniqueId)
-        ])
+    ])
 
     // ContactQuery
     try db.create(index: "index_contact_queries_on_lastQueried",

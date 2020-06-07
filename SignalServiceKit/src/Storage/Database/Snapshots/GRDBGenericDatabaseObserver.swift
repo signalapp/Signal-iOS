@@ -33,48 +33,11 @@ public class GRDBGenericDatabaseObserver: NSObject {
         _snapshotDelegates = _snapshotDelegates.filter { $0.value != nil} + [Weak(value: snapshotDelegate)]
     }
 
-    private struct PendingChanges {
-        var collections: Set<String> = Set()
-        var tableNames: Set<String> = Set()
-        var interactionRowIds: Set<Int64> = Set()
-    }
+    fileprivate typealias RowId = Int64
+    fileprivate var pendingChanges = ObservedDatabaseChanges<RowId>(concurrencyMode: .uiDatabaseObserverSerialQueue)
+    fileprivate var committedChanges = ObservedDatabaseChanges<RowId>(concurrencyMode: .mainThread)
 
-    private var _pendingChanges = PendingChanges()
-    private var pendingChanges: PendingChanges {
-        get {
-            AssertIsOnUIDatabaseObserverSerialQueue()
-
-            return _pendingChanges
-        }
-        set {
-            AssertIsOnUIDatabaseObserverSerialQueue()
-
-            _pendingChanges = newValue
-        }
-    }
-
-    private struct CommittedChanges {
-        let collections: Set<String>
-        let interactionRowIds: Set<Int64>
-    }
-
-    private typealias CollectionName = String
-    private var _committedChanges: CommittedChanges?
-    private var committedChanges: CommittedChanges? {
-        get {
-            AssertIsOnMainThread()
-
-            return _committedChanges
-        }
-
-        set {
-            AssertIsOnMainThread()
-
-            _committedChanges = newValue
-        }
-    }
-
-    private lazy var tableNameToCollectionMap: [String: String] = {
+    private static var tableNameToCollectionMap: [String: String] = {
         var result = [String: String]()
         for table in GRDBDatabaseStorageAdapter.tables {
             result[table.tableName] = table.collection
@@ -83,24 +46,22 @@ public class GRDBGenericDatabaseObserver: NSObject {
         return result
     }()
 
-    private func committedChanges(forPendingChanges pendingChanges: PendingChanges, db: Database) throws -> CommittedChanges {
-        return CommittedChanges(collections: collections(forPendingChanges: pendingChanges, db: db),
-                                interactionRowIds: pendingChanges.interactionRowIds)
-    }
-
-    private func collections(forPendingChanges pendingChanges: PendingChanges, db: Database) -> Set<String> {
-        guard pendingChanges.tableNames.count > 0 else {
-            return pendingChanges.collections
+    private class func committedCollectionsForPendingChanges(pendingChanges: ObservedDatabaseChanges<RowId>,
+                                                             db: Database) -> Set<String> {
+        let tableNames = pendingChanges.tableNames
+        let collections = pendingChanges.collections
+        guard tableNames.count > 0 else {
+            return collections
         }
 
         // If necessary, convert GRDB table names to "collections".
-        var allCollections = pendingChanges.collections
-        for tableName in pendingChanges.tableNames {
+        var allCollections = collections
+        for tableName in tableNames {
             guard !tableName.hasPrefix(GRDBFullTextSearchFinder.contentTableName) else {
                 owsFailDebug("should not have been notified for changes to FTS tables")
                 continue
             }
-            guard let collection = self.tableNameToCollectionMap[tableName] else {
+            guard let collection = tableNameToCollectionMap[tableName] else {
                 owsFailDebug("Unknown table: \(tableName)")
                 continue
             }
@@ -109,15 +70,13 @@ public class GRDBGenericDatabaseObserver: NSObject {
         return allCollections
     }
 
-    private typealias RowId = Int64
-
     // internal - should only be called by DatabaseStorage
     func didTouchThread(transaction: GRDBWriteTransaction) {
         // Note: We don't actually use the `transaction` param, but touching must happen within
         // a write transaction in order for the touch machinery to notify it's observers
         // in the expected way.
         AssertIsOnUIDatabaseObserverSerialQueue()
-        pendingChanges.tableNames.insert(TSThread.table.tableName)
+        pendingChanges.append(tableName: TSThread.table.tableName)
     }
 
     // internal - should only be called by DatabaseStorage
@@ -128,8 +87,8 @@ public class GRDBGenericDatabaseObserver: NSObject {
         AssertIsOnUIDatabaseObserverSerialQueue()
         let rowId = RowId(interaction.sortId)
         assert(rowId > 0)
-        pendingChanges.interactionRowIds.insert(rowId)
-        pendingChanges.tableNames.insert(TSInteraction.table.tableName)
+        pendingChanges.append(interactionChange: rowId)
+        pendingChanges.append(tableName: TSInteraction.table.tableName)
     }
 }
 
@@ -142,35 +101,30 @@ extension GRDBGenericDatabaseObserver: DatabaseSnapshotDelegate {
     public func snapshotTransactionDidChange(with event: DatabaseEvent) {
         AssertIsOnUIDatabaseObserverSerialQueue()
 
-        _ = pendingChanges.tableNames.insert(event.tableName)
+        pendingChanges.append(tableName: event.tableName)
 
         if event.tableName == InteractionRecord.databaseTableName {
-            _ = pendingChanges.interactionRowIds.insert(event.rowID)
+            pendingChanges.append(interactionChange: event.rowID)
         }
     }
 
     public func snapshotTransactionDidCommit(db: Database) {
         AssertIsOnUIDatabaseObserverSerialQueue()
 
-        do {
-            let pendingChanges = self.pendingChanges
-            self.pendingChanges = PendingChanges()
+        let interactionChanges = pendingChanges.interactionChanges
+        let collections = Self.committedCollectionsForPendingChanges(pendingChanges: pendingChanges, db: db)
+        pendingChanges.reset()
 
-            let committedChanges = try self.committedChanges(forPendingChanges: pendingChanges, db: db)
-            DispatchQueue.main.async {
-                self.committedChanges = committedChanges
-            }
-        } catch {
-            DispatchQueue.main.async {
-                self.committedChanges = nil
-            }
+        DispatchQueue.main.async {
+            self.committedChanges.append(interactionChanges: interactionChanges)
+            self.committedChanges.append(collections: collections)
         }
     }
 
     public func snapshotTransactionDidRollback(db: Database) {
         owsFailDebug("test this if we ever use it")
         AssertIsOnUIDatabaseObserverSerialQueue()
-        pendingChanges = PendingChanges()
+        pendingChanges.reset()
     }
 
     // MARK: - Snapshot LifeCycle (Post Commit)
@@ -186,21 +140,25 @@ extension GRDBGenericDatabaseObserver: DatabaseSnapshotDelegate {
     public func databaseSnapshotDidUpdate() {
         AssertIsOnMainThread()
 
-        do {
-            guard let committedChanges = self.committedChanges else {
-                throw OWSAssertionError("committedChanges was unexpectedly nil")
-            }
-            self.committedChanges = nil
+        defer {
+            committedChanges.reset()
+        }
 
-            for delegate in snapshotDelegates {
-                delegate.genericDatabaseSnapshotDidUpdate(updatedCollections: committedChanges.collections,
-                                                          updatedInteractionRowIds: committedChanges.interactionRowIds)
-            }
-        } catch {
+        // We don't yet use lastError in this snapshot, but we might eventually.
+        if let error = self.committedChanges.lastError {
             owsFailDebug("unknown error: \(error)")
             for delegate in snapshotDelegates {
                 delegate.genericDatabaseSnapshotDidReset()
             }
+            return
+        }
+
+        let collections = committedChanges.collections
+        let interactionChanges = committedChanges.interactionChanges
+
+        for delegate in snapshotDelegates {
+            delegate.genericDatabaseSnapshotDidUpdate(updatedCollections: collections,
+                                                      updatedInteractionRowIds: interactionChanges)
         }
     }
 

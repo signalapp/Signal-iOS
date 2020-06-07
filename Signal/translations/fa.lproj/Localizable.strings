@@ -1,8 +1,8 @@
 /* Button text to dismiss missing contacts permission alert */
-"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "الان نه";
+"AB_PERMISSION_MISSING_ACTION_NOT_NOW" = "حالا نه";
 
 /* Action sheet item */
-"ACCEPT_NEW_IDENTITY_ACTION" = "پذیرش کد امنیتی جدید";
+"ACCEPT_NEW_IDENTITY_ACTION" = "پذیرفتن کد امنیتی جدید";
 
 /* Accessibility label for attachment. */
 "ACCESSIBILITY_LABEL_ATTACHMENT" = "ضمیمه";
@@ -405,7 +405,7 @@
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "کاربری که مسدود شده است، امکان تماس یا ارسال پیام به شما را ندارد.";
 
 /* Tooltip highlighting the blur image editing tool. */
-"BLUR_TOOLTIP" = "New: Blur faces or draw anywhere to blur.";
+"BLUR_TOOLTIP" = "جدید: چهره‌ها را محو کنید یا روی هر ناحیه‌‌ای برای محو کردن ترسیم کنید.";
 
 /* browse files option from file sharing menu */
 "BROWSE_FILES_BUTTON" = "مرور";
@@ -764,17 +764,20 @@
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "انتخاب کنید چه کسی می تواند نام گروه، آواتار و تایمر پیام‌های ناپدید‌شونده را ویرایش کند.";
 
-/* Footer text for the 'block and leave' section of conversation settings view. */
+/* Footer text for the 'block and leave' section of contact conversation settings view. */
+"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "You will no longer receive messages or updates from this user.";
+
+/* Footer text for the 'block and leave' section of group conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER" = "شما دیگر از این گروه پیام یا به‌روزرسانی دریافت نخواهید کرد.";
 
 /* Label for 'block group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_GROUP" = "مسدود کردن گروه";
 
 /* table cell label in conversation settings */
-"CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "این گروه را مسدود کن";
+"CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "CONVERSATION_SETTINGS_BLOCK_THIS_GROUP";
 
 /* table cell label in conversation settings */
-"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "مسدود کردن کاربر";
+"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "CONVERSATION_SETTINGS_BLOCK_THIS_USER";
 
 /* Label for 'block user' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_USER" = "مسدود کردن کاربر";
@@ -807,13 +810,13 @@
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "فقط مدیرها";
 
 /* Description for the 'edit group membership access' alert. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "انتخاب کنید که چی کسی می تواند عضویت گروه را تغییر دهد:";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "انتخاب کنید که چی کسی می تواند اعضای گروه را ویرایش کند:";
 
 /* Label for button that sets 'group membership access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "همه اعضا";
 
 /* Navbar title when viewing settings for a group thread */
-"CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "اطلاعات گروه";
+"CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "CONVERSATION_SETTINGS_GROUP_INFO_TITLE";
 
 /* Label for 'make group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "تبدیل به مدیر";
@@ -1164,7 +1167,7 @@
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "برای ویرایش اطلاعات مخاطبین، Signal نیاز به دسترسی به مخاطبین دارد";
 
 /* table cell label in conversation settings */
-"EDIT_GROUP_ACTION" = "وایرایش گروه";
+"EDIT_GROUP_ACTION" = "EDIT_GROUP_ACTION";
 
 /* The 'clear avatar' button in the 'edit group' view. */
 "EDIT_GROUP_CLEAR_AVATAR" = "حذف عکس پروفایل";
@@ -1186,9 +1189,6 @@
 
 /* Label for the group name in the 'edit group' view. */
 "EDIT_GROUP_GROUP_NAME" = "نام گروه";
-
-/* An indicator that a user is a new member of the group. */
-"EDIT_GROUP_NEW_MEMBER_LABEL" = "اضافه شده";
 
 /* The title for the 'update group' button. */
 "EDIT_GROUP_UPDATE_BUTTON" = "به‌روزرسانی";
@@ -1212,13 +1212,13 @@
 "EMOJI_CATEGORY_ACTIVITIES_NAME" = "فعالیت‌ها";
 
 /* The name for the emoji category 'Animals & Nature' */
-"EMOJI_CATEGORY_ANIMALS_NAME" = "Animals & Nature";
+"EMOJI_CATEGORY_ANIMALS_NAME" = "حیوانات و طبیعت";
 
 /* The name for the emoji category 'Flags' */
 "EMOJI_CATEGORY_FLAGS_NAME" = "پرچم‌ها";
 
 /* The name for the emoji category 'Food & Drink' */
-"EMOJI_CATEGORY_FOOD_NAME" = "Food & Drink";
+"EMOJI_CATEGORY_FOOD_NAME" = "غذا و نوشیدنی";
 
 /* The name for the emoji category 'Objects' */
 "EMOJI_CATEGORY_OBJECTS_NAME" = "اشیا";
@@ -1227,13 +1227,13 @@
 "EMOJI_CATEGORY_RECENTS_NAME" = "تماس‌های اخیر";
 
 /* The name for the emoji category 'Smileys & People' */
-"EMOJI_CATEGORY_SMILEYSANDPEOPLE_NAME" = "Smileys & People";
+"EMOJI_CATEGORY_SMILEYSANDPEOPLE_NAME" = "لبخندها و آدم‌ها";
 
 /* The name for the emoji category 'Symbols' */
 "EMOJI_CATEGORY_SYMBOLS_NAME" = "نمادها";
 
 /* The name for the emoji category 'Travel & Places' */
-"EMOJI_CATEGORY_TRAVEL_NAME" = "Travel & Places";
+"EMOJI_CATEGORY_TRAVEL_NAME" = "سفر و مکان‌ها";
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE1" = "هیچ کدام از مخاطبین شما Signal را نصب نکرده‌اند.";
@@ -1455,10 +1455,10 @@
 "GRDB_MIGRATION_NOTIFICATION_TITLE" = "در حال بهینه‌سازی پایگاه داده";
 
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "شما دسترسی ویرایش اطلاعات گروه را به \"%@\" تغییر دادید.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "شما دسترسی ویرایش اطلاعات گروه را به «%@» انتقال دادید.";
 
 /* Message indicating that the access to the group's attributes was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ دسترسی ویرایش اطلاعات گروه را به \"%2$@\" تغییر داد.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ قابلیت ویرایش اطلاعات گروه را به «%2$@» انتقال داد.";
 
 /* Message indicating that the access to the group's attributes was changed. Embeds {{new access level}}. */
 "GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "اطلاعات گروه می تواند توسط \"%@\" تغییر داده شود.";
@@ -1476,16 +1476,13 @@
 "GROUP_ACCESS_LEVEL_UNKNOWN" = "ناشناخته";
 
 /* Message indicating that the access to the group's members was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "شما دسترسی ویرایش عضویت گروه را به \"%@\" تغییر دادید.";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "شما قابلیت ویرایش اعضای گروه را به «%@» تغییر دادید.";
 
 /* Message indicating that the access to the group's members was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ دسترسی ویرایش عضویت گروه را به \"%2$@\" تغییر داد.";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ قابلیت ویرایش عضویت گروه را به «%2$@» تغییر داد.";
 
 /* Message indicating that the access to the group's members was changed. Embeds {{new access level}}. */
 "GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "عضویت گروه می تواند توسط \"%@\" تغییر کند.";
-
-/* Error indicating that a member cannot be added to a group. */
-"GROUP_CANNOT_ADD_INVALID_MEMBER" = "این کاربر نمی تواند عضو گروه شود.";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "شما گروه رو خلق کردی";
@@ -1560,7 +1557,7 @@
 "GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@امتیازات مدیریتی شما را لغو کرده است.";
 
 /* Conversation settings table section title */
-"GROUP_MANAGEMENT_SECTION" = "مدیریت گروه";
+"GROUP_MANAGEMENT_SECTION" = "GROUP_MANAGEMENT_SECTION";
 
 /* Label indicating that a group member is an admin. */
 "GROUP_MEMBER_ADMIN_INDICATOR" = "مدیر";
@@ -1586,17 +1583,8 @@
 /* Label indicating that a group has no other members. */
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "بدون عضو.";
 
-/* Label for the button that clears all verification errors in the 'group members' view. */
-"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "پاک کردن تائید برای همه";
-
-/* Label for the 'reset all no-longer-verified group members' confirmation alert. */
-"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE" = "این باعث می شود تا تایید تمام اعضای گروه که کد امنیتی آن ها از آخرین باری که تایید شده بودند از بین برود.";
-
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "اعضا";
-
-/* Title for the 'no longer verified' section of the 'group members' view. */
-"GROUP_MEMBERS_SECTION_TITLE_NO_LONGER_VERIFIED" = "دیگر علامت تائید ندارند.";
 
 /* Button label for the 'send message to group member' button */
 "GROUP_MEMBERS_SEND_MESSAGE" = "پیام";
@@ -1806,13 +1794,13 @@
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* The image editor hint that you can draw blur */
-"IMAGE_EDITOR_BLUR_HINT" = "هرجایی را برای محو کردن لمس کنید";
+"IMAGE_EDITOR_BLUR_HINT" = "برای محو کردن روی هر ناحیه‌ای ترسیم کنید";
 
 /* The image editor setting to blur faces */
 "IMAGE_EDITOR_BLUR_SETTING" = "محو کردن چهره‌ها";
 
 /* A toast indicating that you can blur more faces after detection */
-"IMAGE_EDITOR_BLUR_TOAST" = "برای محو کردن چهره‌ها و قسمت‌های دیگر لمس کنید";
+"IMAGE_EDITOR_BLUR_TOAST" = "برای محو کردن روی چهره‌ها و نواحی دیگر ترسیم کنید";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "شما نمی توانید بیشتر از %@ آیتم را به اشتراک بگذارید.";
@@ -2001,7 +1989,7 @@
 "LINKING_DEVICE_FAILED_TITLE" = "خطا در اتصال دستگاه جدید";
 
 /* table cell label in conversation settings */
-"LIST_GROUP_MEMBERS_ACTION" = "اعضای گروه";
+"LIST_GROUP_MEMBERS_ACTION" = "LIST_GROUP_MEMBERS_ACTION";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "جستجو بر اساس نام یا آدرس";
@@ -2052,13 +2040,13 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "برای همه پاک شود";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "This message will be permanently deleted for everyone in the conversation. Members will be able to see that you deleted a message.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "این پیام به طور دائم برای همه در این مکالمه حذف خواهد شد. اعضا قادر خواهند بود تا ببینند که شما پیامی را حذف کرده‌آید.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
-"MESSAGE_ACTION_DELETE_FOR_TITLE" = "Who would you like to delete this message for?";
+"MESSAGE_ACTION_DELETE_FOR_TITLE" = "این پیام را می‌خواهید برای چه کسانی حذف کنید؟";
 
 /* The title for the action that deletes a message for the local user only. */
-"MESSAGE_ACTION_DELETE_FOR_YOU" = "Delete for Me";
+"MESSAGE_ACTION_DELETE_FOR_YOU" = "حذف برای من";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DELETE_MESSAGE" = "حذف این پیام";
@@ -2321,9 +2309,6 @@
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "گروه جدید";
 
-/* Accessibility label for the new group button */
-"NEW_GROUP_BUTTON_LABEL" = "گروه جدید";
-
 /* The title for the 'create group' button. */
 "NEW_GROUP_CREATE_BUTTON" = "ساخت";
 
@@ -2342,17 +2327,11 @@
 /* Used in place of the group name when a group has not yet been named. */
 "NEW_GROUP_DEFAULT_TITLE" = "گروه جدید";
 
-/* An indicator that a user is a member of the new group. */
-"NEW_GROUP_MEMBER_LABEL" = "عضو";
-
 /* notification title. Embeds {{author name}} and {{group name}} */
 "NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ به %@";
 
 /* The title for the 'name new group' view. */
 "NEW_GROUP_NAME_GROUP_VIEW_TITLE" = "نام گروه";
-
-/* Placeholder text for group name field */
-"NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "این گفتگوی گروهی را نام‌گذاری کنید";
 
 /* a title for the selected section of the 'recipient picker' view. */
 "NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "کاربران دیگر";
@@ -3711,7 +3690,7 @@
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "با فعال‌کردن این امکان، از نمایش پیش‌نمایش Signal هنگام جابجایی بین برنامه‌ها، جلوگیری کنید.";
 
 /* Label for the notifications section of conversation settings view. */
-"SETTINGS_SECTION_NOTIFICATIONS" = "نوتیفیکیشن ها";
+"SETTINGS_SECTION_NOTIFICATIONS" = "SETTINGS_SECTION_NOTIFICATIONS";
 
 /* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "صداها";
@@ -4008,7 +3987,7 @@
 "UNNAMED_DEVICE" = "دستگاه بدون نام";
 
 /* Pressing this button marks a thread as unread */
-"UNREAD_ACTION" = "Unread";
+"UNREAD_ACTION" = "خوانده نشده";
 
 /* No comment provided by engineer. */
 "UNREGISTER_SIGNAL_FAIL" = "خطا در حذف‌شدن از Signal.";
@@ -4018,12 +3997,6 @@
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_FEATURE_ERROR" = "دستگاه شما این قابلیت را پشتیبانی نمی‌کند.";
-
-/* Title for alert indicating that group members can't be removed. */
-"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "شما قادر به حذف اعضای گروه نیستید. یا خود اعضا باید گروه را ترک کنند و یا شما باید گروه جدیدی بدون اعضای مورد نظر بسازید.";
-
-/* Title for alert indicating that group members can't be removed. */
-"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "پشتیبانی نشده است";
 
 /* Error indicating that a group could not be updated. */
 "UPDATE_GROUP_FAILED" = "گروه قابل بروز رسانی نیست.";
@@ -4137,7 +4110,7 @@
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "نصب بر روی دسکتاپ را کامل کنید.";
 
 /* text indicating the message was remotely deleted by you */
-"YOU_DELETED_THIS_MESSAGE" = "You deleted this message.";
+"YOU_DELETED_THIS_MESSAGE" = "شما این پیام را حذف کردید.";
 
 /* Info Message when you disabled disappearing messages. */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "شما پیام‌های محوشونده را غیرفعال کردید.";

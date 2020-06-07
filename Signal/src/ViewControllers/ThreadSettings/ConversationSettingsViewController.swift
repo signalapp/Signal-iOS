@@ -7,6 +7,20 @@ import PromiseKit
 import UIKit
 import ContactsUI
 
+@objc
+public protocol ConversationSettingsViewDelegate: class {
+
+    func conversationColorWasUpdated()
+
+    func conversationSettingsDidUpdate()
+
+    func conversationSettingsDidRequestConversationSearch()
+
+    func popAllConversationSettingsViews(completion: (() -> Void)?)
+}
+
+// MARK: -
+
 // TODO: We should describe which state updates & when it is committed.
 @objc
 class ConversationSettingsViewController: OWSTableViewController {
@@ -48,7 +62,7 @@ class ConversationSettingsViewController: OWSTableViewController {
     // MARK: -
 
     @objc
-    public weak var conversationSettingsViewDelegate: OWSConversationSettingsViewDelegate?
+    public weak var conversationSettingsViewDelegate: ConversationSettingsViewDelegate?
 
     private let threadViewModel: ThreadViewModel
 

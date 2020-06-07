@@ -123,7 +123,7 @@ void AssertIsOnDisappearingMessagesQueue()
     OWSBackgroundTask *_Nullable backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
 
     __block NSUInteger expirationCount = 0;
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [self.disappearingMessagesFinder enumerateExpiredMessagesWithBlock:^(TSMessage *message) {
             // We want to compute `now` *after* our finder fetches results.
             // Otherwise, if we computed it before the finder, and a message had expired in the tiny
@@ -142,7 +142,7 @@ void AssertIsOnDisappearingMessagesQueue()
             expirationCount++;
         }
                                                                transaction:transaction];
-    }];
+    });
 
     OWSLogDebug(@"Removed %lu expired messages", (unsigned long)expirationCount);
 
@@ -215,9 +215,9 @@ void AssertIsOnDisappearingMessagesQueue()
         dispatch_async(OWSDisappearingMessagesJob.serialQueue, ^{
             // Theoretically this shouldn't be necessary, but there was a race condition when receiving a backlog
             // of messages across timer changes which could cause a disappearing message's timer to never be started.
-            [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
                 [self cleanupMessagesWhichFailedToStartExpiringWithTransaction:transaction];
-            }];
+            });
 
             [self runLoop];
         });

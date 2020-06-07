@@ -371,13 +371,15 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
         OWSAssertIsOnMainThread();
         // TODO - in line with QuotedReply and other message attachments, saving should happen as part of sending
         // preparation rather than duplicated here and in the SAE
-        [self.databaseStorage
-            asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        DatabaseStorageAsyncWriteWithCompletion(
+            SDSDatabaseStorage.shared,
+            ^(SDSAnyWriteTransaction *transaction) {
                 if (contactShare.avatarImage) {
                     [contactShare.dbRecord saveAvatarImage:contactShare.avatarImage transaction:transaction];
                 }
-            }
-            completion:^{
+            },
+            // Completion:
+            ^{
                 __block TSOutgoingMessage *outgoingMessage = nil;
                 outgoingMessage = [ThreadUtil sendMessageNonDurablyWithContactShare:contactShare.dbRecord
                                                                              thread:self.thread
@@ -386,7 +388,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
                                                                          }];
                 // This is necessary to show progress.
                 self.outgoingMessage = outgoingMessage;
-            }];
+            });
         
         
     }
@@ -575,8 +577,9 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
     OWSLogDebug(@"Confirming identity for recipient: %@", address);
 
-    [self.databaseStorage
-        asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageAsyncWriteWithCompletion(
+        SDSDatabaseStorage.shared,
+        ^(SDSAnyWriteTransaction *transaction) {
             OWSVerificationState verificationState =
                 [[OWSIdentityManager sharedManager] verificationStateForAddress:address transaction:transaction];
             switch (verificationState) {
@@ -606,10 +609,11 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
                     break;
                 }
             }
-        }
-        completion:^{
+        },
+        // Completion:
+        ^{
             [self resendMessage:message fromViewController:fromViewController];
-        }];
+        });
 }
 
 - (void)resendMessage:(TSOutgoingMessage *)message fromViewController:(UIViewController *)fromViewController

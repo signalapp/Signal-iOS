@@ -16,11 +16,9 @@ class ComposeViewController: OWSViewController {
 
         view.backgroundColor = Theme.backgroundColor
 
-        let showNewGroupAsCell = RemoteConfig.groupsV2CreateGroups
-
         recipientPicker.allowsSelectingUnregisteredPhoneNumbers = false
         recipientPicker.shouldShowInvites = true
-        recipientPicker.shouldShowNewGroup = showNewGroupAsCell
+        recipientPicker.shouldShowNewGroup = true
         recipientPicker.delegate = self
         addChild(recipientPicker)
         view.addSubview(recipientPicker.view)
@@ -30,12 +28,6 @@ class ComposeViewController: OWSViewController {
         recipientPicker.view.autoPinEdge(toSuperviewEdge: .bottom)
 
         navigationItem.leftBarButtonItem = UIBarButtonItem(barButtonSystemItem: .stop, target: self, action: #selector(dismissPressed))
-
-        if !showNewGroupAsCell {
-            navigationItem.rightBarButtonItem = UIBarButtonItem(image: UIImage(named: "btnGroup--white"), style: .plain, target: self, action: #selector(newGroupPressed))
-            navigationItem.rightBarButtonItem?.accessibilityLabel = NSLocalizedString("NEW_GROUP_BUTTON_LABEL",
-                                                                                      comment: "Accessibility label for the new group button")
-        }
     }
 
     @objc func dismissPressed() {
@@ -58,10 +50,7 @@ class ComposeViewController: OWSViewController {
     }
 
     func showNewGroupUI() {
-        let newGroupView: UIViewController = (RemoteConfig.groupsV2CreateGroups
-            ? NewGroupMembersViewController()
-            : NewGroupViewController())
-        navigationController?.pushViewController(newGroupView, animated: true)
+        navigationController?.pushViewController(NewGroupMembersViewController(), animated: true)
     }
 }
 

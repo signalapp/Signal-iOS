@@ -203,9 +203,9 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
                 .then(^{
                     OWSAssertIsOnMainThread();
 
-                    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
                         [self markEnabledWithPin:pin transaction:transaction];
-                    }];
+                    });
 
                     if (success) {
                         success();
@@ -228,9 +228,9 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
                 success:^(NSURLSessionDataTask *task, id responseObject) {
                     OWSAssertIsOnMainThread();
 
-                    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
                         [self markEnabledWithPin:pin transaction:transaction];
-                    }];
+                    });
 
                     if (success) {
                         success();
@@ -263,9 +263,9 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
                 .ensure(^{
                     OWSAssertIsOnMainThread();
 
-                    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
                         [self markDisabledWithTransaction:transaction];
-                    }];
+                    });
                 })
                 .then(^() {
                     OWSAssertIsOnMainThread();
@@ -290,9 +290,10 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
                                      success:^(NSURLSessionDataTask *task, id responseObject) {
                                          OWSAssertIsOnMainThread();
 
-                                         [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-                                             [self markDisabledWithTransaction:transaction];
-                                         }];
+                                         DatabaseStorageWrite(
+                                             self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+                                                 [self markDisabledWithTransaction:transaction];
+                                             });
 
                                          if (success) {
                                              success();
@@ -383,9 +384,9 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
     // We don't need to migrate this pin, either because it's v2 or short enough that
     // we never truncated it. Mark it as complete so we don't need to check again.
 
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [self markLegacyPinAsMigratedWithTransaction:transaction];
-    }];
+    });
 
     return NO;
 }
@@ -409,9 +410,9 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
                                  result(isValid);
 
                                  if (isValid) {
-                                     [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                                     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
                                          [self setPinCode:pin transaction:transaction];
-                                     }];
+                                     });
                                  }
                              }];
         }
@@ -481,7 +482,7 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
 
 - (void)updateRepetitionIntervalWithWasSuccessful:(BOOL)wasSuccessful
 {
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         if (wasSuccessful) {
             [self setLastSuccessfulReminderDate:[NSDate new] transaction:transaction];
         }
@@ -497,7 +498,7 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
         [OWS2FAManager.keyValueStore setDouble:newInterval
                                            key:kOWS2FAManager_RepetitionInterval
                                    transaction:transaction];
-    }];
+    });
 }
 
 - (NSTimeInterval)adjustRepetitionInterval:(NSTimeInterval)oldInterval wasSuccessful:(BOOL)wasSuccessful

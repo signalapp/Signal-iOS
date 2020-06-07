@@ -10,7 +10,6 @@ NS_ASSUME_NONNULL_BEGIN
 @class PhoneNumber;
 @class SDSAnyReadTransaction;
 @class SignalAccount;
-@class SignalAccountReadCache;
 @class SignalServiceAddress;
 @class TSThread;
 @class UIImage;
@@ -54,8 +53,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)comparableNameForSignalAccount:(SignalAccount *)signalAccount
                                  transaction:(SDSAnyReadTransaction *)transaction;
-
-@property (nonatomic, readonly) SignalAccountReadCache *signalAccountReadCache;
 
 @property (nonatomic, readonly) NSString *unknownUserLabel;
 

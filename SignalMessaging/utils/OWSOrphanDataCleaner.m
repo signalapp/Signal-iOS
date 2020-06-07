@@ -675,7 +675,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
                 success:^{
                     OWSLogInfo(@"Completed orphan data cleanup.");
 
-                    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
                         [self.keyValueStore setString:AppVersion.sharedInstance.currentAppVersion
                                                   key:OWSOrphanDataCleaner_LastCleaningVersionKey
                                           transaction:transaction];
@@ -683,7 +683,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
                         [self.keyValueStore setDate:[NSDate new]
                                                 key:OWSOrphanDataCleaner_LastCleaningDateKey
                                         transaction:transaction];
-                    }];
+                    });
 
                     if (completion) {
                         completion();
@@ -758,7 +758,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     NSDate *appLaunchTime = CurrentAppContext().appLaunchTime;
     NSTimeInterval thresholdTimestamp = appLaunchTime.timeIntervalSince1970 - kMinimumOrphanAgeSeconds;
     NSDate *thresholdDate = [NSDate dateWithTimeIntervalSince1970:thresholdTimestamp];
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         NSUInteger interactionsRemoved = 0;
         for (NSString *interactionId in orphanData.interactionIds) {
             if (!self.isMainAppAndActive) {
@@ -847,7 +847,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
             [reaction anyRemoveWithTransaction:transaction];
         }
         OWSLogInfo(@"Deleted orphan reactions: %zu", reactionsRemoved);
-    }];
+    });
 
     if (shouldAbort) {
         return NO;

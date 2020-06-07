@@ -301,7 +301,7 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
 
 + (void)cullPreKeyRecords {
     NSTimeInterval expirationInterval = kDayInterval * 30;
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         NSMutableArray<NSString *> *keys = [[self.preKeyStore.keyStore allKeysWithTransaction:transaction] mutableCopy];
         NSMutableSet<NSString *> *keysToRemove = [NSMutableSet new];
         [Batching loopObjcWithBatchSize:Batching.kDefaultBatchSize
@@ -336,7 +336,7 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
             [self.preKeyStore.keyStore removeValueForKey:key
                                              transaction:transaction];
         }
-    }];
+    });
 }
 
 + (NSArray *)removeCurrentRecord:(SignedPreKeyRecord *)currentRecord fromRecords:(NSArray *)allRecords {

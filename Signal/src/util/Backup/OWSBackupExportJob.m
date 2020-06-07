@@ -838,9 +838,9 @@ NS_ASSUME_NONNULL_BEGIN
                 backupFragment.relativeFilePath = attachmentExport.relativeFilePath;
                 backupFragment.attachmentId = attachmentExport.attachmentId;
                 backupFragment.uncompressedDataLength = exportItem.uncompressedDataLength;
-                [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
                     [backupFragment anyInsertWithTransaction:transaction];
-                }];
+                });
 
                 OWSLogVerbose(@"saved attachment: %@ as %@",
                     attachmentExport.attachmentFilePath,
@@ -1083,7 +1083,7 @@ NS_ASSUME_NONNULL_BEGIN
     // After every successful backup export, we can (and should) cull metadata
     // for any backup fragment (i.e. CloudKit record) that wasn't involved in
     // the latest backup export.
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         NSArray<NSString *> *allRecordNames = [OWSBackupFragment anyAllUniqueIdsWithTransaction:transaction];
 
         NSMutableSet<NSString *> *obsoleteRecordNames = [NSMutableSet new];
@@ -1099,7 +1099,7 @@ NS_ASSUME_NONNULL_BEGIN
             }
             [instance anyRemoveWithTransaction:transaction];
         }
-    }];
+    });
 }
 
 - (AnyPromise *)cleanUpCloudWithActiveRecordNames:(NSSet<NSString *> *)activeRecordNames

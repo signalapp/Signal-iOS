@@ -38,9 +38,9 @@ NSString *const NSNotificationName_DeviceListUpdateModifiedDeviceList
                 }
 
                 __block BOOL didAddOrRemove;
-                [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
                     didAddOrRemove = [OWSDevice replaceAll:devices transaction:transaction];
-                }];
+                });
 
                 [NSNotificationCenter.defaultCenter
                     postNotificationNameAsync:NSNotificationName_DeviceListUpdateSucceeded

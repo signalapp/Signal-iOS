@@ -177,7 +177,10 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
     init(message: TSOutgoingMessage, jobRecord: SSKMessageSenderJobRecord) {
         self.message = message
         self.jobRecord = jobRecord
+
         super.init()
+
+        self.queuePriority = MessageSender.queuePriority(for: message)
     }
 
     // MARK: Dependencies

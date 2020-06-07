@@ -409,6 +409,11 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
     return YES;
 }
 
+- (BOOL)hasUI
+{
+    return YES;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

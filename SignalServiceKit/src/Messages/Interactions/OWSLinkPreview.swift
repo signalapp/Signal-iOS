@@ -815,7 +815,7 @@ public class OWSLinkPreviewManager: NSObject {
                                                                imageMimeType: OWSMimeTypeImageJpeg)
                     return linkPreviewDraft
                 }
-                .recover(on: DispatchQueue.global()) { (_) -> Promise<OWSLinkPreviewDraft> in
+                .recover(on: .global()) { (_) -> Promise<OWSLinkPreviewDraft> in
                     return Promise.value(OWSLinkPreviewDraft(urlString: linkUrlString, title: title))
             }
         } catch {

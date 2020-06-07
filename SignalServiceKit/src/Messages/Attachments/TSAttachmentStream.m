@@ -426,10 +426,9 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
 - (void)removeFile
 {
-    NSError *error;
-
     NSString *thumbnailsDirPath = self.thumbnailsDirPath;
     if ([[NSFileManager defaultManager] fileExistsAtPath:thumbnailsDirPath]) {
+        NSError *error;
         BOOL success = [[NSFileManager defaultManager] removeItemAtPath:thumbnailsDirPath error:&error];
         if (error || !success) {
             OWSLogError(@"remove thumbnails dir failed with: %@", error);
@@ -438,10 +437,8 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 
     NSString *_Nullable legacyThumbnailPath = self.legacyThumbnailPath;
     if (legacyThumbnailPath) {
-        BOOL success = [[NSFileManager defaultManager] removeItemAtPath:legacyThumbnailPath error:&error];
-
-        if (error || !success) {
-            OWSLogError(@"remove legacy thumbnail failed with: %@", error);
+        if (![OWSFileSystem deleteFileIfExists:legacyThumbnailPath]) {
+            OWSLogError(@"remove legacy thumbnail failed.");
         }
     }
 
@@ -450,12 +447,9 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
         OWSFailDebug(@"Missing path for attachment.");
         return;
     }
-    BOOL success = [[NSFileManager defaultManager] removeItemAtPath:filePath error:&error];
-    if (error || !success) {
-        OWSLogError(@"remove file failed with: %@", error);
+    if (![OWSFileSystem deleteFileIfExists:filePath]) {
+        OWSLogError(@"remove file failed");
     }
-
-
 
     // Remove the attachment specific directory and any associated files stored for this attachment.
     NSString *_Nullable attachmentFolder = self.uniqueIdAttachmentFolder;
@@ -719,7 +713,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     OWSAssertDebug(changeBlock);
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
             // We load a new instance before using anyUpdateWithTransaction()
             // since it isn't thread-safe to mutate the current instance async.
             TSAttachmentStream *_Nullable latestInstance =
@@ -737,7 +731,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
                                                                block:^(TSAttachmentStream *attachmentStream) {
                                                                    changeBlock(attachmentStream);
                                                                }];
-        }];
+        });
 
         if (completion != nil) {
             completion();

@@ -30,22 +30,10 @@ public class ConversationListDatabaseObserver: NSObject {
         _snapshotDelegates = _snapshotDelegates.filter { $0.value != nil} + [Weak(value: snapshotDelegate)]
     }
 
-    private typealias RowId = Int64
     private var threadChangeCollector = ThreadChangeCollector()
 
-    private typealias ThreadUniqueId = String
-    private var _committedThreadChanges: Swift.Result<Set<ThreadUniqueId>, Error>?
-    private var committedThreadChanges: Swift.Result<Set<ThreadUniqueId>, Error>? {
-        get {
-            AssertIsOnMainThread()
-            return _committedThreadChanges
-        }
-
-        set {
-            AssertIsOnMainThread()
-            _committedThreadChanges = newValue
-        }
-    }
+    private typealias UniqueId = String
+    private var committedChanges = ObservedDatabaseChanges<UniqueId>(concurrencyMode: .mainThread)
 
     // internal - should only be called by DatabaseStorage
     func didTouch(thread: TSThread, transaction: GRDBWriteTransaction) {
@@ -76,14 +64,14 @@ extension ConversationListDatabaseObserver: DatabaseSnapshotDelegate {
         do {
             let threadChangeCollector = self.threadChangeCollector
             self.threadChangeCollector = ThreadChangeCollector()
-            let committedThreadChanges = try threadChangeCollector.threadUniqueIds(db: db)
+            let committedChanges = try threadChangeCollector.threadUniqueIds(db: db)
 
             DispatchQueue.main.async {
-                self.committedThreadChanges = .success(committedThreadChanges)
+                self.committedChanges.append(threadChanges: committedChanges)
             }
         } catch {
             DispatchQueue.main.async {
-                self.committedThreadChanges = .failure(error)
+                self.committedChanges.setLastError(error)
             }
         }
     }
@@ -107,30 +95,29 @@ extension ConversationListDatabaseObserver: DatabaseSnapshotDelegate {
     public func databaseSnapshotDidUpdate() {
         AssertIsOnMainThread()
 
-        let reset = {
+        defer {
+            self.committedChanges.reset()
+        }
+
+        let notifyReset = {
             for delegate in self.snapshotDelegates {
                 delegate.conversationListDatabaseSnapshotDidReset()
             }
         }
 
-        guard let committedThreadChanges = self.committedThreadChanges else {
-            owsFailDebug("committedThreadChanges was unexpectedly nil")
-            reset()
-            return
-        }
-
-        switch committedThreadChanges {
-        case .success(let updatedThreadIds):
-            self.committedThreadChanges = nil
-            for delegate in snapshotDelegates {
-                delegate.conversationListDatabaseSnapshotDidUpdate(updatedThreadIds: updatedThreadIds)
+        if let lastError = committedChanges.lastError {
+            switch lastError {
+            case DatabaseObserverError.changeTooLarge:
+                // no assertionFailure, we expect this sometimes
+                notifyReset()
+            default:
+                owsFailDebug("unknown error: \(lastError)")
+                notifyReset()
             }
-        case .failure(DatabaseObserverError.changeTooLarge):
-            // no assertionFailure, we expect this sometimes
-            reset()
-        case .failure(let unknownError):
-            owsFailDebug("unknown error: \(unknownError)")
-            reset()
+        } else {
+            for delegate in snapshotDelegates {
+                delegate.conversationListDatabaseSnapshotDidUpdate(updatedThreadIds: committedChanges.threadChanges)
+            }
         }
     }
 

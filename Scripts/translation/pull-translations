@@ -17,6 +17,10 @@ tx pull -a --minimum-perc=80
 # Once supported, we don't want to drop any translations.
 tx pull --force
 
+# There's some problem with nb_NO, iconv fails to parse it.
+# I'm guessing it some kind of unicode encoding issue.
+rm -rf nb_NO.lproj
+
 for dir in *.lproj
 do
 

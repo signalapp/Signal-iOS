@@ -106,9 +106,9 @@ NSString *const OWSPreferencesKeyWasBlurTooltipShown = @"OWSPreferencesKeyWasBlu
 
 - (void)removeValueForKey:(NSString *)key
 {
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [self.keyValueStore removeValueForKey:key transaction:transaction];
-    }];
+    });
 }
 
 - (BOOL)boolForKey:(NSString *)key defaultValue:(BOOL)defaultValue
@@ -122,9 +122,9 @@ NSString *const OWSPreferencesKeyWasBlurTooltipShown = @"OWSPreferencesKeyWasBlu
 
 - (void)setBool:(BOOL)value forKey:(NSString *)key
 {
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [self.keyValueStore setBool:value key:key transaction:transaction];
-    }];
+    });
 }
 
 - (NSUInteger)uintForKey:(NSString *)key defaultValue:(NSUInteger)defaultValue
@@ -138,9 +138,9 @@ NSString *const OWSPreferencesKeyWasBlurTooltipShown = @"OWSPreferencesKeyWasBlu
 
 - (void)setUInt:(NSUInteger)value forKey:(NSString *)key
 {
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [self.keyValueStore setUInt:value key:key transaction:transaction];
-    }];
+    });
 }
 
 - (nullable NSDate *)dateForKey:(NSString *)key
@@ -154,9 +154,9 @@ NSString *const OWSPreferencesKeyWasBlurTooltipShown = @"OWSPreferencesKeyWasBlu
 
 - (void)setDate:(NSDate *)value forKey:(NSString *)key
 {
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [self.keyValueStore setDate:value key:key transaction:transaction];
-    }];
+    });
 }
 
 - (nullable NSString *)stringForKey:(NSString *)key
@@ -170,9 +170,9 @@ NSString *const OWSPreferencesKeyWasBlurTooltipShown = @"OWSPreferencesKeyWasBlu
 
 - (void)setString:(NSString *)value forKey:(NSString *)key
 {
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [self.keyValueStore setString:value key:key transaction:transaction];
-    }];
+    });
 }
 
 #pragma mark - Specific Preferences

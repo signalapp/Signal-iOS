@@ -140,9 +140,9 @@
 
 - (void)didToggleshouldNotifyOfNewAccountsSwitch:(UISwitch *)sender
 {
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [self.preferences setShouldNotifyOfNewAccounts:sender.isOn transaction:transaction];
-    }];
+    });
 }
 
 @end

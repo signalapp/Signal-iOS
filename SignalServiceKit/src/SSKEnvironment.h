@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class MessageFetcherJob;
 @class MessageProcessing;
 @class MessageSenderJobQueue;
+@class ModelReadCaches;
 @class OWS2FAManager;
 @class OWSAttachmentDownloads;
 @class OWSBatchMessageProcessor;
@@ -105,7 +106,8 @@ NS_ASSUME_NONNULL_BEGIN
                       messageFetcherJob:(MessageFetcherJob *)messageFetcherJob
                        bulkProfileFetch:(BulkProfileFetch *)bulkProfileFetch
                          bulkUUIDLookup:(BulkUUIDLookup *)bulkUUIDLookup
-                      versionedProfiles:(id<VersionedProfiles>)versionedProfiles NS_DESIGNATED_INITIALIZER;
+                      versionedProfiles:(id<VersionedProfiles>)versionedProfiles
+                        modelReadCaches:(ModelReadCaches *)modelReadCaches NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic, readonly, class) SSKEnvironment *shared;
 
@@ -163,6 +165,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BulkProfileFetch *bulkProfileFetch;
 @property (nonatomic, readonly) BulkUUIDLookup *bulkUUIDLookup;
 @property (nonatomic, readonly) id<VersionedProfiles> versionedProfiles;
+@property (nonatomic, readonly) ModelReadCaches *modelReadCaches;
 
 @property (nonatomic, readonly, nullable) OWSPrimaryStorage *primaryStorage;
 

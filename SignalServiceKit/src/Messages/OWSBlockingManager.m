@@ -437,12 +437,12 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 
     // Open a sneaky transaction and quit the group if we're a member
     if ([groupModel.groupMembers containsObject:TSAccountManager.localAddress]) {
-        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
             TSGroupThread *groupThread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
             [GroupManager leaveGroupOrDeclineInviteAsyncWithoutUIWithGroupThread:groupThread
                                                                      transaction:transaction
                                                                          success:nil];
-        }];
+        });
     }
 
     [self handleUpdateWithSneakyTransactionAndSendSyncMessage:wasLocallyInitiated];
@@ -568,9 +568,9 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     if ([self isThreadBlocked:thread]) {
         return;
     }
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [self addBlockedThread:thread wasLocallyInitiated:wasLocallyInitiated transaction:transaction];
-    }];
+    });
 }
 
 - (void)removeBlockedThread:(TSThread *)thread
@@ -597,9 +597,9 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     if (![self isThreadBlocked:thread]) {
         return;
     }
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [self removeBlockedThread:thread wasLocallyInitiated:wasLocallyInitiated transaction:transaction];
-    }];
+    });
 }
 
 #pragma mark - Updates
@@ -608,9 +608,9 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
 
 - (void)handleUpdateWithSneakyTransactionAndSendSyncMessage:(BOOL)sendSyncMessage
 {
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [self handleUpdateAndSendSyncMessage:sendSyncMessage transaction:transaction];
-    }];
+    });
 }
 
 - (void)handleUpdateAndSendSyncMessage:(BOOL)sendSyncMessage transaction:(SDSAnyWriteTransaction *)transaction
@@ -767,9 +767,9 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     OWSAssertDebug(blockedGroupIds);
 
     __block TSThread *_Nullable thread;
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         thread = [TSAccountManager getOrCreateLocalThreadWithTransaction:transaction];
-    }];
+    });
     if (thread == nil) {
         OWSFailDebug(@"Missing thread.");
         return;
@@ -802,7 +802,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
     OWSAssertDebug(blockedUUIDs);
     OWSAssertDebug(blockedGroupIds);
 
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [OWSBlockingManager.keyValueStore setObject:blockedPhoneNumbers
                                                 key:kOWSBlockingManager_SyncedBlockedPhoneNumbersKey
                                         transaction:transaction];
@@ -812,7 +812,7 @@ NSString *const kOWSBlockingManager_SyncedBlockedGroupIdsKey = @"kOWSBlockingMan
         [OWSBlockingManager.keyValueStore setObject:blockedGroupIds
                                                 key:kOWSBlockingManager_SyncedBlockedGroupIdsKey
                                         transaction:transaction];
-    }];
+    });
 }
 
 #pragma mark - Notifications

@@ -241,9 +241,9 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
 {
     OWSAssertDebug(value);
 
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [self.keyValueStore setDate:value key:OWSBackup_LastExportSuccessDateKey transaction:transaction];
-    }];
+    });
 }
 
 - (nullable NSDate *)lastExportSuccessDate
@@ -255,11 +255,10 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
 {
     OWSAssertDebug(value);
 
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [self.keyValueStore setDate:value key:OWSBackup_LastExportFailureDateKey transaction:transaction];
-    }];
+    });
 }
-
 
 - (nullable NSDate *)lastExportFailureDate
 {
@@ -273,14 +272,14 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
 
 - (void)setIsBackupEnabled:(BOOL)value
 {
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [self.keyValueStore setBool:value key:OWSBackup_IsBackupEnabledKey transaction:transaction];
 
         if (!value) {
             [self.keyValueStore removeValueForKey:OWSBackup_LastExportSuccessDateKey transaction:transaction];
             [self.keyValueStore removeValueForKey:OWSBackup_LastExportFailureDateKey transaction:transaction];
         }
-    }];
+    });
 
     [self postDidChangeNotification];
 
@@ -855,7 +854,7 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
         return [AnyPromise promiseWithValue:error];
     }
 
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         // This should overwrite the attachment pointer with an attachment stream.
         //
         // Since our "any" methods are strict about "insert vs. update", we need to
@@ -869,7 +868,7 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
             [oldValue anyRemoveWithTransaction:transaction];
         }
         [stream anyInsertWithTransaction:transaction];
-    }];
+    });
 
     return [AnyPromise promiseWithValue:@(1)];
 }

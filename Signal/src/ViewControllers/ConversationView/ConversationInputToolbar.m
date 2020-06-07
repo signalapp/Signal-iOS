@@ -543,9 +543,9 @@ const CGFloat kMaxIPadTextViewHeight = 142;
     }
 
     dispatch_block_t markTooltipAsShown = ^{
-        [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
             [StickerManager.shared stickerTooltipWasShownWithTransaction:transaction];
-        }];
+        });
     };
 
     __block StickerPack *_Nullable stickerPack;

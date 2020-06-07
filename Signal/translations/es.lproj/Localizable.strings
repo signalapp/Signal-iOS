@@ -764,17 +764,20 @@
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Selecciona quién puede modificar el nombre e imagen del grupo y la desaparición de mensajes.";
 
-/* Footer text for the 'block and leave' section of conversation settings view. */
+/* Footer text for the 'block and leave' section of contact conversation settings view. */
+"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "You will no longer receive messages or updates from this user.";
+
+/* Footer text for the 'block and leave' section of group conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER" = "No podrás enviar ni recibir más mensajes en este grupo.";
 
 /* Label for 'block group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_GROUP" = "Bloquear grupo";
 
 /* table cell label in conversation settings */
-"CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "Bloquear grupo";
+"CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "CONVERSATION_SETTINGS_BLOCK_THIS_GROUP";
 
 /* table cell label in conversation settings */
-"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "Bloquear persona";
+"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "CONVERSATION_SETTINGS_BLOCK_THIS_USER";
 
 /* Label for 'block user' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_USER" = "Bloquear persona";
@@ -813,7 +816,7 @@
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "Cualquier participante";
 
 /* Navbar title when viewing settings for a group thread */
-"CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "Detalles de grupo";
+"CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "CONVERSATION_SETTINGS_GROUP_INFO_TITLE";
 
 /* Label for 'make group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Promover a admin";
@@ -1164,7 +1167,7 @@
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal necesita acceso a los contactos para que puedas modificarlos.";
 
 /* table cell label in conversation settings */
-"EDIT_GROUP_ACTION" = "Editar grupo";
+"EDIT_GROUP_ACTION" = "EDIT_GROUP_ACTION";
 
 /* The 'clear avatar' button in the 'edit group' view. */
 "EDIT_GROUP_CLEAR_AVATAR" = "Eliminar imagen";
@@ -1186,9 +1189,6 @@
 
 /* Label for the group name in the 'edit group' view. */
 "EDIT_GROUP_GROUP_NAME" = "Nombre del grupo";
-
-/* An indicator that a user is a new member of the group. */
-"EDIT_GROUP_NEW_MEMBER_LABEL" = "Agregad*";
 
 /* The title for the 'update group' button. */
 "EDIT_GROUP_UPDATE_BUTTON" = "Actualizar";
@@ -1308,7 +1308,7 @@
 "ERROR_DESCRIPTION_NO_INTERNET" = "Signal no ha podido conectarse a internet. Prueba de nuevo.";
 
 /* Error indicating that an outgoing message had no valid recipients. */
-"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Fallo al enviar mensaje por falta de destinatarios válidos.";
+"ERROR_DESCRIPTION_NO_VALID_RECIPIENTS" = "Fallo al enviar mensaje por falta de destinatari*s válid*s.";
 
 /* Error indicating that a socket request failed. */
 "ERROR_DESCRIPTION_REQUEST_FAILED" = "Fallo en la petición de red.";
@@ -1341,7 +1341,7 @@
 "ERROR_MESSAGE_DUPLICATE_MESSAGE" = "Mensaje duplicado recibido.";
 
 /* No comment provided by engineer. */
-"ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "La clave del destinatario no es válida.";
+"ERROR_MESSAGE_INVALID_KEY_EXCEPTION" = "La clave de destinatari* no es válida.";
 
 /* No comment provided by engineer. */
 "ERROR_MESSAGE_INVALID_MESSAGE" = "Mensaje recibido con clave desincronizada.";
@@ -1484,9 +1484,6 @@
 /* Message indicating that the access to the group's members was changed. Embeds {{new access level}}. */
 "GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "«%@» puede(n) modificar l*s participantes del grupo.";
 
-/* Error indicating that a member cannot be added to a group. */
-"GROUP_CANNOT_ADD_INVALID_MEMBER" = "Esta persona no se puede agregar al grupo.";
-
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "Has creado el grupo.";
 
@@ -1560,7 +1557,7 @@
 "GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ te ha retirado los permisos de admin.";
 
 /* Conversation settings table section title */
-"GROUP_MANAGEMENT_SECTION" = "Gestión del grupo";
+"GROUP_MANAGEMENT_SECTION" = "GROUP_MANAGEMENT_SECTION";
 
 /* Label indicating that a group member is an admin. */
 "GROUP_MEMBER_ADMIN_INDICATOR" = "Admin";
@@ -1586,17 +1583,8 @@
 /* Label indicating that a group has no other members. */
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "Sin participantes.";
 
-/* Label for the button that clears all verification errors in the 'group members' view. */
-"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "Retirar verificación a tod*s";
-
-/* Label for the 'reset all no-longer-verified group members' confirmation alert. */
-"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE" = "Esta acción retira la marca de verificación a tod*s l*s participantes del grupo cuyas cifras de seguridad han cambiado.";
-
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "Participantes";
-
-/* Title for the 'no longer verified' section of the 'group members' view. */
-"GROUP_MEMBERS_SECTION_TITLE_NO_LONGER_VERIFIED" = "Persona no verificada";
 
 /* Button label for the 'send message to group member' button */
 "GROUP_MEMBERS_SEND_MESSAGE" = "Mensaje";
@@ -2001,7 +1989,7 @@
 "LINKING_DEVICE_FAILED_TITLE" = "Fallo al enlazar dispositivo";
 
 /* table cell label in conversation settings */
-"LIST_GROUP_MEMBERS_ACTION" = "Participantes";
+"LIST_GROUP_MEMBERS_ACTION" = "LIST_GROUP_MEMBERS_ACTION";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "Buscar por nombre o dirección";
@@ -2321,9 +2309,6 @@
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "Crear grupo";
 
-/* Accessibility label for the new group button */
-"NEW_GROUP_BUTTON_LABEL" = "Crear grupo";
-
 /* The title for the 'create group' button. */
 "NEW_GROUP_CREATE_BUTTON" = "Crear";
 
@@ -2342,17 +2327,11 @@
 /* Used in place of the group name when a group has not yet been named. */
 "NEW_GROUP_DEFAULT_TITLE" = "Nuevo grupo";
 
-/* An indicator that a user is a member of the new group. */
-"NEW_GROUP_MEMBER_LABEL" = "Participante";
-
 /* notification title. Embeds {{author name}} and {{group name}} */
 "NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ en %@";
 
 /* The title for the 'name new group' view. */
 "NEW_GROUP_NAME_GROUP_VIEW_TITLE" = "Nombre de grupo";
-
-/* Placeholder text for group name field */
-"NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "Nombre del grupo";
 
 /* a title for the selected section of the 'recipient picker' view. */
 "NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "Otras personas";
@@ -3711,7 +3690,7 @@
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Con esta opción activada, evitas que aparezca contenido de Signal en las capturas de pantalla del gestor de aplicaciones.";
 
 /* Label for the notifications section of conversation settings view. */
-"SETTINGS_SECTION_NOTIFICATIONS" = "Notificaciones";
+"SETTINGS_SECTION_NOTIFICATIONS" = "SETTINGS_SECTION_NOTIFICATIONS";
 
 /* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "Sonidos";
@@ -3756,7 +3735,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Mostrar indicador";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "«Remitente sellado» es una característica del protocolo de Signal que permite a nuestro servidor no saber quién envía el mensaje. En cambio, tu destinatario sí sabe quién lo envía. Al activar la opción se muestra un icono de estado en la sección «Más detalles» de los mensajes entregados con remitente sellado.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "«Remitente sellado» es una característica del protocolo de Signal que permite a nuestro servidor no saber quién envía el mensaje. En cambio, tu destinatari* sí sabe quién lo envía. Al activar la opción se muestra un icono de estado en la sección «Más detalles» de los mensajes entregados con remitente sellado.";
 
 /* switch label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Permitir de cualquiera";
@@ -4018,12 +3997,6 @@
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_FEATURE_ERROR" = "Este dispositivo no es compatible con esta función.";
-
-/* Title for alert indicating that group members can't be removed. */
-"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "No puedes eliminar participantes del grupo. Tienen que abandonar el grupo o puedes crear un grupo nuevo sin esos participantes. ";
-
-/* Title for alert indicating that group members can't be removed. */
-"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "No permitido";
 
 /* Error indicating that a group could not be updated. */
 "UPDATE_GROUP_FAILED" = "No se ha podido actualizar el grupo.";

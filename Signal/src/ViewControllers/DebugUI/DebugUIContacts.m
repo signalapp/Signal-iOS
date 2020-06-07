@@ -81,17 +81,17 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)clearSignalAccountCache
 {
     OWSLogWarn(@"Deleting all signal accounts.");
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [SignalAccount anyRemoveAllWithoutInstantationWithTransaction:transaction];
-    }];
+    });
 }
 
 + (void)clearSignalRecipientCache
 {
     OWSLogWarn(@"Deleting all signal recipients.");
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [SignalRecipient anyRemoveAllWithoutInstantationWithTransaction:transaction];
-    }];
+    });
 }
 
 + (SignalServiceAddress *)unregisteredRecipient

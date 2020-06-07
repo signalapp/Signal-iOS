@@ -196,7 +196,7 @@ public class NewGroupConfirmViewController: OWSViewController {
                                                                 // we must rotate the seed after every failure.
                                                                 self.newGroupState.generateNewSeed()
 
-                                                                NewGroupViewController.showCreateErrorUI(error: error)
+                                                                NewGroupConfirmViewController.showCreateErrorUI(error: error)
                                                             }
                                                         }
         }

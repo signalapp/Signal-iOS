@@ -121,9 +121,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)sendGroupSyncMessage
 {
-    [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [self.syncManager syncGroupsWithTransaction:transaction];
-    }];
+    });
 }
 
 + (void)sendBlockListSyncMessage

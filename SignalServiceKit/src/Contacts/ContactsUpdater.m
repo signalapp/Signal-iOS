@@ -106,7 +106,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         NSSet<NSString *> *registeredPhoneNumbers = operation.registeredPhoneNumbers;
-        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
             for (NSString *phoneNumber in phoneNumbersToLookup) {
                 SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber];
                 if ([registeredPhoneNumbers containsObject:phoneNumber]) {
@@ -117,7 +117,7 @@ NS_ASSUME_NONNULL_BEGIN
                     [SignalRecipient markRecipientAsUnregistered:address transaction:transaction];
                 }
             }
-        }];
+        });
 
         dispatch_async(dispatch_get_main_queue(), ^{
             success([registeredRecipients copy]);

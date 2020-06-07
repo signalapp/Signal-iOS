@@ -172,7 +172,6 @@ public class BulkProfileFetch: NSObject {
                 self.isUpdateInFlight = false
                 switch error {
                 case ProfileFetchError.missing:
-                    Logger.error("Error: \(error)")
                     self.lastOutcomeMap[address] = UpdateOutcome(.noProfile)
                 case ProfileFetchError.throttled:
                     self.lastOutcomeMap[address] = UpdateOutcome(.throttled)

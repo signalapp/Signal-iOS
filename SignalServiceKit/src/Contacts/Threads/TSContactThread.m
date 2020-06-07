@@ -137,9 +137,9 @@ NSUInteger const TSContactThreadSchemaVersion = 1;
     OWSAssertDebug(contactAddress.isValid);
 
     __block TSContactThread *thread;
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         thread = [self getOrCreateThreadWithContactAddress:contactAddress transaction:transaction];
-    }];
+    });
 
     return thread;
 }

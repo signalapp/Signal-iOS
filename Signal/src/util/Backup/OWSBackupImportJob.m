@@ -150,11 +150,11 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     [allItems addObjectsFromArray:self.attachmentsItems];
 
     // Record metadata for all items, so that we can re-use them in incremental backups after the restore.
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         for (OWSBackupFragment *item in allItems) {
             [item anyUpsertWithTransaction:transaction];
         }
-    }];
+    });
 
     return [self downloadFilesFromCloud:blockingItems]
         .thenInBackground(^{
@@ -375,7 +375,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     }
 
     __block NSUInteger count = 0;
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         for (OWSBackupFragment *item in self.attachmentsItems) {
             if (self.isComplete) {
                 return;
@@ -414,7 +414,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                                                     @"Indicates that the backup import data is being restored.")
                                        progress:@(count / (CGFloat)self.attachmentsItems.count)];
         }
-    }];
+    });
 
     OWSLogError(@"enqueued lazy restore of %zd files.", count);
 
@@ -433,7 +433,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     NSMutableDictionary<NSString *, NSNumber *> *restoredEntityCounts = [NSMutableDictionary new];
     __block unsigned long long copiedEntities = 0;
     __block BOOL aborted = NO;
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
     // POST GRDB TODO: We need to totally rework this, post GRDB.
 
 #ifdef GRDB_BACKUP
@@ -576,7 +576,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
             }
         }
 #endif
-    }];
+    });
 
     if (aborted) {
         return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Backup import failed.")];

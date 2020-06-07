@@ -506,9 +506,9 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 {
     OWSLogInfo(@"");
 
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [AppPreferences setHasDimissedFirstConversationCue:YES transaction:transaction];
-    }];
+    });
 
     [self updateViewState];
 }
@@ -873,8 +873,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     // Dismiss any message actions if they're presented
     [self.conversationSplitViewController.selectedConversationViewController dismissMessageActionsAnimated:YES];
 
-    UIViewController *newGroupViewController
-        = (RemoteConfig.groupsV2CreateGroups ? [NewGroupMembersViewController new] : [NewGroupViewController new]);
+    UIViewController *newGroupViewController = [NewGroupMembersViewController new];
 
     [self.contactsManager requestSystemContactsOnceWithCompletion:^(NSError *_Nullable error) {
         if (error) {
@@ -979,9 +978,9 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     [self.conversationSplitViewController closeSelectedConversationAnimated:YES];
 
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [selectedThread archiveThreadAndUpdateStorageService:YES transaction:transaction];
-    }];
+    });
     [self updateViewState];
 }
 
@@ -1003,9 +1002,9 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     [self.conversationSplitViewController closeSelectedConversationAnimated:YES];
 
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [selectedThread unarchiveThreadAndUpdateStorageService:YES transaction:transaction];
-    }];
+    });
     [self updateViewState];
 }
 
@@ -1637,7 +1636,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         [self.conversationSplitViewController closeSelectedConversationAnimated:YES];
     }
 
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         if ([thread isKindOfClass:[TSGroupThread class]]) {
             TSGroupThread *groupThread = (TSGroupThread *)thread;
             if (groupThread.isLocalUserInGroup || groupThread.isGroupV2Thread) {
@@ -1650,7 +1649,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
             // contact thread
             [thread softDeleteThreadWithTransaction:transaction];
         }
-    }];
+    });
 
     [self updateViewState];
 }
@@ -1664,9 +1663,9 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     TSThread *thread = [self threadForIndexPath:indexPath];
 
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [thread markAllAsReadAndUpdateStorageService:YES transaction:transaction];
-    }];
+    });
 }
 
 - (void)markAsUnreadIndexPath:(NSIndexPath *)indexPath
@@ -1678,9 +1677,9 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     TSThread *thread = [self threadForIndexPath:indexPath];
 
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [thread markAsUnreadAndUpdateStorageService:YES transaction:transaction];
-    }];
+    });
 }
 
 - (void)archiveIndexPath:(NSIndexPath *)indexPath
@@ -1697,7 +1696,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         [self.conversationSplitViewController closeSelectedConversationAnimated:YES];
     }
 
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         switch (self.conversationListMode) {
             case ConversationListMode_Inbox:
                 [thread archiveThreadAndUpdateStorageService:YES transaction:transaction];
@@ -1706,7 +1705,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                 [thread unarchiveThreadAndUpdateStorageService:YES transaction:transaction];
                 break;
         }
-    }];
+    });
     [self updateViewState];
 }
 

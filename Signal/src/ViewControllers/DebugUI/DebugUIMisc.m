@@ -85,9 +85,9 @@ NS_ASSUME_NONNULL_BEGIN
     [items addObject:[OWSTableItem
                          itemWithTitle:@"Clear experience upgrades (works once per launch)"
                            actionBlock:^{
-                               [DebugUIMisc.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                               DatabaseStorageWrite(SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *transaction) {
                                    [ExperienceUpgrade anyRemoveAllWithoutInstantationWithTransaction:transaction];
-                               }];
+                               });
                            }]];
     [items addObject:[OWSTableItem itemWithTitle:@"Clear hasDismissedOffers"
                                      actionBlock:^{
@@ -97,13 +97,13 @@ NS_ASSUME_NONNULL_BEGIN
     [items addObject:[OWSTableItem
                          itemWithTitle:@"Delete disappearing messages config"
                            actionBlock:^{
-                               [DebugUIMisc.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                               DatabaseStorageWrite(SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *transaction) {
                                    OWSDisappearingMessagesConfiguration *_Nullable config =
                                        [thread disappearingMessagesConfigurationWithTransaction:transaction];
                                    if (config) {
                                        [config anyRemoveWithTransaction:transaction];
                                    }
-                               }];
+                               });
                            }]];
 
     [items addObject:[OWSTableItem
@@ -152,11 +152,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     [items addObject:[OWSTableItem itemWithTitle:@"Reset 2FA Repetition Interval"
                                      actionBlock:^() {
-                                         [SDSDatabaseStorage.shared
-                                             writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                                         DatabaseStorageWrite(
+                                             SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *transaction) {
                                                  [OWS2FAManager.sharedManager
                                                      setDefaultRepetitionIntervalWithTransaction:transaction];
-                                             }];
+                                             });
                                      }]];
 
     [items addObject:[OWSTableItem subPageItemWithText:@"Share UIImage"
@@ -224,10 +224,10 @@ NS_ASSUME_NONNULL_BEGIN
                                      }]];
     [items addObject:[OWSTableItem itemWithTitle:@"Delete all threads without leaving groups or removing interactions"
                                      actionBlock:^{
-                                         [DebugUIMisc.databaseStorage
-                                             writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                                         DatabaseStorageWrite(
+                                             SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *transaction) {
                                                  [TSThread anyRemoveAllWithoutInstantationWithTransaction:transaction];
-                                             }];
+                                             });
                                      }]];
 
     return [OWSTableSection sectionWithTitle:self.name items:items];
@@ -274,7 +274,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)clearHasDismissedOffers
 {
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         NSMutableArray<TSContactThread *> *contactThreads = [NSMutableArray new];
         [TSThread anyEnumerateWithTransaction:transaction
                                         block:^(TSThread *thread, BOOL *stop) {
@@ -293,7 +293,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                }];
             }
         }
-    }];
+    });
 }
 
 + (void)sendEncryptedDatabase:(TSThread *)thread
@@ -302,7 +302,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *fileName = filePath.lastPathComponent;
 
     __block BOOL success;
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         NSError *error;
         success = [[NSFileManager defaultManager] copyItemAtPath:OWSPrimaryStorage.databaseFilePath
                                                           toPath:filePath
@@ -311,7 +311,7 @@ NS_ASSUME_NONNULL_BEGIN
             OWSFailDebug(@"Could not copy database file: %@.", error);
             success = NO;
         }
-    }];
+    });
 
     if (!success) {
         return;
@@ -437,7 +437,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSLogVerbose(@"batchIndex: %i / %i", (int)batchIndex, (int)batchCount);
 
         @autoreleasepool {
-            [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
                 SDSKeyValueStore *store = [OWSBlockingManager keyValueStore];
                 
                 // Set three values at a time.
@@ -449,161 +449,163 @@ NS_ASSUME_NONNULL_BEGIN
                     
                     [store setBool:true key:NSUUID.UUID.UUIDString transaction:transaction];
                 }
-            }];
+            });
         }
     }
 }
 
 + (void)clearRandomKeyValueStores
 {
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         SDSKeyValueStore *store = [OWSBlockingManager keyValueStore];
         [store removeAllWithTransaction:transaction];
-    }];
+    });
 }
 
 + (void)saveOneOfEachModel
 {
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        SignalServiceAddress *address1 = [[SignalServiceAddress alloc] initWithUuid:NSUUID.UUID phoneNumber:nil];
-        SignalServiceAddress *address2 = [[SignalServiceAddress alloc] initWithUuid:NSUUID.UUID phoneNumber:nil];
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+        [self saveOneOfEachModelWithTransaction:transaction];
+    });
+}
 
-        // TSThread
-        TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactAddress:address1
-                                                                           transaction:transaction];
++ (void)saveOneOfEachModelWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    SignalServiceAddress *address1 = [[SignalServiceAddress alloc] initWithUuid:NSUUID.UUID phoneNumber:nil];
+    SignalServiceAddress *address2 = [[SignalServiceAddress alloc] initWithUuid:NSUUID.UUID phoneNumber:nil];
 
-        // TSInteraction
-        TSIncomingMessageBuilder *incomingMessageBuilder =
-            [TSIncomingMessageBuilder incomingMessageBuilderWithThread:thread messageBody:@"Exemplar"];
-        incomingMessageBuilder.authorAddress = address2;
-        [[incomingMessageBuilder build] anyInsertWithTransaction:transaction];
+    // TSThread
+    TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactAddress:address1 transaction:transaction];
 
-        StickerPackInfo *stickerPackInfo =
-            [[StickerPackInfo alloc] initWithPackId:[Randomness generateRandomBytes:16]
-                                            packKey:[Randomness generateRandomBytes:(int)StickerManager.packKeyLength]];
-        StickerInfo *stickerInfo = [[StickerInfo alloc] initWithPackId:stickerPackInfo.packId
-                                                               packKey:stickerPackInfo.packKey
-                                                             stickerId:0];
-        // InstalledSticker
-        [[[InstalledSticker alloc] initWithInfo:stickerInfo emojiString:nil] anyInsertWithTransaction:transaction];
+    // TSInteraction
+    TSIncomingMessageBuilder *incomingMessageBuilder =
+        [TSIncomingMessageBuilder incomingMessageBuilderWithThread:thread messageBody:@"Exemplar"];
+    incomingMessageBuilder.authorAddress = address2;
+    [[incomingMessageBuilder build] anyInsertWithTransaction:transaction];
 
-        // StickerPack
-        [[[StickerPack alloc] initWithInfo:stickerPackInfo
-                                     title:@"some title"
-                                    author:nil
-                                     cover:[[StickerPackItem alloc] initWithStickerId:0 emojiString:@""]
-                                  stickers:@[
-                                      [[StickerPackItem alloc] initWithStickerId:1 emojiString:@""],
-                                      [[StickerPackItem alloc] initWithStickerId:2 emojiString:@""],
-                                  ]] anyInsertWithTransaction:transaction];
+    StickerPackInfo *stickerPackInfo =
+        [[StickerPackInfo alloc] initWithPackId:[Randomness generateRandomBytes:16]
+                                        packKey:[Randomness generateRandomBytes:(int)StickerManager.packKeyLength]];
+    StickerInfo *stickerInfo = [[StickerInfo alloc] initWithPackId:stickerPackInfo.packId
+                                                           packKey:stickerPackInfo.packKey
+                                                         stickerId:0];
+    // InstalledSticker
+    [[[InstalledSticker alloc] initWithInfo:stickerInfo emojiString:nil] anyInsertWithTransaction:transaction];
 
-        // KnownStickerPack
-        [[[KnownStickerPack alloc] initWithInfo:stickerPackInfo] anyInsertWithTransaction:transaction];
+    // StickerPack
+    [[[StickerPack alloc] initWithInfo:stickerPackInfo
+                                 title:@"some title"
+                                author:nil
+                                 cover:[[StickerPackItem alloc] initWithStickerId:0 emojiString:@""]
+                              stickers:@[
+                                  [[StickerPackItem alloc] initWithStickerId:1 emojiString:@""],
+                                  [[StickerPackItem alloc] initWithStickerId:2 emojiString:@""],
+                              ]] anyInsertWithTransaction:transaction];
 
-        // OWSMessageDecryptJob
-        //
-        // TODO: Generate real envelope data.
-        if (StorageCoordinator.dataStoreForUI == DataStoreYdb) {
-            [[[OWSMessageDecryptJob alloc] initWithEnvelopeData:[Randomness generateRandomBytes:16]]
-                anyInsertWithTransaction:transaction];
-        }
+    // KnownStickerPack
+    [[[KnownStickerPack alloc] initWithInfo:stickerPackInfo] anyInsertWithTransaction:transaction];
 
-        // OWSMessageContentJob
-        //
-        // TODO: Generate real envelope data.
-        [[[OWSMessageContentJob alloc] initWithEnvelopeData:[Randomness generateRandomBytes:16]
-                                              plaintextData:nil
-                                            wasReceivedByUD:NO] anyInsertWithTransaction:transaction];
-
-        // TSAttachment
-        [[[TSAttachmentPointer alloc] initWithServerId:12345
-                                                cdnKey:@""
-                                             cdnNumber:0
-                                                   key:[Randomness generateRandomBytes:16]
-                                                digest:nil
-                                             byteCount:1024
-                                           contentType:OWSMimeTypePdf
-                                        sourceFilename:nil
-                                               caption:nil
-                                        albumMessageId:nil
-                                        attachmentType:TSAttachmentTypeDefault
-                                             mediaSize:CGSizeMake(1, 10)
-                                              blurHash:nil
-                                       uploadTimestamp:0] anyInsertWithTransaction:transaction];
-        [[[TSAttachmentStream alloc] initWithContentType:OWSMimeTypePdf
-                                               byteCount:1024
-                                          sourceFilename:nil
-                                                 caption:nil
-                                          albumMessageId:nil] anyInsertWithTransaction:transaction];
-
-        // ExperienceUpgrade
-        //
-        // We don't bother.
-
-        // TestModel
-        [[[TestModel alloc] init] anyInsertWithTransaction:transaction];
-
-        // OWSUserProfile
-        [[OWSUserProfile getOrBuildUserProfileForAddress:address1
-                                             transaction:transaction] updateWithUsername:nil
-                                                                           isUuidCapable:YES
-                                                                             transaction:transaction];
-
-        // OWSBackupFragment
-        //
-        // We don't bother.
-
-        // OWSRecipientIdentity
-        [[[OWSRecipientIdentity alloc] initWithAccountId:NSUUID.UUID.UUIDString
-                                             identityKey:[Randomness generateRandomBytes:16]
-                                         isFirstKnownKey:YES
-                                               createdAt:[NSDate new]
-                                       verificationState:OWSVerificationStateDefault]
+    // OWSMessageDecryptJob
+    //
+    // TODO: Generate real envelope data.
+    if (StorageCoordinator.dataStoreForUI == DataStoreYdb) {
+        [[[OWSMessageDecryptJob alloc] initWithEnvelopeData:[Randomness generateRandomBytes:16]]
             anyInsertWithTransaction:transaction];
+    }
 
-        // SignalAccount
-        [[[SignalAccount alloc] initWithSignalServiceAddress:address1] anyInsertWithTransaction:transaction];
+    // OWSMessageContentJob
+    //
+    // TODO: Generate real envelope data.
+    [[[OWSMessageContentJob alloc] initWithEnvelopeData:[Randomness generateRandomBytes:16]
+                                          plaintextData:nil
+                                        wasReceivedByUD:NO] anyInsertWithTransaction:transaction];
 
-        // OWSDisappearingMessagesConfiguration
-        [[OWSDisappearingMessagesConfiguration fetchOrBuildDefaultWithThread:thread transaction:transaction]
-            anyInsertWithTransaction:transaction];
+    // TSAttachment
+    [[[TSAttachmentPointer alloc] initWithServerId:12345
+                                            cdnKey:@""
+                                         cdnNumber:0
+                                               key:[Randomness generateRandomBytes:16]
+                                            digest:nil
+                                         byteCount:1024
+                                       contentType:OWSMimeTypePdf
+                                    sourceFilename:nil
+                                           caption:nil
+                                    albumMessageId:nil
+                                    attachmentType:TSAttachmentTypeDefault
+                                         mediaSize:CGSizeMake(1, 10)
+                                          blurHash:nil
+                                   uploadTimestamp:0] anyInsertWithTransaction:transaction];
+    [[[TSAttachmentStream alloc] initWithContentType:OWSMimeTypePdf
+                                           byteCount:1024
+                                      sourceFilename:nil
+                                             caption:nil
+                                      albumMessageId:nil] anyInsertWithTransaction:transaction];
 
-        // SignalRecipient
-        [[[SignalRecipient alloc] initWithAddress:address1] anyInsertWithTransaction:transaction];
+    // ExperienceUpgrade
+    //
+    // We don't bother.
 
-        // OWSUnknownDBObject
-        //
-        // We don't bother.
+    // TestModel
+    [[[TestModel alloc] init] anyInsertWithTransaction:transaction];
 
-        // OWSDevice
-        [[[OWSDevice alloc] initWithUniqueId:NSUUID.UUID.UUIDString
-                                   createdAt:[NSDate new]
-                                    deviceId:1
-                                  lastSeenAt:[NSDate new]
-                                        name:nil] anyInsertWithTransaction:transaction];
+    // OWSUserProfile
+    [[OWSUserProfile getOrBuildUserProfileForAddress:address1 transaction:transaction] updateWithUsername:nil
+                                                                                            isUuidCapable:YES
+                                                                                              transaction:transaction];
 
-        // SSKJobRecord
-        //
-        // NOTE: We insert every kind of job record.
-        [[[SSKMessageDecryptJobRecord alloc] initWithEnvelopeData:[Randomness generateRandomBytes:16]
-                                                            label:SSKMessageDecryptJobQueue.jobRecordLabel]
-            anyInsertWithTransaction:transaction];
-        TSOutgoingMessage *queuedMessage =
-            [[TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread messageBody:@"some body"] build];
-        NSError *_Nullable error;
-        [queuedMessage anyInsertWithTransaction:transaction];
-        [[[SSKMessageSenderJobRecord alloc] initWithMessage:queuedMessage
-                                  removeMessageAfterSending:NO
-                                                      label:MessageSenderJobQueue.jobRecordLabel
-                                                transaction:transaction
-                                                      error:&error] anyInsertWithTransaction:transaction];
-        OWSAssertDebug(error == nil);
-        [[[OWSBroadcastMediaMessageJobRecord alloc]
-            initWithAttachmentIdMap:[NSMutableDictionary new]
-                              label:BroadcastMediaMessageJobQueue.jobRecordLabel] anyInsertWithTransaction:transaction];
-        [[[OWSSessionResetJobRecord alloc] initWithContactThread:thread label:OWSSessionResetJobQueue.jobRecordLabel]
-            anyInsertWithTransaction:transaction];
-    }];
+    // OWSBackupFragment
+    //
+    // We don't bother.
+
+    // OWSRecipientIdentity
+    [[[OWSRecipientIdentity alloc] initWithAccountId:NSUUID.UUID.UUIDString
+                                         identityKey:[Randomness generateRandomBytes:16]
+                                     isFirstKnownKey:YES
+                                           createdAt:[NSDate new]
+                                   verificationState:OWSVerificationStateDefault] anyInsertWithTransaction:transaction];
+
+    // SignalAccount
+    [[[SignalAccount alloc] initWithSignalServiceAddress:address1] anyInsertWithTransaction:transaction];
+
+    // OWSDisappearingMessagesConfiguration
+    [[OWSDisappearingMessagesConfiguration fetchOrBuildDefaultWithThread:thread transaction:transaction]
+        anyInsertWithTransaction:transaction];
+
+    // SignalRecipient
+    [[[SignalRecipient alloc] initWithAddress:address1] anyInsertWithTransaction:transaction];
+
+    // OWSUnknownDBObject
+    //
+    // We don't bother.
+
+    // OWSDevice
+    [[[OWSDevice alloc] initWithUniqueId:NSUUID.UUID.UUIDString
+                               createdAt:[NSDate new]
+                                deviceId:1
+                              lastSeenAt:[NSDate new]
+                                    name:nil] anyInsertWithTransaction:transaction];
+
+    // SSKJobRecord
+    //
+    // NOTE: We insert every kind of job record.
+    [[[SSKMessageDecryptJobRecord alloc] initWithEnvelopeData:[Randomness generateRandomBytes:16]
+                                                        label:SSKMessageDecryptJobQueue.jobRecordLabel]
+        anyInsertWithTransaction:transaction];
+    TSOutgoingMessage *queuedMessage = [[TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:thread
+                                                                                       messageBody:@"some body"] build];
+    NSError *_Nullable error;
+    [queuedMessage anyInsertWithTransaction:transaction];
+    [[[SSKMessageSenderJobRecord alloc] initWithMessage:queuedMessage
+                              removeMessageAfterSending:NO
+                                                  label:MessageSenderJobQueue.jobRecordLabel
+                                            transaction:transaction
+                                                  error:&error] anyInsertWithTransaction:transaction];
+    OWSAssertDebug(error == nil);
+    [[[OWSBroadcastMediaMessageJobRecord alloc] initWithAttachmentIdMap:[NSMutableDictionary new]
+                                                                  label:BroadcastMediaMessageJobQueue.jobRecordLabel]
+        anyInsertWithTransaction:transaction];
+    [[[OWSSessionResetJobRecord alloc] initWithContactThread:thread label:OWSSessionResetJobQueue.jobRecordLabel]
+        anyInsertWithTransaction:transaction];
 }
 
 @end

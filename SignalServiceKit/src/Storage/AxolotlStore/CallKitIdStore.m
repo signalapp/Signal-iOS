@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "CallKitIdStore.h"
@@ -35,7 +35,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(address.isValid);
     OWSAssertDebug(callKitId.length > 0);
 
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         if (address.phoneNumber) {
             [self.phoneNumberStore setString:address.phoneNumber key:callKitId transaction:transaction];
         } else {
@@ -47,7 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
         } else {
             [self.uuidStore removeValueForKey:callKitId transaction:transaction];
         }
-    }];
+    });
 }
 
 + (SignalServiceAddress *)addressForCallKitId:(NSString *)callKitId

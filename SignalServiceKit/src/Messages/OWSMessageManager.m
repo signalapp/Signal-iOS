@@ -1292,7 +1292,7 @@ NS_ASSUME_NONNULL_BEGIN
                 return;
             }
 
-            [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
                 TSGroupThread *_Nullable oldGroupThread = [TSGroupThread fetchWithGroupId:groupId
                                                                               transaction:transaction];
                 if (oldGroupThread == nil) {
@@ -1313,14 +1313,14 @@ NS_ASSUME_NONNULL_BEGIN
 
                 // Eagerly clean up the attachment.
                 [attachmentStream anyRemoveWithTransaction:transaction];
-            }];
+            });
         }
         failure:^(NSError *error) {
             OWSLogError(@"failed to fetch attachments for group avatar sent at: %llu. with error: %@",
                 envelope.timestamp,
                 error);
 
-            [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
                 // Eagerly clean up the attachment.
                 TSAttachment *_Nullable attachment = [TSAttachment anyFetchWithUniqueId:avatarPointer.uniqueId
                                                                             transaction:transaction];
@@ -1331,7 +1331,7 @@ NS_ASSUME_NONNULL_BEGIN
                     return;
                 }
                 [attachment anyRemoveWithTransaction:transaction];
-            }];
+            });
         }];
 }
 
@@ -2063,7 +2063,7 @@ NS_ASSUME_NONNULL_BEGIN
                     // This is expected if there is a pending message request.
                     return;
                 }
-                [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
                     TSAttachmentStream *_Nullable attachmentStream = attachmentStreams.firstObject;
                     OWSAssertDebug(attachmentStream);
                     if (attachmentStream && incomingMessage.quotedMessage.thumbnailAttachmentPointerId.length > 0 &&
@@ -2080,7 +2080,7 @@ NS_ASSUME_NONNULL_BEGIN
                         // since the attachment might be a contact avatar, etc.
                         [self.databaseStorage touchInteraction:incomingMessage transaction:transaction];
                     }
-                }];
+                });
             }
             failure:^(NSError *error) {
                 OWSLogWarn(@"failed to download attachment for message: %llu with error: %@",

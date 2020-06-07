@@ -180,7 +180,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
             unreadMessages =
                 [unreadMessages subarrayWithRange:NSMakeRange(batchSize, unreadMessages.count - batchSize)];
             OWSAssertDebug(batch.count > 0);
-            [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
                 OWSReadCircumstance circumstance = hasPendingMessageRequest
                     ? OWSReadCircumstanceReadOnThisDeviceWhilePendingMessageRequest
                     : OWSReadCircumstanceReadOnThisDevice;
@@ -189,7 +189,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
                            readTimestamp:readTimestamp
                             circumstance:circumstance
                              transaction:transaction];
-            }];
+            });
         }
         while (messagesWithUnreadReactions.count > 0) {
             NSUInteger batchSize = MIN(messagesWithUnreadReactions.count, maxBatchSize);
@@ -198,13 +198,13 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
             messagesWithUnreadReactions = [messagesWithUnreadReactions
                 subarrayWithRange:NSMakeRange(batchSize, messagesWithUnreadReactions.count - batchSize)];
             OWSAssertDebug(batch.count > 0);
-            [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
                 for (TSOutgoingMessage *message in batch) {
                     [message markUnreadReactionsAsReadWithTransaction:transaction];
                 }
 
                 [self sendLinkedDeviceReadReceiptForMessages:batch thread:thread transaction:transaction];
-            }];
+            });
         }
         dispatch_async(dispatch_get_main_queue(), completion);
     });
@@ -465,7 +465,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 {
     // Clear out so we re-initialize if we ever re-run the "on launch" logic,
     // such as after a completed database transfer.
-    self.areReadReceiptsEnabledCached = NO;
+    self.areReadReceiptsEnabledCached = nil;
 
     [self areReadReceiptsEnabled];
 }
@@ -473,7 +473,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 - (BOOL)areReadReceiptsEnabled
 {
     // We don't need to worry about races around this cached value.
-    if (!self.areReadReceiptsEnabledCached) {
+    if (self.areReadReceiptsEnabledCached == nil) {
         [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
             self.areReadReceiptsEnabledCached =
                 @([OWSReadReceiptManager.keyValueStore getBool:OWSReadReceiptManagerAreReadReceiptsEnabled
@@ -489,9 +489,9 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
 {
     OWSLogInfo(@"setAreReadReceiptsEnabled: %d.", value);
 
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [self setAreReadReceiptsEnabled:value transaction:transaction];
-    }];
+    });
 
     [SSKEnvironment.shared.syncManager sendConfigurationSyncMessage];
     [SSKEnvironment.shared.storageServiceManager recordPendingLocalAccountUpdates];

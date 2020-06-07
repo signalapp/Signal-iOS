@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "DebugUIMessagesAction.h"
@@ -79,7 +79,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     __block NSUInteger count = countParam;
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *_Nonnull transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *_Nonnull transaction) {
         NSUInteger batchSize = 0;
         while (count > 0) {
             NSUInteger index = count;
@@ -121,7 +121,7 @@ NS_ASSUME_NONNULL_BEGIN
                 count--;
             }
         }
-    }];
+    });
 }
 
 @end

@@ -174,7 +174,7 @@ NS_ASSUME_NONNULL_BEGIN
                 success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
                     OWSAssertDebug(attachmentStreams.count == 1);
                     TSAttachmentStream *attachmentStream = attachmentStreams.firstObject;
-                    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
                         [outgoingMessage
                             anyUpdateOutgoingMessageWithTransaction:transaction
                                                               block:^(TSOutgoingMessage *outgoingMessage) {
@@ -182,7 +182,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                       setQuotedMessageThumbnailAttachmentStream:
                                                                           attachmentStream];
                                                               }];
-                    }];
+                    });
                 }
                 failure:^(NSError *error) {
                     OWSLogWarn(

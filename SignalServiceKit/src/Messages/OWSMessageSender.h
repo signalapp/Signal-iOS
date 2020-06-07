@@ -92,6 +92,8 @@ NS_SWIFT_NAME(MessageSender)
                         success:(void (^)(void))successHandler
                         failure:(void (^)(NSError *error))failureHandler;
 
++ (NSOperationQueuePriority)queuePriorityForMessage:(TSOutgoingMessage *)message;
+
 @end
 
 #pragma mark -

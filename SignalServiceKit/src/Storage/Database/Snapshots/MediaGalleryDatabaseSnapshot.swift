@@ -26,31 +26,10 @@ public class MediaGalleryDatabaseObserver: NSObject {
         _snapshotDelegates = _snapshotDelegates.filter { $0.value != nil} + [Weak(value: snapshotDelegate)]
     }
 
-    private typealias RowId = Int64
-
-    private var _pendingDeletes: Set<RowId> = Set()
-    private var pendingDeletes: Set<RowId> {
-        get {
-            AssertIsOnUIDatabaseObserverSerialQueue()
-            return _pendingDeletes
-        }
-        set {
-            AssertIsOnUIDatabaseObserverSerialQueue()
-            _pendingDeletes = newValue
-        }
-    }
-
-    private var _committedDeletes: Set<RowId>?
-    private var committedDeletes: Set<RowId>? {
-        get {
-            AssertIsOnMainThread()
-            return _committedDeletes
-        }
-        set {
-            AssertIsOnMainThread()
-            _committedDeletes = newValue
-        }
-    }
+    // NOTE: This observer only tracks deleted attachment rowIds in ObservedDatabaseChanges.
+    fileprivate typealias RowId = Int64
+    fileprivate var pendingChanges = ObservedDatabaseChanges<RowId>(concurrencyMode: .uiDatabaseObserverSerialQueue)
+    fileprivate var committedChanges = ObservedDatabaseChanges<RowId>(concurrencyMode: .mainThread)
 
     var _deletedAttachmentIds: Set<String>?
     var deletedAttachmentIds: Set<String>? {
@@ -72,24 +51,25 @@ extension MediaGalleryDatabaseObserver: DatabaseSnapshotDelegate {
     public func snapshotTransactionDidChange(with event: DatabaseEvent) {
         AssertIsOnUIDatabaseObserverSerialQueue()
         if event.kind == .delete && event.tableName == AttachmentRecord.databaseTableName {
-            _ = pendingDeletes.insert(event.rowID)
+            pendingChanges.append(attachmentChange: event.rowID)
         }
     }
 
     public func snapshotTransactionDidCommit(db: Database) {
         AssertIsOnUIDatabaseObserverSerialQueue()
-        let pendingDeletes = self.pendingDeletes
-        self.pendingDeletes = Set()
+
+        let attachmentChanges = pendingChanges.attachmentChanges
+        pendingChanges.reset()
 
         DispatchQueue.main.async {
-            self.committedDeletes = pendingDeletes
+            self.committedChanges.append(attachmentChanges: attachmentChanges)
         }
     }
 
     public func snapshotTransactionDidRollback(db: Database) {
         owsFailDebug("we should verify this works if we ever start to use rollbacks")
         AssertIsOnUIDatabaseObserverSerialQueue()
-        pendingDeletes = Set()
+        pendingChanges.reset()
     }
 
     // MARK: - Snapshot LifeCycle (Post Commit)
@@ -97,21 +77,35 @@ extension MediaGalleryDatabaseObserver: DatabaseSnapshotDelegate {
     public func databaseSnapshotWillUpdate() {
         AssertIsOnMainThread()
 
-        do {
-            guard let committedDeletes = self.committedDeletes else {
-                throw OWSAssertionError("committedDeletes were unexpectedly nil")
+        defer {
+            committedChanges.reset()
+        }
+
+        let notifyReset = {
+            for delegate in self.snapshotDelegates {
+                delegate.mediaGalleryDatabaseSnapshotDidReset()
             }
-            self.committedDeletes = nil
+        }
+
+        // We don't yet use lastError in this snapshot, but we might eventually.
+        if let error = self.committedChanges.lastError {
+            owsFailDebug("Error: \(error)")
+            return notifyReset()
+        }
+
+        do {
+            let deletedAttachmentRowIds = committedChanges.attachmentChanges
 
             assert(self.deletedAttachmentIds == nil)
             try databaseStorage.uiReadThrows { transaction in
-                self.deletedAttachmentIds = try self.attachmentIds(forRowIds: committedDeletes, transaction: transaction)
+                self.deletedAttachmentIds = try self.attachmentIds(forRowIds: deletedAttachmentRowIds, transaction: transaction)
             }
             for delegate in snapshotDelegates {
                 delegate.mediaGalleryDatabaseSnapshotWillUpdate()
             }
         } catch {
-            owsFailDebug("error: \(error)")
+            owsFailDebug("Error: \(error)")
+            return notifyReset()
         }
     }
 

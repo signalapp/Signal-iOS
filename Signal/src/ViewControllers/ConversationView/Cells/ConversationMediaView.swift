@@ -564,7 +564,7 @@ public class ConversationMediaView: UIView {
             }
 
             guard let media = loadMediaBlock() else {
-                Logger.error("Failed to load media.")
+                Logger.info("Failed to load media.")
 
                 DispatchQueue.main.async {
                     loadCompletion(nil)

@@ -393,19 +393,24 @@ public class SDSDatabaseStorage: SDSTransactable {
         }
     }
 
-    @objc
-    public override func write(block: @escaping (SDSAnyWriteTransaction) -> Void) {
-        if OWSIsDebugBuild() &&
-            Thread.isMainThread &&
+    // NOTE: This method is not @objc. See SDSDatabaseStorage+Objc.h.
+    public override func write(file: String = #file,
+                               function: String = #function,
+                               line: Int = #line,
+                               block: @escaping (SDSAnyWriteTransaction) -> Void) {
+        #if TESTABLE_BUILD
+        if Thread.isMainThread &&
             AppReadiness.isAppReady() {
-            Logger.verbose("Database write on main thread.")
+            owsFailDebug("Database write on main thread.")
         }
+        #endif
 
+        let benchTitle = "Slow Write Transaction \(Self.owsFormatLogMessage(file: file, function: function, line: line))"
         switch dataStoreForWrites {
         case .grdb:
             do {
                 try grdbStorage.write { transaction in
-                    Bench(title: "Slow Write Transaction", logIfLongerThan: 0.1) {
+                    Bench(title: benchTitle, logIfLongerThan: 0.1) {
                         block(transaction.asAnyWrite)
                     }
                 }
@@ -414,7 +419,7 @@ public class SDSDatabaseStorage: SDSTransactable {
             }
         case .ydb:
             yapStorage.write { transaction in
-                Bench(title: "Slow Write Transaction", logIfLongerThan: 0.1) {
+                Bench(title: benchTitle, logIfLongerThan: 0.1) {
                     block(transaction.asAnyWrite)
                 }
             }
@@ -445,6 +450,15 @@ public class SDSDatabaseStorage: SDSTransactable {
             value = block(transaction)
         }
         return value
+    }
+
+    public static func owsFormatLogMessage(file: String = #file,
+                                           function: String = #function,
+                                           line: Int = #line) -> String {
+        let filename = (file as NSString).lastPathComponent
+        // We format the filename & line number in a format compatible
+        // with XCode's "Open Quickly..." feature.
+        return "[\(filename):\(line) \(function)]"
     }
 }
 

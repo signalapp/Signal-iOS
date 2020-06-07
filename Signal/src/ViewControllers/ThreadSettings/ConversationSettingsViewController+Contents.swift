@@ -464,8 +464,11 @@ extension ConversationSettingsViewController {
         let section = OWSTableSection()
         section.customHeaderHeight = 14
 
-        section.footerTitle = NSLocalizedString("CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER",
-                                                comment: "Footer text for the 'block and leave' section of conversation settings view.")
+        section.footerTitle = isGroupThread
+            ? NSLocalizedString("CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER",
+                                comment: "Footer text for the 'block and leave' section of group conversation settings view.")
+            : NSLocalizedString("CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER",
+                                comment: "Footer text for the 'block and leave' section of contact conversation settings view.")
 
         if isGroupThread, isLocalUserInConversation {
             section.add(OWSTableItem(customCellBlock: { [weak self] in
