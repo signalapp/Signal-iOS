@@ -111,11 +111,11 @@ public class UIDatabaseObserver: NSObject {
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(self.applicationStateDidChange),
-                                               name: .OWSApplicationWillResignActive,
+                                               name: .OWSApplicationDidEnterBackground,
                                                object: nil)
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(applicationStateDidChange),
-                                               name: .OWSApplicationDidBecomeActive,
+                                               name: .OWSApplicationWillEnterForeground,
                                                object: nil)
 
         AppReadiness.runNowOrWhenAppDidBecomeReady {
@@ -133,7 +133,7 @@ public class UIDatabaseObserver: NSObject {
             guard AppReadiness.isAppReady() else {
                 return false
             }
-            guard CurrentAppContext().isAppForegroundAndActive() else {
+            guard !CurrentAppContext().isInBackground() else {
                 return false
             }
             return true
