@@ -70,6 +70,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addReadToReactions
         case addIsMarkedUnreadToThreads
         case addIsMediaMessageToMessageSenderJobQueue
+        case readdAttachmentIndex
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -623,6 +624,20 @@ public class GRDBSchemaMigrator: NSObject {
                 on: "model_TSAttachment",
                 columns: ["uniqueId", "contentType"]
             )
+        }
+
+        migrator.registerMigration(MigrationId.readdAttachmentIndex.rawValue) { db in
+            try db.create(
+                index: "index_model_TSAttachment_on_uniqueId",
+                on: "model_TSAttachment",
+                columns: ["uniqueId"]
+            )
+
+            do {
+                try db.execute(sql: "UPDATE model_SSKJobRecord SET isMediaMessage = 0")
+            } catch {
+                owsFail("Error: \(error)")
+            }
         }
 
         // MARK: - Schema Migration Insertion Point
