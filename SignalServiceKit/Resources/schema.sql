@@ -867,3 +867,9 @@ CREATE
     ,"contentType"
 )
 ;
+
+CREATE
+    INDEX "index_model_TSAttachment_on_uniqueId"
+        ON "model_TSAttachment"("uniqueId"
+)
+;
