@@ -89,7 +89,7 @@ public class UIDatabaseObserver: NSObject {
         }
     }
 
-    private var hasPendingSnapshotUpdate = false
+    private let hasPendingSnapshotUpdate = AtomicBool(false)
     private var lastSnapshotUpdateDate: Date?
 
     // This property should only be accessed on the main thread.
@@ -211,23 +211,28 @@ extension UIDatabaseObserver: TransactionObserver {
             }
         }
 
-        DispatchQueue.main.async { [weak self] in
-            self?.enqueueSnapshotUpdate()
-        }
-    }
-
-    private func enqueueSnapshotUpdate() {
         // Enqueue the update.
-        hasPendingSnapshotUpdate = true
+        hasPendingSnapshotUpdate.set(true)
         // Try to update immediately.
-        updateSnapshotIfNecessary()
+        DispatchQueue.main.async { [weak self] in
+            self?.updateSnapshotIfNecessary()
+        }
     }
 
     private func updateSnapshotIfNecessary() {
         AssertIsOnMainThread()
 
-        guard hasPendingSnapshotUpdate else {
-            // If there's no new database changes, we don't need to update the snapshot.
+        do {
+            // We only want to update the snapshot if we the flag needs to be cleared.
+            try hasPendingSnapshotUpdate.transition(from: true, to: false)
+        } catch {
+            switch error {
+            case AtomicError.invalidTransition:
+                // If there's no new database changes, we don't need to update the snapshot.
+                break
+            default:
+                owsFailDebug("Error: \(error)")
+            }
             return
         }
 
@@ -243,7 +248,6 @@ extension UIDatabaseObserver: TransactionObserver {
         }
 
         // Update the snapshot now.
-        hasPendingSnapshotUpdate = false
         lastSnapshotUpdateDate = Date()
         updateSnapshot()
     }
