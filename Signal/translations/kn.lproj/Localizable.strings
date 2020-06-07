@@ -764,17 +764,20 @@
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "ಗುಂಪಿನ ಹೆಸರು, ಅವತಾರ್ ಮತ್ತು ಕಣ್ಮರೆಯಾಗುತ್ತಿರುವ ಸಂದೇಶಗಳ ಟೈಮರ್ ಅನ್ನು ಯಾರು ತಿದ್ದಬಹುದು ಎಂಬುದನ್ನು ಆಯ್ಕೆ ಮಾಡಿ.";
 
-/* Footer text for the 'block and leave' section of conversation settings view. */
+/* Footer text for the 'block and leave' section of contact conversation settings view. */
+"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "You will no longer receive messages or updates from this user.";
+
+/* Footer text for the 'block and leave' section of group conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER" = "ನೀವು ಈ ಗುಂಪಿನಿಂದ ಸಂದೇಶಗಳು ಅಥವಾ ನವೀಕರಣಗಳನ್ನು ಇನ್ನು ಮುಂದೆ ಸ್ವೀಕರಿಸುವುದಿಲ್ಲ.";
 
 /* Label for 'block group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_GROUP" = "ಗುಂಪನ್ನು ನಿರ್ಬಂಧಿಸಿ";
 
 /* table cell label in conversation settings */
-"CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "ಈ ಗುಂಪನ್ನು ನಿರ್ಬಂಧಿಸಿ";
+"CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "CONVERSATION_SETTINGS_BLOCK_THIS_GROUP";
 
 /* table cell label in conversation settings */
-"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "ಈ ಬಳಕೆದಾರನನ್ನು ನಿರ್ಬಂಧಿಸಿ";
+"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "CONVERSATION_SETTINGS_BLOCK_THIS_USER";
 
 /* Label for 'block user' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_USER" = "ಬಳಕೆದಾರನನ್ನು ನಿರ್ಬಂಧಿಸಿ";
@@ -813,7 +816,7 @@
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "ಎಲ್ಲಾ ಸದಸ್ಯರು";
 
 /* Navbar title when viewing settings for a group thread */
-"CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "ಗುಂಪಿನ ಮಾಹಿತಿ";
+"CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "CONVERSATION_SETTINGS_GROUP_INFO_TITLE";
 
 /* Label for 'make group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "ಅಡ್ಮಿನ್ ಮಾಡಿ";
@@ -1164,7 +1167,7 @@
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "ಸಂಪರ್ಕ ಮಾಹಿತಿಯನ್ನು ತಿದ್ದಲು Signal ಸಂಪರ್ಕ ಪ್ರವೇಶದ ಅಗತ್ಯವಿದೆ";
 
 /* table cell label in conversation settings */
-"EDIT_GROUP_ACTION" = "ಗುಂಪನ್ನು ತಿದ್ದಿರಿ";
+"EDIT_GROUP_ACTION" = "EDIT_GROUP_ACTION";
 
 /* The 'clear avatar' button in the 'edit group' view. */
 "EDIT_GROUP_CLEAR_AVATAR" = "ಅವತಾರ್ ತೆಗೆಯಿರಿ";
@@ -1186,9 +1189,6 @@
 
 /* Label for the group name in the 'edit group' view. */
 "EDIT_GROUP_GROUP_NAME" = "ಗುಂಪಿನ ಹೆಸರು";
-
-/* An indicator that a user is a new member of the group. */
-"EDIT_GROUP_NEW_MEMBER_LABEL" = "ಸೇರಿಸಲಾಗಿದೆ";
 
 /* The title for the 'update group' button. */
 "EDIT_GROUP_UPDATE_BUTTON" = "ನವೀಕರಿಸಿ";
@@ -1484,9 +1484,6 @@
 /* Message indicating that the access to the group's members was changed. Embeds {{new access level}}. */
 "GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "ಗುಂಪಿನ ಸದಸ್ಯತ್ವವನ್ನು “%@“ ಬದಲಾಯಿಸಬಹುದು.";
 
-/* Error indicating that a member cannot be added to a group. */
-"GROUP_CANNOT_ADD_INVALID_MEMBER" = "ಈ ಬಳಕೆದಾರನನ್ನು ಗುಂಪಿಗೆ ಸೇರಿಸಲಾಗುವುದಿಲ್ಲ.";
-
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "ನೀವು ಗುಂಪನ್ನು ರಚಿಸಿದ್ದೀರಿ.";
 
@@ -1560,7 +1557,7 @@
 "GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ ನಿಮ್ಮ ನಿರ್ವಾಹಕ ಸವಲತ್ತುಗಳನ್ನು ಹಿಂತೆಗೆದುಕೊಂಡಿದ್ದಾರೆ.";
 
 /* Conversation settings table section title */
-"GROUP_MANAGEMENT_SECTION" = "ಗುಂಪು ನಿರ್ವಹಣೆ";
+"GROUP_MANAGEMENT_SECTION" = "GROUP_MANAGEMENT_SECTION";
 
 /* Label indicating that a group member is an admin. */
 "GROUP_MEMBER_ADMIN_INDICATOR" = "ಅಡ್ಮಿನ್‌‌";
@@ -1586,17 +1583,8 @@
 /* Label indicating that a group has no other members. */
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "ಸದಸ್ಯರು ಇಲ್ಲ.";
 
-/* Label for the button that clears all verification errors in the 'group members' view. */
-"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "ಎಲ್ಲರಿಗೂ ದೃಢೀಕರಣವನ್ನು ತೆರವುಗೊಳಿಸಿ";
-
-/* Label for the 'reset all no-longer-verified group members' confirmation alert. */
-"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE" = "ಕೊನೆಯದಾಗಿ ದೃಢೀಕರಿಸಿದ ನಂತರ ಸುರಕ್ಷತಾ ಸಂಖ್ಯೆಗಳು ಬದಲಾದ ಎಲ್ಲಾ ಗುಂಪಿನ ಸದಸ್ಯರ ದೃಢೀಕರಣವನ್ನು ಇದು ತೆರವುಗೊಳಿಸುತ್ತದೆ.";
-
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "ಸದಸ್ಯರು";
-
-/* Title for the 'no longer verified' section of the 'group members' view. */
-"GROUP_MEMBERS_SECTION_TITLE_NO_LONGER_VERIFIED" = "ದೃಢೀಕರಿಸಿದಂತೆ ಇನ್ನು ಮುಂದೆ ಗುರುತಿಸಲಾಗಿಲ್ಲ";
 
 /* Button label for the 'send message to group member' button */
 "GROUP_MEMBERS_SEND_MESSAGE" = "ಸಂದೇಶ";
@@ -2001,7 +1989,7 @@
 "LINKING_DEVICE_FAILED_TITLE" = "ಸಾಧನವನ್ನು ಲಿಂಕ್ ಮಾಡುವುದು ವಿಫಲವಾಗಿದೆ";
 
 /* table cell label in conversation settings */
-"LIST_GROUP_MEMBERS_ACTION" = "ಗುಂಪಿನ ಸದಸ್ಯರು";
+"LIST_GROUP_MEMBERS_ACTION" = "LIST_GROUP_MEMBERS_ACTION";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "ಹೆಸರು ಅಥವಾ ವಿಳಾಸದ ಮೂಲಕ ಹುಡುಕಿ";
@@ -2321,9 +2309,6 @@
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "ಹೊಸ ಗುಂಪು";
 
-/* Accessibility label for the new group button */
-"NEW_GROUP_BUTTON_LABEL" = "ಹೊಸ ಗುಂಪು";
-
 /* The title for the 'create group' button. */
 "NEW_GROUP_CREATE_BUTTON" = "ರಚಿಸಿ";
 
@@ -2342,17 +2327,11 @@
 /* Used in place of the group name when a group has not yet been named. */
 "NEW_GROUP_DEFAULT_TITLE" = "ಹೊಸ ಗುಂಪು";
 
-/* An indicator that a user is a member of the new group. */
-"NEW_GROUP_MEMBER_LABEL" = "ಸದಸ್ಯ";
-
 /* notification title. Embeds {{author name}} and {{group name}} */
 "NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ ರಿಂದ %@ ಗೆ";
 
 /* The title for the 'name new group' view. */
 "NEW_GROUP_NAME_GROUP_VIEW_TITLE" = "ಹೆಸರಿನ ಗುಂಪು";
-
-/* Placeholder text for group name field */
-"NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "ಈ ಗುಂಪು ಚಾಟ್‌ಗೆ ಹೆಸರಿಸಿ";
 
 /* a title for the selected section of the 'recipient picker' view. */
 "NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "ಇತರ ಬಳಕೆದಾರರು";
@@ -3711,7 +3690,7 @@
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "ಆ್ಯಪ್ ಸ್ವಿಚರ್‌ನಲ್ಲಿ Signal ಪೂರ್ವವೀಕ್ಷಣೆಗಳು ಕಾಣಿಸಿಕೊಳ್ಳದಂತೆ ತಡೆಯಿರಿ.";
 
 /* Label for the notifications section of conversation settings view. */
-"SETTINGS_SECTION_NOTIFICATIONS" = "ಅಧಿಸೂಚನೆಗಳು";
+"SETTINGS_SECTION_NOTIFICATIONS" = "SETTINGS_SECTION_NOTIFICATIONS";
 
 /* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "ಶಬ್ದಗಳು";
@@ -4018,12 +3997,6 @@
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_FEATURE_ERROR" = "ನಿಮ್ಮ ಸಾಧನವು ಈ ವೈಶಿಷ್ಟ್ಯವನ್ನು ಬೆಂಬಲಿಸುತ್ತಿಲ್ಲ.";
-
-/* Title for alert indicating that group members can't be removed. */
-"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "ನಿಮ್ಮಿಂದ ಗುಂಪಿನ ಸದಸ್ಯರನ್ನು ತೆಗೆಯಲು ಸಾಧ್ಯವಿಲ್ಲ. ಅವರು ಒಂದೋ ಬಿಡಬೇಕು ಅಥವಾ ನೀವು ಈ ಸದಸ್ಯರು ಇಲ್ಲದೇ ಹೊಸ ಗುಂಪನ್ನು ರಚಿಸಬಹುದು.";
-
-/* Title for alert indicating that group members can't be removed. */
-"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "ಬೆಂಬಲ ಹೊಂದಿಲ್ಲ";
 
 /* Error indicating that a group could not be updated. */
 "UPDATE_GROUP_FAILED" = "ಗುಂಪನ್ನು ಅಪ್‌ಡೇಟ್ ಮಾಡಲಾಗದು.";
