@@ -38,12 +38,16 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
     }
 }
 
+// MARK: -
+
 @interface TSInteraction ()
 
 @property (nonatomic) uint64_t sortId;
 @property (nonatomic) uint64_t receivedAtTimestamp;
 
 @end
+
+// MARK: -
 
 @implementation TSInteraction
 
