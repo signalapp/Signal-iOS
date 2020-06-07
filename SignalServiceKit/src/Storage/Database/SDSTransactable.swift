@@ -40,7 +40,12 @@ public extension SDSTransactable {
             completionQueue.async(execute: completion)
         }
     }
+}
 
+// MARK: - Async Methods
+
+// NOTE: This extension is not @objc. See SDSDatabaseStorage+Objc.h.
+public extension SDSTransactable {
     func asyncWrite(file: String = #file,
                     function: String = #function,
                     line: Int = #line,
@@ -55,7 +60,8 @@ public extension SDSTransactable {
     func asyncWrite(file: String = #file,
                     function: String = #function,
                     line: Int = #line,
-                    block: @escaping (SDSAnyWriteTransaction) -> Void, completion: @escaping () -> Void) {
+                    block: @escaping (SDSAnyWriteTransaction) -> Void,
+                    completion: @escaping () -> Void) {
         asyncWrite(file: file,
                    function: function,
                    line: line,
@@ -67,7 +73,9 @@ public extension SDSTransactable {
     func asyncWrite(file: String = #file,
                     function: String = #function,
                     line: Int = #line,
-                    block: @escaping (SDSAnyWriteTransaction) -> Void, completionQueue: DispatchQueue, completion: @escaping () -> Void) {
+                    block: @escaping (SDSAnyWriteTransaction) -> Void,
+                    completionQueue: DispatchQueue,
+                    completion: @escaping () -> Void) {
         DispatchQueue.global().async {
             self.write(file: file,
                        function: function,
@@ -107,7 +115,7 @@ public extension SDSTransactable {
         }
     }
 
-    @objc
+    // NOTE: This method is not @objc. See SDSDatabaseStorage+Objc.h.
     func writePromise(_ block: @escaping (SDSAnyWriteTransaction) -> Void) -> AnyPromise {
         return AnyPromise(write(.promise, block) as Promise<Void>)
     }
@@ -212,5 +220,44 @@ public extension SDSTransactable {
             throw error.grdbErrorForLogging
         }
         return value
+    }
+}
+
+// MARK: - @objc macro methods
+
+// NOTE: Do NOT call these methods directly. See SDSDatabaseStorage+Objc.h.
+@objc
+public extension SDSTransactable {
+    @available(*, deprecated, message: "Use DatabaseStorageWrite() instead")
+    func __private_objc_write(file: String = #file,
+                               function: String = #function,
+                               line: Int = #line,
+                               block: @escaping (SDSAnyWriteTransaction) -> Void) {
+        write(file: file, function: function, line: line, block: block)
+    }
+
+    @available(*, deprecated, message: "Use DatabaseStorageAsyncWrite() instead")
+    func __private_objc_asyncWrite(file: String = #file,
+                    function: String = #function,
+                    line: Int = #line,
+                    block: @escaping (SDSAnyWriteTransaction) -> Void) {
+        asyncWrite(file: file,
+                   function: function,
+                   line: line,
+                   block: block,
+                   completion: { })
+    }
+
+    @available(*, deprecated, message: "Use DatabaseStorageAsyncWriteWithCompletion() instead")
+    func __private_objc_asyncWrite(file: String = #file,
+                    function: String = #function,
+                    line: Int = #line,
+                    block: @escaping (SDSAnyWriteTransaction) -> Void,
+                    completion: @escaping () -> Void) {
+        asyncWrite(file: file,
+                   function: function,
+                   line: line,
+                   block: block,
+                   completion: completion)
     }
 }

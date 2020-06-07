@@ -614,14 +614,14 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
         __block TSThread *thread = nil;
         DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
             thread = [TSContactThread getOrCreateThreadWithContactAddress:recipientAddress transaction:transaction];
-        }];
+        });
         [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
             [ThreadUtil enqueueMessageWithText:url.absoluteString
                                         thread:thread
                               quotedReplyModel:nil
                               linkPreviewDraft:nil
                                    transaction:transaction];
-        });
+        }];
     });
 
     // Also copy to pasteboard.

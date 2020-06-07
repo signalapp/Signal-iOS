@@ -393,7 +393,7 @@ public class SDSDatabaseStorage: SDSTransactable {
         }
     }
 
-    @objc
+    // NOTE: This method is not @objc. See SDSDatabaseStorage+Objc.h.
     public override func write(file: String = #file,
                                function: String = #function,
                                line: Int = #line,
