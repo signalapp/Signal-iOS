@@ -398,11 +398,12 @@ public class SDSDatabaseStorage: SDSTransactable {
                                function: String = #function,
                                line: Int = #line,
                                block: @escaping (SDSAnyWriteTransaction) -> Void) {
-        if OWSIsDebugBuild() &&
-            Thread.isMainThread &&
+        #if TESTABLE_BUILD
+        if Thread.isMainThread &&
             AppReadiness.isAppReady() {
-            Logger.verbose("Database write on main thread.")
+            owsFailDebug("Database write on main thread.")
         }
+        #endif
 
         let benchTitle = "Slow Write Transaction \(Self.owsFormatLogMessage(file: file, function: function, line: line))"
         switch dataStoreForWrites {

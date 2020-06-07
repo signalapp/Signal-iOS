@@ -739,7 +739,7 @@ public class ShareViewController: UIViewController, ShareViewDelegate, SAEFailed
             return itemProvider.loadUrl(forTypeIdentifier: kUTTypeImage as String, options: nil).map { fileUrl in
                 LoadedItem(itemProvider: unloadedItem.itemProvider,
                            payload: .fileUrl(fileUrl))
-            }.recover { error -> Promise<LoadedItem> in
+            }.recover(on: .global()) { error -> Promise<LoadedItem> in
                 let nsError = error as NSError
                 assert(nsError.domain == NSItemProvider.errorDomain)
                 assert(nsError.code == NSItemProvider.ErrorCode.unexpectedValueClassError.rawValue)
