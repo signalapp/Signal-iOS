@@ -52,6 +52,7 @@ static SSKEnvironment *sharedSSKEnvironment;
 @property (nonatomic) BulkProfileFetch *bulkProfileFetch;
 @property (nonatomic) BulkUUIDLookup *bulkUUIDLookup;
 @property (nonatomic) id<VersionedProfiles> versionedProfiles;
+@property (nonatomic) EarlyMessageManager *earlyMessageManager;
 
 @end
 
@@ -109,6 +110,7 @@ static SSKEnvironment *sharedSSKEnvironment;
                        bulkProfileFetch:(BulkProfileFetch *)bulkProfileFetch
                          bulkUUIDLookup:(BulkUUIDLookup *)bulkUUIDLookup
                       versionedProfiles:(id<VersionedProfiles>)versionedProfiles
+                    earlyMessageManager:(EarlyMessageManager *)earlyMessageManager
 {
     self = [super init];
     if (!self) {
@@ -160,6 +162,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     OWSAssertDebug(bulkProfileFetch);
     OWSAssertDebug(versionedProfiles);
     OWSAssertDebug(bulkUUIDLookup);
+    OWSAssertDebug(earlyMessageManager);
 
     _contactsManager = contactsManager;
     _linkPreviewManager = linkPreviewManager;
@@ -207,6 +210,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     _bulkProfileFetch = bulkProfileFetch;
     _versionedProfiles = versionedProfiles;
     _bulkUUIDLookup = bulkUUIDLookup;
+    _earlyMessageManager = earlyMessageManager;
 
     return self;
 }
