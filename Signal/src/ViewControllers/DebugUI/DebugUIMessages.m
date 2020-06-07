@@ -232,10 +232,11 @@ NS_ASSUME_NONNULL_BEGIN
                             OWSGroupInfoRequestMessage *groupInfoRequestMessage = [[OWSGroupInfoRequestMessage alloc]
                                 initWithThread:thread
                                        groupId:[TSGroupModel generateRandomV1GroupId]];
-                            [self writeWithBlock:^(SDSAnyWriteTransaction *_Nonnull transaction) {
-                                [self.messageSenderJobQueue addMessage:groupInfoRequestMessage.asPreparer
-                                                           transaction:transaction];
-                            }];
+                            DatabaseStorageWrite(
+                                SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *_Nonnull transaction) {
+                                    [self.messageSenderJobQueue addMessage:groupInfoRequestMessage.asPreparer
+                                                               transaction:transaction];
+                                });
                         }],
         [OWSTableItem itemWithTitle:@"Message with stalled timer"
                         actionBlock:^{
@@ -328,16 +329,6 @@ NS_ASSUME_NONNULL_BEGIN
     [self.class readWithBlock:block];
 }
 
-+ (void)writeWithBlock:(void (^)(SDSAnyWriteTransaction *transaction))block
-{
-    [self.databaseStorage writeWithBlock:block];
-}
-
-- (void)writeWithBlock:(void (^)(SDSAnyWriteTransaction *transaction))block
-{
-    [self.class writeWithBlock:block];
-}
-
 #pragma mark -
 
 + (void)sendMessages:(NSUInteger)count toAllMembersOfGroup:(TSGroupThread *)groupThread
@@ -356,13 +347,13 @@ NS_ASSUME_NONNULL_BEGIN
     NSString *randomText = [self randomText];
     NSString *text = [[[@(counter) description] stringByAppendingString:@" "] stringByAppendingString:randomText];
     __block TSOutgoingMessage *message;
-    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *transaction) {
         message = [ThreadUtil enqueueMessageWithText:text
                                               thread:thread
                                     quotedReplyModel:nil
                                     linkPreviewDraft:nil
                                          transaction:transaction];
-    }];
+    });
     OWSLogInfo(@"sendTextMessageInThread timestamp: %llu.", message.timestamp);
 }
 
@@ -3447,158 +3438,168 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 {
     OWSAssertDebug(thread);
 
+    __block NSArray<TSInteraction *> *result;
+    DatabaseStorageWrite(SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *transaction) {
+        result = [self unsavedSystemMessagesInThread:thread transaction:transaction];
+    });
+    return result;
+}
+
++ (NSArray<TSInteraction *> *)unsavedSystemMessagesInThread:(TSThread *)thread
+                                                transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(thread);
+
     NSMutableArray<TSInteraction *> *result = [NSMutableArray new];
 
-    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        if ([thread isKindOfClass:[TSContactThread class]]) {
-            TSContactThread *contactThread = (TSContactThread *)thread;
+    if ([thread isKindOfClass:[TSContactThread class]]) {
+        TSContactThread *contactThread = (TSContactThread *)thread;
 
-            [result addObject:[[TSCall alloc] initWithCallType:RPRecentCallTypeIncoming
-                                                        thread:contactThread
-                                               sentAtTimestamp:[NSDate ows_millisecondTimeStamp]]];
-            [result addObject:[[TSCall alloc] initWithCallType:RPRecentCallTypeOutgoing
-                                                        thread:contactThread
-                                               sentAtTimestamp:[NSDate ows_millisecondTimeStamp]]];
-            [result addObject:[[TSCall alloc] initWithCallType:RPRecentCallTypeIncomingMissed
-                                                        thread:contactThread
-                                               sentAtTimestamp:[NSDate ows_millisecondTimeStamp]]];
-            [result addObject:[[TSCall alloc] initWithCallType:RPRecentCallTypeIncomingMissedBecauseOfChangedIdentity
-                                                        thread:contactThread
-                                               sentAtTimestamp:[NSDate ows_millisecondTimeStamp]]];
-            [result addObject:[[TSCall alloc] initWithCallType:RPRecentCallTypeOutgoingIncomplete
-                                                        thread:contactThread
-                                               sentAtTimestamp:[NSDate ows_millisecondTimeStamp]]];
-            [result addObject:[[TSCall alloc] initWithCallType:RPRecentCallTypeIncomingIncomplete
-                                                        thread:contactThread
-                                               sentAtTimestamp:[NSDate ows_millisecondTimeStamp]]];
-            [result addObject:[[TSCall alloc] initWithCallType:RPRecentCallTypeIncomingDeclined
-                                                        thread:contactThread
-                                               sentAtTimestamp:[NSDate ows_millisecondTimeStamp]]];
-            [result addObject:[[TSCall alloc] initWithCallType:RPRecentCallTypeOutgoingMissed
-                                                        thread:contactThread
-                                               sentAtTimestamp:[NSDate ows_millisecondTimeStamp]]];
-        }
+        [result addObject:[[TSCall alloc] initWithCallType:RPRecentCallTypeIncoming
+                                                    thread:contactThread
+                                           sentAtTimestamp:[NSDate ows_millisecondTimeStamp]]];
+        [result addObject:[[TSCall alloc] initWithCallType:RPRecentCallTypeOutgoing
+                                                    thread:contactThread
+                                           sentAtTimestamp:[NSDate ows_millisecondTimeStamp]]];
+        [result addObject:[[TSCall alloc] initWithCallType:RPRecentCallTypeIncomingMissed
+                                                    thread:contactThread
+                                           sentAtTimestamp:[NSDate ows_millisecondTimeStamp]]];
+        [result addObject:[[TSCall alloc] initWithCallType:RPRecentCallTypeIncomingMissedBecauseOfChangedIdentity
+                                                    thread:contactThread
+                                           sentAtTimestamp:[NSDate ows_millisecondTimeStamp]]];
+        [result addObject:[[TSCall alloc] initWithCallType:RPRecentCallTypeOutgoingIncomplete
+                                                    thread:contactThread
+                                           sentAtTimestamp:[NSDate ows_millisecondTimeStamp]]];
+        [result addObject:[[TSCall alloc] initWithCallType:RPRecentCallTypeIncomingIncomplete
+                                                    thread:contactThread
+                                           sentAtTimestamp:[NSDate ows_millisecondTimeStamp]]];
+        [result addObject:[[TSCall alloc] initWithCallType:RPRecentCallTypeIncomingDeclined
+                                                    thread:contactThread
+                                           sentAtTimestamp:[NSDate ows_millisecondTimeStamp]]];
+        [result addObject:[[TSCall alloc] initWithCallType:RPRecentCallTypeOutgoingMissed
+                                                    thread:contactThread
+                                           sentAtTimestamp:[NSDate ows_millisecondTimeStamp]]];
+    }
 
-        {
-            NSNumber *durationSeconds = [OWSDisappearingMessagesConfiguration validDurationsSeconds][0];
-            OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration =
-                [thread disappearingMessagesConfigurationWithTransaction:transaction];
-            disappearingMessagesConfiguration = [disappearingMessagesConfiguration
-                copyAsEnabledWithDurationSeconds:(uint32_t)[durationSeconds intValue]];
+    {
+        NSNumber *durationSeconds = [OWSDisappearingMessagesConfiguration validDurationsSeconds][0];
+        OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration =
+            [thread disappearingMessagesConfigurationWithTransaction:transaction];
+        disappearingMessagesConfiguration =
+            [disappearingMessagesConfiguration copyAsEnabledWithDurationSeconds:(uint32_t)[durationSeconds intValue]];
 
-            [result addObject:[[OWSDisappearingConfigurationUpdateInfoMessage alloc]
-                                          initWithThread:thread
-                                           configuration:disappearingMessagesConfiguration
-                                     createdByRemoteName:@"Alice"
-                                  createdInExistingGroup:NO]];
-        }
+        [result addObject:[[OWSDisappearingConfigurationUpdateInfoMessage alloc]
+                                      initWithThread:thread
+                                       configuration:disappearingMessagesConfiguration
+                                 createdByRemoteName:@"Alice"
+                              createdInExistingGroup:NO]];
+    }
 
-        {
-            NSNumber *durationSeconds = [OWSDisappearingMessagesConfiguration validDurationsSeconds][0];
-            OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration =
-                [thread disappearingMessagesConfigurationWithTransaction:transaction];
-            disappearingMessagesConfiguration = [disappearingMessagesConfiguration
-                copyAsEnabledWithDurationSeconds:(uint32_t)[durationSeconds intValue]];
+    {
+        NSNumber *durationSeconds = [OWSDisappearingMessagesConfiguration validDurationsSeconds][0];
+        OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration =
+            [thread disappearingMessagesConfigurationWithTransaction:transaction];
+        disappearingMessagesConfiguration =
+            [disappearingMessagesConfiguration copyAsEnabledWithDurationSeconds:(uint32_t)[durationSeconds intValue]];
 
-            [result addObject:[[OWSDisappearingConfigurationUpdateInfoMessage alloc]
-                                          initWithThread:thread
-                                           configuration:disappearingMessagesConfiguration
-                                     createdByRemoteName:nil
-                                  createdInExistingGroup:YES]];
-        }
+        [result addObject:[[OWSDisappearingConfigurationUpdateInfoMessage alloc]
+                                      initWithThread:thread
+                                       configuration:disappearingMessagesConfiguration
+                                 createdByRemoteName:nil
+                              createdInExistingGroup:YES]];
+    }
 
-        {
-            NSNumber *durationSeconds = [[OWSDisappearingMessagesConfiguration validDurationsSeconds] lastObject];
-            OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration =
-                [thread disappearingMessagesConfigurationWithTransaction:transaction];
-            disappearingMessagesConfiguration = [disappearingMessagesConfiguration
-                copyAsEnabledWithDurationSeconds:(uint32_t)[durationSeconds intValue]];
+    {
+        NSNumber *durationSeconds = [[OWSDisappearingMessagesConfiguration validDurationsSeconds] lastObject];
+        OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration =
+            [thread disappearingMessagesConfigurationWithTransaction:transaction];
+        disappearingMessagesConfiguration =
+            [disappearingMessagesConfiguration copyAsEnabledWithDurationSeconds:(uint32_t)[durationSeconds intValue]];
 
-            [result addObject:[[OWSDisappearingConfigurationUpdateInfoMessage alloc]
-                                          initWithThread:thread
-                                           configuration:disappearingMessagesConfiguration
-                                     createdByRemoteName:@"Alice"
-                                  createdInExistingGroup:NO]];
-        }
-        {
-            OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration =
-                [thread disappearingMessagesConfigurationWithTransaction:transaction];
-            disappearingMessagesConfiguration = [disappearingMessagesConfiguration copyWithIsEnabled:NO];
+        [result addObject:[[OWSDisappearingConfigurationUpdateInfoMessage alloc]
+                                      initWithThread:thread
+                                       configuration:disappearingMessagesConfiguration
+                                 createdByRemoteName:@"Alice"
+                              createdInExistingGroup:NO]];
+    }
+    {
+        OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration =
+            [thread disappearingMessagesConfigurationWithTransaction:transaction];
+        disappearingMessagesConfiguration = [disappearingMessagesConfiguration copyWithIsEnabled:NO];
 
-            [result addObject:[[OWSDisappearingConfigurationUpdateInfoMessage alloc]
-                                          initWithThread:thread
-                                           configuration:disappearingMessagesConfiguration
-                                     createdByRemoteName:@"Alice"
-                                  createdInExistingGroup:NO]];
-        }
+        [result addObject:[[OWSDisappearingConfigurationUpdateInfoMessage alloc]
+                                      initWithThread:thread
+                                       configuration:disappearingMessagesConfiguration
+                                 createdByRemoteName:@"Alice"
+                              createdInExistingGroup:NO]];
+    }
 
-        [result addObject:[TSInfoMessage userNotRegisteredMessageInThread:thread
-                                                                  address:[[SignalServiceAddress alloc]
-                                                                              initWithPhoneNumber:@"+19174054215"]]];
+    [result addObject:[TSInfoMessage userNotRegisteredMessageInThread:thread
+                                                              address:[[SignalServiceAddress alloc]
+                                                                          initWithPhoneNumber:@"+19174054215"]]];
 
-        [result addObject:[[TSInfoMessage alloc] initWithThread:thread messageType:TSInfoMessageTypeSessionDidEnd]];
-        // TODO: customMessage?
-        [result addObject:[[TSInfoMessage alloc] initWithThread:thread messageType:TSInfoMessageTypeGroupUpdate]];
-        // TODO: customMessage?
-        [result addObject:[[TSInfoMessage alloc] initWithThread:thread messageType:TSInfoMessageTypeGroupQuit]];
+    [result addObject:[[TSInfoMessage alloc] initWithThread:thread messageType:TSInfoMessageTypeSessionDidEnd]];
+    // TODO: customMessage?
+    [result addObject:[[TSInfoMessage alloc] initWithThread:thread messageType:TSInfoMessageTypeGroupUpdate]];
+    // TODO: customMessage?
+    [result addObject:[[TSInfoMessage alloc] initWithThread:thread messageType:TSInfoMessageTypeGroupQuit]];
 
-        [result addObject:[[OWSVerificationStateChangeMessage alloc]
-                                 initWithThread:thread
-                               recipientAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"]
-                              verificationState:OWSVerificationStateDefault
-                                  isLocalChange:YES]];
+    [result addObject:[[OWSVerificationStateChangeMessage alloc]
+                             initWithThread:thread
+                           recipientAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"]
+                          verificationState:OWSVerificationStateDefault
+                              isLocalChange:YES]];
 
-        [result addObject:[[OWSVerificationStateChangeMessage alloc]
-                                 initWithThread:thread
-                               recipientAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"]
-                              verificationState:OWSVerificationStateVerified
-                                  isLocalChange:YES]];
-        [result addObject:[[OWSVerificationStateChangeMessage alloc]
-                                 initWithThread:thread
-                               recipientAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"]
-                              verificationState:OWSVerificationStateNoLongerVerified
-                                  isLocalChange:YES]];
+    [result addObject:[[OWSVerificationStateChangeMessage alloc]
+                             initWithThread:thread
+                           recipientAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"]
+                          verificationState:OWSVerificationStateVerified
+                              isLocalChange:YES]];
+    [result addObject:[[OWSVerificationStateChangeMessage alloc]
+                             initWithThread:thread
+                           recipientAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"]
+                          verificationState:OWSVerificationStateNoLongerVerified
+                              isLocalChange:YES]];
 
-        [result addObject:[[OWSVerificationStateChangeMessage alloc]
-                                 initWithThread:thread
-                               recipientAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"]
-                              verificationState:OWSVerificationStateDefault
-                                  isLocalChange:NO]];
-        [result addObject:[[OWSVerificationStateChangeMessage alloc]
-                                 initWithThread:thread
-                               recipientAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"]
-                              verificationState:OWSVerificationStateVerified
-                                  isLocalChange:NO]];
-        [result addObject:[[OWSVerificationStateChangeMessage alloc]
-                                 initWithThread:thread
-                               recipientAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"]
-                              verificationState:OWSVerificationStateNoLongerVerified
-                                  isLocalChange:NO]];
+    [result addObject:[[OWSVerificationStateChangeMessage alloc]
+                             initWithThread:thread
+                           recipientAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"]
+                          verificationState:OWSVerificationStateDefault
+                              isLocalChange:NO]];
+    [result addObject:[[OWSVerificationStateChangeMessage alloc]
+                             initWithThread:thread
+                           recipientAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"]
+                          verificationState:OWSVerificationStateVerified
+                              isLocalChange:NO]];
+    [result addObject:[[OWSVerificationStateChangeMessage alloc]
+                             initWithThread:thread
+                           recipientAddress:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"]
+                          verificationState:OWSVerificationStateNoLongerVerified
+                              isLocalChange:NO]];
 
-        [result addObject:[TSErrorMessage missingSessionWithEnvelope:[self createEnvelopeForThread:thread]
-                                                     withTransaction:transaction]];
-        [result addObject:[TSErrorMessage invalidKeyExceptionWithEnvelope:[self createEnvelopeForThread:thread]
-                                                          withTransaction:transaction]];
-        [result addObject:[TSErrorMessage invalidVersionWithEnvelope:[self createEnvelopeForThread:thread]
-                                                     withTransaction:transaction]];
-        [result addObject:[TSErrorMessage corruptedMessageWithEnvelope:[self createEnvelopeForThread:thread]
-                                                       withTransaction:transaction]];
+    [result addObject:[TSErrorMessage missingSessionWithEnvelope:[self createEnvelopeForThread:thread]
+                                                 withTransaction:transaction]];
+    [result addObject:[TSErrorMessage invalidKeyExceptionWithEnvelope:[self createEnvelopeForThread:thread]
+                                                      withTransaction:transaction]];
+    [result addObject:[TSErrorMessage invalidVersionWithEnvelope:[self createEnvelopeForThread:thread]
+                                                 withTransaction:transaction]];
+    [result addObject:[TSErrorMessage corruptedMessageWithEnvelope:[self createEnvelopeForThread:thread]
+                                                   withTransaction:transaction]];
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
-        TSInvalidIdentityKeyReceivingErrorMessage *_Nullable blockingSNChangeMessage =
-            [TSInvalidIdentityKeyReceivingErrorMessage untrustedKeyWithEnvelope:[self createEnvelopeForThread:thread]
-                                                                withTransaction:transaction];
+    TSInvalidIdentityKeyReceivingErrorMessage *_Nullable blockingSNChangeMessage =
+        [TSInvalidIdentityKeyReceivingErrorMessage untrustedKeyWithEnvelope:[self createEnvelopeForThread:thread]
+                                                            withTransaction:transaction];
 #pragma clang diagnostic pop
 
 
-        OWSAssertDebug(blockingSNChangeMessage);
-        [result addObject:blockingSNChangeMessage];
+    OWSAssertDebug(blockingSNChangeMessage);
+    [result addObject:blockingSNChangeMessage];
 
-        [result addObject:[[TSErrorMessage alloc]
-                                 initWithThread:thread
-                              failedMessageType:TSErrorMessageNonBlockingIdentityChange
-                                        address:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"]]];
-    }];
+    [result addObject:[[TSErrorMessage alloc]
+                             initWithThread:thread
+                          failedMessageType:TSErrorMessageNonBlockingIdentityChange
+                                    address:[[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"]]];
 
     return result;
 }
@@ -3608,11 +3609,11 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     OWSAssertDebug(thread);
 
     NSArray<TSInteraction *> *messages = [self unsavedSystemMessagesInThread:thread];
-    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *transaction) {
         for (TSInteraction *message in messages) {
             [message anyInsertWithTransaction:transaction];
         }
-    }];
+    });
 }
 
 + (void)createSystemMessageInThread:(TSThread *)thread
@@ -3621,9 +3622,9 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 
     NSArray<TSInteraction *> *messages = [self unsavedSystemMessagesInThread:thread];
     TSInteraction *message = messages[(NSUInteger)arc4random_uniform((uint32_t)messages.count)];
-    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *transaction) {
         [message anyInsertWithTransaction:transaction];
-    }];
+    });
 }
 
 + (void)sendTextAndSystemMessages:(NSUInteger)counter thread:(TSThread *)thread
@@ -3692,7 +3693,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                   OWSAssertDebug(phoneNumber);
                   OWSAssertDebug(phoneNumber.toE164);
 
-                  [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                  DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
                       SignalServiceAddress *address =
                           [[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber.toE164];
                       TSContactThread *contactThread =
@@ -3706,15 +3707,15 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                       OWSLogInfo(@"Create fake thread: %@, interactions: %lu",
                           phoneNumber.toE164,
                           (unsigned long)interactionCount);
-                  }];
+                  });
               }];
 }
 
 + (void)createFakeMessagesInBatches:(NSUInteger)counter thread:(TSThread *)thread isTextOnly:(BOOL)isTextOnly
 {
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [self createFakeMessagesInBatches:counter thread:thread isTextOnly:isTextOnly transaction:transaction];
-    }];
+    });
 }
 
 + (void)createFakeMessagesInBatches:(NSUInteger)counter
@@ -3751,9 +3752,9 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     uint32_t deleteDelay = arc4random_uniform((uint32_t)(0.01 * NSEC_PER_SEC));
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, deleteDelay), dispatch_get_main_queue(), ^{
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-            [self writeWithBlock:^(SDSAnyWriteTransaction *_Nonnull transaction) {
+            DatabaseStorageWrite(SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *_Nonnull transaction) {
                 [self deleteRandomMessagesWithCount:1 thread:thread transaction:transaction];
-            }];
+            });
         });
         [self thrashInsertAndDeleteForThread:thread counter:counter - 1];
     });
@@ -3854,13 +3855,13 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 
     void (^completion)(TSGroupThread *) = ^(TSGroupThread *thread) {
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
-            [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            DatabaseStorageWrite(SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *transaction) {
                 [ThreadUtil enqueueMessageWithText:[@(counter) description]
                                             thread:thread
                                   quotedReplyModel:nil
                                   linkPreviewDraft:nil
                                        transaction:transaction];
-            }];
+            });
             dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)1.f * NSEC_PER_SEC), dispatch_get_main_queue(), ^{
                 [self createNewGroups:counter - 1 recipientAddress:recipientAddress];
             });
@@ -3935,12 +3936,12 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         return;
     }
 
-    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *transaction) {
         [SSKEnvironment.shared.batchMessageProcessor enqueueEnvelopeData:envelopeData
                                                            plaintextData:plaintextData
                                                          wasReceivedByUD:NO
                                                              transaction:transaction];
-    }];
+    });
 }
 
 + (void)performRandomActions:(NSUInteger)counter thread:(TSThread *)thread
@@ -3998,13 +3999,13 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
             [self resurrectNewOutgoingMessages2:messageCount thread:thread transaction:transaction];
         },
     ];
-    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *transaction) {
         NSUInteger actionCount = 1 + (NSUInteger)arc4random_uniform(3);
         for (NSUInteger actionIdx = 0; actionIdx < actionCount; actionIdx++) {
             TransactionBlock actionBlock = actionBlocks[(NSUInteger)arc4random_uniform((uint32_t)actionBlocks.count)];
             actionBlock(transaction);
         }
-    }];
+    });
 }
 
 + (void)deleteLastMessages:(NSUInteger)count thread:(TSThread *)thread transaction:(SDSAnyWriteTransaction *)transaction
@@ -4129,14 +4130,14 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         OWSLogInfo(@"resurrectNewOutgoingMessages1.2: %zd", count);
-        [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        DatabaseStorageWrite(SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *transaction) {
             for (TSOutgoingMessage *message in messages) {
                 [message anyRemoveWithTransaction:transaction];
             }
             for (TSOutgoingMessage *message in messages) {
                 [message anyInsertWithTransaction:transaction];
             }
-        }];
+        });
     });
 }
 
@@ -4167,18 +4168,18 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
         OWSLogInfo(@"resurrectNewOutgoingMessages2.2: %zd", count);
-        [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        DatabaseStorageWrite(SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *transaction) {
             for (TSOutgoingMessage *message in messages) {
                 [message anyRemoveWithTransaction:transaction];
             }
-        }];
+        });
         dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(1.f * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
             OWSLogInfo(@"resurrectNewOutgoingMessages2.3: %zd", count);
-            [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            DatabaseStorageWrite(SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *transaction) {
                 for (TSOutgoingMessage *message in messages) {
                     [message anyInsertWithTransaction:transaction];
                 }
-            }];
+            });
         });
     });
 }
@@ -4209,7 +4210,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         = (addresses.count > 0 ? addresses.firstObject
                                : [[SignalServiceAddress alloc] initWithPhoneNumber:@"+19174054215"]);
 
-    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *transaction) {
         for (NSNumber *timestamp in timestamps) {
             NSString *randomText = [self randomText];
             {
@@ -4237,7 +4238,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                      transaction:transaction];
             }
         }
-    }];
+    });
 }
 
 + (void)createDisappearingMessagesWhichFailedToStartInThread:(TSThread *)thread
@@ -4253,9 +4254,9 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
     TSIncomingMessage *message = [incomingMessageBuilder build];
     // private setter to avoid starting expire machinery.
     message.read = YES;
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [message anyInsertWithTransaction:transaction];
-    }];
+    });
 }
 
 + (void)testLinkificationInThread:(TSThread *)thread
@@ -4272,7 +4273,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                      @"https://кц.рф/some/path",
                                      @"http://foo.кц.рф"];
 
-    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *transaction) {
         for (NSString *string in strings) {
             // DO NOT log these strings with the debugger attached.
             //        OWSLogInfo(@"%@", string);
@@ -4291,7 +4292,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                         // Do nothing.
                                     }];
         }
-    }];
+    });
 }
 
 + (void)createRandomGroupWithName:(NSString *)groupName
@@ -4324,7 +4325,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         @"non-crashing string",
     ];
 
-    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *transaction) {
         for (NSString *string in strings) {
             // DO NOT log these strings with the debugger attached.
             //        OWSLogInfo(@"%@", string);
@@ -4343,7 +4344,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                         // Do nothing.
                                     }];
         }
-    }];
+    });
 }
 
 + (void)testZalgoTextInThread:(TSThread *)thread
@@ -4353,7 +4354,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
         @"This is some normal text",
     ];
 
-    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *transaction) {
         for (NSString *string in strings) {
             OWSLogInfo(@"sending zalgo");
 
@@ -4372,7 +4373,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                                         // Do nothing.
                                     }];
         }
-    }];
+    });
 }
 
 + (void)testDirectionalFilenamesInThread:(TSThread *)thread
@@ -4415,9 +4416,9 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 
 + (void)deleteAllMessagesInThread:(TSThread *)thread
 {
-    [self writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *transaction) {
         [thread removeAllThreadInteractionsWithTransaction:transaction];
-    }];
+    });
 }
 
 #pragma mark - Utility
@@ -4757,7 +4758,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
 
 + (void)requestGroupInfoForGroupThread:(TSGroupThread *)groupThread
 {
-    [self writeWithBlock:^(SDSAnyWriteTransaction *_Nonnull transaction) {
+    DatabaseStorageWrite(SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *_Nonnull transaction) {
         for (SignalServiceAddress *address in groupThread.groupModel.groupMembers) {
             TSThread *thread = [TSContactThread getOrCreateThreadWithContactAddress:address transaction:transaction];
             OWSLogInfo(@"Requesting group info for group thread from: %@", address);
@@ -4765,7 +4766,7 @@ typedef OWSContact * (^OWSContactBlock)(SDSAnyWriteTransaction *transaction);
                 [[OWSGroupInfoRequestMessage alloc] initWithThread:thread groupId:groupThread.groupModel.groupId];
             [self.messageSenderJobQueue addMessage:groupInfoRequestMessage.asPreparer transaction:transaction];
         }
-    }];
+    });
 }
 
 @end

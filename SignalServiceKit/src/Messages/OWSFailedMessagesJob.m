@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSFailedMessagesJob.h"
@@ -74,8 +74,8 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
 {
     __block uint count = 0;
 
-    [self.databaseStorage
-        writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(
+        self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
             [self enumerateAttemptingOutMessagesWithBlock:^(TSOutgoingMessage *message) {
                 // sanity check
                 OWSAssertDebug(message.messageState == TSOutgoingMessageStateSending);
@@ -91,7 +91,7 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
                 count++;
             }
                                               transaction:transaction];
-        }];
+        });
 
     OWSLogDebug(@"Marked %u messages as unsent", count);
 }

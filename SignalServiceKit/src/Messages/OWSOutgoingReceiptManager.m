@@ -331,7 +331,7 @@ typedef NS_ENUM(NSUInteger, OWSReceiptType) {
         OWSFailDebug(@"Invalid timestamps.");
         return;
     }
-    [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         NSString *identifier = address.uuidString ?: address.phoneNumber;
 
         NSSet<NSNumber *> *_Nullable oldUUIDTimestamps;
@@ -368,7 +368,7 @@ typedef NS_ENUM(NSUInteger, OWSReceiptType) {
         } else {
             [store removeValueForKey:identifier transaction:transaction];
         }
-    }];
+    });
 }
 
 - (void)reachabilityChanged

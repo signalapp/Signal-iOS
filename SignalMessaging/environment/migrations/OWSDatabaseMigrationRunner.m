@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSDatabaseMigrationRunner.h"
@@ -59,13 +59,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)assumeAllExistingMigrationsRun
 {
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         for (OWSDatabaseMigration *migration in self.allMigrations) {
             OWSLogInfo(@"Skipping migration on new install: %@", migration);
 
             [migration markAsCompleteWithTransaction:transaction];
         }
-    }];
+    });
 }
 
 - (void)runAllOutstandingWithCompletion:(OWSDatabaseMigrationCompletion)completion
@@ -86,7 +86,7 @@ NS_ASSUME_NONNULL_BEGIN
         [knownMigrationIds addObject:migration.migrationId];
     }
 
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         NSArray<NSString *> *savedMigrationIds =
             [OWSDatabaseMigration allCompleteMigrationIdsWithTransaction:transaction];
 
@@ -98,7 +98,7 @@ NS_ASSUME_NONNULL_BEGIN
             OWSLogInfo(@"Culling unknown migration: %@", unknownMigrationId);
             [OWSDatabaseMigration markMigrationIdAsIncomplete:unknownMigrationId transaction:transaction];
         }
-    }];
+    });
 }
 
 // Run migrations serially to:

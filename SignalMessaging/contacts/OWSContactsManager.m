@@ -394,7 +394,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     OWSAssertDebug(phoneNumbersForIntersection.count > 0);
 
     dispatch_async(self.intersectionQueue, ^{
-        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
             if (isFullIntersection) {
                 // replace last known numbers
                 [self.keyValueStore setObject:phoneNumbersForIntersection
@@ -455,7 +455,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
                                       transaction:transaction];
                 }
             }
-        }];
+        });
     });
 }
 
@@ -676,7 +676,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         }
 
         // Update cached SignalAccounts on disk
-        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
             if (signalAccountsToUpsert.count > 0) {
                 OWSLogInfo(@"Saving %lu SignalAccounts", (unsigned long)signalAccountsToUpsert.count);
                 for (SignalAccount *signalAccount in signalAccountsToUpsert) {
@@ -695,7 +695,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
             OWSLogInfo(
                 @"SignalAccount cache size: %lu.", (unsigned long)[SignalAccount anyCountWithTransaction:transaction]);
-        }];
+        });
 
         // Add system contacts to the profile whitelist immediately
         // so that they do not see the "message request" UI.

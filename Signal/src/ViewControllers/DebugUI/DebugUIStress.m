@@ -518,9 +518,9 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(message);
 
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
-    }];
+    });
 }
 
 + (void)sendStressMessage:(TSThread *)thread
@@ -623,7 +623,7 @@ NS_ASSUME_NONNULL_BEGIN
     __block TSThread *_Nullable otherThread = nil;
     BOOL shouldUseOtherThread = arc4random_uniform(2) == 0;
     if (shouldUseOtherThread) {
-        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
             BOOL shouldUseGroupThread = arc4random_uniform(2) == 0;
             if (shouldUseGroupThread) {
                 NSError *_Nullable error;
@@ -647,7 +647,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                        transaction:transaction];
             }
             interactionThread = otherThread;
-        }];
+        });
     }
 
     NSString *text = NSUUID.UUID.UUIDString;
@@ -655,23 +655,23 @@ NS_ASSUME_NONNULL_BEGIN
         [TSOutgoingMessageBuilder outgoingMessageBuilderWithThread:interactionThread messageBody:text];
     TSOutgoingMessage *message = [messageBuilder build];
 
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [message anyInsertWithTransaction:transaction];
-    }];
+    });
 
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [message updateWithFakeMessageState:TSOutgoingMessageStateSending transaction:transaction];
         [message updateWithFakeMessageState:TSOutgoingMessageStateFailed transaction:transaction];
-    }];
+    });
 
     BOOL shouldDelete = arc4random_uniform(2) == 0;
     if (shouldDelete) {
-        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
             [message anyRemoveWithTransaction:transaction];
             if (otherThread != nil) {
                 [otherThread anyRemoveWithTransaction:transaction];
             }
-        }];
+        });
     }
 }
 

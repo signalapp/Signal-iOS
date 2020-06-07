@@ -99,9 +99,9 @@ NS_ASSUME_NONNULL_BEGIN
                              animated:(BOOL)isAnimated
 {
     __block TSThread *thread = nil;
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         thread = [TSContactThread getOrCreateThreadWithContactAddress:address transaction:transaction];
-    }];
+    });
     [self presentConversationForThread:thread action:action animated:(BOOL)isAnimated];
 }
 

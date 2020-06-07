@@ -1872,9 +1872,9 @@ typedef enum : NSUInteger {
         initWithTitle:CommonStrings.deleteButton
                 style:ActionSheetActionStyleDestructive
               handler:^(ActionSheetAction *action) {
-                  [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                  DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
                       [message anyRemoveWithTransaction:transaction];
-                  }];
+                  });
               }];
     [actionSheet addAction:deleteMessageAction];
 
@@ -1883,9 +1883,9 @@ typedef enum : NSUInteger {
         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"send_again")
                           style:ActionSheetActionStyleDefault
                         handler:^(ActionSheetAction *action) {
-                            [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                            DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
                                 [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
-                            }];
+                            });
                         }];
 
     [actionSheet addAction:resendMessageAction];
@@ -1937,9 +1937,9 @@ typedef enum : NSUInteger {
                                 return;
                             }
                             TSContactThread *contactThread = (TSContactThread *)self.thread;
-                            [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                            DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
                                 [self.sessionResetJobQueue addContactThread:contactThread transaction:transaction];
-                            }];
+                            });
                         }];
     [alert addAction:resetSessionAction];
 
@@ -2468,7 +2468,7 @@ typedef enum : NSUInteger {
                             OWSLogInfo(@"Blocking an unknown user.");
                             [self.blockingManager addBlockedAddress:contactThread.contactAddress
                                                 wasLocallyInitiated:YES];
-                            [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                            DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
                                 [contactThread anyUpdateContactThreadWithTransaction:transaction
                                                                                block:^(TSContactThread *thread) {
                                                                                    // The contactoffers interaction is
@@ -2478,7 +2478,7 @@ typedef enum : NSUInteger {
                                                                                    // response to this change.
                                                                                    thread.hasDismissedOffers = YES;
                                                                                }];
-                            }];
+                            });
                         }];
     [actionSheet addAction:blockAction];
 
@@ -2509,7 +2509,7 @@ typedef enum : NSUInteger {
 
     [self.navigationController pushViewController:contactVC animated:YES];
 
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [contactThread anyUpdateContactThreadWithTransaction:transaction
                                                        block:^(TSContactThread *thread) {
                                                            // The contactoffers interaction is an unsaved interaction.
@@ -2517,7 +2517,7 @@ typedef enum : NSUInteger {
                                                            // interaction in response to this change.
                                                            thread.hasDismissedOffers = YES;
                                                        }];
-    }];
+    });
 }
 
 - (void)tappedAddToProfileWhitelistOfferMessage:(OWSContactOffersInteraction *)interaction
@@ -2530,7 +2530,7 @@ typedef enum : NSUInteger {
     TSContactThread *contactThread = (TSContactThread *)self.thread;
 
     [self presentAddThreadToProfileWhitelistWithSuccess:^() {
-        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
             [contactThread anyUpdateContactThreadWithTransaction:transaction
                                                            block:^(TSContactThread *thread) {
                                                                // The contactoffers interaction is an unsaved
@@ -2539,7 +2539,7 @@ typedef enum : NSUInteger {
                                                                // change.
                                                                thread.hasDismissedOffers = YES;
                                                            }];
-        }];
+        });
     }];
 }
 
@@ -2754,19 +2754,19 @@ typedef enum : NSUInteger {
         success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
             OWSAssertDebug(attachmentStreams.count == 1);
             TSAttachmentStream *attachmentStream = attachmentStreams.firstObject;
-            [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
                 [message anyUpdateMessageWithTransaction:transaction
                                                    block:^(TSMessage *latestInstance) {
                                                        [latestInstance
                                                            setQuotedMessageThumbnailAttachmentStream:attachmentStream];
                                                    }];
-            }];
+            });
         }
         failure:^(NSError *error) {
             OWSLogWarn(@"Failed to redownload thumbnail with error: %@", error);
-            [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
                 [self.databaseStorage touchInteraction:message transaction:transaction];
-            }];
+            });
         }];
 }
 
@@ -3299,8 +3299,9 @@ typedef enum : NSUInteger {
     OWSLogVerbose(@"Sending contact share.");
 
     __block BOOL didAddToProfileWhitelist;
-    [self.databaseStorage
-        asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageAsyncWriteWithCompletion(
+        SDSDatabaseStorage.shared,
+        ^(SDSAnyWriteTransaction *transaction) {
             didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyOrPendingRequest:self.thread
                                                                                           transaction:transaction];
 
@@ -3309,8 +3310,9 @@ typedef enum : NSUInteger {
             if (contactShare.avatarImage) {
                 [contactShare.dbRecord saveAvatarImage:contactShare.avatarImage transaction:transaction];
             }
-        }
-        completion:^{
+        },
+        // Completion:
+        ^{
             TSOutgoingMessage *message = [ThreadUtil enqueueMessageWithContactShare:contactShare.dbRecord
                                                                              thread:self.thread];
             [self messageWasSent:message];
@@ -3318,7 +3320,7 @@ typedef enum : NSUInteger {
             if (didAddToProfileWhitelist) {
                 [self ensureBannerState];
             }
-        }];
+        });
 }
 
 - (void)showApprovalDialogAfterProcessingVideoURL:(NSURL *)movieURL filename:(nullable NSString *)filename
@@ -3730,11 +3732,11 @@ typedef enum : NSUInteger {
 {
     OWSAssertIsOnMainThread();
 
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         // We updated the group, so if there was a pending message request we should accept it.
         [ThreadUtil addThreadToProfileWhitelistIfEmptyOrPendingRequest:self.thread transaction:transaction];
         [self updateDisappearingMessagesConfigurationWithTransaction:transaction];
-    }];
+    });
 }
 
 - (void)popKeyBoard
@@ -3769,9 +3771,9 @@ typedef enum : NSUInteger {
         TSThread *thread = _thread;
         NSString *currentDraft = [self.inputToolbar messageText];
 
-        [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
             [thread updateWithDraft:currentDraft transaction:transaction];
-        }];
+        });
     }
 }
 
@@ -4138,9 +4140,9 @@ typedef enum : NSUInteger {
         dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             OWSLogInfo(@"Group updated, removing group creation error.");
 
-            [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
                 [message anyRemoveWithTransaction:transaction];
-            }];
+            });
         });
 }
 
@@ -4357,9 +4359,9 @@ typedef enum : NSUInteger {
         [BenchManager completeEventWithEventId:@"fromSendUntil_toggleDefaultKeyboard"];
     });
 
-    [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [self.thread updateWithDraft:@"" transaction:transaction];
-    }];
+    });
 
     if (didAddToProfileWhitelist) {
         [self ensureBannerState];

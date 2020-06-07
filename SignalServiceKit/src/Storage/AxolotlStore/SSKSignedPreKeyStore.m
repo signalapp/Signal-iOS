@@ -137,11 +137,11 @@ NSString *const kPrekeyCurrentSignedPrekeyIdKey = @"currentSignedPrekeyId";
 
 - (void)storeSignedPreKey:(int)signedPreKeyId signedPreKeyRecord:(SignedPreKeyRecord *)signedPreKeyRecord
 {
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [self.keyStore setSignedPreKeyRecord:signedPreKeyRecord
                                       forKey:[SDSKeyValueStore keyWithInt:signedPreKeyId]
                                  transaction:transaction];
-    }];
+    });
 }
 
 - (BOOL)containsSignedPreKey:(int)signedPreKeyId
@@ -156,9 +156,9 @@ NSString *const kPrekeyCurrentSignedPrekeyIdKey = @"currentSignedPrekeyId";
 
 - (void)removeSignedPreKey:(int)signedPrekeyId
 {
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [self.keyStore removeValueForKey:[SDSKeyValueStore keyWithInt:signedPrekeyId] transaction:transaction];
-    }];
+    });
 }
 
 - (nullable NSNumber *)currentSignedPrekeyId
@@ -172,9 +172,9 @@ NSString *const kPrekeyCurrentSignedPrekeyIdKey = @"currentSignedPrekeyId";
 
 - (void)setCurrentSignedPrekeyId:(int)value
 {
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [self.metadataStore setObject:@(value) key:kPrekeyCurrentSignedPrekeyIdKey transaction:transaction];
-    }];
+    });
 }
 
 - (nullable SignedPreKeyRecord *)currentSignedPreKey
@@ -208,17 +208,17 @@ NSString *const kPrekeyCurrentSignedPrekeyIdKey = @"currentSignedPrekeyId";
 
 - (void)clearPrekeyUpdateFailureCount
 {
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [self.metadataStore removeValueForKey:kPrekeyUpdateFailureCountKey transaction:transaction];
-    }];
+    });
 }
 
 - (NSInteger)incrementPrekeyUpdateFailureCount
 {
     __block NSInteger result;
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         result = [self.metadataStore incrementIntForKey:kPrekeyUpdateFailureCountKey transaction:transaction];
-    }];
+    });
     return result;
 }
 
@@ -233,16 +233,16 @@ NSString *const kPrekeyCurrentSignedPrekeyIdKey = @"currentSignedPrekeyId";
 
 - (void)setFirstPrekeyUpdateFailureDate:(nonnull NSDate *)value
 {
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [self.metadataStore setDate:value key:kFirstPrekeyUpdateFailureDateKey transaction:transaction];
-    }];
+    });
 }
 
 - (void)clearFirstPrekeyUpdateFailureDate
 {
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [self.metadataStore removeValueForKey:kFirstPrekeyUpdateFailureDateKey transaction:transaction];
-    }];
+    });
 }
 
 #pragma mark - Debugging

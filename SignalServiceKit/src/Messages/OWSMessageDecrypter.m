@@ -273,7 +273,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
             case SSKProtoEnvelopeTypeReceipt:
             case SSKProtoEnvelopeTypeKeyExchange:
             case SSKProtoEnvelopeTypeUnknown: {
-                [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
                     OWSMessageDecryptResult *result =
                         [OWSMessageDecryptResult resultWithEnvelopeData:envelopeData
                                                           plaintextData:nil
@@ -281,7 +281,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                                                            sourceDevice:envelope.sourceDevice
                                                             isUDMessage:NO];
                     successBlock(result, transaction);
-                }];
+                });
                 // Return to avoid double-acknowledging.
                 return;
             }
@@ -313,11 +313,11 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
         OWSFailDebug(@"Received an invalid envelope: %@", exception.debugDescription);
         OWSProdFail([OWSAnalyticsEvents messageManagerErrorInvalidProtocolMessage]);
 
-        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
             ThreadlessErrorMessage *errorMessage = [ThreadlessErrorMessage corruptedMessageInUnknownThread];
             [SSKEnvironment.shared.notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
                                                                                 transaction:transaction];
-        }];
+        });
     }
 
     failureBlock();
@@ -390,8 +390,8 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
         return failureBlock(error);
     }
 
-    [self.databaseStorage
-        asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageAsyncWrite(
+        SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *transaction) {
             NSString *accountIdentifier = [[OWSAccountIdFinder new] ensureAccountIdForAddress:envelope.sourceAddress
                                                                                   transaction:transaction];
             @try {
@@ -422,7 +422,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                     failureBlock(error);
                 });
             }
-        }];
+        });
 }
 
 - (void)decryptUnidentifiedSender:(SSKProtoEnvelope *)envelope
@@ -465,157 +465,176 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     SignalServiceAddress *localAddress = self.tsAccountManager.localAddress;
     uint32_t localDeviceId = self.tsAccountManager.storedDeviceId;
 
-    [self.databaseStorage asyncWriteWithBlock:^(SDSAnyWriteTransaction *transaction) {
-        NSError *cipherError;
-        SMKSecretSessionCipher *_Nullable cipher =
-            [[SMKSecretSessionCipher alloc] initWithSessionStore:self.sessionStore
-                                                     preKeyStore:self.preKeyStore
-                                               signedPreKeyStore:self.signedPreKeyStore
-                                                   identityStore:self.identityManager
-                                                           error:&cipherError];
-        if (cipherError || !cipher) {
-            OWSFailDebug(@"Could not create secret session cipher: %@", cipherError);
-            cipherError = EnsureDecryptError(cipherError, @"Could not create secret session cipher");
-            return failureBlock(cipherError);
+    DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+        [self decryptUnidentifiedSender:envelope
+                          encryptedData:encryptedData
+                   certificateValidator:certificateValidator
+                           localAddress:localAddress
+                          localDeviceId:localDeviceId
+                        serverTimestamp:serverTimestamp
+                            transaction:transaction
+                           successBlock:successBlock
+                           failureBlock:failureBlock];
+    });
+}
+
+- (void)decryptUnidentifiedSender:(SSKProtoEnvelope *)envelope
+                    encryptedData:(NSData *)encryptedData
+             certificateValidator:(id<SMKCertificateValidator>)certificateValidator
+                     localAddress:(SignalServiceAddress *)localAddress
+                    localDeviceId:(uint32_t)localDeviceId
+                  serverTimestamp:(UInt64)serverTimestamp
+                      transaction:(SDSAnyWriteTransaction *)transaction
+                     successBlock:(DecryptSuccessBlock)successBlock
+                     failureBlock:(void (^)(NSError *_Nullable error))failureBlock
+{
+    NSError *cipherError;
+    SMKSecretSessionCipher *_Nullable cipher =
+        [[SMKSecretSessionCipher alloc] initWithSessionStore:self.sessionStore
+                                                 preKeyStore:self.preKeyStore
+                                           signedPreKeyStore:self.signedPreKeyStore
+                                               identityStore:self.identityManager
+                                                       error:&cipherError];
+    if (cipherError || !cipher) {
+        OWSFailDebug(@"Could not create secret session cipher: %@", cipherError);
+        cipherError = EnsureDecryptError(cipherError, @"Could not create secret session cipher");
+        return failureBlock(cipherError);
+    }
+
+    NSError *decryptError;
+    SMKDecryptResult *_Nullable decryptResult =
+        [cipher throwswrapped_decryptMessageWithCertificateValidator:certificateValidator
+                                                      cipherTextData:encryptedData
+                                                           timestamp:serverTimestamp
+                                                           localE164:localAddress.phoneNumber
+                                                           localUuid:localAddress.uuid
+                                                       localDeviceId:localDeviceId
+                                                     protocolContext:transaction
+                                                               error:&decryptError];
+
+    if (!decryptResult) {
+        if (!decryptError) {
+            OWSFailDebug(@"Caller should provide specific error");
+            NSError *error
+                = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptUDMessage, @"Could not decrypt UD message");
+            return failureBlock(error);
         }
 
-        NSError *decryptError;
-        SMKDecryptResult *_Nullable decryptResult =
-            [cipher throwswrapped_decryptMessageWithCertificateValidator:certificateValidator
-                                                          cipherTextData:encryptedData
-                                                               timestamp:serverTimestamp
-                                                               localE164:localAddress.phoneNumber
-                                                               localUuid:localAddress.uuid
-                                                           localDeviceId:localDeviceId
-                                                         protocolContext:transaction
-                                                                   error:&decryptError];
+        // Decrypt Failure Part 1: Unwrap failure details
 
-        if (!decryptResult) {
-            if (!decryptError) {
-                OWSFailDebug(@"Caller should provide specific error");
-                NSError *error = OWSErrorWithCodeDescription(
-                    OWSErrorCodeFailedToDecryptUDMessage, @"Could not decrypt UD message");
-                return failureBlock(error);
+        NSError *_Nullable underlyingError;
+        SSKProtoEnvelope *_Nullable identifiedEnvelope;
+
+        if (![decryptError.domain isEqualToString:@"SignalMetadataKit.SecretSessionKnownSenderError"]) {
+            underlyingError = decryptError;
+            identifiedEnvelope = envelope;
+        } else {
+            underlyingError = decryptError.userInfo[NSUnderlyingErrorKey];
+
+            NSString *_Nullable senderE164 = decryptError.userInfo[SecretSessionKnownSenderError.kSenderE164Key];
+            NSUUID *_Nullable senderUuid = decryptError.userInfo[SecretSessionKnownSenderError.kSenderUuidKey];
+            SignalServiceAddress *senderAddress = [[SignalServiceAddress alloc] initWithUuid:senderUuid
+                                                                                 phoneNumber:senderE164];
+            OWSAssert(senderAddress.isValid);
+
+            NSNumber *senderDeviceId = decryptError.userInfo[SecretSessionKnownSenderError.kSenderDeviceIdKey];
+            OWSAssert(senderDeviceId);
+
+            SSKProtoEnvelopeBuilder *identifiedEnvelopeBuilder = envelope.asBuilder;
+            identifiedEnvelopeBuilder.sourceE164 = senderAddress.phoneNumber;
+            identifiedEnvelopeBuilder.sourceUuid = senderAddress.uuidString;
+            identifiedEnvelopeBuilder.sourceDevice = senderDeviceId.unsignedIntValue;
+            NSError *identifiedEnvelopeBuilderError;
+
+            identifiedEnvelope = [identifiedEnvelopeBuilder buildAndReturnError:&identifiedEnvelopeBuilderError];
+            if (identifiedEnvelopeBuilderError) {
+                OWSFailDebug(@"failure identifiedEnvelopeBuilderError: %@", identifiedEnvelopeBuilderError);
             }
+        }
+        OWSAssert(underlyingError);
+        OWSAssert(identifiedEnvelope);
 
-            // Decrypt Failure Part 1: Unwrap failure details
+        NSException *_Nullable underlyingException;
+        if ([underlyingError.domain isEqualToString:SCKExceptionWrapperErrorDomain]
+            && underlyingError.code == SCKExceptionWrapperErrorThrown) {
 
-            NSError *_Nullable underlyingError;
-            SSKProtoEnvelope *_Nullable identifiedEnvelope;
+            underlyingException = underlyingError.userInfo[SCKExceptionWrapperUnderlyingExceptionKey];
+            OWSAssert(underlyingException);
+        }
 
-            if (![decryptError.domain isEqualToString:@"SignalMetadataKit.SecretSessionKnownSenderError"]) {
-                underlyingError = decryptError;
-                identifiedEnvelope = envelope;
-            } else {
-                underlyingError = decryptError.userInfo[NSUnderlyingErrorKey];
+        // Decrypt Failure Part 2: Handle unwrapped failure details
 
-                NSString *_Nullable senderE164 = decryptError.userInfo[SecretSessionKnownSenderError.kSenderE164Key];
-                NSUUID *_Nullable senderUuid = decryptError.userInfo[SecretSessionKnownSenderError.kSenderUuidKey];
-                SignalServiceAddress *senderAddress = [[SignalServiceAddress alloc] initWithUuid:senderUuid
-                                                                                     phoneNumber:senderE164];
-                OWSAssert(senderAddress.isValid);
-
-                NSNumber *senderDeviceId = decryptError.userInfo[SecretSessionKnownSenderError.kSenderDeviceIdKey];
-                OWSAssert(senderDeviceId);
-
-                SSKProtoEnvelopeBuilder *identifiedEnvelopeBuilder = envelope.asBuilder;
-                identifiedEnvelopeBuilder.sourceE164 = senderAddress.phoneNumber;
-                identifiedEnvelopeBuilder.sourceUuid = senderAddress.uuidString;
-                identifiedEnvelopeBuilder.sourceDevice = senderDeviceId.unsignedIntValue;
-                NSError *identifiedEnvelopeBuilderError;
-
-                identifiedEnvelope = [identifiedEnvelopeBuilder buildAndReturnError:&identifiedEnvelopeBuilderError];
-                if (identifiedEnvelopeBuilderError) {
-                    OWSFailDebug(@"failure identifiedEnvelopeBuilderError: %@", identifiedEnvelopeBuilderError);
+        if (underlyingException) {
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                [self processException:underlyingException envelope:identifiedEnvelope];
+                NSString *errorDescription = [NSString
+                    stringWithFormat:@"Exception while decrypting ud message: %@", underlyingException.description];
+                NSError *error;
+                if ([underlyingException.name isEqualToString:DuplicateMessageException]) {
+                    OWSLogInfo(@"%@", errorDescription);
+                    error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptDuplicateMessage, errorDescription);
+                } else {
+                    OWSLogError(@"%@", errorDescription);
+                    error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptMessage, errorDescription);
                 }
-            }
-            OWSAssert(underlyingError);
-            OWSAssert(identifiedEnvelope);
+                failureBlock(error);
+            });
+            return;
+        }
 
-            NSException *_Nullable underlyingException;
-            if ([underlyingError.domain isEqualToString:SCKExceptionWrapperErrorDomain]
-                && underlyingError.code == SCKExceptionWrapperErrorThrown) {
-
-                underlyingException = underlyingError.userInfo[SCKExceptionWrapperUnderlyingExceptionKey];
-                OWSAssert(underlyingException);
-            }
-
-            // Decrypt Failure Part 2: Handle unwrapped failure details
-
-            if (underlyingException) {
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                    [self processException:underlyingException envelope:identifiedEnvelope];
-                    NSString *errorDescription = [NSString
-                        stringWithFormat:@"Exception while decrypting ud message: %@", underlyingException.description];
-                    NSError *error;
-                    if ([underlyingException.name isEqualToString:DuplicateMessageException]) {
-                        OWSLogInfo(@"%@", errorDescription);
-                        error = OWSErrorWithCodeDescription(
-                            OWSErrorCodeFailedToDecryptDuplicateMessage, errorDescription);
-                    } else {
-                        OWSLogError(@"%@", errorDescription);
-                        error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptMessage, errorDescription);
-                    }
-                    failureBlock(error);
-                });
-                return;
-            }
-
-            if ([underlyingError.domain isEqualToString:@"SignalMetadataKit.SMKSecretSessionCipherError"]
-                && underlyingError.code == SMKSecretSessionCipherErrorSelfSentMessage) {
-                // Self-sent messages can be safely discarded.
-                failureBlock(underlyingError);
-                return;
-            }
-
-            OWSFailDebug(@"Could not decrypt UD message: %@", underlyingError);
+        if ([underlyingError.domain isEqualToString:@"SignalMetadataKit.SMKSecretSessionCipherError"]
+            && underlyingError.code == SMKSecretSessionCipherErrorSelfSentMessage) {
+            // Self-sent messages can be safely discarded.
             failureBlock(underlyingError);
             return;
         }
 
-        if (decryptResult.messageType == SMKMessageTypePrekey) {
-            [TSPreKeyManager checkPreKeys];
-        }
+        OWSFailDebug(@"Could not decrypt UD message: %@", underlyingError);
+        failureBlock(underlyingError);
+        return;
+    }
 
-        NSString *_Nullable senderE164 = decryptResult.senderE164;
-        NSUUID *_Nullable senderUuid = decryptResult.senderUuid;
-        SignalServiceAddress *sourceAddress = [[SignalServiceAddress alloc] initWithUuid:senderUuid
-                                                                             phoneNumber:senderE164];
-        if (!sourceAddress.isValid) {
-            NSString *errorDescription = [NSString stringWithFormat:@"Invalid UD sender: %@", sourceAddress];
-            OWSFailDebug(@"%@", errorDescription);
-            NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptUDMessage, errorDescription);
-            return failureBlock(error);
-        }
+    if (decryptResult.messageType == SMKMessageTypePrekey) {
+        [TSPreKeyManager checkPreKeys];
+    }
 
-        long sourceDeviceId = decryptResult.senderDeviceId;
-        if (sourceDeviceId < 1 || sourceDeviceId > UINT32_MAX) {
-            NSString *errorDescription = @"Invalid UD sender device id.";
-            OWSFailDebug(@"%@", errorDescription);
-            NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptUDMessage, errorDescription);
-            return failureBlock(error);
-        }
-        NSData *plaintextData = [decryptResult.paddedPayload removePadding];
+    NSString *_Nullable senderE164 = decryptResult.senderE164;
+    NSUUID *_Nullable senderUuid = decryptResult.senderUuid;
+    SignalServiceAddress *sourceAddress = [[SignalServiceAddress alloc] initWithUuid:senderUuid phoneNumber:senderE164];
+    if (!sourceAddress.isValid) {
+        NSString *errorDescription = [NSString stringWithFormat:@"Invalid UD sender: %@", sourceAddress];
+        OWSFailDebug(@"%@", errorDescription);
+        NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptUDMessage, errorDescription);
+        return failureBlock(error);
+    }
 
-        SSKProtoEnvelopeBuilder *envelopeBuilder = [envelope asBuilder];
-        [envelopeBuilder setSourceE164:sourceAddress.phoneNumber];
-        [envelopeBuilder setSourceUuid:sourceAddress.uuidString];
-        [envelopeBuilder setSourceDevice:(uint32_t)sourceDeviceId];
-        NSError *envelopeBuilderError;
-        NSData *_Nullable newEnvelopeData = [envelopeBuilder buildSerializedDataAndReturnError:&envelopeBuilderError];
-        if (envelopeBuilderError || !newEnvelopeData) {
-            OWSFailDebug(@"Could not update UD envelope data: %@", envelopeBuilderError);
-            NSError *error = EnsureDecryptError(envelopeBuilderError, @"Could not update UD envelope data");
-            return failureBlock(error);
-        }
+    long sourceDeviceId = decryptResult.senderDeviceId;
+    if (sourceDeviceId < 1 || sourceDeviceId > UINT32_MAX) {
+        NSString *errorDescription = @"Invalid UD sender device id.";
+        OWSFailDebug(@"%@", errorDescription);
+        NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptUDMessage, errorDescription);
+        return failureBlock(error);
+    }
+    NSData *plaintextData = [decryptResult.paddedPayload removePadding];
 
-        OWSMessageDecryptResult *result = [OWSMessageDecryptResult resultWithEnvelopeData:newEnvelopeData
-                                                                            plaintextData:plaintextData
-                                                                            sourceAddress:sourceAddress
-                                                                             sourceDevice:(UInt32)sourceDeviceId
-                                                                              isUDMessage:YES];
-        successBlock(result, transaction);
-    }];
+    SSKProtoEnvelopeBuilder *envelopeBuilder = [envelope asBuilder];
+    [envelopeBuilder setSourceE164:sourceAddress.phoneNumber];
+    [envelopeBuilder setSourceUuid:sourceAddress.uuidString];
+    [envelopeBuilder setSourceDevice:(uint32_t)sourceDeviceId];
+    NSError *envelopeBuilderError;
+    NSData *_Nullable newEnvelopeData = [envelopeBuilder buildSerializedDataAndReturnError:&envelopeBuilderError];
+    if (envelopeBuilderError || !newEnvelopeData) {
+        OWSFailDebug(@"Could not update UD envelope data: %@", envelopeBuilderError);
+        NSError *error = EnsureDecryptError(envelopeBuilderError, @"Could not update UD envelope data");
+        return failureBlock(error);
+    }
+
+    OWSMessageDecryptResult *result = [OWSMessageDecryptResult resultWithEnvelopeData:newEnvelopeData
+                                                                        plaintextData:plaintextData
+                                                                        sourceAddress:sourceAddress
+                                                                         sourceDevice:(UInt32)sourceDeviceId
+                                                                          isUDMessage:YES];
+    successBlock(result, transaction);
 }
 
 - (void)processException:(NSException *)exception envelope:(SSKProtoEnvelope *)envelope
@@ -630,7 +649,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
         OWSLogError(@"%@", logString);
     }
 
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         TSErrorMessage *errorMessage;
 
         if (!envelope.sourceAddress.isValid) {
@@ -670,7 +689,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
             [errorMessage anyInsertWithTransaction:transaction];
             [self notifyUserForErrorMessage:errorMessage envelope:envelope transaction:transaction];
         }
-    }];
+    });
 }
 
 - (void)notifyUserForErrorMessage:(TSErrorMessage *)errorMessage

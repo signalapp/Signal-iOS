@@ -225,9 +225,9 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSLogInfo(@"");
 
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [OWSBackupFragment anyRemoveAllWithInstantationWithTransaction:transaction];
-    }];
+    });
 }
 
 + (void)logBackupMetadataCache

@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "DebugUIDiskUsage.h"
@@ -54,7 +54,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)saveAllAttachments
 {
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         NSMutableArray<TSAttachmentStream *> *attachmentStreams = [NSMutableArray new];
         [TSAttachment anyEnumerateWithTransaction:transaction
                                             block:^(TSAttachment *attachment, BOOL *stop) {
@@ -76,7 +76,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                      // Do nothing, rewriting is sufficient.
                                                  }];
         }
-    }];
+    });
 }
 
 + (void)deleteOldMessages_3Months
@@ -86,7 +86,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 + (void)deleteOldMessages:(NSTimeInterval)maxAgeSeconds
 {
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         NSArray<NSString *> *threadIds = [TSThread anyAllUniqueIdsWithTransaction:transaction];
         NSMutableArray<TSInteraction *> *interactionsToDelete = [NSMutableArray new];
         for (NSString *threadId in threadIds) {
@@ -109,7 +109,7 @@ NS_ASSUME_NONNULL_BEGIN
         for (TSInteraction *interaction in interactionsToDelete) {
             [interaction anyRemoveWithTransaction:transaction];
         }
-    }];
+    });
 }
 
 @end

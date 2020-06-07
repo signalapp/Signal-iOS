@@ -381,9 +381,9 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
         OWSFail(@"uuid was unexpectedly nil");
     }
 
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [self storeLocalNumber:phoneNumber uuid:uuid transaction:transaction];
-    }];
+    });
 
     [self postRegistrationStateDidChangeNotification];
 }
@@ -392,7 +392,7 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
 {
     OWSAssert(self.localUuid == nil);
 
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         @synchronized(self) {
             [self.keyValueStore setString:uuid.UUIDString
                                       key:TSAccountManager_RegisteredUUIDKey
@@ -400,7 +400,7 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
 
             [self loadAccountStateWithTransaction:transaction];
         }
-    }];
+    });
 }
 
 + (nullable NSString *)localNumber
@@ -521,9 +521,9 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
 - (uint32_t)getOrGenerateRegistrationId
 {
     __block uint32_t result;
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         result = [self getOrGenerateRegistrationIdWithTransaction:transaction];
-    }];
+    });
     return result;
 }
 
@@ -797,7 +797,7 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
 
     OWSLogWarn(@"Updating isDeregistered: %d", isDeregistered);
 
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         @synchronized(self) {
             [self.keyValueStore setObject:@(isDeregistered)
                                       key:TSAccountManager_IsDeregisteredKey
@@ -805,7 +805,7 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
 
             [self loadAccountStateWithTransaction:transaction];
         }
-    }];
+    });
 
     [self postRegistrationStateDidChangeNotification];
 }
@@ -820,7 +820,7 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
         return NO;
     }
 
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         @synchronized(self) {
             self.phoneNumberAwaitingVerification = nil;
             self.uuidAwaitingVerification = nil;
@@ -842,7 +842,7 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
             [OWSKeyBackupService clearKeysWithTransaction:transaction];
             [OWS2FAManager.sharedManager setPinCode:nil transaction:transaction];
         }
-    }];
+    });
 
     [self postRegistrationStateDidChangeNotification];
 
@@ -872,7 +872,7 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
         return;
     }
 
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         @synchronized(self) {
             [self.keyValueStore setObject:@(transferInProgress)
                                       key:TSAccountManager_IsTransferInProgressKey
@@ -880,7 +880,7 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
 
             [self loadAccountStateWithTransaction:transaction];
         }
-    }];
+    });
 
     [self postRegistrationStateDidChangeNotification];
 }
@@ -892,7 +892,7 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
 
 - (void)setWasTransferred:(BOOL)wasTransferred
 {
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         @synchronized(self) {
             [self.keyValueStore setObject:@(wasTransferred)
                                       key:TSAccountManager_WasTransferredKey
@@ -900,7 +900,7 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
 
             [self loadAccountStateWithTransaction:transaction];
         }
-    }];
+    });
 
     [self postRegistrationStateDidChangeNotification];
 }
@@ -919,9 +919,9 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
 - (void)setHasPendingBackupRestoreDecision:(BOOL)value
 {
     OWSLogInfo(@"%d", value);
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [self.keyValueStore setBool:value key:TSAccountManager_HasPendingRestoreDecisionKey transaction:transaction];
-    }];
+    });
     [self postRegistrationStateDidChangeNotification];
 }
 
@@ -937,9 +937,9 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
 
 - (void)setIsManualMessageFetchEnabled:(BOOL)value
 {
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [self.keyValueStore setBool:value key:TSAccountManager_ManualMessageFetchKey transaction:transaction];
-    }];
+    });
 }
 
 - (void)registerForTestsWithLocalNumber:(NSString *)localNumber uuid:(NSUUID *)uuid
@@ -950,9 +950,9 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
     OWSAssertDebug(localNumber.length > 0);
     OWSAssertDebug(uuid != nil);
 
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [self storeLocalNumber:localNumber uuid:uuid transaction:transaction];
-    }];
+    });
 }
 
 - (void)reachabilityChanged {

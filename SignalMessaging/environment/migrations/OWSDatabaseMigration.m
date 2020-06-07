@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import <SignalMessaging/OWSDatabaseMigration.h>
@@ -88,9 +88,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)markAsCompleteWithSneakyTransaction
 {
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [self markAsCompleteWithTransaction:transaction];
-    }];
+    });
 }
 
 - (BOOL)isCompleteWithSneakyTransaction

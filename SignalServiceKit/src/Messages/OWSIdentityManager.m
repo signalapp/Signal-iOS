@@ -131,9 +131,9 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
 
 - (void)generateNewIdentityKey
 {
-    [self.databaseQueue writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseQueue, ^(SDSAnyWriteTransaction *transaction) {
         [self storeIdentityKeyPair:[Curve25519 generateKeyPair] transaction:transaction];
-    }];
+    });
 }
 
 - (void)storeIdentityKeyPair:(ECKeyPair *)keyPair transaction:(SDSAnyWriteTransaction *)transaction
@@ -213,9 +213,9 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
     OWSAssertDebug(address.isValid);
 
     __block BOOL result;
-    [self.databaseQueue writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseQueue, ^(SDSAnyWriteTransaction *transaction) {
         result = [self saveRemoteIdentity:identityKey address:address transaction:transaction];
-    }];
+    });
 
     return result;
 }
@@ -307,13 +307,13 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
     OWSAssertDebug(identityKey.length == kStoredIdentityKeyLength);
     OWSAssertDebug(address.isValid);
 
-    [self.databaseQueue writeWithBlock:^(SDSAnyWriteTransaction *_Nonnull transaction) {
+    DatabaseStorageWrite(self.databaseQueue, ^(SDSAnyWriteTransaction *_Nonnull transaction) {
         [self setVerificationState:verificationState
                        identityKey:identityKey
                            address:address
              isUserInitiatedChange:isUserInitiatedChange
                        transaction:transaction];
-    }];
+    });
 }
 
 - (void)setVerificationState:(OWSVerificationState)verificationState
@@ -730,10 +730,10 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
                     OWSLogInfo(@"Successfully sent verification state sync message");
 
                     // Record that this verification state was successfully synced.
-                    [self.databaseQueue writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                    DatabaseStorageWrite(self.databaseQueue, ^(SDSAnyWriteTransaction *transaction) {
                         [self clearSyncMessageForAddress:message.verificationForRecipientAddress
                                              transaction:transaction];
-                    }];
+                    });
                 }
                 failure:^(NSError *error) {
                     OWSLogError(@"Failed to send verification state sync message with error: %@", error);
@@ -745,9 +745,9 @@ NSNotificationName const kNSNotificationNameIdentityStateDidChange = @"kNSNotifi
                 OWSLogInfo(@"Removing retries for syncing verification state, since user is no longer registered: %@",
                     message.verificationForRecipientAddress);
                 // Otherwise this will fail forever.
-                [self.databaseQueue writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+                DatabaseStorageWrite(self.databaseQueue, ^(SDSAnyWriteTransaction *transaction) {
                     [self clearSyncMessageForAddress:message.verificationForRecipientAddress transaction:transaction];
-                }];
+                });
             }
         }];
 }

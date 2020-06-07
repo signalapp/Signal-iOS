@@ -127,7 +127,7 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
                                        }];
         })
         .thenInBackground(^{
-            [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+            DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
                 [attachmentStream updateAsUploadedWithEncryptionKey:upload.encryptionKey
                                                              digest:upload.digest
                                                            serverId:upload.serverId
@@ -135,7 +135,7 @@ static const CGFloat kAttachmentUploadProgressTheta = 0.001f;
                                                           cdnNumber:0
                                                     uploadTimestamp:upload.uploadTimestamp
                                                         transaction:transaction];
-            }];
+            });
             self.completedUpload = attachmentStream;
             [self reportSuccess];
         })

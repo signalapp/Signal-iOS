@@ -149,9 +149,9 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
 - (void)addJobForEnvelopeData:(NSData *)envelopeData
 {
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [self addJobForEnvelopeData:envelopeData transaction:transaction];
-    }];
+    });
 }
 
 - (void)addJobForEnvelopeData:(NSData *)envelopeData transaction:(SDSAnyWriteTransaction *)transaction
@@ -162,13 +162,13 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
 - (void)removeJobWithId:(NSString *)uniqueId
 {
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         OWSMessageDecryptJob *_Nullable job =
             [OWSMessageDecryptJob anyFetchWithUniqueId:uniqueId transaction:transaction];
         if (job) {
             [job anyRemoveWithTransaction:transaction];
         }
-    }];
+    });
 }
 
 - (NSUInteger)queuedJobCount
@@ -436,11 +436,11 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
         OWSFailDebug(@"Could not parse proto.");
         // TODO: Add analytics.
 
-        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
             ThreadlessErrorMessage *errorMessage = [ThreadlessErrorMessage corruptedMessageInUnknownThread];
             [SSKEnvironment.shared.notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
                                                                                 transaction:transaction];
-        }];
+        });
 
         dispatch_async(self.serialQueue, ^{
             completion(NO);
