@@ -427,38 +427,29 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     OWSAssertDebug([outgoingMessagePreparer isKindOfClass:[OutgoingMessagePreparer class]]);
 
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        // This method will use a read/write transaction. This transaction
-        // will block until any open read/write transactions are complete.
-        //
-        // That's key - we don't want to send any messages in response
-        // to an incoming message until processing of that batch of messages
-        // is complete.  For example, we wouldn't want to auto-reply to a
-        // group info request before that group info request's batch was
-        // finished processing.  Otherwise, we might receive a delivery
-        // notice for a group update we hadn't yet saved to the db.
-        //
-        // So we're using YDB behavior to ensure this invariant, which is a bit
-        // unorthodox.
-        __block NSError *error;
         __block TSOutgoingMessage *message;
-        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-            message = [outgoingMessagePreparer prepareMessageWithTransaction:transaction error:&error];
+        if (outgoingMessagePreparer.canBePreparedWithoutTransaction) {
+            message = [outgoingMessagePreparer prepareMessageWithoutTransaction];
+        } else {
+            __block NSError *error;
+            DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+                message = [outgoingMessagePreparer prepareMessageWithTransaction:transaction error:&error];
+                if (error != nil) {
+                    return;
+                }
+            });
             if (error != nil) {
+                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                    failureHandler(error);
+                });
                 return;
             }
+        }
 
-            OWSAssertDebug(message);
-            if (message.body.length > 0) {
-                OWSAssertDebug([message.body lengthOfBytesUsingEncoding:NSUTF8StringEncoding]
-                    <= kOversizeTextMessageSizeThreshold);
-            }
-        });
-
-        if (error != nil) {
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                failureHandler(error);
-            });
-            return;
+        OWSAssertDebug(message);
+        if (message.body.length > 0) {
+            OWSAssertDebug(
+                [message.body lengthOfBytesUsingEncoding:NSUTF8StringEncoding] <= kOversizeTextMessageSizeThreshold);
         }
 
         NSOperationQueue *sendingQueue = [self sendingQueueForMessage:message];
@@ -899,7 +890,15 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
 - (nullable TSThread *)threadForMessageWithSneakyTransaction:(TSMessage *)message
 {
+    // Try to avoid opening a write transaction.
     __block TSThread *_Nullable thread = nil;
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        thread = [message threadWithTransaction:transaction];
+    }];
+    if (thread != nil) {
+        return thread;
+    }
+
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         thread = [self threadForMessage:message transaction:transaction];
     });
@@ -1531,20 +1530,19 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         successParam();
     };
 
-    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        if (!message.shouldBeSaved) {
-            // We don't need to do this work for transient messages.
-            return;
-        }
-        TSInteraction *_Nullable latestCopy = [TSInteraction anyFetchWithUniqueId:message.uniqueId
-                                                                      transaction:transaction];
-        if (![latestCopy isKindOfClass:[TSOutgoingMessage class]]) {
-            OWSLogWarn(@"Could not update expiration for deleted message.");
-            return;
-        }
-        TSOutgoingMessage *latestMessage = (TSOutgoingMessage *)latestCopy;
-        [ViewOnceMessages completeIfNecessaryWithMessage:latestMessage transaction:transaction];
-    });
+    if (message.shouldBeSaved) {
+        // We don't need to do this work for transient messages.
+        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+            TSInteraction *_Nullable latestCopy = [TSInteraction anyFetchWithUniqueId:message.uniqueId
+                                                                          transaction:transaction];
+            if (![latestCopy isKindOfClass:[TSOutgoingMessage class]]) {
+                OWSLogWarn(@"Could not update expiration for deleted message.");
+                return;
+            }
+            TSOutgoingMessage *latestMessage = (TSOutgoingMessage *)latestCopy;
+            [ViewOnceMessages completeIfNecessaryWithMessage:latestMessage transaction:transaction];
+        });
+    }
 
     if (!message.shouldSyncTranscript) {
         return success();
@@ -1656,33 +1654,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     for (NSNumber *deviceId in deviceIds) {
         @try {
-            // This may involve blocking network requests, so we do it _before_
-            // we open a transaction.
+            // This may involve blocking network requests.
             [self throws_ensureRecipientHasSessionForMessageSend:messageSend deviceId:deviceId];
-
-            __block NSDictionary *_Nullable messageDict;
-            __block NSException *encryptionException;
-            DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-                @try {
-                    messageDict = [self throws_encryptedMessageForMessageSend:messageSend
-                                                                     deviceId:deviceId
-                                                                    plainText:plainText
-                                                                  transaction:transaction];
-                } @catch (NSException *exception) {
-                    encryptionException = exception;
-                }
-            });
-
-            if (encryptionException) {
-                OWSLogInfo(@"Exception during encryption: %@", encryptionException);
-                @throw encryptionException;
-            }
-
-            if (messageDict) {
-                [messagesArray addObject:messageDict];
-            } else {
-                OWSRaiseException(InvalidMessageException, @"Failed to encrypt message");
-            }
         } @catch (NSException *exception) {
             if ([exception.name isEqualToString:OWSMessageSenderInvalidDeviceException]) {
                 DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
@@ -1690,10 +1663,35 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                          devicesToRemove:@[ deviceId ]
                                                              transaction:transaction];
                 });
+                [deviceIds removeObject:deviceId];
             } else {
                 @throw exception;
             }
         }
+    }
+
+    __block NSException *encryptionException;
+    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+        for (NSNumber *deviceId in deviceIds) {
+            @try {
+                NSDictionary *_Nullable messageDict = [self throws_encryptedMessageForMessageSend:messageSend
+                                                                                         deviceId:deviceId
+                                                                                        plainText:plainText
+                                                                                      transaction:transaction];
+                if (messageDict) {
+                    [messagesArray addObject:messageDict];
+                } else {
+                    OWSRaiseException(InvalidMessageException, @"Failed to encrypt message");
+                }
+            } @catch (NSException *exception) {
+                encryptionException = exception;
+                return;
+            }
+        }
+    });
+    if (encryptionException) {
+        OWSLogInfo(@"Exception during encryption: %@", encryptionException);
+        @throw encryptionException;
     }
 
     return [messagesArray copy];
@@ -1711,11 +1709,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     NSString *accountId = messageSend.recipient.accountId;
 
     __block BOOL hasSession;
-    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        hasSession = [self.sessionStore containsSessionForAddress:recipientAddress
-                                                         deviceId:[deviceId intValue]
-                                                      transaction:transaction];
-    });
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
+        hasSession = [self.sessionStore containsSessionForAccountId:accountId
+                                                           deviceId:[deviceId intValue]
+                                                        transaction:transaction];
+    }];
     if (hasSession) {
         return;
     }
@@ -1967,6 +1965,18 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
 #pragma mark -
 
++ (BOOL)doesMessageNeedsToBePrepared:(TSOutgoingMessage *)message
+{
+    if (message.allAttachmentIds.count > 0 || message.messageSticker != nil || message.quotedMessage != nil) {
+        return YES;
+    }
+    if (message.hasFailedRecipients) {
+        return YES;
+    }
+    return NO;
+}
+
+// NOTE: Any changes to this method should be reflected in doesMessageNeedsToBePrepared.
 + (NSArray<NSString *> *)prepareMessageForSending:(TSOutgoingMessage *)message
                                       transaction:(SDSAnyWriteTransaction *)transaction
 {
