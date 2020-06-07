@@ -127,6 +127,8 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 
 @property (nonatomic, readonly) BOOL shouldProcessIncomingMessages;
 
+@property (nonatomic, readonly) BOOL hasUI;
+
 @end
 
 id<AppContext> CurrentAppContext(void);
