@@ -204,7 +204,7 @@ struct GRDBAttachmentFinderAdapter: AttachmentFinderAdapter {
 
         var sql = """
             SELECT * FROM \(AttachmentRecord.databaseTableName)
-            WHERE \(reactionColumn: .uniqueId) IN (\(attachmentIds.map { "\'\($0)'" }.joined(separator: ",")))
+            WHERE \(attachmentColumn: .uniqueId) IN (\(attachmentIds.map { "\'\($0)'" }.joined(separator: ",")))
         """
 
         let arguments: StatementArguments
@@ -218,6 +218,8 @@ struct GRDBAttachmentFinderAdapter: AttachmentFinderAdapter {
         } else {
             arguments = []
         }
+
+        sql += " ORDER BY \(attachmentColumn: .id)"
 
         let cursor = TSAttachment.grdbFetchCursor(sql: sql, arguments: arguments, transaction: transaction)
 
