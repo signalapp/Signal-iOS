@@ -203,8 +203,8 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
                                                           PMKResolver resolve) {
                                                           [self downloadAttachmentsForMessage:message
                                                               bypassPendingMessageRequest:NO
-                                                              attachments:[message
-                                                                              allAttachmentsWithTransaction:transaction]
+                                                              attachments:[message allAttachmentsWithTransaction:
+                                                                                       transaction.unwrapGrdbRead]
                                                               transaction:transaction
                                                               success:^(NSArray<TSAttachmentStream *> *streams) {
                                                                   @synchronized(attachmentStreams) {
@@ -253,7 +253,7 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
 {
     [self downloadAttachmentsForMessage:message
             bypassPendingMessageRequest:bypassPendingMessageRequest
-                            attachments:[message bodyAttachmentsWithTransaction:transaction]
+                            attachments:[message bodyAttachmentsWithTransaction:transaction.unwrapGrdbRead]
                             transaction:transaction
                                 success:success
                                 failure:failure];
@@ -267,7 +267,7 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
 {
     [self downloadAttachmentsForMessage:message
             bypassPendingMessageRequest:bypassPendingMessageRequest
-                            attachments:[message allAttachmentsWithTransaction:transaction]
+                            attachments:[message allAttachmentsWithTransaction:transaction.unwrapGrdbRead]
                             transaction:transaction
                                 success:success
                                 failure:failure];

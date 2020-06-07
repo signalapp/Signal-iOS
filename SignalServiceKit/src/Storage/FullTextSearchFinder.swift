@@ -488,7 +488,7 @@ class AnySearchIndexer {
     }
 
     private static let messageIndexer: SearchIndexer<TSMessage> = SearchIndexer { (message: TSMessage, transaction: SDSAnyReadTransaction) in
-        if let bodyText = message.bodyText(with: transaction) {
+        if let bodyText = message.bodyText(with: transaction.unwrapGrdbRead) {
             return bodyText
         }
         return ""

@@ -13,6 +13,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, readonly, nullable) NSString *messageId;
 @property (nonatomic, readonly, nullable) NSString *threadId;
+@property (nonatomic, readonly) BOOL isMediaMessage;
 @property (nonatomic, readonly, nullable) TSOutgoingMessage *invisibleMessage;
 @property (nonatomic, readonly) BOOL removeMessageAfterSending;
 
@@ -46,10 +47,11 @@ NS_ASSUME_NONNULL_BEGIN
                           sortId:(unsigned long long)sortId
                           status:(SSKJobRecordStatus)status
                 invisibleMessage:(nullable TSOutgoingMessage *)invisibleMessage
+                  isMediaMessage:(BOOL)isMediaMessage
                        messageId:(nullable NSString *)messageId
        removeMessageAfterSending:(BOOL)removeMessageAfterSending
                         threadId:(nullable NSString *)threadId
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:failureCount:label:sortId:status:invisibleMessage:messageId:removeMessageAfterSending:threadId:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:failureCount:label:sortId:status:invisibleMessage:isMediaMessage:messageId:removeMessageAfterSending:threadId:));
 
 // clang-format on
 

@@ -48,6 +48,56 @@ public class AttachmentFinder: NSObject, AttachmentFinderAdapter {
             return GRDBAttachmentFinderAdapter.enumerateAttachmentPointersWithLazyRestoreFragments(transaction: grdbRead, block: block)
         }
     }
+
+    @objc
+    public class func attachments(
+        withAttachmentIds attachmentIds: [String],
+        transaction: GRDBReadTransaction
+    ) -> [TSAttachment] {
+        return GRDBAttachmentFinderAdapter.attachments(
+            withAttachmentIds: attachmentIds,
+            transaction: transaction
+        )
+    }
+
+    @objc
+    public class func attachments(
+        withAttachmentIds attachmentIds: [String],
+        matchingContentType: String,
+        transaction: GRDBReadTransaction
+    ) -> [TSAttachment] {
+        return GRDBAttachmentFinderAdapter.attachments(
+            withAttachmentIds: attachmentIds,
+            matchingContentType: matchingContentType,
+            transaction: transaction
+        )
+    }
+
+    @objc
+    public class func attachments(
+        withAttachmentIds attachmentIds: [String],
+        ignoringContentType: String,
+        transaction: GRDBReadTransaction
+    ) -> [TSAttachment] {
+        return GRDBAttachmentFinderAdapter.attachments(
+            withAttachmentIds: attachmentIds,
+            ignoringContentType: ignoringContentType,
+            transaction: transaction
+        )
+    }
+
+    @objc
+    public class func existsAttachments(
+        withAttachmentIds attachmentIds: [String],
+        ignoringContentType: String,
+        transaction: GRDBReadTransaction
+    ) -> Bool {
+        return GRDBAttachmentFinderAdapter.existsAttachments(
+            withAttachmentIds: attachmentIds,
+            ignoringContentType: ignoringContentType,
+            transaction: transaction
+        )
+    }
 }
 
 // MARK: -
@@ -142,5 +192,75 @@ struct GRDBAttachmentFinderAdapter: AttachmentFinderAdapter {
         } catch {
             owsFailDebug("error: \(error)")
         }
+    }
+
+    static func attachments(
+        withAttachmentIds attachmentIds: [String],
+        ignoringContentType: String? = nil,
+        matchingContentType: String? = nil,
+        transaction: GRDBReadTransaction
+    ) -> [TSAttachment] {
+        guard !attachmentIds.isEmpty else { return [] }
+
+        var sql = """
+            SELECT * FROM \(AttachmentRecord.databaseTableName)
+            WHERE \(attachmentColumn: .uniqueId) IN (\(attachmentIds.map { "\'\($0)'" }.joined(separator: ",")))
+        """
+
+        let arguments: StatementArguments
+
+        if let ignoringContentType = ignoringContentType {
+            sql += " AND \(attachmentColumn: .contentType) != ?"
+            arguments = [ignoringContentType]
+        } else if let matchingContentType = matchingContentType {
+            sql += " AND \(attachmentColumn: .contentType) = ?"
+            arguments = [matchingContentType]
+        } else {
+            arguments = []
+        }
+
+        sql += " ORDER BY \(attachmentColumn: .id)"
+
+        let cursor = TSAttachment.grdbFetchCursor(sql: sql, arguments: arguments, transaction: transaction)
+
+        var attachments = [TSAttachment]()
+
+        do {
+            while let attachment = try cursor.next() {
+                attachments.append(attachment)
+            }
+        } catch {
+            owsFailDebug("unexpected error \(error)")
+        }
+
+        return attachments
+    }
+
+    static func existsAttachments(
+        withAttachmentIds attachmentIds: [String],
+        ignoringContentType: String,
+        transaction: GRDBReadTransaction
+    ) -> Bool {
+        guard !attachmentIds.isEmpty else { return false }
+
+        let sql = """
+            SELECT EXISTS(
+                SELECT 1
+                FROM \(AttachmentRecord.databaseTableName)
+                WHERE \(attachmentColumn: .uniqueId) IN (\(attachmentIds.map { "\'\($0)'" }.joined(separator: ",")))
+                AND \(attachmentColumn: .contentType) != ?
+                LIMIT 1
+            )
+        """
+
+        let exists: Bool
+        do {
+            exists = try Bool.fetchOne(transaction.database, sql: sql, arguments: [ignoringContentType]) ?? false
+        } catch {
+            owsFailDebug("Received unexpected error \(error)")
+            exists = false
+        }
+
+        return exists
     }
 }

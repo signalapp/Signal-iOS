@@ -255,7 +255,7 @@ public class DebugFlags: NSObject {
     public static let keepWebSocketOpenInBackground = false
 
     @objc
-    public static var audibleErrorLogging = build.includes(.internalPreview)
+    public static var audibleErrorLogging = build.includes(.qa)
 
     @objc
     public static let verboseAboutView = build.includes(.qa)

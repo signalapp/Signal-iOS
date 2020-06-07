@@ -104,10 +104,29 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
             throw JobError.obsolete(description: "message no longer exists")
         }
 
-        return MessageSenderOperation(message: message, jobRecord: jobRecord)
+        let operation = MessageSenderOperation(message: message, jobRecord: jobRecord)
+
+        // Media messages run on their own queue to not block future non-media sends,
+        // but should not start sending until all previous operations have executed.
+        // We can guarantee this by adding another operation to the send queue that
+        // we depend upon.
+        //
+        // For example, if you send text messages A, B and then media message C
+        // message C should never send before A and B. However, if you send text
+        // messages A, B, then media message C, followed by text message D, D cannot
+        // send before A and B, but CAN send before C.
+        if jobRecord.isMediaMessage, let sendQueue = senderQueues[message.uniqueThreadId] {
+            let orderMaintainingOperation = Operation()
+            orderMaintainingOperation.queuePriority = MessageSender.queuePriority(for: message)
+            sendQueue.addOperation(orderMaintainingOperation)
+            operation.addDependency(orderMaintainingOperation)
+        }
+
+        return operation
     }
 
     var senderQueues: [String: OperationQueue] = [:]
+    var mediaSenderQueues: [String: OperationQueue] = [:]
     let defaultQueue: OperationQueue = {
         let operationQueue = OperationQueue()
         operationQueue.name = "DefaultSendingQueue"
@@ -123,17 +142,31 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
             return defaultQueue
         }
 
-        guard let existingQueue = senderQueues[threadId] else {
-            let operationQueue = OperationQueue()
-            operationQueue.name = "SendingQueue:\(threadId)"
-            operationQueue.maxConcurrentOperationCount = 1
+        if jobRecord.isMediaMessage {
+            guard let existingQueue = mediaSenderQueues[threadId] else {
+                let operationQueue = OperationQueue()
+                operationQueue.name = "MediaSendingQueue:\(threadId)"
+                operationQueue.maxConcurrentOperationCount = 1
 
-            senderQueues[threadId] = operationQueue
+                mediaSenderQueues[threadId] = operationQueue
 
-            return operationQueue
+                return operationQueue
+            }
+
+            return existingQueue
+        } else {
+            guard let existingQueue = senderQueues[threadId] else {
+                let operationQueue = OperationQueue()
+                operationQueue.name = "SendingQueue:\(threadId)"
+                operationQueue.maxConcurrentOperationCount = 1
+
+                senderQueues[threadId] = operationQueue
+
+                return operationQueue
+            }
+
+            return existingQueue
         }
-
-        return existingQueue
     }
 
     @objc
