@@ -764,17 +764,20 @@
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "ഗ്രൂപ്പ് പേര്, അവ്‌താർ, മെസേജുകൾ അപ്രത്യക്ഷമാകേണ്ട ടൈമർ എന്നിവ ആർക്ക് എഡിറ്റ് ചെയ്യാനാകും എന്ന് തിരഞ്ഞെടുക്കുക.";
 
-/* Footer text for the 'block and leave' section of conversation settings view. */
+/* Footer text for the 'block and leave' section of contact conversation settings view. */
+"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "You will no longer receive messages or updates from this user.";
+
+/* Footer text for the 'block and leave' section of group conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER" = "ഈ ഗ്രൂപ്പിൽ നിന്ന് നിങ്ങൾക്ക് മേലിൽ സന്ദേശങ്ങളോ അപ്‌ഡേറ്റുകളോ ലഭിക്കില്ല.";
 
 /* Label for 'block group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_GROUP" = "ഗ്രൂപ്പ് ബ്ലോക്ക് ചെയ്യുക";
 
 /* table cell label in conversation settings */
-"CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "ഈ ഗ്രൂപ്പ് ബ്ലോക്ക് ചെയ്യുക";
+"CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "CONVERSATION_SETTINGS_BLOCK_THIS_GROUP";
 
 /* table cell label in conversation settings */
-"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "ഈ യൂസറെ ബ്ലോക്ക് ചെയ്യുക";
+"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "CONVERSATION_SETTINGS_BLOCK_THIS_USER";
 
 /* Label for 'block user' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_USER" = "യൂസറെ ബ്ലോക്ക് ചെയ്യുക";
@@ -813,7 +816,7 @@
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "എല്ലാ അംഗങ്ങൾക്കും";
 
 /* Navbar title when viewing settings for a group thread */
-"CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "ഗ്രൂപ്പ് വിവരം";
+"CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "CONVERSATION_SETTINGS_GROUP_INFO_TITLE";
 
 /* Label for 'make group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "അഡ്‌മിൻ ആക്കുക";
@@ -1164,7 +1167,7 @@
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "കോൺടാക്ട് വിവരങ്ങൾ എഡിറ്റ് ചെയ്യുന്നതിന് Signal ന് കോൺടാക്ട് അക്സസ് ആവശ്യമാണ്";
 
 /* table cell label in conversation settings */
-"EDIT_GROUP_ACTION" = "ഗ്രൂപ്പ് എഡിറ്റുചെയ്യുക";
+"EDIT_GROUP_ACTION" = "EDIT_GROUP_ACTION";
 
 /* The 'clear avatar' button in the 'edit group' view. */
 "EDIT_GROUP_CLEAR_AVATAR" = "അവതാർ ഇല്ലാതാക്കുക";
@@ -1186,9 +1189,6 @@
 
 /* Label for the group name in the 'edit group' view. */
 "EDIT_GROUP_GROUP_NAME" = "ഗ്രൂപ്പിൻ്റെ പേര്";
-
-/* An indicator that a user is a new member of the group. */
-"EDIT_GROUP_NEW_MEMBER_LABEL" = "കൂട്ടിച്ചേർത്തു";
 
 /* The title for the 'update group' button. */
 "EDIT_GROUP_UPDATE_BUTTON" = "അപ്‌ഡേറ്റ്";
@@ -1484,9 +1484,6 @@
 /* Message indicating that the access to the group's members was changed. Embeds {{new access level}}. */
 "GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "\"%@\" കൊണ്ട് ഗ്രൂപ്പ് മെംബർഷിപ്പ് മാറ്റാനാകും.";
 
-/* Error indicating that a member cannot be added to a group. */
-"GROUP_CANNOT_ADD_INVALID_MEMBER" = "ഈ യൂസറിനെ ഗ്രൂപ്പിൽ ചേർക്കാൻ കഴിയുകയില്ല.";
-
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "നിങ്ങൾ ഗ്രൂപ്പ് സൃഷ്ടിച്ചു.";
 
@@ -1560,7 +1557,7 @@
 "GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ നിങ്ങളുടെ അഡ്മിൻ അധികാരങ്ങൾ റദ്ദാക്കിയിരിക്കുന്നു.";
 
 /* Conversation settings table section title */
-"GROUP_MANAGEMENT_SECTION" = "ഗ്രൂപ്പ് മാനേജ്‌മെൻ്റ്";
+"GROUP_MANAGEMENT_SECTION" = "GROUP_MANAGEMENT_SECTION";
 
 /* Label indicating that a group member is an admin. */
 "GROUP_MEMBER_ADMIN_INDICATOR" = "അഡ്‌മിൻ‌";
@@ -1586,17 +1583,8 @@
 /* Label indicating that a group has no other members. */
 "GROUP_MEMBERS_NO_OTHER_MEMBERS" = "അംഗങ്ങൾ ഇല്ല.";
 
-/* Label for the button that clears all verification errors in the 'group members' view. */
-"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED" = "എല്ലാവർക്കുമുള്ള പരിശോധന പൂർത്തിയാക്കുക";
-
-/* Label for the 'reset all no-longer-verified group members' confirmation alert. */
-"GROUP_MEMBERS_RESET_NO_LONGER_VERIFIED_ALERT_MESSAGE" = "സുരക്ഷാ നമ്പരുകൾ അവസാന വട്ടം പരിശോധിച്ച് ഉറപ്പാക്കിയ ശേഷം മാറ്റം വന്നിട്ടുള്ള എല്ലാ ഗ്രൂപ്പ് അംഗങ്ങളുടെയും പരിശോധനയും ഇതിൽ നടക്കും.";
-
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "അംഗങ്ങൾ";
-
-/* Title for the 'no longer verified' section of the 'group members' view. */
-"GROUP_MEMBERS_SECTION_TITLE_NO_LONGER_VERIFIED" = "പരിശോധിച്ചതായി ഇതുവരെയും അടയാളപ്പെടുത്തിയിട്ടില്ല";
 
 /* Button label for the 'send message to group member' button */
 "GROUP_MEMBERS_SEND_MESSAGE" = "സന്ദേശം";
@@ -2001,7 +1989,7 @@
 "LINKING_DEVICE_FAILED_TITLE" = "ഡിവൈസ് ലിങ്ക് ചെയ്യുന്നത് പരാജയപ്പെട്ടിരിക്കുന്നു";
 
 /* table cell label in conversation settings */
-"LIST_GROUP_MEMBERS_ACTION" = "ഗ്രൂപ്പിലെ അംഗങ്ങൾ";
+"LIST_GROUP_MEMBERS_ACTION" = "LIST_GROUP_MEMBERS_ACTION";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "പേര് അല്ലെങ്കിൽ വിലാസം ഉപയോഗിച്ച് തിരയുക";
@@ -2321,9 +2309,6 @@
 /* Label for the 'create new group' button. */
 "NEW_GROUP_BUTTON" = "പുതിയ ഗ്രൂപ്പ്";
 
-/* Accessibility label for the new group button */
-"NEW_GROUP_BUTTON_LABEL" = "പുതിയ ഗ്രൂപ്പ്";
-
 /* The title for the 'create group' button. */
 "NEW_GROUP_CREATE_BUTTON" = "സൃഷ്ടിക്കുക";
 
@@ -2342,17 +2327,11 @@
 /* Used in place of the group name when a group has not yet been named. */
 "NEW_GROUP_DEFAULT_TITLE" = "പുതിയ ഗ്രൂപ്പ്";
 
-/* An indicator that a user is a member of the new group. */
-"NEW_GROUP_MEMBER_LABEL" = "അംഗം";
-
 /* notification title. Embeds {{author name}} and {{group name}} */
 "NEW_GROUP_MESSAGE_NOTIFICATION_TITLE" = "%@ മുതൽ  %@ വരെ";
 
 /* The title for the 'name new group' view. */
 "NEW_GROUP_NAME_GROUP_VIEW_TITLE" = "ഗ്രൂപ്പിന് പേര് നൽകുക";
-
-/* Placeholder text for group name field */
-"NEW_GROUP_NAMEGROUP_REQUEST_DEFAULT" = "ഈ ഗ്രൂപ്പ് ചാറ്റിന് പേര് നൽകുക";
 
 /* a title for the selected section of the 'recipient picker' view. */
 "NEW_GROUP_NON_CONTACTS_SECTION_TITLE" = "മറ്റ് യൂസർമാർ";
@@ -3711,7 +3690,7 @@
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "ആപ്പ് സ്വിച്ചറിൽ Signal പ്രിവ്യൂകൾ ദൃശ്യമാകുന്നത് തടയുക.";
 
 /* Label for the notifications section of conversation settings view. */
-"SETTINGS_SECTION_NOTIFICATIONS" = "അറിയിപ്പുകൾ";
+"SETTINGS_SECTION_NOTIFICATIONS" = "SETTINGS_SECTION_NOTIFICATIONS";
 
 /* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "ശബ്ദങ്ങൾ";
@@ -4018,12 +3997,6 @@
 
 /* No comment provided by engineer. */
 "UNSUPPORTED_FEATURE_ERROR" = "നിങ്ങളുടെ ഡിവൈസ് ഈ ഫീച്ചർ സപ്പോർട്ട് ചെയ്യുന്നില്ല.";
-
-/* Title for alert indicating that group members can't be removed. */
-"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_MESSAGE" = "നിങ്ങൾക്ക് ഗ്രൂപ്പ് അംഗങ്ങളെ നീക്കം ചെയ്യാൻ കഴിയുകയില്ല.  അവർ വിട്ടു പോകണം അല്ലെങ്കിൽ ഈ അംഗം ഇല്ലാതെ നിങ്ങൾ പുതിയൊരു ഗ്രൂപ്പ് ഉണ്ടാക്കാൻ കഴിയും.";
-
-/* Title for alert indicating that group members can't be removed. */
-"UPDATE_GROUP_CANT_REMOVE_MEMBERS_ALERT_TITLE" = "സപ്പോർട്ട് ചെയ്യുന്നില്ല";
 
 /* Error indicating that a group could not be updated. */
 "UPDATE_GROUP_FAILED" = "ഗ്രൂപ്പ് അപ്‌ഡേറ്റ് ചെയ്യാനാകുന്നില്ല.";
