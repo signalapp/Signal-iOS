@@ -1409,7 +1409,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
                  wasLocallyInitiated:wasLocallyInitiated
                          transaction:transaction
                           completion:^{
-                              dispatch_async(dispatch_get_main_queue(), ^{
+                              dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                                   // If this is the profile for the local user, we always want to defer to local state
                                   // so skip the update profile for address call.
                                   if (address.isLocalAddress) {
