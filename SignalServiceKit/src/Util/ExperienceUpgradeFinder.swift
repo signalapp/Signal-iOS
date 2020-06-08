@@ -3,6 +3,8 @@
 //
 
 import Foundation
+import PromiseKit
+import Contacts
 
 public enum ExperienceUpgradeId: String, CaseIterable {
     case introducingPins = "009"
@@ -10,9 +12,13 @@ public enum ExperienceUpgradeId: String, CaseIterable {
     case profileNameReminder = "011"
     case messageRequests = "012"
     case pinReminder // Never saved, used to periodically prompt the user for their PIN
+    case notificationPermissionReminder
+    case contactPermissionReminder
 
     // Until this flag is true the upgrade won't display to users.
     func hasLaunched(transaction: GRDBReadTransaction) -> Bool {
+        AssertIsOnMainThread()
+
         switch self {
         case .introducingPins:
             // The PIN setup flow requires an internet connection and you to not already have a PIN
@@ -27,6 +33,31 @@ public enum ExperienceUpgradeId: String, CaseIterable {
             return FeatureFlags.messageRequest
         case .pinReminder:
             return OWS2FAManager.shared().isDueForV2Reminder(transaction: transaction.asAnyRead)
+        case .notificationPermissionReminder:
+            let (promise, resolver) = Promise<Bool>.pending()
+
+            Logger.info("Checking notification authorization")
+
+            DispatchQueue.global(qos: .userInitiated).async {
+                UNUserNotificationCenter.current().getNotificationSettings { settings in
+                    Logger.info("Checked notification authorization \(settings.authorizationStatus)")
+                    resolver.fulfill(settings.authorizationStatus == .authorized)
+                }
+            }
+
+            DispatchQueue.global().asyncAfter(deadline: .now() + 0.05) {
+                guard promise.result == nil else { return }
+                resolver.reject(OWSAssertionError("timeout fetching notification permissions"))
+            }
+
+            do {
+                return !(try promise.wait())
+            } catch {
+                owsFailDebug("failed to query notification permission")
+                return false
+            }
+        case .contactPermissionReminder:
+            return CNContactStore.authorizationStatus(for: CNEntityType.contacts) != .authorized
         }
     }
 
@@ -80,6 +111,10 @@ public enum ExperienceUpgradeId: String, CaseIterable {
             return .low
         case .pinReminder:
             return .medium
+        case .notificationPermissionReminder:
+            return .medium
+        case .contactPermissionReminder:
+            return .medium
         }
     }
 
@@ -91,6 +126,43 @@ public enum ExperienceUpgradeId: String, CaseIterable {
             return false
         default:
             return true
+        }
+    }
+
+    // Some experience upgrades are dynamic, but still track state (like
+    // snooze duration), but can never be permanently completed.
+    var canBeCompleted: Bool {
+        switch self {
+        case .pinReminder:
+            return false
+        case .notificationPermissionReminder:
+            return false
+        case .contactPermissionReminder:
+            return false
+        default:
+            return true
+        }
+    }
+
+    var snoozeDuration: TimeInterval {
+        switch self {
+        case .notificationPermissionReminder:
+            return kDayInterval * 30
+        case .contactPermissionReminder:
+            return kDayInterval * 30
+        default:
+            return kDayInterval * 2
+        }
+    }
+
+    var showOnLinkedDevices: Bool {
+        switch self {
+        case .notificationPermissionReminder:
+            return true
+        case .contactPermissionReminder:
+            return true
+        default:
+            return false
         }
     }
 }
@@ -127,12 +199,16 @@ public class ExperienceUpgradeFinder: NSObject {
     }
 
     public class func markAsComplete(experienceUpgradeId: ExperienceUpgradeId, transaction: GRDBWriteTransaction) {
-        Logger.info("marking experience upgrade as complete \(experienceUpgradeId)")
         markAsComplete(experienceUpgrade: ExperienceUpgrade(uniqueId: experienceUpgradeId.rawValue), transaction: transaction)
     }
 
     public class func markAsComplete(experienceUpgrade: ExperienceUpgrade, transaction: GRDBWriteTransaction) {
+        guard experienceUpgrade.id.canBeCompleted else {
+            return Logger.info("skipping marking experience upgrade as complete for experience upgrade \(experienceUpgrade.uniqueId)")
+        }
+
         Logger.info("marking experience upgrade as complete \(experienceUpgrade.uniqueId)")
+
         experienceUpgrade.upsertWith(transaction: transaction.asAnyWrite) { $0.isComplete = true }
     }
 
@@ -149,13 +225,11 @@ public class ExperienceUpgradeFinder: NSObject {
     /// yet to be completed. Sorted by priority from highest to lowest. For equal
     /// priority upgrades follows the order of the `ExperienceUpgradeId` enumeration
     private class func allActiveExperienceUpgrades(transaction: GRDBReadTransaction) -> [ExperienceUpgrade] {
-        // Only the primary device will ever see experience upgrades.
-        // TODO: We may eventually sync these and show them on linked devices.
-        guard SSKEnvironment.shared.tsAccountManager.isRegisteredPrimaryDevice else { return [] }
+        let isPrimaryDevice = SSKEnvironment.shared.tsAccountManager.isRegisteredPrimaryDevice
 
         let activeIds = ExperienceUpgradeId
             .allCases
-            .filter { $0.hasLaunched(transaction: transaction) && !$0.hasExpired }
+            .filter { $0.hasLaunched(transaction: transaction) && !$0.hasExpired && ($0.showOnLinkedDevices || isPrimaryDevice) }
             .map { $0.rawValue }
 
         // We don't include `isComplete` in the query as we want to initialize
@@ -205,7 +279,7 @@ public extension ExperienceUpgrade {
     var isSnoozed: Bool {
         guard lastSnoozedTimestamp > 0 else { return false }
         // If it hasn't been two days since we were snoozed, wait to show again.
-        return -Date(timeIntervalSince1970: lastSnoozedTimestamp).timeIntervalSinceNow <= kDayInterval * 2
+        return -Date(timeIntervalSince1970: lastSnoozedTimestamp).timeIntervalSinceNow <= id.snoozeDuration
     }
 
     var daysSinceFirstViewed: Int {
