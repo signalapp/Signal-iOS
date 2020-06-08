@@ -281,7 +281,9 @@ public class GRDBSchemaMigrator: NSObject {
         migrator.registerMigration(MigrationId.dedupeSignalRecipients.rawValue) { db in
             do {
                 try autoreleasepool {
-                    try dedupeSignalRecipients(transaction: GRDBWriteTransaction(database: db).asAnyWrite)
+                    let transaction = GRDBWriteTransaction(database: db)
+                    try dedupeSignalRecipients(transaction: transaction.asAnyWrite)
+                    transaction.finalizeTransaction()
                 }
 
                 try db.drop(index: "index_signal_recipients_on_recipientPhoneNumber")
@@ -577,9 +579,10 @@ public class GRDBSchemaMigrator: NSObject {
                 try db.drop(table: "model_TSRecipientReadReceipt")
                 try db.drop(table: "model_OWSLinkedDeviceReadReceipt")
 
-                let transaction = GRDBWriteTransaction(database: db).asAnyWrite
+                let transaction = GRDBWriteTransaction(database: db)
                 let viewOnceStore = SDSKeyValueStore(collection: "viewOnceMessages")
-                viewOnceStore.removeAll(transaction: transaction)
+                viewOnceStore.removeAll(transaction: transaction.asAnyWrite)
+                transaction.finalizeTransaction()
             } catch {
                 owsFail("Error: \(error)")
             }
@@ -650,18 +653,21 @@ public class GRDBSchemaMigrator: NSObject {
 
         migrator.registerMigration(MigrationId.dataMigration_populateGalleryItems.rawValue) { db in
             do {
-                try createInitialGalleryRecords(transaction: GRDBWriteTransaction(database: db))
+                let transaction = GRDBWriteTransaction(database: db)
+                try createInitialGalleryRecords(transaction: transaction)
+                transaction.finalizeTransaction()
             } catch {
                 owsFail("Error: \(error)")
             }
         }
 
         migrator.registerMigration(MigrationId.dataMigration_markOnboardedUsers_v2.rawValue) { db in
-            let transaction = GRDBWriteTransaction(database: db).asAnyWrite
-            if TSAccountManager.sharedInstance().isRegistered(transaction: transaction) {
+            let transaction = GRDBWriteTransaction(database: db)
+            if TSAccountManager.sharedInstance().isRegistered(transaction: transaction.asAnyWrite) {
                 Logger.info("marking existing user as onboarded")
-                TSAccountManager.sharedInstance().setIsOnboarded(true, transaction: transaction)
+                TSAccountManager.sharedInstance().setIsOnboarded(true, transaction: transaction.asAnyWrite)
             }
+            transaction.finalizeTransaction()
         }
 
         migrator.registerMigration(MigrationId.dataMigration_clearLaunchScreenCache.rawValue) { _ in
@@ -669,14 +675,20 @@ public class GRDBSchemaMigrator: NSObject {
         }
 
         migrator.registerMigration(MigrationId.dataMigration_enableV2RegistrationLockIfNecessary.rawValue) { db in
-            let transaction = GRDBWriteTransaction(database: db).asAnyWrite
-            guard KeyBackupService.hasMasterKey(transaction: transaction) else { return }
-            OWS2FAManager.keyValueStore().setBool(true, key: OWS2FAManager.isRegistrationLockV2EnabledKey, transaction: transaction)
+            let transaction = GRDBWriteTransaction(database: db)
+            guard KeyBackupService.hasMasterKey(transaction: transaction.asAnyWrite) else {
+                transaction.finalizeTransaction()
+                return
+
+            }
+            OWS2FAManager.keyValueStore().setBool(true, key: OWS2FAManager.isRegistrationLockV2EnabledKey, transaction: transaction.asAnyWrite)
+            transaction.finalizeTransaction()
         }
 
         migrator.registerMigration(MigrationId.dataMigration_resetStorageServiceData.rawValue) { db in
-            let transaction = GRDBWriteTransaction(database: db).asAnyWrite
-            SSKEnvironment.shared.storageServiceManager.resetLocalData(transaction: transaction)
+            let transaction = GRDBWriteTransaction(database: db)
+            SSKEnvironment.shared.storageServiceManager.resetLocalData(transaction: transaction.asAnyWrite)
+            transaction.finalizeTransaction()
         }
 
         migrator.registerMigration(MigrationId.dataMigration_markAllInteractionsAsNotDeleted.rawValue) { db in

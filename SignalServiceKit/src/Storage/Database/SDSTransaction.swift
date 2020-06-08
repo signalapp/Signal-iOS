@@ -30,8 +30,32 @@ public class GRDBReadTransaction: NSObject {
 @objc
 public class GRDBWriteTransaction: GRDBReadTransaction {
 
+    private enum TransactionState {
+        case open
+        case finalizing
+        case finalized
+    }
+    private var transactionState: TransactionState = .open
+
     init(database: Database) {
         super.init(database: database, isUIRead: false)
+    }
+    
+    deinit {
+        if transactionState == .finalized {
+            owsFailDebug("Write transaction not finalized.")
+        }
+    }
+
+    @objc
+    public func finalizeTransaction() {
+        guard transactionState == .open else {
+            owsFailDebug("Write transaction finalized more than once.")
+            return
+        }
+        transactionState = .finalizing
+        performTransactionFinalizationBlocks()
+        transactionState = .finalized
     }
 
     @objc
@@ -50,6 +74,35 @@ public class GRDBWriteTransaction: GRDBReadTransaction {
     @objc
     public func addAsyncCompletion(queue: DispatchQueue, block: @escaping () -> Void) {
         asyncCompletions.append((queue, block))
+    }
+
+    fileprivate typealias TransactionFinalizationBlock = (_ transaction: GRDBWriteTransaction) -> Void
+    private var transactionFinalizationBlocks = [String: TransactionFinalizationBlock]()
+
+    private func performTransactionFinalizationBlocks() {
+        assert(transactionState == .finalizing)
+
+        let blocks = transactionFinalizationBlocks.values
+        transactionFinalizationBlocks.removeAll()
+        for block in blocks {
+            block(self)
+        }
+        assert(transactionFinalizationBlocks.isEmpty)
+    }
+
+    fileprivate func addTransactionFinalizationBlock(forKey key: String,
+                                                     block: @escaping TransactionFinalizationBlock) {
+        guard transactionState == .open else {
+            // We're already finalizing; run the block immediately.
+            block(self)
+            return
+        }
+        guard transactionFinalizationBlocks[key] == nil else {
+            // Ignoring duplicate.
+            Logger.verbose("Ignoring duplicate.")
+            return
+        }
+        transactionFinalizationBlocks[key] = block
     }
 }
 
@@ -189,6 +242,22 @@ public class SDSAnyWriteTransaction: SDSAnyReadTransaction, SPKProtocolWriteCont
     @objc
     public func shouldIgnoreInteractionUpdates(forThreadUniqueId threadUniqueId: String) -> Bool {
         return threadUniqueIdsToIgnoreInteractionUpdates.contains(threadUniqueId)
+    }
+
+    public typealias TransactionFinalizationBlock = (SDSAnyWriteTransaction) -> Void
+
+    @objc
+    public func addTransactionFinalizationBlock(forKey key: String,
+                                                block: @escaping TransactionFinalizationBlock) {
+        switch writeTransaction {
+        case .yapWrite:
+            // YDB transactions don't support deferred transaction finalizations.
+            block(self)
+        case .grdbWrite(let grdbWrite):
+            grdbWrite.addTransactionFinalizationBlock(forKey: key) { (transaction: GRDBWriteTransaction) in
+                block(SDSAnyWriteTransaction(.grdbWrite(transaction)))
+            }
+        }
     }
 }
 

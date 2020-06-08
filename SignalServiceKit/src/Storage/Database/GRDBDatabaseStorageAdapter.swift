@@ -383,6 +383,7 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
             autoreleasepool {
                 transaction = GRDBWriteTransaction(database: database)
                 block(transaction)
+                transaction.finalizeTransaction()
             }
         }
 

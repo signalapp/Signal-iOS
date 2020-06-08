@@ -520,7 +520,7 @@ ConversationColorName const ConversationColorNameDefault = ConversationColorName
         }
         [self anyOverwritingUpdateWithTransaction:transaction];
     } else {
-        [self.databaseStorage touchThread:self transaction:transaction];
+        [self scheduleTouchFinalizationWithTransaction:transaction];
     }
 }
 
@@ -536,8 +536,24 @@ ConversationColorName const ConversationColorNameDefault = ConversationColorName
         self.lastInteractionRowId = latestInteraction ? latestInteraction.sortId : 0;
         [self anyOverwritingUpdateWithTransaction:transaction];
     } else {
-        [self.databaseStorage touchThread:self transaction:transaction];
+        [self scheduleTouchFinalizationWithTransaction:transaction];
     }
+}
+
+- (NSString *)transactionFinalizationKey
+{
+    return [NSString stringWithFormat:@"%@.%@", self.class.collection, self.uniqueId];
+}
+
+- (void)scheduleTouchFinalizationWithTransaction:(SDSAnyWriteTransaction *)transactionForMethod
+{
+    OWSAssertDebug(transactionForMethod != nil);
+
+    [transactionForMethod addTransactionFinalizationBlockForKey:self.transactionFinalizationKey
+                                                          block:^(SDSAnyWriteTransaction *transactionForBlock) {
+                                                              [self.databaseStorage touchThread:self
+                                                                                    transaction:transactionForBlock];
+                                                          }];
 }
 
 - (void)softDeleteThreadWithTransaction:(SDSAnyWriteTransaction *)transaction
