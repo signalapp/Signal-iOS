@@ -252,7 +252,6 @@ extension UIDatabaseObserver: TransactionObserver {
             let maxUpdateFrequencySeconds: TimeInterval = 1 / TimeInterval(maxUpdatesPerSecond)
             guard secondsSinceLastUpdate >= maxUpdateFrequencySeconds else {
                 // Don't update the snapshot yet; we've updated the snapshot recently.
-                Logger.verbose("Delaying snapshot update")
                 return
             }
         }
@@ -265,11 +264,11 @@ extension UIDatabaseObserver: TransactionObserver {
             switch error {
             case AtomicError.invalidTransition:
                 // If there's no new database changes, we don't need to update the snapshot.
-                break
+                return
             default:
                 owsFailDebug("Error: \(error)")
+                return
             }
-            return
         }
 
         // Update the snapshot now.
