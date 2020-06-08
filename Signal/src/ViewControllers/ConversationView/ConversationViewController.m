@@ -5495,7 +5495,13 @@ typedef enum : NSUInteger {
     }
 
     [self.bottomBar addSubview:bottomView];
-    [bottomView autoPinEdgesToSuperviewMargins];
+
+    // The message requests view expects to extend into the safe area
+    if (self.messageRequestView) {
+        [bottomView autoPinEdgesToSuperviewEdges];
+    } else {
+        [bottomView autoPinEdgesToSuperviewMargins];
+    }
 
     [self updateInputAccessoryPlaceholderHeight];
     [self updateContentInsetsAnimated:self.viewHasEverAppeared];
