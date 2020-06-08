@@ -204,26 +204,41 @@ extension UIDatabaseObserver: TransactionObserver {
     }
 
     public func databaseDidCommit(_ db: Database) {
-
         UIDatabaseObserver.serializedSync {
             for snapshotDelegate in snapshotDelegates {
                 snapshotDelegate.snapshotTransactionDidCommit(db: db)
             }
         }
 
-        // Enqueue the update.
-        hasPendingSnapshotUpdate.set(true)
-        // Try to update immediately.
         DispatchQueue.main.async { [weak self] in
-            self?.updateSnapshotIfNecessary()
+            guard let self = self else {
+                return
+            }
+            // Enqueue the update.
+            self.hasPendingSnapshotUpdate.set(true)
+            // Try to update immediately.
+            self.updateSnapshotIfNecessary()
         }
     }
 
     private func updateSnapshotIfNecessary() {
         AssertIsOnMainThread()
 
+        if let lastSnapshotUpdateDate = self.lastSnapshotUpdateDate {
+            let secondsSinceLastUpdate = abs(lastSnapshotUpdateDate.timeIntervalSinceNow)
+            // Don't update UI more often than Nx/second.
+            let maxUpdatesPerSecond: UInt = 10
+            let maxUpdateFrequencySeconds: TimeInterval = 1 / TimeInterval(maxUpdatesPerSecond)
+            guard secondsSinceLastUpdate >= maxUpdateFrequencySeconds else {
+                // Don't update the snapshot yet; we've updated the snapshot recently.
+                Logger.verbose("Delaying snapshot update")
+                return
+            }
+        }
+
         do {
             // We only want to update the snapshot if we the flag needs to be cleared.
+            // This will throw AtomicError.invalidTransition if that flag isn't set.
             try hasPendingSnapshotUpdate.transition(from: true, to: false)
         } catch {
             switch error {
@@ -234,17 +249,6 @@ extension UIDatabaseObserver: TransactionObserver {
                 owsFailDebug("Error: \(error)")
             }
             return
-        }
-
-        if let lastSnapshotUpdateDate = self.lastSnapshotUpdateDate {
-            let secondsSinceLastUpdate = abs(lastSnapshotUpdateDate.timeIntervalSinceNow)
-            // Don't update UI more often than Nx/second.
-            let maxUpdatesPerSecond: UInt = 10
-            let maxUpdateFrequencySeconds: TimeInterval = 1 / TimeInterval(maxUpdatesPerSecond)
-            guard secondsSinceLastUpdate >= maxUpdateFrequencySeconds else {
-                // Don't update the snapshot yet; we've updated the snapshot recently.
-                return
-            }
         }
 
         // Update the snapshot now.
