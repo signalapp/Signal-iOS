@@ -355,7 +355,9 @@ class GRDBFullTextSearchFinder: NSObject {
         let query = FullTextSearchFinder.query(searchText: searchText)
 
         guard query.count > 0 else {
-            owsFailDebug("Empty query.")
+            // FullTextSearchFinder.query filters some characters, so query
+            // may now be empty.
+            Logger.warn("Empty query.")
             return
         }
 
