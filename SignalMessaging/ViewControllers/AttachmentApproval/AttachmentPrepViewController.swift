@@ -271,10 +271,12 @@ public class AttachmentPrepViewController: OWSViewController {
         }
         blurTooltip = tooltip
 
-        preferences.setWasBlurTooltipShown()
+        DispatchQueue.global().async {
+            self.preferences.setWasBlurTooltipShown()
 
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 5) { [weak self] in
-            self?.removeBlurTooltip()
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 5) { [weak self] in
+                self?.removeBlurTooltip()
+            }
         }
     }
 

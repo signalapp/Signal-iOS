@@ -275,7 +275,7 @@ public class AccountManager: NSObject {
                     throw error
                 }
             }
-        }.then {
+        }.then(on: .global()) {
             self.deviceService.updateSecondaryDeviceCapabilities()
         }.done {
             self.completeRegistration()
