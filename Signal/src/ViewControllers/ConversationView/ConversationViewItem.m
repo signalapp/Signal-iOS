@@ -1394,7 +1394,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
 
 - (void)deleteAction
 {
-    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [self.interaction anyRemoveWithTransaction:transaction];
     });
 }
