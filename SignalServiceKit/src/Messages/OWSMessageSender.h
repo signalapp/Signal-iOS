@@ -100,6 +100,8 @@ NS_SWIFT_NAME(MessageSender)
 
 @interface OutgoingMessagePreparerHelper : NSObject
 
++ (BOOL)doesMessageNeedsToBePrepared:(TSOutgoingMessage *)message NS_SWIFT_NAME(doesMessageNeedsToBePrepared(_:));
+
 /// Persists all necessary data to disk before sending, e.g. generate thumbnails
 + (NSArray<NSString *> *)prepareMessageForSending:(TSOutgoingMessage *)message
                                       transaction:(SDSAnyWriteTransaction *)transaction;
