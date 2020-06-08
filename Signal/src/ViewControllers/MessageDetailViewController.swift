@@ -61,6 +61,8 @@ class MessageDetailViewController: OWSViewController {
 
     private var contactShareViewHelper: ContactShareViewHelper!
 
+    private var databaseUpdateTimer: Timer?
+
     // MARK: Dependencies
 
     var preferences: OWSPreferences {
@@ -899,19 +901,38 @@ extension MessageDetailViewController: SDSDatabaseStorageObserver {
             return
         }
 
-        refreshContent()
+        refreshContentForDatabaseUpdate()
     }
 
     func databaseStorageDidUpdateExternally() {
         AssertIsOnMainThread()
 
-        refreshContent()
+        refreshContentForDatabaseUpdate()
     }
 
     func databaseStorageDidReset() {
         AssertIsOnMainThread()
 
-        refreshContent()
+        refreshContentForDatabaseUpdate()
+    }
+
+    private func refreshContentForDatabaseUpdate() {
+        guard databaseUpdateTimer == nil else {
+            return
+        }
+        // Updating this view is slightly expensive and there will be tons of relevant
+        // database updates when sending to a large group. Update latency isn't that
+        // imporant, so we de-bounce to never update this view more than once every N seconds.
+        self.databaseUpdateTimer = Timer.scheduledTimer(withTimeInterval: 2.0,
+                                                        repeats: false) { [weak self] _ in
+            guard let self = self else {
+                return
+            }
+            assert(self.databaseUpdateTimer != nil)
+            self.databaseUpdateTimer?.invalidate()
+            self.databaseUpdateTimer = nil
+            self.refreshContent()
+        }
     }
 
     private func refreshContent() {
