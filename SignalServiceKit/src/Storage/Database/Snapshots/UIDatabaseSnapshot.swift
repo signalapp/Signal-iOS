@@ -195,6 +195,25 @@ extension UIDatabaseObserver: TransactionObserver {
         return true
     }
 
+    // Database observation operates like so:
+    //
+    // * This class (UIDatabaseObserver) works closely with its "snapshot delegates"
+    //   (per-view snapshots/observers) to update the views in controlled, consistent way.
+    // * UIDatabaseObserver observes all database _changes_ and _commits_.
+    // * When a _change_ occurs:
+    //   * This is done off the main thread.
+    //   * UIDatabaseObserver informs all "snapshot delegates" of changes using snapshotTransactionDidChange.
+    //   * The "snapshot delegates" aggregate the changes.
+    // * When a _commit_ occurs:
+    //   * This is done off the main thread.
+    //   * UIDatabaseObserver informs all "snapshot delegates" to commit their _changes_ using snapshotTransactionDidCommit.
+    //     The "snapshot delegates" commit changes internally using DispatchQueue.main.async().
+    //   * UIDatabaseObserver enqueues a "snapshot update" using DispatchQueue.main.async().
+    // * When a "snapshot update" is performed:
+    //   * This is done on the main thread.
+    //   * UIDatabaseObserver informs all "snapshot delegates" of the update using databaseSnapshotWillUpdate.
+    //   * UIDatabaseObserver updates the database snapshot.
+    //   * UIDatabaseObserver informs all "snapshot delegates" of the update using databaseSnapshotDidUpdate.
     public func databaseDidChange(with event: DatabaseEvent) {
         UIDatabaseObserver.serializedSync {
             for snapshotDelegate in snapshotDelegates {
@@ -203,38 +222,28 @@ extension UIDatabaseObserver: TransactionObserver {
         }
     }
 
+    // See comment on databaseDidChange.
     public func databaseDidCommit(_ db: Database) {
-
         UIDatabaseObserver.serializedSync {
             for snapshotDelegate in snapshotDelegates {
                 snapshotDelegate.snapshotTransactionDidCommit(db: db)
             }
         }
 
-        // Enqueue the update.
-        hasPendingSnapshotUpdate.set(true)
-        // Try to update immediately.
         DispatchQueue.main.async { [weak self] in
-            self?.updateSnapshotIfNecessary()
+            guard let self = self else {
+                return
+            }
+            // Enqueue the update.
+            self.hasPendingSnapshotUpdate.set(true)
+            // Try to update immediately.
+            self.updateSnapshotIfNecessary()
         }
     }
 
+    // See comment on databaseDidChange.
     private func updateSnapshotIfNecessary() {
         AssertIsOnMainThread()
-
-        do {
-            // We only want to update the snapshot if we the flag needs to be cleared.
-            try hasPendingSnapshotUpdate.transition(from: true, to: false)
-        } catch {
-            switch error {
-            case AtomicError.invalidTransition:
-                // If there's no new database changes, we don't need to update the snapshot.
-                break
-            default:
-                owsFailDebug("Error: \(error)")
-            }
-            return
-        }
 
         if let lastSnapshotUpdateDate = self.lastSnapshotUpdateDate {
             let secondsSinceLastUpdate = abs(lastSnapshotUpdateDate.timeIntervalSinceNow)
@@ -247,11 +256,27 @@ extension UIDatabaseObserver: TransactionObserver {
             }
         }
 
+        do {
+            // We only want to update the snapshot if we the flag needs to be cleared.
+            // This will throw AtomicError.invalidTransition if that flag isn't set.
+            try hasPendingSnapshotUpdate.transition(from: true, to: false)
+        } catch {
+            switch error {
+            case AtomicError.invalidTransition:
+                // If there's no new database changes, we don't need to update the snapshot.
+                return
+            default:
+                owsFailDebug("Error: \(error)")
+                return
+            }
+        }
+
         // Update the snapshot now.
         lastSnapshotUpdateDate = Date()
         updateSnapshot()
     }
 
+    // See comment on databaseDidChange.
     private func updateSnapshot() {
         AssertIsOnMainThread()
 
