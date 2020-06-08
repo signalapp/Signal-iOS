@@ -203,6 +203,11 @@ ConversationColorName const ConversationColorNameDefault = ConversationColorName
     [super anyWillRemoveWithTransaction:transaction];
 
     [self removeAllThreadInteractionsWithTransaction:transaction];
+
+    // TODO: If we ever use transaction finalizations for more than
+    // de-bouncing thread touches, we should promote this to TSYapDatabaseObject
+    // (or at least include it in the "will remove" hook for any relevant models.
+    [transaction addRemovedFinalizationKey:self.transactionFinalizationKey];
 }
 
 - (void)removeAllThreadInteractionsWithTransaction:(SDSAnyWriteTransaction *)transaction
@@ -540,15 +545,13 @@ ConversationColorName const ConversationColorNameDefault = ConversationColorName
     }
 }
 
-- (NSString *)transactionFinalizationKey
-{
-    return [NSString stringWithFormat:@"%@.%@", self.class.collection, self.uniqueId];
-}
-
 - (void)scheduleTouchFinalizationWithTransaction:(SDSAnyWriteTransaction *)transactionForMethod
 {
     OWSAssertDebug(transactionForMethod != nil);
 
+    // If we insert, update or remove N interactions in a given
+    // transactions, we don't need to touch the same thread more
+    // than once.
     [transactionForMethod addTransactionFinalizationBlockForKey:self.transactionFinalizationKey
                                                           block:^(SDSAnyWriteTransaction *transactionForBlock) {
                                                               [self.databaseStorage touchThread:self

@@ -378,22 +378,27 @@ extension GRDBDatabaseStorageAdapter: SDSDatabaseStorageAdapter {
             }
         }
 
-        var transaction: GRDBWriteTransaction!
+        var syncCompletions: [GRDBWriteTransaction.CompletionBlock] = []
+        var asyncCompletions: [GRDBWriteTransaction.AsyncCompletion] = []
+
         try pool.write { database in
             autoreleasepool {
-                transaction = GRDBWriteTransaction(database: database)
+                let transaction = GRDBWriteTransaction(database: database)
                 block(transaction)
                 transaction.finalizeTransaction()
+
+                syncCompletions = transaction.syncCompletions
+                asyncCompletions = transaction.asyncCompletions
             }
         }
 
         // Perform all completions _after_ the write transaction completes.
-        for block in transaction.syncCompletions {
+        for block in syncCompletions {
             block()
         }
 
-        for (queue, block) in transaction.asyncCompletions {
-            queue.async(execute: block)
+        for asyncCompletion in asyncCompletions {
+            asyncCompletion.queue.async(execute: asyncCompletion.block)
         }
     }
 }
