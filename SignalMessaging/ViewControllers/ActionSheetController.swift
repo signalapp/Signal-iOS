@@ -12,7 +12,11 @@ public class ActionSheetController: OWSViewController {
     private let scrollView = UIScrollView()
 
     @objc
-    private(set) public var actions = [ActionSheetAction]()
+    private(set) public var actions = [ActionSheetAction]() {
+        didSet {
+            isCancelable = firstCancelAction != nil
+        }
+    }
 
     @objc
     public var contentAlignment: ContentAlignment = .center {
@@ -36,6 +40,9 @@ public class ActionSheetController: OWSViewController {
             stackView.insertArrangedSubview(customHeader, at: 0)
         }
     }
+
+    @objc
+    public var isCancelable = false
 
     fileprivate static let minimumRowHeight: CGFloat = 60
 
@@ -181,14 +188,15 @@ public class ActionSheetController: OWSViewController {
     }
 
     @objc func didTapBackdrop(_ sender: UITapGestureRecognizer) {
+        guard isCancelable else { return }
         // If we have a cancel action, treat tapping the background
         // as tapping the cancel button.
-        guard let firstCancelAction = firstCancelAction else { return }
 
         let point = sender.location(in: self.scrollView)
         guard !contentView.frame.contains(point) else { return }
 
-        dismiss(animated: true) {
+        dismiss(animated: true) { [firstCancelAction] in
+            guard let firstCancelAction = firstCancelAction else { return }
             firstCancelAction.handler?(firstCancelAction)
         }
     }
