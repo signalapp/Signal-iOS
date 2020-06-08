@@ -195,6 +195,25 @@ extension UIDatabaseObserver: TransactionObserver {
         return true
     }
 
+    // Database observation operates like so:
+    //
+    // * This class (UIDatabaseObserver) works closely with its "snapshot delegates"
+    //   (per-view snapshots/observers) to update the views in controlled, consistent way.
+    // * UIDatabaseObserver observes all database _changes_ and _commits_.
+    // * When a _change_ occurs:
+    //   * This is done off the main thread.
+    //   * UIDatabaseObserver informs all "snapshot delegates" of changes using snapshotTransactionDidChange.
+    //   * The "snapshot delegates" aggregate the changes.
+    // * When a _commit_ occurs:
+    //   * This is done off the main thread.
+    //   * UIDatabaseObserver informs all "snapshot delegates" to commit their _changes_ using snapshotTransactionDidCommit.
+    //     The "snapshot delegates" commit changes internally using DispatchQueue.main.async().
+    //   * UIDatabaseObserver enqueues a "snapshot update" using DispatchQueue.main.async().
+    // * When a "snapshot update" is performed:
+    //   * This is done on the main thread.
+    //   * UIDatabaseObserver informs all "snapshot delegates" of the update using databaseSnapshotWillUpdate.
+    //   * UIDatabaseObserver updates the database snapshot.
+    //   * UIDatabaseObserver informs all "snapshot delegates" of the update using databaseSnapshotDidUpdate.
     public func databaseDidChange(with event: DatabaseEvent) {
         UIDatabaseObserver.serializedSync {
             for snapshotDelegate in snapshotDelegates {
@@ -203,6 +222,7 @@ extension UIDatabaseObserver: TransactionObserver {
         }
     }
 
+    // See comment on databaseDidChange.
     public func databaseDidCommit(_ db: Database) {
         UIDatabaseObserver.serializedSync {
             for snapshotDelegate in snapshotDelegates {
@@ -221,6 +241,7 @@ extension UIDatabaseObserver: TransactionObserver {
         }
     }
 
+    // See comment on databaseDidChange.
     private func updateSnapshotIfNecessary() {
         AssertIsOnMainThread()
 
@@ -256,6 +277,7 @@ extension UIDatabaseObserver: TransactionObserver {
         updateSnapshot()
     }
 
+    // See comment on databaseDidChange.
     private func updateSnapshot() {
         AssertIsOnMainThread()
 
