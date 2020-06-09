@@ -94,7 +94,6 @@ public class UIDatabaseObserver: NSObject {
 
     private let hasPendingSnapshotUpdate = AtomicBool(false)
     private var lastSnapshotUpdateDate: Date?
-    private var recentCommitDates = [Date]()
 
     // This property should only be accessed on the main thread.
     private var lastCheckpointDate: Date?
@@ -242,7 +241,6 @@ extension UIDatabaseObserver: TransactionObserver {
             guard let self = self else {
                 return
             }
-            self.recentCommitDates.append(Date())
             // Enqueue the update.
             self.hasPendingSnapshotUpdate.set(true)
             // Try to update immediately.
@@ -301,41 +299,30 @@ extension UIDatabaseObserver: TransactionObserver {
         // which it updates database snapshots when it is under
         // heavy load.
         //
-        // We measure load using a couple of heuristics.
-        //
-        // * Can the display link maintain its preferred frame rate?
-        // * Database commit frequency.
+        // We measure load using a heuristics: Can the display link
+        // maintain its preferred frame rate?
         let windowDuration: TimeInterval = 5 * kSecondInterval
-        recentCommitDates = recentCommitDates.filter {
-            abs($0.timeIntervalSinceNow) < windowDuration
-        }
         recentDisplayLinkDates = recentDisplayLinkDates.filter {
             abs($0.timeIntervalSinceNow) < windowDuration
         }
-        let recentCommitFrequency: Double = Double(recentCommitDates.count) / windowDuration
-        let lightLoadCommitFrequency: Double = 10
-        let heavyLoadCommitFrequency: Double = 100
-        // Alpha represents the unit load, 0 <= x <= 1.
-        // 0 = light load.
-        // 1 = heavy load.
-        let commitAlpha: Double = recentCommitFrequency.inverseLerp(lightLoadCommitFrequency,
-                                                                    heavyLoadCommitFrequency,
-                                                                    shouldClamp: true)
 
         let recentDisplayLinkFrequency: Double = Double(recentDisplayLinkDates.count) / windowDuration
         // Under light load, the display link should fire at its preferred frame rate.
         let lightDisplayLinkFrequency: Double = Double(self.displayLinkPreferredFramesPerSecond)
         // We consider heavy load to be the display link firing at half of its preferred frame rate.
         let heavyDisplayLinkFrequency: Double = Double(self.displayLinkPreferredFramesPerSecond / 2)
+        // Alpha represents the unit load, 0 <= x <= 1.
+        // 0 = light load.
+        // 1 = heavy load.
         let displayLinkAlpha: Double = recentDisplayLinkFrequency.inverseLerp(lightDisplayLinkFrequency,
                                                                               heavyDisplayLinkFrequency,
                                                                               shouldClamp: true)
 
-        // Obtain an alpha by averaging the alphas from our two heuristics.
-        let alpha: Double = (commitAlpha + displayLinkAlpha) / 2
+        // Select the alpha of our chosen heuristic.
+        let alpha: Double = displayLinkAlpha
 
         let fastUpdateFrequencySeconds: TimeInterval = 1 / TimeInterval(20)
-        let slowUpdateFrequencySeconds: TimeInterval = 1 / TimeInterval(4)
+        let slowUpdateFrequencySeconds: TimeInterval = 1 / TimeInterval(2)
         // Under light load, we want the fastest update frequency.
         // Under heavy load, we want the slowest update frequency.
         let targetUpdateFrequencySeconds = alpha.lerp(fastUpdateFrequencySeconds, slowUpdateFrequencySeconds)
