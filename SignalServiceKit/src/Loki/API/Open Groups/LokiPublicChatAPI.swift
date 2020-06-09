@@ -19,7 +19,8 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
 
     // MARK: Convenience
     private static var userDisplayName: String {
-        return SSKEnvironment.shared.contactsManager.displayName(forPhoneIdentifier: getUserHexEncodedPublicKey()) ?? "Anonymous"
+        let userHexEncodedPublicKey = UserDefaults.standard[.masterHexEncodedPublicKey] ?? getUserHexEncodedPublicKey()
+        return SSKEnvironment.shared.profileManager.profileNameForRecipient(withID: userHexEncodedPublicKey) ?? "Anonymous"
     }
     
     // MARK: Database

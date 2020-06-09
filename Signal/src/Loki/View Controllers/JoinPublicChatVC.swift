@@ -133,7 +133,8 @@ final class JoinPublicChatVC : BaseVC, UIPageViewControllerDataSource, UIPageVie
         isJoining = true
         let channelID: UInt64 = 1
         let urlAsString = url.absoluteString
-        let displayName = OWSProfileManager.shared().localProfileName()
+        let userHexEncodedPublicKey = UserDefaults.standard[.masterHexEncodedPublicKey] ?? getUserHexEncodedPublicKey()
+        let displayName = OWSProfileManager.shared().profileNameForRecipient(withID: userHexEncodedPublicKey)
         let profilePictureURL = OWSProfileManager.shared().profilePictureURL()
         let profileKey = OWSProfileManager.shared().localProfileKey().keyData
         LokiPublicChatManager.shared.addChat(server: urlAsString, channel: channelID)
