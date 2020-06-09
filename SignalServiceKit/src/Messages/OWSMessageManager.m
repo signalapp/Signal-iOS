@@ -1097,11 +1097,21 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if (!typingMessage.hasAction) {
-            OWSFailDebug(@"Type message is missing action.");
+    if (!typingMessage.hasAction) {
+        OWSFailDebug(@"Type message is missing action.");
+        return;
+    }
+
+    // We should ignore typing indicator messages.
+    if (envelope.hasServerTimestamp && envelope.serverTimestamp > 0) {
+        uint64_t relevancyCutoff = NSDate.ows_millisecondTimeStamp - (5 * kMinuteInterval);
+        if (envelope.serverTimestamp < relevancyCutoff) {
+            OWSLogInfo(@"Discarding obsolete typing indicator message.");
             return;
         }
+    }
+
+    dispatch_async(dispatch_get_main_queue(), ^{
         switch (typingMessage.unwrappedAction) {
             case SSKProtoTypingMessageActionStarted:
                 [self.typingIndicators didReceiveTypingStartedMessageInThread:thread
