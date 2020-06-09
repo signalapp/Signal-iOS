@@ -113,7 +113,6 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
 
     // This method should only be called within performSync().
     private func readValue(for key: KeyType, transaction: SDSAnyReadTransaction) -> ValueType? {
-        Logger.verbose("---- Reading \(key) in \(logName)")
         if let value = readBlock(key, transaction) {
             if !isExcluded(key: key),
                 canUseCache(transaction: transaction) {
@@ -412,7 +411,6 @@ private class ModelReadCacheWrapper<KeyType: AnyObject & Hashable, ValueType: Ba
         AssertIsOnMainThread()
 
         if uiReadEvacuationBlock(change) {
-            Logger.verbose("---- Evacuating \(uiReadCache.logName)")
             uiReadCache.evacuateCache()
         }
     }
