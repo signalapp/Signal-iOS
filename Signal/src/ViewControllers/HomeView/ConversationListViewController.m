@@ -1355,13 +1355,15 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         case ConversationListViewControllerSectionArchiveButton:
             return nil;
         case ConversationListViewControllerSectionConversations: {
+            TSThread *thread = [self threadForIndexPath:indexPath];
+
             UIContextualAction *deleteAction =
                 [UIContextualAction contextualActionWithStyle:UIContextualActionStyleDestructive
                                                         title:nil
                                                       handler:^(UIContextualAction *action,
                                                           __kindof UIView *sourceView,
                                                           void (^completionHandler)(BOOL)) {
-                                                          [self tableViewCellTappedDelete:indexPath];
+                                                          [self deleteThreadWithConfirmation:thread];
                                                           completionHandler(YES);
                                                       }];
             deleteAction.backgroundColor = UIColor.ows_accentRedColor;
@@ -1374,7 +1376,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                                                       handler:^(UIContextualAction *action,
                                                           __kindof UIView *sourceView,
                                                           void (^completionHandler)(BOOL)) {
-                                                          [self archiveIndexPath:indexPath];
+                                                          [self archiveThread:thread];
                                                           completionHandler(YES);
                                                       }];
 
@@ -1409,6 +1411,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         case ConversationListViewControllerSectionConversations: {
 
             ThreadViewModel *model = [self threadViewModelForIndexPath:indexPath];
+            TSThread *thread = [self threadForIndexPath:indexPath];
 
             if (model.hasUnreadMessages) {
                 UIContextualAction *readAction =
@@ -1424,7 +1427,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                                                                                  (int64_t)(0.65 * NSEC_PER_SEC)),
                                                                   dispatch_get_main_queue(),
                                                                   ^{
-                                                                      [self markAsReadIndexPath:indexPath];
+                                                                      [self markThreadAsRead:thread];
                                                                   });
                                                           }];
 
@@ -1449,7 +1452,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                                                                                  (int64_t)(0.65 * NSEC_PER_SEC)),
                                                                   dispatch_get_main_queue(),
                                                                   ^{
-                                                                      [self markAsUnreadIndexPath:indexPath];
+                                                                      [self markThreadAsUnread:thread];
                                                                   });
                                                           }];
 
@@ -1589,15 +1592,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 #pragma mark - HomeFeedTableViewCellDelegate
 
-- (void)tableViewCellTappedDelete:(NSIndexPath *)indexPath
+- (void)deleteThreadWithConfirmation:(TSThread *)thread
 {
-    if (indexPath.section != ConversationListViewControllerSectionConversations) {
-        OWSFailDebug(@"failure: unexpected section: %lu", (unsigned long)indexPath.section);
-        return;
-    }
-
-    TSThread *thread = [self threadForIndexPath:indexPath];
-
     __weak ConversationListViewController *weakSelf = self;
     ActionSheetController *alert = [[ActionSheetController alloc]
         initWithTitle:NSLocalizedString(@"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE",
@@ -1639,43 +1635,22 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self updateViewState];
 }
 
-- (void)markAsReadIndexPath:(NSIndexPath *)indexPath
+- (void)markThreadAsRead:(TSThread *)thread
 {
-    if (indexPath.section != ConversationListViewControllerSectionConversations) {
-        OWSFailDebug(@"failure: unexpected section: %lu", (unsigned long)indexPath.section);
-        return;
-    }
-
-    TSThread *thread = [self threadForIndexPath:indexPath];
-
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [thread markAllAsReadAndUpdateStorageService:YES transaction:transaction];
     });
 }
 
-- (void)markAsUnreadIndexPath:(NSIndexPath *)indexPath
+- (void)markThreadAsUnread:(TSThread *)thread
 {
-    if (indexPath.section != ConversationListViewControllerSectionConversations) {
-        OWSFailDebug(@"failure: unexpected section: %lu", (unsigned long)indexPath.section);
-        return;
-    }
-
-    TSThread *thread = [self threadForIndexPath:indexPath];
-
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [thread markAsUnreadAndUpdateStorageService:YES transaction:transaction];
     });
 }
 
-- (void)archiveIndexPath:(NSIndexPath *)indexPath
+- (void)archiveThread:(TSThread *)thread
 {
-    if (indexPath.section != ConversationListViewControllerSectionConversations) {
-        OWSFailDebug(@"failure: unexpected section: %lu", (unsigned long)indexPath.section);
-        return;
-    }
-
-    TSThread *thread = [self threadForIndexPath:indexPath];
-
     // If this conversation is currently selected, close it.
     if ([self.conversationSplitViewController.selectedThread.uniqueId isEqualToString:thread.uniqueId]) {
         [self.conversationSplitViewController closeSelectedConversationAnimated:YES];
