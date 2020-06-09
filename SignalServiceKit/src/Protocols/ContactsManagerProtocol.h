@@ -28,7 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (NSString *)displayNameForSignalAccount:(SignalAccount *)signalAccount;
 
 /// Returns the user's nickname / first name, if supported by the name's locale.
-/// If we don't know the user's name components, fallsback to displayNameForAddress:
+/// If we don't know the user's name components, falls back to displayNameForAddress:
 ///
 /// The user can customize their short name preferences in the system settings app
 /// to any of these variants which we respect:

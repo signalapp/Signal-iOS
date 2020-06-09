@@ -340,7 +340,9 @@ public class GroupManager: NSObject {
             }
         }.then(on: .global()) { (groupModel: TSGroupModel) -> Promise<TSGroupThread> in
             // We're creating this thread, we added ourselves
-            groupModel.addedByAddress = self.tsAccountManager.localAddress
+            if groupModel.groupsVersion == .V1 {
+                groupModel.addedByAddress = self.tsAccountManager.localAddress
+            }
 
             let thread = databaseStorage.write { (transaction: SDSAnyWriteTransaction) -> TSGroupThread in
                 return self.insertGroupThreadInDatabaseAndCreateInfoMessage(groupModel: groupModel,
@@ -1087,7 +1089,9 @@ public class GroupManager: NSObject {
             let newGroupModel = try builder.build(transaction: transaction)
 
             // We're leaving, so clear out who added us. If we're re-added it may change.
-            newGroupModel.addedByAddress = nil
+            if newGroupModel.groupsVersion == .V1 {
+                newGroupModel.addedByAddress = nil
+            }
 
             let groupUpdateSourceAddress = localAddress
             let result = try self.updateExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: newGroupModel,
@@ -1560,7 +1564,7 @@ public class GroupManager: NSObject {
             // This thread didn't previously exist, so if we're a member we
             // have to assume we were just added.
             var wasAddedToGroup = false
-            if let localAddress = tsAccountManager.localAddress, newGroupModel.groupMembers.contains(localAddress) {
+            if newGroupModel.groupsVersion == .V1, let localAddress = tsAccountManager.localAddress, newGroupModel.groupMembers.contains(localAddress) {
                 newGroupModel.addedByAddress = groupUpdateSourceAddress
                 wasAddedToGroup = true
             }
@@ -1654,7 +1658,8 @@ public class GroupManager: NSObject {
 
             // If we weren't previously a member and are now a member, assume whoever
             // triggered this update added us to the group.
-            if let localAddress = tsAccountManager.localAddress,
+            if newGroupModel.groupsVersion == .V1,
+                let localAddress = tsAccountManager.localAddress,
                 !oldGroupModel.groupMembers.contains(localAddress),
                 newGroupModel.groupMembers.contains(localAddress) {
                 newGroupModel.addedByAddress = groupUpdateSourceAddress

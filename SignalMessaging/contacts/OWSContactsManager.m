@@ -1089,8 +1089,12 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         return [self displayNameForAddress:address transaction:transaction];
     }
 
-    NSPersonNameComponentsFormatter *formatter = [NSPersonNameComponentsFormatter new];
-    formatter.style = NSPersonNameComponentsFormatterStyleShort;
+    static NSPersonNameComponentsFormatter *formatter;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        formatter = [NSPersonNameComponentsFormatter new];
+        formatter.style = NSPersonNameComponentsFormatterStyleShort;
+    });
 
     return [formatter stringFromPersonNameComponents:nameComponents];
 }
