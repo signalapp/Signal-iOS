@@ -40,7 +40,7 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
 
     private let cacheName: String
 
-    private var logName: String {
+    fileprivate var logName: String {
         return "\(cacheName) \(mode)"
     }
 
@@ -87,11 +87,14 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
                                                    name: SDSDatabaseStorage.didReceiveCrossProcessNotification,
                                                    object: nil)
         case .uiRead:
-            NotificationCenter.default.addObserver(self,
-                                                   selector: #selector(didUpdateUIDatabaseSnapshot),
-                                                   name: UIDatabaseObserver.didUpdateUIDatabaseSnapshotNotification,
-                                                   object: nil)
+            // uiRead caches are evacuated by the cache wrapper, which
+            // observes storage changes.
+            break
         }
+    }
+
+    fileprivate func evacuateCache() {
+        nscache.removeAllObjects()
     }
 
     @objc
@@ -99,25 +102,18 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
         AssertIsOnMainThread()
         assert(mode == .read)
 
-        self.nscache.removeAllObjects()
+        evacuateCache()
 
         DispatchQueue.global().async {
             self.performSync {
-                self.nscache.removeAllObjects()
+                self.evacuateCache()
             }
         }
     }
 
-    @objc
-    func didUpdateUIDatabaseSnapshot(_ notification: Notification) {
-        AssertIsOnMainThread()
-        assert(mode == .uiRead)
-
-        self.nscache.removeAllObjects()
-    }
-
     // This method should only be called within performSync().
     private func readValue(for key: KeyType, transaction: SDSAnyReadTransaction) -> ValueType? {
+        Logger.verbose("---- Reading \(key) in \(logName)")
         if let value = readBlock(key, transaction) {
             if !isExcluded(key: key),
                 canUseCache(transaction: transaction) {
@@ -144,7 +140,6 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
     }
 
     func getValue(for key: KeyType, transaction: SDSAnyReadTransaction) -> ValueType? {
-
         // This can be used to verify that cached values exactly
         // align with database contents.
         #if TESTABLE_BUILD
@@ -181,8 +176,9 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
 
                     return nil
                 }
+            } else {
+                return self.readValue(for: key, transaction: transaction)
             }
-            return self.readValue(for: key, transaction: transaction)
         }
     }
 
@@ -352,18 +348,31 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
 
 // MARK: -
 
-private class ModelReadCacheWrapper<KeyType: AnyObject & Hashable, ValueType: BaseModel> {
+private class ModelReadCacheWrapper<KeyType: AnyObject & Hashable, ValueType: BaseModel>: SDSDatabaseStorageObserver {
+
+    // MARK: - Dependencies
+
+    private var databaseStorage: SDSDatabaseStorage {
+        return SDSDatabaseStorage.shared
+    }
+
+    // MARK: -
+
     private let uiReadCache: ModelReadCache<KeyType, ValueType>
     private let readCache: ModelReadCache<KeyType, ValueType>
 
     typealias ReadBlock = (KeyType, SDSAnyReadTransaction) -> ValueType?
     typealias KeyBlock = (ValueType) -> KeyType
     typealias CopyBlock = (ValueType) throws -> ValueType
+    typealias UIReadEvacuationBlock = (SDSDatabaseStorageChange) -> Bool
+
+    private let uiReadEvacuationBlock: UIReadEvacuationBlock
 
     init(cacheName: String,
          keyBlock: @escaping KeyBlock,
          readBlock: @escaping ReadBlock,
-         copyBlock: @escaping CopyBlock) {
+         copyBlock: @escaping CopyBlock,
+         uiReadEvacuationBlock: @escaping UIReadEvacuationBlock) {
         uiReadCache = ModelReadCache(mode: .uiRead,
                                      cacheName: cacheName,
                                      keyBlock: keyBlock,
@@ -374,6 +383,11 @@ private class ModelReadCacheWrapper<KeyType: AnyObject & Hashable, ValueType: Ba
                                    keyBlock: keyBlock,
                                    readBlock: readBlock,
                                    copyBlock: copyBlock)
+        self.uiReadEvacuationBlock = uiReadEvacuationBlock
+
+        AppReadiness.runNowOrWhenAppWillBecomeReady {
+            self.databaseStorage.add(databaseStorageObserver: self)
+        }
     }
 
     func getValue(for key: KeyType, transaction: SDSAnyReadTransaction) -> ValueType? {
@@ -392,6 +406,27 @@ private class ModelReadCacheWrapper<KeyType: AnyObject & Hashable, ValueType: Ba
     func didInsertOrUpdate(value: ValueType, transaction: SDSAnyWriteTransaction) {
         // Only update readCache to reflect writes.
         readCache.didInsertOrUpdate(value: value, transaction: transaction)
+    }
+
+    public func databaseStorageDidUpdate(change: SDSDatabaseStorageChange) {
+        AssertIsOnMainThread()
+
+        if uiReadEvacuationBlock(change) {
+            Logger.verbose("---- Evacuating \(uiReadCache.logName)")
+            uiReadCache.evacuateCache()
+        }
+    }
+
+    public func databaseStorageDidUpdateExternally() {
+        AssertIsOnMainThread()
+
+        uiReadCache.evacuateCache()
+    }
+
+    public func databaseStorageDidReset() {
+        AssertIsOnMainThread()
+
+        uiReadCache.evacuateCache()
     }
 }
 
@@ -416,6 +451,9 @@ public class UserProfileReadCache: NSObject {
                     throw OWSAssertionError("Copy failed.")
                 }
                 return modelCopy
+        },
+            uiReadEvacuationBlock: { storageChange in
+                storageChange.didUpdateModel(collection: OWSUserProfile.collection())
         })
     }
 
@@ -457,6 +495,9 @@ public class SignalAccountReadCache: NSObject {
                                     throw OWSAssertionError("Copy failed.")
                                 }
                                 return modelCopy
+        },
+                               uiReadEvacuationBlock: { storageChange in
+                                storageChange.didUpdateModel(collection: SignalAccount.collection())
         })
     }
 
@@ -498,6 +539,9 @@ public class SignalRecipientReadCache: NSObject {
                                     throw OWSAssertionError("Copy failed.")
                                 }
                                 return modelCopy
+        },
+                               uiReadEvacuationBlock: { storageChange in
+                                storageChange.didUpdateModel(collection: SignalRecipient.collection())
         })
     }
 
