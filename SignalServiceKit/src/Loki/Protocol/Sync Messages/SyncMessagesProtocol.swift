@@ -237,6 +237,9 @@ public final class SyncMessagesProtocol : NSObject {
         for openGroup in groups {
             let openGroupManager = LokiPublicChatManager.shared
             guard openGroupManager.getChat(server: openGroup.url, channel: openGroup.channel) == nil else { return }
+            let userHexEncodedPublicKey = UserDefaults.standard[.masterHexEncodedPublicKey] ?? getUserHexEncodedPublicKey()
+            let displayName = SSKEnvironment.shared.profileManager.profileNameForRecipient(withID: userHexEncodedPublicKey)
+            LokiPublicChatAPI.setDisplayName(to: displayName, on: openGroup.url)
             openGroupManager.addChat(server: openGroup.url, channel: openGroup.channel)
         }
     }
