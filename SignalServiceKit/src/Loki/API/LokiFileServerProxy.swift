@@ -49,7 +49,7 @@ internal class LokiFileServerProxy : LokiHTTPClient {
             DispatchQueue.global(qos: .userInitiated).async {
                 let uncheckedSymmetricKey = try? Curve25519.generateSharedSecret(fromPublicKey: LokiFileServerProxy.fileServerPublicKey, privateKey: keyPair.privateKey)
                 guard let symmetricKey = uncheckedSymmetricKey else { return seal.reject(Error.symmetricKeyGenerationFailed) }
-                LokiAPI.getFileServerProxy().then(on: DispatchQueue.global()) { proxy -> Promise<Any> in
+                LokiAPI.getRandomSnode().then(on: DispatchQueue.global()) { proxy -> Promise<Any> in
                     let url = "\(proxy.address):\(proxy.port)/file_proxy"
                     guard let urlAsString = request.url?.absoluteString, let serverURLEndIndex = urlAsString.range(of: server)?.upperBound,
                         serverURLEndIndex < urlAsString.endIndex else { throw Error.endpointParsingFailed }
