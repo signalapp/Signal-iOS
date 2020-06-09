@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -10,11 +10,6 @@ NS_ASSUME_NONNULL_BEGIN
  * Attachment downloading
  */
 + (dispatch_queue_t)attachmentsQueue;
-
-/**
- * Serial message sending queue
- */
-+ (dispatch_queue_t)sendingQueue;
 
 @end
 
