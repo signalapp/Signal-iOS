@@ -837,3 +837,15 @@ class TSAttachmentSerializer: SDSSerializer {
         return AttachmentRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, albumMessageId: albumMessageId, attachmentType: attachmentType, blurHash: blurHash, byteCount: byteCount, caption: caption, contentType: contentType, encryptionKey: encryptionKey, serverId: serverId, sourceFilename: sourceFilename, cachedAudioDurationSeconds: cachedAudioDurationSeconds, cachedImageHeight: cachedImageHeight, cachedImageWidth: cachedImageWidth, creationTimestamp: creationTimestamp, digest: digest, isUploaded: isUploaded, isValidImageCached: isValidImageCached, isValidVideoCached: isValidVideoCached, lazyRestoreFragmentId: lazyRestoreFragmentId, localRelativeFilePath: localRelativeFilePath, mediaSize: mediaSize, pointerType: pointerType, state: state, uploadTimestamp: uploadTimestamp, cdnKey: cdnKey, cdnNumber: cdnNumber)
     }
 }
+
+// MARK: - Deep Copy
+
+@objc
+public extension TSAttachment {
+    func deepCopy() throws -> TSAttachment {
+        guard let record = try asRecord() as? AttachmentRecord else {
+            throw OWSAssertionError("Could not convert to record.")
+        }
+        return try TSAttachment.fromRecord(record)
+    }
+}

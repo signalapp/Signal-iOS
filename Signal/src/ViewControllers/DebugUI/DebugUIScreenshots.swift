@@ -956,9 +956,7 @@ public extension DebugUIScreenshots {
         }
         let contact = self.buildContact(address: address, fullName: givenName, transaction: transaction)
         if let existingAccount = contactsManager.fetchSignalAccount(for: address, transaction: transaction) {
-            // Do nothing.
-            existingAccount.contact = contact
-            existingAccount.anyOverwritingUpdate(transaction: transaction)
+            existingAccount.updateWithContact(contact, transaction: transaction)
         } else {
             let newAccount = SignalAccount(contact: contact,
                                            contactAvatarHash: nil,

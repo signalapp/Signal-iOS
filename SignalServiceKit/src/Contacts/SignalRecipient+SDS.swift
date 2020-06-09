@@ -584,3 +584,15 @@ class SignalRecipientSerializer: SDSSerializer {
         return SignalRecipientRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, devices: devices, recipientPhoneNumber: recipientPhoneNumber, recipientUUID: recipientUUID)
     }
 }
+
+// MARK: - Deep Copy
+
+@objc
+public extension SignalRecipient {
+    func deepCopy() throws -> SignalRecipient {
+        guard let record = try asRecord() as? SignalRecipientRecord else {
+            throw OWSAssertionError("Could not convert to record.")
+        }
+        return try SignalRecipient.fromRecord(record)
+    }
+}

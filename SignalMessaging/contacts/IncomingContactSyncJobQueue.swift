@@ -266,8 +266,8 @@ public class IncomingContactSyncOperation: OWSOperation, DurableOperation {
             }
             if let contact = existingAccount.contact,
                 contact.isFromContactSync {
-                existingAccount.contact = try self.buildContact(contactDetails, transaction: transaction)
-                existingAccount.anyOverwritingUpdate(transaction: transaction)
+                let contact = try self.buildContact(contactDetails, transaction: transaction)
+                existingAccount.updateWithContact(contact, transaction: transaction)
             }
         } else {
             let contact = try self.buildContact(contactDetails, transaction: transaction)

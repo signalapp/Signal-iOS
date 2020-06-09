@@ -585,3 +585,15 @@ class KnownStickerPackSerializer: SDSSerializer {
         return KnownStickerPackRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, dateCreated: dateCreated, info: info, referenceCount: referenceCount)
     }
 }
+
+// MARK: - Deep Copy
+
+@objc
+public extension KnownStickerPack {
+    func deepCopy() throws -> KnownStickerPack {
+        guard let record = try asRecord() as? KnownStickerPackRecord else {
+            throw OWSAssertionError("Could not convert to record.")
+        }
+        return try KnownStickerPack.fromRecord(record)
+    }
+}

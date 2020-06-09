@@ -1801,6 +1801,23 @@ class %sSerializer: SDSSerializer {
     swift_body += '''}
 '''
 
+
+    if not has_sds_superclass:
+        swift_body += '''
+// MARK: - Deep Copy
+
+@objc
+public extension %(model_name)s {
+    func deepCopy() throws -> %(model_name)s {
+        guard let record = try asRecord() as? %(record_name)s else {
+            throw OWSAssertionError("Could not convert to record.")
+        }
+        return try %(model_name)s.fromRecord(record)
+    }
+}
+''' % { "model_name": str(clazz.name), "record_name": clazz.record_name(), }
+
+
     # print 'swift_body', swift_body
     print 'Writing:', swift_filepath
 

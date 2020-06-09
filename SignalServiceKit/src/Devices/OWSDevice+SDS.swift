@@ -593,3 +593,15 @@ class OWSDeviceSerializer: SDSSerializer {
         return DeviceRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, createdAt: createdAt, deviceId: deviceId, lastSeenAt: lastSeenAt, name: name)
     }
 }
+
+// MARK: - Deep Copy
+
+@objc
+public extension OWSDevice {
+    func deepCopy() throws -> OWSDevice {
+        guard let record = try asRecord() as? DeviceRecord else {
+            throw OWSAssertionError("Could not convert to record.")
+        }
+        return try OWSDevice.fromRecord(record)
+    }
+}

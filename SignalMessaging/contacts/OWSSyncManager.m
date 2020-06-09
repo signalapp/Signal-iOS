@@ -297,10 +297,12 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 
 - (AnyPromise *)syncLocalContact
 {
-    SignalAccount *signalAccount =
-        [[SignalAccount alloc] initWithSignalServiceAddress:self.tsAccountManager.localAddress];
     // OWSContactsOutputStream requires all signalAccount to have a contact.
-    signalAccount.contact = [[Contact alloc] initWithSystemContact:[CNContact new]];
+    Contact *contact = [[Contact alloc] initWithSystemContact:[CNContact new]];
+    SignalAccount *signalAccount =
+        [[SignalAccount alloc] initWithSignalServiceAddress:self.tsAccountManager.localAddress
+                                                    contact:contact
+                                   multipleAccountLabelText:nil];
 
     return [self syncContactsForSignalAccounts:@[ signalAccount ] skipIfRedundant:NO debounce:NO];
 }

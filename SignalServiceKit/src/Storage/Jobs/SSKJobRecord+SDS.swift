@@ -769,3 +769,15 @@ class SSKJobRecordSerializer: SDSSerializer {
         return JobRecordRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, failureCount: failureCount, label: label, status: status, attachmentIdMap: attachmentIdMap, contactThreadId: contactThreadId, envelopeData: envelopeData, invisibleMessage: invisibleMessage, messageId: messageId, removeMessageAfterSending: removeMessageAfterSending, threadId: threadId, attachmentId: attachmentId, isMediaMessage: isMediaMessage)
     }
 }
+
+// MARK: - Deep Copy
+
+@objc
+public extension SSKJobRecord {
+    func deepCopy() throws -> SSKJobRecord {
+        guard let record = try asRecord() as? JobRecordRecord else {
+            throw OWSAssertionError("Could not convert to record.")
+        }
+        return try SSKJobRecord.fromRecord(record)
+    }
+}
