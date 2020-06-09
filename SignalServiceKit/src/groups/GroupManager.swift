@@ -1559,15 +1559,24 @@ public class GroupManager: NSObject {
 
             // This thread didn't previously exist, so if we're a member we
             // have to assume we were just added.
+            var wasAddedToGroup = false
             if let localAddress = tsAccountManager.localAddress, newGroupModel.groupMembers.contains(localAddress) {
                 newGroupModel.addedByAddress = groupUpdateSourceAddress
+                wasAddedToGroup = true
             }
 
             let thread = insertGroupThreadInDatabaseAndCreateInfoMessage(groupModel: newGroupModel,
                                                                          disappearingMessageToken: newDisappearingMessageToken,
                                                                          groupUpdateSourceAddress: groupUpdateSourceAddress,
-            infoMessagePolicy: infoMessagePolicy,
+                                                                         infoMessagePolicy: infoMessagePolicy,
                                                                          transaction: transaction)
+
+            // Auto-accept the message request for this group if we were added by someone we trust.
+            if wasAddedToGroup, let addedByAddress = groupUpdateSourceAddress,
+                profileManager.isUser(inProfileWhitelist: addedByAddress, transaction: transaction) {
+                profileManager.addGroupId(toProfileWhitelist: newGroupModel.groupId, wasLocallyInitiated: true, transaction: transaction)
+            }
+
             return UpsertGroupResult(action: .inserted, groupThread: thread)
         }
 
@@ -1649,6 +1658,12 @@ public class GroupManager: NSObject {
                 !oldGroupModel.groupMembers.contains(localAddress),
                 newGroupModel.groupMembers.contains(localAddress) {
                 newGroupModel.addedByAddress = groupUpdateSourceAddress
+
+                // Auto-accept the message request for this group if we were added by someone we trust.
+                if let addedByAddress = groupUpdateSourceAddress,
+                    profileManager.isUser(inProfileWhitelist: addedByAddress, transaction: transaction) {
+                    profileManager.addGroupId(toProfileWhitelist: newGroupModel.groupId, wasLocallyInitiated: true, transaction: transaction)
+                }
             }
 
             groupThread.update(with: newGroupModel, transaction: transaction)
