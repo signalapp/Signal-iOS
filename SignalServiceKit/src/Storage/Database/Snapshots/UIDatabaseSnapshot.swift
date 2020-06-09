@@ -251,7 +251,7 @@ extension UIDatabaseObserver: TransactionObserver {
         if let lastSnapshotUpdateDate = self.lastSnapshotUpdateDate {
             let secondsSinceLastUpdate = abs(lastSnapshotUpdateDate.timeIntervalSinceNow)
             // Don't update UI more often than Nx/second.
-            let maxUpdatesPerSecond: UInt = 10
+            let maxUpdatesPerSecond: UInt = 5
             let maxUpdateFrequencySeconds: TimeInterval = 1 / TimeInterval(maxUpdatesPerSecond)
             guard secondsSinceLastUpdate >= maxUpdateFrequencySeconds else {
                 // Don't update the snapshot yet; we've updated the snapshot recently.
