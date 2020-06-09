@@ -1080,6 +1080,25 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     return [self displayNameForAddress:signalAccount.recipientAddress];
 }
 
+- (NSString *)shortDisplayNameForAddress:(SignalServiceAddress *)address
+                             transaction:(SDSAnyReadTransaction *)transaction
+{
+    OWSAssertDebug(address.isValid);
+    NSPersonNameComponents *_Nullable nameComponents = [self nameComponentsForAddress:address transaction:transaction];
+    if (!nameComponents) {
+        return [self displayNameForAddress:address transaction:transaction];
+    }
+
+    static NSPersonNameComponentsFormatter *formatter;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        formatter = [NSPersonNameComponentsFormatter new];
+        formatter.style = NSPersonNameComponentsFormatterStyleShort;
+    });
+
+    return [formatter stringFromPersonNameComponents:nameComponents];
+}
+
 - (nullable NSPersonNameComponents *)nameComponentsForAddress:(SignalServiceAddress *)address
 {
     OWSAssertDebug(address.isValid);
