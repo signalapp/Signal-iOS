@@ -339,6 +339,11 @@ public class GroupManager: NSObject {
                 return createdGroupModel
             }
         }.then(on: .global()) { (groupModel: TSGroupModel) -> Promise<TSGroupThread> in
+            // We're creating this thread, we added ourselves
+            if groupModel.groupsVersion == .V1 {
+                groupModel.addedByAddress = self.tsAccountManager.localAddress
+            }
+
             let thread = databaseStorage.write { (transaction: SDSAnyWriteTransaction) -> TSGroupThread in
                 return self.insertGroupThreadInDatabaseAndCreateInfoMessage(groupModel: groupModel,
                                                                             disappearingMessageToken: disappearingMessageToken,
@@ -1083,6 +1088,11 @@ public class GroupManager: NSObject {
             builder.groupMembership = newGroupMembership
             let newGroupModel = try builder.build(transaction: transaction)
 
+            // We're leaving, so clear out who added us. If we're re-added it may change.
+            if newGroupModel.groupsVersion == .V1 {
+                newGroupModel.addedByAddress = nil
+            }
+
             let groupUpdateSourceAddress = localAddress
             let result = try self.updateExistingGroupThreadInDatabaseAndCreateInfoMessage(newGroupModel: newGroupModel,
                                                                                           newDisappearingMessageToken: nil,
@@ -1550,11 +1560,27 @@ public class GroupManager: NSObject {
             guard canInsert else {
                 throw OWSAssertionError("Missing groupThread.")
             }
+
+            // This thread didn't previously exist, so if we're a member we
+            // have to assume we were just added.
+            var wasAddedToGroup = false
+            if newGroupModel.groupsVersion == .V1, let localAddress = tsAccountManager.localAddress, newGroupModel.groupMembers.contains(localAddress) {
+                newGroupModel.addedByAddress = groupUpdateSourceAddress
+                wasAddedToGroup = true
+            }
+
             let thread = insertGroupThreadInDatabaseAndCreateInfoMessage(groupModel: newGroupModel,
                                                                          disappearingMessageToken: newDisappearingMessageToken,
                                                                          groupUpdateSourceAddress: groupUpdateSourceAddress,
-            infoMessagePolicy: infoMessagePolicy,
+                                                                         infoMessagePolicy: infoMessagePolicy,
                                                                          transaction: transaction)
+
+            // Auto-accept the message request for this group if we were added by someone we trust.
+            if wasAddedToGroup, let addedByAddress = groupUpdateSourceAddress,
+                profileManager.isUser(inProfileWhitelist: addedByAddress, transaction: transaction) {
+                profileManager.addGroupId(toProfileWhitelist: newGroupModel.groupId, wasLocallyInitiated: true, transaction: transaction)
+            }
+
             return UpsertGroupResult(action: .inserted, groupThread: thread)
         }
 
@@ -1629,6 +1655,21 @@ public class GroupManager: NSObject {
             }
 
             let hasUserFacingChange = !oldGroupModel.isEqual(to: newGroupModel, ignoreRevision: true)
+
+            // If we weren't previously a member and are now a member, assume whoever
+            // triggered this update added us to the group.
+            if newGroupModel.groupsVersion == .V1,
+                let localAddress = tsAccountManager.localAddress,
+                !oldGroupModel.groupMembers.contains(localAddress),
+                newGroupModel.groupMembers.contains(localAddress) {
+                newGroupModel.addedByAddress = groupUpdateSourceAddress
+
+                // Auto-accept the message request for this group if we were added by someone we trust.
+                if let addedByAddress = groupUpdateSourceAddress,
+                    profileManager.isUser(inProfileWhitelist: addedByAddress, transaction: transaction) {
+                    profileManager.addGroupId(toProfileWhitelist: newGroupModel.groupId, wasLocallyInitiated: true, transaction: transaction)
+                }
+            }
 
             groupThread.update(with: newGroupModel, transaction: transaction)
 
