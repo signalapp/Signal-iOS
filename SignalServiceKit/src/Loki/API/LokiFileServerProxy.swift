@@ -1,5 +1,5 @@
 import PromiseKit
-import SignalMetadataKit
+import SessionMetadataKit
 
 internal class LokiFileServerProxy : LokiHTTPClient {
     private let server: String

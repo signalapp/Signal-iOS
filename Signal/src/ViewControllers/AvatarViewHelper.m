@@ -8,10 +8,10 @@
 #import <MobileCoreServices/UTCoreTypes.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/UIUtil.h>
-#import <SignalServiceKit/PhoneNumber.h>
-#import <SignalServiceKit/TSGroupModel.h>
-#import <SignalServiceKit/TSGroupThread.h>
-#import <SignalServiceKit/TSThread.h>
+#import <SessionServiceKit/PhoneNumber.h>
+#import <SessionServiceKit/TSGroupModel.h>
+#import <SessionServiceKit/TSGroupThread.h>
+#import <SessionServiceKit/TSThread.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

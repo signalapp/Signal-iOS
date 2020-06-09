@@ -15,8 +15,8 @@
 #import <SignalMessaging/OWSFormat.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/UIView+OWS.h>
-#import <SignalServiceKit/NSTimer+OWS.h>
-#import <SignalServiceKit/TSQuotedMessage.h>
+#import <SessionServiceKit/NSTimer+OWS.h>
+#import <SessionServiceKit/TSQuotedMessage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

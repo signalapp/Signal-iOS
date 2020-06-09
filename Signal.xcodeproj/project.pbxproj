@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		2400888E239F30A600305217 /* SessionRestorationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2400888D239F30A600305217 /* SessionRestorationView.swift */; };
 		241C1192245F8878005CB2F4 /* LK001UpdateFriendRequestStatusStorage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 241C1191245F8878005CB2F4 /* LK001UpdateFriendRequestStatusStorage.swift */; };
-		241C1194245F8CE2005CB2F4 /* LK001UpdateFriendRequestStatusStorageTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 241C1193245F8C95005CB2F4 /* LK001UpdateFriendRequestStatusStorageTest.swift */; };
 		241C6314231F64C000B4198E /* JazzIcon.swift in Sources */ = {isa = PBXBuildFile; fileRef = 241C630E231F5AAC00B4198E /* JazzIcon.swift */; };
 		241C6315231F64CE00B4198E /* CGFloat+Rounding.swift in Sources */ = {isa = PBXBuildFile; fileRef = 241C6312231F5F1D00B4198E /* CGFloat+Rounding.swift */; };
 		241C6316231F64CE00B4198E /* UIColor+Helper.swift in Sources */ = {isa = PBXBuildFile; fileRef = 241C6310231F5C4400B4198E /* UIColor+Helper.swift */; };
@@ -749,7 +748,6 @@
 		1CE3CD5C23334683BDD3D78C /* Pods-Signal.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.test.xcconfig"; path = "Pods/Target Support Files/Pods-Signal/Pods-Signal.test.xcconfig"; sourceTree = "<group>"; };
 		2400888D239F30A600305217 /* SessionRestorationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionRestorationView.swift; sourceTree = "<group>"; };
 		241C1191245F8878005CB2F4 /* LK001UpdateFriendRequestStatusStorage.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LK001UpdateFriendRequestStatusStorage.swift; sourceTree = "<group>"; };
-		241C1193245F8C95005CB2F4 /* LK001UpdateFriendRequestStatusStorageTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LK001UpdateFriendRequestStatusStorageTest.swift; sourceTree = "<group>"; };
 		241C630E231F5AAC00B4198E /* JazzIcon.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = JazzIcon.swift; sourceTree = "<group>"; };
 		241C6310231F5C4400B4198E /* UIColor+Helper.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Helper.swift"; sourceTree = "<group>"; };
 		241C6312231F5F1D00B4198E /* CGFloat+Rounding.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CGFloat+Rounding.swift"; sourceTree = "<group>"; };
@@ -1644,7 +1642,6 @@
 			isa = PBXGroup;
 			children = (
 				241C1191245F8878005CB2F4 /* LK001UpdateFriendRequestStatusStorage.swift */,
-				241C1193245F8C95005CB2F4 /* LK001UpdateFriendRequestStatusStorageTest.swift */,
 			);
 			path = Migrations;
 			sourceTree = "<group>";
@@ -3678,15 +3675,11 @@
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-Signal/Pods-Signal-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/AFNetworking/AFNetworking.framework",
-				"${BUILT_PRODUCTS_DIR}/AxolotlKit/AxolotlKit.framework",
 				"${BUILT_PRODUCTS_DIR}/CocoaLumberjack/CocoaLumberjack.framework",
 				"${BUILT_PRODUCTS_DIR}/CryptoSwift/CryptoSwift.framework",
-				"${BUILT_PRODUCTS_DIR}/Curve25519Kit/Curve25519Kit.framework",
 				"${BUILT_PRODUCTS_DIR}/FeedKit/FeedKit.framework",
 				"${BUILT_PRODUCTS_DIR}/GCDWebServer/GCDWebServer.framework",
 				"${PODS_ROOT}/GRKOpenSSLFramework/OpenSSL-iOS/bin/openssl.framework",
-				"${BUILT_PRODUCTS_DIR}/GoogleUtilities/GoogleUtilities.framework",
-				"${BUILT_PRODUCTS_DIR}/HKDFKit/HKDFKit.framework",
 				"${BUILT_PRODUCTS_DIR}/Mantle/Mantle.framework",
 				"${BUILT_PRODUCTS_DIR}/NVActivityIndicatorView/NVActivityIndicatorView.framework",
 				"${BUILT_PRODUCTS_DIR}/PromiseKit/PromiseKit.framework",
@@ -3695,9 +3688,12 @@
 				"${BUILT_PRODUCTS_DIR}/SAMKeychain/SAMKeychain.framework",
 				"${BUILT_PRODUCTS_DIR}/SQLCipher/SQLCipher.framework",
 				"${BUILT_PRODUCTS_DIR}/SSZipArchive/SSZipArchive.framework",
-				"${BUILT_PRODUCTS_DIR}/SignalCoreKit/SignalCoreKit.framework",
-				"${BUILT_PRODUCTS_DIR}/SignalMetadataKit/SignalMetadataKit.framework",
-				"${BUILT_PRODUCTS_DIR}/SignalServiceKit/SignalServiceKit.framework",
+				"${BUILT_PRODUCTS_DIR}/SessionAxolotlKit/SessionAxolotlKit.framework",
+				"${BUILT_PRODUCTS_DIR}/SessionCoreKit/SessionCoreKit.framework",
+				"${BUILT_PRODUCTS_DIR}/SessionCurve25519Kit/SessionCurve25519Kit.framework",
+				"${BUILT_PRODUCTS_DIR}/SessionHKDFKit/SessionHKDFKit.framework",
+				"${BUILT_PRODUCTS_DIR}/SessionMetadataKit/SessionMetadataKit.framework",
+				"${BUILT_PRODUCTS_DIR}/SessionServiceKit/SessionServiceKit.framework",
 				"${BUILT_PRODUCTS_DIR}/Starscream/Starscream.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftProtobuf/SwiftProtobuf.framework",
 				"${BUILT_PRODUCTS_DIR}/YYImage/YYImage.framework",
@@ -3707,15 +3703,11 @@
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AFNetworking.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AxolotlKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CocoaLumberjack.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CryptoSwift.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Curve25519Kit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/FeedKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GCDWebServer.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/openssl.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/GoogleUtilities.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/HKDFKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Mantle.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/NVActivityIndicatorView.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PromiseKit.framework",
@@ -3724,9 +3716,12 @@
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SAMKeychain.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SQLCipher.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SSZipArchive.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalCoreKit.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalMetadataKit.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalServiceKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SessionAxolotlKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SessionCoreKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SessionCurve25519Kit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SessionHKDFKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SessionMetadataKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SessionServiceKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Starscream.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftProtobuf.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YYImage.framework",
@@ -3764,21 +3759,21 @@
 			inputPaths = (
 				"${PODS_ROOT}/Target Support Files/Pods-SignalTests/Pods-SignalTests-frameworks.sh",
 				"${BUILT_PRODUCTS_DIR}/AFNetworking/AFNetworking.framework",
-				"${BUILT_PRODUCTS_DIR}/AxolotlKit/AxolotlKit.framework",
 				"${BUILT_PRODUCTS_DIR}/CocoaLumberjack/CocoaLumberjack.framework",
 				"${BUILT_PRODUCTS_DIR}/CryptoSwift/CryptoSwift.framework",
-				"${BUILT_PRODUCTS_DIR}/Curve25519Kit/Curve25519Kit.framework",
 				"${PODS_ROOT}/GRKOpenSSLFramework/OpenSSL-iOS/bin/openssl.framework",
-				"${BUILT_PRODUCTS_DIR}/HKDFKit/HKDFKit.framework",
 				"${BUILT_PRODUCTS_DIR}/Mantle/Mantle.framework",
 				"${BUILT_PRODUCTS_DIR}/PromiseKit/PromiseKit.framework",
 				"${BUILT_PRODUCTS_DIR}/PureLayout/PureLayout.framework",
 				"${BUILT_PRODUCTS_DIR}/Reachability/Reachability.framework",
 				"${BUILT_PRODUCTS_DIR}/SAMKeychain/SAMKeychain.framework",
 				"${BUILT_PRODUCTS_DIR}/SQLCipher/SQLCipher.framework",
-				"${BUILT_PRODUCTS_DIR}/SignalCoreKit/SignalCoreKit.framework",
-				"${BUILT_PRODUCTS_DIR}/SignalMetadataKit/SignalMetadataKit.framework",
-				"${BUILT_PRODUCTS_DIR}/SignalServiceKit/SignalServiceKit.framework",
+				"${BUILT_PRODUCTS_DIR}/SessionAxolotlKit/SessionAxolotlKit.framework",
+				"${BUILT_PRODUCTS_DIR}/SessionCoreKit/SessionCoreKit.framework",
+				"${BUILT_PRODUCTS_DIR}/SessionCurve25519Kit/SessionCurve25519Kit.framework",
+				"${BUILT_PRODUCTS_DIR}/SessionHKDFKit/SessionHKDFKit.framework",
+				"${BUILT_PRODUCTS_DIR}/SessionMetadataKit/SessionMetadataKit.framework",
+				"${BUILT_PRODUCTS_DIR}/SessionServiceKit/SessionServiceKit.framework",
 				"${BUILT_PRODUCTS_DIR}/Starscream/Starscream.framework",
 				"${BUILT_PRODUCTS_DIR}/SwiftProtobuf/SwiftProtobuf.framework",
 				"${BUILT_PRODUCTS_DIR}/YYImage/YYImage.framework",
@@ -3788,21 +3783,21 @@
 			name = "[CP] Embed Pods Frameworks";
 			outputPaths = (
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AFNetworking.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/AxolotlKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CocoaLumberjack.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/CryptoSwift.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Curve25519Kit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/openssl.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/HKDFKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Mantle.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PromiseKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/PureLayout.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Reachability.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SAMKeychain.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SQLCipher.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalCoreKit.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalMetadataKit.framework",
-				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SignalServiceKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SessionAxolotlKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SessionCoreKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SessionCurve25519Kit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SessionHKDFKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SessionMetadataKit.framework",
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SessionServiceKit.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/Starscream.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/SwiftProtobuf.framework",
 				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/YYImage.framework",
@@ -4295,7 +4290,6 @@
 			files = (
 				456F6E2F1E261D1000FD2210 /* PeerConnectionClientTest.swift in Sources */,
 				3491D9A121022DB7001EF5A1 /* CDSSigningCertificateTest.m in Sources */,
-				241C1194245F8CE2005CB2F4 /* LK001UpdateFriendRequestStatusStorageTest.swift in Sources */,
 				34BBC861220E883300857249 /* ImageEditorModelTest.swift in Sources */,
 				340B02BA1FA0D6C700F9CFEC /* ConversationViewItemTest.m in Sources */,
 				458E383A1D6699FA0094BD24 /* OWSDeviceProvisioningURLParserTest.m in Sources */,

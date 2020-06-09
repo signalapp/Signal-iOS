@@ -5,7 +5,7 @@
 #import "OWSPrimaryStorage+SignedPreKeyStore.h"
 #import "SSKBaseTestObjC.h"
 #import "TSPreKeyManager.h"
-#import <AxolotlKit/SignedPrekeyRecord.h>
+#import <SessionAxolotlKit/SignedPrekeyRecord.h>
 
 @interface  TSPreKeyManager (Testing)
 

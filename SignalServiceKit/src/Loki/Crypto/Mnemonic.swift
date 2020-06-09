@@ -24,7 +24,7 @@ public enum Mnemonic {
             if let cachedResult = Language.wordSetCache[self] {
                 return cachedResult
             } else {
-                let bundleID = "org.cocoapods.SignalServiceKit"
+                let bundleID = "org.cocoapods.SessionServiceKit"
                 let url = Bundle(identifier: bundleID)!.url(forResource: filename, withExtension: "txt")!
                 let contents = try! String(contentsOf: url)
                 let result = contents.split(separator: ",").map { String($0) }

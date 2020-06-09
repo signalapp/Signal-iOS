@@ -5,7 +5,7 @@
 #import "OWSOutgoingSentMessageTranscript.h"
 #import "TSOutgoingMessage.h"
 #import "TSThread.h"
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

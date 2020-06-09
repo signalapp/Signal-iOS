@@ -5,9 +5,9 @@
 #import "SignalsNavigationController.h"
 #import "Session-Swift.h"
 #import <SignalMessaging/UIUtil.h>
-#import <SignalServiceKit/NSTimer+OWS.h>
-#import <SignalServiceKit/OWSSignalService.h>
-#import <SignalServiceKit/TSSocketManager.h>
+#import <SessionServiceKit/NSTimer+OWS.h>
+#import <SessionServiceKit/OWSSignalService.h>
+#import <SessionServiceKit/TSSocketManager.h>
 
 static double const STALLED_PROGRESS = 0.9;
 

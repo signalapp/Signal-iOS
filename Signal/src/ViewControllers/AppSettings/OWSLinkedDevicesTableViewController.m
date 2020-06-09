@@ -7,11 +7,11 @@
 #import "OWSLinkDeviceViewController.h"
 #import "Session-Swift.h"
 #import "UIViewController+Permissions.h"
-#import <SignalServiceKit/NSTimer+OWS.h>
-#import <SignalServiceKit/OWSDevice.h>
-#import <SignalServiceKit/OWSDevicesService.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
-#import <SignalServiceKit/TSDatabaseView.h>
+#import <SessionServiceKit/NSTimer+OWS.h>
+#import <SessionServiceKit/OWSDevice.h>
+#import <SessionServiceKit/OWSDevicesService.h>
+#import <SessionServiceKit/OWSPrimaryStorage.h>
+#import <SessionServiceKit/TSDatabaseView.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseViewConnection.h>
 #import <YapDatabase/YapDatabaseViewMappings.h>

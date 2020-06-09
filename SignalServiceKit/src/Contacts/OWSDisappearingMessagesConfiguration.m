@@ -4,7 +4,7 @@
 
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "NSString+SSK.h"
-#import <SignalCoreKit/NSDate+OWS.h>
+#import <SessionCoreKit/NSDate+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

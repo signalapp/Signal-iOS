@@ -3,7 +3,7 @@
 //
 
 import Foundation
-@testable import SignalServiceKit
+@testable import SessionServiceKit
 import XCTest
 
 func XCTAssertMatch(expectedPattern: String, actualText: String, file: StaticString = #file, line: UInt = #line) {

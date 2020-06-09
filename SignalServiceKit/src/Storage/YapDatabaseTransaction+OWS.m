@@ -3,10 +3,10 @@
 //
 
 #import "YapDatabaseTransaction+OWS.h"
-#import <AxolotlKit/PreKeyRecord.h>
-#import <AxolotlKit/PreKeyBundle.h>
-#import <AxolotlKit/SignedPrekeyRecord.h>
-#import <Curve25519Kit/Curve25519.h>
+#import <SessionAxolotlKit/PreKeyRecord.h>
+#import <SessionAxolotlKit/PreKeyBundle.h>
+#import <SessionAxolotlKit/SignedPrekeyRecord.h>
+#import <SessionCurve25519Kit/Curve25519.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

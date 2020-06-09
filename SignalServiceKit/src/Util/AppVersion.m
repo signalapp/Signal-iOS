@@ -3,7 +3,7 @@
 //
 
 #import "AppVersion.h"
-#import <SignalServiceKit/NSUserDefaults+OWS.h>
+#import <SessionServiceKit/NSUserDefaults+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -1,5 +1,5 @@
 import PromiseKit
-import SignalMetadataKit
+import SessionMetadataKit
 
 /// Base class for `LokiFileServerAPI` and `LokiPublicChatAPI`.
 public class LokiDotNetAPI : NSObject {

@@ -11,9 +11,9 @@
 #import "OWSPrimaryStorage.h"
 #import "OWSStorage+Subclass.h"
 #import "TSAttachmentStream.h"
-#import <SignalCoreKit/NSData+OWS.h>
-#import <SignalCoreKit/Randomness.h>
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SessionCoreKit/NSData+OWS.h>
+#import <SessionCoreKit/Randomness.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseAutoView.h>
 #import <YapDatabase/YapDatabaseCrossProcessNotification.h>
@@ -256,7 +256,7 @@ NSString *const kNSUserDefaults_DatabaseExtensionVersionMap = @"kNSUserDefaults_
     if ([name isEqualToString:@"TSRecipient"]) {
         OWSLogError(@"Could not decode object: %@", name);
     } else {
-        OWSFailDebug(@"Could not decode object: %@", name);
+        NSLog(@"Could not decode object: %@", name);
     }
     OWSProdCritical([OWSAnalyticsEvents storageErrorCouldNotDecodeClass]);
     return [OWSUnknownDBObject class];

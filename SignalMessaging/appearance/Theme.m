@@ -5,9 +5,9 @@
 #import "Theme.h"
 #import "UIColor+OWS.h"
 #import "UIUtil.h"
-#import <SignalServiceKit/NSNotificationCenter+OWS.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
-#import <SignalServiceKit/YapDatabaseConnection+OWS.h>
+#import <SessionServiceKit/NSNotificationCenter+OWS.h>
+#import <SessionServiceKit/OWSPrimaryStorage.h>
+#import <SessionServiceKit/YapDatabaseConnection+OWS.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN

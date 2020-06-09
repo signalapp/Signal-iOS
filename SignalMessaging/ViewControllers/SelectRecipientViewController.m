@@ -14,11 +14,11 @@
 #import <SignalMessaging/UIFont+OWS.h>
 #import <SignalMessaging/UIUtil.h>
 #import <SignalMessaging/UIView+OWS.h>
-#import <SignalServiceKit/AppContext.h>
-#import <SignalServiceKit/ContactsUpdater.h>
-#import <SignalServiceKit/PhoneNumberUtil.h>
-#import <SignalServiceKit/SignalAccount.h>
-#import <SignalServiceKit/TSAccountManager.h>
+#import <SessionServiceKit/AppContext.h>
+#import <SessionServiceKit/ContactsUpdater.h>
+#import <SessionServiceKit/PhoneNumberUtil.h>
+#import <SessionServiceKit/SignalAccount.h>
+#import <SessionServiceKit/TSAccountManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -92,7 +92,7 @@ NSString *const kSelectRecipientViewControllerCellIdentifier = @"kSelectRecipien
     [self.view addSubview:self.tableViewController.view];
     [self.tableViewController.view autoPinEdgeToSuperviewSafeArea:ALEdgeLeading];
     [self.tableViewController.view autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];
-    [_tableViewController.view autoPinToTopLayoutGuideOfViewController:self withInset:0];
+    [_tableViewController.view autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.view withOffset:0];
     [_tableViewController.view autoPinEdgeToSuperviewEdge:ALEdgeBottom];
     self.tableViewController.tableView.rowHeight = UITableViewAutomaticDimension;
     self.tableViewController.tableView.estimatedRowHeight = 60;

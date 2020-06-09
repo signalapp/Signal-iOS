@@ -3,7 +3,7 @@
 //
 
 import XCTest
-@testable import SignalServiceKit
+@testable import SessionServiceKit
 
 class MessageSenderJobQueueTest: SSKBaseTestSwift {
 

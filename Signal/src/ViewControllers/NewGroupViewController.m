@@ -8,8 +8,8 @@
 #import "OWSNavigationController.h"
 #import "Session-Swift.h"
 #import "SignalApp.h"
-#import <SignalCoreKit/NSDate+OWS.h>
-#import <SignalCoreKit/Randomness.h>
+#import <SessionCoreKit/NSDate+OWS.h>
+#import <SessionCoreKit/Randomness.h>
 #import <SignalMessaging/BlockListUIUtils.h>
 #import <SignalMessaging/ContactTableViewCell.h>
 #import <SignalMessaging/ContactsViewHelper.h>
@@ -20,12 +20,12 @@
 #import <SignalMessaging/UIUtil.h>
 #import <SignalMessaging/UIView+OWS.h>
 #import <SignalMessaging/UIViewController+OWS.h>
-#import <SignalServiceKit/NSString+SSK.h>
-#import <SignalServiceKit/OWSMessageSender.h>
-#import <SignalServiceKit/SignalAccount.h>
-#import <SignalServiceKit/TSGroupModel.h>
-#import <SignalServiceKit/TSGroupThread.h>
-#import <SignalServiceKit/TSOutgoingMessage.h>
+#import <SessionServiceKit/NSString+SSK.h>
+#import <SessionServiceKit/OWSMessageSender.h>
+#import <SessionServiceKit/SignalAccount.h>
+#import <SessionServiceKit/TSGroupModel.h>
+#import <SessionServiceKit/TSGroupThread.h>
+#import <SessionServiceKit/TSOutgoingMessage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -127,7 +127,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self.view addSubview:firstSection];
     [firstSection autoSetDimension:ALDimensionHeight toSize:100.f];
     [firstSection autoPinWidthToSuperview];
-    [firstSection autoPinToTopLayoutGuideOfViewController:self withInset:0];
+    [firstSection autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.view withOffset:0.0f];
 
     _tableViewController = [OWSTableViewController new];
     _tableViewController.delegate = self;

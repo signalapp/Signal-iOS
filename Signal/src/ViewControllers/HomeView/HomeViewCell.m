@@ -8,10 +8,10 @@
 #import <SignalMessaging/OWSFormat.h>
 #import <SignalMessaging/OWSUserProfile.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
-#import <SignalServiceKit/OWSMath.h>
-#import <SignalServiceKit/OWSMessageManager.h>
-#import <SignalServiceKit/TSContactThread.h>
-#import <SignalServiceKit/TSGroupThread.h>
+#import <SessionServiceKit/OWSMath.h>
+#import <SessionServiceKit/OWSMessageManager.h>
+#import <SessionServiceKit/TSContactThread.h>
+#import <SessionServiceKit/TSGroupThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

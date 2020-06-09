@@ -15,8 +15,8 @@
 #import "TSAttachment.h"
 #import "TSAttachmentStream.h"
 #import "TSContactThread.h"
-#import <SignalCoreKit/NSDate+OWS.h>
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SessionCoreKit/NSDate+OWS.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 #import "OWSPrimaryStorage.h"
 
 @import Contacts;

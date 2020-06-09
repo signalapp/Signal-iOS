@@ -52,8 +52,8 @@ public class OnboardingPermissionsViewController: OnboardingBaseViewController {
         stackView.isLayoutMarginsRelativeArrangement = true
         view.addSubview(stackView)
         stackView.autoPinWidthToSuperview()
-        stackView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-        stackView.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
+        stackView.autoPinEdge(.top, to: .top, of: view)
+        stackView.autoPinEdge(.bottom, to: .bottom, of: view)
     }
 
     // MARK: Request Access

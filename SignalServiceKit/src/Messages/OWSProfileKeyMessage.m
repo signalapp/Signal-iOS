@@ -6,7 +6,7 @@
 #import "ProfileManagerProtocol.h"
 #import "ProtoUtils.h"
 #import "SSKEnvironment.h"
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

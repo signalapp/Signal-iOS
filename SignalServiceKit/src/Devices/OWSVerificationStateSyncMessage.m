@@ -4,8 +4,8 @@
 
 #import "OWSVerificationStateSyncMessage.h"
 #import "OWSIdentityManager.h"
-#import <SignalCoreKit/Cryptography.h>
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SessionCoreKit/Cryptography.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

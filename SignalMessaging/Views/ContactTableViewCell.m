@@ -8,7 +8,7 @@
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
-#import <SignalServiceKit/SignalAccount.h>
+#import <SessionServiceKit/SignalAccount.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -3,7 +3,7 @@
 //
 
 #import "AppReadiness.h"
-#import <SignalCoreKit/Threading.h>
+#import <SessionCoreKit/Threading.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

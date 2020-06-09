@@ -15,8 +15,8 @@
 #import "SSKBaseTestObjC.h"
 #import "TSGroupThread.h"
 #import "TSNetworkManager.h"
-#import <SignalCoreKit/Cryptography.h>
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SessionCoreKit/Cryptography.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

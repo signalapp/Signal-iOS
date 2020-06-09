@@ -12,14 +12,14 @@
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
-#import <SignalCoreKit/NSDate+OWS.h>
+#import <SessionCoreKit/NSDate+OWS.h>
 #import <SignalMessaging/OWSNavigationController.h>
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/UIUtil.h>
 #import <SignalMessaging/UIViewController+OWS.h>
-#import <SignalServiceKit/NSString+SSK.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
+#import <SessionServiceKit/NSString+SSK.h>
+#import <SessionServiceKit/OWSPrimaryStorage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -100,7 +100,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     UIView *contentView = [UIView containerView];
     contentView.backgroundColor = Theme.backgroundColor;
     [self.view addSubview:contentView];
-    [contentView autoPinToTopLayoutGuideOfViewController:self withInset:0];
+    [contentView autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.view withOffset:0.0f];
     [contentView autoPinWidthToSuperview];
 
     const CGFloat fontSizePoints = ScaleFromIPhone5To7Plus(16.f, 20.f);

@@ -14,8 +14,8 @@
 #import "UIView+OWS.h"
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
-#import <SignalServiceKit/OWSBlockingManager.h>
-#import <SignalServiceKit/TSGroupThread.h>
+#import <SessionServiceKit/OWSBlockingManager.h>
+#import <SessionServiceKit/TSGroupThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

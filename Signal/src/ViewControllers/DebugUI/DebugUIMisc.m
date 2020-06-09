@@ -9,17 +9,17 @@
 #import "OWSTableViewController.h"
 #import "Session-Swift.h"
 #import "ThreadUtil.h"
-#import <AxolotlKit/PreKeyBundle.h>
+#import <SessionAxolotlKit/PreKeyBundle.h>
 #import <SignalMessaging/AttachmentSharing.h>
 #import <SignalMessaging/Environment.h>
-#import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
-#import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
-#import <SignalServiceKit/OWSPrimaryStorage+SessionStore.h>
-#import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
-#import <SignalServiceKit/TSCall.h>
-#import <SignalServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
-#import <SignalServiceKit/TSThread.h>
-#import <SignalServiceKit/UIImage+OWS.h>
+#import <SessionServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
+#import <SessionServiceKit/OWSDisappearingMessagesConfiguration.h>
+#import <SessionServiceKit/OWSPrimaryStorage+SessionStore.h>
+#import <SessionServiceKit/OWSVerificationStateChangeMessage.h>
+#import <SessionServiceKit/TSCall.h>
+#import <SessionServiceKit/TSInvalidIdentityKeyReceivingErrorMessage.h>
+#import <SessionServiceKit/TSThread.h>
+#import <SessionServiceKit/UIImage+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -4,7 +4,7 @@
 //
 //import UIKit
 //import CallKit
-//import SignalServiceKit
+//import SessionServiceKit
 //
 ///**
 // * Requests actions from CallKit

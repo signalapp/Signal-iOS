@@ -56,7 +56,7 @@ public class OnboardingCaptchaViewController: OnboardingBaseViewController {
         stackView.isLayoutMarginsRelativeArrangement = true
         view.addSubview(stackView)
         stackView.autoPinWidthToSuperviewMargins()
-        stackView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
+        stackView.autoPinEdge(.top, to: .top, of: view)
         autoPinView(toBottomOfViewControllerOrKeyboard: stackView, avoidNotch: true)
 
         NotificationCenter.default.addObserver(self,

@@ -15,9 +15,9 @@
 #import "TSInteraction.h"
 #import "TSInvalidIdentityKeyReceivingErrorMessage.h"
 #import "TSOutgoingMessage.h"
-#import <SignalCoreKit/Cryptography.h>
-#import <SignalCoreKit/NSDate+OWS.h>
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SessionCoreKit/Cryptography.h>
+#import <SessionCoreKit/NSDate+OWS.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN

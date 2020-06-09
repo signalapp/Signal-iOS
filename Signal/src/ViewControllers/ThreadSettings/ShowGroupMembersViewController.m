@@ -12,10 +12,10 @@
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/UIUtil.h>
-#import <SignalServiceKit/OWSBlockingManager.h>
-#import <SignalServiceKit/SignalAccount.h>
-#import <SignalServiceKit/TSGroupModel.h>
-#import <SignalServiceKit/TSGroupThread.h>
+#import <SessionServiceKit/OWSBlockingManager.h>
+#import <SessionServiceKit/SignalAccount.h>
+#import <SessionServiceKit/TSGroupModel.h>
+#import <SessionServiceKit/TSGroupThread.h>
 
 @import ContactsUI;
 

@@ -79,7 +79,7 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
         view.addSubview(recipientRow)
         recipientRow.autoPinEdge(toSuperviewSafeArea: .leading)
         recipientRow.autoPinEdge(toSuperviewSafeArea: .trailing)
-        recipientRow.autoPin(toTopLayoutGuideOf: self, withInset: 0)
+        recipientRow.autoPinEdge(.bottom, to: .bottom, of: view)
 
         // Text View
         textView = OWSTextView()
@@ -94,7 +94,7 @@ public class MessageApprovalViewController: OWSViewController, UITextViewDelegat
         textView.autoPinEdge(toSuperviewSafeArea: .leading)
         textView.autoPinEdge(toSuperviewSafeArea: .trailing)
         textView.autoPinEdge(.top, to: .bottom, of: recipientRow)
-        textView.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
+        textView.autoPinEdge(.bottom, to: .bottom, of: view)
     }
 
     private func createRecipientRow() -> UIView {

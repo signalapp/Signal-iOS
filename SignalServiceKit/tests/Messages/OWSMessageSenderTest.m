@@ -17,9 +17,9 @@
 #import "TSNetworkManager.h"
 #import "TSOutgoingMessage.h"
 #import "TSRequest.h"
-#import <AxolotlKit/AxolotlExceptions.h>
-#import <AxolotlKit/SessionBuilder.h>
-#import <SignalCoreKit/Cryptography.h>
+#import <SessionAxolotlKit/AxolotlExceptions.h>
+#import <SessionAxolotlKit/SessionBuilder.h>
+#import <SessionCoreKit/Cryptography.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

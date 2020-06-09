@@ -3,7 +3,7 @@
 //
 
 #import "UIFont+OWS.h"
-#import <SignalCoreKit/iOSVersions.h>
+#import <SessionCoreKit/iOSVersions.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

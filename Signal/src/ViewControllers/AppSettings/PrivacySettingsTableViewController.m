@@ -10,10 +10,10 @@
 #import <SignalMessaging/OWSPreferences.h>
 #import <SignalMessaging/ThreadUtil.h>
 #import <SignalMessaging/UIColor+OWS.h>
-#import <SignalServiceKit/NSString+SSK.h>
-#import <SignalServiceKit/OWS2FAManager.h>
-#import <SignalServiceKit/OWSReadReceiptManager.h>
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SessionServiceKit/NSString+SSK.h>
+#import <SessionServiceKit/OWS2FAManager.h>
+#import <SessionServiceKit/OWSReadReceiptManager.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -1,7 +1,7 @@
 #import "LKAddressMessage.h"
 #import "NSDate+OWS.h"
 #import "SignalRecipient.h"
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 
 @interface LKAddressMessage ()
 

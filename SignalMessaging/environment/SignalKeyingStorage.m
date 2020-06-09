@@ -3,9 +3,9 @@
 //
 
 #import "SignalKeyingStorage.h"
-#import <SignalCoreKit/Randomness.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
-#import <SignalServiceKit/YapDatabaseConnection+OWS.h>
+#import <SessionCoreKit/Randomness.h>
+#import <SessionServiceKit/OWSPrimaryStorage.h>
+#import <SessionServiceKit/YapDatabaseConnection+OWS.h>
 
 #define SignalKeyingCollection @"SignalKeyingCollection"
 

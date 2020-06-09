@@ -5,7 +5,7 @@
 import Foundation
 import PromiseKit
 import PushKit
-import SignalServiceKit
+import SessionServiceKit
 import SignalMessaging
 
 public enum PushRegistrationError: Error {

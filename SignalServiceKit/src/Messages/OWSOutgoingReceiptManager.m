@@ -12,7 +12,7 @@
 #import "TSContactThread.h"
 #import "TSYapDatabaseObject.h"
 #import <Reachability/Reachability.h>
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

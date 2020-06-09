@@ -11,8 +11,8 @@
 #import <SignalMessaging/UIColor+OWS.h>
 #import <SignalMessaging/UIFont+OWS.h>
 #import <SignalMessaging/UIView+OWS.h>
-#import <SignalServiceKit/NSString+SSK.h>
-#import <SignalServiceKit/OWS2FAManager.h>
+#import <SessionServiceKit/NSString+SSK.h>
+#import <SessionServiceKit/OWS2FAManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -149,7 +149,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self createTableView];
 
-    [instructionsLabel autoPinToTopLayoutGuideOfViewController:self withInset:kVSpacing];
+    [instructionsLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.view withOffset:kVSpacing];
     [instructionsLabel autoPinEdgeToSuperviewSafeArea:ALEdgeLeading withInset:self.hMargin];
     [instructionsLabel autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing withInset:self.hMargin];
 
@@ -159,7 +159,7 @@ NS_ASSUME_NONNULL_BEGIN
                                         toEdge:ALEdgeBottom
                                         ofView:instructionsLabel
                                     withOffset:kVSpacing];
-    [self.tableViewController.view autoPinToBottomLayoutGuideOfViewController:self withInset:0];
+    [self.tableViewController.view autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.view withOffset:0.0f];
 
     [self updateTableContents];
 }

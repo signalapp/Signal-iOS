@@ -17,9 +17,9 @@
 #import "TSDatabaseView.h"
 #import "TSIncomingMessage.h"
 #import "YapDatabaseConnection+OWS.h"
-#import <SignalCoreKit/NSDate+OWS.h>
-#import <SignalCoreKit/Threading.h>
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SessionCoreKit/NSDate+OWS.h>
+#import <SessionCoreKit/Threading.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN

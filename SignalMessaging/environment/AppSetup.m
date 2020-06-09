@@ -5,27 +5,27 @@
 #import "AppSetup.h"
 #import "Environment.h"
 #import "VersionMigrations.h"
-#import <AxolotlKit/SessionCipher.h>
+#import <SessionAxolotlKit/SessionCipher.h>
 #import <SignalMessaging/OWSDatabaseMigration.h>
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
-#import <SignalServiceKit/ContactDiscoveryService.h>
-#import <SignalServiceKit/OWS2FAManager.h>
-#import <SignalServiceKit/OWSAttachmentDownloads.h>
-#import <SignalServiceKit/OWSBackgroundTask.h>
-#import <SignalServiceKit/OWSBatchMessageProcessor.h>
-#import <SignalServiceKit/OWSBlockingManager.h>
-#import <SignalServiceKit/OWSDisappearingMessagesJob.h>
-#import <SignalServiceKit/OWSIdentityManager.h>
-#import <SignalServiceKit/OWSMessageDecrypter.h>
-#import <SignalServiceKit/OWSMessageManager.h>
-#import <SignalServiceKit/OWSMessageReceiver.h>
-#import <SignalServiceKit/OWSOutgoingReceiptManager.h>
-#import <SignalServiceKit/OWSReadReceiptManager.h>
-#import <SignalServiceKit/OWSStorage.h>
-#import <SignalServiceKit/SSKEnvironment.h>
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
-#import <SignalServiceKit/TSSocketManager.h>
+#import <SessionServiceKit/ContactDiscoveryService.h>
+#import <SessionServiceKit/OWS2FAManager.h>
+#import <SessionServiceKit/OWSAttachmentDownloads.h>
+#import <SessionServiceKit/OWSBackgroundTask.h>
+#import <SessionServiceKit/OWSBatchMessageProcessor.h>
+#import <SessionServiceKit/OWSBlockingManager.h>
+#import <SessionServiceKit/OWSDisappearingMessagesJob.h>
+#import <SessionServiceKit/OWSIdentityManager.h>
+#import <SessionServiceKit/OWSMessageDecrypter.h>
+#import <SessionServiceKit/OWSMessageManager.h>
+#import <SessionServiceKit/OWSMessageReceiver.h>
+#import <SessionServiceKit/OWSOutgoingReceiptManager.h>
+#import <SessionServiceKit/OWSReadReceiptManager.h>
+#import <SessionServiceKit/OWSStorage.h>
+#import <SessionServiceKit/SSKEnvironment.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
+#import <SessionServiceKit/TSSocketManager.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

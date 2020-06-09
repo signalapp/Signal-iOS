@@ -3,8 +3,8 @@
 //
 
 #import "AppContext.h"
-#import <SignalCoreKit/NSObject+OWS.h>
-#import <SignalCoreKit/OWSAsserts.h>
+#import <SessionCoreKit/NSObject+OWS.h>
+#import <SessionCoreKit/OWSAsserts.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
