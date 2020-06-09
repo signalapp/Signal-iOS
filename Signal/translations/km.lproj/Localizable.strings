@@ -656,6 +656,30 @@
 /* Label for the 'organization' field of a contact. */
 "CONTACT_FIELD_ORGANIZATION" = "ស្ថាប័ន";
 
+/* Body for contact permission action sheet */
+"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "To see contact names and photos in your conversations:";
+
+/* First step for contact permission action sheet */
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Tap “Go to Settings” below";
+
+/* Third step for contact permission action sheet */
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "Turn on “Contacts”";
+
+/* Title for contact permission action sheet */
+"CONTACT_PERMISSION_ACTION_SHEET_TITLE" = "Turn on Contacts";
+
+/* Snooze action text for contact permission reminder megaphone */
+"CONTACT_PERMISSION_NOT_NOW_ACTION" = "លើកក្រោយ";
+
+/* Action text for contact permission reminder megaphone */
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Turn On";
+
+/* Body for contact permission reminder megaphone */
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "See contact names and photos in your conversations.";
+
+/* Title for contact permission reminder megaphone */
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Turn on Contacts?";
+
 /* Label for a contact's phone number. */
 "CONTACT_PHONE" = "ទូរសព្ទ";
 
@@ -681,7 +705,7 @@
 "CONTACT_SHARE_NO_FIELDS_SELECTED" = "គ្មានជ្រើសរើសលេខទំនាក់ទំនង";
 
 /* Button text to initiate an email to signal support staff */
-"CONTACT_SUPPORT" = "Contact Support";
+"CONTACT_SUPPORT" = "ទាក់ទងជំនួយ";
 
 /* Alert body */
 "CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal was unable to complete your support request.";
@@ -762,7 +786,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "ទាំងអស់";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Choose who can edit the group name, avatar and disappearing messages timer.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Choose who can edit the group name, photo, and disappearing messages timer.";
 
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "You will no longer receive messages or updates from this user.";
@@ -772,12 +796,6 @@
 
 /* Label for 'block group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_GROUP" = "Block Group";
-
-/* table cell label in conversation settings */
-"CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "CONVERSATION_SETTINGS_BLOCK_THIS_GROUP";
-
-/* table cell label in conversation settings */
-"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "CONVERSATION_SETTINGS_BLOCK_THIS_USER";
 
 /* Label for 'block user' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_USER" = "Block User";
@@ -795,7 +813,7 @@
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Only Admins";
 
 /* Description for the 'edit group attributes access' alert. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Choose who can change the group name, avatar and disappearing messages:";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Choose who can change the group name, photo, and disappearing messages:";
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "All Members";
@@ -814,9 +832,6 @@
 
 /* Label for button that sets 'group membership access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "All Members";
-
-/* Navbar title when viewing settings for a group thread */
-"CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "CONVERSATION_SETTINGS_GROUP_INFO_TITLE";
 
 /* Label for 'make group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Make Admin";
@@ -900,7 +915,7 @@
 "CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "ការកែប្រែមិនបានរក្សាទុក";
 
 /* Label for 'view all members' button in conversation settings view. */
-"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "View all members";
+"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "បង្ហាញសមាជិកទាំងអស់";
 
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "អ្នកប្រើប្រាស់នេះនៅក្នុងបញ្ជីទំនាក់ទំនងរបស់អ្នក";
@@ -1166,11 +1181,8 @@
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signalត្រូវការចូលប្រើប្រាស់លេខទំនាក់ទំនង ដើម្បីកែប្រែព័ត៌មានទំនាក់ទំនង";
 
-/* table cell label in conversation settings */
-"EDIT_GROUP_ACTION" = "EDIT_GROUP_ACTION";
-
 /* The 'clear avatar' button in the 'edit group' view. */
-"EDIT_GROUP_CLEAR_AVATAR" = "Remove Avatar";
+"EDIT_GROUP_CLEAR_AVATAR" = "Remove Photo";
 
 /* a title for the contacts section of the 'new/update group' view. */
 "EDIT_GROUP_CONTACTS_SECTION_TITLE" = "បញ្ជីទំនាក់ទំនង";
@@ -1185,7 +1197,7 @@
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "Maximum group size of 100 members reached.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
-"EDIT_GROUP_ERROR_INVALID_AVATAR" = "Invalid avatar.";
+"EDIT_GROUP_ERROR_INVALID_AVATAR" = "Invalid photo.";
 
 /* Label for the group name in the 'edit group' view. */
 "EDIT_GROUP_GROUP_NAME" = "Group Name";
@@ -1209,19 +1221,19 @@
 "EMAIL_INVITE_SUBJECT" = "តោះប្តូរទៅប្រើ Signal";
 
 /* The name for the emoji category 'Activities' */
-"EMOJI_CATEGORY_ACTIVITIES_NAME" = "Activities";
+"EMOJI_CATEGORY_ACTIVITIES_NAME" = "សកម្មភាព";
 
 /* The name for the emoji category 'Animals & Nature' */
 "EMOJI_CATEGORY_ANIMALS_NAME" = "Animals & Nature";
 
 /* The name for the emoji category 'Flags' */
-"EMOJI_CATEGORY_FLAGS_NAME" = "Flags";
+"EMOJI_CATEGORY_FLAGS_NAME" = "ទង់";
 
 /* The name for the emoji category 'Food & Drink' */
 "EMOJI_CATEGORY_FOOD_NAME" = "Food & Drink";
 
 /* The name for the emoji category 'Objects' */
-"EMOJI_CATEGORY_OBJECTS_NAME" = "Objects";
+"EMOJI_CATEGORY_OBJECTS_NAME" = "កម្មវត្ថុ";
 
 /* The name for the emoji category 'Recents' */
 "EMOJI_CATEGORY_RECENTS_NAME" = "Recents";
@@ -1230,7 +1242,7 @@
 "EMOJI_CATEGORY_SMILEYSANDPEOPLE_NAME" = "Smileys & People";
 
 /* The name for the emoji category 'Symbols' */
-"EMOJI_CATEGORY_SYMBOLS_NAME" = "Symbols";
+"EMOJI_CATEGORY_SYMBOLS_NAME" = "សញ្ញា";
 
 /* The name for the emoji category 'Travel & Places' */
 "EMOJI_CATEGORY_TRAVEL_NAME" = "Travel & Places";
@@ -1448,6 +1460,9 @@
 /* Placeholder text for the search field in GIF view */
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "បញ្ចូលការស្វែងរករបស់អ្នក";
 
+/* Turn on permission view 'go to settings' button */
+"GO_TO_SETTINGS_BUTTON" = "Go to Settings";
+
 /* Body message of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_BODY" = "ជំនាន់ Signal នេះ រួមមាន ការបង្កើនប្រសិទ្ធភាពទិន្នន័យនិងការកែលម្អការល្បឿន។ អ្នកអាចនឹងត្រូវបើកកម្មវិធីនេះ ដើម្បីបញ្ចប់ដំណើរការ។";
 
@@ -1542,7 +1557,7 @@
 "GROUP_LOCAL_USER_INVITED_TO_THE_GROUP" = "You were invited to the group.";
 
 /* Message indicating that the local user has joined the group. */
-"GROUP_LOCAL_USER_JOINED_THE_GROUP" = "You joined the group.";
+"GROUP_LOCAL_USER_JOINED_THE_GROUP" = "អ្នកបានចូលក្រុមនេះ។";
 
 /* Message indicating that the local user was removed from the group by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed you.";
@@ -1556,11 +1571,8 @@
 /* Message indicating that the local user had their administrator role revoked by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ revoked your admin privileges.";
 
-/* Conversation settings table section title */
-"GROUP_MANAGEMENT_SECTION" = "GROUP_MANAGEMENT_SECTION";
-
 /* Label indicating that a group member is an admin. */
-"GROUP_MEMBER_ADMIN_INDICATOR" = "Admin";
+"GROUP_MEMBER_ADMIN_INDICATOR" = "អ្នកគ្រប់គ្រង";
 
 /* Format string for the group member count indicator. Embeds {{ %1$@ the number of members in the group, %2$@ the maximum number of members in the group. }}. */
 "GROUP_MEMBER_COUNT_FORMAT" = "%1$@/%2$@";
@@ -1590,7 +1602,7 @@
 "GROUP_MEMBERS_SEND_MESSAGE" = "សារ";
 
 /* Placeholder text for 'group name' field. */
-"GROUP_NAME_PLACEHOLDER" = "Group name (required)";
+"GROUP_NAME_PLACEHOLDER" = "ឈ្មោះក្រុម (តម្រូវ)";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{remote user name}}. */
 "GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "%@ accepted an invitation to the group.";
@@ -1683,22 +1695,22 @@
 "GROUP_UPDATED" = "បានធ្វើបច្ចុប្បន្នភាពក្រុម។";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED" = "The group avatar was removed.";
+"GROUP_UPDATED_AVATAR_REMOVED" = "The group photo was removed.";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "You removed the avatar.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "You removed the photo.";
 
 /* Message indicating that the group's avatar was removed by a remote user. Embeds {{user who removed the avatar}}. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed the avatar.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed the photo.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED" = "បានធ្វើបច្ចុប្បន្នភាពរូបតំណាងក្រុម";
+"GROUP_UPDATED_AVATAR_UPDATED" = "Updated the group photo.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "You updated the avatar.";
+"GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "You updated the photo.";
 
 /* Message indicating that the group's avatar was changed by a remote user. Embeds {{user who changed the avatar}}. */
-"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ updated the avatar.";
+"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ updated the photo.";
 
 /* Info message indicating that the group was updated by the local user. */
 "GROUP_UPDATED_BY_LOCAL_USER" = "អ្នកបានធ្វើបច្ចុប្បន្នភាពក្រុម។";
@@ -1794,13 +1806,13 @@
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* The image editor hint that you can draw blur */
-"IMAGE_EDITOR_BLUR_HINT" = "Draw anywhere to blur";
+"IMAGE_EDITOR_BLUR_HINT" = "គូរកន្លែងដើម្បីព្រិល";
 
 /* The image editor setting to blur faces */
-"IMAGE_EDITOR_BLUR_SETTING" = "Blur faces";
+"IMAGE_EDITOR_BLUR_SETTING" = "ព្រិលមុខ";
 
 /* A toast indicating that you can blur more faces after detection */
-"IMAGE_EDITOR_BLUR_TOAST" = "Draw to blur additional faces or areas";
+"IMAGE_EDITOR_BLUR_TOAST" = "គូរដើម្បីព្រិលមុខ ឬតំបន់បន្ថែម";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "អ្នកមិនអាចចែករំលែកលើសពី %@ ។";
@@ -1837,9 +1849,6 @@
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "រៀបរាប់ប្រអប់សំបុត្ររបស់អ្នក។ ចាប់ផ្តើមពីការផ្ញើសារទៅកាន់មិត្តភក្តិណាម្នាក់។";
-
-/* Multi-line label explaining how to show names instead of phone numbers in your inbox */
-"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "អ្នកអាចបើកការចូលប្រើប្រាស់បញ្ជីទំនាក់ទំនងក្នុងការកំណត់ iOS ដើម្បីមើលឈ្មោះទំនាក់ទំនង ក្នុងបញ្ជីសន្ទនា Signal របស់អ្នក។";
 
 /* info message text in conversation view */
 "INCOMING_CALL_ANSWERED" = "Answered Call";
@@ -1987,9 +1996,6 @@
 
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "ការភ្ជាប់ឧបករណ៍បានបរាជ័យ";
-
-/* table cell label in conversation settings */
-"LIST_GROUP_MEMBERS_ACTION" = "LIST_GROUP_MEMBERS_ACTION";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "ស្វែងរកតាមឈ្មោះ ឬ អសយដ្ឋាន";
@@ -2163,10 +2169,10 @@
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "រារាំង";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Do you want to let %@ message you? You won't receive any messages until you unblock them.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Let %@ message you and share your name and photo with them? You won't receive any messages until you unblock them.";
 
-/* A prompt notifying that the user must unblock this group to continue. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_FORMAT" = "Do you want to let the group %@ message you? You won't receive any messages until you unblock them.";
+/* A prompt notifying that the user must unblock this group to continue. */
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Unblock this group and share your name and photo with its members? You won't receive any messages until you unblock them.";
 
 /* incoming message request button text which deletes a conversation */
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "លុប";
@@ -2174,17 +2180,17 @@
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "អ្នកត្រូវចែករំលែកប្រវត្តិរូបរបស់អ្នក ដើម្បីបន្តការសន្ទនាជាមួយ %@។";
 
-/* A prompt notifying that the user must share their profile with this group. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT_FORMAT" = "អ្នកត្រូវចែករំលែកប្រវត្តិរូបរបស់អ្នក ដើម្បីបន្តការសន្ទនាក្នុង %@។";
+/* A prompt notifying that the user must share their profile with this group. */
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "You must share your profile to continue your conversation with this group.";
 
 /* A prompt for the user to accept or decline an invite to a group. Embeds {{name of user who invited you}}. */
 "MESSAGE_REQUEST_VIEW_GROUP_INVITE_PROMPT_FORMAT" = "You were invited to this group by %@. Do you want to let members of this group message you?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "តើអ្នកអនុញ្ញាត %@ ផ្ញើសារមកអ្នក? គេនឹងមិនដឹងថាអ្នកបានឃើញសាររបស់គេទេ លុះត្រាតែអ្នកយល់ព្រម។";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Let %@ message you and share your name and photo with them? They won’t know you’ve seen their message until you accept.";
 
-/* A prompt asking if the user wants to accept a group invite. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_FORMAT" = "តើអ្នកចង់ចូលក្រុម %@ ? គេនឹងមិនដឹងថាអ្នកបានឃើញសាររបស់គេទេ លុះត្រាតែអ្នកយល់ព្រម។";
+/* A prompt asking if the user wants to accept a group invite. */
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Join this group and share your name and photo with its members? They won’t know you’ve seen their messages until you accept.";
 
 /* A button used to share your profile with an existing thread. */
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "ចែករំលែកប្រវត្តិរូប";
@@ -2196,7 +2202,7 @@
 "MESSAGE_REQUESTS_NAMES_SPLASH_TITLE" = "Introducing Message Requests";
 
 /* Button to start a create profile name flow from the one time splash screen that appears after upgrading */
-"MESSAGE_REQUESTS_SPLASH_ADD_PROFILE_NAME_BUTTON" = "Add Profile Name";
+"MESSAGE_REQUESTS_SPLASH_ADD_PROFILE_NAME_BUTTON" = "បន្ថែមឈ្មោះប្រវត្តិរូប";
 
 /* Body text for message requests splash screen */
 "MESSAGE_REQUESTS_SPLASH_BODY" = "You can now choose to ”Accept” or ”Delete“ a new conversation. Names let people know who’s messaging them.";
@@ -2375,6 +2381,33 @@
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "អ្នកប្រហែលបានទទួលសារ នៅពេល %@ របស់អ្នក កំពុងបើកឡើងវិញ។";
 
+/* Body for notification permission action sheet */
+"NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "To receive notifications for new messages:";
+
+/* First step for notification permission action sheet */
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "Tap “Go to Settings” below";
+
+/* Third step for notification permission action sheet */
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE" = "Turn on “Allow Notifications”";
+
+/* Second step for notification permission action sheet */
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_TWO" = "Tap Notifications";
+
+/* Title for notification permission action sheet */
+"NOTIFICATION_PERMISSION_ACTION_SHEET_TITLE" = "Turn on Notifications";
+
+/* Snooze action text for contact permission reminder megaphone */
+"NOTIFICATION_PERMISSION_NOT_NOW_ACTION" = "លើកក្រោយ";
+
+/* Action text for notification permission reminder megaphone */
+"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Turn On";
+
+/* Body for notification permission reminder megaphone */
+"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Never miss a message from your contacts and groups.";
+
+/* Title for notification permission reminder megaphone */
+"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Turn on Notifications?";
+
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "សកម្មភាពរួមមាន “ដាក់ថាបានអាន” “ឆ្លើយតប,” និង “ហៅទៅវិញ។”";
 
@@ -2403,7 +2436,7 @@
 "ONBOARDING_2FA_ATTEMPTS_EXHAUSTED" = "លេខ PIN មិនត្រឹមត្រូវ។ ការសាកល្បងហួសកំណត់។";
 
 /* Label for the 'create new pin' button when reglock is disabled during onboarding. */
-"ONBOARDING_2FA_CREATE_NEW_PIN" = "Create New PIN";
+"ONBOARDING_2FA_CREATE_NEW_PIN" = "បង្កើត PIN ថ្មី";
 
 /* Button asking if the user would like to enter an alphanumeric PIN */
 "ONBOARDING_2FA_ENTER_ALPHANUMERIC" = "បញ្ចូលលេខ PIN អក្សរក្រមលេខ";
@@ -2607,13 +2640,13 @@
 "PENDING_GROUP_MEMBERS_REVOKE_OR_RESEND_INVITE_CONFIRMATION_TITLE_N_FORMAT" = "Revoke or re-send %1$@ invites sent by “%2$@“?";
 
 /* Footer for the 'invites by other group members' section of the 'pending group members' view. */
-"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "Details of people invited by other group members are not shown. If invitees choose to join, their information will be shared with the group at that time. They will not see any messages in the group until they join.";
+"PENDING_GROUP_MEMBERS_SECTION_FOOTER_INVITES_FROM_OTHER_MEMBERS" = "ព័ត៌មានលំអិតនៃមនុស្ស ដែលត្រូវបានអញ្ជើញដោយសមាជិកក្រុមផ្សេង មិនត្រូវបានបង្ហាញ។ បើអ្នកត្រូវបានអញ្ជើញជ្រើសរើសចូលរួម ព័ត៌មានពួកគេនឹងត្រូវចែករំលែកជាមួយក្រុមគ្រប់ពេល។ ពួកគេនឹងមិនអាចឃើញសារក្នុងក្រុម រហូតដល់ពួកគេចូលរួមក្រុម។";
 
 /* Title for the 'invites by other group members' section of the 'pending group members' view. */
 "PENDING_GROUP_MEMBERS_SECTION_TITLE_INVITES_FROM_OTHER_MEMBERS" = "អញ្ជើញតាមសមាជិកក្រុមផ្សេង";
 
 /* Title for the 'people you invited' section of the 'pending group members' view. */
-"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "People you invited";
+"PENDING_GROUP_MEMBERS_SECTION_TITLE_PEOPLE_YOU_INVITED" = "មនុស្សដែលអ្នកបានអញ្ជើញ";
 
 /* The title for the 'pending group members' view. */
 "PENDING_GROUP_MEMBERS_VIEW_TITLE" = "Pending Group Invites";
@@ -2718,7 +2751,7 @@
 "PIN_CREATION_ERROR_TITLE" = "ការបង្កើត PIN បរាជ័យ";
 
 /* The explanation in the 'pin creation' view. */
-"PIN_CREATION_EXPLANATION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall Signal.";
+"PIN_CREATION_EXPLANATION" = "លេខ PIN រក្សាទុកព័ត៌មានដែលផ្ទុកជាមួយ Signalដែលបានអ៊ិនគ្រីប​ដូច្នេះមានតែអ្នកប៉ុណ្ណោះដែលអាចចូលប្រើវាបាន។ ប្រវត្តិរូប ការកំណត់ និងទំនាក់ទំនងរបស់អ្នក នឹងស្តារឡើងវិញនៅពេលដែលអ្នកតំឡើង Signal ឡើងវិញ។";
 
 /* Label indicating that the attempted PIN does not match the first PIN */
 "PIN_CREATION_MISMATCH_ERROR" = "លេខPIN  មិនត្រូវគ្នា។ ព្យាយាមម្តងទៀត។";
@@ -2733,7 +2766,7 @@
 "PIN_CREATION_PIN_PROGRESS" = "កំពុងបង្កើត PIN…";
 
 /* The re-creation explanation in the 'pin creation' view. */
-"PIN_CREATION_RECREATION_EXPLANATION" = "You can change your PIN as long as this device is registered.";
+"PIN_CREATION_RECREATION_EXPLANATION" = "អ្នកអាចប្តូរលេខ PIN របស់អ្នក លុះត្រាឧបករណ៍នេះត្រូវបានចុះឈ្មោះ។";
 
 /* Title of the 'pin creation' recreation view. */
 "PIN_CREATION_RECREATION_TITLE" = "ផ្លាស់ប្តូរលេខ PIN របស់អ្នក";
@@ -2742,7 +2775,7 @@
 "PIN_CREATION_TITLE" = "បង្កើតលេខ PIN របស់អ្នក";
 
 /* Label indicating that the attempted PIN is too weak */
-"PIN_CREATION_WEAK_ERROR" = "Choose a stronger PIN";
+"PIN_CREATION_WEAK_ERROR" = "ជ្រើសរើសលេខ PIN ខ្លាំងជាងនេះ";
 
 /* The explanation for the 'pin reminder' dialog. */
 "PIN_REMINDER_EXPLANATION" = "ដើម្បីជួយការចង់ចាំលេខ PIN របស់អ្នក យើងនឹងសួរអ្នក ឲ្យបញ្ចូលវាជាប្រចាំ។យើងនឹងសួរតិចជាងមុនលើកក្រោយ។";
@@ -2865,10 +2898,10 @@
 "PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "ពត៌មានផ្ទាល់ខ្លួនរបស់អ្នក ត្រូវបានរក្សាទុក។";
 
 /* Action Sheet title prompting the user for a profile avatar */
-"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "កំណត់រូបតំណាង";
+"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Set Profile Photo";
 
 /* Label for action that clear's the user's profile avatar */
-"PROFILE_VIEW_CLEAR_AVATAR" = "លុបរូបតំណាង";
+"PROFILE_VIEW_CLEAR_AVATAR" = "Remove Photo";
 
 /* A string indicating that the user can create a username on the profile view. */
 "PROFILE_VIEW_CREATE_USERNAME" = "បង្កើតឈ្មោះអ្នកប្រើប្រាស់";
@@ -2898,7 +2931,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "ពត៌មានផ្ទាល់ខ្លួនអាចធ្វើបច្ចុប្បន្នភាព នៅពេលតភ្ជាប់នឹងអ៊ីនធើណេត។";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "ប្រវត្តិរូបSignalរបស់អ្នកនឹងបង្ហាញទៅបញ្ជីទំនាក់ទំនងរបស់អ្នក នៅពេលចាប់ផ្តើមសន្ទនាថ្មី និងពេលអ្នកចែករំលែកវាជាមួយអ្នកប្រើប្រាស់និងក្រុមផ្សេង។";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your profile is end-to-end encrypted. It will be visible to your contacts, when you initiate or accept new conversations, and when you join new groups.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "រក្សា";
@@ -3615,7 +3648,7 @@
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "Make sure you memorize or securely store your PIN as it can’t be recovered. If you forget your PIN, you may lose data when re-registering your Signal account.";
 
 /* The title for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "Confirm your Signal PIN";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_TITLE" = "បញ្ជាក់លេខ Signal PIN របស់អ្នក";
 
 /* Footer for the 'pin reminder' section of the privacy settings when Signal PINs are available. */
 "SETTINGS_PIN_REMINDER_FOOTER" = "Reminders help you remember your PIN since it can’t be recovered. You’ll be asked less frequently over time.";
@@ -3624,7 +3657,7 @@
 "SETTINGS_PIN_REMINDER_SWITCH_LABEL" = "PIN Reminders";
 
 /* Footer for the 'PINs' section of the privacy settings. */
-"SETTINGS_PINS_FOOTER" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall Signal.";
+"SETTINGS_PINS_FOOTER" = "លេខ PIN រក្សាទុកព័ត៌មានដែលផ្ទុកជាមួយ Signalដែលបានអ៊ិនគ្រីប​ដូច្នេះមានតែអ្នកប៉ុណ្ណោះដែលអាចចូលប្រើវាបាន។ ប្រវត្តិរូប ការកំណត់ និងទំនាក់ទំនងរបស់អ្នក នឹងស្តារឡើងវិញនៅពេលដែលអ្នកតំឡើង Signal ឡើងវិញ។";
 
 /* Label for the 'pins' item of the privacy settings when the user does have a pin. */
 "SETTINGS_PINS_ITEM" = "ផ្លាស់ប្តូរលេខ PIN របស់អ្នក";
@@ -3688,9 +3721,6 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "រារាំងការបើកមើលSignal  ពីការបង្ហាញក្នុងការផ្លាស់ប្តូរកម្មវិធី។";
-
-/* Label for the notifications section of conversation settings view. */
-"SETTINGS_SECTION_NOTIFICATIONS" = "SETTINGS_SECTION_NOTIFICATIONS";
 
 /* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "សំឡេង";
@@ -4008,7 +4038,7 @@
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "បង្កើតលេខ PIN របស់អ្នក";
 
 /* Body text for PINs splash screen */
-"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "PINs keep information stored with Signal encrypted so only you can access it. Your profile, settings, and contacts will restore when you reinstall Signal.";
+"UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_DESCRIPTION" = "លេខ PIN រក្សាទុកព័ត៌មានដែលផ្ទុកជាមួយ Signalដែលបានអ៊ិនគ្រីប​ដូច្នេះមានតែអ្នកប៉ុណ្ណោះដែលអាចចូលប្រើវាបាន។ ប្រវត្តិរូប ការកំណត់ និងទំនាក់ទំនងរបស់អ្នក នឹងស្តារឡើងវិញនៅពេលដែលអ្នកតំឡើង Signal ឡើងវិញ។";
 
 /* Header for PINs splash screen */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_SETUP_TITLE" = "ការណែនាំ លេខPINs";

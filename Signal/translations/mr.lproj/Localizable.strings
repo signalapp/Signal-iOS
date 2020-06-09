@@ -656,6 +656,30 @@
 /* Label for the 'organization' field of a contact. */
 "CONTACT_FIELD_ORGANIZATION" = "संस्था";
 
+/* Body for contact permission action sheet */
+"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "To see contact names and photos in your conversations:";
+
+/* First step for contact permission action sheet */
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Tap “Go to Settings” below";
+
+/* Third step for contact permission action sheet */
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "Turn on “Contacts”";
+
+/* Title for contact permission action sheet */
+"CONTACT_PERMISSION_ACTION_SHEET_TITLE" = "Turn on Contacts";
+
+/* Snooze action text for contact permission reminder megaphone */
+"CONTACT_PERMISSION_NOT_NOW_ACTION" = "आता नाही";
+
+/* Action text for contact permission reminder megaphone */
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "चालू करा";
+
+/* Body for contact permission reminder megaphone */
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "See contact names and photos in your conversations.";
+
+/* Title for contact permission reminder megaphone */
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Turn on Contacts?";
+
 /* Label for a contact's phone number. */
 "CONTACT_PHONE" = "फोन";
 
@@ -762,7 +786,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "सर्व";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "गट नाव, अवतार आणि हरवणारे संदेश टायमर जो संपादन करू शकतो त्याला निवडा.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Choose who can edit the group name, photo, and disappearing messages timer.";
 
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "You will no longer receive messages or updates from this user.";
@@ -772,12 +796,6 @@
 
 /* Label for 'block group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_GROUP" = "गट अवरोधित करा";
-
-/* table cell label in conversation settings */
-"CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "CONVERSATION_SETTINGS_BLOCK_THIS_GROUP";
-
-/* table cell label in conversation settings */
-"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "CONVERSATION_SETTINGS_BLOCK_THIS_USER";
 
 /* Label for 'block user' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_USER" = "वापरकर्त्याला अवरोधित करा";
@@ -795,7 +813,7 @@
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "फक्त प्रशासक";
 
 /* Description for the 'edit group attributes access' alert. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "गट नाव, अवतार आणि हरवणारे संदेश जो बदलू शकतो त्याला निवडा:";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Choose who can change the group name, photo, and disappearing messages:";
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "सर्व सदस्य";
@@ -814,9 +832,6 @@
 
 /* Label for button that sets 'group membership access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "सर्व सदस्य";
-
-/* Navbar title when viewing settings for a group thread */
-"CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "CONVERSATION_SETTINGS_GROUP_INFO_TITLE";
 
 /* Label for 'make group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "प्रशासक बनवा";
@@ -1166,11 +1181,8 @@
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal ला संपर्क संपादन करण्यासाठी संपर्क अॅक्सेसची गरज आहे";
 
-/* table cell label in conversation settings */
-"EDIT_GROUP_ACTION" = "EDIT_GROUP_ACTION";
-
 /* The 'clear avatar' button in the 'edit group' view. */
-"EDIT_GROUP_CLEAR_AVATAR" = "अवतार हटवा";
+"EDIT_GROUP_CLEAR_AVATAR" = "Remove Photo";
 
 /* a title for the contacts section of the 'new/update group' view. */
 "EDIT_GROUP_CONTACTS_SECTION_TITLE" = "संपर्क";
@@ -1185,7 +1197,7 @@
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "100 सदस्यांचा कमाल गट आकार पूर्ण.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
-"EDIT_GROUP_ERROR_INVALID_AVATAR" = "अवैध अवतार.";
+"EDIT_GROUP_ERROR_INVALID_AVATAR" = "Invalid photo.";
 
 /* Label for the group name in the 'edit group' view. */
 "EDIT_GROUP_GROUP_NAME" = "गट नाव";
@@ -1448,6 +1460,9 @@
 /* Placeholder text for the search field in GIF view */
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "आपला शोध प्रविष्ट करा";
 
+/* Turn on permission view 'go to settings' button */
+"GO_TO_SETTINGS_BUTTON" = "Go to Settings";
+
 /* Body message of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_BODY" = "Signal च्या या आवृत्ती मध्ये डेटाबेस ऑप्टीमायझेशन आणि कार्यप्रदर्शन सुधारणा समाविष्ट आहेत. प्रक्रिया पूर्ण करण्यासाठी आपल्याला अॅप उघडणे गरजेचे असू शकते.";
 
@@ -1555,9 +1570,6 @@
 
 /* Message indicating that the local user had their administrator role revoked by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ ने आपले प्रशासक विशेषाधिकार रद्द केले.";
-
-/* Conversation settings table section title */
-"GROUP_MANAGEMENT_SECTION" = "GROUP_MANAGEMENT_SECTION";
 
 /* Label indicating that a group member is an admin. */
 "GROUP_MEMBER_ADMIN_INDICATOR" = "प्रशासक";
@@ -1683,22 +1695,22 @@
 "GROUP_UPDATED" = "गट अद्यतनित.";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED" = "गट अवतार काढला गेला.";
+"GROUP_UPDATED_AVATAR_REMOVED" = "The group photo was removed.";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "आपण अवतार काढला.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "You removed the photo.";
 
 /* Message indicating that the group's avatar was removed by a remote user. Embeds {{user who removed the avatar}}. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ ने अवतार काढला.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed the photo.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED" = "गट अवतार अद्यतनित केला.";
+"GROUP_UPDATED_AVATAR_UPDATED" = "Updated the group photo.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "आपण अवतार अद्यतनित केला.";
+"GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "You updated the photo.";
 
 /* Message indicating that the group's avatar was changed by a remote user. Embeds {{user who changed the avatar}}. */
-"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ ने अवतार अद्यतनित केला.";
+"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ updated the photo.";
 
 /* Info message indicating that the group was updated by the local user. */
 "GROUP_UPDATED_BY_LOCAL_USER" = "आपण गट अद्ययावत केले.";
@@ -1837,9 +1849,6 @@
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "आपल्या इनबॉक्सला घरी लिहिण्यासाठी काहीतरी द्या. एका मित्राला संदेश पाठवून सुरूवात करा.";
-
-/* Multi-line label explaining how to show names instead of phone numbers in your inbox */
-"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "आपल्या Signal संभाषण यादी मध्ये संपर्क नाव बघण्यासाठी iOS सेटिंग अॅप मध्ये आपण संपर्क अॅक्सेस सक्षम करू शकता.";
 
 /* info message text in conversation view */
 "INCOMING_CALL_ANSWERED" = "उत्तर दिलेले कॉल";
@@ -1987,9 +1996,6 @@
 
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "डिव्हाईस लिंक करणे अयशस्वी";
-
-/* table cell label in conversation settings */
-"LIST_GROUP_MEMBERS_ACTION" = "LIST_GROUP_MEMBERS_ACTION";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "नाव किंवा पत्त्याद्वारे शोधा";
@@ -2163,10 +2169,10 @@
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "अवरोधित करा";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "%@ याने आपणास संदेश पाठविण्याची अनुमती द्यायची? आपण जोपर्यंत त्यांना अनब्लॉक नाही तोपर्यंत आपल्याला कोणतेही संदेश प्राप्त होणार नाही.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Let %@ message you and share your name and photo with them? You won't receive any messages until you unblock them.";
 
-/* A prompt notifying that the user must unblock this group to continue. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_FORMAT" = "%@ गटाने आपणास संदेश पाठविण्याची अनुमती द्यायची? आपण जोपर्यंत त्यांना अनब्लॉक नाही तोपर्यंत आपल्याला कोणतेही संदेश प्राप्त होणार नाही.";
+/* A prompt notifying that the user must unblock this group to continue. */
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Unblock this group and share your name and photo with its members? You won't receive any messages until you unblock them.";
 
 /* incoming message request button text which deletes a conversation */
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "काढून टाका";
@@ -2174,17 +2180,17 @@
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "%@ सोबत आपले संभाषण सुरू ठेवण्यासाठी आपण आपली प्रोफाईल सामायिक करायला हवी.";
 
-/* A prompt notifying that the user must share their profile with this group. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT_FORMAT" = "%@ मध्ये आपले संभाषण सुरू ठेवण्यासाठी आपण आपली प्रोफाईल सामायिक करायला हवी.";
+/* A prompt notifying that the user must share their profile with this group. */
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "You must share your profile to continue your conversation with this group.";
 
 /* A prompt for the user to accept or decline an invite to a group. Embeds {{name of user who invited you}}. */
 "MESSAGE_REQUEST_VIEW_GROUP_INVITE_PROMPT_FORMAT" = "%@ द्वारा आपल्याला या गटात आमंत्रित करण्यात आले होते. या गटातील सदस्यांनी आपल्याला संदेश पाठविण्याची अनुमती द्यायची? ";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "%@ याने आपणास संदेश पाठविण्याची अनुमती द्यायची? आपण जोपर्यंत स्वीकार करत नाही त्यांना कळणार नाही की आपण त्यांचे संदेश पाहिले आहेत.";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Let %@ message you and share your name and photo with them? They won’t know you’ve seen their message until you accept.";
 
-/* A prompt asking if the user wants to accept a group invite. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_FORMAT" = "%@ गटात सामील होण्यास आपण इच्छुक आहात? आपण जोपर्यंत स्वीकार करत नाही त्यांना कळणार नाही की आपण त्यांचे संदेश पाहिले आहेत.";
+/* A prompt asking if the user wants to accept a group invite. */
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Join this group and share your name and photo with its members? They won’t know you’ve seen their messages until you accept.";
 
 /* A button used to share your profile with an existing thread. */
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "प्रोफाईल सामायिक करा";
@@ -2374,6 +2380,33 @@
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "आपला %@ पुन्हा चालू होत असताना आपल्याला संदेश प्राप्त झाले असू शकतात.";
+
+/* Body for notification permission action sheet */
+"NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "To receive notifications for new messages:";
+
+/* First step for notification permission action sheet */
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "Tap “Go to Settings” below";
+
+/* Third step for notification permission action sheet */
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE" = "Turn on “Allow Notifications”";
+
+/* Second step for notification permission action sheet */
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_TWO" = "Tap Notifications";
+
+/* Title for notification permission action sheet */
+"NOTIFICATION_PERMISSION_ACTION_SHEET_TITLE" = "Turn on Notifications";
+
+/* Snooze action text for contact permission reminder megaphone */
+"NOTIFICATION_PERMISSION_NOT_NOW_ACTION" = "आता नाही";
+
+/* Action text for notification permission reminder megaphone */
+"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "चालू करा";
+
+/* Body for notification permission reminder megaphone */
+"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Never miss a message from your contacts and groups.";
+
+/* Title for notification permission reminder megaphone */
+"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Turn on Notifications?";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "क्रियांमध्ये \"वाचले म्हणून चिन्हांकित करा\", \"प्रत्युत्तर द्या\" आणि \"परत कॉल करा\" समाविष्ट आहे.";
@@ -2865,10 +2898,10 @@
 "PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "आपले प्रोफाईल नाव जतन केले गेले आहे.";
 
 /* Action Sheet title prompting the user for a profile avatar */
-"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "प्रोफाईल अवतार सेट करा";
+"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Set Profile Photo";
 
 /* Label for action that clear's the user's profile avatar */
-"PROFILE_VIEW_CLEAR_AVATAR" = "अवतार साफ करा";
+"PROFILE_VIEW_CLEAR_AVATAR" = "Remove Photo";
 
 /* A string indicating that the user can create a username on the profile view. */
 "PROFILE_VIEW_CREATE_USERNAME" = "वापरकर्तानाव तयार करा";
@@ -2898,7 +2931,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "इंटरनेटला कनेक्ट केल्यावरच प्रोफाईल अद्यतनित करता येईल.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "जेव्हा आपण नवीन संभाषणे चालू करता, आणि जेव्हा आपण इतर वापरकर्ते आणि गटांसोबत ते सामायिक करता, तेव्हा आपली Signal प्रोफाईल आपल्या संपर्कांना दृश्यमान असेल.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your profile is end-to-end encrypted. It will be visible to your contacts, when you initiate or accept new conversations, and when you join new groups.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "जतन करा";
@@ -3688,9 +3721,6 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "अॅप स्विचर मध्ये Signal पुनरावलोकन येण्यापासून प्रतिबंधित करा.";
-
-/* Label for the notifications section of conversation settings view. */
-"SETTINGS_SECTION_NOTIFICATIONS" = "SETTINGS_SECTION_NOTIFICATIONS";
 
 /* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "ध्वनी";

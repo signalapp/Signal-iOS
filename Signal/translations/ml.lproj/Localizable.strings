@@ -656,6 +656,30 @@
 /* Label for the 'organization' field of a contact. */
 "CONTACT_FIELD_ORGANIZATION" = "സ്ഥാപനം";
 
+/* Body for contact permission action sheet */
+"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "To see contact names and photos in your conversations:";
+
+/* First step for contact permission action sheet */
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Tap “Go to Settings” below";
+
+/* Third step for contact permission action sheet */
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "Turn on “Contacts”";
+
+/* Title for contact permission action sheet */
+"CONTACT_PERMISSION_ACTION_SHEET_TITLE" = "Turn on Contacts";
+
+/* Snooze action text for contact permission reminder megaphone */
+"CONTACT_PERMISSION_NOT_NOW_ACTION" = "ഇപ്പോൾ വേണ്ട";
+
+/* Action text for contact permission reminder megaphone */
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "ഓൺ ചെയ്യുക";
+
+/* Body for contact permission reminder megaphone */
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "See contact names and photos in your conversations.";
+
+/* Title for contact permission reminder megaphone */
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Turn on Contacts?";
+
 /* Label for a contact's phone number. */
 "CONTACT_PHONE" = "ഇമെ‌യിൽ അഡ്രസ്സ് ഇല്ല";
 
@@ -762,7 +786,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "എല്ലാം";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "ഗ്രൂപ്പ് പേര്, അവ്‌താർ, മെസേജുകൾ അപ്രത്യക്ഷമാകേണ്ട ടൈമർ എന്നിവ ആർക്ക് എഡിറ്റ് ചെയ്യാനാകും എന്ന് തിരഞ്ഞെടുക്കുക.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Choose who can edit the group name, photo, and disappearing messages timer.";
 
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "You will no longer receive messages or updates from this user.";
@@ -772,12 +796,6 @@
 
 /* Label for 'block group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_GROUP" = "ഗ്രൂപ്പ് ബ്ലോക്ക് ചെയ്യുക";
-
-/* table cell label in conversation settings */
-"CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "CONVERSATION_SETTINGS_BLOCK_THIS_GROUP";
-
-/* table cell label in conversation settings */
-"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "CONVERSATION_SETTINGS_BLOCK_THIS_USER";
 
 /* Label for 'block user' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_USER" = "യൂസറെ ബ്ലോക്ക് ചെയ്യുക";
@@ -795,7 +813,7 @@
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "അഡ്‌മിൻ‌മാർക്ക് മാത്രം";
 
 /* Description for the 'edit group attributes access' alert. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "ഗ്രൂപ്പ് പേര്, അവ്‌താർ, അപ്രത്യക്ഷമാകേണ്ട മെസേജുകൾ എന്നിവ ആർക്ക് മാറ്റാനാകും എന്ന് തിരഞ്ഞെടുക്കുക:";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Choose who can change the group name, photo, and disappearing messages:";
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "എല്ലാ അംഗങ്ങൾക്കും";
@@ -814,9 +832,6 @@
 
 /* Label for button that sets 'group membership access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "എല്ലാ അംഗങ്ങൾക്കും";
-
-/* Navbar title when viewing settings for a group thread */
-"CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "CONVERSATION_SETTINGS_GROUP_INFO_TITLE";
 
 /* Label for 'make group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "അഡ്‌മിൻ ആക്കുക";
@@ -1166,11 +1181,8 @@
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "കോൺടാക്ട് വിവരങ്ങൾ എഡിറ്റ് ചെയ്യുന്നതിന് Signal ന് കോൺടാക്ട് അക്സസ് ആവശ്യമാണ്";
 
-/* table cell label in conversation settings */
-"EDIT_GROUP_ACTION" = "EDIT_GROUP_ACTION";
-
 /* The 'clear avatar' button in the 'edit group' view. */
-"EDIT_GROUP_CLEAR_AVATAR" = "അവതാർ ഇല്ലാതാക്കുക";
+"EDIT_GROUP_CLEAR_AVATAR" = "Remove Photo";
 
 /* a title for the contacts section of the 'new/update group' view. */
 "EDIT_GROUP_CONTACTS_SECTION_TITLE" = "കോൺടാക്ടുകൾ";
@@ -1185,7 +1197,7 @@
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "ഗ്രൂപ്പിൻ്റെ പരമാവധി സൈസ് ആയ 100 അംഗങ്ങൾ ആയിരിക്കുന്നു.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
-"EDIT_GROUP_ERROR_INVALID_AVATAR" = "അസാധുവായ അവതാർ.";
+"EDIT_GROUP_ERROR_INVALID_AVATAR" = "Invalid photo.";
 
 /* Label for the group name in the 'edit group' view. */
 "EDIT_GROUP_GROUP_NAME" = "ഗ്രൂപ്പിൻ്റെ പേര്";
@@ -1448,6 +1460,9 @@
 /* Placeholder text for the search field in GIF view */
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "നിങ്ങളുടെ തിരയൽ നൽകുക.";
 
+/* Turn on permission view 'go to settings' button */
+"GO_TO_SETTINGS_BUTTON" = "Go to Settings";
+
 /* Body message of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_BODY" = "Signal ൻ്റെ ഈ വെർഷനിൽ ഡാറ്റാബേസ് ഓപ്റ്റിമൈസേഷനും പെർഫോമൻസ് ഇമ്പ്രൂവ്‌മെൻസും ഉൾപ്പെടുത്തിയിട്ടുണ്ട്.  പ്രക്രിയ പൂർത്തിയാക്കാൻ നിങ്ങൾക്ക് ആപ്പ് ഓപ്പൺ ചെയ്യാവുന്നതാണ്.";
 
@@ -1555,9 +1570,6 @@
 
 /* Message indicating that the local user had their administrator role revoked by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ നിങ്ങളുടെ അഡ്മിൻ അധികാരങ്ങൾ റദ്ദാക്കിയിരിക്കുന്നു.";
-
-/* Conversation settings table section title */
-"GROUP_MANAGEMENT_SECTION" = "GROUP_MANAGEMENT_SECTION";
 
 /* Label indicating that a group member is an admin. */
 "GROUP_MEMBER_ADMIN_INDICATOR" = "അഡ്‌മിൻ‌";
@@ -1683,22 +1695,22 @@
 "GROUP_UPDATED" = "ഗ്രൂപ്പ് അപ്‌ഡേറ്റുചെയ്‌തു.";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED" = "ഗ്രൂപ്പ് അവതാർ നീക്കം ചെയ്തിരിക്കുന്നു.";
+"GROUP_UPDATED_AVATAR_REMOVED" = "The group photo was removed.";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "നിങ്ങൾ അവതാർ നീക്കം ചെയ്തിരിക്കുന്നു";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "You removed the photo.";
 
 /* Message indicating that the group's avatar was removed by a remote user. Embeds {{user who removed the avatar}}. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ അവതാർ നീക്കം ചെയ്തിരിക്കുന്നു";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed the photo.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED" = "ഗ്രൂപ്പ് അവതാർ അപ്ഡേറ്റ് ചെയ്തിരിക്കുന്നു.";
+"GROUP_UPDATED_AVATAR_UPDATED" = "Updated the group photo.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "നിങ്ങൾ അവതാർ അവതാർ ചെയ്തിരിക്കുന്നു";
+"GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "You updated the photo.";
 
 /* Message indicating that the group's avatar was changed by a remote user. Embeds {{user who changed the avatar}}. */
-"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ അവതാർ അവതാർ ചെയ്തിരിക്കുന്നു";
+"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ updated the photo.";
 
 /* Info message indicating that the group was updated by the local user. */
 "GROUP_UPDATED_BY_LOCAL_USER" = "നിങ്ങൾ ഗ്രൂപ്പ് അപ്‌ഡേറ്റുചെയ്‌തു.";
@@ -1837,9 +1849,6 @@
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "നിങ്ങളുടെ ഇൻ‌ബോക്സിന് വീട്ടിലേക്ക് എന്തെങ്കിലും എഴുതാൻ ഉപയോഗിക്കൂ. ഒരു സുഹൃത്തിനു മെസേജ് ചെയ്തുകൊണ്ട് തുടങ്ങൂ.";
-
-/* Multi-line label explaining how to show names instead of phone numbers in your inbox */
-"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "നിങ്ങളുടെ Signal സംഭാഷണ ലിസ്റ്റിൽ ഉള്ള കോൺടാക്ട് പേരുകൾ കാണുന്നതിന് വേണ്ടി നിങ്ങൾക്ക് iOS സെറ്റിംഗ്സ് ആപ്പിൽ കോൺടാക്സ് അക്സസ് പ്രാപ്തമാക്കാവുന്നതാണ്.";
 
 /* info message text in conversation view */
 "INCOMING_CALL_ANSWERED" = "ഉത്തരം നൽകിയ കോൾ";
@@ -1987,9 +1996,6 @@
 
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "ഡിവൈസ് ലിങ്ക് ചെയ്യുന്നത് പരാജയപ്പെട്ടിരിക്കുന്നു";
-
-/* table cell label in conversation settings */
-"LIST_GROUP_MEMBERS_ACTION" = "LIST_GROUP_MEMBERS_ACTION";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "പേര് അല്ലെങ്കിൽ വിലാസം ഉപയോഗിച്ച് തിരയുക";
@@ -2163,10 +2169,10 @@
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "ബ്ലോക്ക്";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "നിങ്ങൾക്ക് %@ മെസേജ് അയക്കുന്നത് അനുവദിക്കണോ? നിങ്ങൾ അവരെ അൺ‌ബ്ലോക്ക് ചെയ്യുന്നതു വരെ നിങ്ങൾക്ക് മെസേജ് ഒന്നും ലഭിക്കില്ല.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Let %@ message you and share your name and photo with them? You won't receive any messages until you unblock them.";
 
-/* A prompt notifying that the user must unblock this group to continue. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_FORMAT" = "ഗ്രൂപ്പ് %@ നിങ്ങൾക്ക് അയക്കുന്നത് അനുവദിക്കുന്നോ? നിങ്ങൾ അവരെ അൺ‌ബ്ലോക്ക് ചെയ്യുന്നതുവരെ മെസേജ് ഒന്നും ലഭിക്കുന്നതല്ല.";
+/* A prompt notifying that the user must unblock this group to continue. */
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Unblock this group and share your name and photo with its members? You won't receive any messages until you unblock them.";
 
 /* incoming message request button text which deletes a conversation */
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "ഇല്ലാതാക്കുക ";
@@ -2174,17 +2180,17 @@
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "നിങ്ങൾക്ക് %@മായി സംസാരം തുടരണമെങ്കിൽ നിങ്ങളുടെ പ്രൊഫൈൽ ഷെയർ ചെയ്യണം.";
 
-/* A prompt notifying that the user must share their profile with this group. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT_FORMAT" = "നിങ്ങൾക്ക് %@ലെ നിങ്ങളുടെ സംസാരം തുടരണമെങ്കിൽ നിങ്ങളുടെ പ്രൊഫൈൽ ഷെയർ ചെയ്യണം.";
+/* A prompt notifying that the user must share their profile with this group. */
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "You must share your profile to continue your conversation with this group.";
 
 /* A prompt for the user to accept or decline an invite to a group. Embeds {{name of user who invited you}}. */
 "MESSAGE_REQUEST_VIEW_GROUP_INVITE_PROMPT_FORMAT" = "നിങ്ങളെ ഈ ഗ്രൂപ്പിലേക്ക് %@ ആണ് ക്ഷണിച്ചത്. നിങ്ങൾക്ക് ഈ ഗ്രൂപ്പിലെ അംഗങ്ങൾക്ക് നിങ്ങൾക്ക് മെസേജ് അയയ്ക്കാൻ അനുവാദം നൽകണോ?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "നിങ്ങൾക്ക് മെസേജ് അയക്കാൻ %@ നെ അനുവദിക്കണോ? നിങ്ങൾ അംഗീകരിക്കുന്നതു വരെ അവരുടെ സന്ദേശം കണ്ടതായി അവർക്ക് അറിയാൻ കഴിയില്ല.";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Let %@ message you and share your name and photo with them? They won’t know you’ve seen their message until you accept.";
 
-/* A prompt asking if the user wants to accept a group invite. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_FORMAT" = "നിങ്ങൾക്ക് %@ ഗ്രൂപ്പിൽ ചേരണോ? നിങ്ങൾ അംഗീകരിക്കുന്നതു വരെ അവരുടെ സന്ദേശം കണ്ടതായി അവർക്ക് അറിയാൻ കഴിയില്ല.";
+/* A prompt asking if the user wants to accept a group invite. */
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Join this group and share your name and photo with its members? They won’t know you’ve seen their messages until you accept.";
 
 /* A button used to share your profile with an existing thread. */
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "പ്രൊഫൈൽ പങ്കിടുക";
@@ -2374,6 +2380,33 @@
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "നിങ്ങളുടെ %@ റിസ്റ്റാർട്ട് ചെയ്യുമ്പോൾ നിങ്ങൾക്ക് സന്ദേശങ്ങൾ ലഭിച്ചേക്കാം.";
+
+/* Body for notification permission action sheet */
+"NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "To receive notifications for new messages:";
+
+/* First step for notification permission action sheet */
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "Tap “Go to Settings” below";
+
+/* Third step for notification permission action sheet */
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE" = "Turn on “Allow Notifications”";
+
+/* Second step for notification permission action sheet */
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_TWO" = "Tap Notifications";
+
+/* Title for notification permission action sheet */
+"NOTIFICATION_PERMISSION_ACTION_SHEET_TITLE" = "Turn on Notifications";
+
+/* Snooze action text for contact permission reminder megaphone */
+"NOTIFICATION_PERMISSION_NOT_NOW_ACTION" = "ഇപ്പോൾ വേണ്ട";
+
+/* Action text for notification permission reminder megaphone */
+"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "ഓൺ ചെയ്യുക";
+
+/* Body for notification permission reminder megaphone */
+"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Never miss a message from your contacts and groups.";
+
+/* Title for notification permission reminder megaphone */
+"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Turn on Notifications?";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "“Mark as Read,” “Reply,” കൂടാതെ “Call Back\" എന്നിവയും ആക്ഷനുകളിൽ ഉൾപ്പെടുന്നു.";
@@ -2865,10 +2898,10 @@
 "PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "നിങ്ങളുടെ പ്രൊഫൈൽ നാമം സേവ് ചെയ്തു.";
 
 /* Action Sheet title prompting the user for a profile avatar */
-"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "പ്രൊഫൈൽ അവതാർ സജ്ജമാക്കുക";
+"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Set Profile Photo";
 
 /* Label for action that clear's the user's profile avatar */
-"PROFILE_VIEW_CLEAR_AVATAR" = "അവതാർ ഇല്ലാതാക്കുക";
+"PROFILE_VIEW_CLEAR_AVATAR" = "Remove Photo";
 
 /* A string indicating that the user can create a username on the profile view. */
 "PROFILE_VIEW_CREATE_USERNAME" = "യൂസർ പേര് സൃഷ്ടിക്കുക";
@@ -2898,7 +2931,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "ഇൻ്റർനെറ്റുമായി കണക്ട് ചെയ്യുമ്പോൾ മാത്രമേ പ്രൊഫൈൽ അപ്ഡേറ്റ് ചെയ്യാൻ സാധിക്കുകയുള്ളൂ.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "നിങ്ങൾ പുതിയ സംഭാഷണങ്ങൾ തുടങ്ങുമ്പോഴും, നിങ്ങൾ മറ്റ് യൂസർമാരുമായിട്ടും ഗ്രൂപ്പുകളുമായിട്ടും പങ്കിടുമ്പോഴും നിങ്ങളുടെ Signal പ്രൊഫൈൽ നിങ്ങളുടെ കോൺടാക്ടുകൾക്ക് ദൃശ്യമാകും.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your profile is end-to-end encrypted. It will be visible to your contacts, when you initiate or accept new conversations, and when you join new groups.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "സംരക്ഷിക്കുക";
@@ -3688,9 +3721,6 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "ആപ്പ് സ്വിച്ചറിൽ Signal പ്രിവ്യൂകൾ ദൃശ്യമാകുന്നത് തടയുക.";
-
-/* Label for the notifications section of conversation settings view. */
-"SETTINGS_SECTION_NOTIFICATIONS" = "SETTINGS_SECTION_NOTIFICATIONS";
 
 /* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "ശബ്ദങ്ങൾ";

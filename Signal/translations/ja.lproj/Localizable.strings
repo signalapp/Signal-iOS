@@ -656,6 +656,30 @@
 /* Label for the 'organization' field of a contact. */
 "CONTACT_FIELD_ORGANIZATION" = "組織";
 
+/* Body for contact permission action sheet */
+"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "To see contact names and photos in your conversations:";
+
+/* First step for contact permission action sheet */
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Tap “Go to Settings” below";
+
+/* Third step for contact permission action sheet */
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "Turn on “Contacts”";
+
+/* Title for contact permission action sheet */
+"CONTACT_PERMISSION_ACTION_SHEET_TITLE" = "Turn on Contacts";
+
+/* Snooze action text for contact permission reminder megaphone */
+"CONTACT_PERMISSION_NOT_NOW_ACTION" = "今はしない";
+
+/* Action text for contact permission reminder megaphone */
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "オン";
+
+/* Body for contact permission reminder megaphone */
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "See contact names and photos in your conversations.";
+
+/* Title for contact permission reminder megaphone */
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Turn on Contacts?";
+
 /* Label for a contact's phone number. */
 "CONTACT_PHONE" = "電話番号";
 
@@ -762,7 +786,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "すべて";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "グループ名、アバター、消えるメッセージの時間を編集できる人を選択してください。";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Choose who can edit the group name, photo, and disappearing messages timer.";
 
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "You will no longer receive messages or updates from this user.";
@@ -772,12 +796,6 @@
 
 /* Label for 'block group' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_GROUP" = "グループをブロック";
-
-/* table cell label in conversation settings */
-"CONVERSATION_SETTINGS_BLOCK_THIS_GROUP" = "CONVERSATION_SETTINGS_BLOCK_THIS_GROUP";
-
-/* table cell label in conversation settings */
-"CONVERSATION_SETTINGS_BLOCK_THIS_USER" = "CONVERSATION_SETTINGS_BLOCK_THIS_USER";
 
 /* Label for 'block user' action in conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_USER" = "ユーザをブロック";
@@ -795,7 +813,7 @@
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "管理者のみ";
 
 /* Description for the 'edit group attributes access' alert. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "グループ名、アバター、消えるメッセージの時間を編集できる人を選択してください。";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Choose who can change the group name, photo, and disappearing messages:";
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "全てのメンバー";
@@ -814,9 +832,6 @@
 
 /* Label for button that sets 'group membership access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "全てのメンバー";
-
-/* Navbar title when viewing settings for a group thread */
-"CONVERSATION_SETTINGS_GROUP_INFO_TITLE" = "CONVERSATION_SETTINGS_GROUP_INFO_TITLE";
 
 /* Label for 'make group admin' button in conversation settings view. */
 "CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "管理者を作成";
@@ -1166,11 +1181,8 @@
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "連絡先を編集するには連絡先へのアクセスが必要です。";
 
-/* table cell label in conversation settings */
-"EDIT_GROUP_ACTION" = "EDIT_GROUP_ACTION";
-
 /* The 'clear avatar' button in the 'edit group' view. */
-"EDIT_GROUP_CLEAR_AVATAR" = "アバターを削除";
+"EDIT_GROUP_CLEAR_AVATAR" = "Remove Photo";
 
 /* a title for the contacts section of the 'new/update group' view. */
 "EDIT_GROUP_CONTACTS_SECTION_TITLE" = "連絡先";
@@ -1185,7 +1197,7 @@
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "グループメンバーが最大の100人に達しました。";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
-"EDIT_GROUP_ERROR_INVALID_AVATAR" = "無効なアバターです。";
+"EDIT_GROUP_ERROR_INVALID_AVATAR" = "Invalid photo.";
 
 /* Label for the group name in the 'edit group' view. */
 "EDIT_GROUP_GROUP_NAME" = "グループ名";
@@ -1448,6 +1460,9 @@
 /* Placeholder text for the search field in GIF view */
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "検索";
 
+/* Turn on permission view 'go to settings' button */
+"GO_TO_SETTINGS_BUTTON" = "Go to Settings";
+
 /* Body message of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_BODY" = "このバージョンのSignalには、データベースの最適化とパフォーマンス改善が含まれます。アプリを開いてこの処理を完了させてください。";
 
@@ -1555,9 +1570,6 @@
 
 /* Message indicating that the local user had their administrator role revoked by another user. Embeds {{remote user name}}. */
 "GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@はあなたの管理者特権を無効にしました。　";
-
-/* Conversation settings table section title */
-"GROUP_MANAGEMENT_SECTION" = "GROUP_MANAGEMENT_SECTION";
 
 /* Label indicating that a group member is an admin. */
 "GROUP_MEMBER_ADMIN_INDICATOR" = "管理者";
@@ -1683,22 +1695,22 @@
 "GROUP_UPDATED" = "グループをアップデートしました。";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED" = "グループのアバターが削除されました。";
+"GROUP_UPDATED_AVATAR_REMOVED" = "The group photo was removed.";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "アバターを削除しました。";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "You removed the photo.";
 
 /* Message indicating that the group's avatar was removed by a remote user. Embeds {{user who removed the avatar}}. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@はアバターを削除しました。";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed the photo.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED" = "グループアバターを更新しました。";
+"GROUP_UPDATED_AVATAR_UPDATED" = "Updated the group photo.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "アバターを更新しました。";
+"GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "You updated the photo.";
 
 /* Message indicating that the group's avatar was changed by a remote user. Embeds {{user who changed the avatar}}. */
-"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%@はアバターを更新しました。";
+"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ updated the photo.";
 
 /* Info message indicating that the group was updated by the local user. */
 "GROUP_UPDATED_BY_LOCAL_USER" = "グループを更新しました。";
@@ -1837,9 +1849,6 @@
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "友達にメッセージを送って始めよう!";
-
-/* Multi-line label explaining how to show names instead of phone numbers in your inbox */
-"INBOX_VIEW_MISSING_CONTACTS_PERMISSION" = "Signalの会話リストに通話相手の名前を表示するように、iOSの設定で連絡先リストのアクセスを設定できます。";
 
 /* info message text in conversation view */
 "INCOMING_CALL_ANSWERED" = "応答した通話";
@@ -1987,9 +1996,6 @@
 
 /* Alert Title */
 "LINKING_DEVICE_FAILED_TITLE" = "端末のリンクに失敗";
-
-/* table cell label in conversation settings */
-"LIST_GROUP_MEMBERS_ACTION" = "LIST_GROUP_MEMBERS_ACTION";
 
 /* A string indicating that the user can search for a location */
 "LOCATION_PICKER_SEARCH_PLACEHOLDER" = "名前か住所で検索";
@@ -2163,10 +2169,10 @@
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "ブロック";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = " %@ があなたにメッセージを送ることを許可しますか? ブロックを解除しない限り、あなたはメッセージを受信しません。";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Let %@ message you and share your name and photo with them? You won't receive any messages until you unblock them.";
 
-/* A prompt notifying that the user must unblock this group to continue. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_FORMAT" = "グループ%@があなたにメッセージを送ることを許可しますか? ブロックを解除しない限り、あなたはメッセージを受信しません。 ";
+/* A prompt notifying that the user must unblock this group to continue. */
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Unblock this group and share your name and photo with its members? You won't receive any messages until you unblock them.";
 
 /* incoming message request button text which deletes a conversation */
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "削除";
@@ -2174,17 +2180,17 @@
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "%@と会話を続けるには、プロフィールを共有する必要があります。";
 
-/* A prompt notifying that the user must share their profile with this group. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT_FORMAT" = "%@で会話を続けるには、プロフィールを共有する必要があります。";
+/* A prompt notifying that the user must share their profile with this group. */
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "You must share your profile to continue your conversation with this group.";
 
 /* A prompt for the user to accept or decline an invite to a group. Embeds {{name of user who invited you}}. */
 "MESSAGE_REQUEST_VIEW_GROUP_INVITE_PROMPT_FORMAT" = "あなたは%@からこのグループへの招待を受けました。このメンバーのグループからのメッセージを受信しますか?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "%@と会話しますか? 招待を受け入れるまで、あなたがメッセージを見たことが相手には分かりません。";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Let %@ message you and share your name and photo with them? They won’t know you’ve seen their message until you accept.";
 
-/* A prompt asking if the user wants to accept a group invite. Embeds {{group name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_FORMAT" = "グループ%@に参加したいですか? 招待を受け入れるまで、あなたがメッセージを見たことが相手には分かりません。";
+/* A prompt asking if the user wants to accept a group invite. */
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Join this group and share your name and photo with its members? They won’t know you’ve seen their messages until you accept.";
 
 /* A button used to share your profile with an existing thread. */
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "プロフィールを共有する";
@@ -2374,6 +2380,33 @@
 
 /* Lock screen notification text presented after user powers on their device without unlocking. Embeds {{device model}} (either 'iPad' or 'iPhone') */
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "%@の再起動中にメッセージが届いたかもしれません。";
+
+/* Body for notification permission action sheet */
+"NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "To receive notifications for new messages:";
+
+/* First step for notification permission action sheet */
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "Tap “Go to Settings” below";
+
+/* Third step for notification permission action sheet */
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE" = "Turn on “Allow Notifications”";
+
+/* Second step for notification permission action sheet */
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_TWO" = "Tap Notifications";
+
+/* Title for notification permission action sheet */
+"NOTIFICATION_PERMISSION_ACTION_SHEET_TITLE" = "Turn on Notifications";
+
+/* Snooze action text for contact permission reminder megaphone */
+"NOTIFICATION_PERMISSION_NOT_NOW_ACTION" = "今はしない";
+
+/* Action text for notification permission reminder megaphone */
+"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "オン";
+
+/* Body for notification permission reminder megaphone */
+"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Never miss a message from your contacts and groups.";
+
+/* Title for notification permission reminder megaphone */
+"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Turn on Notifications?";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "「既読」「返信」「折り返す」を含む";
@@ -2865,10 +2898,10 @@
 "PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "プロフィール名を保存しました。";
 
 /* Action Sheet title prompting the user for a profile avatar */
-"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "プロフィールアバターを設定";
+"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Set Profile Photo";
 
 /* Label for action that clear's the user's profile avatar */
-"PROFILE_VIEW_CLEAR_AVATAR" = "アイコンを取り消す";
+"PROFILE_VIEW_CLEAR_AVATAR" = "Remove Photo";
 
 /* A string indicating that the user can create a username on the profile view. */
 "PROFILE_VIEW_CREATE_USERNAME" = "ユーザ名の作成";
@@ -2898,7 +2931,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "プロフィールの更新にはインターネット接続が必要です。";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "プロフィールは新しく会話を始める際に相手に見え、プロフィールを共有する人やグループにも見えます。";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your profile is end-to-end encrypted. It will be visible to your contacts, when you initiate or accept new conversations, and when you join new groups.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "保存";
@@ -3688,9 +3721,6 @@
 
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Signalの画面をアプリ変更時に表示しません。";
-
-/* Label for the notifications section of conversation settings view. */
-"SETTINGS_SECTION_NOTIFICATIONS" = "SETTINGS_SECTION_NOTIFICATIONS";
 
 /* Header Label for the sounds section of settings views. */
 "SETTINGS_SECTION_SOUNDS" = "サウンド";
