@@ -88,7 +88,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     _profileViewMode = profileViewMode;
     _completionHandler = completionHandler;
 
-    DatabaseStorageWrite(SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageAsyncWrite(SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *transaction) {
         [ProfileViewController.keyValueStore setDate:[NSDate new]
                                                  key:kProfileView_LastPresentedDate
                                          transaction:transaction];
