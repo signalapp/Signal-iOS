@@ -1705,6 +1705,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     OWSAssertDebug(messageSend.recipient);
     OWSAssertDebug(deviceId);
 
+    SignalServiceAddress *recipientAddress = messageSend.recipient.address;
+    OWSAssertDebug(recipientAddress.isValid);
+
     NSString *accountId = messageSend.recipient.accountId;
 
     __block BOOL hasSession;
