@@ -2171,7 +2171,7 @@
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Let %@ message you and share your name and photo with them? You won't receive any messages until you unblock them.";
 
-/* A prompt notifying that the user must unblock this group to continue. Embeds {{group name}}. */
+/* A prompt notifying that the user must unblock this group to continue. */
 "MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Unblock this group and share your name and photo with its members? You won't receive any messages until you unblock them.";
 
 /* incoming message request button text which deletes a conversation */
@@ -2180,7 +2180,7 @@
 /* A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "You must share your profile to continue your conversation with %@.";
 
-/* A prompt notifying that the user must share their profile with this group. Embeds {{group name}}. */
+/* A prompt notifying that the user must share their profile with this group. */
 "MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "You must share your profile to continue your conversation with this group.";
 
 /* A prompt for the user to accept or decline an invite to a group. Embeds {{name of user who invited you}}. */
@@ -2189,7 +2189,7 @@
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
 "MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Let %@ message you and share your name and photo with them? They won’t know you’ve seen their message until you accept.";
 
-/* A prompt asking if the user wants to accept a group invite. Embeds {{group name}}. */
+/* A prompt asking if the user wants to accept a group invite. */
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Join this group and share your name and photo with its members? They won’t know you’ve seen their messages until you accept.";
 
 /* A button used to share your profile with an existing thread. */
