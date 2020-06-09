@@ -333,7 +333,7 @@ NS_ASSUME_NONNULL_BEGIN
     return CGSizeMake(self.stickerSize, self.stickerSize);
 }
 
-- (nullable NSValue *)senderNameSize
+- (nullable NSValue *)senderNameSize:(CGFloat)maxContentWidth
 {
     OWSAssertDebug(self.conversationStyle);
     OWSAssertDebug(self.conversationStyle.maxMessageWidth > 0);
@@ -343,7 +343,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     CGFloat hMargins = OWSMessageStickerView.textInsetHorizontal * 2;
-    const int maxTextWidth = (int)floor(self.conversationStyle.maxMessageWidth - hMargins);
+    const int maxTextWidth = (int)floor(maxContentWidth - hMargins);
     [self configureSenderNameLabel];
     CGSize result = CGSizeCeil([self.senderNameLabel sizeThatFits:CGSizeMake(maxTextWidth, CGFLOAT_MAX)]);
     result.width = MIN(result.width, maxTextWidth);
@@ -360,10 +360,12 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(self.viewItem.stickerAttachment != nil || self.viewItem.isFailedSticker);
 
     CGSize cellSize = CGSizeZero;
+    CGFloat margin = OWSMessageStickerView.marginAndSpacing;
+    CGFloat maxContentWidth = self.conversationStyle.maxMessageWidth - margin * 2;
 
     NSMutableArray<NSValue *> *textViewSizes = [NSMutableArray new];
 
-    NSValue *_Nullable senderNameSize = [self senderNameSize];
+    NSValue *_Nullable senderNameSize = [self senderNameSize:maxContentWidth];
     if (senderNameSize) {
         [textViewSizes addObject:senderNameSize];
     }
@@ -380,7 +382,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     CGSize footerSize = [self.footerView measureWithConversationViewItem:self.viewItem];
-    footerSize.width = MIN(footerSize.width, self.conversationStyle.maxMessageWidth);
+    footerSize.width = MIN(footerSize.width, maxContentWidth);
     [textViewSizes addObject:[NSValue valueWithCGSize:footerSize]];
 
     if (textViewSizes.count > 0) {
@@ -391,7 +393,6 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSAssertDebug(cellSize.width > 0 && cellSize.height > 0);
 
-    CGFloat margin = OWSMessageStickerView.marginAndSpacing;
     cellSize.width += margin * 2;
     cellSize.height += margin;
 
