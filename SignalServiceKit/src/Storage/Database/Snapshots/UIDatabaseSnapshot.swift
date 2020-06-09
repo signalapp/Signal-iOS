@@ -94,11 +94,14 @@ public class UIDatabaseObserver: NSObject {
 
     private let hasPendingSnapshotUpdate = AtomicBool(false)
     private var lastSnapshotUpdateDate: Date?
+    private var recentCommitDates = [Date]()
 
     // This property should only be accessed on the main thread.
     private var lastCheckpointDate: Date?
 
     private var displayLink: CADisplayLink?
+    private let displayLinkPreferredFramesPerSecond: Int = 60
+    private var recentDisplayLinkDates = [Date]()
 
     init(pool: DatabasePool, checkpointingQueue: DatabaseQueue?) throws {
         self.pool = pool
@@ -147,7 +150,7 @@ public class UIDatabaseObserver: NSObject {
                 displayLink.isPaused = false
             } else {
                 let link = CADisplayLink(target: self, selector: #selector(displayLinkDidFire))
-                link.preferredFramesPerSecond = 60
+                link.preferredFramesPerSecond = displayLinkPreferredFramesPerSecond
                 link.add(to: .main, forMode: .default)
                 assert(!link.isPaused)
                 displayLink = link
@@ -160,6 +163,8 @@ public class UIDatabaseObserver: NSObject {
     @objc
     func displayLinkDidFire() {
         AssertIsOnMainThread()
+
+        recentDisplayLinkDates.append(Date())
 
         updateSnapshotIfNecessary()
     }
@@ -237,6 +242,7 @@ extension UIDatabaseObserver: TransactionObserver {
             guard let self = self else {
                 return
             }
+            self.recentCommitDates.append(Date())
             // Enqueue the update.
             self.hasPendingSnapshotUpdate.set(true)
             // Try to update immediately.
@@ -251,9 +257,7 @@ extension UIDatabaseObserver: TransactionObserver {
         if let lastSnapshotUpdateDate = self.lastSnapshotUpdateDate {
             let secondsSinceLastUpdate = abs(lastSnapshotUpdateDate.timeIntervalSinceNow)
             // Don't update UI more often than Nx/second.
-            let maxUpdatesPerSecond: UInt = 5
-            let maxUpdateFrequencySeconds: TimeInterval = 1 / TimeInterval(maxUpdatesPerSecond)
-            guard secondsSinceLastUpdate >= maxUpdateFrequencySeconds else {
+            guard secondsSinceLastUpdate >= targetUpdateFrequencySeconds else {
                 // Don't update the snapshot yet; we've updated the snapshot recently.
                 return
             }
@@ -277,6 +281,65 @@ extension UIDatabaseObserver: TransactionObserver {
         // Update the snapshot now.
         lastSnapshotUpdateDate = Date()
         updateSnapshot()
+    }
+
+    private var targetUpdateFrequencySeconds: Double {
+        AssertIsOnMainThread()
+
+        // We want the UI to feel snappy and responsive, which means
+        // low latency in view updates.
+        //
+        // This means updating the database snapshot (and hence the
+        // views) as frequently as possible.
+        //
+        // However, when the app is under heavy load, constantly
+        // updating the views is expensive and causes CPU contention,
+        // slowing down business logic. The outcome is that the app
+        // feels less responsive.
+        //
+        // Therefore, the app should "back off" and slow the rate at
+        // which it updates database snapshots when it is under
+        // heavy load.
+        //
+        // We measure load using a couple of heuristics.
+        //
+        // * Can the display link maintain its preferred frame rate?
+        // * Database commit frequency.
+        let windowDuration: TimeInterval = 5 * kSecondInterval
+        recentCommitDates = recentCommitDates.filter {
+            abs($0.timeIntervalSinceNow) < windowDuration
+        }
+        recentDisplayLinkDates = recentDisplayLinkDates.filter {
+            abs($0.timeIntervalSinceNow) < windowDuration
+        }
+        let recentCommitFrequency: Double = Double(recentCommitDates.count) / windowDuration
+        let lightLoadCommitFrequency: Double = 10
+        let heavyLoadCommitFrequency: Double = 100
+        // Alpha represents the unit load, 0 <= x <= 1.
+        // 0 = light load.
+        // 1 = heavy load.
+        let commitAlpha: Double = recentCommitFrequency.inverseLerp(lightLoadCommitFrequency,
+                                                                    heavyLoadCommitFrequency,
+                                                                    shouldClamp: true)
+
+        let recentDisplayLinkFrequency: Double = Double(recentDisplayLinkDates.count) / windowDuration
+        // Under light load, the display link should fire at its preferred frame rate.
+        let lightDisplayLinkFrequency: Double = Double(self.displayLinkPreferredFramesPerSecond)
+        // We consider heavy load to be the display link firing at half of its preferred frame rate.
+        let heavyDisplayLinkFrequency: Double = Double(self.displayLinkPreferredFramesPerSecond / 2)
+        let displayLinkAlpha: Double = recentDisplayLinkFrequency.inverseLerp(lightDisplayLinkFrequency,
+                                                                              heavyDisplayLinkFrequency,
+                                                                              shouldClamp: true)
+
+        // Obtain an alpha by averaging the alphas from our two heuristics.
+        let alpha: Double = (commitAlpha + displayLinkAlpha) / 2
+
+        let fastUpdateFrequencySeconds: TimeInterval = 1 / TimeInterval(20)
+        let slowUpdateFrequencySeconds: TimeInterval = 1 / TimeInterval(4)
+        // Under light load, we want the fastest update frequency.
+        // Under heavy load, we want the slowest update frequency.
+        let targetUpdateFrequencySeconds = alpha.lerp(fastUpdateFrequencySeconds, slowUpdateFrequencySeconds)
+        return targetUpdateFrequencySeconds
     }
 
     // See comment on databaseDidChange.
