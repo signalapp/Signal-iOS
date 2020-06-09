@@ -643,7 +643,7 @@ NS_ASSUME_NONNULL_BEGIN
         return NO;
     }
 
-    CGPoint tapPoint = [sender locationInView:self];
+    CGPoint tapPoint = [sender locationInView:self.avatarView.superview];
     return CGRectContainsPoint(self.avatarView.frame, tapPoint);
 }
 
