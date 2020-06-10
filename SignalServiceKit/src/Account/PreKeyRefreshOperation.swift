@@ -43,7 +43,7 @@ public class RefreshPreKeysOperation: OWSOperation {
         firstly(on: .global()) { () -> Promise<Int> in
             return self.accountServiceClient.getPreKeysCount()
         }.then(on: DispatchQueue.global()) { (preKeysCount: Int) -> Promise<Void> in
-            Logger.debug("preKeysCount: \(preKeysCount)")
+            Logger.info("preKeysCount: \(preKeysCount)")
             guard preKeysCount < kEphemeralPreKeysMinimumCount || self.signedPreKeyStore.currentSignedPrekeyId() == nil else {
                 Logger.debug("Available keys sufficient: \(preKeysCount)")
                 return Promise.value(())
