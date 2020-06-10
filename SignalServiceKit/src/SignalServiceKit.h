@@ -41,6 +41,7 @@
 #import <SignalServiceKit/OWSUserProfile.h>
 #import <SignalServiceKit/OWSVerificationStateChangeMessage.h>
 #import <SignalServiceKit/PhoneNumber.h>
+#import <SignalServiceKit/PreKeyBundle+jsonDict.h>
 #import <SignalServiceKit/RemoteAttestation.h>
 #import <SignalServiceKit/SDSDatabaseStorage+Objc.h>
 #import <SignalServiceKit/SSKJobRecord.h>

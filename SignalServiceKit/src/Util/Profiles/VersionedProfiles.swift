@@ -4,9 +4,7 @@
 
 import Foundation
 import PromiseKit
-//import SignalServiceKit
 import SignalMetadataKit
-//import ZKGroup
 
 @objc
 public class VersionedProfileUpdate: NSObject {
