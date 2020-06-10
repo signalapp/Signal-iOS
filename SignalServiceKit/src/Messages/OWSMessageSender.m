@@ -696,6 +696,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         return [AnyPromise promiseWithValue:@(1)];
     }
 
+    OWSLogInfo(@"Trying to unlock prekey update.");
+
     return [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
         dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             OWSProdError([OWSAnalyticsEvents messageSendErrorFailedDueToPrekeyUpdateFailures]);

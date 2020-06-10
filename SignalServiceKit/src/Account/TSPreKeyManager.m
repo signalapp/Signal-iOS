@@ -24,9 +24,6 @@ NS_ASSUME_NONNULL_BEGIN
 // How often we check prekey state on app activation.
 #define kPreKeyCheckFrequencySeconds (12 * kHourInterval)
 
-// This global should only be accessed on prekeyQueue.
-static NSDate *lastPreKeyCheckTimestamp = nil;
-
 // Maximum number of failures while updating signed prekeys
 // before the message sending is disabled.
 static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
@@ -34,6 +31,14 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
 // Maximum amount of time that can elapse without updating signed prekeys
 // before the message sending is disabled.
 #define kSignedPreKeyUpdateFailureMaxFailureDuration (10 * kDayInterval)
+
+#pragma mark -
+
+@interface TSPreKeyManager ()
+
+@property (atomic, nullable) NSDate *lastPreKeyCheckTimestamp;
+
+@end
 
 #pragma mark -
 
@@ -61,6 +66,16 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
 + (SDSDatabaseStorage *)databaseStorage
 {
     return SDSDatabaseStorage.shared;
+}
+
++ (instancetype)shared
+{
+    static TSPreKeyManager *instance = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        instance = [self new];
+    });
+    return instance;
 }
 
 #pragma mark - State Tracking
@@ -100,7 +115,7 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
 
 + (void)refreshPreKeysDidSucceed
 {
-    lastPreKeyCheckTimestamp = [NSDate new];
+    TSPreKeyManager.shared.lastPreKeyCheckTimestamp = [NSDate new];
 }
 
 #pragma mark - Check/Request Initiation
@@ -136,6 +151,7 @@ static const NSUInteger kMaxPrekeyUpdateFailureCount = 5;
 
     __weak SSKRefreshPreKeysOperation *weakRefreshOperation = refreshOperation;
     NSBlockOperation *checkIfRefreshNecessaryOperation = [NSBlockOperation blockOperationWithBlock:^{
+        NSDate *_Nullable lastPreKeyCheckTimestamp = TSPreKeyManager.shared.lastPreKeyCheckTimestamp;
         BOOL shouldCheck = (lastPreKeyCheckTimestamp == nil
                             || fabs([lastPreKeyCheckTimestamp timeIntervalSinceNow]) >= kPreKeyCheckFrequencySeconds);
         if (!shouldCheck) {

@@ -40,9 +40,9 @@ public class RefreshPreKeysOperation: OWSOperation {
             return
         }
 
-        firstly {
-            self.accountServiceClient.getPreKeysCount()
-        }.then(on: DispatchQueue.global()) { preKeysCount -> Promise<Void> in
+        firstly(on: .global()) { () -> Promise<Int> in
+            return self.accountServiceClient.getPreKeysCount()
+        }.then(on: DispatchQueue.global()) { (preKeysCount: Int) -> Promise<Void> in
             Logger.debug("preKeysCount: \(preKeysCount)")
             guard preKeysCount < kEphemeralPreKeysMinimumCount || self.signedPreKeyStore.currentSignedPrekeyId() == nil else {
                 Logger.debug("Available keys sufficient: \(preKeysCount)")
@@ -56,10 +56,11 @@ public class RefreshPreKeysOperation: OWSOperation {
             self.signedPreKeyStore.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
             self.preKeyStore.storePreKeyRecords(preKeyRecords)
 
-            return firstly {
+            return firstly(on: .global()) { () -> Promise<Void> in
                 self.accountServiceClient.setPreKeys(identityKey: identityKey, signedPreKeyRecord: signedPreKeyRecord, preKeyRecords: preKeyRecords)
-            }.done {
+            }.done(on: .global()) { () in
                 signedPreKeyRecord.markAsAcceptedByService()
+
                 self.signedPreKeyStore.storeSignedPreKey(signedPreKeyRecord.id, signedPreKeyRecord: signedPreKeyRecord)
                 self.signedPreKeyStore.setCurrentSignedPrekeyId(signedPreKeyRecord.id)
 
@@ -67,10 +68,10 @@ public class RefreshPreKeysOperation: OWSOperation {
                 TSPreKeyManager.clearSignedPreKeyRecords()
                 TSPreKeyManager.cullPreKeyRecords()
             }
-        }.done {
-            Logger.debug("done")
+        }.done(on: .global()) {
+            Logger.info("done")
             self.reportSuccess()
-        }.catch { error in
+        }.catch(on: .global()) { error in
             self.reportError(withUndefinedRetry: error)
         }
     }
