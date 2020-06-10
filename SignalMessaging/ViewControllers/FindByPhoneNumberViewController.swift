@@ -132,11 +132,17 @@ public class FindByPhoneNumberViewController: OWSViewController {
         button.setEnabled(false)
         button.accessibilityIdentifier =
             UIView.accessibilityIdentifier(in: self, name: "button")
+
+        applyTheme()
     }
 
     public override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
 
+        applyTheme()
+    }
+
+    private func applyTheme() {
         view.backgroundColor = Theme.backgroundColor
         countryRowTitleLabel.textColor = Theme.primaryTextColor
         phoneNumberRowTitleLabel.textColor = Theme.primaryTextColor
