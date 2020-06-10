@@ -7,7 +7,7 @@ import PromiseKit
 
 @objc(LKStorage)
 public final class Storage : NSObject {
-    private static let queue = DispatchQueue(label: "Storage.queue", qos: .userInitiated)
+    public static let serialQueue = DispatchQueue(label: "Storage.serialQueue", qos: .userInitiated)
 
     private static var owsStorage: OWSPrimaryStorage { OWSPrimaryStorage.shared() }
 
@@ -39,7 +39,7 @@ public final class Storage : NSObject {
 
     public static func write(with block: @escaping (YapDatabaseReadWriteTransaction) -> Void) -> Promise<Void> {
         let (promise, seal) = Promise<Void>.pending()
-        queue.async { // TODO: There are cases where this isn't necessary
+        serialQueue.async { // TODO: There are cases where this isn't necessary
             owsStorage.dbReadWriteConnection.readWrite(block)
             seal.fulfill(())
         }
