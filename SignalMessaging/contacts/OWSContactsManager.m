@@ -682,7 +682,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
             if (signalAccountsToUpsert.count > 0) {
                 OWSLogInfo(@"Saving %lu SignalAccounts", (unsigned long)signalAccountsToUpsert.count);
                 for (SignalAccount *signalAccount in signalAccountsToUpsert) {
-                    OWSLogVerbose(@"Saving SignalAccount: %@", signalAccount);
+                    OWSLogVerbose(@"Saving SignalAccount: %@", signalAccount.recipientAddress);
                     [signalAccount anyUpsertWithTransaction:transaction];
                 }
             }
@@ -690,7 +690,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
             if (signalAccountsToRemove.count > 0) {
                 OWSLogInfo(@"Removing %lu old SignalAccounts.", (unsigned long)signalAccountsToRemove.count);
                 for (SignalAccount *signalAccount in signalAccountsToRemove) {
-                    OWSLogVerbose(@"Removing old SignalAccount: %@", signalAccount);
+                    OWSLogVerbose(@"Removing old SignalAccount: %@", signalAccount.recipientAddress);
                     [signalAccount anyRemoveWithTransaction:transaction];
                 }
             }
