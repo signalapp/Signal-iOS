@@ -136,15 +136,15 @@ class MessageRequestView: UIStackView {
         } else if let thread = thread as? TSContactThread {
             let formatString: String
 
-            if hasSentMessages {
-                formatString = NSLocalizedString(
-                    "MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT",
-                    comment: "A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}."
-                )
-            } else if isThreadBlocked {
+            if isThreadBlocked {
                 formatString = NSLocalizedString(
                     "MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT",
                     comment: "A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}."
+                )
+            } else if hasSentMessages {
+                formatString = NSLocalizedString(
+                    "MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT",
+                    comment: "A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}."
                 )
             } else {
                 formatString = NSLocalizedString(

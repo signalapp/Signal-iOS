@@ -122,6 +122,16 @@ class MemberActionSheet: NSObject {
         blockAction.leadingIcon = .settingsBlock
         actionSheet.addAction(blockAction)
 
+        let addToGroupAction = ActionSheetAction(
+            title: NSLocalizedString("ADD_TO_GROUP",
+                                     comment: "Label for button or row which allows users to add to another group."),
+            accessibilityIdentifier: "MemberActionSheet.addToGroup"
+        ) { _ in
+            AddToGroupViewController.presentForUser(self.address, from: fromViewController)
+        }
+        addToGroupAction.leadingIcon = .settingsAddToGroup
+        actionSheet.addAction(addToGroupAction)
+
         let safetyNumberAction = ActionSheetAction(
             title: NSLocalizedString("VERIFY_PRIVACY",
                                      comment: "Label for button or row which allows users to verify the safety number of another user."),
