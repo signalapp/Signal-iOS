@@ -580,7 +580,6 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                 return;
             }
 
-            OWSFailDebug(@"Could not decrypt UD message: %@.", underlyingError);
             failureBlock(underlyingError);
             return;
         }
