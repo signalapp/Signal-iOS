@@ -61,8 +61,8 @@ public class RemoteConfig: NSObject {
     }
 
     @objc
-    public static var groupsV2IncomingMessages: Bool {
-        guard FeatureFlags.groupsV2IncomingMessages else { return false }
+    public static var groupsV2GoodCitizen: Bool {
+        guard FeatureFlags.groupsV2GoodCitizen else { return false }
         if DebugFlags.groupsV2IgnoreServerFlags { return true }
         return isEnabled(.groupsV2GoodCitizen)
     }
@@ -93,6 +93,7 @@ private struct Flags {
     enum Sticky: String, FlagType {
         case pinsForEveryone
         case pinsForEveryoneV2
+        case groupsV2GoodCitizen
     }
 
     // We filter the received config down to just the supported flags.

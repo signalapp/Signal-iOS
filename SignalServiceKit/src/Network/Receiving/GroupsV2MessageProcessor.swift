@@ -176,7 +176,7 @@ class IncomingGroupsV2MessageQueue: NSObject {
             // Don't process queues.
             return
         }
-        guard RemoteConfig.groupsV2IncomingMessages else {
+        guard RemoteConfig.groupsV2GoodCitizen else {
             // Don't process this queue.
             return
         }
@@ -753,7 +753,7 @@ public class GroupsV2MessageProcessor: NSObject {
             return
         }
 
-        guard RemoteConfig.groupsV2IncomingMessages else {
+        guard RemoteConfig.groupsV2GoodCitizen else {
             // Discard envelope.
             return
         }
