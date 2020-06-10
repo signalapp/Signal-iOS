@@ -68,6 +68,30 @@
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "ADD_TO_CONTACTS_OFFER" = "Szeretnéd hozzáadni ezt a felhasználót a kontaktjaidhoz?";
 
+/* Label for button or row which allows users to add to another group. */
+"ADD_TO_GROUP" = "Add to Another Group";
+
+/* The button on the 'add to group' confirmation to add the user to the group. */
+"ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "Add to Group";
+
+/* The title on the 'add to group' confirmation action sheet. Embeds {contact name} */
+"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "Add %@ to this group?";
+
+/* The title on the 'add to group' confirmation action sheet. Embeds {group name} */
+"ADD_TO_GROUP_ACTION_SHEET_TITLE_FORMAT" = "Add to %@";
+
+/* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
+"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ is already a member of %@";
+
+/* The title for the 'add to group' view's recents section */
+"ADD_TO_GROUP_RECENTS_TITLE" = "Recent";
+
+/* A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name} */
+"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ was added to %@";
+
+/* Title of the 'add to group' view. */
+"ADD_TO_GROUP_TITLE" = "Add to Another Group";
+
 /* Message shown in conversation view that offers to share your profile with a user. */
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Szeretnéd megosztani a profilod ezzel a felhasználóval?";
 
@@ -657,16 +681,16 @@
 "CONTACT_FIELD_ORGANIZATION" = "Szervezet";
 
 /* Body for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "To see contact names and photos in your conversations:";
+"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Kontakt nevek és fotók beszélgetésekben való megjelenítéséhez:";
 
 /* First step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Tap “Go to Settings” below";
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Koppints az \"Ugrás Beállításokhoz\" címkére lent";
 
 /* Third step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "Turn on “Contacts”";
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "\"Kontaktok\" bekapcsolása";
 
 /* Title for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_TITLE" = "Turn on Contacts";
+"CONTACT_PERMISSION_ACTION_SHEET_TITLE" = "Kontaktok bekapcsolása";
 
 /* Snooze action text for contact permission reminder megaphone */
 "CONTACT_PERMISSION_NOT_NOW_ACTION" = "Később";
@@ -675,10 +699,10 @@
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Bekapcsolás";
 
 /* Body for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "See contact names and photos in your conversations.";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Jelenítsd meg kontaktjaid nevét és fotóit beszélgetéseidben.";
 
 /* Title for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Turn on Contacts?";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Kontaktok bekapcsolása?";
 
 /* Label for a contact's phone number. */
 "CONTACT_PHONE" = "Telefonszám";
@@ -786,7 +810,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "Összes";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Choose who can edit the group name, photo, and disappearing messages timer.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Add meg, hogy ki szerkeszthesse a csoportnevet az avatárt és az eltűnő üzenetek időzítőjét.";
 
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "Többé nem kapsz üzeneteket vagy frissítéseket ettől a felhasználótól.";
@@ -813,7 +837,7 @@
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Csak adminok";
 
 /* Description for the 'edit group attributes access' alert. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Choose who can change the group name, photo, and disappearing messages:";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Add meg, hogy ki változtathassa a csoportnevet az avatárt és az eltűnő üzenetek időzítőjét.";
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "Minden felhasználó";
@@ -1182,7 +1206,7 @@
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "A Signalnak hozzáférésre van szüksége Kontakt listádhoz hogy szerkeszthesd az elemeit";
 
 /* The 'clear avatar' button in the 'edit group' view. */
-"EDIT_GROUP_CLEAR_AVATAR" = "Remove Photo";
+"EDIT_GROUP_CLEAR_AVATAR" = "Avatár eltávolítása";
 
 /* a title for the contacts section of the 'new/update group' view. */
 "EDIT_GROUP_CONTACTS_SECTION_TITLE" = "Kontaktok";
@@ -1197,7 +1221,7 @@
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "A csoport elérte a maximális, 100 fős tag létszámot.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
-"EDIT_GROUP_ERROR_INVALID_AVATAR" = "Invalid photo.";
+"EDIT_GROUP_ERROR_INVALID_AVATAR" = "Érvénytelen fotófájl.";
 
 /* Label for the group name in the 'edit group' view. */
 "EDIT_GROUP_GROUP_NAME" = "Csoport név";
@@ -1461,7 +1485,7 @@
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Keresés";
 
 /* Turn on permission view 'go to settings' button */
-"GO_TO_SETTINGS_BUTTON" = "Go to Settings";
+"GO_TO_SETTINGS_BUTTON" = "Ugrás Beállításokhoz";
 
 /* Body message of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_BODY" = "A Signal ezen verziója adatbázis optimalizálásokat és teljesítményt növelő változtatásokat tartalmaz. A folyamat befejezéséhez nyisd meg az alkalmazást.";
@@ -1695,22 +1719,22 @@
 "GROUP_UPDATED" = "Csoport frissítve. ";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED" = "The group photo was removed.";
+"GROUP_UPDATED_AVATAR_REMOVED" = "A csoport avatár eltávolítva.";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "You removed the photo.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "Eltávolítottad a csoport avatárt.";
 
 /* Message indicating that the group's avatar was removed by a remote user. Embeds {{user who removed the avatar}}. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed the photo.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ eltávolította a csoport avatárt.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED" = "Updated the group photo.";
+"GROUP_UPDATED_AVATAR_UPDATED" = "Csoport avatár frissítve.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "You updated the photo.";
+"GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "Frissítetted a csoport avatárt.";
 
 /* Message indicating that the group's avatar was changed by a remote user. Embeds {{user who changed the avatar}}. */
-"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ updated the photo.";
+"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ frissítette a csoport avatárt.";
 
 /* Info message indicating that the group was updated by the local user. */
 "GROUP_UPDATED_BY_LOCAL_USER" = "Frissítetted a csoportot.";
@@ -2169,10 +2193,10 @@
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "Letiltás";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Let %@ message you and share your name and photo with them? You won't receive any messages until you unblock them.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Engedélyezed, hogy %@ üzenetet küldjön számodra és lássa a profilodat? Amíg nem oldod fel a tiltást, nem kapsz tőle üzeneteket.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Unblock this group and share your name and photo with its members? You won't receive any messages until you unblock them.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Feloldod a csoport tiltását és megosztod profilodat a tagokkal? Amíg nem oldod fel a tiltást, nem kapsz üzeneteket a csoportból.";
 
 /* incoming message request button text which deletes a conversation */
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Törlés";
@@ -2181,16 +2205,16 @@
 "MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Profiod megosztása szükséges a beszélgetés folyatatásához %@ felhasználóval.";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "You must share your profile to continue your conversation with this group.";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Profilod megosztása szükséges a beszélgetés folyatatásához ebben a csoportban.";
 
 /* A prompt for the user to accept or decline an invite to a group. Embeds {{name of user who invited you}}. */
 "MESSAGE_REQUEST_VIEW_GROUP_INVITE_PROMPT_FORMAT" = "%@ meghívott ebbe a csoportba. Engedélyezed, hogy a csoport tagjaitól itt üzenetet fogadj?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Let %@ message you and share your name and photo with them? They won’t know you’ve seen their message until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Engedélyezed, hogy %@ üzenetet küldjön számodra és lássa a profilodat? Amíg nem oldod fel a tiltást, nem kapsz tőle üzeneteket.";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Join this group and share your name and photo with its members? They won’t know you’ve seen their messages until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Szeretnél csatlakozni a csoporthoz? Ezzel profilod láthatóvá is válik. Amíg ezt meg nem erősíted, senki nem értesül róla, hogy láttad -e ezt a felkérő üzenetet.";
 
 /* A button used to share your profile with an existing thread. */
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Profil megosztása";
@@ -2382,19 +2406,19 @@
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Lehetséges, hogy volt bejövő üzeneted, amíg az %@ újraindult.";
 
 /* Body for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "To receive notifications for new messages:";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "Értesítések fogadásához új üzenetekről:";
 
 /* First step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "Tap “Go to Settings” below";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "Koppints a \"Beállításokhoz\" címkére lent";
 
 /* Third step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE" = "Turn on “Allow Notifications”";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE" = "Kapcsold be: \"Értesítések engedélyezése\"";
 
 /* Second step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_TWO" = "Tap Notifications";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_TWO" = "Koppintsd az Értesítésekre";
 
 /* Title for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_TITLE" = "Turn on Notifications";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_TITLE" = "Értesítések bekapcsolása";
 
 /* Snooze action text for contact permission reminder megaphone */
 "NOTIFICATION_PERMISSION_NOT_NOW_ACTION" = "Később";
@@ -2403,10 +2427,10 @@
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Bekapcsolás";
 
 /* Body for notification permission reminder megaphone */
-"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Never miss a message from your contacts and groups.";
+"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Ne maradj le kontakjaid és csoportjaid értesítéseiről.";
 
 /* Title for notification permission reminder megaphone */
-"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Turn on Notifications?";
+"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Értesítések bekapcsolása?";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "Művelet lehet \"Olvasottnak jelöl\", \"Válasz\" és \"Visszahívás\".";
@@ -2898,10 +2922,10 @@
 "PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "Profilneved mentésre került.";
 
 /* Action Sheet title prompting the user for a profile avatar */
-"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Set Profile Photo";
+"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Profilkép beállítása";
 
 /* Label for action that clear's the user's profile avatar */
-"PROFILE_VIEW_CLEAR_AVATAR" = "Remove Photo";
+"PROFILE_VIEW_CLEAR_AVATAR" = "Avatár eltávolítása";
 
 /* A string indicating that the user can create a username on the profile view. */
 "PROFILE_VIEW_CREATE_USERNAME" = "Felhasználónév létrehozása";
@@ -2931,7 +2955,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "A profil frissítéséhez aktív internetkapcsolat szükséges.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your profile is end-to-end encrypted. It will be visible to your contacts, when you initiate or accept new conversations, and when you join new groups.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Signal profilod végpontok közt titkosítva kerül továbbításra. Kontaktjaid számára akkor lesz látható, mikor új beszélgetést kezdeményezel vagy elfogadsz rá egy felkérést, illetve ha csatlakozol egy csoporthoz.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Mentés";

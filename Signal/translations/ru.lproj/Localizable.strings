@@ -68,6 +68,30 @@
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "ADD_TO_CONTACTS_OFFER" = "Вы хотите добавить этого пользователя в свои контакты?";
 
+/* Label for button or row which allows users to add to another group. */
+"ADD_TO_GROUP" = "Add to Another Group";
+
+/* The button on the 'add to group' confirmation to add the user to the group. */
+"ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "Add to Group";
+
+/* The title on the 'add to group' confirmation action sheet. Embeds {contact name} */
+"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "Add %@ to this group?";
+
+/* The title on the 'add to group' confirmation action sheet. Embeds {group name} */
+"ADD_TO_GROUP_ACTION_SHEET_TITLE_FORMAT" = "Add to %@";
+
+/* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
+"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ is already a member of %@";
+
+/* The title for the 'add to group' view's recents section */
+"ADD_TO_GROUP_RECENTS_TITLE" = "Recent";
+
+/* A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name} */
+"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ was added to %@";
+
+/* Title of the 'add to group' view. */
+"ADD_TO_GROUP_TITLE" = "Add to Another Group";
+
 /* Message shown in conversation view that offers to share your profile with a user. */
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Вы хотите открыть свой профиль этому пользователю?";
 
@@ -657,16 +681,16 @@
 "CONTACT_FIELD_ORGANIZATION" = "Организация";
 
 /* Body for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "To see contact names and photos in your conversations:";
+"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Чтобы видеть имена и фото контактов в ваших разговорах:";
 
 /* First step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Tap “Go to Settings” below";
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Нажмите «Перейти в Настройки» ниже";
 
 /* Third step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "Turn on “Contacts”";
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "Включите «Контакты»";
 
 /* Title for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_TITLE" = "Turn on Contacts";
+"CONTACT_PERMISSION_ACTION_SHEET_TITLE" = "Включите контакты";
 
 /* Snooze action text for contact permission reminder megaphone */
 "CONTACT_PERMISSION_NOT_NOW_ACTION" = "Не сейчас";
@@ -675,10 +699,10 @@
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Включить";
 
 /* Body for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "See contact names and photos in your conversations.";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Чтобы видеть имена и фото контактов в ваших разговорах.";
 
 /* Title for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Turn on Contacts?";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Включить Контакты?";
 
 /* Label for a contact's phone number. */
 "CONTACT_PHONE" = "Телефон";
@@ -786,7 +810,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "Все";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Choose who can edit the group name, photo, and disappearing messages timer.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Выберите, кто может редактировать имя, фото и время исчезновения сообщений группы.";
 
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "Вы больше не будете получать сообщения и обновления от этого пользователя.";
@@ -813,7 +837,7 @@
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Только администраторы";
 
 /* Description for the 'edit group attributes access' alert. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Choose who can change the group name, photo, and disappearing messages:";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Выберите, кто может изменять имя, фото и исчезающие сообщения группы:";
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "Все участники";
@@ -1182,7 +1206,7 @@
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal требуется доступ к контактам для редактирования информации контактов.";
 
 /* The 'clear avatar' button in the 'edit group' view. */
-"EDIT_GROUP_CLEAR_AVATAR" = "Remove Photo";
+"EDIT_GROUP_CLEAR_AVATAR" = "Удалить фото";
 
 /* a title for the contacts section of the 'new/update group' view. */
 "EDIT_GROUP_CONTACTS_SECTION_TITLE" = "Контакты";
@@ -1197,7 +1221,7 @@
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "Достигнут максимальный размер группы в 100 участников.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
-"EDIT_GROUP_ERROR_INVALID_AVATAR" = "Invalid photo.";
+"EDIT_GROUP_ERROR_INVALID_AVATAR" = "Недействительное фото.";
 
 /* Label for the group name in the 'edit group' view. */
 "EDIT_GROUP_GROUP_NAME" = "Имя группы";
@@ -1461,7 +1485,7 @@
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Введите слова для поиска.";
 
 /* Turn on permission view 'go to settings' button */
-"GO_TO_SETTINGS_BUTTON" = "Go to Settings";
+"GO_TO_SETTINGS_BUTTON" = "Перейти в Настройки";
 
 /* Body message of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_BODY" = "Эта версия Signal включает оптимизации базы данных и улучшения производительности. Возможно, вам потребуется открыть приложение, чтобы завершить обновление.";
@@ -1695,22 +1719,22 @@
 "GROUP_UPDATED" = "Группа обновлена.";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED" = "The group photo was removed.";
+"GROUP_UPDATED_AVATAR_REMOVED" = "Фото группы было удалено.";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "You removed the photo.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "Вы удалили фото.";
 
 /* Message indicating that the group's avatar was removed by a remote user. Embeds {{user who removed the avatar}}. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed the photo.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ удалил(-а) фото.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED" = "Updated the group photo.";
+"GROUP_UPDATED_AVATAR_UPDATED" = "Обновлено фото группы.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "You updated the photo.";
+"GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "Вы обновили фото.";
 
 /* Message indicating that the group's avatar was changed by a remote user. Embeds {{user who changed the avatar}}. */
-"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ updated the photo.";
+"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ обновил(-а) фото.";
 
 /* Info message indicating that the group was updated by the local user. */
 "GROUP_UPDATED_BY_LOCAL_USER" = "Вы обновили группу.";
@@ -2169,10 +2193,10 @@
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "Заблокировать";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Let %@ message you and share your name and photo with them? You won't receive any messages until you unblock them.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Разрешить %@ отправлять вам сообщения и поделиться своим именем и фото с этим человеком? Вы не получите никаких сообщений, пока не разблокируете его.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Unblock this group and share your name and photo with its members? You won't receive any messages until you unblock them.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Разблокировать эту группу и поделиться своим именем и фото с её участниками? Вы не будете получать сообщений, пока не разблокируете эту группу.";
 
 /* incoming message request button text which deletes a conversation */
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Удалить";
@@ -2181,16 +2205,16 @@
 "MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Вы должны поделиться своим профилем, чтобы продолжить свой разговор с %@.";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "You must share your profile to continue your conversation with this group.";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Вы должны поделиться своим профилем, чтобы продолжить свой разговор с этой группой.";
 
 /* A prompt for the user to accept or decline an invite to a group. Embeds {{name of user who invited you}}. */
 "MESSAGE_REQUEST_VIEW_GROUP_INVITE_PROMPT_FORMAT" = "Вы были приглашены в эту группу %@. Вы хотите разрешить участникам этой группы отправлять вам сообщения?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Let %@ message you and share your name and photo with them? They won’t know you’ve seen their message until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Разрешить %@ отправлять вам сообщения и поделиться своим именем и фото с этим человеком? Он не узнает, что вы видели его сообщение, пока вы не примете.";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Join this group and share your name and photo with its members? They won’t know you’ve seen their messages until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Присоединиться к этой группе и поделиться своим именем и фото с её участниками? Они не узнают, что вы видели их сообщения, пока вы не примете.";
 
 /* A button used to share your profile with an existing thread. */
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Поделиться профилем";
@@ -2382,19 +2406,19 @@
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Вы могли получить сообщения, пока ваш %@ перезапускался.";
 
 /* Body for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "To receive notifications for new messages:";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "Чтобы получать уведомления о новых сообщениях:";
 
 /* First step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "Tap “Go to Settings” below";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "Нажмите «Перейти в Настройки» ниже";
 
 /* Third step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE" = "Turn on “Allow Notifications”";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE" = "Включите «Разрешить уведомления»";
 
 /* Second step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_TWO" = "Tap Notifications";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_TWO" = "Нажмите «Уведомления»";
 
 /* Title for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_TITLE" = "Turn on Notifications";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_TITLE" = "Включите уведомления";
 
 /* Snooze action text for contact permission reminder megaphone */
 "NOTIFICATION_PERMISSION_NOT_NOW_ACTION" = "Не сейчас";
@@ -2403,10 +2427,10 @@
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Включить";
 
 /* Body for notification permission reminder megaphone */
-"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Never miss a message from your contacts and groups.";
+"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Чтобы не пропустить сообщения от ваших контактов и групп.";
 
 /* Title for notification permission reminder megaphone */
-"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Turn on Notifications?";
+"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Включить уведомления?";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "Действия включают «Прочитано», «Ответить» и «Перезвонить».";
@@ -2898,10 +2922,10 @@
 "PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "Имя вашего профиля было сохранено.";
 
 /* Action Sheet title prompting the user for a profile avatar */
-"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Set Profile Photo";
+"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Установить фото профиля";
 
 /* Label for action that clear's the user's profile avatar */
-"PROFILE_VIEW_CLEAR_AVATAR" = "Remove Photo";
+"PROFILE_VIEW_CLEAR_AVATAR" = "Удалить фото";
 
 /* A string indicating that the user can create a username on the profile view. */
 "PROFILE_VIEW_CREATE_USERNAME" = "Создать имя пользователя";
@@ -2931,7 +2955,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "Профиль может быть обновлён только когда есть подключение к интернету.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your profile is end-to-end encrypted. It will be visible to your contacts, when you initiate or accept new conversations, and when you join new groups.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Ваш профиль защищён сквозным шифрованием. Он становится виден вашим контактам, когда вы начинаете или принимаете новые разговоры и когда вы присоединяетесь к новым группам.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Сохранить";

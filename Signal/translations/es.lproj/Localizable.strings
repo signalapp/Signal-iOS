@@ -68,6 +68,30 @@
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "ADD_TO_CONTACTS_OFFER" = "¿Deseas añadir esta persona a tus contactos?";
 
+/* Label for button or row which allows users to add to another group. */
+"ADD_TO_GROUP" = "Add to Another Group";
+
+/* The button on the 'add to group' confirmation to add the user to the group. */
+"ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "Add to Group";
+
+/* The title on the 'add to group' confirmation action sheet. Embeds {contact name} */
+"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "Add %@ to this group?";
+
+/* The title on the 'add to group' confirmation action sheet. Embeds {group name} */
+"ADD_TO_GROUP_ACTION_SHEET_TITLE_FORMAT" = "Add to %@";
+
+/* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
+"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ is already a member of %@";
+
+/* The title for the 'add to group' view's recents section */
+"ADD_TO_GROUP_RECENTS_TITLE" = "Recent";
+
+/* A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name} */
+"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ was added to %@";
+
+/* Title of the 'add to group' view. */
+"ADD_TO_GROUP_TITLE" = "Add to Another Group";
+
 /* Message shown in conversation view that offers to share your profile with a user. */
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "¿Deseas compartir tu perfil con esta persona?";
 
@@ -657,16 +681,16 @@
 "CONTACT_FIELD_ORGANIZATION" = "Organización";
 
 /* Body for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "To see contact names and photos in your conversations:";
+"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Para mostrar nombres y fotos de contactos en tus chats:";
 
 /* First step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Tap “Go to Settings” below";
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Toca sobre «Ir a ajustes» debajo";
 
 /* Third step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "Turn on “Contacts”";
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "Activa «Contactos»";
 
 /* Title for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_TITLE" = "Turn on Contacts";
+"CONTACT_PERMISSION_ACTION_SHEET_TITLE" = "Activa contactos";
 
 /* Snooze action text for contact permission reminder megaphone */
 "CONTACT_PERMISSION_NOT_NOW_ACTION" = "Ahora no";
@@ -675,10 +699,10 @@
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Activar";
 
 /* Body for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "See contact names and photos in your conversations.";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Ver nombres y fotos de tus contactos en los chats.";
 
 /* Title for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Turn on Contacts?";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "¿Activar contactos?";
 
 /* Label for a contact's phone number. */
 "CONTACT_PHONE" = "Teléfono";
@@ -786,7 +810,7 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "Todo";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Choose who can edit the group name, photo, and disappearing messages timer.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Selecciona quién puede modificar el nombre e imagen del grupo y la desaparición de mensajes.";
 
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "No podrás enviar ni recibir más mensajes de esta persona.";
@@ -813,7 +837,7 @@
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Sólo admins";
 
 /* Description for the 'edit group attributes access' alert. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Choose who can change the group name, photo, and disappearing messages:";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Selecciona quién puede modificar el nombre e imagen del grupo y la desaparición de mensajes:";
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "Cualquier participante";
@@ -1182,7 +1206,7 @@
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal necesita acceso a los contactos para que puedas modificarlos.";
 
 /* The 'clear avatar' button in the 'edit group' view. */
-"EDIT_GROUP_CLEAR_AVATAR" = "Remove Photo";
+"EDIT_GROUP_CLEAR_AVATAR" = "Eliminar imagen";
 
 /* a title for the contacts section of the 'new/update group' view. */
 "EDIT_GROUP_CONTACTS_SECTION_TITLE" = "Personas";
@@ -1197,7 +1221,7 @@
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "Se alcanzó el número máximo de participantes en el grupo (100).";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
-"EDIT_GROUP_ERROR_INVALID_AVATAR" = "Invalid photo.";
+"EDIT_GROUP_ERROR_INVALID_AVATAR" = "Imagen inválida.";
 
 /* Label for the group name in the 'edit group' view. */
 "EDIT_GROUP_GROUP_NAME" = "Nombre del grupo";
@@ -1461,7 +1485,7 @@
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Buscar";
 
 /* Turn on permission view 'go to settings' button */
-"GO_TO_SETTINGS_BUTTON" = "Go to Settings";
+"GO_TO_SETTINGS_BUTTON" = "Ir a ajustes";
 
 /* Body message of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_BODY" = "Esta versión de Signal incluye optimizaciones en la base de datos y mejoras de rendimiento. Necesitarás abrir la aplicación para completar el proceso.";
@@ -1695,22 +1719,22 @@
 "GROUP_UPDATED" = "Grupo actualizado.";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED" = "The group photo was removed.";
+"GROUP_UPDATED_AVATAR_REMOVED" = "Se eliminó la imagen del grupo.";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "You removed the photo.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "Has eliminado la imagen.";
 
 /* Message indicating that the group's avatar was removed by a remote user. Embeds {{user who removed the avatar}}. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed the photo.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ ha eliminado la imagen.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED" = "Updated the group photo.";
+"GROUP_UPDATED_AVATAR_UPDATED" = "Imagen del grupo actualizada.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "You updated the photo.";
+"GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "Has actualizado la imagen.";
 
 /* Message indicating that the group's avatar was changed by a remote user. Embeds {{user who changed the avatar}}. */
-"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ updated the photo.";
+"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ ha actualizado la imagen.";
 
 /* Info message indicating that the group was updated by the local user. */
 "GROUP_UPDATED_BY_LOCAL_USER" = "Has actualizado el grupo.";
@@ -2169,10 +2193,10 @@
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "Bloquear";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Let %@ message you and share your name and photo with them? You won't receive any messages until you unblock them.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "¿Permitir a %@ enviarte mensajes y compartir tu nombre y foto de perfil? No recibirás ningún mensaje de esta persona hasta que la desbloquees.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Unblock this group and share your name and photo with its members? You won't receive any messages until you unblock them.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "¿Desbloquear este grupo y compartir tu nombre y foto de perfil con sus participantes? No recibirás ningún mensaje del grupo hasta que lo desbloquees.";
 
 /* incoming message request button text which deletes a conversation */
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Eliminar";
@@ -2181,16 +2205,16 @@
 "MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Debes compartir tu perfil para continuar tu chat con %@.";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "You must share your profile to continue your conversation with this group.";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Debes compartir tu nombre y foto de perfil para chatear con este grupo.";
 
 /* A prompt for the user to accept or decline an invite to a group. Embeds {{name of user who invited you}}. */
 "MESSAGE_REQUEST_VIEW_GROUP_INVITE_PROMPT_FORMAT" = "%@ te ha invitado a participar en este grupo. ¿Deseas que participantes de este grupo te envíen mensajes?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Let %@ message you and share your name and photo with them? They won’t know you’ve seen their message until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "¿Permitir a %@ enviarte mensajes y compartir tu nombre y foto de perfil? No sabrá que has visto sus mensajes hasta que aceptes.";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Join this group and share your name and photo with its members? They won’t know you’ve seen their messages until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "¿Unirse a este grupo y compartir tu nombre y foto de perfil con sus participantes? No sabrán que has visto sus mensajes hasta que aceptes.";
 
 /* A button used to share your profile with an existing thread. */
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Compartir perfil";
@@ -2382,19 +2406,19 @@
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Has recibido mensajes mientras tu %@ estaba reiniciándose.";
 
 /* Body for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "To receive notifications for new messages:";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "Para recibir notificaciones de nuevos mensajes:";
 
 /* First step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "Tap “Go to Settings” below";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "Toca sobre «Ir a ajustes» debajo";
 
 /* Third step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE" = "Turn on “Allow Notifications”";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE" = "Activa «Permitir notificaciones»";
 
 /* Second step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_TWO" = "Tap Notifications";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_TWO" = "Toca sobre «Notificaciones»";
 
 /* Title for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_TITLE" = "Turn on Notifications";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_TITLE" = "Activa las notificaciones";
 
 /* Snooze action text for contact permission reminder megaphone */
 "NOTIFICATION_PERMISSION_NOT_NOW_ACTION" = "Ahora no";
@@ -2403,10 +2427,10 @@
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Activar";
 
 /* Body for notification permission reminder megaphone */
-"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Never miss a message from your contacts and groups.";
+"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Nunca te pierdas un mensaje de tus contactos o grupos.";
 
 /* Title for notification permission reminder megaphone */
-"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Turn on Notifications?";
+"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "¿Activar notificaciones?";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "Las acciones incluyen: «Marcar como leído», «Responder» o «Llamar».";
@@ -2898,10 +2922,10 @@
 "PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "Tu nombre se ha guardado en el perfil.";
 
 /* Action Sheet title prompting the user for a profile avatar */
-"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Set Profile Photo";
+"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Seleccionar foto de perfil";
 
 /* Label for action that clear's the user's profile avatar */
-"PROFILE_VIEW_CLEAR_AVATAR" = "Remove Photo";
+"PROFILE_VIEW_CLEAR_AVATAR" = "Eliminar foto";
 
 /* A string indicating that the user can create a username on the profile view. */
 "PROFILE_VIEW_CREATE_USERNAME" = "Crear alias (nombre de usuari*)";
@@ -2931,7 +2955,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "El perfil sólo se puede actualizar con una conexión a internet activa.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your profile is end-to-end encrypted. It will be visible to your contacts, when you initiate or accept new conversations, and when you join new groups.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Tu perfil está cifrado de punto a punto. Sólo será visible para tus contactos, o para personas con las que inicies o aceptes un chat y cuando te unas a nuevos grupos. ";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Guardar";
@@ -3765,7 +3789,7 @@
 "SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS" = "Mostrar indicador";
 
 /* table section footer */
-"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "«Remitente confidencial» es una característica del protocolo de Signal que permite a nuestro servidor no saber quién envía el mensaje. Al contrario que la persona que lo recibe. Activar la opción muestra un icono de estado en la sección «Más detalles» de los mensajes entregados con remitente confidencial.";
+"SETTINGS_UNIDENTIFIED_DELIVERY_SHOW_INDICATORS_FOOTER" = "«Remitente confidencial» es una característica del protocolo de Signal que impide saber a nuestro servidor quién envía el mensaje. La persona que lo recibe sí lo sabrá. Activar la opción muestra un icono de estado en la sección «Más detalles» de los mensajes entregados con esta característica.";
 
 /* switch label */
 "SETTINGS_UNIDENTIFIED_DELIVERY_UNRESTRICTED_ACCESS" = "Permitir de cualquiera";
@@ -3894,7 +3918,7 @@
 "THREAD_DETAILS_MORE_MUTUAL_GROUP" = "Participa en «%@», «%@» y %lu grupos adicionales";
 
 /* Subtitle appearing at the top of the users 'note to self' conversation */
-"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "En este chat puedes añadir notas, mensajes personales, contraseñas .... Si tu cuenta tiene dispositivos enlazados, las notas se sincronizarán.";
+"THREAD_DETAILS_NOTE_TO_SELF_EXPLANATION" = "En este chat puedes añadir notas, mensajes personales, fotos .... Si tu cuenta tiene dispositivos enlazados, el contenido se sincronizará.";
 
 /* A string indicating a mutual group the user shares with this contact. Embeds {{mutual group name}} */
 "THREAD_DETAILS_ONE_MUTUAL_GROUP" = "Participa en «%@»";

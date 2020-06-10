@@ -68,6 +68,30 @@
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "ADD_TO_CONTACTS_OFFER" = "Da li želite dodati ovog korisnika u vaš imenik?";
 
+/* Label for button or row which allows users to add to another group. */
+"ADD_TO_GROUP" = "Add to Another Group";
+
+/* The button on the 'add to group' confirmation to add the user to the group. */
+"ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "Add to Group";
+
+/* The title on the 'add to group' confirmation action sheet. Embeds {contact name} */
+"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "Add %@ to this group?";
+
+/* The title on the 'add to group' confirmation action sheet. Embeds {group name} */
+"ADD_TO_GROUP_ACTION_SHEET_TITLE_FORMAT" = "Add to %@";
+
+/* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
+"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ is already a member of %@";
+
+/* The title for the 'add to group' view's recents section */
+"ADD_TO_GROUP_RECENTS_TITLE" = "Recent";
+
+/* A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name} */
+"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ was added to %@";
+
+/* Title of the 'add to group' view. */
+"ADD_TO_GROUP_TITLE" = "Add to Another Group";
+
 /* Message shown in conversation view that offers to share your profile with a user. */
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Želite li podijeliti svoj profil s ovim korisnikom?";
 
@@ -405,7 +429,7 @@
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Blokirani korisnici neće biti u mogućnosti da vas pozovu ili vam pošalju poruku.";
 
 /* Tooltip highlighting the blur image editing tool. */
-"BLUR_TOOLTIP" = "New: Blur faces or draw anywhere to blur.";
+"BLUR_TOOLTIP" = "Novo: Zamutite lice ili crtajte bilo gdje kako bi zamutili.";
 
 /* browse files option from file sharing menu */
 "BROWSE_FILES_BUTTON" = "Pregledaj";
@@ -657,16 +681,16 @@
 "CONTACT_FIELD_ORGANIZATION" = "Organizacija";
 
 /* Body for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "To see contact names and photos in your conversations:";
+"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Kako bi vidjeli imena kontakta i slike u razgovorima:";
 
 /* First step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Tap “Go to Settings” below";
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Dodirnite \"Idi na postavke\"";
 
 /* Third step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "Turn on “Contacts”";
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "Uključite \"Kontakti\"";
 
 /* Title for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_TITLE" = "Turn on Contacts";
+"CONTACT_PERMISSION_ACTION_SHEET_TITLE" = "Uključite kontakte";
 
 /* Snooze action text for contact permission reminder megaphone */
 "CONTACT_PERMISSION_NOT_NOW_ACTION" = "Ne sada";
@@ -675,10 +699,10 @@
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Uključi";
 
 /* Body for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "See contact names and photos in your conversations.";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Vidite imena kontakta i slike u razgovorima.";
 
 /* Title for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Turn on Contacts?";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Uključiti kontakte?";
 
 /* Label for a contact's phone number. */
 "CONTACT_PHONE" = "Telefon";
@@ -786,10 +810,10 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "Svi";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Choose who can edit the group name, photo, and disappearing messages timer.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Odaberite tko može uređivati ime grupe, sliku i vrijeme poruka koje nestaju.";
 
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "You will no longer receive messages or updates from this user.";
+"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "Nećete više primati poruke ili ažuriranja od ovog korisnika.";
 
 /* Footer text for the 'block and leave' section of group conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER" = "Više nećete primati poruke ili ažuriranja iz ove grupe.";
@@ -813,7 +837,7 @@
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Samo administratori";
 
 /* Description for the 'edit group attributes access' alert. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Choose who can change the group name, photo, and disappearing messages:";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Odaberite tko može promjeniti ime grupe, sliku i poruke koje nestaju:";
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "Svi članovi";
@@ -1182,7 +1206,7 @@
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal zahtijeva pristup kontaktima za uređivanje kontakt informacija";
 
 /* The 'clear avatar' button in the 'edit group' view. */
-"EDIT_GROUP_CLEAR_AVATAR" = "Remove Photo";
+"EDIT_GROUP_CLEAR_AVATAR" = "Ukloni sliku";
 
 /* a title for the contacts section of the 'new/update group' view. */
 "EDIT_GROUP_CONTACTS_SECTION_TITLE" = "Kontakti";
@@ -1197,7 +1221,7 @@
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "Dosegnuta maksimalna veličina grupe od 100 članova.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
-"EDIT_GROUP_ERROR_INVALID_AVATAR" = "Invalid photo.";
+"EDIT_GROUP_ERROR_INVALID_AVATAR" = "Neispravna slika.";
 
 /* Label for the group name in the 'edit group' view. */
 "EDIT_GROUP_GROUP_NAME" = "Ime grupe";
@@ -1221,31 +1245,31 @@
 "EMAIL_INVITE_SUBJECT" = "Prebacimo se na Signal";
 
 /* The name for the emoji category 'Activities' */
-"EMOJI_CATEGORY_ACTIVITIES_NAME" = "Activities";
+"EMOJI_CATEGORY_ACTIVITIES_NAME" = "Aktivnosti";
 
 /* The name for the emoji category 'Animals & Nature' */
-"EMOJI_CATEGORY_ANIMALS_NAME" = "Animals & Nature";
+"EMOJI_CATEGORY_ANIMALS_NAME" = "Životinje i priroda";
 
 /* The name for the emoji category 'Flags' */
-"EMOJI_CATEGORY_FLAGS_NAME" = "Flags";
+"EMOJI_CATEGORY_FLAGS_NAME" = "Zastave";
 
 /* The name for the emoji category 'Food & Drink' */
-"EMOJI_CATEGORY_FOOD_NAME" = "Food & Drink";
+"EMOJI_CATEGORY_FOOD_NAME" = "Hrana i piće";
 
 /* The name for the emoji category 'Objects' */
-"EMOJI_CATEGORY_OBJECTS_NAME" = "Objects";
+"EMOJI_CATEGORY_OBJECTS_NAME" = "Objekti";
 
 /* The name for the emoji category 'Recents' */
-"EMOJI_CATEGORY_RECENTS_NAME" = "Recents";
+"EMOJI_CATEGORY_RECENTS_NAME" = "Nedavno";
 
 /* The name for the emoji category 'Smileys & People' */
-"EMOJI_CATEGORY_SMILEYSANDPEOPLE_NAME" = "Smileys & People";
+"EMOJI_CATEGORY_SMILEYSANDPEOPLE_NAME" = "Smiley i ljudi";
 
 /* The name for the emoji category 'Symbols' */
-"EMOJI_CATEGORY_SYMBOLS_NAME" = "Symbols";
+"EMOJI_CATEGORY_SYMBOLS_NAME" = "Simboli";
 
 /* The name for the emoji category 'Travel & Places' */
-"EMOJI_CATEGORY_TRAVEL_NAME" = "Travel & Places";
+"EMOJI_CATEGORY_TRAVEL_NAME" = "Putovanja i mjesta";
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE1" = "Nitko od vaših kontakata ne koristi Signal.";
@@ -1461,7 +1485,7 @@
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Unesite pretragu";
 
 /* Turn on permission view 'go to settings' button */
-"GO_TO_SETTINGS_BUTTON" = "Go to Settings";
+"GO_TO_SETTINGS_BUTTON" = "Idi na postavke";
 
 /* Body message of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_BODY" = "Ova verzija Signala uključuje optimizacije baze podataka i poboljšanja performansi. Možda će te morati otvoriti aplikaciju kako bi dovršili ovaj proces.";
@@ -1695,22 +1719,22 @@
 "GROUP_UPDATED" = "Grupa je ažurirana.";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED" = "The group photo was removed.";
+"GROUP_UPDATED_AVATAR_REMOVED" = "Slika grupe je uklonjena.";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "You removed the photo.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "Uklonili ste sliku.";
 
 /* Message indicating that the group's avatar was removed by a remote user. Embeds {{user who removed the avatar}}. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed the photo.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ je uklonio sliku.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED" = "Updated the group photo.";
+"GROUP_UPDATED_AVATAR_UPDATED" = "Slika grupe ažurirana.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "You updated the photo.";
+"GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "Ažurirali ste sliku grupe.";
 
 /* Message indicating that the group's avatar was changed by a remote user. Embeds {{user who changed the avatar}}. */
-"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ updated the photo.";
+"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ je ažurirao sliku.";
 
 /* Info message indicating that the group was updated by the local user. */
 "GROUP_UPDATED_BY_LOCAL_USER" = "Ažurirali ste grupu.";
@@ -1806,13 +1830,13 @@
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* The image editor hint that you can draw blur */
-"IMAGE_EDITOR_BLUR_HINT" = "Draw anywhere to blur";
+"IMAGE_EDITOR_BLUR_HINT" = "Crtajte bilo gdje kako bi zamutili";
 
 /* The image editor setting to blur faces */
-"IMAGE_EDITOR_BLUR_SETTING" = "Blur faces";
+"IMAGE_EDITOR_BLUR_SETTING" = "Zamuti lica";
 
 /* A toast indicating that you can blur more faces after detection */
-"IMAGE_EDITOR_BLUR_TOAST" = "Draw to blur additional faces or areas";
+"IMAGE_EDITOR_BLUR_TOAST" = "Crtajte da zamutite dodatna lica ili područja";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Ne možete podijeliti više od %@ stavki.";
@@ -2046,13 +2070,13 @@
 "MESSAGE_ACTION_DELETE_FOR_EVERYONE" = "Obriši za sve";
 
 /* A one-time confirmation that you want to delete for everyone */
-"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "This message will be permanently deleted for everyone in the conversation. Members will be able to see that you deleted a message.";
+"MESSAGE_ACTION_DELETE_FOR_EVERYONE_CONFIRMATION" = "Ova poruka će biti trajno obrisana za svakog u razgovoru. Članovi će moći vidjeti da ste obrisali poruku.";
 
 /* The title for the action sheet asking who the user wants to delete the message for. */
-"MESSAGE_ACTION_DELETE_FOR_TITLE" = "Who would you like to delete this message for?";
+"MESSAGE_ACTION_DELETE_FOR_TITLE" = "Za koga bi ste htjeli obrisati ovu poruku?";
 
 /* The title for the action that deletes a message for the local user only. */
-"MESSAGE_ACTION_DELETE_FOR_YOU" = "Delete for Me";
+"MESSAGE_ACTION_DELETE_FOR_YOU" = "Obriši za mene";
 
 /* Action sheet button title */
 "MESSAGE_ACTION_DELETE_MESSAGE" = "Obriši ovu poruku";
@@ -2169,10 +2193,10 @@
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "Blokiraj";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Let %@ message you and share your name and photo with them? You won't receive any messages until you unblock them.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Želite li da Vam %@ šalje poruke i želite li podijeliti svoje ime i sliku s tim korisnikom? Nećete primati poruke tog korisnika dok ga ne odblokirate.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Unblock this group and share your name and photo with its members? You won't receive any messages until you unblock them.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Želite li odblokirati ovu grupu i podijeliti svoje ime i sliku s njenim članovima? Nećete primati poruke iz grupe sve dok ju ne odblokirate.";
 
 /* incoming message request button text which deletes a conversation */
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Obriši";
@@ -2181,16 +2205,16 @@
 "MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Morate podijeliti svoj profil kako bi nastavili razgovor s %@.";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "You must share your profile to continue your conversation with this group.";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Morate podijeliti svoj progil kako bi nastavili razgovore u ovoj grupi.";
 
 /* A prompt for the user to accept or decline an invite to a group. Embeds {{name of user who invited you}}. */
 "MESSAGE_REQUEST_VIEW_GROUP_INVITE_PROMPT_FORMAT" = "%@ Vas je pozvao u ovu grupu. Želite li dozvoliti članovima grupe da Vam šalju poruke?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Let %@ message you and share your name and photo with them? They won’t know you’ve seen their message until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Želite li da Vam %@ šalje poruke i želite li podijeliti svoje ime i sliku s tim korisnikom? Korisnik neće znati da ste vidjeli njegove poruke dok ne prihvatite zahtjev.";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Join this group and share your name and photo with its members? They won’t know you’ve seen their messages until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Želite li se pridružiti ovoj grupi i podijeliti svoje ime i sliku s njenim članovima? Neće znati da ste vidjeli njihove poruke dok ne prihvatite.";
 
 /* A button used to share your profile with an existing thread. */
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Podijeli profil";
@@ -2382,19 +2406,19 @@
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "Možda ste primili poruke dok se Vaš %@ ponovno pokretao.";
 
 /* Body for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "To receive notifications for new messages:";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "Kako bi primili obavijesti o novim porukama:";
 
 /* First step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "Tap “Go to Settings” below";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "Dodirnite \"Idi na postavke\"";
 
 /* Third step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE" = "Turn on “Allow Notifications”";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE" = "Uključite \"Dopusti obavijesti\"";
 
 /* Second step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_TWO" = "Tap Notifications";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_TWO" = "Dodirnite Obavijesti";
 
 /* Title for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_TITLE" = "Turn on Notifications";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_TITLE" = "Uključite Obavijesti";
 
 /* Snooze action text for contact permission reminder megaphone */
 "NOTIFICATION_PERMISSION_NOT_NOW_ACTION" = "Ne sada";
@@ -2403,10 +2427,10 @@
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Uključi";
 
 /* Body for notification permission reminder megaphone */
-"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Never miss a message from your contacts and groups.";
+"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Ne propustite poruku svojih kontakta i grupa.";
 
 /* Title for notification permission reminder megaphone */
-"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Turn on Notifications?";
+"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Uključiti obavijesti?";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "Radnje uključuju \"Označi kao pročitano\", \"Odgovori\" i \"Nazovi\".";
@@ -2898,10 +2922,10 @@
 "PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "Ime Vašeg profila je spremljeno.";
 
 /* Action Sheet title prompting the user for a profile avatar */
-"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Set Profile Photo";
+"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Postavi profilnu sliku";
 
 /* Label for action that clear's the user's profile avatar */
-"PROFILE_VIEW_CLEAR_AVATAR" = "Remove Photo";
+"PROFILE_VIEW_CLEAR_AVATAR" = "Ukloni sliku";
 
 /* A string indicating that the user can create a username on the profile view. */
 "PROFILE_VIEW_CREATE_USERNAME" = "Stvorite korisničko ime";
@@ -2931,7 +2955,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "Profil se može ažurirati samo kad ste spojeni na internet.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your profile is end-to-end encrypted. It will be visible to your contacts, when you initiate or accept new conversations, and when you join new groups.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Vaš profil je nekriptiran s kraja na kraj. Bit će vidljiv Vašim kontaktima, kad inicirate ili prihvatite nove razgovore, i kad se pridružite novim grupama.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Spremi";
@@ -4017,7 +4041,7 @@
 "UNNAMED_DEVICE" = "Neimenovani uređaj";
 
 /* Pressing this button marks a thread as unread */
-"UNREAD_ACTION" = "Unread";
+"UNREAD_ACTION" = "Označi kao nepročitano";
 
 /* No comment provided by engineer. */
 "UNREGISTER_SIGNAL_FAIL" = "Odjava sa Signala nije uspjela.";
@@ -4140,7 +4164,7 @@
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Završi podešavanje na Signal za Desktop.";
 
 /* text indicating the message was remotely deleted by you */
-"YOU_DELETED_THIS_MESSAGE" = "You deleted this message.";
+"YOU_DELETED_THIS_MESSAGE" = "Obrisali ste ovu poruku.";
 
 /* Info Message when you disabled disappearing messages. */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Onemogućili ste poruke koje nestaju.";
