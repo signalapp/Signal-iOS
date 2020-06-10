@@ -151,6 +151,7 @@ public extension OWSPrimaryStorage {
 
     // MARK: - Open Groups
     private static let openGroupUserCountCollection = "LokiPublicChatUserCountCollection"
+    private static let openGroupAvatarURLCollection = "LokiPublicChatAvatarURLCollection"
 
     public func getUserCount(for publicChat: LokiPublicChat, in transaction: YapDatabaseReadTransaction) -> Int? {
         return transaction.object(forKey: publicChat.id, inCollection: OWSPrimaryStorage.openGroupUserCountCollection) as? Int
@@ -158,5 +159,13 @@ public extension OWSPrimaryStorage {
     
     public func setUserCount(_ userCount: Int, forPublicChatWithID publicChatID: String, in transaction: YapDatabaseReadWriteTransaction) {
         transaction.setObject(userCount, forKey: publicChatID, inCollection: OWSPrimaryStorage.openGroupUserCountCollection)
+    }
+    
+    public func getAvatarURL(forPublicChatWithID publicChatID: String, in transaction: YapDatabaseReadTransaction) -> String? {
+        return transaction.object(forKey: publicChatID, inCollection: OWSPrimaryStorage.openGroupAvatarURLCollection) as? String
+    }
+    
+    public func setAvatarURL(_ avatarURL: String?, forPublicChatWithID publicChatID: String, in transaction: YapDatabaseReadWriteTransaction) {
+        transaction.setObject(avatarURL, forKey: publicChatID, inCollection: OWSPrimaryStorage.openGroupAvatarURLCollection)
     }
 }

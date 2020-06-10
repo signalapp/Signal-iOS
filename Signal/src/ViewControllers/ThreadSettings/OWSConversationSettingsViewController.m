@@ -957,8 +957,14 @@ const CGFloat kIconViewLength = 24;
     [stackView setLayoutMarginsRelativeArrangement:YES];
     
     if (self.isGroupThread) {
-        profilePictureView.hexEncodedPublicKey = @"";
-        profilePictureView.isRSSFeed = true; // For now just always show the Session logo
+        TSGroupThread* groupThread = (TSGroupThread*)self.thread;
+        if (groupThread.isPublicChat && groupThread.groupModel.groupImage != nil) {
+            profilePictureView.groupAvatarImage = groupThread.groupModel.groupImage;
+            profilePictureView.isRSSFeed = false;
+        } else {
+            profilePictureView.hexEncodedPublicKey = @"";
+            profilePictureView.isRSSFeed = true; // For now just always show the Session logo
+        }
     } else {
         profilePictureView.hexEncodedPublicKey = self.thread.contactIdentifier;
         
