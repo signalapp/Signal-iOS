@@ -371,11 +371,11 @@ NS_ASSUME_NONNULL_BEGIN
 
     CGFloat yOffset = MAX(0, (scrollViewSize.height - imageViewSize.height) / 2);
     self.mediaViewTopConstraint.constant = yOffset;
-    self.mediaViewBottomConstraint.constant = yOffset;
+    self.mediaViewBottomConstraint.constant = -yOffset;
 
     CGFloat xOffset = MAX(0, (scrollViewSize.width - imageViewSize.width) / 2);
     self.mediaViewLeadingConstraint.constant = xOffset;
-    self.mediaViewTrailingConstraint.constant = xOffset;
+    self.mediaViewTrailingConstraint.constant = -xOffset;
 }
 
 - (void)scrollViewDidZoom:(UIScrollView *)scrollView
