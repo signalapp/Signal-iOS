@@ -643,7 +643,7 @@ NS_ASSUME_NONNULL_BEGIN
         return NO;
     }
 
-    CGPoint tapPoint = [sender locationInView:self];
+    CGPoint tapPoint = [sender locationInView:self.avatarView.superview];
     return CGRectContainsPoint(self.avatarView.frame, tapPoint);
 }
 
@@ -678,7 +678,8 @@ NS_ASSUME_NONNULL_BEGIN
         CGPoint velocity = [self.panGestureRecognizer velocityInView:self];
         return fabs(velocity.x) > fabs(velocity.y);
     } else if (gestureRecognizer == self.messageViewTapGestureRecognizer) {
-        return ![self isGestureInReactions:self.messageViewTapGestureRecognizer] &&
+        return ![self isGestureInReactions:self.messageViewTapGestureRecognizer]
+            && ![self isGestureInAvatar:self.contentViewTapGestureRecognizer] &&
             [self.messageView willHandleTapGesture:self.messageViewTapGestureRecognizer];
     } else if (gestureRecognizer == self.contentViewTapGestureRecognizer) {
         return [self isGestureInAvatar:self.contentViewTapGestureRecognizer] ||
