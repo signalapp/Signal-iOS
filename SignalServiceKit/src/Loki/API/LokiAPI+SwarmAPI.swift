@@ -132,42 +132,6 @@ public extension LokiAPI {
         }
     }
 
-    internal static func getFileServerProxy() -> Promise<LokiAPITarget> {
-        let (promise, seal) = Promise<LokiAPITarget>.pending()
-        func getVersion(for snode: LokiAPITarget) -> Promise<String> {
-            if let version = snodeVersion[snode] {
-                return Promise { $0.fulfill(version) }
-            } else {
-                let url = URL(string: "\(snode.address):\(snode.port)/get_stats/v1")!
-                let request = TSRequest(url: url)
-                return TSNetworkManager.shared().perform(request, withCompletionQueue: DispatchQueue.global()).map(on: DispatchQueue.global()) { intermediate in
-                    let rawResponse = intermediate.responseObject
-                    guard let json = rawResponse as? JSON, let version = json["version"] as? String else { throw LokiAPIError.missingSnodeVersion }
-                    snodeVersion[snode] = version
-                    return version
-                }
-            }
-        }
-        getRandomSnode().then(on: DispatchQueue.global()) { snode -> Promise<LokiAPITarget> in
-            return getVersion(for: snode).then(on: DispatchQueue.global()) { version -> Promise<LokiAPITarget> in
-                if version >= "2.0.2" {
-                    print("[Loki] Using file server proxy with version number \(version).")
-                    return Promise { $0.fulfill(snode) }
-                } else {
-                    print("[Loki] Rejecting file server proxy with version number \(version).")
-                    return getFileServerProxy()
-                }
-            }.recover(on: DispatchQueue.global()) { _ in
-                return getFileServerProxy()
-            }
-        }.done(on: DispatchQueue.global()) { snode in
-            seal.fulfill(snode)
-        }.catch(on: DispatchQueue.global()) { error in
-            seal.reject(error)
-        }
-        return promise
-    }
-
     // MARK: Public API
     @objc public static func clearSnodePool() {
         snodePool.removeAll()

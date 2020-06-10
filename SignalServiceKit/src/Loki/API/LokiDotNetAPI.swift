@@ -53,6 +53,15 @@ public class LokiDotNetAPI : NSObject {
         transaction.setObject(newValue, forKey: server, inCollection: authTokenCollection)
     }
 
+    public static func clearAuthToken(for server: String) {
+        // Dispatch async on the main queue to avoid nested write transactions
+        DispatchQueue.main.async {
+            storage.dbReadWriteConnection.readWrite { transaction in
+                transaction.removeObject(forKey: server, inCollection: authTokenCollection)
+            }
+        }
+    }
+
     // MARK: Lifecycle
     override private init() { }
 
@@ -195,6 +204,20 @@ public class LokiDotNetAPI : NSObject {
                     seal.reject(error)
                 }
             }
+        }
+    }
+}
+
+// MARK: Error Handling
+internal extension Promise {
+
+    internal func handlingInvalidAuthTokenIfNeeded(for server: String) -> Promise<T> {
+        return recover(on: DispatchQueue.global()) { error -> Promise<T> in
+            if let error = error as? NetworkManagerError, (error.statusCode == 401 || error.statusCode == 403) {
+                print("[Loki] Group chat auth token for: \(server) expired; dropping it.")
+                LokiDotNetAPI.clearAuthToken(for: server)
+            }
+            throw error
         }
     }
 }
