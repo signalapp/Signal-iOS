@@ -92,7 +92,7 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
                  */
                 return deviceLinks
             }
-        }
+        }.handlingInvalidAuthTokenIfNeeded(for: server)
     }
     
     public static func setDeviceLinks(_ deviceLinks: Set<DeviceLink>) -> Promise<Void> {
@@ -108,7 +108,7 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
             request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
             return attempt(maxRetryCount: 8, recoveringOn: LokiAPI.workQueue) {
                 LokiFileServerProxy(for: server).perform(request).map { _ in }
-            }.recover { error in
+            }.handlingInvalidAuthTokenIfNeeded(for: server).recover { error in
                 print("Couldn't update device links due to error: \(error).")
                 throw error
             }
