@@ -135,6 +135,10 @@ final class JoinPublicChatVC : BaseVC, UIPageViewControllerDataSource, UIPageVie
         let urlAsString = url.absoluteString
         let displayName = OWSProfileManager.shared().localProfileName()
         // TODO: Profile picture & profile key
+        OWSPrimaryStorage.shared().dbReadWriteConnection.readWrite { transaction in
+            transaction.removeObject(forKey: "\(urlAsString).\(channelID)", inCollection: LokiPublicChatAPI.lastMessageServerIDCollection)
+            transaction.removeObject(forKey: "\(urlAsString).\(channelID)", inCollection: LokiPublicChatAPI.lastDeletionServerIDCollection)
+        }
         LokiPublicChatManager.shared.addChat(server: urlAsString, channel: channelID)
         .done(on: .main) { [weak self] _ in
             let _ = LokiPublicChatAPI.getMessages(for: channelID, on: urlAsString)
@@ -144,9 +148,15 @@ final class JoinPublicChatVC : BaseVC, UIPageViewControllerDataSource, UIPageVie
             let _ = syncManager.syncAllOpenGroups()
             self?.presentingViewController!.dismiss(animated: true, completion: nil)
         }
-        .catch(on: .main) { [weak self] _ in
+        .catch(on: .main) { [weak self] error in
+            var title = NSLocalizedString("Couldn't Join", comment: "")
+            var message = ""
+            if case LokiHTTPClient.HTTPError.networkError(let statusCode, _, _) = error, (statusCode == 401 || statusCode == 403) {
+                title = NSLocalizedString("Unauthorized", comment: "")
+                message = NSLocalizedString("Please ask the open group operator to add you to the group.", comment: "")
+            }
             self?.isJoining = false
-            self?.showError(title: NSLocalizedString("Couldn't Join", comment: ""))
+            self?.showError(title: title, message: message)
         }
     }
     

@@ -1,7 +1,7 @@
 import PromiseKit
 
 /// Base class for `LokiSnodeProxy` and `LokiFileServerProxy`.
-internal class LokiHTTPClient {
+public class LokiHTTPClient {
 
     internal lazy var httpSession: AFHTTPSessionManager = {
         let result = AFHTTPSessionManager(sessionConfiguration: .ephemeral)
@@ -34,9 +34,9 @@ internal class LokiHTTPClient {
 
 // MARK: - HTTP Error
 
-internal extension LokiHTTPClient {
+public extension LokiHTTPClient {
 
-    internal enum HTTPError : LocalizedError {
+    public enum HTTPError : LocalizedError {
         case networkError(code: Int, response: Any?, underlyingError: Error?)
 
         internal static func from(error: Error) -> LokiHTTPClient.HTTPError? {
