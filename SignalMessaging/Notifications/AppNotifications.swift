@@ -403,7 +403,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         // "no longer verified".
         var didIdentityChange = false
         for address in thread.recipientAddresses {
-            if self.identityManager.verificationState(for: address) == .noLongerVerified {
+            if self.identityManager.verificationState(for: address,
+                                                      transaction: transaction) == .noLongerVerified {
                 didIdentityChange = true
                 break
             }
@@ -504,7 +505,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         // "no longer verified".
         var didIdentityChange = false
         for address in thread.recipientAddresses {
-            if self.identityManager.verificationState(for: address) == .noLongerVerified {
+            if self.identityManager.verificationState(for: address,
+                                                      transaction: transaction) == .noLongerVerified {
                 didIdentityChange = true
                 break
             }
