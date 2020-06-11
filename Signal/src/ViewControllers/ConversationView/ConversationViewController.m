@@ -177,6 +177,7 @@ typedef enum : NSUInteger {
 @property (nonatomic) uint64_t lastVisibleSortId;
 
 @property (nonatomic) BOOL isUserScrolling;
+@property (nonatomic) BOOL isWaitingForDeceleration;
 @property (nonatomic, nullable) ConversationScrollState *scrollStateBeforeLoadingMore;
 
 @property (nonatomic) ConversationScrollButton *scrollDownButton;
@@ -731,6 +732,7 @@ typedef enum : NSUInteger {
 {
     [self cancelVoiceMemo];
     self.isUserScrolling = NO;
+    self.isWaitingForDeceleration = NO;
     [self saveDraft];
     [self markVisibleMessagesAsRead];
     [self.cellMediaCache removeAllObjects];
@@ -1292,6 +1294,7 @@ typedef enum : NSUInteger {
     [self.inputToolbar clearDesiredKeyboard];
 
     self.isUserScrolling = NO;
+    self.isWaitingForDeceleration = NO;
 }
 
 - (void)viewDidLayoutSubviews
@@ -1767,7 +1770,7 @@ typedef enum : NSUInteger {
 - (void)autoLoadMoreIfNecessary
 {
     BOOL isMainAppAndActive = CurrentAppContext().isMainAppAndActive;
-    if (self.isUserScrolling || !self.isViewVisible || !isMainAppAndActive) {
+    if (self.isUserScrolling || self.isWaitingForDeceleration || !self.isViewVisible || !isMainAppAndActive) {
         return;
     }
     if (!self.showLoadOlderHeader && !self.showLoadNewerHeader) {
@@ -4107,6 +4110,11 @@ typedef enum : NSUInteger {
 
     [self updateLastVisibleSortIdWithSneakyAsyncTransaction];
 
+    [self scheduleAutoLoadMore];
+}
+
+- (void)scheduleAutoLoadMore
+{
     [self.autoLoadMoreTimer invalidate];
     self.autoLoadMoreTimer = [NSTimer weakScheduledTimerWithTimeInterval:0.1f
                                                                   target:self
@@ -4126,9 +4134,30 @@ typedef enum : NSUInteger {
     self.isUserScrolling = YES;
 }
 
-- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)willDecelerate
 {
+    if (!self.isUserScrolling) {
+        return;
+    }
+
     self.isUserScrolling = NO;
+
+    if (willDecelerate) {
+        self.isWaitingForDeceleration = willDecelerate;
+    } else {
+        [self scheduleAutoLoadMore];
+    }
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
+{
+    if (!self.isWaitingForDeceleration) {
+        return;
+    }
+
+    self.isWaitingForDeceleration = NO;
+
+    [self scheduleAutoLoadMore];
 }
 
 #pragma mark - ConversationSettingsViewDelegate
@@ -4476,13 +4505,6 @@ typedef enum : NSUInteger {
 }
 
 #pragma mark - Database Observation
-
-- (void)setIsUserScrolling:(BOOL)isUserScrolling
-{
-    _isUserScrolling = isUserScrolling;
-
-    [self autoLoadMoreIfNecessary];
-}
 
 - (void)setIsViewVisible:(BOOL)isViewVisible
 {
