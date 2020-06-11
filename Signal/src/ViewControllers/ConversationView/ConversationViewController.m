@@ -1803,8 +1803,18 @@ typedef enum : NSUInteger {
     }
 }
 
+- (void)resetShowLoadMore
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(self.conversationViewModel);
+
+    _showLoadOlderHeader = self.conversationViewModel.canLoadOlderItems;
+    _showLoadNewerHeader = self.conversationViewModel.canLoadNewerItems;
+}
+
 - (void)updateShowLoadMoreHeadersWithTransaction:(SDSAnyReadTransaction *)transaction
 {
+    OWSAssertIsOnMainThread();
     OWSAssertDebug(self.conversationViewModel);
 
     BOOL valueChanged = NO;
@@ -4959,6 +4969,8 @@ typedef enum : NSUInteger {
         [self updateLastVisibleSortIdWithTransaction:transaction];
         return;
     }
+
+    [self resetShowLoadMore];
 
     OWSAssertDebug(conversationUpdate.conversationUpdateType == ConversationUpdateType_Diff);
     OWSAssertDebug(conversationUpdate.updateItems);

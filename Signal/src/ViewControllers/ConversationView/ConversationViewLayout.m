@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "ConversationViewLayout.h"
@@ -154,7 +154,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (layoutItems.count == 0) {
         self.footerLayoutAttributes = nil;
     } else {
-        NSIndexPath *footerIndexPath = [NSIndexPath indexPathForRow:(NSInteger)layoutItems.count - 1 inSection:0];
+        NSIndexPath *footerIndexPath = [NSIndexPath indexPathForRow:NSUIntegerMaxValue() inSection:0];
         UICollectionViewLayoutAttributes *footerLayoutAttributes = [UICollectionViewLayoutAttributes
             layoutAttributesForSupplementaryViewOfKind:UICollectionElementKindSectionFooter
                                          withIndexPath:footerIndexPath];
