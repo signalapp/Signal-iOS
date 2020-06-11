@@ -38,7 +38,7 @@ public final class MultiDeviceProtocol : NSObject {
     // MARK: - Sending (Part 1)
     @objc(isMultiDeviceRequiredForMessage:)
     public static func isMultiDeviceRequired(for message: TSOutgoingMessage) -> Bool {
-        return !(message is DeviceLinkMessage) && (message.thread as? TSGroupThread)?.groupModel.groupType != .openGroup
+        return !(message is DeviceLinkMessage) && !(message is UnlinkDeviceMessage) && (message.thread as? TSGroupThread)?.groupModel.groupType != .openGroup
     }
 
     private static func copy(_ messageSend: OWSMessageSend, for destination: MultiDeviceDestination, with seal: Resolver<Void>) -> OWSMessageSend {
