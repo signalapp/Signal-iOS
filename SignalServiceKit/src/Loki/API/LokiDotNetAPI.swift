@@ -37,7 +37,7 @@ public class LokiDotNetAPI : NSObject {
         if let token = getAuthTokenFromDatabase(for: server) {
             return Promise.value(token)
         } else {
-            return requestNewAuthToken(for: server).then(on: DispatchQueue.global()) { submitAuthToken($0, for: server) }.map(on: DispatchQueue.global()) { token in
+            return requestNewAuthToken(for: server).then2 { submitAuthToken($0, for: server) }.map2 { token in
                 try! Storage.writeSync { transaction in
                     setAuthToken(for: server, to: token, in: transaction)
                 }
@@ -65,7 +65,7 @@ public class LokiDotNetAPI : NSObject {
         let queryParameters = "pubKey=\(getUserHexEncodedPublicKey())"
         let url = URL(string: "\(server)/loki/v1/get_challenge?\(queryParameters)")!
         let request = TSRequest(url: url)
-        return LokiFileServerProxy(for: server).perform(request, withCompletionQueue: LokiAPI.workQueue).map(on: LokiAPI.workQueue) { rawResponse in
+        return LokiFileServerProxy(for: server).perform(request, withCompletionQueue: DispatchQueue.global(qos: .userInitiated)).map2 { rawResponse in
             guard let json = rawResponse as? JSON, let base64EncodedChallenge = json["cipherText64"] as? String, let base64EncodedServerPublicKey = json["serverPubKey64"] as? String,
                 let challenge = Data(base64Encoded: base64EncodedChallenge), var serverPublicKey = Data(base64Encoded: base64EncodedServerPublicKey) else {
                 throw LokiDotNetAPIError.parsingFailed
@@ -89,7 +89,7 @@ public class LokiDotNetAPI : NSObject {
         let url = URL(string: "\(server)/loki/v1/submit_challenge")!
         let parameters = [ "pubKey" : getUserHexEncodedPublicKey(), "token" : token ]
         let request = TSRequest(url: url, method: "POST", parameters: parameters)
-        return LokiFileServerProxy(for: server).perform(request, withCompletionQueue: DispatchQueue.global()).map(on: DispatchQueue.global()) { _ in token }
+        return LokiFileServerProxy(for: server).perform(request, withCompletionQueue: DispatchQueue.global(qos: .userInitiated)).map2 { _ in token }
     }
 
     // MARK: Public API
@@ -157,9 +157,9 @@ public class LokiDotNetAPI : NSObject {
                 if isProxyingRequired {
                     attachment.isUploaded = false
                     attachment.save()
-                    let _ = LokiFileServerProxy(for: server).performLokiFileServerNSURLRequest(request as NSURLRequest).done { responseObject in
+                    let _ = LokiFileServerProxy(for: server).performLokiFileServerNSURLRequest(request as NSURLRequest).done2 { responseObject in
                         parseResponse(responseObject)
-                    }.catch { error in
+                    }.catch2 { error in
                         seal.reject(error)
                     }
                 } else {
@@ -187,13 +187,13 @@ public class LokiDotNetAPI : NSObject {
                 }
             }
             if server == LokiFileServerAPI.server {
-                LokiAPI.workQueue.async {
+                DispatchQueue.global(qos: .userInitiated).async {
                     proceed(with: "loki") // Uploads to the Loki File Server shouldn't include any personally identifiable information so use a dummy auth token
                 }
             } else {
-                getAuthToken(for: server).done(on: LokiAPI.workQueue) { token in
+                getAuthToken(for: server).done2 { token in
                     proceed(with: token)
-                }.catch { error in
+                }.catch2 { error in
                     print("[Loki] Couldn't upload attachment due to error: \(error).")
                     seal.reject(error)
                 }
@@ -206,7 +206,7 @@ public class LokiDotNetAPI : NSObject {
 internal extension Promise {
 
     internal func handlingInvalidAuthTokenIfNeeded(for server: String) -> Promise<T> {
-        return recover(on: DispatchQueue.global()) { error -> Promise<T> in
+        return recover2 { error -> Promise<T> in
             if let error = error as? NetworkManagerError, (error.statusCode == 401 || error.statusCode == 403) {
                 print("[Loki] Group chat auth token for: \(server) expired; dropping it.")
                 LokiDotNetAPI.clearAuthToken(for: server)

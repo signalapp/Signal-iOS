@@ -34,11 +34,11 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
     public static func getDeviceLinks(associatedWith hexEncodedPublicKeys: Set<String>) -> Promise<Set<DeviceLink>> {
         let hexEncodedPublicKeysDescription = "[ \(hexEncodedPublicKeys.joined(separator: ", ")) ]"
         print("[Loki] Getting device links for: \(hexEncodedPublicKeysDescription).")
-        return getAuthToken(for: server).then(on: DispatchQueue.global()) { token -> Promise<Set<DeviceLink>> in
+        return getAuthToken(for: server).then2 { token -> Promise<Set<DeviceLink>> in
             let queryParameters = "ids=\(hexEncodedPublicKeys.map { "@\($0)" }.joined(separator: ","))&include_user_annotations=1"
             let url = URL(string: "\(server)/users?\(queryParameters)")!
             let request = TSRequest(url: url)
-            return LokiFileServerProxy(for: server).perform(request, withCompletionQueue: DispatchQueue.global()).map(on: DispatchQueue.global(qos: .userInitiated)) { rawResponse -> Set<DeviceLink> in
+            return LokiFileServerProxy(for: server).perform(request, withCompletionQueue: DispatchQueue.global(qos: .userInitiated)).map2 { rawResponse -> Set<DeviceLink> in
                 guard let json = rawResponse as? JSON, let data = json["data"] as? [JSON] else {
                     print("[Loki] Couldn't parse device links for users: \(hexEncodedPublicKeys) from: \(rawResponse).")
                     throw LokiDotNetAPIError.parsingFailed
@@ -80,7 +80,7 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
                         return deviceLink
                     }
                 })
-            }.map(on: DispatchQueue.global()) { deviceLinks in
+            }.map2 { deviceLinks in
                 storage.setDeviceLinks(deviceLinks)
                 return deviceLinks
             }
@@ -89,7 +89,7 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
     
     public static func setDeviceLinks(_ deviceLinks: Set<DeviceLink>) -> Promise<Void> {
         print("[Loki] Updating device links.")
-        return getAuthToken(for: server).then { token -> Promise<Void> in
+        return getAuthToken(for: server).then2 { token -> Promise<Void> in
             let isMaster = deviceLinks.contains { $0.master.hexEncodedPublicKey == getUserHexEncodedPublicKey() }
             let deviceLinksAsJSON = deviceLinks.map { $0.toJSON() }
             let value = !deviceLinksAsJSON.isEmpty ? [ "isPrimary" : isMaster ? 1 : 0, "authorisations" : deviceLinksAsJSON ] : nil
@@ -98,9 +98,9 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
             let url = URL(string: "\(server)/users/me")!
             let request = TSRequest(url: url, method: "PATCH", parameters: parameters)
             request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
-            return attempt(maxRetryCount: 8, recoveringOn: LokiAPI.workQueue) {
-                LokiFileServerProxy(for: server).perform(request).map { _ in }
-            }.handlingInvalidAuthTokenIfNeeded(for: server).recover { error in
+            return attempt(maxRetryCount: 8) {
+                LokiFileServerProxy(for: server).perform(request).map2 { _ in }
+            }.handlingInvalidAuthTokenIfNeeded(for: server).recover2 { error in
                 print("Couldn't update device links due to error: \(error).")
                 throw error
             }
@@ -114,7 +114,7 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
             deviceLinks = storage.getDeviceLinks(for: getUserHexEncodedPublicKey(), in: transaction)
         }
         deviceLinks.insert(deviceLink)
-        return setDeviceLinks(deviceLinks).map(on: LokiAPI.workQueue) { _ in
+        return setDeviceLinks(deviceLinks).map2 { _ in
             storage.addDeviceLink(deviceLink)
         }
     }
@@ -126,7 +126,7 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
             deviceLinks = storage.getDeviceLinks(for: getUserHexEncodedPublicKey(), in: transaction)
         }
         deviceLinks.remove(deviceLink)
-        return setDeviceLinks(deviceLinks).map(on: LokiAPI.workQueue) { _ in
+        return setDeviceLinks(deviceLinks).map2 { _ in
             storage.removeDeviceLink(deviceLink)
         }
     }
@@ -151,7 +151,7 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
             print("[Loki] Couldn't upload profile picture due to error: \(error).")
             return Promise(error: error)
         }
-        return LokiFileServerProxy(for: server).performLokiFileServerNSURLRequest(request as NSURLRequest).map { responseObject in
+        return LokiFileServerProxy(for: server).performLokiFileServerNSURLRequest(request as NSURLRequest).map2 { responseObject in
             guard let json = responseObject as? JSON, let data = json["data"] as? JSON, let downloadURL = data["url"] as? String else {
                 print("[Loki] Couldn't parse profile picture from: \(responseObject).")
                 throw LokiDotNetAPIError.parsingFailed

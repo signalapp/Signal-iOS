@@ -15,12 +15,8 @@ import PromiseKit
 @objc(LKMultiDeviceProtocol)
 public final class MultiDeviceProtocol : NSObject {
 
-    private static var _lastDeviceLinkUpdate: [String:Date] = [:]
     /// A mapping from hex encoded public key to date updated.
-    public static var lastDeviceLinkUpdate: [String:Date] {
-        get { LokiAPI.stateQueue.sync { _lastDeviceLinkUpdate } }
-        set { LokiAPI.stateQueue.sync { _lastDeviceLinkUpdate = newValue } }
-    }
+    public static var lastDeviceLinkUpdate: [String:Date] = [:]
 
     // TODO: I don't think stateQueue actually helps avoid race conditions
 

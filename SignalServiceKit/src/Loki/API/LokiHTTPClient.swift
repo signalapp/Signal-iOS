@@ -10,12 +10,12 @@ public class LokiHTTPClient {
         securityPolicy.validatesDomainName = false
         result.securityPolicy = securityPolicy
         result.responseSerializer = AFHTTPResponseSerializer()
-        result.completionQueue = DispatchQueue.global()
+        result.completionQueue = DispatchQueue.global(qos: .userInitiated)
         return result
     }()
 
     internal func perform(_ request: TSRequest, withCompletionQueue queue: DispatchQueue = DispatchQueue.main) -> LokiAPI.RawResponsePromise {
-        return TSNetworkManager.shared().perform(request, withCompletionQueue: queue).map { $0.responseObject }.recover { error -> LokiAPI.RawResponsePromise in
+        return TSNetworkManager.shared().perform(request, withCompletionQueue: queue).map2 { $0.responseObject }.recover2 { error -> LokiAPI.RawResponsePromise in
             throw HTTPError.from(error: error) ?? error
         }
     }

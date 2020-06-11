@@ -1,15 +1,7 @@
 import PromiseKit
 
-// TODO: We guarantee that things happen in-order through promise chaining. For performance we should be able to use different queues for everything as long
-// as we always modify state from the same queue.
-
 @objc(LKAPI)
 public final class LokiAPI : NSObject {
-
-    /// All service node related errors must be handled on this queue to avoid race conditions maintaining e.g. failure counts.
-    internal static let errorHandlingQueue = DispatchQueue(label: "LokiAPI.errorHandlingQueue")
-    internal static let stateQueue = DispatchQueue(label: "LokiAPI.stateQueue")
-    internal static let workQueue = DispatchQueue(label: "LokiAPI.workQueue", qos: .userInitiated)
 
     internal static var storage: OWSPrimaryStorage { OWSPrimaryStorage.shared() }
     
@@ -22,7 +14,7 @@ public final class LokiAPI : NSObject {
     /// - Note: Changing this on the fly is not recommended.
     internal static var useOnionRequests = true
     
-    // MARK: Nested Types
+    // MARK: Types
     public typealias RawResponse = Any
     
     @objc public class LokiAPIError : NSError { // Not called `Error` for Obj-C interoperablity
@@ -46,13 +38,13 @@ public final class LokiAPI : NSObject {
         parameters: JSON, headers: [String:String]? = nil, timeout: TimeInterval? = nil) -> RawResponsePromise {
         let url = URL(string: "\(target.address):\(target.port)/storage_rpc/v1")!
         if useOnionRequests {
-            return OnionRequestAPI.sendOnionRequest(invoking: method, on: target, with: parameters, associatedWith: hexEncodedPublicKey).map { $0 as Any }
+            return OnionRequestAPI.sendOnionRequest(invoking: method, on: target, with: parameters, associatedWith: hexEncodedPublicKey).map2 { $0 as Any }
         } else {
             let request = TSRequest(url: url, method: "POST", parameters: [ "method" : method.rawValue, "params" : parameters ])
             if let headers = headers { request.allHTTPHeaderFields = headers }
             request.timeoutInterval = timeout ?? defaultTimeout
-            return TSNetworkManager.shared().perform(request, withCompletionQueue: workQueue)
-                .map { $0.responseObject }
+            return TSNetworkManager.shared().perform(request, withCompletionQueue: DispatchQueue.global(qos: .userInitiated))
+                .map2 { $0.responseObject }
                 .handlingSnodeErrorsIfNeeded(for: target, associatedWith: hexEncodedPublicKey)
                 .recoveringNetworkErrorsIfNeeded()
         }
@@ -68,16 +60,16 @@ public final class LokiAPI : NSObject {
     
     // MARK: Public API
     public static func getMessages() -> Promise<Set<MessageListPromise>> {
-        return attempt(maxRetryCount: maxRetryCount, recoveringOn: workQueue) {
-            getTargetSnodes(for: getUserHexEncodedPublicKey()).mapValues { targetSnode in
-                getRawMessages(from: targetSnode, usingLongPolling: false).map { parseRawMessagesResponse($0, from: targetSnode) }
-            }.map { Set($0) }
+        return attempt(maxRetryCount: maxRetryCount) {
+            getTargetSnodes(for: getUserHexEncodedPublicKey()).mapValues2 { targetSnode in
+                getRawMessages(from: targetSnode, usingLongPolling: false).map2 { parseRawMessagesResponse($0, from: targetSnode) }
+            }.map2 { Set($0) }
         }
     }
 
     @objc(sendSignalMessage:onP2PSuccess:)
     public static func objc_sendSignalMessage(_ signalMessage: SignalMessage, onP2PSuccess: @escaping () -> Void) -> AnyPromise {
-        let promise = sendSignalMessage(signalMessage, onP2PSuccess: onP2PSuccess).mapValues { AnyPromise.from($0) }.map { Set($0) }
+        let promise = sendSignalMessage(signalMessage, onP2PSuccess: onP2PSuccess).mapValues2 { AnyPromise.from($0) }.map2 { Set($0) }
         return AnyPromise.from(promise)
     }
 
@@ -87,18 +79,18 @@ public final class LokiAPI : NSObject {
         let destination = lokiMessage.destination
         func sendLokiMessage(_ lokiMessage: LokiMessage, to target: LokiAPITarget) -> RawResponsePromise {
             let parameters = lokiMessage.toJSON()
-            return attempt(maxRetryCount: maxRetryCount, recoveringOn: workQueue) {
+            return attempt(maxRetryCount: maxRetryCount) {
                 invoke(.sendMessage, on: target, associatedWith: destination, parameters: parameters)
             }
         }
         func sendLokiMessageUsingSwarmAPI() -> Promise<Set<RawResponsePromise>> {
             notificationCenter.post(name: .calculatingPoW, object: NSNumber(value: signalMessage.timestamp))
-            return lokiMessage.calculatePoW().then { lokiMessageWithPoW -> Promise<Set<RawResponsePromise>> in
+            return lokiMessage.calculatePoW().then2 { lokiMessageWithPoW -> Promise<Set<RawResponsePromise>> in
                 notificationCenter.post(name: .routing, object: NSNumber(value: signalMessage.timestamp))
-                return getTargetSnodes(for: destination).map { snodes in
+                return getTargetSnodes(for: destination).map2 { snodes in
                     return Set(snodes.map { snode in
                         notificationCenter.post(name: .messageSending, object: NSNumber(value: signalMessage.timestamp))
-                        return sendLokiMessage(lokiMessageWithPoW, to: snode).map { rawResponse in
+                        return sendLokiMessage(lokiMessageWithPoW, to: snode).map2 { rawResponse in
                             if let json = rawResponse as? JSON, let powDifficulty = json["difficulty"] as? Int {
                                 guard powDifficulty != LokiAPI.powDifficulty else { return rawResponse }
                                 print("[Loki] Setting proof of work difficulty to \(powDifficulty).")
@@ -115,10 +107,10 @@ public final class LokiAPI : NSObject {
         if let peer = LokiP2PAPI.getInfo(for: destination), (lokiMessage.isPing || peer.isOnline) {
             let target = LokiAPITarget(address: peer.address, port: peer.port, publicKeySet: nil)
             // TODO: Retrying
-            return Promise.value([ target ]).mapValues { sendLokiMessage(lokiMessage, to: $0) }.map { Set($0) }.get { _ in
+            return Promise.value([ target ]).mapValues2 { sendLokiMessage(lokiMessage, to: $0) }.map2 { Set($0) }.get2 { _ in
                 LokiP2PAPI.markOnline(destination)
                 onP2PSuccess()
-            }.recover { error -> Promise<Set<RawResponsePromise>> in
+            }.recover2 { error -> Promise<Set<RawResponsePromise>> in
                 LokiP2PAPI.markOffline(destination)
                 if lokiMessage.isPing {
                     print("[Loki] Failed to ping \(destination); marking contact as offline.")
@@ -228,7 +220,7 @@ public final class LokiAPI : NSObject {
 private extension Promise {
 
     fileprivate func recoveringNetworkErrorsIfNeeded() -> Promise<T> {
-        return recover { error -> Promise<T> in
+        return recover2 { error -> Promise<T> in
             switch error {
             case NetworkManagerError.taskError(_, let underlyingError): throw underlyingError
             case LokiHTTPClient.HTTPError.networkError(_, _, let underlyingError): throw underlyingError ?? error

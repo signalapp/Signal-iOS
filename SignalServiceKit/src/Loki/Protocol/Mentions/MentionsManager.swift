@@ -2,14 +2,8 @@
 @objc(LKMentionsManager)
 public final class MentionsManager : NSObject {
 
-    private static var _userHexEncodedPublicKeyCache: [String:Set<String>] = [:]
     /// A mapping from thread ID to set of user hex encoded public keys.
-    @objc public static var userPublicKeyCache: [String:Set<String>] {
-        get { LokiAPI.stateQueue.sync { _userHexEncodedPublicKeyCache } }
-        set { LokiAPI.stateQueue.sync { _userHexEncodedPublicKeyCache = newValue } }
-    }
-
-    // TODO: I don't think stateQueue actually helps avoid race conditions
+    @objc public static var userPublicKeyCache: [String:Set<String>] = [:]
 
     internal static var storage: OWSPrimaryStorage { OWSPrimaryStorage.shared() }
 

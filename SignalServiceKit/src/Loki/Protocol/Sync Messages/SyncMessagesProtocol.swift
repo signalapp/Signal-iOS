@@ -48,7 +48,7 @@ public final class SyncMessagesProtocol : NSObject {
         let friends = Set(hepks).map { SignalAccount(recipientId: $0) }
         let syncManager = SSKEnvironment.shared.syncManager
         let promises = friends.chunked(by: 3).map { friends -> Promise<Void> in // TODO: Does this always fit?
-            return Promise(syncManager.syncContacts(for: friends)).map { _ in }
+            return Promise(syncManager.syncContacts(for: friends)).map2 { _ in }
         }
         return when(fulfilled: promises)
     }
@@ -67,7 +67,7 @@ public final class SyncMessagesProtocol : NSObject {
         }
         let syncManager = SSKEnvironment.shared.syncManager
         let promises = groups.map { group -> Promise<Void> in
-            return Promise(syncManager.syncGroup(for: group)).map { _ in }
+            return Promise(syncManager.syncGroup(for: group)).map2 { _ in }
         }
         return when(fulfilled: promises)
     }

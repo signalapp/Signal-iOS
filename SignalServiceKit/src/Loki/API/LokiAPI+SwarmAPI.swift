@@ -38,8 +38,8 @@ public extension LokiAPI {
             ]
             print("[Loki] Populating snode pool using: \(target).")
             let (promise, seal) = Promise<LokiAPITarget>.pending()
-            attempt(maxRetryCount: 4, recoveringOn: DispatchQueue.global()) {
-                HTTP.execute(.post, url, parameters: parameters).map(on: DispatchQueue.global()) { json -> LokiAPITarget in
+            attempt(maxRetryCount: 4) {
+                HTTP.execute(.post, url, parameters: parameters).map2 { json -> LokiAPITarget in
                     guard let intermediate = json["result"] as? JSON, let rawTargets = intermediate["service_node_states"] as? [JSON] else { throw LokiAPIError.randomSnodePoolUpdatingFailed }
                     snodePool = try Set(rawTargets.flatMap { rawTarget in
                         guard let address = rawTarget["public_ip"] as? String, let port = rawTarget["storage_port"] as? Int, let ed25519PublicKey = rawTarget["pubkey_ed25519"] as? String, let x25519PublicKey = rawTarget["pubkey_x25519"] as? String, address != "0.0.0.0" else {
@@ -51,13 +51,13 @@ public extension LokiAPI {
                     // randomElement() uses the system's default random generator, which is cryptographically secure
                     return snodePool.randomElement()!
                 }
-            }.done(on: DispatchQueue.global()) { snode in
+            }.done2 { snode in
                 seal.fulfill(snode)
                 try! Storage.writeSync { transaction in
                     print("[Loki] Persisting snode pool to database.")
                     storage.setSnodePool(LokiAPI.snodePool, in: transaction)
                 }
-            }.catch(on: DispatchQueue.global()) { error in
+            }.catch2 { error in
                 print("[Loki] Failed to contact seed node at: \(target).")
                 seal.reject(error)
             }
@@ -81,11 +81,11 @@ public extension LokiAPI {
         } else {
             print("[Loki] Getting swarm for: \(hexEncodedPublicKey).")
             let parameters: [String:Any] = [ "pubKey" : hexEncodedPublicKey ]
-            return getRandomSnode().then(on: workQueue) {
+            return getRandomSnode().then2 {
                 invoke(.getSwarm, on: $0, associatedWith: hexEncodedPublicKey, parameters: parameters)
-            }.map {
+            }.map2 {
                 parseTargets(from: $0)
-            }.get { swarm in
+            }.get2 { swarm in
                 swarmCache[hexEncodedPublicKey] = swarm
                 try! Storage.writeSync { transaction in
                     storage.setSwarm(swarm, for: hexEncodedPublicKey, in: transaction)
@@ -96,7 +96,7 @@ public extension LokiAPI {
 
     internal static func getTargetSnodes(for hexEncodedPublicKey: String) -> Promise<[LokiAPITarget]> {
         // shuffled() uses the system's default random generator, which is cryptographically secure
-        return getSwarm(for: hexEncodedPublicKey).map { Array($0.shuffled().prefix(targetSwarmSnodeCount)) }
+        return getSwarm(for: hexEncodedPublicKey).map2 { Array($0.shuffled().prefix(targetSwarmSnodeCount)) }
     }
 
     internal static func dropSnodeFromSnodePool(_ target: LokiAPITarget) {
@@ -145,7 +145,7 @@ public extension LokiAPI {
 internal extension Promise {
     
     internal func handlingSnodeErrorsIfNeeded(for target: LokiAPITarget, associatedWith hexEncodedPublicKey: String) -> Promise<T> {
-        return recover(on: LokiAPI.errorHandlingQueue) { error -> Promise<T> in
+        return recover2 { error -> Promise<T> in
             if let error = error as? LokiHTTPClient.HTTPError {
                 switch error.statusCode {
                 case 0, 400, 500, 503:

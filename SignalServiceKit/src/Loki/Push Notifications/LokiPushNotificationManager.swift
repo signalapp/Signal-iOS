@@ -36,7 +36,7 @@ public final class LokiPushNotificationManager : NSObject {
         let url = URL(string: server + "register")!
         let request = TSRequest(url: url, method: "POST", parameters: parameters)
         request.allHTTPHeaderFields = [ "Content-Type" : "application/json" ]
-        let promise = TSNetworkManager.shared().makePromise(request: request).map { _, response in
+        let promise = TSNetworkManager.shared().makePromise(request: request).map2 { _, response in
             guard let json = response as? JSON else {
                 return print("[Loki] Couldn't register device token.")
             }
@@ -48,7 +48,7 @@ public final class LokiPushNotificationManager : NSObject {
             userDefaults[.isUsingFullAPNs] = false
             return
         }
-        promise.catch { error in
+        promise.catch2 { error in
             print("[Loki] Couldn't register device token.")
         }
         return promise
@@ -77,7 +77,7 @@ public final class LokiPushNotificationManager : NSObject {
         let url = URL(string: server + "register")!
         let request = TSRequest(url: url, method: "POST", parameters: parameters)
         request.allHTTPHeaderFields = [ "Content-Type" : "application/json" ]
-        let promise = TSNetworkManager.shared().makePromise(request: request).map { _, response in
+        let promise = TSNetworkManager.shared().makePromise(request: request).map2 { _, response in
             guard let json = response as? JSON else {
                 return print("[Loki] Couldn't register device token.")
             }
@@ -89,7 +89,7 @@ public final class LokiPushNotificationManager : NSObject {
             userDefaults[.isUsingFullAPNs] = true
             return
         }
-        promise.catch { error in
+        promise.catch2 { error in
             print("[Loki] Couldn't register device token.")
         }
         return promise

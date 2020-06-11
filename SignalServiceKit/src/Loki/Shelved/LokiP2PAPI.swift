@@ -204,7 +204,7 @@ public class LokiP2PAPI : NSObject {
             return
         }
         
-        messageSender.sendPromise(message: message).catch { error in
+        messageSender.sendPromise(message: message).catch2 { error in
             Logger.warn("Failed to send online status to \(thread.contactIdentifier()).")
         }.retainUntilComplete()
     }

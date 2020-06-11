@@ -56,9 +56,9 @@ public final class LokiPublicChatManager : NSObject {
                 return Promise(error: Error.chatCreationFailed)
             }
         }
-        return LokiPublicChatAPI.getAuthToken(for: server).then { token in
+        return LokiPublicChatAPI.getAuthToken(for: server).then2 { token in
             return LokiPublicChatAPI.getInfo(for: channel, on: server)
-        }.map { channelInfo -> LokiPublicChat in
+        }.map2 { channelInfo -> LokiPublicChat in
             guard let chat = self.addChat(server: server, channel: channel, name: channelInfo.displayName) else { throw Error.chatCreationFailed }
             return chat
         }
