@@ -731,7 +731,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     OWSAssertDebug(message);
     OWSAssertDebug(thread);
 
-    // If necessary, gather "ud sending access" using a single write transaction.
+    // 1. gather "ud sending access" using a single write transaction.
     NSMutableDictionary<SignalServiceAddress *, OWSUDSendingAccess *> *sendingAccessMap = [NSMutableDictionary new];
     if (senderCertificate != nil) {
         DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
@@ -746,6 +746,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         });
     }
 
+    // 2. Build a "OWSMessageSend" for each recipient.
     NSMutableArray<OWSMessageSend *> *messageSends = [NSMutableArray new];
     for (SignalRecipient *recipient in recipients) {
         OWSUDSendingAccess *_Nullable udSendingAccess = sendingAccessMap[recipient.address];
@@ -758,11 +759,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         [messageSends addObject:messageSend];
     }
 
-    // 1. Before kicking of the per-recipient message sends, try
+    // 3. Before kicking of the per-recipient message sends, try
     // to ensure sessions for all recipient devices in parallel.
     return
         [MessageSending ensureSessionsforMessageSendsObjc:messageSends ignoreErrors:YES].thenInBackground(^(id value) {
-            // 2. Create the per-recipient message send promises.
+            // 4. Perform the per-recipient message sends.
             NSMutableArray<AnyPromise *> *sendPromises = [NSMutableArray array];
             for (OWSMessageSend *messageSend in messageSends) {
                 [self sendMessageToRecipient:messageSend];
