@@ -95,7 +95,6 @@ pid_t localPid(void)
 - (void)notifyChanged
 {
     OWSAssertIsOnMainThread();
-    OWSLogVerbose(@"");
 
     if (![DarwinNotificationCenter isValidObserver:self.notifyToken]) {
         [self start];

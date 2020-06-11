@@ -225,6 +225,10 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
             OWSAssertDebug(legacyStateMap);
             for (NSString *phoneNumber in legacyStateMap) {
                 SignalServiceAddress *address = [[SignalServiceAddress alloc] initWithPhoneNumber:phoneNumber];
+                if (!address.isValid) {
+                    OWSFailDebug(@"Ignoring invalid address.");
+                    continue;
+                }
                 recipientAddressStates[address] = legacyStateMap[phoneNumber];
             }
             _recipientAddressStates = recipientAddressStates;
@@ -476,6 +480,10 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
     NSMutableDictionary<SignalServiceAddress *, TSOutgoingMessageRecipientState *> *recipientAddressStates =
         [NSMutableDictionary new];
     for (SignalServiceAddress *recipientAddress in recipientAddresses) {
+        if (!recipientAddress.isValid) {
+            OWSFailDebug(@"Ignoring invalid address.");
+            continue;
+        }
         TSOutgoingMessageRecipientState *recipientState = [TSOutgoingMessageRecipientState new];
         recipientState.state = OWSOutgoingMessageRecipientStateSending;
         recipientAddressStates[recipientAddress] = recipientState;
@@ -906,6 +914,10 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                                                       TSOutgoingMessageRecipientState *> *recipientAddressStates
                                                       = [NSMutableDictionary new];
                                                   for (SignalServiceAddress *recipientAddress in udRecipientAddresses) {
+                                                      if (!recipientAddress.isValid) {
+                                                          OWSFailDebug(@"Ignoring invalid address.");
+                                                          continue;
+                                                      }
                                                       if (recipientAddressStates[recipientAddress]) {
                                                           OWSFailDebug(@"recipient appears more than once in recipient "
                                                                        @"lists: %@",
@@ -920,6 +932,10 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                                                   }
                                                   for (SignalServiceAddress
                                                            *recipientAddress in nonUdRecipientAddresses) {
+                                                      if (!recipientAddress.isValid) {
+                                                          OWSFailDebug(@"Ignoring invalid address.");
+                                                          continue;
+                                                      }
                                                       if (recipientAddressStates[recipientAddress]) {
                                                           OWSFailDebug(@"recipient appears more than once in recipient "
                                                                        @"lists: %@",
@@ -978,6 +994,10 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
 
     [self anyUpdateOutgoingMessageWithTransaction:transaction
                                             block:^(TSOutgoingMessage *message) {
+                                                if (!singleGroupRecipient.isValid) {
+                                                    OWSFailDebug(@"Ignoring invalid address.");
+                                                    return;
+                                                }
                                                 TSOutgoingMessageRecipientState *recipientState =
                                                     [TSOutgoingMessageRecipientState new];
                                                 recipientState.state = OWSOutgoingMessageRecipientStateSending;
