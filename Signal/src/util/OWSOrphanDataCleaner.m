@@ -18,6 +18,7 @@
 #import <SessionServiceKit/TSQuotedMessage.h>
 #import <SessionServiceKit/TSThread.h>
 #import <SessionServiceKit/YapDatabaseTransaction+OWS.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN

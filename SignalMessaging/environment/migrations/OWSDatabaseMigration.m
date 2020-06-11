@@ -72,14 +72,14 @@ NS_ASSUME_NONNULL_BEGIN
     OWSDatabaseConnection *dbConnection = (OWSDatabaseConnection *)self.primaryStorage.newDatabaseConnection;
 
     [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            [self runUpWithTransaction:transaction];
-        }
-        completionBlock:^{
-            OWSLogInfo(@"Completed migration %@", self.uniqueId);
-            [self save];
+        [self runUpWithTransaction:transaction];
+    }
+    completion:^{
+        OWSLogInfo(@"Completed migration %@", self.uniqueId);
+        [self save];
 
-            completion();
-        }];
+        completion();
+    }];
 }
 
 #pragma mark - Database Connections

@@ -31,6 +31,7 @@
 #import <SessionServiceKit/TSYapDatabaseObject.h>
 #import <SessionServiceKit/UIImage+OWS.h>
 #import <SessionServiceKit/YapDatabaseConnection+OWS.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -813,16 +814,16 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
             [newRecipientIds addObject:recipientId];
         }
     }
-        completionBlock:^{
-            for (NSString *recipientId in newRecipientIds) {
-                [[NSNotificationCenter defaultCenter]
-                    postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
-                                       object:nil
-                                     userInfo:@{
-                                         kNSNotificationKey_ProfileRecipientId : recipientId,
-                                     }];
-            }
-        }];
+    completion:^{
+        for (NSString *recipientId in newRecipientIds) {
+            [[NSNotificationCenter defaultCenter]
+                postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
+                                   object:nil
+                                 userInfo:@{
+                                     kNSNotificationKey_ProfileRecipientId : recipientId,
+                                 }];
+        }
+    }];
 }
 
 - (BOOL)isUserInProfileWhitelist:(NSString *)recipientId
@@ -859,16 +860,16 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
             didChange = YES;
         }
     }
-        completionBlock:^{
-            if (didChange) {
-                [[NSNotificationCenter defaultCenter]
-                    postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
-                                       object:nil
-                                     userInfo:@{
-                                         kNSNotificationKey_ProfileGroupId : groupId,
-                                     }];
-            }
-        }];
+    completion:^{
+        if (didChange) {
+            [[NSNotificationCenter defaultCenter]
+                postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
+                                   object:nil
+                                 userInfo:@{
+                                     kNSNotificationKey_ProfileGroupId : groupId,
+                                 }];
+        }
+    }];
 }
 
 - (void)addThreadToProfileWhitelist:(TSThread *)thread

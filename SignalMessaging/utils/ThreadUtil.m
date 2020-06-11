@@ -26,6 +26,7 @@
 #import <SessionServiceKit/TSInvalidIdentityKeyErrorMessage.h>
 #import <SessionServiceKit/TSOutgoingMessage.h>
 #import <SessionServiceKit/TSThread.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -203,28 +204,23 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                       block:^(void (^benchmarkCompletion)(void)) {
                           // To avoid blocking the send flow, we dispatch an async write from within this read
                           // transaction
+                          [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull writeTransaction) {
+                              [message saveWithTransaction:writeTransaction];
 
-                          // TODO: <-------
-
-                          [self.dbConnection
-                              asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull writeTransaction) {
-                                  [message saveWithTransaction:writeTransaction];
-
-                                  OWSLinkPreview *_Nullable linkPreview =
-                                      [self linkPreviewForLinkPreviewDraft:linkPreviewDraft
-                                                               transaction:writeTransaction];
-                                  if (linkPreview) {
-                                      [message updateWithLinkPreview:linkPreview transaction:writeTransaction];
-                                  }
-
-                                  NSMutableArray<OWSOutgoingAttachmentInfo *> *attachmentInfos = [NSMutableArray new];
-                                  for (SignalAttachment *attachment in attachments) {
-                                      OWSOutgoingAttachmentInfo *attachmentInfo = [attachment buildOutgoingAttachmentInfoWithMessage:message];
-                                      [attachmentInfos addObject:attachmentInfo];
-                                  }
-                                  completionBlock(message, attachmentInfos, writeTransaction);
+                              OWSLinkPreview *_Nullable linkPreview =
+                                  [self linkPreviewForLinkPreviewDraft:linkPreviewDraft
+                                                           transaction:writeTransaction];
+                              if (linkPreview) {
+                                  [message updateWithLinkPreview:linkPreview transaction:writeTransaction];
                               }
-                                      completionBlock:benchmarkCompletion];
+
+                              NSMutableArray<OWSOutgoingAttachmentInfo *> *attachmentInfos = [NSMutableArray new];
+                              for (SignalAttachment *attachment in attachments) {
+                                  OWSOutgoingAttachmentInfo *attachmentInfo = [attachment buildOutgoingAttachmentInfoWithMessage:message];
+                                  [attachmentInfos addObject:attachmentInfo];
+                              }
+                              completionBlock(message, attachmentInfos, writeTransaction);
+                          } completion:benchmarkCompletion];
                       }];
 
     return message;
@@ -721,7 +717,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
         } @catch (NSException *exception) {
             // Do nothing
         }
-    }];
+    } error:nil];
     [TSAttachmentStream deleteAttachments];
 }
 

@@ -13,6 +13,7 @@
 #import <Reachability/Reachability.h>
 #import <SessionCoreKit/Cryptography.h>
 #import <YapDatabase/YapDatabase.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -6,6 +6,7 @@
 #import "OWSPrimaryStorage.h"
 #import "SSKEnvironment.h"
 #import <YapDatabase/YapDatabaseTransaction.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -52,11 +53,9 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)saveAsyncWithCompletionBlock:(void (^_Nullable)(void))completionBlock
 {
-    // TODO: <--------
-    [[self dbReadWriteConnection] asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         [self saveWithTransaction:transaction];
-    }
-                                          completionBlock:completionBlock];
+    } completion:completionBlock];
 }
 
 - (void)touchWithTransaction:(YapDatabaseReadWriteTransaction *)transaction

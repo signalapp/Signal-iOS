@@ -32,27 +32,39 @@ public final class Storage : NSObject {
     // • There can only be a single write transaction per database at any one time, so all write transactions must use `OWSPrimaryStorage`'s `dbReadWriteConnection`.
     // • Executing a write transaction from within a write transaction causes a deadlock and must be avoided.
 
+    @discardableResult
     @objc(writeWithBlock:)
     public static func objc_write(with block: @escaping (YapDatabaseReadWriteTransaction) -> Void) -> AnyPromise {
         return AnyPromise.from(write(with: block))
     }
 
+    @discardableResult
     public static func write(with block: @escaping (YapDatabaseReadWriteTransaction) -> Void) -> Promise<Void> {
+        return write(with: block) { }
+    }
+
+    @discardableResult
+    @objc(writeWithBlock:completion:)
+    public static func objc_write(with block: @escaping (YapDatabaseReadWriteTransaction) -> Void, completion: @escaping () -> Void) -> AnyPromise {
+        return AnyPromise.from(write(with: block, completion: completion))
+    }
+
+    @discardableResult
+    public static func write(with block: @escaping (YapDatabaseReadWriteTransaction) -> Void, completion: @escaping () -> Void) -> Promise<Void> {
         let (promise, seal) = Promise<Void>.pending()
         serialQueue.async { // TODO: There are cases where this isn't necessary
             owsStorage.dbReadWriteConnection.readWrite(block)
+            DispatchQueue.main.async {
+                completion()
+            }
             seal.fulfill(())
         }
         return promise
     }
 
     /// Blocks the calling thread until the write has finished.
+    @discardableResult
     @objc(writeSyncWithBlock:error:)
-    public static func objc_writeSync(with block: @escaping (YapDatabaseReadWriteTransaction) -> Void) throws {
-        try writeSync(with: block)
-    }
-
-    /// Blocks the calling thread until the write has finished.
     public static func writeSync(with block: @escaping (YapDatabaseReadWriteTransaction) -> Void) throws {
         try write(with: block).wait()
     }
