@@ -53,12 +53,9 @@ public extension LokiAPI {
                 }
             }.done(on: DispatchQueue.global()) { snode in
                 seal.fulfill(snode)
-                // Dispatch async on the main queue to avoid nested write transactions
-                DispatchQueue.main.async {
-                    storage.dbReadWriteConnection.readWrite { transaction in
-                        print("[Loki] Persisting snode pool to database.")
-                        storage.setSnodePool(LokiAPI.snodePool, in: transaction)
-                    }
+                try! Storage.syncWrite { transaction in
+                    print("[Loki] Persisting snode pool to database.")
+                    storage.setSnodePool(LokiAPI.snodePool, in: transaction)
                 }
             }.catch(on: DispatchQueue.global()) { error in
                 print("[Loki] Failed to contact seed node at: \(target).")
@@ -90,12 +87,8 @@ public extension LokiAPI {
                 parseTargets(from: $0)
             }.get { swarm in
                 swarmCache[hexEncodedPublicKey] = swarm
-                // Dispatch async on the main queue to avoid nested write transactions
-                DispatchQueue.main.async {
-                    let storage = OWSPrimaryStorage.shared()
-                    storage.dbReadWriteConnection.readWrite { transaction in
-                        storage.setSwarm(swarm, for: hexEncodedPublicKey, in: transaction)
-                    }
+                try! Storage.syncWrite { transaction in
+                    storage.setSwarm(swarm, for: hexEncodedPublicKey, in: transaction)
                 }
             }
         }
@@ -108,12 +101,8 @@ public extension LokiAPI {
 
     internal static func dropSnodeFromSnodePool(_ target: LokiAPITarget) {
         LokiAPI.snodePool.remove(target)
-        // Dispatch async on the main queue to avoid nested write transactions
-        DispatchQueue.main.async {
-            let storage = OWSPrimaryStorage.shared()
-            storage.dbReadWriteConnection.readWrite { transaction in
-                storage.dropSnodeFromSnodePool(target, in: transaction)
-            }
+        try! Storage.syncWrite { transaction in
+            storage.dropSnodeFromSnodePool(target, in: transaction)
         }
     }
 
@@ -122,12 +111,8 @@ public extension LokiAPI {
         if var swarm = swarm, let index = swarm.firstIndex(of: target) {
             swarm.remove(at: index)
             LokiAPI.swarmCache[hexEncodedPublicKey] = swarm
-            // Dispatch async on the main queue to avoid nested write transactions
-            DispatchQueue.main.async {
-                let storage = OWSPrimaryStorage.shared()
-                storage.dbReadWriteConnection.readWrite { transaction in
-                    storage.setSwarm(swarm, for: hexEncodedPublicKey, in: transaction)
-                }
+            try! Storage.syncWrite { transaction in
+                storage.setSwarm(swarm, for: hexEncodedPublicKey, in: transaction)
             }
         }
     }
@@ -135,11 +120,8 @@ public extension LokiAPI {
     // MARK: Public API
     @objc public static func clearSnodePool() {
         snodePool.removeAll()
-        // Dispatch async on the main queue to avoid nested write transactions
-        DispatchQueue.main.async {
-            storage.dbReadWriteConnection.readWrite { transaction in
-                storage.clearSnodePool(in: transaction)
-            }
+        try! Storage.syncWrite { transaction in
+            storage.clearSnodePool(in: transaction)
         }
     }
 

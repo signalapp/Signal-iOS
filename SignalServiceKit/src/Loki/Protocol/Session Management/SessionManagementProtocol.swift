@@ -141,14 +141,12 @@ public final class SessionManagementProtocol : NSObject {
     @objc(repairSessionIfNeededForMessage:to:)
     public static func repairSessionIfNeeded(for message: TSOutgoingMessage, to hexEncodedPublicKey: String) {
         guard (message.thread as? TSGroupThread)?.groupModel.groupType == .closedGroup else { return }
-        DispatchQueue.main.async {
-            storage.dbReadWriteConnection.readWrite { transaction in
-                let thread = TSContactThread.getOrCreateThread(withContactId: hexEncodedPublicKey, transaction: transaction)
-                let sessionRequestMessage = SessionRequestMessage(thread: thread)
-                storage.setSessionRequestTimestamp(for: hexEncodedPublicKey, to: Date(), in: transaction)
-                let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
-                messageSenderJobQueue.add(message: sessionRequestMessage, transaction: transaction)
-            }
+        Storage.write { transaction in
+            let thread = TSContactThread.getOrCreateThread(withContactId: hexEncodedPublicKey, transaction: transaction)
+            let sessionRequestMessage = SessionRequestMessage(thread: thread)
+            storage.setSessionRequestTimestamp(for: hexEncodedPublicKey, to: Date(), in: transaction)
+            let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
+            messageSenderJobQueue.add(message: sessionRequestMessage, transaction: transaction)
         }
     }
 
@@ -205,7 +203,7 @@ public final class SessionManagementProtocol : NSObject {
             closedGroupMembers.formUnion(group.groupModel.groupMemberIds)
         }
         LokiFileServerAPI.getDeviceLinks(associatedWith: closedGroupMembers).ensure {
-            storage.dbReadWriteConnection.readWrite { transaction in
+            Storage.write { transaction in
                 let validHEPKs = closedGroupMembers.flatMap {
                     LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: $0, in: transaction)
                 }

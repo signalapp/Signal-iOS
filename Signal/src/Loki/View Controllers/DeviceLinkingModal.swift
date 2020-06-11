@@ -186,7 +186,7 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
             SSKEnvironment.shared.messageSender.send(linkingAuthorizationMessage, success: {
                 let storage = OWSPrimaryStorage.shared()
                 let slaveHexEncodedPublicKey = deviceLink.slave.hexEncodedPublicKey
-                storage.dbReadWriteConnection.readWrite { transaction in
+                try! Storage.syncWrite { transaction in
                     let thread = TSContactThread.getOrCreateThread(withContactId: slaveHexEncodedPublicKey, transaction: transaction)
                     thread.save(with: transaction)
                 }
@@ -196,7 +196,7 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
                     let _ = SSKEnvironment.shared.syncManager.syncAllContacts()
                 }
                 let _ = SSKEnvironment.shared.syncManager.syncAllOpenGroups()
-                storage.dbReadWriteConnection.readWrite { transaction in
+                try! Storage.syncWrite { transaction in
                     storage.setFriendRequestStatus(.friends, for: slaveHexEncodedPublicKey, transaction: transaction)
                 }
                 DispatchQueue.main.async {
@@ -251,9 +251,8 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
         session.markLinkingRequestAsProcessed() // Only relevant in master mode
         delegate?.handleDeviceLinkingModalDismissed() // Only relevant in slave mode
         if let deviceLink = deviceLink {
-            let storage = OWSPrimaryStorage.shared()
-            storage.dbReadWriteConnection.readWrite { transaction in
-                storage.removePreKeyBundle(forContact: deviceLink.slave.hexEncodedPublicKey, transaction: transaction)
+            try! Storage.syncWrite { transaction in
+                OWSPrimaryStorage.shared().removePreKeyBundle(forContact: deviceLink.slave.hexEncodedPublicKey, transaction: transaction)
             }
         }
         dismiss(animated: true, completion: nil)

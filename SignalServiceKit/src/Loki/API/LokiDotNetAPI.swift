@@ -38,11 +38,8 @@ public class LokiDotNetAPI : NSObject {
             return Promise.value(token)
         } else {
             return requestNewAuthToken(for: server).then(on: DispatchQueue.global()) { submitAuthToken($0, for: server) }.map(on: DispatchQueue.global()) { token in
-                // Dispatch async on the main queue to avoid nested write transactions
-                DispatchQueue.main.async {
-                    storage.dbReadWriteConnection.readWrite { transaction in
-                        setAuthToken(for: server, to: token, in: transaction)
-                    }
+                try! Storage.syncWrite { transaction in
+                    setAuthToken(for: server, to: token, in: transaction)
                 }
                 return token
             }
@@ -54,11 +51,8 @@ public class LokiDotNetAPI : NSObject {
     }
 
     public static func clearAuthToken(for server: String) {
-        // Dispatch async on the main queue to avoid nested write transactions
-        DispatchQueue.main.async {
-            storage.dbReadWriteConnection.readWrite { transaction in
-                transaction.removeObject(forKey: server, inCollection: authTokenCollection)
-            }
+        try! Storage.syncWrite { transaction in
+            transaction.removeObject(forKey: server, inCollection: authTokenCollection)
         }
     }
 
