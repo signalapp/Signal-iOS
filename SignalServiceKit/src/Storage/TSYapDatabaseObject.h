@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import <Mantle/MTLModel+NSCoding.h>
@@ -57,6 +57,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 // This method should only ever be called within a GRDB write transaction.
 - (void)clearRowId;
+
+@property (nonatomic, readonly) NSString *transactionFinalizationKey;
 
 #pragma mark -
 

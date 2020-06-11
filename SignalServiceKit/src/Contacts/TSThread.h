@@ -140,6 +140,8 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
 - (BOOL)hasPendingMessageRequestWithTransaction:(GRDBReadTransaction *)transaction
     NS_SWIFT_NAME(hasPendingMessageRequest(transaction:));
 
+- (void)scheduleTouchFinalizationWithTransaction:(SDSAnyWriteTransaction *)transactionForMethod;
+
 #pragma mark Archival
 
 /**
