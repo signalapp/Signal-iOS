@@ -70,7 +70,7 @@ public final class MultiDeviceProtocol : NSObject {
                 threadPromiseSeal.fulfill(thread)
             }
         }
-        return threadPromise.then(on: DispatchQueue.main) { thread -> Promise<Void> in // Intentionally the main queue
+        return threadPromise.then2 { thread -> Promise<Void> in
             let message = messageSend.message
             let messageSender = SSKEnvironment.shared.messageSender
             let (promise, seal) = Promise<Void>.pending()
@@ -108,7 +108,7 @@ public final class MultiDeviceProtocol : NSObject {
         }
         print("[Loki] Sending \(type(of: message)) message using multi device routing.")
         let recipientID = messageSend.recipient.recipientId()
-        getMultiDeviceDestinations(for: recipientID, in: transaction).done(on: OWSDispatch.sendingQueue()) { destinations in
+        getMultiDeviceDestinations(for: recipientID, in: transaction).done2 { destinations in
             var promises: [Promise<Void>] = []
             let masterDestination = destinations.first { $0.isMaster }
             if let masterDestination = masterDestination {
@@ -136,7 +136,7 @@ public final class MultiDeviceProtocol : NSObject {
                     messageSend.failure(errors.first!)
                 }
             }
-        }.catch(on: DispatchQueue.main) { error in // Intentionally the main queue
+        }.catch2 { error in
             // Proceed even if updating the recipient's device links failed, so that message sending
             // is independent of whether the file server is online
             let udManager = SSKEnvironment.shared.udManager

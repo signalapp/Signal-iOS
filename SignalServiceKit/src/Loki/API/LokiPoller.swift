@@ -70,8 +70,8 @@ public final class LokiPoller : NSObject {
     }
 
     private func pollNextSnode(seal: Resolver<Void>) {
-        let userHexEncodedPublicKey = getUserHexEncodedPublicKey()
-        let swarm = LokiAPI.swarmCache[userHexEncodedPublicKey] ?? []
+        let userPublicKey = getUserHexEncodedPublicKey()
+        let swarm = LokiAPI.swarmCache[userPublicKey] ?? []
         let unusedSnodes = Set(swarm).subtracting(usedSnodes)
         if !unusedSnodes.isEmpty {
             // randomElement() uses the system's default random generator, which is cryptographically secure
@@ -84,7 +84,7 @@ public final class LokiPoller : NSObject {
                     self?.pollCount = 0
                 } else {
                     print("[Loki] Polling \(nextSnode) failed; dropping it and switching to next snode.")
-                    LokiAPI.dropSnodeFromSwarmIfNeeded(nextSnode, hexEncodedPublicKey: userHexEncodedPublicKey)
+                    LokiAPI.dropSnodeFromSwarmIfNeeded(nextSnode, hexEncodedPublicKey: userPublicKey)
                 }
                 self?.pollNextSnode(seal: seal)
             }

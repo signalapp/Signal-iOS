@@ -12,7 +12,7 @@ public extension LokiAPI {
     // MARK: Settings
     private static let minimumSnodePoolCount = 32
     private static let minimumSwarmSnodeCount = 2
-    private static let targetSwarmSnodeCount = 3
+    private static let targetSwarmSnodeCount = 2
     
     internal static let snodeFailureThreshold = 2
     
