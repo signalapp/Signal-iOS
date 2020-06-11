@@ -147,6 +147,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
             let operationQueue = OperationQueue()
             operationQueue.name = "SendingQueue:\(threadId)"
             operationQueue.maxConcurrentOperationCount = 1
+            operationQueue.qualityOfService = .userInitiated
 
             senderQueues[threadId] = operationQueue
 

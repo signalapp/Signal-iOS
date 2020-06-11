@@ -5,7 +5,6 @@ public extension LokiAPI {
 
     fileprivate static let seedNodePool: Set<String> = [ "https://storage.seed1.loki.network", "https://storage.seed3.loki.network", "https://public.loki.foundation" ]
 
-    /// Only ever modified from `LokiAPI.errorHandlingQueue` to avoid race conditions.
     internal static var snodeFailureCount: [LokiAPITarget:UInt] = [:]
     internal static var snodePool: Set<LokiAPITarget> = []
     internal static var swarmCache: [String:[LokiAPITarget]] = [:] // TODO: Make this set based?

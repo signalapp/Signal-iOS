@@ -126,21 +126,21 @@ public extension JobQueue {
 
         jobRecord.save(with: transaction)
 
-        transaction.addCompletionQueue(.global()) {
+        transaction.addCompletionQueue(DispatchQueue.global(qos: .userInitiated)) {
             self.startWorkWhenAppIsReady()
         }
     }
 
     func startWorkWhenAppIsReady() {
         guard !CurrentAppContext().isRunningTests else {
-            DispatchQueue.global().async {
+            DispatchQueue.global(qos: .userInitiated).async {
                 self.workStep()
             }
             return
         }
 
         AppReadiness.runNowOrWhenAppDidBecomeReady {
-            DispatchQueue.global().async {
+            DispatchQueue.global(qos: .userInitiated).async {
                 self.workStep()
             }
         }
@@ -190,7 +190,7 @@ public extension JobQueue {
                 owsFailDebug("unexpected error")
             }
 
-            DispatchQueue.global().async {
+            DispatchQueue.global(qos: .userInitiated).async {
                 self.workStep()
             }
         }

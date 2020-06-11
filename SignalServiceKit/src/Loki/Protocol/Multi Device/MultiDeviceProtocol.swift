@@ -18,8 +18,6 @@ public final class MultiDeviceProtocol : NSObject {
     /// A mapping from hex encoded public key to date updated.
     public static var lastDeviceLinkUpdate: [String:Date] = [:]
 
-    // TODO: I don't think stateQueue actually helps avoid race conditions
-
     internal static var storage: OWSPrimaryStorage { OWSPrimaryStorage.shared() }
 
     // MARK: - Settings
@@ -317,10 +315,10 @@ public extension MultiDeviceProtocol {
         }
         if timeSinceLastUpdate > deviceLinkUpdateInterval {
             let masterHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: hexEncodedPublicKey, in: transaction) ?? hexEncodedPublicKey
-            LokiFileServerAPI.getDeviceLinks(associatedWith: masterHexEncodedPublicKey).done(on: DispatchQueue.global()) { _ in
+            LokiFileServerAPI.getDeviceLinks(associatedWith: masterHexEncodedPublicKey).done2 { _ in
                 getDestinations()
                 lastDeviceLinkUpdate[hexEncodedPublicKey] = Date()
-            }.catch(on: DispatchQueue.global()) { error in
+            }.catch2 { error in
                 if (error as? LokiDotNetAPI.LokiDotNetAPIError) == LokiDotNetAPI.LokiDotNetAPIError.parsingFailed {
                     // Don't immediately re-fetch in case of failure due to a parsing error
                     lastDeviceLinkUpdate[hexEncodedPublicKey] = Date()
