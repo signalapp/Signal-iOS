@@ -141,7 +141,13 @@ public final class SessionManagementProtocol : NSObject {
     @objc(repairSessionIfNeededForMessage:to:)
     public static func repairSessionIfNeeded(for message: TSOutgoingMessage, to hexEncodedPublicKey: String) {
         guard (message.thread as? TSGroupThread)?.groupModel.groupType == .closedGroup else { return }
+        var hasSentSessionRequest = false
+        storage.dbReadConnection.read { transaction in
+            hasSentSessionRequest = storage.getSessionRequestTimestamp(for: hexEncodedPublicKey, in: transaction) != nil
+        }
+        guard !hasSentSessionRequest else { return }
         Storage.write { transaction in
+            print("[Loki] Repairing session with: \(hexEncodedPublicKey).")
             let thread = TSContactThread.getOrCreateThread(withContactId: hexEncodedPublicKey, transaction: transaction)
             let sessionRequestMessage = SessionRequestMessage(thread: thread)
             storage.setSessionRequestTimestamp(for: hexEncodedPublicKey, to: Date(), in: transaction)
@@ -194,6 +200,7 @@ public final class SessionManagementProtocol : NSObject {
         if let sentSessionRequestTimestamp = storage.getSessionRequestTimestamp(for: hexEncodedPublicKey, in: transaction),
             envelope.timestamp < NSDate.ows_millisecondsSince1970(for: sentSessionRequestTimestamp) {
             // We sent a session request after this one was sent
+            print("[Loki] Ignoring session request from: \(hexEncodedPublicKey).")
             return
         }
         var closedGroupMembers: Set<String> = []

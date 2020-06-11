@@ -38,6 +38,7 @@ public final class ClosedGroupsProtocol : NSObject {
             guard hexEncodedPublicKey != getUserHexEncodedPublicKey() else { return }
             let hasSession = storage.containsSession(hexEncodedPublicKey, deviceId: Int32(OWSDevicePrimaryDeviceId), protocolContext: transaction)
             guard !hasSession else { return }
+            print("[Loki] Establishing session with: \(hexEncodedPublicKey).")
             let thread = TSContactThread.getOrCreateThread(withContactId: hexEncodedPublicKey, transaction: transaction)
             thread.save(with: transaction)
             let sessionRequestMessage = SessionRequestMessage(thread: thread)
