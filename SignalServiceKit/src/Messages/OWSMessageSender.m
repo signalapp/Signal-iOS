@@ -437,7 +437,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 if (error != nil) {
                     return;
                 }
-            });
+            }];
             if (error != nil) {
                 dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
                     failureHandler(error);
@@ -1671,7 +1671,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     }
 
     __block NSException *encryptionException;
-    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         for (NSNumber *deviceId in deviceIds) {
             @try {
                 NSDictionary *_Nullable messageDict = [self throws_encryptedMessageForMessageSend:messageSend
@@ -1688,7 +1688,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 return;
             }
         }
-    });
+    }];
     if (encryptionException) {
         OWSLogInfo(@"Exception during encryption: %@", encryptionException);
         @throw encryptionException;
