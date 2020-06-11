@@ -154,7 +154,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
             appDelegate.startRSSFeedPollersIfNeeded()
         }
         // Populate onion request path countries cache
-        DispatchQueue.global(qos: .default).async {
+        DispatchQueue.global(qos: .utility).async {
             let _ = IP2Country.shared.populateCacheIfNeeded()
         }
         // Do initial update

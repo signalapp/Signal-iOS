@@ -44,7 +44,7 @@ final class IP2Country {
     }
 
     @objc func populateCacheIfNeededAsync() {
-        DispatchQueue.global(qos: .userInitiated).async {
+        DispatchQueue.global(qos: .utility).async {
             let _ = self.populateCacheIfNeeded()
         }
     }
