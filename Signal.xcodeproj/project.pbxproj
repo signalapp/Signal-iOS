@@ -104,6 +104,7 @@
 		3448E1622213585C004B052E /* OnboardingBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3448E1612213585C004B052E /* OnboardingBaseViewController.swift */; };
 		3448E16422135FFA004B052E /* OnboardingPhoneNumberViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3448E16322135FFA004B052E /* OnboardingPhoneNumberViewController.swift */; };
 		3448E1662215B313004B052E /* OnboardingCaptchaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3448E1652215B313004B052E /* OnboardingCaptchaViewController.swift */; };
+		344DAEDF248A7526000AD4FA /* DebugUIStress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344DAEDE248A7526000AD4FA /* DebugUIStress.swift */; };
 		344DC9AF226E483D004E7322 /* ManageStickersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344DC9AE226E483C004E7322 /* ManageStickersViewController.swift */; };
 		344F248D2007CCD600CFB4F4 /* DisplayableText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344F248C2007CCD600CFB4F4 /* DisplayableText.swift */; };
 		3456A73223D63EBE00947219 /* GroupsV2Protos.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3456A73123D63EBE00947219 /* GroupsV2Protos.swift */; };
@@ -1000,6 +1001,7 @@
 		3448E16322135FFA004B052E /* OnboardingPhoneNumberViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingPhoneNumberViewController.swift; sourceTree = "<group>"; };
 		3448E1652215B313004B052E /* OnboardingCaptchaViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingCaptchaViewController.swift; sourceTree = "<group>"; };
 		34491FC11FB0F78500B3E5A3 /* my */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = my; path = translations/my.lproj/Localizable.strings; sourceTree = "<group>"; };
+		344DAEDE248A7526000AD4FA /* DebugUIStress.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebugUIStress.swift; sourceTree = "<group>"; };
 		344DC9AE226E483C004E7322 /* ManageStickersViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ManageStickersViewController.swift; sourceTree = "<group>"; };
 		344F248C2007CCD600CFB4F4 /* DisplayableText.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DisplayableText.swift; sourceTree = "<group>"; };
 		3456A73123D63EBE00947219 /* GroupsV2Protos.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsV2Protos.swift; sourceTree = "<group>"; };
@@ -2691,6 +2693,7 @@
 				452037D01EE84975004E4CDF /* DebugUISessionState.m */,
 				34BECE291F74C12700D7438D /* DebugUIStress.h */,
 				34BECE2A1F74C12700D7438D /* DebugUIStress.m */,
+				344DAEDE248A7526000AD4FA /* DebugUIStress.swift */,
 				343A65931FC47D5D000477A1 /* DebugUISyncMessages.h */,
 				343A65941FC47D5E000477A1 /* DebugUISyncMessages.m */,
 				34D8C0251ED3673300188D7C /* DebugUITableViewController.h */,
@@ -4955,6 +4958,7 @@
 				45A663C51F92EC760027B59E /* GroupTableViewCell.swift in Sources */,
 				88B688B0238F0D1000286F82 /* ReactionsDetailSheet.swift in Sources */,
 				34CA631B2097806F00E526A0 /* OWSContactShareView.m in Sources */,
+				344DAEDF248A7526000AD4FA /* DebugUIStress.swift in Sources */,
 				8853506824084E470011D318 /* OWSDateHeaderCell.swift in Sources */,
 				34D1F0861F8678AA0066283D /* ConversationViewController.m in Sources */,
 				3427C64320F500E000EEC730 /* OWSMessageTimerView.m in Sources */,
