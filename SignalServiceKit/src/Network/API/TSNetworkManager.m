@@ -13,8 +13,8 @@
 #import "TSAccountManager.h"
 #import "TSRequest.h"
 #import <AFNetworking/AFNetworking.h>
-#import <SignalCoreKit/NSData+OWS.h>
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SessionCoreKit/NSData+OWS.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

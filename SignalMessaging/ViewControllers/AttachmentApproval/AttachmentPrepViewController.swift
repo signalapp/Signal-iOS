@@ -146,7 +146,7 @@ public class AttachmentPrepViewController: OWSViewController, PlayerProgressBarD
             // pops the keyboard.
             contentContainer.addSubview(progressBar)
 
-            progressBar.autoPin(toTopLayoutGuideOf: self, withInset: 0)
+            progressBar.autoPinEdge(.top, to: .top, of: view)
             progressBar.autoPinWidthToSuperview()
             progressBar.autoSetDimension(.height, toSize: 44)
 

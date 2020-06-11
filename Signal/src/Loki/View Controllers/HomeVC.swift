@@ -84,7 +84,6 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
     // MARK: Lifecycle
     override func viewDidLoad() {
         super.viewDidLoad()
-        touch(IP2Country.shared)
         SignalApp.shared().homeViewController = self
         setUpGradientBackground()
         if navigationController?.navigationBar != nil {
@@ -153,6 +152,10 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
             appDelegate.startOpenGroupPollersIfNeeded()
             appDelegate.createRSSFeedsIfNeeded()
             appDelegate.startRSSFeedPollersIfNeeded()
+        }
+        // Populate onion request path countries cache
+        DispatchQueue.global(qos: .userInitiated).async {
+            let _ = IP2Country.shared.populateCacheIfNeeded()
         }
         // Do initial update
         reload()

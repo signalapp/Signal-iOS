@@ -11,7 +11,7 @@
 #import "TSOutgoingMessage.h"
 #import "TSThread.h"
 #import "YapDatabaseConnection+OWS.h"
-#import <SignalCoreKit/Cryptography.h>
+#import <SessionCoreKit/Cryptography.h>
 
 @interface TSMessageStorageTests : SSKBaseTestObjC
 

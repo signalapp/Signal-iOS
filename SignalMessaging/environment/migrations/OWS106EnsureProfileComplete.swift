@@ -4,7 +4,7 @@
 
 import Foundation
 import PromiseKit
-import SignalServiceKit
+import SessionServiceKit
 
 @objc
 public class OWS106EnsureProfileComplete: OWSDatabaseMigration {

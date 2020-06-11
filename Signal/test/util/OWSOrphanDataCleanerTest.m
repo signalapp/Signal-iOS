@@ -4,11 +4,11 @@
 
 #import "OWSOrphanDataCleaner.h"
 #import "SignalBaseTest.h"
-#import <SignalServiceKit/OWSDevice.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
-#import <SignalServiceKit/TSAttachmentStream.h>
-#import <SignalServiceKit/TSContactThread.h>
-#import <SignalServiceKit/TSIncomingMessage.h>
+#import <SessionServiceKit/OWSDevice.h>
+#import <SessionServiceKit/OWSPrimaryStorage.h>
+#import <SessionServiceKit/TSAttachmentStream.h>
+#import <SessionServiceKit/TSContactThread.h>
+#import <SessionServiceKit/TSIncomingMessage.h>
 
 @interface OWSOrphanDataCleaner (Test)
 

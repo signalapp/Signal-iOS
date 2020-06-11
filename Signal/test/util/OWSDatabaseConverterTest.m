@@ -3,11 +3,11 @@
 //
 
 #import "SignalBaseTest.h"
-#import <SignalCoreKit/NSData+OWS.h>
-#import <SignalCoreKit/Randomness.h>
-#import <SignalServiceKit/OWSFileSystem.h>
-#import <SignalServiceKit/OWSStorage.h>
-#import <SignalServiceKit/YapDatabaseConnection+OWS.h>
+#import <SessionCoreKit/NSData+OWS.h>
+#import <SessionCoreKit/Randomness.h>
+#import <SessionServiceKit/OWSFileSystem.h>
+#import <SessionServiceKit/OWSStorage.h>
+#import <SessionServiceKit/YapDatabaseConnection+OWS.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseCryptoUtils.h>
 #import <YapDatabase/YapDatabasePrivate.h>

@@ -1,5 +1,5 @@
 import Foundation
-import SignalMetadataKit
+import SessionMetadataKit
 
 @objc(LKSessionResetImplementation)
 public class LokiSessionResetImplementation : NSObject, SessionResetProtocol {

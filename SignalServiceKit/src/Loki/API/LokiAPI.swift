@@ -1,9 +1,7 @@
 import PromiseKit
 
-// TODO: A lot of the API relies on things happening serially and state being maintained correctly (i.e. without
-// race conditions). To this end we should just have one high quality serial queue and do everything on there, except
-// for things that explicitly *can* be done in parallel and don't modify state, which should then happen
-// on a global queue.
+// TODO: We guarantee that things happen in-order through promise chaining. For performance we should be able to use different queues for everything as long
+// as we always modify state from the same queue.
 
 @objc(LKAPI)
 public final class LokiAPI : NSObject {

@@ -4,20 +4,20 @@
 
 #import "OWSOrphanDataCleaner.h"
 #import "DateUtil.h"
-#import <SignalCoreKit/NSDate+OWS.h>
+#import <SessionCoreKit/NSDate+OWS.h>
 #import <SignalMessaging/OWSProfileManager.h>
 #import <SignalMessaging/OWSUserProfile.h>
-#import <SignalServiceKit/AppReadiness.h>
-#import <SignalServiceKit/AppVersion.h>
-#import <SignalServiceKit/OWSContact.h>
-#import <SignalServiceKit/OWSFileSystem.h>
-#import <SignalServiceKit/OWSPrimaryStorage.h>
-#import <SignalServiceKit/TSAttachmentStream.h>
-#import <SignalServiceKit/TSInteraction.h>
-#import <SignalServiceKit/TSMessage.h>
-#import <SignalServiceKit/TSQuotedMessage.h>
-#import <SignalServiceKit/TSThread.h>
-#import <SignalServiceKit/YapDatabaseTransaction+OWS.h>
+#import <SessionServiceKit/AppReadiness.h>
+#import <SessionServiceKit/AppVersion.h>
+#import <SessionServiceKit/OWSContact.h>
+#import <SessionServiceKit/OWSFileSystem.h>
+#import <SessionServiceKit/OWSPrimaryStorage.h>
+#import <SessionServiceKit/TSAttachmentStream.h>
+#import <SessionServiceKit/TSInteraction.h>
+#import <SessionServiceKit/TSMessage.h>
+#import <SessionServiceKit/TSQuotedMessage.h>
+#import <SessionServiceKit/TSThread.h>
+#import <SessionServiceKit/YapDatabaseTransaction+OWS.h>
 #import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN

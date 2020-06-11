@@ -18,9 +18,9 @@
 #import "YapDatabaseTransaction+OWS.h"
 #import <PromiseKit/AnyPromise.h>
 #import <Reachability/Reachability.h>
-#import <SignalCoreKit/NSData+OWS.h>
-#import <SignalCoreKit/Randomness.h>
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SessionCoreKit/NSData+OWS.h>
+#import <SessionCoreKit/Randomness.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN

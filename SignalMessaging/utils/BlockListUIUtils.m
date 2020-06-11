@@ -6,11 +6,11 @@
 #import "OWSContactsManager.h"
 #import "PhoneNumber.h"
 #import <SignalMessaging/SignalMessaging-Swift.h>
-#import <SignalServiceKit/Contact.h>
-#import <SignalServiceKit/OWSBlockingManager.h>
-#import <SignalServiceKit/SignalAccount.h>
-#import <SignalServiceKit/TSAccountManager.h>
-#import <SignalServiceKit/TSGroupThread.h>
+#import <SessionServiceKit/Contact.h>
+#import <SessionServiceKit/OWSBlockingManager.h>
+#import <SessionServiceKit/SignalAccount.h>
+#import <SessionServiceKit/TSAccountManager.h>
+#import <SessionServiceKit/TSGroupThread.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

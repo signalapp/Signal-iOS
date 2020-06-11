@@ -3,7 +3,7 @@
 //
 
 import Foundation
-import SignalServiceKit
+import SessionServiceKit
 import SignalMessaging
 
 @objc
@@ -171,7 +171,7 @@ public class LongTextViewController: OWSViewController {
         view.addSubview(footer)
         footer.autoPinWidthToSuperview()
         footer.autoPinEdge(.top, to: .bottom, of: messageTextView)
-        footer.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
+        footer.autoPinEdge(.bottom, to: .bottom, of: view)
 
         footer.items = [
             UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil),

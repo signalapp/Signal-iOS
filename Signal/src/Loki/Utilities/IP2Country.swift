@@ -2,16 +2,17 @@ import SwiftCSV
 
 final class IP2Country {
 
-    private let ipv4Table = try! CSV(name: "GeoLite2-Country-Blocks-IPv4", extension: "csv", bundle: .main, delimiter: ",", encoding: .utf8, loadColumns: true)!
-    private let countryNamesTable = try! CSV(name: "GeoLite2-Country-Locations-English", extension: "csv", bundle: .main, delimiter: ",", encoding: .utf8, loadColumns: true)!
+    private lazy var ipv4Table = try! CSV(name: "GeoLite2-Country-Blocks-IPv4", extension: "csv", bundle: .main, delimiter: ",", encoding: .utf8, loadColumns: true)!
+    private lazy var countryNamesTable = try! CSV(name: "GeoLite2-Country-Locations-English", extension: "csv", bundle: .main, delimiter: ",", encoding: .utf8, loadColumns: true)!
     var countryNamesCache: [String:String] = [:]
+
+    static var isInitialized = false
 
     // MARK: Lifecycle
     static let shared = IP2Country()
 
     private init() {
-        populateCacheIfNeeded()
-        NotificationCenter.default.addObserver(self, selector: #selector(populateCacheIfNeeded), name: .pathsBuilt, object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(populateCacheIfNeededAsync), name: .pathsBuilt, object: nil)
     }
 
     deinit {
@@ -42,23 +43,29 @@ final class IP2Country {
         return getCountryInternal()
     }
 
-    @objc private func populateCacheIfNeeded() {
+    @objc func populateCacheIfNeededAsync() {
         DispatchQueue.global(qos: .userInitiated).async {
-            if OnionRequestAPI.paths.count < OnionRequestAPI.pathCount {
-                let storage = OWSPrimaryStorage.shared()
-                storage.dbReadConnection.read { transaction in
-                    OnionRequestAPI.paths = storage.getOnionRequestPaths(in: transaction)
-                }
-            }
-            guard OnionRequestAPI.paths.count >= OnionRequestAPI.pathCount else { return }
-            let pathToDisplay = OnionRequestAPI.paths.first!
-            pathToDisplay.forEach { snode in
-                let _ = self.cacheCountry(for: snode.ip) // Preload if needed
-            }
-            DispatchQueue.main.async {
-                NotificationCenter.default.post(name: .onionRequestPathCountriesLoaded, object: nil)
-            }
-            print("[Loki] Finished preloading onion request path countries.")
+            let _ = self.populateCacheIfNeeded()
         }
+    }
+
+    func populateCacheIfNeeded() -> Bool {
+        if OnionRequestAPI.paths.count < OnionRequestAPI.pathCount {
+            let storage = OWSPrimaryStorage.shared()
+            storage.dbReadConnection.read { transaction in
+                OnionRequestAPI.paths = storage.getOnionRequestPaths(in: transaction)
+            }
+        }
+        guard OnionRequestAPI.paths.count >= OnionRequestAPI.pathCount else { return false }
+        let pathToDisplay = OnionRequestAPI.paths.first!
+        pathToDisplay.forEach { snode in
+            let _ = self.cacheCountry(for: snode.ip) // Preload if needed
+        }
+        DispatchQueue.main.async {
+            IP2Country.isInitialized = true
+            NotificationCenter.default.post(name: .onionRequestPathCountriesLoaded, object: nil)
+        }
+        print("[Loki] Finished preloading onion request path countries.")
+        return true
     }
 }

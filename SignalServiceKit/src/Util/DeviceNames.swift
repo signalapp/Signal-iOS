@@ -3,8 +3,8 @@
 //
 
 import Foundation
-import Curve25519Kit
-import AxolotlKit
+import SessionCurve25519Kit
+import SessionAxolotlKit
 
 @objc
 public enum DeviceNameError: Int, Error {

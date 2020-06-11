@@ -21,14 +21,14 @@
 #import "TSContactThread.h"
 #import "TSErrorMessage.h"
 #import "TSPreKeyManager.h"
-#import <AxolotlKit/AxolotlExceptions.h>
-#import <AxolotlKit/NSData+keyVersionByte.h>
-#import <AxolotlKit/SessionCipher.h>
-#import <SignalCoreKit/NSData+OWS.h>
-#import <SignalCoreKit/Randomness.h>
-#import <SignalCoreKit/SCKExceptionWrapper.h>
-#import <SignalMetadataKit/SignalMetadataKit-Swift.h>
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SessionAxolotlKit/AxolotlExceptions.h>
+#import <SessionAxolotlKit/NSData+keyVersionByte.h>
+#import <SessionAxolotlKit/SessionCipher.h>
+#import <SessionCoreKit/NSData+OWS.h>
+#import <SessionCoreKit/Randomness.h>
+#import <SessionCoreKit/SCKExceptionWrapper.h>
+#import <SessionMetadataKit/SessionMetadataKit-Swift.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

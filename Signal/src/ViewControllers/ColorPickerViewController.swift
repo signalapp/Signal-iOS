@@ -465,7 +465,7 @@ private class MockIncomingMessage: TSIncomingMessage {
         fatalError("init(coder:) has not been implemented")
     }
 
-    required init(dictionary dictionaryValue: [AnyHashable: Any]!) throws {
+    required init(dictionary dictionaryValue: [String: Any]!) throws {
         fatalError("init(dictionary:) has not been implemented")
     }
 
@@ -494,7 +494,7 @@ private class MockOutgoingMessage: TSOutgoingMessage {
         fatalError("init(coder:) has not been implemented")
     }
 
-    required init(dictionary dictionaryValue: [AnyHashable: Any]!) throws {
+    required init(dictionary dictionaryValue: [String: Any]!) throws {
         fatalError("init(dictionary:) has not been implemented")
     }
 

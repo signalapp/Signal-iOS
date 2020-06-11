@@ -7,7 +7,7 @@
 #import "NSString+SSK.h"
 #import "TSAttachmentPointer.h"
 #import "TSMessage.h"
-#import <SignalCoreKit/iOSVersions.h>
+#import <SessionCoreKit/iOSVersions.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

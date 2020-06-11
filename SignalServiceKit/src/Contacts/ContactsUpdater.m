@@ -9,9 +9,9 @@
 #import "PhoneNumber.h"
 #import "SSKEnvironment.h"
 #import "TSNetworkManager.h"
-#import <SignalCoreKit/Cryptography.h>
-#import <SignalCoreKit/Threading.h>
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SessionCoreKit/Cryptography.h>
+#import <SessionCoreKit/Threading.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN

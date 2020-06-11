@@ -1,9 +1,9 @@
 #import "OWSPrimaryStorage.h"
 
-#import <AxolotlKit/AxolotlExceptions.h>
-#import <AxolotlKit/PreKeyBundle.h>
-#import <AxolotlKit/PreKeyRecord.h>
-#import <Curve25519Kit/Ed25519.h>
+#import <SessionAxolotlKit/AxolotlExceptions.h>
+#import <SessionAxolotlKit/PreKeyBundle.h>
+#import <SessionAxolotlKit/PreKeyRecord.h>
+#import <SessionCurve25519Kit/Ed25519.h>
 #import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN

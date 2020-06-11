@@ -70,8 +70,8 @@ public class OnboardingSplashViewController: OnboardingBaseViewController {
         stackView.isLayoutMarginsRelativeArrangement = true
         view.addSubview(stackView)
         stackView.autoPinWidthToSuperview()
-        stackView.autoPin(toTopLayoutGuideOf: self, withInset: 0)
-        stackView.autoPin(toBottomLayoutGuideOf: self, withInset: 0)
+        stackView.autoPinEdge(.top, to: .top, of: view)
+        stackView.autoPinEdge(.bottom, to: .bottom, of: view)
         lokiLogoImageView.autoCenterInSuperview()
         
         if UserDefaults.standard.bool(forKey: "wasUnlinked") {

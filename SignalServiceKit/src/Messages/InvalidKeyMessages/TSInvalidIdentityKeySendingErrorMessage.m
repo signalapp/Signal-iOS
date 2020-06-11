@@ -11,7 +11,7 @@
 #import "TSContactThread.h"
 #import "TSErrorMessage_privateConstructor.h"
 #import "TSOutgoingMessage.h"
-#import <AxolotlKit/NSData+keyVersionByte.h>
+#import <SessionAxolotlKit/NSData+keyVersionByte.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

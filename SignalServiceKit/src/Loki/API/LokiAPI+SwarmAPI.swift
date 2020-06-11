@@ -3,8 +3,12 @@ import PromiseKit
 public extension LokiAPI {
     private static var snodeVersion: [LokiAPITarget:String] = [:]
 
+    fileprivate static let seedNodePool: Set<String> = [ "https://storage.seed1.loki.network", "https://storage.seed3.loki.network", "https://public.loki.foundation" ]
+
     /// Only ever modified from `LokiAPI.errorHandlingQueue` to avoid race conditions.
     internal static var snodeFailureCount: [LokiAPITarget:UInt] = [:]
+    internal static var snodePool: Set<LokiAPITarget> = []
+    internal static var swarmCache: [String:[LokiAPITarget]] = [:] // TODO: Make this set based?
 
     // MARK: Settings
     private static let minimumSnodePoolCount = 32
@@ -12,39 +16,6 @@ public extension LokiAPI {
     private static let targetSwarmSnodeCount = 3
     
     internal static let snodeFailureThreshold = 2
-    
-    // MARK: Caching
-    internal static var swarmCache: [String:[LokiAPITarget]] = [:] // TODO: Make this set based?
-    
-    internal static func dropSnodeFromSwarmIfNeeded(_ target: LokiAPITarget, hexEncodedPublicKey: String) {
-        let swarm = LokiAPI.swarmCache[hexEncodedPublicKey]
-        if var swarm = swarm, let index = swarm.firstIndex(of: target) {
-            swarm.remove(at: index)
-            LokiAPI.swarmCache[hexEncodedPublicKey] = swarm
-            // Dispatch async on the main queue to avoid nested write transactions
-            DispatchQueue.main.async {
-                let storage = OWSPrimaryStorage.shared()
-                storage.dbReadWriteConnection.readWrite { transaction in
-                    storage.setSwarm(swarm, for: hexEncodedPublicKey, in: transaction)
-                }
-            }
-        }
-    }
-    
-    // MARK: Clearnet Setup
-    fileprivate static let seedNodePool: Set<String> = [ "https://storage.seed1.loki.network", "https://storage.seed3.loki.network", "https://public.loki.foundation" ]
-
-    internal static var snodePool: Set<LokiAPITarget> = []
-
-    @objc public static func clearSnodePool() {
-        snodePool.removeAll()
-        // Dispatch async on the main queue to avoid nested write transactions
-        DispatchQueue.main.async {
-            storage.dbReadWriteConnection.readWrite { transaction in
-                storage.clearSnodePool(in: transaction)
-            }
-        }
-    }
     
     // MARK: Internal API
     internal static func getRandomSnode() -> Promise<LokiAPITarget> {
@@ -135,42 +106,43 @@ public extension LokiAPI {
         return getSwarm(for: hexEncodedPublicKey).map { Array($0.shuffled().prefix(targetSwarmSnodeCount)) }
     }
 
-    internal static func getFileServerProxy() -> Promise<LokiAPITarget> {
-        let (promise, seal) = Promise<LokiAPITarget>.pending()
-        func getVersion(for snode: LokiAPITarget) -> Promise<String> {
-            if let version = snodeVersion[snode] {
-                return Promise { $0.fulfill(version) }
-            } else {
-                let url = URL(string: "\(snode.address):\(snode.port)/get_stats/v1")!
-                let request = TSRequest(url: url)
-                return TSNetworkManager.shared().perform(request, withCompletionQueue: DispatchQueue.global()).map(on: DispatchQueue.global()) { intermediate in
-                    let rawResponse = intermediate.responseObject
-                    guard let json = rawResponse as? JSON, let version = json["version"] as? String else { throw LokiAPIError.missingSnodeVersion }
-                    snodeVersion[snode] = version
-                    return version
-                }
+    internal static func dropSnodeFromSnodePool(_ target: LokiAPITarget) {
+        LokiAPI.snodePool.remove(target)
+        // Dispatch async on the main queue to avoid nested write transactions
+        DispatchQueue.main.async {
+            let storage = OWSPrimaryStorage.shared()
+            storage.dbReadWriteConnection.readWrite { transaction in
+                storage.dropSnodeFromSnodePool(target, in: transaction)
             }
         }
-        getRandomSnode().then(on: DispatchQueue.global()) { snode -> Promise<LokiAPITarget> in
-            return getVersion(for: snode).then(on: DispatchQueue.global()) { version -> Promise<LokiAPITarget> in
-                if version >= "2.0.2" {
-                    print("[Loki] Using file server proxy with version number \(version).")
-                    return Promise { $0.fulfill(snode) }
-                } else {
-                    print("[Loki] Rejecting file server proxy with version number \(version).")
-                    return getFileServerProxy()
-                }
-            }.recover(on: DispatchQueue.global()) { _ in
-                return getFileServerProxy()
-            }
-        }.done(on: DispatchQueue.global()) { snode in
-            seal.fulfill(snode)
-        }.catch(on: DispatchQueue.global()) { error in
-            seal.reject(error)
-        }
-        return promise
     }
-    
+
+    internal static func dropSnodeFromSwarmIfNeeded(_ target: LokiAPITarget, hexEncodedPublicKey: String) {
+        let swarm = LokiAPI.swarmCache[hexEncodedPublicKey]
+        if var swarm = swarm, let index = swarm.firstIndex(of: target) {
+            swarm.remove(at: index)
+            LokiAPI.swarmCache[hexEncodedPublicKey] = swarm
+            // Dispatch async on the main queue to avoid nested write transactions
+            DispatchQueue.main.async {
+                let storage = OWSPrimaryStorage.shared()
+                storage.dbReadWriteConnection.readWrite { transaction in
+                    storage.setSwarm(swarm, for: hexEncodedPublicKey, in: transaction)
+                }
+            }
+        }
+    }
+
+    // MARK: Public API
+    @objc public static func clearSnodePool() {
+        snodePool.removeAll()
+        // Dispatch async on the main queue to avoid nested write transactions
+        DispatchQueue.main.async {
+            storage.dbReadWriteConnection.readWrite { transaction in
+                storage.clearSnodePool(in: transaction)
+            }
+        }
+    }
+
     // MARK: Parsing
     private static func parseTargets(from rawResponse: Any) -> [LokiAPITarget] {
         guard let json = rawResponse as? JSON, let rawTargets = json["snodes"] as? [JSON] else {
@@ -202,15 +174,8 @@ internal extension Promise {
                     print("[Loki] Couldn't reach snode at: \(target); setting failure count to \(newFailureCount).")
                     if newFailureCount >= LokiAPI.snodeFailureThreshold {
                         print("[Loki] Failure threshold reached for: \(target); dropping it.")
-                        LokiAPI.dropSnodeFromSwarmIfNeeded(target, hexEncodedPublicKey: hexEncodedPublicKey) // Remove it from the swarm cache associated with the given public key
-                        LokiAPI.snodePool.remove(target) // Remove it from the snode pool
-                        // Dispatch async on the main queue to avoid nested write transactions
-                        DispatchQueue.main.async {
-                            let storage = OWSPrimaryStorage.shared()
-                            storage.dbReadWriteConnection.readWrite { transaction in
-                                storage.dropSnode(target, in: transaction)
-                            }
-                        }
+                        LokiAPI.dropSnodeFromSwarmIfNeeded(target, hexEncodedPublicKey: hexEncodedPublicKey)
+                        LokiAPI.dropSnodeFromSnodePool(target)
                         LokiAPI.snodeFailureCount[target] = 0
                     }
                 case 406:

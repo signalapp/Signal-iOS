@@ -9,8 +9,8 @@
 #import "SSKBaseTestObjC.h"
 #import "SSKEnvironment.h"
 #import "YapDatabaseConnection+OWS.h"
-#import <Curve25519Kit/Curve25519.h>
-#import <SignalCoreKit/Randomness.h>
+#import <SessionCurve25519Kit/Curve25519.h>
+#import <SessionCoreKit/Randomness.h>
 
 extern NSString *const OWSPrimaryStorageTrustedKeysCollection;
 

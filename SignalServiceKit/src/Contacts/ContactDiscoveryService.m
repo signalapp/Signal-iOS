@@ -10,11 +10,11 @@
 #import "OWSRequestFactory.h"
 #import "SSKEnvironment.h"
 #import "TSNetworkManager.h"
-#import <Curve25519Kit/Curve25519.h>
-#import <HKDFKit/HKDFKit.h>
-#import <SignalCoreKit/Cryptography.h>
-#import <SignalCoreKit/NSData+OWS.h>
-#import <SignalCoreKit/NSDate+OWS.h>
+#import <SessionCurve25519Kit/Curve25519.h>
+#import <SessionHKDFKit/HKDFKit.h>
+#import <SessionCoreKit/Cryptography.h>
+#import <SessionCoreKit/NSData+OWS.h>
+#import <SessionCoreKit/NSDate+OWS.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

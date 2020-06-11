@@ -11,7 +11,7 @@
 #import "YapDatabaseConnection+OWS.h"
 #import <CocoaLumberjack/CocoaLumberjack.h>
 #import <Reachability/Reachability.h>
-#import <SignalCoreKit/Cryptography.h>
+#import <SessionCoreKit/Cryptography.h>
 #import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN

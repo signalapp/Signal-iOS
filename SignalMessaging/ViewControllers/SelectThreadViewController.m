@@ -16,12 +16,12 @@
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
 #import <SignalMessaging/SignalMessaging-Swift.h>
-#import <SignalServiceKit/NSString+SSK.h>
-#import <SignalServiceKit/PhoneNumber.h>
-#import <SignalServiceKit/SignalAccount.h>
-#import <SignalServiceKit/TSAccountManager.h>
-#import <SignalServiceKit/TSContactThread.h>
-#import <SignalServiceKit/TSThread.h>
+#import <SessionServiceKit/NSString+SSK.h>
+#import <SessionServiceKit/PhoneNumber.h>
+#import <SessionServiceKit/SignalAccount.h>
+#import <SessionServiceKit/TSAccountManager.h>
+#import <SessionServiceKit/TSContactThread.h>
+#import <SessionServiceKit/TSThread.h>
 #import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -112,7 +112,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     [self.view addSubview:header];
     [header autoPinWidthToSuperview];
-    [header autoPinToTopLayoutGuideOfViewController:self withInset:0];
+    [header autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.view withOffset:0.0f];
     [header setCompressionResistanceVerticalHigh];
     [header setContentHuggingVerticalHigh];
      */

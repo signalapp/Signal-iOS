@@ -3,7 +3,7 @@
 //
 
 import XCTest
-import SignalServiceKit
+import SessionServiceKit
 import CocoaLumberjack
 
 @objc

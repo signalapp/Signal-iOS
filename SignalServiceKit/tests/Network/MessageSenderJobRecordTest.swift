@@ -4,7 +4,7 @@
 
 import Foundation
 import XCTest
-@testable import SignalServiceKit
+@testable import SessionServiceKit
 
 let kMessageSenderJobRecordLabel = "MessageSender"
 class SSKMessageSenderJobRecordTest: SSKBaseTestSwift {

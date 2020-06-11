@@ -4,7 +4,7 @@
 
 #import "OWSReadReceiptsForLinkedDevicesMessage.h"
 #import "OWSLinkedDeviceReadReceipt.h"
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -5,7 +5,7 @@
 #import "SSKEnvironment.h"
 #import "TSThread.h"
 
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 
 @implementation LKFriendRequestMessage
 

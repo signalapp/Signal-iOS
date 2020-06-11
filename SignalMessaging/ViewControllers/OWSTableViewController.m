@@ -579,8 +579,8 @@ NSString *const kOWSTableCellIdentifier = @"kOWSTableCellIdentifier";
         // if applyScrollViewInsetsFix disables contentInsetAdjustmentBehavior,
         // we need to pin to the top and bottom layout guides since UIKit
         // won't adjust our content insets.
-        [self.tableView autoPinToTopLayoutGuideOfViewController:self withInset:0];
-        [self.tableView autoPinToBottomLayoutGuideOfViewController:self withInset:0];
+        [self.tableView autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.view withOffset:0];
+        [self.tableView autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.view withOffset:0];
         [self.tableView autoPinEdgeToSuperviewSafeArea:ALEdgeLeading];
         [self.tableView autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];
 

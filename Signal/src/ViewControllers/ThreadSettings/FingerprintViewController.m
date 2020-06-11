@@ -9,17 +9,17 @@
 #import "UIColor+OWS.h"
 #import "UIFont+OWS.h"
 #import "UIView+OWS.h"
-#import <SignalCoreKit/NSDate+OWS.h>
+#import <SessionCoreKit/NSDate+OWS.h>
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/UIUtil.h>
-#import <SignalServiceKit/OWSError.h>
-#import <SignalServiceKit/OWSFingerprint.h>
-#import <SignalServiceKit/OWSFingerprintBuilder.h>
-#import <SignalServiceKit/OWSIdentityManager.h>
-#import <SignalServiceKit/OWSPrimaryStorage+SessionStore.h>
-#import <SignalServiceKit/TSAccountManager.h>
-#import <SignalServiceKit/TSInfoMessage.h>
+#import <SessionServiceKit/OWSError.h>
+#import <SessionServiceKit/OWSFingerprint.h>
+#import <SessionServiceKit/OWSFingerprintBuilder.h>
+#import <SessionServiceKit/OWSIdentityManager.h>
+#import <SessionServiceKit/OWSPrimaryStorage+SessionStore.h>
+#import <SessionServiceKit/TSAccountManager.h>
+#import <SessionServiceKit/TSInfoMessage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -192,7 +192,7 @@ typedef void (^CustomLayoutBlock)(void);
                                                                      action:@selector(verifyUnverifyButtonTapped:)]];
     [self.view addSubview:verifyUnverifyButton];
     [verifyUnverifyButton autoPinWidthToSuperview];
-    [verifyUnverifyButton autoPinToBottomLayoutGuideOfViewController:self withInset:0];
+    [verifyUnverifyButton autoPinEdge:ALEdgeBottom toEdge:ALEdgeBottom ofView:self.view withOffset:0.0f];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, verifyUnverifyButton);
 
     UIView *verifyUnverifyPillbox = [UIView new];
@@ -336,7 +336,7 @@ typedef void (^CustomLayoutBlock)(void);
     // verified.
     [verificationStateLabel autoSetDimension:ALDimensionHeight
                                       toSize:round(verificationStateLabel.font.lineHeight * 2.25f)];
-    [verificationStateLabel autoPinToTopLayoutGuideOfViewController:self withInset:ScaleFromIPhone5To7Plus(15.f, 20.f)];
+    [verificationStateLabel autoPinEdge:ALEdgeTop toEdge:ALEdgeTop ofView:self.view withOffset:ScaleFromIPhone5To7Plus(15.f, 20.f)];
     [verificationStateLabel autoPinEdge:ALEdgeBottom
                                  toEdge:ALEdgeTop
                                  ofView:fingerprintView

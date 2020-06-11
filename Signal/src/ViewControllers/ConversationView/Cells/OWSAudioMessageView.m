@@ -9,7 +9,7 @@
 #import "ViewControllerUtils.h"
 #import <SignalMessaging/OWSFormat.h>
 #import <SignalMessaging/UIColor+OWS.h>
-#import <SignalServiceKit/MIMETypeUtil.h>
+#import <SessionServiceKit/MIMETypeUtil.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -100,7 +100,7 @@ public enum OnionRequestAPI {
 
     /// Builds and returns `pathCount` paths. The returned promise errors out with `Error.insufficientSnodes`
     /// if not enough (reliable) snodes are available.
-    public static func buildPaths() -> Promise<[Path]> {
+    private static func buildPaths() -> Promise<[Path]> {
         print("[Loki] [Onion Request API] Building onion request paths.")
         DispatchQueue.main.async {
             NotificationCenter.default.post(name: .buildingPaths, object: nil)
@@ -146,6 +146,9 @@ public enum OnionRequestAPI {
             let storage = OWSPrimaryStorage.shared()
             storage.dbReadConnection.read { transaction in
                 paths = storage.getOnionRequestPaths(in: transaction)
+                if paths.count >= pathCount {
+                    guardSnodes.formUnion([ paths[0][0], paths[1][0] ])
+                }
             }
         }
         // randomElement() uses the system's default random generator, which is cryptographically secure
@@ -160,7 +163,7 @@ public enum OnionRequestAPI {
         }
     }
 
-    private static func dropPaths() {
+    private static func dropAllPaths() {
         paths.removeAll()
         // Dispatch async on the main queue to avoid nested write transactions
         DispatchQueue.main.async {
@@ -250,7 +253,7 @@ public enum OnionRequestAPI {
         }
         promise.catch(on: LokiAPI.workQueue) { error in // Must be invoked on LokiAPI.workQueue
             guard case HTTP.Error.httpRequestFailed(_, _) = error else { return }
-            dropPaths() // A snode in the path is bad; retry with a different path
+            dropAllPaths() // A snode in the path is bad; retry with a different path
             dropGuardSnode(guardSnode)
         }
         promise.handlingErrorsIfNeeded(forTargetSnode: snode, associatedWith: hexEncodedPublicKey)
@@ -275,15 +278,8 @@ private extension Promise where T == JSON {
                 print("[Loki] Couldn't reach snode at: \(snode); setting failure count to \(newFailureCount).")
                 if newFailureCount >= LokiAPI.snodeFailureThreshold {
                     print("[Loki] Failure threshold reached for: \(snode); dropping it.")
-                    LokiAPI.dropSnodeFromSwarmIfNeeded(snode, hexEncodedPublicKey: hexEncodedPublicKey) // Remove it from the swarm cache associated with the given public key
-                    LokiAPI.snodePool.remove(snode) // Remove it from the snode pool
-                    // Dispatch async on the main queue to avoid nested write transactions
-                    DispatchQueue.main.async {
-                        let storage = OWSPrimaryStorage.shared()
-                        storage.dbReadWriteConnection.readWrite { transaction in
-                            storage.dropSnode(snode, in: transaction)
-                        }
-                    }
+                    LokiAPI.dropSnodeFromSwarmIfNeeded(snode, hexEncodedPublicKey: hexEncodedPublicKey)
+                    LokiAPI.dropSnodeFromSnodePool(snode)
                     LokiAPI.snodeFailureCount[snode] = 0
                 }
             case 406:

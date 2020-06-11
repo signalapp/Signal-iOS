@@ -7,7 +7,7 @@
 #import "SSKEnvironment.h"
 #import "YapDatabaseConnection+OWS.h"
 #import "YapDatabaseTransaction+OWS.h"
-#import <AxolotlKit/SessionRecord.h>
+#import <SessionAxolotlKit/SessionRecord.h>
 #import <YapDatabase/YapDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN

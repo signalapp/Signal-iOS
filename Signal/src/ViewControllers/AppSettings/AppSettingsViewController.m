@@ -19,8 +19,8 @@
 #import <SignalMessaging/Environment.h>
 #import <SignalMessaging/OWSContactsManager.h>
 #import <SignalMessaging/UIUtil.h>
-#import <SignalServiceKit/TSAccountManager.h>
-#import <SignalServiceKit/TSSocketManager.h>
+#import <SessionServiceKit/TSAccountManager.h>
+#import <SessionServiceKit/TSSocketManager.h>
 #import "Session-Swift.h"
 
 @interface AppSettingsViewController ()

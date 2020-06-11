@@ -3,8 +3,8 @@
 //
 
 #import "TestAppContext.h"
-#import <SignalServiceKit/OWSFileSystem.h>
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SessionServiceKit/OWSFileSystem.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

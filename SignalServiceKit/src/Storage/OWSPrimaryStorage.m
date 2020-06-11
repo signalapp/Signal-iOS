@@ -18,7 +18,7 @@
 #import "SSKEnvironment.h"
 #import "TSDatabaseSecondaryIndexes.h"
 #import "TSDatabaseView.h"
-#import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

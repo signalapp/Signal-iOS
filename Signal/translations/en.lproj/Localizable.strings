@@ -2835,8 +2835,10 @@
 "Please wait while the device link is created. This can take up to a minute." = "Please wait while the device link is created. This can take up to a minute.";
 "Path" = "Path";
 "Session hides your IP by bouncing your messages through several Service Nodes in Session’s decentralized network. These are the countries your connection is currently being bounced through:" = "Session hides your IP by bouncing your messages through several Service Nodes in Session’s decentralized network. These are the countries your connection is currently being bounced through:";
-"Guard Node" = "Guard Node";
+"Entry Node" = "Entry Node";
 "Service Node" = "Service Node";
 "You" = "You";
 "Destination" = "Destination";
 "Learn More" = "Learn More";
+"Please ask the open group operator to add you to the group." = "Please ask the open group operator to add you to the group.";
+"Unauthorized" = "Unauthorized";

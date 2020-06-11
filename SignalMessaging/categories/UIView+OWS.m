@@ -4,9 +4,9 @@
 
 #import "UIView+OWS.h"
 #import "OWSMath.h"
-#import <SignalCoreKit/iOSVersions.h>
+#import <SessionCoreKit/iOSVersions.h>
 #import <SignalMessaging/SignalMessaging-Swift.h>
-#import <SignalServiceKit/AppContext.h>
+#import <SessionServiceKit/AppContext.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

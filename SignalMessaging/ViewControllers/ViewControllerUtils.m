@@ -6,8 +6,8 @@
 #import "PhoneNumber.h"
 #import <AVFoundation/AVFoundation.h>
 #import <SignalMessaging/Environment.h>
-#import <SignalServiceKit/NSString+SSK.h>
-#import <SignalServiceKit/PhoneNumberUtil.h>
+#import <SessionServiceKit/NSString+SSK.h>
+#import <SessionServiceKit/PhoneNumberUtil.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
