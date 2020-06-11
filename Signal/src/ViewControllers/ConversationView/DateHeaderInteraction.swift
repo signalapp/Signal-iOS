@@ -30,10 +30,9 @@ public class DateHeaderInteraction: TSInteraction {
     }
 
     @objc
-    public init(thread: TSThread, timestamp: UInt64, receivedAtTimestamp: UInt64) {
+    public init(thread: TSThread, timestamp: UInt64) {
         super.init(uniqueId: "DateHeader_\(timestamp)",
                    timestamp: timestamp,
-                   receivedAtTimestamp: receivedAtTimestamp,
                    thread: thread)
     }
 

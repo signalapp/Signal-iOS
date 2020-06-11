@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -18,5 +18,9 @@ public extension Date {
 
     static func ows_millisecondTimestamp() -> UInt64 {
         return NSDate.ows_millisecondTimeStamp()
+    }
+
+    init(millisecondsSince1970: UInt64) {
+        self = NSDate.ows_date(withMillisecondsSince1970: millisecondsSince1970) as Date
     }
 }

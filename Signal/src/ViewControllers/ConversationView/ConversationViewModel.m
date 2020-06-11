@@ -1137,19 +1137,17 @@ NS_ASSUME_NONNULL_BEGIN
 
     __block BOOL hasPlacedUnreadIndicator = NO;
     __block BOOL shouldShowDateOnNextViewItem = YES;
-    __block uint64_t previousViewItemReceivedAtTimestamp = 0;
+    __block uint64_t previousViewItemTimestamp = 0;
     void (^addHeaderViewItemIfNecessary)(id<ConversationViewItem>) = ^(id<ConversationViewItem> viewItem) {
-        uint64_t viewItemReceivedAtTimestamp = viewItem.interaction.receivedAtTimestamp;
-        OWSAssertDebug(viewItemReceivedAtTimestamp > 0);
+        uint64_t viewItemTimestamp = viewItem.interaction.timestamp;
+        OWSAssertDebug(viewItemTimestamp > 0);
 
         BOOL shouldShowDate = NO;
-        if (previousViewItemReceivedAtTimestamp == 0) {
+        if (previousViewItemTimestamp == 0) {
             // Only show for the first item if the date is not today
             shouldShowDateOnNextViewItem
-                = ![DateUtil dateIsToday:[NSDate ows_dateWithMillisecondsSince1970:viewItemReceivedAtTimestamp]];
-        } else if (![DateUtil isSameDayWithTimestamp:previousViewItemReceivedAtTimestamp
-                                           timestamp:viewItemReceivedAtTimestamp]
-            && viewItemReceivedAtTimestamp > previousViewItemReceivedAtTimestamp) {
+                = ![DateUtil dateIsToday:[NSDate ows_dateWithMillisecondsSince1970:viewItemTimestamp]];
+        } else if (![DateUtil isSameDayWithTimestamp:previousViewItemTimestamp timestamp:viewItemTimestamp]) {
             shouldShowDateOnNextViewItem = YES;
         }
 
@@ -1170,8 +1168,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                  shouldShowDate:shouldShowDate];
         } else if (shouldShowDate) {
             interaction = [[OWSDateHeaderInteraction alloc] initWithThread:self.thread
-                                                                 timestamp:viewItem.interaction.timestamp
-                                                       receivedAtTimestamp:viewItem.interaction.receivedAtTimestamp];
+                                                                 timestamp:viewItem.interaction.timestamp];
         }
 
         if (interaction) {
@@ -1180,7 +1177,7 @@ NS_ASSUME_NONNULL_BEGIN
             [viewItems addObject:headerViewItem];
         }
 
-        previousViewItemReceivedAtTimestamp = viewItemReceivedAtTimestamp;
+        previousViewItemTimestamp = viewItemTimestamp;
     };
 
     __block BOOL hasError = NO;
