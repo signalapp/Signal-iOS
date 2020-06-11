@@ -607,3 +607,15 @@ class OWSBackupFragmentSerializer: SDSSerializer {
         return BackupFragmentRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, attachmentId: attachmentId, downloadFilePath: downloadFilePath, encryptionKey: encryptionKey, recordName: recordName, relativeFilePath: relativeFilePath, uncompressedDataLength: uncompressedDataLength)
     }
 }
+
+// MARK: - Deep Copy
+
+@objc
+public extension OWSBackupFragment {
+    func deepCopy() throws -> OWSBackupFragment {
+        guard let record = try asRecord() as? BackupFragmentRecord else {
+            throw OWSAssertionError("Could not convert to record.")
+        }
+        return try OWSBackupFragment.fromRecord(record)
+    }
+}

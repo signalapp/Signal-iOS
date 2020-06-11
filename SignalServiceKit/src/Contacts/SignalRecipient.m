@@ -448,8 +448,8 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
     OWSAssertDebug(transaction);
 
     SignalRecipient *recipient = [self getOrBuildUnsavedRecipientForAddress:address transaction:transaction];
-    OWSLogDebug(@"Marking recipient as not registered: %@", address);
     if (recipient.devices.count > 0) {
+        OWSLogDebug(@"Marking recipient as not registered: %@", address);
         if ([SignalRecipient anyFetchWithUniqueId:recipient.uniqueId transaction:transaction] == nil) {
             [recipient removeDevices:recipient.devices.set];
             [recipient anyInsertWithTransaction:transaction];

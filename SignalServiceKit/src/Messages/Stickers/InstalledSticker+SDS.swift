@@ -576,3 +576,15 @@ class InstalledStickerSerializer: SDSSerializer {
         return InstalledStickerRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, emojiString: emojiString, info: info)
     }
 }
+
+// MARK: - Deep Copy
+
+@objc
+public extension InstalledSticker {
+    func deepCopy() throws -> InstalledSticker {
+        guard let record = try asRecord() as? InstalledStickerRecord else {
+            throw OWSAssertionError("Could not convert to record.")
+        }
+        return try InstalledSticker.fromRecord(record)
+    }
+}

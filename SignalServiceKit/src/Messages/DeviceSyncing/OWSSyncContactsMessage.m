@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "OWSSyncContactsMessage.h"
@@ -104,9 +104,11 @@ NS_ASSUME_NONNULL_BEGIN
             hasLocalAddress |= signalAccount.recipientAddress.isLocalAddress;
         }
         if (!hasLocalAddress) {
-            SignalAccount *signalAccount = [[SignalAccount alloc] initWithSignalServiceAddress:localAddress];
             // OWSContactsOutputStream requires all signalAccount to have a contact.
-            signalAccount.contact = [[Contact alloc] initWithSystemContact:[CNContact new]];
+            Contact *contact = [[Contact alloc] initWithSystemContact:[CNContact new]];
+            SignalAccount *signalAccount = [[SignalAccount alloc] initWithSignalServiceAddress:localAddress
+                                                                                       contact:contact
+                                                                      multipleAccountLabelText:nil];
             [signalAccounts addObject:signalAccount];
         }
     }

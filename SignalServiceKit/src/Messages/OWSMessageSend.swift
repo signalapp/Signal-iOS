@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -22,16 +22,28 @@ public class OWSMessageSend: NSObject {
 
     private static let kMaxRetriesPerRecipient: Int = 3
 
+    private var _remainingAttempts = AtomicValue<Int>(OWSMessageSend.kMaxRetriesPerRecipient)
     @objc
-    public var remainingAttempts = OWSMessageSend.kMaxRetriesPerRecipient
+    public var remainingAttempts: Int {
+        get { return _remainingAttempts.get() }
+        set { _remainingAttempts.set(newValue) }
+    }
 
     // We "fail over" to REST sends after _any_ error sending
     // via the web socket.
+    private var _hasWebsocketSendFailed = AtomicBool(false)
     @objc
-    public var hasWebsocketSendFailed = false
+    public var hasWebsocketSendFailed: Bool {
+        get { return _hasWebsocketSendFailed.get() }
+        set { _hasWebsocketSendFailed.set(newValue) }
+    }
 
+    private var _udSendingAccess = AtomicValue<OWSUDSendingAccess?>(nil)
     @objc
-    public var udSendingAccess: OWSUDSendingAccess?
+    public var udSendingAccess: OWSUDSendingAccess? {
+        get { return _udSendingAccess.get() }
+        set { _udSendingAccess.set(newValue) }
+    }
 
     @objc
     public let localAddress: SignalServiceAddress
@@ -57,11 +69,14 @@ public class OWSMessageSend: NSObject {
         self.thread = thread
         self.recipient = recipient
         self.localAddress = localAddress
-        self.udSendingAccess = udSendingAccess
         self.isLocalAddress = recipient.address.isLocalAddress
 
         self.success = success
         self.failure = failure
+
+        super.init()
+
+        self.udSendingAccess = udSendingAccess
     }
 
     @objc

@@ -117,7 +117,6 @@ extension ConversationViewDatabaseObserver: DatabaseSnapshotDelegate {
     // MARK: - Transaction LifeCycle
 
     public func snapshotTransactionDidChange(with event: DatabaseEvent) {
-        Logger.verbose("")
         AssertIsOnUIDatabaseObserverSerialQueue()
         if event.tableName == InteractionRecord.databaseTableName {
             pendingChanges.append(interactionChange: event.rowID)

@@ -619,3 +619,15 @@ class StickerPackSerializer: SDSSerializer {
         return StickerPackRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, author: author, cover: cover, dateCreated: dateCreated, info: info, isInstalled: isInstalled, items: items, title: title)
     }
 }
+
+// MARK: - Deep Copy
+
+@objc
+public extension StickerPack {
+    func deepCopy() throws -> StickerPack {
+        guard let record = try asRecord() as? StickerPackRecord else {
+            throw OWSAssertionError("Could not convert to record.")
+        }
+        return try StickerPack.fromRecord(record)
+    }
+}

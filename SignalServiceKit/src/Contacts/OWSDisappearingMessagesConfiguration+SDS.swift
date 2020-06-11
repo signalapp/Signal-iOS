@@ -575,3 +575,15 @@ class OWSDisappearingMessagesConfigurationSerializer: SDSSerializer {
         return DisappearingMessagesConfigurationRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, durationSeconds: durationSeconds, enabled: enabled)
     }
 }
+
+// MARK: - Deep Copy
+
+@objc
+public extension OWSDisappearingMessagesConfiguration {
+    func deepCopy() throws -> OWSDisappearingMessagesConfiguration {
+        guard let record = try asRecord() as? DisappearingMessagesConfigurationRecord else {
+            throw OWSAssertionError("Could not convert to record.")
+        }
+        return try OWSDisappearingMessagesConfiguration.fromRecord(record)
+    }
+}

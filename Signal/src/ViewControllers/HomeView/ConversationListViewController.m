@@ -1624,7 +1624,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                 [groupThread softDeleteThreadWithTransaction:transaction];
             } else {
                 [groupThread anyRemoveWithTransaction:transaction];
-                [self.databaseStorage touchThread:groupThread transaction:transaction];
             }
         } else {
             // contact thread

@@ -583,3 +583,15 @@ class ExperienceUpgradeSerializer: SDSSerializer {
         return ExperienceUpgradeRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, firstViewedTimestamp: firstViewedTimestamp, lastSnoozedTimestamp: lastSnoozedTimestamp, isComplete: isComplete)
     }
 }
+
+// MARK: - Deep Copy
+
+@objc
+public extension ExperienceUpgrade {
+    func deepCopy() throws -> ExperienceUpgrade {
+        guard let record = try asRecord() as? ExperienceUpgradeRecord else {
+            throw OWSAssertionError("Could not convert to record.")
+        }
+        return try ExperienceUpgrade.fromRecord(record)
+    }
+}

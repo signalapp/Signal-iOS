@@ -21,6 +21,10 @@ NSUInteger const SignalAccountSchemaVersion = 1;
 
 @property (nonatomic, readonly) NSUInteger accountSchemaVersion;
 
+@property (nonatomic) NSString *multipleAccountLabelText;
+
+@property (nonatomic, nullable) Contact *contact;
+
 @end
 
 #pragma mark -
@@ -47,18 +51,31 @@ NSUInteger const SignalAccountSchemaVersion = 1;
 }
 
 - (instancetype)initWithSignalRecipient:(SignalRecipient *)signalRecipient
+                                contact:(nullable Contact *)contact
+               multipleAccountLabelText:(nullable NSString *)multipleAccountLabelText
 {
     OWSAssertDebug(signalRecipient);
-    OWSAssertDebug(signalRecipient.address.isValid);
-    return [self initWithSignalServiceAddress:signalRecipient.address];
+    return [self initWithSignalServiceAddress:signalRecipient.address
+                                      contact:contact
+                     multipleAccountLabelText:multipleAccountLabelText];
 }
 
 - (instancetype)initWithSignalServiceAddress:(SignalServiceAddress *)serviceAddress
 {
+    return [self initWithSignalServiceAddress:serviceAddress contact:nil multipleAccountLabelText:nil];
+}
+
+- (instancetype)initWithSignalServiceAddress:(SignalServiceAddress *)serviceAddress
+                                     contact:(nullable Contact *)contact
+                    multipleAccountLabelText:(nullable NSString *)multipleAccountLabelText
+{
+    OWSAssertDebug(serviceAddress.isValid);
     if (self = [super init]) {
         _recipientUUID = serviceAddress.uuidString;
         _recipientPhoneNumber = serviceAddress.phoneNumber;
         _accountSchemaVersion = SignalAccountSchemaVersion;
+        _contact = contact;
+        _multipleAccountLabelText = multipleAccountLabelText;
     }
     return self;
 }
@@ -206,13 +223,13 @@ NSUInteger const SignalAccountSchemaVersion = 1;
     if (contactAvatarData == nil) {
         return;
     }
-    self.contactAvatarHash = [Cryptography computeSHA256Digest:contactAvatarData];
+    _contactAvatarHash = [Cryptography computeSHA256Digest:contactAvatarData];
     OWSAssertDebug(self.contactAvatarHash != nil);
     if (self.contactAvatarHash == nil) {
         return;
     }
 
-    self.contactAvatarJpegData = [UIImage validJpegDataFromAvatarData:contactAvatarData];
+    _contactAvatarJpegData = [UIImage validJpegDataFromAvatarData:contactAvatarData];
     if (self.contactAvatarJpegData == nil) {
         OWSFailDebug(@"Could not convert avatar to JPEG.");
         return;
@@ -238,6 +255,14 @@ NSUInteger const SignalAccountSchemaVersion = 1;
     [super anyDidRemoveWithTransaction:transaction];
 
     [self.signalAccountReadCache didRemoveSignalAccount:self transaction:transaction];
+}
+
+- (void)updateWithContact:(nullable Contact *)contact transaction:(SDSAnyWriteTransaction *)transaction
+{
+    [self anyUpdateWithTransaction:transaction
+                             block:^(SignalAccount *account) {
+                                 account.contact = contact;
+                             }];
 }
 
 @end

@@ -2106,7 +2106,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     // TODO: Is this still necessary?
-    [self.databaseStorage touchThread:thread transaction:transaction];
+    [thread scheduleTouchFinalizationWithTransaction:transaction];
 
     [SSKEnvironment.shared.notificationsManager notifyUserForIncomingMessage:incomingMessage
                                                                       thread:thread

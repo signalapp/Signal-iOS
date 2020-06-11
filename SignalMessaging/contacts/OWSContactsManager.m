@@ -588,12 +588,14 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
                 }
                 [seenAddresses addObject:signalRecipient.address];
 
-                SignalAccount *signalAccount = [[SignalAccount alloc] initWithSignalRecipient:signalRecipient];
-                signalAccount.contact = contact;
+                NSString *_Nullable multipleAccountLabelText = nil;
                 if (signalRecipients.count > 1) {
-                    signalAccount.multipleAccountLabelText =
-                        [[self class] accountLabelForContact:contact address:signalRecipient.address];
+                    multipleAccountLabelText = [[self class] accountLabelForContact:contact
+                                                                            address:signalRecipient.address];
                 }
+                SignalAccount *signalAccount = [[SignalAccount alloc] initWithSignalRecipient:signalRecipient
+                                                                                      contact:contact
+                                                                     multipleAccountLabelText:multipleAccountLabelText];
                 [signalAccount tryToCacheContactAvatarData];
                 [systemContactsSignalAccounts addObject:signalAccount];
             }
@@ -680,7 +682,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
             if (signalAccountsToUpsert.count > 0) {
                 OWSLogInfo(@"Saving %lu SignalAccounts", (unsigned long)signalAccountsToUpsert.count);
                 for (SignalAccount *signalAccount in signalAccountsToUpsert) {
-                    OWSLogVerbose(@"Saving SignalAccount: %@", signalAccount);
+                    OWSLogVerbose(@"Saving SignalAccount: %@", signalAccount.recipientAddress);
                     [signalAccount anyUpsertWithTransaction:transaction];
                 }
             }
@@ -688,7 +690,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
             if (signalAccountsToRemove.count > 0) {
                 OWSLogInfo(@"Removing %lu old SignalAccounts.", (unsigned long)signalAccountsToRemove.count);
                 for (SignalAccount *signalAccount in signalAccountsToRemove) {
-                    OWSLogVerbose(@"Removing old SignalAccount: %@", signalAccount);
+                    OWSLogVerbose(@"Removing old SignalAccount: %@", signalAccount.recipientAddress);
                     [signalAccount anyRemoveWithTransaction:transaction];
                 }
             }
