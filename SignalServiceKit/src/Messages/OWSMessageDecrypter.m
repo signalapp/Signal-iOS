@@ -351,7 +351,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     OWSAssertDebug(failureBlock);
 
     // Check whether we need to refresh our PreKeys every time we receive a PreKeyWhisperMessage.
-    [TSPreKeyManager checkPreKeys];
+    [TSPreKeyManager checkPreKeysIfNecessary];
 
     [self decryptEnvelope:envelope
               envelopeData:envelopeData
@@ -564,7 +564,8 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
         }
 
         if (decryptResult.messageType == SMKMessageTypePrekey) {
-            [TSPreKeyManager checkPreKeys];
+            // Check whether we need to refresh our PreKeys every time we receive a PreKeyWhisperMessage.
+            [TSPreKeyManager checkPreKeysIfNecessary];
         }
 
         NSString *_Nullable senderE164 = decryptResult.senderE164;
