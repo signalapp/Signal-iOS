@@ -154,7 +154,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
             appDelegate.startRSSFeedPollersIfNeeded()
         }
         // Populate onion request path countries cache
-        DispatchQueue.global(qos: .userInitiated).async {
+        DispatchQueue.global(qos: .default).async {
             let _ = IP2Country.shared.populateCacheIfNeeded()
         }
         // Do initial update
@@ -368,7 +368,6 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         let delete = UITableViewRowAction(style: .destructive, title: NSLocalizedString("Delete", comment: "")) { [weak self] action, indexPath in
             let alert = UIAlertController(title: NSLocalizedString("CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE", comment: ""), message: NSLocalizedString("CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE", comment: ""), preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("TXT_DELETE_TITLE", comment: ""), style: .destructive) { _ in
-                guard let self = self else { return }
                 try! Storage.writeSync { transaction in
                     if let publicChat = publicChat {
                         var messageIDs: Set<String> = []
