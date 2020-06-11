@@ -254,7 +254,7 @@ public final class MultiDeviceProtocol : NSObject {
         }) {
             return
         }
-        LokiFileServerAPI.getDeviceLinks(associatedWith: getUserHexEncodedPublicKey()).done(on: DispatchQueue.main) { slaveDeviceLinks in
+        LokiFileServerAPI.getDeviceLinks(associatedWith: getUserHexEncodedPublicKey()).done2 { slaveDeviceLinks in
             // Check that the device link IS present on the file server.
             // Note that the device link as seen from the master device's perspective has been deleted at this point, but the
             // device link as seen from the slave perspective hasn't.
@@ -265,7 +265,9 @@ public final class MultiDeviceProtocol : NSObject {
                     LokiFileServerAPI.removeDeviceLink(deviceLink) // Attempt to clean up on the file server
                 }
                 UserDefaults.standard[.wasUnlinked] = true
-                NotificationCenter.default.post(name: .dataNukeRequested, object: nil)
+                DispatchQueue.main.async {
+                    NotificationCenter.default.post(name: .dataNukeRequested, object: nil)
+                }
             }
         }
     }
