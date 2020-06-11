@@ -735,7 +735,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     // If necessary, gather "ud sending access" using a single write transaction.
     NSMutableDictionary<SignalServiceAddress *, OWSUDSendingAccess *> *sendingAccessMap = [NSMutableDictionary new];
     if (senderCertificate != nil) {
-        DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+        [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
             for (SignalRecipient *recipient in recipients) {
                 if (!recipient.address.isLocalAddress) {
                     sendingAccessMap[recipient.address] = [self.udManager udSendingAccessForAddress:recipient.address
@@ -744,7 +744,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                                                         transaction:transaction];
                 }
             }
-        });
+        }];
     }
 
     for (SignalRecipient *recipient in recipients) {
@@ -1376,7 +1376,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         // If we've just delivered a message to a user, we know they
         // have a valid Signal account.
         [SignalRecipient markRecipientAsRegisteredAndGet:recipient.address transaction:transaction];
-    });
+    }];
 
     messageSend.success();
 }
@@ -1530,26 +1530,26 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
     }
 
-    [self.databaseStorage
-         writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
-             if (extraDevices.count < 1 && missingDevices.count < 1) {
-                 OWSProdFail([OWSAnalyticsEvents messageSenderErrorNoMissingOrExtraDevices]);
-             }
-             [recipient updateRegisteredRecipientWithDevicesToAdd:missingDevices
-                                                  devicesToRemove:extraDevices
-                                                      transaction:transaction];
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+        if (extraDevices.count < 1 && missingDevices.count < 1) {
+            OWSProdFail([OWSAnalyticsEvents messageSenderErrorNoMissingOrExtraDevices]);
+        }
+        [recipient updateRegisteredRecipientWithDevicesToAdd:missingDevices
+                                             devicesToRemove:extraDevices
+                                                 transaction:transaction];
 
-             if (extraDevices && extraDevices.count > 0) {
-                 OWSLogInfo(@"Deleting sessions for extra devices: %@", extraDevices);
-                 for (NSNumber *extraDeviceId in extraDevices) {
-                     [self.sessionStore deleteSessionForAddress:recipient.address
-                                                       deviceId:extraDeviceId.intValue
-                                                    transaction:transaction];
-                 }
-             }
-         }
-        completionQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
-             completion:completionHandler];
+        if (extraDevices && extraDevices.count > 0) {
+            OWSLogInfo(@"Deleting sessions for extra devices: %@", extraDevices);
+            for (NSNumber *extraDeviceId in extraDevices) {
+                [self.sessionStore deleteSessionForAddress:recipient.address
+                                                  deviceId:extraDeviceId.intValue
+                                               transaction:transaction];
+            }
+        }
+    }];
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        completionHandler();
+    });
 }
 
 - (void)handleMessageSentLocally:(TSOutgoingMessage *)message
@@ -1829,13 +1829,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                                recipientId:accountId
                                                                   deviceId:[deviceId intValue]];
     __block NSException *_Nullable exception;
-    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
         @try {
             [builder throws_processPrekeyBundle:bundle protocolContext:transaction];
         } @catch (NSException *caughtException) {
             exception = caughtException;
         }
-    });
+    }];
     if (exception) {
         if ([exception.name isEqualToString:UntrustedIdentityKeyException]) {
             OWSRaiseExceptionWithUserInfo(UntrustedIdentityKeyException,
@@ -2020,7 +2020,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                 [self.sessionStore deleteSessionForAddress:address deviceId:deviceNumber transaction:transaction];
             }
         }
-            completionQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+            completionQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
                  completion:completionHandler];
 }
 
