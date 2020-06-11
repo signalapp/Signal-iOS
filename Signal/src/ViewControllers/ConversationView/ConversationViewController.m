@@ -5015,13 +5015,14 @@ typedef enum : NSUInteger {
                     
                     id<ConversationViewItem> viewItem = updateItem.viewItem;
                     OWSAssertDebug(viewItem);
-                    if ([viewItem.interaction isKindOfClass:[TSOutgoingMessage class]]) {
+                    if ([viewItem.interaction isKindOfClass:[TSOutgoingMessage class]]
+                        && conversationUpdate.shouldJumpToOutgoingMessage) {
                         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)viewItem.interaction;
                         if (!outgoingMessage.isFromLinkedDevice) {
                             scrollToBottom = YES;
                         }
                     }
-                    
+
                     break;
                 }
                 case ConversationUpdateItemType_Update: {
