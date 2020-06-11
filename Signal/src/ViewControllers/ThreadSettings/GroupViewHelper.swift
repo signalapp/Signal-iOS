@@ -29,6 +29,10 @@ class GroupViewHelper: NSObject {
         return Environment.shared.contactsManager
     }
 
+    var blockingManager: OWSBlockingManager {
+        return .shared()
+    }
+
     // MARK: -
 
     @objc
@@ -63,6 +67,9 @@ class GroupViewHelper: NSObject {
         guard let groupThread = thread as? TSGroupThread else {
             // Both users can edit contact threads.
             return true
+        }
+        guard !blockingManager.isThreadBlocked(groupThread) else {
+            return false
         }
         guard let groupModelV2 = groupThread.groupModel as? TSGroupModelV2 else {
             // All users can edit v1 groups.

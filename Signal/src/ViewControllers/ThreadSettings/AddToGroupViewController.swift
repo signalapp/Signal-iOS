@@ -72,11 +72,14 @@ public class AddToGroupViewController: OWSTableViewController {
     private func updateTableContents() {
         AssertIsOnMainThread()
 
-        let groupThreads = threadViewHelper.threads.filter { thread -> Bool in
-            guard let groupThread = thread as? TSGroupThread else { return false }
-            guard !OWSBlockingManager.shared().isThreadBlocked(groupThread) else { return false }
-            return groupThread.isLocalUserInGroup
-        } as? [TSGroupThread] ?? []
+        let groupThreads = databaseStorage.read { transaction in
+            return self.threadViewHelper.threads.filter { thread -> Bool in
+                guard let groupThread = thread as? TSGroupThread else { return false }
+                let threadViewModel = ThreadViewModel(thread: groupThread, transaction: transaction)
+                let groupViewHelper = GroupViewHelper(threadViewModel: threadViewModel)
+                return groupViewHelper.canEditConversationMembership
+            } as? [TSGroupThread] ?? []
+        }            
 
         let contents = OWSTableContents()
 
