@@ -219,8 +219,6 @@ struct GRDBAttachmentFinderAdapter: AttachmentFinderAdapter {
             arguments = []
         }
 
-        sql += " ORDER BY \(attachmentColumn: .id)"
-
         let cursor = TSAttachment.grdbFetchCursor(sql: sql, arguments: arguments, transaction: transaction)
 
         var attachments = [TSAttachment]()
@@ -233,7 +231,17 @@ struct GRDBAttachmentFinderAdapter: AttachmentFinderAdapter {
             owsFailDebug("unexpected error \(error)")
         }
 
-        return attachments
+        return attachments.sorted { lhs, rhs -> Bool in
+            guard let lhsIndex = attachmentIds.firstIndex(of: lhs.uniqueId) else {
+                owsFailDebug("unexpected attachment \(lhs.uniqueId)")
+                return false
+            }
+            guard let rhsIndex = attachmentIds.firstIndex(of: rhs.uniqueId) else {
+                owsFailDebug("unexpected attachment \(rhs.uniqueId)")
+                return false
+            }
+            return lhsIndex < rhsIndex
+        }
     }
 
     static func existsAttachments(
