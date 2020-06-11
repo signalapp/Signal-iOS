@@ -1767,7 +1767,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     NSString *accountId = messageSend.recipient.accountId;
 
     __block BOOL hasSession;
-    [self.databaseStorage writeWithBlock:^(SDSAnyWriteTransaction *transaction) {
+    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
         hasSession = [self.sessionStore containsSessionForAccountId:accountId
                                                            deviceId:[deviceId intValue]
                                                         transaction:transaction];
