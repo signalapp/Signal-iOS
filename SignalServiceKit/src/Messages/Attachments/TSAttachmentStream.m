@@ -545,7 +545,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
 {
     OWSAssertDebug(changeBlock);
 
-    [self.dbReadWriteConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         NSString *collection = [TSAttachmentStream collection];
         TSAttachmentStream *latestInstance = [transaction objectForKey:self.uniqueId inCollection:collection];
         if (!latestInstance) {

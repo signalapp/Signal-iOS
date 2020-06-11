@@ -389,7 +389,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     if (attachmentIds.count < 1) {
         return;
     }
-    [self.dbReadWriteConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         for (NSString *attachmentId in attachmentIds) {
             // We need to fetch each attachment, since [TSAttachment removeWithTransaction:] does important work.
             TSAttachment *_Nullable attachment =
@@ -672,9 +672,9 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 
 - (void)updateWithCustomMessage:(NSString *)customMessage
 {
-    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self updateWithCustomMessage:customMessage transaction:transaction];
-    }];
+    } error:nil];
 }
 
 - (void)saveIsCalculatingProofOfWork:(BOOL)isCalculatingPoW withTransaction:(YapDatabaseReadWriteTransaction *)transaction

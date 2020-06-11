@@ -375,6 +375,9 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
         OWSAssertIsOnMainThread();
         // TODO - in line with QuotedReply and other message attachments, saving should happen as part of sending
         // preparation rather than duplicated here and in the SAE
+
+        // TODO: <--------
+
         [self.dbReadWriteConnection
             asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
                 if (contactShare.avatarImage) {
@@ -552,7 +555,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
     OWSLogDebug(@"Confirming identity for recipient: %@", recipientId);
 
-    [self.dbReadWriteConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         OWSVerificationState verificationState =
             [[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId transaction:transaction];
         switch (verificationState) {

@@ -136,17 +136,17 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 
 - (void)addJobForEnvelopeData:(NSData *)envelopeData
 {
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         OWSMessageDecryptJob *job = [[OWSMessageDecryptJob alloc] initWithEnvelopeData:envelopeData];
         [job saveWithTransaction:transaction];
-    }];
+    } error:nil];
 }
 
 - (void)removeJobWithId:(NSString *)uniqueId
 {
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         [transaction removeObjectForKey:uniqueId inCollection:[OWSMessageDecryptJob collection]];
-    }];
+    } error:nil];
 }
 
 + (YapDatabaseView *)databaseExtension
@@ -375,11 +375,11 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     if (!envelope) {
         OWSFailDebug(@"Couldn't parse proto.");
 
-        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             TSErrorMessage *errorMessage = [TSErrorMessage corruptedMessageInUnknownThread];
             [SSKEnvironment.shared.notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
                                                                                 transaction:transaction];
-        }];
+        } error:nil];
 
         dispatch_async(self.serialQueue, ^{
             completion(NO);

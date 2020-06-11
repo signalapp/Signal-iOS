@@ -5,6 +5,7 @@
 #import "OWSDatabaseMigration.h"
 #import <SessionServiceKit/OWSPrimaryStorage.h>
 #import <SessionServiceKit/SSKEnvironment.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -70,8 +71,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSDatabaseConnection *dbConnection = (OWSDatabaseConnection *)self.primaryStorage.newDatabaseConnection;
 
-    [dbConnection
-        asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             [self runUpWithTransaction:transaction];
         }
         completionBlock:^{

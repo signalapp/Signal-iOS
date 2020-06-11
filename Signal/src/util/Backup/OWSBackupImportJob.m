@@ -157,11 +157,11 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     [allItems addObjectsFromArray:self.attachmentsItems];
 
     // Record metadata for all items, so that we can re-use them in incremental backups after the restore.
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         for (OWSBackupFragment *item in allItems) {
             [item saveWithTransaction:transaction];
         }
-    }];
+    } error:nil];
 
     return [self downloadFilesFromCloud:blockingItems]
         .thenInBackground(^{
@@ -390,7 +390,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     }
 
     __block NSUInteger count = 0;
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         for (OWSBackupFragment *item in self.attachmentsItems) {
             if (self.isComplete) {
                 return;
@@ -428,7 +428,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                                                     @"Indicates that the backup import data is being restored.")
                                        progress:@(count / (CGFloat)self.attachmentsItems.count)];
         }
-    }];
+    } error:nil];
 
     OWSLogError(@"enqueued lazy restore of %zd files.", count);
 
@@ -456,7 +456,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
     NSMutableDictionary<NSString *, NSNumber *> *restoredEntityCounts = [NSMutableDictionary new];
     __block unsigned long long copiedEntities = 0;
     __block BOOL aborted = NO;
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         for (NSString *collection in collectionsToRestore) {
             if ([collection isEqualToString:[OWSDatabaseMigration collection]]) {
                 // It's okay if there are existing migrations; we'll clear those
@@ -585,7 +585,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
                 }
             }
         }
-    }];
+    } error:nil];
 
     if (aborted) {
         return [AnyPromise promiseWithValue:OWSBackupErrorWithDescription(@"Backup import failed.")];

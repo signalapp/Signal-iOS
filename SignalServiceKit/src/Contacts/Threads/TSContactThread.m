@@ -53,9 +53,9 @@ NSString *const TSContactThreadPrefix = @"c";
     OWSAssertDebug(contactId.length > 0);
 
     __block TSContactThread *thread;
-    [[self dbReadWriteConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         thread = [self getOrCreateThreadWithContactId:contactId transaction:transaction];
-    }];
+    } error:nil];
 
     return thread;
 }

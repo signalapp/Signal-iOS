@@ -340,7 +340,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
     OWSAssertDebug(recipientIdsForIntersection.count > 0);
 
     dispatch_async(self.serialQueue, ^{
-        [self.dbReadConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             [transaction setObject:recipientIdsForIntersection
                             forKey:OWSContactsManagerKeyLastKnownContactPhoneNumbers
                       inCollection:OWSContactsManagerCollection];
@@ -354,7 +354,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
                               forKey:OWSContactsManagerKeyNextFullIntersectionDate
                         inCollection:OWSContactsManagerCollection];
             }
-        }];
+        } error:nil];
     });
 }
 
@@ -522,7 +522,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         }
 
         // Update cached SignalAccounts on disk
-        [self.dbWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             OWSLogInfo(@"Saving %lu SignalAccounts", (unsigned long)accountsToSave.count);
             for (SignalAccount *signalAccount in accountsToSave) {
                 OWSLogVerbose(@"Saving SignalAccount: %@", signalAccount);
@@ -553,7 +553,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
                     [signalAccounts sortUsingComparator:self.signalAccountComparator];
                 }
             }
-        }];
+        } error:nil];
 
         dispatch_async(dispatch_get_main_queue(), ^{
             [self updateSignalAccounts:signalAccounts];

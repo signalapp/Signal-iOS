@@ -5,6 +5,7 @@
 #import "OWSResaveCollectionDBMigration.h"
 #import <YapDatabase/YapDatabaseConnection.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -20,7 +21,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(completion);
 
     NSMutableArray<NSString *> *recordIds = [NSMutableArray new];
-    [dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         [recordIds addObjectsFromArray:[transaction allKeysInCollection:collection]];
         OWSLogInfo(@"Migrating %lu records from: %@.", (unsigned long)recordIds.count, collection);
     }
@@ -52,7 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    [dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         const int kBatchSize = 1000;
         for (int i = 0; i < kBatchSize && recordIds.count > 0; i++) {
             NSString *messageId = [recordIds lastObject];

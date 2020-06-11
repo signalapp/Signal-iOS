@@ -867,10 +867,10 @@ NSError *OWSBackupErrorWithDescription(NSString *description)
         return [AnyPromise promiseWithValue:error];
     }
 
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         // This should overwrite the attachment pointer with an attachment stream.
         [stream saveWithTransaction:transaction];
-    }];
+    } error:nil];
 
     return [AnyPromise promiseWithValue:@(1)];
 }

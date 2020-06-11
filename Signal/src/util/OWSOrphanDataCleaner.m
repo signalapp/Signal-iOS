@@ -525,14 +525,14 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
                 success:^{
                     OWSLogInfo(@"Completed orphan data cleanup.");
 
-                    [databaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                         [transaction setObject:AppVersion.sharedInstance.currentAppVersion
                                         forKey:OWSOrphanDataCleaner_LastCleaningVersionKey
                                   inCollection:OWSOrphanDataCleaner_Collection];
                         [transaction setDate:[NSDate new]
                                       forKey:OWSOrphanDataCleaner_LastCleaningDateKey
                                 inCollection:OWSOrphanDataCleaner_Collection];
-                    }];
+                    } error:nil];
 
                     if (completion) {
                         completion();
@@ -613,7 +613,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
     NSDate *appLaunchTime = CurrentAppContext().appLaunchTime;
     NSTimeInterval thresholdTimestamp = appLaunchTime.timeIntervalSince1970 - kMinimumOrphanAgeSeconds;
     NSDate *thresholdDate = [NSDate dateWithTimeIntervalSince1970:thresholdTimestamp];
-    [databaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         NSUInteger interactionsRemoved = 0;
         for (NSString *interactionId in orphanData.interactionIds) {
             if (!self.isMainAppAndActive) {
@@ -674,7 +674,7 @@ typedef void (^OrphanDataBlock)(OWSOrphanData *);
             [attachmentStream removeWithTransaction:transaction];
         }
         OWSLogInfo(@"Deleted orphan attachments: %zu", attachmentsRemoved);
-    }];
+    } error:nil];
 
     if (shouldAbort) {
         return nil;

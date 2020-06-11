@@ -1036,7 +1036,7 @@ const CGFloat kIconViewLength = 24;
     }
 
     if (self.disappearingMessagesConfiguration.dictionaryValueDidChange) {
-        [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             [self.disappearingMessagesConfiguration saveWithTransaction:transaction];
             // MJK TODO - should be safe to remove this senderTimestamp
             OWSDisappearingConfigurationUpdateInfoMessage *infoMessage =
@@ -1053,7 +1053,7 @@ const CGFloat kIconViewLength = 24;
                                thread:self.thread];
 
             [self.messageSenderJobQueue addMessage:message transaction:transaction];
-        }];
+        } error:nil];
     }
 }
 
@@ -1170,10 +1170,10 @@ const CGFloat kIconViewLength = 24;
     TSOutgoingMessage *message =
         [TSOutgoingMessage outgoingMessageInThread:gThread groupMetaMessage:TSGroupMetaMessageQuit expiresInSeconds:0];
 
-    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         [self.messageSenderJobQueue addMessage:message transaction:transaction];
         [gThread leaveGroupWithTransaction:transaction];
-    }];
+    } error:nil];
 
     [self.navigationController popViewControllerAnimated:YES];
 }
@@ -1389,9 +1389,9 @@ const CGFloat kIconViewLength = 24;
 
 - (void)setThreadMutedUntilDate:(nullable NSDate *)value
 {
-    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
+    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
         [self.thread updateWithMutedUntilDate:value transaction:transaction];
-    }];
+    } error:nil];
     
     [self updateTableContents];
 }
@@ -1456,9 +1456,9 @@ const CGFloat kIconViewLength = 24;
     didPickConversationColor:(OWSConversationColor *_Nonnull)conversationColor
 {
     OWSLogDebug(@"picked color: %@", conversationColor.name);
-    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         [self.thread updateConversationColorName:conversationColor.name transaction:transaction];
-    }];
+    } error:nil];
 
     [self.contactsManager.avatarCache removeAllImages];
     [self updateTableContents];

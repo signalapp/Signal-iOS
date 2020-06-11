@@ -149,7 +149,7 @@ SSKProtoVerified *_Nullable BuildVerifiedProtoWithRecipientId(NSString *destinat
 {
     changeBlock(self);
 
-    [[self class].dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         OWSRecipientIdentity *latest = [[self class] fetchObjectWithUniqueID:self.uniqueId transaction:transaction];
         if (latest == nil) {
             [self saveWithTransaction:transaction];
@@ -158,7 +158,7 @@ SSKProtoVerified *_Nullable BuildVerifiedProtoWithRecipientId(NSString *destinat
         
         changeBlock(latest);
         [latest saveWithTransaction:transaction];
-    }];
+    } error:nil];
 }
 
 #pragma mark - debug

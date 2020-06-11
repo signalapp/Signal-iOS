@@ -96,7 +96,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSSet<NSString *> *registeredRecipientIds = operation.registeredRecipientIds;
 
         NSMutableSet<SignalRecipient *> *recipients = [NSMutableSet new];
-        [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             for (NSString *recipientId in recipientIdsToLookup) {
                 if ([registeredRecipientIds containsObject:recipientId]) {
                     SignalRecipient *recipient =
@@ -106,7 +106,7 @@ NS_ASSUME_NONNULL_BEGIN
                     [SignalRecipient markRecipientAsUnregistered:recipientId transaction:transaction];
                 }
             }
-        }];
+        } error:nil];
 
         dispatch_async(dispatch_get_main_queue(), ^{
             success([recipients copy]);
