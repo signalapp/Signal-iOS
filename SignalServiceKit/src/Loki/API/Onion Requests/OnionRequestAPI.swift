@@ -123,7 +123,7 @@ public enum OnionRequestAPI {
                 }
             }.map(on: LokiAPI.workQueue) { paths in
                 OnionRequestAPI.paths = paths
-                try! Storage.syncWrite { transaction in
+                try! Storage.writeSync { transaction in
                     print("[Loki] Persisting onion request paths to database.")
                     OWSPrimaryStorage.shared().setOnionRequestPaths(paths, in: transaction)
                 }
@@ -163,7 +163,7 @@ public enum OnionRequestAPI {
 
     private static func dropAllPaths() {
         paths.removeAll()
-        try! Storage.syncWrite { transaction in
+        try! Storage.writeSync { transaction in
             OWSPrimaryStorage.shared().clearOnionRequestPaths(in: transaction)
         }
     }

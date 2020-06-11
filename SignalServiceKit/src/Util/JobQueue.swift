@@ -157,7 +157,7 @@ public extension JobQueue {
             return
         }
 
-        self.dbConnection.readWrite { transaction in
+        try! Storage.writeSync { transaction in
             guard let nextJob: JobRecordType = self.finder.getNextReady(label: self.jobRecordLabel, transaction: transaction) as? JobRecordType else {
                 Logger.verbose("nothing left to enqueue")
                 return
@@ -197,7 +197,7 @@ public extension JobQueue {
     }
 
     public func restartOldJobs() {
-        self.dbConnection.readWrite { transaction in
+        try! Storage.writeSync { transaction in
             let runningRecords = self.finder.allRecords(label: self.jobRecordLabel, status: .running, transaction: transaction)
             Logger.info("marking old `running` JobRecords as ready: \(runningRecords.count)")
             for record in runningRecords {

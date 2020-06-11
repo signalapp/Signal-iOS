@@ -63,7 +63,7 @@ public final class LokiRSSFeedPoller : NSObject {
                     envelope.setSource(NSLocalizedString("Loki", comment: ""))
                     envelope.setSourceDevice(OWSDevicePrimaryDeviceId)
                     envelope.setContent(try! content.build().serializedData())
-                    try! Storage.syncWrite { transaction in
+                    try! Storage.writeSync { transaction in
                         SSKEnvironment.shared.messageManager.throws_processEnvelope(try! envelope.build(), plaintextData: try! content.build().serializedData(), wasReceivedByUD: false, transaction: transaction, serverID: 0)
                     }
                 }

@@ -112,7 +112,7 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
          * We don't want to delete the session. Ref: SignalServiceKit/Loki/Docs/SessionReset.md
          * ================
         if firstAttempt {
-            self.dbConnection.readWrite { transaction in
+            try! Storage.writeSync { transaction in
                 Logger.info("deleting sessions for recipient: \(self.recipientId)")
                 self.primaryStorage.deleteAllSessions(forContact: self.recipientId, protocolContext: transaction)
             }
@@ -127,7 +127,7 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
             return self.messageSender.sendPromise(message: endSessionMessage)
         }.done {
             Logger.info("successfully sent EndSessionMessage.")
-            self.dbConnection.readWrite { transaction in
+            try! Storage.writeSync { transaction in
                 // Archive the just-created session since the recipient should delete their corresponding
                 // session upon receiving and decrypting our EndSession message.
                 // Otherwise if we send another message before them, they wont have the session to decrypt it.
@@ -160,7 +160,7 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
     }
 
     override public func didSucceed() {
-        self.dbConnection.readWrite { transaction in
+        try! Storage.writeSync { transaction in
             self.durableOperationDelegate?.durableOperationDidSucceed(self, transaction: transaction)
         }
     }
@@ -168,7 +168,7 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
     override public func didReportError(_ error: Error) {
         Logger.debug("remainingRetries: \(self.remainingRetries)")
 
-        self.dbConnection.readWrite { transaction in
+        try! Storage.writeSync { transaction in
             self.durableOperationDelegate?.durableOperation(self, didReportError: error, transaction: transaction)
         }
     }
@@ -192,7 +192,7 @@ public class SessionResetOperation: OWSOperation, DurableOperation {
 
     override public func didFail(error: Error) {
         Logger.error("failed to send EndSessionMessage with error: \(error.localizedDescription)")
-        self.dbConnection.readWrite { transaction in
+        try! Storage.writeSync { transaction in
             self.durableOperationDelegate?.durableOperation(self, didFailWithError: error, transaction: transaction)
 
             // Even though this is the failure handler - which means probably the recipient didn't receive the message

@@ -186,7 +186,7 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
             SSKEnvironment.shared.messageSender.send(linkingAuthorizationMessage, success: {
                 let storage = OWSPrimaryStorage.shared()
                 let slaveHexEncodedPublicKey = deviceLink.slave.hexEncodedPublicKey
-                try! Storage.syncWrite { transaction in
+                try! Storage.writeSync { transaction in
                     let thread = TSContactThread.getOrCreateThread(withContactId: slaveHexEncodedPublicKey, transaction: transaction)
                     thread.save(with: transaction)
                 }
@@ -196,7 +196,7 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
                     let _ = SSKEnvironment.shared.syncManager.syncAllContacts()
                 }
                 let _ = SSKEnvironment.shared.syncManager.syncAllOpenGroups()
-                try! Storage.syncWrite { transaction in
+                try! Storage.writeSync { transaction in
                     storage.setFriendRequestStatus(.friends, for: slaveHexEncodedPublicKey, transaction: transaction)
                 }
                 DispatchQueue.main.async {
@@ -251,7 +251,7 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
         session.markLinkingRequestAsProcessed() // Only relevant in master mode
         delegate?.handleDeviceLinkingModalDismissed() // Only relevant in slave mode
         if let deviceLink = deviceLink {
-            try! Storage.syncWrite { transaction in
+            try! Storage.writeSync { transaction in
                 OWSPrimaryStorage.shared().removePreKeyBundle(forContact: deviceLink.slave.hexEncodedPublicKey, transaction: transaction)
             }
         }

@@ -30,7 +30,7 @@ public class OWS114RemoveDynamicInteractions: OWSDatabaseMigration {
 
     private func doMigrationAsync(completion : @escaping OWSDatabaseMigrationCompletion) {
         DispatchQueue.global().async {
-            self.dbReadWriteConnection().readWrite { transaction in
+            try! Storage.writeSync { transaction in
                 guard let dbView = TSDatabaseView.threadSpecialMessagesDatabaseView(transaction) as? YapDatabaseViewTransaction else {
                     owsFailDebug("Couldn't load db view.")
                     return

@@ -71,7 +71,7 @@ public final class LokiPublicChatManager : NSObject {
         let model = TSGroupModel(title: chat.displayName, memberIds: [userHexEncodedPublicKey!, chat.server], image: nil, groupId: LKGroupUtilities.getEncodedOpenGroupIDAsData(chat.id), groupType: .openGroup, adminIds: [])
         
         // Store the group chat mapping
-        try! Storage.syncWrite { transaction in
+        try! Storage.writeSync { transaction in
             let thread = TSGroupThread.getOrCreateThread(with: model, transaction: transaction)
            
             // Save the group chat
@@ -118,7 +118,7 @@ public final class LokiPublicChatManager : NSObject {
         }
         
         // Remove the chat from the db
-        try! Storage.syncWrite { transaction in
+        try! Storage.writeSync { transaction in
             LokiDatabaseUtilities.removePublicChat(for: threadId, in: transaction)
         }
 

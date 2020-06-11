@@ -37,13 +37,13 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
     }
     
     private static func setLastMessageServerID(for group: UInt64, on server: String, to newValue: UInt64) {
-        try! Storage.syncWrite { transaction in
+        try! Storage.writeSync { transaction in
             transaction.setObject(newValue, forKey: "\(server).\(group)", inCollection: lastMessageServerIDCollection)
         }
     }
     
     private static func removeLastMessageServerID(for group: UInt64, on server: String) {
-        try! Storage.syncWrite { transaction in
+        try! Storage.writeSync { transaction in
             transaction.removeObject(forKey: "\(server).\(group)", inCollection: lastMessageServerIDCollection)
         }
     }
@@ -57,13 +57,13 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
     }
     
     private static func setLastDeletionServerID(for group: UInt64, on server: String, to newValue: UInt64) {
-        try! Storage.syncWrite { transaction in
+        try! Storage.writeSync { transaction in
             transaction.setObject(newValue, forKey: "\(server).\(group)", inCollection: lastDeletionServerIDCollection)
         }
     }
     
     private static func removeLastDeletionServerID(for group: UInt64, on server: String) {
-        try! Storage.syncWrite { transaction in
+        try! Storage.writeSync { transaction in
             transaction.removeObject(forKey: "\(server).\(group)", inCollection: lastDeletionServerIDCollection)
         }
     }
@@ -271,7 +271,7 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
                     print("[Loki] Couldn't parse display names for users: \(hexEncodedPublicKeys) from: \(rawResponse).")
                     throw LokiDotNetAPIError.parsingFailed
                 }
-                try! Storage.syncWrite { transaction in
+                try! Storage.writeSync { transaction in
                     data.forEach { data in
                         guard let user = data["user"] as? JSON, let hexEncodedPublicKey = user["username"] as? String, let rawDisplayName = user["name"] as? String else { return }
                         let endIndex = hexEncodedPublicKey.endIndex
@@ -355,7 +355,7 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
                         throw LokiDotNetAPIError.parsingFailed
                     }
                     let storage = OWSPrimaryStorage.shared()
-                    try! Storage.syncWrite { transaction in
+                    try! Storage.writeSync { transaction in
                         storage.setUserCount(memberCount, forPublicChatWithID: "\(server).\(channel)", in: transaction)
                     }
                     // TODO: Use this to update open group names as needed

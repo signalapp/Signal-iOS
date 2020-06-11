@@ -38,7 +38,7 @@ public class LokiDotNetAPI : NSObject {
             return Promise.value(token)
         } else {
             return requestNewAuthToken(for: server).then(on: DispatchQueue.global()) { submitAuthToken($0, for: server) }.map(on: DispatchQueue.global()) { token in
-                try! Storage.syncWrite { transaction in
+                try! Storage.writeSync { transaction in
                     setAuthToken(for: server, to: token, in: transaction)
                 }
                 return token
@@ -51,7 +51,7 @@ public class LokiDotNetAPI : NSObject {
     }
 
     public static func clearAuthToken(for server: String) {
-        try! Storage.syncWrite { transaction in
+        try! Storage.writeSync { transaction in
             transaction.removeObject(forKey: server, inCollection: authTokenCollection)
         }
     }

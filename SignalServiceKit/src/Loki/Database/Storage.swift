@@ -47,13 +47,13 @@ public final class Storage : NSObject {
     }
 
     /// Blocks the calling thread until the write has finished.
-    @objc(syncWriteWithBlock:error:)
-    public static func objc_syncWrite(with block: @escaping (YapDatabaseReadWriteTransaction) -> Void) throws {
-        try syncWrite(with: block)
+    @objc(writeSyncWithBlock:error:)
+    public static func objc_writeSync(with block: @escaping (YapDatabaseReadWriteTransaction) -> Void) throws {
+        try writeSync(with: block)
     }
 
     /// Blocks the calling thread until the write has finished.
-    public static func syncWrite(with block: @escaping (YapDatabaseReadWriteTransaction) -> Void) throws {
+    public static func writeSync(with block: @escaping (YapDatabaseReadWriteTransaction) -> Void) throws {
         try write(with: block).wait()
     }
 }

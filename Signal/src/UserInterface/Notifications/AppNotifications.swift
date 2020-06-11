@@ -659,7 +659,7 @@ class NotificationActionHandler {
     }
 
     private func markAsRead(thread: TSThread) -> Promise<Void> {
-        return dbConnection.readWritePromise { transaction in
+        return Storage.write { transaction in
             thread.markAllAsRead(with: transaction)
         }
     }

@@ -889,7 +889,7 @@ public class ExperienceUpgradesPageViewController: OWSViewController, UIPageView
     @objc public override func dismiss(animated flag: Bool, completion: (() -> Void)? = nil) {
         // Blocking write before dismiss, to be sure they're marked as complete
         // before HomeView.didAppear is re-fired.
-        self.editingDBConnection.readWrite { transaction in
+        try! Storage.writeSync { transaction in
             Logger.info("marking all upgrades as seen.")
             ExperienceUpgradeFinder.shared.markAllAsSeen(transaction: transaction)
         }

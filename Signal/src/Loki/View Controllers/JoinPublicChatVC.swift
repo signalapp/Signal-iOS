@@ -135,7 +135,7 @@ final class JoinPublicChatVC : BaseVC, UIPageViewControllerDataSource, UIPageVie
         let urlAsString = url.absoluteString
         let displayName = OWSProfileManager.shared().localProfileName()
         // TODO: Profile picture & profile key
-        try! Storage.syncWrite { transaction in
+        try! Storage.writeSync { transaction in
             transaction.removeObject(forKey: "\(urlAsString).\(channelID)", inCollection: LokiPublicChatAPI.lastMessageServerIDCollection)
             transaction.removeObject(forKey: "\(urlAsString).\(channelID)", inCollection: LokiPublicChatAPI.lastDeletionServerIDCollection)
         }

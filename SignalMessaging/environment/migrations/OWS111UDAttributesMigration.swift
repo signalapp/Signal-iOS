@@ -35,7 +35,7 @@ public class OWS111UDAttributesMigration: OWSDatabaseMigration {
     private func doMigration() {
         tsAccountManager.updateAccountAttributes().retainUntilComplete()
 
-        self.dbReadWriteConnection().readWrite { transaction in
+        try! Storage.writeSync { transaction in
             self.save(with: transaction)
         }
     }

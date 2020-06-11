@@ -163,7 +163,7 @@ public final class LokiPublicChatPoller : NSObject {
                     envelope.setSource(senderHexEncodedPublicKey)
                     envelope.setSourceDevice(OWSDevicePrimaryDeviceId)
                     envelope.setContent(try! content.build().serializedData())
-                    try! Storage.syncWrite { transaction in
+                    try! Storage.writeSync { transaction in
                         transaction.setObject(senderDisplayName, forKey: senderHexEncodedPublicKey, inCollection: publicChat.id)
                         let messageServerID = message.serverID
                         SSKEnvironment.shared.messageManager.throws_processEnvelope(try! envelope.build(), plaintextData: try! content.build().serializedData(), wasReceivedByUD: false, transaction: transaction, serverID: messageServerID ?? 0)
@@ -213,7 +213,7 @@ public final class LokiPublicChatPoller : NSObject {
     private func pollForDeletedMessages() {
         let publicChat = self.publicChat
         let _ = LokiPublicChatAPI.getDeletedMessageServerIDs(for: publicChat.channel, on: publicChat.server).done(on: DispatchQueue.global()) { deletedMessageServerIDs in
-            try! Storage.syncWrite { transaction in
+            try! Storage.writeSync { transaction in
                 let deletedMessageIDs = deletedMessageServerIDs.compactMap { OWSPrimaryStorage.shared().getIDForMessage(withServerID: UInt($0), in: transaction) }
                 deletedMessageIDs.forEach { messageID in
                     TSMessage.fetch(uniqueId: messageID)?.remove(with: transaction)

@@ -53,7 +53,7 @@ public class OWS113MultiAttachmentMediaMessages: OWSDatabaseMigration {
                     }
                 }
             }
-            self.dbReadWriteConnection().readWrite { transaction in
+            try! Storage.writeSync { transaction in
                 for (attachmentId, messageId) in legacyAttachments {
                     autoreleasepool {
                         guard let attachment = TSAttachment.fetch(uniqueId: attachmentId, transaction: transaction) else {

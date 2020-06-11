@@ -369,7 +369,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
             let alert = UIAlertController(title: NSLocalizedString("CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE", comment: ""), message: NSLocalizedString("CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE", comment: ""), preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("TXT_DELETE_TITLE", comment: ""), style: .destructive) { _ in
                 guard let self = self else { return }
-                self.editingDatabaseConnection.readWrite { transaction in
+                try! Storage.writeSync { transaction in
                     if let publicChat = publicChat {
                         var messageIDs: Set<String> = []
                         thread.enumerateInteractions(with: transaction) { interaction, _ in

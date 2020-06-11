@@ -53,7 +53,7 @@ public extension LokiAPI {
                 }
             }.done(on: DispatchQueue.global()) { snode in
                 seal.fulfill(snode)
-                try! Storage.syncWrite { transaction in
+                try! Storage.writeSync { transaction in
                     print("[Loki] Persisting snode pool to database.")
                     storage.setSnodePool(LokiAPI.snodePool, in: transaction)
                 }
@@ -87,7 +87,7 @@ public extension LokiAPI {
                 parseTargets(from: $0)
             }.get { swarm in
                 swarmCache[hexEncodedPublicKey] = swarm
-                try! Storage.syncWrite { transaction in
+                try! Storage.writeSync { transaction in
                     storage.setSwarm(swarm, for: hexEncodedPublicKey, in: transaction)
                 }
             }
@@ -101,7 +101,7 @@ public extension LokiAPI {
 
     internal static func dropSnodeFromSnodePool(_ target: LokiAPITarget) {
         LokiAPI.snodePool.remove(target)
-        try! Storage.syncWrite { transaction in
+        try! Storage.writeSync { transaction in
             storage.dropSnodeFromSnodePool(target, in: transaction)
         }
     }
@@ -111,7 +111,7 @@ public extension LokiAPI {
         if var swarm = swarm, let index = swarm.firstIndex(of: target) {
             swarm.remove(at: index)
             LokiAPI.swarmCache[hexEncodedPublicKey] = swarm
-            try! Storage.syncWrite { transaction in
+            try! Storage.writeSync { transaction in
                 storage.setSwarm(swarm, for: hexEncodedPublicKey, in: transaction)
             }
         }
@@ -120,7 +120,7 @@ public extension LokiAPI {
     // MARK: Public API
     @objc public static func clearSnodePool() {
         snodePool.removeAll()
-        try! Storage.syncWrite { transaction in
+        try! Storage.writeSync { transaction in
             storage.clearSnodePool(in: transaction)
         }
     }

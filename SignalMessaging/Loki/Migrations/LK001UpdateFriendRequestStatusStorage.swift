@@ -19,7 +19,7 @@ public class LK001UpdateFriendRequestStatusStorage : OWSDatabaseMigration {
 
     private func doMigrationAsync(completion: @escaping OWSDatabaseMigrationCompletion) {
         DispatchQueue.global().async {
-            self.dbReadWriteConnection().readWrite { transaction in
+            try! Storage.writeSync { transaction in
                 var threads: [TSContactThread] = []
                 TSContactThread.enumerateCollectionObjects(with: transaction) { object, _ in
                     guard let thread = object as? TSContactThread else { return }
