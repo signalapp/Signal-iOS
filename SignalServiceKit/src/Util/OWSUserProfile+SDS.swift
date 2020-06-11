@@ -632,3 +632,15 @@ class OWSUserProfileSerializer: SDSSerializer {
         return UserProfileRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, avatarFileName: avatarFileName, avatarUrlPath: avatarUrlPath, profileKey: profileKey, profileName: profileName, recipientPhoneNumber: recipientPhoneNumber, recipientUUID: recipientUUID, username: username, familyName: familyName, isUuidCapable: isUuidCapable)
     }
 }
+
+// MARK: - Deep Copy
+
+@objc
+public extension OWSUserProfile {
+    func deepCopy() throws -> OWSUserProfile {
+        guard let record = try asRecord() as? UserProfileRecord else {
+            throw OWSAssertionError("Could not convert to record.")
+        }
+        return try OWSUserProfile.fromRecord(record)
+    }
+}

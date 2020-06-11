@@ -600,3 +600,15 @@ class IncomingGroupsV2MessageJobSerializer: SDSSerializer {
         return IncomingGroupsV2MessageJobRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, createdAt: createdAt, envelopeData: envelopeData, plaintextData: plaintextData, wasReceivedByUD: wasReceivedByUD, groupId: groupId)
     }
 }
+
+// MARK: - Deep Copy
+
+@objc
+public extension IncomingGroupsV2MessageJob {
+    func deepCopy() throws -> IncomingGroupsV2MessageJob {
+        guard let record = try asRecord() as? IncomingGroupsV2MessageJobRecord else {
+            throw OWSAssertionError("Could not convert to record.")
+        }
+        return try IncomingGroupsV2MessageJob.fromRecord(record)
+    }
+}

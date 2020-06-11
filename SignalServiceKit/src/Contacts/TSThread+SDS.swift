@@ -714,3 +714,15 @@ class TSThreadSerializer: SDSSerializer {
         return ThreadRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, conversationColorName: conversationColorName, creationDate: creationDate, isArchived: isArchived, lastInteractionRowId: lastInteractionRowId, messageDraft: messageDraft, mutedUntilDate: mutedUntilDate, shouldThreadBeVisible: shouldThreadBeVisible, contactPhoneNumber: contactPhoneNumber, contactUUID: contactUUID, groupModel: groupModel, hasDismissedOffers: hasDismissedOffers, isMarkedUnread: isMarkedUnread)
     }
 }
+
+// MARK: - Deep Copy
+
+@objc
+public extension TSThread {
+    func deepCopy() throws -> TSThread {
+        guard let record = try asRecord() as? ThreadRecord else {
+            throw OWSAssertionError("Could not convert to record.")
+        }
+        return try TSThread.fromRecord(record)
+    }
+}

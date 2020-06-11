@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 // This property is optional and will not be set for
 // non-contact account.
-@property (nonatomic, nullable) Contact *contact;
+@property (nonatomic, nullable, readonly) Contact *contact;
 
 // We cache the contact avatar data on this class.
 //
@@ -46,12 +46,12 @@ NS_ASSUME_NONNULL_BEGIN
 //
 // This property is optional and will not be set for
 // non-contact account.
-@property (nonatomic, nullable) NSData *contactAvatarHash;
-@property (nonatomic, nullable) NSData *contactAvatarJpegData;
+@property (nonatomic, nullable, readonly) NSData *contactAvatarHash;
+@property (nonatomic, nullable, readonly) NSData *contactAvatarJpegData;
 
 // For contacts with more than one signal account,
 // this is a label for the account.
-@property (nonatomic) NSString *multipleAccountLabelText;
+@property (nonatomic, readonly) NSString *multipleAccountLabelText;
 
 - (nullable NSString *)contactFullName;
 - (nullable NSString *)contactFirstName;
@@ -64,9 +64,16 @@ NS_ASSUME_NONNULL_BEGIN
 - (instancetype)initWithGrdbId:(int64_t)grdbId uniqueId:(NSString *)uniqueId NS_UNAVAILABLE;
 
 // Convenience initializer which is neither "designated" nor "unavailable".
-- (instancetype)initWithSignalRecipient:(SignalRecipient *)signalRecipient;
+- (instancetype)initWithSignalRecipient:(SignalRecipient *)signalRecipient
+                                contact:(nullable Contact *)contact
+               multipleAccountLabelText:(nullable NSString *)multipleAccountLabelText;
 
-- (instancetype)initWithSignalServiceAddress:(SignalServiceAddress *)address NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(address:));
+// Convenience initializer which is neither "designated" nor "unavailable".
+- (instancetype)initWithSignalServiceAddress:(SignalServiceAddress *)address NS_SWIFT_NAME(init(address:));
+
+- (instancetype)initWithSignalServiceAddress:(SignalServiceAddress *)serviceAddress
+                                     contact:(nullable Contact *)contact
+                    multipleAccountLabelText:(nullable NSString *)multipleAccountLabelText NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)initWithContact:(nullable Contact *)contact
               contactAvatarHash:(nullable NSData *)contactAvatarHash
@@ -98,6 +105,9 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:contact:contactAvat
 - (BOOL)hasSameContent:(SignalAccount *)other;
 
 - (void)tryToCacheContactAvatarData;
+
+- (void)updateWithContact:(nullable Contact *)contact
+              transaction:(SDSAnyWriteTransaction *)transaction NS_SWIFT_NAME(updateWithContact(_:transaction:));
 
 @end
 
