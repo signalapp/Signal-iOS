@@ -28,6 +28,10 @@ NS_ASSUME_NONNULL_BEGIN
                          deviceId:(int)deviceId
                       transaction:(SDSAnyWriteTransaction *)transaction;
 
+- (BOOL)containsSessionForAccountId:(NSString *)accountId
+                           deviceId:(int)deviceId
+                        transaction:(SDSAnyReadTransaction *)transaction;
+
 - (nullable NSNumber *)maxSessionSenderChainKeyIndexForAccountId:(NSString *)accountId
                                                      transaction:(SDSAnyReadTransaction *)transaction;
 

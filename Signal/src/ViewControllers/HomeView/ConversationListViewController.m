@@ -89,7 +89,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 @property (nonatomic, readonly) UIView *deregisteredView;
 @property (nonatomic, readonly) UIView *outageView;
 @property (nonatomic, readonly) UIView *archiveReminderView;
-@property (nonatomic, readonly) UIView *missingContactsPermissionView;
 
 @property (nonatomic) BOOL hasArchivedThreadsRow;
 @property (nonatomic) BOOL hasThemeChanged;
@@ -351,16 +350,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [reminderStackView addArrangedSubview:archiveReminderView];
     SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, archiveReminderView);
 
-    ReminderView *missingContactsPermissionView = [ReminderView
-        nagWithText:NSLocalizedString(@"INBOX_VIEW_MISSING_CONTACTS_PERMISSION",
-                        @"Multi-line label explaining how to show names instead of phone numbers in your inbox")
-          tapAction:^{
-              [[UIApplication sharedApplication] openSystemSettings];
-          }];
-    _missingContactsPermissionView = missingContactsPermissionView;
-    [reminderStackView addArrangedSubview:missingContactsPermissionView];
-    SET_SUBVIEW_ACCESSIBILITY_IDENTIFIER(self, missingContactsPermissionView);
-
     self.tableView = [[UITableView alloc] initWithFrame:CGRectZero style:UITableViewStylePlain];
     self.tableView.delegate = self;
     self.tableView.dataSource = self;
@@ -608,9 +597,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 - (void)updateReminderViews
 {
     self.archiveReminderView.hidden = self.conversationListMode != ConversationListMode_Archive;
-    // App is killed and restarted when the user changes their contact permissions, so need need to "observe" anything
-    // to re-render this.
-    self.missingContactsPermissionView.hidden = !self.contactsManager.isSystemContactsDenied;
     self.deregisteredView.hidden
         = !TSAccountManager.sharedInstance.isDeregistered || TSAccountManager.sharedInstance.isTransferInProgress;
     self.outageView.hidden = !OutageDetection.sharedManager.hasOutage;
@@ -619,9 +605,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     self.expiredView.hidden = !SSKAppExpiry.isExpiringSoon;
     [self.expiredView updateText];
 
-    self.hasVisibleReminders = !self.archiveReminderView.isHidden || !self.missingContactsPermissionView.isHidden
-        || !self.deregisteredView.isHidden || !self.outageView.isHidden || !self.expiredView.isHidden
-        || !self.endOfLifeOSView.isHidden;
+    self.hasVisibleReminders = !self.archiveReminderView.isHidden || !self.deregisteredView.isHidden
+        || !self.outageView.isHidden || !self.expiredView.isHidden || !self.endOfLifeOSView.isHidden;
 }
 
 - (void)setHasVisibleReminders:(BOOL)hasVisibleReminders
@@ -1370,13 +1355,15 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         case ConversationListViewControllerSectionArchiveButton:
             return nil;
         case ConversationListViewControllerSectionConversations: {
+            TSThread *thread = [self threadForIndexPath:indexPath];
+
             UIContextualAction *deleteAction =
                 [UIContextualAction contextualActionWithStyle:UIContextualActionStyleDestructive
                                                         title:nil
                                                       handler:^(UIContextualAction *action,
                                                           __kindof UIView *sourceView,
                                                           void (^completionHandler)(BOOL)) {
-                                                          [self tableViewCellTappedDelete:indexPath];
+                                                          [self deleteThreadWithConfirmation:thread];
                                                           completionHandler(YES);
                                                       }];
             deleteAction.backgroundColor = UIColor.ows_accentRedColor;
@@ -1389,7 +1376,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                                                       handler:^(UIContextualAction *action,
                                                           __kindof UIView *sourceView,
                                                           void (^completionHandler)(BOOL)) {
-                                                          [self archiveIndexPath:indexPath];
+                                                          [self archiveThread:thread];
                                                           completionHandler(YES);
                                                       }];
 
@@ -1424,6 +1411,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         case ConversationListViewControllerSectionConversations: {
 
             ThreadViewModel *model = [self threadViewModelForIndexPath:indexPath];
+            TSThread *thread = [self threadForIndexPath:indexPath];
 
             if (model.hasUnreadMessages) {
                 UIContextualAction *readAction =
@@ -1439,7 +1427,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                                                                                  (int64_t)(0.65 * NSEC_PER_SEC)),
                                                                   dispatch_get_main_queue(),
                                                                   ^{
-                                                                      [self markAsReadIndexPath:indexPath];
+                                                                      [self markThreadAsRead:thread];
                                                                   });
                                                           }];
 
@@ -1464,7 +1452,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                                                                                  (int64_t)(0.65 * NSEC_PER_SEC)),
                                                                   dispatch_get_main_queue(),
                                                                   ^{
-                                                                      [self markAsUnreadIndexPath:indexPath];
+                                                                      [self markThreadAsUnread:thread];
                                                                   });
                                                           }];
 
@@ -1604,15 +1592,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
 #pragma mark - HomeFeedTableViewCellDelegate
 
-- (void)tableViewCellTappedDelete:(NSIndexPath *)indexPath
+- (void)deleteThreadWithConfirmation:(TSThread *)thread
 {
-    if (indexPath.section != ConversationListViewControllerSectionConversations) {
-        OWSFailDebug(@"failure: unexpected section: %lu", (unsigned long)indexPath.section);
-        return;
-    }
-
-    TSThread *thread = [self threadForIndexPath:indexPath];
-
     __weak ConversationListViewController *weakSelf = self;
     ActionSheetController *alert = [[ActionSheetController alloc]
         initWithTitle:NSLocalizedString(@"CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE",
@@ -1643,7 +1624,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                 [groupThread softDeleteThreadWithTransaction:transaction];
             } else {
                 [groupThread anyRemoveWithTransaction:transaction];
-                [self.databaseStorage touchThread:groupThread transaction:transaction];
             }
         } else {
             // contact thread
@@ -1654,43 +1634,22 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self updateViewState];
 }
 
-- (void)markAsReadIndexPath:(NSIndexPath *)indexPath
+- (void)markThreadAsRead:(TSThread *)thread
 {
-    if (indexPath.section != ConversationListViewControllerSectionConversations) {
-        OWSFailDebug(@"failure: unexpected section: %lu", (unsigned long)indexPath.section);
-        return;
-    }
-
-    TSThread *thread = [self threadForIndexPath:indexPath];
-
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [thread markAllAsReadAndUpdateStorageService:YES transaction:transaction];
     });
 }
 
-- (void)markAsUnreadIndexPath:(NSIndexPath *)indexPath
+- (void)markThreadAsUnread:(TSThread *)thread
 {
-    if (indexPath.section != ConversationListViewControllerSectionConversations) {
-        OWSFailDebug(@"failure: unexpected section: %lu", (unsigned long)indexPath.section);
-        return;
-    }
-
-    TSThread *thread = [self threadForIndexPath:indexPath];
-
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [thread markAsUnreadAndUpdateStorageService:YES transaction:transaction];
     });
 }
 
-- (void)archiveIndexPath:(NSIndexPath *)indexPath
+- (void)archiveThread:(TSThread *)thread
 {
-    if (indexPath.section != ConversationListViewControllerSectionConversations) {
-        OWSFailDebug(@"failure: unexpected section: %lu", (unsigned long)indexPath.section);
-        return;
-    }
-
-    TSThread *thread = [self threadForIndexPath:indexPath];
-
     // If this conversation is currently selected, close it.
     if ([self.conversationSplitViewController.selectedThread.uniqueId isEqualToString:thread.uniqueId]) {
         [self.conversationSplitViewController closeSelectedConversationAnimated:YES];

@@ -24,6 +24,7 @@
 #import "DebugUIMessages.h"
 #import "DebugUIPage.h"
 #import "DebugUIScreenshots.h"
+#import "DebugUIStress.h"
 #import "DebugUITableViewController.h"
 #import "FingerprintViewController.h"
 #import "MediaDetailViewController.h"

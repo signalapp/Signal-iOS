@@ -608,3 +608,15 @@ class SignalAccountSerializer: SDSSerializer {
         return SignalAccountRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, contact: contact, contactAvatarHash: contactAvatarHash, contactAvatarJpegData: contactAvatarJpegData, multipleAccountLabelText: multipleAccountLabelText, recipientPhoneNumber: recipientPhoneNumber, recipientUUID: recipientUUID)
     }
 }
+
+// MARK: - Deep Copy
+
+@objc
+public extension SignalAccount {
+    func deepCopy() throws -> SignalAccount {
+        guard let record = try asRecord() as? SignalAccountRecord else {
+            throw OWSAssertionError("Could not convert to record.")
+        }
+        return try SignalAccount.fromRecord(record)
+    }
+}

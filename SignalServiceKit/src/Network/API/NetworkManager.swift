@@ -56,6 +56,7 @@ public extension TSNetworkManager {
         let (promise, resolver) = Promise<Response>.pending()
 
         self.makeRequest(request,
+                         completionQueue: DispatchQueue.global(),
                          success: { task, responseObject in
                             resolver.fulfill((task: task, responseObject: responseObject))
         },

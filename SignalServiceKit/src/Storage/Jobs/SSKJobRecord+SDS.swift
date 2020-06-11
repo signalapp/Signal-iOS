@@ -39,6 +39,7 @@ public struct JobRecordRecord: SDSRecord {
     public let removeMessageAfterSending: Bool?
     public let threadId: String?
     public let attachmentId: String?
+    public let isMediaMessage: Bool?
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -55,6 +56,7 @@ public struct JobRecordRecord: SDSRecord {
         case removeMessageAfterSending
         case threadId
         case attachmentId
+        case isMediaMessage
     }
 
     public static func columnName(_ column: JobRecordRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -92,6 +94,7 @@ public extension JobRecordRecord {
         removeMessageAfterSending = row[11]
         threadId = row[12]
         attachmentId = row[13]
+        isMediaMessage = row[14]
     }
 }
 
@@ -230,6 +233,7 @@ extension SSKJobRecord {
             let status: SSKJobRecordStatus = record.status
             let invisibleMessageSerialized: Data? = record.invisibleMessage
             let invisibleMessage: TSOutgoingMessage? = try SDSDeserialization.optionalUnarchive(invisibleMessageSerialized, name: "invisibleMessage")
+            let isMediaMessage: Bool = try SDSDeserialization.required(record.isMediaMessage, name: "isMediaMessage")
             let messageId: String? = record.messageId
             let removeMessageAfterSending: Bool = try SDSDeserialization.required(record.removeMessageAfterSending, name: "removeMessageAfterSending")
             let threadId: String? = record.threadId
@@ -241,6 +245,7 @@ extension SSKJobRecord {
                                              sortId: sortId,
                                              status: status,
                                              invisibleMessage: invisibleMessage,
+                                             isMediaMessage: isMediaMessage,
                                              messageId: messageId,
                                              removeMessageAfterSending: removeMessageAfterSending,
                                              threadId: threadId)
@@ -317,6 +322,7 @@ extension SSKJobRecordSerializer {
     static let removeMessageAfterSendingColumn = SDSColumnMetadata(columnName: "removeMessageAfterSending", columnType: .int, isOptional: true)
     static let threadIdColumn = SDSColumnMetadata(columnName: "threadId", columnType: .unicodeString, isOptional: true)
     static let attachmentIdColumn = SDSColumnMetadata(columnName: "attachmentId", columnType: .unicodeString, isOptional: true)
+    static let isMediaMessageColumn = SDSColumnMetadata(columnName: "isMediaMessage", columnType: .int, isOptional: true)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -336,7 +342,8 @@ extension SSKJobRecordSerializer {
         messageIdColumn,
         removeMessageAfterSendingColumn,
         threadIdColumn,
-        attachmentIdColumn
+        attachmentIdColumn,
+        isMediaMessageColumn
         ])
 }
 
@@ -757,7 +764,20 @@ class SSKJobRecordSerializer: SDSSerializer {
         let removeMessageAfterSending: Bool? = nil
         let threadId: String? = nil
         let attachmentId: String? = nil
+        let isMediaMessage: Bool? = nil
 
-        return JobRecordRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, failureCount: failureCount, label: label, status: status, attachmentIdMap: attachmentIdMap, contactThreadId: contactThreadId, envelopeData: envelopeData, invisibleMessage: invisibleMessage, messageId: messageId, removeMessageAfterSending: removeMessageAfterSending, threadId: threadId, attachmentId: attachmentId)
+        return JobRecordRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, failureCount: failureCount, label: label, status: status, attachmentIdMap: attachmentIdMap, contactThreadId: contactThreadId, envelopeData: envelopeData, invisibleMessage: invisibleMessage, messageId: messageId, removeMessageAfterSending: removeMessageAfterSending, threadId: threadId, attachmentId: attachmentId, isMediaMessage: isMediaMessage)
+    }
+}
+
+// MARK: - Deep Copy
+
+@objc
+public extension SSKJobRecord {
+    func deepCopy() throws -> SSKJobRecord {
+        guard let record = try asRecord() as? JobRecordRecord else {
+            throw OWSAssertionError("Could not convert to record.")
+        }
+        return try SSKJobRecord.fromRecord(record)
     }
 }

@@ -22,6 +22,10 @@ public class FakeContactsManager: NSObject, ContactsManagerProtocol {
         return "Fake name"
     }
 
+    public func shortDisplayName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
+        return "Short fake name"
+    }
+
     public func nameComponents(for address: SignalServiceAddress) -> PersonNameComponents? {
         return PersonNameComponents()
     }

@@ -470,10 +470,12 @@ class AttachmentTextToolbar: UIView, UITextViewDelegate {
         }
         viewOnceTooltip = tooltip
 
-        preferences.setWasViewOnceTooltipShown()
+        DispatchQueue.global().async {
+            self.preferences.setWasViewOnceTooltipShown()
 
-        DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 5) { [weak self] in
-            self?.removeViewOnceTooltip()
+            DispatchQueue.main.asyncAfter(deadline: DispatchTime.now() + 5) { [weak self] in
+                self?.removeViewOnceTooltip()
+            }
         }
     }
 

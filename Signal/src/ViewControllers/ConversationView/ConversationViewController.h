@@ -13,6 +13,7 @@ typedef NS_ENUM(NSUInteger, ConversationViewAction) {
     ConversationViewActionVideoCall,
 };
 
+@class ConversationViewCell;
 @class TSThread;
 @class ThreadViewModel;
 
@@ -31,6 +32,9 @@ typedef NS_ENUM(NSUInteger, ConversationViewAction) {
                          focusMessageId:(nullable NSString *)focusMessageId NS_DESIGNATED_INITIALIZER;
 
 - (void)popKeyBoard;
+- (void)dismissKeyBoard;
+
+- (void)updateMessageActionsStateForCell:(ConversationViewCell *)cell;
 
 - (void)scrollToFirstUnreadMessage:(BOOL)isAnimated;
 

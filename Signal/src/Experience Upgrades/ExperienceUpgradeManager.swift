@@ -16,16 +16,30 @@ class ExperienceUpgradeManager: NSObject {
     // before we display the splash.
     static let splashStartDay = 7
 
+    private static func dismissLastPresented() {
+        lastPresented?.dismiss(animated: false, completion: nil)
+        lastPresented = nil
+    }
+
     @objc
     static func presentNext(fromViewController: UIViewController) -> Bool {
-        // If we already have a experience upgrade in the view hierarchy, do nothing
-        guard lastPresented?.isPresented != true else { return true }
-
-        guard let next = databaseStorage.read(block: { transaction in
+        let optionalNext = databaseStorage.read(block: { transaction in
             return ExperienceUpgradeFinder.next(transaction: transaction.unwrapGrdbRead)
-        }) else {
-            return false
+        })
+
+        // If we already have presented this experience upgrade, do nothing.
+        guard let next = optionalNext, lastPresented?.experienceUpgrade.uniqueId != next.uniqueId else {
+            if optionalNext == nil {
+                dismissLastPresented()
+                return false
+            } else {
+                return true
+            }
         }
+
+        // Otherwise, dismiss any currently present experience upgrade. It's
+        // no longer next and may have been completed.
+        dismissLastPresented()
 
         let hasMegaphone = self.hasMegaphone(forExperienceUpgrade: next)
         let hasSplash = self.hasSplash(forExperienceUpgrade: next)
@@ -127,7 +141,9 @@ class ExperienceUpgradeManager: NSObject {
         case .introducingPins,
              .reactions,
              .profileNameReminder,
-             .pinReminder:
+             .pinReminder,
+             .notificationPermissionReminder,
+             .contactPermissionReminder:
             return true
         case .messageRequests:
             // no need to annoy user with banner for message requests. They are self explanatory.
@@ -147,9 +163,10 @@ class ExperienceUpgradeManager: NSObject {
             return ProfileNameReminderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         case .pinReminder:
             return PinReminderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
-        case .messageRequests:
-            // no need to annoy user with banner for message requests. They are self explanatory.
-            return nil
+        case .notificationPermissionReminder:
+            return NotificationPermissionReminderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
+        case .contactPermissionReminder:
+            return ContactPermissionReminderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         default:
             return nil
         }

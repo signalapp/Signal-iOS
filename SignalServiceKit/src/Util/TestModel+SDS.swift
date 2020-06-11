@@ -632,3 +632,15 @@ class TestModelSerializer: SDSSerializer {
         return TestModelRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, dateValue: dateValue, doubleValue: doubleValue, floatValue: floatValue, int64Value: int64Value, nsIntegerValue: nsIntegerValue, nsNumberValueUsingInt64: nsNumberValueUsingInt64, nsNumberValueUsingUInt64: nsNumberValueUsingUInt64, nsuIntegerValue: nsuIntegerValue, uint64Value: uint64Value)
     }
 }
+
+// MARK: - Deep Copy
+
+@objc
+public extension TestModel {
+    func deepCopy() throws -> TestModel {
+        guard let record = try asRecord() as? TestModelRecord else {
+            throw OWSAssertionError("Could not convert to record.")
+        }
+        return try TestModel.fromRecord(record)
+    }
+}

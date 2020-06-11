@@ -328,47 +328,30 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     return [NSSet setWithArray:result].allObjects;
 }
 
-- (NSArray<TSAttachment *> *)bodyAttachmentsWithTransaction:(SDSAnyReadTransaction *)transaction
+- (NSArray<TSAttachment *> *)bodyAttachmentsWithTransaction:(GRDBReadTransaction *)transaction
 {
-    return [TSMessage attachmentsWithIds:self.attachmentIds transaction:transaction];
+    return [self allAttachmentsWithTransaction:transaction];
 }
 
-- (NSArray<TSAttachment *> *)allAttachmentsWithTransaction:(SDSAnyReadTransaction *)transaction
+- (NSArray<TSAttachment *> *)allAttachmentsWithTransaction:(GRDBReadTransaction *)transaction
 {
-    return [TSMessage attachmentsWithIds:self.allAttachmentIds transaction:transaction];
+    return [AttachmentFinder attachmentsWithAttachmentIds:self.attachmentIds transaction:transaction];
 }
 
-+ (NSArray<TSAttachment *> *)attachmentsWithIds:(NSArray<NSString *> *)attachmentIds
-                                    transaction:(SDSAnyReadTransaction *)transaction
-{
-    NSMutableArray<TSAttachment *> *attachments = [NSMutableArray new];
-    for (NSString *attachmentId in attachmentIds) {
-        TSAttachment *_Nullable attachment = [TSAttachment anyFetchWithUniqueId:attachmentId transaction:transaction];
-        if (attachment) {
-            [attachments addObject:attachment];
-        }
-    }
-    return [attachments copy];
-}
-
-- (NSArray<TSAttachment *> *)bodyAttachmentsWithTransaction:(SDSAnyReadTransaction *)transaction
+- (NSArray<TSAttachment *> *)bodyAttachmentsWithTransaction:(GRDBReadTransaction *)transaction
                                                 contentType:(NSString *)contentType
 {
-    NSArray<TSAttachment *> *attachments = [self bodyAttachmentsWithTransaction:transaction];
-    return [attachments filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(TSAttachment *evaluatedObject,
-                                                        NSDictionary<NSString *, id> *_Nullable bindings) {
-        return [evaluatedObject.contentType isEqualToString:contentType];
-    }]];
+    return [AttachmentFinder attachmentsWithAttachmentIds:self.attachmentIds
+                                      matchingContentType:contentType
+                                              transaction:transaction];
 }
 
-- (NSArray<TSAttachment *> *)bodyAttachmentsWithTransaction:(SDSAnyReadTransaction *)transaction
+- (NSArray<TSAttachment *> *)bodyAttachmentsWithTransaction:(GRDBReadTransaction *)transaction
                                           exceptContentType:(NSString *)contentType
 {
-    NSArray<TSAttachment *> *attachments = [self bodyAttachmentsWithTransaction:transaction];
-    return [attachments filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(TSAttachment *evaluatedObject,
-                                                        NSDictionary<NSString *, id> *_Nullable bindings) {
-        return ![evaluatedObject.contentType isEqualToString:contentType];
-    }]];
+    return [AttachmentFinder attachmentsWithAttachmentIds:self.attachmentIds
+                                      ignoringContentType:contentType
+                                              transaction:transaction];
 }
 
 - (void)removeAttachment:(TSAttachment *)attachment transaction:(SDSAnyWriteTransaction *)transaction
@@ -398,17 +381,24 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     }
 }
 
-- (nullable TSAttachment *)oversizeTextAttachmentWithTransaction:(SDSAnyReadTransaction *)transaction
+- (nullable TSAttachment *)oversizeTextAttachmentWithTransaction:(GRDBReadTransaction *)transaction
 {
     return [self bodyAttachmentsWithTransaction:transaction contentType:OWSMimeTypeOversizeTextMessage].firstObject;
 }
 
-- (NSArray<TSAttachment *> *)mediaAttachmentsWithTransaction:(SDSAnyReadTransaction *)transaction
+- (BOOL)hasMediaAttachmentsWithTransaction:(GRDBReadTransaction *)transaction
+{
+    return [AttachmentFinder existsAttachmentsWithAttachmentIds:self.attachmentIds
+                                            ignoringContentType:OWSMimeTypeOversizeTextMessage
+                                                    transaction:transaction];
+}
+
+- (NSArray<TSAttachment *> *)mediaAttachmentsWithTransaction:(GRDBReadTransaction *)transaction
 {
     return [self bodyAttachmentsWithTransaction:transaction exceptContentType:OWSMimeTypeOversizeTextMessage];
 }
 
-- (nullable NSString *)oversizeTextWithTransaction:(SDSAnyReadTransaction *)transaction
+- (nullable NSString *)oversizeTextWithTransaction:(GRDBReadTransaction *)transaction
 {
     TSAttachment *_Nullable attachment = [self oversizeTextAttachmentWithTransaction:transaction];
     if (!attachment) {
@@ -434,7 +424,7 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     return text.filterStringForDisplay;
 }
 
-- (nullable NSString *)bodyTextWithTransaction:(SDSAnyReadTransaction *)transaction
+- (nullable NSString *)bodyTextWithTransaction:(GRDBReadTransaction *)transaction
 {
     NSString *_Nullable oversizeText = [self oversizeTextWithTransaction:transaction];
     if (oversizeText) {
@@ -464,7 +454,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     }
 
     if (bodyDescription == nil) {
-        TSAttachment *_Nullable oversizeTextAttachment = [self oversizeTextAttachmentWithTransaction:transaction];
+        TSAttachment *_Nullable oversizeTextAttachment =
+            [self oversizeTextAttachmentWithTransaction:transaction.unwrapGrdbRead];
         if ([oversizeTextAttachment isKindOfClass:[TSAttachmentStream class]]) {
             TSAttachmentStream *oversizeTextAttachmentStream = (TSAttachmentStream *)oversizeTextAttachment;
             NSData *_Nullable data = [NSData dataWithContentsOfFile:oversizeTextAttachmentStream.originalFilePath];
@@ -480,7 +471,8 @@ static const NSUInteger OWSMessageSchemaVersion = 4;
     NSString *_Nullable attachmentEmoji = nil;
     NSString *_Nullable attachmentDescription = nil;
 
-    TSAttachment *_Nullable mediaAttachment = [self mediaAttachmentsWithTransaction:transaction].firstObject;
+    TSAttachment *_Nullable mediaAttachment =
+        [self mediaAttachmentsWithTransaction:transaction.unwrapGrdbRead].firstObject;
     if (mediaAttachment != nil) {
         attachmentEmoji = mediaAttachment.emoji;
         attachmentDescription = mediaAttachment.description;

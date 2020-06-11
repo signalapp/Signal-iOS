@@ -251,6 +251,8 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 // On app launch, all "sending" recipients should be marked as "failed".
 - (void)updateWithAllSendingRecipientsMarkedAsFailedWithTansaction:(SDSAnyWriteTransaction *)transaction;
 
+- (BOOL)hasFailedRecipients;
+
 // When we start a message send, all "failed" recipients should be marked as "sending".
 - (void)updateAllUnsentRecipientsAsSendingWithTransaction:(SDSAnyWriteTransaction *)transaction
     NS_SWIFT_NAME(updateAllUnsentRecipientsAsSending(transaction:));

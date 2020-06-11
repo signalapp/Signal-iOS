@@ -104,6 +104,7 @@
 		3448E1622213585C004B052E /* OnboardingBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3448E1612213585C004B052E /* OnboardingBaseViewController.swift */; };
 		3448E16422135FFA004B052E /* OnboardingPhoneNumberViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3448E16322135FFA004B052E /* OnboardingPhoneNumberViewController.swift */; };
 		3448E1662215B313004B052E /* OnboardingCaptchaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3448E1652215B313004B052E /* OnboardingCaptchaViewController.swift */; };
+		344DAEDF248A7526000AD4FA /* DebugUIStress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344DAEDE248A7526000AD4FA /* DebugUIStress.swift */; };
 		344DC9AF226E483D004E7322 /* ManageStickersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344DC9AE226E483C004E7322 /* ManageStickersViewController.swift */; };
 		344F248D2007CCD600CFB4F4 /* DisplayableText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344F248C2007CCD600CFB4F4 /* DisplayableText.swift */; };
 		3456A73223D63EBE00947219 /* GroupsV2Protos.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3456A73123D63EBE00947219 /* GroupsV2Protos.swift */; };
@@ -604,6 +605,8 @@
 		768A1A2B17FC9CD300E00ED8 /* libz.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 768A1A2A17FC9CD300E00ED8 /* libz.dylib */; };
 		76C87F19181EFCE600C4ACAB /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */; };
 		76EB054018170B33006006FC /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 76EB03C318170B33006006FC /* AppDelegate.m */; };
+		8806EF19248DBD7200E764C7 /* NotificationPermissionReminderMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8806EF18248DBD7200E764C7 /* NotificationPermissionReminderMegaphone.swift */; };
+		8806EF1B248DBFC100E764C7 /* ContactPermissionReminderMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8806EF1A248DBFC100E764C7 /* ContactPermissionReminderMegaphone.swift */; };
 		8806F21B23E90B0B00692638 /* MessageRequests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8806F21A23E90B0B00692638 /* MessageRequests.swift */; };
 		8806F21D23E90C8300692638 /* messageRequestsSplash.json in Resources */ = {isa = PBXBuildFile; fileRef = 8806F21C23E90C8300692638 /* messageRequestsSplash.json */; };
 		88081437234D80150004C187 /* UIResponder+OWS.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88081436234D80150004C187 /* UIResponder+OWS.swift */; };
@@ -628,6 +631,7 @@
 		8821334E2304E72700353626 /* NonContactTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8821334D2304E72700353626 /* NonContactTableViewCell.swift */; };
 		8827004C232071C500F01C46 /* OWSWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8827004B232071C500F01C46 /* OWSWindow.swift */; };
 		8827004E23208A1900F01C46 /* AppearanceSettingsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8827004D23208A1900F01C46 /* AppearanceSettingsTableViewController.swift */; };
+		882BDAAE249050F000C14587 /* AddToGroupViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 882BDAAD249050F000C14587 /* AddToGroupViewController.swift */; };
 		882E0B7723C7BD1900E8CE49 /* NotificationServiceExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 885AC56423AB42430077705E /* NotificationServiceExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		8835DDF9230CEDC300DC6B66 /* RecipientPickerViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 8835DDF8230CEDC300DC6B66 /* RecipientPickerViewController.m */; };
 		8835DDFD230CEE8900DC6B66 /* RecipientPickerDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8835DDFC230CEE8900DC6B66 /* RecipientPickerDelegate.swift */; };
@@ -997,6 +1001,7 @@
 		3448E16322135FFA004B052E /* OnboardingPhoneNumberViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingPhoneNumberViewController.swift; sourceTree = "<group>"; };
 		3448E1652215B313004B052E /* OnboardingCaptchaViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingCaptchaViewController.swift; sourceTree = "<group>"; };
 		34491FC11FB0F78500B3E5A3 /* my */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = my; path = translations/my.lproj/Localizable.strings; sourceTree = "<group>"; };
+		344DAEDE248A7526000AD4FA /* DebugUIStress.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebugUIStress.swift; sourceTree = "<group>"; };
 		344DC9AE226E483C004E7322 /* ManageStickersViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ManageStickersViewController.swift; sourceTree = "<group>"; };
 		344F248C2007CCD600CFB4F4 /* DisplayableText.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DisplayableText.swift; sourceTree = "<group>"; };
 		3456A73123D63EBE00947219 /* GroupsV2Protos.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = GroupsV2Protos.swift; sourceTree = "<group>"; };
@@ -1555,6 +1560,8 @@
 		76EB03C318170B33006006FC /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
 		7BB1CB6F2D7841356BE367EA /* Pods-Signal.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-Signal.testable release.xcconfig"; path = "Pods/Target Support Files/Pods-Signal/Pods-Signal.testable release.xcconfig"; sourceTree = "<group>"; };
 		80A8593EDA963AA130D319BA /* Pods-NotificationServiceExtension.testable release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NotificationServiceExtension.testable release.xcconfig"; path = "Pods/Target Support Files/Pods-NotificationServiceExtension/Pods-NotificationServiceExtension.testable release.xcconfig"; sourceTree = "<group>"; };
+		8806EF18248DBD7200E764C7 /* NotificationPermissionReminderMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationPermissionReminderMegaphone.swift; sourceTree = "<group>"; };
+		8806EF1A248DBFC100E764C7 /* ContactPermissionReminderMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContactPermissionReminderMegaphone.swift; sourceTree = "<group>"; };
 		8806F21A23E90B0B00692638 /* MessageRequests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MessageRequests.swift; sourceTree = "<group>"; };
 		8806F21C23E90C8300692638 /* messageRequestsSplash.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = messageRequestsSplash.json; sourceTree = "<group>"; };
 		88081436234D80150004C187 /* UIResponder+OWS.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIResponder+OWS.swift"; sourceTree = "<group>"; };
@@ -1582,6 +1589,7 @@
 		882159D023677E0500D17403 /* ur */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ur; path = translations/ur.lproj/Localizable.strings; sourceTree = "<group>"; };
 		8827004B232071C500F01C46 /* OWSWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSWindow.swift; sourceTree = "<group>"; };
 		8827004D23208A1900F01C46 /* AppearanceSettingsTableViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppearanceSettingsTableViewController.swift; sourceTree = "<group>"; };
+		882BDAAD249050F000C14587 /* AddToGroupViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddToGroupViewController.swift; sourceTree = "<group>"; };
 		8835DDF7230CEDC300DC6B66 /* RecipientPickerViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = RecipientPickerViewController.h; sourceTree = "<group>"; };
 		8835DDF8230CEDC300DC6B66 /* RecipientPickerViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = RecipientPickerViewController.m; sourceTree = "<group>"; };
 		8835DDFC230CEE8900DC6B66 /* RecipientPickerDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecipientPickerDelegate.swift; sourceTree = "<group>"; };
@@ -2034,6 +2042,7 @@
 				347B83F624367EC00019A52C /* GroupViewHelper+MemberActionSheet.swift */,
 				34E6003924251AD50026AD4B /* GroupViewUtils.swift */,
 				88A357B823639384009D6B9A /* MemberActionSheet.swift */,
+				882BDAAD249050F000C14587 /* AddToGroupViewController.swift */,
 				340FC898204DAC8D007AEB0F /* OWSAddToContactViewController.h */,
 				340FC8A1204DAC8D007AEB0F /* OWSAddToContactViewController.m */,
 				347B83FC24378DDE0019A52C /* PendingGroupMembersViewController.swift */,
@@ -2684,6 +2693,7 @@
 				452037D01EE84975004E4CDF /* DebugUISessionState.m */,
 				34BECE291F74C12700D7438D /* DebugUIStress.h */,
 				34BECE2A1F74C12700D7438D /* DebugUIStress.m */,
+				344DAEDE248A7526000AD4FA /* DebugUIStress.swift */,
 				343A65931FC47D5D000477A1 /* DebugUISyncMessages.h */,
 				343A65941FC47D5E000477A1 /* DebugUISyncMessages.m */,
 				34D8C0251ED3673300188D7C /* DebugUITableViewController.h */,
@@ -3183,6 +3193,8 @@
 				8889007423DBD0B400F40186 /* ProfileNameReminder.swift */,
 				88A505FB23DBAE4F0005C012 /* Reactions.swift */,
 				8806F21A23E90B0B00692638 /* MessageRequests.swift */,
+				8806EF18248DBD7200E764C7 /* NotificationPermissionReminderMegaphone.swift */,
+				8806EF1A248DBFC100E764C7 /* ContactPermissionReminderMegaphone.swift */,
 			);
 			path = "Upgrade Views";
 			sourceTree = "<group>";
@@ -4668,6 +4680,7 @@
 				34DBF007206C3CB200025978 /* OWSBubbleShapeView.m in Sources */,
 				88D23D1023CEBF7F00B0E74B /* NotificationActionHandler.swift in Sources */,
 				4C04392A220A9EC800BAEA63 /* VoiceNoteLock.swift in Sources */,
+				8806EF1B248DBFC100E764C7 /* ContactPermissionReminderMegaphone.swift in Sources */,
 				34D8C02B1ED3685800188D7C /* DebugUIContacts.m in Sources */,
 				3496956E21A301A100DCFE74 /* OWSBackupExportJob.m in Sources */,
 				88D23D2823CEC0C700B0E74B /* TurnServerInfo.swift in Sources */,
@@ -4797,6 +4810,8 @@
 				34BE2F5822A7371D002C94AC /* PdfViewController.swift in Sources */,
 				3496957121A301A100DCFE74 /* OWSBackupImportJob.m in Sources */,
 				34BECE301F7ABCF800D7438D /* GifPickerLayout.swift in Sources */,
+				882BDAAE249050F000C14587 /* AddToGroupViewController.swift in Sources */,
+				8806EF19248DBD7200E764C7 /* NotificationPermissionReminderMegaphone.swift in Sources */,
 				343A65951FC47D5E000477A1 /* DebugUISyncMessages.m in Sources */,
 				88D23D1223CEBFB200B0E74B /* UserNotificationActionHandler.swift in Sources */,
 				4C63550222F15A6700A8ECE6 /* ThemeHeaderView.swift in Sources */,
@@ -4943,6 +4958,7 @@
 				45A663C51F92EC760027B59E /* GroupTableViewCell.swift in Sources */,
 				88B688B0238F0D1000286F82 /* ReactionsDetailSheet.swift in Sources */,
 				34CA631B2097806F00E526A0 /* OWSContactShareView.m in Sources */,
+				344DAEDF248A7526000AD4FA /* DebugUIStress.swift in Sources */,
 				8853506824084E470011D318 /* OWSDateHeaderCell.swift in Sources */,
 				34D1F0861F8678AA0066283D /* ConversationViewController.m in Sources */,
 				3427C64320F500E000EEC730 /* OWSMessageTimerView.m in Sources */,

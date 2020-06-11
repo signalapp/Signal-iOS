@@ -8,6 +8,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class BulkProfileFetch;
 @class BulkUUIDLookup;
 @class ContactsUpdater;
+@class EarlyMessageManager;
 @class GroupsV2MessageProcessor;
 @class MessageFetcherJob;
 @class MessageProcessing;
@@ -107,7 +108,8 @@ NS_ASSUME_NONNULL_BEGIN
                        bulkProfileFetch:(BulkProfileFetch *)bulkProfileFetch
                          bulkUUIDLookup:(BulkUUIDLookup *)bulkUUIDLookup
                       versionedProfiles:(id<VersionedProfiles>)versionedProfiles
-                        modelReadCaches:(ModelReadCaches *)modelReadCaches NS_DESIGNATED_INITIALIZER;
+                        modelReadCaches:(ModelReadCaches *)modelReadCaches
+                    earlyMessageManager:(EarlyMessageManager *)earlyMessageManager NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic, readonly, class) SSKEnvironment *shared;
 
@@ -166,6 +168,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) BulkUUIDLookup *bulkUUIDLookup;
 @property (nonatomic, readonly) id<VersionedProfiles> versionedProfiles;
 @property (nonatomic, readonly) ModelReadCaches *modelReadCaches;
+@property (nonatomic, readonly) EarlyMessageManager *earlyMessageManager;
 
 @property (nonatomic, readonly, nullable) OWSPrimaryStorage *primaryStorage;
 

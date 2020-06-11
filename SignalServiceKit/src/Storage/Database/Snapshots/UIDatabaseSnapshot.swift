@@ -99,6 +99,8 @@ public class UIDatabaseObserver: NSObject {
     private var lastCheckpointDate: Date?
 
     private var displayLink: CADisplayLink?
+    private let displayLinkPreferredFramesPerSecond: Int = 60
+    private var recentDisplayLinkDates = [Date]()
 
     init(pool: DatabasePool, checkpointingQueue: DatabaseQueue?) throws {
         self.pool = pool
@@ -147,7 +149,7 @@ public class UIDatabaseObserver: NSObject {
                 displayLink.isPaused = false
             } else {
                 let link = CADisplayLink(target: self, selector: #selector(displayLinkDidFire))
-                link.preferredFramesPerSecond = 60
+                link.preferredFramesPerSecond = displayLinkPreferredFramesPerSecond
                 link.add(to: .main, forMode: .default)
                 assert(!link.isPaused)
                 displayLink = link
@@ -160,6 +162,8 @@ public class UIDatabaseObserver: NSObject {
     @objc
     func displayLinkDidFire() {
         AssertIsOnMainThread()
+
+        recentDisplayLinkDates.append(Date())
 
         updateSnapshotIfNecessary()
     }
@@ -198,6 +202,25 @@ extension UIDatabaseObserver: TransactionObserver {
         return true
     }
 
+    // Database observation operates like so:
+    //
+    // * This class (UIDatabaseObserver) works closely with its "snapshot delegates"
+    //   (per-view snapshots/observers) to update the views in controlled, consistent way.
+    // * UIDatabaseObserver observes all database _changes_ and _commits_.
+    // * When a _change_ occurs:
+    //   * This is done off the main thread.
+    //   * UIDatabaseObserver informs all "snapshot delegates" of changes using snapshotTransactionDidChange.
+    //   * The "snapshot delegates" aggregate the changes.
+    // * When a _commit_ occurs:
+    //   * This is done off the main thread.
+    //   * UIDatabaseObserver informs all "snapshot delegates" to commit their _changes_ using snapshotTransactionDidCommit.
+    //     The "snapshot delegates" commit changes internally using DispatchQueue.main.async().
+    //   * UIDatabaseObserver enqueues a "snapshot update" using DispatchQueue.main.async().
+    // * When a "snapshot update" is performed:
+    //   * This is done on the main thread.
+    //   * UIDatabaseObserver informs all "snapshot delegates" of the update using databaseSnapshotWillUpdate.
+    //   * UIDatabaseObserver updates the database snapshot.
+    //   * UIDatabaseObserver informs all "snapshot delegates" of the update using databaseSnapshotDidUpdate.
     public func databaseDidChange(with event: DatabaseEvent) {
         UIDatabaseObserver.serializedSync {
             for snapshotDelegate in snapshotDelegates {
@@ -206,46 +229,49 @@ extension UIDatabaseObserver: TransactionObserver {
         }
     }
 
+    // See comment on databaseDidChange.
     public func databaseDidCommit(_ db: Database) {
-
         UIDatabaseObserver.serializedSync {
             for snapshotDelegate in snapshotDelegates {
                 snapshotDelegate.snapshotTransactionDidCommit(db: db)
             }
         }
 
-        // Enqueue the update.
-        hasPendingSnapshotUpdate.set(true)
-        // Try to update immediately.
         DispatchQueue.main.async { [weak self] in
-            self?.updateSnapshotIfNecessary()
+            guard let self = self else {
+                return
+            }
+            // Enqueue the update.
+            self.hasPendingSnapshotUpdate.set(true)
+            // Try to update immediately.
+            self.updateSnapshotIfNecessary()
         }
     }
 
+    // See comment on databaseDidChange.
     private func updateSnapshotIfNecessary() {
         AssertIsOnMainThread()
 
+        if let lastSnapshotUpdateDate = self.lastSnapshotUpdateDate {
+            let secondsSinceLastUpdate = abs(lastSnapshotUpdateDate.timeIntervalSinceNow)
+            // Don't update UI more often than Nx/second.
+            guard secondsSinceLastUpdate >= targetUpdateFrequencySeconds else {
+                // Don't update the snapshot yet; we've updated the snapshot recently.
+                return
+            }
+        }
+
         do {
             // We only want to update the snapshot if we the flag needs to be cleared.
+            // This will throw AtomicError.invalidTransition if that flag isn't set.
             try hasPendingSnapshotUpdate.transition(from: true, to: false)
         } catch {
             switch error {
             case AtomicError.invalidTransition:
                 // If there's no new database changes, we don't need to update the snapshot.
-                break
+                return
             default:
                 owsFailDebug("Error: \(error)")
-            }
-            return
-        }
-
-        if let lastSnapshotUpdateDate = self.lastSnapshotUpdateDate {
-            let secondsSinceLastUpdate = abs(lastSnapshotUpdateDate.timeIntervalSinceNow)
-            // Don't update UI more often than Nx/second.
-            let maxUpdatesPerSecond: UInt = 10
-            let maxUpdateFrequencySeconds: TimeInterval = 1 / TimeInterval(maxUpdatesPerSecond)
-            guard secondsSinceLastUpdate >= maxUpdateFrequencySeconds else {
-                // Don't update the snapshot yet; we've updated the snapshot recently.
                 return
             }
         }
@@ -255,6 +281,55 @@ extension UIDatabaseObserver: TransactionObserver {
         updateSnapshot()
     }
 
+    private var targetUpdateFrequencySeconds: Double {
+        AssertIsOnMainThread()
+
+        // We want the UI to feel snappy and responsive, which means
+        // low latency in view updates.
+        //
+        // This means updating the database snapshot (and hence the
+        // views) as frequently as possible.
+        //
+        // However, when the app is under heavy load, constantly
+        // updating the views is expensive and causes CPU contention,
+        // slowing down business logic. The outcome is that the app
+        // feels less responsive.
+        //
+        // Therefore, the app should "back off" and slow the rate at
+        // which it updates database snapshots when it is under
+        // heavy load.
+        //
+        // We measure load using a heuristics: Can the display link
+        // maintain its preferred frame rate?
+        let windowDuration: TimeInterval = 5 * kSecondInterval
+        recentDisplayLinkDates = recentDisplayLinkDates.filter {
+            abs($0.timeIntervalSinceNow) < windowDuration
+        }
+
+        let recentDisplayLinkFrequency: Double = Double(recentDisplayLinkDates.count) / windowDuration
+        // Under light load, the display link should fire at its preferred frame rate.
+        let lightDisplayLinkFrequency: Double = Double(self.displayLinkPreferredFramesPerSecond)
+        // We consider heavy load to be the display link firing at half of its preferred frame rate.
+        let heavyDisplayLinkFrequency: Double = Double(self.displayLinkPreferredFramesPerSecond / 2)
+        // Alpha represents the unit load, 0 <= x <= 1.
+        // 0 = light load.
+        // 1 = heavy load.
+        let displayLinkAlpha: Double = recentDisplayLinkFrequency.inverseLerp(lightDisplayLinkFrequency,
+                                                                              heavyDisplayLinkFrequency,
+                                                                              shouldClamp: true)
+
+        // Select the alpha of our chosen heuristic.
+        let alpha: Double = displayLinkAlpha
+
+        let fastUpdateFrequencySeconds: TimeInterval = 1 / TimeInterval(20)
+        let slowUpdateFrequencySeconds: TimeInterval = 1 / TimeInterval(2)
+        // Under light load, we want the fastest update frequency.
+        // Under heavy load, we want the slowest update frequency.
+        let targetUpdateFrequencySeconds = alpha.lerp(fastUpdateFrequencySeconds, slowUpdateFrequencySeconds)
+        return targetUpdateFrequencySeconds
+    }
+
+    // See comment on databaseDidChange.
     private func updateSnapshot() {
         AssertIsOnMainThread()
 

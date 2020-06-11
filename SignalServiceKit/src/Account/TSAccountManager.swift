@@ -167,7 +167,7 @@ public extension TSAccountManager {
             return Promise.value(())
         }
         Logger.info("Updating account attributes.")
-        let promise: Promise<Void> = firstly { () -> Promise<Void> in
+        let promise: Promise<Void> = firstly(on: .global()) { () -> Promise<Void> in
             let client = SignalServiceRestClient()
             return (self.isPrimaryDevice
                 ? client.updatePrimaryDeviceAccountAttributes()

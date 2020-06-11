@@ -107,6 +107,7 @@
     "JobRecordRecord.envelopeData": 6, 
     "JobRecordRecord.failureCount": 1, 
     "JobRecordRecord.invisibleMessage": 7, 
+    "JobRecordRecord.isMediaMessage": 12, 
     "JobRecordRecord.label": 2, 
     "JobRecordRecord.messageId": 8, 
     "JobRecordRecord.removeMessageAfterSending": 9, 

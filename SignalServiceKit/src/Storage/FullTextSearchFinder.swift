@@ -355,7 +355,9 @@ class GRDBFullTextSearchFinder: NSObject {
         let query = FullTextSearchFinder.query(searchText: searchText)
 
         guard query.count > 0 else {
-            owsFailDebug("Empty query.")
+            // FullTextSearchFinder.query filters some characters, so query
+            // may now be empty.
+            Logger.warn("Empty query.")
             return
         }
 
@@ -488,7 +490,7 @@ class AnySearchIndexer {
     }
 
     private static let messageIndexer: SearchIndexer<TSMessage> = SearchIndexer { (message: TSMessage, transaction: SDSAnyReadTransaction) in
-        if let bodyText = message.bodyText(with: transaction) {
+        if let bodyText = message.bodyText(with: transaction.unwrapGrdbRead) {
             return bodyText
         }
         return ""

@@ -88,7 +88,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
     _profileViewMode = profileViewMode;
     _completionHandler = completionHandler;
 
-    DatabaseStorageWrite(SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageAsyncWrite(SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *transaction) {
         [ProfileViewController.keyValueStore setDate:[NSDate new]
                                                  key:kProfileView_LastPresentedDate
                                          transaction:transaction];
@@ -769,7 +769,7 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
 {
     if (sender.state == UIGestureRecognizerStateRecognized) {
         SFSafariViewController *safariVC = [[SFSafariViewController alloc]
-            initWithURL:[NSURL URLWithString:@"https://support.signal.org/hc/articles/115001110511"]];
+            initWithURL:[NSURL URLWithString:@"https://support.signal.org/hc/articles/360007459591"]];
         [self presentViewController:safariVC animated:YES completion:nil];
     }
 }

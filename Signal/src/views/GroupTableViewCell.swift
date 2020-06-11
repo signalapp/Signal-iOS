@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import UIKit
@@ -69,9 +69,8 @@ import SignalServiceKit
             self.nameLabel.text = MessageStrings.newGroupDefaultTitle
         }
 
-        let groupMembers = thread.groupModel.groupMembers
-        let groupMemberNames = groupMembers.map { contactsManager.displayName(for: $0) }.joined(separator: ", ")
-        self.subtitleLabel.text = groupMemberNames
+        let groupMembersCount = thread.groupModel.groupMembers.count
+        self.subtitleLabel.text = GroupViewUtils.formatGroupMembersLabel(memberCount: groupMembersCount)
 
         self.avatarView.image = OWSAvatarBuilder.buildImage(thread: thread, diameter: kStandardAvatarSize)
 

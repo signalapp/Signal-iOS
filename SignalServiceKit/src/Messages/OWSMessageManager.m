@@ -172,6 +172,11 @@ NS_ASSUME_NONNULL_BEGIN
     return SSKEnvironment.shared.groupsV2;
 }
 
+- (EarlyMessageManager *)earlyMessageManager
+{
+    return SSKEnvironment.shared.earlyMessageManager;
+}
+
 #pragma mark -
 
 - (void)startObserving
@@ -942,10 +947,10 @@ NS_ASSUME_NONNULL_BEGIN
 
     for (NSNumber *nsEarlyTimestamp in earlyTimestamps) {
         UInt64 earlyTimestamp = [nsEarlyTimestamp unsignedLongLongValue];
-        [OWSEarlyMessageManager recordEarlyReceiptForOutgoingMessageWithType:receiptMessage.unwrappedType
-                                                                      sender:envelope.sourceAddress
-                                                                   timestamp:envelope.timestamp
-                                                  associatedMessageTimestamp:earlyTimestamp];
+        [self.earlyMessageManager recordEarlyReceiptForOutgoingMessageWithType:receiptMessage.unwrappedType
+                                                                        sender:envelope.sourceAddress
+                                                                     timestamp:envelope.timestamp
+                                                    associatedMessageTimestamp:earlyTimestamp];
     }
 }
 
@@ -1092,11 +1097,21 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    dispatch_async(dispatch_get_main_queue(), ^{
-        if (!typingMessage.hasAction) {
-            OWSFailDebug(@"Type message is missing action.");
+    if (!typingMessage.hasAction) {
+        OWSFailDebug(@"Type message is missing action.");
+        return;
+    }
+
+    // We should ignore typing indicator messages.
+    if (envelope.hasServerTimestamp && envelope.serverTimestamp > 0) {
+        uint64_t relevancyCutoff = NSDate.ows_millisecondTimeStamp - (5 * kMinuteInterval);
+        if (envelope.serverTimestamp < relevancyCutoff) {
+            OWSLogInfo(@"Discarding obsolete typing indicator message.");
             return;
         }
+    }
+
+    dispatch_async(dispatch_get_main_queue(), ^{
         switch (typingMessage.unwrappedAction) {
             case SSKProtoTypingMessageActionStarted:
                 [self.typingIndicators didReceiveTypingStartedMessageInThread:thread
@@ -1480,11 +1495,11 @@ NS_ASSUME_NONNULL_BEGIN
                 case OWSReactionProcessingResultInvalidReaction:
                     break;
                 case OWSReactionProcessingResultAssociatedMessageMissing:
-                    [OWSEarlyMessageManager recordEarlyEnvelope:envelope
-                                                  plainTextData:plaintextData
-                                                wasReceivedByUD:wasReceivedByUD
-                                     associatedMessageTimestamp:dataMessage.reaction.timestamp
-                                        associatedMessageAuthor:dataMessage.reaction.authorAddress];
+                    [self.earlyMessageManager recordEarlyEnvelope:envelope
+                                                    plainTextData:plaintextData
+                                                  wasReceivedByUD:wasReceivedByUD
+                                       associatedMessageTimestamp:dataMessage.reaction.timestamp
+                                          associatedMessageAuthor:dataMessage.reaction.authorAddress];
                     break;
             }
         } else if (dataMessage.delete != nil) {
@@ -1515,11 +1530,11 @@ NS_ASSUME_NONNULL_BEGIN
                     OWSLogError(@"Failed to remotely delete message: %llu", dataMessage.delete.targetSentTimestamp);
                     break;
                 case OWSRemoteDeleteProcessingResultDeletedMessageMissing:
-                    [OWSEarlyMessageManager recordEarlyEnvelope:envelope
-                                                  plainTextData:plaintextData
-                                                wasReceivedByUD:wasReceivedByUD
-                                     associatedMessageTimestamp:dataMessage.delete.targetSentTimestamp
-                                        associatedMessageAuthor:envelope.sourceAddress];
+                    [self.earlyMessageManager recordEarlyEnvelope:envelope
+                                                    plainTextData:plaintextData
+                                                  wasReceivedByUD:wasReceivedByUD
+                                       associatedMessageTimestamp:dataMessage.delete.targetSentTimestamp
+                                          associatedMessageAuthor:envelope.sourceAddress];
                     break;
             }
         } else {
@@ -1577,9 +1592,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                                        readTimestamp:envelope.timestamp
                                                                          transaction:transaction];
         for (SSKProtoSyncMessageRead *readReceiptProto in earlyReceipts) {
-            [OWSEarlyMessageManager recordEarlyReadReceiptFromLinkedDeviceWithTimestamp:envelope.timestamp
-                                                             associatedMessageTimestamp:readReceiptProto.timestamp
-                                                                associatedMessageAuthor:readReceiptProto.senderAddress];
+            [self.earlyMessageManager
+                recordEarlyReadReceiptFromLinkedDeviceWithTimestamp:envelope.timestamp
+                                         associatedMessageTimestamp:readReceiptProto.timestamp
+                                            associatedMessageAuthor:readReceiptProto.senderAddress];
         }
     } else if (syncMessage.verified) {
         OWSLogInfo(@"Received verification state for %@", syncMessage.verified.destinationAddress);
@@ -1603,11 +1619,11 @@ NS_ASSUME_NONNULL_BEGIN
             case OWSViewOnceSyncMessageProcessingResultInvalidSyncMessage:
                 break;
             case OWSViewOnceSyncMessageProcessingResultAssociatedMessageMissing:
-                [OWSEarlyMessageManager recordEarlyEnvelope:envelope
-                                              plainTextData:plaintextData
-                                            wasReceivedByUD:wasReceivedByUD
-                                 associatedMessageTimestamp:syncMessage.viewOnceOpen.timestamp
-                                    associatedMessageAuthor:syncMessage.viewOnceOpen.senderAddress];
+                [self.earlyMessageManager recordEarlyEnvelope:envelope
+                                                plainTextData:plaintextData
+                                              wasReceivedByUD:wasReceivedByUD
+                                   associatedMessageTimestamp:syncMessage.viewOnceOpen.timestamp
+                                      associatedMessageAuthor:syncMessage.viewOnceOpen.senderAddress];
                 break;
         }
     } else if (syncMessage.configuration) {
@@ -1903,11 +1919,11 @@ NS_ASSUME_NONNULL_BEGIN
             case OWSReactionProcessingResultInvalidReaction:
                 break;
             case OWSReactionProcessingResultAssociatedMessageMissing:
-                [OWSEarlyMessageManager recordEarlyEnvelope:envelope
-                                              plainTextData:plaintextData
-                                            wasReceivedByUD:wasReceivedByUD
-                                 associatedMessageTimestamp:dataMessage.reaction.timestamp
-                                    associatedMessageAuthor:dataMessage.reaction.authorAddress];
+                [self.earlyMessageManager recordEarlyEnvelope:envelope
+                                                plainTextData:plaintextData
+                                              wasReceivedByUD:wasReceivedByUD
+                                   associatedMessageTimestamp:dataMessage.reaction.timestamp
+                                      associatedMessageAuthor:dataMessage.reaction.authorAddress];
                 break;
         }
 
@@ -1929,11 +1945,11 @@ NS_ASSUME_NONNULL_BEGIN
                 OWSLogError(@"Failed to remotely delete message: %llu", dataMessage.delete.targetSentTimestamp);
                 break;
             case OWSRemoteDeleteProcessingResultDeletedMessageMissing:
-                [OWSEarlyMessageManager recordEarlyEnvelope:envelope
-                                              plainTextData:plaintextData
-                                            wasReceivedByUD:wasReceivedByUD
-                                 associatedMessageTimestamp:dataMessage.delete.targetSentTimestamp
-                                    associatedMessageAuthor:envelope.sourceAddress];
+                [self.earlyMessageManager recordEarlyEnvelope:envelope
+                                                plainTextData:plaintextData
+                                              wasReceivedByUD:wasReceivedByUD
+                                   associatedMessageTimestamp:dataMessage.delete.targetSentTimestamp
+                                      associatedMessageAuthor:envelope.sourceAddress];
                 break;
         }
         return nil;
@@ -2021,7 +2037,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     [incomingMessage anyInsertWithTransaction:transaction];
 
-    [OWSEarlyMessageManager applyPendingMessagesFor:incomingMessage transaction:transaction];
+    [self.earlyMessageManager applyPendingMessagesFor:incomingMessage transaction:transaction];
 
     // Any messages sent from the current user - from this device or another - should be automatically marked as read.
     if (envelope.sourceAddress.isLocalAddress) {
@@ -2090,7 +2106,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     // TODO: Is this still necessary?
-    [self.databaseStorage touchThread:thread transaction:transaction];
+    [thread scheduleTouchFinalizationWithTransaction:transaction];
 
     [SSKEnvironment.shared.notificationsManager notifyUserForIncomingMessage:incomingMessage
                                                                       thread:thread

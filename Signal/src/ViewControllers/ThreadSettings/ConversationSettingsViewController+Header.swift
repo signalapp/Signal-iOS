@@ -89,14 +89,19 @@ extension ConversationSettingsViewController {
         func buildHeaderSubtitleLabel(attributedText: NSAttributedString,
                                       font: UIFont?) -> UILabel {
             let label = UILabel()
-            label.attributedText = attributedText
+
+            // Defaults need to be set *before* assigning the attributed text,
+            // or the attributes will get overriden
             label.textColor = Theme.secondaryTextAndIconColor
+            label.lineBreakMode = .byTruncatingTail
             if let font = font {
                 label.font = font
             } else {
                 label.font = UIFont.ows_regularFont(withSize: viewController.subtitlePointSize)
             }
-            label.lineBreakMode = .byTruncatingTail
+
+            label.attributedText = attributedText
+
             return label
         }
 

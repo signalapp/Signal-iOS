@@ -14,6 +14,7 @@
 #import "TSRequest.h"
 #import <AFNetworking/AFHTTPSessionManager.h>
 #import <SignalCoreKit/NSData+OWS.h>
+#import <SignalCoreKit/NSDate+OWS.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -63,6 +64,7 @@ dispatch_queue_t NetworkManagerQueue()
 
 @property (nonatomic, readonly) AFHTTPSessionManager *sessionManager;
 @property (nonatomic, readonly) NSDictionary *defaultHeaders;
+@property (nonatomic, readonly) NSDate *createdDate;
 
 @end
 
@@ -93,6 +95,7 @@ dispatch_queue_t NetworkManagerQueue()
     // NOTE: We could enable HTTPShouldUsePipelining here.
     // Make a copy of the default headers for this session manager.
     _defaultHeaders = [self.sessionManager.requestSerializer.HTTPRequestHeaders copy];
+    _createdDate = [NSDate new];
 
     return self;
 }
@@ -226,14 +229,21 @@ dispatch_queue_t NetworkManagerQueue()
 {
     AssertOnDispatchQueue(NetworkManagerQueue());
 
-    OWSSessionManager *_Nullable sessionManager = [self.pool lastObject];
-    if (sessionManager) {
+    while (YES) {
+        OWSSessionManager *_Nullable sessionManager = [self.pool lastObject];
+        if (sessionManager == nil) {
+            // Pool is drained.
+            return [OWSSessionManager new];
+        }
+
         [self.pool removeLastObject];
-    } else {
-        sessionManager = [OWSSessionManager new];
+
+        if ([self shouldDiscardSessionManager:sessionManager]) {
+            // Discard.
+        } else {
+            return sessionManager;
+        }
     }
-    OWSAssertDebug(sessionManager);
-    return sessionManager;
 }
 
 - (void)returnToPool:(OWSSessionManager *)sessionManager
@@ -241,12 +251,23 @@ dispatch_queue_t NetworkManagerQueue()
     AssertOnDispatchQueue(NetworkManagerQueue());
 
     OWSAssertDebug(sessionManager);
-    const NSUInteger kMaxPoolSize = 3;
-    if (self.pool.count >= kMaxPoolSize) {
-        // Discard
+    const NSUInteger kMaxPoolSize = 32;
+    if (self.pool.count >= kMaxPoolSize || [self shouldDiscardSessionManager:sessionManager]) {
+        // Discard.
         return;
     }
     [self.pool addObject:sessionManager];
+}
+
+- (BOOL)shouldDiscardSessionManager:(OWSSessionManager *)sessionManager
+{
+    return fabs(sessionManager.createdDate.timeIntervalSinceNow) > self.maxSessionManagerAge;
+}
+
+- (NSTimeInterval)maxSessionManagerAge
+{
+    // Throw away session managers every 5 minutes.
+    return 5 * kMinuteInterval;
 }
 
 @end

@@ -60,7 +60,7 @@ class SyncPushTokensJob: NSObject {
             Logger.warn("uploading tokens to account servers. pushToken: \(redact(pushToken)), voipToken: \(redact(voipToken))")
             return firstly {
                 self.accountManager.updatePushTokens(pushToken: pushToken, voipToken: voipToken)
-            }.done { _ in
+            }.done(on: .global()) { _ in
                 self.recordPushTokensLocally(pushToken: pushToken, voipToken: voipToken)
             }
         }.done {
@@ -90,6 +90,7 @@ class SyncPushTokensJob: NSObject {
     // MARK: 
 
     private func recordPushTokensLocally(pushToken: String, voipToken: String) {
+        assert(!Thread.isMainThread)
         Logger.warn("Recording push tokens locally. pushToken: \(redact(pushToken)), voipToken: \(redact(voipToken))")
 
         var didTokensChange = false

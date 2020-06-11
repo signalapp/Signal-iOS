@@ -885,7 +885,8 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
         }
     }
 
-    TSAttachment *_Nullable oversizeTextAttachment = [message oversizeTextAttachmentWithTransaction:transaction];
+    TSAttachment *_Nullable oversizeTextAttachment =
+        [message oversizeTextAttachmentWithTransaction:transaction.unwrapGrdbRead];
     if ([oversizeTextAttachment isKindOfClass:[TSAttachmentStream class]]) {
         TSAttachmentStream *oversizeTextAttachmentStream = (TSAttachmentStream *)oversizeTextAttachment;
         self.displayableBodyText = [self displayableBodyTextForOversizeTextAttachment:oversizeTextAttachmentStream
@@ -897,13 +898,13 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
         self.attachmentPointer = (TSAttachmentPointer *)oversizeTextAttachmentPointer;
         return;
     } else {
-        NSString *_Nullable bodyText = [message bodyTextWithTransaction:transaction];
+        NSString *_Nullable bodyText = [message bodyTextWithTransaction:transaction.unwrapGrdbRead];
         if (bodyText) {
             self.displayableBodyText = [self displayableBodyTextForText:bodyText interactionId:message.uniqueId];
         }
     }
 
-    NSArray<TSAttachment *> *mediaAttachments = [message mediaAttachmentsWithTransaction:transaction];
+    NSArray<TSAttachment *> *mediaAttachments = [message mediaAttachmentsWithTransaction:transaction.unwrapGrdbRead];
     NSArray<ConversationMediaAlbumItem *> *mediaAlbumItems = [self albumItemsForMediaAttachments:mediaAttachments];
     if (mediaAlbumItems.count > 0) {
         if (mediaAlbumItems.count == 1) {
@@ -955,7 +956,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
         if (self.messageCellType == OWSMessageCellType_Unknown) {
             OWSAssertDebug(message.attachmentIds.count == 0
                 || (message.attachmentIds.count == 1 &&
-                       [message oversizeTextAttachmentWithTransaction:transaction] != nil));
+                    [message oversizeTextAttachmentWithTransaction:transaction.unwrapGrdbRead] != nil));
             self.messageCellType = OWSMessageCellType_TextOnlyMessage;
         }
         OWSAssertDebug(self.displayableBodyText);
@@ -1032,7 +1033,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
         self.viewOnceMessageState = ViewOnceMessageState_IncomingInvalidContent;
         return;
     }
-    NSArray<TSAttachment *> *mediaAttachments = [message mediaAttachmentsWithTransaction:transaction];
+    NSArray<TSAttachment *> *mediaAttachments = [message mediaAttachmentsWithTransaction:transaction.unwrapGrdbRead];
     // TODO: We currently only support single attachments for
     //       view-once messages.
     TSAttachment *_Nullable mediaAttachment = mediaAttachments.firstObject;
@@ -1393,7 +1394,7 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
 
 - (void)deleteAction
 {
-    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [self.interaction anyRemoveWithTransaction:transaction];
     });
 }

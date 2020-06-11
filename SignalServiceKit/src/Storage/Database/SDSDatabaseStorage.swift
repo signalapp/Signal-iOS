@@ -401,7 +401,7 @@ public class SDSDatabaseStorage: SDSTransactable {
         #if TESTABLE_BUILD
         if Thread.isMainThread &&
             AppReadiness.isAppReady() {
-            owsFailDebug("Database write on main thread.")
+            Logger.warn("Database write on main thread.")
         }
         #endif
 

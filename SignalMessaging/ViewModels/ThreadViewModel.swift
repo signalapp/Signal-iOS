@@ -56,7 +56,7 @@ public class ThreadViewModel: NSObject {
         self.hasPendingMessageRequest = thread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead)
 
         if let groupThread = thread as? TSGroupThread, let addedByAddress = groupThread.groupModel.addedByAddress {
-            self.addedToGroupByName = Environment.shared.contactsManager.displayName(for: addedByAddress, transaction: transaction)
+            self.addedToGroupByName = Environment.shared.contactsManager.shortDisplayName(for: addedByAddress, transaction: transaction)
         } else {
             self.addedToGroupByName = nil
         }

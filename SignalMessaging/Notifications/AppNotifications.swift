@@ -403,7 +403,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         // "no longer verified".
         var didIdentityChange = false
         for address in thread.recipientAddresses {
-            if self.identityManager.verificationState(for: address) == .noLongerVerified {
+            if self.identityManager.verificationState(for: address,
+                                                      transaction: transaction) == .noLongerVerified {
                 didIdentityChange = true
                 break
             }
@@ -464,7 +465,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         if let bodyDescription: String = {
             if let messageBody = message.body, !messageBody.isEmpty {
                 return messageBody.filterStringForDisplay()
-            } else if let oversizeText = message.oversizeText(with: transaction), !oversizeText.isEmpty {
+            } else if let oversizeText = message.oversizeText(with: transaction.unwrapGrdbRead), !oversizeText.isEmpty {
                 return oversizeText.filterStringForDisplay()
             } else {
                 return nil
@@ -478,7 +479,7 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         } else if message.contactShare != nil {
             notificationBody = String(format: NotificationStrings.incomingReactionContactShareMessageFormat, reaction.emoji)
         } else if message.hasAttachments() {
-            let mediaAttachments = message.mediaAttachments(with: transaction)
+            let mediaAttachments = message.mediaAttachments(with: transaction.unwrapGrdbRead)
             let firstAttachment = mediaAttachments.first
 
             if mediaAttachments.count > 1 {
@@ -504,7 +505,8 @@ public class NotificationPresenter: NSObject, NotificationsProtocol {
         // "no longer verified".
         var didIdentityChange = false
         for address in thread.recipientAddresses {
-            if self.identityManager.verificationState(for: address) == .noLongerVerified {
+            if self.identityManager.verificationState(for: address,
+                                                      transaction: transaction) == .noLongerVerified {
                 didIdentityChange = true
                 break
             }

@@ -592,3 +592,15 @@ class OWSMessageContentJobSerializer: SDSSerializer {
         return MessageContentJobRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, createdAt: createdAt, envelopeData: envelopeData, plaintextData: plaintextData, wasReceivedByUD: wasReceivedByUD)
     }
 }
+
+// MARK: - Deep Copy
+
+@objc
+public extension OWSMessageContentJob {
+    func deepCopy() throws -> OWSMessageContentJob {
+        guard let record = try asRecord() as? MessageContentJobRecord else {
+            throw OWSAssertionError("Could not convert to record.")
+        }
+        return try OWSMessageContentJob.fromRecord(record)
+    }
+}

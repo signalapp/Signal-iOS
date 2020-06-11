@@ -69,6 +69,8 @@ public class GRDBSchemaMigrator: NSObject {
         case removeEarlyReceiptTables
         case addReadToReactions
         case addIsMarkedUnreadToThreads
+        case addIsMediaMessageToMessageSenderJobQueue
+        case readdAttachmentIndex
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -279,7 +281,9 @@ public class GRDBSchemaMigrator: NSObject {
         migrator.registerMigration(MigrationId.dedupeSignalRecipients.rawValue) { db in
             do {
                 try autoreleasepool {
-                    try dedupeSignalRecipients(transaction: GRDBWriteTransaction(database: db).asAnyWrite)
+                    let transaction = GRDBWriteTransaction(database: db)
+                    try dedupeSignalRecipients(transaction: transaction.asAnyWrite)
+                    transaction.finalizeTransaction()
                 }
 
                 try db.drop(index: "index_signal_recipients_on_recipientPhoneNumber")
@@ -575,9 +579,10 @@ public class GRDBSchemaMigrator: NSObject {
                 try db.drop(table: "model_TSRecipientReadReceipt")
                 try db.drop(table: "model_OWSLinkedDeviceReadReceipt")
 
-                let transaction = GRDBWriteTransaction(database: db).asAnyWrite
+                let transaction = GRDBWriteTransaction(database: db)
                 let viewOnceStore = SDSKeyValueStore(collection: "viewOnceMessages")
-                viewOnceStore.removeAll(transaction: transaction)
+                viewOnceStore.removeAll(transaction: transaction.asAnyWrite)
+                transaction.finalizeTransaction()
             } catch {
                 owsFail("Error: \(error)")
             }
@@ -610,6 +615,38 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
+        migrator.registerMigration(MigrationId.addIsMediaMessageToMessageSenderJobQueue.rawValue) { db in
+            do {
+                try db.alter(table: "model_SSKJobRecord") { (table: TableAlteration) -> Void in
+                    table.add(column: "isMediaMessage", .boolean)
+                }
+
+                try db.drop(index: "index_model_TSAttachment_on_uniqueId")
+
+                try db.create(
+                    index: "index_model_TSAttachment_on_uniqueId_and_contentType",
+                    on: "model_TSAttachment",
+                    columns: ["uniqueId", "contentType"]
+                )
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(MigrationId.readdAttachmentIndex.rawValue) { db in
+            do {
+                try db.create(
+                    index: "index_model_TSAttachment_on_uniqueId",
+                    on: "model_TSAttachment",
+                    columns: ["uniqueId"]
+                )
+
+                try db.execute(sql: "UPDATE model_SSKJobRecord SET isMediaMessage = 0")
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
         // MARK: - Schema Migration Insertion Point
     }
 
@@ -620,18 +657,21 @@ public class GRDBSchemaMigrator: NSObject {
 
         migrator.registerMigration(MigrationId.dataMigration_populateGalleryItems.rawValue) { db in
             do {
-                try createInitialGalleryRecords(transaction: GRDBWriteTransaction(database: db))
+                let transaction = GRDBWriteTransaction(database: db)
+                try createInitialGalleryRecords(transaction: transaction)
+                transaction.finalizeTransaction()
             } catch {
                 owsFail("Error: \(error)")
             }
         }
 
         migrator.registerMigration(MigrationId.dataMigration_markOnboardedUsers_v2.rawValue) { db in
-            let transaction = GRDBWriteTransaction(database: db).asAnyWrite
-            if TSAccountManager.sharedInstance().isRegistered(transaction: transaction) {
+            let transaction = GRDBWriteTransaction(database: db)
+            if TSAccountManager.sharedInstance().isRegistered(transaction: transaction.asAnyWrite) {
                 Logger.info("marking existing user as onboarded")
-                TSAccountManager.sharedInstance().setIsOnboarded(true, transaction: transaction)
+                TSAccountManager.sharedInstance().setIsOnboarded(true, transaction: transaction.asAnyWrite)
             }
+            transaction.finalizeTransaction()
         }
 
         migrator.registerMigration(MigrationId.dataMigration_clearLaunchScreenCache.rawValue) { _ in
@@ -639,14 +679,20 @@ public class GRDBSchemaMigrator: NSObject {
         }
 
         migrator.registerMigration(MigrationId.dataMigration_enableV2RegistrationLockIfNecessary.rawValue) { db in
-            let transaction = GRDBWriteTransaction(database: db).asAnyWrite
-            guard KeyBackupService.hasMasterKey(transaction: transaction) else { return }
-            OWS2FAManager.keyValueStore().setBool(true, key: OWS2FAManager.isRegistrationLockV2EnabledKey, transaction: transaction)
+            let transaction = GRDBWriteTransaction(database: db)
+            guard KeyBackupService.hasMasterKey(transaction: transaction.asAnyWrite) else {
+                transaction.finalizeTransaction()
+                return
+
+            }
+            OWS2FAManager.keyValueStore().setBool(true, key: OWS2FAManager.isRegistrationLockV2EnabledKey, transaction: transaction.asAnyWrite)
+            transaction.finalizeTransaction()
         }
 
         migrator.registerMigration(MigrationId.dataMigration_resetStorageServiceData.rawValue) { db in
-            let transaction = GRDBWriteTransaction(database: db).asAnyWrite
-            SSKEnvironment.shared.storageServiceManager.resetLocalData(transaction: transaction)
+            let transaction = GRDBWriteTransaction(database: db)
+            SSKEnvironment.shared.storageServiceManager.resetLocalData(transaction: transaction.asAnyWrite)
+            transaction.finalizeTransaction()
         }
 
         migrator.registerMigration(MigrationId.dataMigration_markAllInteractionsAsNotDeleted.rawValue) { db in

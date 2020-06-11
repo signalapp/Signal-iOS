@@ -615,3 +615,15 @@ class OWSReactionSerializer: SDSSerializer {
         return ReactionRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, emoji: emoji, reactorE164: reactorE164, reactorUUID: reactorUUID, receivedAtTimestamp: receivedAtTimestamp, sentAtTimestamp: sentAtTimestamp, uniqueMessageId: uniqueMessageId, read: read)
     }
 }
+
+// MARK: - Deep Copy
+
+@objc
+public extension OWSReaction {
+    func deepCopy() throws -> OWSReaction {
+        guard let record = try asRecord() as? ReactionRecord else {
+            throw OWSAssertionError("Could not convert to record.")
+        }
+        return try OWSReaction.fromRecord(record)
+    }
+}

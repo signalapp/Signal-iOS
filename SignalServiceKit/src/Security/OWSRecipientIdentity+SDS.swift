@@ -600,3 +600,15 @@ class OWSRecipientIdentitySerializer: SDSSerializer {
         return RecipientIdentityRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, accountId: accountId, createdAt: createdAt, identityKey: identityKey, isFirstKnownKey: isFirstKnownKey, verificationState: verificationState)
     }
 }
+
+// MARK: - Deep Copy
+
+@objc
+public extension OWSRecipientIdentity {
+    func deepCopy() throws -> OWSRecipientIdentity {
+        guard let record = try asRecord() as? RecipientIdentityRecord else {
+            throw OWSAssertionError("Could not convert to record.")
+        }
+        return try OWSRecipientIdentity.fromRecord(record)
+    }
+}

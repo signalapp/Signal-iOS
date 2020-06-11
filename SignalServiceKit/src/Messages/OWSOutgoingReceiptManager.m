@@ -315,9 +315,10 @@ typedef NS_ENUM(NSUInteger, OWSReceiptType) {
 
     [store setObject:newTimestamps key:identifier transaction:transaction];
 
-    [transaction addAsyncCompletion:^{
-        [self process];
-    }];
+    [transaction addAsyncCompletionWithQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
+                                       block:^{
+                                           [self process];
+                                       }];
 }
 
 - (void)dequeueReceiptsForAddress:(SignalServiceAddress *)address

@@ -110,38 +110,41 @@ class MessageRequestView: UIStackView {
     // MARK: - Contact or Group V1
 
     func prepareContactOrGroupV1Prompt(hasSentMessages: Bool, isThreadBlocked: Bool) -> UILabel {
-        let formatString: String
-        let embeddedString: String
-
-        if let thread = thread as? TSGroupThread {
+        if thread.isGroupThread {
+            let string: String
             if isThreadBlocked {
-            formatString = NSLocalizedString(
-            "MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT_FORMAT",
-            comment: "A prompt notifying that the user must unblock this group to continue. Embeds {{group name}}."
-            )
+                string = NSLocalizedString(
+                    "MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT",
+                    comment: "A prompt notifying that the user must unblock this group to continue."
+                )
             } else if hasSentMessages {
-                formatString = NSLocalizedString(
-                    "MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT_FORMAT",
-                    comment: "A prompt notifying that the user must share their profile with this group. Embeds {{group name}}."
+                string = NSLocalizedString(
+                    "MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT",
+                    comment: "A prompt notifying that the user must share their profile with this group."
                 )
             } else {
-                formatString = NSLocalizedString(
-                    "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT_FORMAT",
-                    comment: "A prompt asking if the user wants to accept a group invite. Embeds {{group name}}."
+                string = NSLocalizedString(
+                    "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT",
+                    comment: "A prompt asking if the user wants to accept a group invite."
                 )
             }
 
-            embeddedString = thread.groupNameOrDefault
+            return prepareLabel(attributedString: NSAttributedString(string: string, attributes: [
+                .font: UIFont.ows_dynamicTypeSubheadlineClamped,
+                .foregroundColor: Theme.secondaryTextAndIconColor
+            ]))
         } else if let thread = thread as? TSContactThread {
-            if hasSentMessages {
-                formatString = NSLocalizedString(
-                    "MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT",
-                    comment: "A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}."
-                )
-            } else if isThreadBlocked {
+            let formatString: String
+
+            if isThreadBlocked {
                 formatString = NSLocalizedString(
                     "MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT",
                     comment: "A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}."
+                )
+            } else if hasSentMessages {
+                formatString = NSLocalizedString(
+                    "MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT",
+                    comment: "A prompt notifying that the user must share their profile with this conversation. Embeds {{contact name}}."
                 )
             } else {
                 formatString = NSLocalizedString(
@@ -150,13 +153,15 @@ class MessageRequestView: UIStackView {
                 )
             }
 
-            embeddedString = contactManager.displayName(for: thread.contactAddress)
+            let shortName = databaseStorage.uiRead { transaction in
+                return self.contactManager.shortDisplayName(for: thread.contactAddress, transaction: transaction)
+            }
+
+            return preparePromptLabel(formatString: formatString, embeddedString: shortName)
         } else {
             owsFailDebug("unexpected thread type")
             return UILabel()
         }
-
-        return preparePromptLabel(formatString: formatString, embeddedString: embeddedString)
     }
 
     func prepareContactOrGroupV1Buttons(hasSentMessages: Bool, isThreadBlocked: Bool) -> UIStackView {

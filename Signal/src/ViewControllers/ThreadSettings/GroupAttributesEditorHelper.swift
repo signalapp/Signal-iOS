@@ -235,21 +235,11 @@ struct GroupAvatar {
 extension GroupAttributesEditorHelper: UITextFieldDelegate {
     public func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString: String) -> Bool {
         // Truncate the replacement to fit.
-        let left: String = (textField.text ?? "").substring(to: range.location)
-        let right: String = (textField.text ?? "").substring(from: range.location + range.length)
-        let maxReplacementLength = GroupManager.maxGroupNameLength - Int(left.count + right.count)
-        let center = replacementString.substring(to: maxReplacementLength)
-        textField.text = (left + center + right)
-
-        delegate?.groupAttributesEditorContentsDidChange()
-
-        // Place the cursor after the truncated replacement.
-        let positionAfterChange = left.count + center.count
-        guard let position = textField.position(from: textField.beginningOfDocument, offset: positionAfterChange) else {
-            owsFailDebug("Invalid position")
-            return false
-        }
-        textField.selectedTextRange = textField.textRange(from: position, to: position)
-        return false
+        return TextFieldHelper.textField(
+            textField,
+            shouldChangeCharactersInRange: range,
+            replacementString: replacementString,
+            byteLimit: UInt(GroupManager.maxGroupNameLength)
+        )
     }
 }
