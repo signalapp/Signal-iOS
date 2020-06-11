@@ -35,7 +35,7 @@ public final class Storage : NSObject {
     @discardableResult
     @objc(writeWithBlock:)
     public static func objc_write(with block: @escaping (YapDatabaseReadWriteTransaction) -> Void) -> AnyPromise {
-        return AnyPromise.from(write(with: block))
+        return AnyPromise.from(write(with: block) { })
     }
 
     @discardableResult
@@ -66,6 +66,6 @@ public final class Storage : NSObject {
     @discardableResult
     @objc(writeSyncWithBlock:error:)
     public static func writeSync(with block: @escaping (YapDatabaseReadWriteTransaction) -> Void) throws {
-        try write(with: block).wait()
+        try write(with: block, completion: { }).wait()
     }
 }
