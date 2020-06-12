@@ -187,9 +187,9 @@ public class FeatureFlags: NSObject {
     public static let groupsV2CreateGroups = groupsV2
 
     // Don't consult this feature flag directly; instead
-    // consult RemoteConfig.groupsV2IncomingMessages.
+    // consult RemoteConfig.groupsV2GoodCitizen.
     @objc
-    public static let groupsV2IncomingMessages = groupsV2
+    public static let groupsV2GoodCitizen = groupsV2
 
     // The other clients don't consider this MVP, but we already implemented it.
     // It enables an optimization where other clients can usually update without
