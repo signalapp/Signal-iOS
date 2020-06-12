@@ -1803,8 +1803,18 @@ typedef enum : NSUInteger {
     }
 }
 
+- (void)resetShowLoadMore
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(self.conversationViewModel);
+
+    _showLoadOlderHeader = self.conversationViewModel.canLoadOlderItems;
+    _showLoadNewerHeader = self.conversationViewModel.canLoadNewerItems;
+}
+
 - (void)updateShowLoadMoreHeadersWithTransaction:(SDSAnyReadTransaction *)transaction
 {
+    OWSAssertIsOnMainThread();
     OWSAssertDebug(self.conversationViewModel);
 
     BOOL valueChanged = NO;
@@ -4960,6 +4970,8 @@ typedef enum : NSUInteger {
         return;
     }
 
+    [self resetShowLoadMore];
+
     OWSAssertDebug(conversationUpdate.conversationUpdateType == ConversationUpdateType_Diff);
     OWSAssertDebug(conversationUpdate.updateItems);
 
@@ -5015,13 +5027,14 @@ typedef enum : NSUInteger {
                     
                     id<ConversationViewItem> viewItem = updateItem.viewItem;
                     OWSAssertDebug(viewItem);
-                    if ([viewItem.interaction isKindOfClass:[TSOutgoingMessage class]]) {
+                    if ([viewItem.interaction isKindOfClass:[TSOutgoingMessage class]]
+                        && conversationUpdate.shouldJumpToOutgoingMessage) {
                         TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)viewItem.interaction;
                         if (!outgoingMessage.isFromLinkedDevice) {
                             scrollToBottom = YES;
                         }
                     }
-                    
+
                     break;
                 }
                 case ConversationUpdateItemType_Update: {

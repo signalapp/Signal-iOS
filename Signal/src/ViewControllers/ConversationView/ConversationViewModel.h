@@ -67,8 +67,10 @@ typedef NS_ENUM(NSUInteger, ConversationUpdateItemType) {
 @property (nonatomic, readonly) ConversationUpdateType conversationUpdateType;
 // Only applies in the "diff" case.
 @property (nonatomic, readonly, nullable) NSArray<ConversationUpdateItem *> *updateItems;
-//// Only applies in the "diff" case.
+// Only applies in the "diff" case.
 @property (nonatomic, readonly) BOOL shouldAnimateUpdates;
+// Only applies in the "diff" case.
+@property (nonatomic, readonly) BOOL shouldJumpToOutgoingMessage;
 
 @end
 

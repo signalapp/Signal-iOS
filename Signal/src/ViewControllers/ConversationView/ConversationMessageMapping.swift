@@ -41,7 +41,7 @@ public class ConversationMessageMapping: NSObject {
     // small messages (e.g. a bunch of 1-line texts in a row from the same sender and timestamp)
     internal var initialLoadCount: Int {
         let avgMessageHeight: CGFloat = 60
-        let referenceSize = UIScreen.main.bounds
+        let referenceSize = CurrentAppContext().frame
         let messageCountToFillScreen = (referenceSize.height / avgMessageHeight)
 
         let result = Int(messageCountToFillScreen * 2)
@@ -74,27 +74,27 @@ public class ConversationMessageMapping: NSObject {
     }
 
     @objc
-    public func loadNewerMessagePage(transaction: SDSAnyReadTransaction) throws {
+    public func loadNewerMessagePage(transaction: SDSAnyReadTransaction) throws -> ConversationMessageMappingDiff {
         guard let newestLoadedId = loadedUniqueIds.last else {
             // empty convo
-            return
+            return ConversationMessageMappingDiff(addedItemIds: [], removedItemIds: [], updatedItemIds: [])
         }
 
-        try ensureLoaded(.after(interactionUniqueId: newestLoadedId),
-                         count: initialLoadCount * 2,
-                         transaction: transaction)
+        return try ensureLoaded(.after(interactionUniqueId: newestLoadedId),
+                                count: initialLoadCount * 2,
+                                transaction: transaction)
     }
 
     @objc
-    public func loadOlderMessagePage(transaction: SDSAnyReadTransaction) throws {
+    public func loadOlderMessagePage(transaction: SDSAnyReadTransaction) throws -> ConversationMessageMappingDiff {
         guard let oldestLoadedId = loadedUniqueIds.first else {
             // empty convo
-            return
+            return ConversationMessageMappingDiff(addedItemIds: [], removedItemIds: [], updatedItemIds: [])
         }
 
-        try ensureLoaded(.before(interactionUniqueId: oldestLoadedId),
-                         count: initialLoadCount * 2,
-                         transaction: transaction)
+        return try ensureLoaded(.before(interactionUniqueId: oldestLoadedId),
+                                count: initialLoadCount * 2,
+                                transaction: transaction)
     }
 
     @objc
@@ -123,7 +123,8 @@ public class ConversationMessageMapping: NSObject {
 
     // MARK: -
 
-    private func ensureLoaded(_ direction: LoadWindowDirection, count: Int, transaction: SDSAnyReadTransaction) throws {
+    @discardableResult
+    private func ensureLoaded(_ direction: LoadWindowDirection, count: Int, transaction: SDSAnyReadTransaction) throws -> ConversationMessageMappingDiff {
         let conversationSize = interactionFinder.count(transaction: transaction)
 
         let getDistanceFromEnd = { (interactionUniqueId: String) throws -> Int in
@@ -154,7 +155,7 @@ public class ConversationMessageMapping: NSObject {
         let unfetchedSet = requestSet.subtracting(loadedIndexSet)
         guard unfetchedSet.count > 0 else {
             Logger.debug("ignoring empty fetch request: \(unfetchedSet.count)")
-            return
+            return ConversationMessageMappingDiff(addedItemIds: [], removedItemIds: [], updatedItemIds: [])
         }
 
         // For perf we only want to fetch a substantially full batch...
@@ -164,8 +165,10 @@ public class ConversationMessageMapping: NSObject {
 
         guard isSubstantialRequest || isFetchingEdge else {
             Logger.debug("ignoring small fetch request: \(unfetchedSet.count)")
-            return
+            return ConversationMessageMappingDiff(addedItemIds: [], removedItemIds: [], updatedItemIds: [])
         }
+
+        let oldItemIds = Set(self.loadedUniqueIds)
 
         let nsRange: NSRange = NSRange(location: unfetchedSet.min()!, length: unfetchedSet.count)
         Logger.debug("fetching set: \(unfetchedSet), nsRange: \(nsRange)")
@@ -207,6 +210,15 @@ public class ConversationMessageMapping: NSObject {
         }
 
         updateCanLoadMore(conversationSize: conversationSize)
+
+        let newItemIds = Set(self.loadedUniqueIds)
+
+        let removedItemIds = oldItemIds.subtracting(newItemIds)
+        let addedItemIds = newItemIds.subtracting(oldItemIds)
+
+        return ConversationMessageMappingDiff(addedItemIds: addedItemIds,
+                                              removedItemIds: removedItemIds,
+                                              updatedItemIds: [])
     }
 
     @objc

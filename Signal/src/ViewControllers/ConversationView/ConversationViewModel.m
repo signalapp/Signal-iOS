@@ -93,6 +93,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
+@interface ConversationUpdate ()
+
+@property (nonatomic) BOOL shouldAnimateUpdates;
+@property (nonatomic) BOOL shouldJumpToOutgoingMessage;
+
+@end
+
 @implementation ConversationUpdate
 
 - (instancetype)initWithConversationUpdateType:(ConversationUpdateType)conversationUpdateType
@@ -107,6 +114,7 @@ NS_ASSUME_NONNULL_BEGIN
     _conversationUpdateType = conversationUpdateType;
     _updateItems = updateItems;
     _shouldAnimateUpdates = shouldAnimateUpdates;
+    _shouldJumpToOutgoingMessage = YES;
 
     return self;
 }
@@ -347,26 +355,79 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)appendOlderItemsWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    [self.delegate conversationViewModelWillLoadMoreItems];
     NSError *error;
-    [self.messageMapping loadOlderMessagePageWithTransaction:transaction error:&error];
+    ConversationMessageMappingDiff *diff = [self.messageMapping loadOlderMessagePageWithTransaction:transaction
+                                                                                              error:&error];
+
     if (error != nil) {
-        OWSFailDebug(@"failure: %@", error);
+        OWSFailDebug(@"Could not determine diff. error: %@", error);
+        return;
     }
-    [self resetMappingWithTransaction:transaction];
-    [self.delegate conversationViewModelDidLoadMoreItems];
-    [self.delegate conversationViewModelRangeDidChangeWithTransaction:transaction];
+
+    [self updateViewForAppendWithDiff:diff transaction:transaction];
 }
 
 - (void)appendNewerItemsWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    [self.delegate conversationViewModelWillLoadMoreItems];
     NSError *error;
-    [self.messageMapping loadNewerMessagePageWithTransaction:transaction error:&error];
+    ConversationMessageMappingDiff *diff = [self.messageMapping loadNewerMessagePageWithTransaction:transaction
+                                                                                              error:&error];
+
     if (error != nil) {
-        OWSFailDebug(@"failure: %@", error);
+        OWSFailDebug(@"Could not determine diff. error: %@", error);
+        return;
     }
-    [self resetMappingWithTransaction:transaction];
+
+    [self updateViewForAppendWithDiff:diff transaction:transaction];
+}
+
+- (void)updateViewForAppendWithDiff:(ConversationMessageMappingDiff *)diff
+                        transaction:(SDSAnyReadTransaction *)transaction
+{
+    [self.delegate conversationViewModelWillLoadMoreItems];
+
+    if (diff.updatedItemIds.count > 0) {
+        OWSFailDebug(@"Unexpectedly had updated items while appending older/newer items.");
+        [self.delegate conversationViewModelDidUpdate:ConversationUpdate.minorUpdate transaction:transaction];
+        [self.delegate conversationViewModelDidLoadMoreItems];
+        [self.delegate conversationViewModelRangeDidChangeWithTransaction:transaction];
+        return;
+    }
+
+    if (diff.addedItemIds.count < 1 && diff.removedItemIds.count < 1 && diff.updatedItemIds.count < 1) {
+        // This probably isn't an error; presumably the modifications
+        // occurred outside the load window.
+        OWSLogDebug(@"Empty diff.");
+        [self.delegate conversationViewModelDidUpdate:ConversationUpdate.minorUpdate transaction:transaction];
+        [self.delegate conversationViewModelDidLoadMoreItems];
+        [self.delegate conversationViewModelRangeDidChangeWithTransaction:transaction];
+        return;
+    }
+
+    NSArray<NSString *> *oldItemIdList = self.viewState.interactionIds;
+
+    if (![self reloadViewItemsWithTransaction:transaction]) {
+        // These errors are rare.
+        OWSFailDebug(@"could not reload view items; hard resetting message mapping.");
+        // resetMapping will call delegate.conversationViewModelDidUpdate.
+        [self resetMappingWithTransaction:transaction];
+        [self.delegate conversationViewModelDidLoadMoreItems];
+        [self.delegate conversationViewModelRangeDidChangeWithTransaction:transaction];
+        return;
+    }
+
+    ConversationUpdate *conversationUpdate = [self conversationUpdateWithOldItemIdList:oldItemIdList
+                                                                        updatedItemSet:[NSSet set]];
+
+    // We never want to animate appends.
+    conversationUpdate.shouldAnimateUpdates = NO;
+
+    // We never want to jump to newly visible outgoing messages during appends.
+    conversationUpdate.shouldJumpToOutgoingMessage = NO;
+
+    OWSLogVerbose(@"self.viewItems.count: %zd -> %zd", oldItemIdList.count, self.viewState.viewItems.count);
+
+    [self.delegate conversationViewModelDidUpdate:conversationUpdate transaction:transaction];
     [self.delegate conversationViewModelDidLoadMoreItems];
     [self.delegate conversationViewModelRangeDidChangeWithTransaction:transaction];
 }
@@ -588,15 +649,15 @@ NS_ASSUME_NONNULL_BEGIN
     [self updateViewWithOldItemIdList:oldItemIdList updatedItemSet:[NSSet set]];
 }
 
-- (void)updateViewWithOldItemIdList:(NSArray<NSString *> *)oldItemIdList
-                     updatedItemSet:(NSSet<NSString *> *)updatedItemSetParam {
+- (ConversationUpdate *)conversationUpdateWithOldItemIdList:(NSArray<NSString *> *)oldItemIdList
+                                             updatedItemSet:(NSSet<NSString *> *)updatedItemSetParam
+{
     OWSAssertDebug(oldItemIdList);
     OWSAssertDebug(updatedItemSetParam);
 
     if (oldItemIdList.count != [NSSet setWithArray:oldItemIdList].count) {
         OWSFailDebug(@"Old view item list has duplicates.");
-        [self.delegate conversationViewModelDidUpdateWithSneakyTransaction:ConversationUpdate.reloadUpdate];
-        return;
+        return ConversationUpdate.reloadUpdate;
     }
 
     NSArray<NSString *> *newItemIdList = self.viewState.interactionIds;
@@ -607,8 +668,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (newItemIdList.count != [NSSet setWithArray:newItemIdList].count) {
         OWSFailDebug(@"New view item list has duplicates.");
-        [self.delegate conversationViewModelDidUpdateWithSneakyTransaction:ConversationUpdate.reloadUpdate];
-        return;
+        return ConversationUpdate.reloadUpdate;
     }
 
     NSSet<NSString *> *oldItemIdSet = [NSSet setWithArray:oldItemIdList];
@@ -640,7 +700,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSUInteger oldIndex = [oldItemIdList indexOfObject:itemId];
         if (oldIndex == NSNotFound) {
             OWSFailDebug(@"Can't find index of deleted view item.");
-            return [self.delegate conversationViewModelDidUpdateWithSneakyTransaction:ConversationUpdate.reloadUpdate];
+            return ConversationUpdate.reloadUpdate;
         }
 
         [updateItems addObject:[[ConversationUpdateItem alloc] initWithUpdateItemType:ConversationUpdateItemType_Delete
@@ -660,12 +720,12 @@ NS_ASSUME_NONNULL_BEGIN
         NSUInteger newIndex = [newItemIdList indexOfObject:itemId];
         if (newIndex == NSNotFound) {
             OWSFailDebug(@"Can't find index of inserted view item.");
-            return [self.delegate conversationViewModelDidUpdateWithSneakyTransaction:ConversationUpdate.reloadUpdate];
+            return ConversationUpdate.reloadUpdate;
         }
         id<ConversationViewItem> _Nullable viewItem = newViewItemMap[itemId];
         if (!viewItem) {
             OWSFailDebug(@"Can't find inserted view item.");
-            return [self.delegate conversationViewModelDidUpdateWithSneakyTransaction:ConversationUpdate.reloadUpdate];
+            return ConversationUpdate.reloadUpdate;
         }
 
         [updateItems addObject:[[ConversationUpdateItem alloc] initWithUpdateItemType:ConversationUpdateItemType_Insert
@@ -681,7 +741,7 @@ NS_ASSUME_NONNULL_BEGIN
         //
         // TODO: The unread indicator might end up being an exception.
         OWSLogWarn(@"New and updated view item lists don't match.");
-        return [self.delegate conversationViewModelDidUpdateWithSneakyTransaction:ConversationUpdate.reloadUpdate];
+        return ConversationUpdate.reloadUpdate;
     }
 
     // In addition to "update" items from the database change notification,
@@ -709,12 +769,12 @@ NS_ASSUME_NONNULL_BEGIN
         NSUInteger newIndex = [newItemIdList indexOfObject:itemId];
         if (newIndex == NSNotFound) {
             OWSFailDebug(@"Can't find index of holdover view item.");
-            return [self.delegate conversationViewModelDidUpdateWithSneakyTransaction:ConversationUpdate.reloadUpdate];
+            return ConversationUpdate.reloadUpdate;
         }
         id<ConversationViewItem> _Nullable viewItem = newViewItemMap[itemId];
         if (!viewItem) {
             OWSFailDebug(@"Can't find holdover view item.");
-            return [self.delegate conversationViewModelDidUpdateWithSneakyTransaction:ConversationUpdate.reloadUpdate];
+            return ConversationUpdate.reloadUpdate;
         }
         if (viewItem.needsUpdate) {
             [updatedItemSet addObject:itemId];
@@ -736,17 +796,17 @@ NS_ASSUME_NONNULL_BEGIN
         NSUInteger oldIndex = [oldItemIdList indexOfObject:itemId];
         if (oldIndex == NSNotFound) {
             OWSFailDebug(@"Can't find old index of updated view item.");
-            return [self.delegate conversationViewModelDidUpdateWithSneakyTransaction:ConversationUpdate.reloadUpdate];
+            return ConversationUpdate.reloadUpdate;
         }
         NSUInteger newIndex = [newItemIdList indexOfObject:itemId];
         if (newIndex == NSNotFound) {
             OWSFailDebug(@"Can't find new index of updated view item.");
-            return [self.delegate conversationViewModelDidUpdateWithSneakyTransaction:ConversationUpdate.reloadUpdate];
+            return ConversationUpdate.reloadUpdate;
         }
         id<ConversationViewItem> _Nullable viewItem = newViewItemMap[itemId];
         if (!viewItem) {
             OWSFailDebug(@"Can't find inserted view item.");
-            return [self.delegate conversationViewModelDidUpdateWithSneakyTransaction:ConversationUpdate.reloadUpdate];
+            return ConversationUpdate.reloadUpdate;
         }
         [updateItems addObject:[[ConversationUpdateItem alloc] initWithUpdateItemType:ConversationUpdateItemType_Update
                                                                              oldIndex:oldIndex
@@ -758,10 +818,15 @@ NS_ASSUME_NONNULL_BEGIN
                                               oldViewItemCount:oldItemIdList.count
                                         updatedNeighborItemSet:updatedNeighborItemSet];
 
-    return [self.delegate
-        conversationViewModelDidUpdateWithSneakyTransaction:[ConversationUpdate
-                                                                diffUpdateWithUpdateItems:updateItems
-                                                                     shouldAnimateUpdates:shouldAnimateUpdates]];
+    return [ConversationUpdate diffUpdateWithUpdateItems:updateItems shouldAnimateUpdates:shouldAnimateUpdates];
+}
+
+- (void)updateViewWithOldItemIdList:(NSArray<NSString *> *)oldItemIdList
+                     updatedItemSet:(NSSet<NSString *> *)updatedItemSetParam
+{
+    ConversationUpdate *conversationUpdate = [self conversationUpdateWithOldItemIdList:oldItemIdList
+                                                                        updatedItemSet:updatedItemSetParam];
+    return [self.delegate conversationViewModelDidUpdateWithSneakyTransaction:conversationUpdate];
 }
 
 - (BOOL)shouldAnimateUpdateItems:(NSArray<ConversationUpdateItem *> *)updateItems
