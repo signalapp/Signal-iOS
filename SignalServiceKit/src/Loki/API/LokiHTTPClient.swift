@@ -10,7 +10,7 @@ public class LokiHTTPClient {
         securityPolicy.validatesDomainName = false
         result.securityPolicy = securityPolicy
         result.responseSerializer = AFHTTPResponseSerializer()
-        result.completionQueue = DispatchQueue.global(qos: .userInitiated)
+        result.completionQueue = DispatchQueue.global(qos: .default)
         return result
     }()
 

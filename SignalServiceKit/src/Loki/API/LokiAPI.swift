@@ -44,7 +44,7 @@ public final class LokiAPI : NSObject {
             let request = TSRequest(url: url, method: "POST", parameters: [ "method" : method.rawValue, "params" : parameters ])
             if let headers = headers { request.allHTTPHeaderFields = headers }
             request.timeoutInterval = timeout ?? defaultTimeout
-            return TSNetworkManager.shared().perform(request, withCompletionQueue: DispatchQueue.global(qos: .userInitiated))
+            return TSNetworkManager.shared().perform(request, withCompletionQueue: DispatchQueue.global(qos: .default))
                 .map2 { $0.responseObject }
                 .handlingSnodeErrorsIfNeeded(for: target, associatedWith: hexEncodedPublicKey)
                 .recoveringNetworkErrorsIfNeeded()

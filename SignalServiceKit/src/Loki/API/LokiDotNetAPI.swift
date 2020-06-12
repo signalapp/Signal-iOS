@@ -65,7 +65,7 @@ public class LokiDotNetAPI : NSObject {
         let queryParameters = "pubKey=\(getUserHexEncodedPublicKey())"
         let url = URL(string: "\(server)/loki/v1/get_challenge?\(queryParameters)")!
         let request = TSRequest(url: url)
-        return LokiFileServerProxy(for: server).perform(request, withCompletionQueue: DispatchQueue.global(qos: .userInitiated)).map2 { rawResponse in
+        return LokiFileServerProxy(for: server).perform(request, withCompletionQueue: DispatchQueue.global(qos: .default)).map2 { rawResponse in
             guard let json = rawResponse as? JSON, let base64EncodedChallenge = json["cipherText64"] as? String, let base64EncodedServerPublicKey = json["serverPubKey64"] as? String,
                 let challenge = Data(base64Encoded: base64EncodedChallenge), var serverPublicKey = Data(base64Encoded: base64EncodedServerPublicKey) else {
                 throw LokiDotNetAPIError.parsingFailed
@@ -89,7 +89,7 @@ public class LokiDotNetAPI : NSObject {
         let url = URL(string: "\(server)/loki/v1/submit_challenge")!
         let parameters = [ "pubKey" : getUserHexEncodedPublicKey(), "token" : token ]
         let request = TSRequest(url: url, method: "POST", parameters: parameters)
-        return LokiFileServerProxy(for: server).perform(request, withCompletionQueue: DispatchQueue.global(qos: .userInitiated)).map2 { _ in token }
+        return LokiFileServerProxy(for: server).perform(request, withCompletionQueue: DispatchQueue.global(qos: .default)).map2 { _ in token }
     }
 
     // MARK: Public API
@@ -191,7 +191,7 @@ public class LokiDotNetAPI : NSObject {
                     proceed(with: "loki") // Uploads to the Loki File Server shouldn't include any personally identifiable information so use a dummy auth token
                 }
             } else {
-                getAuthToken(for: server).done2 { token in
+                getAuthToken(for: server).done(on: DispatchQueue.global(qos: .userInitiated)) { token in
                     proceed(with: token)
                 }.catch2 { error in
                     print("[Loki] Couldn't upload attachment due to error: \(error).")

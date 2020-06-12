@@ -203,7 +203,7 @@ public final class LokiPublicChatPoller : NSObject {
                     proceed()
                 }
             } else {
-                DispatchQueue.global(qos: .userInitiated).async {
+                DispatchQueue.global(qos: .default).async {
                     proceed()
                 }
             }
