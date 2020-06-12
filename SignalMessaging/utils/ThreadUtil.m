@@ -250,21 +250,25 @@ NS_ASSUME_NONNULL_BEGIN
                                                 quotedReplyModel:quotedReplyModel
                                                      transaction:transaction];
 
-    DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *writeTransaction) {
-        [outgoingMessagePreparer insertMessageWithLinkPreviewDraft:nil transaction:writeTransaction];
-
-        [messageSender sendMessage:outgoingMessagePreparer
-            success:^{
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    completion(nil);
-                });
-            }
-            failure:^(NSError *_Nonnull error) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    completion(error);
-                });
-            }];
-    });
+    DatabaseStorageAsyncWriteWithCompletion(
+        self.databaseStorage,
+        ^(SDSAnyWriteTransaction *writeTransaction) {
+            [outgoingMessagePreparer insertMessageWithLinkPreviewDraft:nil transaction:writeTransaction];
+        },
+        // Completion:
+        ^{
+            [messageSender sendMessage:outgoingMessagePreparer
+                success:^{
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        completion(nil);
+                    });
+                }
+                failure:^(NSError *_Nonnull error) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        completion(error);
+                    });
+                }];
+        });
 
     return outgoingMessagePreparer.unpreparedMessage;
 }
