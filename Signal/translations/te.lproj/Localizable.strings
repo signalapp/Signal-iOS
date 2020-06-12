@@ -419,12 +419,6 @@
 /* Alert body after unblocking a group. */
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "ఇప్పటికే ఉన్న సభ్యులు ఇప్పుడు మిమ్మల్ని మళ్ళీ గుంపుకు చేర్చవచ్చు.";
 
-/* Action sheet that will block an unknown user. */
-"BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION" = "నిరోధించు";
-
-/* Title format for action sheet that offers to block an unknown user.Embeds {{the unknown user's name or phone number}}. */
-"BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "%@ ని నిరోధించాల?";
-
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "నిరోధించిన వినియోగదారులు మీకు కాల్ చేయలేరు లేదా మీకు సందేశాలు పంపలేరు.";
 
@@ -944,12 +938,6 @@
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "ఈ వినియోగదారు మీ పరిచయాలలో ఉన్నారు";
 
-/* Indicates that user's profile has been shared with a group. */
-"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "ఈ సమూహాం  మీ రూపంని చూడగలదు.";
-
-/* Indicates that user's profile has been shared with a user. */
-"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER" = "ఈ వినియోగదారు మీ రూపంను చూడగలరు.";
-
 /* Button to confirm that user wants to share their profile with a user or group. */
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "రూపంను భాగస్వామ్యం చేయండి";
 
@@ -962,12 +950,6 @@
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "పరిచయాలకు జోడించు";
 
-/* Message shown in conversation view that offers to share your profile with a user. */
-"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "ఈ వినియోగదారుతో మీ రూపంను భాగస్వామ్యం చేయండి";
-
-/* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
-"CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "ఈ వినియోగదారు మీ పరిచయాలలో లేరు.";
-
 /* button text to delete all items in the current conversation */
 "CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "అన్నిటిని తొలిగించు";
 
@@ -976,9 +958,6 @@
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "మరిన్ని కోసం తాకండి";
-
-/* Message shown in conversation view that offers to block an unknown user. */
-"CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "ఈ వినియోగదారుని బ్లాక్ చేయండి";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "మీ సెషన్‌ను రీసెట్ చేయడం వలన భవిష్యత్తులో సందేశాలను %@ నుండి స్వీకరించడానికి మిమ్మల్ని అనుమతిస్తుంది, అయితే ఇది ఇప్పటికే పాడైన సందేశాలను తిరిగి పొందదు.";
@@ -1277,44 +1256,8 @@
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "మీరు ఎందుకు ఒకరిని ఆహ్వానించరు?";
 
-/* Indicates that user should confirm their 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "మీ పిన్ను నిర్ధారించండి.";
-
-/* Error indicating that attempt to disable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "నమోదు లాక్‌ని నిలిపివేయడం సాధ్యం కాలేదు.";
-
 /* Error indicating that attempt to enable 'two-factor auth' failed. */
 "ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "రిజిస్ట్రేషన్ లాక్‌ని ప్రారంభించలేదు.";
-
-/* Label for the 'enable two-factor auth' item in the settings view */
-"ENABLE_2FA_VIEW_DISABLE_2FA" = "అచేతనించు";
-
-/* Label for the 'enable two-factor auth' item in the settings view */
-"ENABLE_2FA_VIEW_ENABLE_2FA" = "ప్రారంభించు";
-
-/* Label for the 'next' button in the 'enable two factor auth' views. */
-"ENABLE_2FA_VIEW_NEXT_BUTTON" = "తరువాత";
-
-/* Error indicating that the entered 'two-factor auth PINs' do not match. */
-"ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "పిన్ సరిపోలలేదు.";
-
-/* Error indicating that the entered 'two-factor auth PIN' is too long. */
-"ENABLE_2FA_VIEW_PIN_TOO_LONG" = "పిన్ 20 అంకెలు మించకూడదు.";
-
-/* Error indicating that the entered 'two-factor auth PIN' is too short. */
-"ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "పిన్ కనీసం 4 అంకెలు ఉండాలి.";
-
-/* Indicates that user should select a 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "రిజిస్ట్రేషన్ లాక్ పిన్ను నమోదు చేయండి. మీరు ఈ ఫోన్ నంబర్‌ను తదుపరిసారి Signal తో నమోదు చేసినప్పుడు ఈ పిన్ ఎంటర్ చేయమని అడుగుతారు.";
-
-/* Indicates that user has 'two factor auth pin' disabled. */
-"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "పెరిగిన భద్రత కోసం, ఈ ఫోన్ నంబర్‌ను Signal తో మళ్లీ నమోదు చేయడానికి అవసరమైన రిజిస్ట్రేషన్ లాక్ పిన్‌ను ప్రారంభించండి.";
-
-/* Indicates that user has 'two factor auth pin' enabled. */
-"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "నమోదు లాక్ ప్రారంభించబడింది. మీ ఫోన్ నంబర్‌ను Signal తో మళ్లీ నమోదు చేసేటప్పుడు మీరు మీ పిన్‌ను నమోదు చేయాలి.";
-
-/* Title for the 'enable two factor auth PIN' views. */
-"ENABLE_2FA_VIEW_TITLE" = "నమోదు లాక్";
 
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "పనిలో ఉన్నారు ";
@@ -2270,17 +2213,11 @@
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ ధృవీకరించబడినట్లుగా గుర్తించబడలేదు. ఎంపికల కోసం నొక్కండి.";
 
-/* Indicates that this 1:1 conversation has been blocked. */
-"MESSAGES_VIEW_CONTACT_BLOCKED" = "మీరు ఈ వినియోగదారుని బ్లాక్ చేసారు";
-
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ధృవీకరించబడినట్లుగా గుర్తించబడలేదు. ఎంపికల కోసం నొక్కండి.";
 
 /* Indicates that a single member of this group has been blocked. */
 "MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "మీరు ఈ గుంపులో 1 సభ్యుడిని నిరోధించారు";
-
-/* Indicates that this group conversation has been blocked. */
-"MESSAGES_VIEW_GROUP_BLOCKED" = "మీరు ఈ గుంపును బ్లాక్ చేసారు";
 
 /* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
 "MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "మీరు ఈ గుంపులోని %@ సభ్యులను బ్లాక్ చేసారు";
@@ -2903,24 +2840,6 @@
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "కొనసాగండి";
 
-/* Action text for profile name reminder megaphone */
-"PROFILE_NAME_REMINDER_MEGAPHONE_ACTION" = "ప్రారంభించడానికి";
-
-/* Body for profile name reminder megaphone when user already has a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_BODY" = "మీ ప్రొఫైల్ ఇప్పుడు ఐచ్ఛిక చివరి పేరును కలిగి ఉంటుంది.";
-
-/* Title for profile name reminder megaphone when user already has a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_TITLE" = "మీ ప్రొఫైల్ పేరును నిర్ధారించండి";
-
-/* Body for profile name reminder megaphone when user doesn't have a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "మీరు క్రొత్త సంభాషణను ప్రారంభించినప్పుడు లేదా భాగస్వామ్యం చేసినప్పుడు ఇది ప్రదర్శించబడుతుంది.";
-
-/* Title for profile name reminder megaphone when user doesn't have a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_TITLE" = "ప్రొఫైల్ పేరును జోడించండి";
-
-/* Toast indicating that a PIN has been created. */
-"PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "మీ రూపం యొక్క పేరు భద్రపరచబడింది.";
-
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Set Profile Photo";
 
@@ -3050,12 +2969,6 @@
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "మీ వాయిస్ సందేశానికి %@ రియాక్ట్ అయ్యింది";
 
-/* Body for the megaphone introducing reactions */
-"REACTION_MEGAPHONE_BODY" = "మీకు ఎలా అనిపిస్తుందో త్వరగా సమాధానం ఇవ్వడానికి ఏదైనా సందేశాన్ని నొక్కండి మరియు పట్టుకోండి.";
-
-/* Title for the megaphone introducing reactions */
-"REACTION_MEGAPHONE_TITLE" = "స్పందనలు పరిచయం చేస్తున్నాం";
-
 /* Text describing the local user in the reaction details pane. */
 "REACTIONS_DETAIL_YOU" = "మీరు";
 
@@ -3163,24 +3076,6 @@
 
 /* No comment provided by engineer. */
 "RELAY_REGISTERED_ERROR_RECOVERY" = "మీరు నమోదు చేయడానికి ప్రయత్నిస్తున్న ఫోన్ నంబర్ ఇప్పటికే మరొక సర్వర్‌లో నమోదు చేయబడింది, దయచేసి అక్కడి నుండి అం-రిజిస్టర్ చేసి మళ్ళీ ప్రయత్నించండి.";
-
-/* Body text for when user is periodically prompted to enter their registration lock PIN */
-"REMINDER_2FA_BODY" = "మీ ఫోన్ నంబర్ కోసం నమోదు లాక్ ప్రారంభించబడింది. మీ రిజిస్ట్రేషన్ లాక్ పిన్ను గుర్తుంచుకోవడంలో మీకు సహాయం చేయడానికి, Signal దీనిని క్రమం తప్పకుండా ధృవీకరించమని అడుగుతుంది.";
-
-/* Body header for when user is periodically prompted to enter their registration lock PIN */
-"REMINDER_2FA_BODY_HEADER" = "జ్ఞాపిక:";
-
-/* Alert message explaining what happens if you forget your 'two-factor auth pin' */
-"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "నమోదు లాక్ అనధికార నమోదు ప్రయత్నాల నుండి మీ ఫోన్ నంబర్ను రక్షించడంలో సహాయపడుతుంది. మీ Signal గోప్యతా సెట్టింగ్ల్లో ఎప్పుడైనా ఈ లక్షణం నిలిపివేయబడుతుంది";
-
-/* Navbar title for when user is periodically prompted to enter their registration lock PIN */
-"REMINDER_2FA_NAV_TITLE" = "మీ రిజిస్ట్రేషన్ లాక్ పిన్ను నమోదు చేయండి";
-
-/* Alert body after wrong guess for 'two-factor auth pin' reminder activity */
-"REMINDER_2FA_WRONG_PIN_ALERT_BODY" = "మీరు మీ గోప్యతా సెట్టింగ్‌లలో క్రొత్త పిన్‌ని సెట్ చేయవచ్చు.";
-
-/* Alert title after wrong guess for 'two-factor auth pin' reminder activity */
-"REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "అది సరైన పిన్ కాదు.";
 
 /* The title for the 'replace group admin' view. */
 "REPLACE_ADMIN_VIEW_TITLE" = "క్రొత్త నిర్వాహకుడిని ఎంచుకోండి";
@@ -3758,20 +3653,8 @@
 /* No comment provided by engineer. */
 "SETTINGS_SUPPORT" = "మద్దతు";
 
-/* Indicates that 'two factor auth' is disabled in the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_DISABLED" = "అచేతనం అయింది";
-
-/* Indicates that 'two factor auth' is enabled in the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_ENABLED" = "చేతనం అయింది";
-
-/* Label for the 'two factor auth' item of the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_ITEM" = "నమోదు లాక్";
-
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "నమోదు లాక్";
-
-/* Title for the 'two factor auth' section of the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_TITLE" = "నమోదు లాక్";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
 "SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "అదనపు భద్రత కోసం, రిజిస్ట్రేషన్ లాక్‌ని ఆన్ చేయండి, మీ ఫోన్ నంబర్‌ను Signal ‌తో మళ్లీ నమోదు చేయడానికి మీ Signal పిన్ అవసరం.";

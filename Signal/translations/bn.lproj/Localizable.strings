@@ -419,12 +419,6 @@
 /* Alert body after unblocking a group. */
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "বিদ্যমান সদস্যরা আপনাকে আবার গ্রুপে যোগ করতে পারেন।";
 
-/* Action sheet that will block an unknown user. */
-"BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION" = "অবরূদ্ধ";
-
-/* Title format for action sheet that offers to block an unknown user.Embeds {{the unknown user's name or phone number}}. */
-"BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "%@ অবরূদ্ধ করবেন?";
-
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "অবরুদ্ধ ব্যবহারকারীরা আপনাকে কল করতে বা আপনাকে বার্তা প্রেরণ করতে পারবেন না।";
 
@@ -944,12 +938,6 @@
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "এই ব্যবহারকারীটি আপনার পরিচিতি তালিকায় রয়েছে";
 
-/* Indicates that user's profile has been shared with a group. */
-"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "এই গ্রুপ আপনার প্রোফাইল দেখতে পারে।";
-
-/* Indicates that user's profile has been shared with a user. */
-"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER" = "এই ব্যবহারকারী আপনার প্রোফাইল দেখতে পারেন।";
-
 /* Button to confirm that user wants to share their profile with a user or group. */
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "প্রোফাইল শেয়ার করুন";
 
@@ -962,12 +950,6 @@
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "পরিচিতি যুক্ত করুন";
 
-/* Message shown in conversation view that offers to share your profile with a user. */
-"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "এই ব্যবহারকারীর সাথে আপনার প্রোফাইল শেয়ার করুন";
-
-/* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
-"CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "এই ব্যবহারকারীটি আপনার পরিচিতি তালিকায় নেই।";
-
 /* button text to delete all items in the current conversation */
 "CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "সব মুছে ফেলুন";
 
@@ -976,9 +958,6 @@
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "আরও পেতে ট্যাপ করুন";
-
-/* Message shown in conversation view that offers to block an unknown user. */
-"CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "এই ব্যবহারকারীকে অবরুদ্ধ করুন";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "আপনার সেশনটি পুনরায় সেট করা হলে আপনাকে %@ থেকে ভবিষ্যতের বার্তাগুলি গ্রহণের অনুমতি দেবে, তবে এটি ইতিমধ্যে দূষিত বার্তাগুলি পুনরুদ্ধার করবে না।";
@@ -1245,19 +1224,19 @@
 "EMAIL_INVITE_SUBJECT" = "Signal এ স্যুইচ করা যাক";
 
 /* The name for the emoji category 'Activities' */
-"EMOJI_CATEGORY_ACTIVITIES_NAME" = "Activities";
+"EMOJI_CATEGORY_ACTIVITIES_NAME" = "কার্যক্রম";
 
 /* The name for the emoji category 'Animals & Nature' */
 "EMOJI_CATEGORY_ANIMALS_NAME" = "Animals & Nature";
 
 /* The name for the emoji category 'Flags' */
-"EMOJI_CATEGORY_FLAGS_NAME" = "Flags";
+"EMOJI_CATEGORY_FLAGS_NAME" = "পতাকা সমূহ";
 
 /* The name for the emoji category 'Food & Drink' */
 "EMOJI_CATEGORY_FOOD_NAME" = "Food & Drink";
 
 /* The name for the emoji category 'Objects' */
-"EMOJI_CATEGORY_OBJECTS_NAME" = "Objects";
+"EMOJI_CATEGORY_OBJECTS_NAME" = "বস্তু সমূহ";
 
 /* The name for the emoji category 'Recents' */
 "EMOJI_CATEGORY_RECENTS_NAME" = "Recents";
@@ -1266,7 +1245,7 @@
 "EMOJI_CATEGORY_SMILEYSANDPEOPLE_NAME" = "Smileys & People";
 
 /* The name for the emoji category 'Symbols' */
-"EMOJI_CATEGORY_SYMBOLS_NAME" = "Symbols";
+"EMOJI_CATEGORY_SYMBOLS_NAME" = "প্রতীক সমূহ";
 
 /* The name for the emoji category 'Travel & Places' */
 "EMOJI_CATEGORY_TRAVEL_NAME" = "Travel & Places";
@@ -1277,44 +1256,8 @@
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "আপনি কাউকে আমন্ত্রণ করছেন না কেন?";
 
-/* Indicates that user should confirm their 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "আপনার পিনটি নিশ্চিত করুন।";
-
-/* Error indicating that attempt to disable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "রেজিস্ট্রেশন লক অক্ষম করতে পারেনি।";
-
 /* Error indicating that attempt to enable 'two-factor auth' failed. */
 "ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "রেজিস্ট্রেশন লক সক্ষম করতে পারেনি।";
-
-/* Label for the 'enable two-factor auth' item in the settings view */
-"ENABLE_2FA_VIEW_DISABLE_2FA" = "অক্ষম";
-
-/* Label for the 'enable two-factor auth' item in the settings view */
-"ENABLE_2FA_VIEW_ENABLE_2FA" = "সক্ষম করুন";
-
-/* Label for the 'next' button in the 'enable two factor auth' views. */
-"ENABLE_2FA_VIEW_NEXT_BUTTON" = "পরবর্তী";
-
-/* Error indicating that the entered 'two-factor auth PINs' do not match. */
-"ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "পিন মিলছে না।";
-
-/* Error indicating that the entered 'two-factor auth PIN' is too long. */
-"ENABLE_2FA_VIEW_PIN_TOO_LONG" = "পিনটি 20 সংখ্যার বেশি হতে পারে না।";
-
-/* Error indicating that the entered 'two-factor auth PIN' is too short. */
-"ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "পিনটি কমপক্ষে 4 টি সংখ্যার হতে হবে।";
-
-/* Indicates that user should select a 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "একটি রেজিস্ট্রেশন লক পিন প্রবেশ করুন। পরের বার আপনি Signal এর সাথে এই ফোন নাম্বার টি নিবন্ধন করার সময় আপনাকে এই পিনটি প্রবেশ করতে বলা হবে।";
-
-/* Indicates that user has 'two factor auth pin' disabled. */
-"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "বর্ধিত সুরক্ষার জন্য, আবার একটি Signal এর সাথে এই ফোন নাম্বার টি নিবন্ধন করার জন্য একটি রেজিস্ট্রেশন লক পিন সক্ষম করুন।";
-
-/* Indicates that user has 'two factor auth pin' enabled. */
-"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "রেজিস্ট্রেশন লক সক্ষম করা হয়েছে। আবার Signal - এর সাথে আপনার ফোন নাম্বার টি নিবন্ধন করার সময় আপনার পিনটি প্রবেশ করতে হবে।";
-
-/* Title for the 'enable two factor auth PIN' views. */
-"ENABLE_2FA_VIEW_TITLE" = "রেজিস্ট্রেশন লক";
 
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "ব্যস্ত";
@@ -1830,13 +1773,13 @@
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* The image editor hint that you can draw blur */
-"IMAGE_EDITOR_BLUR_HINT" = "Draw anywhere to blur";
+"IMAGE_EDITOR_BLUR_HINT" = "যেকোন জায়গা অস্পষ্ট করতে দাগ টানুন";
 
 /* The image editor setting to blur faces */
 "IMAGE_EDITOR_BLUR_SETTING" = "চেহারা অস্পষ্ট করুন";
 
 /* A toast indicating that you can blur more faces after detection */
-"IMAGE_EDITOR_BLUR_TOAST" = "Draw to blur additional faces or areas";
+"IMAGE_EDITOR_BLUR_TOAST" = "আরো মুখয়ব বা জায়গা অস্পষ্ট করতে আলতো চেপে টানুন";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "আপনি %@ টির বেশি আইটেম শেয়ার করতে পারবেন না।";
@@ -2270,17 +2213,11 @@
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ আর যাচাইকৃত হিসাবে চিহ্নিত নয়। বিকল্পগুলির জন্য আলতো চাপুন।";
 
-/* Indicates that this 1:1 conversation has been blocked. */
-"MESSAGES_VIEW_CONTACT_BLOCKED" = "আপনি এই ব্যবহারকারীকে অবরুদ্ধ করেছেন";
-
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ আর যাচাইকৃত হিসাবে চিহ্নিত নয়। বিকল্পগুলির জন্য আলতো চাপুন।";
 
 /* Indicates that a single member of this group has been blocked. */
 "MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "আপনি এই গ্রুপের 1 জন ব্যবহারকারীকে অবরুদ্ধ করেছেন";
-
-/* Indicates that this group conversation has been blocked. */
-"MESSAGES_VIEW_GROUP_BLOCKED" = "আপনি গ্রুপটিকে অবরুদ্ধ করেছেন";
 
 /* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
 "MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "আপনি এই গ্রুপের %@ ব্যবহারকারীকে অবরুদ্ধ করেছেন";
@@ -2903,24 +2840,6 @@
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "এগিয়ে যান";
 
-/* Action text for profile name reminder megaphone */
-"PROFILE_NAME_REMINDER_MEGAPHONE_ACTION" = "শুরু করা যাক";
-
-/* Body for profile name reminder megaphone when user already has a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_BODY" = "আপনার প্রোফাইল এখন একটি ঐচ্ছিক নামের শেষাংশ অন্তর্ভুক্ত করতে পারেন।";
-
-/* Title for profile name reminder megaphone when user already has a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_TITLE" = "আপনার প্রোফাইল নাম নিশ্চিত করুন";
-
-/* Body for profile name reminder megaphone when user doesn't have a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "আপনি যখন কোনও নতুন কথোপকথন শুরু করবেন বা শেয়ার করবেন তখন এটি প্রদর্শিত হবে।";
-
-/* Title for profile name reminder megaphone when user doesn't have a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_TITLE" = "একটি প্রোফাইল নাম যোগ করুন";
-
-/* Toast indicating that a PIN has been created. */
-"PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "আপনার প্রোফাইলের নামটি সংরক্ষণ করা হয়েছে।";
-
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Set Profile Photo";
 
@@ -3050,12 +2969,6 @@
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "আপনার ভয়েস বার্তায় %@ প্রতিক্রিয়া জানিয়েছে";
 
-/* Body for the megaphone introducing reactions */
-"REACTION_MEGAPHONE_BODY" = "আপনার কেমন লাগছে তাড়াতাড়ি উত্তর দিতে কোনও বার্তা আলতো চেপে ধরে রাখুন।";
-
-/* Title for the megaphone introducing reactions */
-"REACTION_MEGAPHONE_TITLE" = "প্রতিক্রিয়া'র সাথে পরিচিত হন";
-
 /* Text describing the local user in the reaction details pane. */
 "REACTIONS_DETAIL_YOU" = "আপনি";
 
@@ -3163,24 +3076,6 @@
 
 /* No comment provided by engineer. */
 "RELAY_REGISTERED_ERROR_RECOVERY" = "আপনি যে ফোন নাম্বার নিবন্ধন করার চেষ্টা করছেন সেটি ইতিমধ্যে অন্য সার্ভারে নিবন্ধিত হয়েছে, দয়া করে সেখান থেকে নিবন্ধন মুক্ত করুন এবং আবার চেষ্টা করুন।";
-
-/* Body text for when user is periodically prompted to enter their registration lock PIN */
-"REMINDER_2FA_BODY" = "রেজিস্ট্রেশন লক আপনার ফোন নাম্বার এর জন্য সচল করা আছে। আপনার রেজিস্ট্রেশন লক পিনটি মনে রাখতে আপনাকে সহায়তা করতে, Signal আপনাকে মাঝে মাঝে এটি নিশ্চিত করতে জিজ্ঞাসা করবে।";
-
-/* Body header for when user is periodically prompted to enter their registration lock PIN */
-"REMINDER_2FA_BODY_HEADER" = "অনুস্মারক:";
-
-/* Alert message explaining what happens if you forget your 'two-factor auth pin' */
-"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "রেজিস্ট্রেশন লক আপনার ফোন নাম্বার অননুমোদিত রেজিস্ট্রেশন প্রচেষ্টা থেকে রক্ষা করতে সহায়তা করে। আপনার Signal গোপনীয়তা সেটিংস থেকে এই বৈশিষ্ট্যটি যে কোনও সময় অক্ষম করা যেতে পারে।";
-
-/* Navbar title for when user is periodically prompted to enter their registration lock PIN */
-"REMINDER_2FA_NAV_TITLE" = "আপনার রেজিস্ট্রেশন লক পিন কোডটি প্রদান করুন";
-
-/* Alert body after wrong guess for 'two-factor auth pin' reminder activity */
-"REMINDER_2FA_WRONG_PIN_ALERT_BODY" = "আপনি নিজের গোপনীয়তা সেটিংসে একটি নতুন পিন সেট করতে পারেন।";
-
-/* Alert title after wrong guess for 'two-factor auth pin' reminder activity */
-"REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "এটি সঠিক পিন নয়।";
 
 /* The title for the 'replace group admin' view. */
 "REPLACE_ADMIN_VIEW_TITLE" = "নতুন প্রশাসক চয়ন করুন।";
@@ -3758,20 +3653,8 @@
 /* No comment provided by engineer. */
 "SETTINGS_SUPPORT" = "সহায়তা";
 
-/* Indicates that 'two factor auth' is disabled in the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_DISABLED" = "নিষ্ক্রিয়";
-
-/* Indicates that 'two factor auth' is enabled in the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_ENABLED" = "সক্রিয়";
-
-/* Label for the 'two factor auth' item of the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_ITEM" = "রেজিস্ট্রেশন লক";
-
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "রেজিস্ট্রেশন লক";
-
-/* Title for the 'two factor auth' section of the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_TITLE" = "রেজিস্ট্রেশন লক";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
 "SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "অতিরিক্ত সুরক্ষার জন্য, রেজিস্ট্রেশন লক চালু করুন, যার জন্য আবার Signal-এর সাথে আপনার ফোন নম্বরটি রেজিস্ট্রেশ করতে আপনার Signal পিনের প্রয়োজন হবে।";

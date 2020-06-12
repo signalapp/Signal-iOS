@@ -419,12 +419,6 @@
 /* Alert body after unblocking a group. */
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Existing members can now add you to the group again.";
 
-/* Action sheet that will block an unknown user. */
-"BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION" = "တားမြစ်မည်";
-
-/* Title format for action sheet that offers to block an unknown user.Embeds {{the unknown user's name or phone number}}. */
-"BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "%@ကိုဘလော့ မလား?";
-
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "ဘလော့လုပ်ထားသော လူများအနေဖြင့် သင့်အားစာပို့​ခြင်း၊ ဖုန်းခေါ်ခြင်းများ ​ပြုလုပ်၍မရပါ။";
 
@@ -944,12 +938,6 @@
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "This user is in your contacts";
 
-/* Indicates that user's profile has been shared with a group. */
-"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "ဤအဖွဲ့က သင့်ကိုယ်ရေးအချက်အလက်ကိုမြင်နိုင်သည် ";
-
-/* Indicates that user's profile has been shared with a user. */
-"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER" = "ဤသူက သင့်ကိုယ်ရေးအချက်အလက်ကိုမြင်နိုင်သည်။ ";
-
 /* Button to confirm that user wants to share their profile with a user or group. */
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "ကိုယ်ရေးအချက်အလက်ကိုမျှဝေသည် ";
 
@@ -962,12 +950,6 @@
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "လိပ်စာစာရင်းထဲထည့်မည်";
 
-/* Message shown in conversation view that offers to share your profile with a user. */
-"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Share Your Profile with This User";
-
-/* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
-"CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "ဤသူသည် သင့်လိပ်စာစာရင်းတွင်မပါဝင်ပါ။ ";
-
 /* button text to delete all items in the current conversation */
 "CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Delete All";
 
@@ -976,9 +958,6 @@
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Tap for More";
-
-/* Message shown in conversation view that offers to block an unknown user. */
-"CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "ဤသူကို ဘလော့မည် ";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "သင်ဤသို့ပြုပြင်လိုက်ခြင်းဖြင့် %@ထံမှ သတင်းစကားများ လက်ခံရရှိနိုင်သော်လည်း ပျက်စီးသွားသော သတင်းစကားများကို ပြန်လည်ဆယ်ယူ၍မရနိုင်ပါ။ ";
@@ -1277,44 +1256,8 @@
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "သူများတွေကို ဖိတ်ရအောင်နော် ";
 
-/* Indicates that user should confirm their 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "သင်၏ PIN ကိုအတည်ပြုပါ";
-
-/* Error indicating that attempt to disable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "မှတ်ပုံတင်ခြင်း lock ကို ပိတ်၍မရပါ။";
-
 /* Error indicating that attempt to enable 'two-factor auth' failed. */
 "ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "မှတ်ပုံတင်ခြင်း lock ကို အသုံးပြု၍ မရနိုင်ပါ။";
-
-/* Label for the 'enable two-factor auth' item in the settings view */
-"ENABLE_2FA_VIEW_DISABLE_2FA" = "မလုပ်ဆောင်သော ";
-
-/* Label for the 'enable two-factor auth' item in the settings view */
-"ENABLE_2FA_VIEW_ENABLE_2FA" = "လုပ်ဆောင်သည်";
-
-/* Label for the 'next' button in the 'enable two factor auth' views. */
-"ENABLE_2FA_VIEW_NEXT_BUTTON" = "နောက်ထက်";
-
-/* Error indicating that the entered 'two-factor auth PINs' do not match. */
-"ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "PIN ကိုက်ညီမူမရှိပါ";
-
-/* Error indicating that the entered 'two-factor auth PIN' is too long. */
-"ENABLE_2FA_VIEW_PIN_TOO_LONG" = "PIN can be no longer than 20 digits.";
-
-/* Error indicating that the entered 'two-factor auth PIN' is too short. */
-"ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "PIN must be at least 4 digits.";
-
-/* Indicates that user should select a 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "မှတ်ပုံတင်ခြင်း lock PIN ကိုထည့်သွင်းပါ။ Signal ကို ဤဖုန်းနံပါတ်ဖြင့် နောက်တစ်ကြိမ် မှတ်ပုံတင်ပါက ဤ PIN ကိုထည့်သွင်းပေးရမည်။";
-
-/* Indicates that user has 'two factor auth pin' disabled. */
-"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "တိုးမြှင့်လိုက်သောလုံခြုံရေးကြောင့် ဤဖုန်းနံပါတ်ဖြင့် Signal တွင် မှတ်ပုံတင်လိုပါက မှတ်ပုံတင်ခြင်း lock PIN ကို ထည့်သွင်းခွင့်ပြုပေးထားရမည်။";
-
-/* Indicates that user has 'two factor auth pin' enabled. */
-"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "မှတ်ပုံတင်ခြင်း lock ကို ဖွင့်ထားပါသည်။ သင်၏ PIN ကို နောက်တစ်ကြိမ် ဤဖုန်းနံပါတ်ဖြင့် Signal တွင် မှတ်ပုံတင်သည့်အခါ ထည့်သွင်းပေးရမည်။";
-
-/* Title for the 'enable two factor auth PIN' views. */
-"ENABLE_2FA_VIEW_TITLE" = "မှတ်ပုံတင်ခြင်း lock";
 
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "မအားပါ";
@@ -2270,17 +2213,11 @@
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@သည်အတည်ပြုထားမှု မရှိတော့ပါ။ လုပ်ဆောင်ချက်များကို ကြည့်ရန် တစ်ချက်နှိပ်ပါ။";
 
-/* Indicates that this 1:1 conversation has been blocked. */
-"MESSAGES_VIEW_CONTACT_BLOCKED" = "You Blocked This User";
-
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@သည်အတည်ပြုထားမှု မရှိတော့ပါ။ လုပ်ဆောင်ချက်များကို ကြည့်ရန် တစ်ချက်နှိပ်ပါ။";
 
 /* Indicates that a single member of this group has been blocked. */
 "MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "You Blocked 1 Member of This Group";
-
-/* Indicates that this group conversation has been blocked. */
-"MESSAGES_VIEW_GROUP_BLOCKED" = "You Blocked This Group";
 
 /* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
 "MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "You Blocked %@ Members of This Group";
@@ -2903,24 +2840,6 @@
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "လုပ်ပြီးပြီ";
 
-/* Action text for profile name reminder megaphone */
-"PROFILE_NAME_REMINDER_MEGAPHONE_ACTION" = "Get Started";
-
-/* Body for profile name reminder megaphone when user already has a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_BODY" = "Your profile can now include an optional last name.";
-
-/* Title for profile name reminder megaphone when user already has a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_TITLE" = "Confirm Your Profile Name";
-
-/* Body for profile name reminder megaphone when user doesn't have a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "This will be displayed when you start a new conversation or share it.";
-
-/* Title for profile name reminder megaphone when user doesn't have a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_TITLE" = "Add a Profile Name";
-
-/* Toast indicating that a PIN has been created. */
-"PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "Your profile name has been saved.";
-
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Set Profile Photo";
 
@@ -3050,12 +2969,6 @@
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Reacted %@ to your voice message";
 
-/* Body for the megaphone introducing reactions */
-"REACTION_MEGAPHONE_BODY" = "Tap and hold on any message to quickly reply with how you feel.";
-
-/* Title for the megaphone introducing reactions */
-"REACTION_MEGAPHONE_TITLE" = "Introducing Reactions";
-
 /* Text describing the local user in the reaction details pane. */
 "REACTIONS_DETAIL_YOU" = "သင်";
 
@@ -3163,24 +3076,6 @@
 
 /* No comment provided by engineer. */
 "RELAY_REGISTERED_ERROR_RECOVERY" = "သင်စာရင်းသွင်းရန်ကြိုးစားနေသည့် ဖုန်းနံပါတ်သည် အခြားဆာဗာတွင် စာရင်းသွင်းပြီး ဖြစ်ပါသည်။ ယင်းဆာဗာမှ ပြန်ထွက်၍ ထပ်မံကြိုးစားကြည့်ပါ။ ";
-
-/* Body text for when user is periodically prompted to enter their registration lock PIN */
-"REMINDER_2FA_BODY" = "သင့်ဖုန်းအတွက် မှတ်ပုံတင်မှု ပိတ်ထားခြင်း ကိုဖွင့်ထားပါသည်။ သင်၏ မှတ်ပုံတင်မှု ပိတ်ထားသည့် PIN ကို မှတ်မိစေရန်အတွက် Signal မှ သင့်ကို မကြာခဏ အတည်ပြုခိုင်းပါလိမ့်မည်။";
-
-/* Body header for when user is periodically prompted to enter their registration lock PIN */
-"REMINDER_2FA_BODY_HEADER" = "သတိပေးချက်";
-
-/* Alert message explaining what happens if you forget your 'two-factor auth pin' */
-"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "မှတ်ပုံတင်ခြင်း ပိတ်ထားမှုသည် သင်၏ဖုန်းကို အသိအမှတ်မပြုထားသော မှတ်ပုံတင်မှုများပြုလုပ်ခြင်းမှ ကာကွယ်ပေးပါသည်။ ဤဝန်ဆောင်မှုကို သင်၏ Signal ကိုယ်ရေးအချက်အလက်များလုံခြုံမှုအပြင်အဆင်များတွင် အချိန်မရွေးပိတ်ထားနိုင်ပါသည်။";
-
-/* Navbar title for when user is periodically prompted to enter their registration lock PIN */
-"REMINDER_2FA_NAV_TITLE" = "မှတ်ပုံတင်ထားသော PIN မှားယွင်းနေပါသည်";
-
-/* Alert body after wrong guess for 'two-factor auth pin' reminder activity */
-"REMINDER_2FA_WRONG_PIN_ALERT_BODY" = " PIN အသစ်ကို သင်၏ကိုယ်ရေးအချက်အလက်များ လုံခြုံမှုအပြင်အဆင်တွင် ရယူနိုင်ပါတယ်။";
-
-/* Alert title after wrong guess for 'two-factor auth pin' reminder activity */
-"REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = " PIN မှားယွင်းနေပါသည်။";
 
 /* The title for the 'replace group admin' view. */
 "REPLACE_ADMIN_VIEW_TITLE" = "Choose New Admin";
@@ -3758,20 +3653,8 @@
 /* No comment provided by engineer. */
 "SETTINGS_SUPPORT" = "အထောက်အပံ့";
 
-/* Indicates that 'two factor auth' is disabled in the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_DISABLED" = "မလုပ်ဆောင်သော";
-
-/* Indicates that 'two factor auth' is enabled in the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_ENABLED" = "လုပ်ဆောင်သော";
-
-/* Label for the 'two factor auth' item of the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_ITEM" = "မှတ်ပုံတင်ခြင်း Lock";
-
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "မှတ်ပုံတင်မှု ပိတ်ထားခြင်း";
-
-/* Title for the 'two factor auth' section of the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_TITLE" = "မှတ်ပုံတင်ခြင်း Lock";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
 "SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "For extra security, turn on registration lock, which will require your Signal PIN to register your phone number with Signal again.";

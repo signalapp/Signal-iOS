@@ -419,12 +419,6 @@
 /* Alert body after unblocking a group. */
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Membobi zasu iya dawowa da kai/ke cikin rukunin yanzu. ";
 
-/* Action sheet that will block an unknown user. */
-"BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION" = "Toshe";
-
-/* Title format for action sheet that offers to block an unknown user.Embeds {{the unknown user's name or phone number}}. */
-"BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "Toshe %@?";
-
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Lambobin da ka/kika toshe ba zasu iya kiranka/ki ko aika maka/miki da sako ba. ";
 
@@ -944,12 +938,6 @@
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Wannan mai amfani baya cikin jerin lambobin sadarwarka/ki";
 
-/* Indicates that user's profile has been shared with a group. */
-"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "Rukuninan Na da damar ganin furofayil dinka/ki. ";
-
-/* Indicates that user's profile has been shared with a user. */
-"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER" = "Mai amfaninan Na da damar ganin furofayil dinka/ki. ";
-
 /* Button to confirm that user wants to share their profile with a user or group. */
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "Ba da damar ganin furofayil ";
 
@@ -962,12 +950,6 @@
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Kara lambobin sadarwa";
 
-/* Message shown in conversation view that offers to share your profile with a user. */
-"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Bawa wannan mai amfanin damar ganin hoton furofayil dinka/ki";
-
-/* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
-"CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "Mai amfaninan baya cikin lambobin sadarwarka. ";
-
 /* button text to delete all items in the current conversation */
 "CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Goge duka";
 
@@ -976,9 +958,6 @@
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Taba domin samun karashin sako";
-
-/* Message shown in conversation view that offers to block an unknown user. */
-"CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "Toshe wannan mai amfani";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Idan ka/kika sake saitin mahadin canjin labarai dinka/ki hakan zai sa ka/ki dinga samun sakonni daga %@ nan gaba, amma hakan ba zai sa sakonni da suka riga suka baci su dawo ba. ";
@@ -1277,44 +1256,8 @@
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "Me yasa baka/ki gayyaci wasu ba? ";
 
-/* Indicates that user should confirm their 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "Tabbabtar da lambobin sirrinka/ki.";
-
-/* Error indicating that attempt to disable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "An kasa nakashe kullin rijista. ";
-
 /* Error indicating that attempt to enable 'two-factor auth' failed. */
 "ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "An kasa karfafa kullin rijista. ";
-
-/* Label for the 'enable two-factor auth' item in the settings view */
-"ENABLE_2FA_VIEW_DISABLE_2FA" = "Hana dama";
-
-/* Label for the 'enable two-factor auth' item in the settings view */
-"ENABLE_2FA_VIEW_ENABLE_2FA" = "Karfafa";
-
-/* Label for the 'next' button in the 'enable two factor auth' views. */
-"ENABLE_2FA_VIEW_NEXT_BUTTON" = "Na gaba";
-
-/* Error indicating that the entered 'two-factor auth PINs' do not match. */
-"ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "Lambobin sirrinan basu yi dai dai da dayar ba. ";
-
-/* Error indicating that the entered 'two-factor auth PIN' is too long. */
-"ENABLE_2FA_VIEW_PIN_TOO_LONG" = "Lambobin sirri ba zasu iya wuce 20 ba. ";
-
-/* Error indicating that the entered 'two-factor auth PIN' is too short. */
-"ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "Lambobin sirri dole saii sun kai 4.";
-
-/* Indicates that user should select a 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Sa lambar kullin rijista. Za'a nemi wadannan lambobin sirrin idan ka/kika sake yin rijistar Signal da wannan lambar waya. ";
-
-/* Indicates that user has 'two factor auth pin' disabled. */
-"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "Domin Karin tsarewa, karfafa lambobin kullin rijista da za'a bukacesu domin samun damar rijistar Signal da wannan lambar waya. ";
-
-/* Indicates that user has 'two factor auth pin' enabled. */
-"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Kullin rijistar ka/ki a karfafe yake. Ka/kina bukatar shigarwa da lambobin sirrinka/ki idan ka/kika zo Kara yin rijistar Signal da lambar wayarka/ki. ";
-
-/* Title for the 'enable two factor auth PIN' views. */
-"ENABLE_2FA_VIEW_TITLE" = "Mukullin rijista";
 
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "Bizi";
@@ -2270,17 +2213,11 @@
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ . Tap for options.";
 
-/* Indicates that this 1:1 conversation has been blocked. */
-"MESSAGES_VIEW_CONTACT_BLOCKED" = "Ka/kin toshe wannan mai amfanin";
-
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "Ba'a shaida %@ a matsayin tabbatacce ba. Taba domin samun zabubbuka. ";
 
 /* Indicates that a single member of this group has been blocked. */
 "MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "Ka/kin toshe memba 1 daga wannan rukunin";
-
-/* Indicates that this group conversation has been blocked. */
-"MESSAGES_VIEW_GROUP_BLOCKED" = "Ka/kin toshe rukuninan. ";
 
 /* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
 "MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "Ka/kin toshe membobin rukuninan guda %@. ";
@@ -2903,24 +2840,6 @@
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Ci gaba";
 
-/* Action text for profile name reminder megaphone */
-"PROFILE_NAME_REMINDER_MEGAPHONE_ACTION" = "Fara";
-
-/* Body for profile name reminder megaphone when user already has a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_BODY" = "Bayanan furofayil dinka/ki zasu iya hada da karin suna idan ka/kina so. ";
-
-/* Title for profile name reminder megaphone when user already has a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_TITLE" = "Tabbatar da sunan furofayil dinka/ki";
-
-/* Body for profile name reminder megaphone when user doesn't have a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "Za'a nuna wannan idan ka/kika fara wani hira ko kuma idan ka/kika tura hira. ";
-
-/* Title for profile name reminder megaphone when user doesn't have a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_TITLE" = "Sa sunan furofayil";
-
-/* Toast indicating that a PIN has been created. */
-"PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "An yi ajiyar sunan furofayil dinka/ki. ";
-
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Set Profile Photo";
 
@@ -3050,12 +2969,6 @@
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Anyi martanin %@ akan sakon muryaka/ki";
 
-/* Body for the megaphone introducing reactions */
-"REACTION_MEGAPHONE_BODY" = "Taba ka/ki rike ko wanne sako domin hanzarta mayarwa da sako akan yadda kake/kike ji. ";
-
-/* Title for the megaphone introducing reactions */
-"REACTION_MEGAPHONE_TITLE" = "Gabatarwa da martani";
-
 /* Text describing the local user in the reaction details pane. */
 "REACTIONS_DETAIL_YOU" = "Kai/Ke";
 
@@ -3163,24 +3076,6 @@
 
 /* No comment provided by engineer. */
 "RELAY_REGISTERED_ERROR_RECOVERY" = "An riga anyi rijistar wannan lamba da kake/kike kokarin yin rijista a wata saba. Ka/ki cire rijistanshi daga can sannan ka/ki Kara gwadawa. ";
-
-/* Body text for when user is periodically prompted to enter their registration lock PIN */
-"REMINDER_2FA_BODY" = "Mukullin Rijista a karfafe yake a lambar wayarka/ki. Domin tunawa da lambobin sirrin Rijistarka/ki, Signal zai diga tambayar tabbatarwarka/ki.";
-
-/* Body header for when user is periodically prompted to enter their registration lock PIN */
-"REMINDER_2FA_BODY_HEADER" = "Tunatarwa";
-
-/* Alert message explaining what happens if you forget your 'two-factor auth pin' */
-"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Mukullin rijista na taimakawa wajen kare wayarka/ki daga rijista da ba'a yarda dashi ba. Za'a iya nakashe wannan tsarin duk sanda akeso ta cikin saitin sirri na Signal dinka/ki. ";
-
-/* Navbar title for when user is periodically prompted to enter their registration lock PIN */
-"REMINDER_2FA_NAV_TITLE" = "Sa lambobin sirrin mukullin rijista. ";
-
-/* Alert body after wrong guess for 'two-factor auth pin' reminder activity */
-"REMINDER_2FA_WRONG_PIN_ALERT_BODY" = "Zaka/ki iya saita sabon lambobin sirri a cikin saitin sirri din Signal. ";
-
-/* Alert title after wrong guess for 'two-factor auth pin' reminder activity */
-"REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "Waddannan lambobin sirrin ba daidai bane. ";
 
 /* The title for the 'replace group admin' view. */
 "REPLACE_ADMIN_VIEW_TITLE" = "Zabi sabon mai gudanarwa";
@@ -3758,20 +3653,8 @@
 /* No comment provided by engineer. */
 "SETTINGS_SUPPORT" = "Bada gudumuwa";
 
-/* Indicates that 'two factor auth' is disabled in the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_DISABLED" = "Hana dama";
-
-/* Indicates that 'two factor auth' is enabled in the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_ENABLED" = "Bada dama";
-
-/* Label for the 'two factor auth' item of the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_ITEM" = "Mukullin rijista";
-
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Mukullin rijista";
-
-/* Title for the 'two factor auth' section of the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Mukullin rijista";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
 "SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Sabida Karin tsaro, kunna makullin rijista da zai kara bukaci lambobin sirrin Signal dinka/ki yayi rijista da lambar wayarka/ki da Signal. ";
