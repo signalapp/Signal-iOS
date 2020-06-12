@@ -1761,7 +1761,7 @@ typedef enum : NSUInteger {
     }
     [self.navigationController.view layoutIfNeeded];
     CGSize navControllerSize = self.navigationController.view.frame.size;
-    CGFloat loadThreshold = MAX(navControllerSize.width, navControllerSize.height);
+    CGFloat loadThreshold = MAX(navControllerSize.width, navControllerSize.height) * 3;
 
     BOOL closeToTop = self.collectionView.contentOffset.y < loadThreshold;
     if (self.showLoadOlderHeader && closeToTop) {

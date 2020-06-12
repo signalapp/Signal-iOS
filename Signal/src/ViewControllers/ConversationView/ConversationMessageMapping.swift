@@ -54,7 +54,7 @@ public class ConversationMessageMapping: NSObject {
     }
 
     // After this size, we'll start unloading interactions
-    private let maxInteractionLimit: Int = 200
+    private let maxInteractionLimit: Int = 500
 
     // oldest saved message in a conversation has an index of 0, the most recent message has index conversationCount - 1.
     private var loadedIndexSet = IndexSet()
