@@ -2945,28 +2945,21 @@ typedef enum : NSUInteger {
     }
 }
 
-/// If no transaction is provided, one will be created in a block submitted asynchronously to the main queue
-- (void)updateUnreadMessageFlagWithTransaction:(nullable SDSAnyReadTransaction *)transaction
+- (void)updateUnreadMessageFlagUsingAsyncTransaction
 {
-    if (!transaction) {
-        // Resubmits to the main queue because we can't verify we're not already in a transaction we don't know about.
-        // This method may be called in response to all sorts of view state changes, e.g. scroll state. These changes
-        // can be a result of a UIKit response to app activity that already has an open transaction.
-        //
-        // We need a transaction to proceed, but we can't verify that we're not already in one (unless explicitly handed one)
-        // To workaround this, we async a block to open a fresh transaction on the main queue.
-        dispatch_async(dispatch_get_main_queue(), ^{
-            [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *newTransaction) {
-                OWSAssertDebug(newTransaction);
-                [self updateUnreadMessageFlagWithTransaction:newTransaction];
-            }];
-        });
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *newTransaction) {
+            OWSAssertDebug(newTransaction);
+            [self updateUnreadMessageFlagWithTransaction:newTransaction];
+        }];
+    });
+}
 
-    } else {
-        InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:self.thread.uniqueId];
-        NSUInteger unreadCount = [interactionFinder unreadCountWithTransaction:transaction.unwrapGrdbRead];
-        [self setHasUnreadMessages:(unreadCount > 0)];
-    }
+- (void)updateUnreadMessageFlagWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:self.thread.uniqueId];
+    NSUInteger unreadCount = [interactionFinder unreadCountWithTransaction:transaction.unwrapGrdbRead];
+    [self setHasUnreadMessages:(unreadCount > 0)];
 }
 
 - (void)scrollDownButtonTapped
@@ -3681,7 +3674,7 @@ typedef enum : NSUInteger {
         uint64_t newLastVisibleSortID = [[lastVisibleViewItem interaction] sortId];
         if ([self hasUnreadMessages] && newLastVisibleSortID > oldLastVisibleSortID) {
             // Only recheck the unread message count if we're already in an unread state and we've revealed a new, later sortId
-            [self updateUnreadMessageFlagWithTransaction:nil];
+            [self updateUnreadMessageFlagUsingAsyncTransaction];
         }
         self.lastVisibleSortId = newLastVisibleSortID;
     }
@@ -5024,7 +5017,7 @@ typedef enum : NSUInteger {
         
         // We can't use the transaction parameter; this completion
         // will be run async.
-        [self updateUnreadMessageFlagWithTransaction:nil];
+        [self updateUnreadMessageFlagUsingAsyncTransaction];
         [self updateLastVisibleSortId];
         [self configureScrollDownButton];
         
