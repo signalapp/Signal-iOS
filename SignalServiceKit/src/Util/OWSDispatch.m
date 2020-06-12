@@ -23,7 +23,8 @@ NS_ASSUME_NONNULL_BEGIN
     static dispatch_once_t onceToken;
     static dispatch_queue_t queue;
     dispatch_once(&onceToken, ^{
-        queue = dispatch_queue_create("org.whispersystems.signal.sendQueue", NULL);
+        dispatch_queue_attr_t attributes = dispatch_queue_attr_make_with_qos_class(DISPATCH_QUEUE_SERIAL, QOS_CLASS_USER_INITIATED, 0);
+        queue = dispatch_queue_create("org.whispersystems.signal.sendQueue", attributes);
     });
     return queue;
 }

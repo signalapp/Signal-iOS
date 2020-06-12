@@ -3,22 +3,10 @@ import PromiseKit
 @objc(LKMentionsManager)
 public final class MentionsManager : NSObject {
 
-    @objc public static var _userPublicKeyCache: [String:Set<String>] = [:]
     /// A mapping from thread ID to set of user hex encoded public keys.
-    @objc public static var userPublicKeyCache: [String:Set<String>] {
-        get {
-            let (promise, seal) = Promise<[String:Set<String>]>.pending()
-            LokiAPI.stateQueue.async {
-                seal.fulfill(_userPublicKeyCache)
-            }
-            return try! promise.wait()
-        }
-        set {
-            LokiAPI.stateQueue.async {
-                _userPublicKeyCache = newValue
-            }
-        }
-    }
+    ///
+    /// - Note: Should only be accessed from the main queue to avoid race conditions.
+    @objc public static var userPublicKeyCache: [String:Set<String>] = [:]
 
     internal static var storage: OWSPrimaryStorage { OWSPrimaryStorage.shared() }
 

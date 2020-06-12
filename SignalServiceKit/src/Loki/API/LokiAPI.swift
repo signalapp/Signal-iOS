@@ -2,7 +2,7 @@ import PromiseKit
 
 @objc(LKAPI)
 public final class LokiAPI : NSObject {
-    internal static let stateQueue = DispatchQueue(label: "LokiAPI.stateQueue", qos: .userInitiated)
+    internal static let workQueue = DispatchQueue(label: "LokiAPI.workQueue", qos: .userInitiated)
 
     internal static var storage: OWSPrimaryStorage { OWSPrimaryStorage.shared() }
     

@@ -15,22 +15,10 @@ import PromiseKit
 @objc(LKMultiDeviceProtocol)
 public final class MultiDeviceProtocol : NSObject {
 
-    public static var _lastDeviceLinkUpdate: [String:Date] = [:]
     /// A mapping from hex encoded public key to date updated.
-    public static var lastDeviceLinkUpdate: [String:Date] {
-        get {
-            let (promise, seal) = Promise<[String:Date]>.pending()
-            LokiAPI.stateQueue.async {
-                seal.fulfill(_lastDeviceLinkUpdate)
-            }
-            return try! promise.wait()
-        }
-        set {
-            LokiAPI.stateQueue.async {
-                _lastDeviceLinkUpdate = newValue
-            }
-        }
-    }
+    ///
+    /// - Note: Should only be accessed from `LokiAPI.workQueue` to avoid race conditions.
+    public static var lastDeviceLinkUpdate: [String:Date] = [:]
 
     internal static var storage: OWSPrimaryStorage { OWSPrimaryStorage.shared() }
 

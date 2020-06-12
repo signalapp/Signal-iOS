@@ -4,55 +4,14 @@ public extension LokiAPI {
 
     fileprivate static let seedNodePool: Set<String> = [ "https://storage.seed1.loki.network", "https://storage.seed3.loki.network", "https://public.loki.foundation" ]
 
-    internal static var _snodeFailureCount: [LokiAPITarget:UInt] = [:]
-    internal static var snodeFailureCount: [LokiAPITarget:UInt] {
-        get {
-            let (promise, seal) = Promise<[LokiAPITarget:UInt]>.pending()
-            stateQueue.async {
-                seal.fulfill(_snodeFailureCount)
-            }
-            return try! promise.wait()
-        }
-        set {
-            LokiAPI.stateQueue.async {
-                _snodeFailureCount = newValue
-            }
-        }
-    }
-
+    /// - Note: Should only be accessed from `LokiAPI.workQueue` to avoid race conditions.
+    internal static var snodeFailureCount: [LokiAPITarget:UInt] = [:]
     // TODO: Read/write this directly from/to the database
-    internal static var _snodePool: Set<LokiAPITarget> = []
-    internal static var snodePool: Set<LokiAPITarget> {
-        get {
-            let (promise, seal) = Promise<Set<LokiAPITarget>>.pending()
-            stateQueue.async {
-                seal.fulfill(_snodePool)
-            }
-            return try! promise.wait()
-        }
-        set {
-            LokiAPI.stateQueue.async {
-                _snodePool = newValue
-            }
-        }
-    }
-
+    /// - Note: Should only be accessed from `LokiAPI.workQueue` to avoid race conditions.
+    internal static var snodePool: Set<LokiAPITarget> = []
     // TODO: Read/write this directly from/to the database
-    internal static var _swarmCache: [String:[LokiAPITarget]] = [:]
-    internal static var swarmCache: [String:[LokiAPITarget]] {
-        get {
-            let (promise, seal) = Promise<[String:[LokiAPITarget]]>.pending()
-            stateQueue.async {
-                seal.fulfill(_swarmCache)
-            }
-            return try! promise.wait()
-        }
-        set {
-            LokiAPI.stateQueue.async {
-                _swarmCache = newValue
-            }
-        }
-    }
+    /// - Note: Should only be accessed from `LokiAPI.workQueue` to avoid race conditions.
+    internal static var swarmCache: [String:[LokiAPITarget]] = [:]
 
     // MARK: Settings
     private static let minimumSnodePoolCount = 32
