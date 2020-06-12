@@ -64,7 +64,7 @@ public class DateHeaderCell: ConversationViewCell {
         titleLabel.font = .ows_dynamicTypeBody2
         titleLabel.textColor = Theme.primaryTextColor
 
-        let date = viewItem.interaction.receivedAtDate()
+        let date = Date(millisecondsSince1970: viewItem.interaction.timestamp)
         let dateString = DateUtil.formatDate(forConversationDateBreaks: date)
 
         titleLabel.text = dateString.localizedUppercase
