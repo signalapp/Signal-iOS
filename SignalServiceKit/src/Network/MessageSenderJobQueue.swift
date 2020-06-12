@@ -73,9 +73,6 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
             return
         }
         self.add(jobRecord: jobRecord, transaction: transaction)
-        transaction.addCompletionQueue(DispatchQueue.global()) {
-            self.workStep() // Loki: Hack to make message sending faster until we have decentralized multi device and no more proof of work
-        }
     }
 
     // MARK: JobQueue

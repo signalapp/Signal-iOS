@@ -114,13 +114,13 @@ public extension LokiAPI {
         }
     }
     
-    internal static func getSwarm(for hexEncodedPublicKey: String) -> Promise<[LokiAPITarget]> {
+    internal static func getSwarm(for hexEncodedPublicKey: String, isForcedReload: Bool = false) -> Promise<[LokiAPITarget]> {
         if swarmCache[hexEncodedPublicKey] == nil {
             storage.dbReadConnection.read { transaction in
                 swarmCache[hexEncodedPublicKey] = storage.getSwarm(for: hexEncodedPublicKey, in: transaction)
             }
         }
-        if let cachedSwarm = swarmCache[hexEncodedPublicKey], cachedSwarm.count >= minimumSwarmSnodeCount {
+        if let cachedSwarm = swarmCache[hexEncodedPublicKey], cachedSwarm.count >= minimumSwarmSnodeCount && !isForcedReload {
             return Promise<[LokiAPITarget]> { $0.fulfill(cachedSwarm) }
         } else {
             print("[Loki] Getting swarm for: \(hexEncodedPublicKey).")

@@ -54,7 +54,7 @@ public final class LokiPoller : NSObject {
     // MARK: Private API
     private func setUpPolling() {
         guard !hasStopped else { return }
-        LokiAPI.getSwarm(for: getUserHexEncodedPublicKey()).then2 { [weak self] _ -> Promise<Void> in
+        LokiAPI.getSwarm(for: getUserHexEncodedPublicKey(), isForcedReload: true).then2 { [weak self] _ -> Promise<Void> in
             guard let strongSelf = self else { return Promise { $0.fulfill(()) } }
             strongSelf.usedSnodes.removeAll()
             let (promise, seal) = Promise<Void>.pending()
