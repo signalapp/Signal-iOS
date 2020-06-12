@@ -8,7 +8,6 @@ import Contacts
 
 public enum ExperienceUpgradeId: String, CaseIterable {
     case introducingPins = "009"
-    case reactions = "010"
     case messageRequests = "012"
     case pinReminder // Never saved, used to periodically prompt the user for their PIN
     case notificationPermissionReminder
@@ -24,8 +23,6 @@ public enum ExperienceUpgradeId: String, CaseIterable {
             return RemoteConfig.pinsForEveryone &&
                 SSKEnvironment.shared.reachabilityManager.isReachable &&
                 !KeyBackupService.hasMasterKey(transaction: transaction.asAnyRead)
-        case .reactions:
-            return true
         case .messageRequests:
             return !SSKEnvironment.shared.profileManager.hasProfileName
         case .pinReminder:
@@ -64,9 +61,6 @@ public enum ExperienceUpgradeId: String, CaseIterable {
         let expirationDate: TimeInterval
 
         switch self {
-        case .reactions:
-            // March 5, 2020 @ 12am UTC
-            expirationDate = 1583366400
         default:
             expirationDate = Date.distantFuture.timeIntervalSince1970
         }
@@ -100,8 +94,6 @@ public enum ExperienceUpgradeId: String, CaseIterable {
             return .high
         case .messageRequests:
             return .high
-        case .reactions:
-            return .low
         case .pinReminder:
             return .medium
         case .notificationPermissionReminder:

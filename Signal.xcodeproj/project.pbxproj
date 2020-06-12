@@ -662,14 +662,6 @@
 		887CD48A24735D4200FDD265 /* launchApp-iPhone.json in Resources */ = {isa = PBXBuildFile; fileRef = 887CD48824735D4200FDD265 /* launchApp-iPhone.json */; };
 		887CD48B24735D4200FDD265 /* launchApp-iPad.json in Resources */ = {isa = PBXBuildFile; fileRef = 887CD48924735D4200FDD265 /* launchApp-iPad.json */; };
 		887EEC1F23F0B20600F8C26D /* PinReminderMegaphone.swift in Sources */ = {isa = PBXBuildFile; fileRef = 887EEC1E23F0B20600F8C26D /* PinReminderMegaphone.swift */; };
-		8889006C23DBB39B00F40186 /* reactionsMegaphone.json in Resources */ = {isa = PBXBuildFile; fileRef = 8889006323DBB39A00F40186 /* reactionsMegaphone.json */; };
-		8889006D23DBB39B00F40186 /* reactionMegaphone_1.png in Resources */ = {isa = PBXBuildFile; fileRef = 8889006523DBB39B00F40186 /* reactionMegaphone_1.png */; };
-		8889006E23DBB39B00F40186 /* reactionMegaphone_0.png in Resources */ = {isa = PBXBuildFile; fileRef = 8889006623DBB39B00F40186 /* reactionMegaphone_0.png */; };
-		8889006F23DBB39B00F40186 /* reactionMegaphone_2.png in Resources */ = {isa = PBXBuildFile; fileRef = 8889006723DBB39B00F40186 /* reactionMegaphone_2.png */; };
-		8889007023DBB39B00F40186 /* reactionMegaphone_3.png in Resources */ = {isa = PBXBuildFile; fileRef = 8889006823DBB39B00F40186 /* reactionMegaphone_3.png */; };
-		8889007123DBB39B00F40186 /* reactionMegaphone_6.png in Resources */ = {isa = PBXBuildFile; fileRef = 8889006923DBB39B00F40186 /* reactionMegaphone_6.png */; };
-		8889007223DBB39B00F40186 /* reactionMegaphone_4.png in Resources */ = {isa = PBXBuildFile; fileRef = 8889006A23DBB39B00F40186 /* reactionMegaphone_4.png */; };
-		8889007323DBB39B00F40186 /* reactionMegaphone_5.png in Resources */ = {isa = PBXBuildFile; fileRef = 8889006B23DBB39B00F40186 /* reactionMegaphone_5.png */; };
 		888C828223D795FA0059464B /* pinCreationFail.json in Resources */ = {isa = PBXBuildFile; fileRef = 888C827F23D795F90059464B /* pinCreationFail.json */; };
 		888C828323D795FA0059464B /* pinCreationInProgress.json in Resources */ = {isa = PBXBuildFile; fileRef = 888C828023D795FA0059464B /* pinCreationInProgress.json */; };
 		888F188623AC5A9E000780E9 /* SignalMessaging.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 453518921FC63DBF00210559 /* SignalMessaging.framework */; };
@@ -687,7 +679,6 @@
 		88A4CC1D246D00090082211F /* DeviceTransferProgressViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A4CC1C246D00090082211F /* DeviceTransferProgressViewController.swift */; };
 		88A505F423DA16E10005C012 /* ExperienceUpgradeManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A505F323DA16E10005C012 /* ExperienceUpgradeManager.swift */; };
 		88A505FA23DBA1360005C012 /* IntroducingPINs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A505F923DBA1360005C012 /* IntroducingPINs.swift */; };
-		88A505FC23DBAE4F0005C012 /* Reactions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A505FB23DBAE4F0005C012 /* Reactions.swift */; };
 		88A595E323AB48E80029E835 /* NotificationServiceExtensionContext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88A595E223AB48E80029E835 /* NotificationServiceExtensionContext.swift */; };
 		88A9419524099F7E000E9700 /* attachment_dark.json in Resources */ = {isa = PBXBuildFile; fileRef = 88A9419424099F7E000E9700 /* attachment_dark.json */; };
 		88A9419724099F85000E9700 /* attachment_light.json in Resources */ = {isa = PBXBuildFile; fileRef = 88A9419624099F85000E9700 /* attachment_light.json */; };
@@ -1637,14 +1628,6 @@
 		887D5880236773240048B8FB /* ta */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ta; path = translations/ta.lproj/Localizable.strings; sourceTree = "<group>"; };
 		887D5881236773410048B8FB /* te */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = te; path = translations/te.lproj/Localizable.strings; sourceTree = "<group>"; };
 		887EEC1E23F0B20600F8C26D /* PinReminderMegaphone.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PinReminderMegaphone.swift; sourceTree = "<group>"; };
-		8889006323DBB39A00F40186 /* reactionsMegaphone.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = reactionsMegaphone.json; sourceTree = "<group>"; };
-		8889006523DBB39B00F40186 /* reactionMegaphone_1.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reactionMegaphone_1.png; sourceTree = "<group>"; };
-		8889006623DBB39B00F40186 /* reactionMegaphone_0.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reactionMegaphone_0.png; sourceTree = "<group>"; };
-		8889006723DBB39B00F40186 /* reactionMegaphone_2.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reactionMegaphone_2.png; sourceTree = "<group>"; };
-		8889006823DBB39B00F40186 /* reactionMegaphone_3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reactionMegaphone_3.png; sourceTree = "<group>"; };
-		8889006923DBB39B00F40186 /* reactionMegaphone_6.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reactionMegaphone_6.png; sourceTree = "<group>"; };
-		8889006A23DBB39B00F40186 /* reactionMegaphone_4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reactionMegaphone_4.png; sourceTree = "<group>"; };
-		8889006B23DBB39B00F40186 /* reactionMegaphone_5.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = reactionMegaphone_5.png; sourceTree = "<group>"; };
 		888C827F23D795F90059464B /* pinCreationFail.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = pinCreationFail.json; sourceTree = "<group>"; };
 		888C828023D795FA0059464B /* pinCreationInProgress.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = pinCreationInProgress.json; sourceTree = "<group>"; };
 		88905E9D229CCA96004E4234 /* ExpirationNagView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExpirationNagView.swift; sourceTree = "<group>"; };
@@ -1665,7 +1648,6 @@
 		88A4CC1C246D00090082211F /* DeviceTransferProgressViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeviceTransferProgressViewController.swift; sourceTree = "<group>"; };
 		88A505F323DA16E10005C012 /* ExperienceUpgradeManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExperienceUpgradeManager.swift; sourceTree = "<group>"; };
 		88A505F923DBA1360005C012 /* IntroducingPINs.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = IntroducingPINs.swift; sourceTree = "<group>"; };
-		88A505FB23DBAE4F0005C012 /* Reactions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Reactions.swift; sourceTree = "<group>"; };
 		88A595E223AB48E80029E835 /* NotificationServiceExtensionContext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationServiceExtensionContext.swift; sourceTree = "<group>"; };
 		88A695BC232C18DF002F7B9B /* AudioWaveformProgressView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioWaveformProgressView.swift; sourceTree = "<group>"; };
 		88A9419424099F7E000E9700 /* attachment_dark.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = attachment_dark.json; sourceTree = "<group>"; };
@@ -3123,29 +3105,6 @@
 			path = Emoji;
 			sourceTree = "<group>";
 		};
-		8889006223DBB38700F40186 /* Reactions Megaphone */ = {
-			isa = PBXGroup;
-			children = (
-				8889006423DBB39B00F40186 /* images */,
-				8889006323DBB39A00F40186 /* reactionsMegaphone.json */,
-			);
-			path = "Reactions Megaphone";
-			sourceTree = "<group>";
-		};
-		8889006423DBB39B00F40186 /* images */ = {
-			isa = PBXGroup;
-			children = (
-				8889006523DBB39B00F40186 /* reactionMegaphone_1.png */,
-				8889006623DBB39B00F40186 /* reactionMegaphone_0.png */,
-				8889006723DBB39B00F40186 /* reactionMegaphone_2.png */,
-				8889006823DBB39B00F40186 /* reactionMegaphone_3.png */,
-				8889006923DBB39B00F40186 /* reactionMegaphone_6.png */,
-				8889006A23DBB39B00F40186 /* reactionMegaphone_4.png */,
-				8889006B23DBB39B00F40186 /* reactionMegaphone_5.png */,
-			);
-			path = images;
-			sourceTree = "<group>";
-		};
 		88A4CC0A246CB2DC0082211F /* Device Transfer */ = {
 			isa = PBXGroup;
 			children = (
@@ -3183,7 +3142,6 @@
 			children = (
 				88A505F923DBA1360005C012 /* IntroducingPINs.swift */,
 				887EEC1E23F0B20600F8C26D /* PinReminderMegaphone.swift */,
-				88A505FB23DBAE4F0005C012 /* Reactions.swift */,
 				8806F21A23E90B0B00692638 /* MessageRequests.swift */,
 				8806EF18248DBD7200E764C7 /* NotificationPermissionReminderMegaphone.swift */,
 				8806EF1A248DBFC100E764C7 /* ContactPermissionReminderMegaphone.swift */,
@@ -3204,7 +3162,6 @@
 			isa = PBXGroup;
 			children = (
 				88A9419324099F6E000E9700 /* Attachment Keyboard */,
-				8889006223DBB38700F40186 /* Reactions Megaphone */,
 				887CD48924735D4200FDD265 /* launchApp-iPad.json */,
 				887CD48824735D4200FDD265 /* launchApp-iPhone.json */,
 				4C9D34842369EA3E006A4307 /* NotificationPermission */,
@@ -3945,7 +3902,6 @@
 				4C63CC00210A620B003AE45C /* SignalTSan.supp in Resources */,
 				4C6F527C20FFE8400097DEEE /* SignalUBSan.supp in Resources */,
 				34CF078A203E6B78005C4D61 /* end_call_tone_cept.caf in Resources */,
-				8889006C23DBB39B00F40186 /* reactionsMegaphone.json in Resources */,
 				34330A5A1E7875FB00DF2FB9 /* fontawesome-webfont.ttf in Resources */,
 				A5509ECA1A69AB8B00ABA4BC /* Main.storyboard in Resources */,
 				34330A5C1E787A9800DF2FB9 /* dripicons-v2.ttf in Resources */,
@@ -3958,12 +3914,10 @@
 				34661FB820C1C0D60056EDD6 /* message_sent.aiff in Resources */,
 				45CB2FA81CB7146C00E1B343 /* Launch Screen.storyboard in Resources */,
 				887CD4872473587300FDD265 /* transfer.json in Resources */,
-				8889007123DBB39B00F40186 /* reactionMegaphone_6.png in Resources */,
 				34C3C78D20409F320000134C /* Opening.m4r in Resources */,
 				4C0CF6FA2386295400C9F818 /* tap_to_focus.json in Resources */,
 				B67EBF5D19194AC60084CCFD /* Settings.bundle in Resources */,
 				34CF0787203E6B78005C4D61 /* busy_tone_ansi.caf in Resources */,
-				8889006F23DBB39B00F40186 /* reactionMegaphone_2.png in Resources */,
 				4C9D349C2369F11F006A4307 /* notificationPermission0.png in Resources */,
 				34330A5E1E787BD800DF2FB9 /* ElegantIcons.ttf in Resources */,
 				45A2F005204473A3002E978A /* NewMessage.aifc in Resources */,
@@ -3974,13 +3928,10 @@
 				45B74A782044AAB600CD42F8 /* bamboo-quiet.aifc in Resources */,
 				8806F21D23E90C8300692638 /* messageRequestsSplash.json in Resources */,
 				8837F73D23D8DE8500772A32 /* pinCreationSuccess.json in Resources */,
-				8889006E23DBB39B00F40186 /* reactionMegaphone_0.png in Resources */,
 				45B74A7B2044AAB600CD42F8 /* chord.aifc in Resources */,
 				887CD48B24735D4200FDD265 /* launchApp-iPad.json in Resources */,
 				88A9419724099F85000E9700 /* attachment_light.json in Resources */,
-				8889007223DBB39B00F40186 /* reactionMegaphone_4.png in Resources */,
 				45B74A812044AAB600CD42F8 /* chord-quiet.aifc in Resources */,
-				8889006D23DBB39B00F40186 /* reactionMegaphone_1.png in Resources */,
 				45B74A832044AAB600CD42F8 /* circles.aifc in Resources */,
 				88A9419524099F7E000E9700 /* attachment_dark.json in Resources */,
 				45B74A892044AAB600CD42F8 /* circles-quiet.aifc in Resources */,
@@ -3989,7 +3940,6 @@
 				45B74A7E2044AAB600CD42F8 /* complete.aifc in Resources */,
 				45B74A872044AAB600CD42F8 /* complete-quiet.aifc in Resources */,
 				45B74A772044AAB600CD42F8 /* hello.aifc in Resources */,
-				8889007323DBB39B00F40186 /* reactionMegaphone_5.png in Resources */,
 				45B74A7C2044AAB600CD42F8 /* hello-quiet.aifc in Resources */,
 				45B74A792044AAB600CD42F8 /* input.aifc in Resources */,
 				45B74A8C2044AAB600CD42F8 /* input-quiet.aifc in Resources */,
@@ -4008,7 +3958,6 @@
 				45B74A8B2044AAB600CD42F8 /* synth.aifc in Resources */,
 				888C828223D795FA0059464B /* pinCreationFail.json in Resources */,
 				45B74A752044AAB600CD42F8 /* synth-quiet.aifc in Resources */,
-				8889007023DBB39B00F40186 /* reactionMegaphone_3.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -4919,7 +4868,6 @@
 				340FC8B6204DAC8D007AEB0F /* OWSQRCodeScanningViewController.m in Sources */,
 				4CB5F26920F7D060004D1B42 /* MessageActions.swift in Sources */,
 				4C46361322EE680700185951 /* ConversationPicker.swift in Sources */,
-				88A505FC23DBAE4F0005C012 /* Reactions.swift in Sources */,
 				88594E5A2335B08000390B19 /* AudioMessageView.swift in Sources */,
 				340FC8B5204DAC8D007AEB0F /* AboutTableViewController.m in Sources */,
 				34BECE2B1F74C12700D7438D /* DebugUIStress.m in Sources */,
