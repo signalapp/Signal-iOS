@@ -104,11 +104,6 @@ class ExperienceUpgradeManager: NSObject {
         clearExperienceUpgrade(.reactions, transaction: transaction)
     }
 
-    @objc
-    static func clearProfileNameReminder(transaction: GRDBWriteTransaction) {
-        clearExperienceUpgrade(.profileNameReminder, transaction: transaction)
-    }
-
     // MARK: - Splash
 
     private static func hasSplash(forExperienceUpgrade experienceUpgrade: ExperienceUpgrade) -> Bool {
@@ -140,7 +135,6 @@ class ExperienceUpgradeManager: NSObject {
         switch experienceUpgrade.id {
         case .introducingPins,
              .reactions,
-             .profileNameReminder,
              .pinReminder,
              .notificationPermissionReminder,
              .contactPermissionReminder:
@@ -159,8 +153,6 @@ class ExperienceUpgradeManager: NSObject {
             return IntroducingPinsMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         case .reactions:
             return ReactionsMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
-        case .profileNameReminder:
-            return ProfileNameReminderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         case .pinReminder:
             return PinReminderMegaphone(experienceUpgrade: experienceUpgrade, fromViewController: fromViewController)
         case .notificationPermissionReminder:

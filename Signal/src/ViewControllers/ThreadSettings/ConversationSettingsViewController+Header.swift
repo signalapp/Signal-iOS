@@ -187,13 +187,6 @@ extension ConversationSettingsViewController {
             }
         }
 
-        if !RemoteConfig.messageRequests
-            && !contactsManager.hasNameInSystemContacts(for: recipientAddress) {
-            if let profileName = contactsManager.formattedProfileName(for: recipientAddress) {
-                builder.addSubtitleLabel(text: profileName)
-            }
-        }
-
         if DebugFlags.showProfileKeyAndUuidsIndicator {
             let uuidText = String(format: "UUID: %@", contactThread.contactAddress.uuid?.uuidString ?? "Unknown")
             builder.addSubtitleLabel(text: uuidText)

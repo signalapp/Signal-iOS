@@ -31,6 +31,8 @@ protocol InteractionFinderAdapter {
 
     func mostRecentInteractionForInbox(transaction: ReadTransaction) -> TSInteraction?
 
+    func earliestKnownInteractionRowId(transaction: ReadTransaction) -> Int?
+
     func sortIndex(interactionUniqueId: String, transaction: ReadTransaction) throws -> UInt?
     func count(transaction: ReadTransaction) -> UInt
     func enumerateInteractionIds(transaction: ReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) throws -> Void) throws
@@ -243,6 +245,15 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
             return yapAdapter.mostRecentInteractionForInbox(transaction: yapRead)
         case .grdbRead(let grdbRead):
             return grdbAdapter.mostRecentInteractionForInbox(transaction: grdbRead)
+        }
+    }
+
+    func earliestKnownInteractionRowId(transaction: SDSAnyReadTransaction) -> Int? {
+        switch transaction.readTransaction {
+        case .yapRead(let yapRead):
+            return yapAdapter.earliestKnownInteractionRowId(transaction: yapRead)
+        case .grdbRead(let grdbRead):
+            return grdbAdapter.earliestKnownInteractionRowId(transaction: grdbRead)
         }
     }
 
@@ -605,6 +616,10 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
         return last
     }
 
+    func earliestKnownInteractionRowId(transaction: YapDatabaseReadTransaction) -> Int? {
+        fatalError("yap not supported")
+    }
+
     func count(transaction: YapDatabaseReadTransaction) -> UInt {
         guard let view = interactionExt(transaction) else {
             return 0
@@ -930,6 +945,18 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
                                              TSErrorMessageType.nonBlockingIdentityChange.rawValue,
                                              TSInfoMessageType.verificationStateChange.rawValue]
         return TSInteraction.grdbFetchOne(sql: sql, arguments: arguments, transaction: transaction)
+    }
+
+    func earliestKnownInteractionRowId(transaction: GRDBReadTransaction) -> Int? {
+        let sql = """
+                SELECT \(interactionColumn: .id)
+                FROM \(InteractionRecord.databaseTableName)
+                WHERE \(interactionColumn: .threadUniqueId) = ?
+                ORDER BY \(interactionColumn: .id) ASC
+                LIMIT 1
+                """
+        let arguments: StatementArguments = [threadUniqueId]
+        return try? Int.fetchOne(transaction.database, sql: sql, arguments: arguments)
     }
 
     func sortIndex(interactionUniqueId: String, transaction: GRDBReadTransaction) throws -> UInt? {

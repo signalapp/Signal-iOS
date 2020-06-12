@@ -9,7 +9,6 @@ import Contacts
 public enum ExperienceUpgradeId: String, CaseIterable {
     case introducingPins = "009"
     case reactions = "010"
-    case profileNameReminder = "011"
     case messageRequests = "012"
     case pinReminder // Never saved, used to periodically prompt the user for their PIN
     case notificationPermissionReminder
@@ -27,10 +26,8 @@ public enum ExperienceUpgradeId: String, CaseIterable {
                 !KeyBackupService.hasMasterKey(transaction: transaction.asAnyRead)
         case .reactions:
             return true
-        case .profileNameReminder:
-            return RemoteConfig.profileNameReminder && !RemoteConfig.messageRequests
         case .messageRequests:
-            return FeatureFlags.messageRequest
+            return !SSKEnvironment.shared.profileManager.hasProfileName
         case .pinReminder:
             return OWS2FAManager.shared().isDueForV2Reminder(transaction: transaction.asAnyRead)
         case .notificationPermissionReminder:
@@ -102,12 +99,8 @@ public enum ExperienceUpgradeId: String, CaseIterable {
         case .introducingPins:
             return .high
         case .messageRequests:
-            // If the user already has a profile name, this is just a simple
-            // notice of a new feature. If they don't have a profile name,
-            // this is a high priority mandatory flow for them to create one.
-            return SSKEnvironment.shared.profileManager.hasProfileName ? .low : .high
-        case .profileNameReminder,
-             .reactions:
+            return .high
+        case .reactions:
             return .low
         case .pinReminder:
             return .medium

@@ -33,19 +33,6 @@ public class RemoteConfig: NSObject {
     }
 
     @objc
-    public static var profileNameReminder: Bool {
-        return isEnabled(.profileNameReminder)
-    }
-
-    @objc
-    public static var messageRequests: Bool {
-        guard !DebugFlags.forceMessageRequests else {
-            return true
-        }
-        return isEnabled(.messageRequests)
-    }
-
-    @objc
     public static var kbs: Bool {
         // This feature latches "on" – once they have a master key in KBS,
         // even if we turn it off on the server they will keep using KBS.
@@ -105,9 +92,7 @@ private struct Flags {
         case pinsForEveryone
         case pinsForEveryoneV2
         case kbs
-        case profileNameReminder
         case mandatoryPins
-        case messageRequests
         case groupsV2CreateGroups
         case groupsV2GoodCitizen
         case deleteForEveryone
@@ -208,41 +193,8 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
         }) {
             Logger.info("loaded stored config: \(storedConfig)")
             self.cachedConfig = RemoteConfig(storedConfig)
-            do {
-                try ensureMessageRequestInteractionIdEpochState()
-            } catch {
-                owsFailDebug("error: \(error)")
-            }
         } else {
             Logger.info("no stored remote config")
-        }
-    }
-
-    func ensureMessageRequestInteractionIdEpochState() throws {
-        guard cachedConfig != nil else {
-            owsFailDebug("cachedConfig was unexpectedly nil")
-            return
-        }
-
-        let hasEpoch = try grdbStorage.read { SSKPreferences.messageRequestInteractionIdEpoch(transaction: $0) } != nil
-
-        if RemoteConfig.messageRequests {
-            guard hasEpoch else {
-                databaseStorage.write { transaction in
-                    let maxId = GRDBInteractionFinder.maxRowId(transaction: transaction.unwrapGrdbWrite)
-                    SSKPreferences.setMessageRequestInteractionIdEpoch(maxId, transaction: transaction.unwrapGrdbWrite)
-                }
-                return
-            }
-        } else {
-            guard !hasEpoch else {
-                // Possible the flag was toggled on and then back off. We want to clear the recorded
-                // epoch so it can be reset the *next* time the flag is toggled back on.
-                databaseStorage.write {
-                    SSKPreferences.setMessageRequestInteractionIdEpoch(nil, transaction: $0.unwrapGrdbWrite)
-                }
-                return
-            }
         }
     }
 

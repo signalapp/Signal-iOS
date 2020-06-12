@@ -138,12 +138,25 @@ extension OWSSyncManager: SyncManagerProtocolSwift {
             return owsFailDebug("Unexpectedly tried to send sync message before registration.")
         }
 
-        databaseStorage.asyncWrite { [weak self] transaction in
-            guard let self = self else { return }
-
-            let syncMessageRequestResponse = OWSSyncMessageRequestResponseMessage(thread: thread, responseType: responseType)
-            self.messageSenderJobQueue.add(message: syncMessageRequestResponse.asPreparer, transaction: transaction)
+        databaseStorage.asyncWrite { [weak self] _ in
+            self?.sendMessageRequestResponseSyncMessage(thread: thread, responseType: responseType)
         }
+    }
+
+    @objc
+    public func sendMessageRequestResponseSyncMessage(
+        thread: TSThread,
+        responseType: OWSSyncMessageRequestResponseType,
+        transaction: SDSAnyWriteTransaction
+    ) {
+        Logger.info("")
+
+        guard tsAccountManager.isRegisteredAndReady else {
+            return owsFailDebug("Unexpectedly tried to send sync message before registration.")
+        }
+
+        let syncMessageRequestResponse = OWSSyncMessageRequestResponseMessage(thread: thread, responseType: responseType)
+        messageSenderJobQueue.add(message: syncMessageRequestResponse.asPreparer, transaction: transaction)
     }
 }
 
