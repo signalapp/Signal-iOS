@@ -627,8 +627,7 @@ class ConversationSettingsViewController: OWSTableViewController {
             return
         }
 
-        let viewController = OWSAddToContactViewController()
-        viewController.configure(with: address)
+        let viewController = OWSAddToContactViewController(address: address)
         navigationController?.pushViewController(viewController, animated: true)
     }
 
