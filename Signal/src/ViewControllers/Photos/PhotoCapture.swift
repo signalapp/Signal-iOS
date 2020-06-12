@@ -114,7 +114,7 @@ class PhotoCapture: NSObject {
 
             if self.session.canAddOutput(movieOutput) {
                 self.session.addOutput(movieOutput)
-                self.session.sessionPreset = .medium
+                self.session.sessionPreset = .high
                 if let connection = movieOutput.connection(with: .video) {
                     if connection.isVideoStabilizationSupported {
                         connection.preferredVideoStabilizationMode = .auto
