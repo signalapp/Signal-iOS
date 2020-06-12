@@ -1987,16 +1987,14 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         return completionHandler();
     }
 
-    DatabaseStorageAsyncWriteWithCompletion(
-        self.databaseStorage,
-        ^(SDSAnyWriteTransaction *transaction) {
-            for (NSUInteger i = 0; i < [devices count]; i++) {
-                int deviceNumber = [devices[i] intValue];
-                [self.sessionStore deleteSessionForAddress:address deviceId:deviceNumber transaction:transaction];
-            }
-        },
-        // Completion
-        completionHandler);
+    DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+        for (NSUInteger i = 0; i < [devices count]; i++) {
+            int deviceNumber = [devices[i] intValue];
+            [self.sessionStore deleteSessionForAddress:address deviceId:deviceNumber transaction:transaction];
+        }
+
+        [transaction addAsyncCompletionOffMain:completionHandler];
+    });
 }
 
 + (NSOperationQueuePriority)queuePriorityForMessage:(TSOutgoingMessage *)message

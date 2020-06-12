@@ -247,17 +247,4 @@ public extension SDSTransactable {
                    block: block,
                    completion: { })
     }
-
-    @available(*, deprecated, message: "Use DatabaseStorageAsyncWriteWithCompletion() instead")
-    func __private_objc_asyncWrite(file: String = #file,
-                    function: String = #function,
-                    line: Int = #line,
-                    block: @escaping (SDSAnyWriteTransaction) -> Void,
-                    completion: @escaping () -> Void) {
-        asyncWrite(file: file,
-                   function: function,
-                   line: line,
-                   block: block,
-                   completion: completion)
-    }
 }

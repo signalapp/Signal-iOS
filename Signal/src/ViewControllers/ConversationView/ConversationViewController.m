@@ -3316,20 +3316,17 @@ typedef enum : NSUInteger {
     OWSLogVerbose(@"Sending contact share.");
 
     __block BOOL didAddToProfileWhitelist;
-    DatabaseStorageAsyncWriteWithCompletion(
-        SDSDatabaseStorage.shared,
-        ^(SDSAnyWriteTransaction *transaction) {
-            didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyOrPendingRequest:self.thread
-                                                                                          transaction:transaction];
+    DatabaseStorageAsyncWrite(SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *transaction) {
+        didAddToProfileWhitelist = [ThreadUtil addThreadToProfileWhitelistIfEmptyOrPendingRequest:self.thread
+                                                                                      transaction:transaction];
 
-            // TODO - in line with QuotedReply and other message attachments, saving should happen as part of sending
-            // preparation rather than duplicated here and in the SAE
-            if (contactShare.avatarImage) {
-                [contactShare.dbRecord saveAvatarImage:contactShare.avatarImage transaction:transaction];
-            }
-        },
-        // Completion:
-        ^{
+        // TODO - in line with QuotedReply and other message attachments, saving should happen as part of sending
+        // preparation rather than duplicated here and in the SAE
+        if (contactShare.avatarImage) {
+            [contactShare.dbRecord saveAvatarImage:contactShare.avatarImage transaction:transaction];
+        }
+
+        [transaction addAsyncCompletion:^{
             TSOutgoingMessage *message = [ThreadUtil enqueueMessageWithContactShare:contactShare.dbRecord
                                                                              thread:self.thread];
             [self messageWasSent:message];
@@ -3337,7 +3334,8 @@ typedef enum : NSUInteger {
             if (didAddToProfileWhitelist) {
                 [self ensureBannerState];
             }
-        });
+        }];
+    });
 }
 
 - (void)showApprovalDialogAfterProcessingVideoURL:(NSURL *)movieURL filename:(nullable NSString *)filename
