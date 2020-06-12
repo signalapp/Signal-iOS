@@ -84,17 +84,16 @@ NS_ASSUME_NONNULL_BEGIN
 
     [BenchManager benchAsyncWithTitle:@"Saving outgoing message"
                                 block:^(void (^benchmarkCompletion)(void)) {
-                                    DatabaseStorageAsyncWriteWithCompletion(
-                                        SDSDatabaseStorage.shared,
-                                        ^(SDSAnyWriteTransaction *writeTransaction) {
+                                    DatabaseStorageAsyncWrite(
+                                        SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *writeTransaction) {
                                             [outgoingMessagePreparer
                                                 insertMessageWithLinkPreviewDraft:linkPreviewDraft
                                                                       transaction:writeTransaction];
                                             [self.messageSenderJobQueue addMessage:outgoingMessagePreparer
                                                                        transaction:writeTransaction];
-                                        },
-                                        // Completion:
-                                        benchmarkCompletion);
+
+                                            [writeTransaction addAsyncCompletion:benchmarkCompletion];
+                                        });
                                 }];
 
     return outgoingMessagePreparer.unpreparedMessage;
@@ -253,17 +252,19 @@ NS_ASSUME_NONNULL_BEGIN
     DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *writeTransaction) {
         [outgoingMessagePreparer insertMessageWithLinkPreviewDraft:nil transaction:writeTransaction];
 
-        [messageSender sendMessage:outgoingMessagePreparer
-            success:^{
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    completion(nil);
-                });
-            }
-            failure:^(NSError *_Nonnull error) {
-                dispatch_async(dispatch_get_main_queue(), ^{
-                    completion(error);
-                });
-            }];
+        [writeTransaction addAsyncCompletionOffMain:^{
+            [messageSender sendMessage:outgoingMessagePreparer
+                success:^{
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        completion(nil);
+                    });
+                }
+                failure:^(NSError *_Nonnull error) {
+                    dispatch_async(dispatch_get_main_queue(), ^{
+                        completion(error);
+                    });
+                }];
+        }];
     });
 
     return outgoingMessagePreparer.unpreparedMessage;
