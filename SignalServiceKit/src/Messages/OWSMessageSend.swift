@@ -4,6 +4,7 @@
 
 import Foundation
 import SignalMetadataKit
+import PromiseKit
 
 // Corresponds to a single effort to send a message to a given recipient,
 // which may span multiple attempts.  Note that group messages may be sent
@@ -19,6 +20,19 @@ public class OWSMessageSend: NSObject {
 
     @objc
     public let recipient: SignalRecipient
+
+    private var _deviceIds = AtomicValue<[NSNumber]>([])
+    @objc
+    public var deviceIds: [NSNumber] {
+        get { return _deviceIds.get() }
+    }
+    @objc
+    public func removeDeviceId(_ deviceId: NSNumber) {
+        _deviceIds.map { deviceIds in
+            assert(deviceIds.contains(deviceId))
+            return deviceIds.filter { $0 != deviceId }
+        }
+    }
 
     private static let kMaxRetriesPerRecipient: Int = 3
 
@@ -51,6 +65,13 @@ public class OWSMessageSend: NSObject {
     @objc
     public let isLocalAddress: Bool
 
+    private let promise: Promise<Void>
+
+    @objc
+    public var asAnyPromise: AnyPromise {
+        return AnyPromise(promise)
+    }
+
     @objc
     public let success: () -> Void
 
@@ -63,20 +84,33 @@ public class OWSMessageSend: NSObject {
                 recipient: SignalRecipient,
                 udSendingAccess: OWSUDSendingAccess?,
                 localAddress: SignalServiceAddress,
-                success: @escaping () -> Void,
-                failure: @escaping (Error) -> Void) {
+                sendErrorBlock: ((Error) -> Void)?) {
         self.message = message
         self.thread = thread
         self.recipient = recipient
         self.localAddress = localAddress
         self.isLocalAddress = recipient.address.isLocalAddress
 
-        self.success = success
-        self.failure = failure
+        let (promise, resolver) = Promise<Void>.pending()
+        self.promise = promise
+        self.success = {
+            resolver.fulfill(())
+        }
+        self.failure = { error in
+            if let sendErrorBlock = sendErrorBlock {
+                sendErrorBlock(error)
+            }
+            resolver.reject(error)
+        }
 
         super.init()
 
         self.udSendingAccess = udSendingAccess
+        if let deviceIds = recipient.devices.array as? [NSNumber] {
+            _deviceIds.set(deviceIds)
+        } else {
+            owsFailDebug("Invalid deviceIds.")
+        }
     }
 
     @objc

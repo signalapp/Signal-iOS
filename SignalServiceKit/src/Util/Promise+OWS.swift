@@ -120,9 +120,9 @@ public func firstly<U: Thenable>(on dispatchQueue: DispatchQueue,
     dispatchQueue.async {
         firstly {
             return try body()
-        }.done { value in
+        }.done(on: .global()) { value in
             resolver.fulfill(value)
-        }.catch { error in
+        }.catch(on: .global()) { error in
             resolver.reject(error)
         }
     }
