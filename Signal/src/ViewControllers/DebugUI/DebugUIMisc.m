@@ -135,14 +135,8 @@ NS_ASSUME_NONNULL_BEGIN
 
     [items addObject:[OWSTableItem itemWithTitle:@"Show 2FA Reminder"
                                      actionBlock:^() {
-                                         UIViewController *reminderVC;
-                                         if (RemoteConfig.pinsForEveryone) {
-                                             reminderVC =
-                                                 [[OWSPinReminderViewController alloc] initWithCompletionHandler:nil];
-                                         } else {
-                                             reminderVC = [OWS2FAReminderViewController wrappedInNavController];
-                                             reminderVC.modalPresentationStyle = UIModalPresentationFullScreen;
-                                         }
+                                         UIViewController *reminderVC =
+                                             [[OWSPinReminderViewController alloc] initWithCompletionHandler:nil];
 
                                          [[[UIApplication sharedApplication] frontmostViewController]
                                              presentViewController:reminderVC

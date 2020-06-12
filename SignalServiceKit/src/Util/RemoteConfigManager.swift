@@ -17,20 +17,7 @@ public class RemoteConfig: NSObject {
     private let config: [String: Bool]
 
     @objc
-    public static var pinsForEveryone: Bool {
-        // If we've turned off the KBS feature we don't want to present the
-        // pins for everyone migration even if this user is in the bucket.
-        guard kbs else { return false }
-        // If you've setup a PIN, you have a PIN, regardless of the FF status
-        if KeyBackupService.hasMasterKey { return true }
-        return isEnabled(.pinsForEveryone) || isEnabled(.pinsForEveryoneV2)
-    }
-
-    @objc
-    public static var mandatoryPins: Bool {
-        guard pinsForEveryone else { return false }
-        return isEnabled(.mandatoryPins)
-    }
+    public static var mandatoryPins: Bool { isEnabled(.mandatoryPins) }
 
     @objc
     public static var kbs: Bool {
@@ -78,8 +65,6 @@ private struct Flags {
     // Values defined in this array remain forever true once they are
     // marked true regardless of the remote state.
     enum Sticky: String, FlagType {
-        case pinsForEveryone
-        case pinsForEveryoneV2
         case groupsV2GoodCitizen
     }
 
@@ -89,8 +74,6 @@ private struct Flags {
     // a sticky flag to 100% in beta then turn it back to 0% before going
     // to production.
     enum Supported: String, FlagType {
-        case pinsForEveryone
-        case pinsForEveryoneV2
         case kbs
         case mandatoryPins
         case groupsV2CreateGroups

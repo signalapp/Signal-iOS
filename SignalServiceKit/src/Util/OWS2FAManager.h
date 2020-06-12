@@ -37,7 +37,6 @@ typedef NS_CLOSED_ENUM(NSUInteger, OWS2FAMode) {
 - (void)setPinCode:(nullable NSString *)pin transaction:(SDSAnyWriteTransaction *)transaction;
 
 @property (nonatomic, readonly) OWS2FAMode mode;
-@property (nonatomic, readonly) BOOL isDueForV1Reminder;
 @property (nonatomic, readonly) NSTimeInterval repetitionInterval;
 
 - (BOOL)is2FAEnabled;

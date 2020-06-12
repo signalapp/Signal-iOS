@@ -20,7 +20,7 @@ public enum ExperienceUpgradeId: String, CaseIterable {
         switch self {
         case .introducingPins:
             // The PIN setup flow requires an internet connection and you to not already have a PIN
-            return RemoteConfig.pinsForEveryone &&
+            return RemoteConfig.kbs &&
                 SSKEnvironment.shared.reachabilityManager.isReachable &&
                 !KeyBackupService.hasMasterKey(transaction: transaction.asAnyRead)
         case .messageRequests:
