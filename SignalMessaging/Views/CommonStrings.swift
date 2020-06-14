@@ -9,10 +9,10 @@ import Foundation
  */
 
 @objc public class CommonStrings: NSObject {
-    
+
     @objc
     static public let archiveAction = NSLocalizedString("ARCHIVE_ACTION", comment: "Label for the archive button for conversations list view")
-    
+
     @objc
     static public let backButton = NSLocalizedString("BACK_BUTTON", comment: "return to the previous screen")
 
@@ -57,10 +57,10 @@ import Foundation
 
     @objc
     static public let learnMore = NSLocalizedString("LEARN_MORE", comment: "Label for the 'learn more' button.")
-    
+
     @objc
     static public let unarchiveAction = NSLocalizedString("UNARCHIVE_ACTION", comment: "Label for the unarchive button for conversations list view")
-    
+
 }
 
 @objc

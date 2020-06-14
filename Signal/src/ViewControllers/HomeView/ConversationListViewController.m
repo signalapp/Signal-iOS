@@ -1255,18 +1255,18 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         cellName = [NSString stringWithFormat:@"cell-contact-%@", contactThread.contactAddress.stringForDisplay];
     }
     cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, cellName);
-    
+
     NSString *archiveTitle;
     if (self.conversationListMode == ConversationListMode_Inbox) {
         archiveTitle = CommonStrings.archiveAction;
     } else {
         archiveTitle = CommonStrings.unarchiveAction;
     }
-    
+
     OWSCellAccessibilityCustomAction *archiveAction = [[OWSCellAccessibilityCustomAction alloc] initWithName:archiveTitle type:OWSCellAccessibilityCustomActionTypeArchive indexPath:indexPath target:self selector:@selector(performAccessibilityCustomAction:)];
-    
+
     OWSCellAccessibilityCustomAction *deleteAction = [[OWSCellAccessibilityCustomAction alloc]initWithName:CommonStrings.deleteButton type:OWSCellAccessibilityCustomActionTypeDelete indexPath:indexPath target:self selector:@selector(performAccessibilityCustomAction:)];
-    
+
     cell.accessibilityCustomActions = @[archiveAction, deleteAction];
     if ([self isConversationActiveForThread:thread.threadRecord]) {
         [tableView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
