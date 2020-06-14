@@ -1255,7 +1255,19 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         cellName = [NSString stringWithFormat:@"cell-contact-%@", contactThread.contactAddress.stringForDisplay];
     }
     cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, cellName);
-
+    
+    NSString *archiveTitle;
+    if (self.conversationListMode == ConversationListMode_Inbox) {
+        archiveTitle = CommonStrings.archiveAction;
+    } else {
+        archiveTitle = CommonStrings.unarchiveAction;
+    }
+    
+    OWSCellAccessibilityCustomAction *archiveAction = [[OWSCellAccessibilityCustomAction alloc] initWithName:archiveTitle type:OWSCellAccessibilityCustomActionTypeArchive indexPath:indexPath target:self selector:@selector(performAccessibilityCustomAction:)];
+    
+    OWSCellAccessibilityCustomAction *deleteAction = [[OWSCellAccessibilityCustomAction alloc]initWithName:CommonStrings.deleteButton type:OWSCellAccessibilityCustomActionTypeDelete indexPath:indexPath target:self selector:@selector(performAccessibilityCustomAction:)];
+    
+    cell.accessibilityCustomActions = @[archiveAction, deleteAction];
     if ([self isConversationActiveForThread:thread.threadRecord]) {
         [tableView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
     } else {
@@ -1380,11 +1392,9 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
             NSString *archiveTitle;
             if (self.conversationListMode == ConversationListMode_Inbox) {
-                archiveTitle = NSLocalizedString(
-                    @"ARCHIVE_ACTION", @"Pressing this button moves a thread from the inbox to the archive");
+                archiveTitle = CommonStrings.archiveAction;
             } else {
-                archiveTitle = NSLocalizedString(@"UNARCHIVE_ACTION",
-                    @"Pressing this button moves an archived thread from the archive back to the inbox");
+                archiveTitle = CommonStrings.unarchiveAction;
             }
 
             archiveAction.backgroundColor = UIColor.ows_gray60Color;
@@ -1612,6 +1622,17 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [alert addAction:[OWSActionSheets cancelAction]];
 
     [self presentActionSheet:alert];
+}
+
+- (void)performAccessibilityCustomAction:(OWSCellAccessibilityCustomAction *)action {
+    switch(action.type){
+        case OWSCellAccessibilityCustomActionTypeArchive:
+            [self archiveIndexPath: action.indexPath];
+            break;
+        case OWSCellAccessibilityCustomActionTypeDelete:
+            [self tableViewCellTappedDelete: action.indexPath];
+            break;
+    }
 }
 
 - (void)deleteThread:(TSThread *)thread
