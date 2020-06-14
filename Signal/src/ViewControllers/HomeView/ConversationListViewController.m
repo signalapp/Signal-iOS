@@ -1624,7 +1624,8 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [self presentActionSheet:alert];
 }
 
-- (void)performAccessibilityCustomAction:(OWSCellAccessibilityCustomAction *)action {
+- (void)performAccessibilityCustomAction:(OWSCellAccessibilityCustomAction *)action
+{
     switch(action.type){
         case OWSCellAccessibilityCustomActionTypeArchive:
             [self archiveIndexPath:action.indexPath];
