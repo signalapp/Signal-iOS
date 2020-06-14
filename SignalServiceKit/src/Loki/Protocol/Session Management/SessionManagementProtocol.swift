@@ -141,6 +141,11 @@ public final class SessionManagementProtocol : NSObject {
     @objc(repairSessionIfNeededForMessage:to:)
     public static func repairSessionIfNeeded(for message: TSOutgoingMessage, to hexEncodedPublicKey: String) {
         guard (message.thread as? TSGroupThread)?.groupModel.groupType == .closedGroup else { return }
+        var hasSentSessionRequest = false
+        storage.dbReadConnection.read { transaction in
+            hasSentSessionRequest = storage.getSessionRequestTimestamp(for: hexEncodedPublicKey, in: transaction) != nil
+        }
+        guard !hasSentSessionRequest else { return }
         DispatchQueue.main.async {
             storage.dbReadWriteConnection.readWrite { transaction in
                 let thread = TSContactThread.getOrCreateThread(withContactId: hexEncodedPublicKey, transaction: transaction)
