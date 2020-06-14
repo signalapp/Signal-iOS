@@ -1627,10 +1627,10 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 - (void)performAccessibilityCustomAction:(OWSCellAccessibilityCustomAction *)action {
     switch(action.type){
         case OWSCellAccessibilityCustomActionTypeArchive:
-            [self archiveIndexPath: action.indexPath];
+            [self archiveIndexPath:action.indexPath];
             break;
         case OWSCellAccessibilityCustomActionTypeDelete:
-            [self tableViewCellTappedDelete: action.indexPath];
+            [self tableViewCellTappedDelete:action.indexPath];
             break;
     }
 }
