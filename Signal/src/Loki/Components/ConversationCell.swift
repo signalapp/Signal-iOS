@@ -141,15 +141,20 @@ final class ConversationCell : UITableViewCell {
                 profilePictureView.hexEncodedPublicKey = ""
                 profilePictureView.isRSSFeed = true
             } else {
-                var users = MentionsManager.userPublicKeyCache[threadViewModel.threadRecord.uniqueId!] ?? []
-                users.remove(getUserHexEncodedPublicKey())
-                let randomUsers = users.sorted().prefix(2) // Sort to provide a level of stability
-                if !randomUsers.isEmpty {
-                    profilePictureView.hexEncodedPublicKey = randomUsers[0]
-                    profilePictureView.additionalHexEncodedPublicKey = randomUsers.count >= 2 ? randomUsers[1] : ""
+                if let groupAvatarImage = (threadViewModel.threadRecord as? TSGroupThread)?.groupModel.groupImage {
+                    profilePictureView.groupAvatarImage = groupAvatarImage
                 } else {
-                    profilePictureView.hexEncodedPublicKey = ""
-                    profilePictureView.additionalHexEncodedPublicKey = ""
+                    profilePictureView.groupAvatarImage = nil
+                    var users = MentionsManager.userPublicKeyCache[threadViewModel.threadRecord.uniqueId!] ?? []
+                    users.remove(getUserHexEncodedPublicKey())
+                    let randomUsers = users.sorted().prefix(2) // Sort to provide a level of stability
+                    if !randomUsers.isEmpty {
+                        profilePictureView.hexEncodedPublicKey = randomUsers[0]
+                        profilePictureView.additionalHexEncodedPublicKey = randomUsers.count >= 2 ? randomUsers[1] : ""
+                    } else {
+                        profilePictureView.hexEncodedPublicKey = ""
+                        profilePictureView.additionalHexEncodedPublicKey = ""
+                    }
                 }
                 profilePictureView.isRSSFeed = (threadViewModel.threadRecord as? TSGroupThread)?.isRSSFeed ?? false
             }
