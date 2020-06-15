@@ -156,10 +156,9 @@ NS_ASSUME_NONNULL_BEGIN
         NSError *deleteError;
         if ([fm removeItemAtPath:bloomFilterPath error:&deleteError]) {
             OWSLogInfo(@"Successfully removed bloom filter cache.");
-            [OWSPrimaryStorage.dbReadWriteConnection
-                readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-                    [transaction removeAllObjectsInCollection:@"TSRecipient"];
-                }];
+            [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+                [transaction removeAllObjectsInCollection:@"TSRecipient"];
+            } error:nil];
             OWSLogInfo(@"Removed all TSRecipient records - will be replaced by SignalRecipients at next address sync.");
         } else {
             OWSLogError(@"Failed to remove bloom filter cache with error: %@", deleteError.localizedDescription);
@@ -174,7 +173,7 @@ NS_ASSUME_NONNULL_BEGIN
 // Versions less than or equal to 1.2.0 didn't store public chat mappings
 + (void)updatePublicChatMapping
 {
-    [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
+    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction * _Nonnull transaction) {
         for (LKPublicChat *chat in LKPublicChatAPI.defaultChats) {
             TSGroupThread *thread = [TSGroupThread threadWithGroupId:[LKGroupUtilities getEncodedOpenGroupIDAsData:chat.id] transaction:transaction];
             if (thread != nil) {
@@ -203,7 +202,7 @@ NS_ASSUME_NONNULL_BEGIN
                 [thread saveWithTransaction:transaction];
             }
         }
-    }];
+    } error:nil];
 }
 
 @end

@@ -159,7 +159,7 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
         let userHexEncodedPublicKey = getUserHexEncodedPublicKey()
         let storage = OWSPrimaryStorage.shared()
         var masterHexEncodedPublicKey = ""
-        storage.dbReadConnection.readWrite { transaction in
+        storage.dbReadConnection.read { transaction in
             masterHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: userHexEncodedPublicKey, in: transaction) ?? userHexEncodedPublicKey
         }
         let members = selectedContacts + [ masterHexEncodedPublicKey ]

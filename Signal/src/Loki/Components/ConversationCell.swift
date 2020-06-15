@@ -134,22 +134,23 @@ final class ConversationCell : UITableViewCell {
     
     // MARK: Updating
     private func update() {
+        AssertIsOnMainThread()
         MentionsManager.populateUserPublicKeyCacheIfNeeded(for: threadViewModel.threadRecord.uniqueId!) // FIXME: This is a terrible place to do this
         unreadMessagesIndicatorView.alpha = threadViewModel.hasUnreadMessages ? 1 : 0.0001 // Setting the alpha to exactly 0 causes an issue on iOS 12
+        profilePictureView.openGroupProfilePicture = nil
         if threadViewModel.isGroupThread {
-            if threadViewModel.name == "Session Public Chat" {
+            if threadViewModel.name == "Loki Public Chat" {
                 profilePictureView.hexEncodedPublicKey = ""
                 profilePictureView.isRSSFeed = true
             } else {
-                var users = MentionsManager.userPublicKeyCache[threadViewModel.threadRecord.uniqueId!] ?? []
-                users.remove(getUserHexEncodedPublicKey())
-                let randomUsers = users.sorted().prefix(2) // Sort to provide a level of stability
-                if !randomUsers.isEmpty {
-                    profilePictureView.hexEncodedPublicKey = randomUsers[0]
-                    profilePictureView.additionalHexEncodedPublicKey = randomUsers.count >= 2 ? randomUsers[1] : ""
+                if let openGroupProfilePicture = (threadViewModel.threadRecord as! TSGroupThread).groupModel.groupImage {
+                    profilePictureView.openGroupProfilePicture = openGroupProfilePicture
                 } else {
-                    profilePictureView.hexEncodedPublicKey = ""
-                    profilePictureView.additionalHexEncodedPublicKey = ""
+                    var users = MentionsManager.userPublicKeyCache[threadViewModel.threadRecord.uniqueId!] ?? []
+                    users.remove(getUserHexEncodedPublicKey())
+                    let randomUsers = users.sorted().prefix(2) // Sort to provide a level of stability
+                    profilePictureView.hexEncodedPublicKey = randomUsers.count >= 1 ? randomUsers[0] : ""
+                    profilePictureView.additionalHexEncodedPublicKey = randomUsers.count >= 2 ? randomUsers[1] : ""
                 }
                 profilePictureView.isRSSFeed = (threadViewModel.threadRecord as? TSGroupThread)?.isRSSFeed ?? false
             }

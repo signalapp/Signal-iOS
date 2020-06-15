@@ -1255,9 +1255,9 @@ typedef enum : NSUInteger {
 
 - (void)restoreSession {
     dispatch_async(dispatch_get_main_queue(), ^{
-        [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             [LKSessionManagementProtocol startSessionResetInThread:self.thread using:transaction];
-        }];
+        } error:nil];
     });
 }
 
@@ -1926,10 +1926,9 @@ typedef enum : NSUInteger {
         accessibilityIdentifier:ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, @"send_again")
                           style:UIAlertActionStyleDefault
                         handler:^(UIAlertAction *action) {
-                            [self.editingDatabaseConnection
-                                asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-                                    [self.messageSenderJobQueue addMessage:message transaction:transaction];
-                                }];
+                            [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+                                [self.messageSenderJobQueue addMessage:message transaction:transaction];
+                            }];
                         }];
 
     [actionSheet addAction:resendMessageAction];
@@ -1980,10 +1979,9 @@ typedef enum : NSUInteger {
                                 return;
                             }
                             TSContactThread *contactThread = (TSContactThread *)self.thread;
-                            [self.editingDatabaseConnection
-                                asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-                                    [self.sessionResetJobQueue addContactThread:contactThread transaction:transaction];
-                                }];
+                            [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+                                [self.sessionResetJobQueue addContactThread:contactThread transaction:transaction];
+                            }];
                         }];
     [alert addAction:resetSessionAction];
 
@@ -2358,12 +2356,11 @@ typedef enum : NSUInteger {
                                    OWSLogInfo(@"Blocking an unknown user.");
                                    [self.blockingManager addBlockedPhoneNumber:interaction.recipientId];
                                    // Delete the offers.
-                                   [self.editingDatabaseConnection
-                                       readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                                           contactThread.hasDismissedOffers = YES;
-                                           [contactThread saveWithTransaction:transaction];
-                                           [interaction removeWithTransaction:transaction];
-                                       }];
+                                   [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                                       contactThread.hasDismissedOffers = YES;
+                                       [contactThread saveWithTransaction:transaction];
+                                       [interaction removeWithTransaction:transaction];
+                                   } error:nil];
                                }];
     [actionSheet addAction:blockAction];
 
@@ -2387,11 +2384,11 @@ typedef enum : NSUInteger {
                                                         editImmediately:YES];
 
     // Delete the offers.
-    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         contactThread.hasDismissedOffers = YES;
         [contactThread saveWithTransaction:transaction];
         [interaction removeWithTransaction:transaction];
-    }];
+    } error:nil];
 }
 
 - (void)tappedAddToProfileWhitelistOfferMessage:(OWSContactOffersInteraction *)interaction
@@ -2405,11 +2402,11 @@ typedef enum : NSUInteger {
 
     [self presentAddThreadToProfileWhitelistWithSuccess:^() {
         // Delete the offers.
-        [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             contactThread.hasDismissedOffers = YES;
             [contactThread saveWithTransaction:transaction];
             [interaction removeWithTransaction:transaction];
-        }];
+        } error:nil];
     }];
 }
 
@@ -2583,18 +2580,16 @@ typedef enum : NSUInteger {
             success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
                 OWSAssertDebug(attachmentStreams.count == 1);
                 TSAttachmentStream *attachmentStream = attachmentStreams.firstObject;
-                [self.editingDatabaseConnection
-                    readWriteWithBlock:^(YapDatabaseReadWriteTransaction *postSuccessTransaction) {
-                        [message setQuotedMessageThumbnailAttachmentStream:attachmentStream];
-                        [message saveWithTransaction:postSuccessTransaction];
-                    }];
+                [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *postSuccessTransaction) {
+                    [message setQuotedMessageThumbnailAttachmentStream:attachmentStream];
+                    [message saveWithTransaction:postSuccessTransaction];
+                } error:nil];
             }
             failure:^(NSError *error) {
                 OWSLogWarn(@"Failed to redownload thumbnail with error: %@", error);
-                [self.editingDatabaseConnection
-                    readWriteWithBlock:^(YapDatabaseReadWriteTransaction *postSuccessTransaction) {
-                        [message touchWithTransaction:postSuccessTransaction];
-                    }];
+                [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *postSuccessTransaction) {
+                    [message touchWithTransaction:postSuccessTransaction];
+                } error:nil];
             }];
     }];
 }
@@ -2899,9 +2894,9 @@ typedef enum : NSUInteger {
     if ([self.thread isKindOfClass:TSContactThread.class] && [message isKindOfClass:LKFriendRequestMessage.class]) {
         NSString *recipientID = self.thread.contactIdentifier;
         OWSAssertIsOnMainThread();
-        [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             [LKFriendRequestProtocol setFriendRequestStatusToSendingIfNeededForHexEncodedPublicKey:recipientID transaction:transaction];
-        }];
+        } error:nil];
     }
 }
 
@@ -3716,7 +3711,7 @@ typedef enum : NSUInteger {
     __block TSGroupThread *groupThread;
     __block TSOutgoingMessage *message;
 
-    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         groupThread = [TSGroupThread getOrCreateThreadWithGroupModel:newGroupModel transaction:transaction];
 
         NSString *updateGroupInfo =
@@ -3730,7 +3725,7 @@ typedef enum : NSUInteger {
                                             groupMetaMessage:TSGroupMetaMessageUpdate
                                             expiresInSeconds:expiresInSeconds];
         [message updateWithCustomMessage:updateGroupInfo transaction:transaction];
-    }];
+    } error:nil];
 
     [groupThread fireAvatarChangedNotification];
 
@@ -3800,7 +3795,7 @@ typedef enum : NSUInteger {
         __block TSThread *thread = _thread;
         __block NSString *currentDraft = [self.inputToolbar messageText];
 
-        [self.editingDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             [thread setDraft:currentDraft transaction:transaction];
         }];
     }
@@ -4501,17 +4496,17 @@ typedef enum : NSUInteger {
 - (void)acceptFriendRequest:(TSIncomingMessage *)friendRequest
 {
     if (self.thread.isGroupThread || self.thread.contactIdentifier == nil) { return; }
-    [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [LKFriendRequestProtocol acceptFriendRequestFromHexEncodedPublicKey:self.thread.contactIdentifier using:transaction];
-    }];
+    } error:nil];
 }
 
 - (void)declineFriendRequest:(TSIncomingMessage *)friendRequest
 {
     if (self.thread.isGroupThread || self.thread.contactIdentifier == nil) { return; }
-    [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [LKFriendRequestProtocol declineFriendRequestFromHexEncodedPublicKey:self.thread.contactIdentifier using:transaction];
-    }];
+    } error:nil];
 }
 
 #pragma mark - ConversationViewLayoutDelegate
@@ -4610,7 +4605,7 @@ typedef enum : NSUInteger {
         [BenchManager completeEventWithEventId:@"fromSendUntil_toggleDefaultKeyboard"];
     });
 
-    [self.editingDatabaseConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self.thread setDraft:@"" transaction:transaction];
     }];
 
@@ -5452,13 +5447,13 @@ typedef enum : NSUInteger {
     }
     dispatch_async(dispatch_get_main_queue(), ^{
         __block TSInteraction *targetInteraction;
-        [OWSPrimaryStorage.sharedManager.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             [self.thread enumerateInteractionsWithTransaction:transaction usingBlock:^(TSInteraction *interaction, YapDatabaseReadTransaction *t) {
                 if (interaction.timestamp == timestamp.unsignedLongLongValue) {
                     targetInteraction = interaction;
                 }
             }];
-        }];
+        } error:nil];
         if (targetInteraction == nil || targetInteraction.interactionType != OWSInteractionType_OutgoingMessage) { return; }
         NSString *hexEncodedPublicKey = targetInteraction.thread.contactIdentifier;
         if (hexEncodedPublicKey == nil) { return; }

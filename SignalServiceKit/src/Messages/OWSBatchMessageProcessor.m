@@ -168,9 +168,9 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
 
 - (void)removeJobsWithIds:(NSArray<NSString *> *)uniqueIds
 {
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         [transaction removeObjectsForKeys:uniqueIds inCollection:[OWSMessageContentJob collection]];
-    }];
+    } error:nil];
 }
 
 + (YapDatabaseView *)databaseExtension
@@ -418,7 +418,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
     AssertOnDispatchQueue(self.serialQueue);
 
     NSMutableArray<OWSMessageContentJob *> *processedJobs = [NSMutableArray new];
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         for (OWSMessageContentJob *job in jobs) {
 
             void (^reportFailure)(YapDatabaseReadWriteTransaction *transaction) = ^(
@@ -453,7 +453,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
                 break;
             }
         }
-    }];
+    } error:nil];
     return processedJobs;
 }
 

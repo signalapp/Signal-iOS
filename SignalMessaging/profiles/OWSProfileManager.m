@@ -31,6 +31,7 @@
 #import <SessionServiceKit/TSYapDatabaseObject.h>
 #import <SessionServiceKit/UIImage+OWS.h>
 #import <SessionServiceKit/YapDatabaseConnection+OWS.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -238,7 +239,8 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     // Ensure that the success and failure blocks are called on the main thread.
     void (^failureBlock)(NSError *) = ^(NSError *error) {
         OWSLogError(@"Updating service with profile failed.");
-
+        
+        /*
         // We use a "self-only" contact sync to indicate to desktop
         // that we've changed our profile and that it should do a
         // profile fetch for "self".
@@ -248,6 +250,10 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         if (requiresSync) {
             [[self.syncManager syncLocalContact] retainUntilComplete];
         }
+         */
+        if (requiresSync) {
+            [LKSyncMessagesProtocol syncProfile];
+        }
 
         dispatch_async(dispatch_get_main_queue(), ^{
             failureBlockParameter(error);
@@ -255,12 +261,17 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     };
     void (^successBlock)(void) = ^{
         OWSLogInfo(@"Successfully updated service with profile.");
-
+        
+        /*
         // We use a "self-only" contact sync to indicate to desktop
         // that we've changed our profile and that it should do a
         // profile fetch for "self".
         if (requiresSync) {
             [[self.syncManager syncLocalContact] retainUntilComplete];
+        }
+         */
+        if (requiresSync) {
+            [LKSyncMessagesProtocol syncProfile];
         }
 
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -695,7 +706,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
             // Remove blocked users and groups from profile whitelist.
             //
             // This will always succeed.
-            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                 [transaction removeObjectsForKeys:intersectingRecipientIds.allObjects
                                      inCollection:kOWSProfileManager_UserWhitelistCollection];
                 for (NSData *groupId in intersectingGroupIds) {
@@ -703,7 +714,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
                     [transaction removeObjectForKey:groupIdKey
                                        inCollection:kOWSProfileManager_GroupWhitelistCollection];
                 }
-            }];
+            } error:nil];
             return @(1);
         });
 
@@ -750,7 +761,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 {
     OWSLogWarn(@"Clearing the profile whitelist.");
 
-    [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [transaction removeAllObjectsInCollection:kOWSProfileManager_UserWhitelistCollection];
         [transaction removeAllObjectsInCollection:kOWSProfileManager_GroupWhitelistCollection];
         OWSAssertDebug(0 == [transaction numberOfKeysInCollection:kOWSProfileManager_UserWhitelistCollection]);
@@ -795,7 +806,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     OWSAssertDebug(recipientIds);
 
     NSMutableSet<NSString *> *newRecipientIds = [NSMutableSet new];
-    [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         for (NSString *recipientId in recipientIds) {
             NSNumber *_Nullable oldValue =
                 [transaction objectForKey:recipientId inCollection:kOWSProfileManager_UserWhitelistCollection];
@@ -813,16 +824,16 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
             [newRecipientIds addObject:recipientId];
         }
     }
-        completionBlock:^{
-            for (NSString *recipientId in newRecipientIds) {
-                [[NSNotificationCenter defaultCenter]
-                    postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
-                                       object:nil
-                                     userInfo:@{
-                                         kNSNotificationKey_ProfileRecipientId : recipientId,
-                                     }];
-            }
-        }];
+    completion:^{
+        for (NSString *recipientId in newRecipientIds) {
+            [[NSNotificationCenter defaultCenter]
+                postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
+                                   object:nil
+                                 userInfo:@{
+                                     kNSNotificationKey_ProfileRecipientId : recipientId,
+                                 }];
+        }
+    }];
 }
 
 - (BOOL)isUserInProfileWhitelist:(NSString *)recipientId
@@ -849,7 +860,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     NSString *groupIdKey = [self groupKeyForGroupId:groupId];
 
     __block BOOL didChange = NO;
-    [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         NSNumber *_Nullable oldValue =
             [transaction objectForKey:groupIdKey inCollection:kOWSProfileManager_GroupWhitelistCollection];
         if (oldValue && oldValue.boolValue) {
@@ -859,16 +870,16 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
             didChange = YES;
         }
     }
-        completionBlock:^{
-            if (didChange) {
-                [[NSNotificationCenter defaultCenter]
-                    postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
-                                       object:nil
-                                     userInfo:@{
-                                         kNSNotificationKey_ProfileGroupId : groupId,
-                                     }];
-            }
-        }];
+    completion:^{
+        if (didChange) {
+            [[NSNotificationCenter defaultCenter]
+                postNotificationNameAsync:kNSNotificationName_ProfileWhitelistDidChange
+                                   object:nil
+                                 userInfo:@{
+                                     kNSNotificationKey_ProfileGroupId : groupId,
+                                 }];
+        }
+    }];
 }
 
 - (void)addThreadToProfileWhitelist:(TSThread *)thread
@@ -1451,9 +1462,9 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         [[OWSProfileKeyMessage alloc] initWithTimestamp:[NSDate ows_millisecondTimeStamp] inThread:thread];
     [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
 
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         [self.messageSenderJobQueue addMessage:message transaction:transaction];
-    }];
+    } error:nil];
 }
 
 #pragma mark - Notifications

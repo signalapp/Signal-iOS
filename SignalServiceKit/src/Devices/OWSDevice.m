@@ -66,23 +66,21 @@ NSString *const kOWSPrimaryStorage_MayHaveLinkedDevices = @"kTSStorageManager_Ma
 - (void)clearMayHaveLinkedDevices
 {
     // Note that we write async to avoid opening transactions within transactions.
-    [OWSPrimaryStorage.sharedManager.newDatabaseConnection
-        asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            [transaction setObject:@(NO)
-                            forKey:kOWSPrimaryStorage_MayHaveLinkedDevices
-                      inCollection:kOWSPrimaryStorage_OWSDeviceCollection];
-        }];
+    [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        [transaction setObject:@(NO)
+                        forKey:kOWSPrimaryStorage_MayHaveLinkedDevices
+                  inCollection:kOWSPrimaryStorage_OWSDeviceCollection];
+    }];
 }
 
 - (void)setMayHaveLinkedDevices
 {
     // Note that we write async to avoid opening transactions within transactions.
-    [OWSPrimaryStorage.sharedManager.newDatabaseConnection
-        asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            [transaction setObject:@(YES)
-                            forKey:kOWSPrimaryStorage_MayHaveLinkedDevices
-                      inCollection:kOWSPrimaryStorage_OWSDeviceCollection];
-        }];
+    [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        [transaction setObject:@(YES)
+                        forKey:kOWSPrimaryStorage_MayHaveLinkedDevices
+                  inCollection:kOWSPrimaryStorage_OWSDeviceCollection];
+    }];
 }
 
 - (BOOL)hasReceivedSyncMessageInLastSeconds:(NSTimeInterval)intervalSeconds

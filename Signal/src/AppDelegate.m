@@ -1254,10 +1254,9 @@ static NSTimeInterval launchStartedAt;
     if ([self.tsAccountManager isRegistered]) {
         OWSLogInfo(@"localNumber: %@", [self.tsAccountManager localNumber]);
 
-        [self.primaryStorage.newDatabaseConnection
-            readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-                [ExperienceUpgradeFinder.sharedManager markAllAsSeenWithTransaction:transaction];
-            }];
+        [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+            [ExperienceUpgradeFinder.sharedManager markAllAsSeenWithTransaction:transaction];
+        } error:nil];
 
         // Start running the disappearing messages job in case the newly registered user
         // enables this feature
@@ -1424,10 +1423,10 @@ static NSTimeInterval launchStartedAt;
         BOOL isChatSetUp = [NSUserDefaults.standardUserDefaults boolForKey:userDefaultsKey];
         if (!isChatSetUp || !chat.isDeletable) {
             [LKPublicChatManager.shared addChatWithServer:chat.server channel:chat.channel name:chat.displayName];
-            [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                 TSGroupThread *thread = [TSGroupThread threadWithGroupId:[LKGroupUtilities getEncodedOpenGroupIDAsData:chat.id] transaction:transaction];
                 if (thread != nil) { [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread]; }
-            }];
+            } error:nil];
             [NSUserDefaults.standardUserDefaults setBool:YES forKey:userDefaultsKey];
         }
     }
@@ -1466,9 +1465,9 @@ static NSTimeInterval launchStartedAt;
         if (!isFeedSetUp || !feed.isDeletable) {
             TSGroupModel *group = [[TSGroupModel alloc] initWithTitle:feed.displayName memberIds:@[ userHexEncodedPublicKey, feed.server ] image:nil groupId:[LKGroupUtilities getEncodedRSSFeedIDAsData:feed.id] groupType:rssFeed adminIds:@[ userHexEncodedPublicKey, feed.server ]];
             __block TSGroupThread *thread;
-            [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                 thread = [TSGroupThread getOrCreateThreadWithGroupModel:group transaction:transaction];
-            }];
+            } error:nil];
             [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
             [NSUserDefaults.standardUserDefaults setBool:YES forKey:userDefaultsKey];
         }

@@ -461,10 +461,9 @@ NS_ASSUME_NONNULL_BEGIN
     TSGroupModel *model = [self makeGroup];
 
     __block TSGroupThread *thread;
-    [OWSPrimaryStorage.dbReadWriteConnection
-        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            thread = [TSGroupThread getOrCreateThreadWithGroupModel:model transaction:transaction];
-        }];
+    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        thread = [TSGroupThread getOrCreateThreadWithGroupModel:model transaction:transaction];
+    } error:nil];
     OWSAssertDebug(thread);
     
     [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];

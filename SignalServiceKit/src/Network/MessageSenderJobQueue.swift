@@ -51,11 +51,11 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
                                                   inMessage: mediaMessage,
                                                   completionHandler: { error in
                                                     if let error = error {
-                                                        self.dbConnection.readWrite { transaction in
+                                                        try! Storage.writeSync { transaction in
                                                             mediaMessage.update(sendingError: error, transaction: transaction)
                                                         }
                                                     } else {
-                                                        self.dbConnection.readWrite { transaction in
+                                                        try! Storage.writeSync { transaction in
                                                             self.add(message: mediaMessage, removeMessageAfterSending: isTemporaryAttachment, transaction: transaction)
                                                         }
                                                     }
@@ -96,7 +96,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
 
     /// Used when the user clears their database to cancel any outstanding jobs.
     @objc public func clearAllJobs() {
-        self.dbConnection.readWrite { transaction in
+        try! Storage.writeSync { transaction in
             let statuses: [SSKJobRecordStatus] = [ .unknown, .ready, .running, .permanentlyFailed ]
             var records: [SSKJobRecord] = []
             statuses.forEach {
@@ -196,7 +196,7 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
     }
 
     override public func didSucceed() {
-        self.dbConnection.readWrite { transaction in
+        try! Storage.writeSync { transaction in
             self.durableOperationDelegate?.durableOperationDidSucceed(self, transaction: transaction)
             if self.jobRecord.removeMessageAfterSending {
                 self.message.remove(with: transaction)
@@ -205,7 +205,7 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
     }
 
     override public func didReportError(_ error: Error) {
-        self.dbConnection.readWrite { transaction in
+        try! Storage.writeSync { transaction in
             self.durableOperationDelegate?.durableOperation(self, didReportError: error, transaction: transaction)
         }
     }
@@ -227,7 +227,7 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
     }
 
     override public func didFail(error: Error) {
-        self.dbConnection.readWrite { transaction in
+        try! Storage.writeSync { transaction in
             self.durableOperationDelegate?.durableOperation(self, didFailWithError: error, transaction: transaction)
 
             self.message.update(sendingError: error, transaction: transaction)

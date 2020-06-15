@@ -452,7 +452,7 @@ void VerifyRegistrationsForPrimaryStorage(OWSStorage *storage)
     // made in another process (e.g. the SAE) from showing up in other processes.
     // There's a simple workaround: a trivial write to the database flushes changes
     // made from other processes.
-    [self.dbReadWriteConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [transaction setObject:[NSUUID UUID].UUIDString forKey:@"conversation_view_noop_mod" inCollection:@"temp"];
     }];
 }

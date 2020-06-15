@@ -241,7 +241,7 @@ public class OWSUDManagerImpl: NSObject, OWSUDManager {
             }
         }
 
-        dbConnection.readWrite { (transaction) in
+        try! Storage.writeSync { (transaction) in
             let oldMode = self.unidentifiedAccessMode(forRecipientId: recipientId, isLocalNumber: isLocalNumber, transaction: transaction)
 
             transaction.setObject(mode.rawValue as Int, forKey: recipientId, inCollection: self.kUnidentifiedAccessCollection)

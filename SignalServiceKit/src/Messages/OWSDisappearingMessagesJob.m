@@ -17,6 +17,7 @@
 #import "TSMessage.h"
 #import "TSThread.h"
 #import <SessionCoreKit/NSDate+OWS.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -126,7 +127,7 @@ void AssertIsOnDisappearingMessagesQueue()
     OWSBackgroundTask *_Nullable backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
 
     __block NSUInteger expirationCount = 0;
-    [self.databaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         [self.disappearingMessagesFinder enumerateExpiredMessagesWithBlock:^(TSMessage *message) {
             // sanity check
             if (message.expiresAt > now) {
@@ -139,7 +140,7 @@ void AssertIsOnDisappearingMessagesQueue()
             expirationCount++;
         }
                                                                transaction:transaction];
-    }];
+    } error:nil];
 
     OWSLogDebug(@"Removed %lu expired messages", (unsigned long)expirationCount);
 
@@ -266,9 +267,9 @@ void AssertIsOnDisappearingMessagesQueue()
         dispatch_async(OWSDisappearingMessagesJob.serialQueue, ^{
             // Theoretically this shouldn't be necessary, but there was a race condition when receiving a backlog
             // of messages across timer changes which could cause a disappearing message's timer to never be started.
-            [self.databaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+            [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
                 [self cleanupMessagesWhichFailedToStartExpiringWithTransaction:transaction];
-            }];
+            } error:nil];
 
             [self runLoop];
         });

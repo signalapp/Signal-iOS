@@ -39,7 +39,7 @@ public class OWS112TypingIndicatorsMigration: OWSDatabaseMigration {
             self.typingIndicators.setTypingIndicatorsEnabled(value: false)
             
             DispatchQueue.global().async {
-                self.dbReadWriteConnection().readWrite { transaction in
+                try! Storage.writeSync { transaction in
                     self.save(with: transaction)
                 }
                 

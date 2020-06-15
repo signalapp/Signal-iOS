@@ -249,14 +249,14 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
         return;
     }
     dispatch_async(self.serialQueue, ^{
-        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             NSSet<NSNumber *> *_Nullable oldTimestamps = [transaction objectForKey:recipientId inCollection:collection];
             NSMutableSet<NSNumber *> *newTimestamps
                 = (oldTimestamps ? [oldTimestamps mutableCopy] : [NSMutableSet new]);
             [newTimestamps addObject:@(timestamp)];
 
             [transaction setObject:newTimestamps forKey:recipientId inCollection:collection];
-        }];
+        } error:nil];
 
         [self process];
     });
@@ -276,7 +276,7 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
         return;
     }
     dispatch_async(self.serialQueue, ^{
-        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             NSSet<NSNumber *> *_Nullable oldTimestamps = [transaction objectForKey:recipientId inCollection:collection];
             NSMutableSet<NSNumber *> *newTimestamps
                 = (oldTimestamps ? [oldTimestamps mutableCopy] : [NSMutableSet new]);
@@ -287,7 +287,7 @@ NSString *const kOutgoingReadReceiptManagerCollection = @"kOutgoingReadReceiptMa
             } else {
                 [transaction removeObjectForKey:recipientId inCollection:collection];
             }
-        }];
+        } error:nil];
     });
 }
 

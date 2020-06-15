@@ -10,6 +10,7 @@
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseQuery.h>
 #import <YapDatabase/YapDatabaseSecondaryIndex.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -83,7 +84,7 @@ static NSString *const OWSIncompleteCallsJobCallTypeIndex = @"index_calls_on_cal
     OWSAssertDebug(CurrentAppContext().appLaunchTime);
     uint64_t cutoffTimestamp = [NSDate ows_millisecondsSince1970ForDate:CurrentAppContext().appLaunchTime];
 
-    [[self.primaryStorage newDatabaseConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self
             enumerateIncompleteCallsWithBlock:^(TSCall *call) {
                 if (call.timestamp <= cutoffTimestamp) {
@@ -106,7 +107,7 @@ static NSString *const OWSIncompleteCallsJobCallTypeIndex = @"index_calls_on_cal
                 count++;
             }
                                   transaction:transaction];
-    }];
+    } error:nil];
 
     OWSLogInfo(@"Marked %u calls as missed", count);
 }

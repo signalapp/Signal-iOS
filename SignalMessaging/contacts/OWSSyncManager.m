@@ -252,9 +252,9 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                                                     showTypingIndicators:showTypingIndicators
                                                         sendLinkPreviews:sendLinkPreviews];
 
-    [self.editingDatabaseConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         [self.messageSenderJobQueue addMessage:syncConfigurationMessage transaction:transaction];
-    }];
+    } error:nil];
 }
 
 #pragma mark - Local Sync

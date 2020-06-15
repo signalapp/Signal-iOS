@@ -9,6 +9,7 @@
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseQuery.h>
 #import <YapDatabase/YapDatabaseSecondaryIndex.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -79,24 +80,23 @@ static NSString *const OWSFailedMessagesJobMessageStateIndex = @"index_outoing_m
 {
     __block uint count = 0;
 
-    [[self.primaryStorage newDatabaseConnection]
-        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-            [self enumerateAttemptingOutMessagesWithBlock:^(TSOutgoingMessage *message) {
-                // sanity check
-                OWSAssertDebug(message.messageState == TSOutgoingMessageStateSending);
-                if (message.messageState != TSOutgoingMessageStateSending) {
-                    OWSLogError(@"Refusing to mark as unsent message with state: %d", (int)message.messageState);
-                    return;
-                }
-
-                OWSLogDebug(@"marking message as unsent: %@", message.uniqueId);
-                [message updateWithAllSendingRecipientsMarkedAsFailedWithTansaction:transaction];
-                OWSAssertDebug(message.messageState == TSOutgoingMessageStateFailed);
-
-                count++;
+    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        [self enumerateAttemptingOutMessagesWithBlock:^(TSOutgoingMessage *message) {
+            // sanity check
+            OWSAssertDebug(message.messageState == TSOutgoingMessageStateSending);
+            if (message.messageState != TSOutgoingMessageStateSending) {
+                OWSLogError(@"Refusing to mark as unsent message with state: %d", (int)message.messageState);
+                return;
             }
-                                              transaction:transaction];
-        }];
+
+            OWSLogDebug(@"marking message as unsent: %@", message.uniqueId);
+            [message updateWithAllSendingRecipientsMarkedAsFailedWithTansaction:transaction];
+            OWSAssertDebug(message.messageState == TSOutgoingMessageStateFailed);
+
+            count++;
+        }
+                                          transaction:transaction];
+    } error:nil];
 
     OWSLogDebug(@"Marked %u messages as unsent", count);
 }

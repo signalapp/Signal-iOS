@@ -216,7 +216,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
 
         switch (envelope.type) {
             case SSKProtoEnvelopeTypeFriendRequest: {
-                [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                     [self decryptFriendRequestMessage:envelope
                          envelopeData:envelopeData
                          successBlock:^(OWSMessageDecryptResult *result) {
@@ -229,7 +229,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                                 error);
                              failureBlock();
                          }];
-                }];
+                } error:nil];
                 // Return to avoid double-acknowledging
                 return;
             }
@@ -271,7 +271,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
             case SSKProtoEnvelopeTypeReceipt:
             case SSKProtoEnvelopeTypeKeyExchange:
             case SSKProtoEnvelopeTypeUnknown: {
-                [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                     OWSMessageDecryptResult *result =
                         [OWSMessageDecryptResult resultWithEnvelopeData:envelopeData
                                                           plaintextData:nil
@@ -279,7 +279,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                                                            sourceDevice:envelope.sourceDevice
                                                             isUDMessage:NO];
                     successBlock(result, transaction);
-                }];
+                } error:nil];
                 // Return to avoid double-acknowledging.
                 return;
             }
@@ -307,12 +307,11 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
         OWSFailDebug(@"Received an invalid envelope: %@.", exception.debugDescription);
         OWSProdFail([OWSAnalyticsEvents messageManagerErrorInvalidProtocolMessage]);
 
-        [[self.primaryStorage newDatabaseConnection]
-            readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                TSErrorMessage *errorMessage = [TSErrorMessage corruptedMessageInUnknownThread];
-                [SSKEnvironment.shared.notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
-                                                                                    transaction:transaction];
-            }];
+        [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            TSErrorMessage *errorMessage = [TSErrorMessage corruptedMessageInUnknownThread];
+            [SSKEnvironment.shared.notificationsManager notifyUserForThreadlessErrorMessage:errorMessage
+                                                                                transaction:transaction];
+        } error:nil];
     }
 
     failureBlock();
@@ -422,43 +421,42 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
         return failureBlock(error);
     }
 
-    [self.dbConnection
-        asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            @try {
-                id<CipherMessage> cipherMessage = cipherMessageBlock(encryptedData);
-                LKSessionCipher *cipher = [[LKSessionCipher alloc]
-                                           initWithSessionResetImplementation:self.sessionResetImplementation
-                                           sessionStore:self.primaryStorage
-                                           preKeyStore:self.primaryStorage
-                                           signedPreKeyStore:self.primaryStorage
-                                           identityKeyStore:self.identityManager
-                                           recipientID:recipientId
-                                           deviceID:deviceId];
+    [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        @try {
+            id<CipherMessage> cipherMessage = cipherMessageBlock(encryptedData);
+            LKSessionCipher *cipher = [[LKSessionCipher alloc]
+                                       initWithSessionResetImplementation:self.sessionResetImplementation
+                                       sessionStore:self.primaryStorage
+                                       preKeyStore:self.primaryStorage
+                                       signedPreKeyStore:self.primaryStorage
+                                       identityKeyStore:self.identityManager
+                                       recipientID:recipientId
+                                       deviceID:deviceId];
 
-                // plaintextData may be nil for some envelope types.
-                NSError *error = nil;
-                NSData *_Nullable decryptedData = [cipher decrypt:cipherMessage protocolContext:transaction error:&error];
-                // Throw if we got an error
-                SCKRaiseIfExceptionWrapperError(error);
-                NSData *_Nullable plaintextData = decryptedData != nil ? [decryptedData removePadding] : nil;
-    
-                OWSMessageDecryptResult *result = [OWSMessageDecryptResult resultWithEnvelopeData:envelopeData
-                                                                                    plaintextData:plaintextData
-                                                                                           source:envelope.source
-                                                                                     sourceDevice:envelope.sourceDevice
-                                                                                      isUDMessage:NO];
-                successBlock(result, transaction);
-            } @catch (NSException *exception) {
-                dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                    [self processException:exception envelope:envelope];
-                    NSString *errorDescription = [NSString
-                        stringWithFormat:@"Exception while decrypting %@: %@.", cipherTypeName, exception.description];
-                    OWSLogError(@"%@", errorDescription);
-                    NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptMessage, errorDescription);
-                    failureBlock(error);
-                });
-            }
-        }];
+            // plaintextData may be nil for some envelope types.
+            NSError *error = nil;
+            NSData *_Nullable decryptedData = [cipher decrypt:cipherMessage protocolContext:transaction error:&error];
+            // Throw if we got an error
+            SCKRaiseIfExceptionWrapperError(error);
+            NSData *_Nullable plaintextData = decryptedData != nil ? [decryptedData removePadding] : nil;
+
+            OWSMessageDecryptResult *result = [OWSMessageDecryptResult resultWithEnvelopeData:envelopeData
+                                                                                plaintextData:plaintextData
+                                                                                       source:envelope.source
+                                                                                 sourceDevice:envelope.sourceDevice
+                                                                                  isUDMessage:NO];
+            successBlock(result, transaction);
+        } @catch (NSException *exception) {
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                [self processException:exception envelope:envelope];
+                NSString *errorDescription = [NSString
+                    stringWithFormat:@"Exception while decrypting %@: %@.", cipherTypeName, exception.description];
+                OWSLogError(@"%@", errorDescription);
+                NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptMessage, errorDescription);
+                failureBlock(error);
+            });
+        }
+    }];
 }
 
 - (void)decryptUnidentifiedSender:(SSKProtoEnvelope *)envelope
@@ -486,7 +484,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     NSString *localRecipientId = self.tsAccountManager.localNumber;
     uint32_t localDeviceId = OWSDevicePrimaryDeviceId;
 
-    [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         NSError *cipherError;
         SMKSecretSessionCipher *_Nullable cipher =
             [[SMKSecretSessionCipher alloc] initWithSessionResetImplementation:self.sessionResetImplementation
@@ -580,7 +578,6 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                 return;
             }
 
-            OWSFailDebug(@"Could not decrypt UD message: %@.", underlyingError);
             failureBlock(underlyingError);
             return;
         }
@@ -635,7 +632,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     OWSLogError(
         @"Got exception: %@ of type: %@ with reason: %@", exception.description, exception.name, exception.reason);
 
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         TSErrorMessage *errorMessage;
 
         if (envelope.source.length == 0) {
@@ -676,7 +673,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
             [LKSessionManagementProtocol handleDecryptionError:errorMessage.errorType forHexEncodedPublicKey:envelope.source using:transaction];
             [self notifyUserForErrorMessage:errorMessage envelope:envelope transaction:transaction];
         }
-    }];
+    } error:nil];
 }
 
 - (void)notifyUserForErrorMessage:(TSErrorMessage *)errorMessage

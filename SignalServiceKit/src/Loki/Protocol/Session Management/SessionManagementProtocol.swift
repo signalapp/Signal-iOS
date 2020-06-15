@@ -146,14 +146,13 @@ public final class SessionManagementProtocol : NSObject {
             hasSentSessionRequest = storage.getSessionRequestTimestamp(for: hexEncodedPublicKey, in: transaction) != nil
         }
         guard !hasSentSessionRequest else { return }
-        DispatchQueue.main.async {
-            storage.dbReadWriteConnection.readWrite { transaction in
-                let thread = TSContactThread.getOrCreateThread(withContactId: hexEncodedPublicKey, transaction: transaction)
-                let sessionRequestMessage = SessionRequestMessage(thread: thread)
-                storage.setSessionRequestTimestamp(for: hexEncodedPublicKey, to: Date(), in: transaction)
-                let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
-                messageSenderJobQueue.add(message: sessionRequestMessage, transaction: transaction)
-            }
+        Storage.write { transaction in
+            print("[Loki] Repairing session with: \(hexEncodedPublicKey).")
+            let thread = TSContactThread.getOrCreateThread(withContactId: hexEncodedPublicKey, transaction: transaction)
+            let sessionRequestMessage = SessionRequestMessage(thread: thread)
+            storage.setSessionRequestTimestamp(for: hexEncodedPublicKey, to: Date(), in: transaction)
+            let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
+            messageSenderJobQueue.add(message: sessionRequestMessage, transaction: transaction)
         }
     }
 
@@ -201,6 +200,7 @@ public final class SessionManagementProtocol : NSObject {
         if let sentSessionRequestTimestamp = storage.getSessionRequestTimestamp(for: hexEncodedPublicKey, in: transaction),
             envelope.timestamp < NSDate.ows_millisecondsSince1970(for: sentSessionRequestTimestamp) {
             // We sent a session request after this one was sent
+            print("[Loki] Ignoring session request from: \(hexEncodedPublicKey).")
             return
         }
         var closedGroupMembers: Set<String> = []
@@ -210,7 +210,7 @@ public final class SessionManagementProtocol : NSObject {
             closedGroupMembers.formUnion(group.groupModel.groupMemberIds)
         }
         LokiFileServerAPI.getDeviceLinks(associatedWith: closedGroupMembers).ensure {
-            storage.dbReadWriteConnection.readWrite { transaction in
+            Storage.write { transaction in
                 let validHEPKs = closedGroupMembers.flatMap {
                     LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: $0, in: transaction)
                 }

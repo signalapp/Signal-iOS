@@ -19,7 +19,8 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
 
     // MARK: Convenience
     private static var userDisplayName: String {
-        return SSKEnvironment.shared.contactsManager.displayName(forPhoneIdentifier: getUserHexEncodedPublicKey()) ?? "Anonymous"
+        let userPublicKey = UserDefaults.standard[.masterHexEncodedPublicKey] ?? getUserHexEncodedPublicKey()
+        return SSKEnvironment.shared.profileManager.profileNameForRecipient(withID: userPublicKey) ?? "Anonymous"
     }
     
     // MARK: Database
@@ -37,13 +38,13 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
     }
     
     private static func setLastMessageServerID(for group: UInt64, on server: String, to newValue: UInt64) {
-        storage.dbReadWriteConnection.readWrite { transaction in
+        try! Storage.writeSync { transaction in
             transaction.setObject(newValue, forKey: "\(server).\(group)", inCollection: lastMessageServerIDCollection)
         }
     }
     
     private static func removeLastMessageServerID(for group: UInt64, on server: String) {
-        storage.dbReadWriteConnection.readWrite { transaction in
+        try! Storage.writeSync { transaction in
             transaction.removeObject(forKey: "\(server).\(group)", inCollection: lastMessageServerIDCollection)
         }
     }
@@ -57,13 +58,13 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
     }
     
     private static func setLastDeletionServerID(for group: UInt64, on server: String, to newValue: UInt64) {
-        storage.dbReadWriteConnection.readWrite { transaction in
+        try! Storage.writeSync { transaction in
             transaction.setObject(newValue, forKey: "\(server).\(group)", inCollection: lastDeletionServerIDCollection)
         }
     }
     
     private static func removeLastDeletionServerID(for group: UInt64, on server: String) {
-        storage.dbReadWriteConnection.readWrite { transaction in
+        try! Storage.writeSync { transaction in
             transaction.removeObject(forKey: "\(server).\(group)", inCollection: lastDeletionServerIDCollection)
         }
     }
@@ -271,7 +272,7 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
                     print("[Loki] Couldn't parse display names for users: \(hexEncodedPublicKeys) from: \(rawResponse).")
                     throw LokiDotNetAPIError.parsingFailed
                 }
-                storage.dbReadWriteConnection.readWrite { transaction in
+                try! Storage.writeSync { transaction in
                     data.forEach { data in
                         guard let user = data["user"] as? JSON, let hexEncodedPublicKey = user["username"] as? String, let rawDisplayName = user["name"] as? String else { return }
                         let endIndex = hexEncodedPublicKey.endIndex
@@ -330,6 +331,51 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
         }
     }
 
+    static func updateProfileIfNeeded(for channel: UInt64, on server: String, from info: LokiPublicChatInfo) {
+        let storage = OWSPrimaryStorage.shared()
+        let publicChatID = "\(server).\(channel)"
+        try! Storage.writeSync { transaction in
+            // Update user count
+            storage.setUserCount(info.memberCount, forPublicChatWithID: publicChatID, in: transaction)
+            let groupThread = TSGroupThread.getOrCreateThread(withGroupId: publicChatID.data(using: .utf8)!, groupType: .openGroup, transaction: transaction)
+            // Update display name if needed
+            let groupModel = groupThread.groupModel
+            if groupModel.groupName != info.displayName {
+                let newGroupModel = TSGroupModel(title: info.displayName, memberIds: groupModel.groupMemberIds, image: groupModel.groupImage, groupId: groupModel.groupId, groupType: groupModel.groupType, adminIds: groupModel.groupAdminIds)
+                groupThread.groupModel = newGroupModel
+                groupThread.save(with: transaction)
+            }
+            // Download and update profile picture if needed
+            let oldProfilePictureURL = storage.getProfilePictureURL(forPublicChatWithID: publicChatID, in: transaction)
+            if oldProfilePictureURL != info.profilePictureURL || groupModel.groupImage == nil {
+                storage.setProfilePictureURL(info.profilePictureURL, forPublicChatWithID: publicChatID, in: transaction)
+                if let avatarURL = info.profilePictureURL {
+                    let configuration = URLSessionConfiguration.default
+                    let manager = AFURLSessionManager.init(sessionConfiguration: configuration)
+                    let url = URL(string: "\(server)\(avatarURL)")!
+                    let request = URLRequest(url: url)
+                    let task = manager.downloadTask(with: request, progress: nil,
+                        destination: { (targetPath: URL, response: URLResponse) -> URL in
+                            let tempFilePath = URL(fileURLWithPath: OWSTemporaryDirectoryAccessibleAfterFirstAuth()).appendingPathComponent(UUID().uuidString)
+                            return tempFilePath
+                        },
+                        completionHandler: { (response: URLResponse, filePath: URL?, error: Error?) in
+                            if let error = error {
+                                print("[Loki] Couldn't download profile picture for public chat channel with ID: \(channel) on server: \(server).")
+                                return
+                            }
+                            if let filePath = filePath, let avatarData = try? Data.init(contentsOf: filePath) {
+                                let attachmentStream = TSAttachmentStream(contentType: OWSMimeTypeImageJpeg, byteCount: UInt32(avatarData.count), sourceFilename: nil, caption: nil, albumMessageId: nil)
+                                try! attachmentStream.write(avatarData)
+                                groupThread.updateAvatar(with: attachmentStream)
+                            }
+                    })
+                    task.resume()
+                }
+            }
+        }
+    }
+
     // MARK: Joining & Leaving
     @objc(getInfoForChannelWithID:onServer:)
     public static func objc_getInfo(for channel: UInt64, on server: String) -> AnyPromise {
@@ -349,17 +395,19 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
                         let annotation = annotations.first,
                         let info = annotation["value"] as? JSON,
                         let displayName = info["name"] as? String,
+                        let profilePictureURL = info["avatar"] as? String,
                         let countInfo = data["counts"] as? JSON,
                         let memberCount = countInfo["subscribers"] as? Int else {
                         print("[Loki] Couldn't parse info for public chat channel with ID: \(channel) on server: \(server) from: \(rawResponse).")
                         throw LokiDotNetAPIError.parsingFailed
                     }
                     let storage = OWSPrimaryStorage.shared()
-                    storage.dbReadWriteConnection.readWrite { transaction in
+                    try! Storage.writeSync { transaction in
                         storage.setUserCount(memberCount, forPublicChatWithID: "\(server).\(channel)", in: transaction)
                     }
-                    // TODO: Use this to update open group names as needed
-                    return LokiPublicChatInfo(displayName: displayName, memberCount: memberCount)
+                    let publicChatInfo = LokiPublicChatInfo(displayName: displayName, profilePictureURL: profilePictureURL, memberCount: memberCount)
+                    updateProfileIfNeeded(for: channel, on: server, from: publicChatInfo)
+                    return publicChatInfo
                 }
             }.handlingInvalidAuthTokenIfNeeded(for: server)
         }

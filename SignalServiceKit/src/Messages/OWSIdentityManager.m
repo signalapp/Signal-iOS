@@ -206,9 +206,9 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     OWSAssertDebug(recipientId.length > 0);
 
     __block BOOL result;
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         result = [self saveRemoteIdentity:identityKey recipientId:recipientId protocolContext:transaction];
-    }];
+    } error:nil];
 
     return result;
 }
@@ -294,13 +294,13 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
     OWSAssertDebug(identityKey.length == kStoredIdentityKeyLength);
     OWSAssertDebug(recipientId.length > 0);
 
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         [self setVerificationState:verificationState
                        identityKey:identityKey
                        recipientId:recipientId
              isUserInitiatedChange:isUserInitiatedChange
                        transaction:transaction];
-    }];
+    } error:nil];
 }
 
 - (void)setVerificationState:(OWSVerificationState)verificationState
@@ -663,10 +663,10 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                     OWSLogInfo(@"Successfully sent verification state sync message");
 
                     // Record that this verification state was successfully synced.
-                    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                         [self clearSyncMessageForRecipientId:message.verificationForRecipientId
                                                  transaction:transaction];
-                    }];
+                    } error:nil];
                 }
                 failure:^(NSError *error) {
                     OWSLogError(@"Failed to send verification state sync message with error: %@", error);
@@ -678,9 +678,9 @@ NSString *const kNSNotificationName_IdentityStateDidChange = @"kNSNotificationNa
                 OWSLogInfo(@"Removing retries for syncing verification state, since user is no longer registered: %@",
                     message.verificationForRecipientId);
                 // Otherwise this will fail forever.
-                [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                     [self clearSyncMessageForRecipientId:message.verificationForRecipientId transaction:transaction];
-                }];
+                } error:nil];
             }
         }];
 }

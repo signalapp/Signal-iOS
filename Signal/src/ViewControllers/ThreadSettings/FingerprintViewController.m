@@ -519,20 +519,19 @@ typedef void (^CustomLayoutBlock)(void);
 - (void)verifyUnverifyButtonTapped:(UIGestureRecognizer *)gestureRecognizer
 {
     if (gestureRecognizer.state == UIGestureRecognizerStateRecognized) {
-        [OWSPrimaryStorage.sharedManager.newDatabaseConnection
-            readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                BOOL isVerified = [[OWSIdentityManager sharedManager] verificationStateForRecipientId:self.recipientId
-                                                                                          transaction:transaction]
-                    == OWSVerificationStateVerified;
+        [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            BOOL isVerified = [[OWSIdentityManager sharedManager] verificationStateForRecipientId:self.recipientId
+                                                                                      transaction:transaction]
+                == OWSVerificationStateVerified;
 
-                OWSVerificationState newVerificationState
-                    = (isVerified ? OWSVerificationStateDefault : OWSVerificationStateVerified);
-                [[OWSIdentityManager sharedManager] setVerificationState:newVerificationState
-                                                             identityKey:self.identityKey
-                                                             recipientId:self.recipientId
-                                                   isUserInitiatedChange:YES
-                                                             transaction:transaction];
-            }];
+            OWSVerificationState newVerificationState
+                = (isVerified ? OWSVerificationStateDefault : OWSVerificationStateVerified);
+            [[OWSIdentityManager sharedManager] setVerificationState:newVerificationState
+                                                         identityKey:self.identityKey
+                                                         recipientId:self.recipientId
+                                               isUserInitiatedChange:YES
+                                                         transaction:transaction];
+        } error:nil];
 
         [self dismissViewControllerAnimated:YES completion:nil];
     }

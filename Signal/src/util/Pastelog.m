@@ -596,16 +596,16 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
 
     DispatchMainThreadSafe(^{
         __block TSThread *thread = nil;
-        [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             thread = [TSContactThread getOrCreateThreadWithContactId:recipientId transaction:transaction];
-        }];
-        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+        } error:nil];
+        [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
             [ThreadUtil enqueueMessageWithText:url.absoluteString
                                       inThread:thread
                               quotedReplyModel:nil
                               linkPreviewDraft:nil
                                    transaction:transaction];
-        }];
+        } error:nil];
     });
 
     // Also copy to pasteboard.
@@ -624,13 +624,13 @@ typedef void (^DebugLogUploadFailure)(DebugLogUploader *uploader, NSError *error
     }];
     DispatchMainThreadSafe(^{
         if (thread) {
-            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+            [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
                 [ThreadUtil enqueueMessageWithText:url.absoluteString
                                           inThread:thread
                                   quotedReplyModel:nil
                                   linkPreviewDraft:nil
                                        transaction:transaction];
-            }];
+            } error:nil];
         } else {
             [Pastelog showFailureAlertWithMessage:@"Could not find last thread."];
         }

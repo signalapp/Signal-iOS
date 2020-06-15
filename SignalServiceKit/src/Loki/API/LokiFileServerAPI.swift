@@ -81,15 +81,7 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
                     }
                 })
             }.map(on: DispatchQueue.global()) { deviceLinks in
-                storage.cacheDeviceLinks(deviceLinks)
-                /*
-                // Dispatch async on the main queue to avoid nested write transactions
-                DispatchQueue.main.async {
-                    storage.dbReadWriteConnection.readWrite { transaction in
-                        storage.setDeviceLinks(deviceLinks, in: transaction)
-                    }
-                }
-                 */
+                storage.setDeviceLinks(deviceLinks)
                 return deviceLinks
             }
         }.handlingInvalidAuthTokenIfNeeded(for: server)
@@ -122,16 +114,8 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
             deviceLinks = storage.getDeviceLinks(for: getUserHexEncodedPublicKey(), in: transaction)
         }
         deviceLinks.insert(deviceLink)
-        return setDeviceLinks(deviceLinks).then(on: LokiAPI.workQueue) { _ -> Promise<Void> in
-            let (promise, seal) = Promise<Void>.pending()
-            // Dispatch async on the main queue to avoid nested write transactions
-            DispatchQueue.main.async {
-                storage.dbReadWriteConnection.readWrite { transaction in
-                    storage.addDeviceLink(deviceLink, in: transaction)
-                }
-                seal.fulfill(())
-            }
-            return promise
+        return setDeviceLinks(deviceLinks).map(on: LokiAPI.workQueue) { _ in
+            storage.addDeviceLink(deviceLink)
         }
     }
 
@@ -142,16 +126,8 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
             deviceLinks = storage.getDeviceLinks(for: getUserHexEncodedPublicKey(), in: transaction)
         }
         deviceLinks.remove(deviceLink)
-        return setDeviceLinks(deviceLinks).then(on: LokiAPI.workQueue) { _ -> Promise<Void> in
-            let (promise, seal) = Promise<Void>.pending()
-            // Dispatch async on the main queue to avoid nested write transactions
-            DispatchQueue.main.async {
-                storage.dbReadWriteConnection.readWrite { transaction in
-                    storage.removeDeviceLink(deviceLink, in: transaction)
-                }
-                seal.fulfill(())
-            }
-            return promise
+        return setDeviceLinks(deviceLinks).map(on: LokiAPI.workQueue) { _ in
+            storage.removeDeviceLink(deviceLink)
         }
     }
     

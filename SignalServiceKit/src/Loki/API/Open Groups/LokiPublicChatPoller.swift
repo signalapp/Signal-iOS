@@ -150,6 +150,9 @@ public final class LokiPublicChatPoller : NSObject {
                     if !wasSentByCurrentUser {
                         content.setDataMessage(try! dataMessage.build())
                     } else {
+                        // The line below is necessary to make it so that when a user sends a message in an open group and then
+                        // deletes and re-joins the open group without closing the app in between, the message isn't ignored.
+                        SyncMessagesProtocol.dropFromSyncMessageTimestampCache(message.timestamp, for: senderHexEncodedPublicKey)
                         let syncMessageSentBuilder = SSKProtoSyncMessageSent.builder()
                         syncMessageSentBuilder.setMessage(try! dataMessage.build())
                         syncMessageSentBuilder.setDestination(userHexEncodedPublicKey)
@@ -163,7 +166,7 @@ public final class LokiPublicChatPoller : NSObject {
                     envelope.setSource(senderHexEncodedPublicKey)
                     envelope.setSourceDevice(OWSDevicePrimaryDeviceId)
                     envelope.setContent(try! content.build().serializedData())
-                    storage.dbReadWriteConnection.readWrite { transaction in
+                    try! Storage.writeSync { transaction in
                         transaction.setObject(senderDisplayName, forKey: senderHexEncodedPublicKey, inCollection: publicChat.id)
                         let messageServerID = message.serverID
                         SSKEnvironment.shared.messageManager.throws_processEnvelope(try! envelope.build(), plaintextData: try! content.build().serializedData(), wasReceivedByUD: false, transaction: transaction, serverID: messageServerID ?? 0)
@@ -213,9 +216,8 @@ public final class LokiPublicChatPoller : NSObject {
     private func pollForDeletedMessages() {
         let publicChat = self.publicChat
         let _ = LokiPublicChatAPI.getDeletedMessageServerIDs(for: publicChat.channel, on: publicChat.server).done(on: DispatchQueue.global()) { deletedMessageServerIDs in
-            let storage = OWSPrimaryStorage.shared()
-            storage.dbReadWriteConnection.readWrite { transaction in
-                let deletedMessageIDs = deletedMessageServerIDs.compactMap { storage.getIDForMessage(withServerID: UInt($0), in: transaction) }
+            try! Storage.writeSync { transaction in
+                let deletedMessageIDs = deletedMessageServerIDs.compactMap { OWSPrimaryStorage.shared().getIDForMessage(withServerID: UInt($0), in: transaction) }
                 deletedMessageIDs.forEach { messageID in
                     TSMessage.fetch(uniqueId: messageID)?.remove(with: transaction)
                 }

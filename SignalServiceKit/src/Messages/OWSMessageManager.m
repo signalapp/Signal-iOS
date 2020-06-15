@@ -938,7 +938,7 @@ NS_ASSUME_NONNULL_BEGIN
                                    attachmentHandler:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
                                        OWSAssertDebug(attachmentStreams.count == 1);
                                        TSAttachmentStream *attachmentStream = attachmentStreams.firstObject;
-                                       [self.dbConnection readWriteWithBlock:^(
+                                       [LKStorage writeSyncWithBlock:^(
                                            YapDatabaseReadWriteTransaction *transaction) {
                                            TSGroupThread *_Nullable groupThread =
                                                [TSGroupThread threadWithGroupId:dataMessage.group.id
@@ -950,7 +950,7 @@ NS_ASSUME_NONNULL_BEGIN
 
                                            [groupThread updateAvatarWithAttachmentStream:attachmentStream
                                                                              transaction:transaction];
-                                       }];
+                                       } error:nil];
                                    }
                                          transaction:transaction
              ];
@@ -1636,7 +1636,7 @@ NS_ASSUME_NONNULL_BEGIN
         // * Failures don't interfere with successes.
         [self.attachmentDownloads downloadAttachmentPointer:attachmentPointer
             success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
-                [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                     TSAttachmentStream *_Nullable attachmentStream = attachmentStreams.firstObject;
                     OWSAssertDebug(attachmentStream);
                     if (attachmentStream && incomingMessage.quotedMessage.thumbnailAttachmentPointerId.length > 0 &&
@@ -1649,7 +1649,7 @@ NS_ASSUME_NONNULL_BEGIN
                         // since the attachment might be a contact avatar, etc.
                         [incomingMessage touchWithTransaction:transaction];
                     }
-                }];
+                } error:nil];
             }
             failure:^(NSError *error) {
                 OWSLogWarn(@"Failed to download attachment for message: %lu with error: %@.",

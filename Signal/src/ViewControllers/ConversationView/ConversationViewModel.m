@@ -550,10 +550,9 @@ static const int kYapDatabaseRangeMaxLength = 25000;
     if (oldIndicatorItem) {
         // TODO ideally this would be happening within the *same* transaction that caused the unreadMessageIndicator
         // to be cleared.
-        [self.editingDatabaseConnection
-            asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-                [oldIndicatorItem.interaction touchWithTransaction:transaction];
-            }];
+        [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+            [oldIndicatorItem.interaction touchWithTransaction:transaction];
+        }];
     }
 
     if (self.hasClearedUnreadMessagesIndicator) {

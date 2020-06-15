@@ -123,13 +123,11 @@ public enum OnionRequestAPI {
                 }
             }.map(on: LokiAPI.workQueue) { paths in
                 OnionRequestAPI.paths = paths
-                // Dispatch async on the main queue to avoid nested write transactions
+                try! Storage.writeSync { transaction in
+                    print("[Loki] Persisting onion request paths to database.")
+                    OWSPrimaryStorage.shared().setOnionRequestPaths(paths, in: transaction)
+                }
                 DispatchQueue.main.async {
-                    let storage = OWSPrimaryStorage.shared()
-                    storage.dbReadWriteConnection.readWrite { transaction in
-                        print("[Loki] Persisting onion request paths to database.")
-                        storage.setOnionRequestPaths(paths, in: transaction)
-                    }
                     NotificationCenter.default.post(name: .pathsBuilt, object: nil)
                 }
                 return paths
@@ -165,12 +163,8 @@ public enum OnionRequestAPI {
 
     private static func dropAllPaths() {
         paths.removeAll()
-        // Dispatch async on the main queue to avoid nested write transactions
-        DispatchQueue.main.async {
-            let storage = OWSPrimaryStorage.shared()
-            storage.dbReadWriteConnection.readWrite { transaction in
-                storage.clearOnionRequestPaths(in: transaction)
-            }
+        try! Storage.writeSync { transaction in
+            OWSPrimaryStorage.shared().clearOnionRequestPaths(in: transaction)
         }
     }
 

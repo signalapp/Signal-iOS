@@ -375,23 +375,23 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
         OWSAssertIsOnMainThread();
         // TODO - in line with QuotedReply and other message attachments, saving should happen as part of sending
         // preparation rather than duplicated here and in the SAE
-        [self.dbReadWriteConnection
-            asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
-                if (contactShare.avatarImage) {
-                    [contactShare.dbRecord saveAvatarImage:contactShare.avatarImage transaction:transaction];
-                }
+
+        [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+            if (contactShare.avatarImage) {
+                [contactShare.dbRecord saveAvatarImage:contactShare.avatarImage transaction:transaction];
             }
-            completionBlock:^{
-                __block TSOutgoingMessage *outgoingMessage = nil;
-                outgoingMessage = [ThreadUtil sendMessageNonDurablyWithContactShare:contactShare.dbRecord
-                                                                           inThread:self.thread
-                                                                      messageSender:self.messageSender
-                                                                         completion:^(NSError *_Nullable error) {
-                                                                             sendCompletion(error, outgoingMessage);
-                                                                         }];
-                // This is necessary to show progress.
-                self.outgoingMessage = outgoingMessage;
-            }];
+        }
+        completion:^{
+            __block TSOutgoingMessage *outgoingMessage = nil;
+            outgoingMessage = [ThreadUtil sendMessageNonDurablyWithContactShare:contactShare.dbRecord
+                                                                       inThread:self.thread
+                                                                  messageSender:self.messageSender
+                                                                     completion:^(NSError *_Nullable error) {
+                                                                         sendCompletion(error, outgoingMessage);
+                                                                     }];
+            // This is necessary to show progress.
+            self.outgoingMessage = outgoingMessage;
+        }];
                                                     
         
     }
@@ -552,7 +552,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
     OWSLogDebug(@"Confirming identity for recipient: %@", recipientId);
 
-    [self.dbReadWriteConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         OWSVerificationState verificationState =
             [[OWSIdentityManager sharedManager] verificationStateForRecipientId:recipientId transaction:transaction];
         switch (verificationState) {

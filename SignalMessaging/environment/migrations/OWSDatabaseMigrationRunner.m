@@ -78,7 +78,7 @@ NS_ASSUME_NONNULL_BEGIN
         [knownMigrationIds addObject:migration.uniqueId];
     }
 
-    [self.primaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         NSArray<NSString *> *savedMigrationIds = [transaction allKeysInCollection:OWSDatabaseMigration.collection];
 
         NSMutableSet<NSString *> *unknownMigrationIds = [NSMutableSet new];
@@ -89,7 +89,7 @@ NS_ASSUME_NONNULL_BEGIN
             OWSLogInfo(@"Culling unknown migration: %@", unknownMigrationId);
             [transaction removeObjectForKey:unknownMigrationId inCollection:OWSDatabaseMigration.collection];
         }
-    }];
+    } error:nil];
 }
 
 // Run migrations serially to:

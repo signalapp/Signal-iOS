@@ -23,6 +23,22 @@ public final class SyncMessagesProtocol : NSObject {
         // FIXME: We added this check to avoid a crash, but we should really figure out why that crash was happening in the first place
         return !UserDefaults.standard[.hasLaunchedOnce]
     }
+    
+    @objc(syncProfile)
+    public static func syncProfile() {
+        try! Storage.writeSync { transaction in
+            let userPublicKey = getUserHexEncodedPublicKey()
+            let linkedDevices = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: userPublicKey, in: transaction)
+            for publicKey in linkedDevices {
+                guard publicKey != userPublicKey else { continue }
+                let thread = TSContactThread.getOrCreateThread(withContactId: publicKey, transaction: transaction)
+                let syncMessage = OWSOutgoingSyncMessage.init(in: thread, messageBody: "", attachmentId: nil)
+                syncMessage.save(with: transaction)
+                let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
+                messageSenderJobQueue.add(message: syncMessage, transaction: transaction)
+            }
+        }
+    }
 
     @objc(syncContactWithHexEncodedPublicKey:in:)
     public static func syncContact(_ hexEncodedPublicKey: String, in transaction: YapDatabaseReadTransaction) -> AnyPromise {
@@ -97,6 +113,12 @@ public final class SyncMessagesProtocol : NSObject {
         return LokiDatabaseUtilities.isUserLinkedDevice(hexEncodedPublicKey, transaction: transaction)
     }
 
+    public static func dropFromSyncMessageTimestampCache(_ timestamp: UInt64, for hexEncodedPublicKey: String) {
+        var timestamps: Set<UInt64> = syncMessageTimestamps[hexEncodedPublicKey] ?? []
+        if timestamps.contains(timestamp) { timestamps.remove(timestamp) }
+        syncMessageTimestamps[hexEncodedPublicKey] = timestamps
+    }
+
     // TODO: We should probably look at why sync messages are being duplicated rather than doing this
     @objc(isDuplicateSyncMessage:fromHexEncodedPublicKey:)
     public static func isDuplicateSyncMessage(_ protoContent: SSKProtoContent, from hexEncodedPublicKey: String) -> Bool {
@@ -166,9 +188,10 @@ public final class SyncMessagesProtocol : NSObject {
         let parser = ContactParser(data: data)
         let hexEncodedPublicKeys = parser.parseHexEncodedPublicKeys()
         let userHexEncodedPublicKey = getUserHexEncodedPublicKey()
+        let linkedDevices = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: userHexEncodedPublicKey, in: transaction)
         // Try to establish sessions
         for hexEncodedPublicKey in hexEncodedPublicKeys {
-            guard hexEncodedPublicKey != userHexEncodedPublicKey else { continue } // Skip self
+            guard !linkedDevices.contains(hexEncodedPublicKey) else { continue } // Skip self and linked devices
             // We don't update the friend request status; that's done in OWSMessageSender.sendMessage(_:)
             let friendRequestStatus = storage.getFriendRequestStatus(for: hexEncodedPublicKey, transaction: transaction)
             switch friendRequestStatus {
@@ -228,6 +251,9 @@ public final class SyncMessagesProtocol : NSObject {
         for openGroup in groups {
             let openGroupManager = LokiPublicChatManager.shared
             guard openGroupManager.getChat(server: openGroup.url, channel: openGroup.channel) == nil else { return }
+            let userPublicKey = UserDefaults.standard[.masterHexEncodedPublicKey] ?? getUserHexEncodedPublicKey()
+            let displayName = SSKEnvironment.shared.profileManager.profileNameForRecipient(withID: userPublicKey)
+            LokiPublicChatAPI.setDisplayName(to: displayName, on: openGroup.url)
             openGroupManager.addChat(server: openGroup.url, channel: openGroup.channel)
         }
     }

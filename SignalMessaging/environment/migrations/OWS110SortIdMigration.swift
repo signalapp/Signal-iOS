@@ -25,7 +25,7 @@ public class OWS110SortIdMigration: OWSDatabaseMigration {
 
     private func doMigration(completion: @escaping OWSDatabaseMigrationCompletion) {
         // TODO batch this?
-        self.dbReadWriteConnection().readWrite { transaction in
+        try! Storage.writeSync { transaction in
 
             var archivedThreads: [TSThread] = []
 

@@ -251,9 +251,9 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 - (uint32_t)getOrGenerateRegistrationId
 {
     __block uint32_t result;
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         result = [self getOrGenerateRegistrationId:transaction];
-    }];
+    } error:nil];
     return result;
 }
 
@@ -523,11 +523,11 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
 
 - (void)storeServerAuthToken:(NSString *)authToken
 {
-    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [transaction setObject:authToken
                         forKey:TSAccountManager_ServerAuthToken
                   inCollection:TSAccountManager_UserAccountCollection];
-    }];
+    } error:nil];
 }
 
 + (void)unregisterTextSecureWithSuccess:(void (^)(void))success failure:(void (^)(NSError *error))failureBlock
@@ -599,7 +599,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
         self.cachedIsDeregistered = @(isDeregistered);
     }
 
-    [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [transaction setObject:@(isDeregistered)
                         forKey:TSAccountManager_IsDeregisteredKey
                   inCollection:TSAccountManager_UserAccountCollection];
@@ -623,7 +623,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
         _cachedLocalNumber = nil;
         _phoneNumberAwaitingVerification = nil;
         _cachedIsDeregistered = nil;
-        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             [transaction removeAllObjectsInCollection:TSAccountManager_UserAccountCollection];
 
             [[OWSPrimaryStorage sharedManager] resetSessionStore:transaction];
@@ -631,7 +631,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
             [transaction setObject:localNumber
                             forKey:TSAccountManager_ReregisteringPhoneNumberKey
                       inCollection:TSAccountManager_UserAccountCollection];
-        }];
+        } error:nil];
 
         [self postRegistrationStateDidChangeNotification];
 
@@ -723,7 +723,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
     }
     AnyPromise *promise = [self performUpdateAccountAttributes];
     promise = promise.then(^(id value) {
-        [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
             // Clear the update request unless a new update has been requested
             // while this update was in flight.
             NSDate *_Nullable latestUpdateRequestDate =
@@ -733,7 +733,7 @@ NSString *const TSAccountManager_NeedsAccountAttributesUpdateKey = @"TSAccountMa
                 [transaction removeObjectForKey:TSAccountManager_NeedsAccountAttributesUpdateKey
                                    inCollection:TSAccountManager_UserAccountCollection];
             }
-        }];
+        } error:nil];
     });
     return promise;
 }

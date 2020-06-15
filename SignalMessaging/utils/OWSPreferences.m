@@ -11,6 +11,7 @@
 #import <SessionServiceKit/TSStorageHeaders.h>
 #import <SessionServiceKit/YapDatabaseConnection+OWS.h>
 #import <SessionServiceKit/YapDatabaseTransaction+OWS.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -87,9 +88,9 @@ NSString *const OWSPreferencesKeySystemCallLogEnabled = @"OWSPreferencesKeySyste
 
 - (void)setValueForKey:(NSString *)key toValue:(nullable id)value
 {
-    [OWSPrimaryStorage.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self setValueForKey:key toValue:value transaction:transaction];
-    }];
+    } error:nil];
 }
 
 - (void)setValueForKey:(NSString *)key

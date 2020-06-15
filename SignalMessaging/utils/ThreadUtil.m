@@ -26,6 +26,7 @@
 #import <SessionServiceKit/TSInvalidIdentityKeyErrorMessage.h>
 #import <SessionServiceKit/TSOutgoingMessage.h>
 #import <SessionServiceKit/TSThread.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -87,7 +88,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
 
 + (void)enqueueDeviceLinkMessage:(LKDeviceLinkMessage *)message
 {
-    [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self.messageSenderJobQueue addMessage:message transaction:transaction];
     }];
 }
@@ -203,25 +204,23 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                       block:^(void (^benchmarkCompletion)(void)) {
                           // To avoid blocking the send flow, we dispatch an async write from within this read
                           // transaction
-                          [self.dbConnection
-                              asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull writeTransaction) {
-                                  [message saveWithTransaction:writeTransaction];
+                          [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull writeTransaction) {
+                              [message saveWithTransaction:writeTransaction];
 
-                                  OWSLinkPreview *_Nullable linkPreview =
-                                      [self linkPreviewForLinkPreviewDraft:linkPreviewDraft
-                                                               transaction:writeTransaction];
-                                  if (linkPreview) {
-                                      [message updateWithLinkPreview:linkPreview transaction:writeTransaction];
-                                  }
-
-                                  NSMutableArray<OWSOutgoingAttachmentInfo *> *attachmentInfos = [NSMutableArray new];
-                                  for (SignalAttachment *attachment in attachments) {
-                                      OWSOutgoingAttachmentInfo *attachmentInfo = [attachment buildOutgoingAttachmentInfoWithMessage:message];
-                                      [attachmentInfos addObject:attachmentInfo];
-                                  }
-                                  completionBlock(message, attachmentInfos, writeTransaction);
+                              OWSLinkPreview *_Nullable linkPreview =
+                                  [self linkPreviewForLinkPreviewDraft:linkPreviewDraft
+                                                           transaction:writeTransaction];
+                              if (linkPreview) {
+                                  [message updateWithLinkPreview:linkPreview transaction:writeTransaction];
                               }
-                                      completionBlock:benchmarkCompletion];
+
+                              NSMutableArray<OWSOutgoingAttachmentInfo *> *attachmentInfos = [NSMutableArray new];
+                              for (SignalAttachment *attachment in attachments) {
+                                  OWSOutgoingAttachmentInfo *attachmentInfo = [attachment buildOutgoingAttachmentInfoWithMessage:message];
+                                  [attachmentInfos addObject:attachmentInfo];
+                              }
+                              completionBlock(message, attachmentInfos, writeTransaction);
+                          } completion:benchmarkCompletion];
                       }];
 
     return message;
@@ -251,7 +250,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
                                                        contactShare:contactShare
                                                         linkPreview:nil];
 
-    [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         [message saveWithTransaction:transaction];
         [self.messageSenderJobQueue addMessage:message transaction:transaction];
     }];
@@ -266,7 +265,7 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
     TSOutgoingMessage *message =
         [TSOutgoingMessage outgoingMessageInThread:thread groupMetaMessage:TSGroupMetaMessageQuit expiresInSeconds:0];
 
-    [self.dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         [self.messageSenderJobQueue addMessage:message transaction:transaction];
     }];
 }
@@ -701,25 +700,24 @@ typedef void (^BuildOutgoingMessageCompletionBlock)(TSOutgoingMessage *savedMess
 {
     OWSLogInfo(@"");
 
-    [OWSPrimaryStorage.sharedManager.newDatabaseConnection
-        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [self removeAllObjectsInCollection:[TSThread collection]
-                                         class:[TSThread class]
+    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        [self removeAllObjectsInCollection:[TSThread collection]
+                                     class:[TSThread class]
+                               transaction:transaction];
+        [self removeAllObjectsInCollection:[TSInteraction collection]
+                                     class:[TSInteraction class]
+                               transaction:transaction];
+        [self removeAllObjectsInCollection:[TSAttachment collection]
+                                     class:[TSAttachment class]
+                               transaction:transaction];
+        @try {
+            [self removeAllObjectsInCollection:[SignalRecipient collection]
+                                         class:[SignalRecipient class]
                                    transaction:transaction];
-            [self removeAllObjectsInCollection:[TSInteraction collection]
-                                         class:[TSInteraction class]
-                                   transaction:transaction];
-            [self removeAllObjectsInCollection:[TSAttachment collection]
-                                         class:[TSAttachment class]
-                                   transaction:transaction];
-            @try {
-                [self removeAllObjectsInCollection:[SignalRecipient collection]
-                                             class:[SignalRecipient class]
-                                       transaction:transaction];
-            } @catch (NSException *exception) {
-                // Do nothing
-            }
-        }];
+        } @catch (NSException *exception) {
+            // Do nothing
+        }
+    } error:nil];
     [TSAttachmentStream deleteAttachments];
 }
 

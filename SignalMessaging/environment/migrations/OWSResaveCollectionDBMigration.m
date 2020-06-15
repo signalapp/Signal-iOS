@@ -5,6 +5,7 @@
 #import "OWSResaveCollectionDBMigration.h"
 #import <YapDatabase/YapDatabaseConnection.h>
 #import <YapDatabase/YapDatabaseTransaction.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -20,18 +21,17 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(completion);
 
     NSMutableArray<NSString *> *recordIds = [NSMutableArray new];
-    [dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         [recordIds addObjectsFromArray:[transaction allKeysInCollection:collection]];
         OWSLogInfo(@"Migrating %lu records from: %@.", (unsigned long)recordIds.count, collection);
     }
-        completionQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
-        completionBlock:^{
-            [self resaveBatch:recordIds
-                   collection:collection
-                       filter:filter
-                 dbConnection:dbConnection
-                   completion:completion];
-        }];
+    completion:^{
+        [self resaveBatch:recordIds
+               collection:collection
+                   filter:filter
+             dbConnection:dbConnection
+               completion:completion];
+    }];
 }
 
 - (void)resaveBatch:(NSMutableArray<NSString *> *)recordIds
@@ -52,7 +52,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    [dbConnection asyncReadWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         const int kBatchSize = 1000;
         for (int i = 0; i < kBatchSize && recordIds.count > 0; i++) {
             NSString *messageId = [recordIds lastObject];
@@ -65,14 +65,14 @@ NS_ASSUME_NONNULL_BEGIN
             [entity saveWithTransaction:transaction];
         }
     }
-        completionBlock:^{
-            // Process the next batch.
-            [self resaveBatch:recordIds
-                   collection:collection
-                       filter:filter
-                 dbConnection:dbConnection
-                   completion:completion];
-        }];
+    completion:^{
+        // Process the next batch.
+        [self resaveBatch:recordIds
+               collection:collection
+                   filter:filter
+             dbConnection:dbConnection
+               completion:completion];
+    }];
 }
 
 @end

@@ -130,14 +130,13 @@ NS_ASSUME_NONNULL_BEGIN
                 success:^(NSArray<TSAttachmentStream *> *attachmentStreams) {
                     OWSAssertDebug(attachmentStreams.count == 1);
                     TSAttachmentStream *attachmentStream = attachmentStreams.firstObject;
-                    [self.primaryStorage.newDatabaseConnection
-                        readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                            [outgoingMessage setQuotedMessageThumbnailAttachmentStream:attachmentStream];
-                            [outgoingMessage saveWithTransaction:transaction];
-                            if (serverID != 0) {
-                                [OWSPrimaryStorage.sharedManager setIDForMessageWithServerID:serverID to:outgoingMessage.uniqueId in:transaction];
-                            }
-                        }];
+                    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                        [outgoingMessage setQuotedMessageThumbnailAttachmentStream:attachmentStream];
+                        [outgoingMessage saveWithTransaction:transaction];
+                        if (serverID != 0) {
+                            [OWSPrimaryStorage.sharedManager setIDForMessageWithServerID:serverID to:outgoingMessage.uniqueId in:transaction];
+                        }
+                    } error:nil];
                 }
                 failure:^(NSError *error) {
                     OWSLogWarn(@"failed to fetch thumbnail for transcript: %lu with error: %@",

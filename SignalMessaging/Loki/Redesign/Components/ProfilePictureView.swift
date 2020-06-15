@@ -7,6 +7,7 @@ public final class ProfilePictureView : UIView {
     @objc public var isRSSFeed = false
     @objc public var hexEncodedPublicKey: String!
     @objc public var additionalHexEncodedPublicKey: String?
+    @objc public var openGroupProfilePicture: UIImage?
     
     // MARK: Components
     private lazy var imageView = getImageView()
@@ -43,6 +44,7 @@ public final class ProfilePictureView : UIView {
     
     // MARK: Updating
     @objc public func update() {
+        AssertIsOnMainThread()
         func getProfilePicture(of size: CGFloat, for hexEncodedPublicKey: String) -> UIImage? {
             guard !hexEncodedPublicKey.isEmpty else { return nil }
             return OWSProfileManager.shared().profileAvatar(forRecipientId: hexEncodedPublicKey) ?? Identicon.generateIcon(string: hexEncodedPublicKey, size: size)
@@ -61,8 +63,8 @@ public final class ProfilePictureView : UIView {
             additionalImageView.isHidden = true
             additionalImageView.image = nil
         }
-        guard hexEncodedPublicKey != nil else { return } // Can happen in rare cases
-        imageView.image = isRSSFeed ? nil : getProfilePicture(of: size, for: hexEncodedPublicKey)
+        guard hexEncodedPublicKey != nil || openGroupProfilePicture != nil else { return }
+        imageView.image = isRSSFeed ? nil : (openGroupProfilePicture ?? getProfilePicture(of: size, for: hexEncodedPublicKey))
         imageView.backgroundColor = isRSSFeed ? UIColor(rgbHex: 0x353535) : UIColor(rgbHex: 0xD8D8D8) // UIColor(rgbHex: 0xD8D8D8) = Colors.unimportant
         imageView.layer.cornerRadius = size / 2
         imageView.contentMode = isRSSFeed ? .center : .scaleAspectFit

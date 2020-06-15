@@ -13,6 +13,7 @@
 #import <Reachability/Reachability.h>
 #import <SessionCoreKit/Cryptography.h>
 #import <YapDatabase/YapDatabase.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -187,10 +188,10 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
                 dispatch_async(self.serialQueue, ^{
                     self.hasRequestInFlight = NO;
 
-                    [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                         // Remove from queue.
                         [transaction removeObjectForKey:eventKey inCollection:kOWSAnalytics_EventsCollection];
-                    }];
+                    } error:nil];
 
                     // Wait a second between network requests / retries.
                     dispatch_after(
@@ -323,7 +324,7 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
             [self sendEvent:eventDictionary eventKey:eventKey isCritical:YES];
         } else {
             // Add to queue.
-            [self.dbConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                 const int kMaxQueuedEvents = 5000;
                 if ([transaction numberOfKeysInCollection:kOWSAnalytics_EventsCollection] > kMaxQueuedEvents) {
                     OWSLogError(@"Event queue overflow.");
@@ -331,7 +332,7 @@ NSString *NSStringForOWSAnalyticsSeverity(OWSAnalyticsSeverity severity)
                 }
 
                 [transaction setObject:eventDictionary forKey:eventKey inCollection:kOWSAnalytics_EventsCollection];
-            }];
+            } error:nil];
 
             [self tryToSyncEvents];
         }

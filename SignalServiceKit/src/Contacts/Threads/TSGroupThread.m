@@ -89,9 +89,9 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
     OWSAssertDebug(groupId.length > 0);
 
     __block TSGroupThread *thread;
-    [[self dbReadWriteConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         thread = [self getOrCreateThreadWithGroupId:groupId groupType:groupType transaction:transaction];
-    }];
+    } error:nil];
     return thread;
 }
 
@@ -117,9 +117,9 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
     OWSAssertDebug(groupModel.groupId.length > 0);
 
     __block TSGroupThread *thread;
-    [[self dbReadWriteConnection] readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         thread = [self getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
-    }];
+    } error:nil];
     return thread;
 }
 
@@ -242,9 +242,9 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
 
 - (void)leaveGroupWithSneakyTransaction
 {
-    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
+    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *_Nonnull transaction) {
         [self leaveGroupWithTransaction:transaction];
-    }];
+    } error:nil];
 }
 
 - (void)leaveGroupWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
@@ -272,9 +272,9 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
 
 - (void)updateAvatarWithAttachmentStream:(TSAttachmentStream *)attachmentStream
 {
-    [self.dbReadWriteConnection readWriteWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         [self updateAvatarWithAttachmentStream:attachmentStream transaction:transaction];
-    }];
+    } error:nil];
 }
 
 - (void)updateAvatarWithAttachmentStream:(TSAttachmentStream *)attachmentStream
