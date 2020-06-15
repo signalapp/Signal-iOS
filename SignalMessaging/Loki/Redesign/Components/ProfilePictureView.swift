@@ -7,7 +7,7 @@ public final class ProfilePictureView : UIView {
     @objc public var isRSSFeed = false
     @objc public var hexEncodedPublicKey: String!
     @objc public var additionalHexEncodedPublicKey: String?
-    @objc public var groupAvatarImage: UIImage?
+    @objc public var openGroupProfilePicture: UIImage?
     
     // MARK: Components
     private lazy var imageView = getImageView()
@@ -62,9 +62,8 @@ public final class ProfilePictureView : UIView {
             additionalImageView.isHidden = true
             additionalImageView.image = nil
         }
-        guard hexEncodedPublicKey != nil || groupAvatarImage != nil else { return } // Can happen in rare cases
-        
-        imageView.image = isRSSFeed ? nil : groupAvatarImage != nil ? groupAvatarImage! : getProfilePicture(of: size, for: hexEncodedPublicKey)
+        guard hexEncodedPublicKey != nil || openGroupProfilePicture != nil else { return }
+        imageView.image = isRSSFeed ? nil : (openGroupProfilePicture ?? getProfilePicture(of: size, for: hexEncodedPublicKey))
         imageView.backgroundColor = isRSSFeed ? UIColor(rgbHex: 0x353535) : UIColor(rgbHex: 0xD8D8D8) // UIColor(rgbHex: 0xD8D8D8) = Colors.unimportant
         imageView.layer.cornerRadius = size / 2
         imageView.contentMode = isRSSFeed ? .center : .scaleAspectFit

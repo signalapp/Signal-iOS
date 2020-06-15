@@ -112,13 +112,10 @@ public final class SyncMessagesProtocol : NSObject {
         let hexEncodedPublicKey = envelope.source!
         return LokiDatabaseUtilities.isUserLinkedDevice(hexEncodedPublicKey, transaction: transaction)
     }
-    
-    @objc(addForceSyncMessageTimestamp:from:)
-    public static func addForceSyncMessageTimestamp(_ timestamp: UInt64, from hexEncodedPublicKey: String) {
+
+    public static func dropFromSyncMessageTimestampCache(_ timestamp: UInt64, for hexEncodedPublicKey: String) {
         var timestamps: Set<UInt64> = syncMessageTimestamps[hexEncodedPublicKey] ?? []
-        if timestamps.contains(timestamp) {
-            timestamps.remove(timestamp)
-        }
+        if timestamps.contains(timestamp) { timestamps.remove(timestamp) }
         syncMessageTimestamps[hexEncodedPublicKey] = timestamps
     }
 
@@ -254,8 +251,8 @@ public final class SyncMessagesProtocol : NSObject {
         for openGroup in groups {
             let openGroupManager = LokiPublicChatManager.shared
             guard openGroupManager.getChat(server: openGroup.url, channel: openGroup.channel) == nil else { return }
-            let userHexEncodedPublicKey = UserDefaults.standard[.masterHexEncodedPublicKey] ?? getUserHexEncodedPublicKey()
-            let displayName = SSKEnvironment.shared.profileManager.profileNameForRecipient(withID: userHexEncodedPublicKey)
+            let userPublicKey = UserDefaults.standard[.masterHexEncodedPublicKey] ?? getUserHexEncodedPublicKey()
+            let displayName = SSKEnvironment.shared.profileManager.profileNameForRecipient(withID: userPublicKey)
             LokiPublicChatAPI.setDisplayName(to: displayName, on: openGroup.url)
             openGroupManager.addChat(server: openGroup.url, channel: openGroup.channel)
         }

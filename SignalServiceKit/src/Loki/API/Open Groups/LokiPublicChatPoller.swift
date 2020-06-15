@@ -150,7 +150,9 @@ public final class LokiPublicChatPoller : NSObject {
                     if !wasSentByCurrentUser {
                         content.setDataMessage(try! dataMessage.build())
                     } else {
-                        SyncMessagesProtocol.addForceSyncMessageTimestamp(message.timestamp, from: senderHexEncodedPublicKey)
+                        // The line below is necessary to make it so that when a user sends a message in an open group and then
+                        // deletes and re-joins the open group without closing the app in between, the message isn't ignored.
+                        SyncMessagesProtocol.dropFromSyncMessageTimestampCache(message.timestamp, for: senderHexEncodedPublicKey)
                         let syncMessageSentBuilder = SSKProtoSyncMessageSent.builder()
                         syncMessageSentBuilder.setMessage(try! dataMessage.build())
                         syncMessageSentBuilder.setDestination(userHexEncodedPublicKey)

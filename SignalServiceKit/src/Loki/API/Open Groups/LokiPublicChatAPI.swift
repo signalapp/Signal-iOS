@@ -19,8 +19,8 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
 
     // MARK: Convenience
     private static var userDisplayName: String {
-        let userHexEncodedPublicKey = UserDefaults.standard[.masterHexEncodedPublicKey] ?? getUserHexEncodedPublicKey()
-        return SSKEnvironment.shared.profileManager.profileNameForRecipient(withID: userHexEncodedPublicKey) ?? "Anonymous"
+        let userPublicKey = UserDefaults.standard[.masterHexEncodedPublicKey] ?? getUserHexEncodedPublicKey()
+        return SSKEnvironment.shared.profileManager.profileNameForRecipient(withID: userPublicKey) ?? "Anonymous"
     }
     
     // MARK: Database
@@ -331,6 +331,51 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
         }
     }
 
+    static func updateProfileIfNeeded(for channel: UInt64, on server: String, from info: LokiPublicChatInfo) {
+        let storage = OWSPrimaryStorage.shared()
+        let publicChatID = "\(server).\(channel)"
+        try! Storage.writeSync { transaction in
+            // Update user count
+            storage.setUserCount(info.memberCount, forPublicChatWithID: publicChatID, in: transaction)
+            let groupThread = TSGroupThread.getOrCreateThread(withGroupId: publicChatID.data(using: .utf8)!, groupType: .openGroup, transaction: transaction)
+            // Update display name if needed
+            let groupModel = groupThread.groupModel
+            if groupModel.groupName != info.displayName {
+                let newGroupModel = TSGroupModel(title: info.displayName, memberIds: groupModel.groupMemberIds, image: groupModel.groupImage, groupId: groupModel.groupId, groupType: groupModel.groupType, adminIds: groupModel.groupAdminIds)
+                groupThread.groupModel = newGroupModel
+                groupThread.save(with: transaction)
+            }
+            // Download and update profile picture if needed
+            let oldProfilePictureURL = storage.getProfilePictureURL(forPublicChatWithID: publicChatID, in: transaction)
+            if oldProfilePictureURL != info.profilePictureURL || groupModel.groupImage == nil {
+                storage.setProfilePictureURL(info.profilePictureURL, forPublicChatWithID: publicChatID, in: transaction)
+                if let avatarURL = info.profilePictureURL {
+                    let configuration = URLSessionConfiguration.default
+                    let manager = AFURLSessionManager.init(sessionConfiguration: configuration)
+                    let url = URL(string: "\(server)\(avatarURL)")!
+                    let request = URLRequest(url: url)
+                    let task = manager.downloadTask(with: request, progress: nil,
+                        destination: { (targetPath: URL, response: URLResponse) -> URL in
+                            let tempFilePath = URL(fileURLWithPath: OWSTemporaryDirectoryAccessibleAfterFirstAuth()).appendingPathComponent(UUID().uuidString)
+                            return tempFilePath
+                        },
+                        completionHandler: { (response: URLResponse, filePath: URL?, error: Error?) in
+                            if let error = error {
+                                print("[Loki] Couldn't download profile picture for public chat channel with ID: \(channel) on server: \(server).")
+                                return
+                            }
+                            if let filePath = filePath, let avatarData = try? Data.init(contentsOf: filePath) {
+                                let attachmentStream = TSAttachmentStream(contentType: OWSMimeTypeImageJpeg, byteCount: UInt32(avatarData.count), sourceFilename: nil, caption: nil, albumMessageId: nil)
+                                try! attachmentStream.write(avatarData)
+                                groupThread.updateAvatar(with: attachmentStream)
+                            }
+                    })
+                    task.resume()
+                }
+            }
+        }
+    }
+
     // MARK: Joining & Leaving
     @objc(getInfoForChannelWithID:onServer:)
     public static func objc_getInfo(for channel: UInt64, on server: String) -> AnyPromise {
@@ -361,58 +406,10 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
                         storage.setUserCount(memberCount, forPublicChatWithID: "\(server).\(channel)", in: transaction)
                     }
                     let publicChatInfo = LokiPublicChatInfo(displayName: displayName, profilePictureURL: profilePictureURL, memberCount: memberCount)
-                    updateOpenGroupProfileIfNeeded(for: channel, on: server, with: publicChatInfo)
+                    updateProfileIfNeeded(for: channel, on: server, from: publicChatInfo)
                     return publicChatInfo
                 }
             }.handlingInvalidAuthTokenIfNeeded(for: server)
-        }
-    }
-        
-    static func updateOpenGroupProfileIfNeeded(for channel: UInt64, on server: String, with info: LokiPublicChatInfo) {
-        let storage = OWSPrimaryStorage.shared()
-        let publicChatID = "\(server).\(channel)"
-        storage.dbReadWriteConnection.readWrite { transaction in
-            //Save user count
-            storage.setUserCount(info.memberCount, forPublicChatWithID: publicChatID, in: transaction)
-            
-            let groupThread = TSGroupThread.getOrCreateThread(withGroupId: publicChatID.data(using: .utf8)!, groupType: .openGroup, transaction: transaction)
-
-            //Update display name if needed
-            let groupModel = groupThread.groupModel
-            if groupModel.groupName != info.displayName {
-                let newGroupModel = TSGroupModel.init(title: info.displayName, memberIds: groupModel.groupMemberIds, image: groupModel.groupImage, groupId: groupModel.groupId, groupType: groupModel.groupType, adminIds: groupModel.groupAdminIds)
-                groupThread.groupModel = newGroupModel
-                groupThread.save(with: transaction)
-            }
-            
-            //Download and update profile picture if needed
-            let oldAvatarURL = storage.getAvatarURL(forPublicChatWithID: publicChatID, in: transaction)
-            if oldAvatarURL != info.profilePictureURL || groupModel.groupImage == nil {
-                storage.setAvatarURL(info.profilePictureURL, forPublicChatWithID: publicChatID, in: transaction)
-                if let avatarURL = info.profilePictureURL {
-                    let configuration = URLSessionConfiguration.default
-                    let manager = AFURLSessionManager.init(sessionConfiguration: configuration)
-                    let url = URL(string: "\(server)\(avatarURL)")!
-                    let request = URLRequest(url: url)
-                    let task = manager.downloadTask(with: request, progress: nil,
-                                                    destination: {(targetPath: URL, response: URLResponse) -> URL in
-                                                        let tempFilePath = URL(fileURLWithPath: OWSTemporaryDirectoryAccessibleAfterFirstAuth()).appendingPathComponent(UUID().uuidString)
-                                                        return tempFilePath
-                                                        },
-                                                    completionHandler: { (response: URLResponse, filePath: URL?, error: Error?) in
-                                                        if let error = error {
-                                                            print("[Loki] Couldn't download profile picture for public chat channel with ID: \(channel) on server: \(server)")
-                                                            return
-                                                        }
-                                                        if let path = filePath, let avatarData = try? Data.init(contentsOf: path) {
-                                                            let attachmentStream = TSAttachmentStream.init(contentType: OWSMimeTypeImageJpeg, byteCount: UInt32(avatarData.count), sourceFilename: nil, caption: nil, albumMessageId: nil)
-                                                            try! attachmentStream.write(avatarData)
-                                                            groupThread.updateAvatar(with: attachmentStream)
-                                                        }
-                    })
-                    task.resume()
-                }
-            }
         }
     }
 

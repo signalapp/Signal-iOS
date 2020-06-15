@@ -957,9 +957,9 @@ const CGFloat kIconViewLength = 24;
     [stackView setLayoutMarginsRelativeArrangement:YES];
     
     if (self.isGroupThread) {
-        TSGroupThread* groupThread = (TSGroupThread*)self.thread;
-        if (groupThread.isPublicChat && groupThread.groupModel.groupImage != nil) {
-            profilePictureView.groupAvatarImage = groupThread.groupModel.groupImage;
+        TSGroupThread* groupThread = (TSGroupThread *)self.thread;
+        if (groupThread.isPublicChat && groupThread.groupModel.groupImage != nil && ![groupThread.groupModel.groupName isEqual:@"Session Public Chat"]) {
+            profilePictureView.openGroupProfilePicture = groupThread.groupModel.groupImage;
             profilePictureView.isRSSFeed = false;
         } else {
             profilePictureView.hexEncodedPublicKey = @"";

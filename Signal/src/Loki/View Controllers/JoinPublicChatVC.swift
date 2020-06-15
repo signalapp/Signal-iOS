@@ -133,11 +133,11 @@ final class JoinPublicChatVC : BaseVC, UIPageViewControllerDataSource, UIPageVie
         isJoining = true
         let channelID: UInt64 = 1
         let urlAsString = url.absoluteString
-        let userHexEncodedPublicKey = UserDefaults.standard[.masterHexEncodedPublicKey] ?? getUserHexEncodedPublicKey()
-        let displayName = OWSProfileManager.shared().profileNameForRecipient(withID: userHexEncodedPublicKey)
-        let profilePictureURL = OWSProfileManager.shared().profilePictureURL()
-        let profileKey = OWSProfileManager.shared().localProfileKey().keyData
-        // TODO: Profile picture & profile key
+        let userPublicKey = UserDefaults.standard[.masterHexEncodedPublicKey] ?? getUserHexEncodedPublicKey()
+        let profileManager = OWSProfileManager.shared()
+        let displayName = profileManager.profileNameForRecipient(withID: userPublicKey)
+        let profilePictureURL = profileManager.profilePictureURL()
+        let profileKey = profileManager.localProfileKey().keyData
         try! Storage.writeSync { transaction in
             transaction.removeObject(forKey: "\(urlAsString).\(channelID)", inCollection: LokiPublicChatAPI.lastMessageServerIDCollection)
             transaction.removeObject(forKey: "\(urlAsString).\(channelID)", inCollection: LokiPublicChatAPI.lastDeletionServerIDCollection)
