@@ -24,7 +24,7 @@ extension ConversationViewController {
     }
 
     @objc
-    func clearMarkedUnread() {
+    func clearThreadUnreadFlagIfNecessary() {
         if thread.isMarkedUnread {
             self.databaseStorage.write { transaction in
                 self.thread.clearMarkedAsUnread(updateStorageService: true, transaction: transaction)

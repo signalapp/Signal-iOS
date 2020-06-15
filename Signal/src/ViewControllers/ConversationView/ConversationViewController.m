@@ -174,7 +174,7 @@ typedef enum : NSUInteger {
 
 @property (nonatomic, readonly) BOOL showLoadOlderHeader;
 @property (nonatomic, readonly) BOOL showLoadNewerHeader;
-@property (nonatomic) uint64_t lastVisibleSortId;
+@property (nonatomic) uint64_t lastSortIDMarkedRead;
 
 @property (nonatomic) BOOL isUserScrolling;
 @property (nonatomic, nullable) ConversationScrollState *scrollStateBeforeLoadingMore;
@@ -801,8 +801,6 @@ typedef enum : NSUInteger {
         [self loadDraftInCompose];
         [self scrollToDefaultPosition:NO];
     }
-
-    [self updateLastVisibleSortId];
 
     if (!self.viewHasEverAppeared) {
         [BenchManager
@@ -2939,9 +2937,19 @@ typedef enum : NSUInteger {
 
 - (void)setHasUnreadMessages:(BOOL)hasUnreadMessages
 {
+    OWSAssertIsOnMainThread();
     if (_hasUnreadMessages != hasUnreadMessages) {
         _hasUnreadMessages = hasUnreadMessages;
         [self configureScrollDownButton];
+    }
+}
+
+/// Checks to see if the unread message flag can be cleared. Shortcircuits if the flag is not set to begin with
+- (void)clearUnreadMessageFlagIfNecessary
+{
+    OWSAssertIsOnMainThread();
+    if ([self hasUnreadMessages]) {
+        [self updateUnreadMessageFlagUsingAsyncTransaction];
     }
 }
 
@@ -2963,6 +2971,7 @@ typedef enum : NSUInteger {
 
 - (void)updateUnreadMessageFlagWithTransaction:(SDSAnyReadTransaction *)transaction
 {
+    OWSAssertIsOnMainThread();
     InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:self.thread.uniqueId];
     NSUInteger unreadCount = [interactionFinder unreadCountWithTransaction:transaction.unwrapGrdbRead];
     [self setHasUnreadMessages:(unreadCount > 0)];
@@ -3005,8 +3014,7 @@ typedef enum : NSUInteger {
         - (self.collectionView.contentInset.top + self.collectionView.contentInset.bottom));
     BOOL isScrolledUpOnePage = scrollSpaceToBottom > pageHeight * 1.f;
 
-    TSInteraction *lastInteraction = [[[self viewItems] lastObject] interaction];
-    BOOL hasLaterMessageOffscreen = ([lastInteraction sortId] > [self lastVisibleSortId]);
+    BOOL hasLaterMessageOffscreen = ([self lastSortID] > [self lastVisibleSortID]);
 
     if ([self isInPreviewPlatter]) {
         [[self scrollDownButton] setHidden:YES];
@@ -3659,31 +3667,39 @@ typedef enum : NSUInteger {
     return lastVisibleIndexPath;
 }
 
-- (void)updateLastVisibleSortId
+- (uint64_t)mostRecentSortIDForItemAtIndex:(NSInteger)idx
 {
     OWSAssertIsOnMainThread();
+    OWSAssertDebug(idx >= 0);
 
-    NSIndexPath *_Nullable lastVisibleIndexPath = [self lastVisibleIndexPath];
-    id<ConversationViewItem> _Nullable lastVisibleViewItem;
-    if (lastVisibleIndexPath) {
-        lastVisibleViewItem = [self viewItemForIndex:lastVisibleIndexPath.row];
+    TSInteraction *interaction = [[self viewItemForIndex:idx] interaction];
+    if ([interaction isKindOfClass:[OWSTypingIndicatorInteraction class]] && idx > 0) {
+        // Walk back one interaction if we've landed on a typing indicator
+        // Typing indicators are the only interaction that don't vend a sortID and there's only one of them, so this should be safe.
+        // If we ever support other variants of interactions that don't vend a sortID, this needs to be changed to a while loop.
+        interaction = [[self viewItemForIndex:idx-1] interaction];
     }
 
-    // If the last item is currently a typing indicator, check the previous
-    // view item (if one exists), since typing indicators don't have sortIds
-    if ([lastVisibleViewItem.interaction isKindOfClass:[OWSTypingIndicatorInteraction class]] && lastVisibleIndexPath.row > 0) {
-        lastVisibleViewItem = [self viewItemForIndex:lastVisibleIndexPath.row - 1];
-    }
+    return [interaction sortId];
+}
 
-    if (lastVisibleViewItem) {
-        uint64_t oldLastVisibleSortID = [self lastVisibleSortId];
-        uint64_t newLastVisibleSortID = [[lastVisibleViewItem interaction] sortId];
-        if ([self hasUnreadMessages] && newLastVisibleSortID > oldLastVisibleSortID) {
-            // Only recheck the unread message count if we're already in an unread state and we've revealed a new, later sortId
-            [self updateUnreadMessageFlagUsingAsyncTransaction];
-        }
-        self.lastVisibleSortId = newLastVisibleSortID;
-    }
+- (uint64_t)lastVisibleSortID
+{
+    NSIndexPath *lastVisibleIndexPath = [self lastVisibleIndexPath];
+    return lastVisibleIndexPath ? [self mostRecentSortIDForItemAtIndex:[lastVisibleIndexPath row]] : 0;
+}
+
+- (uint64_t)lastSortID
+{
+    NSInteger lastItemIndex = (NSInteger)[[self viewItems] count] - 1;
+    return (lastItemIndex >= 0) ? [self mostRecentSortIDForItemAtIndex:lastItemIndex] : 0;
+}
+
+- (void)setLastSortIDMarkedRead:(uint64_t)lastSortIDMarkedRead
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug([self isMarkingAsRead]);
+    _lastSortIDMarkedRead = lastSortIDMarkedRead;
 }
 
 - (void)markVisibleMessagesAsRead
@@ -3699,34 +3715,33 @@ typedef enum : NSUInteger {
         return;
     }
 
-    [self clearMarkedUnread];
+    // Always clear the thread unread flag
+    [self clearThreadUnreadFlagIfNecessary];
 
-    [self updateLastVisibleSortId];
+    BOOL isShowingUnreadMessage = ([self lastVisibleSortID] > [self lastSortIDMarkedRead]);
+    if (![self isMarkingAsRead] && isShowingUnreadMessage) {
+        [self setIsMarkingAsRead:YES];
+        [self clearUnreadMessageFlagIfNecessary];
 
-    uint64_t lastVisibleSortId = self.lastVisibleSortId;
+        uint64_t sortIDToMarkRead = [self lastVisibleSortID];
+        [BenchManager benchAsyncWithTitle:@"marking as read" block:^(void (^ _Nonnull benchCompletion)(void)) {
+            [[OWSReadReceiptManager sharedManager] markAsReadLocallyBeforeSortId:sortIDToMarkRead
+                                                                          thread:[self thread]
+                                                        hasPendingMessageRequest:[[self threadViewModel] hasPendingMessageRequest]
+                                                                      completion:^{
+                OWSAssertIsOnMainThread();
+                [self setLastSortIDMarkedRead:sortIDToMarkRead];
+                [self setIsMarkingAsRead:NO];
 
-    if (lastVisibleSortId == 0) {
-        // No visible messages yet. New Thread.
-        return;
+                // If -markVisibleMessagesAsRead wasn't invoked on a timer, we'd want to double check that the current -lastVisibleSortID
+                // hasn't incremented since we started the read receipt request.
+                // But we have a timer, so if it has changed, this method will just be reinvoked in <100ms.
+
+                benchCompletion();
+            }];
+        }];
+
     }
-
-    OWSAssertIsOnMainThread();
-    if (self.isMarkingAsRead) {
-        return;
-    }
-    self.isMarkingAsRead = YES;
-    [BenchManager benchAsyncWithTitle:@"marking as read"
-                                block:^(void (^benchCompletion)(void)) {
-                                    [OWSReadReceiptManager.sharedManager
-                                        markAsReadLocallyBeforeSortId:self.lastVisibleSortId
-                                                               thread:self.thread
-                                             hasPendingMessageRequest:self.threadViewModel.hasPendingMessageRequest
-                                                           completion:^{
-                                                               OWSAssertIsOnMainThread();
-                                                               self.isMarkingAsRead = NO;
-                                                               benchCompletion();
-                                                           }];
-                                }];
 }
 
 - (void)conversationSettingsDidUpdate
@@ -4101,7 +4116,6 @@ typedef enum : NSUInteger {
     // Constantly try to update the lastKnownDistanceFromBottom.
     [self updateLastKnownDistanceFromBottom];
 
-    [self updateLastVisibleSortId];
     [self configureScrollDownButton];
 
     [self.autoLoadMoreTimer invalidate];
@@ -4512,7 +4526,6 @@ typedef enum : NSUInteger {
         [self resetForSizeOrOrientationChange];
     }
 
-    [self updateLastVisibleSortId];
     [self configureScrollDownButton];
 }
 
@@ -4933,7 +4946,6 @@ typedef enum : NSUInteger {
     } else if (conversationUpdate.conversationUpdateType == ConversationUpdateType_Reload) {
         [self resetContentAndLayoutWithTransaction:transaction];
         [self updateUnreadMessageFlagWithTransaction:transaction];
-        [self updateLastVisibleSortId];
         return;
     }
 
@@ -5024,7 +5036,6 @@ typedef enum : NSUInteger {
         // We can't use the transaction parameter; this completion
         // will be run async.
         [self updateUnreadMessageFlagUsingAsyncTransaction];
-        [self updateLastVisibleSortId];
         [self configureScrollDownButton];
         
         [self showMessageRequestDialogIfRequired];
