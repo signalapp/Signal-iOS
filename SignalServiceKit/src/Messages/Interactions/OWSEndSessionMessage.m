@@ -51,7 +51,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (SSKProtoContentBuilder *)prepareCustomContentBuilder:(SignalRecipient *)recipient {
-    SSKProtoContentBuilder *builder = SSKProtoContent.builder;
+    SSKProtoContentBuilder *builder = [super prepareCustomContentBuilder:recipient];
     
     PreKeyBundle *bundle = [OWSPrimaryStorage.sharedManager generatePreKeyBundleForContact:recipient.recipientId];
     SSKProtoPrekeyBundleMessageBuilder *preKeyBuilder = [SSKProtoPrekeyBundleMessage builderFromPreKeyBundle:bundle];

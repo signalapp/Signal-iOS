@@ -928,7 +928,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 {
     OWSAssertDebug(messageSend);
     OWSAssertDebug(messageSend.thread || [messageSend.message isKindOfClass:[OWSOutgoingSyncMessage class]]);
-    OWSAssertDebug(messageSend.isUDSend);
 
     TSOutgoingMessage *message = messageSend.message;
     SignalRecipient *recipient = messageSend.recipient;

@@ -35,7 +35,7 @@
 
 #pragma mark Building
 - (SSKProtoContentBuilder *)prepareCustomContentBuilder:(SignalRecipient *)recipient {
-    SSKProtoContentBuilder *contentBuilder = SSKProtoContent.builder;
+    SSKProtoContentBuilder *contentBuilder = [super prepareCustomContentBuilder:recipient];
     NSError *error;
     if (self.kind == LKDeviceLinkMessageKindRequest) {
         // The slave device attaches a pre key bundle with the request it sends, so that a
