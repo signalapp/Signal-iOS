@@ -23,6 +23,22 @@ public final class SyncMessagesProtocol : NSObject {
         // FIXME: We added this check to avoid a crash, but we should really figure out why that crash was happening in the first place
         return !UserDefaults.standard[.hasLaunchedOnce]
     }
+    
+    @objc(syncProfileUpdate)
+    public static func syncProfileUpdate() {
+        storage.dbReadWriteConnection.readWrite{ transaction in
+            let userHexEncodedPublicKey = getUserHexEncodedPublicKey()
+            let linkedDevices = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: userHexEncodedPublicKey, in: transaction)
+            for hexEncodedPublicKey in linkedDevices {
+                guard hexEncodedPublicKey != userHexEncodedPublicKey else { continue }
+                let thread = TSContactThread.getOrCreateThread(withContactId: hexEncodedPublicKey, transaction: transaction)
+                let syncMessage = OWSOutgoingSyncMessage.init(in: thread, messageBody: "", attachmentId: nil)
+                syncMessage.save(with: transaction)
+                let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
+                messageSenderJobQueue.add(message: syncMessage, transaction: transaction)
+            }
+        }
+    }
 
     @objc(syncContactWithHexEncodedPublicKey:in:)
     public static func syncContact(_ hexEncodedPublicKey: String, in transaction: YapDatabaseReadTransaction) -> AnyPromise {
@@ -166,9 +182,10 @@ public final class SyncMessagesProtocol : NSObject {
         let parser = ContactParser(data: data)
         let hexEncodedPublicKeys = parser.parseHexEncodedPublicKeys()
         let userHexEncodedPublicKey = getUserHexEncodedPublicKey()
+        let linkedDevices = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: userHexEncodedPublicKey, in: transaction)
         // Try to establish sessions
         for hexEncodedPublicKey in hexEncodedPublicKeys {
-            guard hexEncodedPublicKey != userHexEncodedPublicKey else { continue } // Skip self
+            guard !linkedDevices.contains(hexEncodedPublicKey) else { continue } // Skip self and linked devices
             // We don't update the friend request status; that's done in OWSMessageSender.sendMessage(_:)
             let friendRequestStatus = storage.getFriendRequestStatus(for: hexEncodedPublicKey, transaction: transaction)
             switch friendRequestStatus {

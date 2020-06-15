@@ -239,7 +239,8 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     // Ensure that the success and failure blocks are called on the main thread.
     void (^failureBlock)(NSError *) = ^(NSError *error) {
         OWSLogError(@"Updating service with profile failed.");
-
+        
+        /*
         // We use a "self-only" contact sync to indicate to desktop
         // that we've changed our profile and that it should do a
         // profile fetch for "self".
@@ -249,6 +250,10 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         if (requiresSync) {
             [[self.syncManager syncLocalContact] retainUntilComplete];
         }
+         */
+        if (requiresSync) {
+            [LKSyncMessagesProtocol syncProfileUpdate];
+        }
 
         dispatch_async(dispatch_get_main_queue(), ^{
             failureBlockParameter(error);
@@ -256,12 +261,17 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
     };
     void (^successBlock)(void) = ^{
         OWSLogInfo(@"Successfully updated service with profile.");
-
+        
+        /*
         // We use a "self-only" contact sync to indicate to desktop
         // that we've changed our profile and that it should do a
         // profile fetch for "self".
         if (requiresSync) {
             [[self.syncManager syncLocalContact] retainUntilComplete];
+        }
+         */
+        if (requiresSync) {
+            [LKSyncMessagesProtocol syncProfileUpdate];
         }
 
         dispatch_async(dispatch_get_main_queue(), ^{
