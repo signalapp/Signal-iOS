@@ -2947,6 +2947,12 @@ typedef enum : NSUInteger {
 
 - (void)updateUnreadMessageFlagUsingAsyncTransaction
 {
+    // Resubmits to the main queue because we can't verify we're not already in a transaction we don't know about.
+    // This method may be called in response to all sorts of view state changes, e.g. scroll state. These changes
+    // can be a result of a UIKit response to app activity that already has an open transaction.
+    //
+    // We need a transaction to proceed, but we can't verify that we're not already in one (unless explicitly handed one)
+    // To workaround this, we async a block to open a fresh transaction on the main queue.
     dispatch_async(dispatch_get_main_queue(), ^{
         [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *newTransaction) {
             OWSAssertDebug(newTransaction);
