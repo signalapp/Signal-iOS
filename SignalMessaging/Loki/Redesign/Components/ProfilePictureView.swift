@@ -44,6 +44,7 @@ public final class ProfilePictureView : UIView {
     
     // MARK: Updating
     @objc public func update() {
+        AssertIsOnMainThread()
         func getProfilePicture(of size: CGFloat, for hexEncodedPublicKey: String) -> UIImage? {
             guard !hexEncodedPublicKey.isEmpty else { return nil }
             return OWSProfileManager.shared().profileAvatar(forRecipientId: hexEncodedPublicKey) ?? Identicon.generateIcon(string: hexEncodedPublicKey, size: size)

@@ -115,7 +115,7 @@ class ConversationViewItemActions: NSObject {
             actions.append(deleteAction)
         }
 
-        if isGroup && conversationViewItem.interaction.thread.name() == "Session Public Chat" {
+        if isGroup && conversationViewItem.interaction.thread.name() == "Loki Public Chat" {
             let reportAction = MessageActionBuilder.report(conversationViewItem, delegate: delegate)
             actions.append(reportAction)
         }
@@ -159,7 +159,7 @@ class ConversationViewItemActions: NSObject {
             actions.append(deleteAction)
         }
 
-        if isGroup && conversationViewItem.interaction.thread.name() == "Session Public Chat" {
+        if isGroup && conversationViewItem.interaction.thread.name() == "Loki Public Chat" {
             let reportAction = MessageActionBuilder.report(conversationViewItem, delegate: delegate)
             actions.append(reportAction)
         }
@@ -192,7 +192,7 @@ class ConversationViewItemActions: NSObject {
             actions.append(deleteAction)
         }
 
-        if isGroup && conversationViewItem.interaction.thread.name() == "Session Public Chat" {
+        if isGroup && conversationViewItem.interaction.thread.name() == "Loki Public Chat" {
             let reportAction = MessageActionBuilder.report(conversationViewItem, delegate: delegate)
             actions.append(reportAction)
         }
