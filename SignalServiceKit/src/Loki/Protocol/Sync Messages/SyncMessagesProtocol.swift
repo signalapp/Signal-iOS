@@ -24,14 +24,14 @@ public final class SyncMessagesProtocol : NSObject {
         return !UserDefaults.standard[.hasLaunchedOnce]
     }
     
-    @objc(syncProfileUpdate)
-    public static func syncProfileUpdate() {
-        storage.dbReadWriteConnection.readWrite{ transaction in
-            let userHexEncodedPublicKey = getUserHexEncodedPublicKey()
-            let linkedDevices = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: userHexEncodedPublicKey, in: transaction)
-            for hexEncodedPublicKey in linkedDevices {
-                guard hexEncodedPublicKey != userHexEncodedPublicKey else { continue }
-                let thread = TSContactThread.getOrCreateThread(withContactId: hexEncodedPublicKey, transaction: transaction)
+    @objc(syncProfile)
+    public static func syncProfile() {
+        try! Storage.writeSync { transaction in
+            let userPublicKey = getUserHexEncodedPublicKey()
+            let linkedDevices = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: userPublicKey, in: transaction)
+            for publicKey in linkedDevices {
+                guard publicKey != userPublicKey else { continue }
+                let thread = TSContactThread.getOrCreateThread(withContactId: publicKey, transaction: transaction)
                 let syncMessage = OWSOutgoingSyncMessage.init(in: thread, messageBody: "", attachmentId: nil)
                 syncMessage.save(with: transaction)
                 let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue

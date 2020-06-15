@@ -252,7 +252,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         }
          */
         if (requiresSync) {
-            [LKSyncMessagesProtocol syncProfileUpdate];
+            [LKSyncMessagesProtocol syncProfile];
         }
 
         dispatch_async(dispatch_get_main_queue(), ^{
@@ -271,7 +271,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         }
          */
         if (requiresSync) {
-            [LKSyncMessagesProtocol syncProfileUpdate];
+            [LKSyncMessagesProtocol syncProfile];
         }
 
         dispatch_async(dispatch_get_main_queue(), ^{
