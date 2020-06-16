@@ -163,7 +163,7 @@ typedef enum : NSUInteger {
 
 @property (nonatomic) ConversationViewAction actionOnOpen;
 
-@property (nonatomic) BOOL peek;
+@property (nonatomic, getter=isInPreviewPlatter) BOOL inPreviewPlatter;
 
 @property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
 
@@ -185,7 +185,7 @@ typedef enum : NSUInteger {
 @property (nonatomic) BOOL isViewVisible;
 @property (nonatomic) BOOL shouldAnimateKeyboardChanges;
 @property (nonatomic) BOOL viewHasEverAppeared;
-@property (nonatomic, readonly) BOOL hasUnreadMessages;
+@property (nonatomic) BOOL hasUnreadMessages;
 @property (nonatomic, nullable) NSNumber *viewHorizonTimestamp;
 @property (nonatomic) ContactShareViewHelper *contactShareViewHelper;
 @property (nonatomic) NSTimer *reloadTimer;
@@ -486,15 +486,23 @@ typedef enum : NSUInteger {
     [self applyTheme];
 }
 
+- (void)setInPreviewPlatter:(BOOL)inPreviewPlatter
+{
+    if (_inPreviewPlatter != inPreviewPlatter) {
+        _inPreviewPlatter = inPreviewPlatter;
+        [self configureScrollDownButton];
+    }
+}
+
 - (void)peekSetup
 {
-    _peek = YES;
+    [self setInPreviewPlatter:YES];
     self.actionOnOpen = ConversationViewActionNone;
 }
 
 - (void)popped
 {
-    _peek = NO;
+    [self setInPreviewPlatter:NO];
     [self updateInputVisibility];
 }
 
@@ -550,7 +558,7 @@ typedef enum : NSUInteger {
 
 - (void)updateInputVisibility
 {
-    if (_peek) {
+    if ([self isInPreviewPlatter]) {
         self.inputToolbar.hidden = YES;
         [self dismissKeyBoard];
         return;
@@ -794,7 +802,7 @@ typedef enum : NSUInteger {
         [self scrollToDefaultPosition:NO];
     }
 
-    [self updateLastVisibleSortIdWithSneakyAsyncTransaction];
+    [self updateLastVisibleSortId];
 
     if (!self.viewHasEverAppeared) {
         [BenchManager
@@ -1252,7 +1260,7 @@ typedef enum : NSUInteger {
     self.actionOnOpen = ConversationViewActionNone;
 
     [self updateInputToolbarLayout];
-    [self ensureScrollDownButton];
+    [self configureScrollDownButton];
     [self.inputToolbar viewDidAppear];
 }
 
@@ -2929,17 +2937,35 @@ typedef enum : NSUInteger {
     [self.scrollDownButton autoPinEdgeToSuperviewSafeArea:ALEdgeTrailing];
 }
 
-- (void)setHasUnreadMessages:(BOOL)hasUnreadMessages transaction:(SDSAnyReadTransaction *)transaction
+- (void)setHasUnreadMessages:(BOOL)hasUnreadMessages
 {
-    OWSAssertDebug(transaction);
-
-    if (_hasUnreadMessages == hasUnreadMessages) {
-        return;
+    if (_hasUnreadMessages != hasUnreadMessages) {
+        _hasUnreadMessages = hasUnreadMessages;
+        [self configureScrollDownButton];
     }
+}
 
-    _hasUnreadMessages = hasUnreadMessages;
+- (void)updateUnreadMessageFlagUsingAsyncTransaction
+{
+    // Resubmits to the main queue because we can't verify we're not already in a transaction we don't know about.
+    // This method may be called in response to all sorts of view state changes, e.g. scroll state. These changes
+    // can be a result of a UIKit response to app activity that already has an open transaction.
+    //
+    // We need a transaction to proceed, but we can't verify that we're not already in one (unless explicitly handed one)
+    // To workaround this, we async a block to open a fresh transaction on the main queue.
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *newTransaction) {
+            OWSAssertDebug(newTransaction);
+            [self updateUnreadMessageFlagWithTransaction:newTransaction];
+        }];
+    });
+}
 
-    self.scrollDownButton.hasUnreadMessages = hasUnreadMessages;
+- (void)updateUnreadMessageFlagWithTransaction:(SDSAnyReadTransaction *)transaction
+{
+    InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:self.thread.uniqueId];
+    NSUInteger unreadCount = [interactionFinder unreadCountWithTransaction:transaction.unwrapGrdbRead];
+    [self setHasUnreadMessages:(unreadCount > 0)];
 }
 
 - (void)scrollDownButtonTapped
@@ -2969,40 +2995,33 @@ typedef enum : NSUInteger {
     [self scrollToBottomAnimated:YES];
 }
 
-- (void)ensureScrollDownButton
+- (void)configureScrollDownButton
 {
     OWSAssertIsOnMainThread();
 
-    if (self.isPresentingMessageActions) {
-        return;
-    }
-
-    if (self.peek) {
-        self.scrollDownButton.hidden = YES;
-        return;
-    }
-
-    BOOL shouldShowScrollDownButton = NO;
     CGFloat scrollSpaceToBottom = (self.safeContentHeight + self.collectionView.contentInset.bottom
         - (self.collectionView.contentOffset.y + self.collectionView.frame.size.height));
     CGFloat pageHeight = (self.collectionView.frame.size.height
         - (self.collectionView.contentInset.top + self.collectionView.contentInset.bottom));
-    // Show "scroll down" button if user is scrolled up at least
-    // one page.
-    BOOL isScrolledUp = scrollSpaceToBottom > pageHeight * 1.f;
+    BOOL isScrolledUpOnePage = scrollSpaceToBottom > pageHeight * 1.f;
 
-    if (self.viewItems.count > 0) {
-        id<ConversationViewItem> lastViewItem = [self.viewItems lastObject];
-        OWSAssertDebug(lastViewItem);
+    TSInteraction *lastInteraction = [[[self viewItems] lastObject] interaction];
+    BOOL hasLaterMessageOffscreen = ([lastInteraction sortId] > [self lastVisibleSortId]);
 
-        if (lastViewItem.interaction.sortId > self.lastVisibleSortId) {
-            shouldShowScrollDownButton = YES;
-        } else if (isScrolledUp) {
-            shouldShowScrollDownButton = YES;
-        }
+    if ([self isInPreviewPlatter]) {
+        [[self scrollDownButton] setHidden:YES];
+
+    } else if ([self isPresentingMessageActions]) {
+        // Content offset calculations get messed up when we're presenting message actions
+        // Don't change button visibility if we're presenting actions
+        // no-op
+
+    } else {
+        BOOL shouldAppear = isScrolledUpOnePage || hasLaterMessageOffscreen;
+        [[self scrollDownButton] setHidden:!shouldAppear];
+
     }
-
-    self.scrollDownButton.hidden = !shouldShowScrollDownButton;
+    [[self scrollDownButton] setHasUnreadMessages:[self hasUnreadMessages]];
 }
 
 #pragma mark - Attachment Picking: Contacts
@@ -3640,29 +3659,7 @@ typedef enum : NSUInteger {
     return lastVisibleIndexPath;
 }
 
-- (void)didScrollToBottom
-{
-    self.scrollDownButton.hidden = YES;
-    
-    [self updateLastVisibleSortIdWithSneakyAsyncTransaction];
-}
-
-// Certain view states changes (scroll state, view layout, etc.) can
-// update which messages are visible and thus should be marked as
-// read.  Many of those changes occur when UIKit responds to some
-// app activity that may have an open transaction.  Therefore, we
-// update the "last visible sort id" async to avoid opening a
-// transaction within a transaction.
-- (void)updateLastVisibleSortIdWithSneakyAsyncTransaction
-{
-    dispatch_async(dispatch_get_main_queue(), ^{
-        [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-            [self updateLastVisibleSortIdWithTransaction:transaction];
-        }];
-    });
-}
-
-- (void)updateLastVisibleSortIdWithTransaction:(SDSAnyReadTransaction *)transaction
+- (void)updateLastVisibleSortId
 {
     OWSAssertIsOnMainThread();
 
@@ -3679,19 +3676,19 @@ typedef enum : NSUInteger {
     }
 
     if (lastVisibleViewItem) {
-        self.lastVisibleSortId = lastVisibleViewItem.interaction.sortId;
+        uint64_t oldLastVisibleSortID = [self lastVisibleSortId];
+        uint64_t newLastVisibleSortID = [[lastVisibleViewItem interaction] sortId];
+        if ([self hasUnreadMessages] && newLastVisibleSortID > oldLastVisibleSortID) {
+            // Only recheck the unread message count if we're already in an unread state and we've revealed a new, later sortId
+            [self updateUnreadMessageFlagUsingAsyncTransaction];
+        }
+        self.lastVisibleSortId = newLastVisibleSortID;
     }
-
-    [self ensureScrollDownButton];
-
-    InteractionFinder *interactionFinder = [[InteractionFinder alloc] initWithThreadUniqueId:self.thread.uniqueId];
-    NSUInteger unreadCount = [interactionFinder unreadCountWithTransaction:transaction.unwrapGrdbRead];
-
-    [self setHasUnreadMessages:unreadCount > 0 transaction:transaction];
 }
 
 - (void)markVisibleMessagesAsRead
 {
+    OWSAssertIsOnMainThread();
     if (self.presentedViewController) {
         return;
     }
@@ -3704,7 +3701,7 @@ typedef enum : NSUInteger {
 
     [self clearMarkedUnread];
 
-    [self updateLastVisibleSortIdWithSneakyAsyncTransaction];
+    [self updateLastVisibleSortId];
 
     uint64_t lastVisibleSortId = self.lastVisibleSortId;
 
@@ -4080,7 +4077,6 @@ typedef enum : NSUInteger {
     CGFloat dstY = MAX(firstContentPageTop, lastContentPageTop);
 
     [self.collectionView setContentOffset:CGPointMake(0, dstY) animated:animated];
-    [self didScrollToBottom];
 }
 
 - (void)scrollToFirstUnreadMessage:(BOOL)isAnimated
@@ -4105,7 +4101,8 @@ typedef enum : NSUInteger {
     // Constantly try to update the lastKnownDistanceFromBottom.
     [self updateLastKnownDistanceFromBottom];
 
-    [self updateLastVisibleSortIdWithSneakyAsyncTransaction];
+    [self updateLastVisibleSortId];
+    [self configureScrollDownButton];
 
     [self.autoLoadMoreTimer invalidate];
     self.autoLoadMoreTimer = [NSTimer weakScheduledTimerWithTimeInterval:0.1f
@@ -4515,7 +4512,8 @@ typedef enum : NSUInteger {
         [self resetForSizeOrOrientationChange];
     }
 
-    [self updateLastVisibleSortIdWithSneakyAsyncTransaction];
+    [self updateLastVisibleSortId];
+    [self configureScrollDownButton];
 }
 
 #pragma mark - UICollectionViewDataSource
@@ -4934,7 +4932,8 @@ typedef enum : NSUInteger {
         return;
     } else if (conversationUpdate.conversationUpdateType == ConversationUpdateType_Reload) {
         [self resetContentAndLayoutWithTransaction:transaction];
-        [self updateLastVisibleSortIdWithTransaction:transaction];
+        [self updateUnreadMessageFlagWithTransaction:transaction];
+        [self updateLastVisibleSortId];
         return;
     }
 
@@ -5024,7 +5023,9 @@ typedef enum : NSUInteger {
         
         // We can't use the transaction parameter; this completion
         // will be run async.
-        [self updateLastVisibleSortIdWithSneakyAsyncTransaction];
+        [self updateUnreadMessageFlagUsingAsyncTransaction];
+        [self updateLastVisibleSortId];
+        [self configureScrollDownButton];
         
         [self showMessageRequestDialogIfRequired];
         
