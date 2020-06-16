@@ -139,4 +139,12 @@ public extension OWSPrimaryStorage {
     public func setUserCount(_ userCount: Int, forPublicChatWithID publicChatID: String, in transaction: YapDatabaseReadWriteTransaction) {
         transaction.setObject(userCount, forKey: publicChatID, inCollection: Storage.openGroupUserCountCollection)
     }
+    
+    public func getProfilePictureURL(forPublicChatWithID publicChatID: String, in transaction: YapDatabaseReadTransaction) -> String? {
+        return transaction.object(forKey: publicChatID, inCollection: Storage.openGroupProfilePictureURLCollection) as? String
+    }
+    
+    public func setProfilePictureURL(_ profilePictureURL: String?, forPublicChatWithID publicChatID: String, in transaction: YapDatabaseReadWriteTransaction) {
+        transaction.setObject(profilePictureURL, forKey: publicChatID, inCollection: Storage.openGroupProfilePictureURLCollection)
+    }
 }

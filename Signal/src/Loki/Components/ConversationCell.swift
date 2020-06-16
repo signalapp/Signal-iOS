@@ -134,26 +134,29 @@ final class ConversationCell : UITableViewCell {
     
     // MARK: Updating
     private func update() {
+        AssertIsOnMainThread()
         MentionsManager.populateUserPublicKeyCacheIfNeeded(for: threadViewModel.threadRecord.uniqueId!) // FIXME: This is a terrible place to do this
         unreadMessagesIndicatorView.alpha = threadViewModel.hasUnreadMessages ? 1 : 0.0001 // Setting the alpha to exactly 0 causes an issue on iOS 12
+        profilePictureView.openGroupProfilePicture = nil
         if threadViewModel.isGroupThread {
-            if threadViewModel.name == "Session Public Chat" {
+            if threadViewModel.name == "Loki Public Chat"
+                || threadViewModel.name == "Session Public Chat" { // Override the profile picture for the Loki Public Chat and the Session Public Chat
                 profilePictureView.hexEncodedPublicKey = ""
                 profilePictureView.isRSSFeed = true
-            } else {
+            } else if let openGroupProfilePicture = (threadViewModel.threadRecord as! TSGroupThread).groupModel.groupImage { // An open group with a profile picture
+                profilePictureView.openGroupProfilePicture = openGroupProfilePicture
+            } else if (threadViewModel.threadRecord as! TSGroupThread).groupModel.groupType == .openGroup
+                || (threadViewModel.threadRecord as! TSGroupThread).groupModel.groupType == .rssFeed { // An open group without a profile picture or an RSS feed
+                profilePictureView.hexEncodedPublicKey = ""
+                profilePictureView.isRSSFeed = true
+            } else { // A closed group
                 var users = MentionsManager.userPublicKeyCache[threadViewModel.threadRecord.uniqueId!] ?? []
                 users.remove(getUserHexEncodedPublicKey())
                 let randomUsers = users.sorted().prefix(2) // Sort to provide a level of stability
-                if !randomUsers.isEmpty {
-                    profilePictureView.hexEncodedPublicKey = randomUsers[0]
-                    profilePictureView.additionalHexEncodedPublicKey = randomUsers.count >= 2 ? randomUsers[1] : ""
-                } else {
-                    profilePictureView.hexEncodedPublicKey = ""
-                    profilePictureView.additionalHexEncodedPublicKey = ""
-                }
-                profilePictureView.isRSSFeed = (threadViewModel.threadRecord as? TSGroupThread)?.isRSSFeed ?? false
+                profilePictureView.hexEncodedPublicKey = randomUsers.count >= 1 ? randomUsers[0] : ""
+                profilePictureView.additionalHexEncodedPublicKey = randomUsers.count >= 2 ? randomUsers[1] : ""
             }
-        } else {
+        } else { // A one-on-one chat
             profilePictureView.hexEncodedPublicKey = threadViewModel.contactIdentifier!
             profilePictureView.additionalHexEncodedPublicKey = nil
             profilePictureView.isRSSFeed = false

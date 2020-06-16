@@ -1125,24 +1125,27 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 }
 
 - (SSKProtoContentBuilder *)prepareCustomContentBuilder:(SignalRecipient *)recipient {
-    return SSKProtoContent.builder;
+    SSKProtoDataMessage *_Nullable dataMessage = [self buildDataMessage:recipient.recipientId];
+
+    if (!dataMessage) {
+        OWSFailDebug(@"Couldn't build protobuf.");
+        return nil;
+    }
+    
+    SSKProtoContentBuilder *contentBuilder = SSKProtoContent.builder;
+    [contentBuilder setDataMessage:dataMessage];
+    
+    return contentBuilder;
 }
 
 - (nullable NSData *)buildPlainTextData:(SignalRecipient *)recipient
 {
-    NSError *error;
-    SSKProtoDataMessage *_Nullable dataMessage = [self buildDataMessage:recipient.recipientId];
-    if (error || !dataMessage) {
-        OWSFailDebug(@"could not build protobuf: %@", error);
-        return nil;
-    }
-
     SSKProtoContentBuilder *contentBuilder = [self prepareCustomContentBuilder:recipient];
-    
-    [contentBuilder setDataMessage:dataMessage];
+
+    NSError *error;
     NSData *_Nullable contentData = [contentBuilder buildSerializedDataAndReturnError:&error];
     if (error || !contentData) {
-        OWSFailDebug(@"could not serialize protobuf: %@", error);
+        OWSFailDebug(@"Couldn't serialize protobuf due to error: %@.", error);
         return nil;
     }
     

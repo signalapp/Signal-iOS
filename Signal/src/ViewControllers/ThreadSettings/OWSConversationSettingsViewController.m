@@ -957,8 +957,15 @@ const CGFloat kIconViewLength = 24;
     [stackView setLayoutMarginsRelativeArrangement:YES];
     
     if (self.isGroupThread) {
-        profilePictureView.hexEncodedPublicKey = @"";
-        profilePictureView.isRSSFeed = true; // For now just always show the Session logo
+        TSGroupThread* groupThread = (TSGroupThread *)self.thread;
+        if (groupThread.isPublicChat && groupThread.groupModel.groupImage != nil
+            && ![groupThread.groupModel.groupName isEqual:@"Loki Public Chat"] && ![groupThread.groupModel.groupName isEqual:@"Session Public Chat"]) {
+            profilePictureView.openGroupProfilePicture = groupThread.groupModel.groupImage;
+            profilePictureView.isRSSFeed = false;
+        } else {
+            profilePictureView.hexEncodedPublicKey = @"";
+            profilePictureView.isRSSFeed = true; // For now just always show the Session logo
+        }
     } else {
         profilePictureView.hexEncodedPublicKey = self.thread.contactIdentifier;
         

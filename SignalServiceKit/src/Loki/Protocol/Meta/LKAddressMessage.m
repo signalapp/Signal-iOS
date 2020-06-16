@@ -27,7 +27,7 @@
 
 #pragma mark Building
 - (SSKProtoContentBuilder *)prepareCustomContentBuilder:(SignalRecipient *)recipient {
-    SSKProtoContentBuilder *contentBuilder = SSKProtoContent.builder;
+    SSKProtoContentBuilder *contentBuilder = [super prepareCustomContentBuilder:recipient];
     SSKProtoLokiAddressMessageBuilder *addressMessageBuilder = SSKProtoLokiAddressMessage.builder;
     [addressMessageBuilder setPtpAddress:self.address];
     uint32_t portAsUInt32 = self.port;

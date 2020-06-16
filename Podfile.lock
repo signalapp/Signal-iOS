@@ -320,7 +320,7 @@ SPEC CHECKSUMS:
   SessionServiceKit: c792d64fc86aaa0f7325beaa36e1a9211a887359
   SQLCipher: e434ed542b24f38ea7b36468a13f9765e1b5c072
   SSZipArchive: 62d4947b08730e4cda640473b0066d209ff033c9
-  Starscream: 8aaf1a7feb805c816d0e7d3190ef23856f6665b9
+  Starscream: ef3ece99d765eeccb67de105bfa143f929026cf5
   SwiftProtobuf: 241400280f912735c1e1b9fe675fdd2c6c4d42e2
   YapDatabase: b418a4baa6906e8028748938f9159807fd039af4
   YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54

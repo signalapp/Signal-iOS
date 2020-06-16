@@ -1394,12 +1394,15 @@ static NSTimeInterval launchStartedAt;
     NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
     if (userHexEncodedPublicKey == nil) { return; }
     self.lokiPoller = [[LKPoller alloc] initOnMessagesReceived:^(NSArray<SSKProtoEnvelope *> *messages) {
+        if (messages.count != 0) {
+            [LKLogger print:@"[Loki] Received new messages."];
+        }
         for (SSKProtoEnvelope *message in messages) {
             NSData *data = [message serializedDataAndReturnError:nil];
             if (data != nil) {
                 [SSKEnvironment.shared.messageReceiver handleReceivedEnvelopeData:data];
             } else {
-                NSLog(@"[Loki] Failed to deserialize envelope.");
+                [LKLogger print:@"[Loki] Failed to deserialize envelope."];
             }
         }
     }];
