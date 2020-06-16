@@ -202,45 +202,17 @@ extension ConversationSettingsViewController {
             return
         }
 
-        let isNoteToSelf = thread.isNoteToSelf
         let isLocalUserInConversation = self.isLocalUserInConversation
 
-        // Show profile status and allow sharing your profile for threads that are not in the whitelist.
-        // This goes away when phoneNumberPrivacy is enabled, since profile sharing become mandatory.
-        let (isThreadInProfileWhitelist, hasSentMessages) = databaseStorage.uiRead { transaction -> (Bool, Bool) in
-            let isThreadInProfileWhitelist =
+        // For pre-message request threads, allow manually sharing your profile if the thread is not whitelisted.
+        let (isPreMessageRequestsThread, isThreadInProfileWhitelist) = databaseStorage.uiRead { transaction -> (Bool, Bool) in
+            return (
+                GRDBThreadFinder.isPreMessageRequestsThread(self.thread, transaction: transaction.unwrapGrdbRead),
                 self.profileManager.isThread(inProfileWhitelist: self.thread, transaction: transaction)
-            let hasSentMessages = InteractionFinder(threadUniqueId: self.thread.uniqueId).existsOutgoingMessage(transaction: transaction)
-            return (isThreadInProfileWhitelist, hasSentMessages)
+            )
         }
 
-        let hideManualProfileSharing = (FeatureFlags.phoneNumberPrivacy
-            || (RemoteConfig.messageRequests && isThreadInProfileWhitelist)
-            || (RemoteConfig.messageRequests && !hasSentMessages))
-        let hideProfileShareStatus = FeatureFlags.phoneNumberPrivacy || RemoteConfig.messageRequests
-
-        if hideManualProfileSharing || isNoteToSelf {
-            // Do nothing
-        } else if isThreadInProfileWhitelist && !hideProfileShareStatus {
-            section.add(OWSTableItem(customCellBlock: { [weak self] in
-                guard let self = self else {
-                    owsFailDebug("Missing self")
-                    return OWSTableItem.newCell()
-                }
-
-                let title = (self.isGroupThread
-                    ? NSLocalizedString(
-                        "CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP",
-                        comment: "Indicates that user's profile has been shared with a group.")
-                    : NSLocalizedString(
-                        "CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER",
-                        comment: "Indicates that user's profile has been shared with a user."))
-                return OWSTableItem.buildLabelCell(name: title,
-                                                   icon: .settingsProfile,
-                                                   accessibilityIdentifier: UIView.accessibilityIdentifier(in: self, name: "profile_is_shared"))
-                },
-                                     actionBlock: nil))
-        } else {
+        if isPreMessageRequestsThread && !isThreadInProfileWhitelist {
             section.add(OWSTableItem(customCellBlock: { [weak self] in
                 guard let self = self else {
                     owsFailDebug("Missing self")

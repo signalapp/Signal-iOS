@@ -328,19 +328,6 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
     [OWS2FAManager.keyValueStore setDate:date key:kOWS2FAManager_LastSuccessfulReminderDateKey transaction:transaction];
 }
 
-- (BOOL)isDueForV1Reminder
-{
-    if (!self.tsAccountManager.isRegisteredPrimaryDevice) {
-        return NO;
-    }
-
-    if (self.mode != OWS2FAMode_V1) {
-        return NO;
-    }
-
-    return self.nextReminderDate.timeIntervalSinceNow < 0;
-}
-
 - (BOOL)isDueForV2ReminderWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     if (!self.tsAccountManager.isRegisteredPrimaryDevice) {

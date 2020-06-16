@@ -77,6 +77,10 @@ public class OWSMockSyncManager: NSObject, SyncManagerProtocol {
         Logger.info("")
     }
 
+    public func sendMessageRequestResponseSyncMessage(thread: TSThread, responseType: OWSSyncMessageRequestResponseType, transaction: SDSAnyWriteTransaction) {
+        Logger.info("")
+    }
+
     @objc
     public func syncLocalContact() -> AnyPromise {
         Logger.info("")

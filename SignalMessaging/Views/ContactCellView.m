@@ -23,7 +23,6 @@ const CGFloat kContactCellAvatarTextMargin = 8;
 @property (nonatomic) UILabel *nameLabel;
 @property (nonatomic) UIImageView *avatarView;
 @property (nonatomic) UILabel *subtitleLabel;
-@property (nonatomic) UILabel *profileNameLabel;
 @property (nonatomic) UILabel *accessoryLabel;
 @property (nonatomic) UIStackView *nameContainerView;
 @property (nonatomic) UIView *accessoryViewContainer;
@@ -87,8 +86,6 @@ const CGFloat kContactCellAvatarTextMargin = 8;
 
     self.subtitleLabel = [UILabel new];
 
-    self.profileNameLabel = [UILabel new];
-
     self.accessoryLabel = [[UILabel alloc] init];
     self.accessoryLabel.textAlignment = NSTextAlignmentRight;
 
@@ -96,7 +93,6 @@ const CGFloat kContactCellAvatarTextMargin = 8;
 
     self.nameContainerView = [[UIStackView alloc] initWithArrangedSubviews:@[
         self.nameLabel,
-        self.profileNameLabel,
         self.subtitleLabel,
     ]];
     self.nameContainerView.axis = UILayoutConstraintAxisVertical;
@@ -118,12 +114,10 @@ const CGFloat kContactCellAvatarTextMargin = 8;
 - (void)configureFontsAndColors
 {
     self.nameLabel.font = OWSTableItem.primaryLabelFont;
-    self.profileNameLabel.font = [UIFont ows_regularFontWithSize:11.f];
     self.subtitleLabel.font = [UIFont ows_regularFontWithSize:11.f];
     self.accessoryLabel.font = [UIFont ows_semiboldFontWithSize:12.f];
 
     self.nameLabel.textColor = Theme.primaryTextColor;
-    self.profileNameLabel.textColor = Theme.secondaryTextAndIconColor;
     self.subtitleLabel.textColor = Theme.secondaryTextAndIconColor;
     self.accessoryLabel.textColor = Theme.middleGrayColor;
 }
@@ -249,20 +243,6 @@ const CGFloat kContactCellAvatarTextMargin = 8;
         self.nameLabel.text = [self.contactsManager displayNameForAddress:self.address];
     }
 
-    if (!isNoteToSelf && !hasCustomName && !RemoteConfig.messageRequests
-        && ![self.contactsManager hasNameInSystemContactsForAddress:self.address]) {
-        NSString *_Nullable profileName = [self.contactsManager formattedProfileNameForAddress:self.address];
-        if (profileName != nil && ![profileName isEqualToString:self.nameLabel.text]) {
-            self.profileNameLabel.text = profileName;
-            self.profileNameLabel.hidden = NO;
-            [self.profileNameLabel setNeedsLayout];
-        } else {
-            self.profileNameLabel.hidden = YES;
-        }
-    } else {
-        self.profileNameLabel.hidden = YES;
-    }
-
     [self.nameLabel setNeedsLayout];
 }
 
@@ -274,7 +254,6 @@ const CGFloat kContactCellAvatarTextMargin = 8;
     self.accessoryMessage = nil;
     self.nameLabel.text = nil;
     self.subtitleLabel.text = nil;
-    self.profileNameLabel.text = nil;
     self.accessoryLabel.text = nil;
     self.customName = nil;
     self.customAvatar = nil;

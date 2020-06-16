@@ -13,7 +13,6 @@
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/ThreadUtil.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
-#import <SignalServiceKit/OWSContactOffersInteraction.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/TSIncomingMessage.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
@@ -964,131 +963,6 @@ NS_ASSUME_NONNULL_BEGIN
     self.conversationProfileState = conversationProfileState;
 }
 
-- (nullable OWSContactOffersInteraction *)tryToBuildContactOffersInteractionWithTransaction:
-                                              (SDSAnyReadTransaction *)transaction
-{
-    OWSAssertDebug(transaction);
-    OWSAssertDebug(self.conversationProfileState);
-    // message requests deprecates ContactOffers
-    OWSAssertDebug(!RemoteConfig.messageRequests);
-
-    BOOL hasLocalProfile = self.conversationProfileState.hasLocalProfile;
-    BOOL isThreadInProfileWhitelist = self.conversationProfileState.isThreadInProfileWhitelist;
-    BOOL hasUnwhitelistedMember = self.conversationProfileState.hasUnwhitelistedMember;
-
-    TSThread *thread = self.thread;
-    BOOL isContactThread = [thread isKindOfClass:[TSContactThread class]];
-    if (!isContactThread) {
-        return nil;
-    }
-    TSContactThread *contactThread = (TSContactThread *)thread;
-    if (contactThread.hasDismissedOffers) {
-        return nil;
-    }
-
-    TSInteraction *firstCallOrMessage = [self firstCallOrMessageForLoadedInteractionsWithTransaction:transaction];
-    if (!firstCallOrMessage) {
-        return nil;
-    }
-
-    BOOL hasTooManyOutgoingMessagesToBlock;
-    if (self.hasTooManyOutgoingMessagesToBlockCached) {
-        hasTooManyOutgoingMessagesToBlock = YES;
-    } else {
-        NSUInteger outgoingMessageCount = [[[InteractionFinder alloc] initWithThreadUniqueId:thread.uniqueId]
-            outgoingMessageCountWithTransaction:transaction];
-        const int kMaxBlockOfferOutgoingMessageCount = 10;
-        hasTooManyOutgoingMessagesToBlock = (outgoingMessageCount > kMaxBlockOfferOutgoingMessageCount);
-        self.hasTooManyOutgoingMessagesToBlockCached = hasTooManyOutgoingMessagesToBlock;
-    }
-
-    BOOL shouldHaveBlockOffer = YES;
-    BOOL shouldHaveAddToContactsOffer = YES;
-    BOOL shouldHaveAddToProfileWhitelistOffer = YES;
-
-    SignalServiceAddress *recipientAddress = contactThread.contactAddress;
-
-    if (recipientAddress.isLocalAddress) {
-        // Don't add self to contacts.
-        shouldHaveAddToContactsOffer = NO;
-        // Don't bother to block self.
-        shouldHaveBlockOffer = NO;
-        // Don't bother adding self to profile whitelist.
-        shouldHaveAddToProfileWhitelistOffer = NO;
-    } else {
-        if ([self.blockingManager isAddressBlocked:recipientAddress]) {
-            // Only create "add to contacts" offers for users which are not already blocked.
-            shouldHaveAddToContactsOffer = NO;
-            // Only create block offers for users which are not already blocked.
-            shouldHaveBlockOffer = NO;
-            // Don't create profile whitelist offers for users which are not already blocked.
-            shouldHaveAddToProfileWhitelistOffer = NO;
-        }
-
-        if ([self.contactsManager hasNameInSystemContactsForAddress:recipientAddress]) {
-            // Only create "add to contacts" offers for non-contacts.
-            shouldHaveAddToContactsOffer = NO;
-            // Only create block offers for non-contacts.
-            shouldHaveBlockOffer = NO;
-            // Don't create profile whitelist offers for non-contacts.
-            shouldHaveAddToProfileWhitelistOffer = NO;
-        }
-    }
-
-    if (hasTooManyOutgoingMessagesToBlock) {
-        // If the user has sent more than N messages, don't show a block offer.
-        shouldHaveBlockOffer = NO;
-    }
-
-    BOOL hasOutgoingBeforeIncomingInteraction = [firstCallOrMessage isKindOfClass:[TSOutgoingMessage class]];
-    if ([firstCallOrMessage isKindOfClass:[TSCall class]]) {
-        TSCall *call = (TSCall *)firstCallOrMessage;
-        hasOutgoingBeforeIncomingInteraction
-            = (call.callType == RPRecentCallTypeOutgoing || call.callType == RPRecentCallTypeOutgoingIncomplete);
-    }
-    if (hasOutgoingBeforeIncomingInteraction) {
-        // If there is an outgoing message before an incoming message
-        // the local user initiated this conversation, don't show a block offer.
-        shouldHaveBlockOffer = NO;
-    }
-
-    if (!hasLocalProfile || isThreadInProfileWhitelist) {
-        // Don't show offer if thread is local user hasn't configured their profile.
-        // Don't show offer if thread is already in profile whitelist.
-        shouldHaveAddToProfileWhitelistOffer = NO;
-    } else if (thread.isGroupThread && !hasUnwhitelistedMember) {
-        // Don't show offer in group thread if all members are already individually
-        // whitelisted.
-        shouldHaveAddToProfileWhitelistOffer = NO;
-    }
-
-    // We can't add a user to contacts that doesn't have a phone number
-    if (recipientAddress.phoneNumber == nil) {
-        shouldHaveAddToContactsOffer = NO;
-    }
-
-    BOOL shouldHaveContactOffers
-        = (shouldHaveBlockOffer || shouldHaveAddToContactsOffer || shouldHaveAddToProfileWhitelistOffer);
-
-    if (!shouldHaveContactOffers) {
-        return nil;
-    }
-
-    // This view model uses the "unique id" to identify this interaction,
-    // but the interaction is never saved in the database so the specific
-    // value doesn't matter.
-    NSString *uniqueId = @"contact-offers";
-    OWSContactOffersInteraction *offersMessage =
-        [[OWSContactOffersInteraction alloc] initWithUniqueId:uniqueId
-                                                       thread:thread
-                                                hasBlockOffer:shouldHaveBlockOffer
-                                        hasAddToContactsOffer:shouldHaveAddToContactsOffer
-                                hasAddToProfileWhitelistOffer:shouldHaveAddToProfileWhitelistOffer];
-
-    OWSLogInfo(@"Creating contact offers: %@ (%llu)", offersMessage.uniqueId, offersMessage.sortId);
-    return offersMessage;
-}
-
 // This is a key method.  It builds or rebuilds the list of
 // cell view models.
 //
@@ -1220,36 +1094,12 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     // Contact Offers / Thread Details are the first item in the thread
-    if (!canLoadMoreItems) {
-        if (self.shouldShowThreadDetails) {
-            OWSLogDebug(@"adding thread details");
-            OWSThreadDetailsInteraction *threadDetails =
-                [[OWSThreadDetailsInteraction alloc] initWithThread:self.thread
-                                                          timestamp:NSDate.ows_millisecondTimeStamp];
+    if (self.shouldShowThreadDetails) {
+        OWSLogDebug(@"adding thread details");
+        OWSThreadDetailsInteraction *threadDetails =
+            [[OWSThreadDetailsInteraction alloc] initWithThread:self.thread timestamp:NSDate.ows_millisecondTimeStamp];
 
-            tryToAddViewItemForInteraction(threadDetails);
-        } else {
-            OWSContactOffersInteraction *_Nullable offers =
-                [self tryToBuildContactOffersInteractionWithTransaction:transaction];
-
-            if (offers) {
-                id<ConversationViewItem> _Nullable offersItem = tryToAddViewItemForInteraction(offers);
-                if (!offersItem) {
-                    OWSFailDebug(@"Contact offers should never be filtered out.");
-                    // Do nothing.
-                } else if ([offersItem.interaction isKindOfClass:[OWSContactOffersInteraction class]]) {
-                    OWSContactOffersInteraction *oldOffers = (OWSContactOffersInteraction *)offersItem.interaction;
-                    BOOL didChange = (oldOffers.hasBlockOffer != offers.hasBlockOffer
-                        || oldOffers.hasAddToContactsOffer != offers.hasAddToContactsOffer
-                        || oldOffers.hasAddToProfileWhitelistOffer != offers.hasAddToProfileWhitelistOffer);
-                    if (didChange) {
-                        [offersItem clearCachedLayoutState];
-                    }
-                } else {
-                    OWSFailDebug(@"Unexpected offers item: %@", offersItem.interaction.class);
-                }
-            }
-        }
+        tryToAddViewItemForInteraction(threadDetails);
     }
 
     for (TSInteraction *interaction in interactions) {
@@ -1394,14 +1244,7 @@ NS_ASSUME_NONNULL_BEGIN
                         || ![incomingSenderAddress isEqualToAddress:previousIncomingSenderAddress]);
                 }
                 if (shouldShowSenderName) {
-                    if (RemoteConfig.messageRequests) {
-                        senderName = [[NSAttributedString alloc] initWithString:accessibilityAuthorName];
-                    } else {
-                        senderName = [self.contactsManager
-                            attributedLegacyDisplayNameForAddress:incomingSenderAddress
-                                                primaryAttributes:[OWSMessageBubbleView senderNamePrimaryAttributes]
-                                              secondaryAttributes:[OWSMessageBubbleView senderNameSecondaryAttributes]];
-                    }
+                    senderName = [[NSAttributedString alloc] initWithString:accessibilityAuthorName];
                 }
 
                 // Show the sender avatar for incoming group messages unless
@@ -1614,8 +1457,6 @@ NS_ASSUME_NONNULL_BEGIN
             case OWSInteractionType_UnreadIndicator:
             case OWSInteractionType_DateHeader:
                 break;
-            case OWSInteractionType_Offer:
-                break;
         }
     }
     return nil;
@@ -1623,7 +1464,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)shouldShowThreadDetails
 {
-    return (!self.canLoadOlderItems && (RemoteConfig.messageRequests || self.thread.isGroupV2Thread));
+    return !self.canLoadOlderItems;
 }
 
 @end

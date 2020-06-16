@@ -3,7 +3,6 @@
 //
 
 #import "ConversationViewItem.h"
-#import "OWSContactOffersCell.h"
 #import "OWSMessageCell.h"
 #import "OWSSystemMessageCell.h"
 #import "Signal-Swift.h"
@@ -367,7 +366,6 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
         case OWSInteractionType_Unknown:
         case OWSInteractionType_TypingIndicator:
         case OWSInteractionType_ThreadDetails:
-        case OWSInteractionType_Offer:
         case OWSInteractionType_DateHeader:
             return NO;
         case OWSInteractionType_Info: {
@@ -561,9 +559,6 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
             case OWSInteractionType_Call:
                 measurementCell = [OWSSystemMessageCell new];
                 break;
-            case OWSInteractionType_Offer:
-                measurementCell = [OWSContactOffersCell new];
-                break;
             case OWSInteractionType_TypingIndicator:
                 measurementCell = [OWSTypingIndicatorCell new];
                 break;
@@ -631,8 +626,6 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
         case OWSInteractionType_Info:
         case OWSInteractionType_Call:
             return [OWSSystemMessageCell cellReuseIdentifier];
-        case OWSInteractionType_Offer:
-            return [OWSContactOffersCell cellReuseIdentifier];
 
         case OWSInteractionType_TypingIndicator:
             return [OWSTypingIndicatorCell cellReuseIdentifier];
@@ -813,7 +806,6 @@ NSString *NSStringForViewOnceMessageState(ViewOnceMessageState cellType)
         case OWSInteractionType_Unknown:
         case OWSInteractionType_ThreadDetails:
         case OWSInteractionType_TypingIndicator:
-        case OWSInteractionType_Offer:
         case OWSInteractionType_UnreadIndicator:
         case OWSInteractionType_DateHeader:
             return;

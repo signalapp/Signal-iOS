@@ -97,6 +97,7 @@ public class GRDBSchemaMigrator: NSObject {
         case dataMigration_enableV2RegistrationLockIfNecessary
         case dataMigration_resetStorageServiceData
         case dataMigration_markAllInteractionsAsNotDeleted
+        case dataMigration_recordMessageRequestInteractionIdEpoch
     }
 
     public static let grdbSchemaVersionDefault: UInt = 0
@@ -701,6 +702,18 @@ public class GRDBSchemaMigrator: NSObject {
             } catch {
                 owsFail("Error: \(error)")
             }
+        }
+
+        migrator.registerMigration(MigrationId.dataMigration_recordMessageRequestInteractionIdEpoch.rawValue) { db in
+            let transaction = GRDBWriteTransaction(database: db)
+            defer { transaction.finalizeTransaction() }
+
+            // Set the epoch only if we haven't already, this lets us track and grandfather
+            // conversations that existed before the message request feature was launched.
+            guard SSKPreferences.messageRequestInteractionIdEpoch(transaction: transaction) == nil else { return }
+
+            let maxId = GRDBInteractionFinder.maxRowId(transaction: transaction)
+            SSKPreferences.setMessageRequestInteractionIdEpoch(maxId, transaction: transaction)
         }
     }
 }

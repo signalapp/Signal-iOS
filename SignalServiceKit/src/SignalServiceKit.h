@@ -18,7 +18,6 @@
 #import <SignalServiceKit/OWSBackupFragment.h>
 #import <SignalServiceKit/OWSBatchMessageProcessor.h>
 #import <SignalServiceKit/OWSBroadcastMediaMessageJobRecord.h>
-#import <SignalServiceKit/OWSContactOffersInteraction.h>
 #import <SignalServiceKit/OWSDevice.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>

@@ -18,7 +18,6 @@ typedef NS_ENUM(NSInteger, OWSInteractionType) {
     OWSInteractionType_Info,
     OWSInteractionType_TypingIndicator,
     OWSInteractionType_ThreadDetails,
-    OWSInteractionType_Offer,
     OWSInteractionType_UnreadIndicator,
     OWSInteractionType_DateHeader
 };

@@ -41,4 +41,5 @@ public protocol SyncManagerProtocolSwift {
         transaction: SDSAnyWriteTransaction
     )
     func sendMessageRequestResponseSyncMessage(thread: TSThread, responseType: OWSSyncMessageRequestResponseType)
+    func sendMessageRequestResponseSyncMessage(thread: TSThread, responseType: OWSSyncMessageRequestResponseType, transaction: SDSAnyWriteTransaction)
 }

@@ -530,7 +530,6 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     NSString *_Nullable name;
-    NSAttributedString *_Nullable attributedName;
     if (thread.isGroupThread) {
         if (thread.name.length == 0) {
             name = [MessageStrings newGroupDefaultTitle];
@@ -540,20 +539,12 @@ NS_ASSUME_NONNULL_BEGIN
     } else {
         if (self.thread.threadRecord.isNoteToSelf) {
             name = MessageStrings.noteToSelf;
-        } else if (RemoteConfig.messageRequests) {
-            name = [self.contactsManager displayNameForAddress:thread.contactAddress];
         } else {
-            attributedName = [self.contactsManager attributedLegacyDisplayNameForAddress:thread.contactAddress
-                                                                             primaryFont:self.nameFont
-                                                                           secondaryFont:self.nameSecondaryFont];
+            name = [self.contactsManager displayNameForAddress:thread.contactAddress];
         }
     }
 
-    if (name && !attributedName) {
-        attributedName = [[NSAttributedString alloc] initWithString:name];
-    }
-
-    self.nameLabel.attributedText = attributedName;
+    self.nameLabel.text = name;
 }
 
 #pragma mark - Typing Indicators
