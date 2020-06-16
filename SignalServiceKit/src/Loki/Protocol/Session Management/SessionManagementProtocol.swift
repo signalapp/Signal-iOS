@@ -179,13 +179,15 @@ public final class SessionManagementProtocol : NSObject {
     }
 
     @objc(isSessionRestorationRequest:)
-    public static func isSessionRestorationRequest(_ dataMessage: SSKProtoDataMessage) -> Bool {
+    public static func isSessionRestorationRequest(_ dataMessage: SSKProtoDataMessage?) -> Bool {
+        guard let dataMessage = dataMessage else { return false }
         let sessionRestoreFlag = SSKProtoDataMessage.SSKProtoDataMessageFlags.sessionRestore
         return dataMessage.hasFlags && (dataMessage.flags & UInt32(sessionRestoreFlag.rawValue) != 0)
     }
 
     @objc(isSessionRequestMessage:)
-    public static func isSessionRequestMessage(_ dataMessage: SSKProtoDataMessage) -> Bool {
+    public static func isSessionRequestMessage(_ dataMessage: SSKProtoDataMessage?) -> Bool {
+        guard let dataMessage = dataMessage else { return false }
         let sessionRequestFlag = SSKProtoDataMessage.SSKProtoDataMessageFlags.sessionRequest
         return dataMessage.hasFlags && (dataMessage.flags & UInt32(sessionRequestFlag.rawValue) != 0)
     }
