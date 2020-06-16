@@ -61,7 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
-- (nullable SSKProtoDataMessageBuilder *)dataMessageBuilder
+- (nullable id)dataMessageBuilder
 {
     SSKProtoGroupContextBuilder *groupContextBuilder =
         [SSKProtoGroupContext builderWithId:self.groupId type:SSKProtoGroupContextTypeRequestInfo];

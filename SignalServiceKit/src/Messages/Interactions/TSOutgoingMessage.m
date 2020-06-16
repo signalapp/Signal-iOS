@@ -900,7 +900,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 
 #pragma mark -
 
-- (nullable SSKProtoDataMessageBuilder *)dataMessageBuilder
+- (nullable id)dataMessageBuilder
 {
     TSThread *thread = self.thread;
     OWSAssertDebug(thread);

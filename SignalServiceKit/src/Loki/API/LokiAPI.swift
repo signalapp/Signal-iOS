@@ -78,54 +78,27 @@ public final class LokiAPI : NSObject {
         guard let lokiMessage = LokiMessage.from(signalMessage: signalMessage) else { return Promise(error: LokiAPIError.messageConversionFailed) }
         let notificationCenter = NotificationCenter.default
         let destination = lokiMessage.destination
-        func sendLokiMessage(_ lokiMessage: LokiMessage, to target: LokiAPITarget) -> RawResponsePromise {
-            let parameters = lokiMessage.toJSON()
-            return attempt(maxRetryCount: maxRetryCount) {
-                invoke(.sendMessage, on: target, associatedWith: destination, parameters: parameters)
-            }
-        }
-        func sendLokiMessageUsingSwarmAPI() -> Promise<Set<RawResponsePromise>> {
-            notificationCenter.post(name: .calculatingPoW, object: NSNumber(value: signalMessage.timestamp))
-            return lokiMessage.calculatePoW().then2 { lokiMessageWithPoW -> Promise<Set<RawResponsePromise>> in
-                notificationCenter.post(name: .routing, object: NSNumber(value: signalMessage.timestamp))
-                return getTargetSnodes(for: destination).map2 { snodes in
-                    return Set(snodes.map { snode in
-                        notificationCenter.post(name: .messageSending, object: NSNumber(value: signalMessage.timestamp))
-                        return sendLokiMessage(lokiMessageWithPoW, to: snode).map2 { rawResponse in
-                            if let json = rawResponse as? JSON, let powDifficulty = json["difficulty"] as? Int {
-                                guard powDifficulty != LokiAPI.powDifficulty else { return rawResponse }
-                                print("[Loki] Setting proof of work difficulty to \(powDifficulty).")
-                                LokiAPI.powDifficulty = UInt(powDifficulty)
-                            } else {
-                                print("[Loki] Failed to update proof of work difficulty from: \(rawResponse).")
-                            }
-                            return rawResponse
+        notificationCenter.post(name: .calculatingPoW, object: NSNumber(value: signalMessage.timestamp))
+        return lokiMessage.calculatePoW().then2 { lokiMessageWithPoW -> Promise<Set<RawResponsePromise>> in
+            notificationCenter.post(name: .routing, object: NSNumber(value: signalMessage.timestamp))
+            return getTargetSnodes(for: destination).map2 { snodes in
+                return Set(snodes.map { snode in
+                    notificationCenter.post(name: .messageSending, object: NSNumber(value: signalMessage.timestamp))
+                    let parameters = lokiMessageWithPoW.toJSON()
+                    return attempt(maxRetryCount: maxRetryCount) {
+                        invoke(.sendMessage, on: snode, associatedWith: destination, parameters: parameters)
+                    }.map2 { rawResponse in
+                        if let json = rawResponse as? JSON, let powDifficulty = json["difficulty"] as? Int {
+                            guard powDifficulty != LokiAPI.powDifficulty else { return rawResponse }
+                            print("[Loki] Setting proof of work difficulty to \(powDifficulty).")
+                            LokiAPI.powDifficulty = UInt(powDifficulty)
+                        } else {
+                            print("[Loki] Failed to update proof of work difficulty from: \(rawResponse).")
                         }
-                    })
-                }
-            }
-        }
-        if let peer = LokiP2PAPI.getInfo(for: destination), (lokiMessage.isPing || peer.isOnline) {
-            let target = LokiAPITarget(address: peer.address, port: peer.port, publicKeySet: nil)
-            // TODO: Retrying
-            return Promise.value([ target ]).mapValues2 { sendLokiMessage(lokiMessage, to: $0) }.map2 { Set($0) }.get2 { _ in
-                LokiP2PAPI.markOnline(destination)
-                onP2PSuccess()
-            }.recover2 { error -> Promise<Set<RawResponsePromise>> in
-                LokiP2PAPI.markOffline(destination)
-                if lokiMessage.isPing {
-                    print("[Loki] Failed to ping \(destination); marking contact as offline.")
-                    if let error = error as? NSError {
-                        error.isRetryable = false
-                        throw error
-                    } else {
-                        throw error
+                        return rawResponse
                     }
-                }
-                return sendLokiMessageUsingSwarmAPI()
+                })
             }
-        } else {
-            return sendLokiMessageUsingSwarmAPI()
         }
     }
     

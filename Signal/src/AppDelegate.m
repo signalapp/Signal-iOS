@@ -65,7 +65,6 @@ static NSTimeInterval launchStartedAt;
 @property (nonatomic) BOOL didAppLaunchFail;
 
 // Loki
-@property (nonatomic) LKP2PServer *lokiP2PServer;
 @property (nonatomic) LKPoller *lokiPoller;
 @property (nonatomic) LKRSSFeedPoller *lokiNewsFeedPoller;
 @property (nonatomic) LKRSSFeedPoller *lokiMessengerUpdatesFeedPoller;
@@ -201,8 +200,6 @@ static NSTimeInterval launchStartedAt;
     // Loki: Stop pollers
     [self stopPollerIfNeeded];
     [self stopOpenGroupPollersIfNeeded];
-
-    if (self.lokiP2PServer) { [self.lokiP2PServer stop]; }
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
@@ -756,9 +753,6 @@ static NSTimeInterval launchStartedAt;
             [Environment.shared.contactsManager fetchSystemContactsOnceIfAlreadyAuthorized];
 
             NSString *userHexEncodedPublicKey = self.tsAccountManager.localNumber;
-
-            // Loki: Tell our friends that we are online
-            [LKP2PAPI broadcastOnlineStatus];
 
             // Loki: Start pollers
             [self startPollerIfNeeded];

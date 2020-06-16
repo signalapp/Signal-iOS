@@ -38,7 +38,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (uint)ttl { return (uint)[LKTTLUtilities getTTLFor:LKMessageTypeEphemeral]; }
 
-- (nullable SSKProtoDataMessageBuilder *)dataMessageBuilder
+- (nullable id)dataMessageBuilder
 {
     SSKProtoDataMessageBuilder *_Nullable builder = [super dataMessageBuilder];
     if (!builder) {

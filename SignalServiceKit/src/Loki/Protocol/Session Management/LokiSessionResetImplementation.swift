@@ -51,7 +51,7 @@ public class LokiSessionResetImplementation : NSObject, SessionResetProtocol {
         }
         // If the current user initiated the reset then send back an empty message to acknowledge the completion of the session reset
         if thread.sessionResetStatus == .initiated {
-            let emptyMessage = EphemeralMessage(in: thread)
+            let emptyMessage = EphemeralMessage(thread: thread)
             SSKEnvironment.shared.messageSender.sendPromise(message: emptyMessage).retainUntilComplete()
         }
         // Show session reset done message

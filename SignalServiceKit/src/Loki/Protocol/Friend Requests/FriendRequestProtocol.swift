@@ -143,7 +143,7 @@ public final class FriendRequestProtocol : NSObject {
             return
         }
         let thread = TSContactThread.getOrCreateThread(withContactId: hexEncodedPublicKey, transaction: transaction)
-        let ephemeralMessage = EphemeralMessage(in: thread)
+        let ephemeralMessage = EphemeralMessage(thread: thread)
         let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
         messageSenderJobQueue.add(message: ephemeralMessage, transaction: transaction)
     }

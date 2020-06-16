@@ -11,7 +11,7 @@
 }
 
 #pragma mark Building
-- (nullable SSKProtoDataMessageBuilder *)dataMessageBuilder
+- (nullable id)dataMessageBuilder
 {
     SSKProtoDataMessageBuilder *builder = super.dataMessageBuilder;
     if (builder == nil) { return nil; }

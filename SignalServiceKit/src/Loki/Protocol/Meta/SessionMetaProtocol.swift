@@ -141,16 +141,4 @@ public final class SessionMetaProtocol : NSObject {
         // This dispatches async on the main queue internally where it starts a new write transaction
         profileManager.setProfileKeyData(profileKey, forRecipientId: hexEncodedPublicKey, avatarURL: profilePictureURL)
     }
-
-    // MARK: P2P
-    @objc(handleP2PAddressMessageIfNeeded:wrappedIn:)
-    public static func handleP2PAddressMessageIfNeeded(_ protoContent: SSKProtoContent, wrappedIn envelope: SSKProtoEnvelope) {
-        // The envelope source is set during UD decryption
-        let hexEncodedPublicKey = envelope.source!
-        guard let addressMessage = protoContent.lokiAddressMessage, let address = addressMessage.ptpAddress else { return }
-        let portAsUInt32 = addressMessage.ptpPort
-        guard portAsUInt32 != 0, portAsUInt32 < UInt16.max else { return }
-        let port = UInt16(portAsUInt32)
-        LokiP2PAPI.didReceiveLokiAddressMessage(forContact: hexEncodedPublicKey, address: address, port: port, receivedThroughP2P: envelope.isPtpMessage)
-    }
 }

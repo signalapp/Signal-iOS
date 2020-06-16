@@ -19,8 +19,6 @@
 #import "OWSDisappearingConfigurationUpdateInfoMessage.h"
 #import "OWSDisappearingMessagesConfiguration.h"
 #import "OWSDisappearingMessagesJob.h"
-#import "LKEphemeralMessage.h"
-#import "LKSessionRequestMessage.h"
 #import "LKDeviceLinkMessage.h"
 #import "OWSIdentityManager.h"
 #import "OWSIncomingMessageFinder.h"
@@ -449,11 +447,6 @@ NS_ASSUME_NONNULL_BEGIN
 
         // Loki: Handle pre key bundle message if needed
         [LKSessionManagementProtocol handlePreKeyBundleMessageIfNeeded:contentProto wrappedIn:envelope using:transaction];
-        
-        // Loki: Handle address message if needed
-        /*
-        [LKSessionMetaProtocol handleP2PAddressMessageIfNeeded:contentProto wrappedIn:envelope];
-         */
 
         // Loki: Handle device linking message if needed
         if (contentProto.lokiDeviceLinkMessage != nil) {

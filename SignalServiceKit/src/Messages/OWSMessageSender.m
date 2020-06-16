@@ -45,11 +45,9 @@
 #import "TSThread.h"
 #import "TSContactThread.h"
 #import "LKFriendRequestMessage.h"
-#import "LKSessionRequestMessage.h"
 #import "LKSessionRestoreMessage.h"
 #import "LKDeviceLinkMessage.h"
 #import "LKUnlinkDeviceMessage.h"
-#import "LKAddressMessage.h"
 #import <SessionAxolotlKit/AxolotlExceptions.h>
 #import <SessionAxolotlKit/CipherMessage.h>
 #import <SessionAxolotlKit/PreKeyBundle.h>
@@ -1933,9 +1931,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     BOOL isSilent = message.isSilent;
     BOOL isOnline = message.isOnline;
+    BOOL isPing = NO;
 
-    LKAddressMessage *addressMessage = [message as:[LKAddressMessage class]];
-    BOOL isPing = addressMessage != nil && addressMessage.isPing;
     OWSMessageServiceParams *messageParams =
         [[OWSMessageServiceParams alloc] initWithType:messageType
                                           recipientId:recipientID

@@ -91,7 +91,6 @@
 #import <SessionServiceKit/OWSContactsOutputStream.h>
 #import <SessionServiceKit/OWSDispatch.h>
 #import <SessionServiceKit/OWSEndSessionMessage.h>
-#import <SessionServiceKit/LKEphemeralMessage.h>
 #import <SessionServiceKit/LKDeviceLinkMessage.h>
 #import <SessionServiceKit/OWSError.h>
 #import <SessionServiceKit/OWSFileSystem.h>

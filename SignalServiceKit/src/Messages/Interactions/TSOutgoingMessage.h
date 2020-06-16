@@ -157,7 +157,7 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
  * Intermediate protobuf representation
  * Subclasses can augment if they want to manipulate the data message before building.
  */
-- (nullable SSKProtoDataMessageBuilder *)dataMessageBuilder;
+- (nullable id)dataMessageBuilder;
 
 - (nullable SSKProtoDataMessage *)buildDataMessage:(NSString *_Nullable)recipientId;
 

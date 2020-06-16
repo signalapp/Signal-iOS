@@ -216,7 +216,7 @@ public final class SessionManagementProtocol : NSObject {
                 }
                 guard validHEPKs.contains(hexEncodedPublicKey) else { return }
                 let thread = TSContactThread.getOrCreateThread(withContactId: hexEncodedPublicKey, transaction: transaction)
-                let ephemeralMessage = EphemeralMessage(in: thread)
+                let ephemeralMessage = EphemeralMessage(thread: thread)
                 let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
                 messageSenderJobQueue.add(message: ephemeralMessage, transaction: transaction)
             }
@@ -243,7 +243,7 @@ public final class SessionManagementProtocol : NSObject {
             // Archive all sessions
             storage.archiveAllSessions(forContact: hexEncodedPublicKey, protocolContext: transaction)
             // Send an ephemeral message
-            let ephemeralMessage = EphemeralMessage(in: thread)
+            let ephemeralMessage = EphemeralMessage(thread: thread)
             let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
             messageSenderJobQueue.add(message: ephemeralMessage, transaction: transaction)
         }
@@ -263,7 +263,7 @@ public final class SessionManagementProtocol : NSObject {
         thread.sessionResetStatus = .requestReceived
         thread.save(with: transaction)
         // Send an ephemeral message
-        let ephemeralMessage = EphemeralMessage(in: thread)
+        let ephemeralMessage = EphemeralMessage(thread: thread)
         let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
         messageSenderJobQueue.add(message: ephemeralMessage, transaction: transaction)
     }

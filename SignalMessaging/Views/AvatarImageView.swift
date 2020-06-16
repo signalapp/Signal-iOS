@@ -85,9 +85,7 @@ public class AvatarImageView: UIImageView {
     }
     
     @objc func updateOnlineStatusIndicator() {
-        let peerInfo = LokiP2PAPI.getInfo(for: contactID)
-        let isOnline = peerInfo?.isOnline ?? false
-        let color: UIColor = isOnline ? .lokiGreen() : .lokiGray()
+        let color = UIColor.lokiGray()
         let currentUserID = getUserHexEncodedPublicKey()
         let isCurrentUser = (contactID == currentUserID)
         layer.borderColor = isCurrentUser ? UIColor.clear.cgColor : color.cgColor

@@ -50,7 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 
-- (nullable SSKProtoDataMessageBuilder *)dataMessageBuilder
+- (nullable id)dataMessageBuilder
 {
     SSKProtoDataMessageBuilder *_Nullable dataMessageBuilder = [super dataMessageBuilder];
     if (!dataMessageBuilder) {
