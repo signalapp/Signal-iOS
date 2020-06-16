@@ -40,10 +40,10 @@ public final class SyncMessagesProtocol : NSObject {
         }
     }
 
-    @objc(syncContactWithHexEncodedPublicKey:in:)
-    public static func syncContact(_ hexEncodedPublicKey: String, in transaction: YapDatabaseReadTransaction) -> AnyPromise {
+    @objc(syncContactWithPublicKey:in:)
+    public static func syncContact(_ publicKey: String, in transaction: YapDatabaseReadTransaction) -> AnyPromise {
         let syncManager = SSKEnvironment.shared.syncManager
-        return syncManager.syncContacts(for: [ SignalAccount(recipientId: hexEncodedPublicKey) ])
+        return syncManager.syncContacts(for: [ SignalAccount(recipientId: publicKey) ])
     }
 
     @objc(syncAllContacts)

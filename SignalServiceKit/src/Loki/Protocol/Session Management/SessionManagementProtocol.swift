@@ -178,8 +178,8 @@ public final class SessionManagementProtocol : NSObject {
         }
     }
 
-    @objc(isSessionRestoreMessage:)
-    public static func isSessionRestoreMessage(_ dataMessage: SSKProtoDataMessage) -> Bool {
+    @objc(isSessionRestorationRequest:)
+    public static func isSessionRestorationRequest(_ dataMessage: SSKProtoDataMessage) -> Bool {
         let sessionRestoreFlag = SSKProtoDataMessage.SSKProtoDataMessageFlags.sessionRestore
         return dataMessage.flags & UInt32(sessionRestoreFlag.rawValue) != 0
     }
@@ -215,6 +215,14 @@ public final class SessionManagementProtocol : NSObject {
             return
         }
         storage.setPreKeyBundle(preKeyBundle, forContact: sender, transaction: transaction)
+    }
+
+    @objc(sendSessionEstablishedMessageToPublicKey:in:)
+    public static func sendSessionEstablishedMessage(to publicKey: String, in transaction: YapDatabaseReadWriteTransaction) {
+        let thread = TSContactThread.getOrCreateThread(withContactId: publicKey, transaction: transaction)
+        let ephemeralMessage = EphemeralMessage(thread: thread)
+        let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
+        messageSenderJobQueue.add(message: ephemeralMessage, transaction: transaction)
     }
 
     @objc(handleEndSessionMessageReceivedInThread:using:)

@@ -270,7 +270,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 
 - (AnyPromise *)syncContact:(NSString *)hexEncodedPubKey transaction:(YapDatabaseReadTransaction *)transaction
 {
-    return [LKSyncMessagesProtocol syncContactWithHexEncodedPublicKey:hexEncodedPubKey in:transaction];
+    return [LKSyncMessagesProtocol syncContactWithPublicKey:hexEncodedPubKey in:transaction];
 }
 
 - (AnyPromise *)syncAllContacts

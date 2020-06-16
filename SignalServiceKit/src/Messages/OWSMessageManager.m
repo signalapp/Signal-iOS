@@ -423,12 +423,6 @@ NS_ASSUME_NONNULL_BEGIN
             envelope.timestamp);
         return;
     }
-
-    // Loki: Ignore any friend requests from before restoration
-    if ([LKFriendRequestProtocol isFriendRequestFromBeforeRestoration:envelope]) {
-        [LKLogger print:@"[Loki] Ignoring friend request from before restoration."];
-        return;
-    }
     
     if (envelope.content != nil) {
         NSError *error;
@@ -438,7 +432,13 @@ NS_ASSUME_NONNULL_BEGIN
             return;
         }
         OWSLogInfo(@"Handling content: <Content: %@>.", [self descriptionForContent:contentProto]);
-        
+
+        // Loki: Ignore any friend requests from before restoration
+        if ([LKFriendRequestProtocol isFriendRequestFromBeforeRestoration:envelope]) {
+            [LKLogger print:@"[Loki] Ignoring friend request from before restoration."];
+            return;
+        }
+
         // Loki: Ignore any duplicate sync transcripts
         if ([LKSyncMessagesProtocol isDuplicateSyncMessage:contentProto fromHexEncodedPublicKey:envelope.source]) { return; }
 
@@ -452,7 +452,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         // Loki: Handle session restoration request if needed
-        if ([LKSessionManagementProtocol isSessionRestoreMessage:contentProto.dataMessage]) { return; } // Don't process the message any further
+        if ([LKSessionManagementProtocol isSessionRestorationRequest:contentProto.dataMessage]) { return; } // Don't process the message any further
 
         // Loki: Handle friend request acceptance if needed
         [LKFriendRequestProtocol handleFriendRequestAcceptanceIfNeeded:envelope in:transaction];
@@ -1033,8 +1033,8 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     // Loki: Handle session reset
-    NSString *hexEncodedPublicKey = envelope.source;
-    TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:hexEncodedPublicKey transaction:transaction];
+    NSString *sender = envelope.source;
+    TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:sender transaction:transaction];
     [LKSessionManagementProtocol handleEndSessionMessageReceivedInThread:thread using:transaction];
 }
 
@@ -1434,11 +1434,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                                 serverTimestamp:serverTimestamp
                                                                 wasReceivedByUD:wasReceivedByUD];
                 
-                // Loki: Parse Loki specific properties if needed
-                /*
-                if (envelope.isPtpMessage) { incomingMessage.isP2P = YES; }
-                 */
-                if (dataMessage.publicChatInfo != nil && dataMessage.publicChatInfo.hasServerID) { incomingMessage.openGroupServerMessageID = dataMessage.publicChatInfo.serverID; }
+                // Loki: Set open group server ID if needed
+                if (dataMessage.publicChatInfo != nil && dataMessage.publicChatInfo.hasServerID) {
+                    incomingMessage.openGroupServerMessageID = dataMessage.publicChatInfo.serverID;
+                }
 
                 NSArray<TSAttachmentPointer *> *attachmentPointers =
                     [TSAttachmentPointer attachmentPointersFromProtos:dataMessage.attachments
@@ -1529,15 +1528,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                         serverTimestamp:serverTimestamp
                                                         wasReceivedByUD:wasReceivedByUD];
 
-        // TODO: Are we sure this works correctly with multi device?
         [LKSessionMetaProtocol updateDisplayNameIfNeededForHexEncodedPublicKey:incomingMessage.authorId using:dataMessage appendingShortID:YES in:transaction];
         [LKSessionMetaProtocol updateProfileKeyIfNeededForHexEncodedPublicKey:thread.contactIdentifier using:dataMessage];
 
-        // Loki: Parse Loki specific properties if needed
-        /*
-        if (envelope.isPtpMessage) { incomingMessage.isP2P = YES; }
-         */
-        
         NSArray<TSAttachmentPointer *> *attachmentPointers =
             [TSAttachmentPointer attachmentPointersFromProtos:dataMessage.attachments albumMessage:incomingMessage];
         for (TSAttachmentPointer *pointer in attachmentPointers) {
@@ -1545,14 +1538,27 @@ NS_ASSUME_NONNULL_BEGIN
             [incomingMessage.attachmentIds addObject:pointer.uniqueId];
         }
 
-        // Loki: Do this before the check below
+        // Loki: Handle friend request if needed
         [LKFriendRequestProtocol handleFriendRequestMessageIfNeededFromEnvelope:envelope using:transaction];
         
         if (body.length == 0 && attachmentPointers.count < 1 && !contact) {
-            OWSLogWarn(@"Ignoring empty incoming message from: %@ with timestamp: %lu.",
-                hexEncodedPublicKey,
-                (unsigned long)timestamp);
+            if (envelope.type == SSKProtoEnvelopeTypeFriendRequest) {
+                // Loki: This is needed for compatibility with refactored desktop clients
+                [LKSessionManagementProtocol sendSessionEstablishedMessageToPublicKey:hexEncodedPublicKey in:transaction];
+            } else {
+                OWSLogWarn(@"Ignoring empty incoming message from: %@ with timestamp: %lu.", hexEncodedPublicKey, (unsigned long)timestamp);
+            }
             return nil;
+        }
+
+        // Loki: This is needed for compatibility with refactored desktop clients
+        LKFriendRequestStatus friendRequestStatus = [self.primaryStorage getFriendRequestStatusForContact:hexEncodedPublicKey transaction:transaction];
+        if (friendRequestStatus == LKFriendRequestStatusNone || friendRequestStatus == LKFriendRequestStatusRequestExpired) {
+            [self.primaryStorage setFriendRequestStatus:LKFriendRequestStatusRequestReceived forContact:hexEncodedPublicKey transaction:transaction];
+        } else if (friendRequestStatus == LKFriendRequestStatusRequestSent) {
+            [self.primaryStorage setFriendRequestStatus:LKFriendRequestStatusFriends forContact:hexEncodedPublicKey transaction:transaction];
+            [LKFriendRequestProtocol sendFriendRequestAcceptedMessageToPublicKey:hexEncodedPublicKey using:transaction];
+            [LKSyncMessagesProtocol syncContactWithPublicKey:masterHexEncodedPublicKey in:transaction];
         }
         
         // Loki: If we received a message from a contact in the last 2 minutes that wasn't P2P, then we need to ping them.

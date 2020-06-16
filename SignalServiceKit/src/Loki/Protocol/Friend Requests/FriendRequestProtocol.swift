@@ -135,7 +135,7 @@ public final class FriendRequestProtocol : NSObject {
         }
     }
 
-    @objc(sendFriendRequestAcceptedMessageToHexEncodedPublicKey:using:)
+    @objc(sendFriendRequestAcceptedMessageToPublicKey:using:)
     public static func sendFriendRequestAcceptedMessage(to publicKey: String, using transaction: YapDatabaseReadWriteTransaction) {
         guard ECKeyPair.isValidHexEncodedPublicKey(candidate: publicKey) else {
             print("[Loki] Invalid Session ID: \(publicKey).")

@@ -13,6 +13,7 @@
 #import "OWSDevice.h"
 #import "OWSDisappearingMessagesJob.h"
 #import "OWSDispatch.h"
+#import "OWSEndSessionMessage.h"
 #import "OWSError.h"
 #import "OWSIdentityManager.h"
 #import "OWSMessageServiceParams.h"
@@ -1191,6 +1192,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
         NSDictionary *signalMessageInfo = deviceMessages.firstObject;
         SSKProtoEnvelopeType type = ((NSNumber *)signalMessageInfo[@"type"]).integerValue;
+        if ([message isKindOfClass:OWSEndSessionMessage.class]) {
+            type = SSKProtoEnvelopeTypeFriendRequest;
+        }
         uint64_t timestamp = message.timestamp;
         NSString *senderID = type == SSKProtoEnvelopeTypeUnidentifiedSender ? @"" : userHexEncodedPublicKey;
         uint32_t senderDeviceID = type == SSKProtoEnvelopeTypeUnidentifiedSender ? 0 : OWSDevicePrimaryDeviceId;
