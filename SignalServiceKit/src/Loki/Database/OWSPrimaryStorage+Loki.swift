@@ -3,7 +3,7 @@
 
 public extension OWSPrimaryStorage {
 
-    // MARK: - Snode Pool
+    // MARK: Snode Pool
     public func setSnodePool(_ snodePool: Set<LokiAPITarget>, in transaction: YapDatabaseReadWriteTransaction) {
         clearSnodePool(in: transaction)
         snodePool.forEach { snode in
@@ -28,9 +28,7 @@ public extension OWSPrimaryStorage {
         transaction.removeObject(forKey: snode.description, inCollection: Storage.snodePoolCollection)
     }
 
-
-
-    // MARK: - Swarm
+    // MARK: Swarm
     public func setSwarm(_ swarm: [Snode], for publicKey: String, in transaction: YapDatabaseReadWriteTransaction) {
         print("[Loki] Caching swarm for: \(publicKey).")
         clearSwarm(for: publicKey, in: transaction)
@@ -55,9 +53,7 @@ public extension OWSPrimaryStorage {
         return result
     }
 
-
-
-    // MARK: - Onion Request Paths
+    // MARK: Onion Request Paths
     public func setOnionRequestPaths(_ paths: [OnionRequestAPI.Path], in transaction: YapDatabaseReadWriteTransaction) {
         // FIXME: This is a bit of a dirty approach that assumes 2 paths of length 3 each. We should do better than this.
         guard paths.count == 2 else { return }
@@ -89,9 +85,7 @@ public extension OWSPrimaryStorage {
         transaction.removeAllObjects(inCollection: Storage.onionRequestPathCollection)
     }
 
-
-
-    // MARK: - Session Requests
+    // MARK: Session Requests
     public func setSessionRequestTimestamp(for publicKey: String, to timestamp: Date, in transaction: YapDatabaseReadWriteTransaction) {
         transaction.setDate(timestamp, forKey: publicKey, inCollection: Storage.sessionRequestTimestampCollection)
     }
@@ -100,9 +94,7 @@ public extension OWSPrimaryStorage {
         transaction.date(forKey: publicKey, inCollection: Storage.sessionRequestTimestampCollection)
     }
 
-
-
-    // MARK: - Multi Device
+    // MARK: Multi Device
     private static var deviceLinkCache: Set<DeviceLink> = []
 
     public func setDeviceLinks(_ deviceLinks: Set<DeviceLink>) {
@@ -129,9 +121,7 @@ public extension OWSPrimaryStorage {
         return getDeviceLink(for: slaveHexEncodedPublicKey, in: transaction)?.master.hexEncodedPublicKey
     }
 
-
-
-    // MARK: - Open Groups
+    // MARK: Open Groups
     public func getUserCount(for publicChat: LokiPublicChat, in transaction: YapDatabaseReadTransaction) -> Int? {
         return transaction.object(forKey: publicChat.id, inCollection: Storage.openGroupUserCountCollection) as? Int
     }

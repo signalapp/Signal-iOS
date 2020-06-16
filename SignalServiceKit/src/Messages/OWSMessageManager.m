@@ -430,9 +430,6 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
     
-    // Loki: Handle friend request acceptance if needed
-    [LKFriendRequestProtocol handleFriendRequestAcceptanceIfNeeded:envelope in:transaction];
-    
     if (envelope.content != nil) {
         NSError *error;
         SSKProtoContent *_Nullable contentProto = [SSKProtoContent parseData:plaintextData error:&error];
@@ -442,11 +439,23 @@ NS_ASSUME_NONNULL_BEGIN
         }
         OWSLogInfo(@"Handling content: <Content: %@>.", [self descriptionForContent:contentProto]);
         
-        // Loki: Workaround for duplicate sync transcript issue
+        // Loki: Ignore any duplicate sync transcripts
         if ([LKSyncMessagesProtocol isDuplicateSyncMessage:contentProto fromHexEncodedPublicKey:envelope.source]) { return; }
 
         // Loki: Handle pre key bundle message if needed
         [LKSessionManagementProtocol handlePreKeyBundleMessageIfNeeded:contentProto wrappedIn:envelope using:transaction];
+
+        // Loki: Handle session request if needed
+        if ([LKSessionManagementProtocol isSessionRequestMessage:contentProto.dataMessage]) {
+            [LKSessionManagementProtocol handleSessionRequestMessage:contentProto.dataMessage wrappedIn:envelope using:transaction];
+            return; // Don't process the message any further
+        }
+
+        // Loki: Handle session restoration request if needed
+        if ([LKSessionManagementProtocol isSessionRestoreMessage:contentProto.dataMessage]) { return; } // Don't process the message any further
+
+        // Loki: Handle friend request acceptance if needed
+        [LKFriendRequestProtocol handleFriendRequestAcceptanceIfNeeded:envelope in:transaction];
 
         // Loki: Handle device linking message if needed
         if (contentProto.lokiDeviceLinkMessage != nil) {
@@ -459,15 +468,6 @@ NS_ASSUME_NONNULL_BEGIN
 
             [[OWSDeviceManager sharedManager] setHasReceivedSyncMessage];
         } else if (contentProto.dataMessage) {
-
-            // Loki: Don't process session request messages any further
-            if ([LKSessionManagementProtocol isSessionRequestMessage:contentProto.dataMessage]) {
-                [LKSessionManagementProtocol handleSessionRequestMessage:contentProto.dataMessage wrappedIn:envelope using:transaction];
-                return;
-            }
-            // Loki: Don't process session restore messages any further
-            if ([LKSessionManagementProtocol isSessionRestoreMessage:contentProto.dataMessage]) { return; }
-
             [self handleIncomingEnvelope:envelope
                          withDataMessage:contentProto.dataMessage
                          wasReceivedByUD:wasReceivedByUD

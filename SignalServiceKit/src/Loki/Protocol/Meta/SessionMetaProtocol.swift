@@ -4,9 +4,9 @@ import PromiseKit
 //
 // • Don't use a database transaction if you can avoid it.
 // • If you do need to use a database transaction, use a read transaction if possible.
-// • Consider making it the caller's responsibility to manage the database transaction (this helps avoid nested or unnecessary transactions).
+// • Consider making it the caller's responsibility to manage the database transaction (this helps avoid unnecessary transactions).
 // • Think carefully about adding a function; there might already be one for what you need.
-// • Document the expected cases for everything.
+// • Document the expected cases in which a function will be used
 // • Express those cases in tests.
 
 /// See [Receipts, Transcripts & Typing Indicators](https://github.com/loki-project/session-protocol-docs/wiki/Receipts,-Transcripts-&-Typing-Indicators) for more information.
@@ -106,9 +106,8 @@ public final class SessionMetaProtocol : NSObject {
 
     // MARK: - Receiving
     @objc(shouldSkipMessageDecryptResult:)
-    public static func shouldSkipMessageDecryptResult(_ result: OWSMessageDecryptResult) -> Bool {
+    public static func shouldSkipMessageDecryptResult(_ result: OWSMessageDecryptResult) -> Bool { // TODO: Why is this function needed at all?
         // Called from OWSMessageReceiver to prevent messages from even being added to the processing queue
-        // TODO: Why is this function needed at all?
         return result.source == getUserHexEncodedPublicKey() // This intentionally doesn't take into account multi device
     }
 

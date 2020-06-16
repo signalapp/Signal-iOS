@@ -4,9 +4,9 @@ import PromiseKit
 //
 // • Don't use a database transaction if you can avoid it.
 // • If you do need to use a database transaction, use a read transaction if possible.
-// • Consider making it the caller's responsibility to manage the database transaction (this helps avoid nested or unnecessary transactions).
+// • Consider making it the caller's responsibility to manage the database transaction (this helps avoid unnecessary transactions).
 // • Think carefully about adding a function; there might already be one for what you need.
-// • Document the expected cases for everything.
+// • Document the expected cases in which a function will be used
 // • Express those cases in tests.
 
 @objc(LKSessionManagementProtocol)
@@ -105,7 +105,7 @@ public final class SessionManagementProtocol : NSObject {
     public static func getSessionResetMessage(for hexEncodedPublicKey: String, in transaction: YapDatabaseReadWriteTransaction) -> SessionRestoreMessage {
         let thread = TSContactThread.getOrCreateThread(withContactId: hexEncodedPublicKey, transaction: transaction)
         let result = SessionRestoreMessage(thread: thread)
-        result.skipSave = true // TODO: Why is this necessary again?
+        result.skipSave = true // TODO: Why is this necessary?
         return result
     }
 
@@ -121,20 +121,17 @@ public final class SessionManagementProtocol : NSObject {
         let udManager = SSKEnvironment.shared.udManager
         let senderCertificate = udManager.getSenderCertificate()
         let (promise, seal) = Promise<OWSMessageSend>.pending()
-        // Dispatch async on the main queue to avoid nested write transactions
-        DispatchQueue.main.async {
-            var recipientUDAccess: OWSUDAccess?
-            if let senderCertificate = senderCertificate {
-                recipientUDAccess = udManager.udAccess(forRecipientId: hexEncodedPublicKey, requireSyncAccess: true) // Starts a new write transaction internally
-            }
-            let messageSend = OWSMessageSend(message: message, thread: thread, recipient: recipient, senderCertificate: senderCertificate,
-                udAccess: recipientUDAccess, localNumber: getUserHexEncodedPublicKey(), success: {
-
-            }, failure: { error in
-
-            })
-            seal.fulfill(messageSend)
+        var recipientUDAccess: OWSUDAccess?
+        if let senderCertificate = senderCertificate {
+            recipientUDAccess = udManager.udAccess(forRecipientId: hexEncodedPublicKey, requireSyncAccess: true) // Starts a new write transaction internally
         }
+        let messageSend = OWSMessageSend(message: message, thread: thread, recipient: recipient, senderCertificate: senderCertificate,
+            udAccess: recipientUDAccess, localNumber: getUserHexEncodedPublicKey(), success: {
+
+        }, failure: { error in
+
+        })
+        seal.fulfill(messageSend)
         return promise
     }
 
@@ -195,70 +192,40 @@ public final class SessionManagementProtocol : NSObject {
 
     @objc(handleSessionRequestMessage:wrappedIn:using:)
     public static func handleSessionRequestMessage(_ dataMessage: SSKProtoDataMessage, wrappedIn envelope: SSKProtoEnvelope, using transaction: YapDatabaseReadWriteTransaction) {
-        // The envelope source is set during UD decryption
-        let hexEncodedPublicKey = envelope.source!
-        if let sentSessionRequestTimestamp = storage.getSessionRequestTimestamp(for: hexEncodedPublicKey, in: transaction),
+        let sender = envelope.source! // Set during UD decryption
+        if let sentSessionRequestTimestamp = storage.getSessionRequestTimestamp(for: sender, in: transaction),
             envelope.timestamp < NSDate.ows_millisecondsSince1970(for: sentSessionRequestTimestamp) {
             // We sent a session request after this one was sent
-            print("[Loki] Ignoring session request from: \(hexEncodedPublicKey).")
+            print("[Loki] Ignoring session request from: \(sender).")
             return
         }
-        var closedGroupMembers: Set<String> = []
-        TSGroupThread.enumerateCollectionObjects(with: transaction) { object, _ in
-            guard let group = object as? TSGroupThread, group.groupModel.groupType == .closedGroup,
-                group.shouldThreadBeVisible else { return }
-            closedGroupMembers.formUnion(group.groupModel.groupMemberIds)
-        }
-        LokiFileServerAPI.getDeviceLinks(associatedWith: closedGroupMembers).ensure {
-            Storage.write { transaction in
-                let validHEPKs = closedGroupMembers.flatMap {
-                    LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: $0, in: transaction)
-                }
-                guard validHEPKs.contains(hexEncodedPublicKey) else { return }
-                let thread = TSContactThread.getOrCreateThread(withContactId: hexEncodedPublicKey, transaction: transaction)
-                let ephemeralMessage = EphemeralMessage(thread: thread)
-                let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
-                messageSenderJobQueue.add(message: ephemeralMessage, transaction: transaction)
-            }
-        }
+        let thread = TSContactThread.getOrCreateThread(withContactId: sender, transaction: transaction)
+        let ephemeralMessage = EphemeralMessage(thread: thread)
+        let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
+        messageSenderJobQueue.add(message: ephemeralMessage, transaction: transaction)
     }
 
-    // TODO: This needs an explanation of when we expect pre key bundles to be attached
     @objc(handlePreKeyBundleMessageIfNeeded:wrappedIn:using:)
     public static func handlePreKeyBundleMessageIfNeeded(_ protoContent: SSKProtoContent, wrappedIn envelope: SSKProtoEnvelope, using transaction: YapDatabaseReadWriteTransaction) {
-        // The envelope source is set during UD decryption
-        let hexEncodedPublicKey = envelope.source!
+        let sender = envelope.source! // Set during UD decryption
         guard let preKeyBundleMessage = protoContent.prekeyBundleMessage else { return }
-        print("[Loki] Received a pre key bundle message from: \(hexEncodedPublicKey).")
+        print("[Loki] Received a pre key bundle message from: \(sender).")
         guard let preKeyBundle = preKeyBundleMessage.getPreKeyBundle(with: transaction) else {
-            print("[Loki] Couldn't parse pre key bundle received from: \(hexEncodedPublicKey).")
+            print("[Loki] Couldn't parse pre key bundle received from: \(sender).")
             return
         }
-        storage.setPreKeyBundle(preKeyBundle, forContact: hexEncodedPublicKey, transaction: transaction)
-        // If we received a friend request (i.e. also a new pre key bundle), but we were already friends with the other user, reset the session.
-        // The envelope type is set during UD decryption.
-        if envelope.type == .friendRequest,
-            storage.getFriendRequestStatus(for: hexEncodedPublicKey, transaction: transaction) == .friends {
-            let thread = TSContactThread.getOrCreateThread(withContactId: hexEncodedPublicKey, transaction: transaction)
-            // Archive all sessions
-            storage.archiveAllSessions(forContact: hexEncodedPublicKey, protocolContext: transaction)
-            // Send an ephemeral message
-            let ephemeralMessage = EphemeralMessage(thread: thread)
-            let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
-            messageSenderJobQueue.add(message: ephemeralMessage, transaction: transaction)
-        }
+        storage.setPreKeyBundle(preKeyBundle, forContact: sender, transaction: transaction)
     }
 
-    // TODO: Confusing that we have this but also a sending version
     @objc(handleEndSessionMessageReceivedInThread:using:)
     public static func handleEndSessionMessageReceived(in thread: TSContactThread, using transaction: YapDatabaseReadWriteTransaction) {
-        let hexEncodedPublicKey = thread.contactIdentifier()
-        print("[Loki] End session message received from: \(hexEncodedPublicKey).")
+        let publicKey = thread.contactIdentifier()
+        print("[Loki] End session message received from: \(publicKey).")
         // Notify the user
         let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .typeLokiSessionResetInProgress)
         infoMessage.save(with: transaction)
         // Archive all sessions
-        storage.archiveAllSessions(forContact: hexEncodedPublicKey, protocolContext: transaction)
+        storage.archiveAllSessions(forContact: publicKey, protocolContext: transaction)
         // Update the session reset status
         thread.sessionResetStatus = .requestReceived
         thread.save(with: transaction)

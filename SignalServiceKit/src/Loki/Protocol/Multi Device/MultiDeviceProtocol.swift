@@ -4,9 +4,9 @@ import PromiseKit
 //
 // • Don't use a database transaction if you can avoid it.
 // • If you do need to use a database transaction, use a read transaction if possible.
-// • Consider making it the caller's responsibility to manage the database transaction (this helps avoid nested or unnecessary transactions).
+// • Consider making it the caller's responsibility to manage the database transaction (this helps avoid unnecessary transactions).
 // • Think carefully about adding a function; there might already be one for what you need.
-// • Document the expected cases for everything.
+// • Document the expected cases in which a function will be used
 // • Express those cases in tests.
 
 @objc(LKMultiDeviceProtocol)
@@ -166,20 +166,17 @@ public final class MultiDeviceProtocol : NSObject {
         let udManager = SSKEnvironment.shared.udManager
         let senderCertificate = udManager.getSenderCertificate()
         let (promise, seal) = Promise<OWSMessageSend>.pending()
-        // Dispatch async on the main queue to avoid nested write transactions
-        DispatchQueue.main.async {
-            var recipientUDAccess: OWSUDAccess?
-            if let senderCertificate = senderCertificate {
-                recipientUDAccess = udManager.udAccess(forRecipientId: hexEncodedPublicKey, requireSyncAccess: true) // Starts a new write transaction internally
-            }
-            let messageSend = OWSMessageSend(message: message, thread: thread, recipient: recipient, senderCertificate: senderCertificate,
-                udAccess: recipientUDAccess, localNumber: getUserHexEncodedPublicKey(), success: {
-                    externalSeal?.fulfill(())
-            }, failure: { error in
-                externalSeal?.reject(error)
-            })
-            seal.fulfill(messageSend)
+        var recipientUDAccess: OWSUDAccess?
+        if let senderCertificate = senderCertificate {
+            recipientUDAccess = udManager.udAccess(forRecipientId: hexEncodedPublicKey, requireSyncAccess: true) // Starts a new write transaction internally
         }
+        let messageSend = OWSMessageSend(message: message, thread: thread, recipient: recipient, senderCertificate: senderCertificate,
+            udAccess: recipientUDAccess, localNumber: getUserHexEncodedPublicKey(), success: {
+                externalSeal?.fulfill(())
+        }, failure: { error in
+            externalSeal?.reject(error)
+        })
+        seal.fulfill(messageSend)
         return promise
     }
 
@@ -224,16 +221,15 @@ public final class MultiDeviceProtocol : NSObject {
 
     @objc(handleUnlinkDeviceMessage:wrappedIn:using:)
     public static func handleUnlinkDeviceMessage(_ dataMessage: SSKProtoDataMessage, wrappedIn envelope: SSKProtoEnvelope, using transaction: YapDatabaseReadWriteTransaction) {
-        // The envelope source is set during UD decryption
-        let hexEncodedPublicKey = envelope.source!
+        let sender = envelope.source! // Set during UD decryption
         // Check that the request was sent by our master device
-        guard let masterHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: getUserHexEncodedPublicKey(), in: transaction) else { return }
-        let wasSentByMasterDevice = (masterHexEncodedPublicKey == hexEncodedPublicKey)
+        guard let masterPublicKey = storage.getMasterHexEncodedPublicKey(for: getUserHexEncodedPublicKey(), in: transaction) else { return }
+        let wasSentByMasterDevice = (masterPublicKey == sender)
         guard wasSentByMasterDevice else { return }
         // Ignore the request if we don't know about the device link in question
-        let masterDeviceLinks = storage.getDeviceLinks(for: masterHexEncodedPublicKey, in: transaction)
+        let masterDeviceLinks = storage.getDeviceLinks(for: masterPublicKey, in: transaction)
         if !masterDeviceLinks.contains(where: {
-            $0.master.hexEncodedPublicKey == masterHexEncodedPublicKey && $0.slave.hexEncodedPublicKey == getUserHexEncodedPublicKey()
+            $0.master.hexEncodedPublicKey == masterPublicKey && $0.slave.hexEncodedPublicKey == getUserHexEncodedPublicKey()
         }) {
             return
         }
@@ -242,7 +238,7 @@ public final class MultiDeviceProtocol : NSObject {
             // Note that the device link as seen from the master device's perspective has been deleted at this point, but the
             // device link as seen from the slave perspective hasn't.
             if slaveDeviceLinks.contains(where: {
-                $0.master.hexEncodedPublicKey == masterHexEncodedPublicKey && $0.slave.hexEncodedPublicKey == getUserHexEncodedPublicKey()
+                $0.master.hexEncodedPublicKey == masterPublicKey && $0.slave.hexEncodedPublicKey == getUserHexEncodedPublicKey()
             }) {
                 for deviceLink in slaveDeviceLinks { // In theory there should only be one
                     LokiFileServerAPI.removeDeviceLink(deviceLink) // Attempt to clean up on the file server
@@ -278,35 +274,35 @@ public final class MultiDeviceProtocol : NSObject {
 // Here (in a non-@objc extension) because it doesn't interoperate well with Obj-C
 public extension MultiDeviceProtocol {
 
-    fileprivate static func getMultiDeviceDestinations(for hexEncodedPublicKey: String, in transaction: YapDatabaseReadTransaction) -> Promise<Set<MultiDeviceDestination>> {
+    fileprivate static func getMultiDeviceDestinations(for publicKey: String, in transaction: YapDatabaseReadTransaction) -> Promise<Set<MultiDeviceDestination>> {
         let (promise, seal) = Promise<Set<MultiDeviceDestination>>.pending()
         func getDestinations(in transaction: YapDatabaseReadTransaction? = nil) {
             storage.dbReadConnection.read { transaction in
                 var destinations: Set<MultiDeviceDestination> = []
-                let masterHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: hexEncodedPublicKey, in: transaction) ?? hexEncodedPublicKey
-                let masterDestination = MultiDeviceDestination(hexEncodedPublicKey: masterHexEncodedPublicKey, isMaster: true)
+                let masterPublicKey = storage.getMasterHexEncodedPublicKey(for: publicKey, in: transaction) ?? publicKey
+                let masterDestination = MultiDeviceDestination(hexEncodedPublicKey: masterPublicKey, isMaster: true)
                 destinations.insert(masterDestination)
-                let deviceLinks = storage.getDeviceLinks(for: masterHexEncodedPublicKey, in: transaction)
+                let deviceLinks = storage.getDeviceLinks(for: masterPublicKey, in: transaction)
                 let slaveDestinations = deviceLinks.map { MultiDeviceDestination(hexEncodedPublicKey: $0.slave.hexEncodedPublicKey, isMaster: false) }
                 destinations.formUnion(slaveDestinations)
                 seal.fulfill(destinations)
             }
         }
         let timeSinceLastUpdate: TimeInterval
-        if let lastDeviceLinkUpdate = lastDeviceLinkUpdate[hexEncodedPublicKey] {
+        if let lastDeviceLinkUpdate = lastDeviceLinkUpdate[publicKey] {
             timeSinceLastUpdate = Date().timeIntervalSince(lastDeviceLinkUpdate)
         } else {
             timeSinceLastUpdate = .infinity
         }
         if timeSinceLastUpdate > deviceLinkUpdateInterval {
-            let masterHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: hexEncodedPublicKey, in: transaction) ?? hexEncodedPublicKey
-            LokiFileServerAPI.getDeviceLinks(associatedWith: masterHexEncodedPublicKey).done2 { _ in
+            let masterPublicKey = storage.getMasterHexEncodedPublicKey(for: publicKey, in: transaction) ?? publicKey
+            LokiFileServerAPI.getDeviceLinks(associatedWith: masterPublicKey).done2 { _ in
                 getDestinations()
-                lastDeviceLinkUpdate[hexEncodedPublicKey] = Date()
+                lastDeviceLinkUpdate[publicKey] = Date()
             }.catch2 { error in
                 if (error as? LokiDotNetAPI.LokiDotNetAPIError) == LokiDotNetAPI.LokiDotNetAPIError.parsingFailed {
                     // Don't immediately re-fetch in case of failure due to a parsing error
-                    lastDeviceLinkUpdate[hexEncodedPublicKey] = Date()
+                    lastDeviceLinkUpdate[publicKey] = Date()
                     getDestinations()
                 } else {
                     print("[Loki] Failed to get device links due to error: \(error).")

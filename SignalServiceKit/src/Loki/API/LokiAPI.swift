@@ -75,16 +75,20 @@ public final class LokiAPI : NSObject {
     }
 
     public static func sendSignalMessage(_ signalMessage: SignalMessage, onP2PSuccess: @escaping () -> Void) -> Promise<Set<RawResponsePromise>> {
+        // Convert the message to a Loki message
         guard let lokiMessage = LokiMessage.from(signalMessage: signalMessage) else { return Promise(error: LokiAPIError.messageConversionFailed) }
         let notificationCenter = NotificationCenter.default
         let destination = lokiMessage.destination
         notificationCenter.post(name: .calculatingPoW, object: NSNumber(value: signalMessage.timestamp))
+        // Calculate proof of work
         return lokiMessage.calculatePoW().then2 { lokiMessageWithPoW -> Promise<Set<RawResponsePromise>> in
             notificationCenter.post(name: .routing, object: NSNumber(value: signalMessage.timestamp))
+            // Get the target snodes
             return getTargetSnodes(for: destination).map2 { snodes in
+                notificationCenter.post(name: .messageSending, object: NSNumber(value: signalMessage.timestamp))
+                let parameters = lokiMessageWithPoW.toJSON()
                 return Set(snodes.map { snode in
-                    notificationCenter.post(name: .messageSending, object: NSNumber(value: signalMessage.timestamp))
-                    let parameters = lokiMessageWithPoW.toJSON()
+                    // Send the message to the target snode
                     return attempt(maxRetryCount: maxRetryCount) {
                         invoke(.sendMessage, on: snode, associatedWith: destination, parameters: parameters)
                     }.map2 { rawResponse in
