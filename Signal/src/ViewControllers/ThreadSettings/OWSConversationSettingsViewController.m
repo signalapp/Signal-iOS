@@ -958,7 +958,8 @@ const CGFloat kIconViewLength = 24;
     
     if (self.isGroupThread) {
         TSGroupThread* groupThread = (TSGroupThread *)self.thread;
-        if (groupThread.isPublicChat && groupThread.groupModel.groupImage != nil && ![groupThread.groupModel.groupName isEqual:@"Loki Public Chat"]) {
+        if (groupThread.isPublicChat && groupThread.groupModel.groupImage != nil
+            && ![groupThread.groupModel.groupName isEqual:@"Loki Public Chat"] && ![groupThread.groupModel.groupName isEqual:@"Session Public Chat"]) {
             profilePictureView.openGroupProfilePicture = groupThread.groupModel.groupImage;
             profilePictureView.isRSSFeed = false;
         } else {
