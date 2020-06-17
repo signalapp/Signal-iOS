@@ -87,11 +87,11 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
         } else {
             queryParameters += "&count=\(fallbackBatchCount)&include_deleted=0"
         }
-        return getAuthToken(for: server).then2 { token -> Promise<[LokiPublicChatMessage]> in
+        return getAuthToken(for: server).then(on: DispatchQueue.global(qos: .default)) { token -> Promise<[LokiPublicChatMessage]> in
             let url = URL(string: "\(server)/channels/\(channel)/messages?\(queryParameters)")!
             let request = TSRequest(url: url)
             request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
-            return LokiFileServerProxy(for: server).perform(request).map2 { rawResponse in
+            return LokiFileServerProxy(for: server).perform(request).map(on: DispatchQueue.global(qos: .default)) { rawResponse in
                 guard let json = rawResponse as? JSON, let rawMessages = json["data"] as? [JSON] else {
                     print("[Loki] Couldn't parse messages for public chat channel with ID: \(channel) on server: \(server) from: \(rawResponse).")
                     throw LokiDotNetAPIError.parsingFailed
@@ -175,14 +175,14 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
         let (promise, seal) = Promise<LokiPublicChatMessage>.pending()
         DispatchQueue.global(qos: .userInitiated).async { [privateKey = userKeyPair.privateKey] in
             guard let signedMessage = message.sign(with: privateKey) else { return seal.reject(LokiDotNetAPIError.signingFailed) }
-            attempt(maxRetryCount: maxRetryCount, recoveringOn: LokiAPI.workQueue) {
-                getAuthToken(for: server).then2 { token -> Promise<LokiPublicChatMessage> in
+            attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global(qos: .default)) {
+                getAuthToken(for: server).then(on: DispatchQueue.global(qos: .default)) { token -> Promise<LokiPublicChatMessage> in
                     let url = URL(string: "\(server)/channels/\(channel)/messages")!
                     let parameters = signedMessage.toJSON()
                     let request = TSRequest(url: url, method: "POST", parameters: parameters)
                     request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
                     let displayName = userDisplayName
-                    return LokiFileServerProxy(for: server).perform(request).map2 { rawResponse in
+                    return LokiFileServerProxy(for: server).perform(request).map(on: DispatchQueue.global(qos: .default)) { rawResponse in
                         // ISO8601DateFormatter doesn't support milliseconds before iOS 11
                         let dateFormatter = DateFormatter()
                         dateFormatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss.SSSZ"
@@ -195,9 +195,9 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
                         return LokiPublicChatMessage(serverID: serverID, hexEncodedPublicKey: getUserHexEncodedPublicKey(), displayName: displayName, profilePicture: signedMessage.profilePicture, body: body, type: publicChatMessageType, timestamp: timestamp, quote: signedMessage.quote, attachments: signedMessage.attachments, signature: signedMessage.signature)
                     }
                 }.handlingInvalidAuthTokenIfNeeded(for: server)
-            }.done2 { message in
+            }.done(on: DispatchQueue.global(qos: .default)) { message in
                 seal.fulfill(message)
-            }.catch2 { error in
+            }.catch(on: DispatchQueue.global(qos: .default)) { error in
                 seal.reject(error)
             }
         }
@@ -213,11 +213,11 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
         } else {
             queryParameters = "count=\(fallbackBatchCount)"
         }
-        return getAuthToken(for: server).then2 { token -> Promise<[UInt64]> in
+        return getAuthToken(for: server).then(on: DispatchQueue.global(qos: .default)) { token -> Promise<[UInt64]> in
             let url = URL(string: "\(server)/loki/v1/channel/\(channel)/deletes?\(queryParameters)")!
             let request = TSRequest(url: url)
             request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
-            return LokiFileServerProxy(for: server).perform(request).map2 { rawResponse in
+            return LokiFileServerProxy(for: server).perform(request).map(on: DispatchQueue.global(qos: .default)) { rawResponse in
                 guard let json = rawResponse as? JSON, let deletions = json["data"] as? [JSON] else {
                     print("[Loki] Couldn't parse deleted messages for public chat channel with ID: \(channel) on server: \(server) from: \(rawResponse).")
                     throw LokiDotNetAPIError.parsingFailed
@@ -244,12 +244,12 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
         let isModerationRequest = !isSentByUser
         print("[Loki] Deleting message with ID: \(messageID) for public chat channel with ID: \(channel) on server: \(server) (isModerationRequest = \(isModerationRequest)).")
         let urlAsString = isSentByUser ? "\(server)/channels/\(channel)/messages/\(messageID)" : "\(server)/loki/v1/moderation/message/\(messageID)"
-        return attempt(maxRetryCount: maxRetryCount, recoveringOn: LokiAPI.workQueue) {
-            getAuthToken(for: server).then2 { token -> Promise<Void> in
+        return attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global(qos: .default)) {
+            getAuthToken(for: server).then(on: DispatchQueue.global(qos: .default)) { token -> Promise<Void> in
                 let url = URL(string: urlAsString)!
                 let request = TSRequest(url: url, method: "DELETE", parameters: [:])
                 request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
-                return LokiFileServerProxy(for: server).perform(request).done2 { result -> Void in
+                return LokiFileServerProxy(for: server).perform(request).done(on: DispatchQueue.global(qos: .default)) { result -> Void in
                     print("[Loki] Deleted message with ID: \(messageID) on server: \(server).")
                 }
             }.handlingInvalidAuthTokenIfNeeded(for: server)
@@ -262,11 +262,11 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
         guard let hexEncodedPublicKeys = displayNameUpdatees[publicChatID] else { return Promise.value(()) }
         displayNameUpdatees[publicChatID] = []
         print("[Loki] Getting display names for: \(hexEncodedPublicKeys).")
-        return getAuthToken(for: server).then2 { token -> Promise<Void> in
+        return getAuthToken(for: server).then(on: DispatchQueue.global(qos: .default)) { token -> Promise<Void> in
             let queryParameters = "ids=\(hexEncodedPublicKeys.map { "@\($0)" }.joined(separator: ","))&include_user_annotations=1"
             let url = URL(string: "\(server)/users?\(queryParameters)")!
             let request = TSRequest(url: url)
-            return LokiFileServerProxy(for: server).perform(request).map2 { rawResponse in
+            return LokiFileServerProxy(for: server).perform(request).map(on: DispatchQueue.global(qos: .default)) { rawResponse in
                 guard let json = rawResponse as? JSON, let data = json["data"] as? [JSON] else {
                     print("[Loki] Couldn't parse display names for users: \(hexEncodedPublicKeys) from: \(rawResponse).")
                     throw LokiDotNetAPIError.parsingFailed
@@ -292,12 +292,12 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
     public static func setDisplayName(to newDisplayName: String?, on server: String) -> Promise<Void> {
         print("[Loki] Updating display name on server: \(server).")
         let parameters: JSON = [ "name" : (newDisplayName ?? "") ]
-        return attempt(maxRetryCount: maxRetryCount, recoveringOn: LokiAPI.workQueue) {
-            getAuthToken(for: server).then2 { token -> Promise<Void> in
+        return attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global(qos: .default)) {
+            getAuthToken(for: server).then(on: DispatchQueue.global(qos: .default)) { token -> Promise<Void> in
                 let url = URL(string: "\(server)/users/me")!
                 let request = TSRequest(url: url, method: "PATCH", parameters: parameters)
                 request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
-                return LokiFileServerProxy(for: server).perform(request).map2 { _ in }.recover2 { error in
+                return LokiFileServerProxy(for: server).perform(request).map(on: DispatchQueue.global(qos: .default)) { _ in }.recover(on: DispatchQueue.global(qos: .default)) { error in
                     print("Couldn't update display name due to error: \(error).")
                     throw error
                 }
@@ -317,12 +317,12 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
             annotation["value"] = [ "profileKey" : profileKey.base64EncodedString(), "url" : url ]
         }
         let parameters: JSON = [ "annotations" : [ annotation ] ]
-        return attempt(maxRetryCount: maxRetryCount, recoveringOn: LokiAPI.workQueue) {
-            getAuthToken(for: server).then2 { token -> Promise<Void> in
+        return attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global(qos: .default)) {
+            getAuthToken(for: server).then(on: DispatchQueue.global(qos: .default)) { token -> Promise<Void> in
                 let url = URL(string: "\(server)/users/me")!
                 let request = TSRequest(url: url, method: "PATCH", parameters: parameters)
                 request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
-                return LokiFileServerProxy(for: server).perform(request).map2 { _ in }.recover2 { error in
+                return LokiFileServerProxy(for: server).perform(request).map(on: DispatchQueue.global(qos: .default)) { _ in }.recover(on: DispatchQueue.global(qos: .default)) { error in
                     print("[Loki] Couldn't update profile picture due to error: \(error).")
                     throw error
                 }
@@ -382,12 +382,12 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
     }
     
     public static func getInfo(for channel: UInt64, on server: String) -> Promise<LokiPublicChatInfo> {
-        return attempt(maxRetryCount: maxRetryCount, recoveringOn: LokiAPI.workQueue) {
-            getAuthToken(for: server).then2 { token -> Promise<LokiPublicChatInfo> in
+        return attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global(qos: .default)) {
+            getAuthToken(for: server).then(on: DispatchQueue.global(qos: .default)) { token -> Promise<LokiPublicChatInfo> in
                 let url = URL(string: "\(server)/channels/\(channel)?include_annotations=1")!
                 let request = TSRequest(url: url)
                 request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
-                return LokiFileServerProxy(for: server).perform(request).map2 { rawResponse in
+                return LokiFileServerProxy(for: server).perform(request).map(on: DispatchQueue.global(qos: .default)) { rawResponse in
                     guard let json = rawResponse as? JSON,
                         let data = json["data"] as? JSON,
                         let annotations = data["annotations"] as? [JSON],
@@ -413,12 +413,12 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
     }
 
     public static func join(_ channel: UInt64, on server: String) -> Promise<Void> {
-        return attempt(maxRetryCount: maxRetryCount, recoveringOn: LokiAPI.workQueue) {
-            getAuthToken(for: server).then2 { token -> Promise<Void> in
+        return attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global(qos: .default)) {
+            getAuthToken(for: server).then(on: DispatchQueue.global(qos: .default)) { token -> Promise<Void> in
                 let url = URL(string: "\(server)/channels/\(channel)/subscribe")!
                 let request = TSRequest(url: url, method: "POST", parameters: [:])
                 request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
-                return LokiFileServerProxy(for: server).perform(request).done2 { result -> Void in
+                return LokiFileServerProxy(for: server).perform(request).done(on: DispatchQueue.global(qos: .default)) { result -> Void in
                     print("[Loki] Joined channel with ID: \(channel) on server: \(server).")
                 }
             }.handlingInvalidAuthTokenIfNeeded(for: server)
@@ -426,12 +426,12 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
     }
 
     public static func leave(_ channel: UInt64, on server: String) -> Promise<Void> {
-        return attempt(maxRetryCount: maxRetryCount, recoveringOn: LokiAPI.workQueue) {
-            getAuthToken(for: server).then2 { token -> Promise<Void> in
+        return attempt(maxRetryCount: maxRetryCount, recoveringOn: DispatchQueue.global(qos: .default)) {
+            getAuthToken(for: server).then(on: DispatchQueue.global(qos: .default)) { token -> Promise<Void> in
                 let url = URL(string: "\(server)/channels/\(channel)/subscribe")!
                 let request = TSRequest(url: url, method: "DELETE", parameters: [:])
                 request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
-                return LokiFileServerProxy(for: server).perform(request).done2 { result -> Void in
+                return LokiFileServerProxy(for: server).perform(request).done(on: DispatchQueue.global(qos: .default)) { result -> Void in
                     print("[Loki] Left channel with ID: \(channel) on server: \(server).")
                 }
             }.handlingInvalidAuthTokenIfNeeded(for: server)
@@ -448,16 +448,16 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
         let url = URL(string: "\(server)/loki/v1/channels/\(channel)/messages/\(messageID)/report")!
         let request = TSRequest(url: url, method: "POST", parameters: [:])
         // Only used for the Loki Public Chat which doesn't require authentication
-        return LokiFileServerProxy(for: server).perform(request).map2 { _ in }
+        return LokiFileServerProxy(for: server).perform(request).map(on: DispatchQueue.global(qos: .default)) { _ in }
     }
 
     // MARK: Moderators
     public static func getModerators(for channel: UInt64, on server: String) -> Promise<Set<String>> {
-        return getAuthToken(for: server).then2 { token -> Promise<Set<String>> in
+        return getAuthToken(for: server).then(on: DispatchQueue.global(qos: .default)) { token -> Promise<Set<String>> in
             let url = URL(string: "\(server)/loki/v1/channel/\(channel)/get_moderators")!
             let request = TSRequest(url: url)
             request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
-            return LokiFileServerProxy(for: server).perform(request).map2 { rawResponse in
+            return LokiFileServerProxy(for: server).perform(request).map(on: DispatchQueue.global(qos: .default)) { rawResponse in
                 guard let json = rawResponse as? JSON, let moderators = json["moderators"] as? [String] else {
                     print("[Loki] Couldn't parse moderators for public chat channel with ID: \(channel) on server: \(server) from: \(rawResponse).")
                     throw LokiDotNetAPIError.parsingFailed

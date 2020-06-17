@@ -54,7 +54,7 @@ public final class LokiPublicChatPoller : NSObject {
     public func pollForNewMessages() -> Promise<Void> {
         let publicChat = self.publicChat
         let userHexEncodedPublicKey = self.userHexEncodedPublicKey
-        return LokiPublicChatAPI.getMessages(for: publicChat.channel, on: publicChat.server).done2 { messages in
+        return LokiPublicChatAPI.getMessages(for: publicChat.channel, on: publicChat.server).done(on: DispatchQueue.global(qos: .default)) { messages in
             let uniqueHexEncodedPublicKeys = Set(messages.map { $0.hexEncodedPublicKey })
             func proceed() {
                 let storage = OWSPrimaryStorage.shared()
@@ -191,12 +191,12 @@ public final class LokiPublicChatPoller : NSObject {
                 return timeSinceLastUpdate > MultiDeviceProtocol.deviceLinkUpdateInterval
             }
             if !hexEncodedPublicKeysToUpdate.isEmpty {
-                LokiFileServerAPI.getDeviceLinks(associatedWith: hexEncodedPublicKeysToUpdate).done2 { _ in
+                LokiFileServerAPI.getDeviceLinks(associatedWith: hexEncodedPublicKeysToUpdate).done(on: DispatchQueue.global(qos: .default)) { _ in
                     proceed()
                     hexEncodedPublicKeysToUpdate.forEach {
                         MultiDeviceProtocol.lastDeviceLinkUpdate[$0] = Date() // TODO: Doing this from a global queue seems a bit iffy
                     }
-                }.catch2 { error in
+                }.catch(on: DispatchQueue.global(qos: .default)) { error in
                     if (error as? LokiDotNetAPI.LokiDotNetAPIError) == LokiDotNetAPI.LokiDotNetAPIError.parsingFailed {
                         // Don't immediately re-fetch in case of failure due to a parsing error
                         hexEncodedPublicKeysToUpdate.forEach {
@@ -215,7 +215,7 @@ public final class LokiPublicChatPoller : NSObject {
     
     private func pollForDeletedMessages() {
         let publicChat = self.publicChat
-        let _ = LokiPublicChatAPI.getDeletedMessageServerIDs(for: publicChat.channel, on: publicChat.server).done2 { deletedMessageServerIDs in
+        let _ = LokiPublicChatAPI.getDeletedMessageServerIDs(for: publicChat.channel, on: publicChat.server).done(on: DispatchQueue.global(qos: .default)) { deletedMessageServerIDs in
             try! Storage.writeSync { transaction in
                 let deletedMessageIDs = deletedMessageServerIDs.compactMap { OWSPrimaryStorage.shared().getIDForMessage(withServerID: UInt($0), in: transaction) }
                 deletedMessageIDs.forEach { messageID in
