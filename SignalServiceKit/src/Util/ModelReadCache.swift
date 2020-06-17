@@ -4,7 +4,74 @@
 
 import Foundation
 
-private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel> {
+#if TESTABLE_BUILD
+protocol ModelCache {
+    var logName: String { get }
+}
+
+// MARK: -
+
+private struct ModelReadCacheStats {
+    static let shouldLogCacheStats = true
+
+    let cacheHitCount = AtomicUInt()
+    let cacheReadCount = AtomicUInt()
+
+    func recordCacheHit(_ cache: ModelCache) {
+        let hitCount = cacheHitCount.increment()
+        let totalCount = cacheReadCount.increment()
+        logStats(hitCount: hitCount, totalCount: totalCount, cache: cache)
+    }
+
+    func recordCacheMiss(_ cache: ModelCache) {
+        let hitCount = cacheHitCount.get()
+        let totalCount = cacheReadCount.increment()
+        logStats(hitCount: hitCount, totalCount: totalCount, cache: cache)
+    }
+
+    private func logStats(hitCount: UInt, totalCount: UInt, cache: ModelCache) {
+        if Self.shouldLogCacheStats, totalCount > 0, totalCount % 100 == 0 {
+            let percentage = 100 * Double(hitCount) / Double(totalCount)
+            Logger.verbose("---- \(cache.logName): \(percentage)% \(totalCount)")
+        }
+    }
+}
+#endif
+
+// MARK: -
+
+private class ModelCacheValueBox<ValueType: BaseModel> {
+    let value: ValueType?
+
+    init(value: ValueType?) {
+        self.value = value
+    }
+}
+
+// MARK: -
+
+private class ModelCacheAdapter<KeyType: AnyObject & Hashable, ValueType: BaseModel> {
+    func read(key: KeyType, transaction: SDSAnyReadTransaction) -> ValueType? {
+        notImplemented()
+    }
+
+    func deriveKey(fromValue value: ValueType) -> KeyType {
+        notImplemented()
+    }
+
+    func copy(value: ValueType) throws -> ValueType {
+        notImplemented()
+    }
+
+    func uiReadEvacuation(databaseChanges: UIDatabaseChanges,
+                          nsCache: NSCache<KeyType, ModelCacheValueBox<ValueType>>) {
+        notImplemented()
+    }
+}
+
+// MARK: -
+
+private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel>: UIDatabaseSnapshotDelegate {
 
     // MARK: - Dependencies
 
@@ -44,41 +111,33 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
         return "\(cacheName) \(mode)"
     }
 
-    class ValueBox {
-        let value: ValueType?
+    #if TESTABLE_BUILD
+    let cacheStats = ModelReadCacheStats()
+    #endif
 
-        init(value: ValueType?) {
-            self.value = value
-        }
-    }
-
-    // This property should only be accessed on serialQueue.
-    //
     // TODO: We could tune the size of this cache.
     //       NSCache's default behavior is opaque.
     //       We're currently only using this to cache
     //       small models, but that could change.
-    private let nscache = NSCache<KeyType, ValueBox>()
+    fileprivate let nsCache = NSCache<KeyType, ModelCacheValueBox<ValueType>>()
 
-    typealias ReadBlock = (KeyType, SDSAnyReadTransaction) -> ValueType?
-    private let readBlock: ReadBlock
+    private let adapter: ModelCacheAdapter<KeyType, ValueType>
 
-    typealias KeyBlock = (ValueType) -> KeyType
-    private let keyBlock: KeyBlock
+    private var isCacheReady: Bool {
+        switch mode {
+        case .read:
+            return true
+        case .uiRead:
+            AssertIsOnMainThread()
+            return isObservingUIDatabaseSnapshots
+        }
+    }
+    private var isObservingUIDatabaseSnapshots = false
 
-    typealias CopyBlock = (ValueType) throws -> ValueType
-    private let copyBlock: CopyBlock
-
-    init(mode: Mode,
-         cacheName: String,
-         keyBlock: @escaping KeyBlock,
-         readBlock: @escaping ReadBlock,
-         copyBlock: @escaping CopyBlock) {
+    init(mode: Mode, cacheName: String, adapter: ModelCacheAdapter<KeyType, ValueType>) {
         self.mode = mode
         self.cacheName = cacheName
-        self.keyBlock = keyBlock
-        self.readBlock = readBlock
-        self.copyBlock = copyBlock
+        self.adapter = adapter
 
         switch mode {
         case .read:
@@ -87,14 +146,18 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
                                                    name: SDSDatabaseStorage.didReceiveCrossProcessNotification,
                                                    object: nil)
         case .uiRead:
-            // uiRead caches are evacuated by the cache wrapper, which
-            // observes storage changes.
-            break
+            // uiRead caches are evacuated by observing storage changes.
+            AppReadiness.runNowOrWhenAppDidBecomeReady {
+                AssertIsOnMainThread()
+
+                self.databaseStorage.appendUIDatabaseSnapshotDelegate(self)
+                self.isObservingUIDatabaseSnapshots = true
+            }
         }
     }
 
     fileprivate func evacuateCache() {
-        nscache.removeAllObjects()
+        nsCache.removeAllObjects()
     }
 
     @objc
@@ -113,41 +176,61 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
 
     // This method should only be called within performSync().
     private func readValue(for key: KeyType, transaction: SDSAnyReadTransaction) -> ValueType? {
-        if let value = readBlock(key, transaction) {
+        if let value = adapter.read(key: key, transaction: transaction) {
             if !isExcluded(key: key),
                 canUseCache(transaction: transaction) {
                 // Update cache.
-                nscache.setObject(ValueBox(value: value), forKey: key)
+                nsCache.setObject(ModelCacheValueBox(value: value), forKey: key)
             }
             return value
         }
         if !isExcluded(key: key),
             canUseCache(transaction: transaction) {
             // Update cache.
-            nscache.setObject(ValueBox(value: nil), forKey: key)
+            nsCache.setObject(ModelCacheValueBox(value: nil), forKey: key)
         }
         return nil
     }
 
+    func didRead(value: ValueType, transaction: SDSAnyReadTransaction) {
+        guard canUseCache(transaction: transaction) else {
+            return
+        }
+        let key = adapter.deriveKey(fromValue: value)
+        performSync {
+            if !isExcluded(key: key),
+                canUseCache(transaction: transaction) {
+                // Update cache.
+                nsCache.setObject(ModelCacheValueBox(value: value), forKey: key)
+            }
+        }
+    }
+
     // This method should only be called within performSync().
-    private func cachedValue(for key: KeyType) -> ValueBox? {
+    private func cachedValue(for key: KeyType) -> ModelCacheValueBox<ValueType>? {
+        guard isCacheReady else {
+            return nil
+        }
         guard !isExcluded(key: key) else {
             // Read excluded.
             return nil
         }
-        return nscache.object(forKey: key)
+        return nsCache.object(forKey: key)
     }
 
-    func getValue(for key: KeyType, transaction: SDSAnyReadTransaction) -> ValueType? {
+    func getValue(for key: KeyType, transaction: SDSAnyReadTransaction, returnNilOnCacheMiss: Bool = false) -> ValueType? {
         // This can be used to verify that cached values exactly
         // align with database contents.
         #if TESTABLE_BUILD
         let shouldCheckValues = false
         let checkValues = { (cachedValue: ValueType?) in
+            guard !returnNilOnCacheMiss else {
+                return
+            }
             let databaseValue = self.readValue(for: key, transaction: transaction)
             if cachedValue != databaseValue {
-                Logger.verbose("cachedValue: \(cachedValue?.description())")
-                Logger.verbose("databaseValue: \(databaseValue?.description())")
+                Logger.verbose("cachedValue: \(cachedValue?.description() ?? "nil")")
+                Logger.verbose("databaseValue: \(databaseValue?.description() ?? "nil")")
                 owsFailDebug("cachedValue != databaseValue")
             }
         }
@@ -155,6 +238,11 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
 
         return performSync {
             if let cachedValue = self.cachedValue(for: key) {
+
+                #if TESTABLE_BUILD
+                cacheStats.recordCacheHit(self)
+                #endif
+
                 if let value = cachedValue.value {
                     // Return a copy of the model.
                     let cachedValue = self.copyValue(value)
@@ -176,9 +264,27 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
                     return nil
                 }
             } else {
+                #if TESTABLE_BUILD
+                cacheStats.recordCacheMiss(self)
+                #endif
+
+                guard !returnNilOnCacheMiss else {
+                    return nil
+                }
+
                 return self.readValue(for: key, transaction: transaction)
             }
         }
+    }
+
+    func getValuesIfInCache(for keys: [KeyType], transaction: SDSAnyReadTransaction) -> [KeyType: ValueType] {
+        var result = [KeyType: ValueType]()
+        for key in keys {
+            if let value = getValue(for: key, transaction: transaction, returnNilOnCacheMiss: true) {
+                result[key] = value
+            }
+        }
+        return result
     }
 
     private func copyValue(_ value: ValueType) -> ValueType? {
@@ -187,7 +293,7 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
             let cachedValue: ValueType
             #if TESTABLE_BUILD
             cachedValue = try Bench(title: "Slow copy: \(logName)", logIfLongerThan: 0.001, logInProduction: false) {
-                try self.copyBlock(value)
+                try adapter.copy(value: value)
             }
             #else
             cachedValue = try self.copyBlock(value)
@@ -201,13 +307,13 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
 
     func didRemove(value: ValueType, transaction: SDSAnyWriteTransaction) {
         assert(mode == .read)
-        let key = keyBlock(value)
+        let key = adapter.deriveKey(fromValue: value)
         updateCacheForWrite(key: key, value: nil, transaction: transaction)
     }
 
     func didInsertOrUpdate(value: ValueType, transaction: SDSAnyWriteTransaction) {
         assert(mode == .read)
-        let key = keyBlock(value)
+        let key = adapter.deriveKey(fromValue: value)
         updateCacheForWrite(key: key, value: value, transaction: transaction)
     }
 
@@ -224,9 +330,9 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
             // so we could also update this when we remove
             // the exclusion.
             if let value = value {
-                nscache.setObject(ValueBox(value: value), forKey: key)
+                nsCache.setObject(ModelCacheValueBox(value: value), forKey: key)
             } else {
-                nscache.setObject(ValueBox(value: nil), forKey: key)
+                nsCache.setObject(ModelCacheValueBox(value: nil), forKey: key)
             }
 
             if self.mode == .read {
@@ -249,6 +355,9 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
     }
 
     private func canUseCache(transaction: SDSAnyReadTransaction) -> Bool {
+        guard isCacheReady else {
+            return false
+        }
         switch transaction.readTransaction {
         case .yapRead:
             return false
@@ -343,11 +452,45 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
             return value
         }
     }
+
+    // MARK: - UIDatabaseSnapshotDelegate
+
+    func uiDatabaseSnapshotWillUpdate() {
+        AssertIsOnMainThread()
+        assert(mode == .uiRead)
+    }
+
+    func uiDatabaseSnapshotDidUpdate(databaseChanges: UIDatabaseChanges) {
+        AssertIsOnMainThread()
+        assert(mode == .uiRead)
+
+        adapter.uiReadEvacuation(databaseChanges: databaseChanges, nsCache: nsCache)
+    }
+
+    func uiDatabaseSnapshotDidUpdateExternally() {
+        AssertIsOnMainThread()
+        assert(mode == .uiRead)
+
+        evacuateCache()
+    }
+
+    func uiDatabaseSnapshotDidReset() {
+        AssertIsOnMainThread()
+        assert(mode == .uiRead)
+
+        evacuateCache()
+    }
 }
 
 // MARK: -
 
-private class ModelReadCacheWrapper<KeyType: AnyObject & Hashable, ValueType: BaseModel>: SDSDatabaseStorageObserver {
+#if TESTABLE_BUILD
+extension ModelReadCache: ModelCache {}
+#endif
+
+// MARK: -
+
+private class ModelReadCacheWrapper<KeyType: AnyObject & Hashable, ValueType: BaseModel> {
 
     // MARK: - Dependencies
 
@@ -360,33 +503,13 @@ private class ModelReadCacheWrapper<KeyType: AnyObject & Hashable, ValueType: Ba
     private let uiReadCache: ModelReadCache<KeyType, ValueType>
     private let readCache: ModelReadCache<KeyType, ValueType>
 
-    typealias ReadBlock = (KeyType, SDSAnyReadTransaction) -> ValueType?
-    typealias KeyBlock = (ValueType) -> KeyType
-    typealias CopyBlock = (ValueType) throws -> ValueType
-    typealias UIReadEvacuationBlock = (SDSDatabaseStorageChange) -> Bool
-
-    private let uiReadEvacuationBlock: UIReadEvacuationBlock
-
-    init(cacheName: String,
-         keyBlock: @escaping KeyBlock,
-         readBlock: @escaping ReadBlock,
-         copyBlock: @escaping CopyBlock,
-         uiReadEvacuationBlock: @escaping UIReadEvacuationBlock) {
+    init(cacheName: String, adapter: ModelCacheAdapter<KeyType, ValueType>) {
         uiReadCache = ModelReadCache(mode: .uiRead,
                                      cacheName: cacheName,
-                                     keyBlock: keyBlock,
-                                     readBlock: readBlock,
-                                     copyBlock: copyBlock)
+                                     adapter: adapter)
         readCache = ModelReadCache(mode: .read,
                                    cacheName: cacheName,
-                                   keyBlock: keyBlock,
-                                   readBlock: readBlock,
-                                   copyBlock: copyBlock)
-        self.uiReadEvacuationBlock = uiReadEvacuationBlock
-
-        AppReadiness.runNowOrWhenAppWillBecomeReady {
-            self.databaseStorage.add(databaseStorageObserver: self)
-        }
+                                   adapter: adapter)
     }
 
     func getValue(for key: KeyType, transaction: SDSAnyReadTransaction) -> ValueType? {
@@ -395,6 +518,14 @@ private class ModelReadCacheWrapper<KeyType: AnyObject & Hashable, ValueType: Ba
         }
         let cache = (transaction.isUIRead ? uiReadCache : readCache)
         return cache.getValue(for: key, transaction: transaction)
+    }
+
+    func getValuesIfInCache(for keys: [KeyType], transaction: SDSAnyReadTransaction) -> [KeyType: ValueType] {
+        if transaction.isUIRead {
+            assert(Thread.isMainThread)
+        }
+        let cache = (transaction.isUIRead ? uiReadCache : readCache)
+        return cache.getValuesIfInCache(for: keys, transaction: transaction)
     }
 
     func didRemove(value: ValueType, transaction: SDSAnyWriteTransaction) {
@@ -407,24 +538,15 @@ private class ModelReadCacheWrapper<KeyType: AnyObject & Hashable, ValueType: Ba
         readCache.didInsertOrUpdate(value: value, transaction: transaction)
     }
 
-    public func databaseStorageDidUpdate(change: SDSDatabaseStorageChange) {
-        AssertIsOnMainThread()
-
-        if uiReadEvacuationBlock(change) {
-            uiReadCache.evacuateCache()
+    func didRead(value: ValueType, transaction: SDSAnyReadTransaction) {
+        if transaction.isUIRead {
+            // "UI read" transactions can always update the "UI read" cache.
+            uiReadCache.didRead(value: value, transaction: transaction)
+        } else if transaction as? SDSAnyWriteTransaction != nil {
+            // To avoid races, only update the "read" cache to reflect
+            // reads from write transactions.
+            readCache.didRead(value: value, transaction: transaction)
         }
-    }
-
-    public func databaseStorageDidUpdateExternally() {
-        AssertIsOnMainThread()
-
-        uiReadCache.evacuateCache()
-    }
-
-    public func databaseStorageDidReset() {
-        AssertIsOnMainThread()
-
-        uiReadCache.evacuateCache()
     }
 }
 
@@ -432,27 +554,39 @@ private class ModelReadCacheWrapper<KeyType: AnyObject & Hashable, ValueType: Ba
 
 @objc
 public class UserProfileReadCache: NSObject {
-    private let cache: ModelReadCacheWrapper<SignalServiceAddress, OWSUserProfile>
+    typealias KeyType = SignalServiceAddress
+    typealias ValueType = OWSUserProfile
+
+    private class Adapter: ModelCacheAdapter<KeyType, ValueType> {
+        override func read(key: KeyType, transaction: SDSAnyReadTransaction) -> ValueType? {
+            OWSUserProfile.getFor(key, transaction: transaction)
+        }
+
+        override func deriveKey(fromValue value: ValueType) -> KeyType {
+            value.address
+        }
+
+        override func copy(value: ValueType) throws -> ValueType {
+            // We don't need to use a deepCopy for OWSUserProfile.
+            guard let modelCopy = value.copy() as? OWSUserProfile else {
+                throw OWSAssertionError("Copy failed.")
+            }
+            return modelCopy
+        }
+
+        override func uiReadEvacuation(databaseChanges: UIDatabaseChanges,
+                                       nsCache: NSCache<KeyType, ModelCacheValueBox<ValueType>>) {
+            if databaseChanges.didUpdateModel(collection: OWSUserProfile.collection()) {
+                nsCache.removeAllObjects()
+            }
+        }
+    }
+
+    private let cache: ModelReadCacheWrapper<KeyType, ValueType>
 
     @objc
     public override init() {
-        cache = ModelReadCacheWrapper(cacheName: "UserProfile",
-                                      keyBlock: {
-            $0.address
-        },
-            readBlock: { (address, transaction) in
-            return OWSUserProfile.getFor(address, transaction: transaction)
-        },
-            copyBlock: { model in
-                // We don't need to use deepCopy() for OWSUserProfile.
-                guard let modelCopy = model.copy() as? OWSUserProfile else {
-                    throw OWSAssertionError("Copy failed.")
-                }
-                return modelCopy
-        },
-            uiReadEvacuationBlock: { storageChange in
-                storageChange.didUpdateModel(collection: OWSUserProfile.collection())
-        })
+        cache = ModelReadCacheWrapper(cacheName: "UserProfile", adapter: Adapter())
     }
 
     @objc
@@ -469,34 +603,52 @@ public class UserProfileReadCache: NSObject {
     public func didInsertOrUpdate(userProfile: OWSUserProfile, transaction: SDSAnyWriteTransaction) {
         cache.didInsertOrUpdate(value: userProfile, transaction: transaction)
     }
+
+    @objc(didReadUserProfile:transaction:)
+    public func didReadUserProfile(_ userProfile: OWSUserProfile, transaction: SDSAnyReadTransaction) {
+        cache.didRead(value: userProfile, transaction: transaction)
+    }
 }
 
 // MARK: -
 
 @objc
 public class SignalAccountReadCache: NSObject {
-    private let cache: ModelReadCacheWrapper<SignalServiceAddress, SignalAccount>
+    typealias KeyType = SignalServiceAddress
+    typealias ValueType = SignalAccount
+
+    private class Adapter: ModelCacheAdapter<KeyType, ValueType> {
+        private let accountFinder = AnySignalAccountFinder()
+
+        override func read(key: KeyType, transaction: SDSAnyReadTransaction) -> ValueType? {
+            accountFinder.signalAccount(for: key, transaction: transaction)
+        }
+
+        override func deriveKey(fromValue value: ValueType) -> KeyType {
+            value.recipientAddress
+        }
+
+        override func copy(value: ValueType) throws -> ValueType {
+            // We don't need to use a deepCopy for SignalAccount.
+            guard let modelCopy = value.copy() as? SignalAccount else {
+                throw OWSAssertionError("Copy failed.")
+            }
+            return modelCopy
+        }
+
+        override func uiReadEvacuation(databaseChanges: UIDatabaseChanges,
+                                       nsCache: NSCache<KeyType, ModelCacheValueBox<ValueType>>) {
+            if databaseChanges.didUpdateModel(collection: SignalAccount.collection()) {
+                nsCache.removeAllObjects()
+            }
+        }
+    }
+
+    private let cache: ModelReadCacheWrapper<KeyType, ValueType>
 
     @objc
     public override init() {
-        let accountFinder = AnySignalAccountFinder()
-        cache = ModelReadCacheWrapper(cacheName: "SignalAccount",
-                                      keyBlock: {
-            $0.recipientAddress
-        },
-                               readBlock: { (address, transaction) in
-                                return accountFinder.signalAccount(for: address, transaction: transaction)
-        },
-                               copyBlock: { model in
-                                // We don't need to use deepCopy() for SignalAccount.
-                                guard let modelCopy = model.copy() as? SignalAccount else {
-                                    throw OWSAssertionError("Copy failed.")
-                                }
-                                return modelCopy
-        },
-                               uiReadEvacuationBlock: { storageChange in
-                                storageChange.didUpdateModel(collection: SignalAccount.collection())
-        })
+        cache = ModelReadCacheWrapper(cacheName: "SignalAccount", adapter: Adapter())
     }
 
     @objc
@@ -513,34 +665,52 @@ public class SignalAccountReadCache: NSObject {
     public func didInsertOrUpdate(signalAccount: SignalAccount, transaction: SDSAnyWriteTransaction) {
         cache.didInsertOrUpdate(value: signalAccount, transaction: transaction)
     }
+
+    @objc(didReadSignalAccount:transaction:)
+    public func didReadSignalAccount(_ signalAccount: SignalAccount, transaction: SDSAnyReadTransaction) {
+        cache.didRead(value: signalAccount, transaction: transaction)
+    }
 }
 
 // MARK: -
 
 @objc
 public class SignalRecipientReadCache: NSObject {
-    private let cache: ModelReadCacheWrapper<SignalServiceAddress, SignalRecipient>
+    typealias KeyType = SignalServiceAddress
+    typealias ValueType = SignalRecipient
+
+    private class Adapter: ModelCacheAdapter<KeyType, ValueType> {
+        private let recipientFinder = AnySignalRecipientFinder()
+
+        override func read(key: KeyType, transaction: SDSAnyReadTransaction) -> ValueType? {
+            recipientFinder.signalRecipient(for: key, transaction: transaction)
+        }
+
+        override func deriveKey(fromValue value: ValueType) -> KeyType {
+            value.address
+        }
+
+        override func copy(value: ValueType) throws -> ValueType {
+            // We don't need to use a deepCopy for SignalRecipient.
+            guard let modelCopy = value.copy() as? SignalRecipient else {
+                throw OWSAssertionError("Copy failed.")
+            }
+            return modelCopy
+        }
+
+        override func uiReadEvacuation(databaseChanges: UIDatabaseChanges,
+                                       nsCache: NSCache<KeyType, ModelCacheValueBox<ValueType>>) {
+            if databaseChanges.didUpdateModel(collection: SignalRecipient.collection()) {
+                nsCache.removeAllObjects()
+            }
+        }
+    }
+
+    private let cache: ModelReadCacheWrapper<KeyType, ValueType>
 
     @objc
     public override init() {
-        let recipientFinder = AnySignalRecipientFinder()
-        cache = ModelReadCacheWrapper(cacheName: "SignalRecipient",
-                                      keyBlock: {
-            $0.address
-        },
-                               readBlock: { (address, transaction) in
-                                return recipientFinder.signalRecipient(for: address, transaction: transaction)
-        },
-                               copyBlock: { model in
-                                // We don't need to use deepCopy() for SignalRecipient.
-                                guard let modelCopy = model.copy() as? SignalRecipient else {
-                                    throw OWSAssertionError("Copy failed.")
-                                }
-                                return modelCopy
-        },
-                               uiReadEvacuationBlock: { storageChange in
-                                storageChange.didUpdateModel(collection: SignalRecipient.collection())
-        })
+        cache = ModelReadCacheWrapper(cacheName: "SignalRecipient", adapter: Adapter())
     }
 
     @objc(getSignalRecipientForAddress:transaction:)
@@ -557,14 +727,19 @@ public class SignalRecipientReadCache: NSObject {
     public func didInsertOrUpdate(signalRecipient: SignalRecipient, transaction: SDSAnyWriteTransaction) {
         cache.didInsertOrUpdate(value: signalRecipient, transaction: transaction)
     }
+
+    @objc(didReadSignalRecipient:transaction:)
+    public func didReadSignalRecipient(_ signalRecipient: SignalRecipient, transaction: SDSAnyReadTransaction) {
+        cache.didRead(value: signalRecipient, transaction: transaction)
+    }
 }
 
 // MARK: -
 
 @objc
 public class ModelReadCaches: NSObject {
-    // UserProfileReadCache is only used within the profile manager.
-
+    @objc
+    public let userProfileReadCache = UserProfileReadCache()
     @objc
     public let signalAccountReadCache = SignalAccountReadCache()
     @objc
