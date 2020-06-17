@@ -149,6 +149,38 @@ extension OWSDevice: SDSModel {
     }
 }
 
+// MARK: - DeepCopyable
+
+extension OWSDevice: DeepCopyable {
+
+    public func deepCopy() throws -> AnyObject {
+        // Any subclass can be cast to it's superclass,
+        // so the order of this switch statement matters.
+        // We need to do a "depth first" search by type.
+        guard let id = self.grdbId?.int64Value else {
+            throw OWSAssertionError("Model missing grdbId.")
+        }
+
+        do {
+            let modelToCopy = self
+            assert(type(of: modelToCopy) == OWSDevice.self)
+            let uniqueId: String = modelToCopy.uniqueId
+            let createdAt: Date = modelToCopy.createdAt
+            let deviceId: Int = modelToCopy.deviceId
+            let lastSeenAt: Date = modelToCopy.lastSeenAt
+            let name: String? = modelToCopy.name
+
+            return OWSDevice(grdbId: id,
+                             uniqueId: uniqueId,
+                             createdAt: createdAt,
+                             deviceId: deviceId,
+                             lastSeenAt: lastSeenAt,
+                             name: name)
+        }
+
+    }
+}
+
 // MARK: - Table Metadata
 
 extension OWSDeviceSerializer {
@@ -285,9 +317,11 @@ public extension OWSDevice {
 
 @objc
 public class OWSDeviceCursor: NSObject {
+    private let transaction: GRDBReadTransaction
     private let cursor: RecordCursor<DeviceRecord>?
 
-    init(cursor: RecordCursor<DeviceRecord>?) {
+    init(transaction: GRDBReadTransaction, cursor: RecordCursor<DeviceRecord>?) {
+        self.transaction = transaction
         self.cursor = cursor
     }
 
@@ -329,10 +363,10 @@ public extension OWSDevice {
         let database = transaction.database
         do {
             let cursor = try DeviceRecord.fetchCursor(database)
-            return OWSDeviceCursor(cursor: cursor)
+            return OWSDeviceCursor(transaction: transaction, cursor: cursor)
         } catch {
             owsFailDebug("Read failed: \(error)")
-            return OWSDeviceCursor(cursor: nil)
+            return OWSDeviceCursor(transaction: transaction, cursor: nil)
         }
     }
 
@@ -538,11 +572,11 @@ public extension OWSDevice {
         do {
             let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
             let cursor = try DeviceRecord.fetchCursor(transaction.database, sqlRequest)
-            return OWSDeviceCursor(cursor: cursor)
+            return OWSDeviceCursor(transaction: transaction, cursor: cursor)
         } catch {
             Logger.error("sql: \(sql)")
             owsFailDebug("Read failed: \(error)")
-            return OWSDeviceCursor(cursor: nil)
+            return OWSDeviceCursor(transaction: transaction, cursor: nil)
         }
     }
 
@@ -598,7 +632,10 @@ class OWSDeviceSerializer: SDSSerializer {
 
 @objc
 public extension OWSDevice {
-    func deepCopy() throws -> OWSDevice {
+    // We're not using this method at the moment,
+    // but we might use it for validation of
+    // other deep copy methods.
+    func deepCopyUsingRecord() throws -> OWSDevice {
         guard let record = try asRecord() as? DeviceRecord else {
             throw OWSAssertionError("Could not convert to record.")
         }

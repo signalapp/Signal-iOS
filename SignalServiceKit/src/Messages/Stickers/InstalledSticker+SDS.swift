@@ -138,6 +138,36 @@ extension InstalledSticker: SDSModel {
     }
 }
 
+// MARK: - DeepCopyable
+
+extension InstalledSticker: DeepCopyable {
+
+    public func deepCopy() throws -> AnyObject {
+        // Any subclass can be cast to it's superclass,
+        // so the order of this switch statement matters.
+        // We need to do a "depth first" search by type.
+        guard let id = self.grdbId?.int64Value else {
+            throw OWSAssertionError("Model missing grdbId.")
+        }
+
+        do {
+            let modelToCopy = self
+            assert(type(of: modelToCopy) == InstalledSticker.self)
+            let uniqueId: String = modelToCopy.uniqueId
+            let emojiString: String? = modelToCopy.emojiString
+            // NOTE: If this generates build errors, you made need to
+            // implement DeepCopyable for this type in DeepCopy.swift.
+            let info: StickerInfo = try DeepCopies.deepCopy(modelToCopy.info)
+
+            return InstalledSticker(grdbId: id,
+                                    uniqueId: uniqueId,
+                                    emojiString: emojiString,
+                                    info: info)
+        }
+
+    }
+}
+
 // MARK: - Table Metadata
 
 extension InstalledStickerSerializer {
@@ -270,9 +300,11 @@ public extension InstalledSticker {
 
 @objc
 public class InstalledStickerCursor: NSObject {
+    private let transaction: GRDBReadTransaction
     private let cursor: RecordCursor<InstalledStickerRecord>?
 
-    init(cursor: RecordCursor<InstalledStickerRecord>?) {
+    init(transaction: GRDBReadTransaction, cursor: RecordCursor<InstalledStickerRecord>?) {
+        self.transaction = transaction
         self.cursor = cursor
     }
 
@@ -314,10 +346,10 @@ public extension InstalledSticker {
         let database = transaction.database
         do {
             let cursor = try InstalledStickerRecord.fetchCursor(database)
-            return InstalledStickerCursor(cursor: cursor)
+            return InstalledStickerCursor(transaction: transaction, cursor: cursor)
         } catch {
             owsFailDebug("Read failed: \(error)")
-            return InstalledStickerCursor(cursor: nil)
+            return InstalledStickerCursor(transaction: transaction, cursor: nil)
         }
     }
 
@@ -523,11 +555,11 @@ public extension InstalledSticker {
         do {
             let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
             let cursor = try InstalledStickerRecord.fetchCursor(transaction.database, sqlRequest)
-            return InstalledStickerCursor(cursor: cursor)
+            return InstalledStickerCursor(transaction: transaction, cursor: cursor)
         } catch {
             Logger.error("sql: \(sql)")
             owsFailDebug("Read failed: \(error)")
-            return InstalledStickerCursor(cursor: nil)
+            return InstalledStickerCursor(transaction: transaction, cursor: nil)
         }
     }
 
@@ -581,7 +613,10 @@ class InstalledStickerSerializer: SDSSerializer {
 
 @objc
 public extension InstalledSticker {
-    func deepCopy() throws -> InstalledSticker {
+    // We're not using this method at the moment,
+    // but we might use it for validation of
+    // other deep copy methods.
+    func deepCopyUsingRecord() throws -> InstalledSticker {
         guard let record = try asRecord() as? InstalledStickerRecord else {
             throw OWSAssertionError("Could not convert to record.")
         }

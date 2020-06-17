@@ -137,6 +137,34 @@ extension OWSDisappearingMessagesConfiguration: SDSModel {
     }
 }
 
+// MARK: - DeepCopyable
+
+extension OWSDisappearingMessagesConfiguration: DeepCopyable {
+
+    public func deepCopy() throws -> AnyObject {
+        // Any subclass can be cast to it's superclass,
+        // so the order of this switch statement matters.
+        // We need to do a "depth first" search by type.
+        guard let id = self.grdbId?.int64Value else {
+            throw OWSAssertionError("Model missing grdbId.")
+        }
+
+        do {
+            let modelToCopy = self
+            assert(type(of: modelToCopy) == OWSDisappearingMessagesConfiguration.self)
+            let uniqueId: String = modelToCopy.uniqueId
+            let durationSeconds: UInt32 = modelToCopy.durationSeconds
+            let enabled: Bool = modelToCopy.isEnabled
+
+            return OWSDisappearingMessagesConfiguration(grdbId: id,
+                                                        uniqueId: uniqueId,
+                                                        durationSeconds: durationSeconds,
+                                                        enabled: enabled)
+        }
+
+    }
+}
+
 // MARK: - Table Metadata
 
 extension OWSDisappearingMessagesConfigurationSerializer {
@@ -269,9 +297,11 @@ public extension OWSDisappearingMessagesConfiguration {
 
 @objc
 public class OWSDisappearingMessagesConfigurationCursor: NSObject {
+    private let transaction: GRDBReadTransaction
     private let cursor: RecordCursor<DisappearingMessagesConfigurationRecord>?
 
-    init(cursor: RecordCursor<DisappearingMessagesConfigurationRecord>?) {
+    init(transaction: GRDBReadTransaction, cursor: RecordCursor<DisappearingMessagesConfigurationRecord>?) {
+        self.transaction = transaction
         self.cursor = cursor
     }
 
@@ -313,10 +343,10 @@ public extension OWSDisappearingMessagesConfiguration {
         let database = transaction.database
         do {
             let cursor = try DisappearingMessagesConfigurationRecord.fetchCursor(database)
-            return OWSDisappearingMessagesConfigurationCursor(cursor: cursor)
+            return OWSDisappearingMessagesConfigurationCursor(transaction: transaction, cursor: cursor)
         } catch {
             owsFailDebug("Read failed: \(error)")
-            return OWSDisappearingMessagesConfigurationCursor(cursor: nil)
+            return OWSDisappearingMessagesConfigurationCursor(transaction: transaction, cursor: nil)
         }
     }
 
@@ -522,11 +552,11 @@ public extension OWSDisappearingMessagesConfiguration {
         do {
             let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
             let cursor = try DisappearingMessagesConfigurationRecord.fetchCursor(transaction.database, sqlRequest)
-            return OWSDisappearingMessagesConfigurationCursor(cursor: cursor)
+            return OWSDisappearingMessagesConfigurationCursor(transaction: transaction, cursor: cursor)
         } catch {
             Logger.error("sql: \(sql)")
             owsFailDebug("Read failed: \(error)")
-            return OWSDisappearingMessagesConfigurationCursor(cursor: nil)
+            return OWSDisappearingMessagesConfigurationCursor(transaction: transaction, cursor: nil)
         }
     }
 
@@ -580,7 +610,10 @@ class OWSDisappearingMessagesConfigurationSerializer: SDSSerializer {
 
 @objc
 public extension OWSDisappearingMessagesConfiguration {
-    func deepCopy() throws -> OWSDisappearingMessagesConfiguration {
+    // We're not using this method at the moment,
+    // but we might use it for validation of
+    // other deep copy methods.
+    func deepCopyUsingRecord() throws -> OWSDisappearingMessagesConfiguration {
         guard let record = try asRecord() as? DisappearingMessagesConfigurationRecord else {
             throw OWSAssertionError("Could not convert to record.")
         }

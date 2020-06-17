@@ -157,6 +157,42 @@ extension OWSBackupFragment: SDSModel {
     }
 }
 
+// MARK: - DeepCopyable
+
+extension OWSBackupFragment: DeepCopyable {
+
+    public func deepCopy() throws -> AnyObject {
+        // Any subclass can be cast to it's superclass,
+        // so the order of this switch statement matters.
+        // We need to do a "depth first" search by type.
+        guard let id = self.grdbId?.int64Value else {
+            throw OWSAssertionError("Model missing grdbId.")
+        }
+
+        do {
+            let modelToCopy = self
+            assert(type(of: modelToCopy) == OWSBackupFragment.self)
+            let uniqueId: String = modelToCopy.uniqueId
+            let attachmentId: String? = modelToCopy.attachmentId
+            let downloadFilePath: String? = modelToCopy.downloadFilePath
+            let encryptionKey: Data = modelToCopy.encryptionKey
+            let recordName: String = modelToCopy.recordName
+            let relativeFilePath: String? = modelToCopy.relativeFilePath
+            let uncompressedDataLength: NSNumber? = modelToCopy.uncompressedDataLength
+
+            return OWSBackupFragment(grdbId: id,
+                                     uniqueId: uniqueId,
+                                     attachmentId: attachmentId,
+                                     downloadFilePath: downloadFilePath,
+                                     encryptionKey: encryptionKey,
+                                     recordName: recordName,
+                                     relativeFilePath: relativeFilePath,
+                                     uncompressedDataLength: uncompressedDataLength)
+        }
+
+    }
+}
+
 // MARK: - Table Metadata
 
 extension OWSBackupFragmentSerializer {
@@ -297,9 +333,11 @@ public extension OWSBackupFragment {
 
 @objc
 public class OWSBackupFragmentCursor: NSObject {
+    private let transaction: GRDBReadTransaction
     private let cursor: RecordCursor<BackupFragmentRecord>?
 
-    init(cursor: RecordCursor<BackupFragmentRecord>?) {
+    init(transaction: GRDBReadTransaction, cursor: RecordCursor<BackupFragmentRecord>?) {
+        self.transaction = transaction
         self.cursor = cursor
     }
 
@@ -341,10 +379,10 @@ public extension OWSBackupFragment {
         let database = transaction.database
         do {
             let cursor = try BackupFragmentRecord.fetchCursor(database)
-            return OWSBackupFragmentCursor(cursor: cursor)
+            return OWSBackupFragmentCursor(transaction: transaction, cursor: cursor)
         } catch {
             owsFailDebug("Read failed: \(error)")
-            return OWSBackupFragmentCursor(cursor: nil)
+            return OWSBackupFragmentCursor(transaction: transaction, cursor: nil)
         }
     }
 
@@ -550,11 +588,11 @@ public extension OWSBackupFragment {
         do {
             let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
             let cursor = try BackupFragmentRecord.fetchCursor(transaction.database, sqlRequest)
-            return OWSBackupFragmentCursor(cursor: cursor)
+            return OWSBackupFragmentCursor(transaction: transaction, cursor: cursor)
         } catch {
             Logger.error("sql: \(sql)")
             owsFailDebug("Read failed: \(error)")
-            return OWSBackupFragmentCursor(cursor: nil)
+            return OWSBackupFragmentCursor(transaction: transaction, cursor: nil)
         }
     }
 
@@ -612,7 +650,10 @@ class OWSBackupFragmentSerializer: SDSSerializer {
 
 @objc
 public extension OWSBackupFragment {
-    func deepCopy() throws -> OWSBackupFragment {
+    // We're not using this method at the moment,
+    // but we might use it for validation of
+    // other deep copy methods.
+    func deepCopyUsingRecord() throws -> OWSBackupFragment {
         guard let record = try asRecord() as? BackupFragmentRecord else {
             throw OWSAssertionError("Could not convert to record.")
         }

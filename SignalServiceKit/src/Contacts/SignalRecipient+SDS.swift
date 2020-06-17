@@ -143,6 +143,38 @@ extension SignalRecipient: SDSModel {
     }
 }
 
+// MARK: - DeepCopyable
+
+extension SignalRecipient: DeepCopyable {
+
+    public func deepCopy() throws -> AnyObject {
+        // Any subclass can be cast to it's superclass,
+        // so the order of this switch statement matters.
+        // We need to do a "depth first" search by type.
+        guard let id = self.grdbId?.int64Value else {
+            throw OWSAssertionError("Model missing grdbId.")
+        }
+
+        do {
+            let modelToCopy = self
+            assert(type(of: modelToCopy) == SignalRecipient.self)
+            let uniqueId: String = modelToCopy.uniqueId
+            // NOTE: If this generates build errors, you made need to
+            // implement DeepCopyable for this type in DeepCopy.swift.
+            let devices: NSOrderedSet = try DeepCopies.deepCopy(modelToCopy.devices)
+            let recipientPhoneNumber: String? = modelToCopy.recipientPhoneNumber
+            let recipientUUID: String? = modelToCopy.recipientUUID
+
+            return SignalRecipient(grdbId: id,
+                                   uniqueId: uniqueId,
+                                   devices: devices,
+                                   recipientPhoneNumber: recipientPhoneNumber,
+                                   recipientUUID: recipientUUID)
+        }
+
+    }
+}
+
 // MARK: - Table Metadata
 
 extension SignalRecipientSerializer {
@@ -277,9 +309,11 @@ public extension SignalRecipient {
 
 @objc
 public class SignalRecipientCursor: NSObject {
+    private let transaction: GRDBReadTransaction
     private let cursor: RecordCursor<SignalRecipientRecord>?
 
-    init(cursor: RecordCursor<SignalRecipientRecord>?) {
+    init(transaction: GRDBReadTransaction, cursor: RecordCursor<SignalRecipientRecord>?) {
+        self.transaction = transaction
         self.cursor = cursor
     }
 
@@ -290,7 +324,9 @@ public class SignalRecipientCursor: NSObject {
         guard let record = try cursor.next() else {
             return nil
         }
-        return try SignalRecipient.fromRecord(record)
+        let value = try SignalRecipient.fromRecord(record)
+        SSKEnvironment.shared.modelReadCaches.signalRecipientReadCache.didReadSignalRecipient(value, transaction: transaction.asAnyRead)
+        return value
     }
 
     public func all() throws -> [SignalRecipient] {
@@ -321,10 +357,10 @@ public extension SignalRecipient {
         let database = transaction.database
         do {
             let cursor = try SignalRecipientRecord.fetchCursor(database)
-            return SignalRecipientCursor(cursor: cursor)
+            return SignalRecipientCursor(transaction: transaction, cursor: cursor)
         } catch {
             owsFailDebug("Read failed: \(error)")
-            return SignalRecipientCursor(cursor: nil)
+            return SignalRecipientCursor(transaction: transaction, cursor: nil)
         }
     }
 
@@ -530,11 +566,11 @@ public extension SignalRecipient {
         do {
             let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
             let cursor = try SignalRecipientRecord.fetchCursor(transaction.database, sqlRequest)
-            return SignalRecipientCursor(cursor: cursor)
+            return SignalRecipientCursor(transaction: transaction, cursor: cursor)
         } catch {
             Logger.error("sql: \(sql)")
             owsFailDebug("Read failed: \(error)")
-            return SignalRecipientCursor(cursor: nil)
+            return SignalRecipientCursor(transaction: transaction, cursor: nil)
         }
     }
 
@@ -549,7 +585,9 @@ public extension SignalRecipient {
                 return nil
             }
 
-            return try SignalRecipient.fromRecord(record)
+            let value = try SignalRecipient.fromRecord(record)
+            SSKEnvironment.shared.modelReadCaches.signalRecipientReadCache.didReadSignalRecipient(value, transaction: transaction.asAnyRead)
+            return value
         } catch {
             owsFailDebug("error: \(error)")
             return nil
@@ -589,7 +627,10 @@ class SignalRecipientSerializer: SDSSerializer {
 
 @objc
 public extension SignalRecipient {
-    func deepCopy() throws -> SignalRecipient {
+    // We're not using this method at the moment,
+    // but we might use it for validation of
+    // other deep copy methods.
+    func deepCopyUsingRecord() throws -> SignalRecipient {
         guard let record = try asRecord() as? SignalRecipientRecord else {
             throw OWSAssertionError("Could not convert to record.")
         }

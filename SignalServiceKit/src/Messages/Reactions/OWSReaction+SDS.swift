@@ -162,6 +162,44 @@ extension OWSReaction: SDSModel {
     }
 }
 
+// MARK: - DeepCopyable
+
+extension OWSReaction: DeepCopyable {
+
+    public func deepCopy() throws -> AnyObject {
+        // Any subclass can be cast to it's superclass,
+        // so the order of this switch statement matters.
+        // We need to do a "depth first" search by type.
+        guard let id = self.grdbId?.int64Value else {
+            throw OWSAssertionError("Model missing grdbId.")
+        }
+
+        do {
+            let modelToCopy = self
+            assert(type(of: modelToCopy) == OWSReaction.self)
+            let uniqueId: String = modelToCopy.uniqueId
+            let emoji: String = modelToCopy.emoji
+            let reactorE164: String? = modelToCopy.reactorE164
+            let reactorUUID: String? = modelToCopy.reactorUUID
+            let read: Bool = modelToCopy.read
+            let receivedAtTimestamp: UInt64 = modelToCopy.receivedAtTimestamp
+            let sentAtTimestamp: UInt64 = modelToCopy.sentAtTimestamp
+            let uniqueMessageId: String = modelToCopy.uniqueMessageId
+
+            return OWSReaction(grdbId: id,
+                               uniqueId: uniqueId,
+                               emoji: emoji,
+                               reactorE164: reactorE164,
+                               reactorUUID: reactorUUID,
+                               read: read,
+                               receivedAtTimestamp: receivedAtTimestamp,
+                               sentAtTimestamp: sentAtTimestamp,
+                               uniqueMessageId: uniqueMessageId)
+        }
+
+    }
+}
+
 // MARK: - Table Metadata
 
 extension OWSReactionSerializer {
@@ -304,9 +342,11 @@ public extension OWSReaction {
 
 @objc
 public class OWSReactionCursor: NSObject {
+    private let transaction: GRDBReadTransaction
     private let cursor: RecordCursor<ReactionRecord>?
 
-    init(cursor: RecordCursor<ReactionRecord>?) {
+    init(transaction: GRDBReadTransaction, cursor: RecordCursor<ReactionRecord>?) {
+        self.transaction = transaction
         self.cursor = cursor
     }
 
@@ -348,10 +388,10 @@ public extension OWSReaction {
         let database = transaction.database
         do {
             let cursor = try ReactionRecord.fetchCursor(database)
-            return OWSReactionCursor(cursor: cursor)
+            return OWSReactionCursor(transaction: transaction, cursor: cursor)
         } catch {
             owsFailDebug("Read failed: \(error)")
-            return OWSReactionCursor(cursor: nil)
+            return OWSReactionCursor(transaction: transaction, cursor: nil)
         }
     }
 
@@ -557,11 +597,11 @@ public extension OWSReaction {
         do {
             let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
             let cursor = try ReactionRecord.fetchCursor(transaction.database, sqlRequest)
-            return OWSReactionCursor(cursor: cursor)
+            return OWSReactionCursor(transaction: transaction, cursor: cursor)
         } catch {
             Logger.error("sql: \(sql)")
             owsFailDebug("Read failed: \(error)")
-            return OWSReactionCursor(cursor: nil)
+            return OWSReactionCursor(transaction: transaction, cursor: nil)
         }
     }
 
@@ -620,7 +660,10 @@ class OWSReactionSerializer: SDSSerializer {
 
 @objc
 public extension OWSReaction {
-    func deepCopy() throws -> OWSReaction {
+    // We're not using this method at the moment,
+    // but we might use it for validation of
+    // other deep copy methods.
+    func deepCopyUsingRecord() throws -> OWSReaction {
         guard let record = try asRecord() as? ReactionRecord else {
             throw OWSAssertionError("Could not convert to record.")
         }

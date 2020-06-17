@@ -173,6 +173,57 @@ extension OWSUserProfile: SDSModel {
     }
 }
 
+// MARK: - DeepCopyable
+
+extension OWSUserProfile: DeepCopyable {
+
+    public func deepCopy() throws -> AnyObject {
+        // Any subclass can be cast to it's superclass,
+        // so the order of this switch statement matters.
+        // We need to do a "depth first" search by type.
+        guard let id = self.grdbId?.int64Value else {
+            throw OWSAssertionError("Model missing grdbId.")
+        }
+
+        do {
+            let modelToCopy = self
+            assert(type(of: modelToCopy) == OWSUserProfile.self)
+            let uniqueId: String = modelToCopy.uniqueId
+            let avatarFileName: String? = modelToCopy.avatarFileName
+            let avatarUrlPath: String? = modelToCopy.avatarUrlPath
+            let familyName: String? = modelToCopy.familyName
+            let isUuidCapable: Bool = modelToCopy.isUuidCapable
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean://
+            // * Implement DeepCopyable for this type.// * Implement DeepCopyable for this type.let profileKey: OWSAES256Key?
+            if let profileKeyForCopy = modelToCopy.profileKey {
+               profileKey = try DeepCopies.deepCopy(profileKeyForCopy)
+            } else {
+               profileKey = nil
+            }
+            let profileName: String? = modelToCopy.profileName
+            let recipientPhoneNumber: String? = modelToCopy.recipientPhoneNumber
+            let recipientUUID: String? = modelToCopy.recipientUUID
+            let username: String? = modelToCopy.username
+
+            return OWSUserProfile(grdbId: id,
+                                  uniqueId: uniqueId,
+                                  avatarFileName: avatarFileName,
+                                  avatarUrlPath: avatarUrlPath,
+                                  familyName: familyName,
+                                  isUuidCapable: isUuidCapable,
+                                  profileKey: profileKey,
+                                  profileName: profileName,
+                                  recipientPhoneNumber: recipientPhoneNumber,
+                                  recipientUUID: recipientUUID,
+                                  username: username)
+        }
+
+    }
+}
+
 // MARK: - Table Metadata
 
 extension OWSUserProfileSerializer {
@@ -319,9 +370,11 @@ public extension OWSUserProfile {
 
 @objc
 public class OWSUserProfileCursor: NSObject {
+    private let transaction: GRDBReadTransaction
     private let cursor: RecordCursor<UserProfileRecord>?
 
-    init(cursor: RecordCursor<UserProfileRecord>?) {
+    init(transaction: GRDBReadTransaction, cursor: RecordCursor<UserProfileRecord>?) {
+        self.transaction = transaction
         self.cursor = cursor
     }
 
@@ -332,7 +385,9 @@ public class OWSUserProfileCursor: NSObject {
         guard let record = try cursor.next() else {
             return nil
         }
-        return try OWSUserProfile.fromRecord(record)
+        let value = try OWSUserProfile.fromRecord(record)
+        SSKEnvironment.shared.modelReadCaches.userProfileReadCache.didReadUserProfile(value, transaction: transaction.asAnyRead)
+        return value
     }
 
     public func all() throws -> [OWSUserProfile] {
@@ -363,10 +418,10 @@ public extension OWSUserProfile {
         let database = transaction.database
         do {
             let cursor = try UserProfileRecord.fetchCursor(database)
-            return OWSUserProfileCursor(cursor: cursor)
+            return OWSUserProfileCursor(transaction: transaction, cursor: cursor)
         } catch {
             owsFailDebug("Read failed: \(error)")
-            return OWSUserProfileCursor(cursor: nil)
+            return OWSUserProfileCursor(transaction: transaction, cursor: nil)
         }
     }
 
@@ -572,11 +627,11 @@ public extension OWSUserProfile {
         do {
             let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
             let cursor = try UserProfileRecord.fetchCursor(transaction.database, sqlRequest)
-            return OWSUserProfileCursor(cursor: cursor)
+            return OWSUserProfileCursor(transaction: transaction, cursor: cursor)
         } catch {
             Logger.error("sql: \(sql)")
             owsFailDebug("Read failed: \(error)")
-            return OWSUserProfileCursor(cursor: nil)
+            return OWSUserProfileCursor(transaction: transaction, cursor: nil)
         }
     }
 
@@ -591,7 +646,9 @@ public extension OWSUserProfile {
                 return nil
             }
 
-            return try OWSUserProfile.fromRecord(record)
+            let value = try OWSUserProfile.fromRecord(record)
+            SSKEnvironment.shared.modelReadCaches.userProfileReadCache.didReadUserProfile(value, transaction: transaction.asAnyRead)
+            return value
         } catch {
             owsFailDebug("error: \(error)")
             return nil
@@ -637,7 +694,10 @@ class OWSUserProfileSerializer: SDSSerializer {
 
 @objc
 public extension OWSUserProfile {
-    func deepCopy() throws -> OWSUserProfile {
+    // We're not using this method at the moment,
+    // but we might use it for validation of
+    // other deep copy methods.
+    func deepCopyUsingRecord() throws -> OWSUserProfile {
         guard let record = try asRecord() as? UserProfileRecord else {
             throw OWSAssertionError("Could not convert to record.")
         }

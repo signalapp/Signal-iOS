@@ -153,6 +153,40 @@ extension OWSRecipientIdentity: SDSModel {
     }
 }
 
+// MARK: - DeepCopyable
+
+extension OWSRecipientIdentity: DeepCopyable {
+
+    public func deepCopy() throws -> AnyObject {
+        // Any subclass can be cast to it's superclass,
+        // so the order of this switch statement matters.
+        // We need to do a "depth first" search by type.
+        guard let id = self.grdbId?.int64Value else {
+            throw OWSAssertionError("Model missing grdbId.")
+        }
+
+        do {
+            let modelToCopy = self
+            assert(type(of: modelToCopy) == OWSRecipientIdentity.self)
+            let uniqueId: String = modelToCopy.uniqueId
+            let accountId: String = modelToCopy.accountId
+            let createdAt: Date = modelToCopy.createdAt
+            let identityKey: Data = modelToCopy.identityKey
+            let isFirstKnownKey: Bool = modelToCopy.isFirstKnownKey
+            let verificationState: OWSVerificationState = modelToCopy.verificationState
+
+            return OWSRecipientIdentity(grdbId: id,
+                                        uniqueId: uniqueId,
+                                        accountId: accountId,
+                                        createdAt: createdAt,
+                                        identityKey: identityKey,
+                                        isFirstKnownKey: isFirstKnownKey,
+                                        verificationState: verificationState)
+        }
+
+    }
+}
+
 // MARK: - Table Metadata
 
 extension OWSRecipientIdentitySerializer {
@@ -291,9 +325,11 @@ public extension OWSRecipientIdentity {
 
 @objc
 public class OWSRecipientIdentityCursor: NSObject {
+    private let transaction: GRDBReadTransaction
     private let cursor: RecordCursor<RecipientIdentityRecord>?
 
-    init(cursor: RecordCursor<RecipientIdentityRecord>?) {
+    init(transaction: GRDBReadTransaction, cursor: RecordCursor<RecipientIdentityRecord>?) {
+        self.transaction = transaction
         self.cursor = cursor
     }
 
@@ -335,10 +371,10 @@ public extension OWSRecipientIdentity {
         let database = transaction.database
         do {
             let cursor = try RecipientIdentityRecord.fetchCursor(database)
-            return OWSRecipientIdentityCursor(cursor: cursor)
+            return OWSRecipientIdentityCursor(transaction: transaction, cursor: cursor)
         } catch {
             owsFailDebug("Read failed: \(error)")
-            return OWSRecipientIdentityCursor(cursor: nil)
+            return OWSRecipientIdentityCursor(transaction: transaction, cursor: nil)
         }
     }
 
@@ -544,11 +580,11 @@ public extension OWSRecipientIdentity {
         do {
             let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
             let cursor = try RecipientIdentityRecord.fetchCursor(transaction.database, sqlRequest)
-            return OWSRecipientIdentityCursor(cursor: cursor)
+            return OWSRecipientIdentityCursor(transaction: transaction, cursor: cursor)
         } catch {
             Logger.error("sql: \(sql)")
             owsFailDebug("Read failed: \(error)")
-            return OWSRecipientIdentityCursor(cursor: nil)
+            return OWSRecipientIdentityCursor(transaction: transaction, cursor: nil)
         }
     }
 
@@ -605,7 +641,10 @@ class OWSRecipientIdentitySerializer: SDSSerializer {
 
 @objc
 public extension OWSRecipientIdentity {
-    func deepCopy() throws -> OWSRecipientIdentity {
+    // We're not using this method at the moment,
+    // but we might use it for validation of
+    // other deep copy methods.
+    func deepCopyUsingRecord() throws -> OWSRecipientIdentity {
         guard let record = try asRecord() as? RecipientIdentityRecord else {
             throw OWSAssertionError("Could not convert to record.")
         }

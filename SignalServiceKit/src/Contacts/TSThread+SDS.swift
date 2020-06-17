@@ -246,6 +246,104 @@ extension TSThread: SDSModel {
     }
 }
 
+// MARK: - DeepCopyable
+
+extension TSThread: DeepCopyable {
+
+    public func deepCopy() throws -> AnyObject {
+        // Any subclass can be cast to it's superclass,
+        // so the order of this switch statement matters.
+        // We need to do a "depth first" search by type.
+        guard let id = self.grdbId?.int64Value else {
+            throw OWSAssertionError("Model missing grdbId.")
+        }
+
+        if let modelToCopy = self as? TSGroupThread {
+            assert(type(of: modelToCopy) == TSGroupThread.self)
+            let uniqueId: String = modelToCopy.uniqueId
+            let conversationColorName: ConversationColorName = modelToCopy.conversationColorName
+            let creationDate: Date? = modelToCopy.creationDate
+            let isArchived: Bool = modelToCopy.isArchived
+            let isMarkedUnread: Bool = modelToCopy.isMarkedUnread
+            let lastInteractionRowId: Int64 = modelToCopy.lastInteractionRowId
+            let messageDraft: String? = modelToCopy.messageDraft
+            let mutedUntilDate: Date? = modelToCopy.mutedUntilDate
+            let shouldThreadBeVisible: Bool = modelToCopy.shouldThreadBeVisible
+            // NOTE: If this generates build errors, you made need to
+            // implement DeepCopyable for this type in DeepCopy.swift.
+            let groupModel: TSGroupModel = try DeepCopies.deepCopy(modelToCopy.groupModel)
+
+            return TSGroupThread(grdbId: id,
+                                 uniqueId: uniqueId,
+                                 conversationColorName: conversationColorName,
+                                 creationDate: creationDate,
+                                 isArchived: isArchived,
+                                 isMarkedUnread: isMarkedUnread,
+                                 lastInteractionRowId: lastInteractionRowId,
+                                 messageDraft: messageDraft,
+                                 mutedUntilDate: mutedUntilDate,
+                                 shouldThreadBeVisible: shouldThreadBeVisible,
+                                 groupModel: groupModel)
+        }
+
+        if let modelToCopy = self as? TSContactThread {
+            assert(type(of: modelToCopy) == TSContactThread.self)
+            let uniqueId: String = modelToCopy.uniqueId
+            let conversationColorName: ConversationColorName = modelToCopy.conversationColorName
+            let creationDate: Date? = modelToCopy.creationDate
+            let isArchived: Bool = modelToCopy.isArchived
+            let isMarkedUnread: Bool = modelToCopy.isMarkedUnread
+            let lastInteractionRowId: Int64 = modelToCopy.lastInteractionRowId
+            let messageDraft: String? = modelToCopy.messageDraft
+            let mutedUntilDate: Date? = modelToCopy.mutedUntilDate
+            let shouldThreadBeVisible: Bool = modelToCopy.shouldThreadBeVisible
+            let contactPhoneNumber: String? = modelToCopy.contactPhoneNumber
+            let contactUUID: String? = modelToCopy.contactUUID
+            let hasDismissedOffers: Bool = modelToCopy.hasDismissedOffers
+
+            return TSContactThread(grdbId: id,
+                                   uniqueId: uniqueId,
+                                   conversationColorName: conversationColorName,
+                                   creationDate: creationDate,
+                                   isArchived: isArchived,
+                                   isMarkedUnread: isMarkedUnread,
+                                   lastInteractionRowId: lastInteractionRowId,
+                                   messageDraft: messageDraft,
+                                   mutedUntilDate: mutedUntilDate,
+                                   shouldThreadBeVisible: shouldThreadBeVisible,
+                                   contactPhoneNumber: contactPhoneNumber,
+                                   contactUUID: contactUUID,
+                                   hasDismissedOffers: hasDismissedOffers)
+        }
+
+        do {
+            let modelToCopy = self
+            assert(type(of: modelToCopy) == TSThread.self)
+            let uniqueId: String = modelToCopy.uniqueId
+            let conversationColorName: ConversationColorName = modelToCopy.conversationColorName
+            let creationDate: Date? = modelToCopy.creationDate
+            let isArchived: Bool = modelToCopy.isArchived
+            let isMarkedUnread: Bool = modelToCopy.isMarkedUnread
+            let lastInteractionRowId: Int64 = modelToCopy.lastInteractionRowId
+            let messageDraft: String? = modelToCopy.messageDraft
+            let mutedUntilDate: Date? = modelToCopy.mutedUntilDate
+            let shouldThreadBeVisible: Bool = modelToCopy.shouldThreadBeVisible
+
+            return TSThread(grdbId: id,
+                            uniqueId: uniqueId,
+                            conversationColorName: conversationColorName,
+                            creationDate: creationDate,
+                            isArchived: isArchived,
+                            isMarkedUnread: isMarkedUnread,
+                            lastInteractionRowId: lastInteractionRowId,
+                            messageDraft: messageDraft,
+                            mutedUntilDate: mutedUntilDate,
+                            shouldThreadBeVisible: shouldThreadBeVisible)
+        }
+
+    }
+}
+
 // MARK: - Table Metadata
 
 extension TSThreadSerializer {
@@ -398,9 +496,11 @@ public extension TSThread {
 
 @objc
 public class TSThreadCursor: NSObject {
+    private let transaction: GRDBReadTransaction
     private let cursor: RecordCursor<ThreadRecord>?
 
-    init(cursor: RecordCursor<ThreadRecord>?) {
+    init(transaction: GRDBReadTransaction, cursor: RecordCursor<ThreadRecord>?) {
+        self.transaction = transaction
         self.cursor = cursor
     }
 
@@ -411,7 +511,9 @@ public class TSThreadCursor: NSObject {
         guard let record = try cursor.next() else {
             return nil
         }
-        return try TSThread.fromRecord(record)
+        let value = try TSThread.fromRecord(record)
+        SSKEnvironment.shared.modelReadCaches.threadReadCache.didReadThread(value, transaction: transaction.asAnyRead)
+        return value
     }
 
     public func all() throws -> [TSThread] {
@@ -442,10 +544,10 @@ public extension TSThread {
         let database = transaction.database
         do {
             let cursor = try ThreadRecord.fetchCursor(database)
-            return TSThreadCursor(cursor: cursor)
+            return TSThreadCursor(transaction: transaction, cursor: cursor)
         } catch {
             owsFailDebug("Read failed: \(error)")
-            return TSThreadCursor(cursor: nil)
+            return TSThreadCursor(transaction: transaction, cursor: nil)
         }
     }
 
@@ -453,6 +555,20 @@ public extension TSThread {
     class func anyFetch(uniqueId: String,
                         transaction: SDSAnyReadTransaction) -> TSThread? {
         assert(uniqueId.count > 0)
+
+        return anyFetch(uniqueId: uniqueId, transaction: transaction, ignoreCache: false)
+    }
+
+    // Fetches a single model by "unique id".
+    class func anyFetch(uniqueId: String,
+                        transaction: SDSAnyReadTransaction,
+                        ignoreCache: Bool) -> TSThread? {
+        assert(uniqueId.count > 0)
+
+        if !ignoreCache,
+            let cachedCopy = SSKEnvironment.shared.modelReadCaches.threadReadCache.getThread(uniqueId: uniqueId, transaction: transaction) {
+            return cachedCopy
+        }
 
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
@@ -651,11 +767,11 @@ public extension TSThread {
         do {
             let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
             let cursor = try ThreadRecord.fetchCursor(transaction.database, sqlRequest)
-            return TSThreadCursor(cursor: cursor)
+            return TSThreadCursor(transaction: transaction, cursor: cursor)
         } catch {
             Logger.error("sql: \(sql)")
             owsFailDebug("Read failed: \(error)")
-            return TSThreadCursor(cursor: nil)
+            return TSThreadCursor(transaction: transaction, cursor: nil)
         }
     }
 
@@ -670,7 +786,9 @@ public extension TSThread {
                 return nil
             }
 
-            return try TSThread.fromRecord(record)
+            let value = try TSThread.fromRecord(record)
+            SSKEnvironment.shared.modelReadCaches.threadReadCache.didReadThread(value, transaction: transaction.asAnyRead)
+            return value
         } catch {
             owsFailDebug("error: \(error)")
             return nil
@@ -719,7 +837,10 @@ class TSThreadSerializer: SDSSerializer {
 
 @objc
 public extension TSThread {
-    func deepCopy() throws -> TSThread {
+    // We're not using this method at the moment,
+    // but we might use it for validation of
+    // other deep copy methods.
+    func deepCopyUsingRecord() throws -> TSThread {
         guard let record = try asRecord() as? ThreadRecord else {
             throw OWSAssertionError("Could not convert to record.")
         }

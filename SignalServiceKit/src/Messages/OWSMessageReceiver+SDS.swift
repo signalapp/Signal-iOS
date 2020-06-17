@@ -138,6 +138,34 @@ extension OWSMessageDecryptJob: SDSModel {
     }
 }
 
+// MARK: - DeepCopyable
+
+extension OWSMessageDecryptJob: DeepCopyable {
+
+    public func deepCopy() throws -> AnyObject {
+        // Any subclass can be cast to it's superclass,
+        // so the order of this switch statement matters.
+        // We need to do a "depth first" search by type.
+        guard let id = self.grdbId?.int64Value else {
+            throw OWSAssertionError("Model missing grdbId.")
+        }
+
+        do {
+            let modelToCopy = self
+            assert(type(of: modelToCopy) == OWSMessageDecryptJob.self)
+            let uniqueId: String = modelToCopy.uniqueId
+            let createdAt: Date = modelToCopy.createdAt
+            let envelopeData: Data = modelToCopy.envelopeData
+
+            return OWSMessageDecryptJob(grdbId: id,
+                                        uniqueId: uniqueId,
+                                        createdAt: createdAt,
+                                        envelopeData: envelopeData)
+        }
+
+    }
+}
+
 // MARK: - Table Metadata
 
 extension OWSMessageDecryptJobSerializer {
@@ -270,9 +298,11 @@ public extension OWSMessageDecryptJob {
 
 @objc
 public class OWSMessageDecryptJobCursor: NSObject {
+    private let transaction: GRDBReadTransaction
     private let cursor: RecordCursor<MessageDecryptJobRecord>?
 
-    init(cursor: RecordCursor<MessageDecryptJobRecord>?) {
+    init(transaction: GRDBReadTransaction, cursor: RecordCursor<MessageDecryptJobRecord>?) {
+        self.transaction = transaction
         self.cursor = cursor
     }
 
@@ -314,10 +344,10 @@ public extension OWSMessageDecryptJob {
         let database = transaction.database
         do {
             let cursor = try MessageDecryptJobRecord.fetchCursor(database)
-            return OWSMessageDecryptJobCursor(cursor: cursor)
+            return OWSMessageDecryptJobCursor(transaction: transaction, cursor: cursor)
         } catch {
             owsFailDebug("Read failed: \(error)")
-            return OWSMessageDecryptJobCursor(cursor: nil)
+            return OWSMessageDecryptJobCursor(transaction: transaction, cursor: nil)
         }
     }
 
@@ -523,11 +553,11 @@ public extension OWSMessageDecryptJob {
         do {
             let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
             let cursor = try MessageDecryptJobRecord.fetchCursor(transaction.database, sqlRequest)
-            return OWSMessageDecryptJobCursor(cursor: cursor)
+            return OWSMessageDecryptJobCursor(transaction: transaction, cursor: cursor)
         } catch {
             Logger.error("sql: \(sql)")
             owsFailDebug("Read failed: \(error)")
-            return OWSMessageDecryptJobCursor(cursor: nil)
+            return OWSMessageDecryptJobCursor(transaction: transaction, cursor: nil)
         }
     }
 
@@ -581,7 +611,10 @@ class OWSMessageDecryptJobSerializer: SDSSerializer {
 
 @objc
 public extension OWSMessageDecryptJob {
-    func deepCopy() throws -> OWSMessageDecryptJob {
+    // We're not using this method at the moment,
+    // but we might use it for validation of
+    // other deep copy methods.
+    func deepCopyUsingRecord() throws -> OWSMessageDecryptJob {
         guard let record = try asRecord() as? MessageDecryptJobRecord else {
             throw OWSAssertionError("Could not convert to record.")
         }

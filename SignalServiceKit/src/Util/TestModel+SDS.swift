@@ -173,6 +173,48 @@ extension TestModel: SDSModel {
     }
 }
 
+// MARK: - DeepCopyable
+
+extension TestModel: DeepCopyable {
+
+    public func deepCopy() throws -> AnyObject {
+        // Any subclass can be cast to it's superclass,
+        // so the order of this switch statement matters.
+        // We need to do a "depth first" search by type.
+        guard let id = self.grdbId?.int64Value else {
+            throw OWSAssertionError("Model missing grdbId.")
+        }
+
+        do {
+            let modelToCopy = self
+            assert(type(of: modelToCopy) == TestModel.self)
+            let uniqueId: String = modelToCopy.uniqueId
+            let dateValue: Date? = modelToCopy.dateValue
+            let doubleValue: Double = modelToCopy.doubleValue
+            let floatValue: Float = modelToCopy.floatValue
+            let int64Value: Int64 = modelToCopy.int64Value
+            let nsIntegerValue: Int = modelToCopy.nsIntegerValue
+            let nsNumberValueUsingInt64: NSNumber? = modelToCopy.nsNumberValueUsingInt64
+            let nsNumberValueUsingUInt64: NSNumber? = modelToCopy.nsNumberValueUsingUInt64
+            let nsuIntegerValue: UInt = modelToCopy.nsuIntegerValue
+            let uint64Value: UInt64 = modelToCopy.uint64Value
+
+            return TestModel(grdbId: id,
+                             uniqueId: uniqueId,
+                             dateValue: dateValue,
+                             doubleValue: doubleValue,
+                             floatValue: floatValue,
+                             int64Value: int64Value,
+                             nsIntegerValue: nsIntegerValue,
+                             nsNumberValueUsingInt64: nsNumberValueUsingInt64,
+                             nsNumberValueUsingUInt64: nsNumberValueUsingUInt64,
+                             nsuIntegerValue: nsuIntegerValue,
+                             uint64Value: uint64Value)
+        }
+
+    }
+}
+
 // MARK: - Table Metadata
 
 extension TestModelSerializer {
@@ -319,9 +361,11 @@ public extension TestModel {
 
 @objc
 public class TestModelCursor: NSObject {
+    private let transaction: GRDBReadTransaction
     private let cursor: RecordCursor<TestModelRecord>?
 
-    init(cursor: RecordCursor<TestModelRecord>?) {
+    init(transaction: GRDBReadTransaction, cursor: RecordCursor<TestModelRecord>?) {
+        self.transaction = transaction
         self.cursor = cursor
     }
 
@@ -363,10 +407,10 @@ public extension TestModel {
         let database = transaction.database
         do {
             let cursor = try TestModelRecord.fetchCursor(database)
-            return TestModelCursor(cursor: cursor)
+            return TestModelCursor(transaction: transaction, cursor: cursor)
         } catch {
             owsFailDebug("Read failed: \(error)")
-            return TestModelCursor(cursor: nil)
+            return TestModelCursor(transaction: transaction, cursor: nil)
         }
     }
 
@@ -572,11 +616,11 @@ public extension TestModel {
         do {
             let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
             let cursor = try TestModelRecord.fetchCursor(transaction.database, sqlRequest)
-            return TestModelCursor(cursor: cursor)
+            return TestModelCursor(transaction: transaction, cursor: cursor)
         } catch {
             Logger.error("sql: \(sql)")
             owsFailDebug("Read failed: \(error)")
-            return TestModelCursor(cursor: nil)
+            return TestModelCursor(transaction: transaction, cursor: nil)
         }
     }
 
@@ -637,7 +681,10 @@ class TestModelSerializer: SDSSerializer {
 
 @objc
 public extension TestModel {
-    func deepCopy() throws -> TestModel {
+    // We're not using this method at the moment,
+    // but we might use it for validation of
+    // other deep copy methods.
+    func deepCopyUsingRecord() throws -> TestModel {
         guard let record = try asRecord() as? TestModelRecord else {
             throw OWSAssertionError("Could not convert to record.")
         }
