@@ -111,7 +111,7 @@ public class UIDatabaseObserver: NSObject {
     private let displayLinkPreferredFramesPerSecond: Int = 60
     private var recentDisplayLinkDates = [Date]()
 
-    private let didDatabaseModifyInteractions = AtomicBool(false)
+    private var didDatabaseModifyInteractions = false
 
     fileprivate var pendingChanges = ObservedDatabaseChanges(concurrencyMode: .uiDatabaseObserverSerialQueue)
     fileprivate var committedChanges = ObservedDatabaseChanges(concurrencyMode: .mainThread)
@@ -282,7 +282,7 @@ extension UIDatabaseObserver: TransactionObserver {
             }
 
             if event.tableName == InteractionRecord.databaseTableName {
-                didDatabaseModifyInteractions.set(true)
+                didDatabaseModifyInteractions = true
             }
         }
     }
@@ -315,11 +315,10 @@ extension UIDatabaseObserver: TransactionObserver {
                 }
             }
 
-            let shouldPostInteractionNotification = didDatabaseModifyInteractions.get()
-            didDatabaseModifyInteractions.set(false)
-            if shouldPostInteractionNotification {
+            if didDatabaseModifyInteractions {
                 NotificationCenter.default.postNotificationNameAsync(Self.databaseDidCommitInteractionChangeNotification, object: nil)
             }
+            didDatabaseModifyInteractions = false
         }
 
         DispatchQueue.main.async { [weak self] in
