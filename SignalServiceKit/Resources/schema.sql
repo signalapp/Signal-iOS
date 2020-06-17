@@ -30,6 +30,8 @@ CREATE
             ,"groupModel" BLOB
             ,"hasDismissedOffers" INTEGER
             ,"isMarkedUnread" BOOLEAN NOT NULL DEFAULT 0
+            ,"lastVisibleSortIdOnScreenPercentage" DOUBLE NOT NULL DEFAULT 0
+            ,"lastVisibleSortId" INTEGER NOT NULL DEFAULT 0
         )
 ;
 

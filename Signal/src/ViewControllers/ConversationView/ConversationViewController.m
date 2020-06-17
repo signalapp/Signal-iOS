@@ -224,6 +224,12 @@ typedef enum : NSUInteger {
 {
     self = [super init];
 
+    // If we're not scrolling to a specific message AND we don't have
+    // any unread messages, try and focus on the last visible interaction
+    if (focusMessageId == nil && !threadViewModel.hasUnreadMessages) {
+        focusMessageId = threadViewModel.lastVisibleInteraction.uniqueId;
+    }
+
     _contactsViewHelper = [[ContactsViewHelper alloc] initWithDelegate:self];
     _contactShareViewHelper = [[ContactShareViewHelper alloc] initWithContactsManager:self.contactsManager];
     _contactShareViewHelper.delegate = self;
@@ -742,6 +748,7 @@ typedef enum : NSUInteger {
     [self.cellMediaCache removeAllObjects];
     [self cancelReadTimer];
     [self dismissPresentedViewControllerIfNecessary];
+    [self saveLastVisibleSortId];
 
     [self dismissKeyBoard];
 }
@@ -841,6 +848,10 @@ typedef enum : NSUInteger {
         return;
     }
 
+    BOOL isScrollingToLastVisibleInteraction =
+        [NSObject isNullableObject:self.conversationViewModel.focusMessageIdOnOpen
+                           equalTo:self.threadViewModel.lastVisibleInteraction.uniqueId];
+
     NSIndexPath *_Nullable indexPath = [self indexPathOfFocusMessage];
 
     if (!indexPath) {
@@ -850,6 +861,8 @@ typedef enum : NSUInteger {
     if (indexPath) {
         if (indexPath.section == 0 && indexPath.row == 0) {
             [self.collectionView setContentOffset:CGPointZero animated:isAnimated];
+        } else if (isScrollingToLastVisibleInteraction) {
+            [self scrollToLastVisibleInteractionAnimated:isAnimated];
         } else {
             [self.collectionView scrollToItemAtIndexPath:indexPath
                                         atScrollPosition:UICollectionViewScrollPositionTop
@@ -860,22 +873,38 @@ typedef enum : NSUInteger {
     }
 }
 
-- (void)scrollToUnreadIndicatorAnimated
+- (void)scrollToLastVisibleInteractionAnimated:(BOOL)isAnimated
 {
     if (self.isUserScrolling) {
         return;
     }
 
-    NSIndexPath *_Nullable indexPath = [self indexPathOfUnreadMessagesIndicator];
-    if (indexPath) {
-        if (indexPath.section == 0 && indexPath.row == 0) {
-            [self.collectionView setContentOffset:CGPointZero animated:YES];
-        } else {
-            [self.collectionView scrollToItemAtIndexPath:indexPath
-                                        atScrollPosition:UICollectionViewScrollPositionTop
-                                                animated:YES];
-        }
+    TSInteraction *_Nullable interaction = self.threadViewModel.lastVisibleInteraction;
+    NSIndexPath *_Nullable indexPath = [self.conversationViewModel indexPathForInteractionId:interaction.uniqueId];
+    if (interaction == nil || indexPath == nil) {
+        OWSFailDebug(@"Unexpectedly missing last visible interaction");
+        [self scrollToBottomAnimated:isAnimated];
+        return;
     }
+
+    [self.view layoutIfNeeded];
+
+    // Restore positioning.
+    UICollectionViewLayoutAttributes *attributes = [self.layout layoutAttributesForItemAtIndexPath:indexPath];
+    CGRect adjustedFrame = attributes.frame;
+
+    // Adjust the view's frame to compensate for the previous on screen percentage.
+    adjustedFrame.origin.y += attributes.frame.size.height * self.thread.lastVisibleSortIdOnScreenPercentage;
+
+    CGFloat bottomInset = -self.collectionView.adjustedContentInset.bottom;
+    CGFloat topInset = -self.collectionView.adjustedContentInset.top;
+    CGFloat collectionViewUnobscuredHeight = self.collectionView.height + bottomInset;
+
+    CGFloat dstY = self.safeContentHeight < self.collectionView.height
+        ? topInset
+        : adjustedFrame.origin.y - collectionViewUnobscuredHeight;
+
+    [self.collectionView setContentOffset:CGPointMake(0, dstY) animated:isAnimated];
 }
 
 - (void)resetContentAndLayoutWithSneakyTransaction
@@ -3546,7 +3575,14 @@ typedef enum : NSUInteger {
     NSIndexPath *_Nullable lastVisibleIndexPath = nil;
     for (NSIndexPath *indexPath in [self.collectionView indexPathsForVisibleItems]) {
         if (!lastVisibleIndexPath || indexPath.row > lastVisibleIndexPath.row) {
-            lastVisibleIndexPath = indexPath;
+            UICollectionViewLayoutAttributes *layoutAttributes =
+                [self.layout layoutAttributesForItemAtIndexPath:indexPath];
+
+            // Don't consider an index path visible if its origin is behind the bottom bar
+            CGPoint origin = [self.view convertPoint:layoutAttributes.frame.origin fromView:self.collectionView];
+            if (self.collectionView.height - origin.y > self.collectionView.adjustedContentInset.bottom) {
+                lastVisibleIndexPath = indexPath;
+            }
         }
     }
     if (lastVisibleIndexPath && lastVisibleIndexPath.row >= (NSInteger)self.viewItems.count) {
@@ -3578,6 +3614,52 @@ typedef enum : NSUInteger {
 {
     NSIndexPath *lastVisibleIndexPath = [self lastVisibleIndexPath];
     return lastVisibleIndexPath ? [self mostRecentSortIdForItemAtIndex:lastVisibleIndexPath.row] : 0;
+}
+
+- (void)saveLastVisibleSortId
+{
+    OWSAssertIsOnMainThread();
+
+    NSInteger lastVisibleRow = self.lastVisibleIndexPath.row;
+
+    // Find the first non-dynamic index path that's visible, since dynamic index paths
+    // can't have their scroll position saved.
+    TSInteraction *_Nullable interaction = [self viewItemForIndex:lastVisibleRow].interaction;
+    while (interaction.isDynamicInteraction && lastVisibleRow > 0) {
+        lastVisibleRow -= 1;
+        interaction = [self viewItemForIndex:lastVisibleRow].interaction;
+    }
+
+    uint64_t lastVisibleSortId = 0;
+    double onScreenPercentage = 0;
+
+    // If we found a non-dynamic interaction, save its sortId. Otherwise, save
+    // a sortId of zero to "clear" the lastVisibleSortId on the thread.
+    if (interaction != nil) {
+        lastVisibleSortId = interaction.sortId;
+
+        // Calculate how much of the view is on screen so we can restore the scroll position precisely
+        UICollectionViewLayoutAttributes *attributes =
+            [self.layout layoutAttributesForItemAtIndexPath:[NSIndexPath indexPathForRow:lastVisibleRow inSection:0]];
+
+        CGPoint origin = [self.view convertPoint:attributes.frame.origin fromView:self.collectionView];
+
+        CGFloat heightAboveBottom
+            = self.collectionView.height - origin.y - self.collectionView.adjustedContentInset.bottom;
+        onScreenPercentage = CGFloatClamp01(heightAboveBottom / attributes.frame.size.height);
+    }
+
+    // Skip the transaction if nothing has changed.
+    if (self.thread.lastVisibleSortId == lastVisibleSortId
+        && fabs(self.thread.lastVisibleSortIdOnScreenPercentage - onScreenPercentage) <= DBL_EPSILON) {
+        return;
+    }
+
+    DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+        [self.thread updateWithLastVisibileSortId:lastVisibleSortId
+                               onScreenPercentage:onScreenPercentage
+                                      transaction:transaction];
+    });
 }
 
 - (uint64_t)lastSortId
@@ -4045,6 +4127,7 @@ typedef enum : NSUInteger {
         self.isWaitingForDeceleration = willDecelerate;
     } else {
         [self scheduleAutoLoadMore];
+        [self saveLastVisibleSortId];
     }
 }
 
@@ -4057,6 +4140,7 @@ typedef enum : NSUInteger {
     self.isWaitingForDeceleration = NO;
 
     [self scheduleAutoLoadMore];
+    [self saveLastVisibleSortId];
 }
 
 #pragma mark - ConversationSettingsViewDelegate
@@ -5177,17 +5261,10 @@ typedef enum : NSUInteger {
     [self dismissMessageActionsAnimated:NO];
     [self dismissReactionsDetailSheetAnimated:NO];
 
-    // Snapshot the "last visible row".
-    NSIndexPath *_Nullable lastVisibleIndexPath = self.lastVisibleIndexPath;
-
     __weak ConversationViewController *weakSelf = self;
     [coordinator
         animateAlongsideTransition:^(id<UIViewControllerTransitionCoordinatorContext> context) {
-            if (lastVisibleIndexPath) {
-                [self.collectionView scrollToItemAtIndexPath:lastVisibleIndexPath
-                                            atScrollPosition:UICollectionViewScrollPositionBottom
-                                                    animated:NO];
-            }
+            [self scrollToLastVisibleInteractionAnimated:NO];
         }
         completion:^(id<UIViewControllerTransitionCoordinatorContext> context) {
             ConversationViewController *strongSelf = weakSelf;
@@ -5201,11 +5278,7 @@ typedef enum : NSUInteger {
 
             [strongSelf updateInputToolbarLayout];
 
-            if (lastVisibleIndexPath) {
-                [strongSelf.collectionView scrollToItemAtIndexPath:lastVisibleIndexPath
-                                                  atScrollPosition:UICollectionViewScrollPositionBottom
-                                                          animated:NO];
-            }
+            [self scrollToLastVisibleInteractionAnimated:NO];
         }];
 }
 

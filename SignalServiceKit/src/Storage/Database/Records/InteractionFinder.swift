@@ -46,6 +46,8 @@ protocol InteractionFinderAdapter {
 
     func interaction(at index: UInt, transaction: ReadTransaction) throws -> TSInteraction?
 
+    func firstInteraction(atOrBeforeSortId sortId: UInt64, transaction: ReadTransaction) -> TSInteraction?
+
     #if DEBUG
     func enumerateUnstartedExpiringMessages(transaction: ReadTransaction, block: @escaping (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void)
     #endif
@@ -487,6 +489,16 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
     }
 
     @objc
+    public func firstInteraction(atOrBeforeSortId sortId: UInt64, transaction: SDSAnyReadTransaction) -> TSInteraction? {
+        switch transaction.readTransaction {
+        case .yapRead:
+            fatalError("YAP not supported")
+        case .grdbRead(let grdbRead):
+            return grdbAdapter.firstInteraction(atOrBeforeSortId: sortId, transaction: grdbRead)
+        }
+    }
+
+    @objc
     public func existsOutgoingMessage(transaction: SDSAnyReadTransaction) -> Bool {
         switch transaction.readTransaction {
         case .yapRead(let yapRead):
@@ -737,6 +749,10 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
         }
 
         return interaction
+    }
+
+    func firstInteraction(atOrBeforeSortId sortId: UInt64, transaction: YapDatabaseReadTransaction) -> TSInteraction? {
+        fatalError("YAP not supported")
     }
 
     func existsOutgoingMessage(transaction: YapDatabaseReadTransaction) -> Bool {
@@ -1170,6 +1186,19 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
         OFFSET ?
         """
         let arguments: StatementArguments = [threadUniqueId, index]
+        return TSInteraction.grdbFetchOne(sql: sql, arguments: arguments, transaction: transaction)
+    }
+
+    func firstInteraction(atOrBeforeSortId sortId: UInt64, transaction: GRDBReadTransaction) -> TSInteraction? {
+        let sql = """
+        SELECT *
+        FROM \(InteractionRecord.databaseTableName)
+        WHERE \(interactionColumn: .threadUniqueId) = ?
+        AND \(interactionColumn: .id) <= ?
+        ORDER BY \(interactionColumn: .id) DESC
+        LIMIT 1
+        """
+        let arguments: StatementArguments = [threadUniqueId, sortId]
         return TSInteraction.grdbFetchOne(sql: sql, arguments: arguments, transaction: transaction)
     }
 

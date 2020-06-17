@@ -52,6 +52,8 @@ NSUInteger const TSContactThreadSchemaVersion = 1;
                       isArchived:(BOOL)isArchived
                   isMarkedUnread:(BOOL)isMarkedUnread
             lastInteractionRowId:(int64_t)lastInteractionRowId
+               lastVisibleSortId:(uint64_t)lastVisibleSortId
+lastVisibleSortIdOnScreenPercentage:(double)lastVisibleSortIdOnScreenPercentage
                     messageDraft:(nullable NSString *)messageDraft
                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
@@ -66,6 +68,8 @@ NSUInteger const TSContactThreadSchemaVersion = 1;
                         isArchived:isArchived
                     isMarkedUnread:isMarkedUnread
               lastInteractionRowId:lastInteractionRowId
+                 lastVisibleSortId:lastVisibleSortId
+lastVisibleSortIdOnScreenPercentage:lastVisibleSortIdOnScreenPercentage
                       messageDraft:messageDraft
                     mutedUntilDate:mutedUntilDate
              shouldThreadBeVisible:shouldThreadBeVisible];

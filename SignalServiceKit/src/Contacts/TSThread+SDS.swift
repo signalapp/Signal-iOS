@@ -40,6 +40,8 @@ public struct ThreadRecord: SDSRecord {
     public let groupModel: Data?
     public let hasDismissedOffers: Bool?
     public let isMarkedUnread: Bool
+    public let lastVisibleSortIdOnScreenPercentage: Double
+    public let lastVisibleSortId: UInt64
 
     public enum CodingKeys: String, CodingKey, ColumnExpression, CaseIterable {
         case id
@@ -57,6 +59,8 @@ public struct ThreadRecord: SDSRecord {
         case groupModel
         case hasDismissedOffers
         case isMarkedUnread
+        case lastVisibleSortIdOnScreenPercentage
+        case lastVisibleSortId
     }
 
     public static func columnName(_ column: ThreadRecord.CodingKeys, fullyQualified: Bool = false) -> String {
@@ -95,6 +99,8 @@ public extension ThreadRecord {
         groupModel = row[12]
         hasDismissedOffers = row[13]
         isMarkedUnread = row[14]
+        lastVisibleSortIdOnScreenPercentage = row[15]
+        lastVisibleSortId = row[16]
     }
 }
 
@@ -132,6 +138,8 @@ extension TSThread {
             let isArchived: Bool = record.isArchived
             let isMarkedUnread: Bool = record.isMarkedUnread
             let lastInteractionRowId: Int64 = record.lastInteractionRowId
+            let lastVisibleSortId: UInt64 = record.lastVisibleSortId
+            let lastVisibleSortIdOnScreenPercentage: Double = record.lastVisibleSortIdOnScreenPercentage
             let messageDraft: String? = record.messageDraft
             let mutedUntilDateInterval: Double? = record.mutedUntilDate
             let mutedUntilDate: Date? = SDSDeserialization.optionalDoubleAsDate(mutedUntilDateInterval, name: "mutedUntilDate")
@@ -147,6 +155,8 @@ extension TSThread {
                                    isArchived: isArchived,
                                    isMarkedUnread: isMarkedUnread,
                                    lastInteractionRowId: lastInteractionRowId,
+                                   lastVisibleSortId: lastVisibleSortId,
+                                   lastVisibleSortIdOnScreenPercentage: lastVisibleSortIdOnScreenPercentage,
                                    messageDraft: messageDraft,
                                    mutedUntilDate: mutedUntilDate,
                                    shouldThreadBeVisible: shouldThreadBeVisible,
@@ -163,6 +173,8 @@ extension TSThread {
             let isArchived: Bool = record.isArchived
             let isMarkedUnread: Bool = record.isMarkedUnread
             let lastInteractionRowId: Int64 = record.lastInteractionRowId
+            let lastVisibleSortId: UInt64 = record.lastVisibleSortId
+            let lastVisibleSortIdOnScreenPercentage: Double = record.lastVisibleSortIdOnScreenPercentage
             let messageDraft: String? = record.messageDraft
             let mutedUntilDateInterval: Double? = record.mutedUntilDate
             let mutedUntilDate: Date? = SDSDeserialization.optionalDoubleAsDate(mutedUntilDateInterval, name: "mutedUntilDate")
@@ -177,6 +189,8 @@ extension TSThread {
                                  isArchived: isArchived,
                                  isMarkedUnread: isMarkedUnread,
                                  lastInteractionRowId: lastInteractionRowId,
+                                 lastVisibleSortId: lastVisibleSortId,
+                                 lastVisibleSortIdOnScreenPercentage: lastVisibleSortIdOnScreenPercentage,
                                  messageDraft: messageDraft,
                                  mutedUntilDate: mutedUntilDate,
                                  shouldThreadBeVisible: shouldThreadBeVisible,
@@ -191,6 +205,8 @@ extension TSThread {
             let isArchived: Bool = record.isArchived
             let isMarkedUnread: Bool = record.isMarkedUnread
             let lastInteractionRowId: Int64 = record.lastInteractionRowId
+            let lastVisibleSortId: UInt64 = record.lastVisibleSortId
+            let lastVisibleSortIdOnScreenPercentage: Double = record.lastVisibleSortIdOnScreenPercentage
             let messageDraft: String? = record.messageDraft
             let mutedUntilDateInterval: Double? = record.mutedUntilDate
             let mutedUntilDate: Date? = SDSDeserialization.optionalDoubleAsDate(mutedUntilDateInterval, name: "mutedUntilDate")
@@ -203,6 +219,8 @@ extension TSThread {
                             isArchived: isArchived,
                             isMarkedUnread: isMarkedUnread,
                             lastInteractionRowId: lastInteractionRowId,
+                            lastVisibleSortId: lastVisibleSortId,
+                            lastVisibleSortIdOnScreenPercentage: lastVisibleSortIdOnScreenPercentage,
                             messageDraft: messageDraft,
                             mutedUntilDate: mutedUntilDate,
                             shouldThreadBeVisible: shouldThreadBeVisible)
@@ -366,6 +384,8 @@ extension TSThreadSerializer {
     static let groupModelColumn = SDSColumnMetadata(columnName: "groupModel", columnType: .blob, isOptional: true)
     static let hasDismissedOffersColumn = SDSColumnMetadata(columnName: "hasDismissedOffers", columnType: .int, isOptional: true)
     static let isMarkedUnreadColumn = SDSColumnMetadata(columnName: "isMarkedUnread", columnType: .int)
+    static let lastVisibleSortIdOnScreenPercentageColumn = SDSColumnMetadata(columnName: "lastVisibleSortIdOnScreenPercentage", columnType: .double)
+    static let lastVisibleSortIdColumn = SDSColumnMetadata(columnName: "lastVisibleSortId", columnType: .int64)
 
     // TODO: We should decide on a naming convention for
     //       tables that store models.
@@ -386,7 +406,9 @@ extension TSThreadSerializer {
         contactUUIDColumn,
         groupModelColumn,
         hasDismissedOffersColumn,
-        isMarkedUnreadColumn
+        isMarkedUnreadColumn,
+        lastVisibleSortIdOnScreenPercentageColumn,
+        lastVisibleSortIdColumn
         ])
 }
 
@@ -828,8 +850,10 @@ class TSThreadSerializer: SDSSerializer {
         let groupModel: Data? = nil
         let hasDismissedOffers: Bool? = nil
         let isMarkedUnread: Bool = model.isMarkedUnread
+        let lastVisibleSortIdOnScreenPercentage: Double = model.lastVisibleSortIdOnScreenPercentage
+        let lastVisibleSortId: UInt64 = model.lastVisibleSortId
 
-        return ThreadRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, conversationColorName: conversationColorName, creationDate: creationDate, isArchived: isArchived, lastInteractionRowId: lastInteractionRowId, messageDraft: messageDraft, mutedUntilDate: mutedUntilDate, shouldThreadBeVisible: shouldThreadBeVisible, contactPhoneNumber: contactPhoneNumber, contactUUID: contactUUID, groupModel: groupModel, hasDismissedOffers: hasDismissedOffers, isMarkedUnread: isMarkedUnread)
+        return ThreadRecord(delegate: model, id: id, recordType: recordType, uniqueId: uniqueId, conversationColorName: conversationColorName, creationDate: creationDate, isArchived: isArchived, lastInteractionRowId: lastInteractionRowId, messageDraft: messageDraft, mutedUntilDate: mutedUntilDate, shouldThreadBeVisible: shouldThreadBeVisible, contactPhoneNumber: contactPhoneNumber, contactUUID: contactUUID, groupModel: groupModel, hasDismissedOffers: hasDismissedOffers, isMarkedUnread: isMarkedUnread, lastVisibleSortIdOnScreenPercentage: lastVisibleSortIdOnScreenPercentage, lastVisibleSortId: lastVisibleSortId)
     }
 }
 

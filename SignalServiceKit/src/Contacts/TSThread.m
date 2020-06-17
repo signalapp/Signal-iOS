@@ -49,6 +49,9 @@ ConversationColorName const ConversationColorNameDefault = ConversationColorName
 @property (atomic, nullable) NSDate *mutedUntilDate;
 @property (nonatomic) int64_t lastInteractionRowId;
 
+@property (nonatomic) uint64_t lastVisibleSortId;
+@property (nonatomic) double lastVisibleSortIdOnScreenPercentage;
+
 @end
 
 #pragma mark -
@@ -115,6 +118,8 @@ ConversationColorName const ConversationColorNameDefault = ConversationColorName
                       isArchived:(BOOL)isArchived
                   isMarkedUnread:(BOOL)isMarkedUnread
             lastInteractionRowId:(int64_t)lastInteractionRowId
+               lastVisibleSortId:(uint64_t)lastVisibleSortId
+lastVisibleSortIdOnScreenPercentage:(double)lastVisibleSortIdOnScreenPercentage
                     messageDraft:(nullable NSString *)messageDraft
                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
@@ -131,6 +136,8 @@ ConversationColorName const ConversationColorNameDefault = ConversationColorName
     _isArchived = isArchived;
     _isMarkedUnread = isMarkedUnread;
     _lastInteractionRowId = lastInteractionRowId;
+    _lastVisibleSortId = lastVisibleSortId;
+    _lastVisibleSortIdOnScreenPercentage = lastVisibleSortIdOnScreenPercentage;
     _messageDraft = messageDraft;
     _mutedUntilDate = mutedUntilDate;
     _shouldThreadBeVisible = shouldThreadBeVisible;
@@ -449,6 +456,15 @@ ConversationColorName const ConversationColorNameDefault = ConversationColorName
         mostRecentInteractionForInboxWithTransaction:transaction];
 }
 
+- (nullable TSInteraction *)firstInteractionAtOrBeforeSortId:(uint64_t)sortId
+                                                 transaction:(SDSAnyReadTransaction *)transaction
+{
+    OWSAssertDebug(transaction);
+    return
+        [[[InteractionFinder alloc] initWithThreadUniqueId:self.uniqueId] firstInteractionAtOrBeforeSortId:sortId
+                                                                                               transaction:transaction];
+}
+
 // Returns YES IFF the interaction should show up in the inbox as the last message.
 + (BOOL)shouldInteractionAppearInInbox:(TSInteraction *)interaction
 {
@@ -538,11 +554,19 @@ ConversationColorName const ConversationColorNameDefault = ConversationColorName
     }
 
     BOOL needsToUpdateLastInteractionRowId = messageSortId > self.lastInteractionRowId;
-    if (needsToMarkAsVisible || needsToClearArchived || needsToUpdateLastInteractionRowId) {
+
+    BOOL needsToUpdateLastVisibleSortId = self.lastVisibleSortId > 0 && wasMessageInserted;
+
+    if (needsToMarkAsVisible || needsToClearArchived || needsToUpdateLastInteractionRowId
+        || needsToUpdateLastVisibleSortId) {
         self.shouldThreadBeVisible = YES;
         self.lastInteractionRowId = MAX(self.lastInteractionRowId, messageSortId);
         if (needsToClearArchived) {
             self.isArchived = NO;
+        }
+        if (needsToUpdateLastVisibleSortId) {
+            self.lastVisibleSortId = 0;
+            self.lastVisibleSortIdOnScreenPercentage = 0;
         }
         [self anyOverwritingUpdateWithTransaction:transaction];
     } else {
@@ -557,9 +581,22 @@ ConversationColorName const ConversationColorNameDefault = ConversationColorName
 
     int64_t messageSortId = [self messageSortIdForMessage:message transaction:transaction];
     BOOL needsToUpdateLastInteractionRowId = messageSortId == self.lastInteractionRowId;
-    if (needsToUpdateLastInteractionRowId) {
-        TSInteraction *_Nullable latestInteraction = [self lastInteractionForInboxWithTransaction:transaction];
-        self.lastInteractionRowId = latestInteraction ? latestInteraction.sortId : 0;
+
+    BOOL needsToUpdateLastVisibleSortId = self.lastVisibleSortId == messageSortId;
+
+    if (needsToUpdateLastInteractionRowId || needsToUpdateLastVisibleSortId) {
+        if (needsToUpdateLastVisibleSortId) {
+            TSInteraction *_Nullable latestInteraction = [self lastInteractionForInboxWithTransaction:transaction];
+            self.lastInteractionRowId = latestInteraction ? latestInteraction.sortId : 0;
+        }
+
+        if (needsToUpdateLastVisibleSortId) {
+            TSInteraction *_Nullable messageBeforeDeletedMessage =
+                [self firstInteractionAtOrBeforeSortId:self.lastVisibleSortId transaction:transaction];
+            self.lastVisibleSortId = messageBeforeDeletedMessage ? messageBeforeDeletedMessage.sortId : 0;
+            self.lastVisibleSortIdOnScreenPercentage = 1;
+        }
+
         [self anyOverwritingUpdateWithTransaction:transaction];
     } else {
         [self scheduleTouchFinalizationWithTransaction:transaction];
@@ -691,6 +728,23 @@ ConversationColorName const ConversationColorNameDefault = ConversationColorName
     [self anyUpdateWithTransaction:transaction
                              block:^(TSThread *thread) {
                                  thread.messageDraft = draftString;
+                             }];
+}
+
+#pragma mark - Last Visible
+
+- (void)updateWithLastVisibileSortId:(uint64_t)lastVisibleSortId
+                  onScreenPercentage:(double)onScreenPercentage
+                         transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(onScreenPercentage >= 0);
+    OWSAssertDebug(onScreenPercentage <= 1);
+    OWSAssertDebug(transaction);
+
+    [self anyUpdateWithTransaction:transaction
+                             block:^(TSThread *thread) {
+                                 thread.lastVisibleSortId = lastVisibleSortId;
+                                 thread.lastVisibleSortIdOnScreenPercentage = onScreenPercentage;
                              }];
 }
 

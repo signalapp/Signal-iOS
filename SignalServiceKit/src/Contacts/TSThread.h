@@ -44,6 +44,18 @@ extern ConversationColorName const ConversationColorNameDefault;
 @property (nonatomic, readonly) BOOL isArchived;
 @property (nonatomic, readonly) BOOL isMarkedUnread;
 
+// This maintains the row Id that was at the bottom of the conversation
+// the last time the user viewed this thread so we can restore their
+// scroll position.
+//
+// If the referenced message is deleted, this value is
+// updated to point to the previous message in the conversation.
+//
+// If a new message is inserted into the conversation, this value
+// is cleared. We only restore this state if there are no unread messages.
+@property (nonatomic, readonly) uint64_t lastVisibleSortId;
+@property (nonatomic, readonly) double lastVisibleSortIdOnScreenPercentage;
+
 // zero if thread has never had an interaction.
 // The corresponding interaction may have been deleted.
 @property (nonatomic, readonly) int64_t lastInteractionRowId;
@@ -66,10 +78,12 @@ extern ConversationColorName const ConversationColorNameDefault;
                       isArchived:(BOOL)isArchived
                   isMarkedUnread:(BOOL)isMarkedUnread
             lastInteractionRowId:(int64_t)lastInteractionRowId
+               lastVisibleSortId:(uint64_t)lastVisibleSortId
+lastVisibleSortIdOnScreenPercentage:(double)lastVisibleSortIdOnScreenPercentage
                     messageDraft:(nullable NSString *)messageDraft
                   mutedUntilDate:(nullable NSDate *)mutedUntilDate
            shouldThreadBeVisible:(BOOL)shouldThreadBeVisible
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorName:creationDate:isArchived:isMarkedUnread:lastInteractionRowId:messageDraft:mutedUntilDate:shouldThreadBeVisible:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorName:creationDate:isArchived:isMarkedUnread:lastInteractionRowId:lastVisibleSortId:lastVisibleSortIdOnScreenPercentage:messageDraft:mutedUntilDate:shouldThreadBeVisible:));
 
 // clang-format on
 
@@ -127,6 +141,10 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
 
 - (nullable TSInteraction *)lastInteractionForInboxWithTransaction:(SDSAnyReadTransaction *)transaction
     NS_SWIFT_NAME(lastInteractionForInbox(transaction:));
+
+- (nullable TSInteraction *)firstInteractionAtOrBeforeSortId:(uint64_t)sortId
+                                                 transaction:(SDSAnyReadTransaction *)transaction
+    NS_SWIFT_NAME(firstInteraction(atOrBeforeSortId:transaction:));
 
 /**
  *  Updates the thread's caches of the latest interaction.
@@ -197,6 +215,10 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
 @property (atomic, readonly, nullable) NSDate *mutedUntilDate;
 
 #pragma mark - Update With... Methods
+
+- (void)updateWithLastVisibileSortId:(uint64_t)lastVisibleSortId
+                  onScreenPercentage:(double)onScreenPercentage
+                         transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)updateWithMutedUntilDate:(nullable NSDate *)mutedUntilDate transaction:(SDSAnyWriteTransaction *)transaction;
 
