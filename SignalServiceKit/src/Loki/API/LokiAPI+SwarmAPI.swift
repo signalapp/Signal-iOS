@@ -41,7 +41,7 @@ public extension LokiAPI {
             ]
             print("[Loki] Populating snode pool using: \(target).")
             let (promise, seal) = Promise<LokiAPITarget>.pending()
-            attempt(maxRetryCount: 4) {
+            attempt(maxRetryCount: 4, recoveringOn: LokiAPI.workQueue) {
                 HTTP.execute(.post, url, parameters: parameters).map2 { json -> LokiAPITarget in
                     guard let intermediate = json["result"] as? JSON, let rawTargets = intermediate["service_node_states"] as? [JSON] else { throw LokiAPIError.randomSnodePoolUpdatingFailed }
                     snodePool = try Set(rawTargets.flatMap { rawTarget in

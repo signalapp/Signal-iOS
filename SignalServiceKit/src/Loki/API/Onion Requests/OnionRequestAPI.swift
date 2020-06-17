@@ -83,7 +83,9 @@ public enum OnionRequestAPI {
                     unusedSnodes.remove(candidate) // All used snodes should be unique
                     print("[Loki] [Onion Request API] Testing guard snode: \(candidate).")
                     // Loop until a reliable guard snode is found
-                    return testSnode(candidate).map2 { candidate }.recover2 { _ in getGuardSnode() }
+                    return testSnode(candidate).map2 { candidate }.recover(on: DispatchQueue.main) { _ in
+                        withDelay(0.25, completionQueue: LokiAPI.workQueue) { getGuardSnode() }
+                    }
                 }
                 let promises = (0..<guardSnodeCount).map { _ in getGuardSnode() }
                 return when(fulfilled: promises).map2 { guardSnodes in

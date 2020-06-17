@@ -61,7 +61,7 @@ public final class LokiAPI : NSObject {
     
     // MARK: Public API
     public static func getMessages() -> Promise<Set<MessageListPromise>> {
-        return attempt(maxRetryCount: maxRetryCount) {
+        return attempt(maxRetryCount: maxRetryCount, recoveringOn: LokiAPI.workQueue) {
             getTargetSnodes(for: getUserHexEncodedPublicKey()).mapValues2 { targetSnode in
                 getRawMessages(from: targetSnode, usingLongPolling: false).map2 { parseRawMessagesResponse($0, from: targetSnode) }
             }.map2 { Set($0) }
@@ -89,7 +89,7 @@ public final class LokiAPI : NSObject {
                 let parameters = lokiMessageWithPoW.toJSON()
                 return Set(snodes.map { snode in
                     // Send the message to the target snode
-                    return attempt(maxRetryCount: maxRetryCount) {
+                    return attempt(maxRetryCount: maxRetryCount, recoveringOn: LokiAPI.workQueue) {
                         invoke(.sendMessage, on: snode, associatedWith: destination, parameters: parameters)
                     }.map2 { rawResponse in
                         if let json = rawResponse as? JSON, let powDifficulty = json["difficulty"] as? Int {

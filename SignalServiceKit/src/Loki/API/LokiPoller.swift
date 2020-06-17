@@ -10,7 +10,7 @@ public final class LokiPoller : NSObject {
     private var pollCount = 0
 
     // MARK: Settings
-    private static let retryInterval: TimeInterval = 1
+    private static let retryInterval: TimeInterval = 0.25
     /// After polling a given snode this many times we always switch to a new one.
     ///
     /// The reason for doing this is that sometimes a snode will be giving us successful responses while

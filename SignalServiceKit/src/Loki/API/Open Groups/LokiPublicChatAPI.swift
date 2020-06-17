@@ -175,7 +175,7 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
         let (promise, seal) = Promise<LokiPublicChatMessage>.pending()
         DispatchQueue.global(qos: .userInitiated).async { [privateKey = userKeyPair.privateKey] in
             guard let signedMessage = message.sign(with: privateKey) else { return seal.reject(LokiDotNetAPIError.signingFailed) }
-            attempt(maxRetryCount: maxRetryCount) {
+            attempt(maxRetryCount: maxRetryCount, recoveringOn: LokiAPI.workQueue) {
                 getAuthToken(for: server).then2 { token -> Promise<LokiPublicChatMessage> in
                     let url = URL(string: "\(server)/channels/\(channel)/messages")!
                     let parameters = signedMessage.toJSON()
@@ -244,7 +244,7 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
         let isModerationRequest = !isSentByUser
         print("[Loki] Deleting message with ID: \(messageID) for public chat channel with ID: \(channel) on server: \(server) (isModerationRequest = \(isModerationRequest)).")
         let urlAsString = isSentByUser ? "\(server)/channels/\(channel)/messages/\(messageID)" : "\(server)/loki/v1/moderation/message/\(messageID)"
-        return attempt(maxRetryCount: maxRetryCount) {
+        return attempt(maxRetryCount: maxRetryCount, recoveringOn: LokiAPI.workQueue) {
             getAuthToken(for: server).then2 { token -> Promise<Void> in
                 let url = URL(string: urlAsString)!
                 let request = TSRequest(url: url, method: "DELETE", parameters: [:])
@@ -292,7 +292,7 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
     public static func setDisplayName(to newDisplayName: String?, on server: String) -> Promise<Void> {
         print("[Loki] Updating display name on server: \(server).")
         let parameters: JSON = [ "name" : (newDisplayName ?? "") ]
-        return attempt(maxRetryCount: maxRetryCount) {
+        return attempt(maxRetryCount: maxRetryCount, recoveringOn: LokiAPI.workQueue) {
             getAuthToken(for: server).then2 { token -> Promise<Void> in
                 let url = URL(string: "\(server)/users/me")!
                 let request = TSRequest(url: url, method: "PATCH", parameters: parameters)
@@ -317,7 +317,7 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
             annotation["value"] = [ "profileKey" : profileKey.base64EncodedString(), "url" : url ]
         }
         let parameters: JSON = [ "annotations" : [ annotation ] ]
-        return attempt(maxRetryCount: maxRetryCount) {
+        return attempt(maxRetryCount: maxRetryCount, recoveringOn: LokiAPI.workQueue) {
             getAuthToken(for: server).then2 { token -> Promise<Void> in
                 let url = URL(string: "\(server)/users/me")!
                 let request = TSRequest(url: url, method: "PATCH", parameters: parameters)
@@ -382,7 +382,7 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
     }
     
     public static func getInfo(for channel: UInt64, on server: String) -> Promise<LokiPublicChatInfo> {
-        return attempt(maxRetryCount: maxRetryCount) {
+        return attempt(maxRetryCount: maxRetryCount, recoveringOn: LokiAPI.workQueue) {
             getAuthToken(for: server).then2 { token -> Promise<LokiPublicChatInfo> in
                 let url = URL(string: "\(server)/channels/\(channel)?include_annotations=1")!
                 let request = TSRequest(url: url)
@@ -413,7 +413,7 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
     }
 
     public static func join(_ channel: UInt64, on server: String) -> Promise<Void> {
-        return attempt(maxRetryCount: maxRetryCount) {
+        return attempt(maxRetryCount: maxRetryCount, recoveringOn: LokiAPI.workQueue) {
             getAuthToken(for: server).then2 { token -> Promise<Void> in
                 let url = URL(string: "\(server)/channels/\(channel)/subscribe")!
                 let request = TSRequest(url: url, method: "POST", parameters: [:])
@@ -426,7 +426,7 @@ public final class LokiPublicChatAPI : LokiDotNetAPI {
     }
 
     public static func leave(_ channel: UInt64, on server: String) -> Promise<Void> {
-        return attempt(maxRetryCount: maxRetryCount) {
+        return attempt(maxRetryCount: maxRetryCount, recoveringOn: LokiAPI.workQueue) {
             getAuthToken(for: server).then2 { token -> Promise<Void> in
                 let url = URL(string: "\(server)/channels/\(channel)/subscribe")!
                 let request = TSRequest(url: url, method: "DELETE", parameters: [:])
