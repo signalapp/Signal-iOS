@@ -86,13 +86,13 @@ public extension LokiAPI {
             let parameters: [String:Any] = [ "pubKey" : hexEncodedPublicKey ]
             return getRandomSnode().then2 {
                 invoke(.getSwarm, on: $0, associatedWith: hexEncodedPublicKey, parameters: parameters)
-            }.map2 {
-                parseTargets(from: $0)
-            }.get2 { swarm in
+            }.map2 { rawSnodes in
+                let swarm = parseTargets(from: rawSnodes)
                 swarmCache[hexEncodedPublicKey] = swarm
                 try! Storage.writeSync { transaction in
                     storage.setSwarm(swarm, for: hexEncodedPublicKey, in: transaction)
                 }
+                return swarm
             }
         }
     }

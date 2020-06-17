@@ -155,6 +155,7 @@ final class ConversationCell : UITableViewCell {
                 let randomUsers = users.sorted().prefix(2) // Sort to provide a level of stability
                 profilePictureView.hexEncodedPublicKey = randomUsers.count >= 1 ? randomUsers[0] : ""
                 profilePictureView.additionalHexEncodedPublicKey = randomUsers.count >= 2 ? randomUsers[1] : ""
+                profilePictureView.isRSSFeed = false
             }
         } else { // A one-on-one chat
             profilePictureView.hexEncodedPublicKey = threadViewModel.contactIdentifier!

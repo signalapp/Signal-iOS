@@ -237,7 +237,7 @@ public final class SyncMessagesProtocol : NSObject {
     }
 
     @objc(handleOpenGroupSyncMessageIfNeeded:wrappedIn:using:)
-    public static func handleOpenGroupSyncMessageIfNeeded(_ syncMessage: SSKProtoSyncMessage, wrappedIn envelope: SSKProtoEnvelope, using transaction: YapDatabaseReadTransaction) {
+    public static func handleOpenGroupSyncMessageIfNeeded(_ syncMessage: SSKProtoSyncMessage, wrappedIn envelope: SSKProtoEnvelope, using transaction: YapDatabaseReadWriteTransaction) {
         let hexEncodedPublicKey = envelope.source! // Set during UD decryption
         let linkedDevices = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: hexEncodedPublicKey, in: transaction)
         let wasSentByLinkedDevice = linkedDevices.contains(hexEncodedPublicKey)
@@ -249,7 +249,7 @@ public final class SyncMessagesProtocol : NSObject {
             let openGroupManager = LokiPublicChatManager.shared
             guard openGroupManager.getChat(server: openGroup.url, channel: openGroup.channel) == nil else { return }
             let userPublicKey = UserDefaults.standard[.masterHexEncodedPublicKey] ?? getUserHexEncodedPublicKey()
-            let displayName = SSKEnvironment.shared.profileManager.profileNameForRecipient(withID: userPublicKey)
+            let displayName = SSKEnvironment.shared.profileManager.profileNameForRecipient(withID: userPublicKey, transaction: transaction)
             LokiPublicChatAPI.setDisplayName(to: displayName, on: openGroup.url)
             openGroupManager.addChat(server: openGroup.url, channel: openGroup.channel)
         }

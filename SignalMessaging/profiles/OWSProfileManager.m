@@ -176,13 +176,12 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
 #pragma mark - Local Profile
 
-- (OWSUserProfile *)localUserProfile
+- (OWSUserProfile *)getLocalUserProfileWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     @synchronized(self)
     {
         if (!_localUserProfile) {
-            _localUserProfile = [OWSUserProfile getOrBuildUserProfileForRecipientId:kLocalProfileUniqueId
-                                                                       dbConnection:self.dbConnection];
+            _localUserProfile = [OWSUserProfile getOrBuildUserProfileForRecipientId:kLocalProfileUniqueId transaction:transaction];
         }
     }
 
@@ -1024,12 +1023,21 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
 - (nullable NSString *)profileNameForRecipientWithID:(NSString *)recipientID
 {
+    __block NSString *result;
+    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        result = [self profileNameForRecipientWithID:recipientID transaction:transaction];
+    } error:nil];
+    return result;
+}
+
+- (nullable NSString *)profileNameForRecipientWithID:(NSString *)recipientID transaction:(YapDatabaseReadWriteTransaction *)transaction
+{
     OWSAssertDebug(recipientID.length > 0);
 
     // For "local reads", use the local user profile.
-    OWSUserProfile *userProfile = ([self.tsAccountManager.localNumber isEqualToString:recipientID]
-                                   ? self.localUserProfile
-                                   : [OWSUserProfile getOrBuildUserProfileForRecipientId:recipientID dbConnection:self.dbConnection]);
+    OWSUserProfile *userProfile = [self.tsAccountManager.localNumber isEqualToString:recipientID]
+                                  ? [self getLocalUserProfileWithTransaction:transaction]
+                                  : [OWSUserProfile getOrBuildUserProfileForRecipientId:recipientID transaction:transaction];
 
     return userProfile.profileName;
 }
