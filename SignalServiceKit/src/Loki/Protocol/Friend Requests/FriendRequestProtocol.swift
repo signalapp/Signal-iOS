@@ -259,10 +259,7 @@ public final class FriendRequestProtocol : NSObject {
             return
         }
         let hexEncodedPublicKey = envelope.source! // Set during UD decryption
-        guard envelope.type == .friendRequest else { // Set during UD decryption
-            print("[Loki] Ignoring friend request logic for non friend request type envelope.")
-            return
-        }
+        guard envelope.type == .friendRequest else { return } // Set during UD decryption
         if canFriendRequestBeAutoAccepted(for: hexEncodedPublicKey, using: transaction) {
             storage.setFriendRequestStatus(.friends, for: hexEncodedPublicKey, transaction: transaction)
             sendFriendRequestAcceptedMessage(to: hexEncodedPublicKey, using: transaction)

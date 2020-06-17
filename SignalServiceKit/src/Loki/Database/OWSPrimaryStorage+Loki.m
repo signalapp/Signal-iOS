@@ -144,14 +144,14 @@
 
 - (void)setPreKeyBundle:(PreKeyBundle *)bundle forContact:(NSString *)hexEncodedPublicKey transaction:(YapDatabaseReadWriteTransaction *)transaction {
     [transaction setObject:bundle forKey:hexEncodedPublicKey inCollection:LKPreKeyBundleCollection];
-    [LKLogger print:[NSString stringWithFormat:@"[Loki] Stored pre key bundle for: %@.", hexEncodedPublicKey]];
+    [LKLogger print:[NSString stringWithFormat:@"[Loki] Stored pre key bundle from: %@.", hexEncodedPublicKey]];
     // FIXME: I don't think the line below is good for anything
     [transaction.connection flushTransactionsWithCompletionQueue:dispatch_get_main_queue() completionBlock:^{ }];
 }
 
 - (void)removePreKeyBundleForContact:(NSString *)hexEncodedPublicKey transaction:(YapDatabaseReadWriteTransaction *)transaction {
     [transaction removeObjectForKey:hexEncodedPublicKey inCollection:LKPreKeyBundleCollection];
-    [LKLogger print:[NSString stringWithFormat:@"[Loki] Removed pre key bundle for: %@.", hexEncodedPublicKey]];
+    [LKLogger print:[NSString stringWithFormat:@"[Loki] Removed pre key bundle from: %@.", hexEncodedPublicKey]];
 }
 
 # pragma mark - Last Message Hash

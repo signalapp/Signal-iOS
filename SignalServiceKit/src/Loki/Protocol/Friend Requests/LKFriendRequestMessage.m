@@ -16,7 +16,7 @@
 }
 
 #pragma mark Building
-- (SSKProtoContentBuilder *)prepareCustomContentBuilder:(SignalRecipient *)recipient {
+- (nullable id)prepareCustomContentBuilder:(SignalRecipient *)recipient {
     SSKProtoContentBuilder *contentBuilder = [super prepareCustomContentBuilder:recipient];
     // Attach the pre key bundle for the contact in question
     PreKeyBundle *preKeyBundle = [OWSPrimaryStorage.sharedManager generatePreKeyBundleForContact:recipient.recipientId];

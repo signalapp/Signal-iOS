@@ -60,7 +60,7 @@ public final class LokiPoller : NSObject {
             let (promise, seal) = Promise<Void>.pending()
             strongSelf.pollNextSnode(seal: seal)
             return promise
-        }.ensure(on: DispatchQueue.main) { [weak self] in
+        }.ensure(on: DispatchQueue.main) { [weak self] in // Timers don't do well on background queues
             guard let strongSelf = self, !strongSelf.hasStopped else { return }
             Timer.scheduledTimer(withTimeInterval: LokiPoller.retryInterval, repeats: false) { _ in
                 guard let strongSelf = self else { return }

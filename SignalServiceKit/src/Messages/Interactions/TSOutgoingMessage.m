@@ -1124,7 +1124,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
     return dataProto;
 }
 
-- (SSKProtoContentBuilder *)prepareCustomContentBuilder:(SignalRecipient *)recipient {
+- (nullable id)prepareCustomContentBuilder:(SignalRecipient *)recipient {
     SSKProtoDataMessage *_Nullable dataMessage = [self buildDataMessage:recipient.recipientId];
 
     if (!dataMessage) {

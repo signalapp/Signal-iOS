@@ -1887,6 +1887,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     }
 
     BOOL isFriendRequestMessage = [messageSend.message isKindOfClass:LKFriendRequestMessage.class];
+    BOOL isSessionRequestMessage = [messageSend.message isKindOfClass:LKSessionRequestMessage.class];
     BOOL isDeviceLinkMessage = [messageSend.message isKindOfClass:LKDeviceLinkMessage.class]
         && ((LKDeviceLinkMessage *)messageSend.message).kind == LKDeviceLinkMessageKindRequest;
 
@@ -1916,7 +1917,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                                       paddedPlaintext:[plainText paddedMessageBody]
                                                                     senderCertificate:messageSend.senderCertificate
                                                                       protocolContext:transaction
-                                                             useFallbackSessionCipher:isFriendRequestMessage || isDeviceLinkMessage
+                                                             useFallbackSessionCipher:isFriendRequestMessage || isSessionRequestMessage || isDeviceLinkMessage
                                                                                 error:&error];
 
         SCKRaiseIfExceptionWrapperError(error);

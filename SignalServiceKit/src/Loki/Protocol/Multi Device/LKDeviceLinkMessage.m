@@ -34,7 +34,7 @@
 }
 
 #pragma mark Building
-- (SSKProtoContentBuilder *)prepareCustomContentBuilder:(SignalRecipient *)recipient {
+- (nullable id)prepareCustomContentBuilder:(SignalRecipient *)recipient {
     SSKProtoContentBuilder *contentBuilder = [super prepareCustomContentBuilder:recipient];
     NSError *error;
     if (self.kind == LKDeviceLinkMessageKindRequest) {

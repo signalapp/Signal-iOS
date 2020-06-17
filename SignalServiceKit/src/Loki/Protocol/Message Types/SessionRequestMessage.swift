@@ -26,4 +26,20 @@ internal final class SessionRequestMessage : TSOutgoingMessage {
         builder.setFlags(UInt32(SSKProtoDataMessage.SSKProtoDataMessageFlags.sessionRequest.rawValue))
         return builder
     }
+
+    override func prepareCustomContentBuilder(_ recipient: SignalRecipient) -> Any? {
+        guard let contentBuilder = super.prepareCustomContentBuilder(recipient) as? SSKProtoContent.SSKProtoContentBuilder else { return nil }
+        // Generate a pre key bundle for the recipient and attach it
+        let preKeyBundle = OWSPrimaryStorage.shared().generatePreKeyBundle(forContact: recipient.recipientId())
+        let preKeyBundleMessageBuilder = SSKProtoPrekeyBundleMessage.builder(from: preKeyBundle)
+        do {
+            let preKeyBundleMessage = try preKeyBundleMessageBuilder.build()
+            contentBuilder.setPrekeyBundleMessage(preKeyBundleMessage)
+        } catch {
+            owsFailDebug("Failed to build pre key bundle message for: \(recipient.recipientId()) due to error: \(error).")
+            return nil
+        }
+        // Return
+        return contentBuilder
+    }
 }

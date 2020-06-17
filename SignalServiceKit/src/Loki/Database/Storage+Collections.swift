@@ -1,4 +1,6 @@
 
+// TODO: Create an extension for each category, e.g. Storage+OpenGroups, Storage+SnodePool, etc.
+
 @objc public extension Storage {
 
     // TODO: Add remaining collections

@@ -164,7 +164,7 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 /**
  * Allows subclasses to supply a custom content builder that has already prepared part of the message.
  */
-- (SSKProtoContentBuilder *)prepareCustomContentBuilder:(SignalRecipient *)recipient;
+- (nullable id)prepareCustomContentBuilder:(SignalRecipient *)recipient;
 
 /**
  * Should this message be synced to the users other registered devices? This is

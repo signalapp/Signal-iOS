@@ -15,12 +15,6 @@ public final class SessionManagementProtocol : NSObject {
     internal static var storage: OWSPrimaryStorage { OWSPrimaryStorage.shared() }
 
     // MARK: - General
-    // BEHAVIOR NOTE: OWSMessageSender.throws_encryptedMessageForMessageSend:recipientId:plaintext:transaction: sets
-    // isFriendRequest to true if the message in question is a friend request or a device linking request, but NOT if
-    // it's a session request.
-
-    // TODO: Does the above make sense?
-
     @objc(createPreKeys)
     public static func createPreKeys() {
         // We don't generate new pre keys here like Signal does.
