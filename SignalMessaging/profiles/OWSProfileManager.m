@@ -82,10 +82,14 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     return SSKEnvironment.shared.versionedProfiles;
 }
 
+- (UserProfileReadCache *)userProfileReadCache
+{
+    return SSKEnvironment.shared.modelReadCaches.userProfileReadCache;
+}
+
 #pragma mark -
 
 @synthesize localUserProfile = _localUserProfile;
-@synthesize userProfileReadCache = _userProfileReadCache;
 
 + (instancetype)sharedManager
 {
@@ -112,7 +116,6 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 
     _profileAvatarImageCache = [NSCache new];
     _currentAvatarDownloads = [NSMutableSet new];
-    _userProfileReadCache = [UserProfileReadCache new];
 
     OWSSingletonAssert();
 
