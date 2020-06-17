@@ -27,8 +27,6 @@ public class SDSDatabaseStorage: SDSTransactable {
 
     private let crossProcess = SDSCrossProcess()
 
-    let observation = SDSDatabaseStorageObservation()
-
     // MARK: - Initialization / Setup
 
     @objc
@@ -213,6 +211,17 @@ public class SDSDatabaseStorage: SDSTransactable {
         }
     }
 
+    // MARK: - Observation
+
+    @objc
+    public func appendUIDatabaseSnapshotDelegate(_ snapshotDelegate: UIDatabaseSnapshotDelegate) {
+        guard let uiDatabaseObserver = grdbStorage.uiDatabaseObserver else {
+            owsFailDebug("Missing uiDatabaseObserver.")
+            return
+        }
+        uiDatabaseObserver.appendSnapshotDelegate(snapshotDelegate)
+    }
+
     // MARK: -
 
     @objc
@@ -249,16 +258,10 @@ public class SDSDatabaseStorage: SDSTransactable {
                     return
                 }
 
-                if let conversationViewDatabaseObserver = grdbStorage.conversationViewDatabaseObserver {
-                    conversationViewDatabaseObserver.didTouch(interaction: interaction, transaction: grdb)
+                if let uiDatabaseObserver = grdbStorage.uiDatabaseObserver {
+                    uiDatabaseObserver.didTouch(interaction: interaction, transaction: grdb)
                 } else if AppReadiness.isAppReady() {
                     owsFailDebug("conversationViewDatabaseObserver was unexpectedly nil")
-                }
-                if let genericDatabaseObserver = grdbStorage.genericDatabaseObserver {
-                    genericDatabaseObserver.didTouch(interaction: interaction,
-                                                     transaction: grdb)
-                } else if AppReadiness.isAppReady() {
-                    owsFailDebug("genericDatabaseObserver was unexpectedly nil")
                 }
                 GRDBFullTextSearchFinder.modelWasUpdated(model: interaction, transaction: grdb)
             }
@@ -276,20 +279,10 @@ public class SDSDatabaseStorage: SDSTransactable {
                     return
                 }
 
-                if let conversationListDatabaseObserver = grdbStorage.conversationListDatabaseObserver {
-                    conversationListDatabaseObserver.didTouch(thread: thread, transaction: grdb)
+                if let uiDatabaseObserver = grdbStorage.uiDatabaseObserver {
+                    uiDatabaseObserver.didTouch(thread: thread, transaction: grdb)
                 } else if AppReadiness.isAppReady() {
                     owsFailDebug("conversationListDatabaseObserver was unexpectedly nil")
-                }
-                if let conversationViewDatabaseObserver = grdbStorage.conversationViewDatabaseObserver {
-                    conversationViewDatabaseObserver.didTouch(thread: thread, transaction: grdb)
-                } else if AppReadiness.isAppReady() {
-                    owsFailDebug("conversationViewDatabaseObserver was unexpectedly nil")
-                }
-                if let genericDatabaseObserver = grdbStorage.genericDatabaseObserver {
-                    genericDatabaseObserver.didTouchThread(transaction: grdb)
-                } else if AppReadiness.isAppReady() {
-                    owsFailDebug("genericDatabaseObserver was unexpectedly nil")
                 }
                 GRDBFullTextSearchFinder.modelWasUpdated(model: thread, transaction: grdb)
             }
@@ -344,13 +337,6 @@ public class SDSDatabaseStorage: SDSTransactable {
         //       once when we become active, we should be able to effectively
         //       skip most of the perf cost.
         NotificationCenter.default.postNotificationNameAsync(SDSDatabaseStorage.didReceiveCrossProcessNotification, object: nil)
-    }
-
-    // MARK: - Generic Observation
-
-    @objc(addDatabaseStorageObserver:)
-    public func add(databaseStorageObserver: SDSDatabaseStorageObserver) {
-        observation.add(databaseStorageObserver: databaseStorageObserver)
     }
 
     // MARK: - SDSTransactable
