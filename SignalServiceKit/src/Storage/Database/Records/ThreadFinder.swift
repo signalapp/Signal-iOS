@@ -10,7 +10,9 @@ public protocol ThreadFinder {
 
     func visibleThreadCount(isArchived: Bool, transaction: ReadTransaction) throws -> UInt
     func enumerateVisibleThreads(isArchived: Bool, transaction: ReadTransaction, block: @escaping (TSThread) -> Void) throws
+    func visibleThreadIds(isArchived: Bool, transaction: ReadTransaction) throws -> [String]
     func sortIndex(thread: TSThread, transaction: ReadTransaction) throws -> UInt?
+    func threads(withThreadIds threadIds: Set<String>, transaction: ReadTransaction) throws -> Set<TSThread>
 }
 
 @objc
@@ -40,6 +42,16 @@ public class AnyThreadFinder: NSObject, ThreadFinder {
     }
 
     @objc
+    public func visibleThreadIds(isArchived: Bool, transaction: SDSAnyReadTransaction) throws -> [String] {
+        switch transaction.readTransaction {
+        case .grdbRead(let grdb):
+            return try grdbAdapter.visibleThreadIds(isArchived: isArchived, transaction: grdb)
+        case .yapRead(let yap):
+            return try yapAdapter.visibleThreadIds(isArchived: isArchived, transaction: yap)
+        }
+    }
+
+    @objc
     public func sortIndexObjc(thread: TSThread, transaction: ReadTransaction) -> NSNumber? {
         do {
             guard let value = try sortIndex(thread: thread, transaction: transaction) else {
@@ -58,6 +70,15 @@ public class AnyThreadFinder: NSObject, ThreadFinder {
             return try grdbAdapter.sortIndex(thread: thread, transaction: grdb)
         case .yapRead(let yap):
             return yapAdapter.sortIndex(thread: thread, transaction: yap)
+        }
+    }
+
+    public func threads(withThreadIds threadIds: Set<String>, transaction: SDSAnyReadTransaction) throws -> Set<TSThread> {
+        switch transaction.readTransaction {
+        case .grdbRead(let grdb):
+            return try grdbAdapter.threads(withThreadIds: threadIds, transaction: grdb)
+        case .yapRead(let yap):
+            return try yapAdapter.threads(withThreadIds: threadIds, transaction: yap)
         }
     }
 }
@@ -85,6 +106,10 @@ struct YAPDBThreadFinder: ThreadFinder {
                                             }
                                             block(thread)
         }
+    }
+
+    func visibleThreadIds(isArchived: Bool, transaction: YapDatabaseReadTransaction) throws -> [String] {
+        throw OWSAssertionError("Not implemented.")
     }
 
     func sortIndex(thread: TSThread, transaction: YapDatabaseReadTransaction) -> UInt? {
@@ -115,6 +140,10 @@ struct YAPDBThreadFinder: ThreadFinder {
         } else {
             return nil
         }
+    }
+
+    func threads(withThreadIds threadIds: Set<String>, transaction: YapDatabaseReadTransaction) throws -> Set<TSThread> {
+        throw OWSAssertionError("Not implemented.")
     }
 
     // MARK: -
@@ -168,6 +197,21 @@ public class GRDBThreadFinder: NSObject, ThreadFinder {
         try ThreadRecord.fetchCursor(transaction.database, sql: sql, arguments: arguments).forEach { threadRecord in
             block(try TSThread.fromRecord(threadRecord))
         }
+    }
+
+    @objc
+    public func visibleThreadIds(isArchived: Bool, transaction: GRDBReadTransaction) throws -> [String] {
+        let sql = """
+        SELECT \(threadColumn: .uniqueId)
+        FROM \(ThreadRecord.databaseTableName)
+        WHERE \(threadColumn: .shouldThreadBeVisible) = 1
+        AND \(threadColumn: .isArchived) = ?
+        ORDER BY \(threadColumn: .lastInteractionRowId) DESC
+        """
+        let arguments: StatementArguments = [isArchived]
+        return try String.fetchAll(transaction.database,
+                                   sql: sql,
+                                   arguments: arguments)
     }
 
     public func sortIndex(thread: TSThread, transaction: GRDBReadTransaction) throws -> UInt? {
@@ -278,5 +322,24 @@ public class GRDBThreadFinder: NSObject, ThreadFinder {
         guard interactionFinder.possiblyHasIncomingMessages(transaction: transaction) else { return false }
 
         return true
+    }
+
+    @objc
+    public func threads(withThreadIds threadIds: Set<String>, transaction: GRDBReadTransaction) throws -> Set<TSThread> {
+        guard !threadIds.isEmpty else {
+            return []
+        }
+
+        let sql = """
+        SELECT * FROM \(ThreadRecord.databaseTableName)
+        WHERE \(threadColumn: .uniqueId) IN (\(threadIds.map { "\'\($0)'" }.joined(separator: ",")))
+        """
+        let arguments: StatementArguments = []
+        let cursor = TSThread.grdbFetchCursor(sql: sql, arguments: arguments, transaction: transaction)
+        var threads = Set<TSThread>()
+        while let thread = try cursor.next() {
+            threads.insert(thread)
+        }
+        return threads
     }
 }

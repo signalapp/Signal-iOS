@@ -49,6 +49,15 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
 @implementation TSInteraction
 
+#pragma mark - Dependencies
+
+- (InteractionReadCache *)interactionReadCache
+{
+    return SSKEnvironment.shared.modelReadCaches.interactionReadCache;
+}
+
+#pragma mark -
+
 + (BOOL)shouldBeIndexedForFTS
 {
     return YES;
@@ -327,6 +336,8 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
     TSThread *fetchedThread = [self threadWithTransaction:transaction];
     [fetchedThread updateWithInsertedMessage:self transaction:transaction];
+
+    [self.interactionReadCache didInsertOrUpdateInteraction:self transaction:transaction];
 }
 
 - (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
@@ -335,6 +346,8 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
 
     TSThread *fetchedThread = [self threadWithTransaction:transaction];
     [fetchedThread updateWithUpdatedMessage:self transaction:transaction];
+
+    [self.interactionReadCache didInsertOrUpdateInteraction:self transaction:transaction];
 }
 
 - (void)anyDidRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
@@ -345,6 +358,8 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
         TSThread *fetchedThread = [self threadWithTransaction:transaction];
         [fetchedThread updateWithRemovedMessage:self transaction:transaction];
     }
+
+    [self.interactionReadCache didRemoveInteraction:self transaction:transaction];
 }
 
 #pragma mark -

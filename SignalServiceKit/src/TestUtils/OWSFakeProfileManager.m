@@ -32,7 +32,6 @@ NS_ASSUME_NONNULL_BEGIN
 @implementation OWSFakeProfileManager
 
 @synthesize localProfileKey = _localProfileKey;
-@synthesize userProfileReadCache = _userProfileReadCache;
 
 - (instancetype)init
 {
@@ -44,7 +43,6 @@ NS_ASSUME_NONNULL_BEGIN
     _profileKeys = [NSMutableDictionary new];
     _recipientWhitelist = [NSMutableSet new];
     _threadWhitelist = [NSMutableSet new];
-    _userProfileReadCache = [UserProfileReadCache new];
     _stubbedUuidCapabilitiesMap = [NSMutableDictionary new];
 
     return self;

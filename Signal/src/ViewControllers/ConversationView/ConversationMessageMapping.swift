@@ -7,6 +7,14 @@ import Foundation
 @objc
 public class ConversationMessageMapping: NSObject {
 
+    // MARK: - Dependencies
+
+    private var interactionReadCache: InteractionReadCache {
+        SSKEnvironment.shared.modelReadCaches.interactionReadCache
+    }
+
+    // MARK: -
+
     private let interactionFinder: InteractionFinder
 
     @objc
@@ -269,12 +277,74 @@ public class ConversationMessageMapping: NSObject {
         Logger.verbose("canLoadOlder: \(canLoadOlder) canLoadNewer: \(canLoadNewer)")
     }
 
+    private let shouldUseModelCache = true
+
     private func fetchInteractions(nsRange: NSRange, transaction: SDSAnyReadTransaction) throws -> [TSInteraction] {
-        var newItems: [TSInteraction] = []
-        try interactionFinder.enumerateInteractions(range: nsRange, transaction: transaction) { (interaction: TSInteraction, _) in
-            newItems.append(interaction)
+
+        // This method is a perf hotspot. To improve perf, we try to leverage
+        // the model cache. If any problems arise, we fall back to using
+        // interactionFinder.enumerateInteractions() which is robust but expensive.
+        let loadWithoutCache: () throws -> [TSInteraction] = {
+
+            var newItems: [TSInteraction] = []
+            try self.interactionFinder.enumerateInteractions(range: nsRange, transaction: transaction) { (interaction: TSInteraction, _) in
+                newItems.append(interaction)
+            }
+            return newItems
         }
-        return newItems
+
+        guard shouldUseModelCache else {
+            return try loadWithoutCache()
+        }
+
+        // Loading the mapping from the cache has the following steps:
+        //
+        // 1. Fetch the uniqueIds for the interactions in the load window/mapping.
+        let interactionIds = try interactionFinder.interactionIds(inRange: nsRange, transaction: transaction)
+        guard !interactionIds.isEmpty else {
+            return []
+        }
+
+        // 2. Try to pull as many interactions as possible from the cache.
+        var interactionIdToModelMap: [String: TSInteraction] = interactionReadCache.getInteractionsIfInCache(forUniqueIds: interactionIds,
+                                                                                                             transaction: transaction)
+        var interactionsToLoad = Set(interactionIds)
+        interactionsToLoad.subtract(interactionIdToModelMap.keys)
+        let cachedCount = interactionIdToModelMap.count
+
+        // 3. Bulk load any interactions that are not in the cache in a
+        //    single query.
+        //
+        // NOTE: There's an upper bound on how long SQL queries should be.
+        //       We use kMaxIncrementalRowChanges to limit query size.
+        guard interactionsToLoad.count <= UIDatabaseObserver.kMaxIncrementalRowChanges else {
+            return try loadWithoutCache()
+        }
+        if !interactionsToLoad.isEmpty {
+            let loadedInteractions = InteractionFinder.interactions(withInteractionIds: interactionsToLoad, transaction: transaction)
+            guard loadedInteractions.count == interactionsToLoad.count else {
+                owsFailDebug("Loading interactions failed.")
+                return try loadWithoutCache()
+            }
+            for interaction in loadedInteractions {
+                interactionIdToModelMap[interaction.uniqueId] = interaction
+            }
+        }
+        guard interactionIds.count == interactionIdToModelMap.count else {
+            owsFailDebug("Missing interactions.")
+            return try loadWithoutCache()
+        }
+
+        // 4. Build the ordered list of interactions.
+        var interactions = [TSInteraction]()
+        for interactionId in interactionIds {
+            guard let interaction = interactionIdToModelMap[interactionId] else {
+                owsFailDebug("Couldn't read interaction: \(interactionId)")
+                return try loadWithoutCache()
+            }
+            interactions.append(interaction)
+        }
+        return interactions
     }
 
     @objc

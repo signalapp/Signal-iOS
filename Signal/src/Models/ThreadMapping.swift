@@ -86,6 +86,14 @@ public class ThreadMappingDiff: NSObject {
 @objc
 class ThreadMapping: NSObject {
 
+    // MARK: - Dependencies
+
+    private var threadReadCache: ThreadReadCache {
+        SSKEnvironment.shared.modelReadCaches.threadReadCache
+    }
+
+    // MARK: -
+
     private var threads: [TSThread] = []
 
     private let kSection: Int = ConversationListViewControllerSection.conversations.rawValue
@@ -169,12 +177,76 @@ class ThreadMapping: NSObject {
         try Bench(title: "update thread mapping (\(isViewingArchive ? "archive" : "inbox"))") {
             archiveCount = try threadFinder.visibleThreadCount(isArchived: true, transaction: transaction)
             inboxCount = try threadFinder.visibleThreadCount(isArchived: false, transaction: transaction)
+            threads = try self.loadThreads(isViewingArchive: isViewingArchive, transaction: transaction)
+        }
+    }
+
+    private let shouldUseModelCache = false
+
+    private func loadThreads(isViewingArchive: Bool, transaction: SDSAnyReadTransaction) throws -> [TSThread] {
+
+        // This method is a perf hotspot. To improve perf, we try to leverage
+        // the model cache. If any problems arise, we fall back to using
+        // threadFinder.enumerateVisibleThreads() which is robust but expensive.
+        let loadWithoutCache: () throws -> [TSThread] = {
             var newThreads: [TSThread] = []
-            try threadFinder.enumerateVisibleThreads(isArchived: isViewingArchive, transaction: transaction) { thread in
+            try self.threadFinder.enumerateVisibleThreads(isArchived: isViewingArchive, transaction: transaction) { thread in
                 newThreads.append(thread)
             }
-            threads = newThreads
+            return newThreads
         }
+
+        guard shouldUseModelCache else {
+            return try loadWithoutCache()
+        }
+
+        // Loading the mapping from the cache has the following steps:
+        //
+        // 1. Fetch the uniqueIds for the visible threads.
+        let threadIds = try threadFinder.visibleThreadIds(isArchived: isViewingArchive, transaction: transaction)
+        guard !threadIds.isEmpty else {
+            return []
+        }
+
+        // 2. Try to pull as many threads as possible from the cache.
+        var threadIdToModelMap: [String: TSThread] = threadReadCache.getThreadsIfInCache(forUniqueIds: threadIds,
+                                                                                         transaction: transaction)
+        var threadsToLoad = Set(threadIds)
+        threadsToLoad.subtract(threadIdToModelMap.keys)
+
+        // 3. Bulk load any threads that are not in the cache in a
+        //    single query.
+        //
+        // NOTE: There's an upper bound on how long SQL queries should be.
+        //       We use kMaxIncrementalRowChanges to limit query size.
+        guard threadsToLoad.count <= UIDatabaseObserver.kMaxIncrementalRowChanges else {
+            return try loadWithoutCache()
+        }
+        if !threadsToLoad.isEmpty {
+            let loadedThreads = try threadFinder.threads(withThreadIds: threadsToLoad, transaction: transaction)
+            guard loadedThreads.count == threadsToLoad.count else {
+                owsFailDebug("Loading threads failed.")
+                return try loadWithoutCache()
+            }
+            for thread in loadedThreads {
+                threadIdToModelMap[thread.uniqueId] = thread
+            }
+        }
+        guard threadIds.count == threadIdToModelMap.count else {
+            owsFailDebug("Missing threads.")
+            return try loadWithoutCache()
+        }
+
+        // 4. Build the ordered list of threads.
+        var threads = [TSThread]()
+        for threadId in threadIds {
+            guard let thread = threadIdToModelMap[threadId] else {
+                owsFailDebug("Couldn't read thread: \(threadId)")
+                return try loadWithoutCache()
+            }
+            threads.append(thread)
+        }
+        return threads
     }
 
     @objc
@@ -318,6 +390,8 @@ class ThreadMapping: NSObject {
         }
         // Once the moves are complete, the new ordering should be correct.
         guard newThreadIds == naiveThreadIdOrdering else {
+            Logger.verbose("newThreadIds: \(newThreadIds)")
+            Logger.verbose("naiveThreadIdOrdering: \(naiveThreadIdOrdering)")
             throw OWSAssertionError("Could not reorder contents.")
         }
 

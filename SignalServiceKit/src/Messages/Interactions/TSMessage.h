@@ -2,7 +2,9 @@
 //  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
+#import "OWSContact.h"
 #import "TSInteraction.h"
+#import "TSQuotedMessage.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -12,7 +14,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class GRDBReadTransaction;
 @class MessageSticker;
-@class OWSContact;
 @class OWSLinkPreview;
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
