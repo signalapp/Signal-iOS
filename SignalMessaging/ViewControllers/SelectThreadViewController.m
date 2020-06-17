@@ -29,7 +29,7 @@ NS_ASSUME_NONNULL_BEGIN
     ContactsViewHelperDelegate,
     UISearchBarDelegate,
     FindByPhoneNumberDelegate,
-    SDSDatabaseStorageObserver>
+    UIDatabaseSnapshotDelegate>
 
 @property (nonatomic, readonly) ContactsViewHelper *contactsViewHelper;
 @property (nonatomic, readonly) FullTextSearcher *fullTextSearcher;
@@ -70,7 +70,7 @@ NS_ASSUME_NONNULL_BEGIN
     _threadViewHelper = [ThreadViewHelper new];
     _threadViewHelper.delegate = self;
 
-    [self.databaseStorage addDatabaseStorageObserver:self];
+    [self.databaseStorage appendUIDatabaseSnapshotDelegate:self];
 
     [self createViews];
 
@@ -111,9 +111,27 @@ NS_ASSUME_NONNULL_BEGIN
     self.tableViewController.tableView.estimatedRowHeight = 60;
 }
 
-#pragma mark - SDSDatabaseStorageObserver
+#pragma mark - UIDatabaseSnapshotDelegate
 
-- (void)databaseStorageDidUpdateWithChange:(SDSDatabaseStorageChange *)change
+- (void)uiDatabaseSnapshotWillUpdate
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(AppReadiness.isAppReady);
+}
+
+- (void)uiDatabaseSnapshotDidUpdateWithDatabaseChanges:(id<UIDatabaseChanges>)databaseChanges
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(AppReadiness.isAppReady);
+
+    if (![databaseChanges didUpdateModelWithCollection:TSThread.collection]) {
+        return;
+    }
+
+    [self updateTableContents];
+}
+
+- (void)uiDatabaseSnapshotDidUpdateExternally
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(AppReadiness.isAppReady);
@@ -121,15 +139,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self updateTableContents];
 }
 
-- (void)databaseStorageDidUpdateExternally
-{
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug(AppReadiness.isAppReady);
-
-    [self updateTableContents];
-}
-
-- (void)databaseStorageDidReset
+- (void)uiDatabaseSnapshotDidReset
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(AppReadiness.isAppReady);

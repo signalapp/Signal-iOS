@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import XCTest
@@ -51,7 +51,7 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
 
         let dbObserver = BlockObserver(block: { [weak self] in self?.dbObserverBlock?() })
         self.dbObserver = dbObserver
-        databaseStorage.add(databaseStorageObserver: dbObserver)
+        databaseStorage.appendUIDatabaseSnapshotDelegate(dbObserver)
     }
 
     override func tearDown() {
@@ -118,7 +118,7 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
             let messageCount = self.databaseStorage.read { transaction in
                 return TSInteraction.anyCount(transaction: transaction)
             }
-            if (messageCount == envelopeDatas.count) {
+            if messageCount == envelopeDatas.count {
                 fulfillOnce()
             }
         }
@@ -143,21 +143,25 @@ class MessageProcessingPerformanceTest: PerformanceBaseTest {
     }
 }
 
-private class BlockObserver: SDSDatabaseStorageObserver {
+private class BlockObserver: UIDatabaseSnapshotDelegate {
     let block: () -> Void
     init(block: @escaping () -> Void) {
         self.block = block
     }
 
-    func databaseStorageDidUpdate(change: SDSDatabaseStorageChange) {
+    func uiDatabaseSnapshotWillUpdate() {
+        AssertIsOnMainThread()
+    }
+
+    func uiDatabaseSnapshotDidUpdate(databaseChanges: UIDatabaseChanges) {
         block()
     }
 
-    func databaseStorageDidUpdateExternally() {
+    func uiDatabaseSnapshotDidUpdateExternally() {
         block()
     }
 
-    func databaseStorageDidReset() {
+    func uiDatabaseSnapshotDidReset() {
         block()
     }
 }

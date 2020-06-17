@@ -111,18 +111,6 @@ public class GRDBDatabaseStorageAdapter: NSObject {
     public private(set) var uiDatabaseObserver: UIDatabaseObserver?
 
     @objc
-    public private(set) var conversationListDatabaseObserver: ConversationListDatabaseObserver?
-
-    @objc
-    public private(set) var conversationViewDatabaseObserver: ConversationViewDatabaseObserver?
-
-    @objc
-    public private(set) var mediaGalleryDatabaseObserver: MediaGalleryDatabaseObserver?
-
-    @objc
-    public private(set) var genericDatabaseObserver: GRDBGenericDatabaseObserver?
-
-    @objc
     public func setupUIDatabase() throws {
         // UIDatabaseObserver is a general purpose observer, whose delegates
         // are notified when things change, but are not given any specific details
@@ -131,36 +119,9 @@ public class GRDBDatabaseStorageAdapter: NSObject {
                                                         checkpointingQueue: storage.checkpointingQueue)
         self.uiDatabaseObserver = uiDatabaseObserver
 
-        // ConversationListDatabaseObserver is built on top of UIDatabaseObserver
-        // but includes the details necessary for rendering collection view
-        // batch updates.
-        let conversationListDatabaseObserver = ConversationListDatabaseObserver()
-        self.conversationListDatabaseObserver = conversationListDatabaseObserver
-        uiDatabaseObserver.appendSnapshotDelegate(conversationListDatabaseObserver)
-
-        // ConversationViewDatabaseObserver is built on top of UIDatabaseObserver
-        // but includes the details necessary for rendering collection view
-        // batch updates.
-        let conversationViewDatabaseObserver = ConversationViewDatabaseObserver()
-        self.conversationViewDatabaseObserver = conversationViewDatabaseObserver
-        uiDatabaseObserver.appendSnapshotDelegate(conversationViewDatabaseObserver)
-
-        // MediaGalleryDatabaseObserver is built on top of UIDatabaseObserver
-        // but includes the details necessary for rendering collection view
-        // batch updates.
-        let mediaGalleryDatabaseObserver = MediaGalleryDatabaseObserver()
-        self.mediaGalleryDatabaseObserver = mediaGalleryDatabaseObserver
-        uiDatabaseObserver.appendSnapshotDelegate(mediaGalleryDatabaseObserver)
-
-        let genericDatabaseObserver = GRDBGenericDatabaseObserver()
-        self.genericDatabaseObserver = genericDatabaseObserver
-        uiDatabaseObserver.appendSnapshotDelegate(genericDatabaseObserver)
-
         try pool.write { db in
             db.add(transactionObserver: uiDatabaseObserver, extent: Database.TransactionObservationExtent.observerLifetime)
         }
-
-        SDSDatabaseStorage.shared.observation.set(grdbStorage: self)
     }
 
     func testing_tearDownUIDatabase() {
@@ -168,10 +129,6 @@ public class GRDBDatabaseStorageAdapter: NSObject {
         // are notified when things change, but are not given any specific details
         // about the changes.
         self.uiDatabaseObserver = nil
-        self.conversationListDatabaseObserver = nil
-        self.conversationViewDatabaseObserver = nil
-        self.mediaGalleryDatabaseObserver = nil
-        self.genericDatabaseObserver = nil
     }
 
     func setup() throws {

@@ -247,11 +247,7 @@ class MediaGallery {
             owsFailDebug("Invalid data store.")
             return
         }
-        guard let mediaGalleryDatabaseObserver = databaseStorage.grdbStorage.mediaGalleryDatabaseObserver else {
-            owsFailDebug("observer was unexpectedly nil")
-            return
-        }
-        mediaGalleryDatabaseObserver.appendSnapshotDelegate(self)
+        databaseStorage.appendUIDatabaseSnapshotDelegate(self)
     }
 
     // MARK: - 
@@ -680,23 +676,25 @@ class MediaGallery {
     }
 }
 
-extension MediaGallery: MediaGalleryDatabaseSnapshotDelegate {
-    func mediaGalleryDatabaseSnapshotWillUpdate() {
+extension MediaGallery: UIDatabaseSnapshotDelegate {
+
+    func uiDatabaseSnapshotWillUpdate() {
         // no-op
     }
 
-    func mediaGalleryDatabaseSnapshotDidUpdate(deletedAttachmentIds: Set<String>) {
+    func uiDatabaseSnapshotDidUpdate(databaseChanges: UIDatabaseChanges) {
+        let deletedAttachmentIds = databaseChanges.attachmentDeletedUniqueIds
         guard deletedAttachmentIds.count > 0 else {
             return
         }
         process(deletedAttachmentIds: Array(deletedAttachmentIds))
     }
 
-    func mediaGalleryDatabaseSnapshotDidUpdateExternally() {
+    func uiDatabaseSnapshotDidUpdateExternally() {
         // no-op
     }
 
-    func mediaGalleryDatabaseSnapshotDidReset() {
+    func uiDatabaseSnapshotDidReset() {
         // no-op
     }
 }

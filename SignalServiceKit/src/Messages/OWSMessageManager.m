@@ -53,7 +53,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSMessageManager () <SDSDatabaseStorageObserver>
+@interface OWSMessageManager () <UIDatabaseSnapshotDelegate>
 
 // This should only be accessed while synchronized on self.
 @property (nonatomic, readonly) NSMutableSet<NSString *> *groupInfoRequestSet;
@@ -181,7 +181,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)startObserving
 {
-    [self.databaseStorage addDatabaseStorageObserver:self];
+    [self.databaseStorage appendUIDatabaseSnapshotDelegate:self];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(databaseDidCommitInteractionChange)
@@ -204,21 +204,27 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-#pragma mark - SDSDatabaseStorageObserver
+#pragma mark - UIDatabaseSnapshotDelegate
 
-- (void)databaseStorageDidUpdateWithChange:(SDSDatabaseStorageChange *)change
+- (void)uiDatabaseSnapshotWillUpdate
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(AppReadiness.isAppReady);
+}
+
+- (void)uiDatabaseSnapshotDidUpdateWithDatabaseChanges:(id<UIDatabaseChanges>)databaseChanges
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(AppReadiness.isAppReady);
 
-    if (!change.didUpdateInteractions) {
+    if (!databaseChanges.didUpdateInteractions) {
         return;
     }
 
     [OWSMessageUtils.sharedManager updateApplicationBadgeCount];
 }
 
-- (void)databaseStorageDidUpdateExternally
+- (void)uiDatabaseSnapshotDidUpdateExternally
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(AppReadiness.isAppReady);
@@ -226,7 +232,7 @@ NS_ASSUME_NONNULL_BEGIN
     [OWSMessageUtils.sharedManager updateApplicationBadgeCount];
 }
 
-- (void)databaseStorageDidReset
+- (void)uiDatabaseSnapshotDidReset
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(AppReadiness.isAppReady);

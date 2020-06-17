@@ -151,7 +151,7 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
 //   _Never_ open a transaction within a @synchronized(self) block.
 // * If you update any account state in the database, reload the cache
 //   immediately.
-@interface TSAccountManager () <SDSDatabaseStorageObserver>
+@interface TSAccountManager () <UIDatabaseSnapshotDelegate>
 
 // This property should only be accessed while @synchronized on self.
 //
@@ -184,7 +184,7 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
 
     [AppReadiness runNowOrWhenAppDidBecomeReady:^{
         if (!CurrentAppContext().isMainApp) {
-            [self.databaseStorage addDatabaseStorageObserver:self];
+            [self.databaseStorage appendUIDatabaseSnapshotDelegate:self];
         }
     }];
     [AppReadiness runNowOrWhenAppDidBecomeReadyPolite:^{
@@ -972,9 +972,15 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
                                                            userInfo:nil];
 }
 
-#pragma mark - SDSDatabaseStorageObserver
+#pragma mark - UIDatabaseSnapshotDelegate
 
-- (void)databaseStorageDidUpdateWithChange:(SDSDatabaseStorageChange *)change
+- (void)uiDatabaseSnapshotWillUpdate
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(AppReadiness.isAppReady);
+}
+
+- (void)uiDatabaseSnapshotDidUpdateWithDatabaseChanges:(id<UIDatabaseChanges>)databaseChanges
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(AppReadiness.isAppReady);
@@ -982,7 +988,7 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
     // Do nothing.
 }
 
-- (void)databaseStorageDidUpdateExternally
+- (void)uiDatabaseSnapshotDidUpdateExternally
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(AppReadiness.isAppReady);
@@ -995,7 +1001,7 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
     [self loadAccountStateWithSneakyTransaction];
 }
 
-- (void)databaseStorageDidReset
+- (void)uiDatabaseSnapshotDidReset
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(AppReadiness.isAppReady);

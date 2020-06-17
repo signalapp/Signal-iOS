@@ -112,7 +112,7 @@ class MessageDetailViewController: OWSViewController {
 
         self.view.layoutIfNeeded()
 
-        databaseStorage.add(databaseStorageObserver: self)
+        databaseStorage.appendUIDatabaseSnapshotDelegate(self)
     }
 
     override public func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
@@ -888,24 +888,29 @@ private extension MediaPresentationContext {
 
 // MARK: -
 
-extension MessageDetailViewController: SDSDatabaseStorageObserver {
-    func databaseStorageDidUpdate(change: SDSDatabaseStorageChange) {
+extension MessageDetailViewController: UIDatabaseSnapshotDelegate {
+
+    func uiDatabaseSnapshotWillUpdate() {
+        AssertIsOnMainThread()
+    }
+
+    func uiDatabaseSnapshotDidUpdate(databaseChanges: UIDatabaseChanges) {
         AssertIsOnMainThread()
 
-        guard change.didUpdate(interaction: self.message) else {
+        guard databaseChanges.didUpdate(interaction: self.message) else {
             return
         }
 
         refreshContentForDatabaseUpdate()
     }
 
-    func databaseStorageDidUpdateExternally() {
+    func uiDatabaseSnapshotDidUpdateExternally() {
         AssertIsOnMainThread()
 
         refreshContentForDatabaseUpdate()
     }
 
-    func databaseStorageDidReset() {
+    func uiDatabaseSnapshotDidReset() {
         AssertIsOnMainThread()
 
         refreshContentForDatabaseUpdate()

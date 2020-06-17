@@ -115,7 +115,7 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
             owsFailDebug("observer was unexpectedly nil")
             return
         }
-        observer.appendSnapshotDelegate(snapshotDelegate)
+        observer.appendUIDatabaseSnapshotDelegate(snapshotDelegate)
 
         let envelopeBuilder = try! fakeService.envelopeBuilder(fromSenderClient: bobClient, bodyText: "Those who stands for nothing will fall for anything")
         envelopeBuilder.setSourceE164(bobClient.e164Identifier!)
@@ -172,7 +172,7 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
             owsFailDebug("observer was unexpectedly nil")
             return
         }
-        observer.appendSnapshotDelegate(snapshotDelegate)
+        observer.appendUIDatabaseSnapshotDelegate(snapshotDelegate)
 
         let envelopeBuilder = try! fakeService.envelopeBuilder(fromSenderClient: bobClient, bodyText: "Those who stands for nothing will fall for anything")
         envelopeBuilder.setSourceUuid(bobClient.uuidIdentifier)
