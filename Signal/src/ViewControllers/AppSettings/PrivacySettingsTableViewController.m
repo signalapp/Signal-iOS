@@ -4,7 +4,6 @@
 
 #import "PrivacySettingsTableViewController.h"
 #import "BlockListViewController.h"
-#import "OWS2FASettingsViewController.h"
 #import "Signal-Swift.h"
 #import <SignalCoreKit/NSString+OWS.h>
 #import <SignalMessaging/Environment.h>
@@ -146,8 +145,8 @@ NS_ASSUME_NONNULL_BEGIN
                     selector:@selector(didToggleTypingIndicatorsSwitch:)]];
     [contents addSection:typingIndicatorsSection];
 
-    // If pins are enabled for everyone, show the change pin and regloock sections
-    if (RemoteConfig.pinsForEveryone && self.accountManager.isRegisteredPrimaryDevice) {
+    // Show the change pin and reglock sections
+    if (self.accountManager.isRegisteredPrimaryDevice) {
         OWSTableSection *pinsSection = [OWSTableSection new];
         pinsSection.headerTitle
             = NSLocalizedString(@"SETTINGS_PINS_TITLE", @"Title for the 'PINs' section of the privacy settings.");
@@ -327,30 +326,6 @@ NS_ASSUME_NONNULL_BEGIN
                 @"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION", @"Settings table section footer.");
             [contents addSection:callKitSection];
         }
-    }
-
-    // If pins are enabled for everyone, everyone has registration lock so we don't need this section
-    // TODO Linked PIN editing
-    if (!RemoteConfig.pinsForEveryone && self.accountManager.isRegisteredPrimaryDevice) {
-        OWSTableSection *twoFactorAuthSection = [OWSTableSection new];
-        twoFactorAuthSection.headerTitle = NSLocalizedString(
-            @"SETTINGS_TWO_FACTOR_AUTH_TITLE", @"Title for the 'two factor auth' section of the privacy settings.");
-        [twoFactorAuthSection
-            addItem:[OWSTableItem
-                        disclosureItemWithText:NSLocalizedString(@"SETTINGS_TWO_FACTOR_AUTH_ITEM",
-                                                   @"Label for the 'two factor auth' item of the privacy settings.")
-                                    detailText:([OWS2FAManager.sharedManager is2FAEnabled]
-                                                       ? NSLocalizedString(@"SETTINGS_TWO_FACTOR_AUTH_ENABLED",
-                                                           @"Indicates that 'two factor auth' is enabled in the "
-                                                           @"privacy settings.")
-                                                       : NSLocalizedString(@"SETTINGS_TWO_FACTOR_AUTH_DISABLED",
-                                                           @"Indicates that 'two factor auth' is disabled in the "
-                                                           @"privacy settings."))accessibilityIdentifier
-                                              :[NSString stringWithFormat:@"settings.privacy.%@", @"2fa"]
-                                   actionBlock:^{
-                                       [weakSelf show2FASettings];
-                                   }]];
-        [contents addSection:twoFactorAuthSection];
     }
 
     OWSTableSection *historyLogsSection = [OWSTableSection new];
@@ -577,15 +552,6 @@ NS_ASSUME_NONNULL_BEGIN
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
         [SSKPreferences setAreLinkPreviewsEnabledAndSendSyncMessage:sender.isOn transaction:transaction];
     });
-}
-
-- (void)show2FASettings
-{
-    OWSLogInfo(@"");
-
-    OWS2FASettingsViewController *vc = [OWS2FASettingsViewController new];
-    vc.mode = OWS2FASettingsMode_Status;
-    [self.navigationController pushViewController:vc animated:YES];
 }
 
 - (void)showChangePin

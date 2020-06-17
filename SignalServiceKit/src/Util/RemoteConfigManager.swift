@@ -17,33 +17,7 @@ public class RemoteConfig: NSObject {
     private let config: [String: Bool]
 
     @objc
-    public static var pinsForEveryone: Bool {
-        // If we've turned off the KBS feature we don't want to present the
-        // pins for everyone migration even if this user is in the bucket.
-        guard kbs else { return false }
-        // If you've setup a PIN, you have a PIN, regardless of the FF status
-        if KeyBackupService.hasMasterKey { return true }
-        return isEnabled(.pinsForEveryone) || isEnabled(.pinsForEveryoneV2)
-    }
-
-    @objc
-    public static var mandatoryPins: Bool {
-        guard pinsForEveryone else { return false }
-        return isEnabled(.mandatoryPins)
-    }
-
-    @objc
-    public static var profileNameReminder: Bool {
-        return isEnabled(.profileNameReminder)
-    }
-
-    @objc
-    public static var messageRequests: Bool {
-        guard !DebugFlags.forceMessageRequests else {
-            return true
-        }
-        return isEnabled(.messageRequests)
-    }
+    public static var mandatoryPins: Bool { isEnabled(.mandatoryPins) }
 
     @objc
     public static var kbs: Bool {
@@ -61,8 +35,8 @@ public class RemoteConfig: NSObject {
     }
 
     @objc
-    public static var groupsV2IncomingMessages: Bool {
-        guard FeatureFlags.groupsV2IncomingMessages else { return false }
+    public static var groupsV2GoodCitizen: Bool {
+        guard FeatureFlags.groupsV2GoodCitizen else { return false }
         if DebugFlags.groupsV2IgnoreServerFlags { return true }
         return isEnabled(.groupsV2GoodCitizen)
     }
@@ -91,8 +65,7 @@ private struct Flags {
     // Values defined in this array remain forever true once they are
     // marked true regardless of the remote state.
     enum Sticky: String, FlagType {
-        case pinsForEveryone
-        case pinsForEveryoneV2
+        case groupsV2GoodCitizen
     }
 
     // We filter the received config down to just the supported flags.
@@ -101,12 +74,8 @@ private struct Flags {
     // a sticky flag to 100% in beta then turn it back to 0% before going
     // to production.
     enum Supported: String, FlagType {
-        case pinsForEveryone
-        case pinsForEveryoneV2
         case kbs
-        case profileNameReminder
         case mandatoryPins
-        case messageRequests
         case groupsV2CreateGroups
         case groupsV2GoodCitizen
         case deleteForEveryone
@@ -207,41 +176,8 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
         }) {
             Logger.info("loaded stored config: \(storedConfig)")
             self.cachedConfig = RemoteConfig(storedConfig)
-            do {
-                try ensureMessageRequestInteractionIdEpochState()
-            } catch {
-                owsFailDebug("error: \(error)")
-            }
         } else {
             Logger.info("no stored remote config")
-        }
-    }
-
-    func ensureMessageRequestInteractionIdEpochState() throws {
-        guard cachedConfig != nil else {
-            owsFailDebug("cachedConfig was unexpectedly nil")
-            return
-        }
-
-        let hasEpoch = try grdbStorage.read { SSKPreferences.messageRequestInteractionIdEpoch(transaction: $0) } != nil
-
-        if RemoteConfig.messageRequests {
-            guard hasEpoch else {
-                databaseStorage.write { transaction in
-                    let maxId = GRDBInteractionFinder.maxRowId(transaction: transaction.unwrapGrdbWrite)
-                    SSKPreferences.setMessageRequestInteractionIdEpoch(maxId, transaction: transaction.unwrapGrdbWrite)
-                }
-                return
-            }
-        } else {
-            guard !hasEpoch else {
-                // Possible the flag was toggled on and then back off. We want to clear the recorded
-                // epoch so it can be reset the *next* time the flag is toggled back on.
-                databaseStorage.write {
-                    SSKPreferences.setMessageRequestInteractionIdEpoch(nil, transaction: $0.unwrapGrdbWrite)
-                }
-                return
-            }
         }
     }
 

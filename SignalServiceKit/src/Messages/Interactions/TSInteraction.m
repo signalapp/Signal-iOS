@@ -29,8 +29,6 @@ NSString *NSStringFromOWSInteractionType(OWSInteractionType value)
             return @"OWSInteractionType_ThreadDetails";
         case OWSInteractionType_TypingIndicator:
             return @"OWSInteractionType_TypingIndicator";
-        case OWSInteractionType_Offer:
-            return @"OWSInteractionType_Offer";
         case OWSInteractionType_UnreadIndicator:
             return @"OWSInteractionType_UnreadIndicator";
         case OWSInteractionType_DateHeader:

@@ -571,14 +571,6 @@ NSString *const kProfileView_LastPresentedDate = @"kProfileView_LastPresentedDat
                           .then(^{
                               [modalActivityIndicator dismissWithCompletion:^{
                                   [weakSelf updateProfileCompleted];
-
-                                  // Clear the profile name experience upgrade if the user edits their profile name,
-                                  // even if they didn't dismiss the reminder directly.
-                                  DatabaseStorageAsyncWrite(
-                                      SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *transaction) {
-                                          [ExperienceUpgradeManager
-                                              clearProfileNameReminderWithTransaction:transaction.unwrapGrdbWrite];
-                                      });
                               }];
                           })
                           .catch(^(NSError *error) {

@@ -400,7 +400,7 @@ typedef void (^AttachmentDownloadFailure)(NSError *error);
                 // If the message that created this attachment was the first message in the
                 // thread, the thread may not yet be marked visible. In that case, just check
                 // if the thread is whitelisted. We know we just received a message.
-                if (!thread.shouldThreadBeVisible && RemoteConfig.messageRequests) {
+                if (!thread.shouldThreadBeVisible) {
                     hasPendingMessageRequest = ![self.profileManager isThreadInProfileWhitelist:thread
                                                                                     transaction:transaction];
                 } else {

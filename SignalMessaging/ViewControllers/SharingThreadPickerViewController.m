@@ -371,15 +371,12 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
         OWSAssertIsOnMainThread();
         // TODO - in line with QuotedReply and other message attachments, saving should happen as part of sending
         // preparation rather than duplicated here and in the SAE
-        DatabaseStorageAsyncWriteWithCompletion(
-            SDSDatabaseStorage.shared,
-            ^(SDSAnyWriteTransaction *transaction) {
-                if (contactShare.avatarImage) {
-                    [contactShare.dbRecord saveAvatarImage:contactShare.avatarImage transaction:transaction];
-                }
-            },
-            // Completion:
-            ^{
+        DatabaseStorageAsyncWrite(SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *transaction) {
+            if (contactShare.avatarImage) {
+                [contactShare.dbRecord saveAvatarImage:contactShare.avatarImage transaction:transaction];
+            }
+
+            [transaction addAsyncCompletion:^{
                 __block TSOutgoingMessage *outgoingMessage = nil;
                 outgoingMessage = [ThreadUtil sendMessageNonDurablyWithContactShare:contactShare.dbRecord
                                                                              thread:self.thread
@@ -388,9 +385,8 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
                                                                          }];
                 // This is necessary to show progress.
                 self.outgoingMessage = outgoingMessage;
-            });
-        
-        
+            }];
+        });
     }
                  fromViewController:approvalViewController];
 }
@@ -577,9 +573,8 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
 
     OWSLogDebug(@"Confirming identity for recipient: %@", address);
 
-    DatabaseStorageAsyncWriteWithCompletion(
-        SDSDatabaseStorage.shared,
-        ^(SDSAnyWriteTransaction *transaction) {
+    DatabaseStorageAsyncWrite(
+        SDSDatabaseStorage.shared, ^(SDSAnyWriteTransaction *transaction) {
             OWSVerificationState verificationState =
                 [[OWSIdentityManager sharedManager] verificationStateForAddress:address transaction:transaction];
             switch (verificationState) {
@@ -609,10 +604,10 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
                     break;
                 }
             }
-        },
-        // Completion:
-        ^{
-            [self resendMessage:message fromViewController:fromViewController];
+
+            [transaction addAsyncCompletion:^{
+                [self resendMessage:message fromViewController:fromViewController];
+            }];
         });
 }
 

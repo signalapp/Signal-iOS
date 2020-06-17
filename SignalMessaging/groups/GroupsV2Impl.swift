@@ -256,6 +256,10 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
     // We do those things here as well, to DRY them up and to ensure they're always
     // done immediately and in a consistent way.
     public func updateExistingGroupOnService(changeSet: GroupsV2ChangeSet) -> Promise<TSGroupThread> {
+        guard RemoteConfig.groupsV2GoodCitizen else {
+            return Promise(error: GroupsV2Error.gv2NotEnabled)
+        }
+
         let groupId = changeSet.groupId
         let groupSecretParamsData = changeSet.groupSecretParamsData
         let groupV2Params: GroupV2Params
@@ -952,6 +956,10 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
     // MARK: - ProfileKeyCredentials
 
     public func loadProfileKeyCredentialData(for uuids: [UUID]) -> Promise<ProfileKeyCredentialMap> {
+        
+        guard RemoteConfig.groupsV2GoodCitizen else {
+            return Promise(error: GroupsV2Error.gv2NotEnabled)
+        }
 
         // 1. Use known credentials, where possible.
         var credentialMap = ProfileKeyCredentialMap()

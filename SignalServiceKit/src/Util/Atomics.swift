@@ -99,7 +99,9 @@ public class AtomicValue<T> {
         }
     }
 
-    fileprivate func map(_ block: @escaping (T) -> T) -> T {
+    // Transform the current value using a block.
+    @discardableResult
+    public func map(_ block: @escaping (T) -> T) -> T {
         return serialQueue.sync {
             let newValue = block(self.value)
             self.value = newValue

@@ -404,7 +404,7 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
             return
         }
         guard RemoteConfig.groupsV2CreateGroups ||
-            RemoteConfig.groupsV2IncomingMessages else {
+            RemoteConfig.groupsV2GoodCitizen else {
                 return
         }
         guard groupMemberViewDelegate.shouldTryToEnableGroupsV2ForMembers else {
@@ -430,7 +430,7 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
             return AnyPromise(Promise.value(()))
         }
         guard RemoteConfig.groupsV2CreateGroups ||
-            RemoteConfig.groupsV2IncomingMessages else {
+            RemoteConfig.groupsV2GoodCitizen else {
                 return AnyPromise(Promise.value(()))
         }
         guard groupMemberViewDelegate.shouldTryToEnableGroupsV2ForMembers else {

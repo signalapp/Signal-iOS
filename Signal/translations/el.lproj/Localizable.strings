@@ -419,12 +419,6 @@
 /* Alert body after unblocking a group. */
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "Τα υπάρχοντα μέλη μπορούν να σε ξαναπροσθέσουν στην ομάδα.";
 
-/* Action sheet that will block an unknown user. */
-"BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION" = "Φραγή";
-
-/* Title format for action sheet that offers to block an unknown user.Embeds {{the unknown user's name or phone number}}. */
-"BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "Φραγή του/της %@;";
-
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Οι φραγμένοι χρήστες δεν θα μπορούν να σε καλέσουν ή να σου στείλουν μηνύματα.";
 
@@ -944,12 +938,6 @@
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Αυτός ο/η χρήστης/τρια είναι στις επαφές σου";
 
-/* Indicates that user's profile has been shared with a group. */
-"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "Η ομάδα μπορεί να δει το προφίλ σου.";
-
-/* Indicates that user's profile has been shared with a user. */
-"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER" = "Ο χρήστης μπορεί να δει το προφίλ σου.";
-
 /* Button to confirm that user wants to share their profile with a user or group. */
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "Κοινοποίηση προφίλ";
 
@@ -962,12 +950,6 @@
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Προσθήκη στις επαφές";
 
-/* Message shown in conversation view that offers to share your profile with a user. */
-"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Κοινοποίηση του προφίλ σου με αυτόν τον/την χρήστη";
-
-/* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
-"CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "Αυτός ο/η χρήστης/τρια δεν είναι στις επαφές σου.";
-
 /* button text to delete all items in the current conversation */
 "CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Διαγραφή όλων";
 
@@ -976,9 +958,6 @@
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "Πάτα για περισσότερα";
-
-/* Message shown in conversation view that offers to block an unknown user. */
-"CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "Φραγή αυτού του/της χρήστη/τριας";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "Η επαναφορά της συνεδρίας θα επιτρέψει τη λήψη μελλοντικών μηνυμάτων από τον/την %@, αλλά δεν θα ανακτήσει τα ήδη κατεστραμμένα μηνύματα.";
@@ -1277,44 +1256,8 @@
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "Θες να προσκαλέσεις κάποιον/α;";
 
-/* Indicates that user should confirm their 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "Επιβεβαίωσε το PIN σου.";
-
-/* Error indicating that attempt to disable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "Αδυναμία απενεργοποίησης του κλειδώματος εγγραφής.";
-
 /* Error indicating that attempt to enable 'two-factor auth' failed. */
 "ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "Αδυναμία ενεργοποίησης του κλειδώματος εγγραφής.";
-
-/* Label for the 'enable two-factor auth' item in the settings view */
-"ENABLE_2FA_VIEW_DISABLE_2FA" = "Απενεργοποίηση";
-
-/* Label for the 'enable two-factor auth' item in the settings view */
-"ENABLE_2FA_VIEW_ENABLE_2FA" = "Ενεργοποίηση";
-
-/* Label for the 'next' button in the 'enable two factor auth' views. */
-"ENABLE_2FA_VIEW_NEXT_BUTTON" = "Επόμενο";
-
-/* Error indicating that the entered 'two-factor auth PINs' do not match. */
-"ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "Τα PIN δεν ταιριάζουν.";
-
-/* Error indicating that the entered 'two-factor auth PIN' is too long. */
-"ENABLE_2FA_VIEW_PIN_TOO_LONG" = "Το ΡΙΝ δεν μπορεί να υπερβαίνει τα 20 ψηφία.";
-
-/* Error indicating that the entered 'two-factor auth PIN' is too short. */
-"ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "Το ΡΙΝ πρέπει να έχει τουλάχιστον 4 ψηφία.";
-
-/* Indicates that user should select a 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "Γράψε ένα PIN κλειδώματος εγγραφής. Θα σου ζητηθεί να εισάγεις αυτό το ΡΙΝ την επόμενη φορά που θα εγγράψεις αυτον τον αριθμό τηλεφώνου στο Signal.";
-
-/* Indicates that user has 'two factor auth pin' disabled. */
-"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "Για επιπλέον ασφάλεια, ενεργοποίησε το PIN κλειδώματος εγγραφής που θα χρειάζεται να γράψεις για να επανεγγράψεις αυτόν τον αριθμό τηλεφώνου στο Signal.";
-
-/* Indicates that user has 'two factor auth pin' enabled. */
-"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "Το κλείδωμα εγγραφής είναι ενεργοποιημένο. Θα χρειαστεί να γράψεις το PIN σου κατά την επανεγγραφή αυτού του αριθμού τηλεφώνου στο Signal.";
-
-/* Title for the 'enable two factor auth PIN' views. */
-"ENABLE_2FA_VIEW_TITLE" = "Κλείδωμα εγγραφής";
 
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "Κατειλλημένο";
@@ -2196,7 +2139,7 @@
 "MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Let %@ message you and share your name and photo with them? You won't receive any messages until you unblock them.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Unblock this group and share your name and photo with its members? You won't receive any messages until you unblock them.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Θέλεις να καταργηθεί η φραγή αυτής της ομάδας και να μοιραστεί το όνομα και η φωτογραφία σου με τα μέλη της; Δεν θα λάβεις κανένα μήνυμα μέχρι να καταργήσεις τη φραγή της.";
 
 /* incoming message request button text which deletes a conversation */
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Διαγραφή";
@@ -2270,17 +2213,11 @@
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "Ο/Η %@ δεν είναι πλέον σημειωμένος/η ως επιβεβαιωμένος/η. Πάτα για επιλογές.";
 
-/* Indicates that this 1:1 conversation has been blocked. */
-"MESSAGES_VIEW_CONTACT_BLOCKED" = "Έχεις βάλει φραγή σε αυτόν τον χρήστη";
-
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "Ο/Η %@ δεν είναι πλέον σημειωμένος/η ως επιβεβαιωμένος/η. Πάτα για επιλογές.";
 
 /* Indicates that a single member of this group has been blocked. */
 "MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "Έβαλες φραγή σε 1 μέλος της ομάδας";
-
-/* Indicates that this group conversation has been blocked. */
-"MESSAGES_VIEW_GROUP_BLOCKED" = "Έβαλες φραγή στην ομάδα";
 
 /* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
 "MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "Έβαλες φραγή σε %@ μέλη της ομάδας";
@@ -2903,24 +2840,6 @@
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "Συνέχεια";
 
-/* Action text for profile name reminder megaphone */
-"PROFILE_NAME_REMINDER_MEGAPHONE_ACTION" = "Ξεκίνησε";
-
-/* Body for profile name reminder megaphone when user already has a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_BODY" = "Το προφίλ σου μπορεί πλέον να περιέχει προαιρετικά και επώνυμο.";
-
-/* Title for profile name reminder megaphone when user already has a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_TITLE" = "Επαλήθευσε το όνομα προφίλ σου";
-
-/* Body for profile name reminder megaphone when user doesn't have a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "Θα εμφανίζεται όταν ξεκινάς μια νέα συνομιλία ή όταν το μοιράζεσαι.";
-
-/* Title for profile name reminder megaphone when user doesn't have a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_TITLE" = "Προσθήκη ονόματος προφίλ";
-
-/* Toast indicating that a PIN has been created. */
-"PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "Το όνομα προφίλ σου έχει αποθηκευθεί.";
-
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Set Profile Photo";
 
@@ -2955,7 +2874,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "Το προφίλ μπορεί να ενημερωθεί μόνο όταν υπάρχει σύνδεση στο διαδίκτυο.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your profile is end-to-end encrypted. It will be visible to your contacts, when you initiate or accept new conversations, and when you join new groups.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Το προφίλ σου είναι κρυπτογραφημένο από άκρο σε άκρο. Θα είναι ορατό στις επαφές σου, όταν ξεκινάς ή αποδέχεσαι νέες συνομιλές και όταν μπαίνεις σε νέες ομάδες.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Αποθήκευση";
@@ -3049,12 +2968,6 @@
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "Αντέδρασε με %@ στο μήνυμα φωνής σου";
-
-/* Body for the megaphone introducing reactions */
-"REACTION_MEGAPHONE_BODY" = "Πάτα παρατεταμένα οποιοδήποτε μήνυμα για να απαντήσεις γρήγορα με το πως νιώθεις.";
-
-/* Title for the megaphone introducing reactions */
-"REACTION_MEGAPHONE_TITLE" = "Υποδέξου τις αντιδράσεις";
 
 /* Text describing the local user in the reaction details pane. */
 "REACTIONS_DETAIL_YOU" = "Εσύ";
@@ -3163,24 +3076,6 @@
 
 /* No comment provided by engineer. */
 "RELAY_REGISTERED_ERROR_RECOVERY" = "Ο αριθμός που προσπαθείς να καταχωρήσεις έχει ήδη καταχωρηθεί σε κάποιον άλλον διακομιστή, παρακαλώ απεγγράψου από εκεί και δοκίμασε ξανά. ";
-
-/* Body text for when user is periodically prompted to enter their registration lock PIN */
-"REMINDER_2FA_BODY" = "Το κλείδωμα εγγραφής είναι ενεργοποιημένο για τον αριθμό τηλεφώνου σου. Για να σε βοηθήσουμε να απομνημονεύσεις το PIN κλειδώματος εγγραφής, το Signal θα σου ζητάει κάθε τόσο να το επιβεβαιώσεις.";
-
-/* Body header for when user is periodically prompted to enter their registration lock PIN */
-"REMINDER_2FA_BODY_HEADER" = "Υπενθύμιση:";
-
-/* Alert message explaining what happens if you forget your 'two-factor auth pin' */
-"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "Το κλείδωμα εγγραφής βοηθά στην προστασία του αριθμού τηλεφώνου σου από μη εξουσιοδοτημένες προσπάθειες εγγραφής. Αυτή η λειτουργία μπορεί να απενεργοποιηθεί ανά πάσα στιγμή μέσα από τις ρυθμίσεις απορρήτου του Signal.";
-
-/* Navbar title for when user is periodically prompted to enter their registration lock PIN */
-"REMINDER_2FA_NAV_TITLE" = "Γράψε το PIN κλειδώματος εγγραφής";
-
-/* Alert body after wrong guess for 'two-factor auth pin' reminder activity */
-"REMINDER_2FA_WRONG_PIN_ALERT_BODY" = "Μπορείς να ορίσεις νέο ΡΙΝ μέσα από τις ρυθμίσεις απορρήτου.";
-
-/* Alert title after wrong guess for 'two-factor auth pin' reminder activity */
-"REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "Αυτό δεν είναι το σωστό ΡΙΝ.";
 
 /* The title for the 'replace group admin' view. */
 "REPLACE_ADMIN_VIEW_TITLE" = "Επιλογή νέου διαχειριστή/τριας";
@@ -3758,20 +3653,8 @@
 /* No comment provided by engineer. */
 "SETTINGS_SUPPORT" = "Υποστήριξη";
 
-/* Indicates that 'two factor auth' is disabled in the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_DISABLED" = "Απενεργοποιημένο";
-
-/* Indicates that 'two factor auth' is enabled in the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_ENABLED" = "Ενεργοποιημένο";
-
-/* Label for the 'two factor auth' item of the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_ITEM" = "Κλείδωμα εγγραφής";
-
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "Κλείδωμα εγγραφής";
-
-/* Title for the 'two factor auth' section of the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_TITLE" = "Κλείδωμα εγγραφής";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
 "SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "Για επιπλέον ασφάλεια, ενεργοποίησε το κλείδωμα εγγραφής,  με το οποίο θα απαιτείται το Signal PIN για την επανεγγραφή του αριθμού τηλεφώνου σου με το Signal.";

@@ -1043,8 +1043,8 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
     NSString *_Nullable profileName = [self.profileManager fullNameForAddress:address transaction:transaction];
 
-    // We only include the profile name in the display name if the feature is enabled.
-    if (RemoteConfig.messageRequests && profileName.length > 0) {
+    // Include the profile name, if set
+    if (profileName.length > 0) {
         return profileName;
     }
 
@@ -1381,134 +1381,6 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 
     if (name.length < 1) {
         name = [self displayNameForAddress:signalAccount.recipientAddress transaction:transaction];
-    }
-
-    return name;
-}
-
-#pragma mark -
-
-- (NSString *)legacyDisplayNameForAddress:(SignalServiceAddress *)address
-{
-    OWSAssertDebug(address.isValid);
-
-    // Prefer a saved name from system contacts, if available
-    NSString *_Nullable savedContactName = [self cachedContactNameForAddress:address];
-    if (savedContactName.length > 0) {
-        return savedContactName;
-    }
-
-    __block NSString *_Nullable profileName;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        profileName = [self.profileManager fullNameForAddress:address transaction:transaction];
-    }];
-
-    if (profileName.length > 0) {
-        if (address.phoneNumber != nil) {
-            return [[address.stringForDisplay stringByAppendingString:@" ~"] stringByAppendingString:profileName];
-        } else {
-            return profileName;
-        }
-    }
-
-    // else fall back to phone number
-    if (address.phoneNumber != nil) {
-        return address.stringForDisplay;
-    } else {
-        return self.unknownUserLabel;
-    }
-}
-
-- (NSAttributedString *)attributedLegacyDisplayNameForAddress:(SignalServiceAddress *)address
-                                                  primaryFont:(UIFont *)primaryFont
-                                                secondaryFont:(UIFont *)secondaryFont
-{
-    OWSAssertDebug(primaryFont);
-    OWSAssertDebug(secondaryFont);
-
-    return [self attributedLegacyDisplayNameForAddress:address
-                                     primaryAttributes:@{
-                                         NSFontAttributeName : primaryFont,
-                                     }
-                                   secondaryAttributes:@{
-                                       NSFontAttributeName : secondaryFont,
-                                   }];
-}
-
-- (NSAttributedString *)attributedLegacyDisplayNameForAddress:(SignalServiceAddress *)address
-                                            primaryAttributes:(NSDictionary *)primaryAttributes
-                                          secondaryAttributes:(NSDictionary *)secondaryAttributes
-{
-    OWSAssertDebug(address.isValid);
-    OWSAssertDebug(primaryAttributes.count > 0);
-    OWSAssertDebug(secondaryAttributes.count > 0);
-
-    // Prefer a saved name from system contacts, if available
-    NSString *_Nullable savedContactName = [self cachedContactNameForAddress:address];
-    if (savedContactName.length > 0) {
-        return [[NSAttributedString alloc] initWithString:savedContactName attributes:primaryAttributes];
-    }
-
-    __block NSString *_Nullable profileName;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        profileName = [self.profileManager fullNameForAddress:address transaction:transaction];
-    }];
-
-    if (profileName.length > 0) {
-        NSMutableAttributedString *result = [NSMutableAttributedString new];
-        if (address.phoneNumber != nil) {
-            [result append:address.stringForDisplay attributes:primaryAttributes];
-            [result append:@" " attributes:primaryAttributes];
-        }
-        [result append:@"~" attributes:secondaryAttributes];
-        [result append:profileName attributes:secondaryAttributes];
-        return [result copy];
-    }
-
-    // else fall back to phone number
-    if (address.phoneNumber != nil) {
-        return [[NSAttributedString alloc] initWithString:address.stringForDisplay attributes:primaryAttributes];
-    } else {
-        return [[NSAttributedString alloc] initWithString:self.unknownUserLabel attributes:primaryAttributes];
-    }
-}
-
-- (nullable NSString *)formattedProfileNameForAddress:(SignalServiceAddress *)address
-{
-    __block NSString *_Nullable profileName;
-    [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-        profileName = [self formattedProfileNameForAddress:address transaction:transaction];
-    }];
-    return profileName;
-}
-
-- (nullable NSString *)formattedProfileNameForAddress:(SignalServiceAddress *)address
-                                          transaction:(SDSAnyReadTransaction *)transaction
-{
-    NSString *_Nullable profileName = [self.profileManager fullNameForAddress:address transaction:transaction];
-
-    if (profileName.length > 0) {
-        return [@"~" stringByAppendingString:profileName];
-    }
-
-    return nil;
-}
-
-- (nullable NSString *)contactOrProfileNameForAddress:(SignalServiceAddress *)address
-{
-    OWSAssertDebug(address.isValid);
-
-    NSString *_Nullable name = [self cachedContactNameForAddress:address];
-
-    if (name.length == 0) {
-        __block NSString *_Nullable profileName;
-        [self.databaseStorage readWithBlock:^(SDSAnyReadTransaction *transaction) {
-            profileName = [self.profileManager fullNameForAddress:address transaction:transaction];
-        }];
-
-        if (profileName.length > 0) {
-            name = profileName;
-        }
     }
 
     return name;

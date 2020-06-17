@@ -6,7 +6,6 @@
 #import "ConversationListViewController.h"
 #import "DebugLogger.h"
 #import "MainAppContext.h"
-#import "OWS2FASettingsViewController.h"
 #import "OWSBackup.h"
 #import "OWSOrphanDataCleaner.h"
 #import "OWSScreenLockUI.h"
@@ -723,22 +722,6 @@ void uncaughtExceptionHandler(NSException *exception)
                 // restart the app, so we check every activation for users who haven't yet registered.
                 [OWSSyncPushTokensJob runWithAccountManager:AppEnvironment.shared.accountManager
                                                 preferences:Environment.shared.preferences];
-            }
-
-            OnboardingController *onboardingController = [OnboardingController new];
-            if (onboardingController.isComplete && [OWS2FAManager sharedManager].isDueForV1Reminder) {
-                UIViewController *frontmostViewController = UIApplication.sharedApplication.frontmostViewController;
-                OWSAssertDebug(frontmostViewController);
-
-                UIViewController *reminderVC = [OWS2FAReminderViewController wrappedInNavController];
-                reminderVC.modalPresentationStyle = UIModalPresentationFullScreen;
-
-                if ([frontmostViewController isKindOfClass:[OWS2FAReminderViewController class]]) {
-                    // We're already presenting this
-                    return;
-                }
-
-                [frontmostViewController presentViewController:reminderVC animated:YES completion:nil];
             }
         });
     }

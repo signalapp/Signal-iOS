@@ -20,18 +20,4 @@ void __SDSTransactableAsyncWrite(
     [transactable __private_objc_asyncWriteWithFile:_file function:_function line:_line block:_block];
 }
 
-void __SDSTransactableAsyncWriteWithCompletion(SDSTransactable *transactable,
-    SDSWriteBlock _block,
-    SDSWriteCompletion _completion,
-    NSString *_file,
-    NSString *_function,
-    uint32_t _line)
-{
-    [transactable __private_objc_asyncWriteWithFile:_file
-                                           function:_function
-                                               line:_line
-                                              block:_block
-                                         completion:_completion];
-}
-
 #pragma clang diagnostic pop

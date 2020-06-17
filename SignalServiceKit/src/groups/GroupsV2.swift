@@ -17,6 +17,7 @@ public enum GroupsV2Error: Error {
     case conflictingChange
     case lastAdminCantLeaveGroup
     case tooManyMembers
+    case gv2NotEnabled
 }
 
 @objc

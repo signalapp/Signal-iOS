@@ -69,16 +69,16 @@
 "ADD_TO_CONTACTS_OFFER" = "നിങ്ങൾ ഈ യൂസറിനെ നിങ്ങളുടെ കോൺടാക്ടുകളിൽ ചേർക്കാൻ താത്‌പര്യപ്പെടുന്നോ?";
 
 /* Label for button or row which allows users to add to another group. */
-"ADD_TO_GROUP" = "Add to Another Group";
+"ADD_TO_GROUP" = "മറ്റൊരു ഗ്രൂപ്പിലേക്ക് ചേർക്കുക";
 
 /* The button on the 'add to group' confirmation to add the user to the group. */
-"ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "Add to Group";
+"ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "ഗ്രൂപ്പിലേക്ക് ചേർക്കുക";
 
 /* The title on the 'add to group' confirmation action sheet. Embeds {contact name} */
-"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "Add %@ to this group?";
+"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "%@-നെ ഗ്രൂപ്പിലേക്ക് ചേർക്കുക";
 
 /* The title on the 'add to group' confirmation action sheet. Embeds {group name} */
-"ADD_TO_GROUP_ACTION_SHEET_TITLE_FORMAT" = "Add to %@";
+"ADD_TO_GROUP_ACTION_SHEET_TITLE_FORMAT" = "%@-ലേക്ക് ചേർക്കുക";
 
 /* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
 "ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ is already a member of %@";
@@ -90,7 +90,7 @@
 "ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ was added to %@";
 
 /* Title of the 'add to group' view. */
-"ADD_TO_GROUP_TITLE" = "Add to Another Group";
+"ADD_TO_GROUP_TITLE" = "മറ്റൊരു ഗ്രൂപ്പിലേക്ക് ചേർക്കുക";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "നിങ്ങളുടെ പ്രൊഫൈൽ ഈ ഉപയോക്താവുമായി പങ്കുവയ്ക്കാൻ നിങ്ങൾ ‌താത്‌പര്യപ്പെടുന്നോ?";
@@ -419,17 +419,11 @@
 /* Alert body after unblocking a group. */
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "നിലവിലുള്ള അംഗങ്ങൾക്ക് ഇപ്പോൾ നിങ്ങളെ വീണ്ടും ഗ്രൂപ്പിൽ ചേർക്കാൻ കഴിയും.";
 
-/* Action sheet that will block an unknown user. */
-"BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION" = "ബ്ലോക്ക്";
-
-/* Title format for action sheet that offers to block an unknown user.Embeds {{the unknown user's name or phone number}}. */
-"BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = " %@നെ ബ്ലോക്ക് ചെയ്യണോ?";
-
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "ബ്ലോക്ക് ചെയ്യപ്പെറ്റ ഉപയോക്താക്കൾക്ക് നിങ്ങളെ വിളിക്കാനോ മെസേജുകൾ അയയ്ക്കാനോ കഴിയില്ല.";
 
 /* Tooltip highlighting the blur image editing tool. */
-"BLUR_TOOLTIP" = "New: Blur faces or draw anywhere to blur.";
+"BLUR_TOOLTIP" = "പുതിയത്: മുഖങ്ങൾ മങ്ങിക്കുക അല്ലെങ്കിൽ മങ്ങിക്കാൻ എവിടെയെങ്കിലും വരയ്ക്കുക";
 
 /* browse files option from file sharing menu */
 "BROWSE_FILES_BUTTON" = "ബ്രൌസ് ചെയ്യുക";
@@ -687,10 +681,10 @@
 "CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Tap “Go to Settings” below";
 
 /* Third step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "Turn on “Contacts”";
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "“കോൺ‌ടാക്റ്റുകൾ” ഓണാക്കുക";
 
 /* Title for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_TITLE" = "Turn on Contacts";
+"CONTACT_PERMISSION_ACTION_SHEET_TITLE" = "“കോൺ‌ടാക്റ്റുകൾ” ഓണാക്കുക";
 
 /* Snooze action text for contact permission reminder megaphone */
 "CONTACT_PERMISSION_NOT_NOW_ACTION" = "ഇപ്പോൾ വേണ്ട";
@@ -702,7 +696,7 @@
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "See contact names and photos in your conversations.";
 
 /* Title for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Turn on Contacts?";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "കോൺ‌ടാക്റ്റുകൾ ഓണാക്കണോ?";
 
 /* Label for a contact's phone number. */
 "CONTACT_PHONE" = "ഇമെ‌യിൽ അഡ്രസ്സ് ഇല്ല";
@@ -944,12 +938,6 @@
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "ഈ യൂസർ നിങ്ങളുടെ കോൺടാക്ടുകളിൽ ഉണ്ട്";
 
-/* Indicates that user's profile has been shared with a group. */
-"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "ഈ ഗ്രൂപ്പിന് നിങ്ങളുടെ പ്രൊഫൈൽ കാണാൻ സാധിക്കും.";
-
-/* Indicates that user's profile has been shared with a user. */
-"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER" = "ഈ യൂസറിന് നിങ്ങളുടെ പ്രൊഫൈൽ കാണാൻ സാധിക്കും.";
-
 /* Button to confirm that user wants to share their profile with a user or group. */
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "പ്രൊഫൈൽ പങ്കിടുക";
 
@@ -962,12 +950,6 @@
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "കോൺടാക്ടുകളിലേക്ക് ചേർക്കുക";
 
-/* Message shown in conversation view that offers to share your profile with a user. */
-"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "നിങ്ങളുടെ പ്രൊഫൈൽ ഈ യൂസറുമായി പങ്കിടുക";
-
-/* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
-"CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "ഈ യൂസർ നിങ്ങളുടെ കോൺടാക്ടുകളിൽ ഇല്ല.";
-
 /* button text to delete all items in the current conversation */
 "CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "എല്ലാം ഇല്ലാതാക്കുക";
 
@@ -976,9 +958,6 @@
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "കൂടുതൽ ലഭിക്കുന്നതിനായി ടാപ് ചെയ്യുക";
-
-/* Message shown in conversation view that offers to block an unknown user. */
-"CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "ഈ യൂസറെ ബ്ലോക്ക് ചെയ്യുക";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = " നിങ്ങളുടെ സെഷൻ റീസെറ്റ് ചെയ്യുന്നത് ഭാവിയിൽ %@ ൽ നിന്ന് സന്ദേശങ്ങൾ സ്വീകരിക്കാൻ നിങ്ങളെ അനുവദിക്കും, പക്ഷേ നേരത്തെ തന്നെ പിശക് സംഭവിച്ച സന്ദേശങ്ങൾ അത് വീണ്ടെടുക്കുകയില്ല.";
@@ -1206,7 +1185,7 @@
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "കോൺടാക്ട് വിവരങ്ങൾ എഡിറ്റ് ചെയ്യുന്നതിന് Signal ന് കോൺടാക്ട് അക്സസ് ആവശ്യമാണ്";
 
 /* The 'clear avatar' button in the 'edit group' view. */
-"EDIT_GROUP_CLEAR_AVATAR" = "Remove Photo";
+"EDIT_GROUP_CLEAR_AVATAR" = "ഫോട്ടോ ഇല്ലാതാക്കുക";
 
 /* a title for the contacts section of the 'new/update group' view. */
 "EDIT_GROUP_CONTACTS_SECTION_TITLE" = "കോൺടാക്ടുകൾ";
@@ -1221,7 +1200,7 @@
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "ഗ്രൂപ്പിൻ്റെ പരമാവധി സൈസ് ആയ 100 അംഗങ്ങൾ ആയിരിക്കുന്നു.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
-"EDIT_GROUP_ERROR_INVALID_AVATAR" = "Invalid photo.";
+"EDIT_GROUP_ERROR_INVALID_AVATAR" = "അസാധുവായ ഫോട്ടോ";
 
 /* Label for the group name in the 'edit group' view. */
 "EDIT_GROUP_GROUP_NAME" = "ഗ്രൂപ്പിൻ്റെ പേര്";
@@ -1277,44 +1256,8 @@
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "നിങ്ങൾ ആരെയും ക്ഷണിക്കാത്തതെന്തേ?";
 
-/* Indicates that user should confirm their 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "നിങ്ങളുടെ പിൻ സ്ഥിരീകരിക്കുക.";
-
-/* Error indicating that attempt to disable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "രജിസ്ട്രേഷൻ ലോക്ക് അപ്രാപ്തമാക്കാൻ സാധിച്ചില്ല.";
-
 /* Error indicating that attempt to enable 'two-factor auth' failed. */
 "ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "രജിസ്ട്രേഷൻ ലോക്ക്  പ്രാപ്തമാക്കാൻ സാധിച്ചില്ല.";
-
-/* Label for the 'enable two-factor auth' item in the settings view */
-"ENABLE_2FA_VIEW_DISABLE_2FA" = "പ്രവർത്തനരഹിതമാക്കുക";
-
-/* Label for the 'enable two-factor auth' item in the settings view */
-"ENABLE_2FA_VIEW_ENABLE_2FA" = "പ്രവർത്തനക്ഷമമാക്കുക";
-
-/* Label for the 'next' button in the 'enable two factor auth' views. */
-"ENABLE_2FA_VIEW_NEXT_BUTTON" = "അടുത്തത്";
-
-/* Error indicating that the entered 'two-factor auth PINs' do not match. */
-"ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "PIN പൊരുത്തപ്പെടുന്നില്ല. ";
-
-/* Error indicating that the entered 'two-factor auth PIN' is too long. */
-"ENABLE_2FA_VIEW_PIN_TOO_LONG" = "PIN 20 അക്കങ്ങളിൽ കൂടാൻ പാടില്ല.";
-
-/* Error indicating that the entered 'two-factor auth PIN' is too short. */
-"ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "PIN കുറഞ്ഞത് 4 അക്കങ്ങളെങ്കിലും ആയിരിക്കണം.";
-
-/* Indicates that user should select a 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "ഒരു രജിസ്ട്രേഷൻ ലോക്ക് PIN നൽകുക.  അടുത്ത തവണ നിങ്ങൾ ഈ ഫോൺ നമ്പർ Signal ൽ രജിസ്റ്റർ ചെയ്യുമ്പോൾ നിങ്ങളോട് ഈ PIN നൽകാൻ ആവശ്യപ്പെടും.";
-
-/* Indicates that user has 'two factor auth pin' disabled. */
-"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "വർദ്ധിച്ച സുരക്ഷയ്ക്ക് വേണ്ടി, ഈ ഫോൺ നമ്പർ Signal ൽ വീണ്ടും രജിസ്റ്റർ ചെയ്യാൻ ആവശ്യമായ രജിസ്ട്രേഷൻ ലോക്ക് PIN പ്രാപ്തമാക്കുക.";
-
-/* Indicates that user has 'two factor auth pin' enabled. */
-"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "രജിസ്ട്രേഷൻ ലോക്ക് പ്രാപ്തമായിരിക്കുന്നു.  നിങ്ങളുടെ  ഫോൺ നമ്പർ Signal ൽ വീണ്ടും രജിസ്റ്റർ ചെയ്യുമ്പോൾ നിങ്ങളുടെ PIN നിങ്ങൾ നൽകേണ്ടതുണ്ട്.";
-
-/* Title for the 'enable two factor auth PIN' views. */
-"ENABLE_2FA_VIEW_TITLE" = "രജിസ്ട്രേഷൻ ലോക്ക്";
 
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "തിരക്കിലാണ്";
@@ -2196,7 +2139,7 @@
 "MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Let %@ message you and share your name and photo with them? You won't receive any messages until you unblock them.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Unblock this group and share your name and photo with its members? You won't receive any messages until you unblock them.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "ഈ ഗ്രൂപ്പിനെ അൺ‌ബ്ലോക്ക് ചെയ്ത് നിങ്ങളുടെ പേരും ഫോട്ടോയും അതിന്റെ അംഗങ്ങളുമായി പങ്കിടണോ? നിങ്ങൾ അൺ‌ബ്ലോക്ക് ചെയ്യുന്നതു വരെ നിങ്ങൾക്ക് സന്ദേശങ്ങളൊന്നും ലഭിക്കില്ല.";
 
 /* incoming message request button text which deletes a conversation */
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "ഇല്ലാതാക്കുക ";
@@ -2270,17 +2213,11 @@
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ ഇനിമേൽ വേരിഫൈ ചെയ്തതായി മാർക്ക് ചെയ്തിട്ടില്ല. ഓപ്ഷനുകൾക്കായി തട്ടുക.";
 
-/* Indicates that this 1:1 conversation has been blocked. */
-"MESSAGES_VIEW_CONTACT_BLOCKED" = "നിങ്ങൾ ഈ യൂസറെ ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു";
-
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ ഇനിമേൽ വേരിഫൈ ചെയ്തതായി മാർക്ക് ചെയ്തിട്ടില്ല. ഓപ്ഷനുകൾക്കായി തട്ടുക.";
 
 /* Indicates that a single member of this group has been blocked. */
 "MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "നിങ്ങൾ ഈ ഗ്രൂപ്പിലെ 1 അംഗത്തെ ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു";
-
-/* Indicates that this group conversation has been blocked. */
-"MESSAGES_VIEW_GROUP_BLOCKED" = "നിങ്ങൾ ഈ ഗ്രൂപ്പിനെ ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു";
 
 /* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
 "MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "നിങ്ങൾ ഈ ഗ്രൂപ്പിലെ %@ അംഗങ്ങളെ ബ്ലോക്ക് ചെയ്തിരിക്കുന്നു";
@@ -2903,29 +2840,11 @@
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "തുടരുക";
 
-/* Action text for profile name reminder megaphone */
-"PROFILE_NAME_REMINDER_MEGAPHONE_ACTION" = "തുടക്കം കുറിക്കുക";
-
-/* Body for profile name reminder megaphone when user already has a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_BODY" = "നിങ്ങളുടെ പ്രൊഫൈലിന് ഇപ്പോൾ ഒരു ഓപ്‌ഷണൽ അവസാന നാമം ഉൾപ്പെടുത്താൻ കഴിയും.";
-
-/* Title for profile name reminder megaphone when user already has a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_TITLE" = "നിങ്ങളുടെ പ്രൊഫൈൽ പേര് സ്ഥിരീകരിക്കുക";
-
-/* Body for profile name reminder megaphone when user doesn't have a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "നിങ്ങൾ ഒരു പുതിയ സംഭാഷണം ആരംഭിക്കുമ്പോഴോ പങ്കിടുമ്പോഴോ ഇത് ദൃശ്യമാകും.";
-
-/* Title for profile name reminder megaphone when user doesn't have a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_TITLE" = "ഒരു പ്രൊഫൈൽ പേര് ചേർക്കുക";
-
-/* Toast indicating that a PIN has been created. */
-"PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "നിങ്ങളുടെ പ്രൊഫൈൽ നാമം സേവ് ചെയ്തു.";
-
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Set Profile Photo";
 
 /* Label for action that clear's the user's profile avatar */
-"PROFILE_VIEW_CLEAR_AVATAR" = "Remove Photo";
+"PROFILE_VIEW_CLEAR_AVATAR" = "ഫോട്ടോ ഇല്ലാതാക്കുക";
 
 /* A string indicating that the user can create a username on the profile view. */
 "PROFILE_VIEW_CREATE_USERNAME" = "യൂസർ പേര് സൃഷ്ടിക്കുക";
@@ -2955,7 +2874,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "ഇൻ്റർനെറ്റുമായി കണക്ട് ചെയ്യുമ്പോൾ മാത്രമേ പ്രൊഫൈൽ അപ്ഡേറ്റ് ചെയ്യാൻ സാധിക്കുകയുള്ളൂ.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your profile is end-to-end encrypted. It will be visible to your contacts, when you initiate or accept new conversations, and when you join new groups.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "നിങ്ങളുടെ പ്രൊഫൈൽ എൻഡ് ടു എൻഡ് എൻക്രിപ്റ്റഡ് ആണ്. നിങ്ങൾ പുതിയ സംഭാഷണങ്ങൾ ആരംഭിക്കുമ്പോഴോ സ്വീകരിക്കുമ്പോഴോ പുതിയ ഗ്രൂപ്പുകളിൽ ചേരുമ്പോഴോ ഇത് നിങ്ങളുടെ കോൺടാക്റ്റുകൾക്ക് ദൃശ്യമാകും.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "സംരക്ഷിക്കുക";
@@ -3049,12 +2968,6 @@
 
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "നിങ്ങളുടെ ശബ്ദ സന്ദേശത്തോട് %@ പ്രതികരിച്ചു";
-
-/* Body for the megaphone introducing reactions */
-"REACTION_MEGAPHONE_BODY" = "നിങ്ങൾക്ക് എങ്ങനെ അനുഭവപ്പെടുന്നുവെന്ന് പെട്ടെന്ന് മറുപടി നൽകാൻ ഏത് സന്ദേശത്തിലും ടാപ് ചെയ്ത് ഹോൾഡ് ചെയ്യുക.";
-
-/* Title for the megaphone introducing reactions */
-"REACTION_MEGAPHONE_TITLE" = "അവതരിപ്പിക്കുന്നു റീയാക്ഷനുകൾ";
 
 /* Text describing the local user in the reaction details pane. */
 "REACTIONS_DETAIL_YOU" = "നിങ്ങൾ";
@@ -3163,24 +3076,6 @@
 
 /* No comment provided by engineer. */
 "RELAY_REGISTERED_ERROR_RECOVERY" = "നിങ്ങൾ രജിസ്റ്റർ ചെയ്യാൻ ശ്രമിക്കുന്ന ഫോൺ നമ്പർ നേരത്തെ തന്നെ മറ്റൊരു  സെർവറിൽ രജിസ്റ്റർ ചെയ്തിട്ടുണ്ട്, അവിടെ നിന്ന് ദയവായി അൺരജിസ്റ്റർ ചെയ്ത ശേഷം വീണ്ടും ശ്രമിക്കുക.";
-
-/* Body text for when user is periodically prompted to enter their registration lock PIN */
-"REMINDER_2FA_BODY" = "നിങ്ങളുടെ ഫോൺ നമ്പറിനായി രജിസ്ട്രേഷൻ ലോക്ക് പ്രാപ്തമാക്കി. നിങ്ങളുടെ രജിസ്ട്രേഷൻ ലോക്ക് പിൻ മനഃപാഠമാക്കാൻ സഹായിക്കുന്നതിന്, സിഗ്നൽ ഇടയ്ക്കിടെ അത് സ്ഥിരീകരിക്കാൻ നിങ്ങളോട് ആവശ്യപ്പെടും.";
-
-/* Body header for when user is periodically prompted to enter their registration lock PIN */
-"REMINDER_2FA_BODY_HEADER" = "ഓർമ്മപ്പെടുത്തൽ:";
-
-/* Alert message explaining what happens if you forget your 'two-factor auth pin' */
-"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "അനധികൃത രജിസ്ട്രേഷൻ ശ്രമങ്ങളിൽ നിന്ന് നിങ്ങളുടെ ഫോൺ നമ്പർ പരിരക്ഷിക്കാൻ രജിസ്ട്രേഷൻ ലോക്ക് സഹായിക്കുന്നു. നിങ്ങളുടെ Signal സ്വകാര്യത ക്രമീകരണങ്ങളിൽ ഏത് സമയത്തും ഈ സവിശേഷത അപ്രാപ്തമാക്കാൻ കഴിയും";
-
-/* Navbar title for when user is periodically prompted to enter their registration lock PIN */
-"REMINDER_2FA_NAV_TITLE" = "നിങ്ങളുടെ രജിസ്ട്രേഷൻ ലോക്ക് PIN നൽകുക";
-
-/* Alert body after wrong guess for 'two-factor auth pin' reminder activity */
-"REMINDER_2FA_WRONG_PIN_ALERT_BODY" = "നിങ്ങളുടെ പ്രൈവസി സെറ്റിംഗ്സിൽ  നിങ്ങൾക്ക് ഒരു പുതിയ PIN സജ്ജമാക്കാവുന്നതാണ്.";
-
-/* Alert title after wrong guess for 'two-factor auth pin' reminder activity */
-"REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "അത് ശരിയായിട്ടുള്ള PIN അല്ല.";
 
 /* The title for the 'replace group admin' view. */
 "REPLACE_ADMIN_VIEW_TITLE" = "പുതിയ അഡ്മിനെ തിരെഞ്ഞെടുക്കുക";
@@ -3758,20 +3653,8 @@
 /* No comment provided by engineer. */
 "SETTINGS_SUPPORT" = "സപ്പോർട്ട്";
 
-/* Indicates that 'two factor auth' is disabled in the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_DISABLED" = "അപ്രാപ്‌തമാക്കി";
-
-/* Indicates that 'two factor auth' is enabled in the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_ENABLED" = "പ്രവർത്തനക്ഷമമാക്കി";
-
-/* Label for the 'two factor auth' item of the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_ITEM" = "രജിസ്ട്രേഷൻ ലോക്ക്";
-
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "രജിസ്ട്രേഷൻ ലോക്ക്";
-
-/* Title for the 'two factor auth' section of the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_TITLE" = "രജിസ്ട്രേഷൻ ലോക്ക്";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
 "SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "അധിക സുരക്ഷയ്ക്ക് വേണ്ടി, രജിസ്ട്രേഷൻ ലോക്ക് സജീവമാക്കുക, അതിനായി നിങ്ങളുടെ ഫോൺ നമ്പർ Signal മായി വീണ്ടും രജിസ്റ്റർ ചെയ്യുന്നതിന് നിങ്ങളുടെ Signal PIN ആവശ്യമുണ്ട്.";

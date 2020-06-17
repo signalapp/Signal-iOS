@@ -13,7 +13,6 @@
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalMessaging/ThreadUtil.h>
 #import <SignalServiceKit/OWSBlockingManager.h>
-#import <SignalServiceKit/OWSContactOffersInteraction.h>
 #import <SignalServiceKit/SSKEnvironment.h>
 #import <SignalServiceKit/TSIncomingMessage.h>
 #import <SignalServiceKit/TSOutgoingMessage.h>
@@ -93,6 +92,13 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
+@interface ConversationUpdate ()
+
+@property (nonatomic) BOOL shouldAnimateUpdates;
+@property (nonatomic) BOOL shouldJumpToOutgoingMessage;
+
+@end
+
 @implementation ConversationUpdate
 
 - (instancetype)initWithConversationUpdateType:(ConversationUpdateType)conversationUpdateType
@@ -107,6 +113,7 @@ NS_ASSUME_NONNULL_BEGIN
     _conversationUpdateType = conversationUpdateType;
     _updateItems = updateItems;
     _shouldAnimateUpdates = shouldAnimateUpdates;
+    _shouldJumpToOutgoingMessage = YES;
 
     return self;
 }
@@ -347,26 +354,79 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)appendOlderItemsWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    [self.delegate conversationViewModelWillLoadMoreItems];
     NSError *error;
-    [self.messageMapping loadOlderMessagePageWithTransaction:transaction error:&error];
+    ConversationMessageMappingDiff *diff = [self.messageMapping loadOlderMessagePageWithTransaction:transaction
+                                                                                              error:&error];
+
     if (error != nil) {
-        OWSFailDebug(@"failure: %@", error);
+        OWSFailDebug(@"Could not determine diff. error: %@", error);
+        return;
     }
-    [self resetMappingWithTransaction:transaction];
-    [self.delegate conversationViewModelDidLoadMoreItems];
-    [self.delegate conversationViewModelRangeDidChangeWithTransaction:transaction];
+
+    [self updateViewForAppendWithDiff:diff transaction:transaction];
 }
 
 - (void)appendNewerItemsWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    [self.delegate conversationViewModelWillLoadMoreItems];
     NSError *error;
-    [self.messageMapping loadNewerMessagePageWithTransaction:transaction error:&error];
+    ConversationMessageMappingDiff *diff = [self.messageMapping loadNewerMessagePageWithTransaction:transaction
+                                                                                              error:&error];
+
     if (error != nil) {
-        OWSFailDebug(@"failure: %@", error);
+        OWSFailDebug(@"Could not determine diff. error: %@", error);
+        return;
     }
-    [self resetMappingWithTransaction:transaction];
+
+    [self updateViewForAppendWithDiff:diff transaction:transaction];
+}
+
+- (void)updateViewForAppendWithDiff:(ConversationMessageMappingDiff *)diff
+                        transaction:(SDSAnyReadTransaction *)transaction
+{
+    [self.delegate conversationViewModelWillLoadMoreItems];
+
+    if (diff.updatedItemIds.count > 0) {
+        OWSFailDebug(@"Unexpectedly had updated items while appending older/newer items.");
+        [self.delegate conversationViewModelDidUpdate:ConversationUpdate.minorUpdate transaction:transaction];
+        [self.delegate conversationViewModelDidLoadMoreItems];
+        [self.delegate conversationViewModelRangeDidChangeWithTransaction:transaction];
+        return;
+    }
+
+    if (diff.addedItemIds.count < 1 && diff.removedItemIds.count < 1 && diff.updatedItemIds.count < 1) {
+        // This probably isn't an error; presumably the modifications
+        // occurred outside the load window.
+        OWSLogDebug(@"Empty diff.");
+        [self.delegate conversationViewModelDidUpdate:ConversationUpdate.minorUpdate transaction:transaction];
+        [self.delegate conversationViewModelDidLoadMoreItems];
+        [self.delegate conversationViewModelRangeDidChangeWithTransaction:transaction];
+        return;
+    }
+
+    NSArray<NSString *> *oldItemIdList = self.viewState.interactionIds;
+
+    if (![self reloadViewItemsWithTransaction:transaction]) {
+        // These errors are rare.
+        OWSFailDebug(@"could not reload view items; hard resetting message mapping.");
+        // resetMapping will call delegate.conversationViewModelDidUpdate.
+        [self resetMappingWithTransaction:transaction];
+        [self.delegate conversationViewModelDidLoadMoreItems];
+        [self.delegate conversationViewModelRangeDidChangeWithTransaction:transaction];
+        return;
+    }
+
+    ConversationUpdate *conversationUpdate = [self conversationUpdateWithOldItemIdList:oldItemIdList
+                                                                        updatedItemSet:[NSSet set]];
+
+    // We never want to animate appends.
+    conversationUpdate.shouldAnimateUpdates = NO;
+
+    // We never want to jump to newly visible outgoing messages during appends.
+    conversationUpdate.shouldJumpToOutgoingMessage = NO;
+
+    OWSLogVerbose(@"self.viewItems.count: %zd -> %zd", oldItemIdList.count, self.viewState.viewItems.count);
+
+    [self.delegate conversationViewModelDidUpdate:conversationUpdate transaction:transaction];
     [self.delegate conversationViewModelDidLoadMoreItems];
     [self.delegate conversationViewModelRangeDidChangeWithTransaction:transaction];
 }
@@ -588,15 +648,15 @@ NS_ASSUME_NONNULL_BEGIN
     [self updateViewWithOldItemIdList:oldItemIdList updatedItemSet:[NSSet set]];
 }
 
-- (void)updateViewWithOldItemIdList:(NSArray<NSString *> *)oldItemIdList
-                     updatedItemSet:(NSSet<NSString *> *)updatedItemSetParam {
+- (ConversationUpdate *)conversationUpdateWithOldItemIdList:(NSArray<NSString *> *)oldItemIdList
+                                             updatedItemSet:(NSSet<NSString *> *)updatedItemSetParam
+{
     OWSAssertDebug(oldItemIdList);
     OWSAssertDebug(updatedItemSetParam);
 
     if (oldItemIdList.count != [NSSet setWithArray:oldItemIdList].count) {
         OWSFailDebug(@"Old view item list has duplicates.");
-        [self.delegate conversationViewModelDidUpdateWithSneakyTransaction:ConversationUpdate.reloadUpdate];
-        return;
+        return ConversationUpdate.reloadUpdate;
     }
 
     NSArray<NSString *> *newItemIdList = self.viewState.interactionIds;
@@ -607,8 +667,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     if (newItemIdList.count != [NSSet setWithArray:newItemIdList].count) {
         OWSFailDebug(@"New view item list has duplicates.");
-        [self.delegate conversationViewModelDidUpdateWithSneakyTransaction:ConversationUpdate.reloadUpdate];
-        return;
+        return ConversationUpdate.reloadUpdate;
     }
 
     NSSet<NSString *> *oldItemIdSet = [NSSet setWithArray:oldItemIdList];
@@ -640,7 +699,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSUInteger oldIndex = [oldItemIdList indexOfObject:itemId];
         if (oldIndex == NSNotFound) {
             OWSFailDebug(@"Can't find index of deleted view item.");
-            return [self.delegate conversationViewModelDidUpdateWithSneakyTransaction:ConversationUpdate.reloadUpdate];
+            return ConversationUpdate.reloadUpdate;
         }
 
         [updateItems addObject:[[ConversationUpdateItem alloc] initWithUpdateItemType:ConversationUpdateItemType_Delete
@@ -660,12 +719,12 @@ NS_ASSUME_NONNULL_BEGIN
         NSUInteger newIndex = [newItemIdList indexOfObject:itemId];
         if (newIndex == NSNotFound) {
             OWSFailDebug(@"Can't find index of inserted view item.");
-            return [self.delegate conversationViewModelDidUpdateWithSneakyTransaction:ConversationUpdate.reloadUpdate];
+            return ConversationUpdate.reloadUpdate;
         }
         id<ConversationViewItem> _Nullable viewItem = newViewItemMap[itemId];
         if (!viewItem) {
             OWSFailDebug(@"Can't find inserted view item.");
-            return [self.delegate conversationViewModelDidUpdateWithSneakyTransaction:ConversationUpdate.reloadUpdate];
+            return ConversationUpdate.reloadUpdate;
         }
 
         [updateItems addObject:[[ConversationUpdateItem alloc] initWithUpdateItemType:ConversationUpdateItemType_Insert
@@ -681,7 +740,7 @@ NS_ASSUME_NONNULL_BEGIN
         //
         // TODO: The unread indicator might end up being an exception.
         OWSLogWarn(@"New and updated view item lists don't match.");
-        return [self.delegate conversationViewModelDidUpdateWithSneakyTransaction:ConversationUpdate.reloadUpdate];
+        return ConversationUpdate.reloadUpdate;
     }
 
     // In addition to "update" items from the database change notification,
@@ -709,12 +768,12 @@ NS_ASSUME_NONNULL_BEGIN
         NSUInteger newIndex = [newItemIdList indexOfObject:itemId];
         if (newIndex == NSNotFound) {
             OWSFailDebug(@"Can't find index of holdover view item.");
-            return [self.delegate conversationViewModelDidUpdateWithSneakyTransaction:ConversationUpdate.reloadUpdate];
+            return ConversationUpdate.reloadUpdate;
         }
         id<ConversationViewItem> _Nullable viewItem = newViewItemMap[itemId];
         if (!viewItem) {
             OWSFailDebug(@"Can't find holdover view item.");
-            return [self.delegate conversationViewModelDidUpdateWithSneakyTransaction:ConversationUpdate.reloadUpdate];
+            return ConversationUpdate.reloadUpdate;
         }
         if (viewItem.needsUpdate) {
             [updatedItemSet addObject:itemId];
@@ -736,17 +795,17 @@ NS_ASSUME_NONNULL_BEGIN
         NSUInteger oldIndex = [oldItemIdList indexOfObject:itemId];
         if (oldIndex == NSNotFound) {
             OWSFailDebug(@"Can't find old index of updated view item.");
-            return [self.delegate conversationViewModelDidUpdateWithSneakyTransaction:ConversationUpdate.reloadUpdate];
+            return ConversationUpdate.reloadUpdate;
         }
         NSUInteger newIndex = [newItemIdList indexOfObject:itemId];
         if (newIndex == NSNotFound) {
             OWSFailDebug(@"Can't find new index of updated view item.");
-            return [self.delegate conversationViewModelDidUpdateWithSneakyTransaction:ConversationUpdate.reloadUpdate];
+            return ConversationUpdate.reloadUpdate;
         }
         id<ConversationViewItem> _Nullable viewItem = newViewItemMap[itemId];
         if (!viewItem) {
             OWSFailDebug(@"Can't find inserted view item.");
-            return [self.delegate conversationViewModelDidUpdateWithSneakyTransaction:ConversationUpdate.reloadUpdate];
+            return ConversationUpdate.reloadUpdate;
         }
         [updateItems addObject:[[ConversationUpdateItem alloc] initWithUpdateItemType:ConversationUpdateItemType_Update
                                                                              oldIndex:oldIndex
@@ -758,10 +817,15 @@ NS_ASSUME_NONNULL_BEGIN
                                               oldViewItemCount:oldItemIdList.count
                                         updatedNeighborItemSet:updatedNeighborItemSet];
 
-    return [self.delegate
-        conversationViewModelDidUpdateWithSneakyTransaction:[ConversationUpdate
-                                                                diffUpdateWithUpdateItems:updateItems
-                                                                     shouldAnimateUpdates:shouldAnimateUpdates]];
+    return [ConversationUpdate diffUpdateWithUpdateItems:updateItems shouldAnimateUpdates:shouldAnimateUpdates];
+}
+
+- (void)updateViewWithOldItemIdList:(NSArray<NSString *> *)oldItemIdList
+                     updatedItemSet:(NSSet<NSString *> *)updatedItemSetParam
+{
+    ConversationUpdate *conversationUpdate = [self conversationUpdateWithOldItemIdList:oldItemIdList
+                                                                        updatedItemSet:updatedItemSetParam];
+    return [self.delegate conversationViewModelDidUpdateWithSneakyTransaction:conversationUpdate];
 }
 
 - (BOOL)shouldAnimateUpdateItems:(NSArray<ConversationUpdateItem *> *)updateItems
@@ -899,131 +963,6 @@ NS_ASSUME_NONNULL_BEGIN
     self.conversationProfileState = conversationProfileState;
 }
 
-- (nullable OWSContactOffersInteraction *)tryToBuildContactOffersInteractionWithTransaction:
-                                              (SDSAnyReadTransaction *)transaction
-{
-    OWSAssertDebug(transaction);
-    OWSAssertDebug(self.conversationProfileState);
-    // message requests deprecates ContactOffers
-    OWSAssertDebug(!RemoteConfig.messageRequests);
-
-    BOOL hasLocalProfile = self.conversationProfileState.hasLocalProfile;
-    BOOL isThreadInProfileWhitelist = self.conversationProfileState.isThreadInProfileWhitelist;
-    BOOL hasUnwhitelistedMember = self.conversationProfileState.hasUnwhitelistedMember;
-
-    TSThread *thread = self.thread;
-    BOOL isContactThread = [thread isKindOfClass:[TSContactThread class]];
-    if (!isContactThread) {
-        return nil;
-    }
-    TSContactThread *contactThread = (TSContactThread *)thread;
-    if (contactThread.hasDismissedOffers) {
-        return nil;
-    }
-
-    TSInteraction *firstCallOrMessage = [self firstCallOrMessageForLoadedInteractionsWithTransaction:transaction];
-    if (!firstCallOrMessage) {
-        return nil;
-    }
-
-    BOOL hasTooManyOutgoingMessagesToBlock;
-    if (self.hasTooManyOutgoingMessagesToBlockCached) {
-        hasTooManyOutgoingMessagesToBlock = YES;
-    } else {
-        NSUInteger outgoingMessageCount = [[[InteractionFinder alloc] initWithThreadUniqueId:thread.uniqueId]
-            outgoingMessageCountWithTransaction:transaction];
-        const int kMaxBlockOfferOutgoingMessageCount = 10;
-        hasTooManyOutgoingMessagesToBlock = (outgoingMessageCount > kMaxBlockOfferOutgoingMessageCount);
-        self.hasTooManyOutgoingMessagesToBlockCached = hasTooManyOutgoingMessagesToBlock;
-    }
-
-    BOOL shouldHaveBlockOffer = YES;
-    BOOL shouldHaveAddToContactsOffer = YES;
-    BOOL shouldHaveAddToProfileWhitelistOffer = YES;
-
-    SignalServiceAddress *recipientAddress = contactThread.contactAddress;
-
-    if (recipientAddress.isLocalAddress) {
-        // Don't add self to contacts.
-        shouldHaveAddToContactsOffer = NO;
-        // Don't bother to block self.
-        shouldHaveBlockOffer = NO;
-        // Don't bother adding self to profile whitelist.
-        shouldHaveAddToProfileWhitelistOffer = NO;
-    } else {
-        if ([self.blockingManager isAddressBlocked:recipientAddress]) {
-            // Only create "add to contacts" offers for users which are not already blocked.
-            shouldHaveAddToContactsOffer = NO;
-            // Only create block offers for users which are not already blocked.
-            shouldHaveBlockOffer = NO;
-            // Don't create profile whitelist offers for users which are not already blocked.
-            shouldHaveAddToProfileWhitelistOffer = NO;
-        }
-
-        if ([self.contactsManager hasNameInSystemContactsForAddress:recipientAddress]) {
-            // Only create "add to contacts" offers for non-contacts.
-            shouldHaveAddToContactsOffer = NO;
-            // Only create block offers for non-contacts.
-            shouldHaveBlockOffer = NO;
-            // Don't create profile whitelist offers for non-contacts.
-            shouldHaveAddToProfileWhitelistOffer = NO;
-        }
-    }
-
-    if (hasTooManyOutgoingMessagesToBlock) {
-        // If the user has sent more than N messages, don't show a block offer.
-        shouldHaveBlockOffer = NO;
-    }
-
-    BOOL hasOutgoingBeforeIncomingInteraction = [firstCallOrMessage isKindOfClass:[TSOutgoingMessage class]];
-    if ([firstCallOrMessage isKindOfClass:[TSCall class]]) {
-        TSCall *call = (TSCall *)firstCallOrMessage;
-        hasOutgoingBeforeIncomingInteraction
-            = (call.callType == RPRecentCallTypeOutgoing || call.callType == RPRecentCallTypeOutgoingIncomplete);
-    }
-    if (hasOutgoingBeforeIncomingInteraction) {
-        // If there is an outgoing message before an incoming message
-        // the local user initiated this conversation, don't show a block offer.
-        shouldHaveBlockOffer = NO;
-    }
-
-    if (!hasLocalProfile || isThreadInProfileWhitelist) {
-        // Don't show offer if thread is local user hasn't configured their profile.
-        // Don't show offer if thread is already in profile whitelist.
-        shouldHaveAddToProfileWhitelistOffer = NO;
-    } else if (thread.isGroupThread && !hasUnwhitelistedMember) {
-        // Don't show offer in group thread if all members are already individually
-        // whitelisted.
-        shouldHaveAddToProfileWhitelistOffer = NO;
-    }
-
-    // We can't add a user to contacts that doesn't have a phone number
-    if (recipientAddress.phoneNumber == nil) {
-        shouldHaveAddToContactsOffer = NO;
-    }
-
-    BOOL shouldHaveContactOffers
-        = (shouldHaveBlockOffer || shouldHaveAddToContactsOffer || shouldHaveAddToProfileWhitelistOffer);
-
-    if (!shouldHaveContactOffers) {
-        return nil;
-    }
-
-    // This view model uses the "unique id" to identify this interaction,
-    // but the interaction is never saved in the database so the specific
-    // value doesn't matter.
-    NSString *uniqueId = @"contact-offers";
-    OWSContactOffersInteraction *offersMessage =
-        [[OWSContactOffersInteraction alloc] initWithUniqueId:uniqueId
-                                                       thread:thread
-                                                hasBlockOffer:shouldHaveBlockOffer
-                                        hasAddToContactsOffer:shouldHaveAddToContactsOffer
-                                hasAddToProfileWhitelistOffer:shouldHaveAddToProfileWhitelistOffer];
-
-    OWSLogInfo(@"Creating contact offers: %@ (%llu)", offersMessage.uniqueId, offersMessage.sortId);
-    return offersMessage;
-}
-
 // This is a key method.  It builds or rebuilds the list of
 // cell view models.
 //
@@ -1072,19 +1011,17 @@ NS_ASSUME_NONNULL_BEGIN
 
     __block BOOL hasPlacedUnreadIndicator = NO;
     __block BOOL shouldShowDateOnNextViewItem = YES;
-    __block uint64_t previousViewItemReceivedAtTimestamp = 0;
+    __block uint64_t previousViewItemTimestamp = 0;
     void (^addHeaderViewItemIfNecessary)(id<ConversationViewItem>) = ^(id<ConversationViewItem> viewItem) {
-        uint64_t viewItemReceivedAtTimestamp = viewItem.interaction.receivedAtTimestamp;
-        OWSAssertDebug(viewItemReceivedAtTimestamp > 0);
+        uint64_t viewItemTimestamp = viewItem.interaction.timestamp;
+        OWSAssertDebug(viewItemTimestamp > 0);
 
         BOOL shouldShowDate = NO;
-        if (previousViewItemReceivedAtTimestamp == 0) {
+        if (previousViewItemTimestamp == 0) {
             // Only show for the first item if the date is not today
             shouldShowDateOnNextViewItem
-                = ![DateUtil dateIsToday:[NSDate ows_dateWithMillisecondsSince1970:viewItemReceivedAtTimestamp]];
-        } else if (![DateUtil isSameDayWithTimestamp:previousViewItemReceivedAtTimestamp
-                                           timestamp:viewItemReceivedAtTimestamp]
-            && viewItemReceivedAtTimestamp > previousViewItemReceivedAtTimestamp) {
+                = ![DateUtil dateIsToday:[NSDate ows_dateWithMillisecondsSince1970:viewItemTimestamp]];
+        } else if (![DateUtil isSameDayWithTimestamp:previousViewItemTimestamp timestamp:viewItemTimestamp]) {
             shouldShowDateOnNextViewItem = YES;
         }
 
@@ -1105,8 +1042,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                  shouldShowDate:shouldShowDate];
         } else if (shouldShowDate) {
             interaction = [[OWSDateHeaderInteraction alloc] initWithThread:self.thread
-                                                                 timestamp:viewItem.interaction.timestamp
-                                                       receivedAtTimestamp:viewItem.interaction.receivedAtTimestamp];
+                                                                 timestamp:viewItem.interaction.timestamp];
         }
 
         if (interaction) {
@@ -1115,7 +1051,7 @@ NS_ASSUME_NONNULL_BEGIN
             [viewItems addObject:headerViewItem];
         }
 
-        previousViewItemReceivedAtTimestamp = viewItemReceivedAtTimestamp;
+        previousViewItemTimestamp = viewItemTimestamp;
     };
 
     __block BOOL hasError = NO;
@@ -1158,36 +1094,12 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     // Contact Offers / Thread Details are the first item in the thread
-    if (!canLoadMoreItems) {
-        if (self.shouldShowThreadDetails) {
-            OWSLogDebug(@"adding thread details");
-            OWSThreadDetailsInteraction *threadDetails =
-                [[OWSThreadDetailsInteraction alloc] initWithThread:self.thread
-                                                          timestamp:NSDate.ows_millisecondTimeStamp];
+    if (self.shouldShowThreadDetails) {
+        OWSLogDebug(@"adding thread details");
+        OWSThreadDetailsInteraction *threadDetails =
+            [[OWSThreadDetailsInteraction alloc] initWithThread:self.thread timestamp:NSDate.ows_millisecondTimeStamp];
 
-            tryToAddViewItemForInteraction(threadDetails);
-        } else {
-            OWSContactOffersInteraction *_Nullable offers =
-                [self tryToBuildContactOffersInteractionWithTransaction:transaction];
-
-            if (offers) {
-                id<ConversationViewItem> _Nullable offersItem = tryToAddViewItemForInteraction(offers);
-                if (!offersItem) {
-                    OWSFailDebug(@"Contact offers should never be filtered out.");
-                    // Do nothing.
-                } else if ([offersItem.interaction isKindOfClass:[OWSContactOffersInteraction class]]) {
-                    OWSContactOffersInteraction *oldOffers = (OWSContactOffersInteraction *)offersItem.interaction;
-                    BOOL didChange = (oldOffers.hasBlockOffer != offers.hasBlockOffer
-                        || oldOffers.hasAddToContactsOffer != offers.hasAddToContactsOffer
-                        || oldOffers.hasAddToProfileWhitelistOffer != offers.hasAddToProfileWhitelistOffer);
-                    if (didChange) {
-                        [offersItem clearCachedLayoutState];
-                    }
-                } else {
-                    OWSFailDebug(@"Unexpected offers item: %@", offersItem.interaction.class);
-                }
-            }
-        }
+        tryToAddViewItemForInteraction(threadDetails);
     }
 
     for (TSInteraction *interaction in interactions) {
@@ -1332,14 +1244,7 @@ NS_ASSUME_NONNULL_BEGIN
                         || ![incomingSenderAddress isEqualToAddress:previousIncomingSenderAddress]);
                 }
                 if (shouldShowSenderName) {
-                    if (RemoteConfig.messageRequests) {
-                        senderName = [[NSAttributedString alloc] initWithString:accessibilityAuthorName];
-                    } else {
-                        senderName = [self.contactsManager
-                            attributedLegacyDisplayNameForAddress:incomingSenderAddress
-                                                primaryAttributes:[OWSMessageBubbleView senderNamePrimaryAttributes]
-                                              secondaryAttributes:[OWSMessageBubbleView senderNameSecondaryAttributes]];
-                    }
+                    senderName = [[NSAttributedString alloc] initWithString:accessibilityAuthorName];
                 }
 
                 // Show the sender avatar for incoming group messages unless
@@ -1552,8 +1457,6 @@ NS_ASSUME_NONNULL_BEGIN
             case OWSInteractionType_UnreadIndicator:
             case OWSInteractionType_DateHeader:
                 break;
-            case OWSInteractionType_Offer:
-                break;
         }
     }
     return nil;
@@ -1561,7 +1464,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (BOOL)shouldShowThreadDetails
 {
-    return (!self.canLoadOlderItems && (RemoteConfig.messageRequests || self.thread.isGroupV2Thread));
+    return !self.canLoadOlderItems;
 }
 
 @end

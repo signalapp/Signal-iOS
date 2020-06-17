@@ -231,20 +231,36 @@ extension ConversationViewController: MessageRequestDelegate {
     }
 
     func messageRequestViewDidTapAccept(mode: MessageRequestMode) {
+        messageRequestViewDidTapAccept(mode: mode, unblockThread: false)
+    }
+
+    func messageRequestViewDidTapAccept(mode: MessageRequestMode, unblockThread: Bool) {
         AssertIsOnMainThread()
 
         let completion = {
-            self.profileManager.addThread(toProfileWhitelist: self.thread)
-            self.syncManager.sendMessageRequestResponseSyncMessage(thread: self.thread,
-                                                                   responseType: .accept)
-
-            // Send our profile key to the sender
-            let profileKeyMessage = OWSProfileKeyMessage(thread: self.thread)
             SDSDatabaseStorage.shared.asyncWrite { transaction in
-                SSKEnvironment.shared.messageSenderJobQueue.add(message: profileKeyMessage.asPreparer, transaction: transaction)
-            }
+                if unblockThread {
+                    self.blockingManager.removeBlockedThread(self.thread, wasLocallyInitiated: true, transaction: transaction)
+                }
 
-            self.dismissMessageRequestView()
+                // Whitelist the thread
+                self.profileManager.addThread(toProfileWhitelist: self.thread, transaction: transaction)
+
+                // Send a sync message notifying our other devices the request was accepted
+                self.syncManager.sendMessageRequestResponseSyncMessage(
+                    thread: self.thread,
+                    responseType: .accept,
+                    transaction: transaction
+                )
+
+                // Send our profile key to the sender
+                let profileKeyMessage = OWSProfileKeyMessage(thread: self.thread)
+                SSKEnvironment.shared.messageSenderJobQueue.add(message: profileKeyMessage.asPreparer, transaction: transaction)
+
+                transaction.addAsyncCompletion {
+                    self.dismissMessageRequestView()
+                }
+            }
         }
 
         switch mode {
@@ -282,12 +298,14 @@ extension ConversationViewController: MessageRequestDelegate {
         let title = String(format: NSLocalizedString("BLOCK_LIST_UNBLOCK_TITLE_FORMAT",
                                                      comment: "A format for the 'unblock conversation' action sheet title. Embeds the {{conversation title}}."),
                            threadName)
-        OWSActionSheets.showConfirmationAlert(title: title,
-                                              message: message,
-                                              proceedTitle: NSLocalizedString("BLOCK_LIST_UNBLOCK_BUTTON",
-                                                                              comment: "Button label for the 'unblock' button")) { _ in
-                                                                                self.blockingManager.removeBlockedThread(self.thread, wasLocallyInitiated: true)
-                                                                                self.messageRequestViewDidTapAccept(mode: mode)
+
+        OWSActionSheets.showConfirmationAlert(
+            title: title,
+            message: message,
+            proceedTitle: NSLocalizedString("BLOCK_LIST_UNBLOCK_BUTTON",
+                                            comment: "Button label for the 'unblock' button")
+        ) { _ in
+            self.messageRequestViewDidTapAccept(mode: mode, unblockThread: true)
         }
     }
 

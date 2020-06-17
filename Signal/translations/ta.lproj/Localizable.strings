@@ -419,12 +419,6 @@
 /* Alert body after unblocking a group. */
 "BLOCK_LIST_VIEW_UNBLOCKED_GROUP_ALERT_BODY" = "தற்போதுள்ள உறுப்பினர்கள் இப்போது உங்களை மீண்டும் குழுவில் சேர்க்கலாம்.";
 
-/* Action sheet that will block an unknown user. */
-"BLOCK_OFFER_ACTIONSHEET_BLOCK_ACTION" = "தடு ";
-
-/* Title format for action sheet that offers to block an unknown user.Embeds {{the unknown user's name or phone number}}. */
-"BLOCK_OFFER_ACTIONSHEET_TITLE_FORMAT" = "1%@ஐ தடுக்கவா?";
-
 /* An explanation of the consequences of blocking another user. */
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "தடுக்கப்பட்ட பயனர்கள் உங்களை அழைக்கவோ அல்லது செய்திகளை அனுப்பவோ முடியாது.";
 
@@ -944,12 +938,6 @@
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "இந்த பயனர் உங்கள் தொடர்புகளில் உள்ளார்";
 
-/* Indicates that user's profile has been shared with a group. */
-"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_GROUP" = "இந்த குழு உங்கள் சுயவிவரத்தைக் காணலாம்.";
-
-/* Indicates that user's profile has been shared with a user. */
-"CONVERSATION_SETTINGS_VIEW_PROFILE_IS_SHARED_WITH_USER" = "இந்த பயனர் உங்கள் சுயவிவரத்தைக் காணலாம்.";
-
 /* Button to confirm that user wants to share their profile with a user or group. */
 "CONVERSATION_SETTINGS_VIEW_SHARE_PROFILE" = "சுயவிவரத்தைப் பகிரவும்";
 
@@ -962,12 +950,6 @@
 /* Message shown in conversation view that offers to add an unknown user to your phone's contacts. */
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "தொடர்பு பட்டியலில் சேர்க்க";
 
-/* Message shown in conversation view that offers to share your profile with a user. */
-"CONVERSATION_VIEW_ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "இந்த பயனருடன் உங்கள் சுயவிவரத்தைப் பகிரவும்";
-
-/* Title for the group of buttons show for unknown contacts offering to add them to contacts, etc. */
-"CONVERSATION_VIEW_CONTACTS_OFFER_TITLE" = "இந்த பயனர் உங்கள் தொடர்புகளில் இல்லை.";
-
 /* button text to delete all items in the current conversation */
 "CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "அனைத்தையும் நீக்கு";
 
@@ -976,9 +958,6 @@
 
 /* Indicator on truncated text messages that they can be tapped to see the entire text message. */
 "CONVERSATION_VIEW_OVERSIZE_TEXT_TAP_FOR_MORE" = "மேலும் தட்டவும்";
-
-/* Message shown in conversation view that offers to block an unknown user. */
-"CONVERSATION_VIEW_UNKNOWN_CONTACT_BLOCK_OFFER" = "இந்த பயனரைத் தடு";
 
 /* ActionSheet title */
 "CORRUPTED_SESSION_DESCRIPTION" = "உங்கள் அமர்வை மீட்டமைப்பது எதிர்கால செய்திகளை %@ from இலிருந்து பெற உங்களை அனுமதிக்கும், ஆனால் இது ஏற்கனவே சிதைந்த செய்திகளை மீட்டெடுக்காது.";
@@ -1277,44 +1256,8 @@
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE2" = "நீங்கள் ஏன் எவேரேனுமொருவரை அழைக்கக்கூடாது ?";
 
-/* Indicates that user should confirm their 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_CONFIRM_PIN_INSTRUCTIONS" = "உங்கள் பின்னை உறுதிப்படுத்தவும்.";
-
-/* Error indicating that attempt to disable 'two-factor auth' failed. */
-"ENABLE_2FA_VIEW_COULD_NOT_DISABLE_2FA" = "பதிவு பூட்டை முடக்க முடியவில்லை.";
-
 /* Error indicating that attempt to enable 'two-factor auth' failed. */
 "ENABLE_2FA_VIEW_COULD_NOT_ENABLE_2FA" = "பதிவு பூட்டை இயக்க முடியவில்லை.";
-
-/* Label for the 'enable two-factor auth' item in the settings view */
-"ENABLE_2FA_VIEW_DISABLE_2FA" = "முடக்கு";
-
-/* Label for the 'enable two-factor auth' item in the settings view */
-"ENABLE_2FA_VIEW_ENABLE_2FA" = "இயக்கு";
-
-/* Label for the 'next' button in the 'enable two factor auth' views. */
-"ENABLE_2FA_VIEW_NEXT_BUTTON" = "அடுத்தது";
-
-/* Error indicating that the entered 'two-factor auth PINs' do not match. */
-"ENABLE_2FA_VIEW_PIN_DOES_NOT_MATCH" = "பின் பொருந்தவில்லை.";
-
-/* Error indicating that the entered 'two-factor auth PIN' is too long. */
-"ENABLE_2FA_VIEW_PIN_TOO_LONG" = "பின் 20 இலக்கங்களுக்கு மேல் இருக்கக்கூடாது.";
-
-/* Error indicating that the entered 'two-factor auth PIN' is too short. */
-"ENABLE_2FA_VIEW_PIN_TOO_SHORT" = "பின் குறைந்தபட்சம் 4 இலக்கங்களாக இருக்க வேண்டும்.";
-
-/* Indicates that user should select a 'two factor auth pin'. */
-"ENABLE_2FA_VIEW_SELECT_PIN_INSTRUCTIONS" = "பதிவு பூட்டு பின்னை உள்ளிடவும். அடுத்த முறை இந்த தொலைபேசி எண்ணை Signal லுடன் பதிவுசெய்யும்போது இந்த PIN ஐ உள்ளிடுமாறு கேட்கப்படுவீர்கள்.";
-
-/* Indicates that user has 'two factor auth pin' disabled. */
-"ENABLE_2FA_VIEW_STATUS_DISABLED_INSTRUCTIONS" = "அதிகரித்த பாதுகாப்பிற்காக, இந்த தொலைபேசி எண்ணை மீண்டும் Signal லுடன் பதிவுசெய்ய தேவைப்படும் பதிவு பூட்டு பின்னை இயக்கவும்.";
-
-/* Indicates that user has 'two factor auth pin' enabled. */
-"ENABLE_2FA_VIEW_STATUS_ENABLED_INSTRUCTIONS" = "பதிவு பூட்டு இயக்கப்பட்டது. உங்கள் தொலைபேசி எண்ணை மீண்டும் Signal லுடன் பதிவுசெய்யும்போது உங்கள் பின்னை உள்ளிட வேண்டும்.";
-
-/* Title for the 'enable two factor auth PIN' views. */
-"ENABLE_2FA_VIEW_TITLE" = "பதிவு பூட்டு";
 
 /* Call setup status label */
 "END_CALL_RESPONDER_IS_BUSY" = "பரபரப்பு";
@@ -2270,17 +2213,11 @@
 /* Indicates that one member of this group conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_1_MEMBER_NO_LONGER_VERIFIED_FORMAT" = "%@ இனி சரிபார்க்கப்பட்டதாக குறிக்கப்படவில்லை. விருப்பங்களுக்குத் தட்டவும்.";
 
-/* Indicates that this 1:1 conversation has been blocked. */
-"MESSAGES_VIEW_CONTACT_BLOCKED" = "இந்த பயனரை நீங்கள் தடுத்தீர்கள்";
-
 /* Indicates that this 1:1 conversation is no longer verified. Embeds {{user's name or phone number}}. */
 "MESSAGES_VIEW_CONTACT_NO_LONGER_VERIFIED_FORMAT" = "%@ இனி சரிபார்க்கப்பட்டதாக குறிக்கப்படவில்லை. விருப்பங்களுக்குத் தட்டவும்.";
 
 /* Indicates that a single member of this group has been blocked. */
 "MESSAGES_VIEW_GROUP_1_MEMBER_BLOCKED" = "இந்த குழுவின் 1 உறுப்பினரை நீங்கள் தடுத்தீர்கள்";
-
-/* Indicates that this group conversation has been blocked. */
-"MESSAGES_VIEW_GROUP_BLOCKED" = "இந்த குழுவை நீங்கள் தடுத்தீர்கள்";
 
 /* Indicates that some members of this group has been blocked. Embeds {{the number of blocked users in this group}}. */
 "MESSAGES_VIEW_GROUP_N_MEMBERS_BLOCKED_FORMAT" = "நீங்கள்  %@ இந்த குழுவின் உறுப்பினர்களைத் தடுத்தீர்கள்";
@@ -2903,24 +2840,6 @@
 /* No comment provided by engineer. */
 "PROCEED_BUTTON" = "தொடர";
 
-/* Action text for profile name reminder megaphone */
-"PROFILE_NAME_REMINDER_MEGAPHONE_ACTION" = "Your profile can now include an optional last name.";
-
-/* Body for profile name reminder megaphone when user already has a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_BODY" = "உங்கள் சுயவிவரம் இப்போது ஒரு விருப்பத்தை சேர்க்கலாம் கடந்த பெயர்.";
-
-/* Title for profile name reminder megaphone when user already has a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_HAS_NAME_TITLE" = "உறுதிப்படுத்தவும் உங்கள் சுயவிவரப் பெயர்";
-
-/* Body for profile name reminder megaphone when user doesn't have a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_BODY" = "இது எப்போது காட்டப்படும் நீங்கள் புதிய உரையாடலைத் தொடங்கவும் அல்லது பகிரவும்.";
-
-/* Title for profile name reminder megaphone when user doesn't have a profile name */
-"PROFILE_NAME_REMINDER_MEGAPHONE_NO_NAME_TITLE" = "சுயவிவரப் பெயரைச் சேர்க்கவும்";
-
-/* Toast indicating that a PIN has been created. */
-"PROFILE_NAME_REMINDER_MEGAPHONE_TOAST" = "உங்கள் சுயவிவரப் பெயர் சேமிக்கப்பட்டது.";
-
 /* Action Sheet title prompting the user for a profile avatar */
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Set Profile Photo";
 
@@ -3050,12 +2969,6 @@
 /* notification body. Embeds {{reaction emoji}} */
 "REACTION_INCOMING_NOTIFICATION_TO_VOICE_MESSAGE_BODY_FORMAT" = "எதிர்வினையாற்றப்பட்டது %@ க்கு உங்கள்குரல் செய்தி";
 
-/* Body for the megaphone introducing reactions */
-"REACTION_MEGAPHONE_BODY" = "தட்டவும் மற்றும் எப்படி என்று விரைவாக பதிலளிக்க எந்த செய்தியையும் பிடித்துக் கொள்ளுங்கள் நீங்கள் உணருங்கள்.";
-
-/* Title for the megaphone introducing reactions */
-"REACTION_MEGAPHONE_TITLE" = "எதிர்வினைகளை அறிமுகப்படுத்துகிறது";
-
 /* Text describing the local user in the reaction details pane. */
 "REACTIONS_DETAIL_YOU" = "நீங்கள்";
 
@@ -3163,24 +3076,6 @@
 
 /* No comment provided by engineer. */
 "RELAY_REGISTERED_ERROR_RECOVERY" = "நீங்கள் பதிவு செய்ய முயற்சிக்கும் தொலைபேசி எண் ஏற்கனவே வேறொரு சேவையகத்தில் பதிவு செய்யப்பட்டுள்ளது, தயவுசெய்து அங்கிருந்து பதிவுசெய்து மீண்டும் முயற்சிக்கவும்.";
-
-/* Body text for when user is periodically prompted to enter their registration lock PIN */
-"REMINDER_2FA_BODY" = "உங்கள் தொலைபேசி எண்ணுக்கு பதிவு பூட்டு இயக்கப்பட்டது. உங்கள் பதிவு பூட்டு பின்னை மனப்பாடம் செய்ய உங்களுக்கு உதவ, சிக்னல் அவ்வப்போது அதை உறுதிப்படுத்தும்படி கேட்கும்.";
-
-/* Body header for when user is periodically prompted to enter their registration lock PIN */
-"REMINDER_2FA_BODY_HEADER" = "நினைவூட்டல்:";
-
-/* Alert message explaining what happens if you forget your 'two-factor auth pin' */
-"REMINDER_2FA_FORGOT_PIN_ALERT_MESSAGE" = "பதிவு பூட்டு உங்கள் தொலைபேசி எண்ணை அங்கீகரிக்கப்படாத பதிவு முயற்சிகளிலிருந்து பாதுகாக்க உதவுகிறது. உங்கள் Signal தனியுரிமை அமைப்புகளில் எந்த நேரத்திலும் இந்த அம்சத்தை முடக்கலாம்.";
-
-/* Navbar title for when user is periodically prompted to enter their registration lock PIN */
-"REMINDER_2FA_NAV_TITLE" = "உங்கள் பதிவு பூட்டு பின்னை உள்ளிடவும்";
-
-/* Alert body after wrong guess for 'two-factor auth pin' reminder activity */
-"REMINDER_2FA_WRONG_PIN_ALERT_BODY" = "உங்கள் தனியுரிமை அமைப்புகளில் புதிய பின்னை அமைக்கலாம்.";
-
-/* Alert title after wrong guess for 'two-factor auth pin' reminder activity */
-"REMINDER_2FA_WRONG_PIN_ALERT_TITLE" = "அது சரியான பின் அல்ல.";
 
 /* The title for the 'replace group admin' view. */
 "REPLACE_ADMIN_VIEW_TITLE" = "புதிய நிர்வாகியைத் தேர்வுசெய்க";
@@ -3758,20 +3653,8 @@
 /* No comment provided by engineer. */
 "SETTINGS_SUPPORT" = "ஆதரவு";
 
-/* Indicates that 'two factor auth' is disabled in the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_DISABLED" = "முடக்கப்பட்டது";
-
-/* Indicates that 'two factor auth' is enabled in the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_ENABLED" = "இயக்கப்பட்டது";
-
-/* Label for the 'two factor auth' item of the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_ITEM" = "பதிவு பூட்டு";
-
 /* Label for the 'enable registration lock' switch of the privacy settings. */
 "SETTINGS_TWO_FACTOR_AUTH_SWITCH_LABEL" = "பதிவு பூட்டு";
-
-/* Title for the 'two factor auth' section of the privacy settings. */
-"SETTINGS_TWO_FACTOR_AUTH_TITLE" = "பதிவு பூட்டு";
 
 /* Footer for the 'two factor auth' section of the privacy settings when Signal PINs are available. */
 "SETTINGS_TWO_FACTOR_PINS_AUTH_FOOTER" = "கூடுதல் பாதுகாப்பிற்கு, இயக்கவும் பதிவு பூட்டு, இது தேவைப்படும் உங்கள் Signal பின் பதிவு செய்ய உங்கள் தொலைபேசி உடன் எண் Signal மீண்டும்.";

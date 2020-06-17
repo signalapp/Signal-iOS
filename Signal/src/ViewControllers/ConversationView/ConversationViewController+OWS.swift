@@ -562,10 +562,6 @@ extension ConversationViewController: MessageActionsViewControllerDelegate {
                                                  emoji: reaction,
                                                  isRemoving: isRemoving,
                                                  transaction: transaction)
-
-                // Mark the reactions experience upgrade complete if the user
-                // sends a reaction, even if they didn't dismiss it directly.
-                ExperienceUpgradeManager.clearReactionsExperienceUpgrade(transaction: transaction.unwrapGrdbWrite)
             }
         }
     }
