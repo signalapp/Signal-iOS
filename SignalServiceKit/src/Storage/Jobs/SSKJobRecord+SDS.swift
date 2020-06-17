@@ -323,8 +323,11 @@ extension SSKJobRecord: DeepCopyable {
             // NOTE: If this generates build errors, you made need to
             // modify DeepCopy.swift to support this type.
             //
-            // That might mean://
-            // * Implement DeepCopyable for this type.// * Implement DeepCopyable for this type.let invisibleMessage: TSOutgoingMessage?
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let invisibleMessage: TSOutgoingMessage?
             if let invisibleMessageForCopy = modelToCopy.invisibleMessage {
                invisibleMessage = try DeepCopies.deepCopy(invisibleMessageForCopy)
             } else {

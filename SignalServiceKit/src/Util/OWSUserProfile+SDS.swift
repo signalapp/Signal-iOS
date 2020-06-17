@@ -196,8 +196,11 @@ extension OWSUserProfile: DeepCopyable {
             // NOTE: If this generates build errors, you made need to
             // modify DeepCopy.swift to support this type.
             //
-            // That might mean://
-            // * Implement DeepCopyable for this type.// * Implement DeepCopyable for this type.let profileKey: OWSAES256Key?
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let profileKey: OWSAES256Key?
             if let profileKeyForCopy = modelToCopy.profileKey {
                profileKey = try DeepCopies.deepCopy(profileKeyForCopy)
             } else {
