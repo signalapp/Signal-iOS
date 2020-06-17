@@ -63,8 +63,11 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             self.verifyServerPublicParams()
         }
         AppReadiness.runNowOrWhenAppDidBecomeReadyPolite {
-            guard self.tsAccountManager.isRegisteredAndReady else {
-                return
+            self.mergeUserProfiles()
+
+            guard FeatureFlags.groupsV2,
+                self.tsAccountManager.isRegisteredAndReady else {
+                    return
             }
 
             firstly {
@@ -74,8 +77,6 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             }
 
             Self.enqueueRestoreGroupPass()
-
-            self.mergeUserProfiles()
         }
 
         observeNotifications()
@@ -87,6 +88,10 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
     // GroupsV2 TODO: Remove this check once zkgroups is in production.
     private func verifyServerPublicParams() {
+        guard FeatureFlags.groupsV2 else {
+            return
+        }
+
         let serverPublicParamsBase64 = TSConstants.serverPublicParamsBase64
         let lastServerPublicParamsKey = "lastServerPublicParamsKey"
         let lastZKgroupVersionCounterKey = "lastZKgroupVersionCounterKey"
@@ -956,9 +961,14 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
     // MARK: - ProfileKeyCredentials
 
     public func loadProfileKeyCredentialData(for uuids: [UUID]) -> Promise<ProfileKeyCredentialMap> {
-        
+
         guard RemoteConfig.groupsV2GoodCitizen else {
             return Promise(error: GroupsV2Error.gv2NotEnabled)
+        }
+
+        guard FeatureFlags.groupsV2,
+                FeatureFlags.versionedProfiledFetches else {
+                    return Promise(error: GroupsV2Error.gv2NotEnabled)
         }
 
         // 1. Use known credentials, where possible.
@@ -1016,7 +1026,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                         let address = SignalServiceAddress(uuid: uuid)
                         guard let credential = try self.versionedProfiles.profileKeyCredential(for: address,
                                                                                                transaction: transaction) else {
-                                                                                                throw OWSAssertionError("Could load credential.")
+                                                                                                throw OWSAssertionError("Could not load credential.")
                         }
                         credentialMap[uuid] = credential
                     }
@@ -1234,7 +1244,8 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
     // MARK: - Profiles
 
     public func reuploadLocalProfilePromise() -> Promise<Void> {
-        guard FeatureFlags.versionedProfiledUpdate else {
+        guard FeatureFlags.groupsV2,
+            FeatureFlags.versionedProfiledUpdate else {
             return Promise(error: OWSAssertionError("Versioned profiles are not enabled."))
         }
         return self.profileManager.reuploadLocalProfilePromise()
