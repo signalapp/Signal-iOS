@@ -25,16 +25,19 @@ public final class LokiPublicChatPoller : NSObject {
     
     @objc public func startIfNeeded() {
         if hasStarted { return }
-        pollForNewMessagesTimer = Timer.scheduledTimer(withTimeInterval: pollForNewMessagesInterval, repeats: true) { [weak self] _ in self?.pollForNewMessages() }
-        pollForDeletedMessagesTimer = Timer.scheduledTimer(withTimeInterval: pollForDeletedMessagesInterval, repeats: true) { [weak self] _ in self?.pollForDeletedMessages() }
-        pollForModeratorsTimer = Timer.scheduledTimer(withTimeInterval: pollForModeratorsInterval, repeats: true) { [weak self] _ in self?.pollForModerators() }
-        pollForDisplayNamesTimer = Timer.scheduledTimer(withTimeInterval: pollForDisplayNamesInterval, repeats: true) { [weak self] _ in self?.pollForDisplayNames() }
-        // Perform initial updates
-        pollForNewMessages()
-        pollForDeletedMessages()
-        pollForModerators()
-        pollForDisplayNames()
-        hasStarted = true
+        DispatchQueue.main.async { [weak self] in // Timers don't do well on background queues
+            guard let strongSelf = self else { return }
+            strongSelf.pollForNewMessagesTimer = Timer.scheduledTimer(withTimeInterval: strongSelf.pollForNewMessagesInterval, repeats: true) { _ in self?.pollForNewMessages() }
+            strongSelf.pollForDeletedMessagesTimer = Timer.scheduledTimer(withTimeInterval: strongSelf.pollForDeletedMessagesInterval, repeats: true) { _ in self?.pollForDeletedMessages() }
+            strongSelf.pollForModeratorsTimer = Timer.scheduledTimer(withTimeInterval: strongSelf.pollForModeratorsInterval, repeats: true) { _ in self?.pollForModerators() }
+            strongSelf.pollForDisplayNamesTimer = Timer.scheduledTimer(withTimeInterval: strongSelf.pollForDisplayNamesInterval, repeats: true) { _ in self?.pollForDisplayNames() }
+            // Perform initial updates
+            strongSelf.pollForNewMessages()
+            strongSelf.pollForDeletedMessages()
+            strongSelf.pollForModerators()
+            strongSelf.pollForDisplayNames()
+            strongSelf.hasStarted = true
+        }
     }
     
     @objc public func stop() {
