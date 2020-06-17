@@ -802,10 +802,10 @@ class ParsedProperty:
                 '// NOTE: If this generates build errors, you made need to',
                 '// modify DeepCopy.swift to support this type.',
                 '//',
-                '// That might mean:'
+                '// That might mean:',
                 '//',
-                '// * Implement DeepCopyable for this type.'
-                '// * Implement DeepCopyable for this type.'
+                '// * Implement DeepCopyable for this type (e.g. a model).',
+                '// * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).',
                 'let %s: %s' % ( value_name, initializer_param_type, ),
                 'if let %sForCopy = modelToCopy.%s {' % ( value_name, model_accessor, ),
                 '   %s = try DeepCopies.deepCopy(%sForCopy)' % ( value_name, value_name, ),
