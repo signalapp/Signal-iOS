@@ -177,11 +177,14 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
     // This method should only be called within performSync().
     private func readValue(for key: KeyType, transaction: SDSAnyReadTransaction) -> ValueType? {
         if let value = adapter.read(key: key, transaction: transaction) {
+            #if TESTABLE_BUILD
             if !isExcluded(key: key),
                 canUseCache(transaction: transaction) {
-                // Update cache.
-                nsCache.setObject(ModelCacheValueBox(value: value), forKey: key)
+                // NOTE: We don't to update cache; the SDS model extensions
+                // will populate the cache for us.
+                assert(nsCache.object(forKey: key) != nil)
             }
+            #endif
             return value
         }
         if !isExcluded(key: key),
@@ -540,11 +543,10 @@ private class ModelReadCacheWrapper<KeyType: AnyObject & Hashable, ValueType: Ba
 
     func didRead(value: ValueType, transaction: SDSAnyReadTransaction) {
         if transaction.isUIRead {
-            // "UI read" transactions can always update the "UI read" cache.
             uiReadCache.didRead(value: value, transaction: transaction)
-        } else if transaction as? SDSAnyWriteTransaction != nil {
-            // To avoid races, only update the "read" cache to reflect
-            // reads from write transactions.
+        } else {
+            // Note that this might not affect the cache due to cache
+            // exclusion, etc.
             readCache.didRead(value: value, transaction: transaction)
         }
     }
