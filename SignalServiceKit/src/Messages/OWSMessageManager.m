@@ -182,6 +182,25 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)startObserving
 {
     [self.databaseStorage addDatabaseStorageObserver:self];
+
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(databaseDidCommit)
+                                                 name:UIDatabaseObserver.databaseDidCommitNotification
+                                               object:nil];
+}
+
+- (void)databaseDidCommit
+{
+    OWSAssertIsOnMainThread();
+    OWSLogInfo(@"");
+
+    // Only the main app needs to update the badge count.
+    // When app is active, this will occur in response to database changes.
+    // When app is not active, we should update in response to ever
+    // database commit.
+    if (CurrentAppContext().isMainApp && !CurrentAppContext().isMainAppAndActive) {
+        [OWSMessageUtils.sharedManager updateApplicationBadgeCount];
+    }
 }
 
 #pragma mark - SDSDatabaseStorageObserver

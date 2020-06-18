@@ -41,6 +41,9 @@ public class UIDatabaseObserver: NSObject {
     @objc
     public static let didUpdateUIDatabaseSnapshotNotification = Notification.Name("didUpdateUIDatabaseSnapshot")
 
+    @objc
+    public static let databaseDidCommitNotification = Notification.Name("databaseDidCommitNotification")
+
     public static let kMaxIncrementalRowChanges = 200
 
     private lazy var nonModelTables: Set<String> = Set([MediaGalleryRecord.databaseTableName, PendingReadReceiptRecord.databaseTableName])
@@ -246,6 +249,8 @@ extension UIDatabaseObserver: TransactionObserver {
             // Try to update immediately.
             self.updateSnapshotIfNecessary()
         }
+
+        NotificationCenter.default.postNotificationNameAsync(Self.databaseDidCommitNotification, object: nil)
     }
 
     // See comment on databaseDidChange.
