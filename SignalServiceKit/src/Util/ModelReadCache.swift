@@ -299,7 +299,7 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
                 try adapter.copy(value: value)
             }
             #else
-            cachedValue = try self.copyBlock(value)
+            cachedValue = try adapter.copy(value: value)
             #endif
             return cachedValue
         } catch {
