@@ -804,7 +804,7 @@ typedef enum : NSUInteger {
     // We want to set the initial scroll state the first time we enter the view.
     if (!self.viewHasEverAppeared) {
         [self loadDraftInCompose];
-        [self scrollToDefaultPosition:NO];
+        [self scrollToDefaultPositionAnimated:NO];
     }
 
     if (!self.viewHasEverAppeared) {
@@ -822,94 +822,6 @@ typedef enum : NSUInteger {
     }
 
     [self showMessageRequestDialogIfRequired];
-}
-
-- (NSIndexPath *_Nullable)indexPathOfUnreadMessagesIndicator
-{
-    NSNumber *_Nullable unreadIndicatorIndex = self.conversationViewModel.viewState.unreadIndicatorIndex;
-    if (unreadIndicatorIndex == nil) {
-        return nil;
-    }
-    return [NSIndexPath indexPathForRow:unreadIndicatorIndex.integerValue inSection:0];
-}
-
-- (NSIndexPath *_Nullable)indexPathOfFocusMessage
-{
-    NSNumber *_Nullable index = self.conversationViewModel.viewState.focusItemIndex;
-    if (index == nil) {
-        return nil;
-    }
-    return [NSIndexPath indexPathForRow:index.integerValue inSection:0];
-}
-
-- (void)scrollToDefaultPosition:(BOOL)isAnimated
-{
-    if (self.isUserScrolling) {
-        return;
-    }
-
-    BOOL isScrollingToLastVisibleInteraction =
-        [NSObject isNullableObject:self.conversationViewModel.focusMessageIdOnOpen
-                           equalTo:self.threadViewModel.lastVisibleInteraction.uniqueId];
-
-    NSIndexPath *_Nullable indexPath = [self indexPathOfFocusMessage];
-
-    if (!indexPath) {
-        indexPath = [self indexPathOfUnreadMessagesIndicator];
-    }
-
-    if (indexPath) {
-        if (indexPath.section == 0 && indexPath.row == 0) {
-            [self.collectionView setContentOffset:CGPointZero animated:isAnimated];
-        } else if (isScrollingToLastVisibleInteraction) {
-            [self scrollToLastVisibleInteractionAnimated:isAnimated];
-        } else {
-            [self.collectionView scrollToItemAtIndexPath:indexPath
-                                        atScrollPosition:UICollectionViewScrollPositionTop
-                                                animated:isAnimated];
-        }
-    } else {
-        [self scrollToLastVisibleInteractionAnimated:isAnimated];
-    }
-}
-
-- (void)scrollToLastVisibleInteractionAnimated:(BOOL)isAnimated
-{
-    if (self.isUserScrolling) {
-        return;
-    }
-
-    TSInteraction *_Nullable interaction = self.threadViewModel.lastVisibleInteraction;
-    if (interaction == nil) {
-        [self scrollToBottomAnimated:isAnimated];
-        return;
-    }
-
-    NSIndexPath *_Nullable indexPath = [self.conversationViewModel indexPathForInteractionId:interaction.uniqueId];
-    if (indexPath == nil) {
-        OWSFailDebug(@"Unexpectedly missing index for last visible interaction");
-        [self scrollToBottomAnimated:isAnimated];
-        return;
-    }
-
-    [self.view layoutIfNeeded];
-
-    // Restore positioning.
-    UICollectionViewLayoutAttributes *attributes = [self.layout layoutAttributesForItemAtIndexPath:indexPath];
-    CGRect adjustedFrame = attributes.frame;
-
-    // Adjust the view's frame to compensate for the previous on screen percentage.
-    adjustedFrame.origin.y += attributes.frame.size.height * self.thread.lastVisibleSortIdOnScreenPercentage;
-
-    CGFloat bottomInset = -self.collectionView.adjustedContentInset.bottom;
-    CGFloat topInset = -self.collectionView.adjustedContentInset.top;
-    CGFloat collectionViewUnobscuredHeight = self.collectionView.height + bottomInset;
-
-    CGFloat dstY = self.safeContentHeight < self.collectionView.height
-        ? topInset
-        : adjustedFrame.origin.y - collectionViewUnobscuredHeight;
-
-    [self.collectionView setContentOffset:CGPointMake(0, dstY) animated:isAnimated];
 }
 
 - (void)resetContentAndLayoutWithSneakyTransaction
@@ -1268,7 +1180,7 @@ typedef enum : NSUInteger {
             // the scroll position gets into a weird state and
             // content is hidden behind the keyboard so we restore
             // it to the default position.
-            [self scrollToDefaultPosition:YES];
+            [self scrollToDefaultPositionAnimated:YES];
             break;
         case ConversationViewActionAudioCall:
             [self startAudioCall];
@@ -2726,9 +2638,10 @@ typedef enum : NSUInteger {
         return;
     }
 
-    [self.collectionView scrollToItemAtIndexPath:indexPath
-                                atScrollPosition:UICollectionViewScrollPositionTop
-                                        animated:YES];
+    [self scrollToInteractionWithIndexPath:indexPath
+                        onScreenPercentage:1
+                                  position:ScrollToCenterIfNotEntirelyOnScreen
+                                  animated:YES];
 
     // TODO: Highlight the quoted message?
 }
@@ -2921,9 +2834,10 @@ typedef enum : NSUInteger {
 
         if (isScrolledAboveUnreadIndicator) {
             // Only scroll as far as the unread indicator if we're scrolled above the unread indicator.
-            [[self collectionView] scrollToItemAtIndexPath:indexPathOfUnreadMessagesIndicator
-                                          atScrollPosition:UICollectionViewScrollPositionTop
-                                                  animated:YES];
+            [self scrollToInteractionWithIndexPath:indexPathOfUnreadMessagesIndicator
+                                onScreenPercentage:1
+                                          position:ScrollToTop
+                                          animated:YES];
             return;
         }
     }
@@ -3946,39 +3860,6 @@ typedef enum : NSUInteger {
     return [self.collectionView.collectionViewLayout collectionViewContentSize].height;
 }
 
-- (void)scrollToBottomAnimated:(BOOL)animated
-{
-    OWSAssertIsOnMainThread();
-
-    if (self.isUserScrolling) {
-        return;
-    }
-
-    if (self.conversationViewModel.canLoadNewerItems) {
-        [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-            [self.conversationViewModel ensureLoadWindowContainsNewestItemsWithTransaction:transaction];
-        }];
-    }
-
-    // Ensure the view is fully layed out before we try to scroll to the bottom, since
-    // we use the collectionView bounds to determine where the "bottom" is.
-    [self.view layoutIfNeeded];
-
-    const CGFloat bottomInset = -self.collectionView.adjustedContentInset.bottom;
-    const CGFloat firstContentPageTop = -self.collectionView.adjustedContentInset.top;
-    const CGFloat collectionViewUnobscuredHeight = self.collectionView.bounds.size.height + bottomInset;
-    const CGFloat lastContentPageTop = self.safeContentHeight - collectionViewUnobscuredHeight;
-
-    CGFloat dstY = MAX(firstContentPageTop, lastContentPageTop);
-
-    [self.collectionView setContentOffset:CGPointMake(0, dstY) animated:animated];
-}
-
-- (void)scrollToFirstUnreadMessage:(BOOL)isAnimated
-{
-    [self scrollToDefaultPosition:isAnimated];
-}
-
 #pragma mark - UIScrollViewDelegate
 
 - (void)updateLastKnownDistanceFromBottom
@@ -4161,26 +4042,11 @@ typedef enum : NSUInteger {
                   didSelectMessageId:(NSString *)messageId
 {
     OWSLogDebug(@"messageId: %@", messageId);
-    [self scrollToInteractionId:messageId];
+    [self scrollToInteractionWithUniqueId:messageId
+                       onScreenPercentage:1
+                                 position:ScrollToCenterIfNotEntirelyOnScreen
+                                 animated:YES];
     [BenchManager completeEventWithEventId:[NSString stringWithFormat:@"Conversation Search Nav: %@", messageId]];
-}
-
-- (void)scrollToInteractionId:(NSString *)interactionId
-{
-    __block NSIndexPath *_Nullable indexPath;
-    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-        indexPath = [self.conversationViewModel ensureLoadWindowContainsInteractionId:interactionId
-                                                                          transaction:transaction];
-    }];
-
-    if (!indexPath) {
-        OWSFailDebug(@"unable to find indexPath");
-        return;
-    }
-
-    [self.collectionView scrollToItemAtIndexPath:indexPath
-                                atScrollPosition:UICollectionViewScrollPositionCenteredVertically
-                                        animated:YES];
 }
 
 #pragma mark - ConversationViewLayoutDelegate
@@ -5488,7 +5354,7 @@ typedef enum : NSUInteger {
     void (^adjustInsets)(void) = ^(void) {
         // Adjust content offset to prevent the presented keyboard from obscuring content.
         if (!self.viewHasEverAppeared) {
-            [self scrollToDefaultPosition:NO];
+            [self scrollToDefaultPositionAnimated:NO];
         } else if (wasScrolledToBottom) {
             // If we were scrolled to the bottom, don't do any fancy math. Just stay at the bottom.
             [self scrollToBottomAnimated:NO];

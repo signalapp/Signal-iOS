@@ -20,9 +20,15 @@ extension ConversationViewController {
     }
 
     @objc
+    var lastIndexPath: IndexPath? {
+        guard !viewItems.isEmpty else { return nil }
+        return IndexPath(row: viewItems.count - 1, section: 0)
+    }
+
+    @objc
     var lastSortId: UInt64 {
-        guard !viewItems.isEmpty else { return 0 }
-        return firstIndexPathWithSortId(atOrBeforeIndexPath: IndexPath(row: viewItems.count - 1, section: 0))?.sortId ?? 0
+        guard let lastIndexPath = lastIndexPath else { return 0 }
+        return firstIndexPathWithSortId(atOrBeforeIndexPath: lastIndexPath)?.sortId ?? 0
     }
 
     @objc

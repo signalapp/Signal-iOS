@@ -187,7 +187,7 @@ NS_ASSUME_NONNULL_BEGIN
         if (self.conversationSplitViewController.visibleThread) {
             if ([self.conversationSplitViewController.visibleThread.uniqueId isEqualToString:thread.uniqueId]) {
                 [self.conversationSplitViewController.selectedConversationViewController
-                    scrollToFirstUnreadMessage:isAnimated];
+                    scrollToDefaultPositionAnimated:isAnimated];
                 return;
             }
         }

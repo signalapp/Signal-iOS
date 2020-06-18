@@ -713,6 +713,7 @@
 		88F7EE93230253C5003ADF7D /* UsernameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F7EE92230253C5003ADF7D /* UsernameViewController.swift */; };
 		88F8195A2383569A007914E8 /* CNContactViewController+OWS.m in Sources */ = {isa = PBXBuildFile; fileRef = 88F819592383569A007914E8 /* CNContactViewController+OWS.m */; };
 		88F8195C238375C7007914E8 /* ReactionCountsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88F8195B238375C7007914E8 /* ReactionCountsView.swift */; };
+		88FE237E249C22080041670F /* ConversationViewController+ScrollTo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88FE237D249C22080041670F /* ConversationViewController+ScrollTo.swift */; };
 		954AEE6A1DF33E01002E5410 /* ContactsPickerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 954AEE681DF33D32002E5410 /* ContactsPickerTest.swift */; };
 		A10FDF79184FB4BB007FF963 /* MediaPlayer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 76C87F18181EFCE600C4ACAB /* MediaPlayer.framework */; };
 		A11CD70D17FA230600A2D1B1 /* QuartzCore.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A11CD70C17FA230600A2D1B1 /* QuartzCore.framework */; };
@@ -1684,6 +1685,7 @@
 		88F819582383569A007914E8 /* CNContactViewController+OWS.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "CNContactViewController+OWS.h"; sourceTree = "<group>"; };
 		88F819592383569A007914E8 /* CNContactViewController+OWS.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = "CNContactViewController+OWS.m"; sourceTree = "<group>"; };
 		88F8195B238375C7007914E8 /* ReactionCountsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReactionCountsView.swift; sourceTree = "<group>"; };
+		88FE237D249C22080041670F /* ConversationViewController+ScrollTo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+ScrollTo.swift"; sourceTree = "<group>"; };
 		8981C8F64D94D3C52EB67A2C /* Pods-SignalTests.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalTests.test.xcconfig"; path = "Pods/Target Support Files/Pods-SignalTests/Pods-SignalTests.test.xcconfig"; sourceTree = "<group>"; };
 		8EEE74B0753448C085B48721 /* Pods-SignalMessaging.app store release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalMessaging.app store release.xcconfig"; path = "Pods/Target Support Files/Pods-SignalMessaging/Pods-SignalMessaging.app store release.xcconfig"; sourceTree = "<group>"; };
 		948239851C08032C842937CC /* Pods-SignalMessaging.test.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-SignalMessaging.test.xcconfig"; path = "Pods/Target Support Files/Pods-SignalMessaging/Pods-SignalMessaging.test.xcconfig"; sourceTree = "<group>"; };
@@ -2147,9 +2149,10 @@
 				343A65961FC4CFE6000477A1 /* ConversationScrollButton.m */,
 				34D1F06D1F8678AA0066283D /* ConversationViewController.h */,
 				34D1F06E1F8678AA0066283D /* ConversationViewController.m */,
-				3457811A23EB56B300CE01C3 /* ConversationViewController+MessageRequest.swift */,
 				88411B5F249B0757005D10AA /* ConversationViewController+LastVisibleSortId.swift */,
+				3457811A23EB56B300CE01C3 /* ConversationViewController+MessageRequest.swift */,
 				4CD675C422E7CF22008010D2 /* ConversationViewController+OWS.swift */,
+				88FE237D249C22080041670F /* ConversationViewController+ScrollTo.swift */,
 				34D1F06F1F8678AA0066283D /* ConversationViewItem.h */,
 				34D1F0701F8678AA0066283D /* ConversationViewItem.m */,
 				34D1F0711F8678AA0066283D /* ConversationViewLayout.h */,
@@ -4863,6 +4866,7 @@
 				4C46361322EE680700185951 /* ConversationPicker.swift in Sources */,
 				88594E5A2335B08000390B19 /* AudioMessageView.swift in Sources */,
 				340FC8B5204DAC8D007AEB0F /* AboutTableViewController.m in Sources */,
+				88FE237E249C22080041670F /* ConversationViewController+ScrollTo.swift in Sources */,
 				34BECE2B1F74C12700D7438D /* DebugUIStress.m in Sources */,
 				340E9AC0235F876800FA362C /* ForwardMessageNavigationController.swift in Sources */,
 				3465947C2433B77700E5C510 /* NewGroupMembersBar.swift in Sources */,

@@ -23,6 +23,8 @@ typedef NS_ENUM(NSUInteger, ConversationViewAction) {
 
 @property (nonatomic, readonly) TSThread *thread;
 @property (nonatomic, readonly) ThreadViewModel *threadViewModel;
+@property (nonatomic, readonly) BOOL isUserScrolling;
+@property (nonatomic, readonly) CGFloat safeContentHeight;
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
@@ -35,8 +37,6 @@ typedef NS_ENUM(NSUInteger, ConversationViewAction) {
 - (void)dismissKeyBoard;
 
 - (void)updateMessageActionsStateForCell:(ConversationViewCell *)cell;
-
-- (void)scrollToFirstUnreadMessage:(BOOL)isAnimated;
 
 #pragma mark 3D Touch Methods
 
