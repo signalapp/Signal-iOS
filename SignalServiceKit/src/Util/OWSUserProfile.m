@@ -69,6 +69,11 @@ NSUInteger const kUserProfileSchemaVersion = 1;
     return SSKEnvironment.shared.storageServiceManager;
 }
 
+- (UserProfileReadCache *)userProfileReadCache
+{
+    return SSKEnvironment.shared.modelReadCaches.userProfileReadCache;
+}
+
 #pragma mark -
 
 @synthesize avatarUrlPath = _avatarUrlPath;
@@ -691,21 +696,21 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 {
     [super anyDidInsertWithTransaction:transaction];
 
-    [self.profileManager.userProfileReadCache didInsertOrUpdateUserProfile:self transaction:transaction];
+    [self.userProfileReadCache didInsertOrUpdateUserProfile:self transaction:transaction];
 }
 
 - (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [super anyDidUpdateWithTransaction:transaction];
 
-    [self.profileManager.userProfileReadCache didInsertOrUpdateUserProfile:self transaction:transaction];
+    [self.userProfileReadCache didInsertOrUpdateUserProfile:self transaction:transaction];
 }
 
 - (void)anyDidRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [super anyDidRemoveWithTransaction:transaction];
 
-    [self.profileManager.userProfileReadCache didRemoveUserProfile:self transaction:transaction];
+    [self.userProfileReadCache didRemoveUserProfile:self transaction:transaction];
 }
 
 + (void)mergeUserProfilesIfNecessaryForAddress:(SignalServiceAddress *)address

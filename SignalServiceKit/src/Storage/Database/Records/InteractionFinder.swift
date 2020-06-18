@@ -27,6 +27,8 @@ protocol InteractionFinderAdapter {
 
     static func enumerateMessagesWhichFailedToStartExpiring(transaction: ReadTransaction, block: @escaping (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void)
 
+    static func interactions(withInteractionIds interactionIds: Set<String>, transaction: ReadTransaction) -> Set<TSInteraction>
+
     // MARK: - instance methods
 
     func mostRecentInteractionForInbox(transaction: ReadTransaction) -> TSInteraction?
@@ -38,6 +40,7 @@ protocol InteractionFinderAdapter {
     func enumerateInteractionIds(transaction: ReadTransaction, block: @escaping (String, UnsafeMutablePointer<ObjCBool>) throws -> Void) throws
     func enumerateRecentInteractions(transaction: ReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws
     func enumerateInteractions(range: NSRange, transaction: ReadTransaction, block: @escaping (TSInteraction, UnsafeMutablePointer<ObjCBool>) -> Void) throws
+    func interactionIds(inRange range: NSRange, transaction: ReadTransaction) throws -> [String]
     func existsOutgoingMessage(transaction: ReadTransaction) -> Bool
     func outgoingMessageCount(transaction: ReadTransaction) -> UInt
 
@@ -176,6 +179,16 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
             YAPDBInteractionFinderAdapter.enumerateMessagesWhichFailedToStartExpiring(transaction: yapRead, block: block)
         case .grdbRead(let grdbRead):
             GRDBInteractionFinder.enumerateMessagesWhichFailedToStartExpiring(transaction: grdbRead, block: block)
+        }
+    }
+
+    @objc
+    public class func interactions(withInteractionIds interactionIds: Set<String>, transaction: SDSAnyReadTransaction) -> Set<TSInteraction> {
+        switch transaction.readTransaction {
+        case .yapRead(let yapRead):
+            return YAPDBInteractionFinderAdapter.interactions(withInteractionIds: interactionIds, transaction: yapRead)
+        case .grdbRead(let grdbRead):
+            return GRDBInteractionFinder.interactions(withInteractionIds: interactionIds, transaction: grdbRead)
         }
     }
 
@@ -337,6 +350,16 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
             return yapAdapter.enumerateInteractions(range: range, transaction: yapRead, block: block)
         case .grdbRead(let grdbRead):
             return try grdbAdapter.enumerateInteractions(range: range, transaction: grdbRead, block: block)
+        }
+    }
+
+    public func interactionIds(inRange range: NSRange, transaction: SDSAnyReadTransaction) throws -> [String] {
+        switch transaction.readTransaction {
+        case .yapRead(let yapRead):
+        owsFailDebug("Invalid transaction.")
+            return try yapAdapter.interactionIds(inRange: range, transaction: yapRead)
+        case .grdbRead(let grdbRead):
+            return try grdbAdapter.interactionIds(inRange: range, transaction: grdbRead)
         }
     }
 
@@ -583,6 +606,10 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
         OWSDisappearingMessagesFinder.ydb_enumerateMessagesWhichFailedToStartExpiring(block, transaction: transaction)
     }
 
+    static func interactions(withInteractionIds interactionIds: Set<String>, transaction: YapDatabaseReadTransaction) -> Set<TSInteraction> {
+        owsFail("Not implemented.")
+    }
+
     // MARK: - instance methods
 
     func mostRecentInteractionForInbox(transaction: YapDatabaseReadTransaction) -> TSInteraction? {
@@ -689,6 +716,11 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
 
             block(interaction, stopPtr)
         }
+    }
+
+    public func interactionIds(inRange range: NSRange, transaction: YapDatabaseReadTransaction) throws -> [String] {
+        owsFailDebug("Invalid transaction.")
+        return []
     }
 
     func interaction(at index: UInt, transaction: YapDatabaseReadTransaction) -> TSInteraction? {
@@ -929,6 +961,28 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
         }
     }
 
+    static func interactions(withInteractionIds interactionIds: Set<String>, transaction: GRDBReadTransaction) -> Set<TSInteraction> {
+        guard !interactionIds.isEmpty else {
+            return []
+        }
+
+        let sql = """
+            SELECT * FROM \(InteractionRecord.databaseTableName)
+            WHERE \(interactionColumn: .uniqueId) IN (\(interactionIds.map { "\'\($0)'" }.joined(separator: ",")))
+        """
+        let arguments: StatementArguments = []
+        let cursor = TSInteraction.grdbFetchCursor(sql: sql, arguments: arguments, transaction: transaction)
+        var interactions = Set<TSInteraction>()
+        do {
+            while let interaction = try cursor.next() {
+                interactions.insert(interaction)
+            }
+        } catch {
+            owsFailDebug("unexpected error \(error)")
+        }
+        return interactions
+    }
+
     // MARK: - instance methods
 
     func mostRecentInteractionForInbox(transaction: GRDBReadTransaction) -> TSInteraction? {
@@ -1054,6 +1108,21 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
                 return
             }
         }
+    }
+
+    func interactionIds(inRange range: NSRange, transaction: GRDBReadTransaction) throws -> [String] {
+        let sql = """
+        SELECT \(interactionColumn: .uniqueId)
+        FROM \(InteractionRecord.databaseTableName)
+        WHERE \(interactionColumn: .threadUniqueId) = ?
+        ORDER BY \(interactionColumn: .id)
+        LIMIT \(range.length)
+        OFFSET \(range.location)
+        """
+        let arguments: StatementArguments = [threadUniqueId]
+        return try String.fetchAll(transaction.database,
+                                   sql: sql,
+                                   arguments: arguments)
     }
 
     @objc

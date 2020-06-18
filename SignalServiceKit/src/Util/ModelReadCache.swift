@@ -177,11 +177,14 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
     // This method should only be called within performSync().
     private func readValue(for key: KeyType, transaction: SDSAnyReadTransaction) -> ValueType? {
         if let value = adapter.read(key: key, transaction: transaction) {
+            #if TESTABLE_BUILD
             if !isExcluded(key: key),
                 canUseCache(transaction: transaction) {
-                // Update cache.
-                nsCache.setObject(ModelCacheValueBox(value: value), forKey: key)
+                // NOTE: We don't to update cache; the SDS model extensions
+                // will populate the cache for us.
+                assert(nsCache.object(forKey: key) != nil)
             }
+            #endif
             return value
         }
         if !isExcluded(key: key),
@@ -540,11 +543,10 @@ private class ModelReadCacheWrapper<KeyType: AnyObject & Hashable, ValueType: Ba
 
     func didRead(value: ValueType, transaction: SDSAnyReadTransaction) {
         if transaction.isUIRead {
-            // "UI read" transactions can always update the "UI read" cache.
             uiReadCache.didRead(value: value, transaction: transaction)
-        } else if transaction as? SDSAnyWriteTransaction != nil {
-            // To avoid races, only update the "read" cache to reflect
-            // reads from write transactions.
+        } else {
+            // Note that this might not affect the cache due to cache
+            // exclusion, etc.
             readCache.didRead(value: value, transaction: transaction)
         }
     }
@@ -737,6 +739,201 @@ public class SignalRecipientReadCache: NSObject {
 // MARK: -
 
 @objc
+public class ThreadReadCache: NSObject {
+    typealias KeyType = NSString
+    typealias ValueType = TSThread
+
+    private class Adapter: ModelCacheAdapter<KeyType, ValueType> {
+        override func read(key: KeyType, transaction: SDSAnyReadTransaction) -> ValueType? {
+            return TSThread.anyFetch(uniqueId: key as String,
+                                     transaction: transaction,
+                                     ignoreCache: true)
+        }
+
+        override func deriveKey(fromValue value: ValueType) -> KeyType {
+            value.uniqueId as NSString
+        }
+
+        override func copy(value: ValueType) throws -> ValueType {
+            return try DeepCopies.deepCopy(value)
+        }
+
+        override func uiReadEvacuation(databaseChanges: UIDatabaseChanges,
+                                       nsCache: NSCache<KeyType, ModelCacheValueBox<ValueType>>) {
+            // Only evacuate modified models.
+            for uniqueId: String in databaseChanges.threadUniqueIds {
+                nsCache.removeObject(forKey: uniqueId as NSString)
+            }
+        }
+    }
+
+    private let cache: ModelReadCacheWrapper<KeyType, ValueType>
+
+    @objc
+    public override init() {
+        cache = ModelReadCacheWrapper(cacheName: "TSThread", adapter: Adapter())
+    }
+
+    @objc(getThreadForUniqueId:transaction:)
+    public func getThread(uniqueId: String, transaction: SDSAnyReadTransaction) -> TSThread? {
+        return cache.getValue(for: uniqueId as NSString, transaction: transaction)
+    }
+
+    @objc(getThreadsIfInCacheForUniqueIds:transaction:)
+    public func getThreadsIfInCache(forUniqueIds uniqueIds: [String], transaction: SDSAnyReadTransaction) -> [String: TSThread] {
+        let keys: [NSString] = uniqueIds.map { $0 as NSString }
+        let result: [NSString: TSThread] = cache.getValuesIfInCache(for: keys, transaction: transaction)
+        return Dictionary(uniqueKeysWithValues: result.map({ (key, value) in
+            return (key as String, value)
+        }))
+    }
+
+    @objc(didRemoveThread:transaction:)
+    public func didRemove(thread: TSThread, transaction: SDSAnyWriteTransaction) {
+        cache.didRemove(value: thread, transaction: transaction)
+    }
+
+    @objc(didInsertOrUpdateThread:transaction:)
+    public func didInsertOrUpdate(thread: TSThread, transaction: SDSAnyWriteTransaction) {
+        cache.didInsertOrUpdate(value: thread, transaction: transaction)
+    }
+
+    @objc
+    public func didReadThread(_ thread: TSThread, transaction: SDSAnyReadTransaction) {
+        cache.didRead(value: thread, transaction: transaction)
+    }
+}
+
+// MARK: -
+
+@objc
+public class InteractionReadCache: NSObject {
+    typealias KeyType = NSString
+    typealias ValueType = TSInteraction
+
+    private class Adapter: ModelCacheAdapter<KeyType, ValueType> {
+        override func read(key: KeyType, transaction: SDSAnyReadTransaction) -> ValueType? {
+            return TSInteraction.anyFetch(uniqueId: key as String,
+                                          transaction: transaction,
+                                          ignoreCache: true)
+        }
+
+        override func deriveKey(fromValue value: ValueType) -> KeyType {
+            value.uniqueId as NSString
+        }
+
+        override func copy(value: ValueType) throws -> ValueType {
+            return try DeepCopies.deepCopy(value)
+        }
+
+        override func uiReadEvacuation(databaseChanges: UIDatabaseChanges,
+                                       nsCache: NSCache<KeyType, ModelCacheValueBox<ValueType>>) {
+            // Only evacuate modified models.
+            for uniqueId: String in databaseChanges.interactionUniqueIds {
+                nsCache.removeObject(forKey: uniqueId as NSString)
+            }
+        }
+    }
+
+    private let cache: ModelReadCacheWrapper<KeyType, ValueType>
+
+    @objc
+    public override init() {
+        cache = ModelReadCacheWrapper(cacheName: "TSInteraction", adapter: Adapter())
+    }
+
+    @objc(getInteractionForUniqueId:transaction:)
+    public func getInteraction(uniqueId: String, transaction: SDSAnyReadTransaction) -> TSInteraction? {
+        return cache.getValue(for: uniqueId as NSString, transaction: transaction)
+    }
+
+    @objc(getInteractionsIfInCacheForUniqueIds:transaction:)
+    public func getInteractionsIfInCache(forUniqueIds uniqueIds: [String], transaction: SDSAnyReadTransaction) -> [String: TSInteraction] {
+        let keys: [NSString] = uniqueIds.map { $0 as NSString }
+        let result: [NSString: TSInteraction] = cache.getValuesIfInCache(for: keys, transaction: transaction)
+        return Dictionary(uniqueKeysWithValues: result.map({ (key, value) in
+            return (key as String, value)
+        }))
+    }
+
+    @objc(didRemoveInteraction:transaction:)
+    public func didRemove(interaction: TSInteraction, transaction: SDSAnyWriteTransaction) {
+        cache.didRemove(value: interaction, transaction: transaction)
+    }
+
+    @objc(didInsertOrUpdateInteraction:transaction:)
+    public func didInsertOrUpdate(interaction: TSInteraction, transaction: SDSAnyWriteTransaction) {
+        cache.didInsertOrUpdate(value: interaction, transaction: transaction)
+    }
+
+    @objc
+    public func didReadInteraction(_ interaction: TSInteraction, transaction: SDSAnyReadTransaction) {
+        cache.didRead(value: interaction, transaction: transaction)
+    }
+}
+
+// MARK: -
+
+@objc
+public class AttachmentReadCache: NSObject {
+    typealias KeyType = NSString
+    typealias ValueType = TSAttachment
+
+    private class Adapter: ModelCacheAdapter<KeyType, ValueType> {
+        override func read(key: KeyType, transaction: SDSAnyReadTransaction) -> ValueType? {
+            return TSAttachment.anyFetch(uniqueId: key as String,
+                                         transaction: transaction,
+                                         ignoreCache: true)
+        }
+
+        override func deriveKey(fromValue value: ValueType) -> KeyType {
+            value.uniqueId as NSString
+        }
+
+        override func copy(value: ValueType) throws -> ValueType {
+            return try DeepCopies.deepCopy(value)
+        }
+
+        override func uiReadEvacuation(databaseChanges: UIDatabaseChanges,
+                                       nsCache: NSCache<KeyType, ModelCacheValueBox<ValueType>>) {
+            // Only evacuate modified models.
+            for uniqueId: String in databaseChanges.attachmentUniqueIds {
+                nsCache.removeObject(forKey: uniqueId as NSString)
+            }
+        }
+    }
+
+    private let cache: ModelReadCacheWrapper<KeyType, ValueType>
+
+    @objc
+    public override init() {
+        cache = ModelReadCacheWrapper(cacheName: "TSAttachment", adapter: Adapter())
+    }
+
+    @objc(getAttachmentForUniqueId:transaction:)
+    public func getAttachment(uniqueId: String, transaction: SDSAnyReadTransaction) -> TSAttachment? {
+        return cache.getValue(for: uniqueId as NSString, transaction: transaction)
+    }
+
+    @objc(didRemoveAttachment:transaction:)
+    public func didRemove(attachment: TSAttachment, transaction: SDSAnyWriteTransaction) {
+        cache.didRemove(value: attachment, transaction: transaction)
+    }
+
+    @objc(didInsertOrUpdateAttachment:transaction:)
+    public func didInsertOrUpdate(attachment: TSAttachment, transaction: SDSAnyWriteTransaction) {
+        cache.didInsertOrUpdate(value: attachment, transaction: transaction)
+    }
+
+    @objc
+    public func didReadAttachment(_ attachment: TSAttachment, transaction: SDSAnyReadTransaction) {
+        cache.didRead(value: attachment, transaction: transaction)
+    }
+}
+
+// MARK: -
+
+@objc
 public class ModelReadCaches: NSObject {
     @objc
     public let userProfileReadCache = UserProfileReadCache()
@@ -744,4 +941,10 @@ public class ModelReadCaches: NSObject {
     public let signalAccountReadCache = SignalAccountReadCache()
     @objc
     public let signalRecipientReadCache = SignalRecipientReadCache()
+    @objc
+    public let threadReadCache = ThreadReadCache()
+    @objc
+    public let interactionReadCache = InteractionReadCache()
+    @objc
+    public let attachmentReadCache = AttachmentReadCache()
 }

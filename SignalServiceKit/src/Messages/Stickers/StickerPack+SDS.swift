@@ -166,6 +166,50 @@ extension StickerPack: SDSModel {
     }
 }
 
+// MARK: - DeepCopyable
+
+extension StickerPack: DeepCopyable {
+
+    public func deepCopy() throws -> AnyObject {
+        // Any subclass can be cast to it's superclass,
+        // so the order of this switch statement matters.
+        // We need to do a "depth first" search by type.
+        guard let id = self.grdbId?.int64Value else {
+            throw OWSAssertionError("Model missing grdbId.")
+        }
+
+        do {
+            let modelToCopy = self
+            assert(type(of: modelToCopy) == StickerPack.self)
+            let uniqueId: String = modelToCopy.uniqueId
+            let author: String? = modelToCopy.author
+            // NOTE: If this generates build errors, you made need to
+            // implement DeepCopyable for this type in DeepCopy.swift.
+            let cover: StickerPackItem = try DeepCopies.deepCopy(modelToCopy.cover)
+            let dateCreated: Date = modelToCopy.dateCreated
+            // NOTE: If this generates build errors, you made need to
+            // implement DeepCopyable for this type in DeepCopy.swift.
+            let info: StickerPackInfo = try DeepCopies.deepCopy(modelToCopy.info)
+            let isInstalled: Bool = modelToCopy.isInstalled
+            // NOTE: If this generates build errors, you made need to
+            // implement DeepCopyable for this type in DeepCopy.swift.
+            let items: [StickerPackItem] = try DeepCopies.deepCopy(modelToCopy.items)
+            let title: String? = modelToCopy.title
+
+            return StickerPack(grdbId: id,
+                               uniqueId: uniqueId,
+                               author: author,
+                               cover: cover,
+                               dateCreated: dateCreated,
+                               info: info,
+                               isInstalled: isInstalled,
+                               items: items,
+                               title: title)
+        }
+
+    }
+}
+
 // MARK: - Table Metadata
 
 extension StickerPackSerializer {
@@ -308,9 +352,11 @@ public extension StickerPack {
 
 @objc
 public class StickerPackCursor: NSObject {
+    private let transaction: GRDBReadTransaction
     private let cursor: RecordCursor<StickerPackRecord>?
 
-    init(cursor: RecordCursor<StickerPackRecord>?) {
+    init(transaction: GRDBReadTransaction, cursor: RecordCursor<StickerPackRecord>?) {
+        self.transaction = transaction
         self.cursor = cursor
     }
 
@@ -352,10 +398,10 @@ public extension StickerPack {
         let database = transaction.database
         do {
             let cursor = try StickerPackRecord.fetchCursor(database)
-            return StickerPackCursor(cursor: cursor)
+            return StickerPackCursor(transaction: transaction, cursor: cursor)
         } catch {
             owsFailDebug("Read failed: \(error)")
-            return StickerPackCursor(cursor: nil)
+            return StickerPackCursor(transaction: transaction, cursor: nil)
         }
     }
 
@@ -561,11 +607,11 @@ public extension StickerPack {
         do {
             let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
             let cursor = try StickerPackRecord.fetchCursor(transaction.database, sqlRequest)
-            return StickerPackCursor(cursor: cursor)
+            return StickerPackCursor(transaction: transaction, cursor: cursor)
         } catch {
             Logger.error("sql: \(sql)")
             owsFailDebug("Read failed: \(error)")
-            return StickerPackCursor(cursor: nil)
+            return StickerPackCursor(transaction: transaction, cursor: nil)
         }
     }
 
@@ -622,12 +668,17 @@ class StickerPackSerializer: SDSSerializer {
 
 // MARK: - Deep Copy
 
+#if TESTABLE_BUILD
 @objc
 public extension StickerPack {
-    func deepCopy() throws -> StickerPack {
+    // We're not using this method at the moment,
+    // but we might use it for validation of
+    // other deep copy methods.
+    func deepCopyUsingRecord() throws -> StickerPack {
         guard let record = try asRecord() as? StickerPackRecord else {
             throw OWSAssertionError("Could not convert to record.")
         }
         return try StickerPack.fromRecord(record)
     }
 }
+#endif

@@ -46,7 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readonly) TSOutgoingMessageState legacyMessageState;
 @property (nonatomic, readonly) BOOL legacyWasDelivered;
 @property (nonatomic, readonly) BOOL hasLegacyMessageState;
-@property (atomic, readonly)
+@property (atomic, nullable, readonly)
     NSDictionary<SignalServiceAddress *, TSOutgoingMessageRecipientState *> *recipientAddressStates;
 @property (nonatomic, readonly) TSOutgoingMessageState storedMessageState;
 

@@ -142,6 +142,36 @@ extension ExperienceUpgrade: SDSModel {
     }
 }
 
+// MARK: - DeepCopyable
+
+extension ExperienceUpgrade: DeepCopyable {
+
+    public func deepCopy() throws -> AnyObject {
+        // Any subclass can be cast to it's superclass,
+        // so the order of this switch statement matters.
+        // We need to do a "depth first" search by type.
+        guard let id = self.grdbId?.int64Value else {
+            throw OWSAssertionError("Model missing grdbId.")
+        }
+
+        do {
+            let modelToCopy = self
+            assert(type(of: modelToCopy) == ExperienceUpgrade.self)
+            let uniqueId: String = modelToCopy.uniqueId
+            let firstViewedTimestamp: Double = modelToCopy.firstViewedTimestamp
+            let isComplete: Bool = modelToCopy.isComplete
+            let lastSnoozedTimestamp: Double = modelToCopy.lastSnoozedTimestamp
+
+            return ExperienceUpgrade(grdbId: id,
+                                     uniqueId: uniqueId,
+                                     firstViewedTimestamp: firstViewedTimestamp,
+                                     isComplete: isComplete,
+                                     lastSnoozedTimestamp: lastSnoozedTimestamp)
+        }
+
+    }
+}
+
 // MARK: - Table Metadata
 
 extension ExperienceUpgradeSerializer {
@@ -276,9 +306,11 @@ public extension ExperienceUpgrade {
 
 @objc
 public class ExperienceUpgradeCursor: NSObject {
+    private let transaction: GRDBReadTransaction
     private let cursor: RecordCursor<ExperienceUpgradeRecord>?
 
-    init(cursor: RecordCursor<ExperienceUpgradeRecord>?) {
+    init(transaction: GRDBReadTransaction, cursor: RecordCursor<ExperienceUpgradeRecord>?) {
+        self.transaction = transaction
         self.cursor = cursor
     }
 
@@ -320,10 +352,10 @@ public extension ExperienceUpgrade {
         let database = transaction.database
         do {
             let cursor = try ExperienceUpgradeRecord.fetchCursor(database)
-            return ExperienceUpgradeCursor(cursor: cursor)
+            return ExperienceUpgradeCursor(transaction: transaction, cursor: cursor)
         } catch {
             owsFailDebug("Read failed: \(error)")
-            return ExperienceUpgradeCursor(cursor: nil)
+            return ExperienceUpgradeCursor(transaction: transaction, cursor: nil)
         }
     }
 
@@ -529,11 +561,11 @@ public extension ExperienceUpgrade {
         do {
             let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
             let cursor = try ExperienceUpgradeRecord.fetchCursor(transaction.database, sqlRequest)
-            return ExperienceUpgradeCursor(cursor: cursor)
+            return ExperienceUpgradeCursor(transaction: transaction, cursor: cursor)
         } catch {
             Logger.error("sql: \(sql)")
             owsFailDebug("Read failed: \(error)")
-            return ExperienceUpgradeCursor(cursor: nil)
+            return ExperienceUpgradeCursor(transaction: transaction, cursor: nil)
         }
     }
 
@@ -586,12 +618,17 @@ class ExperienceUpgradeSerializer: SDSSerializer {
 
 // MARK: - Deep Copy
 
+#if TESTABLE_BUILD
 @objc
 public extension ExperienceUpgrade {
-    func deepCopy() throws -> ExperienceUpgrade {
+    // We're not using this method at the moment,
+    // but we might use it for validation of
+    // other deep copy methods.
+    func deepCopyUsingRecord() throws -> ExperienceUpgrade {
         guard let record = try asRecord() as? ExperienceUpgradeRecord else {
             throw OWSAssertionError("Could not convert to record.")
         }
         return try ExperienceUpgrade.fromRecord(record)
     }
 }
+#endif

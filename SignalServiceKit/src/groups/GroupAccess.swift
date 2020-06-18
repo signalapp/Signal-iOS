@@ -29,6 +29,7 @@ public enum GroupV2Access: UInt, Codable {
 
 // MARK: -
 
+// This class is immutable.
 @objc
 public class GroupAccess: MTLModel {
     @objc

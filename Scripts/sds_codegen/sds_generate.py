@@ -192,6 +192,17 @@ class ParsedClass:
         super_class = global_class_map[self.super_class_name]
         return super_class.table_superclass()
 
+    def all_superclass_names(self):
+        result = [self.name]
+        if self.super_class_name is not None:
+            if self.super_class_name in global_class_map:
+                super_class = global_class_map[self.super_class_name]
+                result += super_class.all_superclass_names()
+        return result
+
+    def has_any_superclass_with_name(self, name):
+        return name in self.all_superclass_names()
+
     def should_generate_extensions(self):
        if self.name in (OLD_BASE_MODEL_CLASS_NAME, NEW_BASE_MODEL_CLASS_NAME, ):
            print 'Ignoring class (1):', self.name
@@ -288,10 +299,10 @@ class TypeInfo:
         self.field_override_record_swift_type = field_override_record_swift_type
 
     def swift_type(self):
-        return self._swift_type
+        return str(self._swift_type)
 
     def objc_type(self):
-        return self._objc_type
+        return str(self._objc_type)
 
     # This defines the mapping of Swift types to database column types.
     # We'll be iterating on this mapping.
@@ -499,7 +510,7 @@ class TypeInfo:
                 return 'archiveNSNumber(%s, conversion: %s)' % ( value_expr, serialization_conversion, )
 
         return value_expr
-
+        
 
     def record_field_type(self, value_name):
         # Special case this oddball type.
@@ -747,6 +758,83 @@ class ParsedProperty:
     def deserialize_record_invocation(self, value_name, did_force_optional):
         return self.type_info().deserialize_record_invocation(self, value_name, self.is_optional, did_force_optional)
 
+
+    def deep_copy_record_invocation(self, value_name, did_force_optional):
+ 
+        swift_type = self.swift_type_safe()
+        objc_type = self.objc_type_safe()
+        is_optional = self.is_optional
+        model_accessor = accessor_name_for_property(self)
+
+        initializer_param_type = swift_type
+        if is_optional:
+            initializer_param_type = initializer_param_type + '?'
+
+        simple_type_map = {
+            'NSString *': 'String',
+            'NSNumber *': 'NSNumber',
+            'NSDate *': 'Date',
+            'NSData *': 'Data',
+            'CGSize': 'CGSize',
+            'CGRect': 'CGRect',
+            'CGPoint': 'CGPoint',
+        }
+        if objc_type in simple_type_map:
+            initializer_param_type = simple_type_map[objc_type]
+            if is_optional:
+                initializer_param_type += '?'
+            return ['let %s: %s = modelToCopy.%s' % ( value_name, initializer_param_type, model_accessor, ),]
+
+ 
+        can_shallow_copy = False
+        if self.type_info().is_numeric():
+            can_shallow_copy = True
+        elif self.is_enum():
+            can_shallow_copy = True
+
+        if can_shallow_copy:
+            return ['let %s: %s = modelToCopy.%s' % ( value_name, initializer_param_type, model_accessor, ),]
+        
+        initializer_param_type = initializer_param_type.replace('AnyObject', 'Any')
+
+        if is_optional:
+            return [
+                '// NOTE: If this generates build errors, you made need to',
+                '// modify DeepCopy.swift to support this type.',
+                '//',
+                '// That might mean:',
+                '//',
+                '// * Implement DeepCopyable for this type (e.g. a model).',
+                '// * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).',
+                'let %s: %s' % ( value_name, initializer_param_type, ),
+                'if let %sForCopy = modelToCopy.%s {' % ( value_name, model_accessor, ),
+                '   %s = try DeepCopies.deepCopy(%sForCopy)' % ( value_name, value_name, ),
+                '} else {',
+                '   %s = nil' % ( value_name, ),
+                '}',
+            ]
+        else:
+            return [
+                '// NOTE: If this generates build errors, you made need to',
+                '// implement DeepCopyable for this type in DeepCopy.swift.',
+                'let %s: %s = try DeepCopies.deepCopy(modelToCopy.%s)' % ( value_name, initializer_param_type, model_accessor, ),
+            ]
+
+        fail('I don\'t know how to deep copy this type: %s / %s' % ( objc_type, swift_type) )
+    
+    
+    def possible_class_type_for_property(self):
+        swift_type = self.swift_type_safe()
+        if swift_type in global_class_map:
+            return global_class_map[swift_type]
+        objc_type = self.objc_type_safe()
+        if objc_type.endswith(' *'):
+            objc_type = objc_type[:-2]
+            if objc_type in global_class_map:
+                return global_class_map[objc_type]
+        return None
+        
+        
     def serialize_record_invocation(self, value_name, did_force_optional):
         return self.type_info().serialize_record_invocation(self, value_name, self.is_optional, did_force_optional)
 
@@ -1189,6 +1277,76 @@ extension %s: SDSModel {
 ''' % ( str(clazz.name), record_name, str(clazz.name), )
 
 
+
+    if not has_sds_superclass:
+        swift_body += '''
+// MARK: - DeepCopyable
+
+extension %(class_name)s: DeepCopyable {
+
+    public func deepCopy() throws -> AnyObject {
+        // Any subclass can be cast to it's superclass,
+        // so the order of this switch statement matters.
+        // We need to do a "depth first" search by type.
+        guard let id = self.grdbId?.int64Value else {
+            throw OWSAssertionError("Model missing grdbId.")
+        }
+''' % { "class_name": str(clazz.name) }
+        # switch self {''' % { "class_name": str(clazz.name) }
+
+        classes_to_copy = list(reversed(all_descendents_of_class(clazz))) + [clazz,]
+        for class_to_copy in classes_to_copy:
+            if should_ignore_class(class_to_copy):
+                continue
+
+            if class_to_copy == clazz:
+                swift_body += '''
+        do {
+            let modelToCopy = self
+            assert(type(of: modelToCopy) == %(class_name)s.self)
+''' % { "class_name": str(class_to_copy.name) }
+            else:
+                swift_body += '''
+        if let modelToCopy = self as? %(class_name)s {
+            assert(type(of: modelToCopy) == %(class_name)s.self)
+''' % { "class_name": str(class_to_copy.name) }
+
+            initializer_params = []
+            base_property_names = set()
+            for property in base_properties:
+                base_property_names.add(property.name)
+
+            deserialize_properties = properties_and_inherited_properties(class_to_copy)
+            for property in deserialize_properties:
+                value_name = '%s' % property.name
+
+                did_force_optional = (property.name not in base_property_names) and (not property.is_optional)
+                for statement in property.deep_copy_record_invocation(value_name, did_force_optional):
+                    swift_body += '            %s\n' % ( str(statement), )
+
+                initializer_params.append('%s: %s' % ( str(property.name), value_name, ) )
+
+            swift_body += '''
+'''
+
+            # --- Invoke Initializer
+
+            initializer_invocation = '            return %s(' % str(class_to_copy.name)
+            swift_body += initializer_invocation
+            initializer_params = ['grdbId: id',] + initializer_params
+            swift_body += (',\n' + ' ' * len(initializer_invocation)).join(initializer_params)
+            swift_body += ')'
+            swift_body += '''
+        }
+'''
+
+        swift_body += '''
+    }
+}
+'''
+
+
+
     if not has_sds_superclass:
         swift_body += '''
 // MARK: - Table Metadata
@@ -1361,9 +1519,11 @@ public extension %(class_name)s {
 
 @objc
 public class %sCursor: NSObject {
+    private let transaction: GRDBReadTransaction
     private let cursor: RecordCursor<%s>?
 
-    init(cursor: RecordCursor<%s>?) {
+    init(transaction: GRDBReadTransaction, cursor: RecordCursor<%s>?) {
+        self.transaction = transaction
         self.cursor = cursor
     }
 
@@ -1373,8 +1533,19 @@ public class %sCursor: NSObject {
         }
         guard let record = try cursor.next() else {
             return nil
-        }
-        return try %s.fromRecord(record)
+        }''' % ( str(clazz.name), str(clazz.name), record_name, record_name, str(clazz.name), )
+
+        cache_code = cache_set_code_for_class(clazz)
+        if cache_code is not None:
+            swift_body += '''
+        let value = try %s.fromRecord(record)
+        %s(value, transaction: transaction.asAnyRead)
+        return value''' % ( str(clazz.name), cache_code, )
+        else:
+            swift_body += '''
+        return try %s.fromRecord(record)''' % ( str(clazz.name), )
+
+        swift_body += '''
     }
 
     public func all() throws -> [%s] {
@@ -1388,7 +1559,7 @@ public class %sCursor: NSObject {
         return result
     }
 }
-''' % ( str(clazz.name), str(clazz.name), record_name, record_name, str(clazz.name), str(clazz.name), str(clazz.name), str(clazz.name), )
+''' % ( str(clazz.name), str(clazz.name), )
 
         # ---- Fetch ----
 
@@ -1409,10 +1580,10 @@ public extension %(class_name)s {
         let database = transaction.database
         do {
             let cursor = try %(record_name)s.fetchCursor(database)
-            return %(class_name)sCursor(cursor: cursor)
+            return %(class_name)sCursor(transaction: transaction, cursor: cursor)
         } catch {
             owsFailDebug("Read failed: \(error)")
-            return %(class_name)sCursor(cursor: nil)
+            return %(class_name)sCursor(transaction: transaction, cursor: nil)
         }
     }
 ''' % { "class_name": str(clazz.name), "record_name": record_name }
@@ -1422,7 +1593,27 @@ public extension %(class_name)s {
     class func anyFetch(uniqueId: String,
                         transaction: SDSAnyReadTransaction) -> %(class_name)s? {
         assert(uniqueId.count > 0)
+''' % { "class_name": str(clazz.name), "record_name": record_name, "record_identifier": record_identifier(clazz.name) }
 
+        cache_code = cache_get_code_for_class(clazz)
+        if cache_code is not None:
+            swift_body += '''
+        return anyFetch(uniqueId: uniqueId, transaction: transaction, ignoreCache: false)
+    }
+    
+    // Fetches a single model by "unique id".
+    class func anyFetch(uniqueId: String,
+                        transaction: SDSAnyReadTransaction,
+                        ignoreCache: Bool) -> %(class_name)s? {
+        assert(uniqueId.count > 0)
+
+        if !ignoreCache,
+            let cachedCopy = %(cache_code)s {
+            return cachedCopy
+        }
+''' % { "class_name": str(clazz.name), "cache_code": str(cache_code), }  
+
+        swift_body += '''
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
             return %(class_name)s.ydb_fetch(uniqueId: uniqueId, transaction: ydbTransaction)
@@ -1638,11 +1829,11 @@ public extension %(class_name)s {
         do {
             let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
             let cursor = try %(record_name)s.fetchCursor(transaction.database, sqlRequest)
-            return %(class_name)sCursor(cursor: cursor)
+            return %(class_name)sCursor(transaction: transaction, cursor: cursor)
         } catch {
             Logger.error("sql: \(sql)")
             owsFailDebug("Read failed: \(error)")
-            return %(class_name)sCursor(cursor: nil)
+            return %(class_name)sCursor(transaction: transaction, cursor: nil)
         }
     }
 ''' % { "class_name": str(clazz.name), "record_name": record_name }
@@ -1660,15 +1851,26 @@ public extension %(class_name)s {
             guard let record = try %s.fetchOne(transaction.database, sqlRequest) else {
                 return nil
             }
+''' % ( str(clazz.name), record_name, )
 
-            return try %s.fromRecord(record)
+        cache_code = cache_set_code_for_class(clazz)
+        if cache_code is not None:
+            swift_body += '''
+            let value = try %s.fromRecord(record)
+            %s(value, transaction: transaction.asAnyRead)
+            return value''' % ( str(clazz.name), cache_code, )
+        else:
+            swift_body += '''
+            return try %s.fromRecord(record)''' % ( str(clazz.name), )
+
+        swift_body += '''
         } catch {
             owsFailDebug("error: \(error)")
             return nil
         }
     }
 }
-''' % ( str(clazz.name), record_name, str(clazz.name), )
+'''
 
 
     # ---- Typed Convenience Methods ----
@@ -1806,15 +2008,20 @@ class %sSerializer: SDSSerializer {
         swift_body += '''
 // MARK: - Deep Copy
 
+#if TESTABLE_BUILD
 @objc
 public extension %(model_name)s {
-    func deepCopy() throws -> %(model_name)s {
+    // We're not using this method at the moment,
+    // but we might use it for validation of 
+    // other deep copy methods.
+    func deepCopyUsingRecord() throws -> %(model_name)s {
         guard let record = try asRecord() as? %(record_name)s else {
             throw OWSAssertionError("Could not convert to record.")
         }
         return try %(model_name)s.fromRecord(record)
     }
 }
+#endif
 ''' % { "model_name": str(clazz.name), "record_name": clazz.record_name(), }
 
 
@@ -2093,10 +2300,24 @@ def should_ignore_property(property):
 def custom_property_column_source(property):
     custom_names = configuration_json.get('custom_property_column_sources')
     if custom_names is None:
-        fail('Configuration JSON is missing dict of custom_property_column_sources during serialization.')
+        fail('Configuration JSON is missing dict of custom_property_column_sources.')
     key = property.class_name + '.' + property.name
 
     return custom_names.get(key)
+
+def cache_get_code_for_class(clazz):
+    code_map = configuration_json.get('class_cache_get_code')
+    if code_map is None:
+        fail('Configuration JSON is missing dict of class_cache_get_code.')
+    key = clazz.name
+    return code_map.get(key)
+
+def cache_set_code_for_class(clazz):
+    code_map = configuration_json.get('class_cache_set_code')
+    if code_map is None:
+        fail('Configuration JSON is missing dict of class_cache_set_code.')
+    key = clazz.name
+    return code_map.get(key)
 
 def should_ignore_class(clazz):
     class_to_skip_serialization = configuration_json.get('class_to_skip_serialization')

@@ -153,6 +153,40 @@ extension IncomingGroupsV2MessageJob: SDSModel {
     }
 }
 
+// MARK: - DeepCopyable
+
+extension IncomingGroupsV2MessageJob: DeepCopyable {
+
+    public func deepCopy() throws -> AnyObject {
+        // Any subclass can be cast to it's superclass,
+        // so the order of this switch statement matters.
+        // We need to do a "depth first" search by type.
+        guard let id = self.grdbId?.int64Value else {
+            throw OWSAssertionError("Model missing grdbId.")
+        }
+
+        do {
+            let modelToCopy = self
+            assert(type(of: modelToCopy) == IncomingGroupsV2MessageJob.self)
+            let uniqueId: String = modelToCopy.uniqueId
+            let createdAt: Date = modelToCopy.createdAt
+            let envelopeData: Data = modelToCopy.envelopeData
+            let groupId: Data? = modelToCopy.groupId
+            let plaintextData: Data? = modelToCopy.plaintextData
+            let wasReceivedByUD: Bool = modelToCopy.wasReceivedByUD
+
+            return IncomingGroupsV2MessageJob(grdbId: id,
+                                              uniqueId: uniqueId,
+                                              createdAt: createdAt,
+                                              envelopeData: envelopeData,
+                                              groupId: groupId,
+                                              plaintextData: plaintextData,
+                                              wasReceivedByUD: wasReceivedByUD)
+        }
+
+    }
+}
+
 // MARK: - Table Metadata
 
 extension IncomingGroupsV2MessageJobSerializer {
@@ -291,9 +325,11 @@ public extension IncomingGroupsV2MessageJob {
 
 @objc
 public class IncomingGroupsV2MessageJobCursor: NSObject {
+    private let transaction: GRDBReadTransaction
     private let cursor: RecordCursor<IncomingGroupsV2MessageJobRecord>?
 
-    init(cursor: RecordCursor<IncomingGroupsV2MessageJobRecord>?) {
+    init(transaction: GRDBReadTransaction, cursor: RecordCursor<IncomingGroupsV2MessageJobRecord>?) {
+        self.transaction = transaction
         self.cursor = cursor
     }
 
@@ -335,10 +371,10 @@ public extension IncomingGroupsV2MessageJob {
         let database = transaction.database
         do {
             let cursor = try IncomingGroupsV2MessageJobRecord.fetchCursor(database)
-            return IncomingGroupsV2MessageJobCursor(cursor: cursor)
+            return IncomingGroupsV2MessageJobCursor(transaction: transaction, cursor: cursor)
         } catch {
             owsFailDebug("Read failed: \(error)")
-            return IncomingGroupsV2MessageJobCursor(cursor: nil)
+            return IncomingGroupsV2MessageJobCursor(transaction: transaction, cursor: nil)
         }
     }
 
@@ -544,11 +580,11 @@ public extension IncomingGroupsV2MessageJob {
         do {
             let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
             let cursor = try IncomingGroupsV2MessageJobRecord.fetchCursor(transaction.database, sqlRequest)
-            return IncomingGroupsV2MessageJobCursor(cursor: cursor)
+            return IncomingGroupsV2MessageJobCursor(transaction: transaction, cursor: cursor)
         } catch {
             Logger.error("sql: \(sql)")
             owsFailDebug("Read failed: \(error)")
-            return IncomingGroupsV2MessageJobCursor(cursor: nil)
+            return IncomingGroupsV2MessageJobCursor(transaction: transaction, cursor: nil)
         }
     }
 
@@ -603,12 +639,17 @@ class IncomingGroupsV2MessageJobSerializer: SDSSerializer {
 
 // MARK: - Deep Copy
 
+#if TESTABLE_BUILD
 @objc
 public extension IncomingGroupsV2MessageJob {
-    func deepCopy() throws -> IncomingGroupsV2MessageJob {
+    // We're not using this method at the moment,
+    // but we might use it for validation of
+    // other deep copy methods.
+    func deepCopyUsingRecord() throws -> IncomingGroupsV2MessageJob {
         guard let record = try asRecord() as? IncomingGroupsV2MessageJobRecord else {
             throw OWSAssertionError("Could not convert to record.")
         }
         return try IncomingGroupsV2MessageJob.fromRecord(record)
     }
 }
+#endif

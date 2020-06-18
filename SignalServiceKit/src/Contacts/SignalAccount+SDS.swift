@@ -158,6 +158,54 @@ extension SignalAccount: SDSModel {
     }
 }
 
+// MARK: - DeepCopyable
+
+extension SignalAccount: DeepCopyable {
+
+    public func deepCopy() throws -> AnyObject {
+        // Any subclass can be cast to it's superclass,
+        // so the order of this switch statement matters.
+        // We need to do a "depth first" search by type.
+        guard let id = self.grdbId?.int64Value else {
+            throw OWSAssertionError("Model missing grdbId.")
+        }
+
+        do {
+            let modelToCopy = self
+            assert(type(of: modelToCopy) == SignalAccount.self)
+            let uniqueId: String = modelToCopy.uniqueId
+            // NOTE: If this generates build errors, you made need to
+            // modify DeepCopy.swift to support this type.
+            //
+            // That might mean:
+            //
+            // * Implement DeepCopyable for this type (e.g. a model).
+            // * Modify DeepCopies.deepCopy() to support this type (e.g. a collection).
+            let contact: Contact?
+            if let contactForCopy = modelToCopy.contact {
+               contact = try DeepCopies.deepCopy(contactForCopy)
+            } else {
+               contact = nil
+            }
+            let contactAvatarHash: Data? = modelToCopy.contactAvatarHash
+            let contactAvatarJpegData: Data? = modelToCopy.contactAvatarJpegData
+            let multipleAccountLabelText: String = modelToCopy.multipleAccountLabelText
+            let recipientPhoneNumber: String? = modelToCopy.recipientPhoneNumber
+            let recipientUUID: String? = modelToCopy.recipientUUID
+
+            return SignalAccount(grdbId: id,
+                                 uniqueId: uniqueId,
+                                 contact: contact,
+                                 contactAvatarHash: contactAvatarHash,
+                                 contactAvatarJpegData: contactAvatarJpegData,
+                                 multipleAccountLabelText: multipleAccountLabelText,
+                                 recipientPhoneNumber: recipientPhoneNumber,
+                                 recipientUUID: recipientUUID)
+        }
+
+    }
+}
+
 // MARK: - Table Metadata
 
 extension SignalAccountSerializer {
@@ -298,9 +346,11 @@ public extension SignalAccount {
 
 @objc
 public class SignalAccountCursor: NSObject {
+    private let transaction: GRDBReadTransaction
     private let cursor: RecordCursor<SignalAccountRecord>?
 
-    init(cursor: RecordCursor<SignalAccountRecord>?) {
+    init(transaction: GRDBReadTransaction, cursor: RecordCursor<SignalAccountRecord>?) {
+        self.transaction = transaction
         self.cursor = cursor
     }
 
@@ -311,7 +361,9 @@ public class SignalAccountCursor: NSObject {
         guard let record = try cursor.next() else {
             return nil
         }
-        return try SignalAccount.fromRecord(record)
+        let value = try SignalAccount.fromRecord(record)
+        SSKEnvironment.shared.modelReadCaches.signalAccountReadCache.didReadSignalAccount(value, transaction: transaction.asAnyRead)
+        return value
     }
 
     public func all() throws -> [SignalAccount] {
@@ -342,10 +394,10 @@ public extension SignalAccount {
         let database = transaction.database
         do {
             let cursor = try SignalAccountRecord.fetchCursor(database)
-            return SignalAccountCursor(cursor: cursor)
+            return SignalAccountCursor(transaction: transaction, cursor: cursor)
         } catch {
             owsFailDebug("Read failed: \(error)")
-            return SignalAccountCursor(cursor: nil)
+            return SignalAccountCursor(transaction: transaction, cursor: nil)
         }
     }
 
@@ -551,11 +603,11 @@ public extension SignalAccount {
         do {
             let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
             let cursor = try SignalAccountRecord.fetchCursor(transaction.database, sqlRequest)
-            return SignalAccountCursor(cursor: cursor)
+            return SignalAccountCursor(transaction: transaction, cursor: cursor)
         } catch {
             Logger.error("sql: \(sql)")
             owsFailDebug("Read failed: \(error)")
-            return SignalAccountCursor(cursor: nil)
+            return SignalAccountCursor(transaction: transaction, cursor: nil)
         }
     }
 
@@ -570,7 +622,9 @@ public extension SignalAccount {
                 return nil
             }
 
-            return try SignalAccount.fromRecord(record)
+            let value = try SignalAccount.fromRecord(record)
+            SSKEnvironment.shared.modelReadCaches.signalAccountReadCache.didReadSignalAccount(value, transaction: transaction.asAnyRead)
+            return value
         } catch {
             owsFailDebug("error: \(error)")
             return nil
@@ -611,12 +665,17 @@ class SignalAccountSerializer: SDSSerializer {
 
 // MARK: - Deep Copy
 
+#if TESTABLE_BUILD
 @objc
 public extension SignalAccount {
-    func deepCopy() throws -> SignalAccount {
+    // We're not using this method at the moment,
+    // but we might use it for validation of
+    // other deep copy methods.
+    func deepCopyUsingRecord() throws -> SignalAccount {
         guard let record = try asRecord() as? SignalAccountRecord else {
             throw OWSAssertionError("Could not convert to record.")
         }
         return try SignalAccount.fromRecord(record)
     }
 }
+#endif

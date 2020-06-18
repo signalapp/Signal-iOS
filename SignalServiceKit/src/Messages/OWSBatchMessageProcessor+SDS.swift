@@ -148,6 +148,38 @@ extension OWSMessageContentJob: SDSModel {
     }
 }
 
+// MARK: - DeepCopyable
+
+extension OWSMessageContentJob: DeepCopyable {
+
+    public func deepCopy() throws -> AnyObject {
+        // Any subclass can be cast to it's superclass,
+        // so the order of this switch statement matters.
+        // We need to do a "depth first" search by type.
+        guard let id = self.grdbId?.int64Value else {
+            throw OWSAssertionError("Model missing grdbId.")
+        }
+
+        do {
+            let modelToCopy = self
+            assert(type(of: modelToCopy) == OWSMessageContentJob.self)
+            let uniqueId: String = modelToCopy.uniqueId
+            let createdAt: Date = modelToCopy.createdAt
+            let envelopeData: Data = modelToCopy.envelopeData
+            let plaintextData: Data? = modelToCopy.plaintextData
+            let wasReceivedByUD: Bool = modelToCopy.wasReceivedByUD
+
+            return OWSMessageContentJob(grdbId: id,
+                                        uniqueId: uniqueId,
+                                        createdAt: createdAt,
+                                        envelopeData: envelopeData,
+                                        plaintextData: plaintextData,
+                                        wasReceivedByUD: wasReceivedByUD)
+        }
+
+    }
+}
+
 // MARK: - Table Metadata
 
 extension OWSMessageContentJobSerializer {
@@ -284,9 +316,11 @@ public extension OWSMessageContentJob {
 
 @objc
 public class OWSMessageContentJobCursor: NSObject {
+    private let transaction: GRDBReadTransaction
     private let cursor: RecordCursor<MessageContentJobRecord>?
 
-    init(cursor: RecordCursor<MessageContentJobRecord>?) {
+    init(transaction: GRDBReadTransaction, cursor: RecordCursor<MessageContentJobRecord>?) {
+        self.transaction = transaction
         self.cursor = cursor
     }
 
@@ -328,10 +362,10 @@ public extension OWSMessageContentJob {
         let database = transaction.database
         do {
             let cursor = try MessageContentJobRecord.fetchCursor(database)
-            return OWSMessageContentJobCursor(cursor: cursor)
+            return OWSMessageContentJobCursor(transaction: transaction, cursor: cursor)
         } catch {
             owsFailDebug("Read failed: \(error)")
-            return OWSMessageContentJobCursor(cursor: nil)
+            return OWSMessageContentJobCursor(transaction: transaction, cursor: nil)
         }
     }
 
@@ -537,11 +571,11 @@ public extension OWSMessageContentJob {
         do {
             let sqlRequest = SQLRequest<Void>(sql: sql, arguments: arguments, cached: true)
             let cursor = try MessageContentJobRecord.fetchCursor(transaction.database, sqlRequest)
-            return OWSMessageContentJobCursor(cursor: cursor)
+            return OWSMessageContentJobCursor(transaction: transaction, cursor: cursor)
         } catch {
             Logger.error("sql: \(sql)")
             owsFailDebug("Read failed: \(error)")
-            return OWSMessageContentJobCursor(cursor: nil)
+            return OWSMessageContentJobCursor(transaction: transaction, cursor: nil)
         }
     }
 
@@ -595,12 +629,17 @@ class OWSMessageContentJobSerializer: SDSSerializer {
 
 // MARK: - Deep Copy
 
+#if TESTABLE_BUILD
 @objc
 public extension OWSMessageContentJob {
-    func deepCopy() throws -> OWSMessageContentJob {
+    // We're not using this method at the moment,
+    // but we might use it for validation of
+    // other deep copy methods.
+    func deepCopyUsingRecord() throws -> OWSMessageContentJob {
         guard let record = try asRecord() as? MessageContentJobRecord else {
             throw OWSAssertionError("Could not convert to record.")
         }
         return try OWSMessageContentJob.fromRecord(record)
     }
 }
+#endif

@@ -64,6 +64,11 @@ ConversationColorName const ConversationColorNameDefault = ConversationColorName
     return SSKEnvironment.shared.tsAccountManager;
 }
 
+- (ThreadReadCache *)threadReadCache
+{
+    return SSKEnvironment.shared.modelReadCaches.threadReadCache;
+}
+
 #pragma mark -
 
 + (NSString *)collection {
@@ -196,6 +201,22 @@ ConversationColorName const ConversationColorNameDefault = ConversationColorName
     if (self.shouldThreadBeVisible && ![SSKPreferences hasSavedThreadWithTransaction:transaction]) {
         [SSKPreferences setHasSavedThread:YES transaction:transaction];
     }
+
+    [self.threadReadCache didInsertOrUpdateThread:self transaction:transaction];
+}
+
+- (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [super anyDidUpdateWithTransaction:transaction];
+
+    [self.threadReadCache didInsertOrUpdateThread:self transaction:transaction];
+}
+
+- (void)anyDidRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [super anyDidRemoveWithTransaction:transaction];
+
+    [self.threadReadCache didRemoveThread:self transaction:transaction];
 }
 
 - (void)anyWillRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
