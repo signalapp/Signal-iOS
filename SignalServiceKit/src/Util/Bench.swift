@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -239,7 +239,7 @@ private class MemoryBencher: MemorySampler {
                 // a failure to measure memory to interfere with running the `block`.
                 return
             }
-            if (currentSize > maxSize) {
+            if currentSize > maxSize {
                 self.maxSize = currentSize
             }
         }
@@ -290,5 +290,30 @@ public extension Bool {
     @inlinable
     static func trueWithProbability(ratio: Float) -> Bool {
         return (0..<ratio).contains(Float.random(in: 0..<1.0))
+    }
+}
+
+@objc
+public class BenchSteps: NSObject {
+    private var title: String?
+
+    private let startTime: TimeInterval
+    private var lastTime: TimeInterval
+
+    @objc
+    public override init() {
+        startTime = CACurrentMediaTime()
+        lastTime = startTime
+    }
+
+    @objc
+    public func step(_ name: String) {
+        let now = CACurrentMediaTime()
+        Logger.debug("[Bench] \(name), duration: \(format(now - lastTime)) (\(format(now - startTime)))")
+        lastTime = now
+    }
+
+    private func format(_ interval: TimeInterval) -> String {
+        return String(format: "%0.2fms", interval * 1000)
     }
 }
