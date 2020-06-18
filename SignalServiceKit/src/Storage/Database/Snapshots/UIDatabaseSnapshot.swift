@@ -231,10 +231,10 @@ extension UIDatabaseObserver: TransactionObserver {
             for snapshotDelegate in snapshotDelegates {
                 snapshotDelegate.snapshotTransactionDidChange(with: event)
             }
-        }
 
-        if event.tableName == InteractionRecord.databaseTableName {
-            didDatabaseModifyInteractions.set(true)
+            if event.tableName == InteractionRecord.databaseTableName {
+                didDatabaseModifyInteractions.set(true)
+            }
         }
     }
 
@@ -243,6 +243,12 @@ extension UIDatabaseObserver: TransactionObserver {
         UIDatabaseObserver.serializedSync {
             for snapshotDelegate in snapshotDelegates {
                 snapshotDelegate.snapshotTransactionDidCommit(db: db)
+            }
+
+            let shouldPostInteractionNotification = didDatabaseModifyInteractions.get()
+            didDatabaseModifyInteractions.set(false)
+            if shouldPostInteractionNotification {
+                NotificationCenter.default.postNotificationNameAsync(Self.databaseDidCommitInteractionChangeNotification, object: nil)
             }
         }
 
@@ -254,12 +260,6 @@ extension UIDatabaseObserver: TransactionObserver {
             self.hasPendingSnapshotUpdate.set(true)
             // Try to update immediately.
             self.updateSnapshotIfNecessary()
-        }
-
-        let shouldPostInteractionNotification = didDatabaseModifyInteractions.get()
-        didDatabaseModifyInteractions.set(false)
-        if shouldPostInteractionNotification {
-            NotificationCenter.default.postNotificationNameAsync(Self.databaseDidCommitInteractionChangeNotification, object: nil)
         }
     }
 
