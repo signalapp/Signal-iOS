@@ -36,11 +36,11 @@ extension OnionRequestAPI {
         DispatchQueue.global(qos: .userInitiated).async {
             do {
                 guard JSONSerialization.isValidJSONObject(payload) else { return seal.reject(HTTP.Error.invalidJSON) }
-                let payloadAsData = try JSONSerialization.data(withJSONObject: payload, options: [])
+                let payloadAsData = try JSONSerialization.data(withJSONObject: payload, options: [ .fragmentsAllowed ])
                 let payloadAsString = String(data: payloadAsData, encoding: .utf8)! // Snodes only accept this as a string
                 let wrapper: JSON = [ "body" : payloadAsString, "headers" : "" ]
                 guard JSONSerialization.isValidJSONObject(wrapper) else { return seal.reject(HTTP.Error.invalidJSON) }
-                let plaintext = try JSONSerialization.data(withJSONObject: wrapper, options: [])
+                let plaintext = try JSONSerialization.data(withJSONObject: wrapper, options: [ .fragmentsAllowed ])
                 let result = try encrypt(plaintext, forSnode: snode)
                 seal.fulfill(result)
             } catch (let error) {
@@ -61,7 +61,7 @@ extension OnionRequestAPI {
             ]
             do {
                 guard JSONSerialization.isValidJSONObject(parameters) else { return seal.reject(HTTP.Error.invalidJSON) }
-                let plaintext = try JSONSerialization.data(withJSONObject: parameters, options: [])
+                let plaintext = try JSONSerialization.data(withJSONObject: parameters, options: [ .fragmentsAllowed ])
                 let result = try encrypt(plaintext, forSnode: lhs)
                 seal.fulfill(result)
             } catch (let error) {

@@ -46,7 +46,7 @@ internal enum HTTP {
         if let parameters = parameters {
             do {
                 guard JSONSerialization.isValidJSONObject(parameters) else { return Promise(error: Error.invalidJSON) }
-                request.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: [])
+                request.httpBody = try JSONSerialization.data(withJSONObject: parameters, options: [ .fragmentsAllowed ])
             } catch (let error) {
                 return Promise(error: error)
             }
@@ -70,7 +70,7 @@ internal enum HTTP {
             }
             let statusCode = UInt(response.statusCode)
             var json: JSON? = nil
-            if let j = try? JSONSerialization.jsonObject(with: data, options: []) as? JSON {
+            if let j = try? JSONSerialization.jsonObject(with: data, options: [ .fragmentsAllowed ]) as? JSON {
                 json = j
             } else if let result = String(data: data, encoding: .utf8) {
                 json = [ "result" : result ]

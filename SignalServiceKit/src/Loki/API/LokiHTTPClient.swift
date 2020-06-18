@@ -44,7 +44,7 @@ public extension LokiHTTPClient {
                 if case NetworkManagerError.taskError(_, let underlyingError) = error, let nsError = underlyingError as? NSError {
                     var response = nsError.userInfo[AFNetworkingOperationFailingURLResponseDataErrorKey]
                     // Deserialize response if needed
-                    if let data = response as? Data, let json = try? JSONSerialization.jsonObject(with: data, options: []) as? JSON {
+                    if let data = response as? Data, let json = try? JSONSerialization.jsonObject(with: data, options: [ .fragmentsAllowed ]) as? JSON {
                         response = json
                     }
                     return LokiHTTPClient.HTTPError.networkError(code: error.statusCode, response: response, underlyingError: underlyingError)

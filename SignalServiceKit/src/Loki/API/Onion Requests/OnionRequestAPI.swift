@@ -228,12 +228,17 @@ public enum OnionRequestAPI {
                         let gcm = GCM(iv: iv.bytes, tagLength: Int(gcmTagSize), mode: .combined)
                         let aes = try AES(key: targetSnodeSymmetricKey.bytes, blockMode: gcm, padding: .noPadding)
                         let data = Data(try aes.decrypt(ciphertext.bytes))
-                        guard let json = try JSONSerialization.jsonObject(with: data, options: []) as? JSON,
-                            let bodyAsString = json["body"] as? String, let bodyAsData = bodyAsString.data(using: .utf8),
-                            let body = try JSONSerialization.jsonObject(with: bodyAsData, options: []) as? JSON,
-                            let statusCode = json["status"] as? Int else { return seal.reject(HTTP.Error.invalidJSON) }
-                        guard 200...299 ~= statusCode else { return seal.reject(Error.httpRequestFailedAtTargetSnode(statusCode: UInt(statusCode), json: body)) }
-                        seal.fulfill(body)
+                        guard let json = try JSONSerialization.jsonObject(with: data, options: [ .fragmentsAllowed ]) as? JSON,
+                            let bodyAsString = json["body"] as? String, let statusCode = json["status"] as? Int else { return seal.reject(HTTP.Error.invalidJSON) }
+                        if statusCode == 406 { // Clock out of sync
+                            print("[Loki] The user's clock is out of sync with the service node network.")
+                            seal.reject(LokiAPI.LokiAPIError.clockOutOfSync)
+                        } else {
+                            guard let bodyAsData = bodyAsString.data(using: .utf8),
+                                let body = try JSONSerialization.jsonObject(with: bodyAsData, options: [ .fragmentsAllowed ]) as? JSON else { return seal.reject(HTTP.Error.invalidJSON) }
+                            guard 200...299 ~= statusCode else { return seal.reject(Error.httpRequestFailedAtTargetSnode(statusCode: UInt(statusCode), json: body)) }
+                            seal.fulfill(body)
+                        }
                     } catch (let error) {
                         seal.reject(error)
                     }

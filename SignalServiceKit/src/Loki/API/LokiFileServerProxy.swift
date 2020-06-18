@@ -58,7 +58,7 @@ internal class LokiFileServerProxy : LokiHTTPClient {
                     let parametersAsString: String
                     if let tsRequest = request as? TSRequest {
                         headers["Content-Type"] = "application/json"
-                        let parametersAsData = try JSONSerialization.data(withJSONObject: tsRequest.parameters, options: [])
+                        let parametersAsData = try JSONSerialization.data(withJSONObject: tsRequest.parameters, options: [ .fragmentsAllowed ])
                         parametersAsString = !tsRequest.parameters.isEmpty ? String(bytes: parametersAsData, encoding: .utf8)! : "null"
                     } else {
                         headers["Content-Type"] = request.allHTTPHeaderFields!["Content-Type"]
@@ -74,7 +74,7 @@ internal class LokiFileServerProxy : LokiHTTPClient {
                         "method" : request.httpMethod,
                         "headers" : headers
                     ]
-                    let proxyRequestParametersAsData = try JSONSerialization.data(withJSONObject: proxyRequestParameters, options: [])
+                    let proxyRequestParametersAsData = try JSONSerialization.data(withJSONObject: proxyRequestParameters, options: [ .fragmentsAllowed ])
                     let ivAndCipherText = try DiffieHellman.encrypt(proxyRequestParametersAsData, using: symmetricKey)
                     let base64EncodedPublicKey = Data(hex: keyPair.hexEncodedPublicKey).base64EncodedString() // The file server expects an 05 prefixed public key
                     let proxyRequestHeaders = [
@@ -103,7 +103,7 @@ internal class LokiFileServerProxy : LokiHTTPClient {
                     task.resume()
                     return promise
                 }.map2 { rawResponse in
-                    guard let responseAsData = rawResponse as? Data, let responseAsJSON = try? JSONSerialization.jsonObject(with: responseAsData, options: .allowFragments) as? JSON, let base64EncodedCipherText = responseAsJSON["data"] as? String,
+                    guard let responseAsData = rawResponse as? Data, let responseAsJSON = try? JSONSerialization.jsonObject(with: responseAsData, options: [ .fragmentsAllowed ]) as? JSON, let base64EncodedCipherText = responseAsJSON["data"] as? String,
                         let meta = responseAsJSON["meta"] as? JSON, let statusCode = meta["code"] as? Int, let cipherText = Data(base64Encoded: base64EncodedCipherText) else {
                         print("[Loki] Received an invalid response.")
                         throw Error.proxyResponseParsingFailed
@@ -112,7 +112,7 @@ internal class LokiFileServerProxy : LokiHTTPClient {
                     guard isSuccess else { throw HTTPError.networkError(code: statusCode, response: nil, underlyingError: Error.fileServerHTTPError(code: statusCode, message: nil)) }
                     let uncheckedJSONAsData = try DiffieHellman.decrypt(cipherText, using: symmetricKey)
                     if uncheckedJSONAsData.isEmpty { return () }
-                    let uncheckedJSON = try? JSONSerialization.jsonObject(with: uncheckedJSONAsData, options: .allowFragments) as? JSON
+                    let uncheckedJSON = try? JSONSerialization.jsonObject(with: uncheckedJSONAsData, options: [ .fragmentsAllowed ]) as? JSON
                     guard let json = uncheckedJSON else { throw HTTPError.networkError(code: -1, response: nil, underlyingError: Error.proxyResponseParsingFailed) }
                     return json
                 }.done2 { rawResponse in
