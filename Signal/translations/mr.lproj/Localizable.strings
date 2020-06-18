@@ -2874,7 +2874,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "इंटरनेटला कनेक्ट केल्यावरच प्रोफाईल अद्यतनित करता येईल.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your profile is end-to-end encrypted. It will be visible to your contacts, when you initiate or accept new conversations, and when you join new groups.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "आपले प्रोफाइल एंड टू एंड एन्क्रिप्टेड आहे. जेव्हा आपण नवीन संभाषणे सुरू करता किंवा स्वीकारता आणि आपण नवीन गटांमध्ये सामील होता तेव्हा हे आपल्या संपर्कांना दृश्यमान असेल.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "जतन करा";

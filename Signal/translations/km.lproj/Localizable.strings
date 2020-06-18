@@ -861,10 +861,10 @@
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "សមាជិក";
 
 /* Format for the section title of the 'members' section in conversation settings view. Embeds: {{ the number of group members }}. */
-"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ Members";
+"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ សមាជិក";
 
 /* Footer for the 'membership access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "Choose who can edit group membership.";
+"CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "ជ្រើសរើសអ្នកដែលអាចកែប្រែសមាជិកភាពក្រុម។";
 
 /* Title of the 'mute this thread' action sheet. */
 "CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "បិទសំឡេង";
@@ -900,16 +900,16 @@
 "CONVERSATION_SETTINGS_PENDING_MEMBER_INVITES_NONE" = "គ្មាន";
 
 /* Label for 'remove from group' button in conversation settings view. */
-"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "Remove From Group";
+"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "លុបចេញពីក្រុម";
 
 /* Format for title for 'remove from group' confirmation alert. Embeds {user to remove from the group}. */
-"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "Remove %@ from the group?";
+"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "លុប %@ ចេញពីក្រុម?";
 
 /* Label for 'revoke group admin' button in conversation settings view. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Remove as Admin";
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "លុបជាអ្នកគ្រប់គ្រង";
 
 /* Format for title for 'revoke group admin' confirmation alert. Embeds {user to revoke admin status from}. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Remove %@ as group admin?";
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "លុប %@ ជាអ្នកគ្រប់គ្រង?";
 
 /* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
 "CONVERSATION_SETTINGS_SEARCH" = "ស្វែងរកការសន្ទនា";
@@ -918,16 +918,16 @@
 "CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "ចុច ដើម្បីផ្លាស់ប្តូរ";
 
 /* Label for 'unblock group' action in conversation settings view. */
-"CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Unblock Group";
+"CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "លែងហាមឃាត់ក្រុម";
 
 /* Label for 'unblock user' action in conversation settings view. */
-"CONVERSATION_SETTINGS_UNBLOCK_USER" = "Unblock User";
+"CONVERSATION_SETTINGS_UNBLOCK_USER" = "លែងហាមឃាត់អ្នកប្រើប្រាស់";
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "មិនបិទសំឡេង";
 
 /* The alert message if user tries to exit conversation settings view without saving changes. */
-"CONVERSATION_SETTINGS_UNSAVED_CHANGES_MESSAGE" = "Would you like to save the changes that you made to this conversation?";
+"CONVERSATION_SETTINGS_UNSAVED_CHANGES_MESSAGE" = "តើអ្នកចង់រក្សាទុកការផ្លាស់ប្តូរដែលអ្នកបានធ្វើចំពោះការសន្ទនានេះ?";
 
 /* The alert title if user tries to exit conversation settings view without saving changes. */
 "CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "ការកែប្រែមិនបានរក្សាទុក";
@@ -951,7 +951,7 @@
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "បន្ថែមចូល បញ្ជីទំនាក់ទំនង";
 
 /* button text to delete all items in the current conversation */
-"CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Delete All";
+"CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "លុបទាំងអស់";
 
 /* Indicates that the app is loading more messages in this conversation. */
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "កំពុងផ្ទុកសារបន្ថែម...";
@@ -1032,16 +1032,16 @@
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "ការផ្លាស់ប្តូរទៅកាន់ GitHub";
 
 /* action sheet body */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Delete all messages in the conversation?";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "លុបសារទាំងអស់ក្នុងការសន្ទនា?";
 
 /* button text */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Delete All Messages";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "លុបសារទាំងអស់";
 
 /* action sheet body. Embeds {{number of selected messages}} which will be deleted. */
-"DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Delete %ld Messages?";
+"DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "លុប %ld សារ?";
 
 /* action sheet body */
-"DELETE_SELECTED_SINGLE_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Delete Message?";
+"DELETE_SELECTED_SINGLE_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "លុបសារ?";
 
 /* Label for button that lets users re-register using the same phone number. */
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "ចុះឈ្មោះលេខទូរសព្ទនេះម្តងទៀត";
@@ -1059,34 +1059,34 @@
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "បរាជ័យក្នុងការធ្វើបច្ចុប្បន្នភាពបញ្ជីឧបករណ៍។";
 
 /* The stop action of the dialog asking the user if they want to cancel a device transfer */
-"DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION" = "Stop Transfer";
+"DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION" = "បញ្ឈប់ការបញ្ជូន";
 
 /* The message of the dialog asking the user if they want to cancel a device transfer */
-"DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE" = "Closing this window will stop the transfer you have in progress, are you sure you want to proceed?";
+"DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE" = "ជ្រើសរើសផ្ទាំងនេះ នឹងបញ្ឈប់ការបញ្ជូនដែលកំពុងដំណើការ តើអ្នកចង់ចាប់ផ្តើមទេ?";
 
 /* The title of the dialog asking the user if they want to cancel a device transfer */
-"DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "Stop Transfer?";
+"DEVICE_TRANSFER_CANCEL_CONFIRMATION_TITLE" = "បញ្ឈប់ការបញ្ជូន?";
 
 /* The explanation for the device transfer 'choice' view */
-"DEVICE_TRANSFER_CHOICE_EXPLANATION" = "If you have your old iOS device, you can securely transfer your account and messages to this device.";
+"DEVICE_TRANSFER_CHOICE_EXPLANATION" = "បើអ្នកមានឧបករណ៍ iOS ចាស់ៗ អ្នកអាចបញ្ជូនគណនី និងសាររបស់អ្នកដោយសុវត្ថិភាព​ទៅឧបករណ៍នេះ។ ";
 
 /* The explanation for the device transfer 'choice' view when linking a device */
-"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "If you were previously using Signal on a linked iPad, you can securely transfer your account and messages to this device.";
+"DEVICE_TRANSFER_CHOICE_LINKED_EXPLANATION" = "បើអ្នកពីមុនប្រើប្រាស់ Signal ដែលបានតភ្ជាប់លើ iPad អ្នកអាចបញ្ជូនគណនី និងសាររបស់អ្នក ដោយសុវត្ថិភាព ពីឧបករណ៍នេះ។";
 
 /* The body for the device transfer 'choice' view 'register' option */
-"DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "Continue without transferring your account and messages";
+"DEVICE_TRANSFER_CHOICE_REGISTER_BODY" = "បន្ត ដោយមិនបញ្ជូន គណនី និងសាររបស់អ្នក";
 
 /* The body for the device transfer 'choice' view 'register' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "Add this iPad as a new linked device without transferring message history";
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "បន្ថែម iPad នេះជាឧបករណ៍ថ្មី ដោយមិនបញ្ជូនប្រវត្តិសារ";
 
 /* The title for the device transfer 'choice' view 'register' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "Add as New Device";
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "បន្ថែមឧបករណ៍ថ្មី";
 
 /* The title for the device transfer 'choice' view 'register' option */
-"DEVICE_TRANSFER_CHOICE_REGISTER_TITLE" = "Register without Transferring";
+"DEVICE_TRANSFER_CHOICE_REGISTER_TITLE" = "ចុះឈ្មោះដោយមិនបញ្ជូន";
 
 /* The title for the device transfer 'choice' view */
-"DEVICE_TRANSFER_CHOICE_TITLE" = "Transfer Account & Messages";
+"DEVICE_TRANSFER_CHOICE_TITLE" = "បញ្ជូនគណនីនិងសារ";
 
 /* The body for the device transfer 'choice' view 'transfer' option */
 "DEVICE_TRANSFER_CHOICE_TRANSFER_BODY" = "Transfer your account and message history from your old iOS device";
@@ -1095,67 +1095,67 @@
 "DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_BODY" = "Transfer your account and message history from your old iPad";
 
 /* The title for the device transfer 'choice' view 'transfer' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "Transfer from another iPad";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_LINKED_TITLE" = "បញ្ជូនចេញពី iPad ផ្សេង";
 
 /* The title for the device transfer 'choice' view 'transfer' option */
-"DEVICE_TRANSFER_CHOICE_TRANSFER_TITLE" = "Transfer from iOS Device";
+"DEVICE_TRANSFER_CHOICE_TRANSFER_TITLE" = "បញ្ជូនចេញពី iOS ផ្សេង";
 
 /* A warning for the device transfer 'choice' view indicating you can only have one device registered with your number */
-"DEVICE_TRANSFER_CHOICE_WARNING" = "Continuing will disable Signal on other devices currently registered with the same phone number.";
+"DEVICE_TRANSFER_CHOICE_WARNING" = "ការបន្តនឹងបិទ Signal លើឧបករណ៍ដែលបានចុះឈ្មោះ ជាមួយលេខទូរស័ព្ទដូចគ្នា។";
 
 /* An error indicating that we were unable to verify the indentity of the new device to complete the transfer */
-"DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "Unable to verify your new device, please try again";
+"DEVICE_TRANSFER_ERROR_CERTIFICATE_MISMATCH" = "មិនអាចផ្ទៀងផ្ទាត់ឧបករណ៍ថ្មីរបស់អ្នក សូមផ្ទៀងផ្ទាត់ម្តងទៀត";
 
 /* An error indicating that something went wrong with the transfer and it could not complete */
-"DEVICE_TRANSFER_ERROR_GENERIC" = "The transfer couldn't complete, please ensure your devices are near each other and try again";
+"DEVICE_TRANSFER_ERROR_GENERIC" = "ការបញ្ជូននេះ មិនអាចបញ្ចប់ សូមប្រាកដថា ឧបករណ៍របស់អ្នក គឺនៅជិតគ្នា និងសាកល្បងម្តងទៀត";
 
 /* An error indicating the user must scan this code with a linked device to transfer. */
-"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "To set up this iPad as a linked device, you must scan with your old iPad";
+"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_LINKED" = "ដើម្បីដំឡើង iPad នេះ ជាឧបករណ៍តភ្ជាប់ អ្នកត្រូវស្កេនជាមួយ iPad ចាស់របស់អ្នក";
 
 /* An error indicating the user must scan this code with a primary device to transfer. */
-"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_PRIMARY" = "To transfer your account, you must scan with your iPhone";
+"DEVICE_TRANSFER_ERROR_MODE_MISMATCH_PRIMARY" = "ដើម្បីបញ្ជូនគណនីអ្នក អ្នកត្រូវស្កេនជាមួយ iPhone របស់អ្នក";
 
 /* An error indicating that the user does not have enough free space on their device to complete the transfer */
-"DEVICE_TRANSFER_ERROR_NOT_ENOUGH_SPACE" = "Not enough free space to complete the transfer";
+"DEVICE_TRANSFER_ERROR_NOT_ENOUGH_SPACE" = "មិនមានទំហំទំនេរគ្រប់គ្រាន់ ដើម្បីបញ្ចប់ការបញ្ជូន";
 
 /* An error indicating the user must update their device before trying to transfer. */
-"DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "Update to the latest version of Signal and try again";
+"DEVICE_TRANSFER_ERROR_UNSUPPORTED_VERSION" = "ធ្វើបច្ចុប្បន្នភាព Signal ទៅកាន់ជំនាន់ចុងក្រោយ និងសាកល្បងម្តងទៀត";
 
 /* The explanation on the action sheet prompting the user if they want to transfer their device. */
-"DEVICE_TRANSFER_PROMPT_EXPLANATION" = "Transfer your Signal account to a new iOS device. Make sure your new device is nearby and turned on.";
+"DEVICE_TRANSFER_PROMPT_EXPLANATION" = "បញ្ជូនគណនី Signal របស់អ្នកទៅឧបករណ៍ iOS ថ្មី។ ប្រាកដថាឧបករណ៍ថ្មីរបស់អ្នក នៅជិតគ្នានិងកំពុងបើក។";
 
 /* The title on the acttion sheet prompting the user if they want to transfer their device. */
-"DEVICE_TRANSFER_PROMPT_TITLE" = "Transfer Account";
+"DEVICE_TRANSFER_PROMPT_TITLE" = "បញ្ជូនគណនី";
 
 /* The explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "Open Signal on your old device, bring it nearby, and make sure Wi-Fi and Bluetooth are enabled on both devices.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION" = "បើក Signal នើឧបករណ៍ចាស់របស់អ្នក ដាក់ជិតគ្នា និងប្រាកដថា Wi-Fi និង Bluetooth បានបើកលើឧបករណ៍ទាំងពីរ។";
 
 /* The second explanation for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "Position this QR code in the frame of your other device.";
+"DEVICE_TRANSFER_QRCODE_EXPLANATION2" = "ដាក់កូដ QR នេះ ក្នុងស៊ុមនៃឧបករណ៍ផ្សេងរបស់អ្នក។";
 
 /* The title for the device transfer qr code view */
-"DEVICE_TRANSFER_QRCODE_TITLE" = "Waiting for Other Device...";
+"DEVICE_TRANSFER_QRCODE_TITLE" = "កំពុងរង់ចាំឧបករណ៍ផ្សេង...";
 
 /* The explanation on the view that shows receiving progress */
-"DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "Keep both devices near each other. Do not turn off either device and keep Signal open. Transfers are end-to-end encrypted.";
+"DEVICE_TRANSFER_RECEIVING_EXPLANATION" = "រក្សាឧបករណ៍ទាំងពីរនៅជិតគ្នា។ មិនត្រូវបិទឧបករណ៍ណាមួយ និងរក្សា Signal ឲ្យនៅបើក។ ការបញ្ជូននឹងត្រូវអ៊ីនគ្រីបទាំងសងខាង។";
 
 /* The title on the view that shows receiving progress */
-"DEVICE_TRANSFER_RECEIVING_TITLE" = "Receiving Data";
+"DEVICE_TRANSFER_RECEIVING_TITLE" = "កំពុងទទួលទិន្នន័យ";
 
 /* Text indicating that we are connecting to the scanned device */
 "DEVICE_TRANSFER_SCANNING_CONNECTING" = "កំពុងតភ្ជាប់...";
 
 /* The explanation for the action sheet asking the user to scan the QR code to transfer */
-"DEVICE_TRANSFER_SCANNING_EXPLANATION" = "Position the QR code within the circle";
+"DEVICE_TRANSFER_SCANNING_EXPLANATION" = "ដាក់កូដ QR code នៅក្នុងរង្វង់";
 
 /* The title for the action sheet asking the user to scan the QR code to transfer */
-"DEVICE_TRANSFER_SCANNING_TITLE" = "Hold Your New Device Up to the Camera";
+"DEVICE_TRANSFER_SCANNING_TITLE" = "កាន់ឧបករណ៍ថ្មីរបស់អ្នកឱ្យជាប់នឹងកាមេរ៉ា";
 
 /* The explanation on the action sheet that shows transfer progress */
-"DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "Keep both devices near each other. Do not turn off either device and keep Signal open.";
+"DEVICE_TRANSFER_TRANSFERRING_EXPLANATION" = "រក្សាឧបករណ៍ទាំងពីរនៅជិតគ្នា។ មិនត្រូវបិទឧបករណ៍ណាមួយ និងរក្សា Signal ឲ្យនៅបើក។";
 
 /* The title on the action sheet that shows transfer progress */
-"DEVICE_TRANSFER_TRANSFERRING_TITLE" = "Transferring Data";
+"DEVICE_TRANSFER_TRANSFERRING_TITLE" = "កំពុងបញ្ជូនទិន្នន័យ";
 
 /* table cell label in conversation settings */
 "DISAPPEARING_MESSAGES" = "សារដែលមិនបង្ហាញ";
@@ -1185,7 +1185,7 @@
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signalត្រូវការចូលប្រើប្រាស់លេខទំនាក់ទំនង ដើម្បីកែប្រែព័ត៌មានទំនាក់ទំនង";
 
 /* The 'clear avatar' button in the 'edit group' view. */
-"EDIT_GROUP_CLEAR_AVATAR" = "Remove Photo";
+"EDIT_GROUP_CLEAR_AVATAR" = "លុបរូបភាព";
 
 /* a title for the contacts section of the 'new/update group' view. */
 "EDIT_GROUP_CONTACTS_SECTION_TITLE" = "បញ្ជីទំនាក់ទំនង";
@@ -1194,16 +1194,16 @@
 "EDIT_GROUP_DEFAULT_TITLE" = "កែប្រែក្រុម";
 
 /* Error message indicating the a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "This user can't be added to the group until they upgrade Signal.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER" = "អ្នកប្រើប្រាស់មួយនេះ មិនអាចបន្ថែមចូលក្នុងក្រុម លុះត្រាគេបានដំឡើង Signal។";
 
 /* Message for 'group full' error alert when a user can't be added to a group. */
-"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "Maximum group size of 100 members reached.";
+"EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "ទំហំក្រុមអតិបរមានៃសមាជិក ១០០ នាក់បានដល់កំណត់។";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
-"EDIT_GROUP_ERROR_INVALID_AVATAR" = "Invalid photo.";
+"EDIT_GROUP_ERROR_INVALID_AVATAR" = "រូបភាពមិនត្រឹមត្រូវ។";
 
 /* Label for the group name in the 'edit group' view. */
-"EDIT_GROUP_GROUP_NAME" = "Group Name";
+"EDIT_GROUP_GROUP_NAME" = "ឈ្មោះក្រុម";
 
 /* The title for the 'update group' button. */
 "EDIT_GROUP_UPDATE_BUTTON" = "បច្ចុប្បន្នភាព";
@@ -1227,28 +1227,28 @@
 "EMOJI_CATEGORY_ACTIVITIES_NAME" = "សកម្មភាព";
 
 /* The name for the emoji category 'Animals & Nature' */
-"EMOJI_CATEGORY_ANIMALS_NAME" = "Animals & Nature";
+"EMOJI_CATEGORY_ANIMALS_NAME" = "សត្វ និងធម្មជាតិ";
 
 /* The name for the emoji category 'Flags' */
 "EMOJI_CATEGORY_FLAGS_NAME" = "ទង់";
 
 /* The name for the emoji category 'Food & Drink' */
-"EMOJI_CATEGORY_FOOD_NAME" = "Food & Drink";
+"EMOJI_CATEGORY_FOOD_NAME" = "អាហារ និងភេសជ្ជៈ";
 
 /* The name for the emoji category 'Objects' */
 "EMOJI_CATEGORY_OBJECTS_NAME" = "កម្មវត្ថុ";
 
 /* The name for the emoji category 'Recents' */
-"EMOJI_CATEGORY_RECENTS_NAME" = "Recents";
+"EMOJI_CATEGORY_RECENTS_NAME" = "ថ្មីៗ";
 
 /* The name for the emoji category 'Smileys & People' */
-"EMOJI_CATEGORY_SMILEYSANDPEOPLE_NAME" = "Smileys & People";
+"EMOJI_CATEGORY_SMILEYSANDPEOPLE_NAME" = "ញញឹម និងមនុស្ស";
 
 /* The name for the emoji category 'Symbols' */
 "EMOJI_CATEGORY_SYMBOLS_NAME" = "សញ្ញា";
 
 /* The name for the emoji category 'Travel & Places' */
-"EMOJI_CATEGORY_TRAVEL_NAME" = "Travel & Places";
+"EMOJI_CATEGORY_TRAVEL_NAME" = "ដំណើរ និងទីកន្លែង";
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE1" = "គ្មានលេខទំនាក់ទំនងណាមួយ ប្រើSignalទេ។";
@@ -1344,7 +1344,7 @@
 "ERROR_MESSAGE_WRONG_TRUSTED_IDENTITY_KEY" = "លេខសុវត្ថិភាពបានផ្លាស់ប្តូរ។";
 
 /* Error indicating network connectivity problems. */
-"ERROR_NETWORK_FAILURE" = "Network Error";
+"ERROR_NETWORK_FAILURE" = "បញ្ហាបណ្តាញ";
 
 /* Error indicating a send failure due to a delinked application. */
 "ERROR_SENDING_DELINKED" = "ឧបករណ៍របស់អ្នកលែងបានតភ្ជាប់។ សូមតភ្ជាប់ឡើងវិញ ដើម្បីផ្ញើសារបន្ថែម។";
@@ -1428,7 +1428,7 @@
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "បញ្ចូលការស្វែងរករបស់អ្នក";
 
 /* Turn on permission view 'go to settings' button */
-"GO_TO_SETTINGS_BUTTON" = "Go to Settings";
+"GO_TO_SETTINGS_BUTTON" = "ទៅកាន់ ការកំណត់";
 
 /* Body message of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_BODY" = "ជំនាន់ Signal នេះ រួមមាន ការបង្កើនប្រសិទ្ធភាពទិន្នន័យនិងការកែលម្អការល្បឿន។ អ្នកអាចនឹងត្រូវបើកកម្មវិធីនេះ ដើម្បីបញ្ចប់ដំណើរការ។";
@@ -1437,19 +1437,19 @@
 "GRDB_MIGRATION_NOTIFICATION_TITLE" = "កំពុងធ្វើឲ្យទិន្នន័យប្រសើរឡើង";
 
 /* Message indicating that the access to the group's attributes was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed who can edit group info to “%@“.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_LOCAL_USER_FORMAT" = "អ្នកបានផ្លាស់ប្តូរអ្នកដែលអាចកែប្រែព័ត៌មានក្រុមទៅ “%@“។";
 
 /* Message indicating that the access to the group's attributes was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed who can edit group info to “%2$@“.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ បានផ្លាស់ប្តូរអ្នកដែលអាចកែប្រែព័ត៌មានក្រុមទៅ “%2$@“។";
 
 /* Message indicating that the access to the group's attributes was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "Group info can be changed by “%@“.";
+"GROUP_ACCESS_ATTRIBUTES_UPDATED_FORMAT" = "ព័ត៌មានក្រុមអាចត្រូវបានផ្លាស់ប្តូរដោយ “%@“។";
 
 /* Description of the 'admins only' access level. */
-"GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "Admins Only";
+"GROUP_ACCESS_LEVEL_ADMINISTRATORS" = "តែអ្នកគ្រប់គ្រង";
 
 /* Description of the 'all users' access level. */
-"GROUP_ACCESS_LEVEL_ANY" = "Any User";
+"GROUP_ACCESS_LEVEL_ANY" = "អ្នកប្រើប្រាស់ណាមួយ";
 
 /* Description of the 'all members' access level. */
 "GROUP_ACCESS_LEVEL_MEMBER" = "សមាជិកទាំងអស់";
@@ -1458,13 +1458,13 @@
 "GROUP_ACCESS_LEVEL_UNKNOWN" = "មិនស្គាល់";
 
 /* Message indicating that the access to the group's members was changed by the local user. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "You changed who can edit group membership to “%@“.";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_LOCAL_USER_FORMAT" = "អ្នកបានផ្លាស់ប្តូរអ្នកដែលអាចកែប្រែសមាជិកភាពក្រុមទៅ “%@“។";
 
 /* Message indicating that the access to the group's members was changed by a remote user. Embeds {{ %1$@ user who changed the access, %2$@ new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ changed who can edit group membership to “%2$@“.";
+"GROUP_ACCESS_MEMBERS_UPDATED_BY_REMOTE_USER_FORMAT" = "%1$@ បានផ្លាស់ប្តូរអ្នកដែលអាចកែប្រែសមាជិកភាពក្រុមទៅ “%2$@“។";
 
 /* Message indicating that the access to the group's members was changed. Embeds {{new access level}}. */
-"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "Group membership can be changed by “%@“.";
+"GROUP_ACCESS_MEMBERS_UPDATED_FORMAT" = "សមាជិកភាពក្រុមអាចត្រូវបានផ្លាស់ប្តូរដោយ “%@“។";
 
 /* Message indicating that group was created by the local user. */
 "GROUP_CREATED_BY_LOCAL_USER" = "អ្នកបានបង្កើតក្រុមនេះ។";
@@ -1473,7 +1473,7 @@
 "GROUP_CREATED_BY_REMOTE_USER_FORMAT" = "%@ បានបន្ថែមអ្នកចូលក្នុងក្រុមនេះ។";
 
 /* Message indicating that group was created by an unknown user. */
-"GROUP_CREATED_BY_UNKNOWN_USER" = "Group was created.";
+"GROUP_CREATED_BY_UNKNOWN_USER" = "ក្រុមត្រូវបានបង្កើត។";
 
 /* Message shown in conversation view that indicates there were issues with group creation. */
 "GROUP_CREATION_FAILED" = "មិនមែនសមាជិកទាំងអស់អាចត្រូវបានបន្ថែមទៅក្រុមនោះទេ។ ចុច ដើម្បីព្យាយាមម្តងទៀត។";
@@ -1482,25 +1482,25 @@
 "GROUP_INVITES_SENT_ALERT_MESSAGE_1_FORMAT" = "%@ can’t be automatically added to this group by you. They’ve been invited to join, and won’t see any group messages until they accept.";
 
 /* Title for an alert indicating that a member was invited to a group. */
-"GROUP_INVITES_SENT_ALERT_TITLE_1" = "Invitation Sent";
+"GROUP_INVITES_SENT_ALERT_TITLE_1" = "ការអញ្ជើញត្រូវបានផ្ញើ";
 
 /* Format for the title for an alert indicating that some members were invited to a group. Embeds: {{ the number of invites sent. }} */
-"GROUP_INVITES_SENT_ALERT_TITLE_N_FORMAT" = "%@ Invitations Sent";
+"GROUP_INVITES_SENT_ALERT_TITLE_N_FORMAT" = "ការអញ្ជើញ%@ បានផ្ញើ";
 
 /* Message for an alert indicating that some members were invited to a group. */
 "GROUP_INVITES_SENT_ALERT_TITLE_N_MESSAGE" = "These users can’t be automatically added to this group by you. They’ve been invited to join, and won’t see any group messages until they accept.";
 
 /* Message indicating that the local user was added to the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%@ added you.";
+"GROUP_LOCAL_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%@ បានបន្ថែមអ្នក។";
 
 /* Message indicating that the local user was granted administrator role. */
-"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR" = "You are now an admin.";
+"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR" = "ឥឡូវអ្នកជាអ្នកគ្រប់គ្រង។";
 
 /* Message indicating that the local user was granted administrator role by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ made you an admin.";
+"GROUP_LOCAL_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ បានដាក់អ្នកជាអ្នកគ្រប់គ្រង។";
 
 /* Message indicating that the local user accepted an invite to the group. */
-"GROUP_LOCAL_USER_INVITE_ACCEPTED" = "You accepted an invitation to the group.";
+"GROUP_LOCAL_USER_INVITE_ACCEPTED" = "អ្នកបានយល់ព្រមការអញ្ជើញទៅក្រុម។";
 
 /* Message indicating that the local user accepted an invite to the group. Embeds {{user who invited the local user}}. */
 "GROUP_LOCAL_USER_INVITE_ACCEPTED_FORMAT" = "You accepted an invitation to the group from %@.";
@@ -1518,25 +1518,25 @@
 "GROUP_LOCAL_USER_INVITE_REVOKED_BY_UNKNOWN_USER" = "Your invitation to the group was revoked.";
 
 /* Message indicating that the local user was invited to the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT" = "%@ invited you.";
+"GROUP_LOCAL_USER_INVITED_BY_REMOTE_USER_FORMAT" = "%@ បានអញ្ជើញអ្នក។";
 
 /* Message indicating that the local user was invited to the group. */
-"GROUP_LOCAL_USER_INVITED_TO_THE_GROUP" = "You were invited to the group.";
+"GROUP_LOCAL_USER_INVITED_TO_THE_GROUP" = "អ្នកត្រូវបានអញ្ជើញទៅក្រុម។";
 
 /* Message indicating that the local user has joined the group. */
 "GROUP_LOCAL_USER_JOINED_THE_GROUP" = "អ្នកបានចូលក្រុមនេះ។";
 
 /* Message indicating that the local user was removed from the group by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed you.";
+"GROUP_LOCAL_USER_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ បានលុបអ្នក។";
 
 /* Message indicating that the local user was removed from the group by an unknown user. */
-"GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "You were removed from the group.";
+"GROUP_LOCAL_USER_REMOVED_BY_UNKNOWN_USER" = "អ្នកត្រូវបានលុបចេញពីក្រុម។";
 
 /* Message indicating that the local user had their administrator role revoked. */
-"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "Your admin privileges were revoked.";
+"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR" = "សិទ្ធិអ្នកគ្រប់គ្រងត្រូវបានដកហូត។";
 
 /* Message indicating that the local user had their administrator role revoked by another user. Embeds {{remote user name}}. */
-"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ revoked your admin privileges.";
+"GROUP_LOCAL_USER_REVOKED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%@ បានដកហូតសិទ្ធិអ្នកគ្រប់គ្រងរបស់អ្នក។";
 
 /* Label indicating that a group member is an admin. */
 "GROUP_MEMBER_ADMIN_INDICATOR" = "អ្នកគ្រប់គ្រង";
@@ -1545,13 +1545,13 @@
 "GROUP_MEMBER_COUNT_FORMAT" = "%1$@/%2$@";
 
 /* The 'group member count' indicator when there are no members in the group. */
-"GROUP_MEMBER_COUNT_LABEL_0" = "No members";
+"GROUP_MEMBER_COUNT_LABEL_0" = "គ្មានសមាជិក។";
 
 /* The 'group member count' indicator when there is 1 member in the group. */
-"GROUP_MEMBER_COUNT_LABEL_1" = "1 member";
+"GROUP_MEMBER_COUNT_LABEL_1" = "សមាជិក 1";
 
 /* Format for the 'group member count' indicator. Embeds {the number of group members}. */
-"GROUP_MEMBER_COUNT_LABEL_FORMAT" = "%@ members";
+"GROUP_MEMBER_COUNT_LABEL_FORMAT" = "%@ សមាជិក";
 
 /* Label indicating the local user. */
 "GROUP_MEMBER_LOCAL_USER" = "អ្នក";
@@ -1560,7 +1560,7 @@
 "GROUP_MEMBERS_CALL" = "ហៅ";
 
 /* Label indicating that a group has no other members. */
-"GROUP_MEMBERS_NO_OTHER_MEMBERS" = "No members.";
+"GROUP_MEMBERS_NO_OTHER_MEMBERS" = "គ្មានសមាជិក។";
 
 /* Title for the 'members' section of the 'group members' view. */
 "GROUP_MEMBERS_SECTION_TITLE_MEMBERS" = "សមាជិក";
@@ -1572,40 +1572,40 @@
 "GROUP_NAME_PLACEHOLDER" = "ឈ្មោះក្រុម (តម្រូវ)";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "%@ accepted an invitation to the group.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FORMAT" = "%@ បានយល់ព្រមការអញ្ជើញទៅក្រុម។";
 
 /* Message indicating that a remote user has accepted an invite from the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ accepted your invitation to the group.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ បានយល់ព្រមការអញ្ជើញទៅក្រុមរបស់អ្នក។";
 
 /* Message indicating that a remote user has accepted their invite. Embeds {{ %1$@ user who accepted their invite, %2$@ user who invited the user}}. */
-"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_REMOTE_USER_FORMAT" = "%1$@ accepted an invitation to the group from %2$@.";
+"GROUP_REMOTE_USER_ACCEPTED_INVITE_FROM_REMOTE_USER_FORMAT" = "%1$@ បានយល់ព្រមការអញ្ជើញទៅក្រុមពី %2$@។";
 
 /* Message indicating that a remote user was added to the group by the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_LOCAL_USER_FORMAT" = "You added %@.";
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_LOCAL_USER_FORMAT" = "អ្នកបានបន្ថែម %@។";
 
 /* Message indicating that a remote user was added to the group by another user. Embeds {{ %1$@ user who added the user, %2$@ user who was added}}. */
-"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ added %2$@.";
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_BY_REMOTE_USER_FORMAT" = "%1$@ បានបន្ថែម %2$@។";
 
 /* Message indicating that a remote user was added to the group. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT" = "%@ was added to the group.";
+"GROUP_REMOTE_USER_ADDED_TO_GROUP_FORMAT" = "%@ ត្រូវបានបន្ថែមទៅក្រុម។";
 
 /* Message indicating that a remote user has declined their invite. */
-"GROUP_REMOTE_USER_DECLINED_INVITE" = "1 person declined the invitation to the group.";
+"GROUP_REMOTE_USER_DECLINED_INVITE" = "មនុស្ស 1 នាក់ បានបដិសេធការអញ្ជើញទៅក្រុម។";
 
 /* Message indicating that a remote user has declined their invite. Embeds {{ user who invited them }}. */
-"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "1 person invited by %@ declined the invitation to the group.";
+"GROUP_REMOTE_USER_DECLINED_INVITE_FORMAT" = "មនុស្ស 1 នាក់ ដែលអញ្ជើញដោយ %@ បានបដិសេធការអញ្ជើញទៅក្រុម។";
 
 /* Message indicating that a remote user has declined an invite to the group from the local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ declined your invitation to the group.";
+"GROUP_REMOTE_USER_DECLINED_INVITE_FROM_LOCAL_USER_FORMAT" = "%@ បានបដិសេធការអញ្ជើញទៅក្រុមរបស់អ្នក។";
 
 /* Message indicating that a remote user was granted administrator role. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR" = "%@ is now an admin";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR" = "%@ ឥឡូវជាអ្នកគ្រប់គ្រង";
 
 /* Message indicating that a remote user was granted administrator role by local user. Embeds {{remote user name}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_LOCAL_USER" = "You made %@ an admin.";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_LOCAL_USER" = "អ្នកបានដាក់ %@ ជាអ្នកគ្រប់គ្រង។";
 
 /* Message indicating that a remote user was granted administrator role by another user. Embeds {{ %1$@ user who granted, %2$@ user who was granted administrator role}}. */
-"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ made %2$@ an admin.";
+"GROUP_REMOTE_USER_GRANTED_ADMINISTRATOR_BY_REMOTE_USER_FORMAT" = "%1$@ បានដាក់ %2$@ ជាអ្នកគ្រប់គ្រង។";
 
 /* Message indicating that a single remote user's invite was revoked. */
 "GROUP_REMOTE_USER_INVITE_REVOKED_1" = "Invitation to the group was revoked for 1 person.";
@@ -1728,7 +1728,7 @@
 "GROUPS_REPLACE_ADMIN_ALERT_MESSAGE" = "Before you leave, choose a new admin for this group.";
 
 /* Title for the 'replace group admin' alert. */
-"GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "Choose New Admin";
+"GROUPS_REPLACE_ADMIN_ALERT_TITLE" = "ជ្រើសរើសអ្នកគ្រប់គ្រងថ្មី";
 
 /* Label for the 'replace group admin' button. */
 "GROUPS_REPLACE_ADMIN_BUTTON" = "Choose new admin";
@@ -2844,7 +2844,7 @@
 "PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Set Profile Photo";
 
 /* Label for action that clear's the user's profile avatar */
-"PROFILE_VIEW_CLEAR_AVATAR" = "Remove Photo";
+"PROFILE_VIEW_CLEAR_AVATAR" = "លុបរូបភាព";
 
 /* A string indicating that the user can create a username on the profile view. */
 "PROFILE_VIEW_CREATE_USERNAME" = "បង្កើតឈ្មោះអ្នកប្រើប្រាស់";
@@ -3009,7 +3009,7 @@
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "លេខកូដ PIN មិនត្រឹមត្រូវ";
 
 /* Indicates the work we are doing while verifying the user's pin */
-"REGISTER_2FA_PIN_PROGRESS" = "Verifying PIN…";
+"REGISTER_2FA_PIN_PROGRESS" = "កំពុងផ្ទៀងផ្ទាត់ PIN…";
 
 /* Label for 'submit' button in the 2FA registration view. */
 "REGISTER_2FA_SUBMIT_BUTTON" = "បញ្ជូន";
@@ -3078,7 +3078,7 @@
 "RELAY_REGISTERED_ERROR_RECOVERY" = "លេខទូរស័ព្ទដែលអ្នកព្យាយាមចុះឈ្មោះនេះ បានចុះឈ្មោះរួចហើយ នៅលើម៉ាស៊ីនមេផ្សេង សូមលុបឈ្មោះពីទីនោះសិន ហើយព្យាយាមម្តងទៀត។";
 
 /* The title for the 'replace group admin' view. */
-"REPLACE_ADMIN_VIEW_TITLE" = "Choose New Admin";
+"REPLACE_ADMIN_VIEW_TITLE" = "ជ្រើសរើសអ្នកគ្រប់គ្រងថ្មី";
 
 /* No comment provided by engineer. */
 "REREGISTER_FOR_PUSH" = "ចុះឈ្មោះឡើងវិញ សម្រាប់ការជូនដំណឹង";
@@ -3171,103 +3171,103 @@
 "SCREENSHOT_NAME_GROUP_FIVE" = "Kirk Family";
 
 /* Please include emoji. This is a group name/channel name for pictures of the sun in the sky. */
-"SCREENSHOT_NAME_GROUP_FOUR" = "Sunsets 🌅";
+"SCREENSHOT_NAME_GROUP_FOUR" = "ថ្ងៃលិច🌅";
 
 /* This is for a group of people interested in discussing books they've read. */
-"SCREENSHOT_NAME_GROUP_ONE" = "Book Club";
+"SCREENSHOT_NAME_GROUP_ONE" = "ក្លឹបសៀវភៅ";
 
 /* This is group chat name for members talking about cats. Please include the emoji. */
-"SCREENSHOT_NAME_GROUP_SIX" = "Cat Chat 🐈 🐱";
+"SCREENSHOT_NAME_GROUP_SIX" = "ជជែកឆ្មា 🐈 🐱";
 
 /* Please include emoji. This is a group name for people who climb rocks/climb trees/hike mountains/outside mountaineering. */
-"SCREENSHOT_NAME_GROUP_THREE" = "🧗🏽‍♀️ Rock Climbers";
+"SCREENSHOT_NAME_GROUP_THREE" = "🧗អ្នកឡើងភ្នំ";
 
 /* This is for a group chat for people who want weather updates. */
-"SCREENSHOT_NAME_GROUP_TWO" = "Weather Forecasts";
+"SCREENSHOT_NAME_GROUP_TWO" = "ព្យាករណ៍អាកាសធាតុ";
 
 /* This appears in Signal > Settings. A female leadership/presidential/chairwoman position + female name Freyja or similar spelling. This will have a cat profile photo. */
 "SCREENSHOT_NAME_LOCAL_PROFILE" = "Chairwoman Freya";
 
 /* This is a message expressing support/happiness/awe/shock. */
-"SCREENSHOT_THREAD_DIRECT_FIVE_MESSAGE_ONE" = "Congrats! I can't believe it!";
+"SCREENSHOT_THREAD_DIRECT_FIVE_MESSAGE_ONE" = "សាទរ! ខ្ញុំមិនជឿទេ!";
 
 /* This is a message. */
-"SCREENSHOT_THREAD_DIRECT_FIVE_MESSAGE_THREE" = "See you tomorrow?";
+"SCREENSHOT_THREAD_DIRECT_FIVE_MESSAGE_THREE" = "ជួបអ្នកថ្ងៃស្អែក?";
 
 /* This is a message. Please include the emoji. */
-"SCREENSHOT_THREAD_DIRECT_FIVE_MESSAGE_TWO" = "Thank you ☺️";
+"SCREENSHOT_THREAD_DIRECT_FIVE_MESSAGE_TWO" = "អរគុណ ☺️";
 
 /* This is a message. */
-"SCREENSHOT_THREAD_DIRECT_FOUR_MESSAGE_ONE" = "Your wisdom has saved me.";
+"SCREENSHOT_THREAD_DIRECT_FOUR_MESSAGE_ONE" = "ប្រាជ្ញារបស់អ្នកបានសង្គ្រោះខ្ញុំ។";
 
 /* This is a message. Include 'Thanks' + a similar phrase with the :) emoji. */
-"SCREENSHOT_THREAD_DIRECT_FOUR_MESSAGE_TWO" = "Thanks! What a wonderful message to read :)";
+"SCREENSHOT_THREAD_DIRECT_FOUR_MESSAGE_TWO" = "សូមអរគុណ! នេះសារដ៏អស្ចារ្យសម្រាប់អាន :)";
 
 /* This is a message. */
-"SCREENSHOT_THREAD_DIRECT_ONE_MESSAGE_ONE" = "The rain is pouring down and I'm sitting here just listening to it.";
+"SCREENSHOT_THREAD_DIRECT_ONE_MESSAGE_ONE" = "មេឃកំពុងភ្លៀង ហើយខ្ញុំកំពុងអង្គុយនៅទីនេះ គ្រាន់តែស្តាប់វា។";
 
 /* This is a message. */
-"SCREENSHOT_THREAD_DIRECT_ONE_MESSAGE_TWO" = "That's what I did this morning too.";
+"SCREENSHOT_THREAD_DIRECT_ONE_MESSAGE_TWO" = "នោះហើយជាអ្វីដែលខ្ញុំបានធ្វើនៅព្រឹកនេះផងដែរ។";
 
 /* This is a message before a call. */
-"SCREENSHOT_THREAD_DIRECT_SEVEN_MESSAGE_ONE" = "Free for a call?";
+"SCREENSHOT_THREAD_DIRECT_SEVEN_MESSAGE_ONE" = "ទំនេរសម្រាប់ការហៅ?";
 
 /* This is a message. */
-"SCREENSHOT_THREAD_DIRECT_SIX_MESSAGE_ONE" = "Yes!";
+"SCREENSHOT_THREAD_DIRECT_SIX_MESSAGE_ONE" = "មែនហើយ!";
 
 /* Replace crepes with similar item that you bake or cook i.e. bread, croissants, naan. */
-"SCREENSHOT_THREAD_DIRECT_THREE_MESSAGE_ONE" = "We're making crepes tomorrow";
+"SCREENSHOT_THREAD_DIRECT_THREE_MESSAGE_ONE" = "យើងបង្កើតផ្កាថ្មនៅថ្ងៃស្អែក";
 
 /* This is a message before an image of mountains + a lake. */
-"SCREENSHOT_THREAD_DIRECT_TWO_MESSAGE_ONE" = "Hey check this out!";
+"SCREENSHOT_THREAD_DIRECT_TWO_MESSAGE_ONE" = "ហេពិនិត្យមើលនេះ!";
 
 /* This is a message. */
-"SCREENSHOT_THREAD_DIRECT_TWO_MESSAGE_THREE" = "New Zealand!";
+"SCREENSHOT_THREAD_DIRECT_TWO_MESSAGE_THREE" = "នូវែលសេឡង់!";
 
 /* This is a message after an image of mountains + a lake. */
-"SCREENSHOT_THREAD_DIRECT_TWO_MESSAGE_TWO" = "Whoa where are you!?";
+"SCREENSHOT_THREAD_DIRECT_TWO_MESSAGE_TWO" = "អូ អ្នកនៅឯណា!?";
 
 /* This is a message in the group chat of family members. */
-"SCREENSHOT_THREAD_GROUP_FIVE_MESSAGE_ONE" = "Today is ...";
+"SCREENSHOT_THREAD_GROUP_FIVE_MESSAGE_ONE" = "ថ្ងៃនេះ គឺ...";
 
 /* This is a message in the group chat of family members. */
-"SCREENSHOT_THREAD_GROUP_FIVE_MESSAGE_TWO" = "Happy birthday to you. Happy birthday to you!";
+"SCREENSHOT_THREAD_GROUP_FIVE_MESSAGE_TWO" = "រីករាយ​ថ្ងៃខួបកំណើត។ រីករាយ​ថ្ងៃខួបកំណើត!";
 
 /* This is a message in the Sunsets group chat. */
-"SCREENSHOT_THREAD_GROUP_FOUR_MESSAGE_ONE" = "It's too cloudy here.";
+"SCREENSHOT_THREAD_GROUP_FOUR_MESSAGE_ONE" = "នៅទីនេះមានពពកច្រើនពេក។";
 
 /* 1984 is the book title. The file extension is a text file. */
 "SCREENSHOT_THREAD_GROUP_ONE_FILE_NAME" = "1984.txt";
 
 /* This is for a message in the 'Book Club' group chat */
-"SCREENSHOT_THREAD_GROUP_ONE_MESSAGE_ONE" = "Did you read this yet?";
+"SCREENSHOT_THREAD_GROUP_ONE_MESSAGE_ONE" = "តើអ្នកបានអានវាហើយឬនៅ?";
 
 /* This is a file name 'Instructions' for the cat chat group. */
-"SCREENSHOT_THREAD_GROUP_SIX_FILE_NAME" = "Instructions.PDF";
+"SCREENSHOT_THREAD_GROUP_SIX_FILE_NAME" = "ការណែនាំ.PDF";
 
 /* This is a message in the cat chat group. */
-"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_FIVE" = "This is the instruction manual.";
+"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_FIVE" = "នេះគឺជាសៀវភៅណែនាំណែនាំ។";
 
 /* This is a message in the cat chat group. */
-"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_FOUR" = "Pictures, please!";
+"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_FOUR" = "សូមរូបភាព!";
 
 /* This is a message after seeing a picture. */
-"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_ONE" = "This is peaceful.";
+"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_ONE" = "នេះគឺជាសន្តិភាព។";
 
 /* This is a message in the cat chat group. */
-"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_THREE" = "She’s walking a cat on a leash...";
+"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_THREE" = "នាងកំពុងបណ្តើរឆ្មាលើខ្សែ...";
 
 /* This is a message. */
-"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_TWO" = "🌅 Good Morning!";
+"SCREENSHOT_THREAD_GROUP_SIX_MESSAGE_TWO" = "🌅 អារុណសួស្តី!";
 
 /* This is a message in the 'Rock Climbers' group chat. Please translate to make sense for the translated group name. For example: Which way should we go? */
-"SCREENSHOT_THREAD_GROUP_THREE_MESSAGE_ONE" = "Which route should we take?";
+"SCREENSHOT_THREAD_GROUP_THREE_MESSAGE_ONE" = "ផ្លូវណាយើងគួរទៅ?";
 
 /* This is a message. Please include the emoji if possible. */
-"SCREENSHOT_THREAD_GROUP_TWO_MESSAGE_ONE" = "See you all there 🤗";
+"SCREENSHOT_THREAD_GROUP_TWO_MESSAGE_ONE" = "ឃើញអ្នកទាំងអស់គ្នានៅទីនោះ 🤗";
 
 /* This is a message sent with an attachment. */
-"SCREENSHOT_THREAD_GROUP_TWO_MESSAGE_TWO" = "Raining all day";
+"SCREENSHOT_THREAD_GROUP_TWO_MESSAGE_TWO" = "ភ្លៀងពេញមួយថ្ងៃ";
 
 /* An example name for a user we use in the screenshots. */
 "SCREENSHOT_USERNAME_1" = "SCREENSHOT_USERNAME_1";
@@ -3318,7 +3318,7 @@
 "SECONDARY_ONBOARDING_GET_STARTED_BY_OPENING_PRIMARY" = "បើក Signal នៅលើទូរស័ព្ទរបស់អ្នក ដើម្បីតភ្ជាប់ iPad នេះទៅកាន់គណនីរបស់អ្នក";
 
 /* Link explaining what to do when trying to link a device before having a primary device. */
-"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "I don't have Signal on my phone…";
+"SECONDARY_ONBOARDING_GET_STARTED_DO_NOT_HAVE_PRIMARY" = "ខ្ញុំមិនមាន Signal លើទូរស័ព្ទរបស់ខ្ញុំទេ…";
 
 /* alert body */
 "SECONDARY_ONBOARDING_INSTALL_PRIMARY_FIRST_BODY" = "ទៅកាន់ App Store នៅលើទូរស័ព្ទរបស់អ្នក,​ ដំឡើង Signal, បញ្ចប់ដំណើរការចុះឈ្មោះ, និងបន្ទាប់មក អ្នកអាចតភ្ជាប់ iPad របស់អ្នក ទៅគណនីដូចគ្នា។";
@@ -3336,7 +3336,7 @@
 "SECONDARY_ONBOARDING_SCAN_CODE_TITLE" = "ស្កេនកូដ QR ជាមួយទូរស័ព្ទរបស់អ្នក";
 
 /* header text before the user can transfer to this device */
-"SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "Launch Signal on your old iPad to transfer your account";
+"SECONDARY_TRANSFER_GET_STARTED_BY_OPENING_IPAD" = "ដំណើរការ Signal នៅលើ iPad ចាស់របស់អ្នក ដើម្បីបញ្ជូនគណនីរបស់អ្នក";
 
 /* No comment provided by engineer. */
 "SECURE_SESSION_RESET" = "កាលប្រើប្រាស់សុវត្ថិភាពត្រូវបានកំណត់ឡើងវិញ។";
@@ -3561,7 +3561,7 @@
 "SETTINGS_NOTIFICATIONS" = "ការជូនដំណឹង";
 
 /* The button text for the dialog asking user to confirm their PIN to disable reminders */
-"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "Turn Off Reminders";
+"SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_ACTION" = "បិទការរំលឹក";
 
 /* The explanation for the dialog asking user to confirm their PIN to disable reminders */
 "SETTINGS_PIN_REMINDER_DISABLE_CONFIRMATION_EXPLANATION" = "Make sure you memorize or securely store your PIN as it can’t be recovered. If you forget your PIN, you may lose data when re-registering your Signal account.";
@@ -3603,10 +3603,10 @@
 "SETTINGS_READ_RECEIPTS_SECTION_FOOTER" = "មើល និងចែករំលែកនៅពេលសារបានអាន។ ការកំណត់នេះ ជាជម្រើសនិងអនុវត្តទៅលើគ្រប់សារសន្ទនាទាំងអស់។";
 
 /* Action to turn off registration lock */
-"SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "Turn Off";
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF" = "បិទ";
 
 /* Title for the alert confirming that the user wants to turn off registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "Turn Off Registration Lock?";
+"SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "បិទការចាក់សោរចុះឈ្មោះ?";
 
 /* Action to turn on registration lock */
 "SETTINGS_REGISTRATION_LOCK_TURN_ON" = "បើក";
@@ -3615,7 +3615,7 @@
 "SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "បើអ្នកភ្លេច Signal PIN របស់អ្នក ពេលដែលចុះឈ្មោះជាមួយ Signal​ ម្តងទៀត អ្នកនឹងត្រូវចាក់សោរគណនីរបស់អ្នករយៈពេល ៧ ថ្ងៃ។";
 
 /* Title for the alert confirming that the user wants to turn on registration lock. */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "Turn On Registration Lock?";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON_TITLE" = "បើកការចាក់សោរចុះឈ្មោះ?";
 
 /* Label for re-link button. */
 "SETTINGS_RELINK_BUTTON" = "តភ្ជាប់-ម្តងទៀត";
@@ -3897,10 +3897,10 @@
 "UNKNOWN_USER" = "មិនស្គាល់";
 
 /* Info Message when an unknown user disabled disappearing messages. */
-"UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Disappearing messages were disabled.";
+"UNKNOWN_USER_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "សារបាត់ទៅវិញបានបិទ។";
 
 /* Info Message when an unknown user enabled disappearing messages. Embeds {{time amount}} before messages disappear. see the *_TIME_AMOUNT strings for context. */
-"UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Disappearing message time was set to %@.";
+"UNKNOWN_USER_UPDATED_DISAPPEARING_MESSAGES_CONFIGURATION" = "កំណត់រយៈពេលលុបសារ %@។";
 
 /* Indicates an unknown or unrecognizable value. */
 "UNKNOWN_VALUE" = "មិនស្គាល់";
@@ -3924,7 +3924,7 @@
 "UNNAMED_DEVICE" = "ឧបករណ៍គ្មានឈ្មោះ";
 
 /* Pressing this button marks a thread as unread */
-"UNREAD_ACTION" = "Unread";
+"UNREAD_ACTION" = "មិនទាន់អាន";
 
 /* No comment provided by engineer. */
 "UNREGISTER_SIGNAL_FAIL" = "បរាជ័យក្នុងការលុបឈ្មោះពី Signal។";
@@ -3936,10 +3936,10 @@
 "UNSUPPORTED_FEATURE_ERROR" = "ឧបករណ៍របស់អ្នកមិនគាំទ្រមុខងារនេះទេ។";
 
 /* Error indicating that a group could not be updated. */
-"UPDATE_GROUP_FAILED" = "Group could not be updated.";
+"UPDATE_GROUP_FAILED" = "ក្រុមមិនអាចធ្វើបច្ចុប្បន្នភាព។";
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
-"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "This action couldn’t be completed. Check your internet connection and try again.";
+"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "សកម្មភាពនេះមិនអាចបញ្ចប់បាន។ ត្រួតពិនិត្យការតភ្ជាប់អ៊ីនធឺណិតរបស់អ្នក និងសាកល្បងម្តងទៀត។";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "បង្កើតលេខ PIN របស់អ្នក";

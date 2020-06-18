@@ -81,7 +81,7 @@
 "ADD_TO_GROUP_ACTION_SHEET_TITLE_FORMAT" = "Agregar a «%@»";
 
 /* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ ya es participante en «%@»";
+"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ ya participa en «%@»";
 
 /* The title for the 'add to group' view's recents section */
 "ADD_TO_GROUP_RECENTS_TITLE" = "Recientes";
@@ -675,7 +675,7 @@
 "CONTACT_FIELD_ORGANIZATION" = "Organización";
 
 /* Body for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Para mostrar nombres y fotos de contactos en tus chats:";
+"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Para mostrar nombres y fotos de contactos de tus chats:";
 
 /* First step for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Toca sobre «Ir a ajustes» abajo";
@@ -684,7 +684,7 @@
 "CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "Activa «Contactos»";
 
 /* Title for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_TITLE" = "Activa contactos";
+"CONTACT_PERMISSION_ACTION_SHEET_TITLE" = "Activar contactos";
 
 /* Snooze action text for contact permission reminder megaphone */
 "CONTACT_PERMISSION_NOT_NOW_ACTION" = "Ahora no";
@@ -693,7 +693,7 @@
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Activar";
 
 /* Body for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Ver nombres y fotos de tus contactos en los chats.";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Muestra nombres y fotos de tus contactos en chats.";
 
 /* Title for contact permission reminder megaphone */
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "¿Activar contactos?";
@@ -2874,7 +2874,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "El perfil sólo se puede actualizar con una conexión a internet activa.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Tu perfil está cifrado de punto a punto. Sólo será visible para tus contactos, o para personas con las que inicies o aceptes un chat y cuando te unas a nuevos grupos. ";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Tu perfil está cifrado de punto a punto. Sólo es visible para tus contactos, para personas con las que inicies o aceptes un chat y cuando te unas a nuevos grupos. Nadie más tiene acceso, ni siquiera l*s creador*s de Signal.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Guardar";
@@ -3591,7 +3591,7 @@
 "SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_DESCRIPTION" = "Al activar, las llamadas de Signal se muestran en la lista de «Recientes» de la aplicación «Teléfono» de iOS.";
 
 /* Short table cell label */
-"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Llamadas en Recientes";
+"SETTINGS_PRIVACY_CALLKIT_SYSTEM_CALL_LOG_PREFERENCE_TITLE" = "Llamadas en «Recientes»";
 
 /* Settings table view cell label */
 "SETTINGS_PRIVACY_TITLE" = "Privacidad";

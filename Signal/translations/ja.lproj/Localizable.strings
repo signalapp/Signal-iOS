@@ -867,10 +867,10 @@
 "CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "グループメンバーシップを編集できるメンバーを選択します。";
 
 /* Title of the 'mute this thread' action sheet. */
-"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "消音";
+"CONVERSATION_SETTINGS_MUTE_ACTION_SHEET_TITLE" = "ミュート";
 
 /* label for 'mute thread' cell in conversation settings */
-"CONVERSATION_SETTINGS_MUTE_LABEL" = "消音";
+"CONVERSATION_SETTINGS_MUTE_LABEL" = "ミュート";
 
 /* Indicates that the current thread is not muted. */
 "CONVERSATION_SETTINGS_MUTE_NOT_MUTED" = "ミュートしていません";
@@ -2259,7 +2259,7 @@
 "MULTIDEVICE_PAIRING_MAX_RECOVERY" = "リンクできる端末の数が最大限度に達しています。端末を削除してください。";
 
 /* An explanation of the consequences of muting a thread. */
-"MUTE_BEHAVIOR_EXPLANATION" = "消音にすると通知が行われなくなります。";
+"MUTE_BEHAVIOR_EXPLANATION" = "ミュートすると通知が行われなくなります。";
 
 /* A button to skip a view. */
 "NAVIGATION_ITEM_SKIP_BUTTON" = "スキップ";

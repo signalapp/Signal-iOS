@@ -81,13 +81,13 @@
 "ADD_TO_GROUP_ACTION_SHEET_TITLE_FORMAT" = "%@-ലേക്ക് ചേർക്കുക";
 
 /* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ is already a member of %@";
+"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ ഇതിനകം %@ അംഗമാണ്";
 
 /* The title for the 'add to group' view's recents section */
 "ADD_TO_GROUP_RECENTS_TITLE" = "Recent";
 
 /* A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ was added to %@";
+"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@-നെ %@-ലേക്ക് ചേർത്തു";
 
 /* Title of the 'add to group' view. */
 "ADD_TO_GROUP_TITLE" = "മറ്റൊരു ഗ്രൂപ്പിലേക്ക് ചേർക്കുക";
@@ -675,10 +675,10 @@
 "CONTACT_FIELD_ORGANIZATION" = "സ്ഥാപനം";
 
 /* Body for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "To see contact names and photos in your conversations:";
+"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "നിങ്ങളുടെ സംഭാഷണങ്ങളിൽ കോൺ‌ടാക്റ്റ് നാമങ്ങളും ഫോട്ടോകളും കാണുന്നതിന്:";
 
 /* First step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Tap “Go to Settings” below";
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "ചുവടെയുള്ള “ക്രമീകരണങ്ങളിലേക്ക് പോകുക” ടാപ്പുചെയ്യുക";
 
 /* Third step for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "“കോൺ‌ടാക്റ്റുകൾ” ഓണാക്കുക";
@@ -693,7 +693,7 @@
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "ഓൺ ചെയ്യുക";
 
 /* Body for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "See contact names and photos in your conversations.";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "നിങ്ങളുടെ സംഭാഷണങ്ങളിൽ കോൺ‌ടാക്റ്റ് നാമങ്ങളും ഫോട്ടോകളും കാണുക.";
 
 /* Title for contact permission reminder megaphone */
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "കോൺ‌ടാക്റ്റുകൾ ഓണാക്കണോ?";
@@ -1227,28 +1227,28 @@
 "EMOJI_CATEGORY_ACTIVITIES_NAME" = "പ്രവർത്തനങ്ങൾ";
 
 /* The name for the emoji category 'Animals & Nature' */
-"EMOJI_CATEGORY_ANIMALS_NAME" = "Animals & Nature";
+"EMOJI_CATEGORY_ANIMALS_NAME" = "മൃഗങ്ങളും പ്രകൃതിയും";
 
 /* The name for the emoji category 'Flags' */
 "EMOJI_CATEGORY_FLAGS_NAME" = "പതാകകൾ";
 
 /* The name for the emoji category 'Food & Drink' */
-"EMOJI_CATEGORY_FOOD_NAME" = "Food & Drink";
+"EMOJI_CATEGORY_FOOD_NAME" = "ഭക്ഷണവും പാനീയവും";
 
 /* The name for the emoji category 'Objects' */
 "EMOJI_CATEGORY_OBJECTS_NAME" = "വസ്തുക്കൾ";
 
 /* The name for the emoji category 'Recents' */
-"EMOJI_CATEGORY_RECENTS_NAME" = "Recents";
+"EMOJI_CATEGORY_RECENTS_NAME" = "സമീപകാലത്ത്";
 
 /* The name for the emoji category 'Smileys & People' */
-"EMOJI_CATEGORY_SMILEYSANDPEOPLE_NAME" = "Smileys & People";
+"EMOJI_CATEGORY_SMILEYSANDPEOPLE_NAME" = "സ്മൈലികളും ആളുകളും";
 
 /* The name for the emoji category 'Symbols' */
 "EMOJI_CATEGORY_SYMBOLS_NAME" = "ചിഹ്നങ്ങൾ";
 
 /* The name for the emoji category 'Travel & Places' */
-"EMOJI_CATEGORY_TRAVEL_NAME" = "Travel & Places";
+"EMOJI_CATEGORY_TRAVEL_NAME" = "യാത്രയും സ്ഥലങ്ങളും";
 
 /* Full width label displayed when attempting to compose message */
 "EMPTY_CONTACTS_LABEL_LINE1" = "നിങ്ങളുടെ കോൺടാക്ടുകളിൽ ആർക്കും Signal ഇല്ല.";
@@ -1665,7 +1665,7 @@
 "GROUP_UPDATED_AVATAR_REMOVED" = "The group photo was removed.";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "You removed the photo.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "നിങ്ങൾ ഫോട്ടോ നീക്കംചെയ്തു.";
 
 /* Message indicating that the group's avatar was removed by a remote user. Embeds {{user who removed the avatar}}. */
 "GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed the photo.";
@@ -2346,7 +2346,7 @@
 "NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "To receive notifications for new messages:";
 
 /* First step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "Tap “Go to Settings” below";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "ചുവടെയുള്ള “ക്രമീകരണങ്ങളിലേക്ക് പോകുക” ടാപ്പുചെയ്യുക";
 
 /* Third step for notification permission action sheet */
 "NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE" = "Turn on “Allow Notifications”";

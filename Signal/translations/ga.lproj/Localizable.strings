@@ -69,28 +69,28 @@
 "ADD_TO_CONTACTS_OFFER" = "An bhfuil fonn ort an t-úsáideoir seo a chur le do liosta teagmhálaithe?";
 
 /* Label for button or row which allows users to add to another group. */
-"ADD_TO_GROUP" = "Add to Another Group";
+"ADD_TO_GROUP" = "Cuir le Grúpa Eile";
 
 /* The button on the 'add to group' confirmation to add the user to the group. */
-"ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "Add to Group";
+"ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "Cuir leis an nGrúpa é/í";
 
 /* The title on the 'add to group' confirmation action sheet. Embeds {contact name} */
-"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "Add %@ to this group?";
+"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "An bhfuil fonn ort %@ a chur leis an ngrúpa seo?";
 
 /* The title on the 'add to group' confirmation action sheet. Embeds {group name} */
-"ADD_TO_GROUP_ACTION_SHEET_TITLE_FORMAT" = "Add to %@";
+"ADD_TO_GROUP_ACTION_SHEET_TITLE_FORMAT" = "Cuir le %@";
 
 /* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ is already a member of %@";
+"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "Tá %@ ina ball den ghrúpa %@ cheana";
 
 /* The title for the 'add to group' view's recents section */
-"ADD_TO_GROUP_RECENTS_TITLE" = "Recent";
+"ADD_TO_GROUP_RECENTS_TITLE" = "Le Déanaí";
 
 /* A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ was added to %@";
+"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "Cuireadh %@ le %@";
 
 /* Title of the 'add to group' view. */
-"ADD_TO_GROUP_TITLE" = "Add to Another Group";
+"ADD_TO_GROUP_TITLE" = "Cuir le Grúpa Eile";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "An bhfuil fonn ort do phróifíl a chomhroinnt leis an úsáideoir seo?";
@@ -423,7 +423,7 @@
 "BLOCK_USER_BEHAVIOR_EXPLANATION" = "Ní bheidh úsáideoirí bactha in ann glaonna a chur ort ná teachtaireachtaí a sheoladh chugat.";
 
 /* Tooltip highlighting the blur image editing tool. */
-"BLUR_TOOLTIP" = "New: Blur faces or draw anywhere to blur.";
+"BLUR_TOOLTIP" = "Nua: Aghaidheanna a dhoiléiriú nó tarraingt áit ar bith le doiléiriú.";
 
 /* browse files option from file sharing menu */
 "BROWSE_FILES_BUTTON" = "Brabhsáil";
@@ -675,16 +675,16 @@
 "CONTACT_FIELD_ORGANIZATION" = "Eagraíocht";
 
 /* Body for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "To see contact names and photos in your conversations:";
+"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Chun ainmneacha agus pictiúir a thaispeáint i gcomhráite:";
 
 /* First step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Tap “Go to Settings” below";
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Tapáil “Socruithe” thíos";
 
 /* Third step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "Turn on “Contacts”";
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "Cuir “Contacts” ar siúl";
 
 /* Title for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_TITLE" = "Turn on Contacts";
+"CONTACT_PERMISSION_ACTION_SHEET_TITLE" = "Cuir Contacts ar siúl";
 
 /* Snooze action text for contact permission reminder megaphone */
 "CONTACT_PERMISSION_NOT_NOW_ACTION" = "Ná bac leis anois";
@@ -693,10 +693,10 @@
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Cuir ar siúl";
 
 /* Body for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "See contact names and photos in your conversations.";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Ainmneacha agus pictiúir de theagmhálaithe a thaispeáint i gcomhráite.";
 
 /* Title for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Turn on Contacts?";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Teagmhálaithe a chur ar siúl?";
 
 /* Label for a contact's phone number. */
 "CONTACT_PHONE" = "Guthán";
@@ -804,10 +804,10 @@
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "Uile";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Choose who can edit the group name, photo, and disappearing messages timer.";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Roghnaigh cé atá in ann ainm agus pictiúr an ghrúpa a athrú, chomh maith leis an tréimhse a mhaireann teachtaireachtaí gearrshaolacha.";
 
 /* Footer text for the 'block and leave' section of contact conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "You will no longer receive messages or updates from this user.";
+"CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_CONTACT_FOOTER" = "Ní bhfaighidh tú teachtaireachtaí ná nuashonruithe ón úsáideoir seo a thuilleadh.";
 
 /* Footer text for the 'block and leave' section of group conversation settings view. */
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER" = "Ní bhfaighidh tú teachtaireachtaí ón ngrúpa seo a thuilleadh.";
@@ -831,7 +831,7 @@
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Riarthóirí Amháin";
 
 /* Description for the 'edit group attributes access' alert. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Choose who can change the group name, photo, and disappearing messages:";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Roghnaigh cé atá in ann ainm agus pictiúr an ghrúpa a athrú, chomh maith leis an tréimhse a mhaireann teachtaireachtaí gearrshaolacha:";
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "Na Baill Go Léir";
@@ -1185,7 +1185,7 @@
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Teastaíonn rochtain ar do chuid teagmhálaithe ó Signal chun iad a chur in eagar";
 
 /* The 'clear avatar' button in the 'edit group' view. */
-"EDIT_GROUP_CLEAR_AVATAR" = "Remove Photo";
+"EDIT_GROUP_CLEAR_AVATAR" = "Bain an Pictiúr";
 
 /* a title for the contacts section of the 'new/update group' view. */
 "EDIT_GROUP_CONTACTS_SECTION_TITLE" = "Teagmhálaithe";
@@ -1200,7 +1200,7 @@
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "Ní cheadaítear níos mó ná 100 ball in aon ghrúpa.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
-"EDIT_GROUP_ERROR_INVALID_AVATAR" = "Invalid photo.";
+"EDIT_GROUP_ERROR_INVALID_AVATAR" = "Pictiúr neamhbhailí.";
 
 /* Label for the group name in the 'edit group' view. */
 "EDIT_GROUP_GROUP_NAME" = "Ainm an Ghrúpa";
@@ -1428,7 +1428,7 @@
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Cuardach";
 
 /* Turn on permission view 'go to settings' button */
-"GO_TO_SETTINGS_BUTTON" = "Go to Settings";
+"GO_TO_SETTINGS_BUTTON" = "Socruithe";
 
 /* Body message of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_BODY" = "Rinneadh optamú ar an mbunachar sonraí agus cuireadh feabhas ar fheidhmíocht sa leagan seo de Signal. Seans go gcaithfidh tú an aip a oscailt chun an próiseas a chur i gcrích.";
@@ -1662,22 +1662,22 @@
 "GROUP_UPDATED" = "Nuashonraíodh an grúpa.";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED" = "The group photo was removed.";
+"GROUP_UPDATED_AVATAR_REMOVED" = "Baineadh pictiúr an ghrúpa.";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "You removed the photo.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "Bhain tú an pictiúr.";
 
 /* Message indicating that the group's avatar was removed by a remote user. Embeds {{user who removed the avatar}}. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed the photo.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "Bhain %@ an pictiúr.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED" = "Updated the group photo.";
+"GROUP_UPDATED_AVATAR_UPDATED" = "Nuashonraíodh pictiúr an ghrúpa.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "You updated the photo.";
+"GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "Nuashonraigh tú an pictiúr.";
 
 /* Message indicating that the group's avatar was changed by a remote user. Embeds {{user who changed the avatar}}. */
-"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ updated the photo.";
+"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "Nuashonraigh %@ an pictiúr.";
 
 /* Info message indicating that the group was updated by the local user. */
 "GROUP_UPDATED_BY_LOCAL_USER" = "Nuashonraigh tú an grúpa.";
@@ -1773,13 +1773,13 @@
 "HOME_VIEW_TITLE_INBOX" = "Signal";
 
 /* The image editor hint that you can draw blur */
-"IMAGE_EDITOR_BLUR_HINT" = "Draw anywhere to blur";
+"IMAGE_EDITOR_BLUR_HINT" = "Tarraing áit ar bith lena dhoiléiriú";
 
 /* The image editor setting to blur faces */
-"IMAGE_EDITOR_BLUR_SETTING" = "Blur faces";
+"IMAGE_EDITOR_BLUR_SETTING" = "Doiléirigh aghaidheanna";
 
 /* A toast indicating that you can blur more faces after detection */
-"IMAGE_EDITOR_BLUR_TOAST" = "Draw to blur additional faces or areas";
+"IMAGE_EDITOR_BLUR_TOAST" = "Tarraing chun aghaidheanna nó áiteanna eile a dhoiléiriú";
 
 /* Momentarily shown to the user when attempting to select more images than is allowed. Embeds {{max number of items}} that can be shared. */
 "IMAGE_PICKER_CAN_SELECT_NO_MORE_TOAST_FORMAT" = "Ní féidir leat níos mó ná %@ comhad a chomhroinnt.";
@@ -2136,10 +2136,10 @@
 "MESSAGE_REQUEST_VIEW_BLOCK_BUTTON" = "Cuir bac air";
 
 /* A prompt notifying that the user must unblock this conversation to continue. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "Let %@ message you and share your name and photo with them? You won't receive any messages until you unblock them.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_CONTACT_PROMPT_FORMAT" = "An bhfuil fonn ort d'ainm agus do phictiúr a roinnt le %@, agus cead a thabhairt dó/di teachtaireachtaí a sheoladh chugat? Ní bhfaighidh tú aon teachtaireacht go dtí go mbainfidh tú an bac de/di.";
 
 /* A prompt notifying that the user must unblock this group to continue. */
-"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "Unblock this group and share your name and photo with its members? You won't receive any messages until you unblock them.";
+"MESSAGE_REQUEST_VIEW_BLOCKED_GROUP_PROMPT" = "An bhfuil fonn ort d'ainm agus do phictiúr a roinnt leis an ngrúpa seo agus an bac a bhaint de? Ní bhfaighidh tú aon teachtaireacht go dtí go mbainfidh tú an bac de.";
 
 /* incoming message request button text which deletes a conversation */
 "MESSAGE_REQUEST_VIEW_DELETE_BUTTON" = "Scrios";
@@ -2148,16 +2148,16 @@
 "MESSAGE_REQUEST_VIEW_EXISTING_CONTACT_PROMPT_FORMAT" = "Caithfidh tú do phróifíl a chomhroinnt le %@ chun dul ar aghaidh leis an gcomhrá.";
 
 /* A prompt notifying that the user must share their profile with this group. */
-"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "You must share your profile to continue your conversation with this group.";
+"MESSAGE_REQUEST_VIEW_EXISTING_GROUP_PROMPT" = "Caithfidh tú do phróifíl a roinnt chun páirt a ghlacadh sa chomhrá leis an ngrúpa seo.";
 
 /* A prompt for the user to accept or decline an invite to a group. Embeds {{name of user who invited you}}. */
 "MESSAGE_REQUEST_VIEW_GROUP_INVITE_PROMPT_FORMAT" = "Thug %@ cuireadh duit páirt a ghlacadh sa ghrúpa seo. An bhfuil fonn ort cead a thabhairt do bhaill den ghrúpa seo teachtaireachtaí a chur chugat?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Let %@ message you and share your name and photo with them? They won’t know you’ve seen their message until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "An bhfuil fonn ort d'ainm agus do phictiúr a roinnt le %@, agus cead a thabhairt dó/di teachtaireachtaí a sheoladh chugat? Ní bheidh a fhios acu go bhfaca tú an teachtaireacht go dtí go nglacfaidh tú léi.";
 
 /* A prompt asking if the user wants to accept a group invite. */
-"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Join this group and share your name and photo with its members? They won’t know you’ve seen their messages until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "An bhfuil fonn ort páirt a ghlacadh sa ghrúpa seo agus d'ainm agus do phictiúr a roinnt le baill den ghrúpa? Ní bheidh a fhios acu go bhfaca tú a gcuid teachtaireachtaí go dtí go nglacfaidh tú leis.";
 
 /* A button used to share your profile with an existing thread. */
 "MESSAGE_REQUEST_VIEW_SHARE_PROFILE_BUTTON" = "Comhroinn mo Phróifíl";
@@ -2343,19 +2343,19 @@
 "NOTIFICATION_BODY_PHONE_LOCKED_FORMAT" = "D'fhéadfadh sé go bhfuair tú teachtaireachtaí nuair a bhí an %@ á atosú.";
 
 /* Body for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "To receive notifications for new messages:";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "Chun fógra a fháil nuair a thagann teachtaireacht nua isteach:";
 
 /* First step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "Tap “Go to Settings” below";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "Tapáil “Socruithe” thíos";
 
 /* Third step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE" = "Turn on “Allow Notifications”";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE" = "Cuir “Allow Notifications” ar siúl";
 
 /* Second step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_TWO" = "Tap Notifications";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_TWO" = "Tapáil Notifications";
 
 /* Title for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_TITLE" = "Turn on Notifications";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_TITLE" = "Cuir Fógraí ar siúl";
 
 /* Snooze action text for contact permission reminder megaphone */
 "NOTIFICATION_PERMISSION_NOT_NOW_ACTION" = "Ná bac leis anois";
@@ -2364,10 +2364,10 @@
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Cuir ar siúl";
 
 /* Body for notification permission reminder megaphone */
-"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Never miss a message from your contacts and groups.";
+"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Ná caill teachtaireacht ar bith ó theagmhálaithe nó ó ghrúpaí.";
 
 /* Title for notification permission reminder megaphone */
-"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Turn on Notifications?";
+"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Fógraí a chur ar siúl?";
 
 /* No comment provided by engineer. */
 "NOTIFICATIONS_FOOTER_WARNING" = "I measc na ngníomhartha: “Marcáil Léite,” “Freagair,” agus “Glaoigh Ar Ais.”";
@@ -2841,10 +2841,10 @@
 "PROCEED_BUTTON" = "Ar Aghaidh";
 
 /* Action Sheet title prompting the user for a profile avatar */
-"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Set Profile Photo";
+"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Socraigh Pictiúr Próifíle";
 
 /* Label for action that clear's the user's profile avatar */
-"PROFILE_VIEW_CLEAR_AVATAR" = "Remove Photo";
+"PROFILE_VIEW_CLEAR_AVATAR" = "Bain an Pictiúr";
 
 /* A string indicating that the user can create a username on the profile view. */
 "PROFILE_VIEW_CREATE_USERNAME" = "Cruthaigh Ainm Úsáideora";
@@ -2874,7 +2874,7 @@
 "PROFILE_VIEW_NO_CONNECTION" = "Ní féidir an phróifíl a athrú nuair nach bhfuil tú ceangailte leis an Idirlíon.";
 
 /* Description of the user profile. */
-"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Your profile is end-to-end encrypted. It will be visible to your contacts, when you initiate or accept new conversations, and when you join new groups.";
+"PROFILE_VIEW_PROFILE_DESCRIPTION" = "Tá do phróifíl criptithe ó cheann go ceann. Beidh do chuid teagmhálaithe in ann í a fheiceáil, chomh maith le daoine a dtosaíonn tú comhrá nua leo, agus nuair a ghlacann tú páirt i ngrúpa nua.";
 
 /* Button to save the profile view in the profile view. */
 "PROFILE_VIEW_SAVE_BUTTON" = "Sábháil";
