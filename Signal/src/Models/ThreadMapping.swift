@@ -390,8 +390,6 @@ class ThreadMapping: NSObject {
         }
         // Once the moves are complete, the new ordering should be correct.
         guard newThreadIds == naiveThreadIdOrdering else {
-            Logger.verbose("newThreadIds: \(newThreadIds)")
-            Logger.verbose("naiveThreadIdOrdering: \(naiveThreadIdOrdering)")
             throw OWSAssertionError("Could not reorder contents.")
         }
 
