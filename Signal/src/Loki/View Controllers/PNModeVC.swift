@@ -23,7 +23,7 @@ final class PNModeVC : BaseVC, OptionViewDelegate {
         // Set up title label
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
-        titleLabel.font = .boldSystemFont(ofSize: isSmallScreen ? Values.largeFontSize : Values.veryLargeFontSize)
+        titleLabel.font = .boldSystemFont(ofSize: isIPhone5OrSmaller ? Values.largeFontSize : Values.veryLargeFontSize)
         titleLabel.text = NSLocalizedString("Push Notifications", comment: "")
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
@@ -55,7 +55,7 @@ final class PNModeVC : BaseVC, OptionViewDelegate {
         let topStackView = UIStackView(arrangedSubviews: [ titleLabel, explanationLabel, optionsStackView ])
         topStackView.axis = .vertical
         let isMediumScreen = (UIScreen.main.bounds.height - 667) < 1
-        topStackView.spacing = isSmallScreen ? Values.smallSpacing : (isMediumScreen ? Values.mediumSpacing : Values.veryLargeSpacing)
+        topStackView.spacing = isIPhone5OrSmaller ? Values.smallSpacing : (isMediumScreen ? Values.mediumSpacing : Values.veryLargeSpacing)
         topStackView.alignment = .fill
         // Set up top stack view container
         let topStackViewContainer = UIView(wrapping: topStackView, withInsets: UIEdgeInsets(top: 0, leading: Values.veryLargeSpacing, bottom: 0, trailing: Values.veryLargeSpacing))

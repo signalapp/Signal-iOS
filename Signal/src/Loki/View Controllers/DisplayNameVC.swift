@@ -21,7 +21,7 @@ final class DisplayNameVC : BaseVC {
         // Set up title label
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
-        titleLabel.font = .boldSystemFont(ofSize: isSmallScreen ? Values.largeFontSize : Values.veryLargeFontSize)
+        titleLabel.font = .boldSystemFont(ofSize: isIPhone5OrSmaller ? Values.largeFontSize : Values.veryLargeFontSize)
         titleLabel.text = NSLocalizedString("Pick your display name", comment: "")
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
@@ -35,9 +35,9 @@ final class DisplayNameVC : BaseVC {
         // Set up spacers
         let topSpacer = UIView.vStretchingSpacer()
         let spacer1 = UIView()
-        spacer1HeightConstraint = spacer1.set(.height, to: isSmallScreen ? Values.smallSpacing : Values.veryLargeSpacing)
+        spacer1HeightConstraint = spacer1.set(.height, to: isIPhone5OrSmaller ? Values.smallSpacing : Values.veryLargeSpacing)
         let spacer2 = UIView()
-        spacer2HeightConstraint = spacer2.set(.height, to: isSmallScreen ? Values.smallSpacing : Values.veryLargeSpacing)
+        spacer2HeightConstraint = spacer2.set(.height, to: isIPhone5OrSmaller ? Values.smallSpacing : Values.veryLargeSpacing)
         let bottomSpacer = UIView.vStretchingSpacer()
         let registerButtonBottomOffsetSpacer = UIView()
         registerButtonBottomOffsetConstraint = registerButtonBottomOffsetSpacer.set(.height, to: Values.onboardingButtonBottomOffset)
@@ -101,9 +101,9 @@ final class DisplayNameVC : BaseVC {
     @objc private func handleKeyboardWillChangeFrameNotification(_ notification: Notification) {
         guard let newHeight = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.size.height else { return }
         bottomConstraint.constant = -newHeight // Negative due to how the constraint is set up
-        registerButtonBottomOffsetConstraint.constant = isSmallScreen ? Values.smallSpacing : Values.largeSpacing
-        spacer1HeightConstraint.constant = isSmallScreen ? Values.smallSpacing : Values.mediumSpacing
-        spacer2HeightConstraint.constant = isSmallScreen ? Values.smallSpacing : Values.mediumSpacing
+        registerButtonBottomOffsetConstraint.constant = isIPhone5OrSmaller ? Values.smallSpacing : Values.largeSpacing
+        spacer1HeightConstraint.constant = isIPhone5OrSmaller ? Values.smallSpacing : Values.mediumSpacing
+        spacer2HeightConstraint.constant = isIPhone5OrSmaller ? Values.smallSpacing : Values.mediumSpacing
         UIView.animate(withDuration: 0.25) {
             self.view.layoutIfNeeded()
         }
@@ -112,8 +112,8 @@ final class DisplayNameVC : BaseVC {
     @objc private func handleKeyboardWillHideNotification(_ notification: Notification) {
         bottomConstraint.constant = 0
         registerButtonBottomOffsetConstraint.constant = Values.onboardingButtonBottomOffset
-        spacer1HeightConstraint.constant = isSmallScreen ? Values.smallSpacing : Values.veryLargeSpacing
-        spacer2HeightConstraint.constant = isSmallScreen ? Values.smallSpacing : Values.veryLargeSpacing
+        spacer1HeightConstraint.constant = isIPhone5OrSmaller ? Values.smallSpacing : Values.veryLargeSpacing
+        spacer2HeightConstraint.constant = isIPhone5OrSmaller ? Values.smallSpacing : Values.veryLargeSpacing
         UIView.animate(withDuration: 0.25) {
             self.view.layoutIfNeeded()
         }

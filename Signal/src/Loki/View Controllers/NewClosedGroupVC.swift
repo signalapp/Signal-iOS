@@ -47,7 +47,7 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
         super.viewDidLoad()
         setUpGradientBackground()
         setUpNavBarStyle()
-        let customTitleFontSize = isSmallScreen ? Values.largeFontSize : Values.veryLargeFontSize
+        let customTitleFontSize = isIPhone5OrSmaller ? Values.largeFontSize : Values.veryLargeFontSize
         setNavBarTitle(NSLocalizedString("New Closed Group", comment: ""), customFontSize: customTitleFontSize)
         // Set up navigation bar buttons
         let closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "X"), style: .plain, target: self, action: #selector(close))

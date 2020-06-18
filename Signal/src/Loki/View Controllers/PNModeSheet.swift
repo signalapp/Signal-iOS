@@ -19,7 +19,7 @@ final class PNModeSheet : Sheet, OptionViewDelegate {
         // Set up title label
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
-        titleLabel.font = .boldSystemFont(ofSize: isSmallScreen ? Values.largeFontSize : Values.veryLargeFontSize)
+        titleLabel.font = .boldSystemFont(ofSize: isIPhone5OrSmaller ? Values.largeFontSize : Values.veryLargeFontSize)
         titleLabel.text = NSLocalizedString("Push Notifications", comment: "")
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
@@ -48,19 +48,19 @@ final class PNModeSheet : Sheet, OptionViewDelegate {
         // Set up button stack view
         let bottomStackView = UIStackView(arrangedSubviews: [ confirmButton, skipButton ])
         bottomStackView.axis = .vertical
-        bottomStackView.spacing = isSmallScreen ? Values.smallSpacing : Values.mediumSpacing
+        bottomStackView.spacing = isIPhone5OrSmaller ? Values.smallSpacing : Values.mediumSpacing
         bottomStackView.alignment = .fill
         // Set up main stack view
         let stackView = UIStackView(arrangedSubviews: [ titleLabel, explanationLabel, optionsStackView, bottomStackView ])
         stackView.axis = .vertical
-        stackView.spacing = isSmallScreen ? 12 : Values.largeSpacing
+        stackView.spacing = isIPhone5OrSmaller ? 12 : Values.largeSpacing
         stackView.alignment = .center
         // Set up constraints
         contentView.addSubview(stackView)
-        stackView.pin(.leading, to: .leading, of: contentView, withInset: isSmallScreen ? Values.mediumSpacing : Values.largeSpacing)
-        stackView.pin(.top, to: .top, of: contentView, withInset: isSmallScreen ? Values.mediumSpacing : Values.largeSpacing)
-        contentView.pin(.trailing, to: .trailing, of: stackView, withInset: isSmallScreen ? Values.mediumSpacing : Values.largeSpacing)
-        contentView.pin(.bottom, to: .bottom, of: stackView, withInset: (isSmallScreen ? Values.mediumSpacing : Values.veryLargeSpacing) + overshoot)
+        stackView.pin(.leading, to: .leading, of: contentView, withInset: isIPhone5OrSmaller ? Values.mediumSpacing : Values.largeSpacing)
+        stackView.pin(.top, to: .top, of: contentView, withInset: isIPhone5OrSmaller ? Values.mediumSpacing : Values.largeSpacing)
+        contentView.pin(.trailing, to: .trailing, of: stackView, withInset: isIPhone5OrSmaller ? Values.mediumSpacing : Values.largeSpacing)
+        contentView.pin(.bottom, to: .bottom, of: stackView, withInset: (isIPhone5OrSmaller ? Values.mediumSpacing : Values.veryLargeSpacing) + overshoot)
     }
 
     // MARK: Interaction

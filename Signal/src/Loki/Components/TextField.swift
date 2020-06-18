@@ -8,8 +8,8 @@ final class TextField : UITextField {
     init(placeholder: String, usesDefaultHeight: Bool = true, customHeight: CGFloat? = nil, customHorizontalInset: CGFloat? = nil, customVerticalInset: CGFloat? = nil) {
         self.usesDefaultHeight = usesDefaultHeight
         self.height = customHeight ?? Values.textFieldHeight
-        self.horizontalInset = customHorizontalInset ?? (isSmallScreen ? Values.mediumSpacing : Values.largeSpacing)
-        self.verticalInset = customVerticalInset ?? (isSmallScreen ? Values.smallSpacing : Values.largeSpacing)
+        self.horizontalInset = customHorizontalInset ?? (isIPhone5OrSmaller ? Values.mediumSpacing : Values.largeSpacing)
+        self.verticalInset = customVerticalInset ?? (isIPhone5OrSmaller ? Values.smallSpacing : Values.largeSpacing)
         super.init(frame: CGRect.zero)
         self.placeholder = placeholder
         setUpStyle()

@@ -134,11 +134,20 @@ final class LinkDeviceVC : BaseVC, UIPageViewControllerDataSource, UIPageViewCon
 
 private final class EnterPublicKeyVC : UIViewController {
     weak var linkDeviceVC: LinkDeviceVC!
+    private var spacer1HeightConstraint: NSLayoutConstraint!
+    private var spacer2HeightConstraint: NSLayoutConstraint!
+    private var spacer3HeightConstraint: NSLayoutConstraint!
     private var bottomConstraint: NSLayoutConstraint!
-    private var linkButtonBottomConstraint: NSLayoutConstraint!
+    private var linkButtonBottomOffsetConstraint: NSLayoutConstraint!
     
     // MARK: Components
-    private lazy var publicKeyTextField = TextField(placeholder: NSLocalizedString("Enter your Session ID", comment: ""), customHeight: 56, customVerticalInset: 12)
+    private lazy var publicKeyTextField: TextField = {
+        if isIPhone6OrSmaller {
+            return TextField(placeholder: NSLocalizedString("Enter your Session ID", comment: ""), customHeight: 56, customVerticalInset: 12)
+        } else {
+            return TextField(placeholder: NSLocalizedString("Enter your Session ID", comment: ""))
+        }
+    }()
     
     // MARK: Lifecycle
     override func viewDidLoad() {
@@ -147,7 +156,7 @@ private final class EnterPublicKeyVC : UIViewController {
         // Set up title label
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
-        titleLabel.font = .boldSystemFont(ofSize: isSmallScreen ? Values.largeFontSize : Values.veryLargeFontSize)
+        titleLabel.font = .boldSystemFont(ofSize: isIPhone6OrSmaller ? Values.largeFontSize : Values.veryLargeFontSize)
         titleLabel.text = NSLocalizedString("Link your device", comment: "")
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
@@ -165,23 +174,33 @@ private final class EnterPublicKeyVC : UIViewController {
         linkButton.addTarget(self, action: #selector(requestDeviceLink), for: UIControl.Event.touchUpInside)
         let linkButtonContainer = UIView()
         linkButtonContainer.addSubview(linkButton)
-        linkButton.pin(.leading, to: .leading, of: linkButtonContainer, withInset: isSmallScreen ? 48 : 80)
+        linkButton.pin(.leading, to: .leading, of: linkButtonContainer, withInset: Values.massiveSpacing)
         linkButton.pin(.top, to: .top, of: linkButtonContainer)
-        linkButtonContainer.pin(.trailing, to: .trailing, of: linkButton, withInset: isSmallScreen ? 48 : 80)
-        linkButtonBottomConstraint = linkButtonContainer.pin(.bottom, to: .bottom, of: linkButton, withInset: Values.largeSpacing)
-        // Set up top stack view
-        let topStackView = UIStackView(arrangedSubviews: [ titleLabel, explanationLabel, publicKeyTextField ])
-        topStackView.axis = .vertical
-        topStackView.spacing = Values.smallSpacing
+        linkButtonContainer.pin(.trailing, to: .trailing, of: linkButton, withInset: Values.massiveSpacing)
+        linkButtonContainer.pin(.bottom, to: .bottom, of: linkButton)
         // Set up spacers
         let topSpacer = UIView.vStretchingSpacer()
+        let spacer1 = UIView()
+        spacer1HeightConstraint = spacer1.set(.height, to: isIPhone6OrSmaller ? Values.smallSpacing : Values.veryLargeSpacing)
+        let spacer2 = UIView()
+        spacer2HeightConstraint = spacer2.set(.height, to: isIPhone6OrSmaller ? Values.smallSpacing : Values.veryLargeSpacing)
         let bottomSpacer = UIView.vStretchingSpacer()
+        let linkButtonBottomOffsetSpacer = UIView()
+        linkButtonBottomOffsetConstraint = linkButtonBottomOffsetSpacer.set(.height, to: Values.onboardingButtonBottomOffset)
+        // Set up top stack view
+        let topStackView = UIStackView(arrangedSubviews: [ titleLabel, spacer1, explanationLabel, spacer2, publicKeyTextField ])
+        topStackView.axis = .vertical
+        // Set up top stack view container
+        let topStackViewContainer = UIView()
+        topStackViewContainer.addSubview(topStackView)
+        topStackView.pin(.leading, to: .leading, of: topStackViewContainer, withInset: Values.veryLargeSpacing)
+        topStackView.pin(.top, to: .top, of: topStackViewContainer)
+        topStackViewContainer.pin(.trailing, to: .trailing, of: topStackView, withInset: Values.veryLargeSpacing)
+        topStackViewContainer.pin(.bottom, to: .bottom, of: topStackView)
         // Set up stack view
-        let stackView = UIStackView(arrangedSubviews: [ topSpacer, topStackView, bottomSpacer, linkButtonContainer ])
+        let stackView = UIStackView(arrangedSubviews: [ topSpacer, topStackViewContainer, bottomSpacer, linkButtonContainer, linkButtonBottomOffsetSpacer ])
         stackView.axis = .vertical
         stackView.alignment = .fill
-        stackView.layoutMargins = UIEdgeInsets(top: 0, left: Values.veryLargeSpacing, bottom: 0, right: Values.veryLargeSpacing)
-        stackView.isLayoutMarginsRelativeArrangement = true
         view.addSubview(stackView)
         stackView.pin(.leading, to: .leading, of: view)
         stackView.pin(.top, to: .top, of: view)
@@ -216,7 +235,9 @@ private final class EnterPublicKeyVC : UIViewController {
     @objc private func handleKeyboardWillChangeFrameNotification(_ notification: Notification) {
         guard let newHeight = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue.size.height else { return }
         bottomConstraint.constant = -newHeight
-        linkButtonBottomConstraint.constant = isSmallScreen ? Values.smallSpacing : Values.mediumSpacing
+        linkButtonBottomOffsetConstraint.constant = isIPhone6OrSmaller ? Values.smallSpacing : Values.largeSpacing
+        spacer1HeightConstraint.constant = isIPhone6OrSmaller ? Values.smallSpacing : Values.mediumSpacing
+        spacer2HeightConstraint.constant = isIPhone6OrSmaller ? Values.smallSpacing : Values.mediumSpacing
         UIView.animate(withDuration: 0.25) {
             self.view.layoutIfNeeded()
         }
@@ -224,7 +245,9 @@ private final class EnterPublicKeyVC : UIViewController {
     
     @objc private func handleKeyboardWillHideNotification(_ notification: Notification) {
         bottomConstraint.constant = 0
-        linkButtonBottomConstraint.constant = Values.largeSpacing
+        linkButtonBottomOffsetConstraint.constant = Values.onboardingButtonBottomOffset
+        spacer1HeightConstraint.constant = isIPhone6OrSmaller ? Values.smallSpacing : Values.veryLargeSpacing
+        spacer2HeightConstraint.constant = isIPhone6OrSmaller ? Values.smallSpacing : Values.veryLargeSpacing
         UIView.animate(withDuration: 0.25) {
             self.view.layoutIfNeeded()
         }

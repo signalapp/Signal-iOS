@@ -210,7 +210,7 @@ private final class EnterChatURLVC : UIViewController {
         let stackView = UIStackView(arrangedSubviews: [ chatURLTextField, UIView.vStretchingSpacer(), nextButtonContainer, UIView.spacer(withHeight: Values.smallSpacing), explanationLabel ])
         stackView.axis = .vertical
         stackView.alignment = .fill
-        let bottomSpacing = isSmallScreen ? Values.smallSpacing : Values.largeSpacing
+        let bottomSpacing = isIPhone5OrSmaller ? Values.smallSpacing : Values.largeSpacing
         stackView.layoutMargins = UIEdgeInsets(top: Values.largeSpacing, left: Values.largeSpacing, bottom: bottomSpacing, right: Values.largeSpacing)
         stackView.isLayoutMarginsRelativeArrangement = true
         view.addSubview(stackView)

@@ -65,7 +65,7 @@ final class SeedVC : BaseVC {
         // Set up title label
         let titleLabel = UILabel()
         titleLabel.textColor = Colors.text
-        titleLabel.font = .boldSystemFont(ofSize: isSmallScreen ? Values.largeFontSize : Values.veryLargeFontSize)
+        titleLabel.font = .boldSystemFont(ofSize: isIPhone5OrSmaller ? Values.largeFontSize : Values.veryLargeFontSize)
         titleLabel.text = NSLocalizedString("Meet your recovery phrase", comment: "")
         titleLabel.numberOfLines = 0
         titleLabel.lineBreakMode = .byWordWrapping
@@ -85,14 +85,14 @@ final class SeedVC : BaseVC {
         // Set up mnemonic label container
         let mnemonicLabelContainer = UIView()
         mnemonicLabelContainer.addSubview(mnemonicLabel)
-        mnemonicLabel.pin(to: mnemonicLabelContainer, withInset: isSmallScreen ? Values.smallSpacing : Values.mediumSpacing)
+        mnemonicLabel.pin(to: mnemonicLabelContainer, withInset: isIPhone5OrSmaller ? Values.smallSpacing : Values.mediumSpacing)
         mnemonicLabelContainer.layer.cornerRadius = Values.textFieldCornerRadius
         mnemonicLabelContainer.layer.borderWidth = Values.borderThickness
         mnemonicLabelContainer.layer.borderColor = Colors.text.cgColor
         // Set up call to action label
         let callToActionLabel = UILabel()
         callToActionLabel.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
-        callToActionLabel.font = .systemFont(ofSize: isSmallScreen ? Values.smallFontSize : Values.mediumFontSize)
+        callToActionLabel.font = .systemFont(ofSize: isIPhone5OrSmaller ? Values.smallFontSize : Values.mediumFontSize)
         callToActionLabel.text = NSLocalizedString("Hold to reveal", comment: "")
         callToActionLabel.textAlignment = .center
         let callToActionLabelGestureRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(revealMnemonic))
@@ -112,7 +112,7 @@ final class SeedVC : BaseVC {
         // Set up top stack view
         let topStackView = UIStackView(arrangedSubviews: [ titleLabel, explanationLabel, mnemonicLabelContainer, callToActionLabel ])
         topStackView.axis = .vertical
-        topStackView.spacing = isSmallScreen ? Values.smallSpacing : Values.largeSpacing
+        topStackView.spacing = isIPhone5OrSmaller ? Values.smallSpacing : Values.largeSpacing
         topStackView.alignment = .fill
         // Set up top stack view container
         let topStackViewContainer = UIView()
