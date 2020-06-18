@@ -144,7 +144,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark -
 
-@interface ConversationViewModel () <ConversationViewDatabaseSnapshotDelegate>
+@interface ConversationViewModel () <UIDatabaseSnapshotDelegate>
 
 @property (nonatomic, weak) id<ConversationViewModelDelegate> delegate;
 
@@ -316,7 +316,7 @@ NS_ASSUME_NONNULL_BEGIN
                            }];
 
     OWSAssert(StorageCoordinator.dataStoreForUI == DataStoreGrdb);
-    [self.databaseStorage.grdbStorage.conversationViewDatabaseObserver appendSnapshotDelegate:self];
+    [self.databaseStorage appendUIDatabaseSnapshotDelegate:self];
 }
 
 - (void)viewDidLoad
@@ -451,49 +451,29 @@ NS_ASSUME_NONNULL_BEGIN
 
 #pragma mark - GRDB Updates
 
-- (void)conversationViewDatabaseSnapshotWillUpdate
+- (void)uiDatabaseSnapshotWillUpdate
 {
-    [self anyDBWillUpdate];
+    [self.delegate conversationViewModelWillUpdate];
 }
 
-- (void)conversationViewDatabaseSnapshotDidUpdateWithTransactionChanges:
-    (ConversationViewDatabaseTransactionChanges *)transactionChanges
+- (void)uiDatabaseSnapshotDidUpdateWithDatabaseChanges:(id<UIDatabaseChanges>)databaseChanges
 {
-    if (self.thread.grdbId != nil) {
-        if (![transactionChanges containsThreadRowId:self.thread.grdbId]) {
-            // Ignoring irrelevant update.
-            return;
-        }
-    } else {
-        OWSFailDebug(@"Missing thread.grdbId.");
-    }
-    
-    __block NSError *dbError;
-    __block NSError *updateError;
-    __block NSSet<NSString *> *updatedInteractionIds;
-    [self.databaseStorage.grdbStorage uiReadAndReturnError:&dbError
-                                                     block:^(GRDBReadTransaction *transaction) {
-                                                         updatedInteractionIds = [transactionChanges
-                                                             updatedInteractionIdsForThreadId:self.thread.uniqueId
-                                                                                  transaction:transaction
-                                                                                        error:&updateError];
-                                                     }];
-
-    if (dbError || updateError || !updatedInteractionIds) {
-        OWSFailDebug(@"failure: %@, %@", dbError, updateError);
-        [self resetMappingWithSneakyTransaction];
+    if (![databaseChanges.threadUniqueIds containsObject:self.thread.uniqueId]) {
+        // Ignoring irrelevant update.
         return;
     }
 
-    [self anyDBDidUpdateWithUpdatedInteractionIds:updatedInteractionIds];
+    [self anyDBDidUpdateWithUpdatedInteractionIds:databaseChanges.interactionUniqueIds];
 }
 
-- (void)conversationViewDatabaseSnapshotDidUpdateExternally
+- (void)uiDatabaseSnapshotDidUpdateExternally
 {
-    [self anyDBDidUpdateExternally];
+    OWSAssertIsOnMainThread();
+
+    OWSLogVerbose(@"");
 }
 
-- (void)conversationViewDatabaseSnapshotDidReset
+- (void)uiDatabaseSnapshotDidReset
 {
     [self resetMappingWithSneakyTransaction];
 }
@@ -606,20 +586,6 @@ NS_ASSUME_NONNULL_BEGIN
     [updatedItemSet intersectSet:[NSSet setWithArray:self.viewState.interactionIndexMap.allKeys]];
 
     [self updateViewWithOldItemIdList:oldItemIdList updatedItemSet:updatedItemSet];
-}
-
-#pragma mark - AnyDB Update
-
-- (void)anyDBWillUpdate
-{
-    [self.delegate conversationViewModelWillUpdate];
-}
-
-- (void)anyDBDidUpdateExternally
-{
-    OWSAssertIsOnMainThread();
-
-    OWSLogVerbose(@"");
 }
 
 #pragma mark -

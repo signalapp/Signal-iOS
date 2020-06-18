@@ -3,6 +3,43 @@
 //
 
 import Foundation
+import GRDB
+
+@objc
+public protocol UIDatabaseChanges: AnyObject {
+    typealias UniqueId = String
+
+    var threadUniqueIds: Set<UniqueId> { get }
+    var interactionUniqueIds: Set<UniqueId> { get }
+    var attachmentUniqueIds: Set<UniqueId> { get }
+
+    // NOTE: This only includes uniqueIds for _deleted_ attachments.
+    var attachmentDeletedUniqueIds: Set<UniqueId> { get }
+
+    var tableNames: Set<String> { get }
+    var collections: Set<String> { get }
+
+    var didUpdateInteractions: Bool { get }
+
+    var didUpdateThreads: Bool { get }
+
+    var didUpdateInteractionsOrThreads: Bool { get }
+
+    // Note that this method should only be used for model
+    // collections, not key-value stores.
+    @objc(didUpdateModelWithCollection:)
+    func didUpdateModel(collection: String) -> Bool
+
+    // Note: In GRDB, this will return true for _any_ key-value write.
+    //       This should be acceptable.
+    @objc(didUpdateKeyValueStore:)
+    func didUpdate(keyValueStore: SDSKeyValueStore) -> Bool
+
+    @objc(didUpdateInteraction:)
+    func didUpdate(interaction: TSInteraction) -> Bool
+}
+
+// MARK: -
 
 // Our observers collect "pending" and "committed" database state.
 // This struct DRYs up a bunch of that handling, especially around
@@ -11,13 +48,18 @@ import Foundation
 // NOTE: Different observers collect different kinds of state.
 // Not all observers will update all of the properties below.
 //
-// ModelId: Some observers use RowIds, some use uniqueIds.
-struct ObservedDatabaseChanges<ModelId: Hashable> {
+// UniqueId: Some observers use RowIds, some use uniqueIds.
+class ObservedDatabaseChanges: NSObject {
+    typealias UniqueId = String
+    typealias RowId = Int64
+
     enum ConcurrencyMode {
         case mainThread
         case uiDatabaseObserverSerialQueue
     }
     private let concurrencyMode: ConcurrencyMode
+
+    #if TESTABLE_BUILD
     private func checkConcurrency() {
         switch concurrencyMode {
         case .mainThread:
@@ -26,6 +68,7 @@ struct ObservedDatabaseChanges<ModelId: Hashable> {
             AssertIsOnUIDatabaseObserverSerialQueue()
         }
     }
+    #endif
 
     init(concurrencyMode: ConcurrencyMode) {
         self.concurrencyMode = concurrencyMode
@@ -35,127 +78,528 @@ struct ObservedDatabaseChanges<ModelId: Hashable> {
 
     private var _collections: Set<String> = Set()
 
-    mutating func append(collection: String) {
+    func append(collection: String) {
         append(collections: [collection])
     }
 
-    mutating func append(collections: Set<String>) {
+    func append(collections: Set<String>) {
+        #if TESTABLE_BUILD
         checkConcurrency()
+        #endif
         _collections.formUnion(collections)
-    }
-
-    var collections: Set<String> {
-        get {
-            checkConcurrency()
-            return _collections
-        }
     }
 
     // MARK: - Table Names
 
     private var _tableNames: Set<String> = Set()
 
-    mutating func append(tableName: String) {
+    func append(tableName: String) {
         append(tableNames: [tableName])
     }
 
-    mutating func append(tableNames: Set<String>) {
+    func append(tableNames: Set<String>) {
+        #if TESTABLE_BUILD
         checkConcurrency()
-        _tableNames.formUnion(tableNames)
-    }
+        #endif
 
-    var tableNames: Set<String> {
-        get {
-            checkConcurrency()
-            return _tableNames
-        }
+        _tableNames.formUnion(tableNames)
     }
 
     // MARK: - Threads
 
-    private var _threadChanges = Set<ModelId>()
+    private var threads = ObservedModelChanges()
 
-    mutating func append(threadChange: ModelId) {
-        append(threadChanges: [threadChange])
-    }
-
-    mutating func append(threadChanges: Set<ModelId>) {
+    func append(thread: TSThread) {
+        #if TESTABLE_BUILD
         checkConcurrency()
-        _threadChanges.formUnion(threadChanges)
+        #endif
+
+        threads.append(model: thread)
     }
 
-    var threadChanges: Set<ModelId> {
-        get {
-            checkConcurrency()
-            return _threadChanges
-        }
+    func append(threadUniqueId: UniqueId) {
+        #if TESTABLE_BUILD
+        checkConcurrency()
+        #endif
+
+        threads.append(uniqueId: threadUniqueId)
+    }
+
+    func append(threadUniqueIds: Set<UniqueId>) {
+        #if TESTABLE_BUILD
+        checkConcurrency()
+        #endif
+
+        threads.append(uniqueIds: threadUniqueIds)
+    }
+
+    func append(threadRowId: RowId) {
+        #if TESTABLE_BUILD
+        checkConcurrency()
+        #endif
+
+        threads.append(rowId: threadRowId)
+    }
+
+    func append(threadRowIds: Set<RowId>) {
+        #if TESTABLE_BUILD
+        checkConcurrency()
+        #endif
+
+        threads.append(rowIds: threadRowIds)
     }
 
     // MARK: - Interactions
 
-    private var _interactionChanges = Set<ModelId>()
+    private var interactions = ObservedModelChanges()
 
-    mutating func append(interactionChange: ModelId) {
-        append(interactionChanges: [interactionChange])
-    }
-
-    mutating func append(interactionChanges: Set<ModelId>) {
+    func append(interaction: TSInteraction) {
+        #if TESTABLE_BUILD
         checkConcurrency()
-        _interactionChanges.formUnion(interactionChanges)
+        #endif
+
+        interactions.append(model: interaction)
     }
 
-    var interactionChanges: Set<ModelId> {
-        get {
-            checkConcurrency()
-            return _interactionChanges
-        }
+    func append(interactionUniqueId: UniqueId) {
+        #if TESTABLE_BUILD
+        checkConcurrency()
+        #endif
+
+        interactions.append(uniqueId: interactionUniqueId)
+    }
+
+    func append(interactionUniqueIds: Set<UniqueId>) {
+        #if TESTABLE_BUILD
+        checkConcurrency()
+        #endif
+
+        interactions.append(uniqueIds: interactionUniqueIds)
+    }
+
+    func append(interactionRowId: RowId) {
+        #if TESTABLE_BUILD
+        checkConcurrency()
+        #endif
+
+        interactions.append(rowId: interactionRowId)
+    }
+
+    func append(interactionRowIds: Set<RowId>) {
+        #if TESTABLE_BUILD
+        checkConcurrency()
+        #endif
+
+        interactions.append(rowIds: interactionRowIds)
     }
 
     // MARK: - Attachments
 
-    private var _attachmentChanges = Set<ModelId>()
+    private var attachments = ObservedModelChanges()
 
-    mutating func append(attachmentChange: ModelId) {
-        append(attachmentChanges: [attachmentChange])
-    }
-
-    mutating func append(attachmentChanges: Set<ModelId>) {
+    func append(attachment: TSAttachment) {
+        #if TESTABLE_BUILD
         checkConcurrency()
-        _attachmentChanges.formUnion(attachmentChanges)
+        #endif
+
+        attachments.append(model: attachment)
     }
 
-    var attachmentChanges: Set<ModelId> {
-        get {
-            checkConcurrency()
-            return _attachmentChanges
-        }
+    func append(attachmentUniqueId: UniqueId) {
+        #if TESTABLE_BUILD
+        checkConcurrency()
+        #endif
+
+        attachments.append(uniqueId: attachmentUniqueId)
+    }
+
+    func append(attachmentUniqueIds: Set<UniqueId>) {
+        #if TESTABLE_BUILD
+        checkConcurrency()
+        #endif
+
+        attachments.append(uniqueIds: attachmentUniqueIds)
+    }
+
+    func append(attachmentDeletedUniqueIds: Set<UniqueId>) {
+        #if TESTABLE_BUILD
+        checkConcurrency()
+        #endif
+
+        attachments.append(deletedUniqueIds: attachmentDeletedUniqueIds)
+    }
+
+    func append(attachmentRowId: RowId) {
+        #if TESTABLE_BUILD
+        checkConcurrency()
+        #endif
+
+        attachments.append(rowId: attachmentRowId)
+    }
+
+    func append(attachmentRowIds: Set<RowId>) {
+        #if TESTABLE_BUILD
+        checkConcurrency()
+        #endif
+
+        attachments.append(rowIds: attachmentRowIds)
+    }
+
+    func append(deletedAttachmentRowId: RowId) {
+        #if TESTABLE_BUILD
+        checkConcurrency()
+        #endif
+
+        attachments.append(deletedRowId: deletedAttachmentRowId)
     }
 
     // MARK: - Errors
 
-    mutating func setLastError(_ error: Error) {
+    func setLastError(_ error: Error) {
+        #if TESTABLE_BUILD
         checkConcurrency()
+        #endif
+
         _lastError = error
     }
 
     private var _lastError: Error?
     var lastError: Error? {
         get {
+            #if TESTABLE_BUILD
             checkConcurrency()
+            #endif
+
             return _lastError
         }
     }
 
     // MARK: -
 
-    mutating func reset() {
+    func reset() {
+        #if TESTABLE_BUILD
         checkConcurrency()
+        #endif
 
         _collections.removeAll()
         _tableNames.removeAll()
-        _threadChanges.removeAll()
-        _interactionChanges.removeAll()
-        _attachmentChanges.removeAll()
+        threads.reset()
+        interactions.reset()
+        attachments.reset()
         _lastError = nil
+    }
+}
+
+// MARK: -
+
+private struct ObservedModelChanges {
+    typealias UniqueId = ObservedDatabaseChanges.UniqueId
+    typealias RowId = ObservedDatabaseChanges.RowId
+
+    private var _rowIds = Set<RowId>()
+    private var _uniqueIds = Set<UniqueId>()
+    private var _deletedRowIds = Set<RowId>()
+    private var _deletedUniqueIds = Set<UniqueId>()
+    fileprivate var rowIdToUniqueIdMap = [RowId: UniqueId]()
+
+    mutating func append(model: BaseModel) {
+        _uniqueIds.insert(model.uniqueId)
+        guard let grdbId = model.grdbId else {
+            owsFailDebug("Missing grdbId")
+            return
+        }
+        let rowId: RowId = grdbId.int64Value
+        _rowIds.insert(rowId)
+        rowIdToUniqueIdMap[rowId] = model.uniqueId
+    }
+
+    mutating func append(uniqueId: UniqueId) {
+        append(uniqueIds: [uniqueId])
+    }
+
+    mutating func append(uniqueIds: Set<UniqueId>) {
+        _uniqueIds.formUnion(uniqueIds)
+    }
+
+    fileprivate mutating func append(deletedUniqueIds: Set<UniqueId>) {
+        _deletedUniqueIds.formUnion(deletedUniqueIds)
+    }
+
+    mutating func append(rowId: RowId) {
+        #if TESTABLE_BUILD
+        assert(rowId > 0)
+        #endif
+        append(rowIds: [rowId])
+    }
+
+    mutating func append(deletedRowId: RowId) {
+        #if TESTABLE_BUILD
+        assert(deletedRowId > 0)
+        #endif
+        _deletedRowIds.insert(deletedRowId)
+    }
+
+    mutating func append(rowIds: Set<RowId>) {
+        #if TESTABLE_BUILD
+        for rowId in rowIds {
+            assert(rowId > 0)
+        }
+        #endif
+        _rowIds.formUnion(rowIds)
+    }
+
+    var rowIds: Set<RowId> {
+        get {
+            assert(_rowIds.count >= _uniqueIds.count)
+            return _rowIds
+        }
+    }
+
+    var uniqueIds: Set<UniqueId> {
+        get {
+            return _uniqueIds
+        }
+    }
+
+    var deletedUniqueIds: Set<UniqueId> {
+        get {
+            return _deletedUniqueIds
+        }
+    }
+
+    var deletedRowIds: Set<RowId> {
+        get {
+            return _deletedRowIds
+        }
+    }
+
+    mutating func reset() {
+        _rowIds.removeAll()
+        _uniqueIds.removeAll()
+        _deletedRowIds.removeAll()
+        _deletedUniqueIds.removeAll()
+        rowIdToUniqueIdMap.removeAll()
+    }
+}
+
+// MARK: - Published state
+
+extension ObservedDatabaseChanges: UIDatabaseChanges {
+
+    var threadUniqueIds: Set<UniqueId> {
+        get {
+            #if TESTABLE_BUILD
+            checkConcurrency()
+            #endif
+
+            return threads.uniqueIds
+        }
+    }
+
+    var interactionUniqueIds: Set<UniqueId> {
+        get {
+            #if TESTABLE_BUILD
+            checkConcurrency()
+            #endif
+
+            return interactions.uniqueIds
+        }
+    }
+
+    var attachmentUniqueIds: Set<UniqueId> {
+        get {
+            #if TESTABLE_BUILD
+            checkConcurrency()
+            #endif
+
+            return attachments.uniqueIds
+        }
+    }
+
+    var attachmentDeletedUniqueIds: Set<UniqueId> {
+        get {
+            #if TESTABLE_BUILD
+            checkConcurrency()
+            #endif
+
+            return attachments.deletedUniqueIds
+        }
+    }
+
+    var tableNames: Set<String> {
+        get {
+            #if TESTABLE_BUILD
+            checkConcurrency()
+            #endif
+
+            return _tableNames
+        }
+    }
+
+    var collections: Set<String> {
+        get {
+            #if TESTABLE_BUILD
+            checkConcurrency()
+            #endif
+
+            return _collections
+        }
+    }
+
+    var didUpdateInteractions: Bool {
+        return didUpdate(collection: TSInteraction.collection())
+    }
+
+    var didUpdateThreads: Bool {
+        return didUpdate(collection: TSThread.collection())
+    }
+
+    var didUpdateInteractionsOrThreads: Bool {
+        return didUpdateInteractions || didUpdateThreads
+    }
+
+    private func didUpdate(collection: String) -> Bool {
+        collections.contains(collection)
+    }
+
+    @objc(didUpdateModelWithCollection:)
+    func didUpdateModel(collection: String) -> Bool {
+        return didUpdate(collection: collection)
+    }
+
+    @objc(didUpdateKeyValueStore:)
+    func didUpdate(keyValueStore: SDSKeyValueStore) -> Bool {
+        // YDB: keyValueStore.collection
+        // GRDB: SDSKeyValueStore.dataStoreCollection
+        return (didUpdate(collection: keyValueStore.collection) ||
+            didUpdate(collection: SDSKeyValueStore.dataStoreCollection))
+    }
+
+    @objc(didUpdateInteraction:)
+    func didUpdate(interaction: TSInteraction) -> Bool {
+        interactionUniqueIds.contains(interaction.uniqueId)
+    }
+
+    func finalizePublishedState(db: Database) throws {
+        // We don't finalize everything, only state the views currently care about.
+
+        // We need to convert all thread "row ids" to "unique ids".
+        threads.append(uniqueIds: try mapRowIdsToUniqueIds(db: db,
+                                                           rowIds: threads.rowIds,
+                                                           uniqueIds: threads.uniqueIds,
+                                                           rowIdToUniqueIdMap: threads.rowIdToUniqueIdMap,
+                                                           tableName: "\(ThreadRecord.databaseTableName)",
+            uniqueIdColumnName: "\(threadColumn: .uniqueId)"))
+
+        // We need to convert all interaction "row ids" to "unique ids".
+        interactions.append(uniqueIds: try mapRowIdsToUniqueIds(db: db,
+                                                                rowIds: interactions.rowIds,
+                                                                uniqueIds: interactions.uniqueIds,
+                                                                rowIdToUniqueIdMap: interactions.rowIdToUniqueIdMap,
+                                                                tableName: "\(InteractionRecord.databaseTableName)",
+            uniqueIdColumnName: "\(interactionColumn: .uniqueId)"))
+
+        // We need to convert all attachment "row ids" to "unique ids".
+        attachments.append(uniqueIds: try mapRowIdsToUniqueIds(db: db,
+                                                               rowIds: attachments.rowIds,
+                                                               uniqueIds: attachments.uniqueIds,
+                                                               rowIdToUniqueIdMap: attachments.rowIdToUniqueIdMap,
+                                                               tableName: "\(AttachmentRecord.databaseTableName)",
+            uniqueIdColumnName: "\(attachmentColumn: .uniqueId)"))
+
+        // We need to convert _deleted_ attachment "row ids" to "unique ids".
+        //
+        // NOTE: We only publish _deleted_ attachment unique ids.
+        attachments.append(deletedUniqueIds: try mapRowIdsToUniqueIds(db: db,
+                                                                      rowIds: attachments.deletedRowIds,
+                                                                      uniqueIds: attachments.deletedUniqueIds,
+                                                                      rowIdToUniqueIdMap: attachments.rowIdToUniqueIdMap,
+                                                                      tableName: "\(AttachmentRecord.databaseTableName)",
+            uniqueIdColumnName: "\(attachmentColumn: .uniqueId)"))
+
+        // We need to convert db table names to "collections."
+        mapTableNamesToCollections()
+    }
+
+    private func mapRowIdsToUniqueIds(db: Database,
+                                      rowIds: Set<RowId>,
+                                      uniqueIds: Set<UniqueId>,
+                                      rowIdToUniqueIdMap: [RowId: UniqueId],
+                                      tableName: String,
+                                      uniqueIdColumnName: String) throws -> Set<String> {
+        AssertIsOnUIDatabaseObserverSerialQueue()
+
+        // We try to avoid the query below by leveraging the
+        // fact that we know the uniqueId and rowId for
+        // touched threads.
+        //
+        // If a thread was touched _and_ modified, we
+        // can convert its rowId to a uniqueId without a query.
+        var allUniqueIds = uniqueIds
+        var unresolvedRowIds = [RowId]()
+        for rowId in rowIds {
+            if let uniqueId = rowIdToUniqueIdMap[rowId] {
+                allUniqueIds.insert(uniqueId)
+            } else {
+                unresolvedRowIds.append(rowId)
+            }
+        }
+
+        guard allUniqueIds.count < UIDatabaseObserver.kMaxIncrementalRowChanges else {
+            throw DatabaseObserverError.changeTooLarge
+        }
+        guard unresolvedRowIds.count < UIDatabaseObserver.kMaxIncrementalRowChanges else {
+            throw DatabaseObserverError.changeTooLarge
+        }
+
+        guard unresolvedRowIds.count > 0 else {
+            return allUniqueIds
+        }
+
+        let commaSeparatedRowIds = unresolvedRowIds.map { String($0) }.joined(separator: ", ")
+        let rowIdsSQL = "(\(commaSeparatedRowIds))"
+        let mappingSql = """
+        SELECT \(uniqueIdColumnName)
+        FROM \(tableName)
+        WHERE rowid IN \(rowIdsSQL)
+        """
+        let fetchedUniqueIds = try String.fetchAll(db, sql: mappingSql)
+        allUniqueIds.formUnion(fetchedUniqueIds)
+
+        guard allUniqueIds.count < UIDatabaseObserver.kMaxIncrementalRowChanges else {
+            throw DatabaseObserverError.changeTooLarge
+        }
+
+        return allUniqueIds
+    }
+
+    private static var tableNameToCollectionMap: [String: String] = {
+        var result = [String: String]()
+        for table in GRDBDatabaseStorageAdapter.tables {
+            result[table.tableName] = table.collection
+        }
+        result[SDSKeyValueStore.tableName] = SDSKeyValueStore.dataStoreCollection
+        return result
+    }()
+
+    private func mapTableNamesToCollections() {
+        let tableNames = self.tableNames
+        guard tableNames.count > 0 else {
+            return
+        }
+
+        // If necessary, convert GRDB table names to "collections".
+        let tableNameToCollectionMap = Self.tableNameToCollectionMap
+        for tableName in tableNames {
+            guard !tableName.hasPrefix(GRDBFullTextSearchFinder.contentTableName) else {
+                owsFailDebug("should not have been notified for changes to FTS tables")
+                continue
+            }
+            guard let collection = tableNameToCollectionMap[tableName] else {
+                owsFailDebug("Unknown table: \(tableName)")
+                continue
+            }
+            append(collection: collection)
+        }
     }
 }

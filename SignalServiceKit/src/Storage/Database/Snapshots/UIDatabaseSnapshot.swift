@@ -5,35 +5,27 @@
 import Foundation
 import GRDB
 
-/// Anything 
-public protocol DatabaseSnapshotDelegate: AnyObject {
-
-    // MARK: - Transaction Lifecycle
-
-    /// Called on the DatabaseSnapshotSerial queue durign the transaction
-    /// so the DatabaseSnapshotDelegate can accrue information about changes
-    /// as they occur.
-
-    func snapshotTransactionDidChange(with event: DatabaseEvent)
-    func snapshotTransactionDidCommit(db: Database)
-    func snapshotTransactionDidRollback(db: Database)
-
-    // MARK: - Snapshot LifeCycle (Post Commit)
-
-    /// Called on the Main Thread after the transaction has committed
-
-    func databaseSnapshotWillUpdate()
-    func databaseSnapshotDidUpdate()
-    func databaseSnapshotDidUpdateExternally()
+@objc
+public protocol UIDatabaseSnapshotDelegate: AnyObject {
+    func uiDatabaseSnapshotWillUpdate()
+    func uiDatabaseSnapshotDidUpdate(databaseChanges: UIDatabaseChanges)
+    func uiDatabaseSnapshotDidUpdateExternally()
+    func uiDatabaseSnapshotDidReset()
 }
+
+// MARK: -
 
 enum DatabaseObserverError: Error {
     case changeTooLarge
 }
 
+// MARK: -
+
 func AssertIsOnUIDatabaseObserverSerialQueue() {
     assert(UIDatabaseObserver.isOnUIDatabaseObserverSerialQueue)
 }
+
+// MARK: -
 
 @objc
 public class UIDatabaseObserver: NSObject {
@@ -77,13 +69,27 @@ public class UIDatabaseObserver: NSObject {
         objc_sync_exit(self)
     }
 
-    private var _snapshotDelegates: [Weak<DatabaseSnapshotDelegate>] = []
-    private var snapshotDelegates: [DatabaseSnapshotDelegate] {
+    private var _snapshotDelegates: [Weak<UIDatabaseSnapshotDelegate>] = []
+    private var snapshotDelegates: [UIDatabaseSnapshotDelegate] {
         return _snapshotDelegates.compactMap { $0.value }
     }
 
-    public func appendSnapshotDelegate(_ snapshotDelegate: DatabaseSnapshotDelegate) {
-        _snapshotDelegates = _snapshotDelegates.filter { $0.value != nil} + [Weak(value: snapshotDelegate)]
+    func appendSnapshotDelegate(_ snapshotDelegate: UIDatabaseSnapshotDelegate) {
+        let append = { [weak self] in
+            guard let self = self else {
+                return
+            }
+            self._snapshotDelegates = self._snapshotDelegates.filter { $0.value != nil} + [Weak(value: snapshotDelegate)]
+        }
+        if CurrentAppContext().isRunningTests {
+            append()
+        } else {
+            // Never notify delegates until the app is ready.
+            // This prevents us from shooting ourselves in the foot
+            // and registering for database changes too early.
+            assert(AppReadiness.isAppReady())
+            AppReadiness.runNowOrWhenAppWillBecomeReady(append)
+        }
     }
 
     private let pool: DatabasePool
@@ -106,6 +112,9 @@ public class UIDatabaseObserver: NSObject {
     private var recentDisplayLinkDates = [Date]()
 
     private let didDatabaseModifyInteractions = AtomicBool(false)
+
+    fileprivate var pendingChanges = ObservedDatabaseChanges(concurrencyMode: .uiDatabaseObserverSerialQueue)
+    fileprivate var committedChanges = ObservedDatabaseChanges(concurrencyMode: .mainThread)
 
     init(pool: DatabasePool, checkpointingQueue: DatabaseQueue?) throws {
         self.pool = pool
@@ -186,7 +195,7 @@ public class UIDatabaseObserver: NSObject {
         Logger.verbose("")
 
         for delegate in snapshotDelegates {
-            delegate.databaseSnapshotDidUpdateExternally()
+            delegate.uiDatabaseSnapshotDidUpdateExternally()
         }
     }
 }
@@ -205,6 +214,34 @@ extension UIDatabaseObserver: TransactionObserver {
         }
 
         return true
+    }
+
+    // internal - should only be called by DatabaseStorage
+    func didTouch(interaction: TSInteraction, transaction: GRDBWriteTransaction) {
+        AssertIsOnUIDatabaseObserverSerialQueue()
+
+        pendingChanges.append(interaction: interaction)
+        pendingChanges.append(tableName: TSInteraction.table.tableName)
+
+        if !pendingChanges.threadUniqueIds.contains(interaction.uniqueThreadId) {
+            let interactionThread: TSThread? = interaction.thread(transaction: transaction.asAnyRead)
+            if let thread = interactionThread {
+                didTouch(thread: thread, transaction: transaction)
+            } else {
+                owsFailDebug("Could not load thread for interaction.")
+            }
+        }
+    }
+
+    // internal - should only be called by DatabaseStorage
+    func didTouch(thread: TSThread, transaction: GRDBWriteTransaction) {
+        // Note: We don't actually use the `transaction` param, but touching must happen within
+        // a write transaction in order for the touch machinery to notify it's observers
+        // in the expected way.
+        AssertIsOnUIDatabaseObserverSerialQueue()
+
+        pendingChanges.append(thread: thread)
+        pendingChanges.append(tableName: TSThread.table.tableName)
     }
 
     // Database observation operates like so:
@@ -228,8 +265,20 @@ extension UIDatabaseObserver: TransactionObserver {
     //   * UIDatabaseObserver informs all "snapshot delegates" of the update using databaseSnapshotDidUpdate.
     public func databaseDidChange(with event: DatabaseEvent) {
         UIDatabaseObserver.serializedSync {
-            for snapshotDelegate in snapshotDelegates {
-                snapshotDelegate.snapshotTransactionDidChange(with: event)
+
+            pendingChanges.append(tableName: event.tableName)
+
+            if event.tableName == InteractionRecord.databaseTableName {
+                pendingChanges.append(interactionRowId: event.rowID)
+            } else if event.tableName == ThreadRecord.databaseTableName {
+                pendingChanges.append(threadRowId: event.rowID)
+            } else if event.tableName == AttachmentRecord.databaseTableName {
+                pendingChanges.append(attachmentRowId: event.rowID)
+            }
+
+            // We record deleted attachments.
+            if event.kind == .delete && event.tableName == AttachmentRecord.databaseTableName {
+                pendingChanges.append(deletedAttachmentRowId: event.rowID)
             }
 
             if event.tableName == InteractionRecord.databaseTableName {
@@ -241,8 +290,29 @@ extension UIDatabaseObserver: TransactionObserver {
     // See comment on databaseDidChange.
     public func databaseDidCommit(_ db: Database) {
         UIDatabaseObserver.serializedSync {
-            for snapshotDelegate in snapshotDelegates {
-                snapshotDelegate.snapshotTransactionDidCommit(db: db)
+            do {
+                // finalizePublishedState() finalizes the state we're about to
+                // copy.
+                try pendingChanges.finalizePublishedState(db: db)
+
+                let interactionUniqueIds = pendingChanges.interactionUniqueIds
+                let threadUniqueIds = pendingChanges.threadUniqueIds
+                let attachmentUniqueIds = pendingChanges.attachmentUniqueIds
+                let attachmentDeletedUniqueIds = pendingChanges.attachmentDeletedUniqueIds
+                let collections = pendingChanges.collections
+                pendingChanges.reset()
+
+                DispatchQueue.main.async {
+                    self.committedChanges.append(interactionUniqueIds: interactionUniqueIds)
+                    self.committedChanges.append(threadUniqueIds: threadUniqueIds)
+                    self.committedChanges.append(attachmentUniqueIds: attachmentUniqueIds)
+                    self.committedChanges.append(attachmentDeletedUniqueIds: attachmentDeletedUniqueIds)
+                    self.committedChanges.append(collections: collections)
+                }
+            } catch {
+                DispatchQueue.main.async {
+                    self.committedChanges.setLastError(error)
+                }
             }
 
             let shouldPostInteractionNotification = didDatabaseModifyInteractions.get()
@@ -350,7 +420,7 @@ extension UIDatabaseObserver: TransactionObserver {
 
         Logger.verbose("databaseSnapshotWillUpdate")
         for delegate in snapshotDelegates {
-            delegate.databaseSnapshotWillUpdate()
+            delegate.uiDatabaseSnapshotWillUpdate()
         }
 
         latestSnapshot.read { db in
@@ -365,17 +435,35 @@ extension UIDatabaseObserver: TransactionObserver {
         // can discard their contents.
         NotificationCenter.default.post(name: Self.didUpdateUIDatabaseSnapshotNotification, object: nil)
 
+        defer {
+            self.committedChanges.reset()
+        }
+
         Logger.verbose("databaseSnapshotDidUpdate")
-        for delegate in snapshotDelegates {
-            delegate.databaseSnapshotDidUpdate()
+
+        if let lastError = committedChanges.lastError {
+            switch lastError {
+            case DatabaseObserverError.changeTooLarge:
+                // no assertionFailure, we expect this sometimes
+                break
+            default:
+                owsFailDebug("unknown error: \(lastError)")
+            }
+            for delegate in self.snapshotDelegates {
+                delegate.uiDatabaseSnapshotDidReset()
+            }
+        } else {
+            for delegate in snapshotDelegates {
+                delegate.uiDatabaseSnapshotDidUpdate(databaseChanges: committedChanges)
+            }
         }
     }
 
     public func databaseDidRollback(_ db: Database) {
+        owsFailDebug("TODO: test this if we ever use it.")
+
         UIDatabaseObserver.serializedSync {
-            for snapshotDelegate in snapshotDelegates {
-                snapshotDelegate.snapshotTransactionDidRollback(db: db)
-            }
+            pendingChanges.reset()
         }
     }
 

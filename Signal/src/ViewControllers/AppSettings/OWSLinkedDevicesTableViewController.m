@@ -13,7 +13,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface OWSLinkedDevicesTableViewController () <SDSDatabaseStorageObserver>
+@interface OWSLinkedDevicesTableViewController () <UIDatabaseSnapshotDelegate>
 
 @property (nonatomic) NSArray<OWSDevice *> *devices;
 
@@ -62,7 +62,7 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
     [self.tableView registerClass:[OWSDeviceTableViewCell class] forCellReuseIdentifier:@"ExistingDevice"];
     [self.tableView applyScrollViewInsetsFix];
 
-    [self.databaseStorage addDatabaseStorageObserver:self];
+    [self.databaseStorage appendUIDatabaseSnapshotDelegate:self];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(deviceListUpdateSucceeded:)
@@ -93,21 +93,27 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
                   withRowAnimation:UITableViewRowAnimationNone];
 }
 
-#pragma mark - SDSDatabaseStorageObserver
+#pragma mark - UIDatabaseSnapshotDelegate
 
-- (void)databaseStorageDidUpdateWithChange:(SDSDatabaseStorageChange *)change
+- (void)uiDatabaseSnapshotWillUpdate
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(AppReadiness.isAppReady);
+}
+
+- (void)uiDatabaseSnapshotDidUpdateWithDatabaseChanges:(id<UIDatabaseChanges>)databaseChanges
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(AppReadiness.isAppReady);
 
-    if (![change didUpdateModelWithCollection:OWSDevice.collection]) {
+    if (![databaseChanges didUpdateModelWithCollection:OWSDevice.collection]) {
         return;
     }
 
     [self updateDeviceList];
 }
 
-- (void)databaseStorageDidUpdateExternally
+- (void)uiDatabaseSnapshotDidUpdateExternally
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(AppReadiness.isAppReady);
@@ -115,7 +121,7 @@ int const OWSLinkedDevicesTableViewControllerSectionAddDevice = 1;
     [self updateDeviceList];
 }
 
-- (void)databaseStorageDidReset
+- (void)uiDatabaseSnapshotDidReset
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(AppReadiness.isAppReady);

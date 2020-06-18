@@ -17,7 +17,7 @@ class MockObserver {
     init() {
         AssertIsOnMainThread()
 
-        SDSDatabaseStorage.shared.add(databaseStorageObserver: self)
+        SDSDatabaseStorage.shared.appendUIDatabaseSnapshotDelegate(self)
     }
 
     func set(expectation: XCTestExpectation) {
@@ -36,17 +36,14 @@ class MockObserver {
 
 // MARK: -
 
-extension MockObserver: SDSDatabaseStorageObserver {
+extension MockObserver: UIDatabaseSnapshotDelegate {
 
-    func databaseStorageDidUpdate(change: SDSDatabaseStorageChange) {
+    func uiDatabaseSnapshotWillUpdate() {
         AssertIsOnMainThread()
+    }
 
-        // YDB sometimes posts empty updates when no write has
-        // occurred.  The tests are simpler and more meaningful
-        // if we ignore these.
-        guard !change.isEmptyYDBChange else {
-            return
-        }
+    func uiDatabaseSnapshotDidUpdate(databaseChanges: UIDatabaseChanges) {
+        AssertIsOnMainThread()
 
         updateCount += 1
         lastChange = change
@@ -55,7 +52,7 @@ extension MockObserver: SDSDatabaseStorageObserver {
         expectation = nil
     }
 
-    func databaseStorageDidUpdateExternally() {
+    func uiDatabaseSnapshotDidUpdateExternally() {
         AssertIsOnMainThread()
 
         Logger.verbose("")
@@ -66,7 +63,7 @@ extension MockObserver: SDSDatabaseStorageObserver {
         expectation = nil
     }
 
-    func databaseStorageDidReset() {
+    func uiDatabaseSnapshotDidReset() {
         AssertIsOnMainThread()
 
         Logger.verbose("")

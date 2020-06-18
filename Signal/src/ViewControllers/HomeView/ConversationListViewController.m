@@ -54,7 +54,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     UIViewControllerPreviewingDelegate,
     UISearchBarDelegate,
     ConversationSearchViewDelegate,
-    ConversationListDatabaseSnapshotDelegate,
+    UIDatabaseSnapshotDelegate,
     OWSBlockListCacheDelegate,
     CameraFirstCaptureDelegate>
 
@@ -162,7 +162,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                                                  name:OWSApplicationWillResignActiveNotification
                                                object:nil];
     OWSAssert(StorageCoordinator.dataStoreForUI == DataStoreGrdb);
-    [self.databaseStorage.grdbStorage.conversationListDatabaseObserver appendSnapshotDelegate:self];
+    [self.databaseStorage appendUIDatabaseSnapshotDelegate:self];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(registrationStateDidChange:)
@@ -1761,17 +1761,15 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     }
 }
 
-#pragma mark - Database delegates
+#pragma mark - DatabaseSnapshotDelegate
 
-#pragma mark GRDB Update
-
-- (void)conversationListDatabaseSnapshotWillUpdate
+- (void)uiDatabaseSnapshotWillUpdate
 {
     OWSAssertIsOnMainThread();
-    [self anyUIDBWillUpdate];
+    [BenchManager startEventWithTitle:@"uiDatabaseUpdate" eventId:@"uiDatabaseUpdate"];
 }
 
-- (void)conversationListDatabaseSnapshotDidUpdateWithUpdatedThreadIds:(NSSet<NSString *> *)updatedThreadIds
+- (void)uiDatabaseSnapshotDidUpdateWithDatabaseChanges:(id<UIDatabaseChanges>)databaseChanges
 {
     OWSAssertIsOnMainThread();
     OWSAssert(StorageCoordinator.dataStoreForUI == DataStoreGrdb);
@@ -1780,16 +1778,27 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
         return;
     }
 
-    [self anyUIDBDidUpdateWithUpdatedThreadIds:updatedThreadIds];
+    [self anyUIDBDidUpdateWithUpdatedThreadIds:databaseChanges.threadUniqueIds];
 }
 
-- (void)conversationListDatabaseSnapshotDidUpdateExternally
+- (void)uiDatabaseSnapshotDidUpdateExternally
 {
     OWSAssertIsOnMainThread();
-    [self anyUIDBDidUpdateExternally];
+
+    OWSLogVerbose(@"");
+
+    if (self.shouldObserveDBModifications) {
+        // External database modifications can't be converted into incremental updates,
+        // so rebuild everything.  This is expensive and usually isn't necessary, but
+        // there's no alternative.
+        //
+        // We don't need to do this if we're not observing db modifications since we'll
+        // do it when we resume.
+        [self resetMappings];
+    }
 }
 
-- (void)conversationListDatabaseSnapshotDidReset
+- (void)uiDatabaseSnapshotDidReset
 {
     OWSAssertIsOnMainThread();
     if (self.shouldObserveDBModifications) {
@@ -1800,12 +1809,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 }
 
 #pragma mark AnyDB Update
-
-- (void)anyUIDBWillUpdate
-{
-    OWSAssertIsOnMainThread();
-    [BenchManager startEventWithTitle:@"uiDatabaseUpdate" eventId:@"uiDatabaseUpdate"];
-}
 
 - (void)anyUIDBDidUpdateWithUpdatedThreadIds:(NSSet<NSString *> *)updatedItemIds
 {
@@ -1884,22 +1887,6 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
     [self.tableView endUpdates];
     [BenchManager completeEventWithEventId:@"uiDatabaseUpdate"];
-}
-
-- (void)anyUIDBDidUpdateExternally
-{
-    OWSLogVerbose(@"");
-    OWSAssertIsOnMainThread();
-
-    if (self.shouldObserveDBModifications) {
-        // External database modifications can't be converted into incremental updates,
-        // so rebuild everything.  This is expensive and usually isn't necessary, but
-        // there's no alternative.
-        //
-        // We don't need to do this if we're not observing db modifications since we'll
-        // do it when we resume.
-        [self resetMappings];
-    }
 }
 
 #pragma mark Profile Whitelist Changes

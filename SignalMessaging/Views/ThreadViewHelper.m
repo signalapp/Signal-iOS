@@ -14,7 +14,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface ThreadViewHelper () <SDSDatabaseStorageObserver>
+@interface ThreadViewHelper () <UIDatabaseSnapshotDelegate>
 
 @property (nonatomic, nullable) YapDatabaseViewMappings *threadMappings;
 @property (nonatomic) BOOL shouldObserveDBModifications;
@@ -61,7 +61,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertIsOnMainThread();
 
-    [self.databaseStorage addDatabaseStorageObserver:self];
+    [self.databaseStorage appendUIDatabaseSnapshotDelegate:self];
 
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(applicationDidBecomeActive:)
@@ -129,14 +129,20 @@ NS_ASSUME_NONNULL_BEGIN
     _threads = [threads copy];
 }
 
-#pragma mark - SDSDatabaseStorageObserver
+#pragma mark - UIDatabaseSnapshotDelegate
 
-- (void)databaseStorageDidUpdateWithChange:(SDSDatabaseStorageChange *)change
+- (void)uiDatabaseSnapshotWillUpdate
+{
+    OWSAssertIsOnMainThread();
+    OWSAssertDebug(AppReadiness.isAppReady);
+}
+
+- (void)uiDatabaseSnapshotDidUpdateWithDatabaseChanges:(id<UIDatabaseChanges>)databaseChanges
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(AppReadiness.isAppReady);
 
-    if (![change didUpdateModelWithCollection:TSThread.collection]) {
+    if (![databaseChanges didUpdateModelWithCollection:TSThread.collection]) {
         return;
     }
     if (!self.shouldObserveDBModifications) {
@@ -146,7 +152,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self updateThreads];
 }
 
-- (void)databaseStorageDidUpdateExternally
+- (void)uiDatabaseSnapshotDidUpdateExternally
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(AppReadiness.isAppReady);
@@ -158,7 +164,7 @@ NS_ASSUME_NONNULL_BEGIN
     [self updateThreads];
 }
 
-- (void)databaseStorageDidReset
+- (void)uiDatabaseSnapshotDidReset
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(AppReadiness.isAppReady);

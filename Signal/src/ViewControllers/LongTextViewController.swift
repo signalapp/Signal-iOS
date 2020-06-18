@@ -58,7 +58,7 @@ public class LongTextViewController: OWSViewController {
 
         self.messageTextView.contentOffset = CGPoint(x: 0, y: self.messageTextView.contentInset.top)
 
-        databaseStorage.add(databaseStorageObserver: self)
+        databaseStorage.appendUIDatabaseSnapshotDelegate(self)
     }
 
     // MARK: -
@@ -164,25 +164,30 @@ public class LongTextViewController: OWSViewController {
 
 // MARK: -
 
-extension LongTextViewController: SDSDatabaseStorageObserver {
-    public func databaseStorageDidUpdate(change: SDSDatabaseStorageChange) {
+extension LongTextViewController: UIDatabaseSnapshotDelegate {
+
+    public func uiDatabaseSnapshotWillUpdate() {
+        AssertIsOnMainThread()
+    }
+
+    public func uiDatabaseSnapshotDidUpdate(databaseChanges: UIDatabaseChanges) {
         AssertIsOnMainThread()
 
-        guard change.didUpdate(interaction: self.viewItem.interaction) else {
+        guard databaseChanges.didUpdate(interaction: self.viewItem.interaction) else {
             return
         }
-        assert(change.didUpdateInteractions)
+        assert(databaseChanges.didUpdateInteractions)
 
         refreshContent()
     }
 
-    public func databaseStorageDidUpdateExternally() {
+    public func uiDatabaseSnapshotDidUpdateExternally() {
         AssertIsOnMainThread()
 
         refreshContent()
     }
 
-    public func databaseStorageDidReset() {
+    public func uiDatabaseSnapshotDidReset() {
         AssertIsOnMainThread()
 
         refreshContent()

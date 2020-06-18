@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -77,7 +77,7 @@ class ConversationSearchViewController: UITableViewController, BlockListCacheDel
         tableView.register(ConversationListCell.self, forCellReuseIdentifier: ConversationListCell.cellReuseIdentifier())
         tableView.register(ContactTableViewCell.self, forCellReuseIdentifier: ContactTableViewCell.reuseIdentifier())
 
-        databaseStorage.add(databaseStorageObserver: self)
+        databaseStorage.appendUIDatabaseSnapshotDelegate(self)
 
         NotificationCenter.default.addObserver(self,
                                                selector: #selector(themeDidChange),
@@ -480,20 +480,29 @@ class EmptySearchResultCell: UITableViewCell {
 
 // MARK: -
 
-extension ConversationSearchViewController: SDSDatabaseStorageObserver {
-    func databaseStorageDidUpdate(change: SDSDatabaseStorageChange) {
+extension ConversationSearchViewController: UIDatabaseSnapshotDelegate {
+
+    func uiDatabaseSnapshotWillUpdate() {
+        AssertIsOnMainThread()
+    }
+
+    func uiDatabaseSnapshotDidUpdate(databaseChanges: UIDatabaseChanges) {
+        AssertIsOnMainThread()
+
+        guard databaseChanges.didUpdateThreads || databaseChanges.didUpdateInteractions else {
+            return
+        }
+
+        refreshSearchResults()
+    }
+
+    func uiDatabaseSnapshotDidUpdateExternally() {
         AssertIsOnMainThread()
 
         refreshSearchResults()
     }
 
-    func databaseStorageDidUpdateExternally() {
-        AssertIsOnMainThread()
-
-        refreshSearchResults()
-    }
-
-    func databaseStorageDidReset() {
+    func uiDatabaseSnapshotDidReset() {
         AssertIsOnMainThread()
 
         refreshSearchResults()
