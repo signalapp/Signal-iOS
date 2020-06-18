@@ -12,7 +12,7 @@ protocol ModelCache {
 // MARK: -
 
 private struct ModelReadCacheStats {
-    static let shouldLogCacheStats = true
+    static let shouldLogCacheStats = false
 
     let cacheHitCount = AtomicUInt()
     let cacheReadCount = AtomicUInt()
