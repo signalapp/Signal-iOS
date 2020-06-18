@@ -46,6 +46,8 @@ protocol InteractionFinderAdapter {
 
     func interaction(at index: UInt, transaction: ReadTransaction) throws -> TSInteraction?
 
+    func firstInteraction(atOrAroundSortId sortId: UInt64, transaction: ReadTransaction) -> TSInteraction?
+
     #if DEBUG
     func enumerateUnstartedExpiringMessages(transaction: ReadTransaction, block: @escaping (TSMessage, UnsafeMutablePointer<ObjCBool>) -> Void)
     #endif
@@ -487,6 +489,16 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
     }
 
     @objc
+    public func firstInteraction(atOrAroundSortId sortId: UInt64, transaction: SDSAnyReadTransaction) -> TSInteraction? {
+        switch transaction.readTransaction {
+        case .yapRead:
+            fatalError("YAP not supported")
+        case .grdbRead(let grdbRead):
+            return grdbAdapter.firstInteraction(atOrAroundSortId: sortId, transaction: grdbRead)
+        }
+    }
+
+    @objc
     public func existsOutgoingMessage(transaction: SDSAnyReadTransaction) -> Bool {
         switch transaction.readTransaction {
         case .yapRead(let yapRead):
@@ -737,6 +749,10 @@ struct YAPDBInteractionFinderAdapter: InteractionFinderAdapter {
         }
 
         return interaction
+    }
+
+    func firstInteraction(atOrAroundSortId sortId: UInt64, transaction: YapDatabaseReadTransaction) -> TSInteraction? {
+        fatalError("YAP not supported")
     }
 
     func existsOutgoingMessage(transaction: YapDatabaseReadTransaction) -> Bool {
@@ -1171,6 +1187,48 @@ public class GRDBInteractionFinder: NSObject, InteractionFinderAdapter {
         """
         let arguments: StatementArguments = [threadUniqueId, index]
         return TSInteraction.grdbFetchOne(sql: sql, arguments: arguments, transaction: transaction)
+    }
+
+    func firstInteraction(atOrAroundSortId sortId: UInt64, transaction: GRDBReadTransaction) -> TSInteraction? {
+        guard sortId > 0 else { return nil }
+
+        // First, see if there's an interaction at or before this sortId.
+
+        let atOrBeforeQuery = """
+        SELECT *
+        FROM \(InteractionRecord.databaseTableName)
+        WHERE \(interactionColumn: .threadUniqueId) = ?
+        AND \(interactionColumn: .id) <= ?
+        ORDER BY \(interactionColumn: .id) DESC
+        LIMIT 1
+        """
+        let arguments: StatementArguments = [threadUniqueId, sortId]
+
+        if let interactionAtOrBeforeSortId = TSInteraction.grdbFetchOne(
+            sql: atOrBeforeQuery,
+            arguments: arguments,
+            transaction: transaction
+        ) {
+            return interactionAtOrBeforeSortId
+        }
+
+        // If there wasn't an interaction at or before this sortId,
+        // look for the first interaction *after* this sort id.
+
+        let afterQuery = """
+        SELECT *
+        FROM \(InteractionRecord.databaseTableName)
+        WHERE \(interactionColumn: .threadUniqueId) = ?
+        AND \(interactionColumn: .id) > ?
+        ORDER BY \(interactionColumn: .id) ASC
+        LIMIT 1
+        """
+
+        return TSInteraction.grdbFetchOne(
+            sql: afterQuery,
+            arguments: arguments,
+            transaction: transaction
+        )
     }
 
     func existsOutgoingMessage(transaction: GRDBReadTransaction) -> Bool {

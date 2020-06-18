@@ -112,6 +112,7 @@ typedef NS_ENUM(NSUInteger, ConversationUpdateItemType) {
 - (void)clearUnreadMessagesIndicator;
 
 - (nullable NSIndexPath *)indexPathForViewItem:(id<ConversationViewItem>)viewItem;
+- (nullable NSIndexPath *)indexPathForInteractionId:(NSString *)interactionId;
 
 - (void)viewDidResetContentAndLayoutWithTransaction:(SDSAnyReadTransaction *)transaction;
 

@@ -25,6 +25,8 @@ public class ThreadViewModel: NSObject {
     @objc public let lastMessageText: String?
     @objc public let lastMessageForInbox: TSInteraction?
 
+    @objc public let lastVisibleInteraction: TSInteraction?
+
     @objc
     public init(thread: TSThread, transaction: SDSAnyReadTransaction) {
         self.threadRecord = thread
@@ -62,6 +64,8 @@ public class ThreadViewModel: NSObject {
         }
 
         self.draftText = thread.currentDraft(with: transaction)
+
+        self.lastVisibleInteraction = thread.firstInteraction(atOrAroundSortId: thread.lastVisibleSortId, transaction: transaction)
     }
 
     @objc

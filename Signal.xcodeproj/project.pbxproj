@@ -637,6 +637,7 @@
 		8835DE08230E092F00DC6B66 /* FindByPhoneNumberViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8835DE06230DFFC500DC6B66 /* FindByPhoneNumberViewController.swift */; };
 		8837F73D23D8DE8500772A32 /* pinCreationSuccess.json in Resources */ = {isa = PBXBuildFile; fileRef = 8837F73C23D8DE8400772A32 /* pinCreationSuccess.json */; };
 		8837F74123DA0B0F00772A32 /* MegaphoneView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8837F74023DA0B0F00772A32 /* MegaphoneView.swift */; };
+		88411B60249B0759005D10AA /* ConversationViewController+LastVisibleSortId.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88411B5F249B0757005D10AA /* ConversationViewController+LastVisibleSortId.swift */; };
 		88535064240829950011D318 /* DateHeaderInteraction.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88535063240829950011D318 /* DateHeaderInteraction.swift */; };
 		8853506824084E470011D318 /* OWSDateHeaderCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8853506724084E470011D318 /* OWSDateHeaderCell.swift */; };
 		8853506A240852F90011D318 /* OWSMessageCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88535069240852F90011D318 /* OWSMessageCell.swift */; };
@@ -1580,6 +1581,7 @@
 		8835DE06230DFFC500DC6B66 /* FindByPhoneNumberViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FindByPhoneNumberViewController.swift; sourceTree = "<group>"; };
 		8837F73C23D8DE8400772A32 /* pinCreationSuccess.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = pinCreationSuccess.json; sourceTree = "<group>"; };
 		8837F74023DA0B0F00772A32 /* MegaphoneView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MegaphoneView.swift; sourceTree = "<group>"; };
+		88411B5F249B0757005D10AA /* ConversationViewController+LastVisibleSortId.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ConversationViewController+LastVisibleSortId.swift"; sourceTree = "<group>"; };
 		88535063240829950011D318 /* DateHeaderInteraction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DateHeaderInteraction.swift; sourceTree = "<group>"; };
 		8853506724084E470011D318 /* OWSDateHeaderCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSDateHeaderCell.swift; sourceTree = "<group>"; };
 		88535069240852F90011D318 /* OWSMessageCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OWSMessageCell.swift; sourceTree = "<group>"; };
@@ -2146,6 +2148,7 @@
 				34D1F06D1F8678AA0066283D /* ConversationViewController.h */,
 				34D1F06E1F8678AA0066283D /* ConversationViewController.m */,
 				3457811A23EB56B300CE01C3 /* ConversationViewController+MessageRequest.swift */,
+				88411B5F249B0757005D10AA /* ConversationViewController+LastVisibleSortId.swift */,
 				4CD675C422E7CF22008010D2 /* ConversationViewController+OWS.swift */,
 				34D1F06F1F8678AA0066283D /* ConversationViewItem.h */,
 				34D1F0701F8678AA0066283D /* ConversationViewItem.m */,
@@ -4864,6 +4867,7 @@
 				340E9AC0235F876800FA362C /* ForwardMessageNavigationController.swift in Sources */,
 				3465947C2433B77700E5C510 /* NewGroupMembersBar.swift in Sources */,
 				347B83F724367EC10019A52C /* GroupViewHelper+MemberActionSheet.swift in Sources */,
+				88411B60249B0759005D10AA /* ConversationViewController+LastVisibleSortId.swift in Sources */,
 				3448E1662215B313004B052E /* OnboardingCaptchaViewController.swift in Sources */,
 				88081437234D80150004C187 /* UIResponder+OWS.swift in Sources */,
 				3457811B23EB56B300CE01C3 /* ConversationViewController+MessageRequest.swift in Sources */,
