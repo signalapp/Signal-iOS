@@ -259,6 +259,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
             [[self.syncManager syncLocalContact] retainUntilComplete];
         }
          */
+
         if (requiresSync) {
             [LKSyncMessagesProtocol syncProfile];
         }
@@ -278,6 +279,7 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
             [[self.syncManager syncLocalContact] retainUntilComplete];
         }
          */
+
         if (requiresSync) {
             [LKSyncMessagesProtocol syncProfile];
         }
@@ -327,29 +329,20 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
         // * Encrypt it
         // * Upload it to asset service
         // * Send asset service info to Signal Service
-        if (self.localProfileAvatarImage == avatarImage) {
-            OWSAssertDebug(userProfile.avatarUrlPath.length > 0);
-            OWSAssertDebug(userProfile.avatarFileName.length > 0);
-
-            OWSLogVerbose(@"Updating local profile on service with unchanged avatar.");
-            // If the avatar hasn't changed, reuse the existing metadata.
-            tryToUpdateService(userProfile.avatarUrlPath, userProfile.avatarFileName);
-        } else {
-            OWSLogVerbose(@"Updating local profile on service with new avatar.");
-            [self writeAvatarToDisk:avatarImage
-                success:^(NSData *data, NSString *fileName) {
-                    [self uploadAvatarToService:data
-                        success:^(NSString *_Nullable avatarUrlPath) {
-                            tryToUpdateService(avatarUrlPath, fileName);
-                        }
-                        failure:^(NSError *error) {
-                            failureBlock(error);
-                        }];
-                }
-                failure:^(NSError *error) {
-                    failureBlock(error);
-                }];
-        }
+        OWSLogVerbose(@"Updating local profile on service with new avatar.");
+        [self writeAvatarToDisk:avatarImage
+            success:^(NSData *data, NSString *fileName) {
+                [self uploadAvatarToService:data
+                    success:^(NSString *_Nullable avatarUrlPath) {
+                        tryToUpdateService(avatarUrlPath, fileName);
+                    }
+                    failure:^(NSError *error) {
+                        failureBlock(error);
+                    }];
+            }
+            failure:^(NSError *error) {
+                failureBlock(error);
+            }];
     } else if (userProfile.avatarUrlPath) {
         OWSLogVerbose(@"Updating local profile on service with cleared avatar.");
         [self uploadAvatarToService:nil
