@@ -133,14 +133,35 @@ public class ProvisioningController: NSObject {
                 }
             }.catch { error in
                 Logger.warn("error: \(error)")
-                let alert = ActionSheetController(title: NSLocalizedString("SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN", comment: "alert title"),
-                                              message: error.localizedDescription)
-                alert.addAction(ActionSheetAction(title: CommonStrings.retryButton,
-                                              accessibilityIdentifier: "alert.retry",
-                                              style: .default,
-                                              handler: { _ in
-                                                self.didSetDeviceName(deviceName, from: viewController)
-                }))
+
+                let alert: ActionSheetController
+                switch error {
+                case SignalServiceError.obsoleteLinkedDevice:
+                    let title = NSLocalizedString("SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE",
+                                                  comment: "Title for error alert indicating that a linked device must be upgraded before it can be linked.")
+                    let message = NSLocalizedString("SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE",
+                                                    comment: "Message for error alert indicating that a linked device must be upgraded before it can be linked.")
+                    alert = ActionSheetController(title: title, message: message)
+
+                    let updateButtonText = NSLocalizedString("APP_UPDATE_NAG_ALERT_UPDATE_BUTTON", comment: "Label for the 'update' button in the 'new app version available' alert.")
+                    let updateAction = ActionSheetAction(title: updateButtonText,
+                                                         accessibilityIdentifier: "alert.update",
+                                                         style: .default) { _ in
+                                                            let url = URL(string: "https://itunes.apple.com/us/app/signal-private-messenger/id874139669?mt=8")!
+                                                            UIApplication.shared.open(url, options: [:])
+                    }
+                    alert.addAction(updateAction)
+                default:
+                    let title = NSLocalizedString("SECONDARY_LINKING_ERROR_WAITING_FOR_SCAN", comment: "alert title")
+                    let message = error.localizedDescription
+                    alert = ActionSheetController(title: title, message: message)
+                    alert.addAction(ActionSheetAction(title: CommonStrings.retryButton,
+                                                      accessibilityIdentifier: "alert.retry",
+                                                      style: .default,
+                                                      handler: { _ in
+                                                        self.didSetDeviceName(deviceName, from: viewController)
+                    }))
+                }
                 modal.dismiss {
                     viewController.presentActionSheet(alert)
                 }
