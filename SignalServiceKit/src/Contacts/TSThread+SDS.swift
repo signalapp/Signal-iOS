@@ -284,6 +284,8 @@ extension TSThread: DeepCopyable {
             let isArchived: Bool = modelToCopy.isArchived
             let isMarkedUnread: Bool = modelToCopy.isMarkedUnread
             let lastInteractionRowId: Int64 = modelToCopy.lastInteractionRowId
+            let lastVisibleSortId: UInt64 = modelToCopy.lastVisibleSortId
+            let lastVisibleSortIdOnScreenPercentage: Double = modelToCopy.lastVisibleSortIdOnScreenPercentage
             let messageDraft: String? = modelToCopy.messageDraft
             let mutedUntilDate: Date? = modelToCopy.mutedUntilDate
             let shouldThreadBeVisible: Bool = modelToCopy.shouldThreadBeVisible
@@ -298,6 +300,8 @@ extension TSThread: DeepCopyable {
                                  isArchived: isArchived,
                                  isMarkedUnread: isMarkedUnread,
                                  lastInteractionRowId: lastInteractionRowId,
+                                 lastVisibleSortId: lastVisibleSortId,
+                                 lastVisibleSortIdOnScreenPercentage: lastVisibleSortIdOnScreenPercentage,
                                  messageDraft: messageDraft,
                                  mutedUntilDate: mutedUntilDate,
                                  shouldThreadBeVisible: shouldThreadBeVisible,
@@ -312,6 +316,8 @@ extension TSThread: DeepCopyable {
             let isArchived: Bool = modelToCopy.isArchived
             let isMarkedUnread: Bool = modelToCopy.isMarkedUnread
             let lastInteractionRowId: Int64 = modelToCopy.lastInteractionRowId
+            let lastVisibleSortId: UInt64 = modelToCopy.lastVisibleSortId
+            let lastVisibleSortIdOnScreenPercentage: Double = modelToCopy.lastVisibleSortIdOnScreenPercentage
             let messageDraft: String? = modelToCopy.messageDraft
             let mutedUntilDate: Date? = modelToCopy.mutedUntilDate
             let shouldThreadBeVisible: Bool = modelToCopy.shouldThreadBeVisible
@@ -326,6 +332,8 @@ extension TSThread: DeepCopyable {
                                    isArchived: isArchived,
                                    isMarkedUnread: isMarkedUnread,
                                    lastInteractionRowId: lastInteractionRowId,
+                                   lastVisibleSortId: lastVisibleSortId,
+                                   lastVisibleSortIdOnScreenPercentage: lastVisibleSortIdOnScreenPercentage,
                                    messageDraft: messageDraft,
                                    mutedUntilDate: mutedUntilDate,
                                    shouldThreadBeVisible: shouldThreadBeVisible,
@@ -343,6 +351,8 @@ extension TSThread: DeepCopyable {
             let isArchived: Bool = modelToCopy.isArchived
             let isMarkedUnread: Bool = modelToCopy.isMarkedUnread
             let lastInteractionRowId: Int64 = modelToCopy.lastInteractionRowId
+            let lastVisibleSortId: UInt64 = modelToCopy.lastVisibleSortId
+            let lastVisibleSortIdOnScreenPercentage: Double = modelToCopy.lastVisibleSortIdOnScreenPercentage
             let messageDraft: String? = modelToCopy.messageDraft
             let mutedUntilDate: Date? = modelToCopy.mutedUntilDate
             let shouldThreadBeVisible: Bool = modelToCopy.shouldThreadBeVisible
@@ -354,6 +364,8 @@ extension TSThread: DeepCopyable {
                             isArchived: isArchived,
                             isMarkedUnread: isMarkedUnread,
                             lastInteractionRowId: lastInteractionRowId,
+                            lastVisibleSortId: lastVisibleSortId,
+                            lastVisibleSortIdOnScreenPercentage: lastVisibleSortIdOnScreenPercentage,
                             messageDraft: messageDraft,
                             mutedUntilDate: mutedUntilDate,
                             shouldThreadBeVisible: shouldThreadBeVisible)
