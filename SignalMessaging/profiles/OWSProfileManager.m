@@ -176,6 +176,15 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
 #pragma mark - Local Profile
 
+- (OWSUserProfile *)localUserProfile
+{
+    __block OWSUserProfile *userProfile;
+    [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+        userProfile = [self getLocalUserProfileWithTransaction:transaction];
+    } error:nil];
+    return userProfile;
+}
+
 - (OWSUserProfile *)getLocalUserProfileWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     @synchronized(self)
