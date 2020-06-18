@@ -277,8 +277,6 @@ public class ConversationMessageMapping: NSObject {
         Logger.verbose("canLoadOlder: \(canLoadOlder) canLoadNewer: \(canLoadNewer)")
     }
 
-    private let shouldUseModelCache = true
-
     private func fetchInteractions(nsRange: NSRange, transaction: SDSAnyReadTransaction) throws -> [TSInteraction] {
 
         // This method is a perf hotspot. To improve perf, we try to leverage
@@ -291,10 +289,6 @@ public class ConversationMessageMapping: NSObject {
                 newItems.append(interaction)
             }
             return newItems
-        }
-
-        guard shouldUseModelCache else {
-            return try loadWithoutCache()
         }
 
         // Loading the mapping from the cache has the following steps:
@@ -310,7 +304,6 @@ public class ConversationMessageMapping: NSObject {
                                                                                                              transaction: transaction)
         var interactionsToLoad = Set(interactionIds)
         interactionsToLoad.subtract(interactionIdToModelMap.keys)
-        let cachedCount = interactionIdToModelMap.count
 
         // 3. Bulk load any interactions that are not in the cache in a
         //    single query.

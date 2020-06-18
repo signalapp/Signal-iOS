@@ -181,8 +181,6 @@ class ThreadMapping: NSObject {
         }
     }
 
-    private let shouldUseModelCache = false
-
     private func loadThreads(isViewingArchive: Bool, transaction: SDSAnyReadTransaction) throws -> [TSThread] {
 
         // This method is a perf hotspot. To improve perf, we try to leverage
@@ -194,10 +192,6 @@ class ThreadMapping: NSObject {
                 newThreads.append(thread)
             }
             return newThreads
-        }
-
-        guard shouldUseModelCache else {
-            return try loadWithoutCache()
         }
 
         // Loading the mapping from the cache has the following steps:
