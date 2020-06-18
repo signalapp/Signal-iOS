@@ -41,6 +41,9 @@ public class UIDatabaseObserver: NSObject {
     @objc
     public static let didUpdateUIDatabaseSnapshotNotification = Notification.Name("didUpdateUIDatabaseSnapshot")
 
+    @objc
+    public static let databaseDidCommitInteractionChangeNotification = Notification.Name("databaseDidCommitInteractionChangeNotification")
+
     public static let kMaxIncrementalRowChanges = 200
 
     private lazy var nonModelTables: Set<String> = Set([MediaGalleryRecord.databaseTableName, PendingReadReceiptRecord.databaseTableName])
@@ -101,6 +104,8 @@ public class UIDatabaseObserver: NSObject {
     private var displayLink: CADisplayLink?
     private let displayLinkPreferredFramesPerSecond: Int = 60
     private var recentDisplayLinkDates = [Date]()
+
+    private let didDatabaseModifyInteractions = AtomicBool(false)
 
     init(pool: DatabasePool, checkpointingQueue: DatabaseQueue?) throws {
         self.pool = pool
@@ -226,6 +231,10 @@ extension UIDatabaseObserver: TransactionObserver {
             for snapshotDelegate in snapshotDelegates {
                 snapshotDelegate.snapshotTransactionDidChange(with: event)
             }
+
+            if event.tableName == InteractionRecord.databaseTableName {
+                didDatabaseModifyInteractions.set(true)
+            }
         }
     }
 
@@ -234,6 +243,12 @@ extension UIDatabaseObserver: TransactionObserver {
         UIDatabaseObserver.serializedSync {
             for snapshotDelegate in snapshotDelegates {
                 snapshotDelegate.snapshotTransactionDidCommit(db: db)
+            }
+
+            let shouldPostInteractionNotification = didDatabaseModifyInteractions.get()
+            didDatabaseModifyInteractions.set(false)
+            if shouldPostInteractionNotification {
+                NotificationCenter.default.postNotificationNameAsync(Self.databaseDidCommitInteractionChangeNotification, object: nil)
             }
         }
 

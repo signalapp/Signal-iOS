@@ -194,7 +194,7 @@ public class NewGroupConfirmViewController: OWSViewController {
                                                                 // Partial success could create the group on the service.
                                                                 // This would cause retries to fail with 409.  Therefore
                                                                 // we must rotate the seed after every failure.
-                                                                self.newGroupState.generateNewSeed()
+                                                                self.newGroupState.deriveNewGroupSeedForRetry()
 
                                                                 NewGroupConfirmViewController.showCreateErrorUI(error: error)
                                                             }
