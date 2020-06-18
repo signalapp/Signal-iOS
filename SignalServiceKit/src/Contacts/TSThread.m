@@ -456,12 +456,12 @@ lastVisibleSortIdOnScreenPercentage:(double)lastVisibleSortIdOnScreenPercentage
         mostRecentInteractionForInboxWithTransaction:transaction];
 }
 
-- (nullable TSInteraction *)firstInteractionAtOrBeforeSortId:(uint64_t)sortId
+- (nullable TSInteraction *)firstInteractionAtOrAroundSortId:(uint64_t)sortId
                                                  transaction:(SDSAnyReadTransaction *)transaction
 {
     OWSAssertDebug(transaction);
     return
-        [[[InteractionFinder alloc] initWithThreadUniqueId:self.uniqueId] firstInteractionAtOrBeforeSortId:sortId
+        [[[InteractionFinder alloc] initWithThreadUniqueId:self.uniqueId] firstInteractionAtOrAroundSortId:sortId
                                                                                                transaction:transaction];
 }
 
@@ -555,16 +555,16 @@ lastVisibleSortIdOnScreenPercentage:(double)lastVisibleSortIdOnScreenPercentage
 
     BOOL needsToUpdateLastInteractionRowId = messageSortId > self.lastInteractionRowId;
 
-    BOOL needsToUpdateLastVisibleSortId = self.lastVisibleSortId > 0 && wasMessageInserted;
+    BOOL needsToClearLastVisibleSortId = self.lastVisibleSortId > 0 && wasMessageInserted;
 
     if (needsToMarkAsVisible || needsToClearArchived || needsToUpdateLastInteractionRowId
-        || needsToUpdateLastVisibleSortId) {
+        || needsToClearLastVisibleSortId) {
         self.shouldThreadBeVisible = YES;
         self.lastInteractionRowId = MAX(self.lastInteractionRowId, messageSortId);
         if (needsToClearArchived) {
             self.isArchived = NO;
         }
-        if (needsToUpdateLastVisibleSortId) {
+        if (needsToClearLastVisibleSortId) {
             self.lastVisibleSortId = 0;
             self.lastVisibleSortIdOnScreenPercentage = 0;
         }
@@ -592,7 +592,7 @@ lastVisibleSortIdOnScreenPercentage:(double)lastVisibleSortIdOnScreenPercentage
 
         if (needsToUpdateLastVisibleSortId) {
             TSInteraction *_Nullable messageBeforeDeletedMessage =
-                [self firstInteractionAtOrBeforeSortId:self.lastVisibleSortId transaction:transaction];
+                [self firstInteractionAtOrAroundSortId:self.lastVisibleSortId transaction:transaction];
             self.lastVisibleSortId = messageBeforeDeletedMessage ? messageBeforeDeletedMessage.sortId : 0;
             self.lastVisibleSortIdOnScreenPercentage = 1;
         }
@@ -733,9 +733,9 @@ lastVisibleSortIdOnScreenPercentage:(double)lastVisibleSortIdOnScreenPercentage
 
 #pragma mark - Last Visible
 
-- (void)updateWithLastVisibileSortId:(uint64_t)lastVisibleSortId
-                  onScreenPercentage:(double)onScreenPercentage
-                         transaction:(SDSAnyWriteTransaction *)transaction
+- (void)updateWithLastVisibleSortId:(uint64_t)lastVisibleSortId
+                 onScreenPercentage:(double)onScreenPercentage
+                        transaction:(SDSAnyWriteTransaction *)transaction
 {
     OWSAssertDebug(onScreenPercentage >= 0);
     OWSAssertDebug(onScreenPercentage <= 1);

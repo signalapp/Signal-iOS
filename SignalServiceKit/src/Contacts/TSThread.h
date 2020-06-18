@@ -142,9 +142,9 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
 - (nullable TSInteraction *)lastInteractionForInboxWithTransaction:(SDSAnyReadTransaction *)transaction
     NS_SWIFT_NAME(lastInteractionForInbox(transaction:));
 
-- (nullable TSInteraction *)firstInteractionAtOrBeforeSortId:(uint64_t)sortId
+- (nullable TSInteraction *)firstInteractionAtOrAroundSortId:(uint64_t)sortId
                                                  transaction:(SDSAnyReadTransaction *)transaction
-    NS_SWIFT_NAME(firstInteraction(atOrBeforeSortId:transaction:));
+    NS_SWIFT_NAME(firstInteraction(atOrAroundSortId:transaction:));
 
 /**
  *  Updates the thread's caches of the latest interaction.
@@ -216,9 +216,9 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:conversationColorNa
 
 #pragma mark - Update With... Methods
 
-- (void)updateWithLastVisibileSortId:(uint64_t)lastVisibleSortId
-                  onScreenPercentage:(double)onScreenPercentage
-                         transaction:(SDSAnyWriteTransaction *)transaction;
+- (void)updateWithLastVisibleSortId:(uint64_t)lastVisibleSortId
+                 onScreenPercentage:(double)onScreenPercentage
+                        transaction:(SDSAnyWriteTransaction *)transaction;
 
 - (void)updateWithMutedUntilDate:(nullable NSDate *)mutedUntilDate transaction:(SDSAnyWriteTransaction *)transaction;
 

@@ -192,7 +192,7 @@ typedef enum : NSUInteger {
 
 @property (nonatomic, nullable) NSNumber *lastKnownDistanceFromBottom;
 @property (nonatomic) ScrollContinuity scrollContinuity;
-@property (nonatomic, nullable) NSTimer *autoLoadMoreTimer;
+@property (nonatomic, nullable) NSTimer *scrollUpdateTimer;
 
 @property (nonatomic, readonly) ConversationSearchController *searchController;
 @property (nonatomic, nullable) NSString *lastSearchedText;
@@ -525,7 +525,7 @@ typedef enum : NSUInteger {
 - (void)dealloc
 {
     [self.reloadTimer invalidate];
-    [self.autoLoadMoreTimer invalidate];
+    [self.scrollUpdateTimer invalidate];
 }
 
 - (void)reloadTimerDidFire
@@ -3998,22 +3998,23 @@ typedef enum : NSUInteger {
 
     [self configureScrollDownButton];
 
-    [self scheduleAutoLoadMore];
+    [self scheduleScrollUpdateTimer];
 }
 
-- (void)scheduleAutoLoadMore
+- (void)scheduleScrollUpdateTimer
 {
-    [self.autoLoadMoreTimer invalidate];
-    self.autoLoadMoreTimer = [NSTimer weakScheduledTimerWithTimeInterval:0.1f
+    [self.scrollUpdateTimer invalidate];
+    self.scrollUpdateTimer = [NSTimer weakScheduledTimerWithTimeInterval:0.1f
                                                                   target:self
-                                                                selector:@selector(autoLoadMoreTimerDidFire)
+                                                                selector:@selector(scrollUpdateTimerDidFire)
                                                                 userInfo:nil
                                                                  repeats:NO];
 }
 
-- (void)autoLoadMoreTimerDidFire
+- (void)scrollUpdateTimerDidFire
 {
     [self autoLoadMoreIfNecessary];
+    [self saveLastVisibleSortIdAndOnScreenPercentage];
 }
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
@@ -4033,8 +4034,7 @@ typedef enum : NSUInteger {
     if (willDecelerate) {
         self.isWaitingForDeceleration = willDecelerate;
     } else {
-        [self scheduleAutoLoadMore];
-        [self saveLastVisibleSortIdAndOnScreenPercentage];
+        [self scheduleScrollUpdateTimer];
     }
 }
 
@@ -4046,8 +4046,7 @@ typedef enum : NSUInteger {
 
     self.isWaitingForDeceleration = NO;
 
-    [self scheduleAutoLoadMore];
-    [self saveLastVisibleSortIdAndOnScreenPercentage];
+    [self scheduleScrollUpdateTimer];
 }
 
 #pragma mark - ConversationSettingsViewDelegate

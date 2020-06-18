@@ -43,14 +43,14 @@ extension ConversationViewController {
             onScreenPercentageToSave = 0
         }
 
-        guard thread.lastVisibleSortId != sortIdToSave,
-            !thread.lastVisibleSortIdOnScreenPercentage.isEqual(to: onScreenPercentageToSave) else {
+        guard thread.lastVisibleSortId != sortIdToSave
+            || !thread.lastVisibleSortIdOnScreenPercentage.isEqual(to: onScreenPercentageToSave) else {
                 return
         }
 
         databaseStorage.asyncWrite { transaction in
             self.thread.update(
-                withLastVisibileSortId: sortIdToSave,
+                withLastVisibleSortId: sortIdToSave,
                 onScreenPercentage: onScreenPercentageToSave,
                 transaction: transaction
             )

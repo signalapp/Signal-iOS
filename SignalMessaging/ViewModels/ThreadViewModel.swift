@@ -65,7 +65,7 @@ public class ThreadViewModel: NSObject {
 
         self.draftText = thread.currentDraft(with: transaction)
 
-        self.lastVisibleInteraction = thread.firstInteraction(atOrBeforeSortId: thread.lastVisibleSortId, transaction: transaction)
+        self.lastVisibleInteraction = thread.firstInteraction(atOrAroundSortId: thread.lastVisibleSortId, transaction: transaction)
     }
 
     @objc
