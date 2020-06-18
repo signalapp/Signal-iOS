@@ -69,28 +69,28 @@
 "ADD_TO_CONTACTS_OFFER" = "Ar norėtumėte pridėti šį naudotoją prie savo adresatų?";
 
 /* Label for button or row which allows users to add to another group. */
-"ADD_TO_GROUP" = "Add to Another Group";
+"ADD_TO_GROUP" = "Pridėti į kitą grupę";
 
 /* The button on the 'add to group' confirmation to add the user to the group. */
-"ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "Add to Group";
+"ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "Pridėti į grupę";
 
 /* The title on the 'add to group' confirmation action sheet. Embeds {contact name} */
-"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "Add %@ to this group?";
+"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "Pridėti %@ į šią grupę?";
 
 /* The title on the 'add to group' confirmation action sheet. Embeds {group name} */
-"ADD_TO_GROUP_ACTION_SHEET_TITLE_FORMAT" = "Add to %@";
+"ADD_TO_GROUP_ACTION_SHEET_TITLE_FORMAT" = "Pridėti į %@";
 
 /* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ is already a member of %@";
+"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "Naudotojas %@ jau yra grupės %@ narys";
 
 /* The title for the 'add to group' view's recents section */
-"ADD_TO_GROUP_RECENTS_TITLE" = "Recent";
+"ADD_TO_GROUP_RECENTS_TITLE" = "Paskiausios";
 
 /* A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ was added to %@";
+"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "Naudotojas %@ buvo pridėtas į %@";
 
 /* Title of the 'add to group' view. */
-"ADD_TO_GROUP_TITLE" = "Add to Another Group";
+"ADD_TO_GROUP_TITLE" = "Pridėti į kitą grupę";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Ar norėtumėte bendrinti savo profilį  su šiuo naudotoju?";
@@ -609,7 +609,7 @@
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Susieti naują įrenginį";
 
 /* Action sheet body presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
-"CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "Gali būti, kad %@ iš naujo įdiegė programėlę arba pakeitė įrenginius. Norėdami užtikrinti privatumą, patvirtinkite savo saugumo numerį su šiuo kontaktu.";
+"CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "Gali būti, kad %@ iš naujo įdiegė programėlę arba pakeitė įrenginius. Norėdami užtikrinti privatumą, patvirtinkite savo saugumo numerį su šiuo adresatu.";
 
 /* Action sheet title presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
 "CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT" = "Saugumo numeris su %@ pasikeitė";
@@ -819,7 +819,7 @@
 "CONVERSATION_SETTINGS_BLOCK_USER" = "Užblokuoti naudotoją";
 
 /* Navbar title when viewing settings for a 1-on-1 thread */
-"CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Kontaktinė informacija";
+"CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Adresato informacija";
 
 /* Label for table cell which leads to picking a new conversation color */
 "CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Pokalbio spalva";
@@ -1182,7 +1182,7 @@
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_BODY" = "Prieigą galite įjungti iOS nustatymų programėlėje.";
 
 /* Alert title for when the user has just tried to edit a contacts after declining to give Signal contacts permissions */
-"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Norint taisyti kontaktinę informaciją, Signal reikia adresatų prieigos";
+"EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Norint taisyti adresato informaciją, Signal reikia adresatų prieigos";
 
 /* The 'clear avatar' button in the 'edit group' view. */
 "EDIT_GROUP_CLEAR_AVATAR" = "Šalinti nuotrauką";
@@ -1836,7 +1836,7 @@
 "INCOMING_INCOMPLETE_CALL" = "Gaunamasis skambutis";
 
 /* info message text shown in conversation view */
-"INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "Praleistas skambutis dėl to, kad pasikeitė šio kontakto saugumo numeris.";
+"INFO_MESSAGE_MISSED_CALL_DUE_TO_CHANGED_IDENITY" = "Praleistas skambutis dėl to, kad pasikeitė šio adresato saugumo numeris.";
 
 /* Shown in inbox and conversation after syncing as a placeholder indicating why your message history is missing. */
 "INFO_MESSAGE_SYNCED_THREAD" = "Galite siųsti ar gauti sinchronizuotas žinutes iš savo telefono ar iPad. ↵Jūsų saugumui, pokalbių istorija nėra perduodama į naujai susietus įrenginius.";
@@ -2349,7 +2349,7 @@
 "NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "Žemiau bakstelėkite \"Pereiti į nustatymus\"";
 
 /* Third step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE" = "Įjunkite \"Leisti pranešimus\"";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE" = "Įjunkite \"Leisti pranešimus\" (angl. Allow Notifications)";
 
 /* Second step for notification permission action sheet */
 "NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_TWO" = "Bakstelėkite \"Pranešimai\"";
@@ -3099,7 +3099,7 @@
 "SAFETY_NUMBER_SHARE_FORMAT" = "Mūsų Signal saugumo numeris:\n%@";
 
 /* Action sheet heading */
-"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Jūsų saugumo numeris, skirtas kontaktui %@ pasikeitė. Jūs, tikriausiai, norėtumėte jį patvirtinti.";
+"SAFETY_NUMBERS_ACTIONSHEET_TITLE" = "Jūsų saugumo numeris, skirtas adresatui %@ pasikeitė. Jūs, tikriausiai, norėtumėte jį patvirtinti.";
 
 /* label presented once scanning (camera) view is visible. */
 "SCAN_CODE_INSTRUCTIONS" = "Nuskenuokite QR kodą savo adresato įrenginyje.";

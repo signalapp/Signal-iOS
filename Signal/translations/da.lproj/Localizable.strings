@@ -4047,7 +4047,7 @@
 "WAITING_TO_COMPLETE_DEVICE_LINK_TEXT" = "Færdiggør opsætning på Signal Desktop";
 
 /* text indicating the message was remotely deleted by you */
-"YOU_DELETED_THIS_MESSAGE" = "Du slettede denne besked.";
+"YOU_DELETED_THIS_MESSAGE" = "Du slettede beskeden";
 
 /* Info Message when you disabled disappearing messages. */
 "YOU_DISABLED_DISAPPEARING_MESSAGES_CONFIGURATION" = "Beskeder med tidsudløb deaktiveret";

@@ -33,10 +33,10 @@
 
 /* Label for 'send message' button in contact view.
    Label for button that lets you send a message to a contact. */
-"ACTION_SEND_MESSAGE" = "Mezua bidali";
+"ACTION_SEND_MESSAGE" = "Bidali Mezua";
 
 /* Label for 'share contact' button. */
-"ACTION_SHARE_CONTACT" = "Kontaktua elkarbanatu";
+"ACTION_SHARE_CONTACT" = "Partekatu Kontaktua";
 
 /* Label for 'video call' button in contact view. */
 "ACTION_VIDEO_CALL" = "Bideo deia";
@@ -48,19 +48,19 @@
 "ADD_GROUP_MEMBERS_ACTION_TITLE_N" = "Partaideak gehitu";
 
 /* Format for the message for the 'add group member' confirmation alert.  Embeds {{ the name of the group. }}. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_1_FORMAT" = "Kidea gehitu \"%2$@\" taldera?";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_1_FORMAT" = "Gehitu kidea \"%2$@\" taldera?";
 
 /* Format for the message for the 'add group members' confirmation alert.  Embeds {{ %1$@ number of new members, %2$@ name of the group. }}. */
 "ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_MESSAGE_N_FORMAT" = "%1$@ kide gehitu \"%2$@\" taldera?";
 
 /* Title for the 'add group member' confirmation alert. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1" = "Partaide berria gehitu";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_1" = "Gehitu Kide Berria";
 
 /* Title for the 'add group members' confirmation alert. */
-"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_N" = "Partaide gehiago gehitu";
+"ADD_GROUP_MEMBERS_VIEW_CONFIRM_ALERT_TITLE_N" = "Gehitu Kide Gehiago";
 
 /* The title for the 'add group members' view. */
-"ADD_GROUP_MEMBERS_VIEW_TITLE" = "Partaideak gehitu";
+"ADD_GROUP_MEMBERS_VIEW_TITLE" = "Gehitu Kideak";
 
 /* Message shown in conversation view that offers to share your profile with a group. */
 "ADD_GROUP_TO_PROFILE_WHITELIST_OFFER" = "Zure profila partekatu nahi duzu talde honekin?";

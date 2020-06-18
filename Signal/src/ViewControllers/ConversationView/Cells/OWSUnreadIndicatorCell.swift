@@ -68,7 +68,7 @@ public class UnreadIndicatorCell: ConversationViewCell {
         titleLabel.font = UIFont.ows_dynamicTypeBody2.ows_semibold()
         titleLabel.textColor = Theme.primaryTextColor
 
-        let date = viewItem.interaction.receivedAtDate()
+        let date = Date(millisecondsSince1970: viewItem.interaction.timestamp)
         let dateString = DateUtil.formatDate(forConversationDateBreaks: date)
 
         var title = NSLocalizedString("MESSAGES_VIEW_UNREAD_INDICATOR", comment: "Indicator that separates read from unread messages.")
