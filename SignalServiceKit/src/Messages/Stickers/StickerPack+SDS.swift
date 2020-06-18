@@ -668,6 +668,7 @@ class StickerPackSerializer: SDSSerializer {
 
 // MARK: - Deep Copy
 
+#if TESTABLE_BUILD
 @objc
 public extension StickerPack {
     // We're not using this method at the moment,
@@ -680,3 +681,4 @@ public extension StickerPack {
         return try StickerPack.fromRecord(record)
     }
 }
+#endif

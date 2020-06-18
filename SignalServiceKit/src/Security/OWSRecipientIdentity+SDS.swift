@@ -639,6 +639,7 @@ class OWSRecipientIdentitySerializer: SDSSerializer {
 
 // MARK: - Deep Copy
 
+#if TESTABLE_BUILD
 @objc
 public extension OWSRecipientIdentity {
     // We're not using this method at the moment,
@@ -651,3 +652,4 @@ public extension OWSRecipientIdentity {
         return try OWSRecipientIdentity.fromRecord(record)
     }
 }
+#endif

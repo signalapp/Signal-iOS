@@ -639,6 +639,7 @@ class IncomingGroupsV2MessageJobSerializer: SDSSerializer {
 
 // MARK: - Deep Copy
 
+#if TESTABLE_BUILD
 @objc
 public extension IncomingGroupsV2MessageJob {
     // We're not using this method at the moment,
@@ -651,3 +652,4 @@ public extension IncomingGroupsV2MessageJob {
         return try IncomingGroupsV2MessageJob.fromRecord(record)
     }
 }
+#endif

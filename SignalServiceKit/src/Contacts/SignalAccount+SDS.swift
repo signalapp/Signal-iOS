@@ -406,6 +406,20 @@ public extension SignalAccount {
                         transaction: SDSAnyReadTransaction) -> SignalAccount? {
         assert(uniqueId.count > 0)
 
+        return anyFetch(uniqueId: uniqueId, transaction: transaction, ignoreCache: false)
+    }
+
+    // Fetches a single model by "unique id".
+    class func anyFetch(uniqueId: String,
+                        transaction: SDSAnyReadTransaction,
+                        ignoreCache: Bool) -> SignalAccount? {
+        assert(uniqueId.count > 0)
+
+        if !ignoreCache,
+            let cachedCopy = SSKEnvironment.shared.modelReadCaches.signalAccountReadCache.getSignalAccount(uniqueId: uniqueId, transaction: transaction) {
+            return cachedCopy
+        }
+
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
             return SignalAccount.ydb_fetch(uniqueId: uniqueId, transaction: ydbTransaction)
@@ -665,6 +679,7 @@ class SignalAccountSerializer: SDSSerializer {
 
 // MARK: - Deep Copy
 
+#if TESTABLE_BUILD
 @objc
 public extension SignalAccount {
     // We're not using this method at the moment,
@@ -677,3 +692,4 @@ public extension SignalAccount {
         return try SignalAccount.fromRecord(record)
     }
 }
+#endif

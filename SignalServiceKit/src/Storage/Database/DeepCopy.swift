@@ -32,7 +32,7 @@ public class DeepCopies {
         return try dictToCopy.deepCopy()
     }
 
-    // NOTE: We get not compile-time type safety with NSOrderedSet.
+    // NOTE: We do not get compile-time type safety with NSOrderedSet.
     static func deepCopy(_ setToCopy: NSOrderedSet) throws -> NSOrderedSet {
         return try setToCopy.deepCopy()
     }
@@ -54,7 +54,7 @@ public class DeepCopies {
         }))
     }
 
-    // NOTE: We get not compile-time type safety with Any.
+    // NOTE: We do not get compile-time type safety with Any.
     static func deepCopy(_ dictToCopy: [InfoMessageUserInfoKey: Any]) throws -> [InfoMessageUserInfoKey: Any] {
         return Dictionary(uniqueKeysWithValues: try dictToCopy.map({ (key, value) in
             let keyCopy: String = try DeepCopies.deepCopy(key.rawValue as String)
@@ -103,7 +103,7 @@ extension Dictionary where Key: DeepCopyable, Value: DeepCopyable {
 
 // MARK: -
 
-// NOTE: We get not compile-time type safety with NSOrderedSet.
+// NOTE: We do not get compile-time type safety with NSOrderedSet.
 extension NSOrderedSet {
     public func deepCopy() throws -> NSOrderedSet {
         let copiedElements: [AnyObject] = try self.array.map { (element: Any) throws -> AnyObject in

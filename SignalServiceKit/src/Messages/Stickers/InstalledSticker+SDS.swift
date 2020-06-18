@@ -611,6 +611,7 @@ class InstalledStickerSerializer: SDSSerializer {
 
 // MARK: - Deep Copy
 
+#if TESTABLE_BUILD
 @objc
 public extension InstalledSticker {
     // We're not using this method at the moment,
@@ -623,3 +624,4 @@ public extension InstalledSticker {
         return try InstalledSticker.fromRecord(record)
     }
 }
+#endif

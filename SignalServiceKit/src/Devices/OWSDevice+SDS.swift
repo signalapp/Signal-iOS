@@ -630,6 +630,7 @@ class OWSDeviceSerializer: SDSSerializer {
 
 // MARK: - Deep Copy
 
+#if TESTABLE_BUILD
 @objc
 public extension OWSDevice {
     // We're not using this method at the moment,
@@ -642,3 +643,4 @@ public extension OWSDevice {
         return try OWSDevice.fromRecord(record)
     }
 }
+#endif

@@ -679,6 +679,7 @@ class TestModelSerializer: SDSSerializer {
 
 // MARK: - Deep Copy
 
+#if TESTABLE_BUILD
 @objc
 public extension TestModel {
     // We're not using this method at the moment,
@@ -691,3 +692,4 @@ public extension TestModel {
         return try TestModel.fromRecord(record)
     }
 }
+#endif

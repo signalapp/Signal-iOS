@@ -629,6 +629,7 @@ class OWSMessageContentJobSerializer: SDSSerializer {
 
 // MARK: - Deep Copy
 
+#if TESTABLE_BUILD
 @objc
 public extension OWSMessageContentJob {
     // We're not using this method at the moment,
@@ -641,3 +642,4 @@ public extension OWSMessageContentJob {
         return try OWSMessageContentJob.fromRecord(record)
     }
 }
+#endif

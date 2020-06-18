@@ -618,6 +618,7 @@ class ExperienceUpgradeSerializer: SDSSerializer {
 
 // MARK: - Deep Copy
 
+#if TESTABLE_BUILD
 @objc
 public extension ExperienceUpgrade {
     // We're not using this method at the moment,
@@ -630,3 +631,4 @@ public extension ExperienceUpgrade {
         return try ExperienceUpgrade.fromRecord(record)
     }
 }
+#endif

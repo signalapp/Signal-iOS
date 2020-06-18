@@ -2008,6 +2008,7 @@ class %sSerializer: SDSSerializer {
         swift_body += '''
 // MARK: - Deep Copy
 
+#if TESTABLE_BUILD
 @objc
 public extension %(model_name)s {
     // We're not using this method at the moment,
@@ -2020,6 +2021,7 @@ public extension %(model_name)s {
         return try %(model_name)s.fromRecord(record)
     }
 }
+#endif
 ''' % { "model_name": str(clazz.name), "record_name": clazz.record_name(), }
 
 

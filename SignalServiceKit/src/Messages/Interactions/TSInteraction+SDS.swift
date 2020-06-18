@@ -3563,6 +3563,7 @@ class TSInteractionSerializer: SDSSerializer {
 
 // MARK: - Deep Copy
 
+#if TESTABLE_BUILD
 @objc
 public extension TSInteraction {
     // We're not using this method at the moment,
@@ -3575,3 +3576,4 @@ public extension TSInteraction {
         return try TSInteraction.fromRecord(record)
     }
 }
+#endif

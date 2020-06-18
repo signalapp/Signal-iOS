@@ -648,6 +648,7 @@ class OWSBackupFragmentSerializer: SDSSerializer {
 
 // MARK: - Deep Copy
 
+#if TESTABLE_BUILD
 @objc
 public extension OWSBackupFragment {
     // We're not using this method at the moment,
@@ -660,3 +661,4 @@ public extension OWSBackupFragment {
         return try OWSBackupFragment.fromRecord(record)
     }
 }
+#endif

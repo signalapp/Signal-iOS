@@ -433,6 +433,20 @@ public extension OWSUserProfile {
                         transaction: SDSAnyReadTransaction) -> OWSUserProfile? {
         assert(uniqueId.count > 0)
 
+        return anyFetch(uniqueId: uniqueId, transaction: transaction, ignoreCache: false)
+    }
+
+    // Fetches a single model by "unique id".
+    class func anyFetch(uniqueId: String,
+                        transaction: SDSAnyReadTransaction,
+                        ignoreCache: Bool) -> OWSUserProfile? {
+        assert(uniqueId.count > 0)
+
+        if !ignoreCache,
+            let cachedCopy = SSKEnvironment.shared.modelReadCaches.userProfileReadCache.getUserProfile(uniqueId: uniqueId, transaction: transaction) {
+            return cachedCopy
+        }
+
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
             return OWSUserProfile.ydb_fetch(uniqueId: uniqueId, transaction: ydbTransaction)
@@ -695,6 +709,7 @@ class OWSUserProfileSerializer: SDSSerializer {
 
 // MARK: - Deep Copy
 
+#if TESTABLE_BUILD
 @objc
 public extension OWSUserProfile {
     // We're not using this method at the moment,
@@ -707,3 +722,4 @@ public extension OWSUserProfile {
         return try OWSUserProfile.fromRecord(record)
     }
 }
+#endif

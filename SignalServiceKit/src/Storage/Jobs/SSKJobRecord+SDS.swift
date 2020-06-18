@@ -936,6 +936,7 @@ class SSKJobRecordSerializer: SDSSerializer {
 
 // MARK: - Deep Copy
 
+#if TESTABLE_BUILD
 @objc
 public extension SSKJobRecord {
     // We're not using this method at the moment,
@@ -948,3 +949,4 @@ public extension SSKJobRecord {
         return try SSKJobRecord.fromRecord(record)
     }
 }
+#endif

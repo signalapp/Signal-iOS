@@ -835,6 +835,7 @@ class TSThreadSerializer: SDSSerializer {
 
 // MARK: - Deep Copy
 
+#if TESTABLE_BUILD
 @objc
 public extension TSThread {
     // We're not using this method at the moment,
@@ -847,3 +848,4 @@ public extension TSThread {
         return try TSThread.fromRecord(record)
     }
 }
+#endif

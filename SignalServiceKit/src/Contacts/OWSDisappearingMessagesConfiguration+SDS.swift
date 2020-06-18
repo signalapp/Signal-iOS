@@ -608,6 +608,7 @@ class OWSDisappearingMessagesConfigurationSerializer: SDSSerializer {
 
 // MARK: - Deep Copy
 
+#if TESTABLE_BUILD
 @objc
 public extension OWSDisappearingMessagesConfiguration {
     // We're not using this method at the moment,
@@ -620,3 +621,4 @@ public extension OWSDisappearingMessagesConfiguration {
         return try OWSDisappearingMessagesConfiguration.fromRecord(record)
     }
 }
+#endif

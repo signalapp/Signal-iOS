@@ -1000,6 +1000,7 @@ class TSAttachmentSerializer: SDSSerializer {
 
 // MARK: - Deep Copy
 
+#if TESTABLE_BUILD
 @objc
 public extension TSAttachment {
     // We're not using this method at the moment,
@@ -1012,3 +1013,4 @@ public extension TSAttachment {
         return try TSAttachment.fromRecord(record)
     }
 }
+#endif

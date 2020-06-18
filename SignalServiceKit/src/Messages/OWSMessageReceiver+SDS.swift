@@ -609,6 +609,7 @@ class OWSMessageDecryptJobSerializer: SDSSerializer {
 
 // MARK: - Deep Copy
 
+#if TESTABLE_BUILD
 @objc
 public extension OWSMessageDecryptJob {
     // We're not using this method at the moment,
@@ -621,3 +622,4 @@ public extension OWSMessageDecryptJob {
         return try OWSMessageDecryptJob.fromRecord(record)
     }
 }
+#endif

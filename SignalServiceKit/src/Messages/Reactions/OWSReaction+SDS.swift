@@ -658,6 +658,7 @@ class OWSReactionSerializer: SDSSerializer {
 
 // MARK: - Deep Copy
 
+#if TESTABLE_BUILD
 @objc
 public extension OWSReaction {
     // We're not using this method at the moment,
@@ -670,3 +671,4 @@ public extension OWSReaction {
         return try OWSReaction.fromRecord(record)
     }
 }
+#endif
