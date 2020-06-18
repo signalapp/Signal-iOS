@@ -145,6 +145,7 @@ final class ConversationCell : UITableViewCell {
                 profilePictureView.isRSSFeed = true
             } else if let openGroupProfilePicture = (threadViewModel.threadRecord as! TSGroupThread).groupModel.groupImage { // An open group with a profile picture
                 profilePictureView.openGroupProfilePicture = openGroupProfilePicture
+                profilePictureView.isRSSFeed = false
             } else if (threadViewModel.threadRecord as! TSGroupThread).groupModel.groupType == .openGroup
                 || (threadViewModel.threadRecord as! TSGroupThread).groupModel.groupType == .rssFeed { // An open group without a profile picture or an RSS feed
                 profilePictureView.hexEncodedPublicKey = ""

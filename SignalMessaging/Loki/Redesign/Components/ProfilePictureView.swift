@@ -65,7 +65,7 @@ public final class ProfilePictureView : UIView {
         }
         guard hexEncodedPublicKey != nil || openGroupProfilePicture != nil else { return }
         imageView.image = isRSSFeed ? nil : (openGroupProfilePicture ?? getProfilePicture(of: size, for: hexEncodedPublicKey))
-        imageView.backgroundColor = isRSSFeed ? UIColor(rgbHex: 0x353535) : UIColor(rgbHex: 0xD8D8D8) // UIColor(rgbHex: 0xD8D8D8) = Colors.unimportant
+        imageView.backgroundColor = isRSSFeed ? UIColor(rgbHex: 0x353535) : Colors.unimportant
         imageView.layer.cornerRadius = size / 2
         imageView.contentMode = isRSSFeed ? .center : .scaleAspectFit
         if isRSSFeed {
