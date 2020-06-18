@@ -148,10 +148,8 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         // Set up public chats and RSS feeds if needed
         if OWSIdentityManager.shared().identityKeyPair() != nil {
             let appDelegate = UIApplication.shared.delegate as! AppDelegate
-            appDelegate.setUpDefaultPublicChatsIfNeeded()
+            appDelegate.startPollerIfNeeded()
             appDelegate.startOpenGroupPollersIfNeeded()
-            appDelegate.createRSSFeedsIfNeeded()
-            appDelegate.startRSSFeedPollersIfNeeded()
         }
         // Populate onion request path countries cache
         DispatchQueue.global(qos: .utility).async {

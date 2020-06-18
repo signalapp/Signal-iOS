@@ -316,9 +316,6 @@ static NSTimeInterval launchStartedAt;
                                              selector:@selector(registrationLockDidChange:)
                                                  name:NSNotificationName_2FAStateDidChange
                                                object:nil];
-    
-    // Loki - Observe thread deleted notifications
-    [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(handleThreadDeleted:) name:NSNotification.threadDeleted object:nil];
 
     // Loki - Observe data nuke request notifications
     [NSNotificationCenter.defaultCenter addObserver:self selector:@selector(handleDataNukeRequested:) name:NSNotification.dataNukeRequested object:nil];
@@ -1413,22 +1410,6 @@ static NSTimeInterval launchStartedAt;
     [self.lokiPoller stopIfNeeded];
 }
 
-- (void)setUpDefaultPublicChatsIfNeeded
-{
-    for (LKPublicChat *chat in LKPublicChatAPI.defaultChats) {
-        NSString *userDefaultsKey = [@"isGroupChatSetUp." stringByAppendingString:chat.id]; // Should ideally be isPublicChatSetUp
-        BOOL isChatSetUp = [NSUserDefaults.standardUserDefaults boolForKey:userDefaultsKey];
-        if (!isChatSetUp || !chat.isDeletable) {
-            [LKPublicChatManager.shared addChatWithServer:chat.server channel:chat.channel name:chat.displayName];
-            [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                TSGroupThread *thread = [TSGroupThread threadWithGroupId:[LKGroupUtilities getEncodedOpenGroupIDAsData:chat.id] transaction:transaction];
-                if (thread != nil) { [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread]; }
-            } error:nil];
-            [NSUserDefaults.standardUserDefaults setBool:YES forKey:userDefaultsKey];
-        }
-    }
-}
-
 - (void)startOpenGroupPollersIfNeeded
 {
     [LKPublicChatManager.shared startPollersIfNeeded];
@@ -1438,77 +1419,6 @@ static NSTimeInterval launchStartedAt;
 - (void)stopOpenGroupPollersIfNeeded
 {
     [LKPublicChatManager.shared stopPollers];
-}
-
-- (LKRSSFeed *)lokiNewsFeed
-{
-    return [[LKRSSFeed alloc] initWithId:@"loki.network.feed" server:@"https://loki.network/feed/" displayName:@"Loki News" isDeletable:true];
-}
-
-- (LKRSSFeed *)lokiMessengerUpdatesFeed
-{
-    return [[LKRSSFeed alloc] initWithId:@"loki.network.messenger-updates.feed" server:@"https://loki.network/category/messenger-updates/feed/" displayName:@"Session Updates" isDeletable:false];
-}
-
-- (void)createRSSFeedsIfNeeded
-{
-    return;
-    /*
-    NSArray *feeds = @[ self.lokiNewsFeed, self.lokiMessengerUpdatesFeed ];
-    NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
-    for (LKRSSFeed *feed in feeds) {
-        NSString *userDefaultsKey = [@"isRSSFeedSetUp." stringByAppendingString:feed.id];
-        BOOL isFeedSetUp = [NSUserDefaults.standardUserDefaults boolForKey:userDefaultsKey];
-        if (!isFeedSetUp || !feed.isDeletable) {
-            TSGroupModel *group = [[TSGroupModel alloc] initWithTitle:feed.displayName memberIds:@[ userHexEncodedPublicKey, feed.server ] image:nil groupId:[LKGroupUtilities getEncodedRSSFeedIDAsData:feed.id] groupType:rssFeed adminIds:@[ userHexEncodedPublicKey, feed.server ]];
-            __block TSGroupThread *thread;
-            [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-                thread = [TSGroupThread getOrCreateThreadWithGroupModel:group transaction:transaction];
-            } error:nil];
-            [OWSProfileManager.sharedManager addThreadToProfileWhitelist:thread];
-            [NSUserDefaults.standardUserDefaults setBool:YES forKey:userDefaultsKey];
-        }
-    }
-     */
-}
-
-- (void)createRSSFeedPollersIfNeeded
-{
-    return;
-    /*
-    // Only create the RSS feed pollers if their threads aren't deleted
-    __block TSGroupThread *lokiNewsFeedThread;
-    [OWSPrimaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        lokiNewsFeedThread = [TSGroupThread threadWithGroupId:[LKGroupUtilities getEncodedRSSFeedIDAsData:self.lokiNewsFeed.id] transaction:transaction];
-    }];
-    if (lokiNewsFeedThread != nil && self.lokiNewsFeedPoller == nil) {
-        self.lokiNewsFeedPoller = [[LKRSSFeedPoller alloc] initForFeed:self.lokiNewsFeed];
-    }
-    // The user can't delete the Session Updates RSS feed
-    if (self.lokiMessengerUpdatesFeedPoller == nil) {
-        self.lokiMessengerUpdatesFeedPoller = [[LKRSSFeedPoller alloc] initForFeed:self.lokiMessengerUpdatesFeed];
-    }
-     */
-}
-
-- (void)startRSSFeedPollersIfNeeded
-{
-    return;
-    /*
-    [self createRSSFeedPollersIfNeeded];
-    if (self.lokiNewsFeedPoller != nil) { [self.lokiNewsFeedPoller startIfNeeded]; }
-    if (self.lokiMessengerUpdatesFeedPoller != nil) { [self.lokiMessengerUpdatesFeedPoller startIfNeeded]; }
-     */
-}
-
-- (void)handleThreadDeleted:(NSNotification *)notification {
-    NSDictionary *userInfo = notification.userInfo;
-    NSString *threadID = (NSString *)userInfo[@"threadId"];
-    if (threadID == nil) { return; }
-    if ([threadID isEqualToString:[TSGroupThread threadIdFromGroupId:[LKGroupUtilities getEncodedRSSFeedIDAsData:self.lokiNewsFeed.id]]] && self.lokiNewsFeedPoller != nil) {
-        [self.lokiNewsFeedPoller stop];
-        self.lokiNewsFeedPoller = nil;
-    }
 }
 
 - (void)handleDataNukeRequested:(NSNotification *)notification {
