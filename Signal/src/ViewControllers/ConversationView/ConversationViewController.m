@@ -748,7 +748,7 @@ typedef enum : NSUInteger {
     [self.cellMediaCache removeAllObjects];
     [self cancelReadTimer];
     [self dismissPresentedViewControllerIfNecessary];
-    [self saveLastVisibleSortId];
+    [self saveLastVisibleSortIdAndOnScreenPercentage];
 
     [self dismissKeyBoard];
 }
@@ -869,7 +869,7 @@ typedef enum : NSUInteger {
                                                 animated:isAnimated];
         }
     } else {
-        [self scrollToBottomAnimated:isAnimated];
+        [self scrollToLastVisibleInteractionAnimated:isAnimated];
     }
 }
 
@@ -880,9 +880,14 @@ typedef enum : NSUInteger {
     }
 
     TSInteraction *_Nullable interaction = self.threadViewModel.lastVisibleInteraction;
+    if (interaction == nil) {
+        [self scrollToBottomAnimated:isAnimated];
+        return;
+    }
+
     NSIndexPath *_Nullable indexPath = [self.conversationViewModel indexPathForInteractionId:interaction.uniqueId];
-    if (interaction == nil || indexPath == nil) {
-        OWSFailDebug(@"Unexpectedly missing last visible interaction");
+    if (indexPath == nil) {
+        OWSFailDebug(@"Unexpectedly missing index for last visible interaction");
         [self scrollToBottomAnimated:isAnimated];
         return;
     }
@@ -3570,104 +3575,6 @@ typedef enum : NSUInteger {
     [self presentFullScreenViewController:pickerModal animated:true completion:nil];
 }
 
-- (nullable NSIndexPath *)lastVisibleIndexPath
-{
-    NSIndexPath *_Nullable lastVisibleIndexPath = nil;
-    for (NSIndexPath *indexPath in [self.collectionView indexPathsForVisibleItems]) {
-        if (!lastVisibleIndexPath || indexPath.row > lastVisibleIndexPath.row) {
-            UICollectionViewLayoutAttributes *layoutAttributes =
-                [self.layout layoutAttributesForItemAtIndexPath:indexPath];
-
-            // Don't consider an index path visible if its origin is behind the bottom bar
-            CGPoint origin = [self.view convertPoint:layoutAttributes.frame.origin fromView:self.collectionView];
-            if (self.collectionView.height - origin.y > self.collectionView.adjustedContentInset.bottom) {
-                lastVisibleIndexPath = indexPath;
-            }
-        }
-    }
-    if (lastVisibleIndexPath && lastVisibleIndexPath.row >= (NSInteger)self.viewItems.count) {
-        // unclear to me why this should happen, so adding an assert to catch it.
-        OWSFailDebug(@"invalid lastVisibleIndexPath");
-        return (self.viewItems.count > 0 ? [NSIndexPath indexPathForRow:(NSInteger)self.viewItems.count - 1 inSection:0]
-                                         : nil);
-    }
-    return lastVisibleIndexPath;
-}
-
-- (uint64_t)mostRecentSortIdForItemAtIndex:(NSInteger)idx
-{
-    OWSAssertIsOnMainThread();
-    OWSAssertDebug(idx >= 0);
-
-    TSInteraction *interaction = [[self viewItemForIndex:idx] interaction];
-    if ([interaction isKindOfClass:[OWSTypingIndicatorInteraction class]] && idx > 0) {
-        // Walk back one interaction if we've landed on a typing indicator
-        // Typing indicators are the only interaction that don't vend a sortId and there's only one of them, so this should be safe.
-        // If we ever support other variants of interactions that don't vend a sortId, this needs to be changed to a while loop.
-        interaction = [[self viewItemForIndex:idx-1] interaction];
-    }
-
-    return interaction.sortId;
-}
-
-- (uint64_t)lastVisibleSortId
-{
-    NSIndexPath *lastVisibleIndexPath = [self lastVisibleIndexPath];
-    return lastVisibleIndexPath ? [self mostRecentSortIdForItemAtIndex:lastVisibleIndexPath.row] : 0;
-}
-
-- (void)saveLastVisibleSortId
-{
-    OWSAssertIsOnMainThread();
-
-    NSInteger lastVisibleRow = self.lastVisibleIndexPath.row;
-
-    // Find the first non-dynamic index path that's visible, since dynamic index paths
-    // can't have their scroll position saved.
-    TSInteraction *_Nullable interaction = [self viewItemForIndex:lastVisibleRow].interaction;
-    while (interaction.isDynamicInteraction && lastVisibleRow > 0) {
-        lastVisibleRow -= 1;
-        interaction = [self viewItemForIndex:lastVisibleRow].interaction;
-    }
-
-    uint64_t lastVisibleSortId = 0;
-    double onScreenPercentage = 0;
-
-    // If we found a non-dynamic interaction, save its sortId. Otherwise, save
-    // a sortId of zero to "clear" the lastVisibleSortId on the thread.
-    if (interaction != nil) {
-        lastVisibleSortId = interaction.sortId;
-
-        // Calculate how much of the view is on screen so we can restore the scroll position precisely
-        UICollectionViewLayoutAttributes *attributes =
-            [self.layout layoutAttributesForItemAtIndexPath:[NSIndexPath indexPathForRow:lastVisibleRow inSection:0]];
-
-        CGPoint origin = [self.view convertPoint:attributes.frame.origin fromView:self.collectionView];
-
-        CGFloat heightAboveBottom
-            = self.collectionView.height - origin.y - self.collectionView.adjustedContentInset.bottom;
-        onScreenPercentage = CGFloatClamp01(heightAboveBottom / attributes.frame.size.height);
-    }
-
-    // Skip the transaction if nothing has changed.
-    if (self.thread.lastVisibleSortId == lastVisibleSortId
-        && fabs(self.thread.lastVisibleSortIdOnScreenPercentage - onScreenPercentage) <= DBL_EPSILON) {
-        return;
-    }
-
-    DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        [self.thread updateWithLastVisibileSortId:lastVisibleSortId
-                               onScreenPercentage:onScreenPercentage
-                                      transaction:transaction];
-    });
-}
-
-- (uint64_t)lastSortId
-{
-    NSInteger lastItemIndex = (NSInteger)self.viewItems.count - 1;
-    return (lastItemIndex >= 0) ? [self mostRecentSortIdForItemAtIndex:lastItemIndex] : 0;
-}
-
 - (void)setLastSortIdMarkedRead:(uint64_t)lastSortIdMarkedRead
 {
     OWSAssertIsOnMainThread();
@@ -4127,7 +4034,7 @@ typedef enum : NSUInteger {
         self.isWaitingForDeceleration = willDecelerate;
     } else {
         [self scheduleAutoLoadMore];
-        [self saveLastVisibleSortId];
+        [self saveLastVisibleSortIdAndOnScreenPercentage];
     }
 }
 
@@ -4140,7 +4047,7 @@ typedef enum : NSUInteger {
     self.isWaitingForDeceleration = NO;
 
     [self scheduleAutoLoadMore];
-    [self saveLastVisibleSortId];
+    [self saveLastVisibleSortIdAndOnScreenPercentage];
 }
 
 #pragma mark - ConversationSettingsViewDelegate
@@ -5139,7 +5046,7 @@ typedef enum : NSUInteger {
     //   - Get position of that same interaction's cell (it'll have a new index)
     //   - Get content offset after transition
     //   - Offset scrollViewContent so that the cell is in the same spot after as it was before.
-    NSIndexPath *_Nullable indexPath = [self lastVisibleIndexPath];
+    NSIndexPath *_Nullable indexPath = self.lastVisibleIndexPath;
     if (indexPath == nil) {
         // nothing visible yet
         return;
