@@ -7,8 +7,9 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
         let storage = OWSPrimaryStorage.shared()
         storage.dbReadConnection.read { transaction in
             TSContactThread.enumerateCollectionObjects(with: transaction) { object, _ in
-                guard let thread = object as? TSContactThread, thread.isContactFriend else { return }
+                guard let thread = object as? TSContactThread, thread.shouldThreadBeVisible && thread.isContactFriend else { return }
                 let hexEncodedPublicKey = thread.contactIdentifier()
+                guard UserDisplayNameUtilities.getPrivateChatDisplayName(for: hexEncodedPublicKey) != nil else { return }
                 // We shouldn't be able to add slave devices to groups
                 if (storage.getMasterHexEncodedPublicKey(for: hexEncodedPublicKey, in: transaction) == nil) {
                     result.append(hexEncodedPublicKey)
