@@ -559,6 +559,8 @@ lastVisibleSortIdOnScreenPercentage:(double)lastVisibleSortIdOnScreenPercentage
 
     BOOL needsToClearLastVisibleSortId = self.lastVisibleSortId > 0 && wasMessageInserted;
 
+    BOOL needsToClearIsMarkedUnread = self.isMarkedUnread && wasMessageInserted;
+
     if (needsToMarkAsVisible || needsToClearArchived || needsToUpdateLastInteractionRowId
         || needsToClearLastVisibleSortId) {
         [self anyUpdateWithTransaction:transaction
@@ -571,6 +573,10 @@ lastVisibleSortIdOnScreenPercentage:(double)lastVisibleSortIdOnScreenPercentage
                                      if (needsToClearLastVisibleSortId) {
                                          thread.lastVisibleSortId = 0;
                                          thread.lastVisibleSortIdOnScreenPercentage = 0;
+                                     }
+                                     if (needsToClearIsMarkedUnread) {
+                                         self.isMarkedUnread = NO;
+                                         [self recordPendingStorageServiceUpdates];
                                      }
                                  }];
     } else {

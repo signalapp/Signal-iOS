@@ -72,6 +72,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addIsMediaMessageToMessageSenderJobQueue
         case readdAttachmentIndex
         case addLastVisibleRowIdToThreads
+        case addMarkedUnreadIndexToThread
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -655,6 +656,18 @@ public class GRDBSchemaMigrator: NSObject {
                     table.add(column: "lastVisibleSortIdOnScreenPercentage", .double).notNull().defaults(to: 0)
                     table.add(column: "lastVisibleSortId", .integer).notNull().defaults(to: 0)
                 }
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(MigrationId.addMarkedUnreadIndexToThread.rawValue) { db in
+            do {
+                try db.create(
+                    index: "index_model_TSThread_on_isMarkedUnread",
+                    on: "model_TSThread",
+                    columns: ["isMarkedUnread"]
+                )
             } catch {
                 owsFail("Error: \(error)")
             }

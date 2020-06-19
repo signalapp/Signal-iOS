@@ -137,16 +137,29 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
     @objc
     public class func unreadCountInAllThreads(transaction: GRDBReadTransaction) -> UInt {
         do {
-            let sql = """
-                SELECT COUNT(*)
-                FROM \(InteractionRecord.databaseTableName)
-                WHERE \(sqlClauseForUnreadInteractionCounts)
+            let unreadInteractionQuery = """
+                SELECT COUNT(interaction.\(interactionColumn: .id))
+                FROM \(InteractionRecord.databaseTableName) AS interaction
+                \(sqlClauseForIgnoringInteractionsWithMutedThread)
+                WHERE \(sqlClauseForUnreadInteractionCounts(interactionsAlias: "interaction"))
             """
-            guard let count = try UInt.fetchOne(transaction.database, sql: sql) else {
-                owsFailDebug("count was unexpectedly nil")
+            guard let unreadInteractionCount = try UInt.fetchOne(transaction.database, sql: unreadInteractionQuery) else {
+                owsFailDebug("unreadInteractionCount was unexpectedly nil")
                 return 0
             }
-            return count
+
+            let markedUnreadThreadQuery = """
+                SELECT COUNT(*)
+                FROM \(ThreadRecord.databaseTableName)
+                WHERE \(threadColumn: .isMarkedUnread) = 1
+            """
+
+            guard let markedUnreadCount = try UInt.fetchOne(transaction.database, sql: markedUnreadThreadQuery) else {
+                owsFailDebug("markedUnreadCount was unexpectedly nil")
+                return unreadInteractionCount
+            }
+
+            return unreadInteractionCount + markedUnreadCount
         } catch {
             owsFailDebug("error: \(error)")
             return 0
@@ -300,7 +313,7 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
                 SELECT COUNT(*)
                 FROM \(InteractionRecord.databaseTableName)
                 WHERE \(interactionColumn: .threadUniqueId) = ?
-                AND \(InteractionFinder.sqlClauseForUnreadInteractionCounts)
+                AND \(InteractionFinder.sqlClauseForUnreadInteractionCounts())
             """
             let arguments: StatementArguments = [threadUniqueId]
 
@@ -556,15 +569,33 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
         """
     }()
 
-    private static let sqlClauseForUnreadInteractionCounts: String = {
+    private static func sqlClauseForUnreadInteractionCounts(interactionsAlias: String? = nil) -> String {
+        let columnPrefix: String
+        if let interactionsAlias = interactionsAlias {
+            columnPrefix = interactionsAlias + "."
+        } else {
+            columnPrefix = ""
+        }
+
         return """
-        \(interactionColumn: .read) IS 0
+        \(columnPrefix)\(interactionColumn: .read) IS 0
         AND (
-            \(interactionColumn: .recordType) IN (\(SDSRecordType.incomingMessage.rawValue), \(SDSRecordType.call.rawValue))
+            \(columnPrefix)\(interactionColumn: .recordType) IN (\(SDSRecordType.incomingMessage.rawValue), \(SDSRecordType.call.rawValue))
             OR (
-                \(interactionColumn: .recordType) IS \(SDSRecordType.infoMessage.rawValue)
-                AND \(interactionColumn: .messageType) IS \(TSInfoMessageType.userJoinedSignal.rawValue)
+                \(columnPrefix)\(interactionColumn: .recordType) IS \(SDSRecordType.infoMessage.rawValue)
+                AND \(columnPrefix)\(interactionColumn: .messageType) IS \(TSInfoMessageType.userJoinedSignal.rawValue)
             )
+        )
+        """
+    }
+
+    private static let sqlClauseForIgnoringInteractionsWithMutedThread: String = {
+        return """
+        INNER JOIN \(ThreadRecord.databaseTableName) AS thread
+        ON \(interactionColumn: .threadUniqueId) = thread.\(threadColumn: .uniqueId)
+        AND (
+            thread.\(threadColumn: .mutedUntilDate) <= strftime('%s','now')
+            OR thread.\(threadColumn: .mutedUntilDate) IS NULL
         )
         """
     }()
