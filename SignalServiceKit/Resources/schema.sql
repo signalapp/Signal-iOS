@@ -875,3 +875,9 @@ CREATE
         ON "model_TSAttachment"("uniqueId"
 )
 ;
+
+CREATE
+    INDEX "index_model_TSThread_on_isMarkedUnread"
+        ON "model_TSThread"("isMarkedUnread"
+)
+;

@@ -137,17 +137,29 @@ public class InteractionFinder: NSObject, InteractionFinderAdapter {
     @objc
     public class func unreadCountInAllThreads(transaction: GRDBReadTransaction) -> UInt {
         do {
-            let sql = """
+            let unreadInteractionQuery = """
                 SELECT COUNT(interaction.\(interactionColumn: .id))
                 FROM \(InteractionRecord.databaseTableName) AS interaction
                 \(sqlClauseForIgnoringInteractionsWithMutedThread)
                 WHERE \(sqlClauseForUnreadInteractionCounts(interactionsAlias: "interaction"))
             """
-            guard let count = try UInt.fetchOne(transaction.database, sql: sql) else {
-                owsFailDebug("count was unexpectedly nil")
+            guard let unreadInteractionCount = try UInt.fetchOne(transaction.database, sql: unreadInteractionQuery) else {
+                owsFailDebug("unreadInteractionCount was unexpectedly nil")
                 return 0
             }
-            return count
+
+            let markedUnreadThreadQuery = """
+                SELECT COUNT(*)
+                FROM \(ThreadRecord.databaseTableName)
+                WHERE \(threadColumn: .isMarkedUnread) = 1
+            """
+
+            guard let markedUnreadCount = try UInt.fetchOne(transaction.database, sql: markedUnreadThreadQuery) else {
+                owsFailDebug("markedUnreadCount was unexpectedly nil")
+                return unreadInteractionCount
+            }
+
+            return unreadInteractionCount + markedUnreadCount
         } catch {
             owsFailDebug("error: \(error)")
             return 0
