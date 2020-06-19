@@ -9,7 +9,6 @@ public final class LokiAPI : NSObject {
     // MARK: Settings
     private static let maxRetryCount: UInt = 4
     private static let defaultTimeout: TimeInterval = 20
-    private static let longPollingTimeout: TimeInterval = 40
 
     internal static var powDifficulty: UInt = 1
     /// - Note: Changing this on the fly is not recommended.
@@ -51,19 +50,17 @@ public final class LokiAPI : NSObject {
         }
     }
     
-    internal static func getRawMessages(from target: LokiAPITarget, usingLongPolling useLongPolling: Bool) -> RawResponsePromise {
+    internal static func getRawMessages(from target: LokiAPITarget) -> RawResponsePromise {
         let lastHashValue = getLastMessageHashValue(for: target) ?? ""
         let parameters = [ "pubKey" : getUserHexEncodedPublicKey(), "lastHash" : lastHashValue ]
-        let headers: [String:String]? = useLongPolling ? [ "X-Loki-Long-Poll" : "true" ] : nil
-        let timeout: TimeInterval? = useLongPolling ? longPollingTimeout : nil
-        return invoke(.getMessages, on: target, associatedWith: getUserHexEncodedPublicKey(), parameters: parameters, headers: headers, timeout: timeout)
+        return invoke(.getMessages, on: target, associatedWith: getUserHexEncodedPublicKey(), parameters: parameters)
     }
     
     // MARK: Public API
     public static func getMessages() -> Promise<Set<MessageListPromise>> {
         return attempt(maxRetryCount: maxRetryCount, recoveringOn: LokiAPI.workQueue) {
             getTargetSnodes(for: getUserHexEncodedPublicKey()).mapValues2 { targetSnode in
-                getRawMessages(from: targetSnode, usingLongPolling: false).map2 { parseRawMessagesResponse($0, from: targetSnode) }
+                getRawMessages(from: targetSnode).map2 { parseRawMessagesResponse($0, from: targetSnode) }
             }.map2 { Set($0) }
         }
     }

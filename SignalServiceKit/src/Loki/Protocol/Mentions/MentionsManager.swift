@@ -85,6 +85,8 @@ public final class MentionsManager : NSObject {
                 populate(in: transaction)
             }
         }
-        userPublicKeyCache[threadID] = result
+        if !result.isEmpty {
+            userPublicKeyCache[threadID] = result
+        }
     }
 }

@@ -181,8 +181,8 @@ class MediaPageViewController: UIPageViewController, UIPageViewControllerDataSou
 
         self.view.addSubview(bottomContainer)
         bottomContainer.autoPinWidthToSuperview()
-        bottomContainer.autoPinEdge(toSuperviewEdge: .bottom)
-        footerBar.autoPinEdge(.bottom, to: .bottom, of: view)
+        bottomContainer.autoPinEdge(toSuperviewSafeArea: .bottom)
+        footerBar.autoPinEdge(toSuperviewSafeArea: .bottom)
         footerBar.autoSetDimension(.height, toSize: 44)
 
         updateTitle()

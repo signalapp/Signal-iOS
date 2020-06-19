@@ -1027,10 +1027,26 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
 - (nullable NSString *)profileNameForRecipientWithID:(NSString *)recipientID
 {
+    if ([self.tsAccountManager.localNumber isEqualToString:recipientID]) {
+        return self.localUserProfile.profileName;
+    }
+
+    __block OWSUserProfile *userProfile;
+
+    [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        userProfile = [OWSUserProfile fetchObjectWithUniqueID:recipientID transaction:transaction];
+    }];
+
+    if (userProfile != nil) {
+        return userProfile.profileName;
+    }
+
     __block NSString *result;
+
     [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         result = [self profileNameForRecipientWithID:recipientID transaction:transaction];
     } error:nil];
+
     return result;
 }
 
