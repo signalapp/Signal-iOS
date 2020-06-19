@@ -10,7 +10,7 @@ class MockObserver {
     var updateCount: UInt = 0
     var externalUpdateCount: UInt = 0
     var resetCount: UInt = 0
-    var lastChange: SDSDatabaseStorageChange?
+    var lastChange: UIDatabaseChanges?
 
     private var expectation: XCTestExpectation?
 
@@ -46,7 +46,7 @@ extension MockObserver: UIDatabaseSnapshotDelegate {
         AssertIsOnMainThread()
 
         updateCount += 1
-        lastChange = change
+        lastChange = databaseChanges
 
         expectation?.fulfill()
         expectation = nil

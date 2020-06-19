@@ -8,6 +8,7 @@
 #import "TestAppContext.h"
 #import <CocoaLumberjack/CocoaLumberjack.h>
 #import <CocoaLumberjack/DDTTYLogger.h>
+#import <SignalServiceKit/SDSDatabaseStorage+Objc.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
@@ -46,7 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 -(void)writeWithBlock:(void (^)(SDSAnyWriteTransaction *))block
 {
-    [SDSDatabaseStorage.shared writeWithBlock:block];
+    DatabaseStorageWrite(SDSDatabaseStorage.shared, block);
 }
 
 - (void)yapReadWithBlock:(void (^)(YapDatabaseReadTransaction *transaction))block

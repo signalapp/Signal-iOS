@@ -109,6 +109,10 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:contact:contactAvat
 - (void)updateWithContact:(nullable Contact *)contact
               transaction:(SDSAnyWriteTransaction *)transaction NS_SWIFT_NAME(updateWithContact(_:transaction:));
 
+#if TESTABLE_BUILD
+- (void)replaceContactForTests:(nullable Contact *)contact NS_SWIFT_NAME(replaceContactForTests(_:));
+#endif
+
 @end
 
 NS_ASSUME_NONNULL_END

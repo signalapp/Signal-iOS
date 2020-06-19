@@ -89,7 +89,7 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
             XCTAssertEqual(0, TSThread.anyCount(transaction: transaction))
         }
 
-        let snapshotDelegate = DatabaseSnapshotBlockDelegate { _ in
+        let databaseDelegate = DatabaseWriteBlockDelegate { _ in
             self.read { transaction in
                 // Each time a write occurs, check to see if we've achieved the expected DB state.
                 //
@@ -115,7 +115,7 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
             owsFailDebug("observer was unexpectedly nil")
             return
         }
-        observer.appendUIDatabaseSnapshotDelegate(snapshotDelegate)
+        observer.appendDatabaseWriteDelegate(databaseDelegate)
 
         let envelopeBuilder = try! fakeService.envelopeBuilder(fromSenderClient: bobClient, bodyText: "Those who stands for nothing will fall for anything")
         envelopeBuilder.setSourceE164(bobClient.e164Identifier!)
@@ -145,7 +145,7 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
             XCTAssertEqual(0, TSThread.anyCount(transaction: transaction))
         }
 
-        let snapshotDelegate = DatabaseSnapshotBlockDelegate { _ in
+        let snapshotDelegate = DatabaseWriteBlockDelegate { _ in
             self.read { transaction in
                 // Each time a write occurs, check to see if we've achieved the expected DB state.
                 //
@@ -172,7 +172,7 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
             owsFailDebug("observer was unexpectedly nil")
             return
         }
-        observer.appendUIDatabaseSnapshotDelegate(snapshotDelegate)
+        observer.appendDatabaseWriteDelegate(snapshotDelegate)
 
         let envelopeBuilder = try! fakeService.envelopeBuilder(fromSenderClient: bobClient, bodyText: "Those who stands for nothing will fall for anything")
         envelopeBuilder.setSourceUuid(bobClient.uuidIdentifier)
@@ -185,28 +185,18 @@ class MessageProcessingIntegrationTest: SSKBaseTestSwift {
 
 // MARK: - Helpers
 
-class DatabaseSnapshotBlockDelegate {
+class DatabaseWriteBlockDelegate {
     let block: (Database) -> Void
     init(block: @escaping (Database) -> Void) {
         self.block = block
     }
 }
 
-extension DatabaseSnapshotBlockDelegate: DatabaseSnapshotDelegate {
+extension DatabaseWriteBlockDelegate: DatabaseWriteDelegate {
 
-    // MARK: - Transaction Lifecycle
-
-    func snapshotTransactionDidChange(with event: DatabaseEvent) { /* no-op */ }
-
-    func snapshotTransactionDidCommit(db: Database) {
+    func databaseDidChange(with event: DatabaseEvent) { /* no-op */ }
+    func databaseDidCommit(db: Database) {
         block(db)
     }
-
-    func snapshotTransactionDidRollback(db: Database) { /* no-op */ }
-
-    // MARK: - Snapshot LifeCycle (Post Commit)
-
-    func databaseSnapshotWillUpdate() { /* no-op */ }
-    func databaseSnapshotDidUpdate() { /* no-op */ }
-    func databaseSnapshotDidUpdateExternally() { /* no-op */ }
+    func databaseDidRollback(db: Database) { /* no-op */ }
 }

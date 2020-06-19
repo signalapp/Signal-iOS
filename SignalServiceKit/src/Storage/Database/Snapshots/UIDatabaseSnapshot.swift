@@ -15,6 +15,16 @@ public protocol UIDatabaseSnapshotDelegate: AnyObject {
 
 // MARK: -
 
+#if TESTABLE_BUILD
+public protocol DatabaseWriteDelegate: AnyObject {
+    func databaseDidChange(with event: DatabaseEvent)
+    func databaseDidCommit(db: Database)
+    func databaseDidRollback(db: Database)
+}
+#endif
+
+// MARK: -
+
 enum DatabaseObserverError: Error {
     case changeTooLarge
 }
@@ -91,6 +101,17 @@ public class UIDatabaseObserver: NSObject {
             AppReadiness.runNowOrWhenAppWillBecomeReady(append)
         }
     }
+
+    #if TESTABLE_BUILD
+    private var _databaseWriteDelegates: [Weak<DatabaseWriteDelegate>] = []
+    private var databaseWriteDelegates: [DatabaseWriteDelegate] {
+        return _databaseWriteDelegates.compactMap { $0.value }
+    }
+
+    func appendDatabaseWriteDelegate(_ delegate: DatabaseWriteDelegate) {
+        _databaseWriteDelegates = _databaseWriteDelegates.filter { $0.value != nil} + [Weak(value: delegate)]
+    }
+    #endif
 
     private let pool: DatabasePool
     private let checkpointingQueue: DatabaseQueue?
@@ -284,6 +305,12 @@ extension UIDatabaseObserver: TransactionObserver {
             if event.tableName == InteractionRecord.databaseTableName {
                 didDatabaseModifyInteractions = true
             }
+
+            #if TESTABLE_BUILD
+            for delegate in databaseWriteDelegates {
+                delegate.databaseDidChange(with: event)
+            }
+            #endif
         }
     }
 
@@ -319,6 +346,12 @@ extension UIDatabaseObserver: TransactionObserver {
                 NotificationCenter.default.postNotificationNameAsync(Self.databaseDidCommitInteractionChangeNotification, object: nil)
             }
             didDatabaseModifyInteractions = false
+
+            #if TESTABLE_BUILD
+            for delegate in databaseWriteDelegates {
+                delegate.databaseDidCommit(db: db)
+            }
+            #endif
         }
 
         DispatchQueue.main.async { [weak self] in
@@ -463,6 +496,12 @@ extension UIDatabaseObserver: TransactionObserver {
 
         UIDatabaseObserver.serializedSync {
             pendingChanges.reset()
+
+            #if TESTABLE_BUILD
+            for delegate in databaseWriteDelegates {
+                delegate.databaseDidRollback(db: db)
+            }
+            #endif
         }
     }
 
