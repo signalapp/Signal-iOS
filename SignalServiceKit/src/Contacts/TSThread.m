@@ -273,8 +273,10 @@ lastVisibleSortIdOnScreenPercentage:(double)lastVisibleSortIdOnScreenPercentage
     // As an optimization, we called `ignoreInteractionUpdatesForThreadUniqueId` so as not
     // to re-save the thread after *each* interaction deletion. However, we still need to resave
     // the thread just once, after all the interactions are deleted.
-    self.lastInteractionRowId = 0;
-    [self anyOverwritingUpdateWithTransaction:transaction];
+    [self anyUpdateWithTransaction:transaction
+                             block:^(TSThread *thread) {
+                                 thread.lastInteractionRowId = 0;
+                             }];
 }
 
 - (BOOL)isNoteToSelf
@@ -559,16 +561,18 @@ lastVisibleSortIdOnScreenPercentage:(double)lastVisibleSortIdOnScreenPercentage
 
     if (needsToMarkAsVisible || needsToClearArchived || needsToUpdateLastInteractionRowId
         || needsToClearLastVisibleSortId) {
-        self.shouldThreadBeVisible = YES;
-        self.lastInteractionRowId = MAX(self.lastInteractionRowId, messageSortId);
-        if (needsToClearArchived) {
-            self.isArchived = NO;
-        }
-        if (needsToClearLastVisibleSortId) {
-            self.lastVisibleSortId = 0;
-            self.lastVisibleSortIdOnScreenPercentage = 0;
-        }
-        [self anyOverwritingUpdateWithTransaction:transaction];
+        [self anyUpdateWithTransaction:transaction
+                                 block:^(TSThread *thread) {
+                                     thread.shouldThreadBeVisible = YES;
+                                     thread.lastInteractionRowId = MAX(thread.lastInteractionRowId, messageSortId);
+                                     if (needsToClearArchived) {
+                                         thread.isArchived = NO;
+                                     }
+                                     if (needsToClearLastVisibleSortId) {
+                                         thread.lastVisibleSortId = 0;
+                                         thread.lastVisibleSortIdOnScreenPercentage = 0;
+                                     }
+                                 }];
     } else {
         [self scheduleTouchFinalizationWithTransaction:transaction];
     }
@@ -585,19 +589,24 @@ lastVisibleSortIdOnScreenPercentage:(double)lastVisibleSortIdOnScreenPercentage
     BOOL needsToUpdateLastVisibleSortId = self.lastVisibleSortId == messageSortId;
 
     if (needsToUpdateLastInteractionRowId || needsToUpdateLastVisibleSortId) {
-        if (needsToUpdateLastVisibleSortId) {
-            TSInteraction *_Nullable latestInteraction = [self lastInteractionForInboxWithTransaction:transaction];
-            self.lastInteractionRowId = latestInteraction ? latestInteraction.sortId : 0;
-        }
+        [self anyUpdateWithTransaction:transaction
+                                 block:^(TSThread *thread) {
+                                     if (needsToUpdateLastVisibleSortId) {
+                                         TSInteraction *_Nullable latestInteraction =
+                                             [thread lastInteractionForInboxWithTransaction:transaction];
+                                         thread.lastInteractionRowId = latestInteraction ? latestInteraction.sortId : 0;
+                                     }
 
-        if (needsToUpdateLastVisibleSortId) {
-            TSInteraction *_Nullable messageBeforeDeletedMessage =
-                [self firstInteractionAtOrAroundSortId:self.lastVisibleSortId transaction:transaction];
-            self.lastVisibleSortId = messageBeforeDeletedMessage ? messageBeforeDeletedMessage.sortId : 0;
-            self.lastVisibleSortIdOnScreenPercentage = 1;
-        }
-
-        [self anyOverwritingUpdateWithTransaction:transaction];
+                                     if (needsToUpdateLastVisibleSortId) {
+                                         TSInteraction *_Nullable messageBeforeDeletedMessage =
+                                             [thread firstInteractionAtOrAroundSortId:thread.lastVisibleSortId
+                                                                          transaction:transaction];
+                                         thread.lastVisibleSortId
+                                             = messageBeforeDeletedMessage ? messageBeforeDeletedMessage.sortId : 0;
+                                         thread.lastVisibleSortIdOnScreenPercentage = 1;
+                                     }
+                                     thread.lastInteractionRowId = 0;
+                                 }];
     } else {
         [self scheduleTouchFinalizationWithTransaction:transaction];
     }
