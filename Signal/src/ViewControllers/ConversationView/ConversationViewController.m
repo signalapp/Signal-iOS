@@ -733,6 +733,12 @@ typedef enum : NSUInteger {
             [self.headerView updateSubtitleForCurrentStatus];
         });
     }
+
+    if ([self.thread isKindOfClass:TSContactThread.class]) {
+        [LKStorage writeWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            [SSKEnvironment.shared.profileManager ensureProfileCachedForContactWithID:self.thread.contactIdentifier with:transaction];
+        }];
+    }
 }
 
 - (void)createContents

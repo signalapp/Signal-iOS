@@ -165,19 +165,21 @@ public final class MultiDeviceProtocol : NSObject {
         let recipient = SignalRecipient.getOrBuildUnsavedRecipient(forRecipientId: hexEncodedPublicKey, transaction: transaction)
         let udManager = SSKEnvironment.shared.udManager
         let senderCertificate = udManager.getSenderCertificate()
+        SSKEnvironment.shared.profileManager.ensureProfileCachedForContact(withID: hexEncodedPublicKey, with: transaction) // Prevent the line below from starting a write transaction
         let (promise, seal) = Promise<OWSMessageSend>.pending()
-        var recipientUDAccess: OWSUDAccess?
-        if let senderCertificate = senderCertificate {
-            SSKEnvironment.shared.profileManager.ensureProfileCachedForContact(withID: hexEncodedPublicKey, with: transaction) // Prevent the line below from starting a write transaction
-            recipientUDAccess = udManager.udAccess(forRecipientId: hexEncodedPublicKey, requireSyncAccess: true)
+        LokiAPI.workQueue.async {
+            var recipientUDAccess: OWSUDAccess?
+            if let senderCertificate = senderCertificate {
+                recipientUDAccess = udManager.udAccess(forRecipientId: hexEncodedPublicKey, requireSyncAccess: true)
+            }
+            let messageSend = OWSMessageSend(message: message, thread: thread, recipient: recipient, senderCertificate: senderCertificate,
+                udAccess: recipientUDAccess, localNumber: getUserHexEncodedPublicKey(), success: {
+                    externalSeal?.fulfill(())
+            }, failure: { error in
+                externalSeal?.reject(error)
+            })
+            seal.fulfill(messageSend)
         }
-        let messageSend = OWSMessageSend(message: message, thread: thread, recipient: recipient, senderCertificate: senderCertificate,
-            udAccess: recipientUDAccess, localNumber: getUserHexEncodedPublicKey(), success: {
-                externalSeal?.fulfill(())
-        }, failure: { error in
-            externalSeal?.reject(error)
-        })
-        seal.fulfill(messageSend)
         return promise
     }
 
