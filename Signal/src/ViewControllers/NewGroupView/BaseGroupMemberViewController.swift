@@ -205,15 +205,16 @@ public class BaseGroupMemberViewController: OWSViewController {
 
     private func updateMemberBar() {
         memberBar.setMembers(databaseStorage.uiRead { transaction in
-            self.orderedMembers(transaction: transaction)
+            self.orderedMembers(shouldSort: false, transaction: transaction)
         })
     }
 
-    private func orderedMembers(transaction: SDSAnyReadTransaction) -> [NewGroupMember] {
-        return Self.orderedMembers(recipientSet: recipientSet, transaction: transaction)
+    private func orderedMembers(shouldSort: Bool, transaction: SDSAnyReadTransaction) -> [NewGroupMember] {
+        return Self.orderedMembers(recipientSet: recipientSet, shouldSort: shouldSort, transaction: transaction)
     }
 
     class func orderedMembers(recipientSet: OrderedSet<PickedRecipient>,
+                              shouldSort: Bool,
                               transaction: SDSAnyReadTransaction) -> [NewGroupMember] {
         var members = recipientSet.orderedMembers.compactMap { (recipient: PickedRecipient) -> NewGroupMember? in
             guard let address = recipient.address else {
@@ -233,8 +234,10 @@ public class BaseGroupMemberViewController: OWSViewController {
                                   comparableName: comparableName,
                                   conversationColorName: conversationColorName)
         }
-        members.sort { (left, right) in
-            return left.comparableName < right.comparableName
+        if shouldSort {
+            members.sort { (left, right) in
+                return left.comparableName < right.comparableName
+            }
         }
         return members
     }

@@ -125,7 +125,9 @@ public class NewGroupConfirmViewController: OWSViewController {
                                                 comment: "Title for the 'members' section of the 'group members' view.")
 
         let members = databaseStorage.uiRead { transaction in
-            BaseGroupMemberViewController.orderedMembers(recipientSet: self.recipientSet, transaction: transaction)
+            BaseGroupMemberViewController.orderedMembers(recipientSet: self.recipientSet,
+                                                         shouldSort: true,
+                                                         transaction: transaction)
         }.compactMap { $0.address }
 
         if members.count > 0 {
