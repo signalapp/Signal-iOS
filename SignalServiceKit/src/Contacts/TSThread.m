@@ -575,7 +575,7 @@ lastVisibleSortIdOnScreenPercentage:(double)lastVisibleSortIdOnScreenPercentage
                                          thread.lastVisibleSortIdOnScreenPercentage = 0;
                                      }
                                      if (needsToClearIsMarkedUnread) {
-                                         self.isMarkedUnread = NO;
+                                         thread.isMarkedUnread = NO;
                                          [self recordPendingStorageServiceUpdates];
                                      }
                                  }];
