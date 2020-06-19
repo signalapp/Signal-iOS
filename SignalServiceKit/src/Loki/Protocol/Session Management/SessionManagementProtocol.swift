@@ -117,7 +117,8 @@ public final class SessionManagementProtocol : NSObject {
         let (promise, seal) = Promise<OWSMessageSend>.pending()
         var recipientUDAccess: OWSUDAccess?
         if let senderCertificate = senderCertificate {
-            recipientUDAccess = udManager.udAccess(forRecipientId: hexEncodedPublicKey, requireSyncAccess: true) // Starts a new write transaction internally
+            SSKEnvironment.shared.profileManager.ensureProfileCachedForContact(withID: hexEncodedPublicKey, with: transaction) // Prevent the line below from starting a write transaction
+            recipientUDAccess = udManager.udAccess(forRecipientId: hexEncodedPublicKey, requireSyncAccess: true)
         }
         let messageSend = OWSMessageSend(message: message, thread: thread, recipient: recipient, senderCertificate: senderCertificate,
             udAccess: recipientUDAccess, localNumber: getUserHexEncodedPublicKey(), success: {

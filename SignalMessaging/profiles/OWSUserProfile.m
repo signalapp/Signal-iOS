@@ -55,9 +55,19 @@ NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
                                            dbConnection:(YapDatabaseConnection *)dbConnection
 {
     __block OWSUserProfile *userProfile;
+
+    [dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+        userProfile = [OWSUserProfile fetchObjectWithUniqueID:recipientId transaction:transaction];
+    }];
+
+    if (userProfile != nil) {
+        return userProfile;
+    }
+
     [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         userProfile = [OWSUserProfile getOrBuildUserProfileForRecipientId:recipientId transaction:transaction];
     } error:nil];
+
     return userProfile;
 }
 

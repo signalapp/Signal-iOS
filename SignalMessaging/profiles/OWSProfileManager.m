@@ -178,6 +178,8 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
 - (OWSUserProfile *)localUserProfile
 {
+    if (_localUserProfile) { return _localUserProfile; }
+
     __block OWSUserProfile *userProfile;
     [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         userProfile = [self getLocalUserProfileWithTransaction:transaction];
@@ -1275,6 +1277,12 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 {
     OWSUserProfile *userProfile = [OWSUserProfile getOrBuildUserProfileForRecipientId:contactID transaction:transaction];
     [userProfile updateWithProfileName:displayName avatarUrlPath:userProfile.avatarUrlPath avatarFileName:userProfile.avatarFileName transaction:transaction completion:nil];
+}
+
+- (void)ensureProfileCachedForContactWithID:(NSString *)contactID with:(YapDatabaseReadWriteTransaction *)transaction
+{
+    OWSUserProfile *userProfile = [OWSUserProfile getOrBuildUserProfileForRecipientId:contactID transaction:transaction];
+    [userProfile saveWithTransaction:transaction];
 }
 
 - (BOOL)isNullableDataEqual:(NSData *_Nullable)left toData:(NSData *_Nullable)right
