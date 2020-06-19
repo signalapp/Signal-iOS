@@ -3293,6 +3293,12 @@
 /* alert title */
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "ਲਿੰਕਿੰਕ ਕੋਡ ਪ੍ਰਾਪਤ ਕਰਨਾ ਅਸਫਲ ਰਿਹਾ";
 
+/* Message for error alert indicating that a linked device must be upgraded before it can be linked. */
+"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "Update Signal on this device to link it with your phone.";
+
+/* Title for error alert indicating that a linked device must be upgraded before it can be linked. */
+"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE" = "Unsupported Version";
+
 /* alert message for outdated linking device */
 "SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "ਤੁਹਾਡੇ ਦੂਜੇ ਡਿਵਾਈਸ 'ਤੇ Signal ਦਾ ਲੀਗੇਸੀ ਸੰਸਕਰਣ ਚੱਲ ਰਿਹਾ ਹੈ ਜਿਸ ਵਿੱਚ iPad ਦੇ QR ਕੋਡਾਂ ਨੂੰ ਸਕੈਨ ਕਰਨਾ ਸਮਰਥਿਤ ਨਹੀਂ ਹੈ. ਕਿਰਪਾ ਕਰਕੇ Signal ਦਾ ਨਵੀਨਤਮ ਸੰਸਕਰਣ ਇੰਸਟਾਲ ਕਰੋ ਅਤੇ ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ.";
 
