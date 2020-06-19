@@ -199,7 +199,7 @@ import SignalMessaging
         contentView.addSubview(titleLabel)
         titleLabel.autoPinWidthToSuperview()
         let titleLabelMargin = ScaleFromIPhone5(16)
-        titleLabel.autoPinEdge(.top, to: .top, of: view, withOffset: titleLabelMargin)
+        titleLabel.autoPinEdge(toSuperviewSafeArea: .top, withInset: titleLabelMargin)
 
         createButtonRow(contentView: contentView)
 
