@@ -93,7 +93,7 @@ public final class LokiAPI : NSObject {
                         invoke(.sendMessage, on: snode, associatedWith: destination, parameters: parameters)
                     }.map2 { rawResponse in
                         if let json = rawResponse as? JSON, let powDifficulty = json["difficulty"] as? Int {
-                            guard powDifficulty != LokiAPI.powDifficulty else { return rawResponse }
+                            guard powDifficulty != LokiAPI.powDifficulty, powDifficulty < 100 else { return rawResponse }
                             print("[Loki] Setting proof of work difficulty to \(powDifficulty).")
                             LokiAPI.powDifficulty = UInt(powDifficulty)
                         } else {
