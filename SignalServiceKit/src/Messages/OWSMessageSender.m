@@ -1858,8 +1858,21 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                                   deviceId:[deviceId intValue]];
     __block NSException *_Nullable exception;
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+        if ([self.sessionStore containsSessionForAccountId:accountId
+                                                  deviceId:[deviceId intValue]
+                                               transaction:transaction]) {
+            OWSLogWarn(@"Session already exists.");
+            return;
+        }
+
         @try {
             [builder throws_processPrekeyBundle:bundle protocolContext:transaction];
+
+            if (![self.sessionStore containsSessionForAccountId:accountId
+                                                       deviceId:[deviceId intValue]
+                                                    transaction:transaction]) {
+                OWSFailDebug(@"Session does not exist.");
+            }
         } @catch (NSException *caughtException) {
             exception = caughtException;
         }
