@@ -102,7 +102,7 @@ public class MessageSending: NSObject {
         }
 
         var promises = [Promise<Void>]()
-        for deviceId in deviceIds {
+        for deviceId in deviceIdsWithoutSessions {
 
             Logger.verbose("Fetching prekey for: \(messageSend.recipient.address), \(deviceId)")
 
@@ -195,6 +195,11 @@ public class MessageSending: NSObject {
                                      transaction: SDSAnyWriteTransaction) throws {
         assert(!Thread.isMainThread)
 
+        guard !sessionStore.containsSession(forAccountId: accountId, deviceId: deviceId.int32Value, transaction: transaction) else {
+            Logger.warn("Session already exists.")
+            return
+        }
+
         let builder = SessionBuilder(sessionStore: sessionStore,
                                      preKeyStore: preKeyStore,
                                      signedPreKeyStore: signedPreKeyStore,
@@ -203,5 +208,8 @@ public class MessageSending: NSObject {
                                      deviceId: deviceId.int32Value)
         try builder.processPrekeyBundle(preKeyBundle,
                                         protocolContext: transaction)
+        if !sessionStore.containsSession(forAccountId: accountId, deviceId: deviceId.int32Value, transaction: transaction) {
+            owsFailDebug("Session does not exist.")
+        }
     }
 }
