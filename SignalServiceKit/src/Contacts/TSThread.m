@@ -562,7 +562,7 @@ lastVisibleSortIdOnScreenPercentage:(double)lastVisibleSortIdOnScreenPercentage
     BOOL needsToClearIsMarkedUnread = self.isMarkedUnread && wasMessageInserted;
 
     if (needsToMarkAsVisible || needsToClearArchived || needsToUpdateLastInteractionRowId
-        || needsToClearLastVisibleSortId) {
+        || needsToClearLastVisibleSortId || needsToClearIsMarkedUnread) {
         [self anyUpdateWithTransaction:transaction
                                  block:^(TSThread *thread) {
                                      thread.shouldThreadBeVisible = YES;
