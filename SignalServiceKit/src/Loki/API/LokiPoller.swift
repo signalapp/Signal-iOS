@@ -10,6 +10,7 @@ public final class LokiPoller : NSObject {
     private var pollCount = 0
 
     // MARK: Settings
+    private static let pollInterval: TimeInterval = 1
     private static let retryInterval: TimeInterval = 0.25
     /// After polling a given snode this many times we always switch to a new one.
     ///
@@ -95,7 +96,7 @@ public final class LokiPoller : NSObject {
 
     private func poll(_ target: LokiAPITarget, seal longTermSeal: Resolver<Void>) -> Promise<Void> {
         guard !hasStopped else { return Promise { $0.fulfill(()) } }
-        return LokiAPI.getRawMessages(from: target, usingLongPolling: false).then2 { [weak self] rawResponse -> Promise<Void> in
+        return LokiAPI.getRawMessages(from: target, usingLongPolling: false).then(on: DispatchQueue.main) { [weak self] rawResponse -> Promise<Void> in
             guard let strongSelf = self, !strongSelf.hasStopped else { return Promise { $0.fulfill(()) } }
             let messages = LokiAPI.parseRawMessagesResponse(rawResponse, from: target)
             strongSelf.onMessagesReceived(messages)
@@ -103,7 +104,10 @@ public final class LokiPoller : NSObject {
             if strongSelf.pollCount == LokiPoller.maxPollCount {
                 throw Error.pollLimitReached
             } else {
-                return strongSelf.poll(target, seal: longTermSeal)
+                return withDelay(LokiPoller.pollInterval, completionQueue: LokiAPI.workQueue) {
+                    guard let strongSelf = self, !strongSelf.hasStopped else { return Promise { $0.fulfill(()) } }
+                    return strongSelf.poll(target, seal: longTermSeal)
+                }
             }
         }
     }
