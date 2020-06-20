@@ -716,7 +716,7 @@ NS_ASSUME_NONNULL_BEGIN
         NSRegularExpression *regex = [[NSRegularExpression alloc] initWithPattern:[NSRegularExpression escapedPatternForString:searchableText] options:NSRegularExpressionCaseInsensitive error:&error];
         OWSAssertDebug(error == nil);
         for (NSTextCheckingResult *match in
-            [regex matchesInString:text options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(0, text.length)]) {
+            [regex matchesInString:attributedText.string options:NSMatchingWithoutAnchoringBounds range:NSMakeRange(0, attributedText.string.length)]) {
             OWSAssertDebug(match.range.length >= ConversationSearchController.kMinimumSearchTextLength);
             UIColor *highlightColor;
             if (LKAppModeUtilities.isLightMode) {
@@ -724,6 +724,7 @@ NS_ASSUME_NONNULL_BEGIN
             } else {
                 highlightColor = UIColor.whiteColor;
             }
+            if (match.range.location + match.range.length > attributedText.length) { continue; }
             [attributedText addAttribute:NSBackgroundColorAttributeName value:highlightColor range:match.range];
             [attributedText addAttribute:NSForegroundColorAttributeName value:UIColor.blackColor range:match.range];
         }
