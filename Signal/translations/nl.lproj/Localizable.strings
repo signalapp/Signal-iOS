@@ -3294,10 +3294,10 @@
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Kan koppelcode niet ophalen";
 
 /* Message for error alert indicating that a linked device must be upgraded before it can be linked. */
-"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "Update Signal on this device to link it with your phone.";
+"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "Werk Signal bij op dit apparaat om het aan je telefoon te kunnen koppelen.";
 
 /* Title for error alert indicating that a linked device must be upgraded before it can be linked. */
-"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE" = "Unsupported Version";
+"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE" = "Niet-ondersteunde versie";
 
 /* alert message for outdated linking device */
 "SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Op je andere apparaat wordt een verouderde versie van Signal uigevoerd welke het scannen van QR-codes van iPads niet ondersteund. Installeer de meest recente versie van Signal en probeer het opnieuw.";
