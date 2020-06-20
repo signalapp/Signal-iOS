@@ -533,7 +533,7 @@ public class MediaTileViewController: UICollectionViewController, MediaGalleryDa
         // show toolbar
         UIView.animate(withDuration: 0.1, delay: 0, options: .curveEaseInOut, animations: {
             NSLayoutConstraint.deactivate([self.footerBarBottomConstraint])
-            self.footerBarBottomConstraint = self.footerBar.autoPinEdge(.bottom, to: .bottom, of: self.view)
+            self.footerBarBottomConstraint = self.footerBar.autoPinEdge(toSuperviewSafeArea: .bottom)
 
             self.footerBar.superview?.layoutIfNeeded()
 
