@@ -11,10 +11,8 @@ public final class MentionUtilities : NSObject {
     @objc public static func highlightMentions(in string: String, isOutgoingMessage: Bool, threadID: String, attributes: [NSAttributedString.Key:Any]) -> NSAttributedString {
         let userHexEncodedPublicKey = getUserHexEncodedPublicKey()
         var publicChat: LokiPublicChat?
-        var userLinkedDeviceHexEncodedPublicKeys: Set<String>!
         OWSPrimaryStorage.shared().dbReadConnection.read { transaction in
             publicChat = LokiDatabaseUtilities.getPublicChat(for: threadID, in: transaction)
-            userLinkedDeviceHexEncodedPublicKeys = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: userHexEncodedPublicKey, in: transaction)
         }
         var string = string
         let regex = try! NSRegularExpression(pattern: "@[0-9a-fA-F]*", options: [])
@@ -49,7 +47,6 @@ public final class MentionUtilities : NSObject {
         }
         let result = NSMutableAttributedString(string: string, attributes: attributes)
         mentions.forEach { mention in
-            guard userLinkedDeviceHexEncodedPublicKeys.contains(mention.hexEncodedPublicKey) else { return }
             result.addAttribute(.foregroundColor, value: Colors.accent, range: mention.range)
             result.addAttribute(.font, value: UIFont.boldSystemFont(ofSize: Values.mediumFontSize), range: mention.range)
         }
