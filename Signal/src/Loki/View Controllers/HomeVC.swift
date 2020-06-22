@@ -198,6 +198,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
     }
     
     private func reload() {
+        AssertIsOnMainThread()
         uiDatabaseConnection.beginLongLivedReadTransaction()
         uiDatabaseConnection.read { transaction in
             self.threads.update(with: transaction)
@@ -213,6 +214,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
     }
     
     @objc private func handleYapDatabaseModifiedNotification(_ notification: Notification) {
+        AssertIsOnMainThread()
         guard isObservingDatabase else { return }
         let notifications = uiDatabaseConnection.beginLongLivedReadTransaction()
         let ext = uiDatabaseConnection.ext(TSThreadDatabaseViewExtensionName) as! YapDatabaseViewConnection
