@@ -68,16 +68,9 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 
     OWSSingletonAssert();
 
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(signalAccountsDidChange:)
-                                                 name:OWSContactsManagerSignalAccountsDidChangeNotification
-                                               object:nil];
-    [[NSNotificationCenter defaultCenter] addObserver:self
-                                             selector:@selector(profileKeyDidChange:)
-                                                 name:kNSNotificationNameProfileKeyDidChange
-                                               object:nil];
-
     [AppReadiness runNowOrWhenAppDidBecomeReadyPolite:^{
+        [self addObservers];
+        
         if ([self.tsAccountManager isRegisteredAndReady]) {
             OWSAssertDebug(self.contactsManager.isSetup);
 
@@ -100,6 +93,21 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 
 - (void)dealloc {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+}
+
+- (void)addObservers {
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(signalAccountsDidChange:)
+                                                 name:OWSContactsManagerSignalAccountsDidChangeNotification
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(profileKeyDidChange:)
+                                                 name:kNSNotificationNameProfileKeyDidChange
+                                               object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(registrationStateDidChange)
+                                                 name:NSNotificationNameRegistrationStateDidChange
+                                               object:nil];
 }
 
 #pragma mark - Dependencies
@@ -174,16 +182,26 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
     [self sendSyncContactsMessageIfPossible];
 }
 
+- (void)registrationStateDidChange
+{
+    OWSAssertIsOnMainThread();
+
+    [self sendSyncContactsMessageIfPossible];
+}
+
 #pragma mark - Methods
 
 - (void)sendSyncContactsMessageIfPossible {
     OWSAssertIsOnMainThread();
 
+    if (!AppReadiness.isAppReady) {
+        // Don't bother if app hasn't finished setup.
+        return;
+    }
     if (!self.contactsManager.isSetup) {
         // Don't bother if the contacts manager hasn't finished setup.
         return;
     }
-
     if (self.tsAccountManager.isRegisteredAndReady && self.tsAccountManager.isRegisteredPrimaryDevice) {
         [self sendSyncContactsMessageIfNecessary];
     }
@@ -343,8 +361,14 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
                               skipIfRedundant:(BOOL)skipIfRedundant
                                      debounce:(BOOL)debounce
 {
+    if (!self.contactsManager.isSetup) {
+        return [AnyPromise promiseWithValue:OWSErrorMakeAssertionError(@"Contacts manager not yet ready.")];
+    }
     if (!self.tsAccountManager.isRegisteredPrimaryDevice) {
         return [AnyPromise promiseWithValue:OWSErrorMakeAssertionError(@"should not sync from secondary device")];
+    }
+    if (!self.tsAccountManager.isRegisteredAndReady) {
+        return [AnyPromise promiseWithValue:OWSErrorMakeAssertionError(@"Not yet registered and ready.")];
     }
 
     AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
