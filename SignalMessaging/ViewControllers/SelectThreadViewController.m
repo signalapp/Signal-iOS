@@ -353,9 +353,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSArray<TSThread *> *)filteredThreadsWithSearchText
 {
-    NSString *searchTerm = [[self.searchBar text] ows_stripped];
-
-    return [self.fullTextSearcher filterThreads:self.threadViewHelper.threads withSearchText:searchTerm];
+    return self.threadViewHelper.threads;
 }
 
 - (NSArray<SignalAccount *> *)filteredSignalAccountsWithSearchText

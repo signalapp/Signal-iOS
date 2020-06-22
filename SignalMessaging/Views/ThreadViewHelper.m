@@ -7,6 +7,8 @@
 #import <SessionServiceKit/OWSPrimaryStorage.h>
 #import <SessionServiceKit/TSDatabaseView.h>
 #import <SessionServiceKit/TSThread.h>
+#import <SessionServiceKit/TSContactThread.h>
+#import <SessionServiceKit/SessionServiceKit-Swift.h>
 #import <YapDatabase/YapDatabase.h>
 #import <YapDatabase/YapDatabaseViewChange.h>
 #import <YapDatabase/YapDatabaseViewConnection.h>
@@ -198,7 +200,16 @@ NS_ASSUME_NONNULL_BEGIN
                 TSThread *thread = [[transaction extension:TSThreadDatabaseViewExtensionName]
                     objectAtIndexPath:[NSIndexPath indexPathForItem:(NSInteger)item inSection:(NSInteger)section]
                          withMappings:self.threadMappings];
-                [threads addObject:thread];
+                if (!thread.shouldThreadBeVisible || !thread.isContactFriend) { continue; }
+                if ([thread isKindOfClass:TSContactThread.class]) {
+                    NSString *publicKey = thread.contactIdentifier;
+                    if ([LKUserDisplayNameUtilities getPrivateChatDisplayNameFor:publicKey] == nil) { continue; }
+                    if ([LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:publicKey in:transaction] == nil) {
+                        [threads addObject:thread];
+                    }
+                } else {
+                    [threads addObject:thread];
+                }
             }
         }
     }];
