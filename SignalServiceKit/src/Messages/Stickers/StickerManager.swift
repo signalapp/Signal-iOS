@@ -42,6 +42,12 @@ public class StickerManager: NSObject {
     @objc
     public static let recentStickersDidChange = Notification.Name("recentStickersDidChange")
 
+    private static var stickersOrPacksDidChangeEvent: DebouncedEvent {
+        DebouncedEvent(maxFrequencySeconds: 0.25) {
+            NotificationCenter.default.postNotificationNameAsync(stickersOrPacksDidChange, object: nil)
+        }
+    }
+
     // MARK: - Dependencies
 
     @objc
@@ -66,13 +72,6 @@ public class StickerManager: NSObject {
     }
 
     // MARK: - Properties
-
-    private static let operationQueue: OperationQueue = {
-        let operationQueue = OperationQueue()
-        operationQueue.name = "org.signal.StickerManager"
-        operationQueue.maxConcurrentOperationCount = 4
-        return operationQueue
-    }()
 
     public static let store = SDSKeyValueStore(collection: "recentStickers")
     public static let emojiMapStore = SDSKeyValueStore(collection: "emojiMap")
@@ -256,7 +255,9 @@ public class StickerManager: NSObject {
                                       transaction: transaction)
         }
 
-        NotificationCenter.default.postNotificationNameAsync(stickersOrPacksDidChange, object: nil)
+        transaction.addAsyncCompletion {
+            stickersOrPacksDidChangeEvent.requestNotify()
+        }
     }
 
     @objc
@@ -299,14 +300,25 @@ public class StickerManager: NSObject {
         }
     }
 
-    // This method is public so that we can download "transient" (uninstalled) sticker packs.
-    public class func tryToDownloadStickerPack(stickerPackInfo: StickerPackInfo) -> Promise<StickerPack> {
+    private let packOperationQueue: OperationQueue = {
+        let operationQueue = OperationQueue()
+        operationQueue.name = "org.signal.StickerManager.packs"
+        operationQueue.maxConcurrentOperationCount = 3
+        return operationQueue
+    }()
+
+    private func tryToDownloadStickerPack(stickerPackInfo: StickerPackInfo) -> Promise<StickerPack> {
         let (promise, resolver) = Promise<StickerPack>.pending()
         let operation = DownloadStickerPackOperation(stickerPackInfo: stickerPackInfo,
                                                      success: resolver.fulfill,
                                                      failure: resolver.reject)
-        operationQueue.addOperation(operation)
+        packOperationQueue.addOperation(operation)
         return promise
+    }
+
+    // This method is public so that we can download "transient" (uninstalled) sticker packs.
+    public class func tryToDownloadStickerPack(stickerPackInfo: StickerPackInfo) -> Promise<StickerPack> {
+        return shared.tryToDownloadStickerPack(stickerPackInfo: stickerPackInfo)
     }
 
     private class func upsertStickerPack(stickerPack: StickerPack,
@@ -369,8 +381,8 @@ public class StickerManager: NSObject {
             }
         }
 
-        DispatchQueue.main.async {
-            StickerManager.shared.fireStickersOrPacksDidChange()
+        transaction.addAsyncCompletion {
+            stickersOrPacksDidChangeEvent.requestNotify()
         }
     }
 
@@ -531,7 +543,9 @@ public class StickerManager: NSObject {
     public class func isStickerInstalled(stickerInfo: StickerInfo,
                                          transaction: SDSAnyReadTransaction) -> Bool {
         let uniqueId = InstalledSticker.uniqueId(for: stickerInfo)
-        return InstalledSticker.anyExists(uniqueId: uniqueId, transaction: transaction)
+        // We use anyFetch(...) instead of anyExists(...) to
+        // leverage the model cache.
+        return InstalledSticker.anyFetch(uniqueId: uniqueId, transaction: transaction) != nil
     }
 
     internal typealias CleanupCompletion = () -> Void
@@ -623,15 +637,15 @@ public class StickerManager: NSObject {
                 #endif
 
                 self.addStickerToEmojiMap(installedSticker, transaction: transaction)
+
+                transaction.addAsyncCompletion {
+                    stickersOrPacksDidChangeEvent.requestNotify()
+                }
             }
 
             if let completion = completion {
                 completion()
             }
-        }
-
-        DispatchQueue.main.async {
-            StickerManager.shared.fireStickersOrPacksDidChange()
         }
     }
 
@@ -649,21 +663,70 @@ public class StickerManager: NSObject {
         return tryToDownloadSticker(stickerPack: stickerPack, stickerInfo: stickerInfo)
             .done(on: DispatchQueue.global()) { (stickerData) in
                 self.installSticker(stickerInfo: stickerInfo, stickerData: stickerData, emojiString: emojiString)
+        }
+    }
+
+    private struct StickerDownload {
+        let promise: Promise<Data>
+        let resolver: Resolver<Data>
+
+        init() {
+            let (promise, resolver) = Promise<Data>.pending()
+            self.promise = promise
+            self.resolver = resolver
+        }
+    }
+    private let stickerDownloadQueue = DispatchQueue(label: "stickerManager.stickerDownloadQueue")
+    // This property should only be accessed on stickerDownloadQueue.
+    private var stickerDownloadMap = [String: StickerDownload]()
+    private let stickerOperationQueue: OperationQueue = {
+        let operationQueue = OperationQueue()
+        operationQueue.name = "org.signal.StickerManager.stickers"
+        operationQueue.maxConcurrentOperationCount = 4
+        return operationQueue
+    }()
+
+    private func tryToDownloadSticker(stickerPack: StickerPack,
+                                      stickerInfo: StickerInfo) -> Promise<Data> {
+        if let data = DownloadStickerOperation.cachedData(for: stickerInfo) {
+            return Promise.value(data)
+        }
+        return stickerDownloadQueue.sync { () -> Promise<Data> in
+            if let stickerDownload = stickerDownloadMap[stickerInfo.asKey()] {
+                return stickerDownload.promise
             }
+
+            let stickerDownload = StickerDownload()
+            stickerDownloadMap[stickerInfo.asKey()] = stickerDownload
+
+            let operation = DownloadStickerOperation(stickerInfo: stickerInfo,
+                                                     success: { [weak self] data in
+                                                        guard let self = self else {
+                                                            return
+                                                        }
+                                                        _ = self.stickerDownloadQueue.sync {
+                                                            self.stickerDownloadMap.removeValue(forKey: stickerInfo.asKey())
+                                                        }
+                                                        stickerDownload.resolver.fulfill(data)
+                },
+                                                     failure: { [weak self] error in
+                                                        guard let self = self else {
+                                                            return
+                                                        }
+                                                        _ = self.stickerDownloadQueue.sync {
+                                                            self.stickerDownloadMap.removeValue(forKey: stickerInfo.asKey())
+                                                        }
+                                                        stickerDownload.resolver.reject(error)
+            })
+            self.stickerOperationQueue.addOperation(operation)
+            return stickerDownload.promise
+        }
     }
 
     // This method is public so that we can download "transient" (uninstalled) stickers.
     public class func tryToDownloadSticker(stickerPack: StickerPack,
                                            stickerInfo: StickerInfo) -> Promise<Data> {
-        if let data = DownloadStickerOperation.cachedData(for: stickerInfo) {
-            return Promise.value(data)
-        }
-        let (promise, resolver) = Promise<Data>.pending()
-        let operation = DownloadStickerOperation(stickerInfo: stickerInfo,
-                                                 success: resolver.fulfill,
-                                                 failure: resolver.reject)
-        operationQueue.addOperation(operation)
-        return promise
+        shared.tryToDownloadSticker(stickerPack: stickerPack, stickerInfo: stickerInfo)
     }
 
     // MARK: - Emoji
@@ -1070,7 +1133,7 @@ public class StickerManager: NSObject {
                     return
                 }
                 if stickersToUninstall.count > 0 {
-                    owsFailDebug("Removing \(stickersToUninstall.count) orphan stickers.")
+                    Logger.warn("Removing \(stickersToUninstall.count) orphan stickers.")
                 }
                 for sticker in stickersToUninstall {
                     self.uninstallSticker(stickerInfo: sticker.info, transaction: transaction)
@@ -1114,7 +1177,7 @@ public class StickerManager: NSObject {
 
     @objc
     public class func processIncomingStickerPackOperation(_ proto: SSKProtoSyncMessageStickerPackOperation,
-                                                           transaction: SDSAnyWriteTransaction) {
+                                                          transaction: SDSAnyWriteTransaction) {
         guard tsAccountManager.isRegisteredAndReady else {
             return
         }
@@ -1141,31 +1204,6 @@ public class StickerManager: NSObject {
             owsFailDebug("Unknown type.")
             return
         }
-    }
-
-    // MARK: - Notifications
-
-    private var stickersOrPacksDidChangeTimer: Timer?
-
-    private func fireStickersOrPacksDidChange() {
-        AssertIsOnMainThread()
-
-        guard stickersOrPacksDidChangeTimer == nil else {
-            return
-        }
-
-        // De-bounce the (many) notifications which can be emitted by this manager.
-        stickersOrPacksDidChangeTimer = Timer.weakScheduledTimer(withTimeInterval: 0.1, target: self, selector: #selector(didChangeTimerFired), userInfo: nil, repeats: false)
-    }
-
-    @objc
-    func didChangeTimerFired(_ timer: Timer) {
-        AssertIsOnMainThread()
-
-        stickersOrPacksDidChangeTimer?.invalidate()
-        stickersOrPacksDidChangeTimer = nil
-
-        NotificationCenter.default.postNotificationNameAsync(StickerManager.stickersOrPacksDidChange, object: nil)
     }
 
     // MARK: - Debug
