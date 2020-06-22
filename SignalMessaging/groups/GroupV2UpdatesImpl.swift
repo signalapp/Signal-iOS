@@ -587,11 +587,20 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                 guard let changeAuthorUuidData = changeActionsProto.sourceUuid else {
                     throw OWSAssertionError("Missing changeAuthorUuid.")
                 }
-                let changeAuthorUuid = try groupV2Params.uuid(forUserId: changeAuthorUuidData)
-                let groupUpdateSourceAddress = SignalServiceAddress(uuid: changeAuthorUuid)
 
                 guard let oldGroupModel = groupThread.groupModel as? TSGroupModelV2 else {
                     throw OWSAssertionError("Invalid group model.")
+                }
+
+                let isSingleRevisionUpdate = oldGroupModel.revision + 1 == changeRevision
+                var groupUpdateSourceAddress: SignalServiceAddress?
+                if isSingleRevisionUpdate {
+                    // The "group update" info message should only reflect
+                    // the "change author" if the change/diff reflects a
+                    // single revision.  Eventually there will be gaps in
+                    // the returned changes.
+                    let changeAuthorUuid = try groupV2Params.uuid(forUserId: changeAuthorUuidData)
+                    groupUpdateSourceAddress = SignalServiceAddress(uuid: changeAuthorUuid)
                 }
 
                 let newGroupModel: TSGroupModel
