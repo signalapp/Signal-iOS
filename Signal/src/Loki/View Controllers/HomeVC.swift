@@ -202,6 +202,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         uiDatabaseConnection.read { transaction in
             self.threads.update(with: transaction)
         }
+        threadViewModelCache.removeAll()
         tableView.reloadData()
         emptyStateView.isHidden = (threadCount != 0)
     }
