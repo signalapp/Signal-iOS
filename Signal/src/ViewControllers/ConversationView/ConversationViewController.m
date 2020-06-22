@@ -591,7 +591,6 @@ typedef enum : NSUInteger {
     [self updateLeftBarItem];
 
     [self addNotificationListeners];
-    [self applyTheme];
     [self.conversationViewModel viewDidLoad];
 }
 
@@ -782,6 +781,11 @@ typedef enum : NSUInteger {
 
     [super viewWillAppear:animated];
 
+    // One-time work performed the first time we enter the view.
+    if (!self.viewHasEverAppeared) {
+        [self applyTheme];
+    }
+
     // We need to recheck on every appearance, since the user may have left the group in the settings VC,
     // or on another device.
     [self updateInputVisibility];
@@ -801,7 +805,7 @@ typedef enum : NSUInteger {
 
     [self resetContentAndLayoutWithSneakyTransaction];
 
-    // We want to set the initial scroll state the first time we enter the view.
+    // One-time work performed the first time we enter the view.
     if (!self.viewHasEverAppeared) {
         [self loadDraftInCompose];
         [self scrollToDefaultPositionAnimated:NO];
@@ -5336,8 +5340,9 @@ typedef enum : NSUInteger {
     UIEdgeInsets oldInsets = self.collectionView.contentInset;
     UIEdgeInsets newInsets = oldInsets;
 
+    OWSAssertDebug(self.bottomLayoutGuide.length == self.view.safeAreaInsets.bottom);
     newInsets.bottom = self.messageActionsExtraContentInsetPadding + self.inputAccessoryPlaceholder.keyboardOverlap
-        + self.bottomBar.height - self.bottomLayoutGuide.length;
+        + self.bottomBar.height - self.view.safeAreaInsets.bottom;
     newInsets.top = self.messageActionsExtraContentInsetPadding;
 
     BOOL wasScrolledToBottom = [self isScrolledToBottom];
@@ -5367,8 +5372,9 @@ typedef enum : NSUInteger {
             if (insetChange != 0) {
                 // The content offset can go negative, up to the size of the top layout guide.
                 // This accounts for the extended layout under the navigation bar.
-                CGFloat minYOffset = -self.topLayoutGuide.length;
-                
+                OWSAssertDebug(self.topLayoutGuide.length == self.view.safeAreaInsets.top);
+                CGFloat minYOffset = -self.view.safeAreaInsets.top;
+
                 CGFloat newYOffset = CGFloatClamp(oldYOffset + insetChange, minYOffset, self.safeContentHeight);
                 CGPoint newOffset = CGPointMake(0, newYOffset);
                 
