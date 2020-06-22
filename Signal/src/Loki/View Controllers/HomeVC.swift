@@ -173,8 +173,8 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
     }
     
     override func viewWillDisappear(_ animated: Bool) {
-        super.viewWillDisappear(animated)
         isViewVisible = false
+        super.viewWillDisappear(animated)
     }
     
     deinit {
@@ -213,8 +213,9 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
     
     @objc private func handleYapDatabaseModifiedNotification(_ notification: Notification) {
         guard isObservingDatabase else { return }
-        let transaction = uiDatabaseConnection.beginLongLivedReadTransaction()
-        let hasChanges = (uiDatabaseConnection.ext(TSThreadDatabaseViewExtensionName) as! YapDatabaseViewConnection).hasChanges(forGroup: TSInboxGroup, in: transaction)
+        let notifications = uiDatabaseConnection.beginLongLivedReadTransaction()
+        let ext = uiDatabaseConnection.ext(TSThreadDatabaseViewExtensionName) as! YapDatabaseViewConnection
+        let hasChanges = ext.hasChanges(forGroup: TSInboxGroup, in: notifications)
         guard hasChanges else {
             uiDatabaseConnection.read { transaction in
                 self.threads.update(with: transaction)
@@ -223,7 +224,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         }
         var sectionChanges = NSArray()
         var rowChanges = NSArray()
-        (uiDatabaseConnection.ext(TSThreadDatabaseViewExtensionName) as! YapDatabaseViewConnection).getSectionChanges(&sectionChanges, rowChanges: &rowChanges, for: transaction, with: threads)
+        ext.getSectionChanges(&sectionChanges, rowChanges: &rowChanges, for: notifications, with: threads)
         guard sectionChanges.count > 0 || rowChanges.count > 0 else { return }
         tableView.beginUpdates()
         rowChanges.forEach { rowChange in
