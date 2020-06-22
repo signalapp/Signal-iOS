@@ -203,7 +203,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
             self.threads.update(with: transaction)
         }
         tableView.reloadData()
-        emptyStateView.isHidden = threadCount != 0
+        emptyStateView.isHidden = (threadCount != 0)
     }
     
     @objc private func handleYapDatabaseModifiedExternallyNotification(_ notification: Notification) {
@@ -243,7 +243,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
             }
         }
         tableView.endUpdates()
-        emptyStateView.isHidden = threadCount != 0
+        emptyStateView.isHidden = (threadCount != 0)
     }
     
     @objc private func handleApplicationDidBecomeActiveNotification(_ notification: Notification) {
