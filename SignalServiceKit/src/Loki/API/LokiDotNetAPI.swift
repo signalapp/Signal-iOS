@@ -28,7 +28,9 @@ public class LokiDotNetAPI : NSObject {
     private static func getAuthTokenFromDatabase(for server: String) -> String? {
         var result: String? = nil
         storage.dbReadConnection.read { transaction in
-            result = transaction.object(forKey: server, inCollection: authTokenCollection) as! String?
+            if transaction.hasObject(forKey: server, inCollection: authTokenCollection) {
+                result = transaction.object(forKey: server, inCollection: authTokenCollection) as? String
+            }
         }
         return result
     }
