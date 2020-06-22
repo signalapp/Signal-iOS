@@ -139,7 +139,6 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         // Listen for notifications
         let notificationCenter = NotificationCenter.default
         notificationCenter.addObserver(self, selector: #selector(handleYapDatabaseModifiedNotification(_:)), name: .YapDatabaseModified, object: OWSPrimaryStorage.shared().dbNotificationObject)
-        notificationCenter.addObserver(self, selector: #selector(handleYapDatabaseModifiedExternallyNotification(_:)), name: .YapDatabaseModifiedExternally, object: OWSPrimaryStorage.shared().dbNotificationObject)
         notificationCenter.addObserver(self, selector: #selector(handleApplicationDidBecomeActiveNotification(_:)), name: .OWSApplicationDidBecomeActive, object: nil)
         notificationCenter.addObserver(self, selector: #selector(handleApplicationWillResignActiveNotification(_:)), name: .OWSApplicationWillResignActive, object: nil)
         notificationCenter.addObserver(self, selector: #selector(handleProfileDidChangeNotification(_:)), name: NSNotification.Name(rawValue: kNSNotificationName_OtherUsersProfileDidChange), object: nil)
@@ -206,11 +205,6 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         threadViewModelCache.removeAll()
         tableView.reloadData()
         emptyStateView.isHidden = (threadCount != 0)
-    }
-    
-    @objc private func handleYapDatabaseModifiedExternallyNotification(_ notification: Notification) {
-        guard isObservingDatabase else { return }
-        reload()
     }
     
     @objc private func handleYapDatabaseModifiedNotification(_ notification: Notification) {
