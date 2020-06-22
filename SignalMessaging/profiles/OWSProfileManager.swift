@@ -44,10 +44,22 @@ public extension OWSProfileManager {
 
     // This will re-upload the existing local profile state.
     func reuploadLocalProfilePromise() -> Promise<Void> {
-        let profileGivenName: String? = localGivenName()
+
+        let profileGivenName: String?
+        let profileFamilyName: String?
+        let profileAvatarData: Data?
+        if let pendingUpdate = (Self.databaseStorage.read { transaction in
+            return Self.currentPendingProfileUpdate(transaction: transaction)
+        }) {
+            profileGivenName = pendingUpdate.profileGivenName
+            profileFamilyName = pendingUpdate.profileFamilyName
+            profileAvatarData = pendingUpdate.profileAvatarData
+        } else {
+            profileGivenName = localGivenName()
+            profileFamilyName = localFamilyName()
+            profileAvatarData = localProfileAvatarData()
+        }
         assert(profileGivenName != nil)
-        let profileFamilyName: String? = localFamilyName()
-        let profileAvatarData: Data? = localProfileAvatarData()
         return OWSProfileManager.updateLocalProfilePromise(profileGivenName: profileGivenName,
                                                            profileFamilyName: profileFamilyName,
                                                            profileAvatarData: profileAvatarData)
@@ -65,6 +77,11 @@ public extension OWSProfileManager {
 
     class func updateProfileOnServiceIfNecessaryObjc() {
         updateProfileOnServiceIfNecessary()
+    }
+
+    // This will re-upload the existing local profile state.
+    func reuploadLocalProfilePromiseObjc() -> AnyPromise {
+        return AnyPromise(reuploadLocalProfilePromise())
     }
 }
 
@@ -132,6 +149,13 @@ extension OWSProfileManager {
         AssertIsOnMainThread()
 
         Logger.verbose("")
+
+        if !update.hasGivenName {
+            Logger.info("Setting empty given name.")
+        }
+        if !update.hasAvatarData {
+            Logger.info("Setting empty avatar.")
+        }
 
         self.profileManager.isUpdatingProfileOnService = true
 
@@ -371,6 +395,20 @@ class PendingProfileUpdate: NSObject, NSCoding {
 
     // If nil, we are clearing the profile avatar.
     let profileAvatarData: Data?
+
+    var hasGivenName: Bool {
+        guard let givenName = profileGivenName else {
+            return false
+        }
+        return !givenName.isEmpty
+    }
+
+    var hasAvatarData: Bool {
+        guard let avatarData = profileAvatarData else {
+            return false
+        }
+        return !avatarData.isEmpty
+    }
 
     init(profileGivenName: String?, profileFamilyName: String?, profileAvatarData: Data?) {
         self.id = UUID()

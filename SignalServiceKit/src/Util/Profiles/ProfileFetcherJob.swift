@@ -170,7 +170,7 @@ public class ProfileFetcherJob: NSObject {
         firstly {
             ProfileFetcherJob(subject: subject, options: options).runAsPromise()
         }.done { profile in
-                success(profile.address)
+            success(profile.address)
         }.catch { error in
             switch error {
             case ProfileFetchError.missing:

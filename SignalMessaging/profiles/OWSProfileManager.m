@@ -412,13 +412,17 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     OWSAssertDebug(successBlock);
     OWSAssertDebug(failureBlock);
 
+    if (givenName.length < 1) {
+        return failureBlock(OWSErrorMakeAssertionError(@"Can't clear given name."));
+    }
+
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
         NSPersonNameComponents *nameComponents = [NSPersonNameComponents new];
         nameComponents.givenName = givenName;
         nameComponents.familyName = familyName;
         NSData *_Nullable encryptedPaddedName = [self encryptLocalProfileNameComponents:nameComponents];
         if (encryptedPaddedName == nil) {
-            failureBlock(OWSErrorMakeAssertionError(@"encryptedPaddedName was unexpectedly nil"));
+            return failureBlock(OWSErrorMakeAssertionError(@"encryptedPaddedName was unexpectedly nil"));
         }
 
         TSRequest *request = [OWSRequestFactory profileNameSetRequestWithEncryptedPaddedName:encryptedPaddedName];
@@ -656,18 +660,11 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
         // Rotate the profile key
         OWSLogInfo(@"Rotating the profile key.");
 
-        // Make copies of the current local profile state.
-        OWSUserProfile *localUserProfile = self.localUserProfile;
-        NSString *_Nullable oldGivenName = localUserProfile.givenName;
-        NSString *_Nullable oldFamilyName = localUserProfile.familyName;
-        __block NSData *_Nullable oldAvatarData;
-
         // Rotate the stored profile key.
         AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
             DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
                 SignalServiceAddress *_Nullable localAddress =
                     [self.tsAccountManager localAddressWithTransaction:transaction];
-                oldAvatarData = [self profileAvatarDataForAddress:localAddress transaction:transaction];
 
                 [self.localUserProfile updateWithProfileKey:[OWSAES256Key generateRandomKey]
                                         wasLocallyInitiated:YES
@@ -691,12 +688,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
         //
         // This may fail.
         promise = promise.thenInBackground(^(id value) {
-            if (oldGivenName.length < 1) {
-                return [AnyPromise promiseWithValue:@(1)];
-            }
-            return [OWSProfileManager updateLocalProfilePromiseObjWithProfileGivenName:oldGivenName
-                                                                     profileFamilyName:oldFamilyName
-                                                                     profileAvatarData:oldAvatarData];
+            return [self reuploadLocalProfilePromiseObjc];
         });
 
         promise = promise.thenInBackground(^(id value) {
