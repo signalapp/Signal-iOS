@@ -1267,7 +1267,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     [self.primaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         publicChat = [LKDatabaseUtilities getPublicChatForThreadID:groupThread.uniqueId transaction: transaction];
     }];
-    if (publicChat == nil) return false;
+    if (publicChat == nil) return true;
     
     if (interationType == OWSInteractionType_IncomingMessage) {
         // Only allow deletion on incoming messages if the user has moderation permission
