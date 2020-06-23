@@ -21,6 +21,13 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+typedef struct {
+    CGSize size;
+    CGSize bodyTextSize;
+    CGSize bodyMediaSize;
+    CGSize quotedMessageSize;
+} OWSMessageBubbleViewMeasurement;
+
 @interface OWSMessageBubbleView () <OWSQuotedMessageViewDelegate,
     OWSContactShareButtonsViewDelegate,
     UITextViewDelegate>
@@ -242,9 +249,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(self.viewItem.interaction);
     OWSAssertDebug([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
 
-    NSValue *_Nullable quotedMessageSize = [self quotedMessageSize];
-    NSValue *_Nullable bodyMediaSize = [self bodyMediaSize];
-    NSValue *_Nullable bodyTextSize = [self bodyTextSize];
+    OWSMessageBubbleViewMeasurement measurement = [self buildMeasurement];
 
     [self.bubbleView addSubview:self.stackView];
     [self.viewConstraints addObjectsFromArray:[self.stackView autoPinEdgesToSuperviewEdges]];
@@ -281,9 +286,9 @@ NS_ASSUME_NONNULL_BEGIN
         self.quotedMessageView = quotedMessageView;
         [quotedMessageView createContents];
         [self.stackView addArrangedSubview:quotedMessageView];
-        OWSAssertDebug(quotedMessageSize);
+        OWSAssertDebug(measurement.quotedMessageSize.width > 0 && measurement.quotedMessageSize.height > 0);
         [self.viewConstraints addObject:[quotedMessageView autoSetDimension:ALDimensionHeight
-                                                                     toSize:quotedMessageSize.CGSizeValue.height]];
+                                                                     toSize:measurement.quotedMessageSize.height]];
     }
 
     UIView *_Nullable bodyMediaView = nil;
@@ -379,9 +384,9 @@ NS_ASSUME_NONNULL_BEGIN
         [self configureBodyTextView];
         [textViews addObject:self.bodyTextView];
 
-        OWSAssertDebug(bodyTextSize);
+        OWSAssertDebug(measurement.bodyTextSize.width > 0 && measurement.bodyTextSize.height > 0);
         [self.viewConstraints addObjectsFromArray:@[
-            [self.bodyTextView autoSetDimension:ALDimensionHeight toSize:bodyTextSize.CGSizeValue.height],
+            [self.bodyTextView autoSetDimension:ALDimensionHeight toSize:measurement.bodyTextSize.height],
         ]];
 
         UIView *_Nullable tapForMoreLabel = [self createTapForMoreLabelIfNecessary];
@@ -443,14 +448,13 @@ NS_ASSUME_NONNULL_BEGIN
 
     [self insertAnyTextViewsIntoStackView:textViews];
 
-    CGSize bubbleSize = [self measureSize];
     [self.viewConstraints addObjectsFromArray:@[
-        [self autoSetDimension:ALDimensionWidth toSize:bubbleSize.width],
+        [self autoSetDimension:ALDimensionWidth toSize:measurement.size.width],
     ]];
     if (bodyMediaView) {
-        OWSAssertDebug(bodyMediaSize);
-        [self.viewConstraints
-            addObject:[bodyMediaView autoSetDimension:ALDimensionHeight toSize:bodyMediaSize.CGSizeValue.height]];
+        OWSAssertDebug(measurement.bodyMediaSize.width > 0 && measurement.bodyMediaSize.height > 0);
+        [self.viewConstraints addObject:[bodyMediaView autoSetDimension:ALDimensionHeight
+                                                                 toSize:measurement.bodyMediaSize.height]];
     }
 
     [self insertContactShareButtonsIfNecessary];
@@ -1283,6 +1287,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGSize)measureSize
 {
+    return [self buildMeasurement].size;
+}
+
+- (OWSMessageBubbleViewMeasurement)buildMeasurement
+{
     OWSAssertDebug(self.conversationStyle);
     OWSAssertDebug(self.conversationStyle.viewWidth > 0);
     OWSAssertDebug(self.viewItem);
@@ -1385,7 +1394,12 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(cellSize.width <= self.conversationStyle.maxMessageWidth);
     cellSize.width = MIN(cellSize.width, self.conversationStyle.maxMessageWidth);
 
-    return cellSize;
+    OWSMessageBubbleViewMeasurement measurement;
+    measurement.size = cellSize;
+    measurement.bodyTextSize = bodyTextSize ? bodyTextSize.CGSizeValue : CGSizeZero;
+    measurement.bodyMediaSize = bodyMediaSize ? bodyMediaSize.CGSizeValue : CGSizeZero;
+    measurement.quotedMessageSize = quotedMessageSize ? quotedMessageSize.CGSizeValue : CGSizeZero;
+    return measurement;
 }
 
 - (CGSize)sizeForTextViewGroup:(NSArray<NSValue *> *)textViewSizes
