@@ -280,7 +280,7 @@ class GroupAndContactStreamTest: SignalBaseTest {
             contactFactory.cnContactIdBuilder = { "123" }
             contactFactory.uniqueIdBuilder = { "123" }
 
-            signalAccount.contact = try contactFactory.build()
+            signalAccount.replaceContactForTests(try contactFactory.build())
 
             contactsOutputStream.write(signalAccount,
                                        recipientIdentity: nil,
@@ -344,6 +344,10 @@ class TestContactsManager: NSObject, ContactsManagerProtocol {
 
     func displayNameWithSneakyTransaction(thread: TSThread) -> String {
         return "Fake Name"
+    }
+
+    func shortDisplayName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
+        return address.stringForDisplay
     }
 
     func conversationColorName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {

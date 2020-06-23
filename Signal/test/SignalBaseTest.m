@@ -6,6 +6,7 @@
 #import "Environment.h"
 #import <SignalMessaging/SignalMessaging-Swift.h>
 #import <SignalServiceKit/OWSPrimaryStorage.h>
+#import <SignalServiceKit/SDSDatabaseStorage+Objc.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
 #import <SignalServiceKit/TestAppContext.h>
 #import <YapDatabase/YapDatabaseConnection.h>
@@ -64,7 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 -(void)writeWithBlock:(void (^)(SDSAnyWriteTransaction *))block
 {
-    [SDSDatabaseStorage.shared writeWithBlock:block];
+    DatabaseStorageWrite(SDSDatabaseStorage.shared, block);
 }
 
 - (void)yapReadWithBlock:(void (^)(YapDatabaseReadTransaction *transaction))block

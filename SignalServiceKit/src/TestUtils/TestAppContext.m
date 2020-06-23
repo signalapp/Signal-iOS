@@ -136,7 +136,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGRect)frame
 {
-    return CGRectZero;
+    // Pretend to be a small device.
+    return CGRectMake(0, 0, 300, 400);
 }
 
 - (UIInterfaceOrientation)interfaceOrientation

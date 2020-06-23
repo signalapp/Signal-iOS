@@ -265,6 +265,13 @@ NSUInteger const SignalAccountSchemaVersion = 1;
                              }];
 }
 
+#if TESTABLE_BUILD
+- (void)replaceContactForTests:(nullable Contact *)contact
+{
+    self.contact = contact;
+}
+#endif
+
 @end
 
 NS_ASSUME_NONNULL_END
