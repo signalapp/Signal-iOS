@@ -155,7 +155,12 @@ public class ProfileFetcherJob: NSObject {
             if error.isNetworkFailureOrTimeout {
                 Logger.warn("Error: \(error)")
             } else {
-                owsFailDebug("Error: \(error)")
+                switch error {
+                case ProfileFetchError.missing:
+                    Logger.warn("Error: \(error)")
+                default:
+                    owsFailDebug("Error: \(error)")
+                }
             }
         }
     }

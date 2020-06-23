@@ -85,7 +85,7 @@ void uncaughtExceptionHandler(NSException *exception)
     OWSLogError(@"name: %@", exception.name);
     OWSLogError(@"reason: %@", exception.reason);
     OWSLogError(@"userInfo: %@", exception.userInfo);
-    OWSLogError(@"exception.callStackSymbols: %@", exception.callStackSymbols);
+    OWSLogError(@"callStackSymbols: %@", exception.callStackSymbols);
     OWSLogFlush();
 }
 #endif
