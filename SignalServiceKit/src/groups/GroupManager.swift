@@ -688,7 +688,6 @@ public class GroupManager: NSObject {
 
     private struct UpdateInfo {
         let groupId: Data
-        let currentGroupModel: TSGroupModel
         let newGroupModel: TSGroupModel
         let oldDMConfiguration: OWSDisappearingMessagesConfiguration
         let newDMConfiguration: OWSDisappearingMessagesConfiguration
@@ -796,7 +795,8 @@ public class GroupManager: NSObject {
                     builder.avatarUrlPath = avatarUrlPath
                     proposedGroupModel = try builder.buildAsV2(transaction: transaction)
                 }
-                let updateInfo = try self.updateInfoV2(newGroupModel: proposedGroupModel,
+                let updateInfo = try self.updateInfoV2(oldGroupModel: oldGroupModel,
+                                                       newGroupModel: proposedGroupModel,
                                                        newDMConfiguration: dmConfiguration,
                                                        transaction: transaction)
                 guard let newGroupModel = updateInfo.newGroupModel as? TSGroupModelV2 else {
@@ -807,6 +807,13 @@ public class GroupManager: NSObject {
                 // diff the "new/proposed" group model against the "old"
                 // group model, not the "current" group model. This avoids
                 // reverting changes from other users.
+                //
+                // The "old" group model reflects the group model the user
+                // used as a point of departure for their updates. The
+                // "current" group model reflects the state of the database
+                // which may have changed since the user started editing.
+                // The "new" group model is the "old" model, updated to
+                // reflect the user intent.
                 //
                 // Let's say Alice and Bob edit the group at the same time.
                 // Alice changes the group name and Bob changes the group
@@ -863,14 +870,14 @@ public class GroupManager: NSObject {
         }
 
         return UpdateInfo(groupId: groupId,
-                          currentGroupModel: currentGroupModel,
                           newGroupModel: newGroupModel,
                           oldDMConfiguration: oldDMConfiguration,
                           newDMConfiguration: newDMConfiguration)
     }
 
     // If dmConfiguration is nil, don't change the disappearing messages configuration.
-    private static func updateInfoV2(newGroupModel proposedGroupModel: TSGroupModelV2,
+    private static func updateInfoV2(oldGroupModel: TSGroupModelV2,
+                                     newGroupModel proposedGroupModel: TSGroupModelV2,
                                      newDMConfiguration dmConfiguration: OWSDisappearingMessagesConfiguration?,
                                      transaction: SDSAnyReadTransaction) throws -> UpdateInfo {
 
@@ -897,7 +904,7 @@ public class GroupManager: NSObject {
         // Before we update a v2 group, we need to separate out the
         // pending and non-pending members.
         let groupMembership = self.separatePendingMembers(in: proposedGroupMembership,
-                                                          oldGroupModel: currentGroupModel,
+                                                          oldGroupModel: oldGroupModel,
                                                           transaction: transaction)
 
         guard groupMembership.nonPendingMembers.contains(localAddress) else {
@@ -933,7 +940,6 @@ public class GroupManager: NSObject {
         }
 
         return UpdateInfo(groupId: groupId,
-                          currentGroupModel: currentGroupModel,
                           newGroupModel: newGroupModel,
                           oldDMConfiguration: oldDMConfiguration,
                           newDMConfiguration: newDMConfiguration)
