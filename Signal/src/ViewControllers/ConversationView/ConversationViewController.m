@@ -591,6 +591,7 @@ typedef enum : NSUInteger {
     [self updateLeftBarItem];
 
     [self addNotificationListeners];
+    [self applyTheme];
     [self.conversationViewModel viewDidLoad];
 }
 
@@ -780,11 +781,6 @@ typedef enum : NSUInteger {
     [self ensureBannerState];
 
     [super viewWillAppear:animated];
-
-    // One-time work performed the first time we enter the view.
-    if (!self.viewHasEverAppeared) {
-        [self applyTheme];
-    }
 
     // We need to recheck on every appearance, since the user may have left the group in the settings VC,
     // or on another device.
