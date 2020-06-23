@@ -3881,7 +3881,7 @@ typedef enum : NSUInteger {
     NSUInteger mentionStartIndex = (NSUInteger)self.currentMentionStartIndex;
     [self.mentions addObject:mentionCandidate];
     NSString *oldText = self.inputToolbar.messageText;
-    NSString *newText = [oldText stringByReplacingCharactersInRange:NSMakeRange(mentionStartIndex, oldText.length - mentionStartIndex) withString:[NSString stringWithFormat:@"@%@", mentionCandidate.displayName]];
+    NSString *newText = [oldText stringByReplacingCharactersInRange:NSMakeRange(mentionStartIndex, oldText.length - mentionStartIndex) withString:[NSString stringWithFormat:@"@%@ ", mentionCandidate.displayName]];
     [self.inputToolbar setMessageText:newText animated:NO];
     self.currentMentionStartIndex = -1;
     [self.inputToolbar hideMentionCandidateSelectionView];
