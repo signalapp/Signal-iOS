@@ -154,6 +154,19 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         DispatchQueue.global(qos: .utility).async {
             let _ = IP2Country.shared.populateCacheIfNeeded()
         }
+        // Preload device links to make message sending quicker
+        var publicKeys: Set<String> = []
+        let storage = OWSPrimaryStorage.shared()
+        storage.dbReadConnection.read { transaction in
+            TSContactThread.enumerateCollectionObjects(with: transaction) { object, _ in
+                guard let thread = object as? TSContactThread, thread.shouldThreadBeVisible && thread.isContactFriend else { return }
+                let publicKey = thread.contactIdentifier()
+                guard UserDisplayNameUtilities.getPrivateChatDisplayName(for: publicKey) != nil,
+                    storage.getMasterHexEncodedPublicKey(for: publicKey, in: transaction) == nil else { return }
+                publicKeys.insert(publicKey)
+            }
+        }
+        let _ = LokiFileServerAPI.getDeviceLinks(associatedWith: publicKeys)
         // Do initial update
         reload()
     }
