@@ -315,7 +315,9 @@ public class InstalledStickerCursor: NSObject {
         guard let record = try cursor.next() else {
             return nil
         }
-        return try InstalledSticker.fromRecord(record)
+        let value = try InstalledSticker.fromRecord(record)
+        SSKEnvironment.shared.modelReadCaches.installedStickerCache.didReadInstalledSticker(value, transaction: transaction.asAnyRead)
+        return value
     }
 
     public func all() throws -> [InstalledSticker] {
@@ -357,6 +359,20 @@ public extension InstalledSticker {
     class func anyFetch(uniqueId: String,
                         transaction: SDSAnyReadTransaction) -> InstalledSticker? {
         assert(uniqueId.count > 0)
+
+        return anyFetch(uniqueId: uniqueId, transaction: transaction, ignoreCache: false)
+    }
+
+    // Fetches a single model by "unique id".
+    class func anyFetch(uniqueId: String,
+                        transaction: SDSAnyReadTransaction,
+                        ignoreCache: Bool) -> InstalledSticker? {
+        assert(uniqueId.count > 0)
+
+        if !ignoreCache,
+            let cachedCopy = SSKEnvironment.shared.modelReadCaches.installedStickerCache.getInstalledSticker(uniqueId: uniqueId, transaction: transaction) {
+            return cachedCopy
+        }
 
         switch transaction.readTransaction {
         case .yapRead(let ydbTransaction):
@@ -574,7 +590,9 @@ public extension InstalledSticker {
                 return nil
             }
 
-            return try InstalledSticker.fromRecord(record)
+            let value = try InstalledSticker.fromRecord(record)
+            SSKEnvironment.shared.modelReadCaches.installedStickerCache.didReadInstalledSticker(value, transaction: transaction.asAnyRead)
+            return value
         } catch {
             owsFailDebug("error: \(error)")
             return nil

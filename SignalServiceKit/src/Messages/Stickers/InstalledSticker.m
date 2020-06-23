@@ -3,10 +3,20 @@
 //
 
 #import "InstalledSticker.h"
+#import <SignalServiceKit/SignalServiceKit-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
 @implementation InstalledSticker
+
+#pragma mark - Dependencies
+
+- (InstalledStickerCache *)installedStickerCache
+{
+    return SSKEnvironment.shared.modelReadCaches.installedStickerCache;
+}
+
+#pragma mark -
 
 - (nullable instancetype)initWithCoder:(NSCoder *)coder
 {
@@ -76,6 +86,29 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)uniqueIdForStickerInfo:(StickerInfo *)info
 {
     return info.asKey;
+}
+
+#pragma mark -
+
+- (void)anyDidInsertWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [super anyDidInsertWithTransaction:transaction];
+
+    [self.installedStickerCache didInsertOrUpdateInstalledSticker:self transaction:transaction];
+}
+
+- (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [super anyDidUpdateWithTransaction:transaction];
+
+    [self.installedStickerCache didInsertOrUpdateInstalledSticker:self transaction:transaction];
+}
+
+- (void)anyDidRemoveWithTransaction:(SDSAnyWriteTransaction *)transaction
+{
+    [super anyDidRemoveWithTransaction:transaction];
+
+    [self.installedStickerCache didRemoveInstalledSticker:self transaction:transaction];
 }
 
 @end

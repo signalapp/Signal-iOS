@@ -934,6 +934,66 @@ public class AttachmentReadCache: NSObject {
 // MARK: -
 
 @objc
+public class InstalledStickerCache: NSObject {
+    typealias KeyType = NSString
+    typealias ValueType = InstalledSticker
+
+    private class Adapter: ModelCacheAdapter<KeyType, ValueType> {
+        override func read(key: KeyType, transaction: SDSAnyReadTransaction) -> ValueType? {
+            return InstalledSticker.anyFetch(uniqueId: key as String,
+                                             transaction: transaction,
+                                             ignoreCache: true)
+        }
+
+        override func deriveKey(fromValue value: ValueType) -> KeyType {
+            value.uniqueId as NSString
+        }
+
+        override func copy(value: ValueType) throws -> ValueType {
+            return try DeepCopies.deepCopy(value)
+        }
+
+        override func uiReadEvacuation(databaseChanges: UIDatabaseChanges,
+                                       nsCache: NSCache<KeyType, ModelCacheValueBox<ValueType>>) {
+            if databaseChanges.didUpdateModel(collection: InstalledSticker.collection()) {
+                nsCache.removeAllObjects()
+            }
+        }
+    }
+
+    private let cache: ModelReadCacheWrapper<KeyType, ValueType>
+
+    @objc
+    public override init() {
+        cache = ModelReadCacheWrapper(cacheName: "InstalledSticker", adapter: Adapter())
+    }
+
+    @objc(getInstalledStickerForUniqueId:transaction:)
+    public func getInstalledSticker(uniqueId: String, transaction: SDSAnyReadTransaction) -> InstalledSticker? {
+        return cache.getValue(for: uniqueId as NSString, transaction: transaction)
+    }
+
+    @objc(didRemoveInstalledSticker:transaction:)
+    public func didRemove(installedSticker: InstalledSticker, transaction: SDSAnyWriteTransaction) {
+        cache.didRemove(value: installedSticker, transaction: transaction)
+    }
+
+    @objc(didInsertOrUpdateInstalledSticker:transaction:)
+    public func didInsertOrUpdate(installedSticker: InstalledSticker, transaction: SDSAnyWriteTransaction) {
+        cache.didInsertOrUpdate(value: installedSticker, transaction: transaction)
+    }
+
+    @objc
+    public func didReadInstalledSticker(_ installedSticker: InstalledSticker, transaction: SDSAnyReadTransaction) {
+        cache.didRead(value: installedSticker, transaction: transaction)
+    }
+}
+
+// MARK: -
+
+// MARK: -
+
+@objc
 public class ModelReadCaches: NSObject {
     @objc
     public let userProfileReadCache = UserProfileReadCache()
@@ -947,4 +1007,6 @@ public class ModelReadCaches: NSObject {
     public let interactionReadCache = InteractionReadCache()
     @objc
     public let attachmentReadCache = AttachmentReadCache()
+    @objc
+    public let installedStickerCache = InstalledStickerCache()
 }

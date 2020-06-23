@@ -48,21 +48,28 @@ public class BaseStickerPackDataSource: NSObject {
         delegates.append(Weak(value: delegate))
     }
 
+    private var didChangeEvent: DebouncedEvent {
+        DebouncedEvent(maxFrequencySeconds: 0.25, onQueue: .main) { [weak self] in
+            AssertIsOnMainThread()
+            guard let self = self else {
+                return
+            }
+            // Inform any observing views or data sources that they of the change.
+            // We do this async since we are likely inside of a transaction
+            // to avoid opening another transaction within it.
+            let delegates = self.delegates
+            DispatchQueue.main.async {
+                for delegate in delegates {
+                    delegate.value?.stickerPackDataDidChange()
+                }
+            }
+        }
+    }
+
     func fireDidChange() {
         AssertIsOnMainThread()
 
-        // Inform any observing views or data sources that they of the change.
-        // We do this async since we are likely inside of a transaction
-        // to avoid opening another transaction within it.
-        let delegates = self.delegates
-        DispatchQueue.main.async {
-            for delegate in delegates {
-                guard let delegate = delegate.value else {
-                    continue
-                }
-                delegate.stickerPackDataDidChange()
-            }
-        }
+        didChangeEvent.requestNotify()
     }
 
     // MARK: Properties
@@ -360,7 +367,7 @@ public class TransientStickerPackDataSource: BaseStickerPackDataSource {
                 self.downloadKeySet.remove(key)
                 self.ensureState()
                 self.fireDidChange()
-            }.catch {  [weak self] (error) in
+            }.catch { [weak self] (error) in
                 owsFailDebug("error: \(error)")
                 guard let self = self else {
                     return

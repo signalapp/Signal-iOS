@@ -42,11 +42,13 @@
 		"SSKJobRecord.sortId": "id"
 	},
 	"class_cache_get_code": {
+		"InstalledSticker": "SSKEnvironment.shared.modelReadCaches.installedStickerCache.getInstalledSticker(uniqueId: uniqueId, transaction: transaction)",
 		"TSThread": "SSKEnvironment.shared.modelReadCaches.threadReadCache.getThread(uniqueId: uniqueId, transaction: transaction)",
 		"TSInteraction": "SSKEnvironment.shared.modelReadCaches.interactionReadCache.getInteraction(uniqueId: uniqueId, transaction: transaction)",
 		"TSAttachment": "SSKEnvironment.shared.modelReadCaches.attachmentReadCache.getAttachment(uniqueId: uniqueId, transaction: transaction)"
 	},
 	"class_cache_set_code": {
+		"InstalledSticker": "SSKEnvironment.shared.modelReadCaches.installedStickerCache.didReadInstalledSticker",
 		"TSThread": "SSKEnvironment.shared.modelReadCaches.threadReadCache.didReadThread",
 		"TSInteraction": "SSKEnvironment.shared.modelReadCaches.interactionReadCache.didReadInteraction",
 		"TSAttachment": "SSKEnvironment.shared.modelReadCaches.attachmentReadCache.didReadAttachment",
