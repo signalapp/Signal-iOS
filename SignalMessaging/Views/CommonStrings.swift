@@ -8,6 +8,7 @@ import Foundation
  * Strings re-used in multiple places should be added here.
  */
 
+// swiftlint:disable line_length
 @objc public class CommonStrings: NSObject {
 
     @objc
