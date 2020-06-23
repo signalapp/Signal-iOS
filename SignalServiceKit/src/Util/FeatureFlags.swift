@@ -290,7 +290,7 @@ public class DebugFlags: NSObject {
 
     // This flag auto-enables the groupv2 flags in RemoteConfig.
     @objc
-    public static let groupsV2IgnoreServerFlags = FeatureFlags.groupsV2
+    public static let groupsV2IgnoreServerFlags = FeatureFlags.groupsV2 && build.includes(.qa)
 
     // If set, this will invite instead of adding other users.
     @objc

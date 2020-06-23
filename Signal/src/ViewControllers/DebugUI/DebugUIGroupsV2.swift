@@ -535,7 +535,8 @@ class DebugUIGroupsV2: DebugUIPage {
             let newGroupModel = try databaseStorage.read { transaction in
                 try groupModelBuilder.buildAsV2(transaction: transaction)
             }
-            return GroupManager.localUpdateExistingGroup(groupModel: newGroupModel,
+            return GroupManager.localUpdateExistingGroup(oldGroupModel: oldGroupModel,
+                                                         newGroupModel: newGroupModel,
                                                          dmConfiguration: nil,
                                                          groupUpdateSourceAddress: localAddress)
         }.done { (_) -> Void in
