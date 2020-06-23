@@ -172,13 +172,16 @@ public class NotificationStrings: NSObject {
 
 @objc public class CallStrings: NSObject {
     @objc
-    static public let callStatusFormat = NSLocalizedString("CALL_STATUS_FORMAT", comment: "embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call'")
+    static public let callStatusFormat = NSLocalizedString("CALL_STATUS_FORMAT",
+                                                           comment: "embeds {{Call Status}} in call screen label. For ongoing calls, {{Call Status}} is a seconds timer like 01:23, otherwise {{Call Status}} is a short text like 'Ringing', 'Busy', or 'Failed Call'")
 
     @objc
-    static public let confirmAndCallButtonTitle = NSLocalizedString("SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION", comment: "alert button text to confirm placing an outgoing call after the recipients Safety Number has changed.")
+    static public let confirmAndCallButtonTitle = NSLocalizedString("SAFETY_NUMBER_CHANGED_CONFIRM_CALL_ACTION",
+                                                                    comment: "alert button text to confirm placing an outgoing call after the recipients Safety Number has changed.")
 
     @objc
-    static public let callBackAlertTitle = NSLocalizedString("CALL_USER_ALERT_TITLE", comment: "Title for alert offering to call a user.")
+    static public let callBackAlertTitle = NSLocalizedString("CALL_USER_ALERT_TITLE",
+                                                             comment: "Title for alert offering to call a user.")
     @objc
     static public let callBackAlertMessageFormat = NSLocalizedString("CALL_USER_ALERT_MESSAGE_FORMAT", comment: "Message format for alert offering to call a user. Embeds {{the user's display name or phone number}}.")
     @objc
