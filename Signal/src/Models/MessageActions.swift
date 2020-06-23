@@ -134,7 +134,7 @@ class ConversationViewItemActions: NSObject {
         let isGroup = conversationViewItem.isGroupThread;
         let isRSSFeed = conversationViewItem.isRSSFeed;
         
-        if shouldAllowReply {
+        if shouldAllowReply && !isRSSFeed {
             let replyAction = MessageActionBuilder.reply(conversationViewItem: conversationViewItem, delegate: delegate)
             actions.append(replyAction)
         }

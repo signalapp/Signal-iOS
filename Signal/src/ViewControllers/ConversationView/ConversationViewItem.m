@@ -1260,7 +1260,7 @@ NSString *NSStringForOWSMessageCellType(OWSMessageCellType cellType)
     
     // Make sure it's a public chat message
     TSMessage *message = (TSMessage *)self.interaction;
-    if (!message.isOpenGroupMessage) return false;
+    if (!message.isOpenGroupMessage) return true;
     
     // Ensure we have the details needed to contact the server
     __block LKPublicChat *publicChat;
