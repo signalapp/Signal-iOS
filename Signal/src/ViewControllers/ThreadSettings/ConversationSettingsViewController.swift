@@ -317,6 +317,8 @@ class ConversationSettingsViewController: OWSTableViewController {
                                                         contactThread.contactAddress)
         }))
 
+        actionSheet.addAction(OWSActionSheets.cancelAction)
+
         self.presentActionSheet(actionSheet)
     }
 
