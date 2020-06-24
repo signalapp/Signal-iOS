@@ -219,8 +219,6 @@ public class FeatureFlags: NSObject {
     @objc
     public static let versionedProfiledFetches = true
 
-    // When we activate this feature flag, we also need to ensure that all
-    // users update their profile once in a durable way.
     @objc
     public static let versionedProfiledUpdate = true
 
