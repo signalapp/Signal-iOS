@@ -60,12 +60,13 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         SwiftSingletons.register(self)
 
         AppReadiness.runNowOrWhenAppWillBecomeReady {
-            self.verifyServerPublicParams()
-        }
-        AppReadiness.runNowOrWhenAppDidBecomeReadyPolite {
-            self.mergeUserProfiles()
+            let didReset = self.verifyServerPublicParams()
 
-            guard FeatureFlags.groupsV2,
+            // We don't need to ensure the local profile commitment
+            // if we've just reset the zkgroup state, since that
+            // have the same effect.
+            guard !didReset,
+                FeatureFlags.versionedProfiledUpdate,
                 self.tsAccountManager.isRegisteredAndReady else {
                     return
             }
@@ -75,6 +76,10 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             }.catch { error in
                 Logger.warn("Local profile update failed with error: \(error)")
             }
+
+        }
+        AppReadiness.runNowOrWhenAppDidBecomeReadyPolite {
+            self.mergeUserProfiles()
 
             Self.enqueueRestoreGroupPass()
         }
@@ -86,12 +91,8 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
 
     private let serviceStore = SDSKeyValueStore(collection: "GroupsV2Impl.serviceStore")
 
-    // GroupsV2 TODO: Remove this check once zkgroups is in production.
-    private func verifyServerPublicParams() {
-        guard FeatureFlags.groupsV2 else {
-            return
-        }
-
+    // Returns true IFF zkgroups-related state is reset.
+    private func verifyServerPublicParams() -> Bool {
         let serverPublicParamsBase64 = TSConstants.serverPublicParamsBase64
         let lastServerPublicParamsKey = "lastServerPublicParamsKey"
         let lastZKgroupVersionCounterKey = "lastZKgroupVersionCounterKey"
@@ -114,7 +115,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         }
         guard shouldReset else {
             // Nothing to be done; server public params haven't changed.
-            return
+            return false
         }
 
         Logger.info("Resetting zkgroup-related state.")
@@ -135,6 +136,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
                 }
             }
         }
+        return true
     }
 
     // This will only be used for internal builds.
@@ -1244,8 +1246,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
     // MARK: - Profiles
 
     public func reuploadLocalProfilePromise() -> Promise<Void> {
-        guard FeatureFlags.groupsV2,
-            FeatureFlags.versionedProfiledUpdate else {
+        guard FeatureFlags.versionedProfiledUpdate else {
             return Promise(error: OWSAssertionError("Versioned profiles are not enabled."))
         }
         return self.profileManager.reuploadLocalProfilePromise()
