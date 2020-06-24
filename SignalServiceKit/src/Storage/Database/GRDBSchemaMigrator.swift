@@ -73,6 +73,7 @@ public class GRDBSchemaMigrator: NSObject {
         case readdAttachmentIndex
         case addLastVisibleRowIdToThreads
         case addMarkedUnreadIndexToThread
+        case fixIncorrectIndexes
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -668,6 +669,23 @@ public class GRDBSchemaMigrator: NSObject {
                     on: "model_TSThread",
                     columns: ["isMarkedUnread"]
                 )
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(MigrationId.fixIncorrectIndexes.rawValue) { db in
+            do {
+                try db.drop(index: "index_model_TSInteraction_on_threadUniqueId_recordType_messageType")
+                try db.create(index: "index_model_TSInteraction_on_uniqueThreadId_recordType_messageType",
+                              on: "model_TSInteraction",
+                              columns: ["uniqueThreadId", "recordType", "messageType"])
+
+                try db.drop(index: "index_model_TSInteraction_on_threadUniqueId_and_attachmentIds")
+                try db.create(index: "index_model_TSInteraction_on_uniqueThreadId_and_attachmentIds",
+                              on: "model_TSInteraction",
+                              columns: ["uniqueThreadId", "attachmentIds"])
+
             } catch {
                 owsFail("Error: \(error)")
             }

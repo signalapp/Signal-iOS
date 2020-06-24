@@ -5,9 +5,9 @@
 	<key>BuildDetails</key>
 	<dict>
 		<key>OSXVersion</key>
-		<string>10.15.4</string>
+		<string>10.15.5</string>
 		<key>WebRTCCommit</key>
-		<string>c0191ff8d06c8051e7d180bd630b438844789cbf Production build of v2.0.2</string>
+		<string>834716a247e0282a6467a8013e3ea37f334a1efa Production build of v2.2.0</string>
 	</dict>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>en</string>
@@ -45,7 +45,7 @@
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>
-	<string>3.12.0.2</string>
+	<string>3.12.0.6</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LOGS_EMAIL</key>

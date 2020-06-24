@@ -69,7 +69,7 @@
 "ADD_TO_CONTACTS_OFFER" = "Szeretnéd hozzáadni ezt a felhasználót a kontaktjaidhoz?";
 
 /* Label for button or row which allows users to add to another group. */
-"ADD_TO_GROUP" = "Másik csoporthoz hozzáadás";
+"ADD_TO_GROUP" = "Hozzáadás másik csoporthoz";
 
 /* The button on the 'add to group' confirmation to add the user to the group. */
 "ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "Hozzáadás a csoporthoz";
@@ -90,7 +90,7 @@
 "ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ hozzáadva az alábbi csoporthoz: %@";
 
 /* Title of the 'add to group' view. */
-"ADD_TO_GROUP_TITLE" = "Másik csoporthoz hozzáadás";
+"ADD_TO_GROUP_TITLE" = "Hozzáadás másik csoporthoz";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Szeretnéd megosztani a profilod ezzel a felhasználóval?";
@@ -3293,6 +3293,12 @@
 /* alert title */
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Társító kód lekérése sikertelen";
 
+/* Message for error alert indicating that a linked device must be upgraded before it can be linked. */
+"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "A telefonod párosításához frissítsd a Signalt ezen az eszközön!";
+
+/* Title for error alert indicating that a linked device must be upgraded before it can be linked. */
+"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE" = "Nem támogatott verzió";
+
 /* alert message for outdated linking device */
 "SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Ez az eszköz a Signal egy régebbi verzióját futtatja, ami még nem képes iOS QR kód beolvasására. Kérlek frissíts a legújabb verzióra és próbáld újra.";
 
@@ -3544,6 +3550,12 @@
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Beállítások";
+
+/* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Count Muted Conversations";
+
+/* table section header */
+"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Badge Count";
 
 /* table section footer */
 "SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Hívás és üzenet értesítések érkezhetnek a készülék zárolási képernyőjére. Hogy mi jelenjen meg bennük, azt itt szabályozhatod.";

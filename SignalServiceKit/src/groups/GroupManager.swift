@@ -764,7 +764,7 @@ public class GroupManager: NSObject {
         }
 
         return firstly { () -> Promise<Void> in
-            guard RemoteConfig.groupsV2CreateGroups else {
+            guard RemoteConfig.groupsV2GoodCitizen else {
                 return Promise.value(())
             }
             return self.tryToEnableGroupsV2(for: Array(proposedGroupModel.groupMembership.allUsers), isBlocking: true, ignoreErrors: true)
@@ -1852,7 +1852,7 @@ public class GroupManager: NSObject {
         guard FeatureFlags.versionedProfiledUpdate else {
             // We don't need a profile key credential for the local user
             // if we're not even going to try to create a v2 group.
-            if RemoteConfig.groupsV2CreateGroups {
+            if RemoteConfig.groupsV2GoodCitizen {
                 owsFailDebug("Can't participate in v2 groups without a profile key commitment.")
             }
             return Promise.value(())

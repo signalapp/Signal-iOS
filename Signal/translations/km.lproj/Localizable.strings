@@ -2154,7 +2154,7 @@
 "MESSAGE_REQUEST_VIEW_GROUP_INVITE_PROMPT_FORMAT" = "You were invited to this group by %@. Do you want to let members of this group message you?";
 
 /* A prompt asking if the user wants to accept a conversation invite. Embeds {{contact name}}. */
-"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "Let %@ message you and share your name and photo with them? They won’t know you’ve seen their message until you accept.";
+"MESSAGE_REQUEST_VIEW_NEW_CONTACT_PROMPT_FORMAT" = "អនុញ្ញាត %@ ផ្ញើសារមកអ្នក និងចែករំលែកឈ្មោះ និងរូបភាពរបស់អ្នកជាមួយពួកគេ? ពួកគេនឹងមិនដឹងថា អ្នកបានមើលឃើញសាររបស់គេរហូតដល់អ្នកយល់ព្រម។ ";
 
 /* A prompt asking if the user wants to accept a group invite. */
 "MESSAGE_REQUEST_VIEW_NEW_GROUP_PROMPT" = "Join this group and share your name and photo with its members? They won’t know you’ve seen their messages until you accept.";
@@ -2406,7 +2406,7 @@
 "ONBOARDING_2FA_ENTER_NUMERIC" = "បញ្ចូលលេខកូដ PIN";
 
 /* Label for the 'forgot 2FA PIN' link in the 'onboarding 2FA' view. */
-"ONBOARDING_2FA_FORGOT_PIN_LINK" = "Need Help?";
+"ONBOARDING_2FA_FORGOT_PIN_LINK" = "ត្រូវការជំនួយ?";
 
 /* Label indicating that the 2fa pin is invalid in the 'onboarding 2fa' view. */
 "ONBOARDING_2FA_INVALID_PIN" = "លេខកូដ PIN មិនត្រឹមត្រូវ";
@@ -2697,7 +2697,7 @@
 "PIN_CREATION_CONFIRM_TITLE" = "Confirm your PIN";
 
 /* The explanation of confirmation in the 'pin creation' view. */
-"PIN_CREATION_CONFIRMATION_EXPLANATION" = "Enter the PIN you just created.";
+"PIN_CREATION_CONFIRMATION_EXPLANATION" = "បញ្ចូលលេខ PIN ដែលអ្នកទើបបង្កើត។";
 
 /* Button asking if the user would like to create an alphanumeric PIN */
 "PIN_CREATION_CREATE_ALPHANUMERIC" = "បង្កើតអក្សរក្រមលេខ PIN";
@@ -2718,7 +2718,7 @@
 "PIN_CREATION_MISMATCH_ERROR" = "លេខPIN  មិនត្រូវគ្នា។ ព្យាយាមម្តងទៀត។";
 
 /* Label indicating the user must use at least 4 digits */
-"PIN_CREATION_NUMERIC_HINT" = "PIN must be at least 4 digits";
+"PIN_CREATION_NUMERIC_HINT" = "លេខ PIN ត្រូវមានយ៉ាងហោច 4 ខ្ទង់";
 
 /* Label indication the user must confirm their PIN. */
 "PIN_CREATION_PIN_CONFIRMATION_HINT" = "បញ្ចូលលេខ PIN ម្តងទៀត";
@@ -2841,7 +2841,7 @@
 "PROCEED_BUTTON" = "ដំណើរការ";
 
 /* Action Sheet title prompting the user for a profile avatar */
-"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Set Profile Photo";
+"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "កំណត់រូបថតប្រវត្តិរូប";
 
 /* Label for action that clear's the user's profile avatar */
 "PROFILE_VIEW_CLEAR_AVATAR" = "លុបរូបភាព";
@@ -2982,7 +2982,7 @@
 "REGISTER_2FA_FORGOT_PIN" = "ខ្ញុំបានភ្លេចលេខPIN ។";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
-"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "Need Help?";
+"REGISTER_2FA_FORGOT_PIN_ALERT_TITLE" = "ត្រូវការជំនួយ?";
 
 /* Alert body for a forgotten SVR (V2) PIN */
 "REGISTER_2FA_FORGOT_SVR_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit code you created that can be numeric or alphanumeric. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
@@ -2994,7 +2994,7 @@
 "REGISTER_2FA_FORGOT_V1_PIN_ALERT_MESSAGE" = "Your PIN is a 4+ digit numeric code you created. If you can’t remember your PIN, you’ll have to wait 7 days to re-register your account.";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock disabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "You have %lu attempts remaining. If you run out of attempts, you can create a new PIN. You can register and use your account but you’ll lose some saved settings like your profile information.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_PLURAL_FORMAT" = "អ្នកនៅមានការព្យាយាម %lu ដង។ បើការព្យាយាមអស់ អ្នកអាចបង្កើតលេខកូដ PIN ថ្មី។  អ្នកអាចចុះឈ្មោះ និងប្រើប្រាស់គណនីរបស់អ្នក តែអ្នកនឹងត្រូវបាត់បង់ការកំណត់ដែលបានរក្សាទុក ដូចជាព័ត៌មានប្រវត្តិរូបរបស់អ្នក។ ";
 
 /* Alert message explaining what happens if you get your pin wrong and have multiple attempts remaining 'two-factor auth pin' with reglock enabled. */
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_PLURAL_FORMAT" = "អ្នកនៅមានការព្យាយាម %lu ដង។ បើការព្យាយាមអស់ គណនីអ្នកនឹងត្រូវចាក់សោរ។ បន្ទាប់ពី 7 ថ្ងៃនៃភាពអសកម្ម អ្នកអាចចុះឈ្មោះម្តងទៀត ដោយមិនត្រូវការលេខ PIN។ គណនីរបស់អ្នក នឹងត្រូវលុបចោលទិន្នន័យទាំងអស់។";
@@ -3003,7 +3003,7 @@
 "REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_REGLOCK_SINGLE" = "អ្នកនៅមានការព្យាយាម 1 ដង។ បើការព្យាយាមអស់ គណនីអ្នកនឹងត្រូវចាក់សោរ។ បន្ទាប់ពី 7 ថ្ងៃនៃភាពអសកម្ម អ្នកអាចចុះឈ្មោះម្តងទៀត ដោយមិនត្រូវការលេខ PIN។ គណនីរបស់អ្នក នឹងត្រូវលុបចោលទិន្នន័យទាំងអស់។";
 
 /* Alert message explaining what happens if you get your pin wrong and have one attempt remaining 'two-factor auth pin' with reglock disabled. */
-"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "You have 1 attempt remaining. If you run out of attempts, you can create a new PIN. You can register and use your account but you’ll lose some saved settings like your profile information.";
+"REGISTER_2FA_INVALID_PIN_ALERT_MESSAGE_SINGLE" = "អ្នកនៅមានការព្យាយាម ១ ដង។ បើការព្យាយាមអស់ អ្នកអាចបង្កើតលេខកូដ PIN ថ្មី។  អ្នកអាចចុះឈ្មោះ និងប្រើប្រាស់គណនីរបស់អ្នក តែអ្នកនឹងត្រូវបាត់បង់ការកំណត់ដែលបានរក្សាទុក ដូចជាព័ត៌មានប្រវត្តិរូបរបស់អ្នក។ ";
 
 /* Alert title explaining what happens if you forget your 'two-factor auth pin'. */
 "REGISTER_2FA_INVALID_PIN_ALERT_TITLE" = "លេខកូដ PIN មិនត្រឹមត្រូវ";
@@ -3293,6 +3293,12 @@
 /* alert title */
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "មិនអាចទាញយកកូដតភ្ជាប់";
 
+/* Message for error alert indicating that a linked device must be upgraded before it can be linked. */
+"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "Update Signal on this device to link it with your phone.";
+
+/* Title for error alert indicating that a linked device must be upgraded before it can be linked. */
+"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE" = "Unsupported Version";
+
 /* alert message for outdated linking device */
 "SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "ឧបករណ៍ដទៃរបស់អ្នកកំពុងដំណើរការ Signal ជំនាន់ចាស់ដែលមិនគាំទ្រការស្កេនកូដ iPad QR ។ សូមដំឡើង Signal ជំនាន់ចុងក្រោយបង្អស់ និងសាកល្បងម្តងទៀត។";
 
@@ -3544,6 +3550,12 @@
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "ការកំណត់";
+
+/* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Count Muted Conversations";
+
+/* table section header */
+"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Badge Count";
 
 /* table section footer */
 "SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "ការហៅ និងសារជូនដំណឹង អាចបង្ហាញ នៅពេលទូរស័ព្ទចាក់សោរ។ អ្នកអាចនឹងចង់ កំណត់ការបង្ហាញទាំងនេះ។";
@@ -3966,7 +3978,7 @@
 "USERNAME_INVALID_CHARACTERS_ERROR" = "ឈ្មោះអ្នកប្រើប្រាស់ អាចមានតែអក្សរ a-z 0-9 និង _";
 
 /* A message indicating that username lookup failed. */
-"USERNAME_LOOKUP_ERROR" = "An error occurred while looking up the username. Please try again later.";
+"USERNAME_LOOKUP_ERROR" = "មានបញ្ហាមួយកើតឡើង នៅពេលស្វែងរកឈ្មោះអ្នកប្រើប្រាស់។ សូមសាកល្បងម្តងទៀតពេលក្រោយ។";
 
 /* A message indicating that the given username is not a registered signal account. Embeds {{username}} */
 "USERNAME_NOT_FOUND_FORMAT" = "%@ មិនមែនជាអ្នកប្រើប្រាស់ Signal ទេ។ សូមប្រាកដថា អ្នកបានបញ្ចូលឈ្មោះអ្នកប្រើប្រាស់ពេញលេញ។";

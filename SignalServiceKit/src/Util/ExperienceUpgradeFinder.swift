@@ -41,7 +41,7 @@ public enum ExperienceUpgradeId: String, CaseIterable {
 
             DispatchQueue.global().asyncAfter(deadline: .now() + 0.05) {
                 guard promise.result == nil else { return }
-                resolver.reject(OWSAssertionError("timeout fetching notification permissions"))
+                resolver.reject(OWSGenericError("timeout fetching notification permissions"))
             }
 
             do {

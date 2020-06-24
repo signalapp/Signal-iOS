@@ -192,7 +192,7 @@
 "ATTACHMENT_APPROVAL_MEDIA_DID_SAVE" = "Zvachengetwa";
 
 /* Placeholder text indicating who this attachment will be sent to. Embeds: {{recipient name}} */
-"ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "Message to %@";
+"ATTACHMENT_APPROVAL_MESSAGE_TO_FORMAT" = "Tsamba kuna %@";
 
 /* Label for 'send' button in the 'attachment approval' dialog. */
 "ATTACHMENT_APPROVAL_SEND_BUTTON" = "Tumira";
@@ -372,10 +372,10 @@
 "BLOCK_LIST_BLOCKED_USERS_SECTION" = "Vashandisi vaka vharirwa";
 
 /* Error message indicating that a conversation can't be blocked because they are already blocked. */
-"BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "Group already blocked.";
+"BLOCK_LIST_ERROR_CONVERSATION_ALREADY_IN_BLOCKLIST" = "Boka ragara rakavharwa.";
 
 /* Error message indicating that a user can't be blocked because they are already blocked. */
-"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "User already blocked.";
+"BLOCK_LIST_ERROR_USER_ALREADY_IN_BLOCKLIST" = "Mushandisi agara akavharirwa.";
 
 /* Button label for the 'unblock' button */
 "BLOCK_LIST_UNBLOCK_BUTTON" = "Vhurisa";
@@ -426,7 +426,7 @@
 "BLUR_TOOLTIP" = "New: Blur faces or draw anywhere to blur.";
 
 /* browse files option from file sharing menu */
-"BROWSE_FILES_BUTTON" = "Browse";
+"BROWSE_FILES_BUTTON" = "Tarisa";
 
 /* Label for 'continue' button. */
 "BUTTON_CONTINUE" = "Enderera";
@@ -519,7 +519,7 @@
 "CALLKIT_ANONYMOUS_CONTACT_NAME" = "Mushandisi weSignal";
 
 /* Accessibility hint describing what you can do with the camera button */
-"CAMERA_BUTTON_HINT" = "Take a picture and then send it";
+"CAMERA_BUTTON_HINT" = "Tora mufananidzo wobva watumira";
 
 /* Accessibility label for camera button. */
 "CAMERA_BUTTON_LABEL" = "Kamera";
@@ -570,7 +570,7 @@
 "COMPOSE_BUTTON_HINT" = "Select or search for a Signal user to start a conversation with.";
 
 /* Accessibility label from compose button. */
-"COMPOSE_BUTTON_LABEL" = "Compose";
+"COMPOSE_BUTTON_LABEL" = "Nyora";
 
 /* Table section header for contact listing when composing a new message */
 "COMPOSE_MESSAGE_CONTACT_SECTION_TITLE" = "Makontakt";
@@ -582,7 +582,7 @@
 "COMPOSE_MESSAGE_PHONE_NUMBER_SEARCH_SECTION_TITLE" = "Tsvaga ne nhamba dze nhare";
 
 /* Table section header for username search when composing a new message */
-"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Username search";
+"COMPOSE_MESSAGE_USERNAME_SEARCH_SECTION_TITLE" = "Tsvaga ne zita";
 
 /* Multi-line label explaining why compose-screen contact picker is empty. */
 "COMPOSE_SCREEN_MISSING_CONTACTS_PERMISSION" = "You can enable contacts access in the iOS Settings app to see which of your contacts are Signal users.";
@@ -675,7 +675,7 @@
 "CONTACT_FIELD_ORGANIZATION" = "Sangano";
 
 /* Body for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "To see contact names and photos in your conversations:";
+"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Kuti uone mazita ne mifananidzo munhaurwa dzako:";
 
 /* First step for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Tap “Go to Settings” below";
@@ -690,13 +690,13 @@
 "CONTACT_PERMISSION_NOT_NOW_ACTION" = "Kwete izvezvi";
 
 /* Action text for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Turn On";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Vhura";
 
 /* Body for contact permission reminder megaphone */
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "See contact names and photos in your conversations.";
 
 /* Title for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Turn on Contacts?";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Vhura makontakt";
 
 /* Label for a contact's phone number. */
 "CONTACT_PHONE" = "Nhare";
@@ -723,7 +723,7 @@
 "CONTACT_SHARE_NO_FIELDS_SELECTED" = "Hapana zvikamu zve kontakt zvakasarudzwa";
 
 /* Button text to initiate an email to signal support staff */
-"CONTACT_SUPPORT" = "Contact Support";
+"CONTACT_SUPPORT" = "Bata Rutsigiro";
 
 /* Alert body */
 "CONTACT_SUPPORT_PROMPT_ERROR_ALERT_BODY" = "Signal was unable to complete your support request.";
@@ -753,7 +753,7 @@
 "CONTACT_WITHOUT_NAME" = "Kontakt isina zita";
 
 /* Message for the 'conversation delete confirmation' alert. */
-"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "This conversation will be deleted from this device.";
+"CONVERSATION_DELETE_CONFIRMATION_ALERT_MESSAGE" = "Nhaurwa iyi icha dzimwa pamudziyo uno.";
 
 /* Title for the 'conversation delete confirmation' alert. */
 "CONVERSATION_DELETE_CONFIRMATION_ALERT_TITLE" = "Dzima nhaurwa?";
@@ -789,7 +789,7 @@
 "CONVERSATION_SETTINGS" = "Gadziro dzehutaurwa";
 
 /* Label for 'add members' button in conversation settings view. */
-"CONVERSATION_SETTINGS_ADD_MEMBERS" = "Add members";
+"CONVERSATION_SETTINGS_ADD_MEMBERS" = "Wedzera nhengo";
 
 /* Label for 'new contact' button in conversation settings view. */
 "CONVERSATION_SETTINGS_ADD_TO_EXISTING_CONTACT" = "Wedzera pakontakt yagara iripo";
@@ -798,10 +798,10 @@
 "CONVERSATION_SETTINGS_ADD_TO_SYSTEM_CONTACTS" = "Wedzera kuma kontakt erunhare";
 
 /* Label indicating that only administrators can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "Admins";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_ADMINISTRATOR" = "Vatariri";
 
 /* Label indicating that all group members can update the group's attributes: name, avatar, etc. */
-"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "All";
+"CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_MEMBER" = "Ese";
 
 /* Footer for the 'attributes access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_ATTRIBUTES_ACCESS_SECTION_FOOTER" = "Choose who can edit the group name, photo, and disappearing messages timer.";
@@ -813,10 +813,10 @@
 "CONVERSATION_SETTINGS_BLOCK_AND_LEAVE_SECTION_FOOTER" = "Hauchawane tsamba kubva kuboka rino.";
 
 /* Label for 'block group' action in conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_GROUP" = "Block Group";
+"CONVERSATION_SETTINGS_BLOCK_GROUP" = "Vharira Boka";
 
 /* Label for 'block user' action in conversation settings view. */
-"CONVERSATION_SETTINGS_BLOCK_USER" = "Block User";
+"CONVERSATION_SETTINGS_BLOCK_USER" = "Vharira Mushandisi";
 
 /* Navbar title when viewing settings for a 1-on-1 thread */
 "CONVERSATION_SETTINGS_CONTACT_INFO_TITLE" = "Ruzivo rwezve Kontakt";
@@ -825,43 +825,43 @@
 "CONVERSATION_SETTINGS_CONVERSATION_COLOR" = "Ruvara rwe nhaurirano";
 
 /* Label for 'edit attributes access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Who Can Edit Group Info";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS" = "Anogona kushandura nezve Boka";
 
 /* Label for button that sets 'group attributes access' to 'administrators-only'. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Only Admins";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Vatariri chete";
 
 /* Description for the 'edit group attributes access' alert. */
 "CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_DESCRIPTION" = "Choose who can change the group name, photo, and disappearing messages:";
 
 /* Label for button that sets 'group attributes access' to 'members-only'. */
-"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "All Members";
+"CONVERSATION_SETTINGS_EDIT_ATTRIBUTES_ACCESS_ALERT_MEMBERS_BUTTON" = "Nhengo dzese";
 
 /* Label for the 'edit group' button in conversation settings view. */
 "CONVERSATION_SETTINGS_EDIT_GROUP" = "Shandura";
 
 /* Label for 'edit membership access' action in conversation settings view. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Who Can Edit Membership";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS" = "Ndiani anokwanisa kushandura nhengo.";
 
 /* Label for button that sets 'group membership access' to 'administrators-only'. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Only Admins";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_ADMINISTRATORS_BUTTON" = "Vatariri chete";
 
 /* Description for the 'edit group membership access' alert. */
 "CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_DESCRIPTION" = "Choose who can edit group membership:";
 
 /* Label for button that sets 'group membership access' to 'members-only'. */
-"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "All Members";
+"CONVERSATION_SETTINGS_EDIT_MEMBERSHIP_ACCESS_ALERT_MEMBERS_BUTTON" = "Nhengo dzese";
 
 /* Label for 'make group admin' button in conversation settings view. */
-"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Make Admin";
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_BUTTON" = "Ita Mutariri";
 
 /* Format for title for 'make group admin' confirmation alert. Embeds {user to make an admin}. */
-"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ will be able to remove group members and make other admins.";
+"CONVERSATION_SETTINGS_MAKE_GROUP_ADMIN_TITLE_FORMAT" = "%@ achagona kubvisa nhengo dze boka nnne kuita vamwe Vatariri.";
 
 /* Section title of the 'members' section in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE" = "Nhengo";
 
 /* Format for the section title of the 'members' section in conversation settings view. Embeds: {{ the number of group members }}. */
-"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "%@ Members";
+"CONVERSATION_SETTINGS_MEMBERS_SECTION_TITLE_FORMAT" = "Nhengo %@";
 
 /* Footer for the 'membership access' section in conversation settings view. */
 "CONVERSATION_SETTINGS_MEMBERSHIP_ACCESS_SECTION_FOOTER" = "Choose who can edit group membership.";
@@ -900,16 +900,16 @@
 "CONVERSATION_SETTINGS_PENDING_MEMBER_INVITES_NONE" = "Hapana";
 
 /* Label for 'remove from group' button in conversation settings view. */
-"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "Remove From Group";
+"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_BUTTON" = "Bvisa kubva muBoka";
 
 /* Format for title for 'remove from group' confirmation alert. Embeds {user to remove from the group}. */
-"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "Remove %@ from the group?";
+"CONVERSATION_SETTINGS_REMOVE_FROM_GROUP_TITLE_FORMAT" = "Bvisa %@ kubva muBoka?";
 
 /* Label for 'revoke group admin' button in conversation settings view. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Remove as Admin";
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_BUTTON" = "Bvisa se Mutariri";
 
 /* Format for title for 'revoke group admin' confirmation alert. Embeds {user to revoke admin status from}. */
-"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Remove %@ as group admin?";
+"CONVERSATION_SETTINGS_REVOKE_GROUP_ADMIN_TITLE_FORMAT" = "Bvisa %@ se Mutariri we Boka?";
 
 /* Table cell label in conversation settings which returns the user to the conversation with 'search mode' activated */
 "CONVERSATION_SETTINGS_SEARCH" = "Tsvaga munhaurwa";
@@ -918,10 +918,10 @@
 "CONVERSATION_SETTINGS_TAP_TO_CHANGE" = "Bata kuti ushandure";
 
 /* Label for 'unblock group' action in conversation settings view. */
-"CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Unblock Group";
+"CONVERSATION_SETTINGS_UNBLOCK_GROUP" = "Vhurira Boka";
 
 /* Label for 'unblock user' action in conversation settings view. */
-"CONVERSATION_SETTINGS_UNBLOCK_USER" = "Unblock User";
+"CONVERSATION_SETTINGS_UNBLOCK_USER" = "Vhurira Mushandisi";
 
 /* Label for button to unmute a thread. */
 "CONVERSATION_SETTINGS_UNMUTE_ACTION" = "Usanyararidze";
@@ -933,7 +933,7 @@
 "CONVERSATION_SETTINGS_UNSAVED_CHANGES_TITLE" = "Shanduko isina kuchengetwa";
 
 /* Label for 'view all members' button in conversation settings view. */
-"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "View all members";
+"CONVERSATION_SETTINGS_VIEW_ALL_MEMBERS" = "Ona nhengo dzese";
 
 /* Indicates that user is in the system contacts list. */
 "CONVERSATION_SETTINGS_VIEW_IS_SYSTEM_CONTACT" = "Mushandisi uyu ari muma kontakt ako";
@@ -951,7 +951,7 @@
 "CONVERSATION_VIEW_ADD_TO_CONTACTS_OFFER" = "Wedzera kuma kontakt";
 
 /* button text to delete all items in the current conversation */
-"CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Delete All";
+"CONVERSATION_VIEW_DELETE_ALL_MESSAGES" = "Dzima zvese";
 
 /* Indicates that the app is loading more messages in this conversation. */
 "CONVERSATION_VIEW_LOADING_MORE_MESSAGES" = "Iri kutora dzimwe tsamba...";
@@ -1032,16 +1032,16 @@
 "DEBUG_LOG_GITHUB_ISSUE_ALERT_TITLE" = "Kudzoserwa kuGithub";
 
 /* action sheet body */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Delete all messages in the conversation?";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_ALERT_BODY" = "Dzima tsamba dzese munhaurwa?";
 
 /* button text */
-"DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Delete All Messages";
+"DELETE_ALL_MESSAGES_IN_CONVERSATION_BUTTON" = "Dzima tsamba dzese";
 
 /* action sheet body. Embeds {{number of selected messages}} which will be deleted. */
-"DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Delete %ld Messages?";
+"DELETE_SELECTED_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Dzima Tsamba %ld?";
 
 /* action sheet body */
-"DELETE_SELECTED_SINGLE_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Delete Message?";
+"DELETE_SELECTED_SINGLE_MESSAGES_IN_CONVERSATION_ALERT_FORMAT" = "Dzima tsamba?";
 
 /* Label for button that lets users re-register using the same phone number. */
 "DEREGISTRATION_REREGISTER_WITH_SAME_PHONE_NUMBER" = "Nyoresa zvakare nhamba yenhare";
@@ -1059,7 +1059,7 @@
 "DEVICE_LIST_UPDATE_FAILED_TITLE" = "Yatadza kuwana mutaro we midziyo";
 
 /* The stop action of the dialog asking the user if they want to cancel a device transfer */
-"DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION" = "Stop Transfer";
+"DEVICE_TRANSFER_CANCEL_CONFIRMATION_ACTION" = "Mira kutumira";
 
 /* The message of the dialog asking the user if they want to cancel a device transfer */
 "DEVICE_TRANSFER_CANCEL_CONFIRMATION_MESSAGE" = "Closing this window will stop the transfer you have in progress, are you sure you want to proceed?";
@@ -1080,7 +1080,7 @@
 "DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_BODY" = "Add this iPad as a new linked device without transferring message history";
 
 /* The title for the device transfer 'choice' view 'register' option when linking a device */
-"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "Add as New Device";
+"DEVICE_TRANSFER_CHOICE_REGISTER_LINKED_TITLE" = "Wedzera se Mudziyo Mutsva";
 
 /* The title for the device transfer 'choice' view 'register' option */
 "DEVICE_TRANSFER_CHOICE_REGISTER_TITLE" = "Register without Transferring";
@@ -1452,7 +1452,7 @@
 "GROUP_ACCESS_LEVEL_ANY" = "Any User";
 
 /* Description of the 'all members' access level. */
-"GROUP_ACCESS_LEVEL_MEMBER" = "All Members";
+"GROUP_ACCESS_LEVEL_MEMBER" = "Nhengo dzese";
 
 /* Description of the 'unknown' access level. */
 "GROUP_ACCESS_LEVEL_UNKNOWN" = "Haizivikanwe";
@@ -1716,7 +1716,7 @@
 "GROUPS_INVITE_ACCEPT_INVITE_FAILED" = "Could not accept invite.";
 
 /* Label for 'block group' button in group invite view. */
-"GROUPS_INVITE_BLOCK_GROUP" = "Block Group";
+"GROUPS_INVITE_BLOCK_GROUP" = "Vharira Boka";
 
 /* Label for 'block group and inviter' button in group invite view. Embeds {{name of user who invited you}}. */
 "GROUPS_INVITE_BLOCK_GROUP_AND_INVITER_FORMAT" = "Block Group and %@";
@@ -2361,7 +2361,7 @@
 "NOTIFICATION_PERMISSION_NOT_NOW_ACTION" = "Kwete izvezvi";
 
 /* Action text for notification permission reminder megaphone */
-"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Turn On";
+"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Vhura";
 
 /* Body for notification permission reminder megaphone */
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Never miss a message from your contacts and groups.";
@@ -3293,6 +3293,12 @@
 /* alert title */
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "Unable to Fetch Linking Code";
 
+/* Message for error alert indicating that a linked device must be upgraded before it can be linked. */
+"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "Update Signal on this device to link it with your phone.";
+
+/* Title for error alert indicating that a linked device must be upgraded before it can be linked. */
+"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE" = "Unsupported Version";
+
 /* alert message for outdated linking device */
 "SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "Your other device is running a legacy version of Signal that doesn't support scanning iPad QR codes. Please install the latest Signal release and try again.";
 
@@ -3545,6 +3551,12 @@
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Gadziro";
 
+/* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Count Muted Conversations";
+
+/* table section header */
+"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Badge Count";
+
 /* table section footer */
 "SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Zviziviso zve nhare ne tsamba zvinoonekwa apo runhare rwakavharwa.Unogona kudzora zvinoratidzwa mu zviziviso izvi.";
 
@@ -3609,7 +3621,7 @@
 "SETTINGS_REGISTRATION_LOCK_TURN_OFF_TITLE" = "Turn Off Registration Lock?";
 
 /* Action to turn on registration lock */
-"SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Turn On";
+"SETTINGS_REGISTRATION_LOCK_TURN_ON" = "Vhura";
 
 /* Body for the alert confirming that the user wants to turn on registration lock. */
 "SETTINGS_REGISTRATION_LOCK_TURN_ON_MESSAGE" = "If you forget your Signal PIN when registering with Signal again, you’ll be locked out of your account for 7 days.";

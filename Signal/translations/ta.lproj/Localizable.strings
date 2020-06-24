@@ -3293,6 +3293,12 @@
 /* alert title */
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "இணைப்புக் குறியீட்டைப் பெற முடியவில்லை";
 
+/* Message for error alert indicating that a linked device must be upgraded before it can be linked. */
+"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "Update Signal on this device to link it with your phone.";
+
+/* Title for error alert indicating that a linked device must be upgraded before it can be linked. */
+"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE" = "Unsupported Version";
+
 /* alert message for outdated linking device */
 "SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "உங்கள் மற்றவை சாதனம் இன் மரபு பதிப்பை இயக்குகிறது Signal அது இல்லை ஆதரவு ஐபாட் கியூஆர் குறியீடுகளை ஸ்கேன் செய்கிறது. தயவு செய்து நிறுவவும் சமீபத்தியது Signal வெளியீடு மற்றும் மீண்டும் முயற்சி செய்.";
 
@@ -3544,6 +3550,12 @@
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "அமைப்புகள்";
+
+/* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Count Muted Conversations";
+
+/* table section header */
+"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Badge Count";
 
 /* table section footer */
 "SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "உங்கள் தொலைபேசி பூட்டப்பட்டிருக்கும் போது அழைப்பு மற்றும் செய்தி அறிவிப்புகள் தோன்றும். இந்த அறிவிப்புகளில் காட்டப்பட்டுள்ளதை மட்டுப்படுத்த நீங்கள் விரும்பலாம்.";

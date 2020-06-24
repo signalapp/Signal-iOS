@@ -100,10 +100,10 @@ PODS:
     - HKDFKit
     - SignalCoreKit
     - SwiftProtobuf
-  - SignalRingRTC (2.0.2):
+  - SignalRingRTC (2.2.0):
     - SignalCoreKit
-    - SignalRingRTC/WebRTC (= 2.0.2)
-  - SignalRingRTC/WebRTC (2.0.2):
+    - SignalRingRTC/WebRTC (= 2.2.0)
+  - SignalRingRTC/WebRTC (2.2.0):
     - SignalCoreKit
   - SignalServiceKit (0.9.0):
     - AFNetworking/NSURLSession
@@ -350,7 +350,7 @@ CHECKOUT OPTIONS:
     :commit: b72c2d1e6132501db906de2cffa8ded7803c54f4
     :git: https://github.com/signalapp/Mantle
   SignalCoreKit:
-    :commit: 0cdc8debd7f9da96973761aaaa3c757584bb845f
+    :commit: 7694823698f2bbede06b7570a1170a1ce1c19ac9
     :git: https://github.com/signalapp/SignalCoreKit.git
   SignalMetadataKit:
     :commit: 3fcb31137b80518607ceed7107516ecabe857699
@@ -388,7 +388,7 @@ SPEC CHECKSUMS:
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
   SignalCoreKit: 4562b2bbd9830077439ca003f952a798457d4ea5
   SignalMetadataKit: a7aacedf262d947c22e2c619f0fd217163d2a637
-  SignalRingRTC: 45cc2ed942a1c1b4c203970932d01fdf7d785d3b
+  SignalRingRTC: 1b45adc0285e41d78dc8a6f7b12f904e00285e99
   SignalServiceKit: 2adac6fb54ddf719e17c1adaf5b6bfa01cdfdde1
   SQLCipher: d305a7bd9af4b64f095c79bdc1a1fa50f2a15116
   SSZipArchive: 41455d4b8d2b6ab93990820b50dc697c2554a322

@@ -3293,6 +3293,12 @@
 /* alert title */
 "SECONDARY_DEVICE_ERROR_FETCHING_LINKING_CODE" = "No s'ha pogut obtenir el codi d'enllaç.";
 
+/* Message for error alert indicating that a linked device must be upgraded before it can be linked. */
+"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_MESSAGE" = "Actualitzeu el Signal d'aquest dispositiu per enllaçar-lo amb el telèfon.";
+
+/* Title for error alert indicating that a linked device must be upgraded before it can be linked. */
+"SECONDARY_LINKING_ERROR_OBSOLETE_LINKED_DEVICE_TITLE" = "Versió sense suport";
+
 /* alert message for outdated linking device */
 "SECONDARY_LINKING_ERROR_OLD_VERSION_MESSAGE" = "El vostre altre dispositiu està executant una versió antiga del Signal que no és compatible amb l'exploració de codis QR d'iPad. Instal·leu-hi l'última versió del Signal i torneu-ho a provar.";
 
@@ -3544,6 +3550,12 @@
 
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "Configuració";
+
+/* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Count Muted Conversations";
+
+/* table section header */
+"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Badge Count";
 
 /* table section footer */
 "SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Les notificacions de trucades i missatges es poden mostrar al telèfon quan està bloquejat. Potser voleu limitar el que es mostra a les notificacions.";

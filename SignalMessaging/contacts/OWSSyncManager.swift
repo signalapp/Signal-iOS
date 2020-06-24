@@ -138,8 +138,8 @@ extension OWSSyncManager: SyncManagerProtocolSwift {
             return owsFailDebug("Unexpectedly tried to send sync message before registration.")
         }
 
-        databaseStorage.asyncWrite { [weak self] _ in
-            self?.sendMessageRequestResponseSyncMessage(thread: thread, responseType: responseType)
+        databaseStorage.asyncWrite { [weak self] transaction in
+            self?.sendMessageRequestResponseSyncMessage(thread: thread, responseType: responseType, transaction: transaction)
         }
     }
 
