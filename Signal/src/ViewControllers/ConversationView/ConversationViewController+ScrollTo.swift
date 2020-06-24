@@ -134,8 +134,8 @@ extension ConversationViewController {
 
         switch position {
         case .top, .topIfNotEntirelyOnScreen:
-            destinationY = attributes.frame.minY
-            destinationY -= attributes.frame.height * (1 - onScreenPercentage)
+            destinationY = attributes.frame.minY - topInset
+            destinationY += attributes.frame.height * (1 - onScreenPercentage)
         case .bottom, .bottomIfNotEntirelyOnScreen:
             destinationY = attributes.frame.minY
             destinationY -= collectionViewHeightUnobscuredByBottomBar
