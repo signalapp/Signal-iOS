@@ -36,6 +36,9 @@ public class RemoteConfig: NSObject {
 
     @objc
     public static var groupsV2GoodCitizen: Bool {
+        if groupsV2CreateGroups {
+            return true
+        }
         guard FeatureFlags.groupsV2GoodCitizen else { return false }
         if DebugFlags.groupsV2IgnoreServerFlags { return true }
         return isEnabled(.groupsV2GoodCitizen)

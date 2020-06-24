@@ -406,8 +406,7 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
             owsFailDebug("Missing delegate.")
             return
         }
-        guard RemoteConfig.groupsV2CreateGroups ||
-            RemoteConfig.groupsV2GoodCitizen else {
+        guard RemoteConfig.groupsV2GoodCitizen else {
                 return
         }
         guard groupMemberViewDelegate.shouldTryToEnableGroupsV2ForMembers else {
@@ -432,8 +431,7 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
             owsFailDebug("Missing delegate.")
             return AnyPromise(Promise.value(()))
         }
-        guard RemoteConfig.groupsV2CreateGroups ||
-            RemoteConfig.groupsV2GoodCitizen else {
+        guard RemoteConfig.groupsV2GoodCitizen else {
                 return AnyPromise(Promise.value(()))
         }
         guard groupMemberViewDelegate.shouldTryToEnableGroupsV2ForMembers else {

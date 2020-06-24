@@ -217,12 +217,10 @@ public class FeatureFlags: NSObject {
     public static let isUsingProductionService = true
 
     @objc
-    public static let versionedProfiledFetches = groupsV2
+    public static let versionedProfiledFetches = true
 
-    // When we activate this feature flag, we also need to ensure that all
-    // users update their profile once in a durable way.
     @objc
-    public static let versionedProfiledUpdate = groupsV2
+    public static let versionedProfiledUpdate = true
 
     @objc
     public static let useOrphanDataCleaner = true

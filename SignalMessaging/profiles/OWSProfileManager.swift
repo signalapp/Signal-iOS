@@ -44,6 +44,7 @@ public extension OWSProfileManager {
 
     // This will re-upload the existing local profile state.
     func reuploadLocalProfilePromise() -> Promise<Void> {
+        Logger.info("")
 
         let profileGivenName: String?
         let profileFamilyName: String?
