@@ -8,7 +8,7 @@
 
 Pod::Spec.new do |s|
   s.name             = "SignalRingRTC"
-  s.version          = "2.0.4"
+  s.version          = "2.2.0"
   s.summary          = "A Swift & Objective-C library used by the Signal iOS app for WebRTC interactions."
 
   s.description      = <<-DESC
@@ -21,7 +21,7 @@ Pod::Spec.new do |s|
   s.author           = { 'iOS Team': 'ios@signal.org' }
   s.social_media_url = 'https://twitter.com/signalapp'
 
-  s.platform     = :ios, '10.0'
+  s.platform     = :ios, '11.0'
   s.requires_arc = true
 
   s.source_files  = 'RingRTC/src/ios/SignalRingRTC/SignalRingRTC/**/*.{h,m,swift}', 'WebRTC/Build/libringrtc/**/*.h'
