@@ -79,7 +79,7 @@ public class AddToGroupViewController: OWSTableViewController {
                 let groupViewHelper = GroupViewHelper(threadViewModel: threadViewModel)
                 return groupViewHelper.canEditConversationMembership
             } as? [TSGroupThread] ?? []
-        }            
+        }
 
         let contents = OWSTableContents()
 
@@ -248,7 +248,8 @@ public class AddToGroupViewController: OWSTableViewController {
                                                          description: self.logTag)
         }.then(on: .global()) { _ in
             // dmConfiguration: nil means don't change disappearing messages configuration.
-            GroupManager.localUpdateExistingGroup(groupModel: newGroupModel,
+            GroupManager.localUpdateExistingGroup(oldGroupModel: oldGroupModel,
+                                                  newGroupModel: newGroupModel,
                                                   dmConfiguration: nil,
                                                   groupUpdateSourceAddress: localAddress)
         }.asVoid()

@@ -36,6 +36,8 @@ class GroupAttributesViewController: OWSViewController {
 
     private let groupThread: TSGroupThread
 
+    private let oldGroupModel: TSGroupModel
+
     private let helper: GroupAttributesEditorHelper
 
     private var editAction: EditAction?
@@ -52,6 +54,10 @@ class GroupAttributesViewController: OWSViewController {
                          editAction: EditAction,
                          delegate: GroupAttributesViewControllerDelegate) {
         self.groupThread = groupThread
+        // Capture the group model before any changes are made
+        // so that we can diff against it to determine the
+        // user intent.
+        self.oldGroupModel = groupThread.groupModel
         self.editAction = editAction
         self.delegate = delegate
 
@@ -282,8 +288,6 @@ private extension GroupAttributesViewController {
             return dismissAndUpdateDelegate()
         }
 
-        let groupThread = self.groupThread
-        let oldGroupModel = groupThread.groupModel
         guard let newGroupModel = buildNewGroupModel(groupName: newGroupName,
                                                      groupAvatar: avatarCurrent) else {
                                                         let error = OWSAssertionError("Couldn't build group model.")
@@ -292,16 +296,16 @@ private extension GroupAttributesViewController {
         }
         GroupViewUtils.updateGroupWithActivityIndicator(fromViewController: self,
                                                         updatePromiseBlock: {
-                                                            self.updateGroupThreadPromise(oldGroupModel: oldGroupModel,
-                                                                newGroupModel: newGroupModel)
+                                                            self.updateGroupThreadPromise(newGroupModel: newGroupModel)
         },
                                                         completion: {
             dismissAndUpdateDelegate()
         })
     }
 
-    func updateGroupThreadPromise(oldGroupModel: TSGroupModel,
-                                  newGroupModel: TSGroupModel) -> Promise<Void> {
+    func updateGroupThreadPromise(newGroupModel: TSGroupModel) -> Promise<Void> {
+
+        let oldGroupModel = self.oldGroupModel
 
         guard let localAddress = tsAccountManager.localAddress else {
             return Promise(error: OWSAssertionError("Missing localAddress."))
@@ -312,7 +316,8 @@ private extension GroupAttributesViewController {
                                                          description: self.logTag)
         }.then(on: .global()) { _ in
             // dmConfiguration: nil means don't change disappearing messages configuration.
-            GroupManager.localUpdateExistingGroup(groupModel: newGroupModel,
+            GroupManager.localUpdateExistingGroup(oldGroupModel: oldGroupModel,
+                                                  newGroupModel: newGroupModel,
                                                   dmConfiguration: nil,
                                                   groupUpdateSourceAddress: localAddress)
         }.asVoid()

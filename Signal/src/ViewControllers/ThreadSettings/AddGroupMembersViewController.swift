@@ -164,7 +164,6 @@ private extension AddGroupMembersViewController {
             return dismissAndUpdateDelegate()
         }
 
-        let oldGroupModel = self.oldGroupModel
         guard let newGroupModel = buildNewGroupModel() else {
                                                         let error = OWSAssertionError("Couldn't build group model.")
                                                         GroupViewUtils.showUpdateErrorUI(error: error)
@@ -172,16 +171,16 @@ private extension AddGroupMembersViewController {
         }
         GroupViewUtils.updateGroupWithActivityIndicator(fromViewController: self,
                                                         updatePromiseBlock: {
-                                                            self.updateGroupThreadPromise(oldGroupModel: oldGroupModel,
-                                                                                          newGroupModel: newGroupModel)
+                                                            self.updateGroupThreadPromise(newGroupModel: newGroupModel)
         },
                                                         completion: {
                                                             dismissAndUpdateDelegate()
         })
     }
 
-    func updateGroupThreadPromise(oldGroupModel: TSGroupModel,
-                                  newGroupModel: TSGroupModel) -> Promise<Void> {
+    func updateGroupThreadPromise(newGroupModel: TSGroupModel) -> Promise<Void> {
+
+        let oldGroupModel = self.oldGroupModel
 
         guard let localAddress = tsAccountManager.localAddress else {
             return Promise(error: OWSAssertionError("Missing localAddress."))
@@ -192,7 +191,8 @@ private extension AddGroupMembersViewController {
                                                          description: self.logTag)
         }.then(on: .global()) { _ in
             // dmConfiguration: nil means don't change disappearing messages configuration.
-            GroupManager.localUpdateExistingGroup(groupModel: newGroupModel,
+            GroupManager.localUpdateExistingGroup(oldGroupModel: oldGroupModel,
+                                                  newGroupModel: newGroupModel,
                                                   dmConfiguration: nil,
                                                   groupUpdateSourceAddress: localAddress)
         }.asVoid()
