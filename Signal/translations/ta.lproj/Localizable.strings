@@ -3551,6 +3551,12 @@
 /* Title for settings activity */
 "SETTINGS_NAV_BAR_TITLE" = "அமைப்புகள்";
 
+/* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Count Muted Conversations";
+
+/* table section header */
+"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Badge Count";
+
 /* table section footer */
 "SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "உங்கள் தொலைபேசி பூட்டப்பட்டிருக்கும் போது அழைப்பு மற்றும் செய்தி அறிவிப்புகள் தோன்றும். இந்த அறிவிப்புகளில் காட்டப்பட்டுள்ளதை மட்டுப்படுத்த நீங்கள் விரும்பலாம்.";
 
