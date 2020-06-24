@@ -12,7 +12,7 @@ public final class TTLUtilities : NSObject {
         // Somewhat important control messages
         case linkDevice
         // Important control messages
-        case disappearingMessagesConfiguration, ephemeral, profileKey, receipt, sessionRequest, sync, unlinkDevice
+        case closedGroupUpdate, disappearingMessagesConfiguration, ephemeral, profileKey, receipt, sessionRequest, sync, unlinkDevice
         // Visible messages
         case friendRequest, regular
     }
@@ -24,7 +24,7 @@ public final class TTLUtilities : NSObject {
         // Somewhat important control messages
         case .linkDevice: return 1 * kHourInMs
         // Important control messages
-        case .disappearingMessagesConfiguration, .ephemeral, .profileKey, .receipt, .sessionRequest, .sync, .unlinkDevice: return 2 * kDayInMs - 1 * kHourInMs
+        case .closedGroupUpdate, .disappearingMessagesConfiguration, .ephemeral, .profileKey, .receipt, .sessionRequest, .sync, .unlinkDevice: return 2 * kDayInMs - 1 * kHourInMs
         // Visible messages
         case .friendRequest, .regular: return 2 * kDayInMs
         }

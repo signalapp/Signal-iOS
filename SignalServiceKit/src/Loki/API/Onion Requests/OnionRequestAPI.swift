@@ -27,7 +27,7 @@ public enum OnionRequestAPI {
         case snodePublicKeySetMissing
         case unsupportedSnodeVersion(String)
 
-        var errorDescription: String? {
+        internal var errorDescription: String? {
             switch self {
             case .httpRequestFailedAtTargetSnode(let statusCode): return "HTTP request failed at target snode with status code: \(statusCode)."
             case .insufficientSnodes: return "Couldn't find enough snodes to build a path."

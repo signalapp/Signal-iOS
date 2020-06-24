@@ -71,7 +71,7 @@ NSString *const TSContactThreadPrefix = @"c";
 
 - (NSArray<NSString *> *)recipientIdentifiers
 {
-    return @[self.contactIdentifier];
+    return @[ self.contactIdentifier ];
 }
 
 - (BOOL)isGroupThread {

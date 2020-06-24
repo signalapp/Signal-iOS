@@ -670,7 +670,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
         OWSAssertDebug(errorMessage);
         if (errorMessage != nil) {
             [errorMessage saveWithTransaction:transaction];
-            [LKSessionManagementProtocol handleDecryptionError:errorMessage.errorType forHexEncodedPublicKey:envelope.source using:transaction];
+            [LKSessionManagementProtocol handleDecryptionError:errorMessage.errorType forPublicKey:envelope.source using:transaction];
             [self notifyUserForErrorMessage:errorMessage envelope:envelope transaction:transaction];
         }
     } error:nil];

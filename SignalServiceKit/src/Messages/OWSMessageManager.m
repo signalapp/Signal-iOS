@@ -1306,15 +1306,15 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         // Loki: Handle profile key update if needed
-        [LKSessionMetaProtocol updateProfileKeyIfNeededForHexEncodedPublicKey:senderMasterHexEncodedPublicKey using:dataMessage];
+        [LKSessionMetaProtocol updateProfileKeyIfNeededForPublicKey:senderMasterHexEncodedPublicKey using:dataMessage];
 
         // Loki: Handle display name update if needed
-        [LKSessionMetaProtocol updateDisplayNameIfNeededForHexEncodedPublicKey:senderMasterHexEncodedPublicKey using:dataMessage appendingShortID:NO in:transaction];
+        [LKSessionMetaProtocol updateDisplayNameIfNeededForPublicKey:senderMasterHexEncodedPublicKey using:dataMessage transaction:transaction];
 
         switch (dataMessage.group.type) {
             case SSKProtoGroupContextTypeUpdate: {
                 // Loki: Ignore updates from non-admins
-                if ([LKClosedGroupsProtocol shouldIgnoreClosedGroupUpdateMessage:envelope in:oldGroupThread using:transaction]) {
+                if ([LKClosedGroupsProtocol shouldIgnoreClosedGroupUpdateMessage:dataMessage inThread:oldGroupThread wrappedIn:envelope using:transaction]) {
                     return nil;
                 }
                 // Ensures that the thread exists but doesn't update it.
@@ -1336,7 +1336,7 @@ NS_ASSUME_NONNULL_BEGIN
                 BOOL wasCurrentUserRemovedFromGroup = [removedMemberIds containsObject:userMasterHexEncodedPublicKey];
                 if (!wasCurrentUserRemovedFromGroup) {
                     // Loki: Try to establish sessions with all members when a group is created or updated
-                    [LKClosedGroupsProtocol establishSessionsIfNeededWithClosedGroupMembers:newMemberIds.allObjects in:newGroupThread using:transaction];
+                    [LKClosedGroupsProtocol establishSessionsIfNeededWithClosedGroupMembers:newMemberIds.allObjects inThread:newGroupThread using:transaction];
                 }
 
                 [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithDisappearingDuration:dataMessage.expireTimer
@@ -1528,8 +1528,8 @@ NS_ASSUME_NONNULL_BEGIN
                                                         serverTimestamp:serverTimestamp
                                                         wasReceivedByUD:wasReceivedByUD];
 
-        [LKSessionMetaProtocol updateDisplayNameIfNeededForHexEncodedPublicKey:incomingMessage.authorId using:dataMessage appendingShortID:YES in:transaction];
-        [LKSessionMetaProtocol updateProfileKeyIfNeededForHexEncodedPublicKey:thread.contactIdentifier using:dataMessage];
+        [LKSessionMetaProtocol updateDisplayNameIfNeededForPublicKey:incomingMessage.authorId using:dataMessage transaction:transaction];
+        [LKSessionMetaProtocol updateProfileKeyIfNeededForPublicKey:thread.contactIdentifier using:dataMessage];
 
         NSArray<TSAttachmentPointer *> *attachmentPointers =
             [TSAttachmentPointer attachmentPointersFromProtos:dataMessage.attachments albumMessage:incomingMessage];

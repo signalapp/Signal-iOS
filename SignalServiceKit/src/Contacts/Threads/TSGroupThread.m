@@ -139,11 +139,12 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
 - (NSArray<NSString *> *)recipientIdentifiers
 {
     NSMutableArray<NSString *> *groupMemberIds = [self.groupModel.groupMemberIds mutableCopy];
+
     if (groupMemberIds == nil) {
         return @[];
     }
 
-    [groupMemberIds removeObject:[TSAccountManager localNumber]];
+    [groupMemberIds removeObject:TSAccountManager.localNumber];
 
     return [groupMemberIds copy];
 }

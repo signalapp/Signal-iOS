@@ -10,11 +10,8 @@ public enum GroupUtilities {
     }
 
     public static func getClosedGroupMembers(_ closedGroup: TSGroupThread, with transaction: YapDatabaseReadTransaction) -> [String] {
-        let storage = OWSPrimaryStorage.shared()
-        let userHexEncodedPublicKey = getUserHexEncodedPublicKey()
         return closedGroup.groupModel.groupMemberIds.filter { member in
-            // Don't show slave devices
-            return storage.getMasterHexEncodedPublicKey(for: member, in: transaction) == nil
+            OWSPrimaryStorage.shared().getMasterHexEncodedPublicKey(for: member, in: transaction) == nil // Don't show slave devices
         }
     }
 

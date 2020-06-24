@@ -38,10 +38,6 @@ message Envelope {
   optional string serverGuid      = 9;
   // We may eventually want to make this required.
   optional uint64 serverTimestamp = 10;
-
-  // Loki: This field is only here as a helper
-  // It shouldn't be set when sending a message
-  optional bool isPtpMessage = 999;
 }
 
 message TypingMessage {
@@ -65,7 +61,6 @@ message Content {
   optional ReceiptMessage           receiptMessage        = 5;
   optional TypingMessage            typingMessage         = 6;
   optional PrekeyBundleMessage      prekeyBundleMessage   = 101; // Loki
-  optional LokiAddressMessage       lokiAddressMessage    = 102; // Loki
   optional LokiDeviceLinkMessage    lokiDeviceLinkMessage = 103; // Loki
 }
 
@@ -79,24 +74,17 @@ message PrekeyBundleMessage { // Loki
   optional bytes  signature   = 7;
 }
 
-message LokiAddressMessage { // Loki
-  // The naming is a bit different from desktop because of swift auto generation
-  // It doesn't like p2p much :(
-  optional string ptpAddress  = 1;
-  optional uint32 ptpPort     = 2;
-}
-
 message LokiDeviceLinkMessage { // Loki
-  optional string masterHexEncodedPublicKey = 1;
-  optional string slaveHexEncodedPublicKey  = 2;
-  optional bytes  slaveSignature            = 3;
-  optional bytes  masterSignature           = 4;
+  optional string masterPublicKey = 1;
+  optional string slavePublicKey  = 2;
+  optional bytes  slaveSignature  = 3;
+  optional bytes  masterSignature = 4;
 }
 
 message CallMessage {
   message Offer {
     // @required
-    optional uint64 id          = 1;
+    optional uint64 id = 1;
     // Signal-iOS renamed the description field to avoid
     // conflicts with [NSObject description].
     // @required
@@ -105,7 +93,7 @@ message CallMessage {
 
   message Answer {
     // @required
-    optional uint64 id          = 1;
+    optional uint64 id = 1;
     // Signal-iOS renamed the description field to avoid
     // conflicts with [NSObject description].
     // @required
@@ -253,18 +241,31 @@ message DataMessage {
     optional string profilePicture = 2;
   }
 
-  optional string             body        = 1;
-  repeated AttachmentPointer  attachments = 2;
-  optional GroupContext       group       = 3;
-  optional uint32             flags       = 4;
-  optional uint32             expireTimer = 5;
-  optional bytes              profileKey  = 6;
-  optional uint64             timestamp   = 7;
-  optional Quote              quote       = 8;
-  repeated Contact            contact     = 9;
-  repeated Preview            preview     = 10;
-  optional LokiProfile        profile     = 101; // Loki: The current user's profile
-  optional PublicChatInfo     publicChatInfo = 999; // Loki: Internal public chat info
+  message ClosedGroupUpdate { // Loki
+    // @required
+    optional string name           = 1;
+    // @required
+    optional string groupID        = 2;
+    // @required
+    optional string sharedSecret   = 3;
+    // @required
+    optional string senderKey      = 4;
+    repeated string members        = 5;
+  }
+
+  optional string            body              = 1;
+  repeated AttachmentPointer attachments       = 2;
+  optional GroupContext      group             = 3;
+  optional uint32            flags             = 4;
+  optional uint32            expireTimer       = 5;
+  optional bytes             profileKey        = 6;
+  optional uint64            timestamp         = 7;
+  optional Quote             quote             = 8;
+  repeated Contact           contact           = 9;
+  repeated Preview           preview           = 10;
+  optional LokiProfile       profile           = 101; // Loki: The current user's profile
+  optional ClosedGroupUpdate closedGroupUpdate = 103; // Loki
+  optional PublicChatInfo    publicChatInfo    = 999; // Loki: Internal public chat info
 }
 
 message NullMessage {
@@ -322,9 +323,10 @@ message SyncMessage {
     optional bytes             data = 101; // Loki
   }
 
-  // Loki
-  message OpenGroupDetails {
+  message OpenGroupDetails { // Loki
+    // @required
     optional string url       = 1;
+    // @required
     optional uint64 channelId = 2;
   }
 

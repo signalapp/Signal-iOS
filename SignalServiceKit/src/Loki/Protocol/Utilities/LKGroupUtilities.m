@@ -49,14 +49,14 @@
 
 +(NSString *)getEncodedGroupID: (NSData *)groupID
 {
-    return [[NSString alloc]initWithData:groupID encoding:NSUTF8StringEncoding];
+    return [[NSString alloc] initWithData:groupID encoding:NSUTF8StringEncoding];
 }
 
 +(NSString *)getDecodedGroupID:(NSData *)groupID
 {
     OWSAssertDebug(groupID.length > 0);
     NSString *encodedGroupID = [[NSString alloc] initWithData:groupID encoding:NSUTF8StringEncoding];
-    if ([encodedGroupID componentsSeparatedByString:@"1"].count > 1) {
+    if ([encodedGroupID componentsSeparatedByString:@"!"].count > 1) {
         return [encodedGroupID componentsSeparatedByString:@"!"][1];
     }
     return [encodedGroupID componentsSeparatedByString:@"!"][0];

@@ -80,9 +80,6 @@ public enum SSKProtoError: Error {
         if hasServerTimestamp {
             builder.setServerTimestamp(serverTimestamp)
         }
-        if hasIsPtpMessage {
-            builder.setIsPtpMessage(isPtpMessage)
-        }
         return builder
     }
 
@@ -133,10 +130,6 @@ public enum SSKProtoError: Error {
 
         @objc public func setServerTimestamp(_ valueParam: UInt64) {
             proto.serverTimestamp = valueParam
-        }
-
-        @objc public func setIsPtpMessage(_ valueParam: Bool) {
-            proto.isPtpMessage = valueParam
         }
 
         @objc public func build() throws -> SSKProtoEnvelope {
@@ -216,13 +209,6 @@ public enum SSKProtoError: Error {
     }
     @objc public var hasServerTimestamp: Bool {
         return proto.hasServerTimestamp
-    }
-
-    @objc public var isPtpMessage: Bool {
-        return proto.isPtpMessage
-    }
-    @objc public var hasIsPtpMessage: Bool {
-        return proto.hasIsPtpMessage
     }
 
     private init(proto: SignalServiceProtos_Envelope,
@@ -469,9 +455,6 @@ extension SSKProtoTypingMessage.SSKProtoTypingMessageBuilder {
         if let _value = prekeyBundleMessage {
             builder.setPrekeyBundleMessage(_value)
         }
-        if let _value = lokiAddressMessage {
-            builder.setLokiAddressMessage(_value)
-        }
         if let _value = lokiDeviceLinkMessage {
             builder.setLokiDeviceLinkMessage(_value)
         }
@@ -512,10 +495,6 @@ extension SSKProtoTypingMessage.SSKProtoTypingMessageBuilder {
             proto.prekeyBundleMessage = valueParam.proto
         }
 
-        @objc public func setLokiAddressMessage(_ valueParam: SSKProtoLokiAddressMessage) {
-            proto.lokiAddressMessage = valueParam.proto
-        }
-
         @objc public func setLokiDeviceLinkMessage(_ valueParam: SSKProtoLokiDeviceLinkMessage) {
             proto.lokiDeviceLinkMessage = valueParam.proto
         }
@@ -545,8 +524,6 @@ extension SSKProtoTypingMessage.SSKProtoTypingMessageBuilder {
 
     @objc public let prekeyBundleMessage: SSKProtoPrekeyBundleMessage?
 
-    @objc public let lokiAddressMessage: SSKProtoLokiAddressMessage?
-
     @objc public let lokiDeviceLinkMessage: SSKProtoLokiDeviceLinkMessage?
 
     private init(proto: SignalServiceProtos_Content,
@@ -557,7 +534,6 @@ extension SSKProtoTypingMessage.SSKProtoTypingMessageBuilder {
                  receiptMessage: SSKProtoReceiptMessage?,
                  typingMessage: SSKProtoTypingMessage?,
                  prekeyBundleMessage: SSKProtoPrekeyBundleMessage?,
-                 lokiAddressMessage: SSKProtoLokiAddressMessage?,
                  lokiDeviceLinkMessage: SSKProtoLokiDeviceLinkMessage?) {
         self.proto = proto
         self.dataMessage = dataMessage
@@ -567,7 +543,6 @@ extension SSKProtoTypingMessage.SSKProtoTypingMessageBuilder {
         self.receiptMessage = receiptMessage
         self.typingMessage = typingMessage
         self.prekeyBundleMessage = prekeyBundleMessage
-        self.lokiAddressMessage = lokiAddressMessage
         self.lokiDeviceLinkMessage = lokiDeviceLinkMessage
     }
 
@@ -617,11 +592,6 @@ extension SSKProtoTypingMessage.SSKProtoTypingMessageBuilder {
             prekeyBundleMessage = try SSKProtoPrekeyBundleMessage.parseProto(proto.prekeyBundleMessage)
         }
 
-        var lokiAddressMessage: SSKProtoLokiAddressMessage? = nil
-        if proto.hasLokiAddressMessage {
-            lokiAddressMessage = try SSKProtoLokiAddressMessage.parseProto(proto.lokiAddressMessage)
-        }
-
         var lokiDeviceLinkMessage: SSKProtoLokiDeviceLinkMessage? = nil
         if proto.hasLokiDeviceLinkMessage {
             lokiDeviceLinkMessage = try SSKProtoLokiDeviceLinkMessage.parseProto(proto.lokiDeviceLinkMessage)
@@ -639,7 +609,6 @@ extension SSKProtoTypingMessage.SSKProtoTypingMessageBuilder {
                                      receiptMessage: receiptMessage,
                                      typingMessage: typingMessage,
                                      prekeyBundleMessage: prekeyBundleMessage,
-                                     lokiAddressMessage: lokiAddressMessage,
                                      lokiDeviceLinkMessage: lokiDeviceLinkMessage)
         return result
     }
@@ -852,114 +821,6 @@ extension SSKProtoPrekeyBundleMessage.SSKProtoPrekeyBundleMessageBuilder {
 
 #endif
 
-// MARK: - SSKProtoLokiAddressMessage
-
-@objc public class SSKProtoLokiAddressMessage: NSObject {
-
-    // MARK: - SSKProtoLokiAddressMessageBuilder
-
-    @objc public class func builder() -> SSKProtoLokiAddressMessageBuilder {
-        return SSKProtoLokiAddressMessageBuilder()
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc public func asBuilder() -> SSKProtoLokiAddressMessageBuilder {
-        let builder = SSKProtoLokiAddressMessageBuilder()
-        if let _value = ptpAddress {
-            builder.setPtpAddress(_value)
-        }
-        if hasPtpPort {
-            builder.setPtpPort(ptpPort)
-        }
-        return builder
-    }
-
-    @objc public class SSKProtoLokiAddressMessageBuilder: NSObject {
-
-        private var proto = SignalServiceProtos_LokiAddressMessage()
-
-        @objc fileprivate override init() {}
-
-        @objc public func setPtpAddress(_ valueParam: String) {
-            proto.ptpAddress = valueParam
-        }
-
-        @objc public func setPtpPort(_ valueParam: UInt32) {
-            proto.ptpPort = valueParam
-        }
-
-        @objc public func build() throws -> SSKProtoLokiAddressMessage {
-            return try SSKProtoLokiAddressMessage.parseProto(proto)
-        }
-
-        @objc public func buildSerializedData() throws -> Data {
-            return try SSKProtoLokiAddressMessage.parseProto(proto).serializedData()
-        }
-    }
-
-    fileprivate let proto: SignalServiceProtos_LokiAddressMessage
-
-    @objc public var ptpAddress: String? {
-        guard proto.hasPtpAddress else {
-            return nil
-        }
-        return proto.ptpAddress
-    }
-    @objc public var hasPtpAddress: Bool {
-        return proto.hasPtpAddress
-    }
-
-    @objc public var ptpPort: UInt32 {
-        return proto.ptpPort
-    }
-    @objc public var hasPtpPort: Bool {
-        return proto.hasPtpPort
-    }
-
-    private init(proto: SignalServiceProtos_LokiAddressMessage) {
-        self.proto = proto
-    }
-
-    @objc
-    public func serializedData() throws -> Data {
-        return try self.proto.serializedData()
-    }
-
-    @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoLokiAddressMessage {
-        let proto = try SignalServiceProtos_LokiAddressMessage(serializedData: serializedData)
-        return try parseProto(proto)
-    }
-
-    fileprivate class func parseProto(_ proto: SignalServiceProtos_LokiAddressMessage) throws -> SSKProtoLokiAddressMessage {
-        // MARK: - Begin Validation Logic for SSKProtoLokiAddressMessage -
-
-        // MARK: - End Validation Logic for SSKProtoLokiAddressMessage -
-
-        let result = SSKProtoLokiAddressMessage(proto: proto)
-        return result
-    }
-
-    @objc public override var debugDescription: String {
-        return "\(proto)"
-    }
-}
-
-#if DEBUG
-
-extension SSKProtoLokiAddressMessage {
-    @objc public func serializedDataIgnoringErrors() -> Data? {
-        return try! self.serializedData()
-    }
-}
-
-extension SSKProtoLokiAddressMessage.SSKProtoLokiAddressMessageBuilder {
-    @objc public func buildIgnoringErrors() -> SSKProtoLokiAddressMessage? {
-        return try! self.build()
-    }
-}
-
-#endif
-
 // MARK: - SSKProtoLokiDeviceLinkMessage
 
 @objc public class SSKProtoLokiDeviceLinkMessage: NSObject {
@@ -973,11 +834,11 @@ extension SSKProtoLokiAddressMessage.SSKProtoLokiAddressMessageBuilder {
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc public func asBuilder() -> SSKProtoLokiDeviceLinkMessageBuilder {
         let builder = SSKProtoLokiDeviceLinkMessageBuilder()
-        if let _value = masterHexEncodedPublicKey {
-            builder.setMasterHexEncodedPublicKey(_value)
+        if let _value = masterPublicKey {
+            builder.setMasterPublicKey(_value)
         }
-        if let _value = slaveHexEncodedPublicKey {
-            builder.setSlaveHexEncodedPublicKey(_value)
+        if let _value = slavePublicKey {
+            builder.setSlavePublicKey(_value)
         }
         if let _value = slaveSignature {
             builder.setSlaveSignature(_value)
@@ -994,12 +855,12 @@ extension SSKProtoLokiAddressMessage.SSKProtoLokiAddressMessageBuilder {
 
         @objc fileprivate override init() {}
 
-        @objc public func setMasterHexEncodedPublicKey(_ valueParam: String) {
-            proto.masterHexEncodedPublicKey = valueParam
+        @objc public func setMasterPublicKey(_ valueParam: String) {
+            proto.masterPublicKey = valueParam
         }
 
-        @objc public func setSlaveHexEncodedPublicKey(_ valueParam: String) {
-            proto.slaveHexEncodedPublicKey = valueParam
+        @objc public func setSlavePublicKey(_ valueParam: String) {
+            proto.slavePublicKey = valueParam
         }
 
         @objc public func setSlaveSignature(_ valueParam: Data) {
@@ -1021,24 +882,24 @@ extension SSKProtoLokiAddressMessage.SSKProtoLokiAddressMessageBuilder {
 
     fileprivate let proto: SignalServiceProtos_LokiDeviceLinkMessage
 
-    @objc public var masterHexEncodedPublicKey: String? {
-        guard proto.hasMasterHexEncodedPublicKey else {
+    @objc public var masterPublicKey: String? {
+        guard proto.hasMasterPublicKey else {
             return nil
         }
-        return proto.masterHexEncodedPublicKey
+        return proto.masterPublicKey
     }
-    @objc public var hasMasterHexEncodedPublicKey: Bool {
-        return proto.hasMasterHexEncodedPublicKey
+    @objc public var hasMasterPublicKey: Bool {
+        return proto.hasMasterPublicKey
     }
 
-    @objc public var slaveHexEncodedPublicKey: String? {
-        guard proto.hasSlaveHexEncodedPublicKey else {
+    @objc public var slavePublicKey: String? {
+        guard proto.hasSlavePublicKey else {
             return nil
         }
-        return proto.slaveHexEncodedPublicKey
+        return proto.slavePublicKey
     }
-    @objc public var hasSlaveHexEncodedPublicKey: Bool {
-        return proto.hasSlaveHexEncodedPublicKey
+    @objc public var hasSlavePublicKey: Bool {
+        return proto.hasSlavePublicKey
     }
 
     @objc public var slaveSignature: Data? {
@@ -3423,6 +3284,163 @@ extension SSKProtoDataMessageLokiProfile.SSKProtoDataMessageLokiProfileBuilder {
 
 #endif
 
+// MARK: - SSKProtoDataMessageClosedGroupUpdate
+
+@objc public class SSKProtoDataMessageClosedGroupUpdate: NSObject {
+
+    // MARK: - SSKProtoDataMessageClosedGroupUpdateBuilder
+
+    @objc public class func builder(name: String, groupID: String, sharedSecret: String, senderKey: String) -> SSKProtoDataMessageClosedGroupUpdateBuilder {
+        return SSKProtoDataMessageClosedGroupUpdateBuilder(name: name, groupID: groupID, sharedSecret: sharedSecret, senderKey: senderKey)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc public func asBuilder() -> SSKProtoDataMessageClosedGroupUpdateBuilder {
+        let builder = SSKProtoDataMessageClosedGroupUpdateBuilder(name: name, groupID: groupID, sharedSecret: sharedSecret, senderKey: senderKey)
+        builder.setMembers(members)
+        return builder
+    }
+
+    @objc public class SSKProtoDataMessageClosedGroupUpdateBuilder: NSObject {
+
+        private var proto = SignalServiceProtos_DataMessage.ClosedGroupUpdate()
+
+        @objc fileprivate override init() {}
+
+        @objc fileprivate init(name: String, groupID: String, sharedSecret: String, senderKey: String) {
+            super.init()
+
+            setName(name)
+            setGroupID(groupID)
+            setSharedSecret(sharedSecret)
+            setSenderKey(senderKey)
+        }
+
+        @objc public func setName(_ valueParam: String) {
+            proto.name = valueParam
+        }
+
+        @objc public func setGroupID(_ valueParam: String) {
+            proto.groupID = valueParam
+        }
+
+        @objc public func setSharedSecret(_ valueParam: String) {
+            proto.sharedSecret = valueParam
+        }
+
+        @objc public func setSenderKey(_ valueParam: String) {
+            proto.senderKey = valueParam
+        }
+
+        @objc public func addMembers(_ valueParam: String) {
+            var items = proto.members
+            items.append(valueParam)
+            proto.members = items
+        }
+
+        @objc public func setMembers(_ wrappedItems: [String]) {
+            proto.members = wrappedItems
+        }
+
+        @objc public func build() throws -> SSKProtoDataMessageClosedGroupUpdate {
+            return try SSKProtoDataMessageClosedGroupUpdate.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoDataMessageClosedGroupUpdate.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SignalServiceProtos_DataMessage.ClosedGroupUpdate
+
+    @objc public let name: String
+
+    @objc public let groupID: String
+
+    @objc public let sharedSecret: String
+
+    @objc public let senderKey: String
+
+    @objc public var members: [String] {
+        return proto.members
+    }
+
+    private init(proto: SignalServiceProtos_DataMessage.ClosedGroupUpdate,
+                 name: String,
+                 groupID: String,
+                 sharedSecret: String,
+                 senderKey: String) {
+        self.proto = proto
+        self.name = name
+        self.groupID = groupID
+        self.sharedSecret = sharedSecret
+        self.senderKey = senderKey
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoDataMessageClosedGroupUpdate {
+        let proto = try SignalServiceProtos_DataMessage.ClosedGroupUpdate(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: SignalServiceProtos_DataMessage.ClosedGroupUpdate) throws -> SSKProtoDataMessageClosedGroupUpdate {
+        guard proto.hasName else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: name")
+        }
+        let name = proto.name
+
+        guard proto.hasGroupID else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: groupID")
+        }
+        let groupID = proto.groupID
+
+        guard proto.hasSharedSecret else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: sharedSecret")
+        }
+        let sharedSecret = proto.sharedSecret
+
+        guard proto.hasSenderKey else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: senderKey")
+        }
+        let senderKey = proto.senderKey
+
+        // MARK: - Begin Validation Logic for SSKProtoDataMessageClosedGroupUpdate -
+
+        // MARK: - End Validation Logic for SSKProtoDataMessageClosedGroupUpdate -
+
+        let result = SSKProtoDataMessageClosedGroupUpdate(proto: proto,
+                                                          name: name,
+                                                          groupID: groupID,
+                                                          sharedSecret: sharedSecret,
+                                                          senderKey: senderKey)
+        return result
+    }
+
+    @objc public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SSKProtoDataMessageClosedGroupUpdate {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoDataMessageClosedGroupUpdate.SSKProtoDataMessageClosedGroupUpdateBuilder {
+    @objc public func buildIgnoringErrors() -> SSKProtoDataMessageClosedGroupUpdate? {
+        return try! self.build()
+    }
+}
+
+#endif
+
 // MARK: - SSKProtoDataMessage
 
 @objc public class SSKProtoDataMessage: NSObject {
@@ -3495,6 +3513,9 @@ extension SSKProtoDataMessageLokiProfile.SSKProtoDataMessageLokiProfileBuilder {
         builder.setPreview(preview)
         if let _value = profile {
             builder.setProfile(_value)
+        }
+        if let _value = closedGroupUpdate {
+            builder.setClosedGroupUpdate(_value)
         }
         if let _value = publicChatInfo {
             builder.setPublicChatInfo(_value)
@@ -3570,6 +3591,10 @@ extension SSKProtoDataMessageLokiProfile.SSKProtoDataMessageLokiProfileBuilder {
             proto.profile = valueParam.proto
         }
 
+        @objc public func setClosedGroupUpdate(_ valueParam: SSKProtoDataMessageClosedGroupUpdate) {
+            proto.closedGroupUpdate = valueParam.proto
+        }
+
         @objc public func setPublicChatInfo(_ valueParam: SSKProtoPublicChatInfo) {
             proto.publicChatInfo = valueParam.proto
         }
@@ -3596,6 +3621,8 @@ extension SSKProtoDataMessageLokiProfile.SSKProtoDataMessageLokiProfileBuilder {
     @objc public let preview: [SSKProtoDataMessagePreview]
 
     @objc public let profile: SSKProtoDataMessageLokiProfile?
+
+    @objc public let closedGroupUpdate: SSKProtoDataMessageClosedGroupUpdate?
 
     @objc public let publicChatInfo: SSKProtoPublicChatInfo?
 
@@ -3647,6 +3674,7 @@ extension SSKProtoDataMessageLokiProfile.SSKProtoDataMessageLokiProfileBuilder {
                  contact: [SSKProtoDataMessageContact],
                  preview: [SSKProtoDataMessagePreview],
                  profile: SSKProtoDataMessageLokiProfile?,
+                 closedGroupUpdate: SSKProtoDataMessageClosedGroupUpdate?,
                  publicChatInfo: SSKProtoPublicChatInfo?) {
         self.proto = proto
         self.attachments = attachments
@@ -3655,6 +3683,7 @@ extension SSKProtoDataMessageLokiProfile.SSKProtoDataMessageLokiProfileBuilder {
         self.contact = contact
         self.preview = preview
         self.profile = profile
+        self.closedGroupUpdate = closedGroupUpdate
         self.publicChatInfo = publicChatInfo
     }
 
@@ -3693,6 +3722,11 @@ extension SSKProtoDataMessageLokiProfile.SSKProtoDataMessageLokiProfileBuilder {
             profile = try SSKProtoDataMessageLokiProfile.parseProto(proto.profile)
         }
 
+        var closedGroupUpdate: SSKProtoDataMessageClosedGroupUpdate? = nil
+        if proto.hasClosedGroupUpdate {
+            closedGroupUpdate = try SSKProtoDataMessageClosedGroupUpdate.parseProto(proto.closedGroupUpdate)
+        }
+
         var publicChatInfo: SSKProtoPublicChatInfo? = nil
         if proto.hasPublicChatInfo {
             publicChatInfo = try SSKProtoPublicChatInfo.parseProto(proto.publicChatInfo)
@@ -3709,6 +3743,7 @@ extension SSKProtoDataMessageLokiProfile.SSKProtoDataMessageLokiProfileBuilder {
                                          contact: contact,
                                          preview: preview,
                                          profile: profile,
+                                         closedGroupUpdate: closedGroupUpdate,
                                          publicChatInfo: publicChatInfo)
         return result
     }
@@ -4566,7 +4601,7 @@ extension SSKProtoSyncMessageContacts.SSKProtoSyncMessageContactsBuilder {
         @objc public func setBlob(_ valueParam: SSKProtoAttachmentPointer) {
             proto.blob = valueParam.proto
         }
-        
+
         @objc public func setData(_ valueParam: Data) {
             proto.data = valueParam
         }
@@ -4583,7 +4618,7 @@ extension SSKProtoSyncMessageContacts.SSKProtoSyncMessageContactsBuilder {
     fileprivate let proto: SignalServiceProtos_SyncMessage.Groups
 
     @objc public let blob: SSKProtoAttachmentPointer?
-    
+
     @objc public var data: Data? {
         guard proto.hasData else {
             return nil
@@ -4640,6 +4675,118 @@ extension SSKProtoSyncMessageGroups {
 
 extension SSKProtoSyncMessageGroups.SSKProtoSyncMessageGroupsBuilder {
     @objc public func buildIgnoringErrors() -> SSKProtoSyncMessageGroups? {
+        return try! self.build()
+    }
+}
+
+#endif
+
+// MARK: - SSKProtoSyncMessageOpenGroupDetails
+
+@objc public class SSKProtoSyncMessageOpenGroupDetails: NSObject {
+
+    // MARK: - SSKProtoSyncMessageOpenGroupDetailsBuilder
+
+    @objc public class func builder(url: String, channelID: UInt64) -> SSKProtoSyncMessageOpenGroupDetailsBuilder {
+        return SSKProtoSyncMessageOpenGroupDetailsBuilder(url: url, channelID: channelID)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc public func asBuilder() -> SSKProtoSyncMessageOpenGroupDetailsBuilder {
+        let builder = SSKProtoSyncMessageOpenGroupDetailsBuilder(url: url, channelID: channelID)
+        return builder
+    }
+
+    @objc public class SSKProtoSyncMessageOpenGroupDetailsBuilder: NSObject {
+
+        private var proto = SignalServiceProtos_SyncMessage.OpenGroupDetails()
+
+        @objc fileprivate override init() {}
+
+        @objc fileprivate init(url: String, channelID: UInt64) {
+            super.init()
+
+            setUrl(url)
+            setChannelID(channelID)
+        }
+
+        @objc public func setUrl(_ valueParam: String) {
+            proto.url = valueParam
+        }
+
+        @objc public func setChannelID(_ valueParam: UInt64) {
+            proto.channelID = valueParam
+        }
+
+        @objc public func build() throws -> SSKProtoSyncMessageOpenGroupDetails {
+            return try SSKProtoSyncMessageOpenGroupDetails.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoSyncMessageOpenGroupDetails.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SignalServiceProtos_SyncMessage.OpenGroupDetails
+
+    @objc public let url: String
+
+    @objc public let channelID: UInt64
+
+    private init(proto: SignalServiceProtos_SyncMessage.OpenGroupDetails,
+                 url: String,
+                 channelID: UInt64) {
+        self.proto = proto
+        self.url = url
+        self.channelID = channelID
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoSyncMessageOpenGroupDetails {
+        let proto = try SignalServiceProtos_SyncMessage.OpenGroupDetails(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage.OpenGroupDetails) throws -> SSKProtoSyncMessageOpenGroupDetails {
+        guard proto.hasURL else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: url")
+        }
+        let url = proto.url
+
+        guard proto.hasChannelID else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: channelID")
+        }
+        let channelID = proto.channelID
+
+        // MARK: - Begin Validation Logic for SSKProtoSyncMessageOpenGroupDetails -
+
+        // MARK: - End Validation Logic for SSKProtoSyncMessageOpenGroupDetails -
+
+        let result = SSKProtoSyncMessageOpenGroupDetails(proto: proto,
+                                                         url: url,
+                                                         channelID: channelID)
+        return result
+    }
+
+    @objc public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SSKProtoSyncMessageOpenGroupDetails {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoSyncMessageOpenGroupDetails.SSKProtoSyncMessageOpenGroupDetailsBuilder {
+    @objc public func buildIgnoringErrors() -> SSKProtoSyncMessageOpenGroupDetails? {
         return try! self.build()
     }
 }
@@ -5125,110 +5272,6 @@ extension SSKProtoSyncMessageConfiguration.SSKProtoSyncMessageConfigurationBuild
 
 #endif
 
-// MARK: - SSKProtoSyncMessageOpenGroups
-@objc public class SSKProtoSyncMessageOpenGroups: NSObject {
-    
-    // MARK: - SSKProtoSyncMessageOpenGroupsBuilder
-
-       @objc public class func builder() -> SSKProtoSyncMessageOpenGroupsBuilder {
-           return SSKProtoSyncMessageOpenGroupsBuilder()
-       }
-
-       // asBuilder() constructs a builder that reflects the proto's contents.
-       @objc public func asBuilder() -> SSKProtoSyncMessageOpenGroupsBuilder {
-           let builder = SSKProtoSyncMessageOpenGroupsBuilder()
-           if hasUrl {
-               builder.setUrl(url)
-           }
-           if hasChannel{
-               builder.setChannel(channel)
-           }
-           return builder
-       }
-
-       @objc public class SSKProtoSyncMessageOpenGroupsBuilder: NSObject {
-
-           private var proto = SignalServiceProtos_SyncMessage.OpenGroups()
-
-           @objc fileprivate override init() {}
-
-           @objc public func setUrl(_ valueParam: String) {
-               proto.url = valueParam
-           }
-
-           @objc public func setChannel(_ valueParam: UInt64) {
-               proto.channel = valueParam
-           }
-
-           @objc public func build() throws -> SSKProtoSyncMessageOpenGroups {
-               return try SSKProtoSyncMessageOpenGroups.parseProto(proto)
-           }
-
-           @objc public func buildSerializedData() throws -> Data {
-               return try SSKProtoSyncMessageOpenGroups.parseProto(proto).serializedData()
-           }
-       }
-
-       fileprivate let proto: SignalServiceProtos_SyncMessage.OpenGroups
-
-       @objc public var url: String {
-           return proto.url
-       }
-       @objc public var hasUrl: Bool {
-           return proto.hasUrl
-       }
-
-       @objc public var channel: UInt64 {
-           return proto.channel
-       }
-       @objc public var hasChannel: Bool {
-           return proto.hasChannel
-       }
-
-       private init(proto: SignalServiceProtos_SyncMessage.OpenGroups) {
-           self.proto = proto
-       }
-
-       @objc
-       public func serializedData() throws -> Data {
-           return try self.proto.serializedData()
-       }
-
-       @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoSyncMessageOpenGroups {
-           let proto = try SignalServiceProtos_SyncMessage.OpenGroups(serializedData: serializedData)
-           return try parseProto(proto)
-       }
-
-       fileprivate class func parseProto(_ proto: SignalServiceProtos_SyncMessage.OpenGroups) throws -> SSKProtoSyncMessageOpenGroups {
-           // MARK: - Begin Validation Logic for SSKProtoSyncMessageOpenGroups -
-
-           // MARK: - End Validation Logic for SSKProtoSyncMessageOpenGroups -
-
-           let result = SSKProtoSyncMessageOpenGroups(proto: proto)
-           return result
-       }
-
-       @objc public override var debugDescription: String {
-           return "\(proto)"
-       }
-}
-
-#if DEBUG
-
-extension SSKProtoSyncMessageOpenGroups {
-    @objc public func serializedDataIgnoringErrors() -> Data? {
-        return try! self.serializedData()
-    }
-}
-
-extension SSKProtoSyncMessageOpenGroups.SSKProtoSyncMessageOpenGroupsBuilder {
-    @objc public func buildIgnoringErrors() -> SSKProtoSyncMessageOpenGroups? {
-        return try! self.build()
-    }
-}
-
-#endif
-
 // MARK: - SSKProtoSyncMessage
 
 @objc public class SSKProtoSyncMessage: NSObject {
@@ -5288,16 +5331,6 @@ extension SSKProtoSyncMessageOpenGroups.SSKProtoSyncMessageOpenGroupsBuilder {
         @objc public func setGroups(_ valueParam: SSKProtoSyncMessageGroups) {
             proto.groups = valueParam.proto
         }
-        
-        @objc public func addOpenGroup(_ valueParam: SSKProtoSyncMessageOpenGroups) {
-            var items = proto.openGroups
-            items.append(valueParam.proto)
-            proto.openGroups = items
-        }
-        
-        @objc public func setOpenGroups(_ wrappedItems: [SSKProtoSyncMessageOpenGroups]) {
-            proto.openGroups = wrappedItems.map { $0.proto }
-        }
 
         @objc public func setRequest(_ valueParam: SSKProtoSyncMessageRequest) {
             proto.request = valueParam.proto
@@ -5329,6 +5362,16 @@ extension SSKProtoSyncMessageOpenGroups.SSKProtoSyncMessageOpenGroupsBuilder {
             proto.padding = valueParam
         }
 
+        @objc public func addOpenGroups(_ valueParam: SSKProtoSyncMessageOpenGroupDetails) {
+            var items = proto.openGroups
+            items.append(valueParam.proto)
+            proto.openGroups = items
+        }
+
+        @objc public func setOpenGroups(_ wrappedItems: [SSKProtoSyncMessageOpenGroupDetails]) {
+            proto.openGroups = wrappedItems.map { $0.proto }
+        }
+
         @objc public func build() throws -> SSKProtoSyncMessage {
             return try SSKProtoSyncMessage.parseProto(proto)
         }
@@ -5345,8 +5388,6 @@ extension SSKProtoSyncMessageOpenGroups.SSKProtoSyncMessageOpenGroupsBuilder {
     @objc public let contacts: SSKProtoSyncMessageContacts?
 
     @objc public let groups: SSKProtoSyncMessageGroups?
-    
-    @objc public let openGroups: [SSKProtoSyncMessageOpenGroups]
 
     @objc public let request: SSKProtoSyncMessageRequest?
 
@@ -5357,6 +5398,8 @@ extension SSKProtoSyncMessageOpenGroups.SSKProtoSyncMessageOpenGroupsBuilder {
     @objc public let verified: SSKProtoVerified?
 
     @objc public let configuration: SSKProtoSyncMessageConfiguration?
+
+    @objc public let openGroups: [SSKProtoSyncMessageOpenGroupDetails]
 
     @objc public var padding: Data? {
         guard proto.hasPadding else {
@@ -5377,7 +5420,7 @@ extension SSKProtoSyncMessageOpenGroups.SSKProtoSyncMessageOpenGroupsBuilder {
                  blocked: SSKProtoSyncMessageBlocked?,
                  verified: SSKProtoVerified?,
                  configuration: SSKProtoSyncMessageConfiguration?,
-                 openGroups: [SSKProtoSyncMessageOpenGroups]) {
+                 openGroups: [SSKProtoSyncMessageOpenGroupDetails]) {
         self.proto = proto
         self.sent = sent
         self.contacts = contacts
@@ -5438,9 +5481,9 @@ extension SSKProtoSyncMessageOpenGroups.SSKProtoSyncMessageOpenGroupsBuilder {
         if proto.hasConfiguration {
             configuration = try SSKProtoSyncMessageConfiguration.parseProto(proto.configuration)
         }
-        
-        var openGroups: [SSKProtoSyncMessageOpenGroups] = []
-        openGroups = try proto.openGroups.map { try SSKProtoSyncMessageOpenGroups.parseProto($0) }
+
+        var openGroups: [SSKProtoSyncMessageOpenGroupDetails] = []
+        openGroups = try proto.openGroups.map { try SSKProtoSyncMessageOpenGroupDetails.parseProto($0) }
 
         // MARK: - Begin Validation Logic for SSKProtoSyncMessage -
 
@@ -5854,23 +5897,23 @@ extension SSKProtoAttachmentPointer.SSKProtoAttachmentPointerBuilder {
             items.append(valueParam)
             proto.members = items
         }
-        
+
+        @objc public func setMembers(_ wrappedItems: [String]) {
+            proto.members = wrappedItems
+        }
+
+        @objc public func setAvatar(_ valueParam: SSKProtoAttachmentPointer) {
+            proto.avatar = valueParam.proto
+        }
+
         @objc public func addAdmins(_ valueParam: String) {
             var items = proto.admins
             items.append(valueParam)
             proto.admins = items
         }
 
-        @objc public func setMembers(_ wrappedItems: [String]) {
-            proto.members = wrappedItems
-        }
-        
         @objc public func setAdmins(_ wrappedItems: [String]) {
             proto.admins = wrappedItems
-        }
-
-        @objc public func setAvatar(_ valueParam: SSKProtoAttachmentPointer) {
-            proto.avatar = valueParam.proto
         }
 
         @objc public func build() throws -> SSKProtoGroupContext {
@@ -5903,7 +5946,7 @@ extension SSKProtoAttachmentPointer.SSKProtoAttachmentPointerBuilder {
     @objc public var members: [String] {
         return proto.members
     }
-    
+
     @objc public var admins: [String] {
         return proto.admins
     }
@@ -6451,6 +6494,7 @@ extension SSKProtoGroupDetailsAvatar.SSKProtoGroupDetailsAvatarBuilder {
         if hasBlocked {
             builder.setBlocked(blocked)
         }
+        builder.setAdmins(admins)
         return builder
     }
 
@@ -6483,16 +6527,6 @@ extension SSKProtoGroupDetailsAvatar.SSKProtoGroupDetailsAvatarBuilder {
         @objc public func setMembers(_ wrappedItems: [String]) {
             proto.members = wrappedItems
         }
-        
-        @objc public func addAdmins(_ valueParam: String) {
-            var items = proto.admins
-            items.append(valueParam)
-            proto.admins = items
-        }
-        
-        @objc public func setAdmins(_ wrappedItems: [String]) {
-            proto.admins = wrappedItems
-        }
 
         @objc public func setAvatar(_ valueParam: SSKProtoGroupDetailsAvatar) {
             proto.avatar = valueParam.proto
@@ -6512,6 +6546,16 @@ extension SSKProtoGroupDetailsAvatar.SSKProtoGroupDetailsAvatarBuilder {
 
         @objc public func setBlocked(_ valueParam: Bool) {
             proto.blocked = valueParam
+        }
+
+        @objc public func addAdmins(_ valueParam: String) {
+            var items = proto.admins
+            items.append(valueParam)
+            proto.admins = items
+        }
+
+        @objc public func setAdmins(_ wrappedItems: [String]) {
+            proto.admins = wrappedItems
         }
 
         @objc public func build() throws -> SSKProtoGroupDetails {
@@ -6541,10 +6585,6 @@ extension SSKProtoGroupDetailsAvatar.SSKProtoGroupDetailsAvatarBuilder {
 
     @objc public var members: [String] {
         return proto.members
-    }
-    
-    @objc public var admins: [String] {
-        return proto.admins
     }
 
     @objc public var active: Bool {
@@ -6576,6 +6616,10 @@ extension SSKProtoGroupDetailsAvatar.SSKProtoGroupDetailsAvatarBuilder {
     }
     @objc public var hasBlocked: Bool {
         return proto.hasBlocked
+    }
+
+    @objc public var admins: [String] {
+        return proto.admins
     }
 
     private init(proto: SignalServiceProtos_GroupDetails,
