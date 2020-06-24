@@ -113,7 +113,7 @@ public class FeatureFlags: NSObject {
     }
 
     @objc
-    public static let uuidCapabilities = allowUUIDOnlyContacts && useOnlyModernContactDiscovery
+    public static let uuidCapabilities = (allowUUIDOnlyContacts && useOnlyModernContactDiscovery) || groupsV2
 
     @objc
     public static var storageModeDescription: String {
@@ -135,7 +135,7 @@ public class FeatureFlags: NSObject {
     public static let strictYDBExtensions = build.includes(.beta)
 
     @objc
-    public static var allowUUIDOnlyContacts = useOnlyModernContactDiscovery
+    public static var allowUUIDOnlyContacts = useOnlyModernContactDiscovery || groupsV2
 
     @objc
     public static var uuidSafetyNumbers = allowUUIDOnlyContacts
@@ -179,7 +179,7 @@ public class FeatureFlags: NSObject {
     public static let answerCallsOnSecondaryDevice: Bool = build.includes(.beta)
 
     @objc
-    public static let groupsV2 = build.includes(.qa) && !isUsingProductionService
+    public static let groupsV2 = build.includes(.qa)
 
     // Don't consult this feature flag directly; instead
     // consult RemoteConfig.groupsV2CreateGroups.
