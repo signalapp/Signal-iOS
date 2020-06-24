@@ -544,7 +544,8 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
         }
 
         dispatch_async(dispatch_get_main_queue(), ^{
-            self.allContacts = allContacts;
+            self.allContacts = [allContacts
+                sortedArrayUsingComparator:[Contact comparatorSortingNamesByFirstThenLast:self.shouldSortByGivenName]];
             self.allContactsMap = [allContactsMap copy];
             [self.cnContactCache removeAllObjects];
             [self.cnContactAvatarCache removeAllObjects];

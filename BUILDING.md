@@ -55,7 +55,7 @@ Developer account for this.
 On the Capabilities tab, turn off Push Notifications and Data Protection,
 while keeping Background Modes on. The App Groups capability will need to
 remain on in order to access the shared data storage. The App ID needs to
-match the SignalApplicationGroup string set in TSConstants.h. 
+match the `applicationGroup` string set (both Production and Staging) in TSConstants.swift. 
 
 If you wish to test the Documents API, the iCloud capability will need to
 be on with the iCloud Documents option selected.

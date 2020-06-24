@@ -436,7 +436,10 @@ class ImagePickerGridController: UICollectionViewController, PhotoLibraryDelegat
         isShowingCollectionPickerController = false
 
         UIView.animate(.promise, duration: 0.25, delay: 0, options: .curveEaseInOut) {
-            self.collectionPickerController.view.frame = self.view.frame.offsetBy(dx: 0, dy: self.view.frame.height)
+            self.collectionPickerController.view.frame = self.collectionPickerController.view.frame.offsetBy(
+                dx: 0,
+                dy: self.collectionPickerController.view.height
+            )
             self.titleView.rotateIcon(.down)
         }.done { _ in
             self.collectionPickerController.view.removeFromSuperview()
