@@ -133,6 +133,25 @@ public class SSKPreferences: NSObject {
         messageRequestInteractionIdEpochCached = value
     }
 
+    // MARK: - Badge Count
+
+    private static let includeMutedThreadsInBadgeCount = "includeMutedThreadsInBadgeCount"
+    private static var includeMutedThreadsInBadgeCountCached: Bool?
+
+    @objc
+    public static func includeMutedThreadsInBadgeCount(transaction: SDSAnyReadTransaction) -> Bool {
+        if let value = includeMutedThreadsInBadgeCountCached { return value }
+        let value = store.getBool(includeMutedThreadsInBadgeCount, defaultValue: false, transaction: transaction)
+        includeMutedThreadsInBadgeCountCached = value
+        return value
+    }
+
+    @objc
+    public static func setIncludeMutedThreadsInBadgeCount(_ value: Bool, transaction: SDSAnyWriteTransaction) {
+        store.setBool(value, key: includeMutedThreadsInBadgeCount, transaction: transaction)
+        includeMutedThreadsInBadgeCountCached = value
+    }
+
     // MARK: -
 
     public class var grdbSchemaVersionDefault: UInt {

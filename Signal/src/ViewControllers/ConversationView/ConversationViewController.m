@@ -154,11 +154,6 @@ typedef enum : NSUInteger {
 @property (nonatomic, nullable) UIView *bannerView;
 @property (nonatomic, nullable) OWSDisappearingMessagesConfiguration *disappearingMessagesConfiguration;
 
-// Back Button Unread Count
-@property (nonatomic, readonly) UIView *backButtonUnreadCountView;
-@property (nonatomic, readonly) UILabel *backButtonUnreadCountLabel;
-@property (nonatomic, readonly) NSUInteger backButtonUnreadCount;
-
 @property (nonatomic) ConversationViewAction actionOnOpen;
 
 @property (nonatomic, getter=isInPreviewPlatter) BOOL inPreviewPlatter;
@@ -167,8 +162,6 @@ typedef enum : NSUInteger {
 
 @property (nonatomic) BOOL userHasScrolled;
 @property (nonatomic, nullable) NSDate *lastMessageSentDate;
-
-@property (nonatomic, nullable) UIBarButtonItem *customBackButton;
 
 @property (nonatomic, readonly) BOOL showLoadOlderHeader;
 @property (nonatomic, readonly) BOOL showLoadNewerHeader;
@@ -1151,7 +1144,6 @@ typedef enum : NSUInteger {
     [self markVisibleMessagesAsRead];
     [self startReadTimer];
     [self updateNavigationBarSubtitleLabel];
-    [self updateBackButtonUnreadCount];
     [self autoLoadMoreIfNecessary];
 
     if (!self.viewHasEverAppeared) {
@@ -1297,18 +1289,6 @@ typedef enum : NSUInteger {
 
 - (void)createHeaderViews
 {
-    _backButtonUnreadCountView = [UIView new];
-    _backButtonUnreadCountView.layer.cornerRadius = self.unreadCountViewDiameter / 2;
-    _backButtonUnreadCountView.backgroundColor = [UIColor redColor];
-    _backButtonUnreadCountView.hidden = YES;
-    _backButtonUnreadCountView.userInteractionEnabled = NO;
-
-    _backButtonUnreadCountLabel = [UILabel new];
-    _backButtonUnreadCountLabel.backgroundColor = [UIColor clearColor];
-    _backButtonUnreadCountLabel.textColor = [UIColor whiteColor];
-    _backButtonUnreadCountLabel.font = [UIFont systemFontOfSize:11];
-    _backButtonUnreadCountLabel.textAlignment = NSTextAlignmentCenter;
-
     ConversationHeaderView *headerView = [[ConversationHeaderView alloc] initWithThread:self.thread
                                                                         contactsManager:self.contactsManager];
     self.headerView = headerView;
@@ -1355,11 +1335,7 @@ typedef enum : NSUInteger {
 - (void)updateBarButtonItems
 {
     self.navigationItem.hidesBackButton = NO;
-    if (self.customBackButton) {
-        self.navigationItem.leftBarButtonItem = self.customBackButton;
-    } else {
-        self.navigationItem.leftBarButtonItem = nil;
-    }
+    self.navigationItem.leftBarButtonItem = nil;
 
     switch (self.uiMode) {
         case ConversationUIMode_Search: {
@@ -3587,33 +3563,6 @@ typedef enum : NSUInteger {
     }
 }
 
-#pragma mark Unread Badge
-
-- (void)updateBackButtonUnreadCount
-{
-    OWSAssertIsOnMainThread();
-    self.backButtonUnreadCount = [OWSMessageUtils.sharedManager unreadMessagesCountExcept:self.thread];
-}
-
-- (void)setBackButtonUnreadCount:(NSUInteger)unreadCount
-{
-    OWSAssertIsOnMainThread();
-    if (_backButtonUnreadCount == unreadCount) {
-        // No need to re-render same count.
-        return;
-    }
-    _backButtonUnreadCount = unreadCount;
-
-    OWSAssertDebug(_backButtonUnreadCountView != nil);
-    _backButtonUnreadCountView.hidden = unreadCount <= 0;
-
-    OWSAssertDebug(_backButtonUnreadCountLabel != nil);
-
-    // Max out the unread count at 99+.
-    const NSUInteger kMaxUnreadCount = 99;
-    _backButtonUnreadCountLabel.text = [OWSFormat formatUInt:MIN(kMaxUnreadCount, unreadCount)];
-}
-
 #pragma mark 3D Touch Preview Actions
 
 - (NSArray<id<UIPreviewActionItem>> *)previewActionItems
@@ -4693,7 +4642,6 @@ typedef enum : NSUInteger {
     }
     [self.thread anyReloadWithTransaction:transaction];
     self.threadViewModel = [[ThreadViewModel alloc] initWithThread:self.thread transaction:transaction];
-    [self updateBackButtonUnreadCount];
     [self updateNavigationBarSubtitleLabel];
     [self updateBarButtonItems];
 
