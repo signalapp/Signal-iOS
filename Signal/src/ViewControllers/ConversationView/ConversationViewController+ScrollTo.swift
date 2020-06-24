@@ -25,13 +25,13 @@ extension ConversationViewController {
         } else if let indexPathOfFocusMessage = indexPathOfFocusMessage {
             scrollToInteraction(
                 indexPath: indexPathOfFocusMessage,
-                position: .topIfNotEntirelyOnScreen,
+                position: .top,
                 animated: animated
             )
         } else if let indexPathOfUnreadMessagesIndicator = indexPathOfUnreadMessagesIndicator {
             scrollToInteraction(
                 indexPath: indexPathOfUnreadMessagesIndicator,
-                position: .topIfNotEntirelyOnScreen,
+                position: .top,
                 animated: animated
             )
         } else {
