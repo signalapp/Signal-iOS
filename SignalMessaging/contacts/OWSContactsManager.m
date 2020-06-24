@@ -523,7 +523,7 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
      shouldClearStaleCache:(BOOL)shouldClearStaleCache
 {
     dispatch_async(self.intersectionQueue, ^{
-        NSMutableArray *allContacts = [contacts mutableCopy];
+        NSMutableArray<Contact *> *allContacts = [contacts mutableCopy];
         NSMutableDictionary<NSString *, Contact *> *allContactsMap = [NSMutableDictionary new];
         for (Contact *contact in contacts) {
             for (PhoneNumber *phoneNumber in contact.parsedPhoneNumbers) {
@@ -543,9 +543,11 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
             }
         }
 
+        NSArray<Contact *> *sortedContacts = [allContacts
+            sortedArrayUsingComparator:[Contact comparatorSortingNamesByFirstThenLast:self.shouldSortByGivenName]];
+
         dispatch_async(dispatch_get_main_queue(), ^{
-            self.allContacts = [allContacts
-                sortedArrayUsingComparator:[Contact comparatorSortingNamesByFirstThenLast:self.shouldSortByGivenName]];
+            self.allContacts = sortedContacts;
             self.allContactsMap = [allContactsMap copy];
             [self.cnContactCache removeAllObjects];
             [self.cnContactAvatarCache removeAllObjects];
