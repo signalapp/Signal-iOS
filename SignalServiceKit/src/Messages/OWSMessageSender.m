@@ -1888,19 +1888,16 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             }
         } @catch (NSException *caughtException) {
             exception = caughtException;
-        }
-    });
-    if (exception) {
-        if ([exception.name isEqualToString:UntrustedIdentityKeyException]) {
-            DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+
+            if ([exception.name isEqualToString:UntrustedIdentityKeyException]) {
                 [MessageSending handleUntrustedIdentityKeyErrorWithAccountId:accountId
                                                             recipientAddress:recipientAddress
                                                                 preKeyBundle:bundle
                                                                  transaction:transaction];
-            });
-
-            OWSRaiseException(UntrustedIdentityKeyException, @"Untrusted identity key");
+            }
         }
+    });
+    if (exception) {
         @throw exception;
     }
 }
