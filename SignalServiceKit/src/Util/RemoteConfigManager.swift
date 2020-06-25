@@ -151,11 +151,15 @@ private extension FlagType {
 @objc
 public protocol RemoteConfigManager: AnyObject {
     var cachedConfig: RemoteConfig? { get }
+
+    func warmCaches()
 }
 
 @objc
 public class StubbableRemoteConfigManager: NSObject, RemoteConfigManager {
     public var cachedConfig: RemoteConfig?
+
+    public func warmCaches() {}
 }
 
 @objc
@@ -209,12 +213,6 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
     public override init() {
         super.init()
 
-        AppReadiness.runNowOrWhenAppWillBecomeReady {
-            self.cacheCurrent()
-
-            RemoteConfig.logFlags()
-        }
-
         // The fetched config won't take effect until the *next* launch.
         // That's not ideal, but we can't risk changing configs in the middle
         // of an app lifetime.
@@ -241,6 +239,12 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
     @objc func registrationStateDidChange() {
         guard self.tsAccountManager.isRegistered else { return }
         self.refreshIfReady()
+    }
+
+    public func warmCaches() {
+        cacheCurrent()
+
+        RemoteConfig.logFlags()
     }
 
     private func cacheCurrent() {

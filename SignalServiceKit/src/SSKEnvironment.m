@@ -307,6 +307,7 @@ static SSKEnvironment *sharedSSKEnvironment;
     //
     // We need to do as few writes as possible here, to avoid conflicts
     // with the migrations which haven't run yet.
+    [self.remoteConfigManager warmCaches];
     [self.blockingManager warmCaches];
     [self.profileManager warmCaches];
     [self.tsAccountManager warmCaches];
