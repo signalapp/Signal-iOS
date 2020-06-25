@@ -47,7 +47,7 @@ extension ConversationViewController {
             }
         }
 
-        guard let lastIndexPath = self.lastIndexPath else { return }
+        guard let lastIndexPath = self.lastIndexPathInLoadedWindow else { return }
         scrollToInteraction(indexPath: lastIndexPath, position: .bottom, animated: animated)
     }
 
@@ -130,7 +130,7 @@ extension ConversationViewController {
         // is only valid for when the view is not on screen, do nothing.
         guard !position.scrollsOnlyIfNotEntirelyOnScreen || !rowIsEntirelyOnScreen else { return }
 
-        guard indexPath != lastIndexPath || !onScreenPercentage.isEqual(to: 1) else {
+        guard indexPath != lastIndexPathInLoadedWindow || !onScreenPercentage.isEqual(to: 1) else {
             // If we're scrolling to the last index AND we want it entirely on screen,
             // scroll directly to the bottom regardless of the requested destination.
             return collectionView.setContentOffset(CGPoint(x: 0, y: bottomDestinationY), animated: animated)

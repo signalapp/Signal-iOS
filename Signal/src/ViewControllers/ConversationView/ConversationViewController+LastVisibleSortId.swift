@@ -5,12 +5,25 @@
 import Foundation
 
 extension ConversationViewController {
-    @objc
-    var lastVisibleIndexPath: IndexPath? {
-        return collectionView.indexPathsForVisibleItems
-            .lazy
-            .sorted { $0.row > $1.row }
-            .first { percentOfIndexPathVisibleAboveBottom($0) ?? 0 > 0 }
+
+    /// The visble content rect in the collection view's coordinate space
+    /// This rect does not include displayed cells occluded by content inset
+    @objc var visibleContentRect: CGRect {
+        let collectionViewBounds = self.collectionView.bounds
+        let insetBounds = collectionViewBounds.inset(by: self.collectionView.adjustedContentInset)
+        return insetBounds
+    }
+
+    /// The index path of the last item in the collection view's visible rect
+    @objc var lastVisibleIndexPath: IndexPath? {
+        let visibleLayoutAttributes = self.layout.layoutAttributesForElements(in: self.visibleContentRect) ?? []
+
+        let lastVisibleIndexPath = visibleLayoutAttributes
+            .map { $0.indexPath }
+            .max { $0.row < $1.row }
+
+        assert(lastVisibleIndexPath == nil || percentOfIndexPathVisibleAboveBottom(lastVisibleIndexPath!) > 0)
+        return lastVisibleIndexPath
     }
 
     @objc
@@ -20,14 +33,14 @@ extension ConversationViewController {
     }
 
     @objc
-    var lastIndexPath: IndexPath? {
+    var lastIndexPathInLoadedWindow: IndexPath? {
         guard !viewItems.isEmpty else { return nil }
         return IndexPath(row: viewItems.count - 1, section: 0)
     }
 
     @objc
-    var lastSortId: UInt64 {
-        guard let lastIndexPath = lastIndexPath else { return 0 }
+    var lastSortIdInLoadedWindow: UInt64 {
+        guard let lastIndexPath = lastIndexPathInLoadedWindow else { return 0 }
         return firstIndexPathWithSortId(atOrBeforeIndexPath: lastIndexPath)?.sortId ?? 0
     }
 
@@ -40,10 +53,10 @@ extension ConversationViewController {
 
         if let lastVisibleIndexPath = lastVisibleIndexPath,
             let (indexPath, sortId) = firstIndexPathWithSortId(atOrBeforeIndexPath: lastVisibleIndexPath),
-            let onScreenPercentage = percentOfIndexPathVisibleAboveBottom(indexPath) {
+            self.layout.layoutAttributesForItem(at: indexPath) != nil {
 
             sortIdToSave = sortId
-            onScreenPercentageToSave = Double(onScreenPercentage)
+            onScreenPercentageToSave = Double(percentOfIndexPathVisibleAboveBottom(indexPath))
         } else {
             sortIdToSave = 0
             onScreenPercentageToSave = 0
@@ -63,11 +76,16 @@ extension ConversationViewController {
         }
     }
 
-    private func percentOfIndexPathVisibleAboveBottom(_ indexPath: IndexPath) -> CGFloat? {
-        guard let attributes = layout.layoutAttributesForItem(at: indexPath) else { return nil }
-        let origin = view.convert(attributes.frame.origin, from: collectionView)
-        let heightAboveBottom = collectionView.height - origin.y - collectionView.adjustedContentInset.bottom
-        return CGFloatClamp01(heightAboveBottom / attributes.frame.height)
+    private func percentOfIndexPathVisibleAboveBottom(_ indexPath: IndexPath) -> CGFloat {
+        // If we don't have layout attributes, it's not visible
+        guard let attributes = self.layout.layoutAttributesForItem(at: indexPath) else { return 0.0 }
+
+        // Map everything to view controller's coordinate space
+        let cellFrame_vcView = self.view.convert(attributes.frame, from: self.collectionView)
+        let visibleRect_vcView = self.view.convert(self.visibleContentRect, from: self.collectionView)
+
+        let intersectionRect = visibleRect_vcView.intersection(cellFrame_vcView)
+        return CGFloatClamp01(intersectionRect.height / cellFrame_vcView.height)
     }
 
     private func firstIndexPathWithSortId(atOrBeforeIndexPath indexPath: IndexPath) -> (indexPath: IndexPath, sortId: UInt64)? {
