@@ -217,12 +217,6 @@ public class FeatureFlags: NSObject {
     public static let isUsingProductionService = true
 
     @objc
-    public static let versionedProfiledFetches = true
-
-    @objc
-    public static let versionedProfiledUpdate = true
-
-    @objc
     public static let useOrphanDataCleaner = true
 
     @objc
@@ -331,4 +325,9 @@ public class DebugFlags: NSObject {
 
     @objc
     public static let deviceTransferVerboseProgressLogging = build.includes(.qa)
+
+    // We currently want to force-enable versioned profiles for
+    // all beta users, but not production.
+    @objc
+    public static let forceVersionedProfiles = build.includes(.beta)
 }
