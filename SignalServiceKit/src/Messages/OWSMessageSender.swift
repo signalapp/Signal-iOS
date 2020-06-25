@@ -7,6 +7,15 @@ import PromiseKit
 import SignalMetadataKit
 
 @objc
+public enum MessageSenderError: Int, Error {
+    case prekeyRateLimit
+    case untrustedIdentity
+    case missingDevice
+}
+
+// MARK: -
+
+@objc
 public class MessageSending: NSObject {
 
     // MARK: - Dependencies
@@ -42,6 +51,36 @@ public class MessageSending: NSObject {
     }
 
     // MARK: -
+
+    @objc
+    public class func isPrekeyRateLimitError(_ error: Error) -> Bool {
+        switch error {
+        case MessageSenderError.prekeyRateLimit:
+            return true
+        default:
+            return false
+        }
+    }
+
+    @objc
+    public class func isUntrustedIdentityError(_ error: Error) -> Bool {
+        switch error {
+        case MessageSenderError.untrustedIdentity:
+            return true
+        default:
+            return false
+        }
+    }
+
+    @objc
+    public class func isMissingDeviceError(_ error: Error) -> Bool {
+        switch error {
+        case MessageSenderError.missingDevice:
+            return true
+        default:
+            return false
+        }
+    }
 
     @objc
     public class func ensureSessionsforMessageSendsObjc(_ messageSends: [OWSMessageSend],
@@ -80,6 +119,7 @@ public class MessageSending: NSObject {
     private class func ensureSessions(forMessageSend messageSend: OWSMessageSend,
                                       ignoreErrors: Bool) -> [Promise<Void>] {
         let recipient: SignalRecipient = messageSend.recipient
+        let recipientAddress = recipient.address
         var deviceIds = messageSend.deviceIds.map { $0.uint32Value }
         if messageSend.isLocalAddress {
             let localDeviceId = tsAccountManager.storedDeviceId()
@@ -125,18 +165,21 @@ public class MessageSending: NSObject {
                 try self.databaseStorage.write { transaction in
                     try self.createSession(forPreKeyBundle: preKeyBundle,
                                            accountId: accountId,
+                                           recipientAddress: recipientAddress,
                                            deviceId: NSNumber(value: deviceId),
                                            transaction: transaction)
                 }
             }.recover(on: .global()) { (error: Error) in
-                if let statusCode = error.httpStatusCode,
-                    statusCode == 404 {
+                switch error {
+                case MessageSenderError.missingDevice:
                     self.databaseStorage.write { transaction in
                         recipient.updateRegisteredRecipientWithDevices(toAdd: nil,
                                                                        devicesToRemove: [NSNumber(value: deviceId)],
                                                                        transaction: transaction)
                     }
                     messageSend.removeDeviceId(NSNumber(value: deviceId))
+                default:
+                    break
                 }
                 if ignoreErrors {
                     Logger.warn("Ignoring error: \(error)")
@@ -159,11 +202,45 @@ public class MessageSending: NSObject {
         let recipientAddress = messageSend.recipient.address
         assert(recipientAddress.isValid)
 
+        Logger.info("recipientAddress: \(recipientAddress), deviceId: \(deviceId)")
+
+        guard isPrekeyRateLimitSafe(recipientAddress: recipientAddress,
+                                    deviceId: deviceId) else {
+                                        // We don't want to retry prekey requests if we've recently hit
+                                        // the rate limit for the same recipient/device.  Fail immediately
+                                        // as though we hit the prekey rate limit again. This will give
+                                        // rate limit's "leaky bucket" time to refill.
+                                        Logger.info("Skipping prekey request to avoid hitting rate limit.")
+                                        return failure(MessageSenderError.prekeyRateLimit)
+        }
+
+        guard isDeviceNotMissing(recipientAddress: recipientAddress,
+                                 deviceId: deviceId) else {
+                                // We don't want to retry prekey requests if we've recently gotten
+                                // a "404 missing device" for the same recipient/device.  Fail immediately
+                                // as though we hit the "404 missing device" error again.
+                                Logger.info("Skipping prekey request to avoid missing device error.")
+                                return failure(MessageSenderError.missingDevice)
+        }
+
+        if let accountId = messageSend.recipient.accountId {
+            guard isPrekeyIdentityKeySafe(accountId: accountId,
+                                          recipientAddress: recipientAddress) else {
+                                            // We don't want to make prekey requests if we can anticipate that
+                                            // we're going to get an untrusted identity error.
+                                            Logger.info("Skipping prekey request due to untrusted identity.")
+                                            return failure(MessageSenderError.untrustedIdentity)
+            }
+        } else {
+            owsFailDebug("Missing accountId.")
+        }
+
         let requestMaker = RequestMaker(label: "Prekey Fetch",
                                         requestFactoryBlock: { (udAccessKeyForRequest: SMKUDAccessKey?) -> TSRequest? in
-                                            OWSRequestFactory.recipientPreKeyRequest(with: recipientAddress,
-                                                                                     deviceId: deviceId.stringValue,
-                                                                                     udAccessKey: udAccessKeyForRequest)
+                                            Logger.verbose("Building prekey request for recipientAddress: \(recipientAddress), deviceId: \(deviceId)")
+                                            return OWSRequestFactory.recipientPreKeyRequest(with: recipientAddress,
+                                                                                            deviceId: deviceId.stringValue,
+                                                                                            udAccessKey: udAccessKeyForRequest)
         }, udAuthFailureBlock: {
             // Note the UD auth failure so subsequent retries
             // to this recipient also use basic auth.
@@ -185,15 +262,27 @@ public class MessageSending: NSObject {
             let bundle = PreKeyBundle(from: responseObject, forDeviceNumber: deviceId)
             success(bundle)
         }.catch(on: .global()) { error in
+            if let httpStatusCode = error.httpStatusCode {
+                if httpStatusCode == 404 {
+                    self.hadMissingDeviceError(recipientAddress: recipientAddress, deviceId: deviceId)
+                    return failure(MessageSenderError.missingDevice)
+                } else if httpStatusCode == 413 {
+                    self.didHitPrekeyRateLimit(recipientAddress: recipientAddress, deviceId: deviceId)
+                    return failure(MessageSenderError.prekeyRateLimit)
+                }
+            }
             failure(error)
         }
     }
 
     private class func createSession(forPreKeyBundle preKeyBundle: PreKeyBundle,
                                      accountId: String,
+                                     recipientAddress: SignalServiceAddress,
                                      deviceId: NSNumber,
                                      transaction: SDSAnyWriteTransaction) throws {
         assert(!Thread.isMainThread)
+
+        Logger.info("Creating session for recipientAddress: \(recipientAddress), deviceId: \(deviceId)")
 
         guard !sessionStore.containsSession(forAccountId: accountId, deviceId: deviceId.int32Value, transaction: transaction) else {
             Logger.warn("Session already exists.")
@@ -206,10 +295,224 @@ public class MessageSending: NSObject {
                                      identityKeyStore: identityManager,
                                      recipientId: accountId,
                                      deviceId: deviceId.int32Value)
-        try builder.processPrekeyBundle(preKeyBundle,
-                                        protocolContext: transaction)
+        do {
+            try builder.processPrekeyBundle(preKeyBundle,
+                                            protocolContext: transaction)
+        } catch {
+            Logger.warn("Error: \(error)")
+
+            if let exception = (error as NSError).userInfo[SCKExceptionWrapperUnderlyingExceptionKey] as? NSException {
+                if UntrustedIdentityKeyException == exception.name.rawValue {
+                    handleUntrustedIdentityKeyError(accountId: accountId,
+                                                    recipientAddress: recipientAddress,
+                                                    preKeyBundle: preKeyBundle,
+                                                    transaction: transaction)
+                }
+            } else {
+                owsFailDebug("Missing underlying exception.")
+            }
+
+            throw error
+        }
         if !sessionStore.containsSession(forAccountId: accountId, deviceId: deviceId.int32Value, transaction: transaction) {
             owsFailDebug("Session does not exist.")
+        }
+    }
+
+    @objc
+    public class func handleUntrustedIdentityKeyError(accountId: String,
+                                                      recipientAddress: SignalServiceAddress,
+                                                      preKeyBundle: PreKeyBundle,
+                                                      transaction: SDSAnyWriteTransaction) {
+        saveRemoteIdentity(recipientAddress: recipientAddress,
+                           preKeyBundle: preKeyBundle,
+                           transaction: transaction)
+
+        if let recipientIdentity = OWSRecipientIdentity.anyFetch(uniqueId: accountId, transaction: transaction) {
+            let currentRecipientIdentityKey = recipientIdentity.identityKey
+            hadUntrustedIdentityKeyError(recipientAddress: recipientAddress,
+                                         currentIdentityKey: currentRecipientIdentityKey,
+                                         preKeyBundle: preKeyBundle)
+        }
+    }
+
+    private class func saveRemoteIdentity(recipientAddress: SignalServiceAddress,
+                                          preKeyBundle: PreKeyBundle,
+                                          transaction: SDSAnyWriteTransaction) {
+        Logger.info("recipientAddress: \(recipientAddress)")
+        do {
+            let newRecipientIdentityKey: Data = try (preKeyBundle.identityKey as NSData).removeKeyType() as Data
+            identityManager.saveRemoteIdentity(newRecipientIdentityKey, address: recipientAddress, transaction: transaction)
+        } catch {
+            owsFailDebug("Error: \(error)")
+        }
+    }
+}
+
+// MARK: - Prekey Rate Limits
+
+fileprivate extension MessageSending {
+    struct CacheKey: Hashable {
+        let recipientAddress: SignalServiceAddress
+        let deviceId: NSNumber
+    }
+
+    static let cacheQueue = DispatchQueue(label: "MessageSender.cacheQueue")
+
+    // This property should only be accessed on cacheQueue.
+    private static var prekeyRateLimitCache = [CacheKey: Date]()
+
+    class func didHitPrekeyRateLimit(recipientAddress: SignalServiceAddress,
+                                     deviceId: NSNumber) {
+        assert(!Thread.isMainThread)
+        let cacheKey = CacheKey(recipientAddress: recipientAddress, deviceId: deviceId)
+        cacheQueue.sync {
+            prekeyRateLimitCache[cacheKey] = Date()
+        }
+    }
+
+    class func isPrekeyRateLimitSafe(recipientAddress: SignalServiceAddress,
+                                     deviceId: NSNumber) -> Bool {
+        assert(!Thread.isMainThread)
+        let cacheKey = CacheKey(recipientAddress: recipientAddress, deviceId: deviceId)
+        let canMakePreKeyRequest = cacheQueue.sync { () -> Bool in
+            guard let date = prekeyRateLimitCache[cacheKey] else {
+                return true
+            }
+            let kBackoffAfterPrekeyRateLimit = kMinuteInterval * 10.1
+            return abs(date.timeIntervalSinceNow) >= kBackoffAfterPrekeyRateLimit
+        }
+        return canMakePreKeyRequest
+    }
+}
+
+// MARK: - Prekey Rate Limits & Untrusted Identities
+
+fileprivate extension MessageSending {
+    private struct StaleIdentity {
+        let currentIdentityKey: Data
+        let newIdentityKey: Data
+        let date: Date
+    }
+
+    // This property should only be accessed on cacheQueue.
+    private static var staleIdentityCache = [SignalServiceAddress: StaleIdentity]()
+
+    class func hadUntrustedIdentityKeyError(recipientAddress: SignalServiceAddress,
+                                            currentIdentityKey: Data,
+                                            preKeyBundle: PreKeyBundle) {
+        assert(!Thread.isMainThread)
+
+        let newIdentityKey: Data
+        do {
+            newIdentityKey = try(preKeyBundle.identityKey as NSData).removeKeyType() as Data
+        } catch {
+            return owsFailDebug("Error: \(error)")
+        }
+
+        cacheQueue.sync {
+            staleIdentityCache[recipientAddress] = StaleIdentity(currentIdentityKey: currentIdentityKey,
+                                                                 newIdentityKey: newIdentityKey,
+                                                                 date: Date())
+        }
+    }
+
+    class func isPrekeyIdentityKeySafe(accountId: String,
+                                       recipientAddress: SignalServiceAddress) -> Bool {
+        assert(!Thread.isMainThread)
+
+        // Prekey rate limits are strict. Therefore,
+        // we want to avoid requesting prekey bundles that can't be
+        // processed.  After a prekey request, we try to process the
+        // prekey bundle which can fail if the new identity key is
+        // untrusted. When that happens, we record the current identity
+        // key.  So long as a) the current identity key hasn't changed
+        // and b) the new identity key still isn't trusted, we can
+        // anticipate that a new prekey bundles will also be untrusted.
+        guard let staleIdentity = (cacheQueue.sync { () -> StaleIdentity? in
+            return staleIdentityCache[recipientAddress]
+        }) else {
+            // If we haven't record any untrusted identity errors for this user,
+            // it is safe to proceed.
+            return true
+        }
+
+        let staleIdentityLifetime = kMinuteInterval * 5
+        guard abs(staleIdentity.date.timeIntervalSinceNow) >= staleIdentityLifetime else {
+            // If the untrusted identity was recorded more than N minutes ago,
+            // try another prekey fetch.  It's conceivable that the recipient
+            // device has re-registered _again_.
+            return true
+        }
+
+        return databaseStorage.read { transaction in
+            guard let currentRecipientIdentity = OWSRecipientIdentity.anyFetch(uniqueId: accountId,
+                                                                               transaction: transaction) else {
+                                                                                owsFailDebug("Missing currentRecipientIdentity.")
+                                                                                return true
+            }
+            let currentIdentityKey = currentRecipientIdentity.identityKey
+            guard currentIdentityKey == staleIdentity.currentIdentityKey else {
+                // If the currentIdentityKey has changed, try another prekey
+                // fetch.
+                return true
+            }
+            let newIdentityKey = staleIdentity.newIdentityKey
+            // If the newIdentityKey is now trusted, try another prekey
+            // fetch.
+            return self.identityManager.isTrustedIdentityKey(newIdentityKey,
+                                                             address: recipientAddress,
+                                                             direction: .outgoing,
+                                                             transaction: transaction)
+        }
+    }
+}
+
+// MARK: - Missing Devices
+
+fileprivate extension MessageSending {
+
+    // This property should only be accessed on cacheQueue.
+    private static var missingDevicesCache = [CacheKey: Date]()
+
+    class func hadMissingDeviceError(recipientAddress: SignalServiceAddress,
+                                     deviceId: NSNumber) {
+        assert(!Thread.isMainThread)
+        let cacheKey = CacheKey(recipientAddress: recipientAddress, deviceId: deviceId)
+
+        guard deviceId.uint32Value == OWSDevicePrimaryDeviceId else {
+            // For now, only bother ignoring primary devices.
+            // 404s should cause the recipient's device list
+            // to be updated, so linked devices shouldn't be
+            // a problem.
+            return
+        }
+        Logger.info("recipientAddress: \(recipientAddress), deviceId: \(deviceId)")
+        Logger.flush()
+
+        cacheQueue.sync {
+            missingDevicesCache[cacheKey] = Date()
+        }
+    }
+
+    class func isDeviceNotMissing(recipientAddress: SignalServiceAddress,
+                                  deviceId: NSNumber) -> Bool {
+        assert(!Thread.isMainThread)
+        let cacheKey = CacheKey(recipientAddress: recipientAddress, deviceId: deviceId)
+
+        // Prekey rate limits are strict. Therefore, we want to avoid
+        // requesting prekey bundles that are missing on the service
+        // (404).
+        return cacheQueue.sync { () -> Bool in
+            guard let date = missingDevicesCache[cacheKey] else {
+                return true
+            }
+            // If the "missing device" was recorded more than N minutes ago,
+            // try another prekey fetch.  It's conceivable that the recipient
+            // has registered (in the primary device case) or
+            // linked to the device (in the secondary device case).
+            let missingDeviceLifetime = kMinuteInterval * 1
+            return abs(date.timeIntervalSinceNow) >= missingDeviceLifetime
         }
     }
 }
