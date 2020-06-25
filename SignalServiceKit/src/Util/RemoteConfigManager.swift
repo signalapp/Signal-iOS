@@ -54,6 +54,20 @@ public class RemoteConfig: NSObject {
     @objc
     public static var deleteForEveryone: Bool { isEnabled(.deleteForEveryone) }
 
+    @objc
+    public static var versionedProfiledFetches: Bool {
+        guard FeatureFlags.versionedProfiledFetches else { return false }
+        if DebugFlags.forceVersionedProfiles { return true }
+        return isEnabled(.versionedProfiles)
+    }
+
+    @objc
+    public static var versionedProfiledUpdate: Bool {
+        guard FeatureFlags.versionedProfiledUpdate else { return false }
+        if DebugFlags.forceVersionedProfiles { return true }
+        return isEnabled(.versionedProfiles)
+    }
+
     private static func isEnabled(_ flag: Flags.Supported, defaultValue: Bool = false) -> Bool {
         guard let remoteConfig = SSKEnvironment.shared.remoteConfigManager.cachedConfig else {
             return defaultValue
@@ -69,6 +83,7 @@ private struct Flags {
     // marked true regardless of the remote state.
     enum Sticky: String, FlagType {
         case groupsV2GoodCitizen
+        case versionedProfiles
     }
 
     // We filter the received config down to just the supported flags.
@@ -82,6 +97,7 @@ private struct Flags {
         case groupsV2CreateGroups
         case groupsV2GoodCitizen
         case deleteForEveryone
+        case versionedProfiles
     }
 }
 
