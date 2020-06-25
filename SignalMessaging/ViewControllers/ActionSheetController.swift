@@ -321,7 +321,7 @@ public class ActionSheetAction: NSObject {
         }
     }
 
-    fileprivate lazy var button = Button(action: self)
+    fileprivate(set) public lazy var button = Button(action: self)
 
     @objc
     public convenience init(title: String, style: Style = .default, handler: Handler? = nil) {
@@ -336,8 +336,8 @@ public class ActionSheetAction: NSObject {
         self.handler = handler
     }
 
-    fileprivate class Button: UIButton {
-        var releaseAction: (() -> Void)?
+    public class Button: UIButton {
+        public var releaseAction: (() -> Void)?
 
         var trailingIcon: ThemeIcon? {
             didSet {

@@ -113,3 +113,13 @@ public class TSOutgoingMessageBuilder: TSMessageBuilder {
         return TSOutgoingMessage(outgoingMessageWithBuilder: self)
     }
 }
+
+public extension TSOutgoingMessage {
+    @objc func failedRecipientAddresses(errorCode: OWSErrorCode) -> [SignalServiceAddress] {
+        guard let states = recipientAddressStates else { return [] }
+
+        return states.filter { _, state in
+            return state.state == .failed && state.errorCode?.intValue == errorCode.rawValue
+        }.map { $0.key }
+    }
+}

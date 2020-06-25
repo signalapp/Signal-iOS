@@ -50,7 +50,7 @@ NS_ASSUME_NONNULL_BEGIN
     self.cellView = [ContactCellView new];
     [self.contentView addSubview:self.cellView];
     [self.cellView autoPinEdgesToSuperviewMargins];
-    self.cellView.userInteractionEnabled = NO;
+    self.cellView.userInteractionEnabled = self.allowUserInteraction;
 }
 
 - (void)configureWithRecipientAddress:(SignalServiceAddress *)address
@@ -129,6 +129,11 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)ows_setAccessoryView:(UIView *)accessoryView
 {
     return [self.cellView setAccessoryView:accessoryView];
+}
+
+- (BOOL)allowUserInteraction
+{
+    return NO;
 }
 
 @end
