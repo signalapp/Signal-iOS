@@ -74,6 +74,7 @@ NSString *NSStringForOutgoingMessageRecipientState(OWSOutgoingMessageRecipientSt
 @property (atomic) OWSOutgoingMessageRecipientState state;
 @property (atomic, nullable) NSNumber *deliveryTimestamp;
 @property (atomic, nullable) NSNumber *readTimestamp;
+@property (atomic, nullable) NSNumber *errorCode;
 @property (atomic) BOOL wasSentByUD;
 
 @end
@@ -839,6 +840,27 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                                                     return;
                                                 }
                                                 recipientState.state = OWSOutgoingMessageRecipientStateSkipped;
+                                            }];
+}
+
+- (void)updateWithFailedRecipient:(SignalServiceAddress *)recipientAddress
+                            error:(NSError *)error
+                      transaction:(SDSAnyWriteTransaction *)transaction
+{
+    OWSAssertDebug(recipientAddress.isValid);
+    OWSAssertDebug(transaction);
+
+    [self anyUpdateOutgoingMessageWithTransaction:transaction
+                                            block:^(TSOutgoingMessage *message) {
+                                                TSOutgoingMessageRecipientState *_Nullable recipientState
+                                                    = message.recipientAddressStates[recipientAddress];
+                                                if (!recipientState) {
+                                                    OWSFailDebug(
+                                                        @"Missing recipient state for recipient: %@", recipientAddress);
+                                                    return;
+                                                }
+                                                recipientState.state = OWSOutgoingMessageRecipientStateFailed;
+                                                recipientState.errorCode = @(error.code);
                                             }];
 }
 
