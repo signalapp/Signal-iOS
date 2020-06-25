@@ -377,7 +377,7 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
         OWSFail(@"phoneNumber was unexpectedly nil");
     }
 
-    if (SSKFeatureFlags.allowUUIDOnlyContacts && !uuid) {
+    if (!uuid) {
         OWSFail(@"uuid was unexpectedly nil");
     }
 
@@ -491,13 +491,9 @@ NSString *const TSAccountManager_DeviceId = @"TSAccountManager_DeviceId";
 }
 
 - (void)storeLocalNumber:(NSString *)localNumber
-                    uuid:(nullable NSUUID *)localUuid
+                    uuid:(NSUUID *)localUuid
              transaction:(SDSAnyWriteTransaction *)transaction
 {
-    // TODO UUID: make uuid non-nullable when enabling SSKFeatureFlags.allowUUIDOnlyContacts in production
-    // canary assert for this TODO.
-    OWSAssertDebug(!TSConstants.isUsingProductionService || !SSKFeatureFlags.allowUUIDOnlyContacts);
-
     @synchronized (self) {
         [self.keyValueStore setString:localNumber key:TSAccountManager_RegisteredNumberKey transaction:transaction];
 
