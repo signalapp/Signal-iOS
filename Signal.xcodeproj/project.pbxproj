@@ -428,7 +428,7 @@
 		457C87B82032645C008D52D6 /* DebugUINotifications.swift in Sources */ = {isa = PBXBuildFile; fileRef = 457C87B72032645C008D52D6 /* DebugUINotifications.swift */; };
 		457F671B20746193000EABCD /* QuotedReplyPreview.swift in Sources */ = {isa = PBXBuildFile; fileRef = 457F671A20746193000EABCD /* QuotedReplyPreview.swift */; };
 		45847E871E4283C30080EAB3 /* Intents.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 45847E861E4283C30080EAB3 /* Intents.framework */; settings = {ATTRIBUTES = (Weak, ); }; };
-		4585C4681ED8F8D200896AEA /* SafetyNumberConfirmationAlert.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4585C4671ED8F8D200896AEA /* SafetyNumberConfirmationAlert.swift */; };
+		4585C4681ED8F8D200896AEA /* SafetyNumberConfirmationSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4585C4671ED8F8D200896AEA /* SafetyNumberConfirmationSheet.swift */; };
 		458967111DC117CC00E9DD21 /* AccountManagerTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = 458967101DC117CC00E9DD21 /* AccountManagerTest.swift */; };
 		458E38371D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.m in Sources */ = {isa = PBXBuildFile; fileRef = 458E38361D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.m */; };
 		458E383A1D6699FA0094BD24 /* OWSDeviceProvisioningURLParserTest.m in Sources */ = {isa = PBXBuildFile; fileRef = 458E38391D6699FA0094BD24 /* OWSDeviceProvisioningURLParserTest.m */; };
@@ -1369,7 +1369,7 @@
 		45847E861E4283C30080EAB3 /* Intents.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Intents.framework; path = System/Library/Frameworks/Intents.framework; sourceTree = SDKROOT; };
 		45855F351D9498A40084F340 /* OWSContactAvatarBuilder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSContactAvatarBuilder.h; sourceTree = "<group>"; };
 		45855F361D9498A40084F340 /* OWSContactAvatarBuilder.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = OWSContactAvatarBuilder.m; sourceTree = "<group>"; };
-		4585C4671ED8F8D200896AEA /* SafetyNumberConfirmationAlert.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SafetyNumberConfirmationAlert.swift; sourceTree = "<group>"; };
+		4585C4671ED8F8D200896AEA /* SafetyNumberConfirmationSheet.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SafetyNumberConfirmationSheet.swift; sourceTree = "<group>"; };
 		4589670F1DC117CC00E9DD21 /* SignalTests-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "SignalTests-Bridging-Header.h"; sourceTree = "<group>"; };
 		458967101DC117CC00E9DD21 /* AccountManagerTest.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = AccountManagerTest.swift; path = Models/AccountManagerTest.swift; sourceTree = "<group>"; };
 		458E38351D668EBF0094BD24 /* OWSDeviceProvisioningURLParser.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = OWSDeviceProvisioningURLParser.h; sourceTree = "<group>"; };
@@ -2439,7 +2439,7 @@
 				34CE88E61F2FB9A10098030F /* ProfileViewController.m */,
 				8835DDFB230CEE7600DC6B66 /* RecipientPicker */,
 				340FC875204DAC8C007AEB0F /* Registration */,
-				4585C4671ED8F8D200896AEA /* SafetyNumberConfirmationAlert.swift */,
+				4585C4671ED8F8D200896AEA /* SafetyNumberConfirmationSheet.swift */,
 				340FC897204DAC8D007AEB0F /* ThreadSettings */,
 				88F7EE92230253C5003ADF7D /* UsernameViewController.swift */,
 				34D1F0BE1F8EC1760066283D /* Utils */,
@@ -4672,7 +4672,7 @@
 				340FC8BA204DAC8D007AEB0F /* FingerprintViewScanController.m in Sources */,
 				34D3E57C245A189D00F5E4A1 /* DebugUIScreenshots.m in Sources */,
 				8835DDF9230CEDC300DC6B66 /* RecipientPickerViewController.m in Sources */,
-				4585C4681ED8F8D200896AEA /* SafetyNumberConfirmationAlert.swift in Sources */,
+				4585C4681ED8F8D200896AEA /* SafetyNumberConfirmationSheet.swift in Sources */,
 				4C20B2B920CA10DE001BAC90 /* ConversationSearchViewController.swift in Sources */,
 				450D19131F85236600970622 /* RemoteVideoView.m in Sources */,
 				34129B8621EF877A005457A8 /* LinkPreviewView.swift in Sources */,

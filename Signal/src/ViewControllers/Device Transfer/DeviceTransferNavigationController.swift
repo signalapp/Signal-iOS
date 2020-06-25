@@ -89,7 +89,7 @@ class DeviceTransferBaseViewController: UIViewController {
 
     override func loadView() {
         view = UIView()
-        view.backgroundColor = Theme.backgroundColor
+        view.backgroundColor = Theme.actionSheetBackgroundColor
 
         view.addSubview(contentView)
         contentView.autoPinEdgesToSuperviewEdges()

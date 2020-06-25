@@ -433,7 +433,7 @@ typedef void (^SendMessageBlock)(SendCompletionBlock completion);
     ActionSheetController *progressActionSheet = [ActionSheetController new];
 
     UIView *headerWithProgress = [UIView new];
-    headerWithProgress.backgroundColor = Theme.backgroundColor;
+    headerWithProgress.backgroundColor = Theme.actionSheetBackgroundColor;
     headerWithProgress.layoutMargins = UIEdgeInsetsMake(16, 16, 16, 16);
 
     UILabel *titleLabel = [UILabel new];

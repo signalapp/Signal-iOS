@@ -43,7 +43,8 @@ extern NSString *const ThemeDidChangeNotification;
 @property (class, readonly, nonatomic) UIColor *hairlineColor;
 @property (class, readonly, nonatomic) UIColor *outlineColor;
 
-@property (class, readonly, nonatomic) UIColor *reactionBackgroundColor;
+@property (class, readonly, nonatomic) UIColor *actionSheetBackgroundColor;
+@property (class, readonly, nonatomic) UIColor *actionSheetHairlineColor;
 @property (class, readonly, nonatomic) UIColor *backdropColor;
 
 @property (class, readonly, nonatomic) UIColor *navbarBackgroundColor;

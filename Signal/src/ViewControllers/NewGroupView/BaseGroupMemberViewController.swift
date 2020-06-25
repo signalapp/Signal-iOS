@@ -382,12 +382,14 @@ extension BaseGroupMemberViewController: RecipientPickerDelegate {
         } else {
             let confirmationText = NSLocalizedString("SAFETY_NUMBER_CHANGED_CONFIRM_ADD_TO_GROUP_ACTION",
                                                      comment: "button title to confirm adding a recipient to a group when their safety number has recently changed")
-            let didShowSNAlert = SafetyNumberConfirmationAlert.presentAlertIfNecessary(address: address,
-                                                                                       confirmationText: confirmationText) { didConfirmIdentity in
-                                                                                        if didConfirmIdentity {
-                                                                                            addRecipientCompletion()
-                                                                                        }
+            let didShowSNAlert = SafetyNumberConfirmationSheet.presentIfNecessary(
+                address: address,
+                confirmationText: confirmationText
+            ) { didConfirmIdentity in
+                guard didConfirmIdentity else { return }
+                addRecipientCompletion()
             }
+
             if didShowSNAlert {
                 return
             }

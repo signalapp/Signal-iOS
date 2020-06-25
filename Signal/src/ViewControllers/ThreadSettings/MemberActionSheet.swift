@@ -210,7 +210,7 @@ private class MemberHeader: UIStackView {
 
         super.init(frame: .zero)
 
-        addBackgroundView(withBackgroundColor: Theme.backgroundColor)
+        addBackgroundView(withBackgroundColor: Theme.actionSheetBackgroundColor)
         axis = .vertical
         spacing = 2
         isLayoutMarginsRelativeArrangement = true

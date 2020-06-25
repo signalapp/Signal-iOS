@@ -724,7 +724,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                  message:(TSOutgoingMessage *)message
                                   thread:(TSThread *)thread
                        senderCertificate:(nullable SMKSenderCertificate *)senderCertificate
-                          sendErrorBlock:(void (^_Nonnull)(NSError *))sendErrorBlock
+                          sendErrorBlock:(void (^_Nonnull)(SignalRecipient *recipient, NSError *))sendErrorBlock
 {
     OWSAssertDebug(!NSThread.isMainThread);
     OWSAssertDebug(recipients.count > 0);
@@ -755,7 +755,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                                     recipient:recipient
                                                               udSendingAccess:udSendingAccess
                                                                  localAddress:self.tsAccountManager.localAddress
-                                                               sendErrorBlock:sendErrorBlock];
+                                                               sendErrorBlock:^(NSError *error) {
+                                                                   sendErrorBlock(recipient, error);
+                                                               }];
         [messageSends addObject:messageSend];
     }
 
@@ -888,18 +890,21 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     BOOL isGroupSend = thread.isGroupThread;
     NSMutableArray<NSError *> *sendErrors = [NSMutableArray array];
+    NSMutableDictionary<SignalServiceAddress *, NSError *> *sendErrorPerRecipient = [NSMutableDictionary dictionary];
 
     [self unlockPreKeyUpdateFailuresPromise]
         .thenInBackground(^(id value) {
-            return [self sendPromiseForRecipients:recipients
-                                          message:message
-                                           thread:thread
-                                senderCertificate:senderCertificate
-                                   sendErrorBlock:^(NSError *error) {
-                                       @synchronized(sendErrors) {
-                                           [sendErrors addObject:error];
-                                       }
-                                   }];
+            return [self
+                sendPromiseForRecipients:recipients
+                                 message:message
+                                  thread:thread
+                       senderCertificate:senderCertificate
+                          sendErrorBlock:^(SignalRecipient *recipient, NSError *error) {
+                              @synchronized(sendErrors) {
+                                  [sendErrors addObject:error];
+                                  sendErrorPerRecipient[recipient.address] = error;
+                              }
+                          }];
         })
         .thenInBackground(^(id value) {
             successHandler();
@@ -909,9 +914,33 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             NSError *firstNonRetryableError = nil;
 
             NSArray<NSError *> *sendErrorsCopy;
+            NSDictionary<SignalServiceAddress *, NSError *> *sendErrorPerRecipientCopy;
             @synchronized(sendErrors) {
                 sendErrorsCopy = [sendErrors copy];
+                sendErrorPerRecipientCopy = [sendErrorPerRecipient copy];
             }
+
+            // Record the individual error for each "failed" recipient.
+            DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+                for (SignalServiceAddress *address in sendErrorPerRecipientCopy) {
+                    NSError *error = sendErrorPerRecipientCopy[address];
+
+                    // Some errors should be ignored when sending messages
+                    // to groups.  See discussion on
+                    // NSError (OWSMessageSender) category.
+                    if (isGroupSend && [error shouldBeIgnoredForGroups]) {
+                        continue;
+                    }
+
+                    // We only want to record a failure for errors we can
+                    // no longer retry.
+                    if (error.isRetryable) {
+                        continue;
+                    }
+
+                    [message updateWithFailedRecipient:address error:error transaction:transaction];
+                }
+            });
 
             for (NSError *error in sendErrorsCopy) {
                 // Some errors should be ignored when sending messages

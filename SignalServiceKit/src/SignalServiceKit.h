@@ -22,6 +22,7 @@
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSDisappearingMessagesFinder.h>
+#import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/OWSIncomingContactSyncJobRecord.h>
 #import <SignalServiceKit/OWSIncomingGroupSyncJobRecord.h>

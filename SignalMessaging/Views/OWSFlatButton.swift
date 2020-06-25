@@ -195,10 +195,7 @@ public class OWSFlatButton: UIView {
 
     @objc
     public func setPressedBlock(_ pressedBlock: @escaping () -> Void) {
-        guard self.pressedBlock == nil else {
-            owsFailDebug("Button already has pressed block.")
-            return
-        }
+        guard self.pressedBlock == nil else { return }
         self.pressedBlock = pressedBlock
     }
 

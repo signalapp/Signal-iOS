@@ -328,7 +328,7 @@ NS_ASSUME_NONNULL_BEGIN
                     statusIndicatorImage = [UIImage imageNamed:@"message_status_read"];
                     break;
                 case MessageReceiptStatusFailed:
-                    statusIndicatorImage = [UIImage imageNamed:@"message_status_failed"];
+                    statusIndicatorImage = [UIImage imageNamed:@"error-outline-12"];
                     messageStatusViewTintColor = UIColor.ows_accentRedColor;
                     break;
             }
