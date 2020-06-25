@@ -204,16 +204,6 @@ public class MessageSending: NSObject {
 
         Logger.info("recipientAddress: \(recipientAddress), deviceId: \(deviceId)")
 
-        guard isPrekeyRateLimitSafe(recipientAddress: recipientAddress,
-                                    deviceId: deviceId) else {
-                                        // We don't want to retry prekey requests if we've recently hit
-                                        // the rate limit for the same recipient/device.  Fail immediately
-                                        // as though we hit the prekey rate limit again. This will give
-                                        // rate limit's "leaky bucket" time to refill.
-                                        Logger.info("Skipping prekey request to avoid hitting rate limit.")
-                                        return failure(MessageSenderError.prekeyRateLimit)
-        }
-
         guard isDeviceNotMissing(recipientAddress: recipientAddress,
                                  deviceId: deviceId) else {
                                 // We don't want to retry prekey requests if we've recently gotten
@@ -267,7 +257,6 @@ public class MessageSending: NSObject {
                     self.hadMissingDeviceError(recipientAddress: recipientAddress, deviceId: deviceId)
                     return failure(MessageSenderError.missingDevice)
                 } else if httpStatusCode == 413 {
-                    self.didHitPrekeyRateLimit(recipientAddress: recipientAddress, deviceId: deviceId)
                     return failure(MessageSenderError.prekeyRateLimit)
                 }
             }
@@ -349,46 +338,12 @@ public class MessageSending: NSObject {
     }
 }
 
-// MARK: - Prekey Rate Limits
-
-fileprivate extension MessageSending {
-    struct CacheKey: Hashable {
-        let recipientAddress: SignalServiceAddress
-        let deviceId: NSNumber
-    }
-
-    static let cacheQueue = DispatchQueue(label: "MessageSender.cacheQueue")
-
-    // This property should only be accessed on cacheQueue.
-    private static var prekeyRateLimitCache = [CacheKey: Date]()
-
-    class func didHitPrekeyRateLimit(recipientAddress: SignalServiceAddress,
-                                     deviceId: NSNumber) {
-        assert(!Thread.isMainThread)
-        let cacheKey = CacheKey(recipientAddress: recipientAddress, deviceId: deviceId)
-        cacheQueue.sync {
-            prekeyRateLimitCache[cacheKey] = Date()
-        }
-    }
-
-    class func isPrekeyRateLimitSafe(recipientAddress: SignalServiceAddress,
-                                     deviceId: NSNumber) -> Bool {
-        assert(!Thread.isMainThread)
-        let cacheKey = CacheKey(recipientAddress: recipientAddress, deviceId: deviceId)
-        let canMakePreKeyRequest = cacheQueue.sync { () -> Bool in
-            guard let date = prekeyRateLimitCache[cacheKey] else {
-                return true
-            }
-            let kBackoffAfterPrekeyRateLimit = kMinuteInterval * 10.1
-            return abs(date.timeIntervalSinceNow) >= kBackoffAfterPrekeyRateLimit
-        }
-        return canMakePreKeyRequest
-    }
-}
-
 // MARK: - Prekey Rate Limits & Untrusted Identities
 
 fileprivate extension MessageSending {
+
+    static let cacheQueue = DispatchQueue(label: "MessageSender.cacheQueue")
+
     private struct StaleIdentity {
         let currentIdentityKey: Data
         let newIdentityKey: Data
@@ -472,6 +427,11 @@ fileprivate extension MessageSending {
 
 fileprivate extension MessageSending {
 
+    private struct CacheKey: Hashable {
+        let recipientAddress: SignalServiceAddress
+        let deviceId: NSNumber
+    }
+
     // This property should only be accessed on cacheQueue.
     private static var missingDevicesCache = [CacheKey: Date]()
 
@@ -487,8 +447,6 @@ fileprivate extension MessageSending {
             // a problem.
             return
         }
-        Logger.info("recipientAddress: \(recipientAddress), deviceId: \(deviceId)")
-        Logger.flush()
 
         cacheQueue.sync {
             missingDevicesCache[cacheKey] = Date()
