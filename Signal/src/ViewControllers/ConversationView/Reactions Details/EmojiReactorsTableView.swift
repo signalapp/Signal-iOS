@@ -26,7 +26,7 @@ class EmojiReactorsTableView: UITableView {
         super.init(frame: .zero, style: .plain)
 
         dataSource = self
-        backgroundColor = Theme.reactionBackgroundColor
+        backgroundColor = Theme.actionSheetBackgroundColor
         separatorStyle = .none
 
         register(EmojiReactorCell.self, forCellReuseIdentifier: EmojiReactorCell.reuseIdentifier)

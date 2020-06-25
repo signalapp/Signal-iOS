@@ -69,7 +69,7 @@ class DeviceTransferQRScanningViewController: DeviceTransferBaseViewController {
 
             layer.path = path.cgPath
             layer.fillRule = .evenOdd
-            layer.fillColor = Theme.backgroundColor.cgColor
+            layer.fillColor = Theme.actionSheetBackgroundColor.cgColor
         }
         return maskingView
     }()
