@@ -250,10 +250,9 @@ public class GRDBThreadFinder: NSObject, ThreadFinder {
         // If the current thread contains messages that are earlier than that id,
         // we don't show the message request.
         if let messageRequestInteractionIdEpoch = SSKPreferences.messageRequestInteractionIdEpoch(transaction: transaction),
-            let earliestKnownInteractionId = interactionFinder.earliestKnownInteractionRowId(transaction: transaction) {
-            guard earliestKnownInteractionId < messageRequestInteractionIdEpoch else {
-                return false
-            }
+            let earliestKnownInteractionId = interactionFinder.earliestKnownInteractionRowId(transaction: transaction),
+            earliestKnownInteractionId <= messageRequestInteractionIdEpoch {
+            return true
         }
 
         // It's possible we pass the above check for a legacy thread, for example if

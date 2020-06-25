@@ -18,7 +18,7 @@ extension FeatureBuild {
     }
 }
 
-let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .beta
+let build: FeatureBuild = OWSIsDebugBuild() ? .dev : .qa
 
 // MARK: -
 
@@ -113,7 +113,7 @@ public class FeatureFlags: NSObject {
     }
 
     @objc
-    public static let uuidCapabilities = allowUUIDOnlyContacts && useOnlyModernContactDiscovery
+    public static let uuidCapabilities = (allowUUIDOnlyContacts && useOnlyModernContactDiscovery) || groupsV2
 
     @objc
     public static var storageModeDescription: String {
@@ -135,7 +135,7 @@ public class FeatureFlags: NSObject {
     public static let strictYDBExtensions = build.includes(.beta)
 
     @objc
-    public static var allowUUIDOnlyContacts = useOnlyModernContactDiscovery
+    public static var allowUUIDOnlyContacts = useOnlyModernContactDiscovery || groupsV2
 
     @objc
     public static var uuidSafetyNumbers = allowUUIDOnlyContacts
@@ -179,7 +179,7 @@ public class FeatureFlags: NSObject {
     public static let answerCallsOnSecondaryDevice: Bool = build.includes(.beta)
 
     @objc
-    public static let groupsV2 = build.includes(.qa) && !isUsingProductionService
+    public static let groupsV2 = build.includes(.qa)
 
     // Don't consult this feature flag directly; instead
     // consult RemoteConfig.groupsV2CreateGroups.
@@ -215,12 +215,6 @@ public class FeatureFlags: NSObject {
 
     @objc
     public static let isUsingProductionService = true
-
-    @objc
-    public static let versionedProfiledFetches = true
-
-    @objc
-    public static let versionedProfiledUpdate = true
 
     @objc
     public static let useOrphanDataCleaner = true
@@ -331,4 +325,9 @@ public class DebugFlags: NSObject {
 
     @objc
     public static let deviceTransferVerboseProgressLogging = build.includes(.qa)
+
+    // We currently want to force-enable versioned profiles for
+    // all beta users, but not production.
+    @objc
+    public static let forceVersionedProfiles = build.includes(.beta)
 }

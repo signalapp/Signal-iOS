@@ -185,6 +185,18 @@ NS_ASSUME_NONNULL_BEGIN
     [self.statusIndicatorImageView.layer addAnimation:animation forKey:@"animation"];
 }
 
+- (BOOL)wasSentToAnyRecipient:(id<ConversationViewItem>)viewItem
+{
+    OWSAssertDebug(viewItem);
+
+    if (viewItem.interaction.interactionType != OWSInteractionType_OutgoingMessage) {
+        return NO;
+    }
+
+    TSOutgoingMessage *outgoingMessage = (TSOutgoingMessage *)viewItem.interaction;
+    return outgoingMessage.wasSentToAnyRecipient;
+}
+
 - (BOOL)isFailedOutgoingMessage:(id<ConversationViewItem>)viewItem
 {
     OWSAssertDebug(viewItem);
@@ -207,13 +219,15 @@ NS_ASSUME_NONNULL_BEGIN
 
     NSString *timestampLabelText;
     if ([self isFailedOutgoingMessage:viewItem]) {
-        timestampLabelText
-            = NSLocalizedString(@"MESSAGE_STATUS_SEND_FAILED", @"Label indicating that a message failed to send.");
+        timestampLabelText = [self wasSentToAnyRecipient:viewItem]
+            ? NSLocalizedString(
+                @"MESSAGE_STATUS_PARTIALLY_SENT", @"Label indicating that a message was only sent to some recipients.")
+            : NSLocalizedString(@"MESSAGE_STATUS_SEND_FAILED", @"Label indicating that a message failed to send.");
     } else {
         timestampLabelText = [DateUtil formatMessageTimestamp:viewItem.interaction.timestamp];
     }
 
-    self.timestampLabel.text = timestampLabelText.localizedUppercaseString;
+    self.timestampLabel.text = timestampLabelText;
 }
 
 - (CGSize)measureWithConversationViewItem:(id<ConversationViewItem>)viewItem

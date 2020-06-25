@@ -66,6 +66,8 @@ typedef NS_ENUM(NSInteger, TSGroupMetaMessage) {
 @property (atomic, nullable, readonly) NSNumber *deliveryTimestamp;
 // This property should only be set if state == .sent.
 @property (atomic, nullable, readonly) NSNumber *readTimestamp;
+// This property should only be set if state == .failed
+@property (atomic, nullable, readonly) NSNumber *errorCode;
 
 @property (atomic, readonly) BOOL wasSentByUD;
 
@@ -247,6 +249,11 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:receivedAtTimestamp
 // This method is used to record a skipped send to one recipient.
 - (void)updateWithSkippedRecipient:(SignalServiceAddress *)recipientAddress
                        transaction:(SDSAnyWriteTransaction *)transaction;
+
+// This method is used to record a failed send to one recipient.
+- (void)updateWithFailedRecipient:(SignalServiceAddress *)recipientAddress
+                            error:(NSError *)error
+                      transaction:(SDSAnyWriteTransaction *)transaction;
 
 // On app launch, all "sending" recipients should be marked as "failed".
 - (void)updateWithAllSendingRecipientsMarkedAsFailedWithTansaction:(SDSAnyWriteTransaction *)transaction;

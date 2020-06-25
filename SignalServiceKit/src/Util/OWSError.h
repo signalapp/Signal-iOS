@@ -15,7 +15,7 @@ typedef NS_ENUM(NSInteger, OWSErrorCode) {
     OWSErrorCodeFailedToEncodeJson = 14,
     OWSErrorCodeFailedToDecodeQR = 15,
     OWSErrorCodePrivacyVerificationFailure = 20,
-    OWSErrorCodeUntrustedIdentity = 25,
+    OWSErrorCodeUntrustedIdentity = 777427,
     OWSErrorCodeFailedToSendOutgoingMessage = 30,
     OWSErrorCodeAssertionFailure = 31,
     OWSErrorCodeFailedToDecryptMessage = 100,

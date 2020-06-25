@@ -68,13 +68,13 @@ import SignalMessaging
             return false
         }
 
-        let showedAlert = SafetyNumberConfirmationAlert.presentAlertIfNecessary(address: address,
-                                                                                confirmationText: CallStrings.confirmAndCallButtonTitle,
-                                                                                completion: { didConfirmIdentity in
-                                                                                    if didConfirmIdentity {
-                                                                                        _ = self.initiateCall(address: address, isVideo: isVideo)
-                                                                                    }
-        })
+        let showedAlert = SafetyNumberConfirmationSheet.presentIfNecessary(
+            address: address,
+            confirmationText: CallStrings.confirmAndCallButtonTitle
+        ) { didConfirmIdentity in
+            guard didConfirmIdentity else { return }
+            _ = self.initiateCall(address: address, isVideo: isVideo)
+        }
         guard !showedAlert else {
             return false
         }

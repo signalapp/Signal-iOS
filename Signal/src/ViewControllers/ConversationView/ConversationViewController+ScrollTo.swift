@@ -41,20 +41,26 @@ extension ConversationViewController {
 
     @objc(scrollToBottomAnimated:)
     func scrollToBottom(animated: Bool) {
-        guard let lastIndexPath = lastIndexPath else { return }
-
         if conversationViewModel.canLoadNewerItems() {
             databaseStorage.uiRead { transaction in
                 self.conversationViewModel.ensureLoadWindowContainsNewestItems(with: transaction)
             }
         }
 
+        guard let lastIndexPath = self.lastIndexPath else { return }
         scrollToInteraction(indexPath: lastIndexPath, position: .bottom, animated: animated)
     }
 
     @objc(scrollToLastVisibleInteractionAnimated:)
     func scrollToLastVisibleInteraction(animated: Bool) {
         guard let lastVisibleInteraction = threadViewModel.lastVisibleInteraction else {
+            return scrollToBottom(animated: animated)
+        }
+
+        // IFF the lastVisibleInteraction is the last non-dynamic interaction in the thread,
+        // we want to scroll to the bottom to also show any active typing indicators.
+        if lastVisibleInteraction.sortId == lastSortId,
+            SSKEnvironment.shared.typingIndicators.typingAddress(forThread: thread) != nil {
             return scrollToBottom(animated: animated)
         }
 

@@ -350,7 +350,7 @@ typedef void (^SystemMessageActionBlock)(void);
                 OWSAssertDebug([interaction isKindOfClass:[OWSUnknownProtocolVersionMessage class]]);
                 if ([interaction isKindOfClass:[OWSUnknownProtocolVersionMessage class]]) {
                     OWSUnknownProtocolVersionMessage *message = (OWSUnknownProtocolVersionMessage *)interaction;
-                    result = [UIImage imageNamed:(message.isProtocolVersionUnknown ? @"message_status_failed"
+                    result = [UIImage imageNamed:(message.isProtocolVersionUnknown ? @"error-outline-12"
                                                                                    : @"check-circle-outline-28")];
                 }
                 break;

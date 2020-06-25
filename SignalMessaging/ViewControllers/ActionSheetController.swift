@@ -125,7 +125,7 @@ public class ActionSheetController: OWSViewController {
         let topMargin: CGFloat = 18
 
         scrollView.addSubview(contentView)
-        contentView.backgroundColor = Theme.backgroundColor
+        contentView.backgroundColor = Theme.actionSheetBackgroundColor
         contentView.autoPinWidthToSuperview()
         contentView.autoPinEdge(toSuperviewEdge: .top, withInset: topMargin)
         contentView.autoPinEdge(toSuperviewEdge: .bottom)
@@ -138,9 +138,9 @@ public class ActionSheetController: OWSViewController {
             contentView.autoMatch(.height, to: .height, of: scrollView, withOffset: -topMargin)
         }
 
-        stackView.addBackgroundView(withBackgroundColor: Theme.hairlineColor)
+        stackView.addBackgroundView(withBackgroundColor: Theme.actionSheetHairlineColor)
         stackView.axis = .vertical
-        stackView.spacing = CGHairlineWidth()
+        stackView.spacing = 1
 
         contentView.addSubview(stackView)
         stackView.autoPinEdgesToSuperviewSafeArea()
@@ -150,7 +150,7 @@ public class ActionSheetController: OWSViewController {
         //    that the stack view can scroll above that range.
         // b) avoid a gap at the bottom of the screen when bouncing vertically
         let safeAreaBackdrop = UIView()
-        safeAreaBackdrop.backgroundColor = Theme.backgroundColor
+        safeAreaBackdrop.backgroundColor = Theme.actionSheetBackgroundColor
         view.insertSubview(safeAreaBackdrop, belowSubview: scrollView)
         safeAreaBackdrop.autoHCenterInSuperview()
         safeAreaBackdrop.autoPinEdge(toSuperviewEdge: .bottom)
@@ -205,7 +205,7 @@ public class ActionSheetController: OWSViewController {
         guard title != nil || message != nil else { return }
 
         let headerStack = UIStackView()
-        headerStack.addBackgroundView(withBackgroundColor: Theme.backgroundColor)
+        headerStack.addBackgroundView(withBackgroundColor: Theme.actionSheetBackgroundColor)
         headerStack.axis = .vertical
         headerStack.isLayoutMarginsRelativeArrangement = true
         headerStack.layoutMargins = UIEdgeInsets(top: 16, leading: 16, bottom: 16, trailing: 16)
@@ -321,7 +321,7 @@ public class ActionSheetAction: NSObject {
         }
     }
 
-    fileprivate lazy var button = Button(action: self)
+    fileprivate(set) public lazy var button = Button(action: self)
 
     @objc
     public convenience init(title: String, style: Style = .default, handler: Handler? = nil) {
@@ -336,8 +336,8 @@ public class ActionSheetAction: NSObject {
         self.handler = handler
     }
 
-    fileprivate class Button: UIButton {
-        var releaseAction: (() -> Void)?
+    public class Button: UIButton {
+        public var releaseAction: (() -> Void)?
 
         var trailingIcon: ThemeIcon? {
             didSet {
@@ -390,7 +390,7 @@ public class ActionSheetAction: NSObject {
         init(action: ActionSheetAction) {
             super.init(frame: .zero)
 
-            setBackgroundImage(UIImage(color: Theme.backgroundColor), for: .init())
+            setBackgroundImage(UIImage(color: Theme.actionSheetBackgroundColor), for: .init())
             setBackgroundImage(UIImage(color: Theme.cellSelectedColor), for: .highlighted)
 
             [leadingIconView, trailingIconView].forEach { iconView in

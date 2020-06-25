@@ -175,9 +175,13 @@ extension OWSProfileManager {
                 self.updateLocalProfile(with: attempt, transaction: transaction)
             }
 
-            if FeatureFlags.versionedProfiledUpdate {
+            if RemoteConfig.versionedProfileUpdate {
+                // TODO: Remove
+                Logger.info("Versioned profile update.")
                 return updateProfileOnServiceVersioned(attempt: attempt)
             } else {
+                // TODO: Remove
+                Logger.info("Unversioned profile update.")
                 return updateProfileOnServiceUnversioned(attempt: attempt)
             }
         }.done(on: DispatchQueue.global()) { _ in

@@ -50,7 +50,7 @@ class ReactionsDetailSheet: UIViewController {
         contentView.autoPinEdge(toSuperviewEdge: .bottom)
         contentView.autoHCenterInSuperview()
         contentView.autoMatch(.height, to: .height, of: view, withOffset: 0, relation: .lessThanOrEqual)
-        contentView.backgroundColor = Theme.reactionBackgroundColor
+        contentView.backgroundColor = Theme.actionSheetBackgroundColor
 
         // Prefer to be full width, but don't exceed the maximum width
         contentView.autoSetDimension(.width, toSize: maxWidth, relation: .lessThanOrEqual)

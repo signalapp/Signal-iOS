@@ -1497,10 +1497,9 @@ typedef enum : NSUInteger {
 - (BOOL)showSafetyNumberConfirmationIfNecessaryWithConfirmationText:(NSString *)confirmationText
                                                          completion:(void (^)(BOOL didConfirmIdentity))completionHandler
 {
-    return [SafetyNumberConfirmationAlert presentAlertIfNecessaryWithAddresses:self.thread.recipientAddresses
-                                                              confirmationText:confirmationText
-                                                                    completion:completionHandler
-                                                     beforePresentationHandler:nil];
+    return [SafetyNumberConfirmationSheet presentIfNecessaryWithAddresses:self.thread.recipientAddresses
+                                                         confirmationText:confirmationText
+                                                               completion:completionHandler];
 }
 
 - (void)showFingerprintWithAddress:(SignalServiceAddress *)address
@@ -1787,8 +1786,26 @@ typedef enum : NSUInteger {
 
 - (void)handleUnsentMessageTap:(TSOutgoingMessage *)message
 {
-    ActionSheetController *actionSheet = [[ActionSheetController alloc] initWithTitle:message.mostRecentFailureText
-                                                                              message:nil];
+    NSArray<SignalServiceAddress *> *recipientsWithChangedSafetyNumber =
+        [message failedRecipientAddressesWithErrorCode:OWSErrorCodeUntrustedIdentity];
+    if (recipientsWithChangedSafetyNumber.count > 0) {
+        // Show special safety number change dialog
+        SafetyNumberConfirmationSheet *sheet = [[SafetyNumberConfirmationSheet alloc]
+            initWithAddressesToConfirm:recipientsWithChangedSafetyNumber
+                      confirmationText:MessageStrings.sendButton
+                     completionHandler:^(BOOL didConfirm) {
+                         if (didConfirm) {
+                             DatabaseStorageAsyncWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+                                 [self.messageSenderJobQueue addMessage:message.asPreparer transaction:transaction];
+                             });
+                         }
+                     }];
+        [self presentViewController:sheet animated:YES completion:nil];
+        return;
+    }
+
+    ActionSheetController *actionSheet = [[ActionSheetController alloc] initWithTitle:nil
+                                                                              message:message.mostRecentFailureText];
 
     [actionSheet addAction:[OWSActionSheets cancelAction]];
 
@@ -5056,13 +5073,6 @@ typedef enum : NSUInteger {
             // probably because this request was accepted on another device. Dismiss it.
             [self dismissMessageRequestView];
         }
-        return;
-    }
-
-    // If we're already showing the message request view, don't render it again.
-    //
-    // TODO:
-    if (self.messageRequestView) {
         return;
     }
 

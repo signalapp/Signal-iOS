@@ -90,7 +90,7 @@ class TurnOnPermissionView: UIStackView {
     init(title: String, message: String, steps: [Step]) {
         super.init(frame: .zero)
 
-        addBackgroundView(withBackgroundColor: Theme.backgroundColor)
+        addBackgroundView(withBackgroundColor: Theme.actionSheetBackgroundColor)
         axis = .vertical
         spacing = 2
         isLayoutMarginsRelativeArrangement = true

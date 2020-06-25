@@ -38,7 +38,7 @@ extension ProfileFetchError: CustomStringConvertible {
 
 @objc
 public enum ProfileFetchType: UInt {
-    // .default fetches honor FeatureFlag.versionedProfiledFetches
+    // .default fetches honor FeatureFlag.versionedProfileFetches
     case `default`
     case unversioned
     case versioned
@@ -365,7 +365,7 @@ public class ProfileFetcherJob: NSObject {
     private var shouldUseVersionedFetchForUuids: Bool {
         switch options.fetchType {
         case .default:
-            return FeatureFlags.versionedProfiledFetches
+            return RemoteConfig.versionedProfileFetches
         case .versioned:
             return true
         case .unversioned:
@@ -399,6 +399,8 @@ public class ProfileFetcherJob: NSObject {
                                             currentVersionedProfileRequest = nil
 
                                             if shouldUseVersionedFetch {
+                                                // TODO: Remove
+                                                Logger.info("Versioned profile fetch.")
                                                 do {
                                                     let request = try self.versionedProfiles.versionedProfileRequest(address: address, udAccessKey: udAccessKeyForRequest)
                                                     currentVersionedProfileRequest = request
@@ -408,6 +410,8 @@ public class ProfileFetcherJob: NSObject {
                                                     return nil
                                                 }
                                             } else {
+                                                // TODO: Remove
+                                                Logger.info("Unversioned profile fetch.")
                                                 return OWSRequestFactory.getUnversionedProfileRequest(address: address, udAccessKey: udAccessKeyForRequest)
                                             }
         }, udAuthFailureBlock: {

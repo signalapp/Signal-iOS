@@ -343,7 +343,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (UIImage *)sendFailureBadge
 {
-    UIImage *image = [UIImage imageNamed:@"message_status_failed_large"];
+    UIImage *image = [UIImage imageNamed:@"error-outline-24"];
     OWSAssertDebug(image);
     OWSAssertDebug(image.size.width == self.sendFailureBadgeSize && image.size.height == self.sendFailureBadgeSize);
     return image;
@@ -351,7 +351,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (CGFloat)sendFailureBadgeSize
 {
-    return 20.f;
+    return 24.f;
 }
 
 // * If cell is visible, lazy-load (expensive) view contents.

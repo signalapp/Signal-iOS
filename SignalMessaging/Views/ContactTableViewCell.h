@@ -35,6 +35,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)ows_setAccessoryView:(UIView *)accessoryView;
 
+- (BOOL)allowUserInteraction;
+
 @end
 
 NS_ASSUME_NONNULL_END
