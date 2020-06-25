@@ -41,14 +41,13 @@ extension ConversationViewController {
 
     @objc(scrollToBottomAnimated:)
     func scrollToBottom(animated: Bool) {
-        guard let lastIndexPath = lastIndexPath else { return }
-
         if conversationViewModel.canLoadNewerItems() {
             databaseStorage.uiRead { transaction in
                 self.conversationViewModel.ensureLoadWindowContainsNewestItems(with: transaction)
             }
         }
 
+        guard let lastIndexPath = self.lastIndexPath else { return }
         scrollToInteraction(indexPath: lastIndexPath, position: .bottom, animated: animated)
     }
 
