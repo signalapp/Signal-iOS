@@ -56,14 +56,12 @@ public class RemoteConfig: NSObject {
 
     @objc
     public static var versionedProfileFetches: Bool {
-        guard FeatureFlags.versionedProfileFetches else { return false }
         if DebugFlags.forceVersionedProfiles { return true }
         return isEnabled(.versionedProfiles)
     }
 
     @objc
     public static var versionedProfileUpdate: Bool {
-        guard FeatureFlags.versionedProfileUpdate else { return false }
         if DebugFlags.forceVersionedProfiles { return true }
         return isEnabled(.versionedProfiles)
     }

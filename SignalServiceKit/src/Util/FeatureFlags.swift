@@ -217,12 +217,6 @@ public class FeatureFlags: NSObject {
     public static let isUsingProductionService = true
 
     @objc
-    public static let versionedProfileFetches = true
-
-    @objc
-    public static let versionedProfileUpdate = true
-
-    @objc
     public static let useOrphanDataCleaner = true
 
     @objc
