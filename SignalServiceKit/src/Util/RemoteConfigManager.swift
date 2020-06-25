@@ -185,19 +185,15 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
 
     // MARK: -
 
-    #if TESTABLE_BUILD
     private let hasWarmedCache = AtomicBool(false)
-    #endif
 
     private var _cachedConfig: RemoteConfig?
     @objc
     public private(set) var cachedConfig: RemoteConfig? {
         get {
-            #if TESTABLE_BUILD
             if !hasWarmedCache.get() {
                 owsFailDebug("CachedConfig not yet set.")
             }
-            #endif
 
             return _cachedConfig
         }
@@ -259,9 +255,7 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
             Logger.info("no stored remote config")
         }
 
-        #if TESTABLE_BUILD
         hasWarmedCache.set(true)
-        #endif
     }
 
     private func refreshIfReady() {
