@@ -211,6 +211,13 @@ public final class SessionManagementProtocol : NSObject {
             print("[Loki] Couldn't parse pre key bundle received from: \(sender).")
             return
         }
+        if isSessionRequestMessage(protoContent.dataMessage),
+            let sentSessionRequestTimestamp = storage.getSessionRequestTimestamp(for: sender, in: transaction),
+            envelope.timestamp < NSDate.ows_millisecondsSince1970(for: sentSessionRequestTimestamp) {
+            // We sent a session request after this one was sent
+            print("[Loki] Ignoring session request from: \(sender).")
+            return
+        }
         storage.setPreKeyBundle(preKeyBundle, forContact: sender, transaction: transaction)
     }
 

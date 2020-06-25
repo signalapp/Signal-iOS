@@ -487,7 +487,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 {
     [self.udManager
         ensureSenderCertificateWithSuccess:^(SMKSenderCertificate *senderCertificate) {
-            OWSAssertDebug(senderCertificate != nil);
+//            OWSAssertDebug(senderCertificate != nil);
             dispatch_async([OWSDispatch sendingQueue], ^{
                 [self sendMessageToService:message senderCertificate:senderCertificate success:success failure:failure];
             });
@@ -928,8 +928,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 {
     OWSAssertDebug(messageSend);
     OWSAssertDebug(messageSend.thread || [messageSend.message isKindOfClass:[OWSOutgoingSyncMessage class]]);
-    NSString *userPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
-    OWSAssertDebug(messageSend.isUDSend || [messageSend.recipient.recipientId isEqual:userPublicKey]);
+//    NSString *userPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+//    OWSAssertDebug(messageSend.isUDSend || [messageSend.recipient.recipientId isEqual:userPublicKey]);
 
     TSOutgoingMessage *message = messageSend.message;
     SignalRecipient *recipient = messageSend.recipient;
