@@ -821,6 +821,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                                                 }
                                                 recipientState.state = OWSOutgoingMessageRecipientStateSent;
                                                 recipientState.wasSentByUD = wasSentByUD;
+                                                recipientState.errorCode = nil;
                                             }];
 }
 
@@ -890,6 +891,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                                                 }
                                                 recipientState.state = OWSOutgoingMessageRecipientStateSent;
                                                 recipientState.deliveryTimestamp = deliveryTimestamp;
+                                                recipientState.errorCode = nil;
                                             }];
 }
 
@@ -914,6 +916,7 @@ NSUInteger const TSOutgoingMessageSchemaVersion = 1;
                                                 }
                                                 recipientState.state = OWSOutgoingMessageRecipientStateSent;
                                                 recipientState.readTimestamp = @(readTimestamp);
+                                                recipientState.errorCode = nil;
                                             }];
 }
 
