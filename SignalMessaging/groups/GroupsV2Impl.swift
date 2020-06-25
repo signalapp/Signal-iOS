@@ -66,7 +66,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             // if we've just reset the zkgroup state, since that
             // have the same effect.
             guard !didReset,
-                FeatureFlags.versionedProfiledUpdate,
+                RemoteConfig.versionedProfiledUpdate,
                 self.tsAccountManager.isRegisteredAndReady else {
                     return
             }
@@ -127,7 +127,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
             self.serviceStore.setInt(zkgroupVersionCounter, key: lastZKgroupVersionCounterKey, transaction: transaction)
         }
         AppReadiness.runNowOrWhenAppDidBecomeReadyPolite {
-            if FeatureFlags.versionedProfiledUpdate,
+            if RemoteConfig.versionedProfiledUpdate,
                 self.tsAccountManager.isRegisteredAndReady {
                 firstly {
                     self.reuploadLocalProfilePromise()
@@ -969,7 +969,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
         }
 
         guard FeatureFlags.groupsV2,
-                FeatureFlags.versionedProfiledFetches else {
+                RemoteConfig.versionedProfiledFetches else {
                     return Promise(error: GroupsV2Error.gv2NotEnabled)
         }
 
@@ -1064,7 +1064,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
     // or v2 group.  We have to create a v1 group unless we know the
     // uuid and profile key credential for all members.
     public func tryToEnsureProfileKeyCredentials(for addresses: [SignalServiceAddress]) -> Promise<Void> {
-        guard FeatureFlags.versionedProfiledFetches else {
+        guard RemoteConfig.versionedProfiledFetches else {
             return Promise.value(())
         }
 
@@ -1246,7 +1246,7 @@ public class GroupsV2Impl: NSObject, GroupsV2Swift {
     // MARK: - Profiles
 
     public func reuploadLocalProfilePromise() -> Promise<Void> {
-        guard FeatureFlags.versionedProfiledUpdate else {
+        guard RemoteConfig.versionedProfiledUpdate else {
             return Promise(error: OWSAssertionError("Versioned profiles are not enabled."))
         }
         return self.profileManager.reuploadLocalProfilePromise()
