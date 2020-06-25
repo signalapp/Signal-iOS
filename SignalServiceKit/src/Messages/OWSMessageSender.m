@@ -612,7 +612,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
             if ([LKMultiDeviceProtocol isMultiDeviceRequiredForMessage:message]) { // Avoid the write transaction if possible
                 [self.primaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-                    [LKMultiDeviceProtocol sendMessageToDestinationAndLinkedDevices:messageSend in:transaction];
+                    [LKMultiDeviceProtocol sendMessageToDestinationAndLinkedDevices:messageSend transaction:transaction];
                 }];
             } else {
                 [self sendMessage:messageSend];
@@ -944,7 +944,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     if ([TSPreKeyManager isAppLockedDueToPreKeyUpdateFailures]) {
         OWSProdError([OWSAnalyticsEvents messageSendErrorFailedDueToPrekeyUpdateFailures]);
 
-        // Retry pr ekey update every time user tries to send a message while the app
+        // Retry pre key update every time user tries to send a message while the app
         // is disabled due to pre key update failures.
         //
         // Only try to update the signed pre key; updating it is sufficient to
@@ -1142,7 +1142,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             }
         } error:nil];
         // Convenience
-        void (^onP2PSuccess)() = ^() { message.isP2P = YES; };
         void (^handleError)(NSError *error) = ^(NSError *error) {
             [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                 if (!message.skipSave) {
@@ -1157,7 +1156,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             failedMessageSend(error);
         };
         // Send the message
-        [[LKAPI sendSignalMessage:signalMessage onP2PSuccess:onP2PSuccess]
+        [[LKSnodeAPI sendSignalMessage:signalMessage]
          .thenOn(OWSDispatch.sendingQueue, ^(id result) {
             NSSet<AnyPromise *> *promises = (NSSet<AnyPromise *> *)result;
             __block BOOL isSuccess = NO;
@@ -1291,7 +1290,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     switch (statusCode) {
         case 0: { // Loki
             NSError *error;
-            if ([responseError isKindOfClass:LokiAPIError.class] || [responseError isKindOfClass:LokiDotNetAPIError.class]
+            if ([responseError isKindOfClass:LKSnodeAPIError.class] || [responseError isKindOfClass:LKDotNetAPIError.class]
                 || [responseError isKindOfClass:DiffieHellmanError.class]) {
                 error = responseError;
             } else {
@@ -1672,10 +1671,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     TSOutgoingMessage *message = messageSend.message;
     
     ECKeyPair *identityKeyPair = self.identityManager.identityKeyPair;
-    FallBackSessionCipher *cipher = [[FallBackSessionCipher alloc] initWithRecipientId:recipientId privateKey:identityKeyPair.privateKey];
+    FallBackSessionCipher *cipher = [[FallBackSessionCipher alloc] initWithRecipientPublicKey:recipientId privateKey:identityKeyPair.privateKey];
     
     // This will return nil if encryption failed
-    NSData *_Nullable serializedMessage = [cipher encryptWithMessage:[plainText paddedMessageBody]];
+    NSData *_Nullable serializedMessage = [cipher encrypt:[plainText paddedMessageBody]];
     if (!serializedMessage) {
         OWSFailDebug(@"Failed to encrypt friend request for: %@.", recipientId);
         return nil;
@@ -1752,13 +1751,47 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             OWSRaiseException(@"SecretSessionCipherFailure", @"Can't create secret session cipher.");
         }
 
-        serializedMessage = [secretCipher throwswrapped_encryptMessageWithRecipientId:recipientID
-                                                                             deviceId:@(OWSDevicePrimaryDeviceId).intValue
-                                                                      paddedPlaintext:[plainText paddedMessageBody]
-                                                                    senderCertificate:messageSend.senderCertificate
-                                                                      protocolContext:transaction
-                                                             useFallbackSessionCipher:isFriendRequestMessage || isSessionRequestMessage || isDeviceLinkMessage
-                                                                                error:&error];
+        if ([messageSend.thread isKindOfClass:TSGroupThread.class] && ((TSGroupThread *)messageSend.thread).usesSharedSenderKeys) {
+            NSString *groupPublicKey = [LKGroupUtilities getDecodedGroupID:((TSGroupThread *)messageSend.thread).groupModel.groupId];
+            NSString *senderPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+            NSArray *ciphertextAndKeyIndex = [LKClosedGroupsProtocol encryptPlaintext:plainText.paddedMessageBody forGroupWithPublicKey:groupPublicKey senderPublicKey:senderPublicKey];
+            if (ciphertextAndKeyIndex.count != 2) {
+                OWSFailDebug(@"Couldn't encrypt closed group message.");
+                return nil;
+            }
+            NSData *ivAndCiphertext = ciphertextAndKeyIndex[0];
+            NSNumber *keyIndex = ciphertextAndKeyIndex[1];
+            SSKProtoClosedGroupCiphertextBuilder *builder = [SSKProtoClosedGroupCiphertext builderWithCiphertext:ivAndCiphertext senderPublicKey:senderPublicKey keyIndex:keyIndex.unsignedIntValue];
+            SSKProtoClosedGroupCiphertext *closedGroupCiphertext = [builder buildAndReturnError:&error];
+            if (closedGroupCiphertext == nil) {
+                OWSFailDebug(@"Couldn't build closed group message due to error: %@.", error);
+                return nil;
+            }
+            ECKeyPair *keyPair = [LKStorage getKeyPairForClosedGroupWithPublicKey:groupPublicKey];
+            if (keyPair == nil) {
+                OWSFailDebug(@"Missing key pair for closed group with public key: %@.", groupPublicKey);
+                return nil;
+            }
+            serializedMessage = [secretCipher throwswrapped_encryptMessageWithRecipientId:recipientID
+                                                                                 deviceId:@(OWSDevicePrimaryDeviceId).intValue
+                                                                          paddedPlaintext:nil
+                                                                    closedGroupCiphertext:closedGroupCiphertext
+                                                                        senderCertificate:messageSend.senderCertificate
+                                                                                  keyPair:keyPair
+                                                                          protocolContext:transaction
+                                                                 useFallbackSessionCipher:NO
+                                                                                    error:&error];
+        } else {
+            serializedMessage = [secretCipher throwswrapped_encryptMessageWithRecipientId:recipientID
+                                                                                 deviceId:@(OWSDevicePrimaryDeviceId).intValue
+                                                                          paddedPlaintext:plainText.paddedMessageBody
+                                                                    closedGroupCiphertext:nil
+                                                                        senderCertificate:messageSend.senderCertificate
+                                                                                  keyPair:nil
+                                                                          protocolContext:transaction
+                                                                 useFallbackSessionCipher:isFriendRequestMessage || isSessionRequestMessage || isDeviceLinkMessage
+                                                                                    error:&error];
+        }
 
         SCKRaiseIfExceptionWrapperError(error);
         if (!serializedMessage || error) {

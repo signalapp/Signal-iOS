@@ -1,8 +1,8 @@
 import PromiseKit
 import SessionMetadataKit
 
-/// Base class for `LokiFileServerAPI` and `LokiPublicChatAPI`.
-public class LokiDotNetAPI : NSObject {
+/// Base class for `FileServerAPI` and `PublicChatAPI`.
+public class DotNetAPI : NSObject {
 
     internal static var storage: OWSPrimaryStorage { OWSPrimaryStorage.shared() }
     internal static var userKeyPair: ECKeyPair { OWSIdentityManager.shared().identityKeyPair()! }
@@ -11,17 +11,18 @@ public class LokiDotNetAPI : NSObject {
     private static let attachmentType = "network.loki"
     
     // MARK: Error
-    @objc public class LokiDotNetAPIError : NSError { // Not called `Error` for Obj-C interoperablity
+    @objc(LKDotNetAPIError)
+    public class DotNetAPIError : NSError { // Not called `Error` for Obj-C interoperablity
         
-        @objc public static let generic = LokiDotNetAPIError(domain: "LokiDotNetAPIErrorDomain", code: 1, userInfo: [ NSLocalizedDescriptionKey : "An error occurred." ])
-        @objc public static let parsingFailed = LokiDotNetAPIError(domain: "LokiDotNetAPIErrorDomain", code: 2, userInfo: [ NSLocalizedDescriptionKey : "Invalid file server response." ])
-        @objc public static let signingFailed = LokiDotNetAPIError(domain: "LokiDotNetAPIErrorDomain", code: 3, userInfo: [ NSLocalizedDescriptionKey : "Couldn't sign message." ])
-        @objc public static let encryptionFailed = LokiDotNetAPIError(domain: "LokiDotNetAPIErrorDomain", code: 4, userInfo: [ NSLocalizedDescriptionKey : "Couldn't encrypt file." ])
-        @objc public static let decryptionFailed = LokiDotNetAPIError(domain: "LokiDotNetAPIErrorDomain", code: 5, userInfo: [ NSLocalizedDescriptionKey : "Couldn't decrypt file." ])
-        @objc public static let maxFileSizeExceeded = LokiDotNetAPIError(domain: "LokiDotNetAPIErrorDomain", code: 6, userInfo: [ NSLocalizedDescriptionKey : "Maximum file size exceeded." ])
+        @objc public static let generic = DotNetAPIError(domain: "DotNetAPIErrorDomain", code: 1, userInfo: [ NSLocalizedDescriptionKey : "An error occurred." ])
+        @objc public static let parsingFailed = DotNetAPIError(domain: "DotNetAPIErrorDomain", code: 2, userInfo: [ NSLocalizedDescriptionKey : "Invalid file server response." ])
+        @objc public static let signingFailed = DotNetAPIError(domain: "DotNetAPIErrorDomain", code: 3, userInfo: [ NSLocalizedDescriptionKey : "Couldn't sign message." ])
+        @objc public static let encryptionFailed = DotNetAPIError(domain: "DotNetAPIErrorDomain", code: 4, userInfo: [ NSLocalizedDescriptionKey : "Couldn't encrypt file." ])
+        @objc public static let decryptionFailed = DotNetAPIError(domain: "DotNetAPIErrorDomain", code: 5, userInfo: [ NSLocalizedDescriptionKey : "Couldn't decrypt file." ])
+        @objc public static let maxFileSizeExceeded = DotNetAPIError(domain: "DotNetAPIErrorDomain", code: 6, userInfo: [ NSLocalizedDescriptionKey : "Maximum file size exceeded." ])
     }
 
-    // MARK: Database
+    // MARK: Storage
     /// To be overridden by subclasses.
     internal class var authTokenCollection: String { preconditionFailure("authTokenCollection is abstract and must be overridden.") }
 
@@ -70,7 +71,7 @@ public class LokiDotNetAPI : NSObject {
         return LokiFileServerProxy(for: server).perform(request, withCompletionQueue: DispatchQueue.global(qos: .default)).map2 { rawResponse in
             guard let json = rawResponse as? JSON, let base64EncodedChallenge = json["cipherText64"] as? String, let base64EncodedServerPublicKey = json["serverPubKey64"] as? String,
                 let challenge = Data(base64Encoded: base64EncodedChallenge), var serverPublicKey = Data(base64Encoded: base64EncodedServerPublicKey) else {
-                throw LokiDotNetAPIError.parsingFailed
+                throw DotNetAPIError.parsingFailed
             }
             // Discard the "05" prefix if needed
             if serverPublicKey.count == 33 {
@@ -80,7 +81,7 @@ public class LokiDotNetAPI : NSObject {
             // The challenge is prefixed by the 16 bit IV
             guard let tokenAsData = try? DiffieHellman.decrypt(challenge, publicKey: serverPublicKey, privateKey: userKeyPair.privateKey),
                 let token = String(bytes: tokenAsData, encoding: .utf8) else {
-                throw LokiDotNetAPIError.decryptionFailed
+                throw DotNetAPIError.decryptionFailed
             }
             return token
         }
@@ -101,14 +102,14 @@ public class LokiDotNetAPI : NSObject {
     }
 
     public static func uploadAttachment(_ attachment: TSAttachmentStream, with attachmentID: String, to server: String) -> Promise<Void> {
-        let isEncryptionRequired = (server == LokiFileServerAPI.server)
+        let isEncryptionRequired = (server == FileServerAPI.server)
         return Promise<Void>() { seal in
             func proceed(with token: String) {
                 // Get the attachment
                 let data: Data
                 guard let unencryptedAttachmentData = try? attachment.readDataFromFile() else {
                     print("[Loki] Couldn't read attachment from disk.")
-                    return seal.reject(LokiDotNetAPIError.generic)
+                    return seal.reject(DotNetAPIError.generic)
                 }
                 // Encrypt the attachment if needed
                 if isEncryptionRequired {
@@ -116,7 +117,7 @@ public class LokiDotNetAPI : NSObject {
                     var digest = NSData()
                     guard let encryptedAttachmentData = Cryptography.encryptAttachmentData(unencryptedAttachmentData, outKey: &encryptionKey, outDigest: &digest) else {
                         print("[Loki] Couldn't encrypt attachment.")
-                        return seal.reject(LokiDotNetAPIError.encryptionFailed)
+                        return seal.reject(DotNetAPIError.encryptionFailed)
                     }
                     attachment.encryptionKey = encryptionKey as Data
                     attachment.digest = digest as Data
@@ -125,9 +126,9 @@ public class LokiDotNetAPI : NSObject {
                     data = unencryptedAttachmentData
                 }
                 // Check the file size if needed
-                let isLokiFileServer = (server == LokiFileServerAPI.server)
-                if isLokiFileServer && data.count > LokiFileServerAPI.maxFileSize {
-                    return seal.reject(LokiDotNetAPIError.maxFileSizeExceeded)
+                let isLokiFileServer = (server == FileServerAPI.server)
+                if isLokiFileServer && data.count > FileServerAPI.maxFileSize {
+                    return seal.reject(DotNetAPIError.maxFileSizeExceeded)
                 }
                 // Create the request
                 let url = "\(server)/files"
@@ -146,7 +147,7 @@ public class LokiDotNetAPI : NSObject {
                     // Parse the server ID & download URL
                     guard let json = responseObject as? JSON, let data = json["data"] as? JSON, let serverID = data["id"] as? UInt64, let downloadURL = data["url"] as? String else {
                         print("[Loki] Couldn't parse attachment from: \(responseObject).")
-                        return seal.reject(LokiDotNetAPIError.parsingFailed)
+                        return seal.reject(DotNetAPIError.parsingFailed)
                     }
                     // Update the attachment
                     attachment.serverId = serverID
@@ -155,7 +156,7 @@ public class LokiDotNetAPI : NSObject {
                     attachment.save()
                     seal.fulfill(())
                 }
-                let isProxyingRequired = (server == LokiFileServerAPI.server) // Don't proxy open group requests for now
+                let isProxyingRequired = (server == FileServerAPI.server) // Don't proxy open group requests for now
                 if isProxyingRequired {
                     attachment.isUploaded = false
                     attachment.save()
@@ -181,14 +182,14 @@ public class LokiDotNetAPI : NSObject {
                         let isSuccessful = (200...299) ~= statusCode
                         guard isSuccessful else {
                             print("[Loki] Couldn't upload attachment.")
-                            return seal.reject(LokiDotNetAPIError.generic)
+                            return seal.reject(DotNetAPIError.generic)
                         }
                         parseResponse(responseObject)
                     })
                     task.resume()
                 }
             }
-            if server == LokiFileServerAPI.server {
+            if server == FileServerAPI.server {
                 DispatchQueue.global(qos: .userInitiated).async {
                     proceed(with: "loki") // Uploads to the Loki File Server shouldn't include any personally identifiable information so use a dummy auth token
                 }
@@ -211,7 +212,7 @@ internal extension Promise {
         return recover2 { error -> Promise<T> in
             if let error = error as? NetworkManagerError, (error.statusCode == 401 || error.statusCode == 403) {
                 print("[Loki] Group chat auth token for: \(server) expired; dropping it.")
-                LokiDotNetAPI.clearAuthToken(for: server)
+                DotNetAPI.clearAuthToken(for: server)
             }
             throw error
         }

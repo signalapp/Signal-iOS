@@ -63,6 +63,7 @@ public final class SessionManagementProtocol : NSObject {
         if message is FriendRequestMessage { return false }
         else if message is SessionRequestMessage { return false }
         else if let message = message as? DeviceLinkMessage, message.kind == .request { return false }
+        else if (message.thread as? TSGroupThread)?.usesSharedSenderKeys == true { return false }
         return true
     }
 
@@ -110,7 +111,7 @@ public final class SessionManagementProtocol : NSObject {
         messageSenderJobQueue.add(message: sessionRequestMessage, transaction: transaction)
     }
 
-    @objc(sendSessionEstablishedMessageToPublicKey:in:)
+    @objc(sendSessionEstablishedMessageToPublicKey:transaction:)
     public static func sendSessionEstablishedMessage(to publicKey: String, in transaction: YapDatabaseReadWriteTransaction) {
         let thread = TSContactThread.getOrCreateThread(withContactId: publicKey, transaction: transaction)
         thread.save(with: transaction)
@@ -119,6 +120,9 @@ public final class SessionManagementProtocol : NSObject {
         messageSenderJobQueue.add(message: ephemeralMessage, transaction: transaction)
     }
 
+    /// DEPRECATED.
+    ///
+    /// Only relevant for closed groups that don't use shared sender keys.
     @objc(shouldIgnoreMissingPreKeyBundleExceptionForMessage:to:)
     public static func shouldIgnoreMissingPreKeyBundleException(for message: TSOutgoingMessage, to hexEncodedPublicKey: String) -> Bool {
         // When a closed group is created, members try to establish sessions with eachother in the background through
@@ -126,15 +130,15 @@ public final class SessionManagementProtocol : NSObject {
         // bundles contained in the session requests and replied with background messages to finalize the session
         // creation, a given user won't be able to successfully send a message to all members of a group. This check
         // is so that until we can do better on this front the user at least won't see this as an error in the UI.
-        return (message.thread as? TSGroupThread)?.groupModel.groupType == .closedGroup
+        guard let groupThread = message.thread as? TSGroupThread else { return false }
+        return groupThread.groupModel.groupType == .closedGroup && !groupThread.usesSharedSenderKeys
     }
 
-    @objc(startSessionResetInThread:using:)
+    @objc(startSessionResetInThread:transaction:)
     public static func startSessionReset(in thread: TSThread, using transaction: YapDatabaseReadWriteTransaction) {
         // Check preconditions
         guard let thread = thread as? TSContactThread else {
-            print("[Loki] Can't restore session for non contact thread.")
-            return
+            return print("[Loki] Can't restore session for non contact thread.")
         }
         // Send session restoration request messages to the devices requiring session restoration
         let devices = thread.sessionRestoreDevices // TODO: Rename this to something that reads better
@@ -157,7 +161,7 @@ public final class SessionManagementProtocol : NSObject {
 
     // MARK: - Receiving
     
-    @objc(handleDecryptionError:forPublicKey:using:)
+    @objc(handleDecryptionError:forPublicKey:transaction:)
     public static func handleDecryptionError(_ rawValue: Int32, for publicKey: String, using transaction: YapDatabaseReadWriteTransaction) {
         let type = TSErrorMessageType(rawValue: rawValue)
         let masterPublicKey = storage.getMasterHexEncodedPublicKey(for: publicKey, in: transaction) ?? publicKey
@@ -171,47 +175,47 @@ public final class SessionManagementProtocol : NSObject {
         }
     }
 
-    @objc(handlePreKeyBundleMessageIfNeeded:wrappedIn:using:)
+    @objc(handlePreKeyBundleMessageIfNeeded:wrappedIn:transaction:)
     public static func handlePreKeyBundleMessageIfNeeded(_ protoContent: SSKProtoContent, wrappedIn envelope: SSKProtoEnvelope, using transaction: YapDatabaseReadWriteTransaction) {
-        let sender = envelope.source! // Set during UD decryption
+        let publicKey = envelope.source! // Set during UD decryption
         guard let preKeyBundleMessage = protoContent.prekeyBundleMessage else { return }
-        print("[Loki] Received a pre key bundle message from: \(sender).")
+        print("[Loki] Received a pre key bundle message from: \(publicKey).")
         guard let preKeyBundle = preKeyBundleMessage.getPreKeyBundle(with: transaction) else {
-            print("[Loki] Couldn't parse pre key bundle received from: \(sender).")
-            return
+            return print("[Loki] Couldn't parse pre key bundle received from: \(publicKey).")
         }
         if isSessionRequestMessage(protoContent.dataMessage),
-            let sentSessionRequestTimestamp = storage.getSessionRequestTimestamp(for: sender, in: transaction),
+            let sentSessionRequestTimestamp = storage.getSessionRequestTimestamp(for: publicKey, in: transaction),
             envelope.timestamp < NSDate.ows_millisecondsSince1970(for: sentSessionRequestTimestamp) {
             // We sent a session request after this one was sent
-            print("[Loki] Ignoring session request from: \(sender).")
-            return
+            return print("[Loki] Ignoring session request from: \(publicKey).")
         }
-        storage.setPreKeyBundle(preKeyBundle, forContact: sender, transaction: transaction)
+        storage.setPreKeyBundle(preKeyBundle, forContact: publicKey, transaction: transaction)
     }
 
     /// - Note: Must be invoked after `handlePreKeyBundleMessageIfNeeded(_:wrappedIn:using:)`.
-    @objc(handleSessionRequestMessage:wrappedIn:using:)
-    public static func handleSessionRequestMessage(_ dataMessage: SSKProtoDataMessage, wrappedIn envelope: SSKProtoEnvelope, using transaction: YapDatabaseReadWriteTransaction) {
-        let sender = envelope.source! // Set during UD decryption
-        if let sentSessionRequestTimestamp = storage.getSessionRequestTimestamp(for: sender, in: transaction),
+    @objc(handleSessionRequestMessageIfNeeded:wrappedIn:transaction:)
+    public static func handleSessionRequestMessageIfNeeded(_ protoContent: SSKProtoContent, wrappedIn envelope: SSKProtoEnvelope, using transaction: YapDatabaseReadWriteTransaction) -> Bool {
+        guard isSessionRequestMessage(protoContent.dataMessage) else { return false }
+        let publicKey = envelope.source! // Set during UD decryption
+        if let sentSessionRequestTimestamp = storage.getSessionRequestTimestamp(for: publicKey, in: transaction),
             envelope.timestamp < NSDate.ows_millisecondsSince1970(for: sentSessionRequestTimestamp) {
             // We sent a session request after this one was sent
-            print("[Loki] Ignoring session request from: \(sender).")
-            return
+            print("[Loki] Ignoring session request from: \(publicKey).")
+            return false
         }
-        sendSessionEstablishedMessage(to: sender, in: transaction)
+        sendSessionEstablishedMessage(to: publicKey, in: transaction)
+        return true
     }
 
     @objc(handleEndSessionMessageReceivedInThread:using:)
     public static func handleEndSessionMessageReceived(in thread: TSContactThread, using transaction: YapDatabaseReadWriteTransaction) {
-        let sender = thread.contactIdentifier()
-        print("[Loki] End session message received from: \(sender).")
+        let publicKey = thread.contactIdentifier()
+        print("[Loki] End session message received from: \(publicKey).")
         // Notify the user
         let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .typeLokiSessionResetInProgress)
         infoMessage.save(with: transaction)
         // Archive all sessions
-        storage.archiveAllSessions(forContact: sender, protocolContext: transaction)
+        storage.archiveAllSessions(forContact: publicKey, protocolContext: transaction)
         // Update the session reset status
         thread.sessionResetStatus = .requestReceived
         thread.save(with: transaction)

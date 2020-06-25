@@ -36,9 +36,14 @@ public final class SessionMetaProtocol : NSObject {
                 }
             }
         } else {
-            result = Set(outgoingGroupMessage.sendingRecipientIds())
-                .intersection(thread.groupModel.groupMemberIds)
-                .subtracting(MultiDeviceProtocol.getUserLinkedDevices())
+            if let groupThread = thread as? TSGroupThread, groupThread.usesSharedSenderKeys {
+                let groupPublicKey = LKGroupUtilities.getDecodedGroupID(groupThread.groupModel.groupId)
+                result = [ groupPublicKey ]
+            } else {
+                result = Set(outgoingGroupMessage.sendingRecipientIds())
+                    .intersection(thread.groupModel.groupMemberIds)
+                    .subtracting(MultiDeviceProtocol.getUserLinkedDevices())
+            }
         }
         return NSMutableSet(set: result)
     }
@@ -72,23 +77,23 @@ public final class SessionMetaProtocol : NSObject {
     // MARK: Typing Indicators
     /// Invoked only if typing indicators are enabled in the settings. Provides an opportunity
     /// to avoid sending them if certain conditions are met.
-    @objc(shouldSendTypingIndicatorForThread:)
-    public static func shouldSendTypingIndicator(for thread: TSThread) -> Bool {
-        guard !thread.isGroupThread(), let contactID = thread.contactIdentifier() else { return false }
+    @objc(shouldSendTypingIndicatorInThread:)
+    public static func shouldSendTypingIndicator(in thread: TSThread) -> Bool {
+        guard !thread.isGroupThread(), let publicKey = thread.contactIdentifier() else { return false }
         var isContactFriend = false
         storage.dbReadConnection.read { transaction in
-            isContactFriend = (storage.getFriendRequestStatus(for: contactID, transaction: transaction) == .friends)
+            isContactFriend = (storage.getFriendRequestStatus(for: publicKey, transaction: transaction) == .friends)
         }
         return isContactFriend
     }
 
     // MARK: Receipts
-    @objc(shouldSendReceiptForThread:)
-    public static func shouldSendReceipt(for thread: TSThread) -> Bool {
-        guard !thread.isGroupThread(), let contactID = thread.contactIdentifier() else { return false }
+    @objc(shouldSendReceiptInThread:)
+    public static func shouldSendReceipt(in thread: TSThread) -> Bool {
+        guard !thread.isGroupThread(), let publicKey = thread.contactIdentifier() else { return false }
         var isContactFriend = false
         storage.dbReadConnection.read { transaction in
-            isContactFriend = (storage.getFriendRequestStatus(for: contactID, transaction: transaction) == .friends)
+            isContactFriend = (storage.getFriendRequestStatus(for: publicKey, transaction: transaction) == .friends)
         }
         return isContactFriend
     }
@@ -102,7 +107,7 @@ public final class SessionMetaProtocol : NSObject {
         return result.source == getUserHexEncodedPublicKey() // Should never occur
     }
 
-    @objc(updateDisplayNameIfNeededForHexEncodedPublicKey:using:transaction:)
+    @objc(updateDisplayNameIfNeededForPublicKey:using:transaction:)
     public static func updateDisplayNameIfNeeded(for publicKey: String, using dataMessage: SSKProtoDataMessage, in transaction: YapDatabaseReadWriteTransaction) {
         guard let profile = dataMessage.profile, let rawDisplayName = profile.displayName, !rawDisplayName.isEmpty else { return }
         let shortID = publicKey.substring(from: publicKey.index(publicKey.endIndex, offsetBy: -8))

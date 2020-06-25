@@ -65,9 +65,8 @@ static NSTimeInterval launchStartedAt;
 @property (nonatomic) BOOL didAppLaunchFail;
 
 // Loki
-@property (nonatomic) LKPoller *lokiPoller;
-@property (nonatomic) LKRSSFeedPoller *lokiNewsFeedPoller;
-@property (nonatomic) LKRSSFeedPoller *lokiMessengerUpdatesFeedPoller;
+@property (nonatomic) LKPoller *poller;
+@property (nonatomic) LKClosedGroupPoller *closedGroupPoller;
 
 @end
 
@@ -1379,36 +1378,27 @@ static NSTimeInterval launchStartedAt;
 
 #pragma mark - Loki
 
-- (void)setUpPollerIfNeeded
-{
-    if (self.lokiPoller != nil) { return; }
-    NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
-    if (userHexEncodedPublicKey == nil) { return; }
-    self.lokiPoller = [[LKPoller alloc] initOnMessagesReceived:^(NSArray<SSKProtoEnvelope *> *messages) {
-        if (messages.count != 0) {
-            [LKLogger print:@"[Loki] Received new messages."];
-        }
-        for (SSKProtoEnvelope *message in messages) {
-            NSData *data = [message serializedDataAndReturnError:nil];
-            if (data != nil) {
-                [SSKEnvironment.shared.messageReceiver handleReceivedEnvelopeData:data];
-            } else {
-                [LKLogger print:@"[Loki] Failed to deserialize envelope."];
-            }
-        }
-    }];
-}
-
 - (void)startPollerIfNeeded
 {
-    [self setUpPollerIfNeeded];
-    [self.lokiPoller startIfNeeded];
+    if (self.poller != nil) { return; }
+    NSString *userPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+    if (userPublicKey == nil) { return; }
+    self.poller = [[LKPoller alloc] init];
+    [self.poller startIfNeeded];
 }
 
-- (void)stopPollerIfNeeded
+- (void)stopPoller { [self.lokiPoller stop]; }
+
+- (void)startClosedGroupPollerIfNeeded
 {
-    [self.lokiPoller stopIfNeeded];
+    if (self.closedGroupPoller != nil) { return; }
+    NSString *userPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+    if (userPublicKey == nil) { return; }
+    self.closedGroupPoller = [[LKClosedGroupPoller alloc] init];
+    [self.closedGroupPoller startIfNeeded];
 }
+
+- (void)stopClosedGroupPoller { [self.closedGroupPoller stop]; }
 
 - (void)startOpenGroupPollersIfNeeded
 {
@@ -1416,16 +1406,13 @@ static NSTimeInterval launchStartedAt;
     [SSKEnvironment.shared.attachmentDownloads continueDownloadIfPossible];
 }
 
-- (void)stopOpenGroupPollersIfNeeded
-{
-    [LKPublicChatManager.shared stopPollers];
-}
+- (void)stopOpenGroupPollers { [LKPublicChatManager.shared stopPollers]; }
 
 - (void)handleDataNukeRequested:(NSNotification *)notification {
     [ThreadUtil deleteAllContent];
     [SSKEnvironment.shared.messageSenderJobQueue clearAllJobs];
     [SSKEnvironment.shared.identityManager clearIdentityKey];
-    [LKAPI clearSnodePool];
+    [LKSnodeAPI clearSnodePool];
     [self stopPollerIfNeeded];
     [self stopOpenGroupPollersIfNeeded];
     [self.lokiNewsFeedPoller stop];

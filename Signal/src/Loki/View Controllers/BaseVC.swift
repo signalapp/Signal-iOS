@@ -3,6 +3,24 @@ class BaseVC : UIViewController {
 
     override var preferredStatusBarStyle: UIStatusBarStyle { return isLightMode ? .default : .lightContent }
 
+    lazy var navBarTitleLabel: UILabel = {
+        let result = UILabel()
+        result.textColor = Colors.text
+        result.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
+        result.alpha = 1
+        result.textAlignment = .center
+        return result
+    }()
+
+    lazy var crossfadeLabel: UILabel = {
+        let result = UILabel()
+        result.textColor = Colors.text
+        result.font = .boldSystemFont(ofSize: Values.veryLargeFontSize)
+        result.alpha = 0
+        result.textAlignment = .center
+        return result
+    }()
+
     override func viewDidLoad() {
         setNeedsStatusBarAppearanceUpdate()
         NotificationCenter.default.addObserver(self, selector: #selector(handleUnexpectedDeviceLinkRequestReceivedNotification), name: .unexpectedDeviceLinkRequestReceived, object: nil)
@@ -23,11 +41,18 @@ class BaseVC : UIViewController {
     }
 
     internal func setNavBarTitle(_ title: String, customFontSize: CGFloat? = nil) {
-        let titleLabel = UILabel()
-        titleLabel.text = title
-        titleLabel.textColor = Colors.text
-        titleLabel.font = .boldSystemFont(ofSize: customFontSize ?? Values.veryLargeFontSize)
-        navigationItem.titleView = titleLabel
+        let container = UIView()
+        navBarTitleLabel.text = title
+        crossfadeLabel.text = title
+        if let customFontSize = customFontSize {
+            navBarTitleLabel.font = .boldSystemFont(ofSize: customFontSize)
+            crossfadeLabel.font = .boldSystemFont(ofSize: customFontSize)
+        }
+        container.addSubview(navBarTitleLabel)
+        navBarTitleLabel.pin(to: container)
+        container.addSubview(crossfadeLabel)
+        crossfadeLabel.pin(to: container)
+        navigationItem.titleView = container
     }
 
     internal func setUpNavBarSessionIcon() {

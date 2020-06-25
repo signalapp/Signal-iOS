@@ -229,7 +229,6 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
             return;
         }        
 
-        if ([LKSyncMessagesProtocol shouldSkipConfigurationSyncMessage]) { return; }
         [self sendConfigurationSyncMessage_AppReady];
     }];
 }
@@ -270,7 +269,7 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 
 - (AnyPromise *)syncContact:(NSString *)hexEncodedPubKey transaction:(YapDatabaseReadTransaction *)transaction
 {
-    return [LKSyncMessagesProtocol syncContactWithPublicKey:hexEncodedPubKey in:transaction];
+    return [LKSyncMessagesProtocol syncContactWithPublicKey:hexEncodedPubKey];
 }
 
 - (AnyPromise *)syncAllContacts

@@ -14,8 +14,8 @@ public class LokiHTTPClient {
         return result
     }()
 
-    internal func perform(_ request: TSRequest, withCompletionQueue queue: DispatchQueue = DispatchQueue.main) -> LokiAPI.RawResponsePromise {
-        return TSNetworkManager.shared().perform(request, withCompletionQueue: queue).map2 { $0.responseObject }.recover2 { error -> LokiAPI.RawResponsePromise in
+    internal func perform(_ request: TSRequest, withCompletionQueue queue: DispatchQueue = DispatchQueue.main) -> SnodeAPI.RawResponsePromise {
+        return TSNetworkManager.shared().perform(request, withCompletionQueue: queue).map2 { $0.responseObject }.recover2 { error -> SnodeAPI.RawResponsePromise in
             throw HTTPError.from(error: error) ?? error
         }
     }

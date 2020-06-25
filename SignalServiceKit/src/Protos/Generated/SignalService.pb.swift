@@ -131,7 +131,10 @@ struct SignalServiceProtos_Envelope {
     case receipt // = 5
     case unidentifiedSender // = 6
 
-    /// Loki: Contains prekeys and a message; uses simple encryption
+    /// Loki
+    case closedGroupCiphertext // = 7
+
+    /// Loki: Contains pre keys and a message; uses simple encryption
     case friendRequest // = 101
 
     init() {
@@ -146,6 +149,7 @@ struct SignalServiceProtos_Envelope {
       case 3: self = .prekeyBundle
       case 5: self = .receipt
       case 6: self = .unidentifiedSender
+      case 7: self = .closedGroupCiphertext
       case 101: self = .friendRequest
       default: return nil
       }
@@ -159,6 +163,7 @@ struct SignalServiceProtos_Envelope {
       case .prekeyBundle: return 3
       case .receipt: return 5
       case .unidentifiedSender: return 6
+      case .closedGroupCiphertext: return 7
       case .friendRequest: return 101
       }
     }
@@ -722,6 +727,50 @@ struct SignalServiceProtos_CallMessage {
   fileprivate var _hangup: SignalServiceProtos_CallMessage.Hangup? = nil
   fileprivate var _busy: SignalServiceProtos_CallMessage.Busy? = nil
   fileprivate var _profileKey: Data? = nil
+}
+
+struct SignalServiceProtos_ClosedGroupCiphertext {
+  // SwiftProtobuf.Message conformance is added in an extension below. See the
+  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+  // methods supported on all messages.
+
+  /// @required
+  var ciphertext: Data {
+    get {return _ciphertext ?? SwiftProtobuf.Internal.emptyData}
+    set {_ciphertext = newValue}
+  }
+  /// Returns true if `ciphertext` has been explicitly set.
+  var hasCiphertext: Bool {return self._ciphertext != nil}
+  /// Clears the value of `ciphertext`. Subsequent reads from it will return its default value.
+  mutating func clearCiphertext() {self._ciphertext = nil}
+
+  /// @required
+  var senderPublicKey: String {
+    get {return _senderPublicKey ?? String()}
+    set {_senderPublicKey = newValue}
+  }
+  /// Returns true if `senderPublicKey` has been explicitly set.
+  var hasSenderPublicKey: Bool {return self._senderPublicKey != nil}
+  /// Clears the value of `senderPublicKey`. Subsequent reads from it will return its default value.
+  mutating func clearSenderPublicKey() {self._senderPublicKey = nil}
+
+  /// @required
+  var keyIndex: UInt32 {
+    get {return _keyIndex ?? 0}
+    set {_keyIndex = newValue}
+  }
+  /// Returns true if `keyIndex` has been explicitly set.
+  var hasKeyIndex: Bool {return self._keyIndex != nil}
+  /// Clears the value of `keyIndex`. Subsequent reads from it will return its default value.
+  mutating func clearKeyIndex() {self._keyIndex = nil}
+
+  var unknownFields = SwiftProtobuf.UnknownStorage()
+
+  init() {}
+
+  fileprivate var _ciphertext: Data? = nil
+  fileprivate var _senderPublicKey: String? = nil
+  fileprivate var _keyIndex: UInt32? = nil
 }
 
 struct SignalServiceProtos_DataMessage {
@@ -1454,7 +1503,7 @@ struct SignalServiceProtos_DataMessage {
     fileprivate var _image: SignalServiceProtos_AttachmentPointer? = nil
   }
 
-  /// Loki: A custom message for our profile
+  /// Loki
   struct LokiProfile {
     // SwiftProtobuf.Message conformance is added in an extension below. See the
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -1492,7 +1541,6 @@ struct SignalServiceProtos_DataMessage {
     // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
     // methods supported on all messages.
 
-    /// @required
     var name: String {
       get {return _name ?? String()}
       set {_name = newValue}
@@ -1503,45 +1551,73 @@ struct SignalServiceProtos_DataMessage {
     mutating func clearName() {self._name = nil}
 
     /// @required
-    var groupID: String {
-      get {return _groupID ?? String()}
-      set {_groupID = newValue}
+    var groupPublicKey: Data {
+      get {return _groupPublicKey ?? SwiftProtobuf.Internal.emptyData}
+      set {_groupPublicKey = newValue}
     }
-    /// Returns true if `groupID` has been explicitly set.
-    var hasGroupID: Bool {return self._groupID != nil}
-    /// Clears the value of `groupID`. Subsequent reads from it will return its default value.
-    mutating func clearGroupID() {self._groupID = nil}
+    /// Returns true if `groupPublicKey` has been explicitly set.
+    var hasGroupPublicKey: Bool {return self._groupPublicKey != nil}
+    /// Clears the value of `groupPublicKey`. Subsequent reads from it will return its default value.
+    mutating func clearGroupPublicKey() {self._groupPublicKey = nil}
 
-    /// @required
-    var sharedSecret: String {
-      get {return _sharedSecret ?? String()}
-      set {_sharedSecret = newValue}
+    var groupPrivateKey: Data {
+      get {return _groupPrivateKey ?? SwiftProtobuf.Internal.emptyData}
+      set {_groupPrivateKey = newValue}
     }
-    /// Returns true if `sharedSecret` has been explicitly set.
-    var hasSharedSecret: Bool {return self._sharedSecret != nil}
-    /// Clears the value of `sharedSecret`. Subsequent reads from it will return its default value.
-    mutating func clearSharedSecret() {self._sharedSecret = nil}
+    /// Returns true if `groupPrivateKey` has been explicitly set.
+    var hasGroupPrivateKey: Bool {return self._groupPrivateKey != nil}
+    /// Clears the value of `groupPrivateKey`. Subsequent reads from it will return its default value.
+    mutating func clearGroupPrivateKey() {self._groupPrivateKey = nil}
 
-    /// @required
-    var senderKey: String {
-      get {return _senderKey ?? String()}
-      set {_senderKey = newValue}
-    }
-    /// Returns true if `senderKey` has been explicitly set.
-    var hasSenderKey: Bool {return self._senderKey != nil}
-    /// Clears the value of `senderKey`. Subsequent reads from it will return its default value.
-    mutating func clearSenderKey() {self._senderKey = nil}
+    var chainKeys: [Data] = []
 
     var members: [String] = []
 
+    var admins: [String] = []
+
+    /// @required
+    var type: SignalServiceProtos_DataMessage.ClosedGroupUpdate.TypeEnum {
+      get {return _type ?? .new}
+      set {_type = newValue}
+    }
+    /// Returns true if `type` has been explicitly set.
+    var hasType: Bool {return self._type != nil}
+    /// Clears the value of `type`. Subsequent reads from it will return its default value.
+    mutating func clearType() {self._type = nil}
+
     var unknownFields = SwiftProtobuf.UnknownStorage()
+
+    enum TypeEnum: SwiftProtobuf.Enum {
+      typealias RawValue = Int
+
+      /// groupPublicKey, name, groupPrivateKey, chainKeys, members, admins
+      case new // = 0
+
+      init() {
+        self = .new
+      }
+
+      init?(rawValue: Int) {
+        switch rawValue {
+        case 0: self = .new
+        default: return nil
+        }
+      }
+
+      var rawValue: Int {
+        switch self {
+        case .new: return 0
+        }
+      }
+
+    }
 
     init() {}
 
     fileprivate var _name: String? = nil
-    fileprivate var _groupID: String? = nil
-    fileprivate var _sharedSecret: String? = nil
-    fileprivate var _senderKey: String? = nil
+    fileprivate var _groupPublicKey: Data? = nil
+    fileprivate var _groupPrivateKey: Data? = nil
+    fileprivate var _type: SignalServiceProtos_DataMessage.ClosedGroupUpdate.TypeEnum? = nil
   }
 
   init() {}
@@ -1577,6 +1653,10 @@ extension SignalServiceProtos_DataMessage.Contact.Email.TypeEnum: CaseIterable {
 }
 
 extension SignalServiceProtos_DataMessage.Contact.PostalAddress.TypeEnum: CaseIterable {
+  // Support synthesized by the compiler.
+}
+
+extension SignalServiceProtos_DataMessage.ClosedGroupUpdate.TypeEnum: CaseIterable {
   // Support synthesized by the compiler.
 }
 
@@ -2839,6 +2919,7 @@ extension SignalServiceProtos_Envelope.TypeEnum: SwiftProtobuf._ProtoNameProvidi
     3: .same(proto: "PREKEY_BUNDLE"),
     5: .same(proto: "RECEIPT"),
     6: .same(proto: "UNIDENTIFIED_SENDER"),
+    7: .same(proto: "CLOSED_GROUP_CIPHERTEXT"),
     101: .same(proto: "FRIEND_REQUEST"),
   ]
 }
@@ -3303,6 +3384,47 @@ extension SignalServiceProtos_CallMessage.Hangup: SwiftProtobuf.Message, SwiftPr
 
   static func ==(lhs: SignalServiceProtos_CallMessage.Hangup, rhs: SignalServiceProtos_CallMessage.Hangup) -> Bool {
     if lhs._id != rhs._id {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
+}
+
+extension SignalServiceProtos_ClosedGroupCiphertext: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = _protobuf_package + ".ClosedGroupCiphertext"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "ciphertext"),
+    2: .same(proto: "senderPublicKey"),
+    3: .same(proto: "keyIndex"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 1: try decoder.decodeSingularBytesField(value: &self._ciphertext)
+      case 2: try decoder.decodeSingularStringField(value: &self._senderPublicKey)
+      case 3: try decoder.decodeSingularUInt32Field(value: &self._keyIndex)
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if let v = self._ciphertext {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 1)
+    }
+    if let v = self._senderPublicKey {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 2)
+    }
+    if let v = self._keyIndex {
+      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 3)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SignalServiceProtos_ClosedGroupCiphertext, rhs: SignalServiceProtos_ClosedGroupCiphertext) -> Bool {
+    if lhs._ciphertext != rhs._ciphertext {return false}
+    if lhs._senderPublicKey != rhs._senderPublicKey {return false}
+    if lhs._keyIndex != rhs._keyIndex {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
@@ -3938,20 +4060,24 @@ extension SignalServiceProtos_DataMessage.ClosedGroupUpdate: SwiftProtobuf.Messa
   static let protoMessageName: String = SignalServiceProtos_DataMessage.protoMessageName + ".ClosedGroupUpdate"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "name"),
-    2: .same(proto: "groupID"),
-    3: .same(proto: "sharedSecret"),
-    4: .same(proto: "senderKey"),
+    2: .same(proto: "groupPublicKey"),
+    3: .same(proto: "groupPrivateKey"),
+    4: .same(proto: "chainKeys"),
     5: .same(proto: "members"),
+    6: .same(proto: "admins"),
+    7: .same(proto: "type"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
     while let fieldNumber = try decoder.nextFieldNumber() {
       switch fieldNumber {
       case 1: try decoder.decodeSingularStringField(value: &self._name)
-      case 2: try decoder.decodeSingularStringField(value: &self._groupID)
-      case 3: try decoder.decodeSingularStringField(value: &self._sharedSecret)
-      case 4: try decoder.decodeSingularStringField(value: &self._senderKey)
+      case 2: try decoder.decodeSingularBytesField(value: &self._groupPublicKey)
+      case 3: try decoder.decodeSingularBytesField(value: &self._groupPrivateKey)
+      case 4: try decoder.decodeRepeatedBytesField(value: &self.chainKeys)
       case 5: try decoder.decodeRepeatedStringField(value: &self.members)
+      case 6: try decoder.decodeRepeatedStringField(value: &self.admins)
+      case 7: try decoder.decodeSingularEnumField(value: &self._type)
       default: break
       }
     }
@@ -3961,30 +4087,44 @@ extension SignalServiceProtos_DataMessage.ClosedGroupUpdate: SwiftProtobuf.Messa
     if let v = self._name {
       try visitor.visitSingularStringField(value: v, fieldNumber: 1)
     }
-    if let v = self._groupID {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 2)
+    if let v = self._groupPublicKey {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 2)
     }
-    if let v = self._sharedSecret {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 3)
+    if let v = self._groupPrivateKey {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 3)
     }
-    if let v = self._senderKey {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 4)
+    if !self.chainKeys.isEmpty {
+      try visitor.visitRepeatedBytesField(value: self.chainKeys, fieldNumber: 4)
     }
     if !self.members.isEmpty {
       try visitor.visitRepeatedStringField(value: self.members, fieldNumber: 5)
+    }
+    if !self.admins.isEmpty {
+      try visitor.visitRepeatedStringField(value: self.admins, fieldNumber: 6)
+    }
+    if let v = self._type {
+      try visitor.visitSingularEnumField(value: v, fieldNumber: 7)
     }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: SignalServiceProtos_DataMessage.ClosedGroupUpdate, rhs: SignalServiceProtos_DataMessage.ClosedGroupUpdate) -> Bool {
     if lhs._name != rhs._name {return false}
-    if lhs._groupID != rhs._groupID {return false}
-    if lhs._sharedSecret != rhs._sharedSecret {return false}
-    if lhs._senderKey != rhs._senderKey {return false}
+    if lhs._groupPublicKey != rhs._groupPublicKey {return false}
+    if lhs._groupPrivateKey != rhs._groupPrivateKey {return false}
+    if lhs.chainKeys != rhs.chainKeys {return false}
     if lhs.members != rhs.members {return false}
+    if lhs.admins != rhs.admins {return false}
+    if lhs._type != rhs._type {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
+}
+
+extension SignalServiceProtos_DataMessage.ClosedGroupUpdate.TypeEnum: SwiftProtobuf._ProtoNameProviding {
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    0: .same(proto: "NEW"),
+  ]
 }
 
 extension SignalServiceProtos_NullMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
@@ -4370,7 +4510,7 @@ extension SignalServiceProtos_SyncMessage.OpenGroupDetails: SwiftProtobuf.Messag
   static let protoMessageName: String = SignalServiceProtos_SyncMessage.protoMessageName + ".OpenGroupDetails"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "url"),
-    2: .same(proto: "channelId"),
+    2: .same(proto: "channelID"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {

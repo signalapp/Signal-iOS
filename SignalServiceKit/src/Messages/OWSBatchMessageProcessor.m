@@ -62,6 +62,7 @@ NS_ASSUME_NONNULL_BEGIN
     OWSAssertDebug(envelopeData);
 
     self = [super initWithUniqueId:[NSUUID new].UUIDString];
+
     if (!self) {
         return self;
     }
@@ -259,6 +260,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
     OWSSingletonAssert();
 
     self = [super init];
+
     if (!self) {
         return self;
     }
@@ -418,6 +420,7 @@ NSString *const OWSMessageContentJobFinderExtensionGroup = @"OWSMessageContentJo
     AssertOnDispatchQueue(self.serialQueue);
 
     NSMutableArray<OWSMessageContentJob *> *processedJobs = [NSMutableArray new];
+
     [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         for (OWSMessageContentJob *job in jobs) {
 

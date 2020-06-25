@@ -403,16 +403,16 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     OWSPrimaryStorage *storage = OWSPrimaryStorage.sharedManager;
-    __block NSSet<NSString *> *linkedDeviceHexEncodedPublicKeys;
+    __block NSSet<NSString *> *senderLinkedDevices;
     [storage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        linkedDeviceHexEncodedPublicKeys = [LKDatabaseUtilities getLinkedDeviceHexEncodedPublicKeysFor:envelope.source in:transaction];
+        senderLinkedDevices = [LKDatabaseUtilities getLinkedDeviceHexEncodedPublicKeysFor:envelope.source in:transaction];
     }];
 
     BOOL duplicateEnvelope = NO;
-    for (NSString *hexEncodedPublicKey in linkedDeviceHexEncodedPublicKeys) {
+    for (NSString *publicKey in senderLinkedDevices) {
         duplicateEnvelope = duplicateEnvelope
             || [self.incomingMessageFinder existsMessageWithTimestamp:envelope.timestamp
-                                                             sourceId:hexEncodedPublicKey
+                                                             sourceId:publicKey
                                                        sourceDeviceId:envelope.sourceDevice
                                                           transaction:transaction];
     }
@@ -423,43 +423,65 @@ NS_ASSUME_NONNULL_BEGIN
             envelope.timestamp);
         return;
     }
-    
-    if (envelope.content != nil) {
+
+    // Loki: Decrypt closed group message if applicable
+    NSData *sharedSenderKeysPlaintext = nil;
+    if ([[LKStorage getUserClosedGroupPublicKeys] containsObject:envelope.source]) {
         NSError *error;
-        SSKProtoContent *_Nullable contentProto = [SSKProtoContent parseData:plaintextData error:&error];
-        if (error || !contentProto) {
-            OWSFailDebug(@"Could not parse proto due to error: %@.", error);
+        SSKProtoClosedGroupCiphertext *_Nullable closedGroupCiphertextProto = [SSKProtoClosedGroupCiphertext parseData:plaintextData error:&error];
+        if (error != nil || closedGroupCiphertextProto == nil) {
+            OWSFailDebug(@"Couldn't parse proto due to error: %@.", error);
+            return;
+        }
+        NSString *senderPublicKey = closedGroupCiphertextProto.senderPublicKey;
+        uint32_t keyIndex = closedGroupCiphertextProto.keyIndex;
+        sharedSenderKeysPlaintext = [LKClosedGroupsProtocol decryptCiphertext:closedGroupCiphertextProto.ciphertext forGroupWithPublicKey:envelope.source senderPublicKey:senderPublicKey keyIndex:keyIndex];
+        if (sharedSenderKeysPlaintext == nil) {
+            OWSFailDebug(@"Couldn't parse proto due to error: %@.", error);
+            return;
+        }
+    }
+
+    if (envelope.content != nil || sharedSenderKeysPlaintext != nil) {
+        NSError *error;
+        SSKProtoContent *_Nullable contentProto = [SSKProtoContent parseData:(sharedSenderKeysPlaintext ?: plaintextData) error:&error];
+        if (error != nil || contentProto == nil) {
+            OWSFailDebug(@"Couldn't parse proto due to error: %@.", error);
             return;
         }
         OWSLogInfo(@"Handling content: <Content: %@>.", [self descriptionForContent:contentProto]);
 
-        // Loki: Ignore any friend requests from before restoration
+        // Loki: Ignore friend requests from before restoration
         if ([LKFriendRequestProtocol isFriendRequestFromBeforeRestoration:envelope]) {
             [LKLogger print:@"[Loki] Ignoring friend request from before restoration."];
             return;
         }
 
-        // Loki: Ignore any duplicate sync transcripts
-        if ([LKSyncMessagesProtocol isDuplicateSyncMessage:contentProto fromHexEncodedPublicKey:envelope.source]) { return; }
+        // Loki: Ignore duplicate sync transcripts
+        if ([LKSyncMessagesProtocol isDuplicateSyncMessage:contentProto fromPublicKey:envelope.source]) {
+            [LKLogger print:@"[Loki] Ignoring duplicate sync transcript."];
+            return;
+        }
 
         // Loki: Handle pre key bundle message if needed
-        [LKSessionManagementProtocol handlePreKeyBundleMessageIfNeeded:contentProto wrappedIn:envelope using:transaction];
+        [LKSessionManagementProtocol handlePreKeyBundleMessageIfNeeded:contentProto wrappedIn:envelope transaction:transaction];
 
         // Loki: Handle session request if needed
-        if ([LKSessionManagementProtocol isSessionRequestMessage:contentProto.dataMessage]) {
-            [LKSessionManagementProtocol handleSessionRequestMessage:contentProto.dataMessage wrappedIn:envelope using:transaction];
-            return; // Don't process the message any further
+        if ([LKSessionManagementProtocol handleSessionRequestMessageIfNeeded:contentProto wrappedIn:envelope transaction:transaction]) {
+            return;
         }
 
         // Loki: Handle session restoration request if needed
-        if ([LKSessionManagementProtocol isSessionRestorationRequest:contentProto.dataMessage]) { return; } // Don't process the message any further
+        if ([LKSessionManagementProtocol isSessionRestorationRequest:contentProto.dataMessage]) {
+            return;
+        }
 
         // Loki: Handle friend request acceptance if needed
         [LKFriendRequestProtocol handleFriendRequestAcceptanceIfNeeded:envelope in:transaction];
 
         // Loki: Handle device linking message if needed
         if (contentProto.lokiDeviceLinkMessage != nil) {
-            [LKMultiDeviceProtocol handleDeviceLinkMessageIfNeeded:contentProto wrappedIn:envelope using:transaction];
+            [LKMultiDeviceProtocol handleDeviceLinkMessageIfNeeded:contentProto wrappedIn:envelope transaction:transaction];
         } else if (contentProto.syncMessage) {
             [self throws_handleIncomingEnvelope:envelope
                                 withSyncMessage:contentProto.syncMessage
@@ -542,13 +564,15 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
+    BOOL usesSharedSenderKeys = [LKClosedGroupsProtocol handleSharedSenderKeysUpdateIfNeeded:dataMessage transaction:transaction];
+
     if (dataMessage.group) {
         TSGroupThread *_Nullable groupThread =
             [TSGroupThread threadWithGroupId:dataMessage.group.id transaction:transaction];
 
         if (groupThread) {
             // Loki: Ignore closed group message if needed
-            if ([LKClosedGroupsProtocol shouldIgnoreClosedGroupMessage:dataMessage inThread:groupThread wrappedIn:envelope using:transaction]) { return; }
+            if ([LKClosedGroupsProtocol shouldIgnoreClosedGroupMessage:dataMessage inThread:groupThread wrappedIn:envelope]) { return; }
 
             if (dataMessage.group.type != SSKProtoGroupContextTypeUpdate) {
                 if (![groupThread isCurrentUserInGroupWithTransaction:transaction]) {
@@ -557,9 +581,9 @@ NS_ASSUME_NONNULL_BEGIN
                 }
             }
         } else {
-            // Unknown group.
+            // Unknown group
             if (dataMessage.group.type == SSKProtoGroupContextTypeUpdate) {
-                // Accept group updates for unknown groups.
+                // Accept group updates for unknown groups
             } else if (dataMessage.group.type == SSKProtoGroupContextTypeDeliver) {
                 [self sendGroupInfoRequest:dataMessage.group.id envelope:envelope transaction:transaction];
                 return;
@@ -577,7 +601,7 @@ NS_ASSUME_NONNULL_BEGIN
     } else if ((dataMessage.flags & SSKProtoDataMessageFlagsProfileKeyUpdate) != 0) {
         [self handleProfileKeyMessageWithEnvelope:envelope dataMessage:dataMessage];
     } else if ([LKMultiDeviceProtocol isUnlinkDeviceMessage:dataMessage]) {
-        [LKMultiDeviceProtocol handleUnlinkDeviceMessage:dataMessage wrappedIn:envelope using:transaction];
+        [LKMultiDeviceProtocol handleUnlinkDeviceMessage:dataMessage wrappedIn:envelope transaction:transaction];
     } else if (dataMessage.attachments.count > 0) {
         [self handleReceivedMediaWithEnvelope:envelope
                                   dataMessage:dataMessage
@@ -846,6 +870,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     TSThread *_Nullable thread = [self threadForEnvelope:envelope dataMessage:dataMessage transaction:transaction];
+
     if (!thread) {
         OWSFailDebug(@"Ignoring media message for unknown group.");
         return;
@@ -895,7 +920,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     // Loki: Take into account multi device when checking sync message validity
-    if (![LKSyncMessagesProtocol isValidSyncMessage:envelope in:transaction]) {
+    if (![LKSyncMessagesProtocol isValidSyncMessage:envelope transaction:transaction]) {
         OWSProdErrorWEnvelope([OWSAnalyticsEvents messageManagerErrorSyncMessageFromUnknownSource], envelope);
         return;
     }
@@ -911,7 +936,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         // Loki: Update profile if needed (i.e. if the sync message came from the master device)
-        [LKSyncMessagesProtocol updateProfileFromSyncMessageIfNeeded:dataMessage wrappedIn:envelope using:transaction];
+        [LKSyncMessagesProtocol updateProfileFromSyncMessageIfNeeded:dataMessage wrappedIn:envelope transaction:transaction];
         
         NSString *destination = syncMessage.sent.destination;
         if (dataMessage && destination.length > 0 && dataMessage.hasProfileKey) {
@@ -950,10 +975,10 @@ NS_ASSUME_NONNULL_BEGIN
         } else {
             if (transcript.isGroupUpdate) {
                 // Loki: Handle closed group updated sync message
-                [LKSyncMessagesProtocol handleClosedGroupUpdatedSyncMessageIfNeeded:transcript using:transaction];
+                [LKSyncMessagesProtocol handleClosedGroupUpdateSyncMessageIfNeeded:transcript wrappedIn:envelope transaction:transaction];
             } else if (transcript.isGroupQuit) {
                 // Loki: Handle closed group quit sync message
-                [LKSyncMessagesProtocol handleClosedGroupQuitSyncMessageIfNeeded:transcript using:transaction];
+                [LKSyncMessagesProtocol handleClosedGroupQuitSyncMessageIfNeeded:transcript wrappedIn:envelope transaction:transaction];
             } else {
                 [OWSRecordTranscriptJob
                     processIncomingSentMessageTranscript:transcript
@@ -1003,13 +1028,13 @@ NS_ASSUME_NONNULL_BEGIN
         [self.identityManager throws_processIncomingSyncMessage:syncMessage.verified transaction:transaction];
     } else if (syncMessage.contacts != nil) {
         // Loki: Handle contact sync message
-        [LKSyncMessagesProtocol handleContactSyncMessageIfNeeded:syncMessage wrappedIn:envelope using:transaction];
+        [LKSyncMessagesProtocol handleContactSyncMessageIfNeeded:syncMessage wrappedIn:envelope transaction:transaction];
     } else if (syncMessage.groups != nil) {
         // Loki: Handle closed groups sync message
-        [LKSyncMessagesProtocol handleClosedGroupSyncMessageIfNeeded:syncMessage wrappedIn:envelope using:transaction];
+        [LKSyncMessagesProtocol handleClosedGroupSyncMessageIfNeeded:syncMessage wrappedIn:envelope transaction:transaction];
     } else if (syncMessage.openGroups != nil) {
         // Loki: Handle open groups sync message
-        [LKSyncMessagesProtocol handleOpenGroupSyncMessageIfNeeded:syncMessage wrappedIn:envelope using:transaction];
+        [LKSyncMessagesProtocol handleOpenGroupSyncMessageIfNeeded:syncMessage wrappedIn:envelope transaction:transaction];
     } else {
         OWSLogWarn(@"Ignoring unsupported sync message.");
     }
@@ -1033,8 +1058,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     // Loki: Handle session reset
-    NSString *sender = envelope.source;
-    TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:sender transaction:transaction];
+    TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:envelope.source transaction:transaction];
     [LKSessionManagementProtocol handleEndSessionMessageReceivedInThread:thread using:transaction];
 }
 
@@ -1057,7 +1081,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     TSThread *_Nullable thread = [self threadForEnvelope:envelope dataMessage:dataMessage transaction:transaction];
     if (!thread) {
-        OWSFailDebug(@"ignoring expiring messages update for unknown group.");
+        OWSFailDebug(@"Ignoring expiring messages update for unknown group.");
         return;
     }
 
@@ -1107,6 +1131,7 @@ NS_ASSUME_NONNULL_BEGIN
         OWSFailDebug(@"Received a profile key message without a profile key from: %@.", envelopeAddress(envelope));
         return;
     }
+
     NSData *profileKey = dataMessage.profileKey;
     if (profileKey.length != kAES256_KeyByteLength) {
         OWSFailDebug(@"received profile key of unexpected length: %lu, from: %@",
@@ -1263,7 +1288,7 @@ NS_ASSUME_NONNULL_BEGIN
     if ([ECKeyPair isValidHexEncodedPublicKeyWithCandidate:envelope.source] && dataMessage.publicChatInfo == nil) { // Handled in LokiPublicChatPoller for open group messages
         dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
         dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
-        [[LKMultiDeviceProtocol updateDeviceLinksIfNeededForHexEncodedPublicKey:envelope.source in:transaction].ensureOn(queue, ^() {
+        [[LKMultiDeviceProtocol updateDeviceLinksIfNeededForPublicKey:envelope.source transaction:transaction].ensureOn(queue, ^() {
             dispatch_semaphore_signal(semaphore);
         }).catchOn(queue, ^(NSError *error) {
             dispatch_semaphore_signal(semaphore);
@@ -1277,16 +1302,15 @@ NS_ASSUME_NONNULL_BEGIN
         NSMutableSet *removedMemberIds = [NSMutableSet new];
         for (NSString *recipientId in newMemberIds) {
             if (![ECKeyPair isValidHexEncodedPublicKeyWithCandidate:recipientId]) {
-                OWSLogVerbose(
-                    @"incoming group update has invalid group member: %@", [self descriptionForEnvelope:envelope]);
-                OWSFailDebug(@"incoming group update has invalid group member");
+                OWSLogVerbose(@"Incoming group update has invalid group member: %@", [self descriptionForEnvelope:envelope]);
+                OWSFailDebug(@"Incoming group update has invalid group member");
                 return nil;
             }
         }
 
-        NSString *senderMasterHexEncodedPublicKey = ([LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:envelope.source in:transaction] ?: envelope.source);
-        NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
-        NSString *userMasterHexEncodedPublicKey = ([LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:userHexEncodedPublicKey in:transaction] ?: userHexEncodedPublicKey);
+        NSString *senderMasterPublicKey = ([LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:envelope.source in:transaction] ?: envelope.source);
+        NSString *userPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+        NSString *userMasterPublicKey = ([LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:userPublicKey in:transaction] ?: userPublicKey);
 
         // Group messages create the group if it doesn't already exist.
         //
@@ -1306,18 +1330,18 @@ NS_ASSUME_NONNULL_BEGIN
         }
 
         // Loki: Handle profile key update if needed
-        [LKSessionMetaProtocol updateProfileKeyIfNeededForPublicKey:senderMasterHexEncodedPublicKey using:dataMessage];
+        [LKSessionMetaProtocol updateProfileKeyIfNeededForPublicKey:senderMasterPublicKey using:dataMessage];
 
         // Loki: Handle display name update if needed
-        [LKSessionMetaProtocol updateDisplayNameIfNeededForPublicKey:senderMasterHexEncodedPublicKey using:dataMessage transaction:transaction];
+        [LKSessionMetaProtocol updateDisplayNameIfNeededForPublicKey:senderMasterPublicKey using:dataMessage transaction:transaction];
 
         switch (dataMessage.group.type) {
             case SSKProtoGroupContextTypeUpdate: {
                 // Loki: Ignore updates from non-admins
-                if ([LKClosedGroupsProtocol shouldIgnoreClosedGroupUpdateMessage:dataMessage inThread:oldGroupThread wrappedIn:envelope using:transaction]) {
+                if ([LKClosedGroupsProtocol shouldIgnoreClosedGroupUpdateMessage:dataMessage inThread:oldGroupThread wrappedIn:envelope]) {
                     return nil;
                 }
-                // Ensures that the thread exists but doesn't update it.
+                // Ensures that the thread exists but don't update it.
                 TSGroupThread *newGroupThread =
                     [TSGroupThread getOrCreateThreadWithGroupId:groupId groupType:oldGroupThread.groupModel.groupType transaction:transaction];
 
@@ -1333,10 +1357,12 @@ NS_ASSUME_NONNULL_BEGIN
 
                 [newGroupThread setGroupModel:newGroupModel withTransaction:transaction];
 
-                BOOL wasCurrentUserRemovedFromGroup = [removedMemberIds containsObject:userMasterHexEncodedPublicKey];
+                BOOL wasCurrentUserRemovedFromGroup = [removedMemberIds containsObject:userMasterPublicKey];
                 if (!wasCurrentUserRemovedFromGroup) {
-                    // Loki: Try to establish sessions with all members when a group is created or updated
-                    [LKClosedGroupsProtocol establishSessionsIfNeededWithClosedGroupMembers:newMemberIds.allObjects inThread:newGroupThread using:transaction];
+                    if (!newGroupThread.usesSharedSenderKeys) {
+                        // Loki: Try to establish sessions with all members involved when a group is created or updated
+                        [LKClosedGroupsProtocol establishSessionsIfNeededWithClosedGroupMembers:newMemberIds.allObjects inThread:newGroupThread transaction:transaction];
+                    }
                 }
 
                 [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithDisappearingDuration:dataMessage.expireTimer
@@ -1365,12 +1391,12 @@ NS_ASSUME_NONNULL_BEGIN
                     return nil;
                 }
                 newMemberIds = [NSMutableSet setWithArray:oldGroupThread.groupModel.groupMemberIds];
-                [newMemberIds removeObject:senderMasterHexEncodedPublicKey];
+                [newMemberIds removeObject:senderMasterPublicKey];
                 oldGroupThread.groupModel.groupMemberIds = [newMemberIds.allObjects mutableCopy];
                 [oldGroupThread saveWithTransaction:transaction];
 
                 NSString *nameString =
-                    [self.contactsManager displayNameForPhoneIdentifier:senderMasterHexEncodedPublicKey transaction:transaction];
+                    [self.contactsManager displayNameForPhoneIdentifier:senderMasterPublicKey transaction:transaction];
                 NSString *updateGroupInfo =
                     [NSString stringWithFormat:NSLocalizedString(@"GROUP_MEMBER_LEFT", @""), nameString];
                 // MJK TODO - should be safe to remove senderTimestamp
@@ -1382,7 +1408,7 @@ NS_ASSUME_NONNULL_BEGIN
                 // If we were the one that quit then we need to leave the group (only relevant for slave
                 // devices in a multi device context)
                 // TODO: This needs more documentation
-                if (![newMemberIds containsObject:userMasterHexEncodedPublicKey]) {
+                if (![newMemberIds containsObject:userMasterPublicKey]) {
                     [oldGroupThread leaveGroupWithTransaction:transaction];
                 }
                 
@@ -1390,13 +1416,13 @@ NS_ASSUME_NONNULL_BEGIN
             }
             case SSKProtoGroupContextTypeDeliver: {
                 if (!oldGroupThread) {
-                    OWSFailDebug(@"ignoring deliver group message from unknown group.");
+                    OWSFailDebug(@"Ignoring deliver group message from unknown group.");
                     return nil;
                 }
 
                 [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithDisappearingDuration:dataMessage.expireTimer
                                                                                           thread:oldGroupThread
-                                                                      createdByRemoteRecipientId:senderMasterHexEncodedPublicKey
+                                                                      createdByRemoteRecipientId:senderMasterPublicKey
                                                                           createdInExistingGroup:NO
                                                                                      transaction:transaction];
 
@@ -1414,7 +1440,7 @@ NS_ASSUME_NONNULL_BEGIN
                     OWSLogError(@"linkPreviewError: %@", linkPreviewError);
                 }
 
-                OWSLogDebug(@"incoming message from: %@ for group: %@ with timestamp: %lu",
+                OWSLogDebug(@"Incoming message from: %@ for group: %@ with timestamp: %lu",
                     envelopeAddress(envelope),
                     groupId,
                     (unsigned long)timestamp);
@@ -1423,7 +1449,7 @@ NS_ASSUME_NONNULL_BEGIN
                 TSIncomingMessage *incomingMessage =
                     [[TSIncomingMessage alloc] initIncomingMessageWithTimestamp:timestamp
                                                                        inThread:oldGroupThread
-                                                                       authorId:senderMasterHexEncodedPublicKey
+                                                                       authorId:senderMasterPublicKey
                                                                  sourceDeviceId:envelope.sourceDevice
                                                                     messageBody:body
                                                                   attachmentIds:@[]
@@ -1449,13 +1475,13 @@ NS_ASSUME_NONNULL_BEGIN
 
                 if (body.length == 0 && attachmentPointers.count < 1 && !contact) {
                     OWSLogWarn(@"Ignoring empty incoming message from: %@ for group: %@ with timestamp: %lu.",
-                        senderMasterHexEncodedPublicKey,
+                        senderMasterPublicKey,
                         groupId,
                         (unsigned long)timestamp);
                     return nil;
                 }
                 
-                // Loki: Cache the user hex encoded public key (for mentions)
+                // Loki: Cache the user public key (for mentions)
                 dispatch_async(dispatch_get_main_queue(), ^{
                     [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
                         [LKMentionsManager populateUserPublicKeyCacheIfNeededFor:oldGroupThread.uniqueId in:transaction];
@@ -1486,16 +1512,16 @@ NS_ASSUME_NONNULL_BEGIN
         // Loki: A message from a slave device should appear as if it came from the master device; the underlying
         // friend request logic, however, should still be specific to the slave device.
 
-        NSString *hexEncodedPublicKey = envelope.source;
-        NSString *masterHexEncodedPublicKey = ([LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:envelope.source in:transaction] ?: envelope.source);
-        TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:hexEncodedPublicKey transaction:transaction];
-        TSContactThread *masterThread = [TSContactThread getOrCreateThreadWithContactId:masterHexEncodedPublicKey transaction:transaction];
+        NSString *publicKey = envelope.source;
+        NSString *masterPublicKey = ([LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:envelope.source in:transaction] ?: envelope.source);
+        TSContactThread *thread = [TSContactThread getOrCreateThreadWithContactId:publicKey transaction:transaction];
+        TSContactThread *masterThread = [TSContactThread getOrCreateThreadWithContactId:masterPublicKey transaction:transaction];
 
-        OWSLogDebug(@"Incoming message from: %@ with timestamp: %lu.", hexEncodedPublicKey, (unsigned long)timestamp);
+        OWSLogDebug(@"Incoming message from: %@ with timestamp: %lu.", publicKey, (unsigned long)timestamp);
         
         [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithDisappearingDuration:dataMessage.expireTimer
                                                                                   thread:masterThread
-                                                              createdByRemoteRecipientId:hexEncodedPublicKey
+                                                              createdByRemoteRecipientId:publicKey
                                                                   createdInExistingGroup:NO
                                                                              transaction:transaction];
 
@@ -1528,7 +1554,10 @@ NS_ASSUME_NONNULL_BEGIN
                                                         serverTimestamp:serverTimestamp
                                                         wasReceivedByUD:wasReceivedByUD];
 
+        // Loki: Handle display name update if needed
         [LKSessionMetaProtocol updateDisplayNameIfNeededForPublicKey:incomingMessage.authorId using:dataMessage transaction:transaction];
+
+        // Loki: Handle profile key update if needed
         [LKSessionMetaProtocol updateProfileKeyIfNeededForPublicKey:thread.contactIdentifier using:dataMessage];
 
         NSArray<TSAttachmentPointer *> *attachmentPointers =
@@ -1544,33 +1573,22 @@ NS_ASSUME_NONNULL_BEGIN
         if (body.length == 0 && attachmentPointers.count < 1 && !contact) {
             if (envelope.type == SSKProtoEnvelopeTypeFriendRequest) {
                 // Loki: This is needed for compatibility with refactored desktop clients
-                [LKSessionManagementProtocol sendSessionEstablishedMessageToPublicKey:hexEncodedPublicKey in:transaction];
+                [LKSessionManagementProtocol sendSessionEstablishedMessageToPublicKey:publicKey transaction:transaction];
             } else {
-                OWSLogWarn(@"Ignoring empty incoming message from: %@ with timestamp: %lu.", hexEncodedPublicKey, (unsigned long)timestamp);
+                OWSLogWarn(@"Ignoring empty incoming message from: %@ with timestamp: %lu.", publicKey, (unsigned long)timestamp);
             }
             return nil;
         }
 
         // Loki: This is needed for compatibility with refactored desktop clients
-        LKFriendRequestStatus friendRequestStatus = [self.primaryStorage getFriendRequestStatusForContact:hexEncodedPublicKey transaction:transaction];
+        LKFriendRequestStatus friendRequestStatus = [self.primaryStorage getFriendRequestStatusForContact:publicKey transaction:transaction];
         if (friendRequestStatus == LKFriendRequestStatusNone || friendRequestStatus == LKFriendRequestStatusRequestExpired) {
-            [self.primaryStorage setFriendRequestStatus:LKFriendRequestStatusRequestReceived forContact:hexEncodedPublicKey transaction:transaction];
+            [self.primaryStorage setFriendRequestStatus:LKFriendRequestStatusRequestReceived forContact:publicKey transaction:transaction];
         } else if (friendRequestStatus == LKFriendRequestStatusRequestSent) {
-            [self.primaryStorage setFriendRequestStatus:LKFriendRequestStatusFriends forContact:hexEncodedPublicKey transaction:transaction];
-            [LKFriendRequestProtocol sendFriendRequestAcceptedMessageToPublicKey:hexEncodedPublicKey using:transaction];
-            [LKSyncMessagesProtocol syncContactWithPublicKey:masterHexEncodedPublicKey in:transaction];
+            [self.primaryStorage setFriendRequestStatus:LKFriendRequestStatusFriends forContact:publicKey transaction:transaction];
+            [LKFriendRequestProtocol sendFriendRequestAcceptedMessageToPublicKey:publicKey using:transaction];
+            [LKSyncMessagesProtocol syncContactWithPublicKey:masterPublicKey];
         }
-        
-        // Loki: If we received a message from a contact in the last 2 minutes that wasn't P2P, then we need to ping them.
-        // We assume this occurred because they don't have our P2P details.
-        /*
-        if (!envelope.isPtpMessage && hexEncodedPublicKey != nil) {
-            uint64_t timestamp = envelope.timestamp;
-            uint64_t now = NSDate.ows_millisecondTimeStamp;
-            uint64_t ageInSeconds = (now - timestamp) / 1000;
-            if (ageInSeconds <= 120) { [LKP2PAPI pingContact:hexEncodedPublicKey]; }
-        }
-         */
 
         [self finalizeIncomingMessage:incomingMessage
                                thread:thread

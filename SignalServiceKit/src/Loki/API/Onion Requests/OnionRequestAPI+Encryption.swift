@@ -18,7 +18,7 @@ extension OnionRequestAPI {
     }
 
     /// - Note: Sync. Don't call from the main thread.
-    private static func encrypt(_ plaintext: Data, forSnode snode: LokiAPITarget) throws -> EncryptionResult {
+    private static func encrypt(_ plaintext: Data, forSnode snode: Snode) throws -> EncryptionResult {
         guard !Thread.isMainThread else { preconditionFailure("It's illegal to call encrypt(_:forSnode:) from the main thread.") }
         guard let hexEncodedSnodeX25519PublicKey = snode.publicKeySet?.x25519Key else { throw Error.snodePublicKeySetMissing }
         let snodeX25519PublicKey = Data(hex: hexEncodedSnodeX25519PublicKey)
@@ -31,7 +31,7 @@ extension OnionRequestAPI {
     }
 
     /// Encrypts `payload` for `snode` and returns the result. Use this to build the core of an onion request.
-    internal static func encrypt(_ payload: JSON, forTargetSnode snode: LokiAPITarget) -> Promise<EncryptionResult> {
+    internal static func encrypt(_ payload: JSON, forTargetSnode snode: Snode) -> Promise<EncryptionResult> {
         let (promise, seal) = Promise<EncryptionResult>.pending()
         DispatchQueue.global(qos: .userInitiated).async {
             do {
@@ -51,7 +51,7 @@ extension OnionRequestAPI {
     }
 
     /// Encrypts the previous encryption result (i.e. that of the hop after this one) for this hop. Use this to build the layers of an onion request.
-    internal static func encryptHop(from lhs: LokiAPITarget, to rhs: LokiAPITarget, using previousEncryptionResult: EncryptionResult) -> Promise<EncryptionResult> {
+    internal static func encryptHop(from lhs: Snode, to rhs: Snode, using previousEncryptionResult: EncryptionResult) -> Promise<EncryptionResult> {
         let (promise, seal) = Promise<EncryptionResult>.pending()
         DispatchQueue.global(qos: .userInitiated).async {
             let parameters: JSON = [

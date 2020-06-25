@@ -13,7 +13,7 @@ public enum LokiRSSFeedProxy {
     }
 
     public static func fetchContent(for url: String) -> Promise<String> {
-        let server = LokiFileServerAPI.server
+        let server = FileServerAPI.server
         let endpoints = [ "messenger-updates/feed" : "loki/v1/rss/messenger", "loki.network/feed" : "loki/v1/rss/loki" ]
         let endpoint = endpoints.first { url.lowercased().contains($0.key) }!.value
         let url = URL(string: server + "/" + endpoint)!

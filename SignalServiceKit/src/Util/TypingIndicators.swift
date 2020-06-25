@@ -323,7 +323,7 @@ public class TypingIndicatorsImpl: NSObject, TypingIndicators {
                 return
             }
 
-            if !SessionMetaProtocol.shouldSendTypingIndicator(for: thread) { return }
+            if !SessionMetaProtocol.shouldSendTypingIndicator(in: thread) { return }
 
             let message = TypingIndicatorMessage(thread: thread, action: action)
             messageSender.sendPromise(message: message).retainUntilComplete()

@@ -22,10 +22,10 @@ public final class SyncMessagesProtocol : NSObject {
     @objc public static func syncProfile() {
         try! Storage.writeSync { transaction in
             let userPublicKey = getUserHexEncodedPublicKey()
-            let linkedDevices = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: userPublicKey, in: transaction)
-            for publicKey in linkedDevices {
-                guard publicKey != userPublicKey else { continue }
-                let thread = TSContactThread.getOrCreateThread(withContactId: publicKey, transaction: transaction)
+            let userLinkedDevices = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: userPublicKey, in: transaction)
+            for device in userLinkedDevices {
+                guard device != userPublicKey else { continue }
+                let thread = TSContactThread.getOrCreateThread(withContactId: device, transaction: transaction)
                 thread.save(with: transaction)
                 let syncMessage = OWSOutgoingSyncMessage.init(in: thread, messageBody: "", attachmentId: nil)
                 syncMessage.save(with: transaction)
@@ -60,14 +60,14 @@ public final class SyncMessagesProtocol : NSObject {
     }
 
     @objc public static func syncAllClosedGroups() -> AnyPromise {
-        var groups: [TSGroupThread] = []
+        var closedGroups: [TSGroupThread] = []
         TSGroupThread.enumerateCollectionObjects { object, _ in
-            guard let group = object as? TSGroupThread, group.groupModel.groupType == .closedGroup,
-                group.shouldThreadBeVisible else { return }
-            groups.append(group)
+            guard let closedGroup = object as? TSGroupThread, closedGroup.groupModel.groupType == .closedGroup,
+                closedGroup.shouldThreadBeVisible else { return }
+            closedGroups.append(closedGroup)
         }
         let syncManager = SSKEnvironment.shared.syncManager
-        let promises = groups.map { group -> Promise<Void> in
+        let promises = closedGroups.map { group -> Promise<Void> in
             return Promise(syncManager.syncGroup(for: group)).map2 { _ in }
         }
         return AnyPromise.from(when(fulfilled: promises))
@@ -87,8 +87,8 @@ public final class SyncMessagesProtocol : NSObject {
 
     // MARK: - Receiving
 
-    @objc(isValidSyncMessage:in:)
-    public static func isValidSyncMessage(_ envelope: SSKProtoEnvelope, in transaction: YapDatabaseReadTransaction) -> Bool {
+    @objc(isValidSyncMessage:transaction:)
+    public static func isValidSyncMessage(_ envelope: SSKProtoEnvelope, transaction: YapDatabaseReadTransaction) -> Bool {
         let publicKey = envelope.source! // Set during UD decryption
         return LokiDatabaseUtilities.isUserLinkedDevice(publicKey, transaction: transaction)
     }
@@ -99,7 +99,7 @@ public final class SyncMessagesProtocol : NSObject {
         syncMessageTimestamps[publicKey] = timestamps
     }
 
-    @objc(isDuplicateSyncMessage:fromHexEncodedPublicKey:)
+    @objc(isDuplicateSyncMessage:fromPublicKey:)
     public static func isDuplicateSyncMessage(_ protoContent: SSKProtoContent, from publicKey: String) -> Bool {
         guard let syncMessage = protoContent.syncMessage?.sent else { return false }
         var timestamps: Set<UInt64> = syncMessageTimestamps[publicKey] ?? []
@@ -111,41 +111,47 @@ public final class SyncMessagesProtocol : NSObject {
         return result
     }
 
-    @objc(updateProfileFromSyncMessageIfNeeded:wrappedIn:using:)
+    @objc(updateProfileFromSyncMessageIfNeeded:wrappedIn:transaction:)
     public static func updateProfileFromSyncMessageIfNeeded(_ dataMessage: SSKProtoDataMessage, wrappedIn envelope: SSKProtoEnvelope, using transaction: YapDatabaseReadWriteTransaction) {
-        let sender = envelope.source! // Set during UD decryption
+        let publicKey = envelope.source! // Set during UD decryption
         guard let userMasterPublicKey = storage.getMasterHexEncodedPublicKey(for: getUserHexEncodedPublicKey(), in: transaction) else { return }
-        let wasSentByMasterDevice = (userMasterPublicKey == sender)
+        let wasSentByMasterDevice = (userMasterPublicKey == publicKey)
         guard wasSentByMasterDevice else { return }
         SessionMetaProtocol.updateDisplayNameIfNeeded(for: userMasterPublicKey, using: dataMessage, in: transaction)
         SessionMetaProtocol.updateProfileKeyIfNeeded(for: userMasterPublicKey, using: dataMessage)
     }
 
-    @objc(handleClosedGroupUpdatedSyncMessageIfNeeded:using:)
-    public static func handleClosedGroupUpdatedSyncMessageIfNeeded(_ transcript: OWSIncomingSentMessageTranscript, using transaction: YapDatabaseReadWriteTransaction) {
+    @objc(handleClosedGroupUpdateSyncMessageIfNeeded:wrappedIn:transaction:)
+    public static func handleClosedGroupUpdateSyncMessageIfNeeded(_ transcript: OWSIncomingSentMessageTranscript, wrappedIn envelope: SSKProtoEnvelope, using transaction: YapDatabaseReadWriteTransaction) {
         // Check preconditions
-        guard let group = transcript.dataMessage.group, let name = group.name else { return }
+        let publicKey = envelope.source! // Set during UD decryption
+        let userLinkedDevices = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: getUserHexEncodedPublicKey(), in: transaction)
+        let wasSentByLinkedDevice = userLinkedDevices.contains(publicKey)
+        guard wasSentByLinkedDevice, let group = transcript.dataMessage.group, let name = group.name else { return }
         // Create or update the group
         let id = group.id
         let members = group.members
         let newGroupThread = TSGroupThread.getOrCreateThread(withGroupId: id, groupType: .closedGroup, transaction: transaction)
         let newGroupModel = TSGroupModel(title: name, memberIds: members, image: nil, groupId: id, groupType: .closedGroup, adminIds: group.admins)
-        newGroupThread.groupModel = newGroupModel // TODO: Should this use the setGroupModel method on TSGroupThread?
         newGroupThread.save(with: transaction)
+        newGroupThread.setGroupModel(newGroupModel, with: transaction)
+        OWSDisappearingMessagesJob.shared().becomeConsistent(withDisappearingDuration: transcript.dataMessage.expireTimer, thread: newGroupThread, createdByRemoteRecipientId: nil, createdInExistingGroup: true, transaction: transaction)
         // Try to establish sessions with all members for which none exists yet when a group is created or updated
         ClosedGroupsProtocol.establishSessionsIfNeeded(with: members, in: newGroupThread, using: transaction)
-        OWSDisappearingMessagesJob.shared().becomeConsistent(withDisappearingDuration: transcript.dataMessage.expireTimer, thread: newGroupThread, createdByRemoteRecipientId: nil, createdInExistingGroup: true, transaction: transaction)
         // Notify the user
         let contactsManager = SSKEnvironment.shared.contactsManager
-        let groupUpdatedMessageDescription = newGroupThread.groupModel.getInfoStringAboutUpdate(to: newGroupModel, contactsManager: contactsManager)
-        let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: newGroupThread, messageType: .typeGroupUpdate, customMessage: groupUpdatedMessageDescription)
+        let infoMessageText = newGroupThread.groupModel.getInfoStringAboutUpdate(to: newGroupModel, contactsManager: contactsManager)
+        let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: newGroupThread, messageType: .typeGroupUpdate, customMessage: infoMessageText)
         infoMessage.save(with: transaction)
     }
 
-    @objc(handleClosedGroupQuitSyncMessageIfNeeded:using:)
-    public static func handleClosedGroupQuitSyncMessageIfNeeded(_ transcript: OWSIncomingSentMessageTranscript, using transaction: YapDatabaseReadWriteTransaction) {
+    @objc(handleClosedGroupQuitSyncMessageIfNeeded:wrappedIn:transaction:)
+    public static func handleClosedGroupQuitSyncMessageIfNeeded(_ transcript: OWSIncomingSentMessageTranscript, wrappedIn envelope: SSKProtoEnvelope, using transaction: YapDatabaseReadWriteTransaction) {
         // Check preconditions
-        guard let group = transcript.dataMessage.group else { return }
+        let publicKey = envelope.source! // Set during UD decryption
+        let userLinkedDevices = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: getUserHexEncodedPublicKey(), in: transaction)
+        let wasSentByLinkedDevice = userLinkedDevices.contains(publicKey)
+        guard wasSentByLinkedDevice, let group = transcript.dataMessage.group else { return }
         // Leave the group
         let groupThread = TSGroupThread.getOrCreateThread(withGroupId: group.id, groupType: .closedGroup, transaction: transaction)
         groupThread.save(with: transaction)
@@ -155,12 +161,12 @@ public final class SyncMessagesProtocol : NSObject {
         infoMessage.save(with: transaction)
     }
 
-    @objc(handleContactSyncMessageIfNeeded:wrappedIn:using:)
+    @objc(handleContactSyncMessageIfNeeded:wrappedIn:transaction:)
     public static func handleContactSyncMessageIfNeeded(_ syncMessage: SSKProtoSyncMessage, wrappedIn envelope: SSKProtoEnvelope, using transaction: YapDatabaseReadWriteTransaction) {
         let publicKey = envelope.source! // Set during UD decryption
         let userLinkedDevices = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: getUserHexEncodedPublicKey(), in: transaction)
         let wasSentByLinkedDevice = userLinkedDevices.contains(publicKey)
-        guard wasSentByLinkedDevice, let contacts = syncMessage.contacts, let contactsAsData = contacts.data, contactsAsData.count > 0 else { return }
+        guard wasSentByLinkedDevice, let contacts = syncMessage.contacts, let contactsAsData = contacts.data, !contactsAsData.isEmpty else { return }
         print("[Loki] Contact sync message received.")
         handleContactSyncMessageData(contactsAsData, using: transaction)
     }
@@ -169,10 +175,10 @@ public final class SyncMessagesProtocol : NSObject {
         let parser = ContactParser(data: data)
         let publicKeys = parser.parseHexEncodedPublicKeys()
         let userPublicKey = getUserHexEncodedPublicKey()
-        let linkedDevices = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: userPublicKey, in: transaction)
+        let userLinkedDevices = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: userPublicKey, in: transaction)
         // Try to establish sessions
         for publicKey in publicKeys {
-            guard !linkedDevices.contains(publicKey) else { continue } // Skip self and linked devices
+            guard !userLinkedDevices.contains(publicKey) else { continue } // Skip self and linked devices
             // We don't update the friend request status; that's done in OWSMessageSender.sendMessage(_:)
             let friendRequestStatus = storage.getFriendRequestStatus(for: publicKey, transaction: transaction)
             switch friendRequestStatus {
@@ -199,42 +205,43 @@ public final class SyncMessagesProtocol : NSObject {
         }
     }
 
-    @objc(handleClosedGroupSyncMessageIfNeeded:wrappedIn:using:)
+    @objc(handleClosedGroupSyncMessageIfNeeded:wrappedIn:transaction:)
     public static func handleClosedGroupSyncMessageIfNeeded(_ syncMessage: SSKProtoSyncMessage, wrappedIn envelope: SSKProtoEnvelope, using transaction: YapDatabaseReadWriteTransaction) {
         let publicKey = envelope.source! // Set during UD decryption
         let userLinkedDevices = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: getUserHexEncodedPublicKey(), in: transaction)
         let wasSentByLinkedDevice = userLinkedDevices.contains(publicKey)
-        guard wasSentByLinkedDevice, let groups = syncMessage.groups, let groupsAsData = groups.data, groupsAsData.count > 0 else { return }
+        guard wasSentByLinkedDevice, let groups = syncMessage.groups, let groupsAsData = groups.data, !groupsAsData.isEmpty else { return }
         print("[Loki] Closed group sync message received.")
         let parser = ClosedGroupParser(data: groupsAsData)
-        let groupModels = parser.parseGroupModels()
-        for groupModel in groupModels {
-            var thread: TSGroupThread! = TSGroupThread(groupId: groupModel.groupId, transaction: transaction)
+        let closedGroups = parser.parseGroupModels()
+        for closedGroup in closedGroups {
+            var thread: TSGroupThread! = TSGroupThread(groupId: closedGroup.groupId, transaction: transaction)
             if thread == nil {
-                thread = TSGroupThread.getOrCreateThread(with: groupModel, transaction: transaction)
+                thread = TSGroupThread.getOrCreateThread(with: closedGroup, transaction: transaction)
                 thread.shouldThreadBeVisible = true
                 thread.save(with: transaction)
             }
-            ClosedGroupsProtocol.establishSessionsIfNeeded(with: groupModel.groupMemberIds, in: thread, using: transaction)
+            ClosedGroupsProtocol.establishSessionsIfNeeded(with: closedGroup.groupMemberIds, in: thread, using: transaction)
         }
     }
 
-    @objc(handleOpenGroupSyncMessageIfNeeded:wrappedIn:using:)
+    @objc(handleOpenGroupSyncMessageIfNeeded:wrappedIn:transaction:)
     public static func handleOpenGroupSyncMessageIfNeeded(_ syncMessage: SSKProtoSyncMessage, wrappedIn envelope: SSKProtoEnvelope, using transaction: YapDatabaseReadWriteTransaction) {
         let publicKey = envelope.source! // Set during UD decryption
         let userLinkedDevices = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: getUserHexEncodedPublicKey(), in: transaction)
         let wasSentByLinkedDevice = userLinkedDevices.contains(publicKey)
         guard wasSentByLinkedDevice else { return }
-        let groups = syncMessage.openGroups
-        guard groups.count > 0 else { return }
+        let openGroups = syncMessage.openGroups
+        guard !openGroups.isEmpty else { return }
         print("[Loki] Open group sync message received.")
-        for openGroup in groups {
-            let openGroupManager = LokiPublicChatManager.shared
+        let openGroupManager = LokiPublicChatManager.shared
+        let userPublicKey = UserDefaults.standard[.masterHexEncodedPublicKey] ?? getUserHexEncodedPublicKey()
+        let userDisplayName = SSKEnvironment.shared.profileManager.profileNameForRecipient(withID: userPublicKey, transaction: transaction)
+        for openGroup in openGroups {
             guard openGroupManager.getChat(server: openGroup.url, channel: openGroup.channelID) == nil else { return }
-            let userPublicKey = UserDefaults.standard[.masterHexEncodedPublicKey] ?? getUserHexEncodedPublicKey()
-            let displayName = SSKEnvironment.shared.profileManager.profileNameForRecipient(withID: userPublicKey, transaction: transaction)
-            LokiPublicChatAPI.setDisplayName(to: displayName, on: openGroup.url)
             openGroupManager.addChat(server: openGroup.url, channel: openGroup.channelID)
+            LokiPublicChatAPI.setDisplayName(to: userDisplayName, on: openGroup.url)
+            // TODO: Should we also set the profile picture here?
         }
     }
 }

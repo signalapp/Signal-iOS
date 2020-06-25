@@ -9,8 +9,10 @@ extern NSString *const AppDelegateStoryboardMain;
 @interface AppDelegate : UIResponder <UIApplicationDelegate>
 
 - (void)startPollerIfNeeded;
-- (void)stopPollerIfNeeded;
+- (void)stopPoller;
+- (void)startClosedGroupPollerIfNeeded;
+- (void)stopClosedGroupPoller;
 - (void)startOpenGroupPollersIfNeeded;
-- (void)stopOpenGroupPollersIfNeeded;
+- (void)stopOpenGroupPollers;
 
 @end

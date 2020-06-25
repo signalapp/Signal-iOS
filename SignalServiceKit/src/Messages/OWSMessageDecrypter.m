@@ -283,6 +283,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                 // Return to avoid double-acknowledging.
                 return;
             }
+            case SSKProtoEnvelopeTypeClosedGroupCiphertext: // Loki: Fall through
             case SSKProtoEnvelopeTypeUnidentifiedSender: {
                 [self decryptUnidentifiedSender:envelope
                     successBlock:^(OWSMessageDecryptResult *result, YapDatabaseReadWriteTransaction *transaction) {
@@ -336,9 +337,9 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     
     NSString *recipientId = envelope.source;
     ECKeyPair *identityKeyPair = self.identityManager.identityKeyPair;
-    FallBackSessionCipher *cipher = [[FallBackSessionCipher alloc] initWithRecipientId:recipientId privateKey:identityKeyPair.privateKey];
-    
-    NSData *_Nullable plaintextData = [[cipher decryptWithMessage:encryptedData] removePadding];
+    FallBackSessionCipher *cipher = [[FallBackSessionCipher alloc] initWithRecipientPublicKey:recipientId privateKey:identityKeyPair.privateKey];
+
+    NSData *_Nullable plaintextData = [[cipher decrypt:encryptedData] removePadding];
     if (!plaintextData) {
         NSString *errorString = [NSString stringWithFormat:@"Failed to decrypt friend request message from: %@.", recipientId];
         NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptMessage, errorString);
@@ -500,6 +501,11 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
             return failureBlock(cipherError);
         }
 
+        ECKeyPair *keyPair = nil; // Loki: SMKSecretSessionCipher will fall back on the user's key pair if this is nil
+        if (envelope.type == SSKProtoEnvelopeTypeClosedGroupCiphertext) {
+            keyPair = [LKStorage getKeyPairForClosedGroupWithPublicKey:envelope.source];
+        }
+
         NSError *decryptError;
         SMKDecryptResult *_Nullable decryptResult =
             [cipher throwswrapped_decryptMessageWithCertificateValidator:certificateValidator
@@ -507,6 +513,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                                                                timestamp:serverTimestamp
                                                         localRecipientId:localRecipientId
                                                            localDeviceId:localDeviceId
+                                                                 keyPair:keyPair
                                                          protocolContext:transaction
                                                                    error:&decryptError];
 
@@ -543,7 +550,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
 
                 identifiedEnvelope = [identifiedEnvelopeBuilder buildAndReturnError:&identifiedEnvelopeBuilderError];
                 if (identifiedEnvelopeBuilderError) {
-                    OWSFailDebug(@"failure identifiedEnvelopeBuilderError: %@", identifiedEnvelopeBuilderError);
+                    OWSFailDebug(@"identifiedEnvelopeBuilderError: %@", identifiedEnvelopeBuilderError);
                 }
             }
             OWSAssert(underlyingError);
@@ -578,6 +585,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                 return;
             }
 
+            OWSFailDebug(@"%@", underlyingError);
             failureBlock(underlyingError);
             return;
         }
@@ -596,7 +604,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
 
         long sourceDeviceId = decryptResult.senderDeviceId;
         if (sourceDeviceId < 1 || sourceDeviceId > UINT32_MAX) {
-            NSString *errorDescription = @"Invalid UD sender device id.";
+            NSString *errorDescription = @"Invalid UD sender device ID.";
             OWSFailDebug(@"%@", errorDescription);
             NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptUDMessage, errorDescription);
             return failureBlock(error);
@@ -670,7 +678,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
         OWSAssertDebug(errorMessage);
         if (errorMessage != nil) {
             [errorMessage saveWithTransaction:transaction];
-            [LKSessionManagementProtocol handleDecryptionError:errorMessage.errorType forPublicKey:envelope.source using:transaction];
+            [LKSessionManagementProtocol handleDecryptionError:errorMessage.errorType forPublicKey:envelope.source transaction:transaction];
             [self notifyUserForErrorMessage:errorMessage envelope:envelope transaction:transaction];
         }
     } error:nil];

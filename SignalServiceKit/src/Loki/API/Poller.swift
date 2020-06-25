@@ -1,16 +1,14 @@
 import PromiseKit
 
 @objc(LKPoller)
-public final class LokiPoller : NSObject {
-    private let onMessagesReceived: ([SSKProtoEnvelope]) -> Void
+public final class Poller : NSObject {
     private let storage = OWSPrimaryStorage.shared()
-    private var hasStarted = false
-    private var hasStopped = false
-    private var usedSnodes = Set<LokiAPITarget>()
+    private var isPolling = false
+    private var usedSnodes = Set<Snode>()
     private var pollCount = 0
 
     // MARK: Settings
-    private static let pollInterval: TimeInterval = 1
+    private static let pollInterval: TimeInterval = 2
     private static let retryInterval: TimeInterval = 0.25
     /// After polling a given snode this many times we always switch to a new one.
     ///
@@ -29,41 +27,32 @@ public final class LokiPoller : NSObject {
         }
     }
 
-    // MARK: Initialization
-    @objc public init(onMessagesReceived: @escaping ([SSKProtoEnvelope]) -> Void) {
-        self.onMessagesReceived = onMessagesReceived
-        super.init()
-    }
-
     // MARK: Public API
     @objc public func startIfNeeded() {
-        guard !hasStarted else { return }
+        guard !isPolling else { return }
         print("[Loki] Started polling.")
-        hasStarted = true
-        hasStopped = false
+        isPolling = true
         setUpPolling()
     }
 
-    @objc public func stopIfNeeded() {
-        guard !hasStopped else { return }
+    @objc public func stop() {
         print("[Loki] Stopped polling.")
-        hasStarted = false
-        hasStopped = true
+        isPolling = false
         usedSnodes.removeAll()
     }
 
     // MARK: Private API
     private func setUpPolling() {
-        guard !hasStopped else { return }
-        LokiAPI.getSwarm(for: getUserHexEncodedPublicKey(), isForcedReload: true).then2 { [weak self] _ -> Promise<Void> in
+        guard isPolling else { return }
+        SnodeAPI.getSwarm(for: getUserHexEncodedPublicKey(), isForcedReload: true).then2 { [weak self] _ -> Promise<Void> in
             guard let strongSelf = self else { return Promise { $0.fulfill(()) } }
             strongSelf.usedSnodes.removeAll()
             let (promise, seal) = Promise<Void>.pending()
             strongSelf.pollNextSnode(seal: seal)
             return promise
         }.ensure(on: DispatchQueue.main) { [weak self] in // Timers don't do well on background queues
-            guard let strongSelf = self, !strongSelf.hasStopped else { return }
-            Timer.scheduledTimer(withTimeInterval: LokiPoller.retryInterval, repeats: false) { _ in
+            guard let strongSelf = self, strongSelf.isPolling else { return }
+            Timer.scheduledTimer(withTimeInterval: Poller.retryInterval, repeats: false) { _ in
                 guard let strongSelf = self else { return }
                 strongSelf.setUpPolling()
             }
@@ -72,7 +61,7 @@ public final class LokiPoller : NSObject {
 
     private func pollNextSnode(seal: Resolver<Void>) {
         let userPublicKey = getUserHexEncodedPublicKey()
-        let swarm = LokiAPI.swarmCache[userPublicKey] ?? []
+        let swarm = SnodeAPI.swarmCache[userPublicKey] ?? []
         let unusedSnodes = Set(swarm).subtracting(usedSnodes)
         if !unusedSnodes.isEmpty {
             // randomElement() uses the system's default random generator, which is cryptographically secure
@@ -85,7 +74,7 @@ public final class LokiPoller : NSObject {
                     self?.pollCount = 0
                 } else {
                     print("[Loki] Polling \(nextSnode) failed; dropping it and switching to next snode.")
-                    LokiAPI.dropSnodeFromSwarmIfNeeded(nextSnode, hexEncodedPublicKey: userPublicKey)
+                    SnodeAPI.dropSnodeFromSwarmIfNeeded(nextSnode, publicKey: userPublicKey)
                 }
                 self?.pollNextSnode(seal: seal)
             }
@@ -94,19 +83,30 @@ public final class LokiPoller : NSObject {
         }
     }
 
-    private func poll(_ target: LokiAPITarget, seal longTermSeal: Resolver<Void>) -> Promise<Void> {
-        guard !hasStopped else { return Promise { $0.fulfill(()) } }
-        return LokiAPI.getRawMessages(from: target).then(on: DispatchQueue.main) { [weak self] rawResponse -> Promise<Void> in
-            guard let strongSelf = self, !strongSelf.hasStopped else { return Promise { $0.fulfill(()) } }
-            let messages = LokiAPI.parseRawMessagesResponse(rawResponse, from: target)
-            strongSelf.onMessagesReceived(messages)
+    private func poll(_ snode: Snode, seal longTermSeal: Resolver<Void>) -> Promise<Void> {
+        guard isPolling else { return Promise { $0.fulfill(()) } }
+        let userPublicKey = getUserHexEncodedPublicKey()
+        return SnodeAPI.getRawMessages(from: snode, associatedWith: userPublicKey).then(on: DispatchQueue.main) { [weak self] rawResponse -> Promise<Void> in
+            guard let strongSelf = self, strongSelf.isPolling else { return Promise { $0.fulfill(()) } }
+            let messages = SnodeAPI.parseRawMessagesResponse(rawResponse, from: snode, associatedWith: userPublicKey)
+            if !messages.isEmpty {
+                print("[Loki] Received \(messages.count) new message(s).")
+            }
+            messages.forEach { message in
+                do {
+                    let data = try message.serializedData()
+                    SSKEnvironment.shared.messageReceiver.handleReceivedEnvelopeData(data)
+                } catch {
+                    print("[Loki] Failed to deserialize envelope due to error: \(error).")
+                }
+            }
             strongSelf.pollCount += 1
-            if strongSelf.pollCount == LokiPoller.maxPollCount {
+            if strongSelf.pollCount == Poller.maxPollCount {
                 throw Error.pollLimitReached
             } else {
-                return withDelay(LokiPoller.pollInterval, completionQueue: LokiAPI.workQueue) {
-                    guard let strongSelf = self, !strongSelf.hasStopped else { return Promise { $0.fulfill(()) } }
-                    return strongSelf.poll(target, seal: longTermSeal)
+                return withDelay(Poller.pollInterval, completionQueue: SnodeAPI.workQueue) {
+                    guard let strongSelf = self, strongSelf.isPolling else { return Promise { $0.fulfill(()) } }
+                    return strongSelf.poll(snode, seal: longTermSeal)
                 }
             }
         }

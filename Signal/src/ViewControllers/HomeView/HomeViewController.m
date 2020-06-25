@@ -679,7 +679,7 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
         [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
             [ThreadUtil deleteAllContent];
             [SSKEnvironment.shared.identityManager clearIdentityKey];
-            [LKAPI clearSnodePool];
+            [LKSnodeAPI clearSnodePool];
             AppDelegate *appDelegate = (AppDelegate *)UIApplication.sharedApplication.delegate;
             [appDelegate stopPollerIfNeeded];
             [appDelegate stopOpenGroupPollersIfNeeded];

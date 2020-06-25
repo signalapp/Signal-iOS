@@ -2789,6 +2789,7 @@
 			isa = PBXGroup;
 			children = (
 				B8CCF63B239757C10091D419 /* Components */,
+				C32B405424A961E1001117B5 /* Dependencies */,
 				B8BFFF392355426100102A27 /* Shelved */,
 				B8CCF63C239757DB0091D419 /* Utilities */,
 				B8CCF63D2397580E0091D419 /* View Controllers */,
@@ -2909,7 +2910,6 @@
 				B83F2B87240CB75A000A54AB /* UIImage+Scaling.swift */,
 				C31A6C59247F214E001123EF /* UIView+Glow.swift */,
 				C3548F0724456AB6009433A8 /* UIView+Wrapping.swift */,
-				C3DAB3232480CB2A00725F25 /* SRCopyableLabel.swift */,
 			);
 			path = Utilities;
 			sourceTree = "<group>";
@@ -2948,6 +2948,14 @@
 				C3DFFAC523E96F0D0058DAF8 /* Sheet.swift */,
 			);
 			path = "View Controllers";
+			sourceTree = "<group>";
+		};
+		C32B405424A961E1001117B5 /* Dependencies */ = {
+			isa = PBXGroup;
+			children = (
+				C3DAB3232480CB2A00725F25 /* SRCopyableLabel.swift */,
+			);
+			path = Dependencies;
 			sourceTree = "<group>";
 		};
 		C35E8AA42485C83B00ACB629 /* CSV */ = {

@@ -16,13 +16,14 @@ option java_outer_classname = "SignalServiceProtos";
 
 message Envelope {
   enum Type {
-    UNKNOWN             = 0;
-    CIPHERTEXT          = 1;
-    KEY_EXCHANGE        = 2;
-    PREKEY_BUNDLE       = 3;
-    RECEIPT             = 5;
-    UNIDENTIFIED_SENDER = 6;
-    FRIEND_REQUEST      = 101; // Loki: Contains prekeys and a message; uses simple encryption
+    UNKNOWN                 = 0;
+    CIPHERTEXT              = 1;
+    KEY_EXCHANGE            = 2;
+    PREKEY_BUNDLE           = 3;
+    RECEIPT                 = 5;
+    UNIDENTIFIED_SENDER     = 6;
+    CLOSED_GROUP_CIPHERTEXT = 7; // Loki
+    FRIEND_REQUEST          = 101; // Loki: Contains pre keys and a message; uses simple encryption
   }
 
   // @required
@@ -131,6 +132,15 @@ message CallMessage {
   optional bytes     profileKey = 6;
 }
 
+message ClosedGroupCiphertext {
+  // @required
+  optional bytes  ciphertext      = 1;
+  // @required
+  optional string senderPublicKey = 2;
+  // @required
+  optional uint32 keyIndex        = 3;
+}
+
 message DataMessage {
   enum Flags {
     END_SESSION             = 1;
@@ -235,22 +245,25 @@ message DataMessage {
     optional AttachmentPointer image = 3;
   }
 
-  // Loki: A custom message for our profile
-  message LokiProfile {
+  message LokiProfile { // Loki
     optional string displayName = 1;
     optional string profilePicture = 2;
   }
 
   message ClosedGroupUpdate { // Loki
+    enum Type {
+      NEW = 0; // groupPublicKey, name, groupPrivateKey, chainKeys, members, admins
+    }
+
+    optional string    name            = 1;
     // @required
-    optional string name           = 1;
+    optional bytes     groupPublicKey  = 2;
+    optional bytes     groupPrivateKey = 3;
+    repeated bytes     chainKeys       = 4;
+    repeated string    members         = 5;
+    repeated string    admins          = 6;
     // @required
-    optional string groupID        = 2;
-    // @required
-    optional string sharedSecret   = 3;
-    // @required
-    optional string senderKey      = 4;
-    repeated string members        = 5;
+    optional Type      type            = 7;
   }
 
   optional string            body              = 1;
@@ -327,7 +340,7 @@ message SyncMessage {
     // @required
     optional string url       = 1;
     // @required
-    optional uint64 channelId = 2;
+    optional uint64 channelID = 2;
   }
 
   message Blocked {
@@ -445,7 +458,7 @@ message GroupDetails {
   optional uint32 expireTimer = 6;
   optional string color       = 7;
   optional bool   blocked     = 8;
-  repeated string admins      = 9;  // Loki
+  repeated string admins      = 9; // Loki
 }
 
 // Internal - DO NOT SEND

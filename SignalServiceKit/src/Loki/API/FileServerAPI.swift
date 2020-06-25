@@ -1,15 +1,16 @@
 import PromiseKit
 
 @objc(LKFileServerAPI)
-public final class LokiFileServerAPI : LokiDotNetAPI {
+public final class FileServerAPI : DotNetAPI {
 
     // MARK: Settings
-    @objc public static let server = "https://file.getsession.org"
-    public static let maxFileSize = 10_000_000 // 10 MB
     private static let deviceLinkType = "network.loki.messenger.devicemapping"
     private static let attachmentType = "net.app.core.oembed"
 
-    // MARK: Database
+    public static let maxFileSize = 10_000_000 // 10 MB
+    @objc public static let server = "https://file.getsession.org"
+
+    // MARK: Storage
     override internal class var authTokenCollection: String { return "LokiStorageAuthTokenCollection" }
     
     // MARK: Device Links
@@ -41,7 +42,7 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
             return LokiFileServerProxy(for: server).perform(request, withCompletionQueue: DispatchQueue.global(qos: .default)).map2 { rawResponse -> Set<DeviceLink> in
                 guard let json = rawResponse as? JSON, let data = json["data"] as? [JSON] else {
                     print("[Loki] Couldn't parse device links for users: \(hexEncodedPublicKeys) from: \(rawResponse).")
-                    throw LokiDotNetAPIError.parsingFailed
+                    throw DotNetAPIError.parsingFailed
                 }
                 return Set(data.flatMap { data -> [DeviceLink] in
                     guard let annotations = data["annotations"] as? [JSON], !annotations.isEmpty else { return [] }
@@ -98,7 +99,7 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
             let url = URL(string: "\(server)/users/me")!
             let request = TSRequest(url: url, method: "PATCH", parameters: parameters)
             request.allHTTPHeaderFields = [ "Content-Type" : "application/json", "Authorization" : "Bearer \(token)" ]
-            return attempt(maxRetryCount: 8, recoveringOn: LokiAPI.workQueue) {
+            return attempt(maxRetryCount: 8, recoveringOn: SnodeAPI.workQueue) {
                 LokiFileServerProxy(for: server).perform(request).map2 { _ in }
             }.handlingInvalidAuthTokenIfNeeded(for: server).recover2 { error in
                 print("Couldn't update device links due to error: \(error).")
@@ -138,7 +139,7 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
     }
 
     public static func uploadProfilePicture(_ profilePicture: Data) -> Promise<String> {
-        guard profilePicture.count < maxFileSize else { return Promise(error: LokiDotNetAPIError.maxFileSizeExceeded) }
+        guard profilePicture.count < maxFileSize else { return Promise(error: DotNetAPIError.maxFileSizeExceeded) }
         let url = "\(server)/files"
         let parameters: JSON = [ "type" : attachmentType, "Content-Type" : "application/binary" ]
         var error: NSError?
@@ -154,7 +155,7 @@ public final class LokiFileServerAPI : LokiDotNetAPI {
         return LokiFileServerProxy(for: server).performLokiFileServerNSURLRequest(request as NSURLRequest).map2 { responseObject in
             guard let json = responseObject as? JSON, let data = json["data"] as? JSON, let downloadURL = data["url"] as? String else {
                 print("[Loki] Couldn't parse profile picture from: \(responseObject).")
-                throw LokiDotNetAPIError.parsingFailed
+                throw DotNetAPIError.parsingFailed
             }
             UserDefaults.standard[.lastProfilePictureUpload] = Date()
             return downloadURL

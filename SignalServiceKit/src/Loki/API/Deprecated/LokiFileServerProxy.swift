@@ -37,19 +37,19 @@ internal class LokiFileServerProxy : LokiHTTPClient {
     }
 
     // MARK: Proxying
-    override internal func perform(_ request: TSRequest, withCompletionQueue queue: DispatchQueue = DispatchQueue.main) -> LokiAPI.RawResponsePromise {
-        let isLokiFileServer = (server == LokiFileServerAPI.server)
+    override internal func perform(_ request: TSRequest, withCompletionQueue queue: DispatchQueue = DispatchQueue.main) -> SnodeAPI.RawResponsePromise {
+        let isLokiFileServer = (server == FileServerAPI.server)
         guard isLokiFileServer else { return super.perform(request, withCompletionQueue: queue) } // Don't proxy open group requests for now
         return performLokiFileServerNSURLRequest(request, withCompletionQueue: queue)
     }
     
-    internal func performLokiFileServerNSURLRequest(_ request: NSURLRequest, withCompletionQueue queue: DispatchQueue = DispatchQueue.main) -> LokiAPI.RawResponsePromise {
+    internal func performLokiFileServerNSURLRequest(_ request: NSURLRequest, withCompletionQueue queue: DispatchQueue = DispatchQueue.main) -> SnodeAPI.RawResponsePromise {
         var headers = getCanonicalHeaders(for: request)
-        return Promise<LokiAPI.RawResponse> { [server = self.server, keyPair = self.keyPair, httpSession = self.httpSession] seal in
+        return Promise<SnodeAPI.RawResponse> { [server = self.server, keyPair = self.keyPair, httpSession = self.httpSession] seal in
             DispatchQueue.global(qos: .userInitiated).async {
                 let uncheckedSymmetricKey = try? Curve25519.generateSharedSecret(fromPublicKey: LokiFileServerProxy.fileServerPublicKey, privateKey: keyPair.privateKey)
                 guard let symmetricKey = uncheckedSymmetricKey else { return seal.reject(Error.symmetricKeyGenerationFailed) }
-                LokiAPI.getRandomSnode().then2 { proxy -> Promise<Any> in
+                SnodeAPI.getRandomSnode().then2 { proxy -> Promise<Any> in
                     let url = "\(proxy.address):\(proxy.port)/file_proxy"
                     guard let urlAsString = request.url?.absoluteString, let serverURLEndIndex = urlAsString.range(of: server)?.upperBound,
                         serverURLEndIndex < urlAsString.endIndex else { throw Error.endpointParsingFailed }
@@ -84,7 +84,7 @@ internal class LokiFileServerProxy : LokiHTTPClient {
                         "Connection" : "close", // TODO: Is this necessary?
                         "Content-Type" : "application/json"
                     ]
-                    let (promise, resolver) = LokiAPI.RawResponsePromise.pending()
+                    let (promise, resolver) = SnodeAPI.RawResponsePromise.pending()
                     let proxyRequest = AFHTTPRequestSerializer().request(withMethod: "POST", urlString: url, parameters: nil, error: nil)
                     proxyRequest.allHTTPHeaderFields = proxyRequestHeaders
                     proxyRequest.httpBody = "{ \"cipherText64\" : \"\(ivAndCipherText.base64EncodedString())\" }".data(using: String.Encoding.utf8)!

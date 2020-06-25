@@ -152,9 +152,8 @@ const int32_t kGroupIdLength = 16;
             updatedGroupInfoString = [updatedGroupInfoString
                                       stringByAppendingString:NSLocalizedString(@"YOU_WERE_REMOVED", @"")];
         } else {
-            NSArray *removedMemberNames = [[newModel.removedMembers allObjects] map:^NSString*(NSString* item) {
-                // TODO: Shouldn't this use DisplayNameUtilities?
-                return [contactsManager displayNameForPhoneIdentifier:item];
+            NSArray *removedMemberNames = [newModel.removedMembers.allObjects map:^NSString*(NSString* publicKey) {
+                return [LKUserDisplayNameUtilities getPrivateChatDisplayNameFor:publicKey];
             }];
             if ([removedMemberNames count] > 1) {
                 updatedGroupInfoString = [updatedGroupInfoString

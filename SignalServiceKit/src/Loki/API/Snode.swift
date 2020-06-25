@@ -1,8 +1,5 @@
 
-public typealias Snode = LokiAPITarget
-
-/// Either a service node or another client if P2P is enabled.
-public final class LokiAPITarget : NSObject, NSCoding {
+public final class Snode : NSObject, NSCoding {
     public let address: String
     public let port: UInt16
     internal let publicKeySet: KeySet?
@@ -55,7 +52,7 @@ public final class LokiAPITarget : NSObject, NSCoding {
     
     // MARK: Equality
     override public func isEqual(_ other: Any?) -> Bool {
-        guard let other = other as? LokiAPITarget else { return false }
+        guard let other = other as? Snode else { return false }
         return address == other.address && port == other.port
     }
     

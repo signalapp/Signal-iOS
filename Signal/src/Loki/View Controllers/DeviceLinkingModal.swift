@@ -182,7 +182,7 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
         let linkingAuthorizationMessage = DeviceLinkingUtilities.getLinkingAuthorizationMessage(for: deviceLink)
         let master = DeviceLink.Device(hexEncodedPublicKey: deviceLink.master.hexEncodedPublicKey, signature: linkingAuthorizationMessage.masterSignature)
         let signedDeviceLink = DeviceLink(between: master, and: deviceLink.slave)
-        LokiFileServerAPI.addDeviceLink(signedDeviceLink).done(on: DispatchQueue.main) { [weak self] in
+        FileServerAPI.addDeviceLink(signedDeviceLink).done(on: DispatchQueue.main) { [weak self] in
             SSKEnvironment.shared.messageSender.send(linkingAuthorizationMessage, success: {
                 let storage = OWSPrimaryStorage.shared()
                 let slaveHexEncodedPublicKey = deviceLink.slave.hexEncodedPublicKey
@@ -205,7 +205,7 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
                 }
             }, failure: { error in
                 print("[Loki] Failed to send device link authorization message.")
-                let _ = LokiFileServerAPI.removeDeviceLink(signedDeviceLink) // Attempt to roll back
+                let _ = FileServerAPI.removeDeviceLink(signedDeviceLink) // Attempt to roll back
                 DispatchQueue.main.async {
                     self?.close()
                     let alert = UIAlertController(title: NSLocalizedString("Device Linking Failed", comment: ""), message: NSLocalizedString("Please check your internet connection and try again", comment: ""), preferredStyle: .alert)
@@ -233,7 +233,7 @@ final class DeviceLinkingModal : Modal, DeviceLinkingSessionDelegate {
         subtitleLabel.text = NSLocalizedString("Your device has been linked successfully", comment: "")
         mnemonicLabel.isHidden = true
         buttonStackView.isHidden = true
-        LokiFileServerAPI.addDeviceLink(deviceLink).catch { error in
+        FileServerAPI.addDeviceLink(deviceLink).catch { error in
             print("[Loki] Failed to add device link due to error: \(error).")
         }
         Timer.scheduledTimer(withTimeInterval: 2, repeats: false) { _ in

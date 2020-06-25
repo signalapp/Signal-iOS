@@ -125,6 +125,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
 - (OWSMessageDecryptJob *_Nullable)nextJob
 {
     __block OWSMessageDecryptJob *_Nullable job = nil;
+
     [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *_Nonnull transaction) {
         YapDatabaseViewTransaction *viewTransaction = [transaction ext:OWSMessageDecryptJobFinderExtensionName];
         OWSAssertDebug(viewTransaction != nil);
@@ -406,7 +407,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
             }
         
             // We persist the decrypted envelope data in the same transaction within which
-            // it was decrypted to prevent data loss.  If the new job isn't persisted,
+            // it was decrypted to prevent data loss. If the new job isn't persisted,
             // the session state side effects of its decryption are also rolled back.
             //
             // NOTE: We use envelopeData from the decrypt result, not job.envelopeData,

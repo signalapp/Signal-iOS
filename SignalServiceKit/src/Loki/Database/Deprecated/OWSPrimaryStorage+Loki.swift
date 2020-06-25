@@ -4,7 +4,7 @@
 public extension OWSPrimaryStorage {
 
     // MARK: Snode Pool
-    public func setSnodePool(_ snodePool: Set<LokiAPITarget>, in transaction: YapDatabaseReadWriteTransaction) {
+    public func setSnodePool(_ snodePool: Set<Snode>, in transaction: YapDatabaseReadWriteTransaction) {
         clearSnodePool(in: transaction)
         snodePool.forEach { snode in
             transaction.setObject(snode, forKey: snode.description, inCollection: Storage.snodePoolCollection)
@@ -15,16 +15,16 @@ public extension OWSPrimaryStorage {
         transaction.removeAllObjects(inCollection: Storage.snodePoolCollection)
     }
 
-    public func getSnodePool(in transaction: YapDatabaseReadTransaction) -> Set<LokiAPITarget> {
-        var result: Set<LokiAPITarget> = []
+    public func getSnodePool(in transaction: YapDatabaseReadTransaction) -> Set<Snode> {
+        var result: Set<Snode> = []
         transaction.enumerateKeysAndObjects(inCollection: Storage.snodePoolCollection) { _, object, _ in
-            guard let snode = object as? LokiAPITarget else { return }
+            guard let snode = object as? Snode else { return }
             result.insert(snode)
         }
         return result
     }
 
-    public func dropSnodeFromSnodePool(_ snode: LokiAPITarget, in transaction: YapDatabaseReadWriteTransaction) {
+    public func dropSnodeFromSnodePool(_ snode: Snode, in transaction: YapDatabaseReadWriteTransaction) {
         transaction.removeObject(forKey: snode.description, inCollection: Storage.snodePoolCollection)
     }
 
@@ -72,12 +72,12 @@ public extension OWSPrimaryStorage {
     public func getOnionRequestPaths(in transaction: YapDatabaseReadTransaction) -> [OnionRequestAPI.Path] {
         let collection = Storage.onionRequestPathCollection
         guard
-            let path0Snode0 = transaction.object(forKey: "0-0", inCollection: collection) as? LokiAPITarget,
-            let path0Snode1 = transaction.object(forKey: "0-1", inCollection: collection) as? LokiAPITarget,
-            let path0Snode2 = transaction.object(forKey: "0-2", inCollection: collection) as? LokiAPITarget,
-            let path1Snode0 = transaction.object(forKey: "1-0", inCollection: collection) as? LokiAPITarget,
-            let path1Snode1 = transaction.object(forKey: "1-1", inCollection: collection) as? LokiAPITarget,
-            let path1Snode2 = transaction.object(forKey: "1-2", inCollection: collection) as? LokiAPITarget else { return [] }
+            let path0Snode0 = transaction.object(forKey: "0-0", inCollection: collection) as? Snode,
+            let path0Snode1 = transaction.object(forKey: "0-1", inCollection: collection) as? Snode,
+            let path0Snode2 = transaction.object(forKey: "0-2", inCollection: collection) as? Snode,
+            let path1Snode0 = transaction.object(forKey: "1-0", inCollection: collection) as? Snode,
+            let path1Snode1 = transaction.object(forKey: "1-1", inCollection: collection) as? Snode,
+            let path1Snode2 = transaction.object(forKey: "1-2", inCollection: collection) as? Snode else { return [] }
         return [ [ path0Snode0, path0Snode1, path0Snode2 ], [ path1Snode0, path1Snode1, path1Snode2 ] ]
     }
 

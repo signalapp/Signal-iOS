@@ -1,5 +1,5 @@
 
-public enum LokiMessageWrapper {
+public enum MessageWrapper {
     
     public enum Error : LocalizedError {
         case failedToWrapData

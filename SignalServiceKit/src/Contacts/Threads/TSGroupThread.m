@@ -25,12 +25,14 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
     OWSAssertDebug(groupModel);
     OWSAssertDebug(groupModel.groupId.length > 0);
     OWSAssertDebug(groupModel.groupMemberIds.count > 0);
+
     for (NSString *recipientId in groupModel.groupMemberIds) {
         OWSAssertDebug(recipientId.length > 0);
     }
 
     NSString *uniqueIdentifier = [[self class] threadIdFromGroupId:groupModel.groupId];
     self = [super initWithUniqueId:uniqueIdentifier];
+
     if (!self) {
         return self;
     }
@@ -55,6 +57,7 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
                                                           adminIds:@[ localNumber ]];
 
     self = [self initWithGroupModel:groupModel];
+
     if (!self) {
         return self;
     }
@@ -77,10 +80,12 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
     OWSAssertDebug(transaction);
 
     TSGroupThread *thread = [self fetchObjectWithUniqueID:[self threadIdFromGroupId:groupId] transaction:transaction];
+
     if (!thread) {
         thread = [[self alloc] initWithGroupId:groupId groupType:groupType];
         [thread saveWithTransaction:transaction];
     }
+
     return thread;
 }
 
@@ -89,9 +94,11 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
     OWSAssertDebug(groupId.length > 0);
 
     __block TSGroupThread *thread;
+
     [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         thread = [self getOrCreateThreadWithGroupId:groupId groupType:groupType transaction:transaction];
     } error:nil];
+
     return thread;
 }
 
@@ -108,6 +115,7 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
         thread = [[TSGroupThread alloc] initWithGroupModel:groupModel];
         [thread saveWithTransaction:transaction];
     }
+
     return thread;
 }
 
@@ -117,15 +125,18 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
     OWSAssertDebug(groupModel.groupId.length > 0);
 
     __block TSGroupThread *thread;
+
     [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         thread = [self getOrCreateThreadWithGroupModel:groupModel transaction:transaction];
     } error:nil];
+
     return thread;
 }
 
 + (NSString *)threadIdFromGroupId:(NSData *)groupId
 {
     OWSAssertDebug(groupId.length > 0);
+
     return [TSGroupThreadPrefix stringByAppendingString:[[LKGroupUtilities getDecodedGroupIDAsData:groupId] base64EncodedString]];
 }
 
@@ -188,12 +199,19 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
     return (self.groupModel.groupType == rssFeed);
 }
 
+- (BOOL)isContactFriend
+{
+    return false;
+}
+
 - (BOOL)isLocalUserInGroup
 {
     __block BOOL result = NO;
+
     [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         result = [self isCurrentUserInGroupWithTransaction:transaction];
     }];
+
     return result;
 }
 
@@ -234,6 +252,7 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
 - (void)setGroupModel:(TSGroupModel *)newGroupModel withTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     self.groupModel = newGroupModel;
+
     [self saveWithTransaction:transaction];
 
     [transaction addCompletionQueue:dispatch_get_main_queue() completionBlock:^{
@@ -251,10 +270,10 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
 - (void)leaveGroupWithTransaction:(YapDatabaseReadWriteTransaction *)transaction
 {
     NSMutableSet<NSString *> *newGroupMemberIDs = [NSMutableSet setWithArray:self.groupModel.groupMemberIds];
-    NSString *userHexEncodedPublicKey = TSAccountManager.localNumber;
-    if (userHexEncodedPublicKey == nil) { return; }
-    NSSet<NSString *> *linkedDeviceHexEncodedPublicKeys = [LKDatabaseUtilities getLinkedDeviceHexEncodedPublicKeysFor:userHexEncodedPublicKey in:transaction];
-    [newGroupMemberIDs minusSet:linkedDeviceHexEncodedPublicKeys];
+    NSString *userPublicKey = TSAccountManager.localNumber;
+    if (userPublicKey == nil) { return; }
+    NSSet<NSString *> *userLinkedDevices = [LKDatabaseUtilities getLinkedDeviceHexEncodedPublicKeysFor:userPublicKey in:transaction];
+    [newGroupMemberIDs minusSet:userLinkedDevices];
     self.groupModel.groupMemberIds = newGroupMemberIDs.allObjects;
     [self saveWithTransaction:transaction];
     [transaction addCompletionQueue:dispatch_get_main_queue() completionBlock:^{
@@ -313,11 +332,6 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
     OWSAssertDebug(groupId.length > 0);
 
     return [self.class stableColorNameForNewConversationWithString:[self threadIdFromGroupId:groupId]];
-}
-
-- (BOOL)isContactFriend
-{
-    return false;
 }
 
 @end
