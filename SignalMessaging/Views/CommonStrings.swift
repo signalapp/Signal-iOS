@@ -61,6 +61,12 @@ import Foundation
 
     @objc
     static public let unarchiveAction = NSLocalizedString("UNARCHIVE_ACTION", comment: "Label for the unarchive button for conversations list view")
+    
+    @objc
+    static public let readAction = NSLocalizedString("READ_ACTION", comment:"Pressing this button marks a thread as read")
+    
+    @objc
+    static public let unreadAction = NSLocalizedString("UNREAD_ACTION", comment: "Pressing this button marks a thread as unread");
 
 }
 

@@ -19,4 +19,6 @@ import UIKit
 @objc enum OWSCellAccessibilityCustomActionType: Int {
     case delete
     case archive
+    case markRead
+    case markUnread
 }

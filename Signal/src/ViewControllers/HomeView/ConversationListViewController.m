@@ -1278,8 +1278,27 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                indexPath:indexPath
                   target:self
                 selector:@selector(performAccessibilityCustomAction:)];
+    
+    OWSCellAccessibilityCustomAction *leadingAction;
+    if (thread.hasUnreadMessages) {
+        leadingAction =
+        [[OWSCellAccessibilityCustomAction alloc]
+         initWithName:CommonStrings.readAction
+         type:OWSCellAccessibilityCustomActionTypeMarkRead
+         indexPath:indexPath
+         target:self
+         selector:@selector(performAccessibilityCustomAction:)];
+    } else {
+        leadingAction = [[OWSCellAccessibilityCustomAction alloc]
+         initWithName:CommonStrings.unreadAction
+         type:OWSCellAccessibilityCustomActionTypeMarkUnread
+         indexPath:indexPath
+         target:self
+         selector:@selector(performAccessibilityCustomAction:)];
+    }
+    
+  cell.accessibilityCustomActions = @[ archiveAction, deleteAction, leadingAction ];
 
-    cell.accessibilityCustomActions = @[ archiveAction, deleteAction ];
 
     if ([self isConversationActiveForThread:thread.threadRecord]) {
         [tableView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
@@ -1452,8 +1471,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                                                           }];
 
                 readAction.backgroundColor = UIColor.ows_accentBlueColor;
-                readAction.accessibilityLabel
-                    = NSLocalizedString(@"READ_ACTION", @"Pressing this button marks a thread as read");
+                readAction.accessibilityLabel = CommonStrings.readAction;
                 readAction.image = [self actionImageNamed:@"message-outline-24"
                                                 withTitle:readAction.accessibilityLabel];
 
@@ -1477,8 +1495,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                                                           }];
 
                 unreadAction.backgroundColor = UIColor.ows_accentBlueColor;
-                unreadAction.accessibilityLabel
-                    = NSLocalizedString(@"UNREAD_ACTION", @"Pressing this button marks a thread as unread");
+                unreadAction.accessibilityLabel = CommonStrings.unreadAction;
                 unreadAction.image = [self actionImageNamed:@"message-unread-outline-24"
                                                   withTitle:unreadAction.accessibilityLabel];
 
@@ -1645,6 +1662,12 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
             break;
         case OWSCellAccessibilityCustomActionTypeDelete:
             [self tableViewCellTappedDelete:action.indexPath];
+            break;
+        case OWSCellAccessibilityCustomActionTypeMarkRead:
+            [self markAsReadIndexPath:action.indexPath];
+            break;
+        case OWSCellAccessibilityCustomActionTypeMarkUnread:
+            [self markAsUnreadIndexPath:action.indexPath];
             break;
     }
 }
