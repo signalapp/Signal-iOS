@@ -74,6 +74,42 @@ public class RemoteConfig: NSObject {
         }
         return remoteConfig.config[flag.rawFlag] ?? defaultValue
     }
+
+    @objc
+    public static func logFlags() {
+        guard let remoteConfig = SSKEnvironment.shared.remoteConfigManager.cachedConfig else {
+            Logger.info("No cached config.")
+            return
+        }
+
+        let logFlag = { (prefix: String, key: String, value: Any?) in
+            if let value = value {
+                Logger.info("\(prefix): \(key) = \(value)")
+            } else {
+                Logger.info("\(prefix): \(key) = nil")
+            }
+        }
+
+        for flag in Flags.Supported.allCases {
+            let value = remoteConfig.config[flag.rawFlag]
+            logFlag("Config.Supported", flag.rawFlag, value)
+        }
+
+        for flag in Flags.Sticky.allCases {
+            let value = remoteConfig.config[flag.rawFlag]
+            logFlag("Config.Sticky", flag.rawFlag, value)
+        }
+
+        var count: CUnsignedInt = 0
+        let methods = class_copyPropertyList(object_getClass(RemoteConfig.self), &count)!
+        for i in 0 ..< count {
+            let selector = property_getName(methods.advanced(by: Int(i)).pointee)
+            if let key = String(cString: selector, encoding: .utf8) {
+                let value = RemoteConfig.value(forKey: key)
+                logFlag("Flag", key, value)
+            }
+        }
+    }
 }
 
 private struct Flags {
@@ -145,8 +181,29 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
 
     // MARK: -
 
+    #if TESTABLE_BUILD
+    private let hasWarmedCache = AtomicBool(false)
+    #endif
+
+    private var _cachedConfig: RemoteConfig?
     @objc
-    public private(set) var cachedConfig: RemoteConfig?
+    public private(set) var cachedConfig: RemoteConfig? {
+        get {
+            #if TESTABLE_BUILD
+            if !hasWarmedCache.get() {
+                owsFailDebug("CachedConfig not yet set.")
+            }
+            #endif
+
+            return _cachedConfig
+        }
+        set {
+            AssertIsOnMainThread()
+            assert(_cachedConfig == nil)
+
+            _cachedConfig = newValue
+        }
+    }
 
     @objc
     public override init() {
@@ -154,6 +211,8 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
 
         AppReadiness.runNowOrWhenAppWillBecomeReady {
             self.cacheCurrent()
+
+            RemoteConfig.logFlags()
         }
 
         // The fetched config won't take effect until the *next* launch.
@@ -187,9 +246,6 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
     private func cacheCurrent() {
         AssertIsOnMainThread()
 
-        // set only once
-        assert(self.cachedConfig == nil)
-
         if let storedConfig = self.databaseStorage.read(block: { transaction in
             self.keyValueStore.getRemoteConfig(transaction: transaction)
         }) {
@@ -198,6 +254,10 @@ public class ServiceRemoteConfigManager: NSObject, RemoteConfigManager {
         } else {
             Logger.info("no stored remote config")
         }
+
+        #if TESTABLE_BUILD
+        hasWarmedCache.set(true)
+        #endif
     }
 
     private func refreshIfReady() {
