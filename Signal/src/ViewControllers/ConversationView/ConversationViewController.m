@@ -5076,13 +5076,6 @@ typedef enum : NSUInteger {
         return;
     }
 
-    // If we're already showing the message request view, don't render it again.
-    //
-    // TODO:
-    if (self.messageRequestView) {
-        return;
-    }
-
     self.messageRequestView = [[MessageRequestView alloc] initWithThread:self.thread];
     self.messageRequestView.delegate = self;
     [self reloadBottomBar];
