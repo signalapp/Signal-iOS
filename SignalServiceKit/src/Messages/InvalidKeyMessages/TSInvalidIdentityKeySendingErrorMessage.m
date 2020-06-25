@@ -14,9 +14,6 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *TSInvalidPreKeyBundleKey = @"TSInvalidPreKeyBundleKey";
-NSString *TSInvalidRecipientKey = @"TSInvalidRecipientKey";
-
 @interface TSInvalidIdentityKeySendingErrorMessage ()
 
 @property (nonatomic, readonly) PreKeyBundle *preKeyBundle;

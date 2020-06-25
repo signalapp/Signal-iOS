@@ -1098,38 +1098,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             NSError *error = OWSErrorMakeUntrustedIdentityError(localizedErrorDescription, recipient.address);
 
             // Key will continue to be unaccepted, so no need to retry. It'll only cause us to hit the Pre-Key request
-            // rate limit
+            // rate limit.
             [error setIsRetryable:NO];
             // Avoid the "Too many failures with this contact" error rate limiting.
             [error setIsFatal:YES];
             *errorHandle = error;
-
-            PreKeyBundle *_Nullable newKeyBundle = exception.userInfo[TSInvalidPreKeyBundleKey];
-            if (newKeyBundle == nil) {
-                OWSProdFail([OWSAnalyticsEvents messageSenderErrorMissingNewPreKeyBundle]);
-                return nil;
-            }
-
-            if (![newKeyBundle isKindOfClass:[PreKeyBundle class]]) {
-                OWSProdFail([OWSAnalyticsEvents messageSenderErrorUnexpectedKeyBundle]);
-                return nil;
-            }
-
-            NSData *newIdentityKeyWithVersion = newKeyBundle.identityKey;
-
-            if (![newIdentityKeyWithVersion isKindOfClass:[NSData class]]) {
-                OWSProdFail([OWSAnalyticsEvents messageSenderErrorInvalidIdentityKeyType]);
-                return nil;
-            }
-
-            // TODO migrate to storing the full 33 byte representation of the identity key.
-            if (newIdentityKeyWithVersion.length != kIdentityKeyLength) {
-                OWSProdFail([OWSAnalyticsEvents messageSenderErrorInvalidIdentityKeyLength]);
-                return nil;
-            }
-
-            NSData *newIdentityKey = [newIdentityKeyWithVersion throws_removeKeyType];
-            [self.identityManager saveRemoteIdentity:newIdentityKey address:recipient.address];
 
             return nil;
         }
@@ -1842,16 +1815,22 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
         failure:^(NSError *error) {
             NSNumber *_Nullable statusCode = HTTPStatusCodeForError(error);
-            if (statusCode.unsignedIntValue == 404) {
+            OWSLogVerbose(@"statusCode: %@", statusCode);
+            if ([MessageSending isMissingDeviceError:error]) {
                 // Can't throw exception from within callback as it's probabably a different thread.
                 exception = [NSException exceptionWithName:OWSMessageSenderInvalidDeviceException
                                                     reason:@"Device not registered"
                                                   userInfo:nil];
-            } else if (statusCode.unsignedIntValue == 413) {
+            } else if ([MessageSending isPrekeyRateLimitError:error]) {
                 // Can't throw exception from within callback as it's probabably a different thread.
                 exception = [NSException exceptionWithName:OWSMessageSenderRateLimitedException
                                                     reason:@"Too many prekey requests"
                                                   userInfo:nil];
+            } else if ([MessageSending isUntrustedIdentityError:error]) {
+                // Can't throw exception from within callback as it's probabably a different thread.
+                exception = [NSException exceptionWithName:UntrustedIdentityKeyException
+                                                    reason:@"Identity key is not valid"
+                                                  userInfo:@ {}];
             } else if (IsNetworkConnectivityFailure(error)) {
                 OWSLogWarn(@"Network failure in prekey request.");
             } else {
@@ -1861,6 +1840,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }];
     dispatch_semaphore_wait(sema, DISPATCH_TIME_FOREVER);
     if (exception) {
+        OWSLogVerbose(@"exception: %@", exception);
         @throw exception;
     }
 
@@ -1869,12 +1849,16 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         OWSRaiseException(
             missingPrekeyBundleException, @"Can't get a prekey bundle from the server with required information");
     } else {
-        [self throws_createSessionForPreKeyBundle:bundle accountId:accountId deviceId:deviceId];
+        [self throws_createSessionForPreKeyBundle:bundle
+                                        accountId:accountId
+                                 recipientAddress:recipientAddress
+                                         deviceId:deviceId];
     }
 }
 
 - (void)throws_createSessionForPreKeyBundle:(PreKeyBundle *)bundle
                                   accountId:(NSString *)accountId
+                           recipientAddress:(SignalServiceAddress *)recipientAddress
                                    deviceId:(NSNumber *)deviceId
 {
     OWSAssertDebug(!NSThread.isMainThread);
@@ -1908,9 +1892,14 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     });
     if (exception) {
         if ([exception.name isEqualToString:UntrustedIdentityKeyException]) {
-            OWSRaiseExceptionWithUserInfo(UntrustedIdentityKeyException,
-                (@{ TSInvalidPreKeyBundleKey : bundle, TSInvalidRecipientKey : accountId }),
-                @"");
+            DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+                [MessageSending handleUntrustedIdentityKeyErrorWithAccountId:accountId
+                                                            recipientAddress:recipientAddress
+                                                                preKeyBundle:bundle
+                                                                 transaction:transaction];
+            });
+
+            OWSRaiseException(UntrustedIdentityKeyException, @"Untrusted identity key");
         }
         @throw exception;
     }
