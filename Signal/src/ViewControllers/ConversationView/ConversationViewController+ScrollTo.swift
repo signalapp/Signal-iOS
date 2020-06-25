@@ -59,7 +59,7 @@ extension ConversationViewController {
 
         // IFF the lastVisibleInteraction is the last non-dynamic interaction in the thread,
         // we want to scroll to the bottom to also show any active typing indicators.
-        if lastVisibleInteraction.sortId == lastSortId,
+        if lastVisibleInteraction.sortId == lastSortIdInLoadedWindow,
             SSKEnvironment.shared.typingIndicators.typingAddress(forThread: thread) != nil {
             return scrollToBottom(animated: animated)
         }
