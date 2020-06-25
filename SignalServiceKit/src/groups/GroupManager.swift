@@ -1839,7 +1839,7 @@ public class GroupManager: NSObject {
             return Promise(error: OWSAssertionError("Missing localAddress."))
         }
 
-        guard RemoteConfig.versionedProfiledUpdate else {
+        guard RemoteConfig.versionedProfileUpdate else {
             // We don't need a profile key credential for the local user
             // if we're not even going to try to create a v2 group.
             if RemoteConfig.groupsV2GoodCitizen {

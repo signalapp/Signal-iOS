@@ -175,7 +175,7 @@ extension OWSProfileManager {
                 self.updateLocalProfile(with: attempt, transaction: transaction)
             }
 
-            if RemoteConfig.versionedProfiledUpdate {
+            if RemoteConfig.versionedProfileUpdate {
                 return updateProfileOnServiceVersioned(attempt: attempt)
             } else {
                 return updateProfileOnServiceUnversioned(attempt: attempt)

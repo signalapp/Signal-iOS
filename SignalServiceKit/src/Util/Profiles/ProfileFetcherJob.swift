@@ -38,7 +38,7 @@ extension ProfileFetchError: CustomStringConvertible {
 
 @objc
 public enum ProfileFetchType: UInt {
-    // .default fetches honor FeatureFlag.versionedProfiledFetches
+    // .default fetches honor FeatureFlag.versionedProfileFetches
     case `default`
     case unversioned
     case versioned
@@ -365,7 +365,7 @@ public class ProfileFetcherJob: NSObject {
     private var shouldUseVersionedFetchForUuids: Bool {
         switch options.fetchType {
         case .default:
-            return RemoteConfig.versionedProfiledFetches
+            return RemoteConfig.versionedProfileFetches
         case .versioned:
             return true
         case .unversioned:

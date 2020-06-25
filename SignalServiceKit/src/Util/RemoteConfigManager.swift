@@ -55,15 +55,15 @@ public class RemoteConfig: NSObject {
     public static var deleteForEveryone: Bool { isEnabled(.deleteForEveryone) }
 
     @objc
-    public static var versionedProfiledFetches: Bool {
-        guard FeatureFlags.versionedProfiledFetches else { return false }
+    public static var versionedProfileFetches: Bool {
+        guard FeatureFlags.versionedProfileFetches else { return false }
         if DebugFlags.forceVersionedProfiles { return true }
         return isEnabled(.versionedProfiles)
     }
 
     @objc
-    public static var versionedProfiledUpdate: Bool {
-        guard FeatureFlags.versionedProfiledUpdate else { return false }
+    public static var versionedProfileUpdate: Bool {
+        guard FeatureFlags.versionedProfileUpdate else { return false }
         if DebugFlags.forceVersionedProfiles { return true }
         return isEnabled(.versionedProfiles)
     }
