@@ -556,8 +556,6 @@ public extension OWSProfileManager {
 
 public extension OWSProfileManager {
 
-    // TODO: Remove currentAvatarDownloads.
-
     private struct CacheKey: Hashable {
         let avatarUrlPath: String
         let profileKey: Data

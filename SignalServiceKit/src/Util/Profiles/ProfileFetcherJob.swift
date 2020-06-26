@@ -453,7 +453,7 @@ public class ProfileFetcherJob: NSObject {
                                                            profileKey: profileKey)
         }.map(on: .global()) { (result: Any?) throws -> Data in
             guard let avatarData = result as? Data else {
-                Logger.verbose("Unexpected result: \(result)")
+                Logger.verbose("Unexpected result: \(String(describing: result))")
                 throw OWSAssertionError("Unexpected result.")
             }
             return avatarData

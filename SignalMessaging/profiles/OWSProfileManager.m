@@ -49,9 +49,6 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 // This property can be accessed on any thread, while synchronized on self.
 @property (atomic, readonly) NSCache<NSString *, UIImage *> *profileAvatarImageCache;
 
-// This property can be accessed on any thread, while synchronized on self.
-@property (atomic, readonly) NSMutableSet<SignalServiceAddress *> *currentAvatarDownloads;
-
 @end
 
 #pragma mark -
@@ -115,7 +112,6 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
         [[SDSKeyValueStore alloc] initWithCollection:@"kOWSProfileManager_GroupWhitelistCollection"];
 
     _profileAvatarImageCache = [NSCache new];
-    _currentAvatarDownloads = [NSMutableSet new];
 
     OWSSingletonAssert();
 
@@ -500,7 +496,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
         });
 
         if (userProfile) {
-            success(userProfile.address);
+            success(userProfile.publicAddress);
             return;
         }
 
@@ -1353,7 +1349,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
                                   block:^(OWSUserProfile *userProfile, BOOL *stop) {
                                       OWSLogError(@"\t [%@]: has profile key: %d, has avatar URL: %d, has "
                                                   @"avatar file: %d, given name: %@, family name: %@, username: %@",
-                                          userProfile.address,
+                                          userProfile.publicAddress,
                                           userProfile.profileKey != nil,
                                           userProfile.avatarUrlPath != nil,
                                           userProfile.avatarFileName != nil,
@@ -1628,124 +1624,77 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     return [[NSUUID UUID].UUIDString stringByAppendingPathExtension:@"jpg"];
 }
 
+// We may know a profile's avatar URL (avatarUrlPath != nil) but not
+// have downloaded the avatar data yet (avatarFileName == nil).
+// We use this method to fill in these missing avatars.
 - (void)downloadAvatarForUserProfile:(OWSUserProfile *)userProfile
 {
     OWSAssertDebug(userProfile);
 
     __block OWSBackgroundTask *backgroundTask = [OWSBackgroundTask backgroundTaskWithLabelStr:__PRETTY_FUNCTION__];
 
-    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-        if (userProfile.avatarUrlPath.length < 1) {
-            OWSFailDebug(@"Malformed avatar URL: %@", userProfile.avatarUrlPath);
-            return;
-        }
-        NSString *_Nullable avatarUrlPathAtStart = userProfile.avatarUrlPath;
+    if (userProfile.profileKey.keyData.length < 1 || userProfile.avatarUrlPath.length < 1) {
+        return;
+    }
 
-        if (userProfile.profileKey.keyData.length < 1 || userProfile.avatarUrlPath.length < 1) {
-            return;
-        }
+    // Record the avatarUrlPath and profileKey; if they change
+    // during the avatar download, we don't want to update the profile.
+    NSString *_Nullable avatarUrlPathAtStart = userProfile.avatarUrlPath;
+    OWSAES256Key *profileKeyAtStart = userProfile.profileKey;
 
-        OWSAES256Key *profileKeyAtStart = userProfile.profileKey;
+    NSString *fileName = [self generateAvatarFilename];
+    NSString *filePath = [OWSUserProfile profileAvatarFilepathWithFilename:fileName];
 
-        NSString *fileName = [self generateAvatarFilename];
-        NSString *filePath = [OWSUserProfile profileAvatarFilepathWithFilename:fileName];
-
-        @synchronized(self.currentAvatarDownloads)
-        {
-            if ([self.currentAvatarDownloads containsObject:userProfile.address]) {
-                // Download already in flight; ignore.
+    // downloadAndDecryptProfileAvatarForProfileAddress:... ensures that
+    // only one download is in flight at a time for a given avatar.
+    [self downloadAndDecryptProfileAvatarForProfileAddress:userProfile.address
+                                             avatarUrlPath:userProfile.avatarUrlPath
+                                                profileKey:userProfile.profileKey]
+        .thenInBackground(^(id value) {
+            if (![value isKindOfClass:[NSData class]]) {
+                OWSFailDebug(@"Invalid value.");
                 return;
             }
-            [self.currentAvatarDownloads addObject:userProfile.address];
-        }
+            NSData *decryptedData = value;
+            BOOL success = [decryptedData writeToFile:filePath atomically:YES];
+            if (!success) {
+                OWSFailDebug(@"Could not write avatar to disk.");
+                return;
+            }
+            UIImage *_Nullable image = [UIImage imageWithContentsOfFile:filePath];
+            if (image == nil) {
+                OWSFailDebug(@"Could not read avatar image.");
+                return;
+            }
 
-        OWSLogVerbose(@"downloading profile avatar: %@", userProfile.uniqueId);
+            DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
+                OWSUserProfile *currentUserProfile = [OWSUserProfile getOrBuildUserProfileForAddress:userProfile.address
+                                                                                         transaction:transaction];
 
-        NSString *tempDirectory = OWSTemporaryDirectory();
-        NSString *tempFilePath = [tempDirectory stringByAppendingPathComponent:fileName];
+                if (currentUserProfile.avatarUrlPath.length > 0) {
+                    // The avatar has already been filled in; abort.
+                    return;
+                }
 
-        void (^completionHandler)(NSURLResponse *_Nonnull, NSURL *_Nullable, NSError *_Nullable) = ^(
-            NSURLResponse *_Nonnull response, NSURL *_Nullable filePathParam, NSError *_Nullable error) {
-            // Ensure disk IO and decryption occurs off the main thread.
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                NSData *_Nullable encryptedData = (error ? nil : [NSData dataWithContentsOfFile:tempFilePath]);
-                NSData *_Nullable decryptedData
-                    = (!encryptedData ? nil : [self decryptProfileData:encryptedData profileKey:profileKeyAtStart]);
-                UIImage *_Nullable image = nil;
-                if (decryptedData) {
-                    BOOL success = [decryptedData writeToFile:filePath atomically:YES];
-                    if (success) {
-                        image = [UIImage imageWithContentsOfFile:filePath];
+                if (![NSObject isNullableObject:currentUserProfile.profileKey.keyData equalTo:profileKeyAtStart]
+                    || ![NSObject isNullableObject:currentUserProfile.avatarUrlPath equalTo:avatarUrlPathAtStart]) {
+                    // If the profileKey or avatarUrlPath has changed,
+                    // abort and kick off a new download if necessary.
+                    if (currentUserProfile.avatarFileName == nil) {
+                        [transaction addAsyncCompletionOffMain:^{
+                            [self downloadAvatarForUserProfile:currentUserProfile];
+                        }];
                     }
                 }
 
-                @synchronized(self.currentAvatarDownloads)
-                {
-                    [self.currentAvatarDownloads removeObject:userProfile.address];
-                }
+                [self updateProfileAvatarCache:image filename:fileName];
 
-                __block OWSUserProfile *latestUserProfile;
-                DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-                    latestUserProfile =
-                        [OWSUserProfile getOrBuildUserProfileForAddress:userProfile.address transaction:transaction];
-                });
-
-                if (latestUserProfile.profileKey.keyData.length < 1
-                    || ![latestUserProfile.profileKey isEqual:userProfile.profileKey]) {
-                    OWSLogWarn(@"Ignoring avatar download for obsolete user profile.");
-                } else if (![avatarUrlPathAtStart isEqualToString:latestUserProfile.avatarUrlPath]) {
-                    OWSLogInfo(@"avatar url has changed during download");
-                    if (latestUserProfile.avatarUrlPath.length > 0) {
-                        [self downloadAvatarForUserProfile:latestUserProfile];
-                    }
-                } else if (error) {
-                    if ([response isKindOfClass:NSHTTPURLResponse.class]
-                        && ((NSHTTPURLResponse *)response).statusCode == 403) {
-                        OWSLogInfo(@"no avatar for: %@", userProfile.address);
-                    } else {
-                        OWSLogError(@"avatar download for %@ failed with error: %@", userProfile.address, error);
-                    }
-                } else if (!encryptedData) {
-                    OWSLogError(@"avatar encrypted data for %@ could not be read.", userProfile.address);
-                } else if (!decryptedData) {
-                    OWSLogInfo(@"avatar data for %@ could not be decrypted.", userProfile.address);
-                } else if (!image) {
-                    OWSLogError(@"avatar image for %@ could not be loaded with error: %@", userProfile.address, error);
-                } else {
-                    [self updateProfileAvatarCache:image filename:fileName];
-
-                    DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-                        [latestUserProfile updateWithAvatarFileName:fileName transaction:transaction];
-                    });
-                }
-
-                OWSAssertDebug(backgroundTask);
-                backgroundTask = nil;
+                [currentUserProfile updateWithAvatarFileName:fileName transaction:transaction];
             });
-        };
 
-        NSURL *avatarUrl = [NSURL URLWithString:userProfile.avatarUrlPath relativeToURL:self.avatarHTTPManager.baseURL];
-        NSError *serializationError;
-        NSMutableURLRequest *request =
-            [self.avatarHTTPManager.requestSerializer requestWithMethod:@"GET"
-                                                              URLString:avatarUrl.absoluteString
-                                                             parameters:nil
-                                                                  error:&serializationError];
-        if (serializationError) {
-            OWSFailDebug(@"serializationError: %@", serializationError);
-            return;
-        }
-
-        __block NSURLSessionDownloadTask *downloadTask = [self.avatarHTTPManager downloadTaskWithRequest:request
-            progress:^(NSProgress *_Nonnull downloadProgress) {
-                OWSLogVerbose(@"Downloading avatar for %@ %f", userProfile.address, downloadProgress.fractionCompleted);
-            }
-            destination:^NSURL *_Nonnull(NSURL *_Nonnull targetPath, NSURLResponse *_Nonnull response) {
-                return [NSURL fileURLWithPath:tempFilePath];
-            }
-            completionHandler:completionHandler];
-        [downloadTask resume];
-    });
+            OWSAssertDebug(backgroundTask);
+            backgroundTask = nil;
+        });
 }
 
 - (void)updateProfileForAddress:(SignalServiceAddress *)addressParam
@@ -1764,11 +1713,6 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
         profileNameEncrypted,
         avatarUrlPath,
         optionalDecryptedAvatarData.length > 0);
-    if ([OWSUserProfile isLocalProfileAddress:address]) {
-        OWSLogInfo(@"okay.");
-        OWSLogFlush();
-        OWSLogFlush();
-    }
 
     // Ensure decryption, etc. off main thread.
     dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{

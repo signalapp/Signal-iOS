@@ -74,6 +74,18 @@ NSUInteger const kUserProfileSchemaVersion = 1;
     return SSKEnvironment.shared.modelReadCaches.userProfileReadCache;
 }
 
+- (TSAccountManager *)tsAccountManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
+
+    return SSKEnvironment.shared.tsAccountManager;
+}
+
+- (id<SyncManagerProtocol>)syncManager
+{
+    return SSKEnvironment.shared.syncManager;
+}
+
 #pragma mark -
 
 @synthesize avatarUrlPath = _avatarUrlPath;
@@ -152,6 +164,19 @@ NSUInteger const kUserProfileSchemaVersion = 1;
     return ([self isLocalProfileAddress:address] ? self.localProfileAddress : address);
 }
 
+- (SignalServiceAddress *)publicAddress
+{
+    if ([self.address.phoneNumber isEqualToString:kLocalProfileInvariantPhoneNumber]) {
+        SignalServiceAddress *_Nullable localAddress = self.tsAccountManager.localAddress;
+        if (localAddress == nil) {
+            OWSFailDebug(@"Missing localAddress.");
+        } else {
+            return localAddress;
+        }
+    }
+    return self.address;
+}
+
 + (nullable OWSUserProfile *)getUserProfileForAddress:(SignalServiceAddress *)addressParam
                                           transaction:(SDSAnyReadTransaction *)transaction
 {
@@ -228,20 +253,6 @@ NSUInteger const kUserProfileSchemaVersion = 1;
     return self;
 }
 
-#pragma mark - Dependencies
-
-- (id<SyncManagerProtocol>)syncManager
-{
-    return SSKEnvironment.shared.syncManager;
-}
-
-- (TSAccountManager *)tsAccountManager
-{
-    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
-
-    return SSKEnvironment.shared.tsAccountManager;
-}
-
 #pragma mark -
 
 - (SignalServiceAddress *)address
@@ -252,8 +263,6 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 // When possible, update the avatar properties in lockstep.
 - (void)setAvatarUrlPath:(nullable NSString *)avatarUrlPath avatarFileName:(nullable NSString *)avatarFileName
 {
-    BOOL isLocalUserProfile = [OWSUserProfile isLocalProfileAddress:self.address];
-
     @synchronized(self) {
         BOOL urlPathDidChange = ![NSObject isNullableObject:_avatarUrlPath equalTo:avatarUrlPath];
         BOOL fileNameDidChange = ![NSObject isNullableObject:_avatarFileName equalTo:avatarFileName];
@@ -309,7 +318,6 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 
 - (void)setAvatarFileName:(nullable NSString *)avatarFileName
 {
-    BOOL isLocalUserProfile = [OWSUserProfile isLocalProfileAddress:self.address];
     @synchronized(self) {
         BOOL didChange = ![NSObject isNullableObject:_avatarFileName equalTo:avatarFileName];
         if (!didChange) {
