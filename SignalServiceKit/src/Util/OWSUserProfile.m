@@ -344,6 +344,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 {
     OWSAssertDebug(transaction);
 
+    BOOL isLocalUserProfile = [OWSUserProfile isLocalProfileAddress:self.address];
     OWSAssertDebug(!self.address.isLocalAddress);
 
     // This should be set to true if:
