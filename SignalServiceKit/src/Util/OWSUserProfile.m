@@ -351,8 +351,9 @@ NSUInteger const kUserProfileSchemaVersion = 1;
              completion:(nullable OWSUserProfileCompletion)completion
 {
     OWSAssertDebug(transaction);
-
     BOOL isLocalUserProfile = [OWSUserProfile isLocalProfileAddress:self.address];
+    // We should never be writing to or updating the "local address" profile;
+    // we should be using the "kLocalProfileInvariantPhoneNumber" profile instead.
     OWSAssertDebug(!self.address.isLocalAddress);
 
     // This should be set to true if:
