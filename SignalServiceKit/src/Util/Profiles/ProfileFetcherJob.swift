@@ -437,7 +437,8 @@ public class ProfileFetcherJob: NSObject {
         let profileAddress = fetchedProfile.profile.address
         guard let avatarUrlPath = fetchedProfile.profile.avatarUrlPath else {
             // If profile has no avatar, we don't need to download the avatar.
-            return updateProfile(fetchedProfile: fetchedProfile, avatarData: nil)
+            return updateProfile(fetchedProfile: fetchedProfile,
+                                 optionalAvatarData: nil)
         }
         guard let profileKey = (databaseStorage.read { transaction in
             self.profileManager.profileKey(for: profileAddress,
@@ -445,7 +446,8 @@ public class ProfileFetcherJob: NSObject {
         }) else {
             // If we don't have a profile key for this user, don't bother
             // downloading their avatar - we can't decrypt it.
-            return updateProfile(fetchedProfile: fetchedProfile, avatarData: nil)
+            return updateProfile(fetchedProfile: fetchedProfile,
+                                 optionalAvatarData: nil)
         }
 
         if let existingAvatarData = (databaseStorage.read { (transaction: SDSAnyReadTransaction) -> Data? in
@@ -458,7 +460,8 @@ public class ProfileFetcherJob: NSObject {
                                                          transaction: transaction)
             }) {
             Logger.verbose("Skipping avatar data download; already downloaded.")
-            return updateProfile(fetchedProfile: fetchedProfile, avatarData: existingAvatarData)
+            return updateProfile(fetchedProfile: fetchedProfile,
+                                 optionalAvatarData: existingAvatarData)
         }
 
         return firstly { () -> AnyPromise in
@@ -473,7 +476,7 @@ public class ProfileFetcherJob: NSObject {
             return avatarData
         }.then(on: .global()) { (avatarData: Data) -> Promise<Void> in
             self.updateProfile(fetchedProfile: fetchedProfile,
-                               avatarData: avatarData)
+                               optionalAvatarData: avatarData)
         }.recover(on: .global()) { (error: Error) -> Promise<Void> in
             if error.isNetworkFailureOrTimeout {
                 Logger.warn("Error: \(error)")
@@ -502,14 +505,14 @@ public class ProfileFetcherJob: NSObject {
             // We made a best effort to download the avatar
             // before updating the profile.
             return self.updateProfile(fetchedProfile: fetchedProfile,
-                                      avatarData: nil)
+                                      optionalAvatarData: nil)
         }
     }
 
     // TODO: This method can cause many database writes.
     //       Perhaps we can use a single transaction?
     private func updateProfile(fetchedProfile: FetchedProfile,
-                               avatarData: Data?) -> Promise<Void> {
+                               optionalAvatarData: Data?) -> Promise<Void> {
         let profile = fetchedProfile.profile
         let address = profile.address
 
@@ -522,7 +525,7 @@ public class ProfileFetcherJob: NSObject {
                                      username: profile.username,
                                      isUuidCapable: profile.supportsUUID,
                                      avatarUrlPath: profile.avatarUrlPath,
-                                     optionalDecryptedAvatarData: avatarData)
+                                     optionalDecryptedAvatarData: optionalAvatarData)
 
         updateUnidentifiedAccess(address: address,
                                  verifier: profile.unidentifiedAccessVerifier,
