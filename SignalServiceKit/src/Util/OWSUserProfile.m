@@ -309,6 +309,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 
 - (void)setAvatarFileName:(nullable NSString *)avatarFileName
 {
+    BOOL isLocalUserProfile = [OWSUserProfile isLocalProfileAddress:self.address];
     @synchronized(self) {
         BOOL didChange = ![NSObject isNullableObject:_avatarFileName equalTo:avatarFileName];
         if (!didChange) {
@@ -342,6 +343,8 @@ NSUInteger const kUserProfileSchemaVersion = 1;
              completion:(nullable OWSUserProfileCompletion)completion
 {
     OWSAssertDebug(transaction);
+
+    OWSAssertDebug(!self.address.isLocalAddress);
 
     // This should be set to true if:
     //
