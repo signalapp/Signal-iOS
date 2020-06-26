@@ -4,6 +4,7 @@
 
 @class AnyPromise;
 @class OWSAES256Key;
+@class OWSUserProfile;
 @class SDSAnyReadTransaction;
 @class SDSAnyWriteTransaction;
 @class SignalServiceAddress;
@@ -30,6 +31,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (nullable NSData *)profileKeyDataForAddress:(SignalServiceAddress *)address
                                   transaction:(SDSAnyReadTransaction *)transaction;
+- (nullable OWSAES256Key *)profileKeyForAddress:(SignalServiceAddress *)address
+                                    transaction:(SDSAnyReadTransaction *)transaction;
 - (void)setProfileKeyData:(NSData *)profileKeyData
                forAddress:(SignalServiceAddress *)address
       wasLocallyInitiated:(BOOL)wasLocallyInitiated
@@ -91,17 +94,30 @@ NS_ASSUME_NONNULL_BEGIN
                                    mainAppOnly:(BOOL)mainAppOnly
                               ignoreThrottling:(BOOL)ignoreThrottling;
 
+// Profile fetches will make a best effort
+// to download and decrypt avatar data,
+// but optionalDecryptedAvatarData may
+// not be populated due to network failures,
+// decryption errors, service issues, etc.
 - (void)updateProfileForAddress:(SignalServiceAddress *)address
            profileNameEncrypted:(nullable NSData *)profileNameEncrypted
                        username:(nullable NSString *)username
                   isUuidCapable:(BOOL)isUuidCapable
-                  avatarUrlPath:(nullable NSString *)avatarUrlPath;
+                  avatarUrlPath:(nullable NSString *)avatarUrlPath
+    optionalDecryptedAvatarData:(nullable NSData *)optionalDecryptedAvatarData;
 
 - (BOOL)recipientAddressIsUuidCapable:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
 
 - (void)warmCaches;
 
 @property (nonatomic, readonly) BOOL hasProfileName;
+
+// This is an internal implementation detail and should only be used by OWSUserProfile.
+- (void)localProfileWasUpdated:(OWSUserProfile *)localUserProfile;
+
+- (AnyPromise *)downloadAndDecryptProfileAvatarForProfileAddress:(SignalServiceAddress *)profileAddress
+                                                   avatarUrlPath:(NSString *)avatarUrlPath
+                                                      profileKey:(OWSAES256Key *)profileKey;
 
 @end
 

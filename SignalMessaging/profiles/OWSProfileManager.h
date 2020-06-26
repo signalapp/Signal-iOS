@@ -115,9 +115,6 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 // This method is for debugging.
 - (void)logUserProfiles;
 
-- (nullable OWSAES256Key *)profileKeyForAddress:(SignalServiceAddress *)address
-                                    transaction:(SDSAnyReadTransaction *)transaction;
-
 - (nullable NSString *)givenNameForAddress:(SignalServiceAddress *)address
                                transaction:(SDSAnyReadTransaction *)transaction;
 
@@ -146,6 +143,11 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 - (void)presentAddThreadToProfileWhitelist:(TSThread *)thread
                         fromViewController:(UIViewController *)fromViewController
                                    success:(void (^)(void))successHandler;
+
+#pragma mark -
+
+// This method is only exposed for usage by the Swift extensions.
+- (NSString *)generateAvatarFilename;
 
 @end
 

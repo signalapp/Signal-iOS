@@ -108,6 +108,10 @@ extension OWSProfileManager {
         return SSKEnvironment.shared.syncManager
     }
 
+    private class var avatarHTTPManager: AFHTTPSessionManager {
+        return OWSSignalService.sharedInstance().cdnSessionManager(forCdnNumber: 0)
+    }
+
     // MARK: -
 
     @objc
@@ -545,5 +549,141 @@ public extension OWSProfileManager {
         assert(paddedNameData.count == totalNameLength)
 
         return encrypt(profileData: paddedNameData, profileKey: profileKey)
+    }
+}
+
+// MARK: - Avatar Downloads
+
+public extension OWSProfileManager {
+
+    // TODO: Remove currentAvatarDownloads.
+
+    private struct CacheKey: Hashable {
+        let avatarUrlPath: String
+        let profileKey: Data
+    }
+
+    private static let serialQueue = DispatchQueue(label: "ProfileManager.serialQueue")
+
+    private static var avatarDownloadCache = [CacheKey: Promise<Data>]()
+
+    @objc
+    class func avatarDownloadAndDecryptPromiseObjc(profileAddress: SignalServiceAddress,
+                                                   avatarUrlPath: String,
+                                                   profileKey: OWSAES256Key) -> AnyPromise {
+        return AnyPromise(avatarDownloadAndDecryptPromise(profileAddress: profileAddress,
+                                                          avatarUrlPath: avatarUrlPath,
+                                                          profileKey: profileKey))
+    }
+
+    private class func avatarDownloadAndDecryptPromise(profileAddress: SignalServiceAddress,
+                                                       avatarUrlPath: String,
+                                                       profileKey: OWSAES256Key) -> Promise<Data> {
+        let cacheKey = CacheKey(avatarUrlPath: avatarUrlPath, profileKey: profileKey.keyData)
+        return serialQueue.sync { () -> Promise<Data> in
+            if let cachedPromise = avatarDownloadCache[cacheKey] {
+                return cachedPromise
+            }
+            let promise = avatarDownloadAndDecryptPromise(profileAddress: profileAddress,
+                                                          avatarUrlPath: avatarUrlPath,
+                                                          profileKey: profileKey,
+                                                          remainingRetries: 3)
+            avatarDownloadCache[cacheKey] = promise
+            _ = promise.ensure(on: .global()) {
+                serialQueue.sync {
+                    guard avatarDownloadCache[cacheKey] != nil else {
+                        owsFailDebug("Missing cached promise.")
+                        return
+                    }
+                    avatarDownloadCache.removeValue(forKey: cacheKey)
+                }
+            }
+            return promise
+        }
+    }
+
+    private class func avatarDownloadAndDecryptPromise(profileAddress: SignalServiceAddress,
+                                                       avatarUrlPath: String,
+                                                       profileKey: OWSAES256Key,
+                                                       remainingRetries: UInt) -> Promise<Data> {
+        assert(!avatarUrlPath.isEmpty)
+
+        var backgroundTask: OWSBackgroundTask? = OWSBackgroundTask(label: "\(#function)")
+
+        let fileName = profileManager.generateAvatarFilename()
+
+        return firstly(on: .global()) { () throws -> Promise<Data> in
+
+            Logger.verbose("downloading profile avatar: \(profileAddress)")
+
+            let tempDirectoryURL = URL(fileURLWithPath: OWSTemporaryDirectory())
+            let tempFileURL = tempDirectoryURL.appendingPathComponent(fileName)
+
+            let avatarHTTPManager = self.avatarHTTPManager
+            guard let avatarUrl = URL(string: avatarUrlPath, relativeTo: avatarHTTPManager.baseURL) else {
+                throw OWSAssertionError("Invalid avatar URL path.")
+            }
+            var requestError: NSError?
+            let request: NSMutableURLRequest = avatarHTTPManager.requestSerializer.request(withMethod: "GET",
+                                                                                           urlString: avatarUrl.absoluteString,
+                                                                                           parameters: nil,
+                                                                                           error: &requestError)
+            if let error = requestError {
+                owsFailDebug("Could not create request failed: \(error)")
+                error.isRetryable = false
+                throw error
+            }
+
+            let (promise, resolver) = Promise<Data>.pending()
+            let task = avatarHTTPManager.downloadTask(with: request as URLRequest,
+                                                      progress: { (progress) in
+                                                        Logger.verbose("Downloading avatar for \(profileAddress) \(progress.fractionCompleted)")
+            },
+                                                      destination: { (_, _) -> URL in
+                                                        return tempFileURL
+            },
+                                                      completionHandler: { (_, completionUrl, error) in
+                                                        if let error = error {
+                                                            Logger.warn("Download failed: \(error)")
+                                                            let errorCopy = error as NSError
+                                                            errorCopy.isRetryable = error.isNetworkFailureOrTimeout
+                                                            return resolver.reject(errorCopy)
+                                                        }
+                                                        guard completionUrl == tempFileURL else {
+                                                            return resolver.reject(OWSAssertionError("Unexpected file URL."))
+                                                        }
+                                                        // TODO: We could verify avatar size here.
+                                                        do {
+                                                            let data = try Data(contentsOf: tempFileURL)
+                                                            resolver.fulfill(data)
+                                                        } catch let error as NSError {
+                                                            owsFailDebug("Could not load data failed: \(error)")
+                                                            // Fail immediately; do not retry.
+                                                            error.isRetryable = false
+                                                            return resolver.reject(error)
+                                                        }
+            })
+            task.resume()
+            return promise
+        }.map(on: .global()) { (encryptedData: Data) -> Data in
+            guard let decryptedData = Self.profileManager.decrypt(profileData: encryptedData, profileKey: profileKey) else {
+                throw OWSAssertionError("Could not decrypt profile avatar.")
+            }
+            return decryptedData
+        }.recover { error -> Promise<Data> in
+            if error.isNetworkFailureOrTimeout,
+                remainingRetries > 0 {
+                // Retry
+                return self.avatarDownloadAndDecryptPromise(profileAddress: profileAddress,
+                                                            avatarUrlPath: avatarUrlPath,
+                                                            profileKey: profileKey,
+                                                            remainingRetries: remainingRetries - 1)
+            } else {
+                throw error
+            }
+        }.ensure {
+            assert(backgroundTask != nil)
+            backgroundTask = nil
+        }
     }
 }

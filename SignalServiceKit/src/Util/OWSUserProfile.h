@@ -67,7 +67,9 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avat
 
 // --- CODE GENERATION MARKER
 
-+ (SignalServiceAddress *)localProfileAddress;
+@property (atomic, readonly, class) SignalServiceAddress *localProfileAddress;
++ (BOOL)isLocalProfileAddress:(SignalServiceAddress *)address;
++ (SignalServiceAddress *)resolveUserProfileAddress:(SignalServiceAddress *)address;
 
 + (nullable OWSUserProfile *)getUserProfileForAddress:(SignalServiceAddress *)address
                                           transaction:(SDSAnyReadTransaction *)transaction;
@@ -94,6 +96,15 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avat
                    username:(nullable NSString *)username
               isUuidCapable:(BOOL)isUuidCapable
               avatarUrlPath:(nullable NSString *)avatarUrlPath
+                transaction:(SDSAnyWriteTransaction *)transaction
+                 completion:(nullable OWSUserProfileCompletion)completion;
+
+- (void)updateWithGivenName:(nullable NSString *)givenName
+                 familyName:(nullable NSString *)familyName
+                   username:(nullable NSString *)username
+              isUuidCapable:(BOOL)isUuidCapable
+              avatarUrlPath:(nullable NSString *)avatarUrlPath
+             avatarFileName:(nullable NSString *)avatarFileName
                 transaction:(SDSAnyWriteTransaction *)transaction
                  completion:(nullable OWSUserProfileCompletion)completion;
 
@@ -139,6 +150,8 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avat
 
 + (void)mergeUserProfilesIfNecessaryForAddress:(SignalServiceAddress *)address
                                    transaction:(SDSAnyWriteTransaction *)transaction;
+
+- (OWSUserProfile *)shallowCopy;
 
 @end
 

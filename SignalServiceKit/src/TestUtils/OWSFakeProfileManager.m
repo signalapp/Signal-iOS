@@ -110,6 +110,12 @@ NS_ASSUME_NONNULL_BEGIN
     return self.profileKeys[address].keyData;
 }
 
+- (nullable OWSAES256Key *)profileKeyForAddress:(SignalServiceAddress *)address
+                                    transaction:(SDSAnyReadTransaction *)transaction
+{
+    return self.profileKeys[address];
+}
+
 - (BOOL)isUserInProfileWhitelist:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction
 {
     return [self.recipientWhitelist containsObject:address];
@@ -274,8 +280,21 @@ NS_ASSUME_NONNULL_BEGIN
                        username:(nullable NSString *)username
                   isUuidCapable:(BOOL)isUuidCapable
                   avatarUrlPath:(nullable NSString *)avatarUrlPath
+    optionalDecryptedAvatarData:(nullable NSData *)optionalDecryptedAvatarData
 {
     // Do nothing.
+}
+
+- (void)localProfileWasUpdated:(OWSUserProfile *)localUserProfile
+{
+    // Do nothing.
+}
+
+- (AnyPromise *)downloadAndDecryptProfileAvatarForProfileAddress:(SignalServiceAddress *)profileAddress
+                                                   avatarUrlPath:(NSString *)avatarUrlPath
+                                                      profileKey:(OWSAES256Key *)profileKey
+{
+    return [AnyPromise promiseWithValue:nil];
 }
 
 @end

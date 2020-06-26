@@ -565,7 +565,7 @@ public class UserProfileReadCache: NSObject {
         }
 
         override func deriveKey(fromValue value: ValueType) -> KeyType {
-            value.address
+            OWSUserProfile.resolve(value.address)
         }
 
         override func copy(value: ValueType) throws -> ValueType {
@@ -593,6 +593,7 @@ public class UserProfileReadCache: NSObject {
 
     @objc
     public func getUserProfile(address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> OWSUserProfile? {
+        let address = OWSUserProfile.resolve(address)
         return cache.getValue(for: address, transaction: transaction)
     }
 
