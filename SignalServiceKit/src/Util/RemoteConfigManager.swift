@@ -57,13 +57,13 @@ public class RemoteConfig: NSObject {
     @objc
     public static var versionedProfileFetches: Bool {
         if DebugFlags.forceVersionedProfiles { return true }
-        return false
+        return isEnabled(.versionedProfiles)
     }
 
     @objc
     public static var versionedProfileUpdate: Bool {
         if DebugFlags.forceVersionedProfiles { return true }
-        return false
+        return isEnabled(.versionedProfiles)
     }
 
     private static func isEnabled(_ flag: Flags.Supported, defaultValue: Bool = false) -> Bool {
@@ -117,6 +117,7 @@ private struct Flags {
     // marked true regardless of the remote state.
     enum Sticky: String, FlagType {
         case groupsV2GoodCitizen
+        case versionedProfiles
     }
 
     // We filter the received config down to just the supported flags.
@@ -130,6 +131,7 @@ private struct Flags {
         case groupsV2CreateGroups
         case groupsV2GoodCitizen
         case deleteForEveryone
+        case versionedProfiles
     }
 }
 
