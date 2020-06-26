@@ -665,7 +665,7 @@ public extension OWSProfileManager {
             return promise
         }.map(on: .global()) { (encryptedData: Data) -> Data in
             guard let decryptedData = Self.profileManager.decrypt(profileData: encryptedData, profileKey: profileKey) else {
-                throw OWSAssertionError("Could not decrypt profile avatar.")
+                throw OWSGenericError("Could not decrypt profile avatar.")
             }
             return decryptedData
         }.recover { error -> Promise<Data> in
