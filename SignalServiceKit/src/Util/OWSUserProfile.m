@@ -538,8 +538,6 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                 transaction:(SDSAnyWriteTransaction *)transaction
                  completion:(nullable OWSUserProfileCompletion)completion
 {
-    OWSAssertDebug(![OWSUserProfile isLocalProfileAddress:self.address]);
-
     [self
                applyChanges:^(OWSUserProfile *userProfile) {
                    [userProfile setProfileKey:profileKey];
