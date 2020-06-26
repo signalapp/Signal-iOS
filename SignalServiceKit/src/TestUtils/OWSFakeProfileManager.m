@@ -297,6 +297,18 @@ NS_ASSUME_NONNULL_BEGIN
     return [AnyPromise promiseWithValue:nil];
 }
 
+- (nullable NSData *)profileAvatarDataForAddress:(SignalServiceAddress *)address
+                                     transaction:(SDSAnyReadTransaction *)transaction
+{
+    return nil;
+}
+
+- (nullable NSString *)profileAvatarURLPathForAddress:(SignalServiceAddress *)address
+                                          transaction:(SDSAnyReadTransaction *)transaction
+{
+    return nil;
+}
+
 @end
 
 #endif

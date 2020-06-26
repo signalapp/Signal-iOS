@@ -126,10 +126,6 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
 - (nullable UIImage *)profileAvatarForAddress:(SignalServiceAddress *)address
                                   transaction:(SDSAnyReadTransaction *)transaction;
-- (nullable NSData *)profileAvatarDataForAddress:(SignalServiceAddress *)address
-                                     transaction:(SDSAnyReadTransaction *)transaction;
-- (nullable NSString *)profileAvatarURLPathForAddress:(SignalServiceAddress *)address
-                                          transaction:(SDSAnyReadTransaction *)transaction;
 
 - (nullable NSString *)usernameForAddress:(SignalServiceAddress *)address
                               transaction:(SDSAnyReadTransaction *)transaction;

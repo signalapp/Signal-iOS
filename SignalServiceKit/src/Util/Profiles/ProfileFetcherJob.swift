@@ -447,6 +447,20 @@ public class ProfileFetcherJob: NSObject {
             // downloading their avatar - we can't decrypt it.
             return updateProfile(fetchedProfile: fetchedProfile, avatarData: nil)
         }
+
+        if let existingAvatarData = (databaseStorage.read { (transaction: SDSAnyReadTransaction) -> Data? in
+            guard let oldAvatarURLPath = self.profileManager.profileAvatarURLPath(for: profileAddress,
+                                                                                  transaction: transaction),
+                oldAvatarURLPath == avatarUrlPath else {
+                    return nil
+            }
+            return self.profileManager.profileAvatarData(for: profileAddress,
+                                                         transaction: transaction)
+            }) {
+            Logger.verbose("Skipping avatar data download; already downloaded.")
+            return updateProfile(fetchedProfile: fetchedProfile, avatarData: existingAvatarData)
+        }
+
         return firstly { () -> AnyPromise in
             profileManager.downloadAndDecryptProfileAvatar(forProfileAddress: profileAddress,
                                                            avatarUrlPath: avatarUrlPath,

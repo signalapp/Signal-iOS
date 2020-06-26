@@ -38,6 +38,11 @@ NS_ASSUME_NONNULL_BEGIN
       wasLocallyInitiated:(BOOL)wasLocallyInitiated
               transaction:(SDSAnyWriteTransaction *)transaction;
 
+- (nullable NSData *)profileAvatarDataForAddress:(SignalServiceAddress *)address
+                                     transaction:(SDSAnyReadTransaction *)transaction;
+- (nullable NSString *)profileAvatarURLPathForAddress:(SignalServiceAddress *)address
+                                          transaction:(SDSAnyReadTransaction *)transaction;
+
 - (void)fillInMissingProfileKeys:(NSDictionary<SignalServiceAddress *, NSData *> *)profileKeys
     NS_SWIFT_NAME(fillInMissingProfileKeys(_:));
 
