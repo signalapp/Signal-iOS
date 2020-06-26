@@ -69,28 +69,28 @@
 "ADD_TO_CONTACTS_OFFER" = "Додати користувача до своїх контактів?";
 
 /* Label for button or row which allows users to add to another group. */
-"ADD_TO_GROUP" = "Add to Another Group";
+"ADD_TO_GROUP" = "Додати в іншу групу";
 
 /* The button on the 'add to group' confirmation to add the user to the group. */
-"ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "Add to Group";
+"ADD_TO_GROUP_ACTION_PROCEED_BUTTON" = "Додати в групу";
 
 /* The title on the 'add to group' confirmation action sheet. Embeds {contact name} */
-"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "Add %@ to this group?";
+"ADD_TO_GROUP_ACTION_SHEET_MESSAGE_FORMAT" = "Додати %@ до цієї групи?";
 
 /* The title on the 'add to group' confirmation action sheet. Embeds {group name} */
-"ADD_TO_GROUP_ACTION_SHEET_TITLE_FORMAT" = "Add to %@";
+"ADD_TO_GROUP_ACTION_SHEET_TITLE_FORMAT" = "Додати до %@";
 
 /* A toast on the 'add to group' view indicating the user is already a member. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ is already a member of %@";
+"ADD_TO_GROUP_ALREADY_MEMBER_TOAST_FORMAT" = "%@ вже у групі %@";
 
 /* The title for the 'add to group' view's recents section */
-"ADD_TO_GROUP_RECENTS_TITLE" = "Recent";
+"ADD_TO_GROUP_RECENTS_TITLE" = "Недавні";
 
 /* A toast on the 'add to group' view indicating the user was added. Embeds {contact name} and {group name} */
-"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ was added to %@";
+"ADD_TO_GROUP_SUCCESS_TOAST_FORMAT" = "%@ було додано до %@";
 
 /* Title of the 'add to group' view. */
-"ADD_TO_GROUP_TITLE" = "Add to Another Group";
+"ADD_TO_GROUP_TITLE" = "Додати в іншу групу";
 
 /* Message shown in conversation view that offers to share your profile with a user. */
 "ADD_USER_TO_PROFILE_WHITELIST_OFFER" = "Поділитися своїм профілем із користувачем?";
@@ -608,12 +608,6 @@
 /* Button text */
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Привязати новий пристрій";
 
-/* Action sheet body presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
-"CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@, можливо, перевстановив програму чи змінив пристрій. Переконайтеся, що все захищено, завіривши ваші коди безпеки.";
-
-/* Action sheet title presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
-"CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT" = "Код безпеки із %@ змінився";
-
 /* No comment provided by engineer. */
 "CONFIRMATION_TITLE" = "Підтвердити";
 
@@ -675,10 +669,10 @@
 "CONTACT_FIELD_ORGANIZATION" = "Організація";
 
 /* Body for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "To see contact names and photos in your conversations:";
+"CONTACT_PERMISSION_ACTION_SHEET_BODY" = "Щоб бачити імена контактів та фотографії у чатах:";
 
 /* First step for contact permission action sheet */
-"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Tap “Go to Settings” below";
+"CONTACT_PERMISSION_ACTION_SHEET_STEP_ONE" = "Натисніть Налаштування нижче";
 
 /* Third step for contact permission action sheet */
 "CONTACT_PERMISSION_ACTION_SHEET_STEP_TWO" = "Turn on “Contacts”";
@@ -693,7 +687,7 @@
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Увімкнути";
 
 /* Body for contact permission reminder megaphone */
-"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "See contact names and photos in your conversations.";
+"CONTACT_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Бачити імена контактів та фотографії у чатах.";
 
 /* Title for contact permission reminder megaphone */
 "CONTACT_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Turn on Contacts?";
@@ -975,10 +969,10 @@
 "DATABASE_VIEW_OVERLAY_TITLE" = "Оптимізація бази даних";
 
 /* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_FORMAT" = "%@ год. тому";
+"DATE_HOURS_AGO_FORMAT" = "%@г";
 
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_FORMAT" = "%@ хв. тому";
+"DATE_MINUTES_AGO_FORMAT" = "%@х";
 
 /* The present; the current time. */
 "DATE_NOW" = "Зараз";
@@ -1185,10 +1179,7 @@
 "EDIT_CONTACT_WITHOUT_CONTACTS_PERMISSION_ALERT_TITLE" = "Signal потребує доступу до контактів, щоб редагувати інформацію контактів.";
 
 /* The 'clear avatar' button in the 'edit group' view. */
-"EDIT_GROUP_CLEAR_AVATAR" = "Remove Photo";
-
-/* a title for the contacts section of the 'new/update group' view. */
-"EDIT_GROUP_CONTACTS_SECTION_TITLE" = "Контакти";
+"EDIT_GROUP_CLEAR_AVATAR" = "Видалити фото";
 
 /* The navbar title for the 'update group' view. */
 "EDIT_GROUP_DEFAULT_TITLE" = "Редагувати групу";
@@ -1200,7 +1191,7 @@
 "EDIT_GROUP_ERROR_CANNOT_ADD_MEMBER_GROUP_FULL" = "Досягнута максимальна кількість учасників зі 100.";
 
 /* Error message indicating that an avatar image is invalid and cannot be used. */
-"EDIT_GROUP_ERROR_INVALID_AVATAR" = "Invalid photo.";
+"EDIT_GROUP_ERROR_INVALID_AVATAR" = "Невірне фото";
 
 /* Label for the group name in the 'edit group' view. */
 "EDIT_GROUP_GROUP_NAME" = "Ім'я Групи";
@@ -1428,7 +1419,7 @@
 "GIF_VIEW_SEARCH_PLACEHOLDER_TEXT" = "Уведіть пошуковий запит";
 
 /* Turn on permission view 'go to settings' button */
-"GO_TO_SETTINGS_BUTTON" = "Go to Settings";
+"GO_TO_SETTINGS_BUTTON" = "Перейти до Налаштувань";
 
 /* Body message of notification shown during GRDB migration indicating that user may need to open app to view their content. */
 "GRDB_MIGRATION_NOTIFICATION_BODY" = "Ця версія Signal включає оптимізацію бази та покращену роботу. Для завершення вам може бути потрібно відкрити програму.";
@@ -1662,22 +1653,22 @@
 "GROUP_UPDATED" = "Групу оновлено.";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED" = "The group photo was removed.";
+"GROUP_UPDATED_AVATAR_REMOVED" = "Фото групи було видалено.";
 
 /* Message indicating that the group's avatar was removed. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "You removed the photo.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_LOCAL_USER" = "Ви видалили фото.";
 
 /* Message indicating that the group's avatar was removed by a remote user. Embeds {{user who removed the avatar}}. */
-"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ removed the photo.";
+"GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ видалив фото.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED" = "Updated the group photo.";
+"GROUP_UPDATED_AVATAR_UPDATED" = "Фото групи оновлено.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "You updated the photo.";
+"GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "Ви оновили фото.";
 
 /* Message indicating that the group's avatar was changed by a remote user. Embeds {{user who changed the avatar}}. */
-"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ updated the photo.";
+"GROUP_UPDATED_AVATAR_UPDATED_BY_REMOTE_USER_FORMAT" = "%@ оновив фото.";
 
 /* Info message indicating that the group was updated by the local user. */
 "GROUP_UPDATED_BY_LOCAL_USER" = "Ви оновили групу.";
@@ -2189,6 +2180,9 @@
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED_SHORT" = "Не вдалося";
 
+/* Label indicating that a message was only sent to some recipients. */
+"MESSAGE_STATUS_PARTIALLY_SENT" = "Partially sent, tap for details";
+
 /* status message for read messages */
 "MESSAGE_STATUS_READ" = "Прочитано";
 
@@ -2346,7 +2340,7 @@
 "NOTIFICATION_PERMISSION_ACTION_SHEET_BODY" = "To receive notifications for new messages:";
 
 /* First step for notification permission action sheet */
-"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "Tap “Go to Settings” below";
+"NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_ONE" = "Натисніть Налаштування нижче";
 
 /* Third step for notification permission action sheet */
 "NOTIFICATION_PERMISSION_ACTION_SHEET_STEP_THREE" = "Turn on “Allow Notifications”";
@@ -2364,7 +2358,7 @@
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_ACTION" = "Увімкнути";
 
 /* Body for notification permission reminder megaphone */
-"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Never miss a message from your contacts and groups.";
+"NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_BODY" = "Ніколи не пропускайте повідомлення від ваших контактів та груп.";
 
 /* Title for notification permission reminder megaphone */
 "NOTIFICATION_PERMISSION_REMINDER_MEGAPHONE_TITLE" = "Turn on Notifications?";
@@ -2841,10 +2835,10 @@
 "PROCEED_BUTTON" = "Продовжити";
 
 /* Action Sheet title prompting the user for a profile avatar */
-"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Set Profile Photo";
+"PROFILE_VIEW_AVATAR_ACTIONSHEET_TITLE" = "Встановити фото профілю";
 
 /* Label for action that clear's the user's profile avatar */
-"PROFILE_VIEW_CLEAR_AVATAR" = "Remove Photo";
+"PROFILE_VIEW_CLEAR_AVATAR" = "Видалити фото";
 
 /* A string indicating that the user can create a username on the profile view. */
 "PROFILE_VIEW_CREATE_USERNAME" = "Створити ім'я користувача";
@@ -3094,6 +3088,18 @@
 
 /* button title to confirm sending to a recipient whose safety number recently changed */
 "SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "Усе одно надіслати";
+
+/* Message for the 'safety number confirmation' view */
+"SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "The following people may have reinstalled or changed devices. Verify your safety number with them to ensure privacy.";
+
+/* Text explaining that the given contact previously had their safety number verified. */
+"SAFETY_NUMBER_CONFIRMATION_PREVIOUSLY_VERIFIED" = "Previously Verified";
+
+/* Title for the 'safety number confirmation' view */
+"SAFETY_NUMBER_CONFIRMATION_TITLE" = "Safety Number Changes";
+
+/* View safety number action for the 'safety number confirmation' view */
+"SAFETY_NUMBER_CONFIRMATION_VIEW_ACTION" = "Детальніше";
 
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
 "SAFETY_NUMBER_SHARE_FORMAT" = "Наш номер безпеки Signal:\n%@";
