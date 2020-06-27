@@ -27,7 +27,7 @@ NSNotificationName const kNSNotificationNameOtherUsersProfileDidChange
 NSString *const kNSNotificationKey_ProfileAddress = @"kNSNotificationKey_ProfileAddress";
 NSString *const kNSNotificationKey_ProfileGroupId = @"kNSNotificationKey_ProfileGroupId";
 
-NSString *const kLocalProfileUniqueId = @"kLocalProfileUniqueId";
+NSString *const kLocalProfileInvariantPhoneNumber = @"kLocalProfileUniqueId";
 
 NSUInteger const kUserProfileSchemaVersion = 1;
 
@@ -72,6 +72,18 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 - (UserProfileReadCache *)userProfileReadCache
 {
     return SSKEnvironment.shared.modelReadCaches.userProfileReadCache;
+}
+
+- (TSAccountManager *)tsAccountManager
+{
+    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
+
+    return SSKEnvironment.shared.tsAccountManager;
+}
+
+- (id<SyncManagerProtocol>)syncManager
+{
+    return SSKEnvironment.shared.syncManager;
 }
 
 #pragma mark -
@@ -136,29 +148,55 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 
 + (SignalServiceAddress *)localProfileAddress
 {
-    return [[SignalServiceAddress alloc] initWithPhoneNumber:kLocalProfileUniqueId];
+    return [[SignalServiceAddress alloc] initWithPhoneNumber:kLocalProfileInvariantPhoneNumber];
 }
 
-+ (nullable OWSUserProfile *)getUserProfileForAddress:(SignalServiceAddress *)address
++ (BOOL)isLocalProfileAddress:(SignalServiceAddress *)address
+{
+    if ([address.phoneNumber isEqualToString:kLocalProfileInvariantPhoneNumber]) {
+        return YES;
+    }
+    return address.isLocalAddress;
+}
+
++ (SignalServiceAddress *)resolveUserProfileAddress:(SignalServiceAddress *)address
+{
+    return ([self isLocalProfileAddress:address] ? self.localProfileAddress : address);
+}
+
+- (SignalServiceAddress *)publicAddress
+{
+    if ([self.address.phoneNumber isEqualToString:kLocalProfileInvariantPhoneNumber]) {
+        SignalServiceAddress *_Nullable localAddress = self.tsAccountManager.localAddress;
+        if (localAddress == nil) {
+            OWSFailDebug(@"Missing localAddress.");
+        } else {
+            return localAddress;
+        }
+    }
+    return self.address;
+}
+
++ (nullable OWSUserProfile *)getUserProfileForAddress:(SignalServiceAddress *)addressParam
                                           transaction:(SDSAnyReadTransaction *)transaction
 {
+    SignalServiceAddress *address = [self resolveUserProfileAddress:addressParam];
     OWSAssertDebug(address.isValid);
-
     return [self.userProfileFinder userProfileForAddress:address transaction:transaction];
 }
 
-+ (OWSUserProfile *)getOrBuildUserProfileForAddress:(SignalServiceAddress *)address
++ (OWSUserProfile *)getOrBuildUserProfileForAddress:(SignalServiceAddress *)addressParam
                                         transaction:(SDSAnyWriteTransaction *)transaction
 {
+    SignalServiceAddress *address = [self resolveUserProfileAddress:addressParam];
     OWSAssertDebug(address.isValid);
-
     OWSUserProfile *_Nullable userProfile =
         [self.userProfileFinder userProfileForAddress:address transaction:transaction];
 
     if (!userProfile) {
         userProfile = [[OWSUserProfile alloc] initWithAddress:address];
 
-        if ([address.phoneNumber isEqualToString:kLocalProfileUniqueId]) {
+        if ([address.phoneNumber isEqualToString:kLocalProfileInvariantPhoneNumber]) {
             [userProfile updateWithProfileKey:[OWSAES256Key generateRandomKey]
                           wasLocallyInitiated:YES
                                   transaction:transaction
@@ -207,6 +245,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
     }
 
     OWSAssertDebug(address.isValid);
+    OWSAssertDebug(!address.isLocalAddress);
     _recipientPhoneNumber = address.phoneNumber;
     _recipientUUID = address.uuidString;
     _userProfileSchemaVersion = kUserProfileSchemaVersion;
@@ -214,25 +253,35 @@ NSUInteger const kUserProfileSchemaVersion = 1;
     return self;
 }
 
-#pragma mark - Dependencies
-
-- (id<SyncManagerProtocol>)syncManager
-{
-    return SSKEnvironment.shared.syncManager;
-}
-
-- (TSAccountManager *)tsAccountManager
-{
-    OWSAssertDebug(SSKEnvironment.shared.tsAccountManager);
-
-    return SSKEnvironment.shared.tsAccountManager;
-}
-
 #pragma mark -
 
 - (SignalServiceAddress *)address
 {
     return [[SignalServiceAddress alloc] initWithUuidString:self.recipientUUID phoneNumber:self.recipientPhoneNumber];
+}
+
+// When possible, update the avatar properties in lockstep.
+- (void)setAvatarUrlPath:(nullable NSString *)avatarUrlPath avatarFileName:(nullable NSString *)avatarFileName
+{
+    @synchronized(self) {
+        BOOL urlPathDidChange = ![NSObject isNullableObject:_avatarUrlPath equalTo:avatarUrlPath];
+        BOOL fileNameDidChange = ![NSObject isNullableObject:_avatarFileName equalTo:avatarFileName];
+        BOOL didChange = urlPathDidChange || fileNameDidChange;
+
+        if (!didChange) {
+            return;
+        }
+
+        if (fileNameDidChange && _avatarFileName.length > 0) {
+            NSString *oldAvatarFilePath = [OWSUserProfile profileAvatarFilepathWithFilename:_avatarFileName];
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+                [OWSFileSystem deleteFileIfExists:oldAvatarFilePath];
+            });
+        }
+
+        _avatarUrlPath = avatarUrlPath;
+        _avatarFileName = avatarFileName;
+    }
 }
 
 - (nullable NSString *)avatarUrlPath
@@ -302,6 +351,10 @@ NSUInteger const kUserProfileSchemaVersion = 1;
              completion:(nullable OWSUserProfileCompletion)completion
 {
     OWSAssertDebug(transaction);
+    BOOL isLocalUserProfile = [OWSUserProfile isLocalProfileAddress:self.address];
+    // We should never be writing to or updating the "local address" profile;
+    // we should be using the "kLocalProfileInvariantPhoneNumber" profile instead.
+    OWSAssertDebug(!self.address.isLocalAddress);
 
     // This should be set to true if:
     //
@@ -354,7 +407,9 @@ NSUInteger const kUserProfileSchemaVersion = 1;
         return;
     }
 
-    BOOL isLocalUserProfile = [self.address.phoneNumber isEqualToString:kLocalProfileUniqueId];
+    if (isLocalUserProfile) {
+        [self.profileManager localProfileWasUpdated:self];
+    }
 
     // Profile changes, record updates with storage service. We don't store avatar information on the service except for
     // the local user.
@@ -411,10 +466,8 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                applyChanges:^(OWSUserProfile *userProfile) {
                    [userProfile setGivenName:givenName];
                    [userProfile setFamilyName:familyName];
-                   // Always setAvatarUrlPath: before you setAvatarFileName: since
-                   // setAvatarUrlPath: may clear the avatar filename.
-                   [userProfile setAvatarUrlPath:avatarUrlPath];
-                   [userProfile setAvatarFileName:avatarFileName];
+                   // Update the avatar properties in lockstep.
+                   [userProfile setAvatarUrlPath:avatarUrlPath avatarFileName:avatarFileName];
                }
                functionName:__PRETTY_FUNCTION__
         wasLocallyInitiated:YES
@@ -437,6 +490,30 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                    [userProfile setUsername:username];
                    [userProfile setIsUuidCapable:isUuidCapable];
                    [userProfile setAvatarUrlPath:avatarUrlPath];
+               }
+               functionName:__PRETTY_FUNCTION__
+        wasLocallyInitiated:YES
+                transaction:transaction
+                 completion:completion];
+}
+
+- (void)updateWithGivenName:(nullable NSString *)givenName
+                 familyName:(nullable NSString *)familyName
+                   username:(nullable NSString *)username
+              isUuidCapable:(BOOL)isUuidCapable
+              avatarUrlPath:(nullable NSString *)avatarUrlPath
+             avatarFileName:(nullable NSString *)avatarFileName
+                transaction:(SDSAnyWriteTransaction *)transaction
+                 completion:(nullable OWSUserProfileCompletion)completion
+{
+    [self
+               applyChanges:^(OWSUserProfile *userProfile) {
+                   [userProfile setGivenName:givenName];
+                   [userProfile setFamilyName:familyName];
+                   [userProfile setUsername:username];
+                   [userProfile setIsUuidCapable:isUuidCapable];
+                   // Update the avatar properties in lockstep.
+                   [userProfile setAvatarUrlPath:avatarUrlPath avatarFileName:avatarFileName];
                }
                functionName:__PRETTY_FUNCTION__
         wasLocallyInitiated:YES
@@ -467,10 +544,8 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                    [userProfile setProfileKey:profileKey];
                    [userProfile setGivenName:nil];
                    [userProfile setFamilyName:nil];
-                   // Always setAvatarUrlPath: before you setAvatarFileName: since
-                   // setAvatarUrlPath: may clear the avatar filename.
-                   [userProfile setAvatarUrlPath:nil];
-                   [userProfile setAvatarFileName:nil];
+                   // Update the avatar properties in lockstep.
+                   [userProfile setAvatarUrlPath:nil avatarFileName:nil];
                }
                functionName:__PRETTY_FUNCTION__
         wasLocallyInitiated:wasLocallyInitiated
@@ -739,6 +814,11 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                                           [self.profileManager updateProfileForAddress:address];
                                       }];
     }
+}
+
+- (OWSUserProfile *)shallowCopy
+{
+    return (OWSUserProfile *)[self copyWithZone:nil];
 }
 
 @end

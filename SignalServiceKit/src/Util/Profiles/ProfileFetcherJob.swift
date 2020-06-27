@@ -430,9 +430,89 @@ public class ProfileFetcherJob: NSObject {
         }
     }
 
+    private func updateProfile(fetchedProfile: FetchedProfile) -> Promise<Void> {
+        // Before we update the profile, try to download and decrypt
+        // the avatar data, if necessary.
+
+        let profileAddress = fetchedProfile.profile.address
+        guard let avatarUrlPath = fetchedProfile.profile.avatarUrlPath else {
+            // If profile has no avatar, we don't need to download the avatar.
+            return updateProfile(fetchedProfile: fetchedProfile,
+                                 optionalAvatarData: nil)
+        }
+        guard let profileKey = (databaseStorage.read { transaction in
+            self.profileManager.profileKey(for: profileAddress,
+                                           transaction: transaction)
+        }) else {
+            // If we don't have a profile key for this user, don't bother
+            // downloading their avatar - we can't decrypt it.
+            return updateProfile(fetchedProfile: fetchedProfile,
+                                 optionalAvatarData: nil)
+        }
+
+        if let existingAvatarData = (databaseStorage.read { (transaction: SDSAnyReadTransaction) -> Data? in
+            guard let oldAvatarURLPath = self.profileManager.profileAvatarURLPath(for: profileAddress,
+                                                                                  transaction: transaction),
+                oldAvatarURLPath == avatarUrlPath else {
+                    return nil
+            }
+            return self.profileManager.profileAvatarData(for: profileAddress,
+                                                         transaction: transaction)
+            }) {
+            Logger.verbose("Skipping avatar data download; already downloaded.")
+            return updateProfile(fetchedProfile: fetchedProfile,
+                                 optionalAvatarData: existingAvatarData)
+        }
+
+        return firstly { () -> AnyPromise in
+            profileManager.downloadAndDecryptProfileAvatar(forProfileAddress: profileAddress,
+                                                           avatarUrlPath: avatarUrlPath,
+                                                           profileKey: profileKey)
+        }.map(on: .global()) { (result: Any?) throws -> Data in
+            guard let avatarData = result as? Data else {
+                Logger.verbose("Unexpected result: \(String(describing: result))")
+                throw OWSAssertionError("Unexpected result.")
+            }
+            return avatarData
+        }.then(on: .global()) { (avatarData: Data) -> Promise<Void> in
+            self.updateProfile(fetchedProfile: fetchedProfile,
+                               optionalAvatarData: avatarData)
+        }.recover(on: .global()) { (error: Error) -> Promise<Void> in
+            if error.isNetworkFailureOrTimeout {
+                Logger.warn("Error: \(error)")
+
+                if profileAddress.isLocalAddress {
+                    // Fetches and local profile updates can conflict.
+                    // To avoid these conflicts we treat "partial"
+                    // profile fetches (where we download the profile
+                    // but not the associated avatar) as failures.
+                    let nsError = error as NSError
+                    nsError.isRetryable = false
+                    throw nsError
+                }
+            } else {
+                // This should be very rare. It might reflect:
+                //
+                // * A race around rotating profile keys which would cause a
+                //   decryption error.
+                // * An incomplete profile update (profile updated but
+                //   avatar not uploaded afterward). This might be due to
+                //   a race with an update that is in flight.
+                //   We should eventually recover since profile updates are
+                //   durable.
+                Logger.warn("Error: \(error)")
+            }
+            // We made a best effort to download the avatar
+            // before updating the profile.
+            return self.updateProfile(fetchedProfile: fetchedProfile,
+                                      optionalAvatarData: nil)
+        }
+    }
+
     // TODO: This method can cause many database writes.
     //       Perhaps we can use a single transaction?
-    private func updateProfile(fetchedProfile: FetchedProfile) -> Promise<Void> {
+    private func updateProfile(fetchedProfile: FetchedProfile,
+                               optionalAvatarData: Data?) -> Promise<Void> {
         let profile = fetchedProfile.profile
         let address = profile.address
 
@@ -444,7 +524,8 @@ public class ProfileFetcherJob: NSObject {
                                      profileNameEncrypted: profile.profileNameEncrypted,
                                      username: profile.username,
                                      isUuidCapable: profile.supportsUUID,
-                                     avatarUrlPath: profile.avatarUrlPath)
+                                     avatarUrlPath: profile.avatarUrlPath,
+                                     optionalDecryptedAvatarData: optionalAvatarData)
 
         updateUnidentifiedAccess(address: address,
                                  verifier: profile.unidentifiedAccessVerifier,
