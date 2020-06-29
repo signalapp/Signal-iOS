@@ -627,7 +627,11 @@ public class OWSLinkPreview: MTLModel {
 
         Logger.verbose("url: \(urlString)")
 
-        let sessionConfiguration = ContentProxy.sessionConfiguration()
+        //It seems like Signal's proxy has been banned by Youtube.
+        //Just comment this out to fix link previews.
+        //We will move this to onion routing in the future
+        //let sessionConfiguration = ContentProxy.sessionConfiguration()
+        let sessionConfiguration = URLSessionConfiguration.ephemeral
 
         // Don't use any caching to protect privacy of these requests.
         sessionConfiguration.requestCachePolicy = .reloadIgnoringLocalCacheData
