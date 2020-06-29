@@ -68,6 +68,7 @@ class DeviceTransferService: NSObject {
     var tsAccountManager: TSAccountManager { .sharedInstance() }
     var databaseStorage: SDSDatabaseStorage { .shared }
     var sleepManager: DeviceSleepManager { .sharedInstance }
+    var modelReadCaches: ModelReadCaches { .shared }
 
     @objc
     static var shared: DeviceTransferService {
@@ -238,6 +239,8 @@ class DeviceTransferService: NSObject {
         DispatchMainThreadSafe {
             self.observers.compactMap { $0.value }.forEach { block($0) }
         }
+
+        modelReadCaches.evacuateAllCaches()
     }
 
     // MARK: -

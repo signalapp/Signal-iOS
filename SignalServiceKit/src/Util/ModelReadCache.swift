@@ -152,6 +152,11 @@ private class ModelReadCache<KeyType: AnyObject & Hashable, ValueType: BaseModel
 
                 self.databaseStorage.appendUIDatabaseSnapshotDelegate(self)
                 self.isObservingUIDatabaseSnapshots = true
+
+                NotificationCenter.default.addObserver(forName: ModelReadCaches.evacuateAllModelCaches, object: nil, queue: nil) { [weak self] _ in
+                    AssertIsOnMainThread()
+                    self?.evacuateCache()
+                }
             }
         }
     }
@@ -997,6 +1002,11 @@ public class InstalledStickerCache: NSObject {
 @objc
 public class ModelReadCaches: NSObject {
     @objc
+    public static var shared: ModelReadCaches {
+        return SSKEnvironment.shared.modelReadCaches
+    }
+
+    @objc
     public let userProfileReadCache = UserProfileReadCache()
     @objc
     public let signalAccountReadCache = SignalAccountReadCache()
@@ -1010,4 +1020,12 @@ public class ModelReadCaches: NSObject {
     public let attachmentReadCache = AttachmentReadCache()
     @objc
     public let installedStickerCache = InstalledStickerCache()
+
+    @objc
+    fileprivate static let evacuateAllModelCaches = Notification.Name("EvacuateAllModelCaches")
+
+    @objc
+    public func evacuateAllCaches() {
+        NotificationCenter.default.postNotificationNameAsync(Self.evacuateAllModelCaches, object: nil)
+    }
 }
