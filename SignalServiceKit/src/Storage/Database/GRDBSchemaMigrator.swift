@@ -74,6 +74,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addLastVisibleRowIdToThreads
         case addMarkedUnreadIndexToThread
         case fixIncorrectIndexes
+        case resetThreadVisibility
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -686,6 +687,14 @@ public class GRDBSchemaMigrator: NSObject {
                               on: "model_TSInteraction",
                               columns: ["uniqueThreadId", "attachmentIds"])
 
+            } catch {
+                owsFail("Error: \(error)")
+            }
+        }
+
+        migrator.registerMigration(MigrationId.resetThreadVisibility.rawValue) { db in
+            do {
+                try db.execute(sql: "UPDATE model_TSThread SET lastVisibleSortIdOnScreenPercentage = 0, lastVisibleSortId = 0")
             } catch {
                 owsFail("Error: \(error)")
             }

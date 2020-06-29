@@ -233,6 +233,9 @@ public class FeatureFlags: NSObject {
 
     @objc
     public static let deviceTransferThrowAway = false
+
+    @objc
+    public static let shouldthreadMappingUseCache = false
 }
 
 /// Flags that we'll leave in the code base indefinitely that are helpful for

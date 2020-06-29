@@ -194,6 +194,10 @@ class ThreadMapping: NSObject {
             return newThreads
         }
 
+        guard FeatureFlags.shouldthreadMappingUseCache else {
+            return try loadWithoutCache()
+        }
+
         // Loading the mapping from the cache has the following steps:
         //
         // 1. Fetch the uniqueIds for the visible threads.
