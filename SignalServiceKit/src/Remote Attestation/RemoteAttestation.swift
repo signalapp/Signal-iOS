@@ -38,9 +38,7 @@ extension RemoteAttestation {
 
     public static func performForCDS() -> Promise<CDSAttestation> {
         return performAttestation(for: .contactDiscovery).map { attestationResponse -> CDSAttestation in
-            guard let attestationBody: [CDSAttestation.Id: [String: Any]] = try attestationResponse.responseBody.required(key: "attestations") else {
-                throw ParamParser.ParseError.invalidFormat("attestations", description: "unexpected attestation body format")
-            }
+            let attestationBody: [CDSAttestation.Id: [String: Any]] = try attestationResponse.responseBody.required(key: "attestations")
 
             // The client MUST reject server responses with more than 3 Remote Attestation Responses attached,
             // for security reasons.

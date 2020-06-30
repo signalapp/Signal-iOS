@@ -62,6 +62,11 @@ public class ParamParser {
         }
     }
 
+    private func badCast<T>(key: Key, type: T.Type) -> ParseError {
+        let description = "Could not cast result to expected type: \(T.self)."
+        return ParseError.invalidFormat(key, description: description)
+    }
+
     private func invalid(key: Key) -> ParseError {
         return ParseError.invalidFormat(key)
     }
@@ -90,7 +95,7 @@ public class ParamParser {
         }
 
         guard let typedValue = someValue as? T else {
-            throw invalid(key: key)
+            throw badCast(key: key, type: T.self)
         }
 
         return typedValue
@@ -123,11 +128,11 @@ public class ParamParser {
             return typedValue
         case let int as Int:
             guard int >= T.min, int <= T.max else {
-                throw invalid(key: key)
+                throw badCast(key: key, type: T.self)
             }
             return T(int)
         default:
-            throw invalid(key: key)
+            throw badCast(key: key, type: T.self)
         }
     }
 
