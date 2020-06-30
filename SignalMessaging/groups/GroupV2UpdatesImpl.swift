@@ -599,6 +599,9 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
                     // the "change author" if the change/diff reflects a
                     // single revision.  Eventually there will be gaps in
                     // the returned changes.
+                    //
+                    // Some userIds/uuidCiphertexts can be validated by
+                    // the service. This is one.
                     let changeAuthorUuid = try groupV2Params.uuid(forUserId: changeAuthorUuidData)
                     groupUpdateSourceAddress = SignalServiceAddress(uuid: changeAuthorUuid)
                 }
@@ -693,6 +696,8 @@ public class GroupV2UpdatesImpl: NSObject, GroupV2UpdatesSwift {
             guard let changeAuthorUuidData = groupChange.diff.changeActionsProto.sourceUuid else {
                 throw OWSAssertionError("Missing changeAuthorUuid.")
             }
+            // Some userIds/uuidCiphertexts can be validated by
+            // the service. This is one.
             let changeAuthorUuid = try groupV2Params.uuid(forUserId: changeAuthorUuidData)
             let groupUpdateSourceAddress = SignalServiceAddress(uuid: changeAuthorUuid)
             let newDisappearingMessageToken = snapshot.disappearingMessageToken

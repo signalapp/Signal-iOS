@@ -246,6 +246,8 @@ public class GroupsV2Protos {
                 throw OWSAssertionError("Group member missing role.")
             }
 
+            // Some userIds/uuidCiphertexts can be validated by
+            // the service. This is one.
             let uuid = try groupV2Params.uuid(forUserId: userID)
 
             let member = GroupV2SnapshotImpl.Member(userID: userID,
@@ -281,6 +283,9 @@ public class GroupsV2Protos {
                 throw OWSAssertionError("Group member missing role.")
             }
 
+            // Some userIds/uuidCiphertexts can be validated by
+            // the service. These cannot.  Therefore we need to
+            // be robust to invalid ciphertexts.
             let uuid: UUID
             let addedByUuid: UUID
             do {
