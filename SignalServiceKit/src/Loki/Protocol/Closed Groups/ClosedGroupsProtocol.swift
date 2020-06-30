@@ -40,9 +40,12 @@ public final class ClosedGroupsProtocol : NSObject {
     //   the group (again fetching device links ahead of time). The user should already have established
     //   sessions with all other members at this point because of the behavior outlined a few points above.
     // • When a user adds a new member to the group, they generate a ratchet for that new member and
-    //   send that to all existing members of the group in a `ClosedGroupUpdateMessage`. They send a
+    //   send that bundled in a `ClosedGroupUpdateMessage` to the group. They send a
     //   `ClosedGroupUpdateMessage` with the newly generated ratchet but also the existing ratchets of
     //   every other member of the group to the user that joined.
+    // • When a user kicks a member from the group, they re-generate ratchets for everyone and send
+    //   those out to all members (minus the member that was just kicked) in a
+    //   `ClosedGroupUpdateMessage` using established channels.
 
     public struct Ratchet {
         public let chainKey: String
