@@ -273,6 +273,7 @@ NS_ASSUME_NONNULL_BEGIN
         case SSKProtoEnvelopeTypeFriendRequest:
         case SSKProtoEnvelopeTypeCiphertext:
         case SSKProtoEnvelopeTypePrekeyBundle:
+        case SSKProtoEnvelopeTypeClosedGroupCiphertext:
         case SSKProtoEnvelopeTypeUnidentifiedSender:
             if (!plaintextData) {
                 OWSFailDebug(@"missing decrypted data for envelope: %@", [self descriptionForEnvelope:envelope]);
@@ -424,27 +425,9 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    // Loki: Decrypt closed group message if applicable
-    NSData *sharedSenderKeysPlaintext = nil;
-    if ([[LKStorage getUserClosedGroupPublicKeys] containsObject:envelope.source]) {
+    if (envelope.content != nil) {
         NSError *error;
-        SSKProtoClosedGroupCiphertext *_Nullable closedGroupCiphertextProto = [SSKProtoClosedGroupCiphertext parseData:plaintextData error:&error];
-        if (error != nil || closedGroupCiphertextProto == nil) {
-            OWSFailDebug(@"Couldn't parse proto due to error: %@.", error);
-            return;
-        }
-        NSString *senderPublicKey = closedGroupCiphertextProto.senderPublicKey;
-        uint32_t keyIndex = closedGroupCiphertextProto.keyIndex;
-        sharedSenderKeysPlaintext = [LKClosedGroupsProtocol decryptCiphertext:closedGroupCiphertextProto.ciphertext forGroupWithPublicKey:envelope.source senderPublicKey:senderPublicKey keyIndex:keyIndex];
-        if (sharedSenderKeysPlaintext == nil) {
-            OWSFailDebug(@"Couldn't parse proto due to error: %@.", error);
-            return;
-        }
-    }
-
-    if (envelope.content != nil || sharedSenderKeysPlaintext != nil) {
-        NSError *error;
-        SSKProtoContent *_Nullable contentProto = [SSKProtoContent parseData:(sharedSenderKeysPlaintext ?: plaintextData) error:&error];
+        SSKProtoContent *_Nullable contentProto = [SSKProtoContent parseData:plaintextData error:&error];
         if (error != nil || contentProto == nil) {
             OWSFailDebug(@"Couldn't parse proto due to error: %@.", error);
             return;
@@ -564,7 +547,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    BOOL usesSharedSenderKeys = [LKClosedGroupsProtocol handleSharedSenderKeysUpdateIfNeeded:dataMessage transaction:transaction];
+    [LKClosedGroupsProtocol handleSharedSenderKeysUpdateIfNeeded:dataMessage transaction:transaction];
 
     if (dataMessage.group) {
         TSGroupThread *_Nullable groupThread =
@@ -1033,7 +1016,7 @@ NS_ASSUME_NONNULL_BEGIN
         // Loki: Handle closed groups sync message
         [LKSyncMessagesProtocol handleClosedGroupSyncMessageIfNeeded:syncMessage wrappedIn:envelope transaction:transaction];
     } else if (syncMessage.openGroups != nil) {
-        // Loki: Handle open groups sync message
+        // Loki: Handle open group sync message
         [LKSyncMessagesProtocol handleOpenGroupSyncMessageIfNeeded:syncMessage wrappedIn:envelope transaction:transaction];
     } else {
         OWSLogWarn(@"Ignoring unsupported sync message.");
@@ -1359,10 +1342,8 @@ NS_ASSUME_NONNULL_BEGIN
 
                 BOOL wasCurrentUserRemovedFromGroup = [removedMemberIds containsObject:userMasterPublicKey];
                 if (!wasCurrentUserRemovedFromGroup) {
-                    if (!newGroupThread.usesSharedSenderKeys) {
-                        // Loki: Try to establish sessions with all members involved when a group is created or updated
-                        [LKClosedGroupsProtocol establishSessionsIfNeededWithClosedGroupMembers:newMemberIds.allObjects inThread:newGroupThread transaction:transaction];
-                    }
+                    // Loki: Try to establish sessions with all members involved when a group is created or updated
+                    [LKClosedGroupsProtocol establishSessionsIfNeededWithClosedGroupMembers:newMemberIds.allObjects inThread:newGroupThread transaction:transaction];
                 }
 
                 [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithDisappearingDuration:dataMessage.expireTimer

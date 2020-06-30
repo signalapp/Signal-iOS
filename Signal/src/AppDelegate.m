@@ -176,8 +176,8 @@ static NSTimeInterval launchStartedAt;
     [DDLog flushLog];
 
     // Loki: Stop pollers
-    [self stopPollerIfNeeded];
-    [self stopOpenGroupPollersIfNeeded];
+    [self stopPoller];
+    [self stopOpenGroupPollers];
 }
 
 - (void)applicationWillEnterForeground:(UIApplication *)application
@@ -197,8 +197,8 @@ static NSTimeInterval launchStartedAt;
     [DDLog flushLog];
 
     // Loki: Stop pollers
-    [self stopPollerIfNeeded];
-    [self stopOpenGroupPollersIfNeeded];
+    [self stopPoller];
+    [self stopOpenGroupPollers];
 }
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
@@ -1387,7 +1387,7 @@ static NSTimeInterval launchStartedAt;
     [self.poller startIfNeeded];
 }
 
-- (void)stopPoller { [self.lokiPoller stop]; }
+- (void)stopPoller { [self.poller stop]; }
 
 - (void)startClosedGroupPollerIfNeeded
 {
@@ -1413,10 +1413,8 @@ static NSTimeInterval launchStartedAt;
     [SSKEnvironment.shared.messageSenderJobQueue clearAllJobs];
     [SSKEnvironment.shared.identityManager clearIdentityKey];
     [LKSnodeAPI clearSnodePool];
-    [self stopPollerIfNeeded];
-    [self stopOpenGroupPollersIfNeeded];
-    [self.lokiNewsFeedPoller stop];
-    [self.lokiMessengerUpdatesFeedPoller stop];
+    [self stopPoller];
+    [self stopOpenGroupPollers];
     [LKPublicChatManager.shared stopPollers];
     bool wasUnlinked = [NSUserDefaults.standardUserDefaults boolForKey:@"wasUnlinked"];
     [SignalApp resetAppData:^{

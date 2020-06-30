@@ -169,7 +169,7 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
             return showError(title: NSLocalizedString("A closed group cannot have more than 20 members", comment: ""))
         }
         let selectedContacts = self.selectedContacts
-        ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self] modalActivityIndicator in
+        ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self] _ in
             let _ = FileServerAPI.getDeviceLinks(associatedWith: selectedContacts).ensure2 {
                 var thread: TSGroupThread!
                 try! Storage.writeSync { transaction in

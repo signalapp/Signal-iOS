@@ -387,9 +387,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         //
         // So we're using YDB behavior to ensure this invariant, which is a bit
         // unorthodox.
-        [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [allAttachmentIds addObjectsFromArray:[OutgoingMessagePreparer prepareMessageForSending:message transaction:transaction]];
-        } error:nil];
+        if (message.attachmentIds.count > 0) {
+            [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+                [allAttachmentIds addObjectsFromArray:[OutgoingMessagePreparer prepareMessageForSending:message transaction:transaction]];
+            } error:nil];
+        }
 
         NSOperationQueue *sendingQueue = [self sendingQueueForMessage:message];
 
@@ -516,11 +518,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     } else if (thread.isGroupThread) {
         TSGroupThread *groupThread = (TSGroupThread *)thread;
         recipientIds = [LKSessionMetaProtocol getDestinationsForOutgoingGroupMessage:message inThread:thread];
-        __block NSString *userMasterHexEncodedPublicKey;
+        __block NSString *userMasterPublicKey;
         [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            userMasterHexEncodedPublicKey = [LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:userPublicKey in:transaction] ?: userPublicKey;
+            userMasterPublicKey = [LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:userPublicKey in:transaction] ?: userPublicKey;
         }];
-        if ([recipientIds containsObject:userMasterHexEncodedPublicKey]) {
+        if ([recipientIds containsObject:userMasterPublicKey]) {
             OWSFailDebug(@"Message send recipients should not include self.");
         }
     } else if ([thread isKindOfClass:TSContactThread.class]) {
@@ -1063,21 +1065,21 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         publicChat = [LKDatabaseUtilities getPublicChatForThreadID:message.uniqueThreadId transaction: transaction];
     }];
     if (publicChat != nil) {
-        NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+        NSString *userPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
         NSString *displayName = SSKEnvironment.shared.profileManager.localProfileName;
         if (displayName == nil) { displayName = @"Anonymous"; }
         TSQuotedMessage *quote = message.quotedMessage;
         uint64_t quoteID = quote.timestamp;
-        NSString *quoteeHexEncodedPublicKey = quote.authorId;
+        NSString *quoteePublicKey = quote.authorId;
         __block uint64_t quotedMessageServerID = 0;
         if (quoteID != 0) {
             [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-                quotedMessageServerID = [LKDatabaseUtilities getServerIDForQuoteWithID:quoteID quoteeHexEncodedPublicKey:quoteeHexEncodedPublicKey threadID:messageSend.thread.uniqueId transaction:transaction];
+                quotedMessageServerID = [LKDatabaseUtilities getServerIDForQuoteWithID:quoteID quoteeHexEncodedPublicKey:quoteePublicKey threadID:messageSend.thread.uniqueId transaction:transaction];
             }];
         }
         NSString *body = (message.body != nil && message.body.length > 0) ? message.body : [NSString stringWithFormat:@"%@", @(message.timestamp)]; // Workaround for the fact that the back-end doesn't accept messages without a body
-        LKGroupMessage *groupMessage = [[LKGroupMessage alloc] initWithHexEncodedPublicKey:userHexEncodedPublicKey displayName:displayName body:body type:LKPublicChatAPI.publicChatMessageType
-         timestamp:message.timestamp quotedMessageTimestamp:quoteID quoteeHexEncodedPublicKey:quoteeHexEncodedPublicKey quotedMessageBody:quote.body quotedMessageServerID:quotedMessageServerID signatureData:nil signatureVersion:0];
+        LKGroupMessage *groupMessage = [[LKGroupMessage alloc] initWithHexEncodedPublicKey:userPublicKey displayName:displayName body:body type:LKPublicChatAPI.publicChatMessageType
+         timestamp:message.timestamp quotedMessageTimestamp:quoteID quoteeHexEncodedPublicKey:quoteePublicKey quotedMessageBody:quote.body quotedMessageServerID:quotedMessageServerID signatureData:nil signatureVersion:0];
         OWSLinkPreview *linkPreview = message.linkPreview;
         if (linkPreview != nil) {
             TSAttachmentStream *attachment = [TSAttachmentStream fetchObjectWithUniqueID:linkPreview.imageAttachmentId];
@@ -1092,7 +1094,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             NSUInteger height = attachment.shouldHaveImageSize ? @(attachment.imageSize.height).unsignedIntegerValue : 0;
             [groupMessage addAttachmentWithKind:@"attachment" server:publicChat.server serverID:attachment.serverId contentType:attachment.contentType size:attachment.byteCount fileName:attachment.sourceFilename flags:0 width:width height:height caption:attachment.caption url:attachment.downloadURL linkPreviewURL:nil linkPreviewTitle:nil];
         }
-        message.actualSenderHexEncodedPublicKey = userHexEncodedPublicKey;
+        message.actualSenderHexEncodedPublicKey = userPublicKey;
         [[LKPublicChatAPI sendMessage:groupMessage toGroup:publicChat.channel onServer:publicChat.server]
         .thenOn(OWSDispatch.sendingQueue, ^(LKGroupMessage *groupMessage) {
             [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
@@ -1105,13 +1107,13 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             failedMessageSend(error);
         }) retainUntilComplete];
     } else {
-        NSString *targetHexEncodedPublicKey = recipient.recipientId;
-        NSString *userHexEncodedPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
+        NSString *targetPublicKey = recipient.recipientId;
+        NSString *userPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
         __block BOOL isUserLinkedDevice;
         [self.dbConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-            isUserLinkedDevice = [LKDatabaseUtilities isUserLinkedDevice:targetHexEncodedPublicKey in:transaction];
+            isUserLinkedDevice = [LKDatabaseUtilities isUserLinkedDevice:targetPublicKey in:transaction];
         }];
-        if ([targetHexEncodedPublicKey isEqual:userHexEncodedPublicKey]) {
+        if ([targetPublicKey isEqual:userPublicKey]) {
             [LKLogger print:[NSString stringWithFormat:@"[Loki] Sending %@ to self.", message.class]];
         } else if (isUserLinkedDevice) {
             [LKLogger print:[NSString stringWithFormat:@"[Loki] Sending %@ to %@ (one of the current user's linked devices).", message.class, recipient.recipientId]];
@@ -1122,9 +1124,16 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         SSKProtoEnvelopeType type = ((NSNumber *)signalMessageInfo[@"type"]).integerValue;
         if ([message isKindOfClass:OWSEndSessionMessage.class]) {
             type = SSKProtoEnvelopeTypeFriendRequest;
+        } else if ([messageSend.thread isKindOfClass:TSGroupThread.class] && ((TSGroupThread *)messageSend.thread).usesSharedSenderKeys) {
+            type = SSKProtoEnvelopeTypeClosedGroupCiphertext;
         }
         uint64_t timestamp = message.timestamp;
-        NSString *senderID = type == SSKProtoEnvelopeTypeUnidentifiedSender ? @"" : userHexEncodedPublicKey;
+        NSString *senderID = (type == SSKProtoEnvelopeTypeUnidentifiedSender) ? @"" : userPublicKey;
+        if ([messageSend.thread isKindOfClass:TSGroupThread.class] && ((TSGroupThread *)messageSend.thread).usesSharedSenderKeys) {
+            senderID = [LKGroupUtilities getDecodedGroupID:((TSGroupThread *)messageSend.thread).groupModel.groupId];
+        } else {
+            OWSAssertDebug([senderID isEqual:@""]);
+        }
         uint32_t senderDeviceID = type == SSKProtoEnvelopeTypeUnidentifiedSender ? 0 : OWSDevicePrimaryDeviceId;
         NSString *content = signalMessageInfo[@"content"];
         NSString *recipientID = signalMessageInfo[@"destination"];
@@ -1472,22 +1481,22 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     OWSOutgoingSentMessageTranscript *sentMessageTranscript =
         [[OWSOutgoingSentMessageTranscript alloc] initWithOutgoingMessage:message isRecipientUpdate:isRecipientUpdate];
 
-    NSString *currentDevice = self.tsAccountManager.localNumber;
+    NSString *userPublicKey = self.tsAccountManager.localNumber;
 
     // Loki: Send to the other device, but not self
     __block NSSet<NSString *> *linkedDevices;
     [self.primaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
-        linkedDevices = [LKDatabaseUtilities getLinkedDeviceHexEncodedPublicKeysFor:currentDevice in:transaction];
+        linkedDevices = [LKDatabaseUtilities getLinkedDeviceHexEncodedPublicKeysFor:userPublicKey in:transaction];
     }];
     NSString *otherDevice;
     for (NSString *device in linkedDevices) {
-        if (![device isEqual:currentDevice]) {
+        if (![device isEqual:userPublicKey]) {
             otherDevice = device;
             break;
         }
     }
 
-    NSString *recipientId = otherDevice ?: currentDevice;
+    NSString *recipientId = otherDevice ?: userPublicKey;
     __block SignalRecipient *recipient;
     [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
         recipient = [SignalRecipient markRecipientAsRegisteredAndGet:recipientId transaction:transaction];
@@ -1715,8 +1724,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     OWSPrimaryStorage *storage = self.primaryStorage;
     TSOutgoingMessage *message = messageSend.message;
 
-    // This may throw an exception
-    if ([LKSessionManagementProtocol isSessionRequiredForMessage:messageSend.message]
+    if ([LKSessionManagementProtocol isSessionRequiredForMessage:message]
         && ![storage containsSession:recipientID deviceId:@(OWSDevicePrimaryDeviceId).intValue protocolContext:transaction]) {
         NSString *missingSessionException = @"missingSessionException";
         OWSRaiseException(missingSessionException,
@@ -1725,10 +1733,10 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
             @(OWSDevicePrimaryDeviceId));
     }
 
-    BOOL isFriendRequestMessage = [messageSend.message isKindOfClass:LKFriendRequestMessage.class];
-    BOOL isSessionRequestMessage = [messageSend.message isKindOfClass:LKSessionRequestMessage.class];
-    BOOL isDeviceLinkMessage = [messageSend.message isKindOfClass:LKDeviceLinkMessage.class]
-        && ((LKDeviceLinkMessage *)messageSend.message).kind == LKDeviceLinkMessageKindRequest;
+    BOOL isFriendRequestMessage = [message isKindOfClass:LKFriendRequestMessage.class];
+    BOOL isSessionRequestMessage = [message isKindOfClass:LKSessionRequestMessage.class];
+    BOOL isDeviceLinkMessage = [message isKindOfClass:LKDeviceLinkMessage.class]
+        && ((LKDeviceLinkMessage *)message).kind == LKDeviceLinkMessageKindRequest;
 
     SessionCipher *cipher = [[SessionCipher alloc] initWithSessionStore:storage
                                                             preKeyStore:storage
@@ -1741,66 +1749,35 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     TSWhisperMessageType messageType;
     if (messageSend.isUDSend) {
         NSError *error;
+        LKSessionResetImplementation *sessionResetImplementation = [[LKSessionResetImplementation alloc] initWithStorage:self.primaryStorage];
+
         SMKSecretSessionCipher *_Nullable secretCipher =
-            [[SMKSecretSessionCipher alloc] initWithSessionStore:self.primaryStorage
-                                                     preKeyStore:self.primaryStorage
-                                               signedPreKeyStore:self.primaryStorage
-                                                   identityStore:self.identityManager
-                                                           error:&error];
+            [[SMKSecretSessionCipher alloc] initWithSessionResetImplementation:sessionResetImplementation
+                                                                  sessionStore:self.primaryStorage
+                                                                   preKeyStore:self.primaryStorage
+                                                             signedPreKeyStore:self.primaryStorage
+                                                                 identityStore:self.identityManager
+                                                sharedSenderKeysImplementation:LKSharedSenderKeysImplementation.shared
+                                                                         error:&error];
         if (error || !secretCipher) {
             OWSRaiseException(@"SecretSessionCipherFailure", @"Can't create secret session cipher.");
         }
 
-        if ([messageSend.thread isKindOfClass:TSGroupThread.class] && ((TSGroupThread *)messageSend.thread).usesSharedSenderKeys) {
-            NSString *groupPublicKey = [LKGroupUtilities getDecodedGroupID:((TSGroupThread *)messageSend.thread).groupModel.groupId];
-            NSString *senderPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
-            NSArray *ciphertextAndKeyIndex = [LKClosedGroupsProtocol encryptPlaintext:plainText.paddedMessageBody forGroupWithPublicKey:groupPublicKey senderPublicKey:senderPublicKey];
-            if (ciphertextAndKeyIndex.count != 2) {
-                OWSFailDebug(@"Couldn't encrypt closed group message.");
-                return nil;
-            }
-            NSData *ivAndCiphertext = ciphertextAndKeyIndex[0];
-            NSNumber *keyIndex = ciphertextAndKeyIndex[1];
-            SSKProtoClosedGroupCiphertextBuilder *builder = [SSKProtoClosedGroupCiphertext builderWithCiphertext:ivAndCiphertext senderPublicKey:senderPublicKey keyIndex:keyIndex.unsignedIntValue];
-            SSKProtoClosedGroupCiphertext *closedGroupCiphertext = [builder buildAndReturnError:&error];
-            if (closedGroupCiphertext == nil) {
-                OWSFailDebug(@"Couldn't build closed group message due to error: %@.", error);
-                return nil;
-            }
-            ECKeyPair *keyPair = [LKStorage getKeyPairForClosedGroupWithPublicKey:groupPublicKey];
-            if (keyPair == nil) {
-                OWSFailDebug(@"Missing key pair for closed group with public key: %@.", groupPublicKey);
-                return nil;
-            }
-            serializedMessage = [secretCipher throwswrapped_encryptMessageWithRecipientId:recipientID
-                                                                                 deviceId:@(OWSDevicePrimaryDeviceId).intValue
-                                                                          paddedPlaintext:nil
-                                                                    closedGroupCiphertext:closedGroupCiphertext
-                                                                        senderCertificate:messageSend.senderCertificate
-                                                                                  keyPair:keyPair
-                                                                          protocolContext:transaction
-                                                                 useFallbackSessionCipher:NO
-                                                                                    error:&error];
-        } else {
-            serializedMessage = [secretCipher throwswrapped_encryptMessageWithRecipientId:recipientID
-                                                                                 deviceId:@(OWSDevicePrimaryDeviceId).intValue
-                                                                          paddedPlaintext:plainText.paddedMessageBody
-                                                                    closedGroupCiphertext:nil
-                                                                        senderCertificate:messageSend.senderCertificate
-                                                                                  keyPair:nil
-                                                                          protocolContext:transaction
-                                                                 useFallbackSessionCipher:isFriendRequestMessage || isSessionRequestMessage || isDeviceLinkMessage
-                                                                                    error:&error];
-        }
+        serializedMessage = [secretCipher throwswrapped_encryptMessageWithRecipientPublicKey:recipientID
+                                                                                    deviceID:@(OWSDevicePrimaryDeviceId).intValue
+                                                                             paddedPlaintext:plainText.paddedMessageBody
+                                                                           senderCertificate:messageSend.senderCertificate
+                                                                             protocolContext:transaction
+                                                                    useFallbackSessionCipher:isFriendRequestMessage || isSessionRequestMessage || isDeviceLinkMessage
+                                                                                       error:&error];
 
         SCKRaiseIfExceptionWrapperError(error);
-        if (!serializedMessage || error) {
+        if (serializedMessage == nil || error != nil) {
             OWSFailDebug(@"Error while UD encrypting message: %@.", error);
             return nil;
         }
         messageType = TSUnidentifiedSenderMessageType;
     } else {
-        // This may throw an exception
         id<CipherMessage> encryptedMessage =
             [cipher throws_encryptMessage:[plainText paddedMessageBody] protocolContext:transaction];
         serializedMessage = encryptedMessage.serialized;
@@ -1809,7 +1786,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     BOOL isSilent = message.isSilent;
     BOOL isOnline = message.isOnline;
-    BOOL isPing = NO;
 
     OWSMessageServiceParams *messageParams =
         [[OWSMessageServiceParams alloc] initWithType:messageType
@@ -1820,12 +1796,12 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                              isOnline:isOnline
                                        registrationId:[cipher throws_remoteRegistrationId:transaction]
                                                   ttl:message.ttl
-                                               isPing:isPing];
+                                               isPing:NO];
 
     NSError *error;
     NSDictionary *jsonDict = [MTLJSONAdapter JSONDictionaryFromModel:messageParams error:&error];
     
-    if (error) {
+    if (error != nil) {
         OWSProdError([OWSAnalyticsEvents messageSendErrorCouldNotSerializeMessageJson]);
         return nil;
     }

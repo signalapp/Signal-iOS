@@ -3,6 +3,10 @@
 internal final class ClosedGroupUpdateMessage : TSOutgoingMessage {
     private let kind: Kind
 
+    @objc internal var isGroupCreationMessage: Bool {
+        if case .new = kind { return true } else { return false }
+    }
+
     // MARK: Settings
     @objc internal override var ttl: UInt32 { return UInt32(TTLUtilities.getTTL(for: .closedGroupUpdate)) }
 

@@ -149,6 +149,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         if OWSIdentityManager.shared().identityKeyPair() != nil {
             let appDelegate = UIApplication.shared.delegate as! AppDelegate
             appDelegate.startPollerIfNeeded()
+            appDelegate.startClosedGroupPollerIfNeeded()
             appDelegate.startOpenGroupPollersIfNeeded()
         }
         // Populate onion request path countries cache

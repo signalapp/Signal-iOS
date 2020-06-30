@@ -169,7 +169,7 @@ public final class SnodeAPI : NSObject {
         try! Storage.writeSync { transaction in
             Storage.pruneLastMessageHashInfoIfExpired(for: snode, associatedWith: publicKey, using: transaction)
         }
-        let lastHash = Storage.getLastMessageHash(for: snode, associatedWith: publicKey)
+        let lastHash = Storage.getLastMessageHash(for: snode, associatedWith: publicKey) ?? ""
         let parameters = [ "pubKey" : publicKey, "lastHash" : lastHash ]
         return invoke(.getMessages, on: snode, associatedWith: publicKey, parameters: parameters)
     }
