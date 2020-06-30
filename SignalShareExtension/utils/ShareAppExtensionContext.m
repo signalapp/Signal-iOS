@@ -318,6 +318,11 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
+- (BOOL)didLastLaunchCrash
+{
+    return NO;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END
