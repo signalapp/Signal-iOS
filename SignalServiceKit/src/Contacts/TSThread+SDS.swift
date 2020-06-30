@@ -126,7 +126,13 @@ public extension ThreadRecord {
         return CodingKeys.allCases
     }
 
+    private static let hasChecked = AtomicBool(false)
+
     static func check(checker: ThreadRowChecker) {
+        guard hasChecked.tryToSetFlag() else {
+            return
+        }
+        Logger.verbose("---checking...")
         // TODO: Remove these temporary checks.
         checker.check_columnCount()
         checker.check_lastVisibleSortIdOnScreenPercentage()
