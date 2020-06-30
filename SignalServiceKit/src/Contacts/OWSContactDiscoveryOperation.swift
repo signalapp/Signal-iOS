@@ -277,7 +277,9 @@ class CDSBatchOperation: OWSOperation {
                                                                              host: attestation.enclaveConfig.host,
                                                                              censorshipCircumventionPrefix: attestation.enclaveConfig.censorshipCircumventionPrefix)
             }.map(on: .global()) { response -> Set<CDSRegisteredContact> in
-                guard let responseAttestion = (attestation.remoteAttestations.first { $0.requestId == response.requestId }) else {
+                let allEnclaveAttestations = attestation.remoteAttestations
+                let respondingEnclaveAttestation = allEnclaveAttestations.first(where: { $1.requestId == response.requestId })
+                guard let responseAttestion = respondingEnclaveAttestation?.value else {
                     throw OWSAssertionError("unable to find responseAttestation for requestId: \(response.requestId)")
                 }
 
@@ -324,7 +326,7 @@ class CDSBatchOperation: OWSOperation {
         }
     }
 
-    func buildIntersectionQuery(phoneNumbersToLookup: [String], remoteAttestations: [RemoteAttestation]) throws -> ContactDiscoveryService.IntersectionQuery {
+    func buildIntersectionQuery(phoneNumbersToLookup: [String], remoteAttestations: [RemoteAttestation.CDSAttestation.Id: RemoteAttestation]) throws -> ContactDiscoveryService.IntersectionQuery {
         let noncePlainTextData = Randomness.generateRandomBytes(32)
         let addressPlainTextData = try type(of: self).encodePhoneNumbers(phoneNumbersToLookup)
         let queryData = Data.join([noncePlainTextData, addressPlainTextData])
@@ -338,7 +340,7 @@ class CDSBatchOperation: OWSOperation {
         }
         assert(encryptionResult.ciphertext.count == phoneNumbersToLookup.count * 8 + 32)
 
-        let queryEnvelopes: [ContactDiscoveryService.IntersectionQuery.EnclaveEnvelope] = try remoteAttestations.map { remoteAttestation in
+        let queryEnvelopes: [RemoteAttestation.CDSAttestation.Id: ContactDiscoveryService.IntersectionQuery.EnclaveEnvelope] = try remoteAttestations.mapValues { remoteAttestation in
             guard let perEnclaveKey = Cryptography.encryptAESGCM(plainTextData: key.keyData,
                                                                  initializationVectorLength: kAESGCM256_DefaultIVLength,
                                                                  additionalAuthenticatedData: remoteAttestation.requestId,

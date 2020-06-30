@@ -26,7 +26,7 @@ public struct ContactDiscoveryService {
             public let iv: Data
             public let mac: Data
         }
-        public let envelopes: [EnclaveEnvelope]
+        public let envelopes: [RemoteAttestation.CDSAttestation.Id: EnclaveEnvelope]
     }
 
     public struct IntersectionResponse {
@@ -108,7 +108,7 @@ public struct ContactDiscoveryService {
             "data": query.data.base64EncodedString(),
             "iv": query.iv.base64EncodedString(),
             "mac": query.mac.base64EncodedString(),
-            "envelopes": query.envelopes.map {
+            "envelopes": query.envelopes.mapValues {
                 [
                     "requestId": $0.requestId.base64EncodedString(),
                     "data": $0.data.base64EncodedString(),

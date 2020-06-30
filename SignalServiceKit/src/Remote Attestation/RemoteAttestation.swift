@@ -27,26 +27,27 @@ extension RemoteAttestation {
     }
 
     public struct CDSAttestation {
+        /// An opaque, server-specified identifier to link an attestation to its corresponding envelope
+        public typealias Id = String
+
         let cookies: [HTTPCookie]
         let auth: RemoteAttestationAuth
         let enclaveConfig: EnclaveConfig
-        let remoteAttestations: [RemoteAttestation]
+        let remoteAttestations: [Id: RemoteAttestation]
     }
 
     public static func performForCDS() -> Promise<CDSAttestation> {
         return performAttestation(for: .contactDiscovery).map { attestationResponse -> CDSAttestation in
-            let attestationsParams: [[String: Any]] = try attestationResponse.responseBody.required(key: "attestations")
+            let attestationBody: [CDSAttestation.Id: [String: Any]] = try attestationResponse.responseBody.required(key: "attestations")
 
             // The client MUST reject server responses with more than 3 Remote Attestation Responses attached,
             // for security reasons.
-            guard (1..<4).contains(attestationsParams.count) else {
-                throw ParamParser.ParseError.invalidFormat("attestations", description: "invalid attestation count: \(attestationsParams.count)")
+            guard (1..<4).contains(attestationBody.count) else {
+                throw ParamParser.ParseError.invalidFormat("attestations", description: "invalid attestation count: \(attestationBody.count)")
             }
 
-            let attestations: [RemoteAttestation] = try attestationsParams.map { attestationParams in
-                guard let parser = ParamParser(responseObject: attestationParams) else {
-                    throw ParamParser.ParseError.invalidFormat("attestations[]", description: "invalid attestation")
-                }
+            let attestations: [CDSAttestation.Id: RemoteAttestation] = try attestationBody.mapValues { attestationParams in
+                let parser = ParamParser(dictionary: attestationParams)
                 return try parseAttestation(params: parser,
                                             clientEphemeralKeyPair: attestationResponse.clientEphemeralKeyPair,
                                             cookies: attestationResponse.cookies,
