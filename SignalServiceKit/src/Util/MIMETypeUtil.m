@@ -24,6 +24,8 @@ NSString *const OWSMimeTypeImageTiff2 = @"image/x-tiff";
 NSString *const OWSMimeTypeImageBmp1 = @"image/bmp";
 NSString *const OWSMimeTypeImageBmp2 = @"image/x-windows-bmp";
 NSString *const OWSMimeTypeImageWebp = @"image/webp";
+NSString *const OWSMimeTypeImageHeic = @"image/heic";
+NSString *const OWSMimeTypeImageHeif = @"image/heif";
 NSString *const OWSMimeTypePdf = @"application/pdf";
 NSString *const OWSMimeTypeOversizeTextMessage = @"text/x-signal-plain";
 NSString *const OWSMimeTypeUnknownForTests = @"unknown/mimetype";
@@ -84,7 +86,7 @@ NSString *const kSyncMessageFileExtension = @"bin";
     static NSDictionary *result = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        result = @{
+        result = @ {
             OWSMimeTypeImageJpeg : @"jpeg",
             @"image/pjpeg" : @"jpeg",
             OWSMimeTypeImagePng : @"png",
@@ -93,6 +95,8 @@ NSString *const kSyncMessageFileExtension = @"bin";
             @"image/bmp" : @"bmp",
             @"image/x-windows-bmp" : @"bmp",
             OWSMimeTypeImageWebp : @"webp",
+            OWSMimeTypeImageHeic : @"heic",
+            OWSMimeTypeImageHeif : @"heif",
         };
     });
     return result;
@@ -171,7 +175,7 @@ NSString *const kSyncMessageFileExtension = @"bin";
     static NSDictionary *result = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        result = @{
+        result = @ {
             @"png" : OWSMimeTypeImagePng,
             @"x-png" : OWSMimeTypeImagePng,
             @"jfif" : @"image/jpeg",
@@ -184,6 +188,8 @@ NSString *const kSyncMessageFileExtension = @"bin";
             @"tif" : @"image/tiff",
             @"tiff" : @"image/tiff",
             @"webp" : OWSMimeTypeImageWebp,
+            @"heic" : OWSMimeTypeImageHeic,
+            @"heif" : OWSMimeTypeImageHeif,
         };
     });
     return result;
