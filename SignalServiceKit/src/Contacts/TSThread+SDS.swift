@@ -78,40 +78,66 @@ public struct ThreadRecord: SDSRecord {
 
 // MARK: - Row Initializer
 
-public extension ThreadRecord {
-    static var databaseSelection: [SQLSelectable] {
-        return CodingKeys.allCases
+@objc
+public protocol ThreadRowChecker {
+    func check_columnCount()
+    func check_lastVisibleSortIdOnScreenPercentage()
+    func check_lastVisibleSortId()
+    func check_fail()
+}
+
+@objc
+public class ThreadRowCheckerImpl: NSObject, ThreadRowChecker {
+    let row: Row
+
+    init(row: Row) {
+        self.row = row
     }
 
-    private static func check_columnCount(row: Row) {
+    @objc
+    public func check_columnCount() {
         guard row.count == 17 else {
             owsFail("Unexpected row count: \(row.count)")
         }
     }
 
-    private static func check_lastVisibleSortIdOnScreenPercentage(row: Row) {
+    @objc
+    public func check_lastVisibleSortIdOnScreenPercentage() {
         guard !row.hasNull(atIndex: 15) else {
             owsFail("Null lastVisibleSortIdOnScreenPercentage")
         }
     }
 
-    private static func check_lastVisibleSortId(row: Row) {
+    @objc
+    public func check_lastVisibleSortId() {
         guard !row.hasNull(atIndex: 16) else {
             owsFail("Null lastVisibleSortId")
         }
     }
 
-    private static func check_fail(row: Row) {
+    @objc
+    public func check_fail() {
         owsFail("Can this be resymbolicated?")
+    }
+}
+
+public extension ThreadRecord {
+    static var databaseSelection: [SQLSelectable] {
+        return CodingKeys.allCases
+    }
+
+    static func check(checker: ThreadRowChecker) {
+        // TODO: Remove these temporary checks.
+        checker.check_columnCount()
+        checker.check_lastVisibleSortIdOnScreenPercentage()
+        checker.check_lastVisibleSortId()
+        // TODO: Can we check the column types?
+        checker.check_fail()
     }
 
     init(row: Row) {
         // TODO: Remove these temporary checks.
-        ThreadRecord.check_columnCount(row: row)
-        ThreadRecord.check_lastVisibleSortIdOnScreenPercentage(row: row)
-        ThreadRecord.check_lastVisibleSortId(row: row)
-        // TODO: Can we check the column types?
-        ThreadRecord.check_fail(row: row)
+        ThreadRecord.check(checker: ThreadRowCheckerImpl(row: row))
 
         id = row[0]
         recordType = row[1]
