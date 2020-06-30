@@ -98,13 +98,7 @@ public class GroupsV2Changes {
             guard let role = TSGroupMemberRole.role(for: protoRole) else {
                 throw OWSAssertionError("Invalid role: \(protoRole.rawValue)")
             }
-            let uuid: UUID
-            do {
-                uuid = try groupV2Params.uuid(forUserId: userId)
-            } catch {
-                owsFailDebug("Error parsing uuid: \(error)")
-                continue
-            }
+            let uuid = try groupV2Params.uuid(forUserId: userId)
             let address = SignalServiceAddress(uuid: uuid)
 
             guard !oldGroupMembership.allUsers.contains(address) else {
@@ -127,13 +121,7 @@ public class GroupsV2Changes {
             guard let userId = action.deletedUserID else {
                 throw OWSAssertionError("Missing userID.")
             }
-            let uuid: UUID
-            do {
-                uuid = try groupV2Params.uuid(forUserId: userId)
-            } catch {
-                owsFailDebug("Error parsing uuid: \(error)")
-                continue
-            }
+            let uuid = try groupV2Params.uuid(forUserId: userId)
             let address = SignalServiceAddress(uuid: uuid)
 
             guard oldGroupMembership.nonPendingMembers.contains(address) else {
@@ -153,13 +141,7 @@ public class GroupsV2Changes {
                 throw OWSAssertionError("Invalid role: \(protoRole.rawValue)")
             }
 
-            let uuid: UUID
-            do {
-                uuid = try groupV2Params.uuid(forUserId: userId)
-            } catch {
-                owsFailDebug("Error parsing uuid: \(error)")
-                continue
-            }
+            let uuid = try groupV2Params.uuid(forUserId: userId)
             let address = SignalServiceAddress(uuid: uuid)
 
             guard oldGroupMembership.nonPendingMembers.contains(address) else {
@@ -228,13 +210,7 @@ public class GroupsV2Changes {
             guard let userId = action.deletedUserID else {
                 throw OWSAssertionError("Missing userID.")
             }
-            let uuid: UUID
-            do {
-                uuid = try groupV2Params.uuid(forUserId: userId)
-            } catch {
-                owsFailDebug("Error parsing uuid: \(error)")
-                continue
-            }
+            let uuid = try groupV2Params.uuid(forUserId: userId)
             let address = SignalServiceAddress(uuid: uuid)
 
             guard oldGroupMembership.pendingMembers.contains(address) else {

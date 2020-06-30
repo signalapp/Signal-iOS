@@ -246,13 +246,7 @@ public class GroupsV2Protos {
                 throw OWSAssertionError("Group member missing role.")
             }
 
-            let uuid: UUID
-            do {
-                uuid = try groupV2Params.uuid(forUserId: userID)
-            } catch {
-                owsFailDebug("Error parsing uuid: \(error)")
-                continue
-            }
+            let uuid = try groupV2Params.uuid(forUserId: userID)
 
             let member = GroupV2SnapshotImpl.Member(userID: userID,
                                                     uuid: uuid,
