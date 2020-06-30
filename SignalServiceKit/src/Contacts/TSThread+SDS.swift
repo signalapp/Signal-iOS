@@ -210,7 +210,6 @@ public class ThreadRowCheckerImpl: NSObject, ThreadRowChecker {
         let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
         guard expectedType.isOptional || !value.isNull else {
             owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
-            return
         }
     }
 
@@ -220,7 +219,6 @@ public class ThreadRowCheckerImpl: NSObject, ThreadRowChecker {
         let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
         guard expectedType.isOptional || !value.isNull else {
             owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
-            return
         }
     }
 
@@ -230,7 +228,6 @@ public class ThreadRowCheckerImpl: NSObject, ThreadRowChecker {
         let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
         guard expectedType.isOptional || !value.isNull else {
             owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
-            return
         }
     }
 
@@ -240,7 +237,6 @@ public class ThreadRowCheckerImpl: NSObject, ThreadRowChecker {
         let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
         guard expectedType.isOptional || !value.isNull else {
             owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
-            return
         }
     }
 
@@ -250,7 +246,6 @@ public class ThreadRowCheckerImpl: NSObject, ThreadRowChecker {
         let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
         guard expectedType.isOptional || !value.isNull else {
             owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
-            return
         }
     }
 
@@ -260,7 +255,6 @@ public class ThreadRowCheckerImpl: NSObject, ThreadRowChecker {
         let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
         guard expectedType.isOptional || !value.isNull else {
             owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
-            return
         }
     }
 
@@ -270,7 +264,6 @@ public class ThreadRowCheckerImpl: NSObject, ThreadRowChecker {
         let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
         guard expectedType.isOptional || !value.isNull else {
             owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
-            return
         }
     }
 
@@ -280,7 +273,6 @@ public class ThreadRowCheckerImpl: NSObject, ThreadRowChecker {
         let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
         guard expectedType.isOptional || !value.isNull else {
             owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
-            return
         }
     }
 
@@ -290,7 +282,6 @@ public class ThreadRowCheckerImpl: NSObject, ThreadRowChecker {
         let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
         guard expectedType.isOptional || !value.isNull else {
             owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
-            return
         }
     }
 
@@ -300,7 +291,6 @@ public class ThreadRowCheckerImpl: NSObject, ThreadRowChecker {
         let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
         guard expectedType.isOptional || !value.isNull else {
             owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
-            return
         }
     }
 
@@ -310,7 +300,6 @@ public class ThreadRowCheckerImpl: NSObject, ThreadRowChecker {
         let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
         guard expectedType.isOptional || !value.isNull else {
             owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
-            return
         }
     }
 
@@ -320,7 +309,6 @@ public class ThreadRowCheckerImpl: NSObject, ThreadRowChecker {
         let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
         guard expectedType.isOptional || !value.isNull else {
             owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
-            return
         }
     }
 
@@ -330,7 +318,6 @@ public class ThreadRowCheckerImpl: NSObject, ThreadRowChecker {
         let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
         guard expectedType.isOptional || !value.isNull else {
             owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
-            return
         }
     }
 
@@ -340,7 +327,6 @@ public class ThreadRowCheckerImpl: NSObject, ThreadRowChecker {
         let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
         guard expectedType.isOptional || !value.isNull else {
             owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
-            return
         }
     }
 
@@ -350,7 +336,6 @@ public class ThreadRowCheckerImpl: NSObject, ThreadRowChecker {
         let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
         guard expectedType.isOptional || !value.isNull else {
             owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
-            return
         }
     }
 
@@ -360,7 +345,6 @@ public class ThreadRowCheckerImpl: NSObject, ThreadRowChecker {
         let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
         guard expectedType.isOptional || !value.isNull else {
             owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
-            return
         }
     }
 
@@ -370,7 +354,6 @@ public class ThreadRowCheckerImpl: NSObject, ThreadRowChecker {
         let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
         guard expectedType.isOptional || !value.isNull else {
             owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
-            return
         }
     }
 
