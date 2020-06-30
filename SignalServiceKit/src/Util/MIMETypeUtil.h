@@ -14,6 +14,8 @@ extern NSString *const OWSMimeTypeImageTiff2;
 extern NSString *const OWSMimeTypeImageBmp1;
 extern NSString *const OWSMimeTypeImageBmp2;
 extern NSString *const OWSMimeTypeImageWebp;
+extern NSString *const OWSMimeTypeImageHeic;
+extern NSString *const OWSMimeTypeImageHeif;
 extern NSString *const OWSMimeTypePdf;
 extern NSString *const OWSMimeTypeOversizeTextMessage;
 extern NSString *const OWSMimeTypeProtobuf;

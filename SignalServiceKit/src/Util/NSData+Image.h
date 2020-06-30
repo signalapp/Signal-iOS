@@ -13,6 +13,8 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
     ImageFormat_Jpeg,
     ImageFormat_Bmp,
     ImageFormat_Webp,
+    ImageFormat_Heic,
+    ImageFormat_Heif,
 };
 
 NSString *NSStringForImageFormat(ImageFormat value);
