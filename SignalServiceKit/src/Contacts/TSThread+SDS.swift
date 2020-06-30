@@ -81,9 +81,43 @@ public struct ThreadRecord: SDSRecord {
 @objc
 public protocol ThreadRowChecker {
     func check_columnCount()
-    func check_lastVisibleSortIdOnScreenPercentage()
-    func check_lastVisibleSortId()
-    func check_fail()
+    func check_columnNames()
+
+    func checkIsNull_id()
+    func checkIsNull_recordType()
+    func checkIsNull_uniqueId()
+    func checkIsNull_conversationColorName()
+    func checkIsNull_creationDate()
+    func checkIsNull_isArchived()
+    func checkIsNull_lastInteractionRowId()
+    func checkIsNull_messageDraft()
+    func checkIsNull_mutedUntilDate()
+    func checkIsNull_shouldThreadBeVisible()
+    func checkIsNull_contactPhoneNumber()
+    func checkIsNull_contactUUID()
+    func checkIsNull_groupModel()
+    func checkIsNull_hasDismissedOffers()
+    func checkIsNull_isMarkedUnread()
+    func checkIsNull_lastVisibleSortIdOnScreenPercentage()
+    func checkIsNull_lastVisibleSortId()
+
+    func checkType_id()
+    func checkType_recordType()
+    func checkType_uniqueId()
+    func checkType_conversationColorName()
+    func checkType_creationDate()
+    func checkType_isArchived()
+    func checkType_lastInteractionRowId()
+    func checkType_messageDraft()
+    func checkType_mutedUntilDate()
+    func checkType_shouldThreadBeVisible()
+    func checkType_contactPhoneNumber()
+    func checkType_contactUUID()
+    func checkType_groupModel()
+    func checkType_hasDismissedOffers()
+    func checkType_isMarkedUnread()
+    func checkType_lastVisibleSortIdOnScreenPercentage()
+    func checkType_lastVisibleSortId()
 }
 
 @objc
@@ -102,22 +136,395 @@ public class ThreadRowCheckerImpl: NSObject, ThreadRowChecker {
     }
 
     @objc
-    public func check_lastVisibleSortIdOnScreenPercentage() {
-        guard !row.hasNull(atIndex: 15) else {
-            owsFail("Null lastVisibleSortIdOnScreenPercentage")
+    public func check_columnNames() {
+        let columnNames = Array(row.columnNames)
+        let expectedColumnNames = ["id", "recordType", "uniqueId", "conversationColorName", "creationDate", "isArchived", "lastInteractionRowId", "messageDraft", "mutedUntilDate", "shouldThreadBeVisible", "contactPhoneNumber", "contactUUID", "groupModel", "hasDismissedOffers", "isMarkedUnread", "lastVisibleSortIdOnScreenPercentage", "lastVisibleSortId"]
+        guard columnNames == expectedColumnNames else {
+            Logger.verbose("columnNames: \(columnNames)")
+            owsFail("Unexpected column names")
+        }
+    }
+
+    struct ExpectedType {
+        let storage: DatabaseValue.Storage
+        let index: Int
+        let isOptional: Bool
+
+        init(_ storage: DatabaseValue.Storage, index: Int, isOptional: Bool = false) {
+            self.storage = storage
+            self.index = index
+            self.isOptional = isOptional
+        }
+
+        func isValidValue(_ value: DatabaseValue) -> Bool {
+            if isOptional, value.isNull {
+                return true
+            }
+            // There's no simpler way to compare enums while ignoring
+            // their associated values
+            switch value.storage {
+            case .null:
+                return false
+            case .int64:
+                if case .int64 = storage {
+                    return true
+                }
+            case .double:
+                if case .double = storage {
+                    return true
+                }
+            case .string:
+                if case .string = storage {
+                    return true
+                }
+            case .blob:
+                if case .blob = storage {
+                    return true
+                }
+            }
+            return false
+        }
+    }
+
+    private let expectedType_id = ExpectedType(DatabaseValue.Storage.int64(0), index: 0)
+    private let expectedType_recordType = ExpectedType(DatabaseValue.Storage.int64(0), index: 1)
+    private let expectedType_uniqueId = ExpectedType(DatabaseValue.Storage.string(""), index: 2)
+    private let expectedType_conversationColorName = ExpectedType(DatabaseValue.Storage.string(""), index: 3)
+    private let expectedType_creationDate = ExpectedType(DatabaseValue.Storage.double(0), index: 4, isOptional: true)
+    private let expectedType_isArchived = ExpectedType(DatabaseValue.Storage.int64(0), index: 5)
+    private let expectedType_lastInteractionRowId = ExpectedType(DatabaseValue.Storage.int64(0), index: 6)
+    private let expectedType_messageDraft = ExpectedType(DatabaseValue.Storage.string(""), index: 7, isOptional: true)
+    private let expectedType_mutedUntilDate = ExpectedType(DatabaseValue.Storage.double(0), index: 8, isOptional: true)
+    private let expectedType_shouldThreadBeVisible = ExpectedType(DatabaseValue.Storage.int64(0), index: 9)
+    private let expectedType_contactPhoneNumber = ExpectedType(DatabaseValue.Storage.string(""), index: 10, isOptional: true)
+    private let expectedType_contactUUID = ExpectedType(DatabaseValue.Storage.string(""), index: 11, isOptional: true)
+    private let expectedType_groupModel = ExpectedType(DatabaseValue.Storage.blob(Data()), index: 12, isOptional: true)
+    private let expectedType_hasDismissedOffers = ExpectedType(DatabaseValue.Storage.int64(0), index: 13, isOptional: true)
+    private let expectedType_isMarkedUnread = ExpectedType(DatabaseValue.Storage.int64(0), index: 14)
+    private let expectedType_lastVisibleSortIdOnScreenPercentage = ExpectedType(DatabaseValue.Storage.double(0), index: 15)
+    private let expectedType_lastVisibleSortId = ExpectedType(DatabaseValue.Storage.int64(0), index: 16)
+
+    @objc
+    public func checkIsNull_id() {
+        let expectedType = expectedType_id
+        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
+        guard expectedType.isOptional || !value.isNull else {
+            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
+            return
         }
     }
 
     @objc
-    public func check_lastVisibleSortId() {
-        guard !row.hasNull(atIndex: 16) else {
-            owsFail("Null lastVisibleSortId")
+    public func checkIsNull_recordType() {
+        let expectedType = expectedType_recordType
+        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
+        guard expectedType.isOptional || !value.isNull else {
+            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
+            return
         }
     }
 
     @objc
-    public func check_fail() {
-        owsFail("Can this be resymbolicated?")
+    public func checkIsNull_uniqueId() {
+        let expectedType = expectedType_uniqueId
+        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
+        guard expectedType.isOptional || !value.isNull else {
+            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
+            return
+        }
+    }
+
+    @objc
+    public func checkIsNull_conversationColorName() {
+        let expectedType = expectedType_conversationColorName
+        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
+        guard expectedType.isOptional || !value.isNull else {
+            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
+            return
+        }
+    }
+
+    @objc
+    public func checkIsNull_creationDate() {
+        let expectedType = expectedType_creationDate
+        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
+        guard expectedType.isOptional || !value.isNull else {
+            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
+            return
+        }
+    }
+
+    @objc
+    public func checkIsNull_isArchived() {
+        let expectedType = expectedType_isArchived
+        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
+        guard expectedType.isOptional || !value.isNull else {
+            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
+            return
+        }
+    }
+
+    @objc
+    public func checkIsNull_lastInteractionRowId() {
+        let expectedType = expectedType_lastInteractionRowId
+        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
+        guard expectedType.isOptional || !value.isNull else {
+            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
+            return
+        }
+    }
+
+    @objc
+    public func checkIsNull_messageDraft() {
+        let expectedType = expectedType_messageDraft
+        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
+        guard expectedType.isOptional || !value.isNull else {
+            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
+            return
+        }
+    }
+
+    @objc
+    public func checkIsNull_mutedUntilDate() {
+        let expectedType = expectedType_mutedUntilDate
+        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
+        guard expectedType.isOptional || !value.isNull else {
+            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
+            return
+        }
+    }
+
+    @objc
+    public func checkIsNull_shouldThreadBeVisible() {
+        let expectedType = expectedType_shouldThreadBeVisible
+        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
+        guard expectedType.isOptional || !value.isNull else {
+            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
+            return
+        }
+    }
+
+    @objc
+    public func checkIsNull_contactPhoneNumber() {
+        let expectedType = expectedType_contactPhoneNumber
+        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
+        guard expectedType.isOptional || !value.isNull else {
+            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
+            return
+        }
+    }
+
+    @objc
+    public func checkIsNull_contactUUID() {
+        let expectedType = expectedType_contactUUID
+        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
+        guard expectedType.isOptional || !value.isNull else {
+            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
+            return
+        }
+    }
+
+    @objc
+    public func checkIsNull_groupModel() {
+        let expectedType = expectedType_groupModel
+        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
+        guard expectedType.isOptional || !value.isNull else {
+            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
+            return
+        }
+    }
+
+    @objc
+    public func checkIsNull_hasDismissedOffers() {
+        let expectedType = expectedType_hasDismissedOffers
+        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
+        guard expectedType.isOptional || !value.isNull else {
+            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
+            return
+        }
+    }
+
+    @objc
+    public func checkIsNull_isMarkedUnread() {
+        let expectedType = expectedType_isMarkedUnread
+        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
+        guard expectedType.isOptional || !value.isNull else {
+            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
+            return
+        }
+    }
+
+    @objc
+    public func checkIsNull_lastVisibleSortIdOnScreenPercentage() {
+        let expectedType = expectedType_lastVisibleSortIdOnScreenPercentage
+        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
+        guard expectedType.isOptional || !value.isNull else {
+            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
+            return
+        }
+    }
+
+    @objc
+    public func checkIsNull_lastVisibleSortId() {
+        let expectedType = expectedType_lastVisibleSortId
+        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
+        guard expectedType.isOptional || !value.isNull else {
+            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
+            return
+        }
+    }
+
+    @objc
+    public func checkType_id() {
+        let expectedType = expectedType_id
+        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
+        guard expectedType.isValidValue(value) else {
+            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
+        }
+    }
+
+    @objc
+    public func checkType_recordType() {
+        let expectedType = expectedType_recordType
+        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
+        guard expectedType.isValidValue(value) else {
+            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
+        }
+    }
+
+    @objc
+    public func checkType_uniqueId() {
+        let expectedType = expectedType_uniqueId
+        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
+        guard expectedType.isValidValue(value) else {
+            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
+        }
+    }
+
+    @objc
+    public func checkType_conversationColorName() {
+        let expectedType = expectedType_conversationColorName
+        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
+        guard expectedType.isValidValue(value) else {
+            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
+        }
+    }
+
+    @objc
+    public func checkType_creationDate() {
+        let expectedType = expectedType_creationDate
+        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
+        guard expectedType.isValidValue(value) else {
+            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
+        }
+    }
+
+    @objc
+    public func checkType_isArchived() {
+        let expectedType = expectedType_isArchived
+        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
+        guard expectedType.isValidValue(value) else {
+            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
+        }
+    }
+
+    @objc
+    public func checkType_lastInteractionRowId() {
+        let expectedType = expectedType_lastInteractionRowId
+        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
+        guard expectedType.isValidValue(value) else {
+            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
+        }
+    }
+
+    @objc
+    public func checkType_messageDraft() {
+        let expectedType = expectedType_messageDraft
+        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
+        guard expectedType.isValidValue(value) else {
+            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
+        }
+    }
+
+    @objc
+    public func checkType_mutedUntilDate() {
+        let expectedType = expectedType_mutedUntilDate
+        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
+        guard expectedType.isValidValue(value) else {
+            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
+        }
+    }
+
+    @objc
+    public func checkType_shouldThreadBeVisible() {
+        let expectedType = expectedType_shouldThreadBeVisible
+        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
+        guard expectedType.isValidValue(value) else {
+            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
+        }
+    }
+
+    @objc
+    public func checkType_contactPhoneNumber() {
+        let expectedType = expectedType_contactPhoneNumber
+        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
+        guard expectedType.isValidValue(value) else {
+            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
+        }
+    }
+
+    @objc
+    public func checkType_contactUUID() {
+        let expectedType = expectedType_contactUUID
+        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
+        guard expectedType.isValidValue(value) else {
+            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
+        }
+    }
+
+    @objc
+    public func checkType_groupModel() {
+        let expectedType = expectedType_groupModel
+        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
+        guard expectedType.isValidValue(value) else {
+            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
+        }
+    }
+
+    @objc
+    public func checkType_hasDismissedOffers() {
+        let expectedType = expectedType_hasDismissedOffers
+        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
+        guard expectedType.isValidValue(value) else {
+            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
+        }
+    }
+
+    @objc
+    public func checkType_isMarkedUnread() {
+        let expectedType = expectedType_isMarkedUnread
+        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
+        guard expectedType.isValidValue(value) else {
+            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
+        }
+    }
+
+    @objc
+    public func checkType_lastVisibleSortIdOnScreenPercentage() {
+        let expectedType = expectedType_lastVisibleSortIdOnScreenPercentage
+        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
+        guard expectedType.isValidValue(value) else {
+            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
+        }
+    }
+
+    @objc
+    public func checkType_lastVisibleSortId() {
+        let expectedType = expectedType_lastVisibleSortId
+        let value: DatabaseValue = Array(row.databaseValues)[expectedType.index]
+        guard expectedType.isValidValue(value) else {
+            owsFail("Value has unexpected type: (value.storage) != (expectedType.storage).")
+        }
     }
 }
 
@@ -129,21 +536,53 @@ public extension ThreadRecord {
     private static let hasChecked = AtomicBool(false)
 
     static func check(checker: ThreadRowChecker) {
-        guard hasChecked.tryToSetFlag() else {
-            return
-        }
-        Logger.verbose("---checking...")
+        Logger.verbose("---- checking...")
         // TODO: Remove these temporary checks.
         checker.check_columnCount()
-        checker.check_lastVisibleSortIdOnScreenPercentage()
-        checker.check_lastVisibleSortId()
-        // TODO: Can we check the column types?
-        checker.check_fail()
+        checker.check_columnNames()
+
+        checker.checkIsNull_id()
+        checker.checkIsNull_recordType()
+        checker.checkIsNull_uniqueId()
+        checker.checkIsNull_conversationColorName()
+        checker.checkIsNull_creationDate()
+        checker.checkIsNull_isArchived()
+        checker.checkIsNull_lastInteractionRowId()
+        checker.checkIsNull_messageDraft()
+        checker.checkIsNull_mutedUntilDate()
+        checker.checkIsNull_shouldThreadBeVisible()
+        checker.checkIsNull_contactPhoneNumber()
+        checker.checkIsNull_contactUUID()
+        checker.checkIsNull_groupModel()
+        checker.checkIsNull_hasDismissedOffers()
+        checker.checkIsNull_isMarkedUnread()
+        checker.checkIsNull_lastVisibleSortIdOnScreenPercentage()
+        checker.checkIsNull_lastVisibleSortId()
+
+        checker.checkType_id()
+        checker.checkType_recordType()
+        checker.checkType_uniqueId()
+        checker.checkType_conversationColorName()
+        checker.checkType_creationDate()
+        checker.checkType_isArchived()
+        checker.checkType_lastInteractionRowId()
+        checker.checkType_messageDraft()
+        checker.checkType_mutedUntilDate()
+        checker.checkType_shouldThreadBeVisible()
+        checker.checkType_contactPhoneNumber()
+        checker.checkType_contactUUID()
+        checker.checkType_groupModel()
+        checker.checkType_hasDismissedOffers()
+        checker.checkType_isMarkedUnread()
+        checker.checkType_lastVisibleSortIdOnScreenPercentage()
+        checker.checkType_lastVisibleSortId()
     }
 
     init(row: Row) {
         // TODO: Remove these temporary checks.
-        ThreadRecord.check(checker: ThreadRowCheckerImpl(row: row))
+        if ThreadRecord.hasChecked.tryToSetFlag() {
+            ThreadRecord.check(checker: ThreadRowCheckerImpl(row: row))
+        }
 
         id = row[0]
         recordType = row[1]

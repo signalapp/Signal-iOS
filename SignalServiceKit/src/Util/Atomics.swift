@@ -48,7 +48,7 @@ public class AtomicBool: NSObject {
     @objc
     public func tryToSetFlag() -> Bool {
         do {
-            transition(from: false, to: true)
+            try transition(from: false, to: true)
             return true
         } catch {
             return false
