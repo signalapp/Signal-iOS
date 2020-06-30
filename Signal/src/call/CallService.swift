@@ -522,6 +522,7 @@ extension SignalCall: CallManagerCallReference { }
         case .hangupAccepted: hangupType = .accepted
         case .hangupDeclined: hangupType = .declined
         case .hangupBusy: hangupType = .busy
+        // TODO - Hook up to case .needPermission from RingRTC when defined in proto
         }
 
         do {
@@ -623,32 +624,24 @@ extension SignalCall: CallManagerCallReference { }
 
         switch event {
         case .ringingLocal:
-            Logger.debug("ringingLocal")
-
             handleRinging(call: call)
 
         case .ringingRemote:
-            Logger.debug("ringingRemote")
-
             handleRinging(call: call)
 
         case .connectedLocal:
-            Logger.debug("connectedLocal")
+            Logger.debug("")
             // nothing further to do - already handled in handleAcceptCall().
 
         case .connectedRemote:
-            Logger.debug("connectedRemote")
-
             callUIAdapter.recipientAcceptedCall(call)
             handleConnected(call: call)
 
         case .endedLocalHangup:
-            Logger.debug("endedLocalHangup")
+            Logger.debug("")
             // nothing further to do - already handled in handleLocalHangupCall().
 
         case .endedRemoteHangup:
-            Logger.debug("endedRemoteHangup")
-
             guard call === self.currentCall else {
                 cleanupStaleCall(call)
                 return
@@ -669,8 +662,6 @@ extension SignalCall: CallManagerCallReference { }
             terminate(call: call)
 
         case .endedRemoteHangupAccepted:
-            Logger.debug("endedRemoteHangupAccepted")
-
             guard call === self.currentCall else {
                 cleanupStaleCall(call)
                 return
@@ -690,8 +681,6 @@ extension SignalCall: CallManagerCallReference { }
             }
 
         case .endedRemoteHangupDeclined:
-            Logger.debug("endedRemoteHangupDeclined")
-
             guard call === self.currentCall else {
                 cleanupStaleCall(call)
                 return
@@ -711,8 +700,6 @@ extension SignalCall: CallManagerCallReference { }
             }
 
         case .endedRemoteHangupBusy:
-            Logger.debug("endedRemoteHangupBusy")
-
             guard call === self.currentCall else {
                 cleanupStaleCall(call)
                 return
@@ -731,9 +718,12 @@ extension SignalCall: CallManagerCallReference { }
                 Logger.info("ignoring 'endedRemoteHangupBusy' since call is already finished")
             }
 
-        case .endedRemoteBusy:
-            Logger.debug("endedRemoteBusy")
+        case .endedRemoteHangupNeedPermission:
+            Logger.debug("")
 
+            // TODO - Implement to show 10s dialog to user.
+
+        case .endedRemoteBusy:
             guard call === self.currentCall else {
                 cleanupStaleCall(call)
                 return
@@ -787,8 +777,6 @@ extension SignalCall: CallManagerCallReference { }
             terminate(call: call)
 
         case .endedTimeout:
-            Logger.debug("endedTimeout")
-
             let description: String
 
             if call.direction == .outgoing {
@@ -800,26 +788,21 @@ extension SignalCall: CallManagerCallReference { }
             handleFailedCall(failedCall: call, error: CallError.timeout(description: description))
 
         case .endedSignalingFailure:
-            Logger.debug("endedSignalingFailure")
             handleFailedCall(failedCall: call, error: CallError.timeout(description: "signaling failure for call"))
 
         case .endedInternalFailure:
-            Logger.debug("endedInternalFailure")
             handleFailedCall(failedCall: call, error: OWSAssertionError("call manager internal error"))
 
         case .endedConnectionFailure:
-            Logger.debug("endedConnectionFailure")
             handleFailedCall(failedCall: call, error: CallError.disconnected)
 
         case .endedDropped:
-            Logger.debug("endedDropped")
+            Logger.debug("")
 
             // An incoming call was dropped, ignoring because we have already
             // failed the call on the screen.
 
         case .remoteVideoEnable:
-            Logger.debug("remoteVideoEnable")
-
             guard call === self.currentCall else {
                 cleanupStaleCall(call)
                 return
@@ -829,8 +812,6 @@ extension SignalCall: CallManagerCallReference { }
             fireDidUpdateVideoTracks()
 
         case .remoteVideoDisable:
-            Logger.debug("remoteVideoDisable")
-
             guard call === self.currentCall else {
                 cleanupStaleCall(call)
                 return
@@ -840,18 +821,12 @@ extension SignalCall: CallManagerCallReference { }
             fireDidUpdateVideoTracks()
 
         case .reconnecting:
-            Logger.debug("reconnecting")
-
             self.handleReconnecting(call: call)
 
         case .reconnected:
-            Logger.debug("reconnected")
-
             self.handleReconnected(call: call)
 
         case .endedReceivedOfferExpired:
-            Logger.debug("endedReceivedOfferExpired")
-
             // TODO - This is the case where an incoming offer's timestamp is
             // not within the range +/- 120 seconds of the current system time.
             // At the moment, this is not an issue since we are currently setting
@@ -861,15 +836,11 @@ extension SignalCall: CallManagerCallReference { }
             terminate(call: call)
 
         case .endedReceivedOfferWhileActive:
-            Logger.debug("endedReceivedOfferWhileActive")
-
             handleMissedCall(call)
             call.state = .localFailure
             terminate(call: call)
 
         case .endedIgnoreCallsFromNonMultiringCallers:
-            Logger.debug("endedIgnoreCallsFromNonMultiringCallers")
-
             handleMissedCall(call)
             call.state = .localFailure
             terminate(call: call)
@@ -992,6 +963,7 @@ extension SignalCall: CallManagerCallReference { }
             case .accepted: hangupBuilder.setType(.hangupAccepted)
             case .declined: hangupBuilder.setType(.hangupDeclined)
             case .busy: hangupBuilder.setType(.hangupBusy)
+            case .needPermission: hangupBuilder.setType(.hangupNormal)  // TODO - Hook up to proto enum
             }
 
             if hangupType != .normal {
