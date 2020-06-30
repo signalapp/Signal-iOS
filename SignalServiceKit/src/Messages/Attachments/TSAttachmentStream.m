@@ -11,6 +11,7 @@
 #import <AVFoundation/AVFoundation.h>
 #import <SignalCoreKit/Threading.h>
 #import <SignalServiceKit/SignalServiceKit-Swift.h>
+#import <YYImage/YYImage.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -565,7 +566,9 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
         if (![self isValidImage]) {
             return nil;
         }
-        UIImage *_Nullable image = [[UIImage alloc] initWithContentsOfFile:self.originalFilePath];
+
+        Class imageClass = self.isWebpImage ? [YYImage class] : [UIImage class];
+        UIImage *_Nullable image = [[imageClass alloc] initWithContentsOfFile:self.originalFilePath];
         if (image == nil) {
             OWSFailDebug(
                 @"Couldn't load original image: %d.", [OWSFileSystem fileOrFolderExistsAtPath:self.originalFilePath]);

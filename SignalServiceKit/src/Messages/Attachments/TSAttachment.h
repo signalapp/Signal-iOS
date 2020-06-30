@@ -130,6 +130,7 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:albumMessageId:atta
 
 @property (nonatomic, readonly) BOOL isAnimated;
 @property (nonatomic, readonly) BOOL isImage;
+@property (nonatomic, readonly) BOOL isWebpImage;
 @property (nonatomic, readonly) BOOL isVideo;
 @property (nonatomic, readonly) BOOL isAudio;
 @property (nonatomic, readonly) BOOL isVoiceMessage;
