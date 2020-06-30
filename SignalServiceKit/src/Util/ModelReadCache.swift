@@ -1007,6 +1007,17 @@ public class ModelReadCaches: NSObject {
     }
 
     @objc
+    public required override init() {
+        super.init()
+
+        NotificationCenter.default.addObserver(forName: SDSDatabaseStorage.storageDidReload,
+                                               object: nil, queue: nil) { [weak self] _ in
+                                                AssertIsOnMainThread()
+                                                self?.evacuateAllCaches()
+        }
+    }
+
+    @objc
     public let userProfileReadCache = UserProfileReadCache()
     @objc
     public let signalAccountReadCache = SignalAccountReadCache()
@@ -1024,8 +1035,7 @@ public class ModelReadCaches: NSObject {
     @objc
     fileprivate static let evacuateAllModelCaches = Notification.Name("EvacuateAllModelCaches")
 
-    @objc
-    public func evacuateAllCaches() {
+    private func evacuateAllCaches() {
         NotificationCenter.default.postNotificationNameAsync(Self.evacuateAllModelCaches, object: nil)
     }
 }

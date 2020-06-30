@@ -239,8 +239,6 @@ class DeviceTransferService: NSObject {
         DispatchMainThreadSafe {
             self.observers.compactMap { $0.value }.forEach { block($0) }
         }
-
-        modelReadCaches.evacuateAllCaches()
     }
 
     // MARK: -

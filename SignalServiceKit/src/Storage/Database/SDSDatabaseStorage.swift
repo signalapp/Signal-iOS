@@ -128,6 +128,9 @@ public class SDSDatabaseStorage: SDSTransactable {
         return GRDBDatabaseStorageAdapter.databaseFileUrl(baseDir: baseDir())
     }
 
+    @objc
+    public static let storageDidReload = Notification.Name("storageDidReload")
+
     public func reload() {
         AssertIsOnMainThread()
         assert(storageCoordinatorState == .GRDB)
@@ -148,6 +151,8 @@ public class SDSDatabaseStorage: SDSTransactable {
         if wasRegistered != TSAccountManager.sharedInstance().isRegistered {
             NotificationCenter.default.post(name: .registrationStateDidChange, object: nil, userInfo: nil)
         }
+
+        NotificationCenter.default.post(name: Self.storageDidReload, object: nil, userInfo: nil)
     }
 
     func createGrdbStorage() -> GRDBDatabaseStorageAdapter {
