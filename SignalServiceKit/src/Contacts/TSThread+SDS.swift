@@ -83,13 +83,36 @@ public extension ThreadRecord {
         return CodingKeys.allCases
     }
 
-    init(row: Row) {
-        // TODO: Remove this temporary check.
-        if arc4random_uniform(2) == 0 {
-            guard row.count == 17 else {
-                owsFail("Unexpected row count: \(row.count)")
-            }
+    private static func check_columnCount(row: Row) {
+        guard row.count == 17 else {
+            owsFail("Unexpected row count: \(row.count)")
         }
+    }
+
+    private static func check_lastVisibleSortIdOnScreenPercentage(row: Row) {
+        guard !row.hasNull(atIndex: 15) else {
+            owsFail("Null lastVisibleSortIdOnScreenPercentage")
+        }
+    }
+
+    private static func check_lastVisibleSortId(row: Row) {
+        guard !row.hasNull(atIndex: 16) else {
+            owsFail("Null lastVisibleSortId")
+        }
+    }
+
+    private static func check_fail(row: Row) {
+        owsFail("Can this be resymbolicated?")
+    }
+
+    init(row: Row) {
+        // TODO: Remove these temporary checks.
+        ThreadRecord.check_columnCount(row: row)
+        ThreadRecord.check_lastVisibleSortIdOnScreenPercentage(row: row)
+        ThreadRecord.check_lastVisibleSortId(row: row)
+        // TODO: Can we check the column types?
+        ThreadRecord.check_fail(row: row)
+
         id = row[0]
         recordType = row[1]
         uniqueId = row[2]
