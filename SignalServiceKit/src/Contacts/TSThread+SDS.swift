@@ -84,6 +84,12 @@ public extension ThreadRecord {
     }
 
     init(row: Row) {
+        // TODO: Remove this temporary check.
+        if arc4random_uniform(2) == 0 {
+            guard row.count == 17 else {
+                owsFail("Unexpected row count: \(row.count)")
+            }
+        }
         id = row[0]
         recordType = row[1]
         uniqueId = row[2]
