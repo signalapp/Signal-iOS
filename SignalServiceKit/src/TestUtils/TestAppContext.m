@@ -194,7 +194,7 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
-- (BOOL)didLastLaunchCrash
+- (BOOL)didLastLaunchNotTerminate
 {
     return NO;
 }

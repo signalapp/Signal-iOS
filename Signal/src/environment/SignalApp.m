@@ -15,7 +15,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-NSString *const kNSUserDefaults_CrashDetectionKey = @"kNSUserDefaults_CrashDetectionKey";
+NSString *const kNSUserDefaults_DidTerminateKey = @"kNSUserDefaults_DidTerminateKey";
 
 @interface SignalApp ()
 
@@ -64,16 +64,20 @@ NSString *const kNSUserDefaults_CrashDetectionKey = @"kNSUserDefaults_CrashDetec
     // Ignore "crashes" in DEBUG builds; applicationWillTerminate
     // will rarely be called during development.
 #else
-    _didLastLaunchCrash = [userDefaults objectForKey:kNSUserDefaults_CrashDetectionKey] != nil;
+    _didLastLaunchNotTerminate = [userDefaults objectForKey:kNSUserDefaults_DidTerminateKey] != nil;
 #endif
     // Very soon after every launch, we set this key.
     // We clear this key when the app terminates in
     // an orderly way.  Therefore if the key is still
     // set on any given launch, we know that the last
     // launch crashed.
-    [userDefaults setObject:@(YES) forKey:kNSUserDefaults_CrashDetectionKey];
+    //
+    // Note that iOS will sometimes kill the app for
+    // reasons other than crashing, so there will be
+    // some false positives.
+    [userDefaults setObject:@(YES) forKey:kNSUserDefaults_DidTerminateKey];
 
-    if (self.didLastLaunchCrash) {
+    if (self.didLastLaunchNotTerminate) {
         OWSLogWarn(@"Last launched crashed.");
     }
 }
@@ -82,7 +86,7 @@ NSString *const kNSUserDefaults_CrashDetectionKey = @"kNSUserDefaults_CrashDetec
 {
     OWSLogInfo(@"");
     NSUserDefaults *userDefaults = CurrentAppContext().appUserDefaults;
-    [userDefaults removeObjectForKey:kNSUserDefaults_CrashDetectionKey];
+    [userDefaults removeObjectForKey:kNSUserDefaults_DidTerminateKey];
 }
 
 #pragma mark - Dependencies

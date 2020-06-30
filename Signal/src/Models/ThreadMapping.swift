@@ -222,7 +222,7 @@ class ThreadMapping: NSObject {
         }
         if !threadIdsToLoad.isEmpty {
             // TODO: Remove this temporary measure.
-            let shouldDoBulkLoad = !SignalApp.shared().didLastLaunchCrash
+            let shouldDoBulkLoad = !SignalApp.shared().didLastLaunchNotTerminate
             var loadedThreads = Set<TSThread>()
             if shouldDoBulkLoad {
                 loadedThreads = try threadFinder.threads(withThreadIds: threadIdsToLoad, transaction: transaction)

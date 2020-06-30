@@ -129,7 +129,7 @@ NSString *NSStringForUIApplicationState(UIApplicationState value);
 
 @property (nonatomic, readonly) BOOL hasUI;
 
-@property (nonatomic, readonly) BOOL didLastLaunchCrash;
+@property (nonatomic, readonly) BOOL didLastLaunchNotTerminate;
 
 @end
 

@@ -580,7 +580,7 @@ public extension ThreadRecord {
 
     init(row: Row) {
         // TODO: Remove these temporary checks.
-        if ThreadRecord.hasChecked.tryToSetFlag() || CurrentAppContext().didLastLaunchCrash {
+        if ThreadRecord.hasChecked.tryToSetFlag() || CurrentAppContext().didLastLaunchNotTerminate {
             ThreadRecord.check(checker: ThreadRowCheckerImpl(row: row))
         }
 

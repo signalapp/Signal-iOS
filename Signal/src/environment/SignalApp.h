@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setup;
 
 @property (nonatomic, readonly) BOOL hasSelectedThread;
-@property (nonatomic, readonly) BOOL didLastLaunchCrash;
+@property (nonatomic, readonly) BOOL didLastLaunchNotTerminate;
 
 #pragma mark - Conversation Presentation
 
