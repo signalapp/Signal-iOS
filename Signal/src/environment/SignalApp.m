@@ -15,12 +15,16 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+NSString *const kNSUserDefaults_CrashDetectionKey = @"kNSUserDefaults_CrashDetectionKey";
+
 @interface SignalApp ()
 
 @property (nonatomic, nullable, weak) ConversationSplitViewController *conversationSplitViewController;
 @property (nonatomic) BOOL hasInitialRootViewController;
 
 @end
+
+#pragma mark -
 
 @implementation SignalApp
 
@@ -44,9 +48,41 @@ NS_ASSUME_NONNULL_BEGIN
 
     OWSSingletonAssert();
 
+    [self handleCrashDetection];
+
     [self warmAvailableEmojiCache];
 
     return self;
+}
+
+#pragma mark - Crash Detection
+
+- (void)handleCrashDetection
+{
+    NSUserDefaults *userDefaults = CurrentAppContext().appUserDefaults;
+#if TESTABLE_BUILD
+    // Ignore "crashes" in DEBUG builds; applicationWillTerminate
+    // will rarely be called during development.
+#else
+    _didLastLaunchCrash = [userDefaults objectForKey:kNSUserDefaults_CrashDetectionKey] != nil;
+#endif
+    // Very soon after every launch, we set this key.
+    // We clear this key when the app terminates in
+    // an orderly way.  Therefore if the key is still
+    // set on any given launch, we know that the last
+    // launch crashed.
+    [userDefaults setObject:@(YES) forKey:kNSUserDefaults_CrashDetectionKey];
+
+    if (self.didLastLaunchCrash) {
+        OWSLogWarn(@"Last launched crashed.");
+    }
+}
+
+- (void)applicationWillTerminate
+{
+    OWSLogInfo(@"");
+    NSUserDefaults *userDefaults = CurrentAppContext().appUserDefaults;
+    [userDefaults removeObjectForKey:kNSUserDefaults_CrashDetectionKey];
 }
 
 #pragma mark - Dependencies

@@ -414,6 +414,11 @@ NSString *const ReportedApplicationStateDidChangeNotification = @"ReportedApplic
     return YES;
 }
 
+- (BOOL)didLastLaunchCrash
+{
+    return SignalApp.sharedApp.didLastLaunchCrash;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END

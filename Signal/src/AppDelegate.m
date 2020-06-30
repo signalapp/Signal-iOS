@@ -237,6 +237,8 @@ void uncaughtExceptionHandler(NSException *exception)
 {
     OWSLogInfo(@"applicationWillTerminate.");
 
+    [SignalApp.sharedApp applicationWillTerminate];
+
     [DDLog flushLog];
 }
 
