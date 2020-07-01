@@ -85,8 +85,6 @@ struct GroupUpdateCopy {
         case .unknown:
             if oldGroupModel != nil,
                 newGroupModel.groupsVersion == .V2 {
-                Logger.verbose("oldGroupModel: \(oldGroupModel != nil)")
-                Logger.flush()
                 if !DebugFlags.permissiveGroupUpdateInfoMessages {
                     // This can happen due to a number of valid scenarios.
                     Logger.warn("Missing updater info.")
