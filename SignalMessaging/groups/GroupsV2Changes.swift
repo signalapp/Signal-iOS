@@ -197,14 +197,17 @@ public class GroupsV2Changes {
             guard let addedByUserID = pendingMember.addedByUserID else {
                 throw OWSAssertionError("Group pending member missing addedByUserID.")
             }
+
             // Some userIds/uuidCiphertexts can be validated by
-            // the service. These cannot.  Therefore we need to
+            // the service. This is one.
+            let addedByUuid = try groupV2Params.uuid(forUserId: addedByUserID)
+
+            // Some userIds/uuidCiphertexts can be validated by
+            // the service. This one cannot.  Therefore we need to
             // be robust to invalid ciphertexts.
             let uuid: UUID
-            let addedByUuid: UUID
             do {
                 uuid = try groupV2Params.uuid(forUserId: userId)
-                addedByUuid = try groupV2Params.uuid(forUserId: addedByUserID)
             } catch {
                 owsFailDebug("Error parsing uuid: \(error)")
                 continue
