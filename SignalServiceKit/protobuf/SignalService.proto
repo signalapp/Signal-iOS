@@ -63,9 +63,9 @@ message Content {
 message CallMessage {
   message Offer {
     enum Type {
-      OFFER_AUDIO_CALL      = 0;
-      OFFER_VIDEO_CALL      = 1;
-      OFFER_NEED_PERMISSION = 2;
+      OFFER_AUDIO_CALL = 0;
+      OFFER_VIDEO_CALL = 1;
+      // next index 3, skip 2 – it was the unused "NEED_PERMISSION" type
     }
 
     // @required
@@ -100,10 +100,11 @@ message CallMessage {
 
   message Hangup {
     enum Type {
-      HANGUP_NORMAL   = 0;
-      HANGUP_ACCEPTED = 1;
-      HANGUP_DECLINED = 2;
-      HANGUP_BUSY     = 3;
+      HANGUP_NORMAL          = 0;
+      HANGUP_ACCEPTED        = 1;
+      HANGUP_DECLINED        = 2;
+      HANGUP_BUSY            = 3;
+      HANGUP_NEED_PERMISSION = 4;
     }
 
     // @required

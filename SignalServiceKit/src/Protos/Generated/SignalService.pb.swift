@@ -454,8 +454,9 @@ struct SignalServiceProtos_CallMessage {
     enum TypeEnum: SwiftProtobuf.Enum {
       typealias RawValue = Int
       case offerAudioCall // = 0
+
+      /// next index 3, skip 2 – it was the unused "NEED_PERMISSION" type
       case offerVideoCall // = 1
-      case offerNeedPermission // = 2
 
       init() {
         self = .offerAudioCall
@@ -465,7 +466,6 @@ struct SignalServiceProtos_CallMessage {
         switch rawValue {
         case 0: self = .offerAudioCall
         case 1: self = .offerVideoCall
-        case 2: self = .offerNeedPermission
         default: return nil
         }
       }
@@ -474,7 +474,6 @@ struct SignalServiceProtos_CallMessage {
         switch self {
         case .offerAudioCall: return 0
         case .offerVideoCall: return 1
-        case .offerNeedPermission: return 2
         }
       }
 
@@ -638,6 +637,7 @@ struct SignalServiceProtos_CallMessage {
       case hangupAccepted // = 1
       case hangupDeclined // = 2
       case hangupBusy // = 3
+      case hangupNeedPermission // = 4
 
       init() {
         self = .hangupNormal
@@ -649,6 +649,7 @@ struct SignalServiceProtos_CallMessage {
         case 1: self = .hangupAccepted
         case 2: self = .hangupDeclined
         case 3: self = .hangupBusy
+        case 4: self = .hangupNeedPermission
         default: return nil
         }
       }
@@ -659,6 +660,7 @@ struct SignalServiceProtos_CallMessage {
         case .hangupAccepted: return 1
         case .hangupDeclined: return 2
         case .hangupBusy: return 3
+        case .hangupNeedPermission: return 4
         }
       }
 
@@ -3715,8 +3717,7 @@ extension SignalServiceProtos_CallMessage.Offer: SwiftProtobuf.Message, SwiftPro
 extension SignalServiceProtos_CallMessage.Offer.TypeEnum: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     0: .same(proto: "OFFER_AUDIO_CALL"),
-    1: .same(proto: "OFFER_VIDEO_CALL"),
-    2: .same(proto: "OFFER_NEED_PERMISSION")
+    1: .same(proto: "OFFER_VIDEO_CALL")
   ]
 }
 
@@ -3877,7 +3878,8 @@ extension SignalServiceProtos_CallMessage.Hangup.TypeEnum: SwiftProtobuf._ProtoN
     0: .same(proto: "HANGUP_NORMAL"),
     1: .same(proto: "HANGUP_ACCEPTED"),
     2: .same(proto: "HANGUP_DECLINED"),
-    3: .same(proto: "HANGUP_BUSY")
+    3: .same(proto: "HANGUP_BUSY"),
+    4: .same(proto: "HANGUP_NEED_PERMISSION")
   ]
 }
 
