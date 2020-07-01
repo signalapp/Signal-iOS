@@ -2848,7 +2848,7 @@ typedef enum : NSUInteger {
         - (self.collectionView.contentInset.top + self.collectionView.contentInset.bottom));
     BOOL isScrolledUpOnePage = scrollSpaceToBottom > pageHeight * 1.f;
 
-    BOOL hasLaterMessageOffscreen = ([self lastSortId] > [self lastVisibleSortId]);
+    BOOL hasLaterMessageOffscreen = ([self lastSortIdInLoadedWindow] > [self lastVisibleSortId]) || [self.conversationViewModel canLoadNewerItems];
 
     if ([self isInPreviewPlatter]) {
         [[self scrollDownButton] setHidden:YES];
