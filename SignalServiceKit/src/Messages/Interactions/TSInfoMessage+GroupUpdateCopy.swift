@@ -83,7 +83,10 @@ struct GroupUpdateCopy {
 
         switch updater {
         case .unknown:
-            if newGroupModel.groupsVersion == .V2 {
+            if oldGroupModel != nil,
+                newGroupModel.groupsVersion == .V2 {
+                Logger.verbose("oldGroupModel: \(oldGroupModel != nil)")
+                Logger.flush()
                 if !DebugFlags.permissiveGroupUpdateInfoMessages {
                     // This can happen due to a number of valid scenarios.
                     Logger.warn("Missing updater info.")
@@ -1246,11 +1249,15 @@ extension GroupUpdateCopy {
     private static func displayName(for address: SignalServiceAddress, transaction: SDSAnyReadTransaction) -> String {
         // TODO: Remove this after we enable the message request feature flag.
         assert(!FeatureFlags.messageRequest)
-        let displayName = contactsManager.displayName(for: address, transaction: transaction)
+        var displayName = contactsManager.displayName(for: address, transaction: transaction).filterForDisplay ?? ""
         if displayName == contactsManager.unknownUserLabel,
             let profileName = profileManager.fullName(for: address, transaction: transaction) {
-            return profileName
+            displayName = profileName.filterForDisplay ?? ""
         }
-        return displayName
+        if displayName.isEmpty {
+            return contactsManager.unknownUserLabel
+        } else {
+            return displayName
+        }
     }
 }
