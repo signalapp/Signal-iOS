@@ -33,6 +33,10 @@ class DebugUIGroupsV2: DebugUIPage {
         return SSKEnvironment.shared.groupsV2
     }
 
+    private var messageSender: MessageSender {
+        return SSKEnvironment.shared.messageSender
+    }
+
     // MARK: Overrides 
 
     override func name() -> String {
@@ -48,8 +52,14 @@ class DebugUIGroupsV2: DebugUIPage {
             })
 
             if groupThread.isGroupV2Thread {
+                // v2 Group
                 sectionItems.append(OWSTableItem(title: "Kick other group members.") { [weak self] in
                     self?.kickOtherGroupMembers(groupThread: groupThread)
+                })
+            } else {
+                // v1 Group
+                sectionItems.append(OWSTableItem(title: "Send empty v1 group update.") { [weak self] in
+                    self?.sendEmptyV1GroupUpdate(groupThread: groupThread)
                 })
             }
         }
@@ -884,6 +894,40 @@ class DebugUIGroupsV2: DebugUIPage {
         contentBuilder.setDataMessage(dataProto)
         let plaintextData = try! contentBuilder.buildSerializedData()
         return plaintextData
+    }
+
+    private func sendEmptyV1GroupUpdate(groupThread: TSGroupThread) {
+
+        guard let localAddress = tsAccountManager.localAddress else {
+            return owsFailDebug("Missing localAddress.")
+        }
+
+        let groupModel = groupThread.groupModel
+        let timestamp = NSDate.ows_millisecondTimeStamp()
+        let message = OWSDynamicOutgoingMessage(thread: groupThread) { (_: SignalRecipient) -> Data in
+            let groupContextBuilder = SSKProtoGroupContext.builder(id: groupModel.groupId)
+            groupContextBuilder.setType(.update)
+            groupContextBuilder.addMembersE164(localAddress.phoneNumber!)
+
+            let memberBuilder = SSKProtoGroupContextMember.builder()
+            memberBuilder.setE164(localAddress.phoneNumber!)
+            memberBuilder.setUuid(localAddress.uuid!.uuidString)
+            groupContextBuilder.addMembers(try! memberBuilder.build())
+
+            let dataBuilder = SSKProtoDataMessage.builder()
+            dataBuilder.setTimestamp(timestamp)
+            dataBuilder.setGroup(try! groupContextBuilder.build())
+            dataBuilder.setRequiredProtocolVersion(0)
+            return Self.contentProtoData(forDataBuilder: dataBuilder)
+        }
+
+        firstly { () -> Promise<Void> in
+            messageSender.sendMessage(.promise, message.asPreparer)
+        }.done { (_) -> Void in
+            Logger.info("Success.")
+        }.catch { error in
+            owsFailDebug("Error: \(error)")
+        }
     }
 }
 

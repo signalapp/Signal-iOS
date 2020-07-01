@@ -17,7 +17,7 @@ class NotificationService: UNNotificationServiceExtension {
     }
 
     var messageProcessing: MessageProcessing {
-        return SSKEnvironment.shared.messageProcessing
+        return .shared
     }
 
     var messageFetcherJob: MessageFetcherJob {

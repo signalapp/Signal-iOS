@@ -1404,8 +1404,13 @@ public class GroupManager: NSObject {
                     }.done(on: .global()) { _ in
                         Logger.debug("Successfully sent group update with avatar")
                     }.recover(on: .global()) { error in
-                        owsFailDebug("Failed to send group avatar update with error: \(error)")
-                        throw error
+                        Logger.error("Error sending v1 group avatar update: \(error)")
+                        if message.wasSentToAnyRecipient {
+                            // If a v1 group update was successfully sent to any
+                            // group member, consider it a success.
+                        } else {
+                            throw error
+                        }
                     }
                 }
             }
@@ -1413,16 +1418,21 @@ public class GroupManager: NSObject {
             // DURABLE CLEANUP - currently one caller uses the completion handler to delete the tappable error message
             // which causes this code to be called. Once we're more aggressive about durable sending retry,
             // we could get rid of this "retryable tappable error message".
-            if thread.isGroupV1Thread {
+            return firstly {
                 return self.messageSender.sendMessage(.promise, message.asPreparer)
-            } else {
-                assert(thread.isGroupV2Thread)
-                return firstly {
-                    return self.messageSender.sendMessage(.promise, message.asPreparer)
-                }.recover(on: .global()) { error in
+            }.recover(on: .global()) { error in
+                if thread.isGroupV1Thread {
+                    Logger.error("Error sending v1 group update: \(error)")
+                    if message.wasSentToAnyRecipient {
+                        // If a v1 group update was successfully sent to any
+                        // group member, consider it a success.
+                    } else {
+                        throw error
+                    }
+                } else {
                     // Failure to send a "group update" message should not
                     // be considered a failure when updating a v2 group.
-                    Logger.error("Error sending group update: \(error)")
+                    Logger.error("Error sending v2 group update: \(error)")
                 }
             }
         }

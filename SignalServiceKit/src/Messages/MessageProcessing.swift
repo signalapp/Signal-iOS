@@ -8,6 +8,11 @@ import PromiseKit
 @objc
 public class MessageProcessing: NSObject {
 
+    @objc
+    public static var shared: MessageProcessing {
+        return SSKEnvironment.shared.messageProcessing
+    }
+
     // MARK: - Dependencies
 
     private var databaseStorage: SDSDatabaseStorage {
@@ -354,6 +359,13 @@ public class MessageProcessing: NSObject {
 
     // This should only be accessed on serialQueue.
     private var allMessageFetchingAndProcessingResolvers = [Resolver<Void>]()
+
+    // This promise can be used by the MessageManager
+    // to block until all messages are fetched and processed.
+    @objc
+    public func allMessageFetchingAndProcessingPromiseObjc() -> AnyPromise {
+        return AnyPromise(allMessageFetchingAndProcessingPromise())
+    }
 
     // This promise can be used by the Groups v2 logic
     // to block until all messages are fetched and processed.
