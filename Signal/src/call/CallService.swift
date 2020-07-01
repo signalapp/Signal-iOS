@@ -386,8 +386,6 @@ extension SignalCall: CallManagerCallReference { }
         calls.insert(newCall)
         BenchEventStart(title: "Incoming Call Connection", eventId: "call-\(newCall.localId)")
 
-        let untrustedIdentity = OWSIdentityManager.shared().untrustedIdentityForSending(to: thread.contactAddress)
-
         guard tsAccountManager.isOnboarded() else {
             Logger.warn("user is not onboarded, skipping call.")
             let callRecord = TSCall(callType: .incomingMissed, thread: thread, sentAtTimestamp: sentAtTimestamp)
@@ -403,12 +401,12 @@ extension SignalCall: CallManagerCallReference { }
             return
         }
 
-        guard untrustedIdentity == nil else {
+        if let untrustedIdentity = OWSIdentityManager.shared().untrustedIdentityForSending(to: thread.contactAddress) {
             Logger.warn("missed a call due to untrusted identity: \(newCall)")
 
             let callerName = self.contactsManager.displayName(for: thread.contactAddress)
 
-            switch untrustedIdentity!.verificationState {
+            switch untrustedIdentity.verificationState {
             case .verified:
                 owsFailDebug("shouldn't have missed a call due to untrusted identity if the identity is verified")
                 self.notificationPresenter.presentMissedCall(newCall, callerName: callerName)
@@ -419,6 +417,36 @@ extension SignalCall: CallManagerCallReference { }
             }
 
             let callRecord = TSCall(callType: .incomingMissedBecauseOfChangedIdentity, thread: thread, sentAtTimestamp: sentAtTimestamp)
+            assert(newCall.callRecord == nil)
+            newCall.callRecord = callRecord
+            databaseStorage.write { transaction in
+                callRecord.anyInsert(transaction: transaction)
+            }
+
+            newCall.state = .localFailure
+            terminate(call: newCall)
+
+            return
+        }
+
+        guard allowsInboundCallsInThread(thread) else {
+            Logger.info("Ignoring call offer from \(thread.contactAddress) due to insufficient permissions.")
+
+            // Send the need permission message to the caller, so they know why we rejected their call.
+            callManager(
+                callManager,
+                shouldSendHangup: callId,
+                call: newCall,
+                destinationDeviceId: sourceDevice,
+                hangupType: .needPermission,
+                deviceId: tsAccountManager.storedDeviceId(),
+                useLegacyHangupMessage: true
+            )
+
+            // Store the call as a missed call for the local user. They will see it in the conversation
+            // along with the message request dialog. When they accept the dialog, they can call back
+            // or the caller can try again.
+            let callRecord = TSCall(callType: .incomingMissed, thread: thread, sentAtTimestamp: sentAtTimestamp)
             assert(newCall.callRecord == nil)
             newCall.callRecord = callRecord
             databaseStorage.write { transaction in
@@ -457,8 +485,6 @@ extension SignalCall: CallManagerCallReference { }
         switch callType {
         case .offerAudioCall: callMediaType = .audioCall
         case .offerVideoCall: callMediaType = .videoCall
-        // TODO - hook up to request user to share profile key logic when ready
-        case .offerNeedPermission: callMediaType = .audioCall
         }
 
         // Get the current local device Id, must be valid for lifetime of the call.
@@ -469,6 +495,18 @@ extension SignalCall: CallManagerCallReference { }
             try callManager.receivedOffer(call: newCall, sourceDevice: sourceDevice, callId: callId, sdp: sdp, messageAgeSec: messageAgeSec, callMediaType: callMediaType, localDevice: localDeviceId, remoteSupportsMultiRing: supportsMultiRing, isLocalDevicePrimary: isPrimaryDevice)
         } catch {
             handleFailedCall(failedCall: newCall, error: error)
+        }
+    }
+
+    private func allowsInboundCallsInThread(_ thread: TSContactThread) -> Bool {
+        return databaseStorage.read { transaction in
+            // IFF one of the following things is true, we can handle inbound call offers
+            // * The thread is in our profile whitelist
+            // * The thread belongs to someone in our system contacts
+            // * The thread existed before messages requests
+            return SSKEnvironment.shared.profileManager.isThread(inProfileWhitelist: thread, transaction: transaction)
+                || self.contactsManager.isSystemContact(address: thread.contactAddress)
+                || GRDBThreadFinder.isPreMessageRequestsThread(thread, transaction: transaction.unwrapGrdbRead)
         }
     }
 
@@ -522,7 +560,7 @@ extension SignalCall: CallManagerCallReference { }
         case .hangupAccepted: hangupType = .accepted
         case .hangupDeclined: hangupType = .declined
         case .hangupBusy: hangupType = .busy
-        // TODO - Hook up to case .needPermission from RingRTC when defined in proto
+        case .hangupNeedPermission: hangupType = .needPermission
         }
 
         do {
@@ -650,11 +688,31 @@ extension SignalCall: CallManagerCallReference { }
             switch call.state {
             case .idle, .dialing, .answering, .localRinging, .localFailure, .remoteBusy, .remoteRinging:
                 handleMissedCall(call)
-            case .connected, .reconnecting, .localHangup, .remoteHangup, .answeredElsewhere, .declinedElsewhere, .busyElsewhere:
+            case .connected, .reconnecting, .localHangup, .remoteHangup, .remoteHangupNeedPermission, .answeredElsewhere, .declinedElsewhere, .busyElsewhere:
                 Logger.info("call is finished")
             }
 
             call.state = .remoteHangup
+
+            // Notify UI
+            callUIAdapter.remoteDidHangupCall(call)
+
+            terminate(call: call)
+
+        case .endedRemoteHangupNeedPermission:
+            guard call === currentCall else {
+                cleanupStaleCall(call)
+                return
+            }
+
+            switch call.state {
+            case .idle, .dialing, .answering, .localRinging, .localFailure, .remoteBusy, .remoteRinging:
+                handleMissedCall(call)
+            case .connected, .reconnecting, .localHangup, .remoteHangup, .remoteHangupNeedPermission, .answeredElsewhere, .declinedElsewhere, .busyElsewhere:
+                Logger.info("call is finished")
+            }
+
+            call.state = .remoteHangupNeedPermission
 
             // Notify UI
             callUIAdapter.remoteDidHangupCall(call)
@@ -668,7 +726,7 @@ extension SignalCall: CallManagerCallReference { }
             }
 
             switch call.state {
-            case .idle, .dialing, .remoteBusy, .remoteRinging, .answeredElsewhere, .declinedElsewhere, .busyElsewhere, .remoteHangup:
+            case .idle, .dialing, .remoteBusy, .remoteRinging, .answeredElsewhere, .declinedElsewhere, .busyElsewhere, .remoteHangup, .remoteHangupNeedPermission:
                 handleFailedCall(failedCall: call, error: OWSAssertionError("unexpected state for endedRemoteHangupAccepted: \(call.state)"))
                 return
             case .answering, .connected:
@@ -687,7 +745,7 @@ extension SignalCall: CallManagerCallReference { }
             }
 
             switch call.state {
-            case .idle, .dialing, .remoteBusy, .remoteRinging, .answeredElsewhere, .declinedElsewhere, .busyElsewhere, .remoteHangup:
+            case .idle, .dialing, .remoteBusy, .remoteRinging, .answeredElsewhere, .declinedElsewhere, .busyElsewhere, .remoteHangup, .remoteHangupNeedPermission:
                 handleFailedCall(failedCall: call, error: OWSAssertionError("unexpected state for endedRemoteHangupDeclined: \(call.state)"))
                 return
             case .answering, .connected:
@@ -706,7 +764,7 @@ extension SignalCall: CallManagerCallReference { }
             }
 
             switch call.state {
-            case .idle, .dialing, .remoteBusy, .remoteRinging, .answeredElsewhere, .declinedElsewhere, .busyElsewhere, .remoteHangup:
+            case .idle, .dialing, .remoteBusy, .remoteRinging, .answeredElsewhere, .declinedElsewhere, .busyElsewhere, .remoteHangup, .remoteHangupNeedPermission:
                 handleFailedCall(failedCall: call, error: OWSAssertionError("unexpected state for endedRemoteHangupBusy: \(call.state)"))
                 return
             case .answering, .connected:
@@ -717,11 +775,6 @@ extension SignalCall: CallManagerCallReference { }
             case  .localFailure, .localHangup:
                 Logger.info("ignoring 'endedRemoteHangupBusy' since call is already finished")
             }
-
-        case .endedRemoteHangupNeedPermission:
-            Logger.debug("")
-
-            // TODO - Implement to show 10s dialog to user.
 
         case .endedRemoteBusy:
             guard call === self.currentCall else {
@@ -963,7 +1016,7 @@ extension SignalCall: CallManagerCallReference { }
             case .accepted: hangupBuilder.setType(.hangupAccepted)
             case .declined: hangupBuilder.setType(.hangupDeclined)
             case .busy: hangupBuilder.setType(.hangupBusy)
-            case .needPermission: hangupBuilder.setType(.hangupNormal)  // TODO - Hook up to proto enum
+            case .needPermission: hangupBuilder.setType(.hangupNeedPermission)
             }
 
             if hangupType != .normal {
@@ -1135,7 +1188,7 @@ extension SignalCall: CallManagerCallReference { }
             self.callUIAdapter.reportIncomingCall(call, thread: call.thread)
         case .remoteRinging:
             Logger.info("call already ringing. Ignoring \(#function): \(call).")
-        case .idle, .localRinging, .connected, .reconnecting, .localFailure, .localHangup, .remoteHangup, .remoteBusy, .answeredElsewhere, .declinedElsewhere, .busyElsewhere:
+        case .idle, .localRinging, .connected, .reconnecting, .localFailure, .localHangup, .remoteHangup, .remoteHangupNeedPermission, .remoteBusy, .answeredElsewhere, .declinedElsewhere, .busyElsewhere:
             owsFailDebug("unexpected call state: \(call.state): \(call).")
         }
     }

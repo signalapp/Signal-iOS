@@ -545,7 +545,7 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         assert(Thread.isMainThread)
 
         switch callState {
-        case .idle, .remoteHangup, .localHangup:
+        case .idle, .remoteHangup, .remoteHangupNeedPermission, .localHangup:
             return NSLocalizedString("IN_CALL_TERMINATED", comment: "Call setup status label")
         case .dialing:
             return NSLocalizedString("IN_CALL_CONNECTING", comment: "Call setup status label")
@@ -728,6 +728,8 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
 
         // Dismiss Handling
         switch callState {
+        case .remoteHangupNeedPermission:
+            displayNeedPermissionErrorAndDismiss()
         case .remoteHangup, .remoteBusy, .localFailure, .answeredElsewhere, .declinedElsewhere, .busyElsewhere:
             Logger.debug("dismissing after delay because new state is \(callState)")
             dismissIfPossible(shouldDelay: true)
@@ -750,6 +752,73 @@ class CallViewController: OWSViewController, CallObserver, CallServiceObserver, 
         } else {
             callDurationTimer?.invalidate()
             callDurationTimer = nil
+        }
+    }
+
+    func displayNeedPermissionErrorAndDismiss() {
+        guard !hasDismissed else { return }
+
+        hasDismissed = true
+
+        callUIAdapter.audioService.delegate = nil
+
+        contactNameLabel.removeFromSuperview()
+        callStatusLabel.removeFromSuperview()
+        incomingCallControls.removeFromSuperview()
+        ongoingCallControls.removeFromSuperview()
+        videoHintView.removeFromSuperview()
+        leaveCallViewButton.removeFromSuperview()
+
+        let needPermissionStack = UIStackView()
+        needPermissionStack.axis = .vertical
+        needPermissionStack.spacing = 20
+
+        view.addSubview(needPermissionStack)
+        needPermissionStack.autoPinWidthToSuperview(withMargin: 16)
+        needPermissionStack.autoVCenterInSuperview()
+
+        needPermissionStack.addArrangedSubview(contactAvatarContainerView)
+        contactAvatarContainerView.autoSetDimension(.height, toSize: 100)
+
+        let shortName = SDSDatabaseStorage.shared.uiRead {
+            return self.contactsManager.shortDisplayName(
+                for: self.thread.contactAddress,
+                transaction: $0
+            )
+        }
+
+        let needPermissionLabel = UILabel()
+        needPermissionLabel.text = String(
+            format: NSLocalizedString("CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT",
+                                      comment: "Error displayed on the 'call' view when the callee needs to grant permission before we can call them. Embeds {callee short name}."),
+            shortName
+        )
+        needPermissionLabel.numberOfLines = 0
+        needPermissionLabel.lineBreakMode = .byWordWrapping
+        needPermissionLabel.textAlignment = .center
+        needPermissionLabel.textColor = Theme.darkThemePrimaryColor
+        needPermissionLabel.font = .ows_dynamicTypeBody
+        needPermissionStack.addArrangedSubview(needPermissionLabel)
+
+        let okayButton = OWSFlatButton()
+        okayButton.useDefaultCornerRadius()
+        okayButton.setTitle(title: CommonStrings.okayButton, font: UIFont.ows_dynamicTypeBody.ows_semibold(), titleColor: Theme.accentBlueColor)
+        okayButton.setBackgroundColors(upColor: .ows_gray05)
+        okayButton.contentEdgeInsets = UIEdgeInsets(top: 13, left: 34, bottom: 13, right: 34)
+
+        okayButton.setPressedBlock { [weak self] in
+            self?.dismissImmediately(completion: nil)
+        }
+
+        let okayButtonContainer = UIView()
+        okayButtonContainer.addSubview(okayButton)
+        okayButton.autoPinHeightToSuperview()
+        okayButton.autoHCenterInSuperview()
+
+        needPermissionStack.addArrangedSubview(okayButtonContainer)
+
+        DispatchQueue.main.asyncAfter(deadline: .now() + 10) { [weak self] in
+            self?.dismissImmediately(completion: nil)
         }
     }
 

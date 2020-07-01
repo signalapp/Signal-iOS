@@ -215,6 +215,7 @@ protocol CallAudioServiceDelegate: class {
         case .localFailure: handleLocalFailure(call: call)
         case .localHangup: handleLocalHangup(call: call)
         case .remoteHangup: handleRemoteHangup(call: call)
+        case .remoteHangupNeedPermission: handleRemoteHangup(call: call)
         case .remoteBusy: handleBusy(call: call)
         case .answeredElsewhere: handleAnsweredElsewhere(call: call)
         case .declinedElsewhere: handleAnsweredElsewhere(call: call)
