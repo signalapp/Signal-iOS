@@ -177,6 +177,11 @@ NS_ASSUME_NONNULL_BEGIN
     return SSKEnvironment.shared.earlyMessageManager;
 }
 
+- (MessageProcessing *)messageProcessing
+{
+    return MessageProcessing.shared;
+}
+
 #pragma mark -
 
 - (void)startObserving
@@ -893,9 +898,10 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     // We don't want to send more than one "group info request"
-    // per group-sender pair per session.  Otherwise, when processing
-    // N incoming messages from Alice in Group X we might send Alice
-    // N "group info requests".
+    // to a given user if we receive multiple messages in an
+    // unknown group from that user.
+    //
+    // We use groupInfoRequestSet to de-bounce.
     NSString *requestKey =
         [NSString stringWithFormat:@"%@.%@", groupId.hexadecimalString, envelope.sourceAddress.stringForDisplay];
     @synchronized(self) {
@@ -906,6 +912,13 @@ NS_ASSUME_NONNULL_BEGIN
         }
         [self.groupInfoRequestSet addObject:requestKey];
     }
+
+    // Once we've drained the queue we can reset groupInfoRequestSet.
+    [self.messageProcessing allMessageFetchingAndProcessingPromiseObjc].thenInBackground(^{
+        @synchronized(self) {
+            [self.groupInfoRequestSet removeAllObjects];
+        }
+    });
 
     // FIXME: https://github.com/signalapp/Signal-iOS/issues/1340
     OWSLogInfo(@"Sending group info request: %@", envelopeAddress(envelope));
