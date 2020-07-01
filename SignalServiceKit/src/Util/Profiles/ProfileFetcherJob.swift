@@ -13,6 +13,7 @@ public enum ProfileFetchError: Int, Error {
     case notMainApp
     case cantRequestVersionedProfile
     case rateLimit
+    case unauthorized
 }
 
 // MARK: -
@@ -30,6 +31,8 @@ extension ProfileFetchError: CustomStringConvertible {
             return "ProfileFetchError.cantRequestVersionedProfile"
         case .rateLimit:
             return "ProfileFetchError.rateLimit"
+        case .unauthorized:
+            return "ProfileFetchError.unauthorized"
         }
     }
 }
@@ -158,6 +161,12 @@ public class ProfileFetcherJob: NSObject {
                 switch error {
                 case ProfileFetchError.missing:
                     Logger.warn("Error: \(error)")
+                case ProfileFetchError.unauthorized:
+                    if self.tsAccountManager.isRegistered {
+                        owsFailDebug("Error: \(error)")
+                    } else {
+                        Logger.warn("Error: \(error)")
+                    }
                 default:
                     owsFailDebug("Error: \(error)")
                 }
@@ -219,7 +228,7 @@ public class ProfileFetcherJob: NSObject {
         return SignalServiceRestClient()
     }
 
-    private var tsAccountManager: TSAccountManager {
+    private class var tsAccountManager: TSAccountManager {
         return SSKEnvironment.shared.tsAccountManager
     }
 
@@ -289,6 +298,9 @@ public class ProfileFetcherJob: NSObject {
         }.done(on: DispatchQueue.global()) { fetchedProfile in
             resolver.fulfill(fetchedProfile)
         }.catch(on: DispatchQueue.global()) { error in
+            if error.httpStatusCode == 401 {
+                return resolver.reject(ProfileFetchError.unauthorized)
+            }
             if error.httpStatusCode == 404 {
                 return resolver.reject(ProfileFetchError.missing)
             }
