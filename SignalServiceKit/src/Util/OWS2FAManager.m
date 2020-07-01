@@ -173,7 +173,7 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
     [self setDefaultRepetitionIntervalWithTransaction:transaction];
 
     // Schedule next reminder relative to now
-    [self setLastSuccessfulReminderDate:[NSDate new] transaction:transaction];
+    [self setLastCompletedReminderDate:[NSDate new] transaction:transaction];
 
     [transaction addSyncCompletion:^{
         [[NSNotificationCenter defaultCenter] postNotificationNameAsync:NSNotificationName_2FAStateDidChange
@@ -317,14 +317,14 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
 
 #pragma mark - Reminders
 
-- (nullable NSDate *)lastSuccessfulReminderDateWithTransaction:(SDSAnyReadTransaction *)transaction
+- (nullable NSDate *)lastCompletedReminderDateWithTransaction:(SDSAnyReadTransaction *)transaction
 {
     return [OWS2FAManager.keyValueStore getDate:kOWS2FAManager_LastSuccessfulReminderDateKey transaction:transaction];
 }
 
-- (void)setLastSuccessfulReminderDate:(nullable NSDate *)date transaction:(SDSAnyWriteTransaction *)transaction
+- (void)setLastCompletedReminderDate:(nullable NSDate *)date transaction:(SDSAnyWriteTransaction *)transaction
 {
-    OWSLogDebug(@"Setting setLastSuccessfulReminderDate:%@", date);
+    OWSLogDebug(@"Setting setLastCompletedReminderDate:%@", date);
     [OWS2FAManager.keyValueStore setDate:date key:kOWS2FAManager_LastSuccessfulReminderDateKey transaction:transaction];
 }
 
@@ -427,11 +427,11 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
 
 - (NSDate *)nextReminderDateWithTransaction:(SDSAnyReadTransaction *)transaction
 {
-    NSDate *lastSuccessfulReminderDate =
-        [self lastSuccessfulReminderDateWithTransaction:transaction] ?: [NSDate distantPast];
+    NSDate *lastCompletedReminderDate =
+        [self lastCompletedReminderDateWithTransaction:transaction] ?: [NSDate distantPast];
     NSTimeInterval repetitionInterval = [self repetitionIntervalWithTransaction:transaction];
 
-    return [lastSuccessfulReminderDate dateByAddingTimeInterval:repetitionInterval];
+    return [lastCompletedReminderDate dateByAddingTimeInterval:repetitionInterval];
 }
 
 - (NSArray<NSNumber *> *)allRepetitionIntervals
@@ -467,20 +467,19 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
                                       transaction:transaction];
 }
 
-- (void)updateRepetitionIntervalWithWasSuccessful:(BOOL)wasSuccessful
+- (void)reminderCompletedWithIncorrectAttempts:(BOOL)incorrectAttempts
 {
     DatabaseStorageWrite(self.databaseStorage, ^(SDSAnyWriteTransaction *transaction) {
-        if (wasSuccessful) {
-            [self setLastSuccessfulReminderDate:[NSDate new] transaction:transaction];
-        }
+        [self setLastCompletedReminderDate:[NSDate new] transaction:transaction];
 
         NSTimeInterval oldInterval = [self repetitionIntervalWithTransaction:transaction];
-        NSTimeInterval newInterval = [self adjustRepetitionInterval:oldInterval wasSuccessful:wasSuccessful];
+        NSTimeInterval newInterval = [self adjustRepetitionInterval:oldInterval
+                                              withIncorrectAttempts:incorrectAttempts];
 
-        OWSLogInfo(@"%@ guess. Updating repetition interval: %f -> %f",
-            (wasSuccessful ? @"successful" : @"failed"),
+        OWSLogInfo(@"Updating repetition interval: %f -> %f. Had incorrect attempts: %d",
             oldInterval,
-            newInterval);
+            newInterval,
+            incorrectAttempts);
 
         [OWS2FAManager.keyValueStore setDouble:newInterval
                                            key:kOWS2FAManager_RepetitionInterval
@@ -488,7 +487,7 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
     });
 }
 
-- (NSTimeInterval)adjustRepetitionInterval:(NSTimeInterval)oldInterval wasSuccessful:(BOOL)wasSuccessful
+- (NSTimeInterval)adjustRepetitionInterval:(NSTimeInterval)oldInterval withIncorrectAttempts:(BOOL)incorrectAttempts
 {
     NSArray<NSNumber *> *allIntervals = self.allRepetitionIntervals;
 
@@ -498,7 +497,7 @@ const NSUInteger kLegacyTruncated2FAv1PinLength = 16;
         }];
 
     NSUInteger newIndex;
-    if (wasSuccessful) {
+    if (!incorrectAttempts) {
         newIndex = oldIndex + 1;
     } else {
         // prevent overflow

@@ -54,7 +54,7 @@ typedef NS_CLOSED_ENUM(NSUInteger, OWS2FAMode) {
 
 - (void)disable2FAWithSuccess:(nullable OWS2FASuccess)success failure:(nullable OWS2FAFailure)failure;
 
-- (void)updateRepetitionIntervalWithWasSuccessful:(BOOL)wasSuccessful;
+- (void)reminderCompletedWithIncorrectAttempts:(BOOL)incorrectAttempts;
 
 - (void)markEnabledWithPin:(NSString *)pin
                transaction:(SDSAnyWriteTransaction *)transaction NS_SWIFT_NAME(markEnabled(pin:transaction:));

@@ -236,9 +236,10 @@ public class PinReminderViewController: OWSViewController {
     @objc func dismissPressed() {
         Logger.info("")
 
-        // The megaphone will persist and we'll deprecate their reminder interval if they
-        // tried and guessed wrong while the view was visible.
-        if hasGuessedWrong { OWS2FAManager.shared().updateRepetitionInterval(withWasSuccessful: false) }
+        // If the user tried and guessed wrong, we'll dismiss the megaphone and
+        // decrease their reminder interval so the next reminder comes sooner.
+        // If they didn't try and enter a PIN, we do nothing and leave the megaphone.
+        if hasGuessedWrong { OWS2FAManager.shared().reminderCompleted(withIncorrectAttempts: true) }
 
         dismiss(animated: true, completion: nil)
     }
@@ -278,7 +279,7 @@ public class PinReminderViewController: OWSViewController {
     }
 
     private func dismissAndUpdateRepetitionInterval() {
-        OWS2FAManager.shared().updateRepetitionInterval(withWasSuccessful: !hasGuessedWrong)
+        OWS2FAManager.shared().reminderCompleted(withIncorrectAttempts: hasGuessedWrong)
         dismiss(animated: true)
     }
 
