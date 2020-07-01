@@ -51,6 +51,10 @@ class DebugUIGroupsV2: DebugUIPage {
                 self?.insertGroupUpdateInfoMessages(groupThread: groupThread)
             })
 
+            sectionItems.append(OWSTableItem(title: "Send group update.") { [weak self] in
+                self?.sendGroupUpdate(groupThread: groupThread)
+            })
+
             if groupThread.isGroupV2Thread {
                 // v2 Group
                 sectionItems.append(OWSTableItem(title: "Kick other group members.") { [weak self] in
@@ -924,6 +928,16 @@ class DebugUIGroupsV2: DebugUIPage {
         firstly { () -> Promise<Void> in
             messageSender.sendMessage(.promise, message.asPreparer)
         }.done { (_) -> Void in
+            Logger.info("Success.")
+        }.catch { error in
+            owsFailDebug("Error: \(error)")
+        }
+    }
+
+    private func sendGroupUpdate(groupThread: TSGroupThread) {
+        firstly {
+            GroupManager.sendGroupUpdateMessage(thread: groupThread)
+        }.done { _ in
             Logger.info("Success.")
         }.catch { error in
             owsFailDebug("Error: \(error)")
