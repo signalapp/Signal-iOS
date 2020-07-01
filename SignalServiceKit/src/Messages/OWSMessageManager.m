@@ -1205,6 +1205,15 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
+    BOOL shouldSuppressAvatarAttribution = NO;
+    SignalServiceAddress *groupUpdateSourceAddress;
+    if (!envelope.sourceAddress.isValid) {
+        OWSFailDebug(@"Invalid envelope.sourceAddress");
+        return;
+    } else {
+        groupUpdateSourceAddress = envelope.sourceAddress;
+    }
+
     // Group messages create the group if it doesn't already exist.
     //
     // We distinguish between the old group state (if any) and the new group
@@ -1217,19 +1226,62 @@ NS_ASSUME_NONNULL_BEGIN
         }
         if (oldGroupThread.isLocalUserInGroup) {
             // If the local user had left the group we couldn't trust our local group state - we'd
-            // have to trust the remote.
+            // have to trust the remote membership.
             //
             // But since we're in the group, ensure no-one is kicked via a group update.
             [newMembers addObjectsFromArray:oldGroupThread.groupModel.groupMembers];
-        }
-    }
+        } else {
+            // If the local user has left the group we can't trust our local group state - we
+            // have to trust the remote membership.  Otherwise, we might accidentally re-add
+            // members who left the group while we were not in the group.
+            SignalServiceAddress *_Nullable localAddress = self.tsAccountManager.localAddress;
+            if (localAddress == nil) {
+                OWSFailDebug(@"Missing localAddress.");
+                return;
+            }
+            if (groupContext.unwrappedType != SSKProtoGroupContextTypeUpdate
+                || ![newMembers containsObject:localAddress]) {
+                OWSLogInfo(
+                    @"Ignoring v1 group state change. We are not in group and the group update does not re-add us.");
+                return;
+            }
 
-    SignalServiceAddress *groupUpdateSourceAddress;
-    if (!envelope.sourceAddress.isValid) {
-        OWSFailDebug(@"Invalid envelope.sourceAddress");
-        return;
-    } else {
-        groupUpdateSourceAddress = envelope.sourceAddress;
+            // When being re-added to a group, we don't want to attribute
+            // all of the changes that have occurred while we were not in
+            // the group to the person that re-added us to the group.
+            //
+            // But we do want to attribute re-adding us to the user who
+            // did it.  Therefore we do two seperate group upserts.  The
+            // first ensures that the group exists and that the other
+            // changes are _not_ attributed (groupUpdateSourceAddress == nil).
+            //
+            // The group upsert below will re-add us to the group and it
+            // will be attributed.
+            NSMutableSet<SignalServiceAddress *> *newMembersWithoutLocalUser = [newMembers mutableCopy];
+            [newMembersWithoutLocalUser removeObject:localAddress];
+
+            DisappearingMessageToken *disappearingMessageToken =
+                [DisappearingMessageToken tokenForProtoExpireTimer:dataMessage.expireTimer];
+            NSError *_Nullable error;
+            UpsertGroupResult *_Nullable result =
+                [GroupManager remoteUpsertExistingGroupV1WithGroupId:groupId
+                                                                name:groupContext.name
+                                                          avatarData:oldGroupThread.groupModel.groupAvatarData
+                                                             members:newMembersWithoutLocalUser.allObjects
+                                            disappearingMessageToken:disappearingMessageToken
+                                            groupUpdateSourceAddress:nil
+                                                   infoMessagePolicy:InfoMessagePolicyAlways
+                                                         transaction:transaction
+                                                               error:&error];
+            if (error != nil || result == nil) {
+                OWSFailDebug(@"Error: %@", error);
+                return;
+            }
+
+            // For the same reason, don't attribute any avatar update
+            // to the user who re-added us.
+            shouldSuppressAvatarAttribution = YES;
+        }
     }
 
     switch (groupContext.unwrappedType) {
@@ -1258,6 +1310,7 @@ NS_ASSUME_NONNULL_BEGIN
                 [self handleReceivedGroupAvatarUpdateWithEnvelope:envelope
                                                       dataMessage:dataMessage
                                                       groupThread:newGroupThread
+                                        shouldSuppressAttribution:shouldSuppressAvatarAttribution
                                                       transaction:transaction];
             }
 
@@ -1296,6 +1349,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)handleReceivedGroupAvatarUpdateWithEnvelope:(SSKProtoEnvelope *)envelope
                                         dataMessage:(SSKProtoDataMessage *)dataMessage
                                         groupThread:(TSGroupThread *)groupThread
+                          shouldSuppressAttribution:(BOOL)shouldSuppressAttribution
                                         transaction:(SDSAnyWriteTransaction *)transaction
 {
     if (!envelope) {
@@ -1315,10 +1369,12 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    SignalServiceAddress *groupUpdateSourceAddress;
+    SignalServiceAddress *_Nullable groupUpdateSourceAddress;
     if (!envelope.sourceAddress.isValid) {
         OWSFailDebug(@"Invalid envelope.sourceAddress");
         return;
+    } else if (shouldSuppressAttribution) {
+        groupUpdateSourceAddress = nil;
     } else {
         groupUpdateSourceAddress = envelope.sourceAddress;
     }
@@ -1836,7 +1892,7 @@ NS_ASSUME_NONNULL_BEGIN
         return;
     }
 
-    OWSLogInfo(@"Received 'Request Group Info' message for group: %@ from: %@", groupId, envelope.sourceAddress);
+    OWSLogInfo(@"Received 'Group Info Request' message for group: %@ from: %@", groupId, envelope.sourceAddress);
 
     TSGroupThread *_Nullable gThread = [TSGroupThread fetchWithGroupId:groupId transaction:transaction];
     if (!gThread) {
@@ -1850,7 +1906,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Ensure sender is in the group.
     if (![gThread.groupModel.groupMembers containsObject:envelope.sourceAddress]) {
-        OWSLogWarn(@"Ignoring 'Request Group Info' message for non-member of group. %@ not in %@",
+        OWSLogWarn(@"Ignoring 'Group Info Request' message for non-member of group. %@ not in %@",
             envelope.sourceAddress,
             gThread.groupModel.groupMembers);
         return;
@@ -1858,7 +1914,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     // Ensure we are in the group.
     if (!gThread.isLocalUserInGroup) {
-        OWSLogWarn(@"Ignoring 'Request Group Info' message for group we no longer belong to.");
+        OWSLogWarn(@"Ignoring 'Group Info Request' message for group we no longer belong to.");
         return;
     }
 
