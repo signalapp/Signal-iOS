@@ -60,6 +60,8 @@ public class GroupsV2Changes {
         guard let changeAuthorUuidData = changeActionsProto.sourceUuid else {
             throw OWSAssertionError("Missing changeAuthorUuid.")
         }
+        // Some userIds/uuidCiphertexts can be validated by
+        // the service. This is one.
         let changeAuthorUuid = try groupV2Params.uuid(forUserId: changeAuthorUuidData)
 
         guard changeActionsProto.hasRevision else {
@@ -98,6 +100,8 @@ public class GroupsV2Changes {
             guard let role = TSGroupMemberRole.role(for: protoRole) else {
                 throw OWSAssertionError("Invalid role: \(protoRole.rawValue)")
             }
+            // Some userIds/uuidCiphertexts can be validated by
+            // the service. This is one.
             let uuid = try groupV2Params.uuid(forUserId: userId)
             let address = SignalServiceAddress(uuid: uuid)
 
@@ -121,6 +125,8 @@ public class GroupsV2Changes {
             guard let userId = action.deletedUserID else {
                 throw OWSAssertionError("Missing userID.")
             }
+            // Some userIds/uuidCiphertexts can be validated by
+            // the service. This is one.
             let uuid = try groupV2Params.uuid(forUserId: userId)
             let address = SignalServiceAddress(uuid: uuid)
 
@@ -141,6 +147,8 @@ public class GroupsV2Changes {
                 throw OWSAssertionError("Invalid role: \(protoRole.rawValue)")
             }
 
+            // Some userIds/uuidCiphertexts can be validated by
+            // the service. This is one.
             let uuid = try groupV2Params.uuid(forUserId: userId)
             let address = SignalServiceAddress(uuid: uuid)
 
@@ -189,11 +197,17 @@ public class GroupsV2Changes {
             guard let addedByUserID = pendingMember.addedByUserID else {
                 throw OWSAssertionError("Group pending member missing addedByUserID.")
             }
+
+            // Some userIds/uuidCiphertexts can be validated by
+            // the service. This is one.
+            let addedByUuid = try groupV2Params.uuid(forUserId: addedByUserID)
+
+            // Some userIds/uuidCiphertexts can be validated by
+            // the service. This one cannot.  Therefore we need to
+            // be robust to invalid ciphertexts.
             let uuid: UUID
-            let addedByUuid: UUID
             do {
                 uuid = try groupV2Params.uuid(forUserId: userId)
-                addedByUuid = try groupV2Params.uuid(forUserId: addedByUserID)
             } catch {
                 owsFailDebug("Error parsing uuid: \(error)")
                 continue
@@ -210,6 +224,8 @@ public class GroupsV2Changes {
             guard let userId = action.deletedUserID else {
                 throw OWSAssertionError("Missing userID.")
             }
+            // Some userIds/uuidCiphertexts can be validated by
+            // the service. This is one.
             let uuid = try groupV2Params.uuid(forUserId: userId)
             let address = SignalServiceAddress(uuid: uuid)
 
