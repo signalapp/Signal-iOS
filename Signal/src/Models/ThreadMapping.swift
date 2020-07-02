@@ -194,10 +194,6 @@ class ThreadMapping: NSObject {
             return newThreads
         }
 
-        guard FeatureFlags.shouldThreadMappingUseCache else {
-            return try loadWithoutCache()
-        }
-
         // Loading the mapping from the cache has the following steps:
         //
         // 1. Fetch the uniqueIds for the visible threads.
@@ -209,34 +205,20 @@ class ThreadMapping: NSObject {
         // 2. Try to pull as many threads as possible from the cache.
         var threadIdToModelMap: [String: TSThread] = threadReadCache.getThreadsIfInCache(forUniqueIds: threadIds,
                                                                                          transaction: transaction)
-        var threadIdsToLoad = Set(threadIds)
-        threadIdsToLoad.subtract(threadIdToModelMap.keys)
+        var threadsToLoad = Set(threadIds)
+        threadsToLoad.subtract(threadIdToModelMap.keys)
 
         // 3. Bulk load any threads that are not in the cache in a
         //    single query.
         //
         // NOTE: There's an upper bound on how long SQL queries should be.
         //       We use kMaxIncrementalRowChanges to limit query size.
-        guard threadIdsToLoad.count <= UIDatabaseObserver.kMaxIncrementalRowChanges else {
+        guard threadsToLoad.count <= UIDatabaseObserver.kMaxIncrementalRowChanges else {
             return try loadWithoutCache()
         }
-        if !threadIdsToLoad.isEmpty {
-            // TODO: Remove this temporary measure.
-            let shouldDoBulkLoad = !SignalApp.shared().didLastLaunchNotTerminate
-            var loadedThreads = Set<TSThread>()
-            if shouldDoBulkLoad {
-                loadedThreads = try threadFinder.threads(withThreadIds: threadIdsToLoad, transaction: transaction)
-            } else {
-                for threadId in threadIdsToLoad {
-                    guard let thread = TSThread.anyFetch(uniqueId: threadId, transaction: transaction) else {
-                        owsFailDebug("Individual thread load failed.")
-                        return try loadWithoutCache()
-                    }
-                    assert(!loadedThreads.contains(thread))
-                    loadedThreads.insert(thread)
-                }
-            }
-            guard loadedThreads.count == threadIdsToLoad.count else {
+        if !threadsToLoad.isEmpty {
+            let loadedThreads = try threadFinder.threads(withThreadIds: threadsToLoad, transaction: transaction)
+            guard loadedThreads.count == threadsToLoad.count else {
                 owsFailDebug("Loading threads failed.")
                 return try loadWithoutCache()
             }
