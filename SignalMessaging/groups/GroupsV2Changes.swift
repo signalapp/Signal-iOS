@@ -303,18 +303,17 @@ public class GroupsV2Changes {
             let uuidCiphertext = try presentation.getUuidCiphertext()
             let uuid = try groupV2Params.uuid(forUuidCiphertext: uuidCiphertext)
 
-            let address = SignalServiceAddress(uuid: uuid)
-            guard oldGroupMembership.pendingMembers.contains(address) else {
+            guard oldGroupMembership.isPendingMember(uuid) else {
                 throw OWSAssertionError("Invalid membership.")
             }
-            guard !oldGroupMembership.nonPendingMembers.contains(address) else {
+            guard !oldGroupMembership.isNonPendingMember(uuid) else {
                 throw OWSAssertionError("Invalid membership.")
             }
-            guard let role = oldGroupMembership.role(for: address) else {
+            guard let role = oldGroupMembership.role(for: uuid) else {
                 throw OWSAssertionError("Missing role.")
             }
-            groupMembershipBuilder.remove(address)
-            groupMembershipBuilder.addNonPendingMember(address, role: role)
+            groupMembershipBuilder.remove(uuid)
+            groupMembershipBuilder.addNonPendingMember(uuid, role: role)
 
             if uuid != changeAuthorUuid {
                 // Only the invitee can accept an invitation.

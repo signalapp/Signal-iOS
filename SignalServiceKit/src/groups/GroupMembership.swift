@@ -248,6 +248,10 @@ public class GroupMembership: MTLModel {
         return Builder().build()
     }
 
+    public func role(for uuid: UUID) -> TSGroupMemberRole? {
+        return role(for: SignalServiceAddress(uuid: uuid))
+    }
+
     public func role(for address: SignalServiceAddress) -> TSGroupMemberRole? {
         guard let memberState = memberStateMap[address] else {
             return nil
