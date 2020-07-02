@@ -1256,6 +1256,47 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     }
     cell.accessibilityIdentifier = ACCESSIBILITY_IDENTIFIER_WITH_NAME(self, cellName);
 
+    NSString *archiveTitle;
+    if (self.conversationListMode == ConversationListMode_Inbox) {
+      archiveTitle = CommonStrings.archiveAction;
+    } else {
+      archiveTitle = CommonStrings.unarchiveAction;
+    }
+
+    OWSCellAccessibilityCustomAction *archiveAction =
+        [[OWSCellAccessibilityCustomAction alloc] initWithName:archiveTitle
+                                                          type:OWSCellAccessibilityCustomActionTypeArchive
+                                                        thread:thread.threadRecord
+                                                        target:self
+                                                      selector:@selector(performAccessibilityCustomAction:)];
+
+    OWSCellAccessibilityCustomAction *deleteAction =
+        [[OWSCellAccessibilityCustomAction alloc] initWithName:CommonStrings.deleteButton
+                                                          type:OWSCellAccessibilityCustomActionTypeDelete
+                                                        thread:thread.threadRecord
+                                                        target:self
+                                                      selector:@selector(performAccessibilityCustomAction:)];
+
+    OWSCellAccessibilityCustomAction *leadingAction;
+    if (thread.hasUnreadMessages) {
+        leadingAction =
+            [[OWSCellAccessibilityCustomAction alloc] initWithName:CommonStrings.readAction
+                                                              type:OWSCellAccessibilityCustomActionTypeMarkRead
+                                                            thread:thread.threadRecord
+                                                            target:self
+                                                          selector:@selector(performAccessibilityCustomAction:)];
+    } else {
+        leadingAction =
+            [[OWSCellAccessibilityCustomAction alloc] initWithName:CommonStrings.unreadAction
+                                                              type:OWSCellAccessibilityCustomActionTypeMarkUnread
+                                                            thread:thread.threadRecord
+                                                            target:self
+                                                          selector:@selector(performAccessibilityCustomAction:)];
+    }
+    
+  cell.accessibilityCustomActions = @[ archiveAction, deleteAction, leadingAction ];
+
+
     if ([self isConversationActiveForThread:thread.threadRecord]) {
         [tableView selectRowAtIndexPath:indexPath animated:NO scrollPosition:UITableViewScrollPositionNone];
     } else {
@@ -1382,11 +1423,9 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
 
             NSString *archiveTitle;
             if (self.conversationListMode == ConversationListMode_Inbox) {
-                archiveTitle = NSLocalizedString(
-                    @"ARCHIVE_ACTION", @"Pressing this button moves a thread from the inbox to the archive");
+                archiveTitle = CommonStrings.archiveAction;
             } else {
-                archiveTitle = NSLocalizedString(@"UNARCHIVE_ACTION",
-                    @"Pressing this button moves an archived thread from the archive back to the inbox");
+                archiveTitle = CommonStrings.unarchiveAction;
             }
 
             archiveAction.backgroundColor = UIColor.ows_gray60Color;
@@ -1432,8 +1471,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                                                           }];
 
                 readAction.backgroundColor = UIColor.ows_accentBlueColor;
-                readAction.accessibilityLabel
-                    = NSLocalizedString(@"READ_ACTION", @"Pressing this button marks a thread as read");
+                readAction.accessibilityLabel = CommonStrings.readAction;
                 readAction.image = [self actionImageNamed:@"message-outline-24"
                                                 withTitle:readAction.accessibilityLabel];
 
@@ -1457,8 +1495,7 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
                                                           }];
 
                 unreadAction.backgroundColor = UIColor.ows_accentBlueColor;
-                unreadAction.accessibilityLabel
-                    = NSLocalizedString(@"UNREAD_ACTION", @"Pressing this button marks a thread as unread");
+                unreadAction.accessibilityLabel = CommonStrings.unreadAction;
                 unreadAction.image = [self actionImageNamed:@"message-unread-outline-24"
                                                   withTitle:unreadAction.accessibilityLabel];
 
@@ -1608,6 +1645,24 @@ NSString *const kArchiveButtonPseudoGroup = @"kArchiveButtonPseudoGroup";
     [alert addAction:[OWSActionSheets cancelAction]];
 
     [self presentActionSheet:alert];
+}
+
+- (void)performAccessibilityCustomAction:(OWSCellAccessibilityCustomAction *)action
+{
+    switch(action.type){
+        case OWSCellAccessibilityCustomActionTypeArchive:
+            [self archiveThread:action.thread];
+            break;
+        case OWSCellAccessibilityCustomActionTypeDelete:
+            [self deleteThreadWithConfirmation:action.thread];
+            break;
+        case OWSCellAccessibilityCustomActionTypeMarkRead:
+            [self markThreadAsRead:action.thread];
+            break;
+        case OWSCellAccessibilityCustomActionTypeMarkUnread:
+            [self markThreadAsUnread:action.thread];
+            break;
+    }
 }
 
 - (void)deleteThread:(TSThread *)thread

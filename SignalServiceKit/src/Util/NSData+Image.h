@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -13,6 +13,8 @@ typedef NS_ENUM(NSInteger, ImageFormat) {
     ImageFormat_Jpeg,
     ImageFormat_Bmp,
     ImageFormat_Webp,
+    ImageFormat_Heic,
+    ImageFormat_Heif,
 };
 
 NSString *NSStringForImageFormat(ImageFormat value);
@@ -50,6 +52,7 @@ NSString *NSStringForImageFormat(ImageFormat value);
 
 + (BOOL)hasAlphaForValidImageFilePath:(NSString *)filePath;
 
+@property (nonatomic, readonly) BOOL isMaybeWebpData;
 - (nullable UIImage *)stillForWebpData;
 
 #pragma mark - Image Data

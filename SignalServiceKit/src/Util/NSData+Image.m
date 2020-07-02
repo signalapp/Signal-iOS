@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "NSData+Image.h"
@@ -137,6 +137,10 @@ NSString *NSStringForImageFormat(ImageFormat value)
             return OWSMimeTypeImageBmp1;
         case ImageFormat_Webp:
             return OWSMimeTypeImageWebp;
+        case ImageFormat_Heic:
+            return OWSMimeTypeImageHeic;
+        case ImageFormat_Heif:
+            return OWSMimeTypeImageHeif;
     }
 }
 
@@ -165,6 +169,8 @@ NSString *NSStringForImageFormat(ImageFormat value)
         case ImageFormat_Jpeg:
         case ImageFormat_Bmp:
         case ImageFormat_Webp:
+        case ImageFormat_Heic:
+        case ImageFormat_Heif:
             return YES;
     }
 }
@@ -190,6 +196,49 @@ NSString *NSStringForImageFormat(ImageFormat value)
                 [mimeType caseInsensitiveCompare:OWSMimeTypeImageBmp2] == NSOrderedSame);
         case ImageFormat_Webp:
             return (mimeType == nil || [mimeType caseInsensitiveCompare:OWSMimeTypeImageWebp] == NSOrderedSame);
+        case ImageFormat_Heic:
+            return (mimeType == nil || [mimeType caseInsensitiveCompare:OWSMimeTypeImageHeic] == NSOrderedSame);
+        case ImageFormat_Heif:
+            return (mimeType == nil || [mimeType caseInsensitiveCompare:OWSMimeTypeImageHeif] == NSOrderedSame);
+    }
+}
+
+- (ImageFormat)ows_guessHighEfficiencyImageFormat
+{
+    // A HEIF image file has the first 16 bytes like
+    // 0000 0018 6674 7970 6865 6963 0000 0000
+    // so in this case the 5th to 12th bytes shall make a string of "ftypheic"
+    const NSUInteger kHeifHeaderStartsAt = 4;
+    const NSUInteger kHeifBrandStartsAt = 8;
+    // We support "heic", "mif1" or "msf1". Other brands are invalid for us for now.
+    // The length is 4 + 1 because the brand must be terminated with a null.
+    // Include the null in the comparison to prevent a bogus brand like "heicfake"
+    // from being considered valid.
+    const NSUInteger kHeifSupportedBrandLength = 5;
+    const NSUInteger kTotalHeaderLength = kHeifBrandStartsAt - kHeifHeaderStartsAt + kHeifSupportedBrandLength;
+    if (self.length < kHeifBrandStartsAt + kHeifSupportedBrandLength) {
+        return ImageFormat_Unknown;
+    }
+
+    // These are the brands of HEIF formatted files that are renderable by CoreGraphics
+    const NSString *kHeifBrandHeaderHeic = @"ftypheic\0";
+    const NSString *kHeifBrandHeaderHeif = @"ftypmif1\0";
+    const NSString *kHeifBrandHeaderHeifStream = @"ftypmsf1\0";
+
+    // Pull the string from the header and compare it with the supported formats
+    unsigned char bytes[kTotalHeaderLength];
+    [self getBytes:&bytes range:NSMakeRange(kHeifHeaderStartsAt, kTotalHeaderLength)];
+    NSData *data = [[NSData alloc] initWithBytes:bytes length:kTotalHeaderLength];
+    NSString *marker = [[NSString alloc] initWithData:data encoding:NSUTF8StringEncoding];
+
+    if ([kHeifBrandHeaderHeic isEqualToString:marker]) {
+        return ImageFormat_Heic;
+    } else if ([kHeifBrandHeaderHeif isEqualToString:marker]) {
+        return ImageFormat_Heif;
+    } else if ([kHeifBrandHeaderHeifStream isEqualToString:marker]) {
+        return ImageFormat_Heif;
+    } else {
+        return ImageFormat_Unknown;
     }
 }
 
@@ -225,7 +274,7 @@ NSString *NSStringForImageFormat(ImageFormat value)
         return ImageFormat_Webp;
     }
 
-    return ImageFormat_Unknown;
+    return [self ows_guessHighEfficiencyImageFormat];
 }
 
 + (BOOL)ows_areByteArraysEqual:(NSUInteger)length left:(unsigned char *)left right:(unsigned char *)right
@@ -342,6 +391,11 @@ NSString *NSStringForImageFormat(ImageFormat value)
     }
     CFRelease(source);
     return result;
+}
+
+- (BOOL)isMaybeWebpData
+{
+    return [self ows_guessImageFormat] == ImageFormat_Webp;
 }
 
 + (BOOL)isWebpFilePath:(NSString *)filePath

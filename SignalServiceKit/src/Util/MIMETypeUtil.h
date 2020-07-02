@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -14,6 +14,8 @@ extern NSString *const OWSMimeTypeImageTiff2;
 extern NSString *const OWSMimeTypeImageBmp1;
 extern NSString *const OWSMimeTypeImageBmp2;
 extern NSString *const OWSMimeTypeImageWebp;
+extern NSString *const OWSMimeTypeImageHeic;
+extern NSString *const OWSMimeTypeImageHeif;
 extern NSString *const OWSMimeTypePdf;
 extern NSString *const OWSMimeTypeOversizeTextMessage;
 extern NSString *const OWSMimeTypeProtobuf;
@@ -55,7 +57,8 @@ extern NSString *const kSyncMessageFileExtension;
 
 + (NSSet<NSString *> *)supportedVideoUTITypes;
 + (NSSet<NSString *> *)supportedAudioUTITypes;
-+ (NSSet<NSString *> *)supportedImageUTITypes;
++ (NSSet<NSString *> *)supportedInputImageUTITypes;
++ (NSSet<NSString *> *)supportedOutputImageUTITypes;
 + (NSSet<NSString *> *)supportedAnimatedImageUTITypes;
 
 + (nullable NSString *)utiTypeForMIMEType:(NSString *)mimeType;
