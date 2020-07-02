@@ -52,6 +52,7 @@ NSString *NSStringForImageFormat(ImageFormat value);
 
 + (BOOL)hasAlphaForValidImageFilePath:(NSString *)filePath;
 
+@property (nonatomic, readonly) BOOL isMaybeWebpData;
 - (nullable UIImage *)stillForWebpData;
 
 #pragma mark - Image Data

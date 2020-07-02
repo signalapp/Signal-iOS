@@ -393,6 +393,11 @@ NSString *NSStringForImageFormat(ImageFormat value)
     return result;
 }
 
+- (BOOL)isMaybeWebpData
+{
+    return [self ows_guessImageFormat] == ImageFormat_Webp;
+}
+
 + (BOOL)isWebpFilePath:(NSString *)filePath
 {
     NSString *fileExtension = filePath.lastPathComponent.pathExtension.lowercaseString;

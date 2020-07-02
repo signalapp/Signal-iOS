@@ -57,7 +57,8 @@ extern NSString *const kSyncMessageFileExtension;
 
 + (NSSet<NSString *> *)supportedVideoUTITypes;
 + (NSSet<NSString *> *)supportedAudioUTITypes;
-+ (NSSet<NSString *> *)supportedImageUTITypes;
++ (NSSet<NSString *> *)supportedInputImageUTITypes;
++ (NSSet<NSString *> *)supportedOutputImageUTITypes;
 + (NSSet<NSString *> *)supportedAnimatedImageUTITypes;
 
 + (nullable NSString *)utiTypeForMIMEType:(NSString *)mimeType;

@@ -7,6 +7,7 @@ import MobileCoreServices
 import SignalServiceKit
 import PromiseKit
 import AVFoundation
+import YYImage
 
 enum SignalAttachmentError: Error {
     case missingData
@@ -445,7 +446,7 @@ public class SignalAttachment: NSObject {
          // HEIC is valid input, but not valid output. Non-iOS11 clients do not support it.
         let heicSet: Set<String> = Set(["public.heic", "public.heif"])
 
-        return MIMETypeUtil.supportedImageUTITypes()
+        return MIMETypeUtil.supportedInputImageUTITypes()
             .union(animatedImageUTISet)
             .union(heicSet)
     }
@@ -453,7 +454,7 @@ public class SignalAttachment: NSObject {
     // Returns the set of UTIs that correspond to valid _output_ image formats
     // for Signal attachments.
     private class var outputImageUTISet: Set<String> {
-        return MIMETypeUtil.supportedImageUTITypes().union(animatedImageUTISet)
+        return MIMETypeUtil.supportedOutputImageUTITypes().union(animatedImageUTISet)
     }
 
     private class var outputVideoUTISet: Set<String> {
@@ -695,7 +696,8 @@ public class SignalAttachment: NSObject {
             Logger.verbose("Sending raw \(attachment.mimeType) to retain any animation")
             return attachment
         } else {
-            guard let image = UIImage(data: dataSource.data()) else {
+            let imageClass = (dataSource.data() as NSData).isMaybeWebpData ? YYImage.self : UIImage.self
+            guard let image = imageClass.init(data: dataSource.data()) else {
                 attachment.error = .couldNotParseImage
                 return attachment
             }
@@ -705,7 +707,8 @@ public class SignalAttachment: NSObject {
 
             if let sourceFilename = dataSource.sourceFilename,
                 let sourceFileExtension = sourceFilename.fileExtension,
-                ["heic", "heif"].contains(sourceFileExtension.lowercased()) {
+                ["heic", "heif"].contains(sourceFileExtension.lowercased()),
+                dataUTI == kUTTypeJPEG as String {
 
                 // If a .heic file actually contains jpeg data, update the extension to match.
                 //
@@ -715,7 +718,6 @@ public class SignalAttachment: NSObject {
                 // updating the extension as well. No problem.
                 // However the problem comes in when you edit an HEIC image in Photos.app - the image is saved
                 // in the Photos.app as a JPEG, but retains the (now incongruous) HEIC extension in the filename.
-                assert(dataUTI == kUTTypeJPEG as String || !isValidOutput)
                 Logger.verbose("changing extension: \(sourceFileExtension) to match jpg uti type")
 
                 let baseFilename = sourceFilename.filenameWithoutExtension

@@ -513,12 +513,29 @@ NSString *const kSyncMessageFileExtension = @"bin";
     return result;
 }
 
-+ (NSSet<NSString *> *)supportedImageUTITypes
++ (NSSet<NSString *> *)supportedInputImageUTITypes
 {
     static NSSet<NSString *> *result = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
         result = [self utiTypesForMIMETypes:[self supportedImageMIMETypesToExtensionTypes].allKeys];
+    });
+    return result;
+}
+
++ (NSSet<NSString *> *)supportedOutputImageUTITypes
+{
+    static NSSet<NSString *> *result = nil;
+    static dispatch_once_t onceToken;
+    dispatch_once(&onceToken, ^{
+        NSMutableArray<NSString *> *imageMIMETypes =
+            [[self supportedImageMIMETypesToExtensionTypes].allKeys mutableCopy];
+        [imageMIMETypes removeObjectsInArray:@[
+            OWSMimeTypeImageWebp,
+            OWSMimeTypeImageHeic,
+            OWSMimeTypeImageHeif,
+        ]];
+        result = [self utiTypesForMIMETypes:imageMIMETypes];
     });
     return result;
 }
