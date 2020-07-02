@@ -499,7 +499,7 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     BOOL result;
     BOOL didUpdateCache = NO;
     @synchronized(self) {
-        if (!self.isValidImageCached.boolValue) {
+        if (!self.isValidImageCached) {
             OWSLogVerbose(@"Updating isValidImageCached.");
             self.isValidImageCached = @([NSData ows_isValidImageAtPath:self.originalFilePath
                                                               mimeType:self.contentType]);

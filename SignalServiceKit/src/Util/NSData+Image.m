@@ -211,8 +211,8 @@ NSString *NSStringForImageFormat(ImageFormat value)
     const NSUInteger kHeifHeaderStartsAt = 4;
     const NSUInteger kHeifBrandStartsAt = 8;
     // We support "heic", "mif1" or "msf1". Other brands are invalid for us for now.
-    // The length is 4 + 1 because the brand must be terminated with a nul.
-    // Include the nul in the comparison to prevent a bogus brand like "heicfake"
+    // The length is 4 + 1 because the brand must be terminated with a null.
+    // Include the null in the comparison to prevent a bogus brand like "heicfake"
     // from being considered valid.
     const NSUInteger kHeifSupportedBrandLength = 5;
     const NSUInteger kTotalHeaderLength = kHeifBrandStartsAt - kHeifHeaderStartsAt + kHeifSupportedBrandLength;
