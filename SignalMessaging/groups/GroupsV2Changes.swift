@@ -79,15 +79,51 @@ public class GroupsV2Changes {
         let oldGroupMembership = oldGroupModel.groupMembership
         var groupMembershipBuilder = oldGroupMembership.asBuilder
 
-        let oldGroupAccess = oldGroupModel.access
+        let oldGroupAccess: GroupAccess = oldGroupModel.access
         var newMembersAccess = oldGroupAccess.members
         var newAttributesAccess = oldGroupAccess.attributes
+
+        if !oldGroupMembership.isNonPendingMember(changeAuthorUuid) {
+            owsFailDebug("changeAuthorUuid not a full member of the group.")
+        }
+        let isChangeAuthorMember = oldGroupMembership.isNonPendingMember(changeAuthorUuid)
+        let isChangeAuthorAdmin = (oldGroupMembership.isNonPendingMember(changeAuthorUuid) &&
+            oldGroupMembership.isAdministrator(changeAuthorUuid))
+        let canAddMembers: Bool
+        switch oldGroupAccess.members {
+        case .unknown:
+            canAddMembers = false
+        case .member:
+            canAddMembers = isChangeAuthorMember
+        case .administrator:
+            canAddMembers = isChangeAuthorAdmin
+        case .any:
+            canAddMembers = true
+        }
+        let canRemoveMembers = isChangeAuthorAdmin
+        let canModifyRoles = isChangeAuthorAdmin
+        let canEditAttributes: Bool
+        switch oldGroupAccess.attributes {
+        case .unknown:
+            canEditAttributes = false
+        case .member:
+            canEditAttributes = isChangeAuthorMember
+        case .administrator:
+            canEditAttributes = isChangeAuthorAdmin
+        case .any:
+            canEditAttributes = true
+        }
+        let canEditAccess = isChangeAuthorAdmin
 
         // This client can learn of profile keys from parsing group state protos.
         // After parsing, we should fill in profileKeys in the profile manager.
         var profileKeys = [UUID: Data]()
 
         for action in changeActionsProto.addMembers {
+            if !canAddMembers {
+                owsFailDebug("Cannot add members.")
+            }
+
             guard let member = action.added else {
                 throw OWSAssertionError("Missing member.")
             }
@@ -100,16 +136,19 @@ public class GroupsV2Changes {
             guard let role = TSGroupMemberRole.role(for: protoRole) else {
                 throw OWSAssertionError("Invalid role: \(protoRole.rawValue)")
             }
+            if role == .administrator && !isChangeAuthorAdmin {
+                owsFailDebug("Only authors can add admins.")
+            }
+
             // Some userIds/uuidCiphertexts can be validated by
             // the service. This is one.
             let uuid = try groupV2Params.uuid(forUserId: userId)
-            let address = SignalServiceAddress(uuid: uuid)
 
-            guard !oldGroupMembership.allUsers.contains(address) else {
+            guard !oldGroupMembership.isPendingOrNonPendingMember(uuid) else {
                 throw OWSAssertionError("Invalid membership.")
             }
-            groupMembershipBuilder.remove(address)
-            groupMembershipBuilder.addNonPendingMember(address, role: role)
+            groupMembershipBuilder.remove(uuid)
+            groupMembershipBuilder.addNonPendingMember(uuid, role: role)
 
             guard let profileKeyCiphertextData = member.profileKey else {
                 throw OWSAssertionError("Missing profileKeyCiphertext.")
@@ -128,15 +167,23 @@ public class GroupsV2Changes {
             // Some userIds/uuidCiphertexts can be validated by
             // the service. This is one.
             let uuid = try groupV2Params.uuid(forUserId: userId)
-            let address = SignalServiceAddress(uuid: uuid)
 
-            guard oldGroupMembership.nonPendingMembers.contains(address) else {
+            if !canRemoveMembers && uuid != changeAuthorUuid {
+                // Admin can kick any member.
+                // Any member can leave the group.
+                owsFailDebug("Cannot kick member.")
+            }
+            guard oldGroupMembership.isNonPendingMember(uuid) else {
                 throw OWSAssertionError("Invalid membership.")
             }
-            groupMembershipBuilder.remove(address)
+            groupMembershipBuilder.remove(uuid)
         }
 
         for action in changeActionsProto.modifyMemberRoles {
+            if !canModifyRoles {
+                owsFailDebug("Cannot modify member role.")
+            }
+
             guard let userId = action.userID else {
                 throw OWSAssertionError("Missing userID.")
             }
@@ -150,13 +197,12 @@ public class GroupsV2Changes {
             // Some userIds/uuidCiphertexts can be validated by
             // the service. This is one.
             let uuid = try groupV2Params.uuid(forUserId: userId)
-            let address = SignalServiceAddress(uuid: uuid)
 
-            guard oldGroupMembership.nonPendingMembers.contains(address) else {
+            guard oldGroupMembership.isNonPendingMember(uuid) else {
                 throw OWSAssertionError("Invalid membership.")
             }
-            groupMembershipBuilder.remove(address)
-            groupMembershipBuilder.addNonPendingMember(address, role: role)
+            groupMembershipBuilder.remove(uuid)
+            groupMembershipBuilder.addNonPendingMember(uuid, role: role)
         }
 
         for action in changeActionsProto.modifyMemberProfileKeys {
@@ -167,8 +213,7 @@ public class GroupsV2Changes {
             let uuidCiphertext = try presentation.getUuidCiphertext()
             let uuid = try groupV2Params.uuid(forUuidCiphertext: uuidCiphertext)
 
-            let address = SignalServiceAddress(uuid: uuid)
-            guard oldGroupMembership.nonPendingMembers.contains(address) else {
+            guard oldGroupMembership.isNonPendingMember(uuid) else {
                 throw OWSAssertionError("Invalid membership.")
             }
 
@@ -179,6 +224,10 @@ public class GroupsV2Changes {
         }
 
         for action in changeActionsProto.addPendingMembers {
+            if !canAddMembers {
+                owsFailDebug("Cannot invite member.")
+            }
+
             guard let pendingMember = action.added else {
                 throw OWSAssertionError("Missing pendingMember.")
             }
@@ -202,6 +251,13 @@ public class GroupsV2Changes {
             // the service. This is one.
             let addedByUuid = try groupV2Params.uuid(forUserId: addedByUserID)
 
+            if role == .administrator && !isChangeAuthorAdmin {
+                owsFailDebug("Only authors can add admins.")
+            }
+            if addedByUuid != changeAuthorUuid {
+                owsFailDebug("Unexpected addedByUuid.")
+            }
+
             // Some userIds/uuidCiphertexts can be validated by
             // the service. This one cannot.  Therefore we need to
             // be robust to invalid ciphertexts.
@@ -212,12 +268,11 @@ public class GroupsV2Changes {
                 owsFailDebug("Error parsing uuid: \(error)")
                 continue
             }
-            let address = SignalServiceAddress(uuid: uuid)
-            guard !oldGroupMembership.allUsers.contains(address) else {
+            guard !oldGroupMembership.isPendingOrNonPendingMember(uuid) else {
                 throw OWSAssertionError("Invalid membership.")
             }
-            groupMembershipBuilder.remove(address)
-            groupMembershipBuilder.addPendingMember(address, role: role, addedByUuid: addedByUuid)
+            groupMembershipBuilder.remove(uuid)
+            groupMembershipBuilder.addPendingMember(uuid, role: role, addedByUuid: addedByUuid)
         }
 
         for action in changeActionsProto.deletePendingMembers {
@@ -227,12 +282,17 @@ public class GroupsV2Changes {
             // Some userIds/uuidCiphertexts can be validated by
             // the service. This is one.
             let uuid = try groupV2Params.uuid(forUserId: userId)
-            let address = SignalServiceAddress(uuid: uuid)
 
-            guard oldGroupMembership.pendingMembers.contains(address) else {
+            if !canRemoveMembers && uuid != changeAuthorUuid {
+                // Admin can revoke any invitation.
+                // The invitee can decline the invitation.
+                owsFailDebug("Cannot revoke invitation.")
+            }
+
+            guard oldGroupMembership.isPendingMember(uuid) else {
                 throw OWSAssertionError("Invalid membership.")
             }
-            groupMembershipBuilder.remove(address)
+            groupMembershipBuilder.remove(uuid)
         }
 
         for action in changeActionsProto.promotePendingMembers {
@@ -256,6 +316,11 @@ public class GroupsV2Changes {
             groupMembershipBuilder.remove(address)
             groupMembershipBuilder.addNonPendingMember(address, role: role)
 
+            if uuid != changeAuthorUuid {
+                // Only the invitee can accept an invitation.
+                owsFailDebug("Cannot accept the invitation.")
+            }
+
             let profileKeyCiphertext = try presentation.getProfileKeyCiphertext()
             let profileKey = try groupV2Params.profileKey(forProfileKeyCiphertext: profileKeyCiphertext,
                                                           uuid: uuid)
@@ -263,11 +328,19 @@ public class GroupsV2Changes {
         }
 
         if let action = changeActionsProto.modifyTitle {
+            if !canEditAttributes {
+                owsFailDebug("Cannot modify title.")
+            }
+
             // Change clears or updates the group title.
             newGroupName = groupV2Params.decryptGroupName(action.title)
         }
 
         if let action = changeActionsProto.modifyAvatar {
+            if !canEditAttributes {
+                owsFailDebug("Cannot modify avatar.")
+            }
+
             if let avatarUrl = action.avatar,
                 !avatarUrl.isEmpty {
                 do {
@@ -287,23 +360,43 @@ public class GroupsV2Changes {
 
         var newDisappearingMessageToken: DisappearingMessageToken?
         if let action = changeActionsProto.modifyDisappearingMessagesTimer {
+            if !canEditAttributes {
+                owsFailDebug("Cannot modify disappearing message timer.")
+            }
+
             // If the timer blob is not populated or has zero duration,
             // disappearing messages should be disabled.
             newDisappearingMessageToken = groupV2Params.decryptDisappearingMessagesTimer(action.timer)
         }
 
         if let action = changeActionsProto.modifyAttributesAccess {
+            if !canEditAccess {
+                owsFailDebug("Cannot edit attributes access.")
+            }
+
             guard let protoAccess = action.attributesAccess else {
                 throw OWSAssertionError("Missing access.")
             }
             newAttributesAccess = GroupAccess.groupV2Access(forProtoAccess: protoAccess)
+
+            if newAttributesAccess == .unknown {
+                owsFailDebug("Unknown attributes access.")
+            }
         }
 
         if let action = changeActionsProto.modifyMemberAccess {
+            if !canEditAccess {
+                owsFailDebug("Cannot edit member access.")
+            }
+
             guard let protoAccess = action.membersAccess else {
                 throw OWSAssertionError("Missing access.")
             }
             newMembersAccess = GroupAccess.groupV2Access(forProtoAccess: protoAccess)
+
+            if newMembersAccess == .unknown {
+                owsFailDebug("Unknown member access.")
+            }
         }
 
         let newGroupMembership = groupMembershipBuilder.build()

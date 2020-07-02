@@ -131,6 +131,10 @@ public class GroupMembership: MTLModel {
             self.memberStateMap = memberStateMap
         }
 
+        public mutating func remove(_ uuid: UUID) {
+            remove(SignalServiceAddress(uuid: uuid))
+        }
+
         public mutating func remove(_ address: SignalServiceAddress) {
             memberStateMap.removeValue(forKey: address)
         }
@@ -139,6 +143,11 @@ public class GroupMembership: MTLModel {
             for address in addresses {
                 remove(address)
             }
+        }
+
+        public mutating func addNonPendingMember(_ uuid: UUID,
+                                                 role: TSGroupMemberRole) {
+            addNonPendingMember(SignalServiceAddress(uuid: uuid), role: role)
         }
 
         public mutating func addNonPendingMember(_ address: SignalServiceAddress,
@@ -154,6 +163,12 @@ public class GroupMembership: MTLModel {
                 }
                 memberStateMap[address] = MemberState(role: role, isPending: false, addedByUuid: nil)
             }
+        }
+
+        public mutating func addPendingMember(_ uuid: UUID,
+                                              role: TSGroupMemberRole,
+                                              addedByUuid: UUID) {
+            addPendingMember(SignalServiceAddress(uuid: uuid), role: role, addedByUuid: addedByUuid)
         }
 
         public mutating func addPendingMember(_ address: SignalServiceAddress,
@@ -252,6 +267,10 @@ public class GroupMembership: MTLModel {
             return false
         }
         return memberState.isAdministrator
+    }
+
+    public func isAdministrator(_ uuid: UUID) -> Bool {
+        return isAdministrator(SignalServiceAddress(uuid: uuid))
     }
 
     @objc
