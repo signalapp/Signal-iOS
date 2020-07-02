@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -257,7 +257,8 @@ public class FullTextSearcher: NSObject {
                                        maxResults: UInt = kDefaultMaxResults,
                                        transaction: SDSAnyReadTransaction) -> ComposeScreenSearchResultSet {
 
-        var signalContacts: [ContactSearchResult] = []
+        var signalContactMap = [SignalServiceAddress: ContactSearchResult]()
+        var signalRecipentResults: [ContactSearchResult] = []
         var groups: [GroupSearchResult] = []
 
         var count: UInt = 0
@@ -272,7 +273,16 @@ public class FullTextSearcher: NSObject {
             switch match {
             case let signalAccount as SignalAccount:
                 let searchResult = ContactSearchResult(signalAccount: signalAccount, transaction: transaction)
-                signalContacts.append(searchResult)
+                assert(signalContactMap[signalAccount.recipientAddress] == nil)
+                signalContactMap[signalAccount.recipientAddress] = searchResult
+            case let signalRecipient as SignalRecipient:
+                guard signalRecipient.devices.count > 0 else {
+                    // Ignore unregistered recipients.
+                    return
+                }
+                let signalAccount = SignalAccount(signalRecipient: signalRecipient, contact: nil, multipleAccountLabelText: nil)
+                let searchResult = ContactSearchResult(signalAccount: signalAccount, transaction: transaction)
+                signalRecipentResults.append(searchResult)
             case let groupThread as TSGroupThread:
                 let sortKey = ConversationSortKey(isContactThread: false,
                                                   creationDate: groupThread.creationDate,
@@ -291,19 +301,28 @@ public class FullTextSearcher: NSObject {
             }
         }
 
-        if matchesNoteToSelf(searchText: searchText, transaction: transaction) {
-            if !signalContacts.contains(where: { $0.signalAccount.recipientAddress.isLocalAddress }) {
-                if let localAddress = TSAccountManager.localAddress {
-                    let localAccount = SignalAccount(address: localAddress)
-                    let localResult = ContactSearchResult(signalAccount: localAccount, transaction: transaction)
-                    signalContacts.append(localResult)
-                } else {
-                    owsFailDebug("localAddress was unexpectedly nil")
-                }
+        // Fill in user matches from SignalRecipients, but only if
+        // we don't already have a SignalAccount for the same user.
+        for signalRecipentResult in signalRecipentResults {
+            if signalContactMap[signalRecipentResult.recipientAddress] == nil {
+                signalContactMap[signalRecipentResult.recipientAddress] = signalRecipentResult
             }
         }
 
+        if let localAddress = TSAccountManager.localAddress {
+            if matchesNoteToSelf(searchText: searchText, transaction: transaction) {
+                if signalContactMap[localAddress] == nil {
+                    let localAccount = SignalAccount(address: localAddress)
+                    let localResult = ContactSearchResult(signalAccount: localAccount, transaction: transaction)
+                    signalContactMap[localAddress] = localResult
+                }
+            }
+        } else {
+            owsFailDebug("localAddress was unexpectedly nil")
+        }
+
         // Order contact results by display name.
+        var signalContacts: [ContactSearchResult] = Array(signalContactMap.values)
         signalContacts.sort()
 
         // Order the conversation and message results in reverse chronological order.

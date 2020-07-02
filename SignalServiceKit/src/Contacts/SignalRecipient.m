@@ -486,6 +486,11 @@ const NSUInteger SignalRecipientSchemaVersion = 1;
     [self.signalRecipientReadCache didRemoveSignalRecipient:self transaction:transaction];
 }
 
++ (BOOL)shouldBeIndexedForFTS
+{
+    return YES;
+}
+
 @end
 
 NS_ASSUME_NONNULL_END
