@@ -555,7 +555,7 @@ NSString *const kSyncMessageFileExtension = @"bin";
     static NSDictionary *result = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        result = @{
+        result = @ {
             @"application/acad" : @"dwg",
             @"application/andrew-inset" : @"ez",
             @"application/applixware" : @"aw",
@@ -1380,6 +1380,8 @@ NSString *const kSyncMessageFileExtension = @"bin";
             @"image/fif" : @"fif",
             @"image/g3fax" : @"g3",
             @"image/gif" : @"gif",
+            @"image/heic" : @"heic",
+            @"image/heif" : @"heif",
             @"image/ief" : @"ief",
             @"image/jpeg" : @"jpg",
             @"image/jutvision" : @"jut",
@@ -1410,6 +1412,7 @@ NSString *const kSyncMessageFileExtension = @"bin";
             @"image/vnd.rn-realpix" : @"rp",
             @"image/vnd.wap.wbmp" : @"wbmp",
             @"image/vnd.xiff" : @"xif",
+            @"image/webp" : @"webp",
             @"image/x-3ds" : @"3ds",
             @"image/x-citrix-jpeg" : @"jpg",
             @"image/x-citrix-png" : @"png",
@@ -1628,7 +1631,7 @@ NSString *const kSyncMessageFileExtension = @"bin";
     static NSDictionary *result = nil;
     static dispatch_once_t onceToken;
     dispatch_once(&onceToken, ^{
-        result = @{
+        result = @ {
             @"123" : @"application/vnd.lotus-1-2-3",
             @"3dml" : @"text/vnd.in3d.3dml",
             @"3ds" : @"image/x-3ds",
@@ -1930,6 +1933,8 @@ NSString *const kSyncMessageFileExtension = @"bin";
             @"hal" : @"application/vnd.hal+xml",
             @"hbci" : @"application/vnd.hbci",
             @"hdf" : @"application/x-hdf",
+            @"heic" : @"image/heic",
+            @"heif" : @"image/heif",
             @"hh" : @"text/x-c",
             @"hlp" : @"application/winhlp",
             @"hpgl" : @"application/vnd.hp-hpgl",
@@ -2510,6 +2515,7 @@ NSString *const kSyncMessageFileExtension = @"bin";
             @"wdp" : @"image/vnd.ms-photo",
             @"weba" : @"audio/webm",
             @"webm" : @"video/webm",
+            @"webp" : @"image/webp",
             @"wg" : @"application/vnd.pmi.widget",
             @"wgt" : @"application/widget",
             @"wks" : @"application/vnd.ms-works",
