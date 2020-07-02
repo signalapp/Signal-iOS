@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 #import "MIMETypeUtil.h"
@@ -1387,7 +1387,6 @@ NSString *const kSyncMessageFileExtension = @"bin";
             @"image/vnd.rn-realpix" : @"rp",
             @"image/vnd.wap.wbmp" : @"wbmp",
             @"image/vnd.xiff" : @"xif",
-            @"image/webp" : @"webp",
             @"image/x-3ds" : @"3ds",
             @"image/x-citrix-jpeg" : @"jpg",
             @"image/x-citrix-png" : @"png",
@@ -2488,7 +2487,6 @@ NSString *const kSyncMessageFileExtension = @"bin";
             @"wdp" : @"image/vnd.ms-photo",
             @"weba" : @"audio/webm",
             @"webm" : @"video/webm",
-            @"webp" : @"image/webp",
             @"wg" : @"application/vnd.pmi.widget",
             @"wgt" : @"application/widget",
             @"wks" : @"application/vnd.ms-works",

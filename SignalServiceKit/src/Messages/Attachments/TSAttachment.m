@@ -359,6 +359,11 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
     return [MIMETypeUtil isImage:self.contentType];
 }
 
+- (BOOL)isWebpImage
+{
+    return [self.contentType isEqualToString:OWSMimeTypeImageWebp];
+}
+
 - (BOOL)isVideo
 {
     return [MIMETypeUtil isVideo:self.contentType];
