@@ -14,7 +14,7 @@ enum SignalAttachmentError: Error {
     case fileSizeTooLarge
     case invalidData
     case couldNotParseImage
-    case couldNotConvertToJpeg
+    case couldNotConvertImage
     case couldNotConvertToMpeg4
     case couldNotRemoveMetadata
     case invalidFileFormat
@@ -50,7 +50,7 @@ extension SignalAttachmentError: LocalizedError {
             return NSLocalizedString("ATTACHMENT_ERROR_INVALID_DATA", comment: "Attachment error message for attachments with invalid data")
         case .couldNotParseImage:
             return NSLocalizedString("ATTACHMENT_ERROR_COULD_NOT_PARSE_IMAGE", comment: "Attachment error message for image attachments which cannot be parsed")
-        case .couldNotConvertToJpeg:
+        case .couldNotConvertImage:
             return NSLocalizedString("ATTACHMENT_ERROR_COULD_NOT_CONVERT_TO_JPEG", comment: "Attachment error message for image attachments which could not be converted to JPEG")
         case .invalidFileFormat:
             return NSLocalizedString("ATTACHMENT_ERROR_INVALID_FILE_FORMAT", comment: "Attachment error message for attachments with an invalid file format")
@@ -728,8 +728,8 @@ public class SignalAttachment: NSObject {
                 Logger.verbose("Rewriting attachment with metadata removed \(attachment.mimeType)")
                 return removeImageMetadata(attachment: attachment)
             } else {
-                Logger.verbose("Recompressing \(ByteCountFormatter.string(fromByteCount: Int64(dataSource.dataLength()), countStyle: .file)) attachment as image/jpeg.")
-                return compressImageAsJPEG(image: image, attachment: attachment, filename: dataSource.sourceFilename, imageQuality: imageQuality)
+                Logger.verbose("Recompressing \(ByteCountFormatter.string(fromByteCount: Int64(dataSource.dataLength()), countStyle: .file)) attachment as supported image type.")
+                return convertAndCompressImage(image: image, attachment: attachment, filename: dataSource.sourceFilename, imageQuality: imageQuality)
             }
         }
     }
@@ -753,7 +753,7 @@ public class SignalAttachment: NSObject {
         return false
     }
 
-    private class func compressImageAsJPEG(image: UIImage, attachment: SignalAttachment, filename: String?, imageQuality: TSImageQuality) -> SignalAttachment {
+    private class func convertAndCompressImage(image: UIImage, attachment: SignalAttachment, filename: String?, imageQuality: TSImageQuality) -> SignalAttachment {
         assert(attachment.error == nil)
 
         if imageQuality == .original &&
@@ -776,25 +776,50 @@ public class SignalAttachment: NSObject {
                 }
                 dstImage = resizedImage
             }
-            guard let jpgImageData = dstImage.jpegData(compressionQuality: jpegCompressionQuality(imageUploadQuality: imageUploadQuality)) else {
-                                                                attachment.error = .couldNotConvertToJpeg
-                                                                return attachment
+
+            let dataUTI: String
+            let dataMIMEType: String
+            let dataFileExtension: String
+            let imageData: Data
+
+            if attachment.mimeType == OWSMimeTypeImageWebp {
+                guard let pngImageData = dstImage.pngData() else {
+                    attachment.error = .couldNotConvertImage
+                    return attachment
+                }
+
+                dataUTI = kUTTypePNG as String
+                dataMIMEType = OWSMimeTypeImagePng
+                dataFileExtension = "png"
+                imageData = pngImageData
+            } else {
+                guard let jpgImageData = dstImage.jpegData(
+                    compressionQuality: jpegCompressionQuality(imageUploadQuality: imageUploadQuality)
+                ) else {
+                    attachment.error = .couldNotConvertImage
+                    return attachment
+                }
+
+                dataUTI = kUTTypeJPEG as String
+                dataMIMEType = OWSMimeTypeImageJpeg
+                dataFileExtension = "jpg"
+                imageData = jpgImageData
             }
 
-            guard let dataSource = DataSourceValue.dataSource(with: jpgImageData, fileExtension: "jpg") else {
-                attachment.error = .couldNotConvertToJpeg
+            guard let dataSource = DataSourceValue.dataSource(with: imageData, fileExtension: dataFileExtension) else {
+                attachment.error = .couldNotConvertImage
                 return attachment
             }
 
             let baseFilename = filename?.filenameWithoutExtension
-            let jpgFilename = baseFilename?.appendingFileExtension("jpg")
-            dataSource.sourceFilename = jpgFilename
+            let newFilenameWithExtension = baseFilename?.appendingFileExtension(dataFileExtension)
+            dataSource.sourceFilename = newFilenameWithExtension
 
             if doesImageHaveAcceptableFileSize(dataSource: dataSource, imageQuality: imageQuality) &&
                 dataSource.dataLength() <= kMaxFileSizeImage {
-                let recompressedAttachment = SignalAttachment(dataSource: dataSource, dataUTI: kUTTypeJPEG as String)
+                let recompressedAttachment = SignalAttachment(dataSource: dataSource, dataUTI: dataUTI)
                 recompressedAttachment.cachedImage = dstImage
-                Logger.verbose("Converted \(attachment.mimeType) to \(ByteCountFormatter.string(fromByteCount: Int64(jpgImageData.count), countStyle: .file)) image/jpeg")
+                Logger.verbose("Converted \(attachment.mimeType) to \(ByteCountFormatter.string(fromByteCount: Int64(imageData.count), countStyle: .file)) \(dataMIMEType)")
                 return recompressedAttachment
             }
 
