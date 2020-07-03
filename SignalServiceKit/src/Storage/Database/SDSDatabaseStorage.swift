@@ -132,11 +132,15 @@ public class SDSDatabaseStorage: SDSTransactable {
         AssertIsOnMainThread()
         assert(storageCoordinatorState == .GRDB)
 
+        Logger.info("")
+
         let wasRegistered = TSAccountManager.sharedInstance().isRegistered
 
-        _grdbStorage = createGrdbStorage()
+        let grdbStorage = createGrdbStorage()
+        _grdbStorage = grdbStorage
 
         GRDBSchemaMigrator().runSchemaMigrations()
+        grdbStorage.forceUpdateSnapshot()
 
         SSKEnvironment.shared.warmCaches()
         OWSIdentityManager.shared().recreateDatabaseQueue()

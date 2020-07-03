@@ -15,10 +15,13 @@ public class GRDBSchemaMigrator: NSObject {
     @objc
     public func runSchemaMigrations() {
         if hasCreatedInitialSchema {
+            Logger.info("Using incrementalMigrator.")
             try! incrementalMigrator.migrate(grdbStorage.pool)
         } else {
+            Logger.info("Using newUserMigrator.")
             try! newUserMigrator.migrate(grdbStorage.pool)
         }
+        Logger.info("Migrations complete.")
 
         SSKPreferences.markGRDBSchemaAsLatest()
     }
@@ -32,6 +35,7 @@ public class GRDBSchemaMigrator: NSObject {
         }
 
         let appliedMigrations = try! incrementalMigrator.appliedMigrations(in: grdbStorage.pool)
+        Logger.info("appliedMigrations: \(appliedMigrations).")
         return appliedMigrations.contains(MigrationId.createInitialSchema.rawValue)
     }
 
@@ -132,20 +136,31 @@ public class GRDBSchemaMigrator: NSObject {
         return migrator
     }()
 
+    class DatabaseMigratorWrapper {
+        var migrator = DatabaseMigrator()
+
+        func registerMigration(_ identifier: String, migrate: @escaping (Database) throws -> Void) {
+            migrator.registerMigration(identifier) {  (database: Database) throws in
+                Logger.info("Running migration: \(identifier)")
+                try migrate(database)
+            }
+        }
+    }
+
     // Used by existing users to incrementally update from their existing schema
     // to the latest.
     private lazy var incrementalMigrator: DatabaseMigrator = {
-        var migrator = DatabaseMigrator()
+        var migratorWrapper = DatabaseMigratorWrapper()
 
-        registerSchemaMigrations(migrator: &migrator)
+        registerSchemaMigrations(migrator: migratorWrapper)
 
         // Data Migrations must run *after* schema migrations
-        registerDataMigrations(migrator: &migrator)
+        registerDataMigrations(migrator: migratorWrapper)
 
-        return migrator
+        return migratorWrapper.migrator
     }()
 
-    private func registerSchemaMigrations(migrator: inout DatabaseMigrator) {
+    private func registerSchemaMigrations(migrator: DatabaseMigratorWrapper) {
 
         // The migration blocks should never throw. If we introduce a crashing
         // migration, we want the crash logs reflect where it occurred.
@@ -703,7 +718,7 @@ public class GRDBSchemaMigrator: NSObject {
         // MARK: - Schema Migration Insertion Point
     }
 
-    func registerDataMigrations(migrator: inout DatabaseMigrator) {
+    func registerDataMigrations(migrator: DatabaseMigratorWrapper) {
 
         // The migration blocks should never throw. If we introduce a crashing
         // migration, we want the crash logs reflect where it occurred.

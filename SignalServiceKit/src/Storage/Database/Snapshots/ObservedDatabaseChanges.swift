@@ -595,6 +595,9 @@ extension ObservedDatabaseChanges: UIDatabaseChanges {
                 owsFailDebug("should not have been notified for changes to FTS tables")
                 continue
             }
+            guard tableName != "grdb_migrations" else {
+                continue
+            }
             guard let collection = tableNameToCollectionMap[tableName] else {
                 owsFailDebug("Unknown table: \(tableName)")
                 continue
