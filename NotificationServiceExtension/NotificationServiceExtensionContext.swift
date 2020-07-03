@@ -16,6 +16,7 @@ class NotificationServiceExtensionContext: NSObject, AppContext {
     var shouldProcessIncomingMessages: Bool { true }
     var hasUI: Bool { false }
     func canPresentNotifications() -> Bool { true }
+    var didLastLaunchNotTerminate: Bool { false }
 
     let appLaunchTime = Date()
     lazy var buildTime: Date = {

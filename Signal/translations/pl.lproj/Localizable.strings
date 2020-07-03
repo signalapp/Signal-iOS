@@ -608,12 +608,6 @@
 /* Button text */
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Połącz nowe urządzenie";
 
-/* Action sheet body presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
-"CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@ mógł ponownie zainstalować lub zmienić urządzenie. Zweryfikuj swój kod zabezpieczenia, aby zapewnić prywatność. ";
-
-/* Action sheet title presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
-"CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT" = "Kod zabezpieczenia z %@ zmienił się";
-
 /* No comment provided by engineer. */
 "CONFIRMATION_TITLE" = "Potwierdź";
 
@@ -975,10 +969,10 @@
 "DATABASE_VIEW_OVERLAY_TITLE" = "Optymalizacja bazy danych";
 
 /* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_FORMAT" = "%@ godz. temu";
+"DATE_HOURS_AGO_FORMAT" = "%@g";
 
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_FORMAT" = "%@ min. temu";
+"DATE_MINUTES_AGO_FORMAT" = "%@min";
 
 /* The present; the current time. */
 "DATE_NOW" = "Teraz";
@@ -1186,9 +1180,6 @@
 
 /* The 'clear avatar' button in the 'edit group' view. */
 "EDIT_GROUP_CLEAR_AVATAR" = "Usuń zdjęcie";
-
-/* a title for the contacts section of the 'new/update group' view. */
-"EDIT_GROUP_CONTACTS_SECTION_TITLE" = "Kontakty";
 
 /* The navbar title for the 'update group' view. */
 "EDIT_GROUP_DEFAULT_TITLE" = "Edytuj grupę";
@@ -1803,7 +1794,7 @@
 "IN_CALL_RECONNECTING" = "Ponowne łączenie...";
 
 /* Call setup status label */
-"IN_CALL_RINGING" = "Trwa łączenie...";
+"IN_CALL_RINGING" = "Dzwonienie...";
 
 /* Call setup status label */
 "IN_CALL_SECURING" = "Odebrane. Trwa zabezpieczanie...";
@@ -2188,6 +2179,9 @@
 
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED_SHORT" = "Błąd";
+
+/* Label indicating that a message was only sent to some recipients. */
+"MESSAGE_STATUS_PARTIALLY_SENT" = "Partially sent, tap for details";
 
 /* status message for read messages */
 "MESSAGE_STATUS_READ" = "Odczytana";
@@ -3095,6 +3089,18 @@
 /* button title to confirm sending to a recipient whose safety number recently changed */
 "SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "Wyślij mimo to";
 
+/* Message for the 'safety number confirmation' view */
+"SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "The following people may have reinstalled or changed devices. Verify your safety number with them to ensure privacy.";
+
+/* Text explaining that the given contact previously had their safety number verified. */
+"SAFETY_NUMBER_CONFIRMATION_PREVIOUSLY_VERIFIED" = "Previously Verified";
+
+/* Title for the 'safety number confirmation' view */
+"SAFETY_NUMBER_CONFIRMATION_TITLE" = "Safety Number Changes";
+
+/* View safety number action for the 'safety number confirmation' view */
+"SAFETY_NUMBER_CONFIRMATION_VIEW_ACTION" = "Zobacz";
+
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
 "SAFETY_NUMBER_SHARE_FORMAT" = "Nasz kod zabezpieczenia Signal:\n%@";
 
@@ -3552,10 +3558,10 @@
 "SETTINGS_NAV_BAR_TITLE" = "Ustawienia";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Count Muted Conversations";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Licz wyciszone konwersacje";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Badge Count";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Licznik na ikonie";
 
 /* table section footer */
 "SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "Powiadomienia o połączeniach i wiadomościach będą pojawiać się na ekranie blokady. Możesz ograniczyć treść tych powiadomień.";

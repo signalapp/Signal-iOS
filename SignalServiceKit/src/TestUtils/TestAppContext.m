@@ -195,6 +195,11 @@ NS_ASSUME_NONNULL_BEGIN
     return YES;
 }
 
+- (BOOL)didLastLaunchNotTerminate
+{
+    return NO;
+}
+
 @end
 
 #endif

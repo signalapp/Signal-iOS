@@ -20,6 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)setup;
 
 @property (nonatomic, readonly) BOOL hasSelectedThread;
+@property (nonatomic, readonly) BOOL didLastLaunchNotTerminate;
 
 #pragma mark - Conversation Presentation
 
@@ -52,6 +53,7 @@ NS_ASSUME_NONNULL_BEGIN
 - (void)showConversationSplitView;
 - (void)ensureRootViewController:(NSTimeInterval)launchStartedAt;
 - (BOOL)receivedVerificationCode:(NSString *)verificationCode;
+- (void)applicationWillTerminate;
 
 @end
 

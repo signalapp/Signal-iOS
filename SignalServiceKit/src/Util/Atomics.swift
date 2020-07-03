@@ -44,6 +44,16 @@ public class AtomicBool: NSObject {
     public func transition(from fromValue: Bool, to toValue: Bool) throws {
         return try value.transition(from: fromValue, to: toValue)
     }
+
+    @objc
+    public func tryToSetFlag() -> Bool {
+        do {
+            try transition(from: false, to: true)
+            return true
+        } catch {
+            return false
+        }
+    }
 }
 
 // MARK: -

@@ -608,12 +608,6 @@
 /* Button text */
 "CONFIRM_LINK_NEW_DEVICE_ACTION" = "Lidhni Pajisje të Re";
 
-/* Action sheet body presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
-"CONFIRM_SENDING_TO_CHANGED_IDENTITY_BODY_FORMAT" = "%@ mund të ketë riinstaluar ose ndryshuar pajisje. Që të garantoni privatësi, verifikoni me të numrin tuaj të sigurisë.";
-
-/* Action sheet title presented when a user's SN has recently changed. Embeds {{contact's name or phone number}} */
-"CONFIRM_SENDING_TO_CHANGED_IDENTITY_TITLE_FORMAT" = "Numri i sigurisë me %@ ka ndryshuar";
-
 /* No comment provided by engineer. */
 "CONFIRMATION_TITLE" = "Ripohojeni";
 
@@ -975,10 +969,10 @@
 "DATABASE_VIEW_OVERLAY_TITLE" = "Po optimizohet Baza e të Dhënave";
 
 /* Format string for a relative time, expressed as a certain number of hours in the past. Embeds {{The number of hours}}. */
-"DATE_HOURS_AGO_FORMAT" = "%@ Hr Më Parë";
+"DATE_HOURS_AGO_FORMAT" = "%@h";
 
 /* Format string for a relative time, expressed as a certain number of minutes in the past. Embeds {{The number of minutes}}. */
-"DATE_MINUTES_AGO_FORMAT" = "%@ Min Më Parë";
+"DATE_MINUTES_AGO_FORMAT" = "%@m";
 
 /* The present; the current time. */
 "DATE_NOW" = "Tani";
@@ -1186,9 +1180,6 @@
 
 /* The 'clear avatar' button in the 'edit group' view. */
 "EDIT_GROUP_CLEAR_AVATAR" = "Hiqe Foton";
-
-/* a title for the contacts section of the 'new/update group' view. */
-"EDIT_GROUP_CONTACTS_SECTION_TITLE" = "Kontakte";
 
 /* The navbar title for the 'update group' view. */
 "EDIT_GROUP_DEFAULT_TITLE" = "Përpunoni Grupin";
@@ -2189,6 +2180,9 @@
 /* status message for failed messages */
 "MESSAGE_STATUS_FAILED_SHORT" = "Të dështuar";
 
+/* Label indicating that a message was only sent to some recipients. */
+"MESSAGE_STATUS_PARTIALLY_SENT" = "Partially sent, tap for details";
+
 /* status message for read messages */
 "MESSAGE_STATUS_READ" = "Të lexuar";
 
@@ -3094,6 +3088,18 @@
 
 /* button title to confirm sending to a recipient whose safety number recently changed */
 "SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "Dërgoje, Sido Qoftë";
+
+/* Message for the 'safety number confirmation' view */
+"SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "The following people may have reinstalled or changed devices. Verify your safety number with them to ensure privacy.";
+
+/* Text explaining that the given contact previously had their safety number verified. */
+"SAFETY_NUMBER_CONFIRMATION_PREVIOUSLY_VERIFIED" = "Previously Verified";
+
+/* Title for the 'safety number confirmation' view */
+"SAFETY_NUMBER_CONFIRMATION_TITLE" = "Safety Number Changes";
+
+/* View safety number action for the 'safety number confirmation' view */
+"SAFETY_NUMBER_CONFIRMATION_VIEW_ACTION" = "Shihni";
 
 /* Snippet to share {{safety number}} with a friend. sent e.g. via SMS */
 "SAFETY_NUMBER_SHARE_FORMAT" = "Numri Ynë i Sigurisë Signal:\n%@";
