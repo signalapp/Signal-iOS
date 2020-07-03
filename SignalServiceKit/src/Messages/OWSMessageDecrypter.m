@@ -502,14 +502,6 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
             return failureBlock(cipherError);
         }
 
-        ECKeyPair *keyPair = nil; // Loki: SMKSecretSessionCipher will fall back on the user's key pair if this is nil
-        if (envelope.type == SSKProtoEnvelopeTypeClosedGroupCiphertext) {
-            NSString *groupPrivateKey = [LKStorage getPrivateKeyForClosedGroupWithPublicKey:envelope.source];
-            if (groupPrivateKey != nil) {
-                keyPair = [[ECKeyPair alloc] initWithPublicKey:[NSData dataFromHexString:[envelope.source removing05PrefixIfNeeded]] privateKey:[NSData dataFromHexString:groupPrivateKey]];
-            }
-        }
-
         NSError *decryptError;
         SMKDecryptResult *_Nullable decryptResult =
             [cipher throwswrapped_decryptMessageWithCertificateValidator:certificateValidator

@@ -3,10 +3,6 @@
 internal final class ClosedGroupUpdateMessage : TSOutgoingMessage {
     private let kind: Kind
 
-    @objc internal var isGroupCreationMessage: Bool {
-        if case .new = kind { return true } else { return false }
-    }
-
     // MARK: Settings
     @objc internal override var ttl: UInt32 { return UInt32(TTLUtilities.getTTL(for: .closedGroupUpdate)) }
 
@@ -16,6 +12,8 @@ internal final class ClosedGroupUpdateMessage : TSOutgoingMessage {
     // MARK: Kind
     internal enum Kind {
         case new(groupPublicKey: Data, name: String, groupPrivateKey: Data, chainKeys: [Data], members: [String], admins: [String])
+        case info(groupPublicKey: Data, name: String, chainKeys: [Data], members: [String], admins: [String])
+        case chainKey(groupPublicKey: Data, chainKey: Data)
     }
 
     // MARK: Initialization
@@ -47,6 +45,15 @@ internal final class ClosedGroupUpdateMessage : TSOutgoingMessage {
                 closedGroupUpdate.setChainKeys(chainKeys)
                 closedGroupUpdate.setMembers(members)
                 closedGroupUpdate.setAdmins(admins)
+            case .info(let groupPublicKey, let name, let chainKeys, let members, let admins):
+                closedGroupUpdate = SSKProtoDataMessageClosedGroupUpdate.builder(groupPublicKey: groupPublicKey, type: .info)
+                closedGroupUpdate.setName(name)
+                closedGroupUpdate.setChainKeys(chainKeys)
+                closedGroupUpdate.setMembers(members)
+                closedGroupUpdate.setAdmins(admins)
+            case .chainKey(let groupPublicKey, let chainKey):
+                closedGroupUpdate = SSKProtoDataMessageClosedGroupUpdate.builder(groupPublicKey: groupPublicKey, type: .chainKey)
+                closedGroupUpdate.setChainKeys([ chainKey ])
             }
             builder.setClosedGroupUpdate(try closedGroupUpdate.build())
         } catch {

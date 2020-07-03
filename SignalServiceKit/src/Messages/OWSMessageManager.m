@@ -547,7 +547,7 @@ NS_ASSUME_NONNULL_BEGIN
         }
     }
 
-    [LKClosedGroupsProtocol handleSharedSenderKeysUpdateIfNeeded:dataMessage transaction:transaction];
+    [LKClosedGroupsProtocol handleSharedSenderKeysUpdateIfNeeded:dataMessage from:envelope.source transaction:transaction];
 
     if (dataMessage.group) {
         TSGroupThread *_Nullable groupThread =
@@ -1192,7 +1192,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     // Ensure sender is in the group.
-    if (![gThread isUserInGroup:envelope.source transaction:transaction]) {
+    if (![gThread isUserMemberInGroup:envelope.source transaction:transaction]) {
         OWSLogWarn(@"Ignoring 'Request Group Info' message for non-member of group. %@ not in %@",
             envelope.source,
             gThread.groupModel.groupMemberIds);
@@ -1321,7 +1321,7 @@ NS_ASSUME_NONNULL_BEGIN
         switch (dataMessage.group.type) {
             case SSKProtoGroupContextTypeUpdate: {
                 // Loki: Ignore updates from non-admins
-                if ([LKClosedGroupsProtocol shouldIgnoreClosedGroupUpdateMessage:dataMessage inThread:oldGroupThread wrappedIn:envelope]) {
+                if (oldGroupThread != nil && [LKClosedGroupsProtocol shouldIgnoreClosedGroupUpdateMessage:dataMessage inThread:oldGroupThread wrappedIn:envelope]) {
                     return nil;
                 }
                 // Ensures that the thread exists but don't update it.
@@ -1343,7 +1343,7 @@ NS_ASSUME_NONNULL_BEGIN
                 BOOL wasCurrentUserRemovedFromGroup = [removedMemberIds containsObject:userMasterPublicKey];
                 if (!wasCurrentUserRemovedFromGroup) {
                     // Loki: Try to establish sessions with all members involved when a group is created or updated
-                    [LKClosedGroupsProtocol establishSessionsIfNeededWithClosedGroupMembers:newMemberIds.allObjects inThread:newGroupThread transaction:transaction];
+                    [LKClosedGroupsProtocol establishSessionsIfNeededWithClosedGroupMembers:newMemberIds.allObjects transaction:transaction];
                 }
 
                 [[OWSDisappearingMessagesJob sharedJob] becomeConsistentWithDisappearingDuration:dataMessage.expireTimer

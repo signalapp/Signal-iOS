@@ -104,7 +104,7 @@ public final class SessionManagementProtocol : NSObject {
         let thread = TSContactThread.getOrCreateThread(withContactId: publicKey, transaction: transaction)
         thread.save(with: transaction)
         // Send the session request
-        print("[Loki] Establishing session with: \(publicKey).")
+        print("[Loki] Sending session request to: \(publicKey).")
         storage.setSessionRequestTimestamp(for: publicKey, to: Date(), in: transaction)
         let sessionRequestMessage = SessionRequestMessage(thread: thread)
         let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue

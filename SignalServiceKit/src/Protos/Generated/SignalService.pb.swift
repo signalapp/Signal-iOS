@@ -729,50 +729,6 @@ struct SignalServiceProtos_CallMessage {
   fileprivate var _profileKey: Data? = nil
 }
 
-struct SignalServiceProtos_ClosedGroupCiphertext {
-  // SwiftProtobuf.Message conformance is added in an extension below. See the
-  // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
-  // methods supported on all messages.
-
-  /// @required
-  var ciphertext: Data {
-    get {return _ciphertext ?? SwiftProtobuf.Internal.emptyData}
-    set {_ciphertext = newValue}
-  }
-  /// Returns true if `ciphertext` has been explicitly set.
-  var hasCiphertext: Bool {return self._ciphertext != nil}
-  /// Clears the value of `ciphertext`. Subsequent reads from it will return its default value.
-  mutating func clearCiphertext() {self._ciphertext = nil}
-
-  /// @required
-  var senderPublicKey: String {
-    get {return _senderPublicKey ?? String()}
-    set {_senderPublicKey = newValue}
-  }
-  /// Returns true if `senderPublicKey` has been explicitly set.
-  var hasSenderPublicKey: Bool {return self._senderPublicKey != nil}
-  /// Clears the value of `senderPublicKey`. Subsequent reads from it will return its default value.
-  mutating func clearSenderPublicKey() {self._senderPublicKey = nil}
-
-  /// @required
-  var keyIndex: UInt32 {
-    get {return _keyIndex ?? 0}
-    set {_keyIndex = newValue}
-  }
-  /// Returns true if `keyIndex` has been explicitly set.
-  var hasKeyIndex: Bool {return self._keyIndex != nil}
-  /// Clears the value of `keyIndex`. Subsequent reads from it will return its default value.
-  mutating func clearKeyIndex() {self._keyIndex = nil}
-
-  var unknownFields = SwiftProtobuf.UnknownStorage()
-
-  init() {}
-
-  fileprivate var _ciphertext: Data? = nil
-  fileprivate var _senderPublicKey: String? = nil
-  fileprivate var _keyIndex: UInt32? = nil
-}
-
 struct SignalServiceProtos_DataMessage {
   // SwiftProtobuf.Message conformance is added in an extension below. See the
   // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
@@ -1593,6 +1549,12 @@ struct SignalServiceProtos_DataMessage {
       /// groupPublicKey, name, groupPrivateKey, chainKeys, members, admins
       case new // = 0
 
+      /// groupPublicKey, name, chainKeys, members, admins
+      case info // = 1
+
+      /// groupPublicKey, chainKeys
+      case chainKey // = 2
+
       init() {
         self = .new
       }
@@ -1600,6 +1562,8 @@ struct SignalServiceProtos_DataMessage {
       init?(rawValue: Int) {
         switch rawValue {
         case 0: self = .new
+        case 1: self = .info
+        case 2: self = .chainKey
         default: return nil
         }
       }
@@ -1607,6 +1571,8 @@ struct SignalServiceProtos_DataMessage {
       var rawValue: Int {
         switch self {
         case .new: return 0
+        case .info: return 1
+        case .chainKey: return 2
         }
       }
 
@@ -3389,47 +3355,6 @@ extension SignalServiceProtos_CallMessage.Hangup: SwiftProtobuf.Message, SwiftPr
   }
 }
 
-extension SignalServiceProtos_ClosedGroupCiphertext: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
-  static let protoMessageName: String = _protobuf_package + ".ClosedGroupCiphertext"
-  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "ciphertext"),
-    2: .same(proto: "senderPublicKey"),
-    3: .same(proto: "keyIndex"),
-  ]
-
-  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
-    while let fieldNumber = try decoder.nextFieldNumber() {
-      switch fieldNumber {
-      case 1: try decoder.decodeSingularBytesField(value: &self._ciphertext)
-      case 2: try decoder.decodeSingularStringField(value: &self._senderPublicKey)
-      case 3: try decoder.decodeSingularUInt32Field(value: &self._keyIndex)
-      default: break
-      }
-    }
-  }
-
-  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
-    if let v = self._ciphertext {
-      try visitor.visitSingularBytesField(value: v, fieldNumber: 1)
-    }
-    if let v = self._senderPublicKey {
-      try visitor.visitSingularStringField(value: v, fieldNumber: 2)
-    }
-    if let v = self._keyIndex {
-      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 3)
-    }
-    try unknownFields.traverse(visitor: &visitor)
-  }
-
-  static func ==(lhs: SignalServiceProtos_ClosedGroupCiphertext, rhs: SignalServiceProtos_ClosedGroupCiphertext) -> Bool {
-    if lhs._ciphertext != rhs._ciphertext {return false}
-    if lhs._senderPublicKey != rhs._senderPublicKey {return false}
-    if lhs._keyIndex != rhs._keyIndex {return false}
-    if lhs.unknownFields != rhs.unknownFields {return false}
-    return true
-  }
-}
-
 extension SignalServiceProtos_DataMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
   static let protoMessageName: String = _protobuf_package + ".DataMessage"
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
@@ -4124,6 +4049,8 @@ extension SignalServiceProtos_DataMessage.ClosedGroupUpdate: SwiftProtobuf.Messa
 extension SignalServiceProtos_DataMessage.ClosedGroupUpdate.TypeEnum: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     0: .same(proto: "NEW"),
+    1: .same(proto: "INFO"),
+    2: .same(proto: "CHAIN_KEY"),
   ]
 }
 

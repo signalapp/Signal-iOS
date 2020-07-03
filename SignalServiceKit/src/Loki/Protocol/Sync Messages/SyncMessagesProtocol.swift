@@ -137,7 +137,7 @@ public final class SyncMessagesProtocol : NSObject {
         newGroupThread.setGroupModel(newGroupModel, with: transaction)
         OWSDisappearingMessagesJob.shared().becomeConsistent(withDisappearingDuration: transcript.dataMessage.expireTimer, thread: newGroupThread, createdByRemoteRecipientId: nil, createdInExistingGroup: true, transaction: transaction)
         // Try to establish sessions with all members for which none exists yet when a group is created or updated
-        ClosedGroupsProtocol.establishSessionsIfNeeded(with: members, in: newGroupThread, using: transaction)
+        ClosedGroupsProtocol.establishSessionsIfNeeded(with: members, using: transaction)
         // Notify the user
         let contactsManager = SSKEnvironment.shared.contactsManager
         let infoMessageText = newGroupThread.groupModel.getInfoStringAboutUpdate(to: newGroupModel, contactsManager: contactsManager)
@@ -221,7 +221,7 @@ public final class SyncMessagesProtocol : NSObject {
                 thread.shouldThreadBeVisible = true
                 thread.save(with: transaction)
             }
-            ClosedGroupsProtocol.establishSessionsIfNeeded(with: closedGroup.groupMemberIds, in: thread, using: transaction)
+            ClosedGroupsProtocol.establishSessionsIfNeeded(with: closedGroup.groupMemberIds, using: transaction)
         }
     }
 

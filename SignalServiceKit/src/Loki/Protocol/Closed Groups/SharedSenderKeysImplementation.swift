@@ -61,7 +61,7 @@ public final class SharedSenderKeysImplementation : NSObject, SharedSenderKeysPr
     internal func generateRatchet(for groupPublicKey: String, senderPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) -> ClosedGroupRatchet {
         let rootChainKey = Data.getSecureRandomData(ofSize: 32)!.toHexString()
         let ratchet = ClosedGroupRatchet(chainKey: rootChainKey, keyIndex: 0, messageKeys: [])
-        Storage.setClosedGroupRatchet(groupPublicKey: groupPublicKey, senderPublicKey: senderPublicKey, ratchet: ratchet, using: transaction)
+        Storage.setClosedGroupRatchet(for: groupPublicKey, senderPublicKey: senderPublicKey, ratchet: ratchet, using: transaction)
         return ratchet
     }
 
@@ -77,14 +77,14 @@ public final class SharedSenderKeysImplementation : NSObject, SharedSenderKeysPr
         #if DEBUG
         assert(!Thread.isMainThread)
         #endif
-        guard let ratchet = Storage.getClosedGroupRatchet(groupPublicKey: groupPublicKey, senderPublicKey: senderPublicKey) else {
+        guard let ratchet = Storage.getClosedGroupRatchet(for: groupPublicKey, senderPublicKey: senderPublicKey) else {
             let error = RatchetingError.loadingFailed(groupPublicKey: groupPublicKey, senderPublicKey: senderPublicKey)
             print("[Loki] \(error.errorDescription!)")
             throw error
         }
         do {
             let result = try step(ratchet)
-            Storage.setClosedGroupRatchet(groupPublicKey: groupPublicKey, senderPublicKey: senderPublicKey, ratchet: result, using: transaction)
+            Storage.setClosedGroupRatchet(for: groupPublicKey, senderPublicKey: senderPublicKey, ratchet: result, using: transaction)
             return result
         } catch {
             print("[Loki] Couldn't step ratchet due to error: \(error).")
@@ -97,7 +97,7 @@ public final class SharedSenderKeysImplementation : NSObject, SharedSenderKeysPr
         #if DEBUG
         assert(!Thread.isMainThread)
         #endif
-        guard let ratchet = Storage.getClosedGroupRatchet(groupPublicKey: groupPublicKey, senderPublicKey: senderPublicKey) else {
+        guard let ratchet = Storage.getClosedGroupRatchet(for: groupPublicKey, senderPublicKey: senderPublicKey) else {
             let error = RatchetingError.loadingFailed(groupPublicKey: groupPublicKey, senderPublicKey: senderPublicKey)
             print("[Loki] \(error.errorDescription!)")
             throw error
@@ -122,7 +122,7 @@ public final class SharedSenderKeysImplementation : NSObject, SharedSenderKeysPr
                     throw error
                 }
             }
-            Storage.setClosedGroupRatchet(groupPublicKey: groupPublicKey, senderPublicKey: senderPublicKey, ratchet: result, using: transaction)
+            Storage.setClosedGroupRatchet(for: groupPublicKey, senderPublicKey: senderPublicKey, ratchet: result, using: transaction)
             return result
         }
     }

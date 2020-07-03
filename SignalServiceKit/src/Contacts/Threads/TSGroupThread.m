@@ -218,10 +218,10 @@ NSString *const TSGroupThread_NotificationKey_UniqueId = @"TSGroupThread_Notific
 - (BOOL)isCurrentUserInGroupWithTransaction:(YapDatabaseReadTransaction *)transaction
 {
     NSString *userHexEncodedPublicKey = TSAccountManager.localNumber;
-    return [self isUserInGroup:userHexEncodedPublicKey transaction:transaction];
+    return [self isUserMemberInGroup:userHexEncodedPublicKey transaction:transaction];
 }
 
-- (BOOL)isUserInGroup:(NSString *)hexEncodedPublicKey transaction:(YapDatabaseReadTransaction *)transaction
+- (BOOL)isUserMemberInGroup:(NSString *)hexEncodedPublicKey transaction:(YapDatabaseReadTransaction *)transaction
 {
     if (hexEncodedPublicKey == nil) { return NO; }
     NSSet<NSString *> *linkedDeviceHexEncodedPublicKeys = [LKDatabaseUtilities getLinkedDeviceHexEncodedPublicKeysFor:hexEncodedPublicKey in:transaction];

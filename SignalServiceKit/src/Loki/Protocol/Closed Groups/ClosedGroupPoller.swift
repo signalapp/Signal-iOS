@@ -6,7 +6,7 @@ public final class ClosedGroupPoller : NSObject {
     private var timer: Timer?
 
     // MARK: Settings
-    private static let pollInterval: TimeInterval = 4
+    private static let pollInterval: TimeInterval = 2
 
     // MARK: Error
     private enum Error : LocalizedError {

@@ -2,20 +2,39 @@
 internal extension Storage {
 
     // MARK: Ratchets
-    internal static let closedGroupRatchetCollection = "LokiClosedGroupRatchetCollection"
+    internal static func getClosedGroupRatchetCollection(for groupPublicKey: String) -> String {
+        return "LokiClosedGroupRatchetCollection.\(groupPublicKey)"
+    }
 
-    internal static func getClosedGroupRatchet(groupPublicKey: String, senderPublicKey: String) -> ClosedGroupRatchet? {
-        let key = "\(groupPublicKey).\(senderPublicKey)"
+    internal static func getClosedGroupRatchet(for groupPublicKey: String, senderPublicKey: String) -> ClosedGroupRatchet? {
+        let collection = getClosedGroupRatchetCollection(for: groupPublicKey)
         var result: ClosedGroupRatchet?
         read { transaction in
-            result = transaction.object(forKey: key, inCollection: closedGroupRatchetCollection) as? ClosedGroupRatchet
+            result = transaction.object(forKey: senderPublicKey, inCollection: collection) as? ClosedGroupRatchet
         }
         return result
     }
 
-    internal static func setClosedGroupRatchet(groupPublicKey: String, senderPublicKey: String, ratchet: ClosedGroupRatchet, using transaction: YapDatabaseReadWriteTransaction) {
-        let key = "\(groupPublicKey).\(senderPublicKey)"
-        transaction.setObject(ratchet, forKey: key, inCollection: closedGroupRatchetCollection)
+    internal static func setClosedGroupRatchet(for groupPublicKey: String, senderPublicKey: String, ratchet: ClosedGroupRatchet, using transaction: YapDatabaseReadWriteTransaction) {
+        let collection = getClosedGroupRatchetCollection(for: groupPublicKey)
+        transaction.setObject(ratchet, forKey: senderPublicKey, inCollection: collection)
+    }
+
+    internal static func getAllClosedGroupRatchets(for groupPublicKey: String) -> [ClosedGroupRatchet] {
+        let collection = getClosedGroupRatchetCollection(for: groupPublicKey)
+        var result: [ClosedGroupRatchet] = []
+        read { transaction in
+            transaction.enumerateRows(inCollection: collection) { _, object, _, _ in
+                guard let ratchet = object as? ClosedGroupRatchet else { return }
+                result.append(ratchet)
+            }
+        }
+        return result
+    }
+
+    internal static func removeAllClosedGroupRatchets(for groupPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) {
+        let collection = getClosedGroupRatchetCollection(for: groupPublicKey)
+        transaction.removeAllObjects(inCollection: collection)
     }
 }
 

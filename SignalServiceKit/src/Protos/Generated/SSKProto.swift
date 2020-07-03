@@ -1710,133 +1710,6 @@ extension SSKProtoCallMessage.SSKProtoCallMessageBuilder {
 
 #endif
 
-// MARK: - SSKProtoClosedGroupCiphertext
-
-@objc public class SSKProtoClosedGroupCiphertext: NSObject {
-
-    // MARK: - SSKProtoClosedGroupCiphertextBuilder
-
-    @objc public class func builder(ciphertext: Data, senderPublicKey: String, keyIndex: UInt32) -> SSKProtoClosedGroupCiphertextBuilder {
-        return SSKProtoClosedGroupCiphertextBuilder(ciphertext: ciphertext, senderPublicKey: senderPublicKey, keyIndex: keyIndex)
-    }
-
-    // asBuilder() constructs a builder that reflects the proto's contents.
-    @objc public func asBuilder() -> SSKProtoClosedGroupCiphertextBuilder {
-        let builder = SSKProtoClosedGroupCiphertextBuilder(ciphertext: ciphertext, senderPublicKey: senderPublicKey, keyIndex: keyIndex)
-        return builder
-    }
-
-    @objc public class SSKProtoClosedGroupCiphertextBuilder: NSObject {
-
-        private var proto = SignalServiceProtos_ClosedGroupCiphertext()
-
-        @objc fileprivate override init() {}
-
-        @objc fileprivate init(ciphertext: Data, senderPublicKey: String, keyIndex: UInt32) {
-            super.init()
-
-            setCiphertext(ciphertext)
-            setSenderPublicKey(senderPublicKey)
-            setKeyIndex(keyIndex)
-        }
-
-        @objc public func setCiphertext(_ valueParam: Data) {
-            proto.ciphertext = valueParam
-        }
-
-        @objc public func setSenderPublicKey(_ valueParam: String) {
-            proto.senderPublicKey = valueParam
-        }
-
-        @objc public func setKeyIndex(_ valueParam: UInt32) {
-            proto.keyIndex = valueParam
-        }
-
-        @objc public func build() throws -> SSKProtoClosedGroupCiphertext {
-            return try SSKProtoClosedGroupCiphertext.parseProto(proto)
-        }
-
-        @objc public func buildSerializedData() throws -> Data {
-            return try SSKProtoClosedGroupCiphertext.parseProto(proto).serializedData()
-        }
-    }
-
-    fileprivate let proto: SignalServiceProtos_ClosedGroupCiphertext
-
-    @objc public let ciphertext: Data
-
-    @objc public let senderPublicKey: String
-
-    @objc public let keyIndex: UInt32
-
-    private init(proto: SignalServiceProtos_ClosedGroupCiphertext,
-                 ciphertext: Data,
-                 senderPublicKey: String,
-                 keyIndex: UInt32) {
-        self.proto = proto
-        self.ciphertext = ciphertext
-        self.senderPublicKey = senderPublicKey
-        self.keyIndex = keyIndex
-    }
-
-    @objc
-    public func serializedData() throws -> Data {
-        return try self.proto.serializedData()
-    }
-
-    @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoClosedGroupCiphertext {
-        let proto = try SignalServiceProtos_ClosedGroupCiphertext(serializedData: serializedData)
-        return try parseProto(proto)
-    }
-
-    fileprivate class func parseProto(_ proto: SignalServiceProtos_ClosedGroupCiphertext) throws -> SSKProtoClosedGroupCiphertext {
-        guard proto.hasCiphertext else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: ciphertext")
-        }
-        let ciphertext = proto.ciphertext
-
-        guard proto.hasSenderPublicKey else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: senderPublicKey")
-        }
-        let senderPublicKey = proto.senderPublicKey
-
-        guard proto.hasKeyIndex else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: keyIndex")
-        }
-        let keyIndex = proto.keyIndex
-
-        // MARK: - Begin Validation Logic for SSKProtoClosedGroupCiphertext -
-
-        // MARK: - End Validation Logic for SSKProtoClosedGroupCiphertext -
-
-        let result = SSKProtoClosedGroupCiphertext(proto: proto,
-                                                   ciphertext: ciphertext,
-                                                   senderPublicKey: senderPublicKey,
-                                                   keyIndex: keyIndex)
-        return result
-    }
-
-    @objc public override var debugDescription: String {
-        return "\(proto)"
-    }
-}
-
-#if DEBUG
-
-extension SSKProtoClosedGroupCiphertext {
-    @objc public func serializedDataIgnoringErrors() -> Data? {
-        return try! self.serializedData()
-    }
-}
-
-extension SSKProtoClosedGroupCiphertext.SSKProtoClosedGroupCiphertextBuilder {
-    @objc public func buildIgnoringErrors() -> SSKProtoClosedGroupCiphertext? {
-        return try! self.build()
-    }
-}
-
-#endif
-
 // MARK: - SSKProtoDataMessageQuoteQuotedAttachment
 
 @objc public class SSKProtoDataMessageQuoteQuotedAttachment: NSObject {
@@ -3422,17 +3295,23 @@ extension SSKProtoDataMessageLokiProfile.SSKProtoDataMessageLokiProfileBuilder {
 
     @objc public enum SSKProtoDataMessageClosedGroupUpdateType: Int32 {
         case new = 0
+        case info = 1
+        case chainKey = 2
     }
 
     private class func SSKProtoDataMessageClosedGroupUpdateTypeWrap(_ value: SignalServiceProtos_DataMessage.ClosedGroupUpdate.TypeEnum) -> SSKProtoDataMessageClosedGroupUpdateType {
         switch value {
         case .new: return .new
+        case .info: return .info
+        case .chainKey: return .chainKey
         }
     }
 
     private class func SSKProtoDataMessageClosedGroupUpdateTypeUnwrap(_ value: SSKProtoDataMessageClosedGroupUpdateType) -> SignalServiceProtos_DataMessage.ClosedGroupUpdate.TypeEnum {
         switch value {
         case .new: return .new
+        case .info: return .info
+        case .chainKey: return .chainKey
         }
     }
 
