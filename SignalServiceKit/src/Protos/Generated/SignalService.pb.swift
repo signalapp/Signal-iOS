@@ -1525,7 +1525,7 @@ struct SignalServiceProtos_DataMessage {
     /// Clears the value of `groupPrivateKey`. Subsequent reads from it will return its default value.
     mutating func clearGroupPrivateKey() {self._groupPrivateKey = nil}
 
-    var chainKeys: [Data] = []
+    var senderKeys: [SignalServiceProtos_DataMessage.ClosedGroupUpdate.SenderKey] = []
 
     var members: [String] = []
 
@@ -1576,6 +1576,39 @@ struct SignalServiceProtos_DataMessage {
         }
       }
 
+    }
+
+    struct SenderKey {
+      // SwiftProtobuf.Message conformance is added in an extension below. See the
+      // `Message` and `Message+*Additions` files in the SwiftProtobuf library for
+      // methods supported on all messages.
+
+      /// @required
+      var chainKey: Data {
+        get {return _chainKey ?? SwiftProtobuf.Internal.emptyData}
+        set {_chainKey = newValue}
+      }
+      /// Returns true if `chainKey` has been explicitly set.
+      var hasChainKey: Bool {return self._chainKey != nil}
+      /// Clears the value of `chainKey`. Subsequent reads from it will return its default value.
+      mutating func clearChainKey() {self._chainKey = nil}
+
+      /// @required
+      var keyIndex: UInt32 {
+        get {return _keyIndex ?? 0}
+        set {_keyIndex = newValue}
+      }
+      /// Returns true if `keyIndex` has been explicitly set.
+      var hasKeyIndex: Bool {return self._keyIndex != nil}
+      /// Clears the value of `keyIndex`. Subsequent reads from it will return its default value.
+      mutating func clearKeyIndex() {self._keyIndex = nil}
+
+      var unknownFields = SwiftProtobuf.UnknownStorage()
+
+      init() {}
+
+      fileprivate var _chainKey: Data? = nil
+      fileprivate var _keyIndex: UInt32? = nil
     }
 
     init() {}
@@ -3987,7 +4020,7 @@ extension SignalServiceProtos_DataMessage.ClosedGroupUpdate: SwiftProtobuf.Messa
     1: .same(proto: "name"),
     2: .same(proto: "groupPublicKey"),
     3: .same(proto: "groupPrivateKey"),
-    4: .same(proto: "chainKeys"),
+    4: .same(proto: "senderKeys"),
     5: .same(proto: "members"),
     6: .same(proto: "admins"),
     7: .same(proto: "type"),
@@ -3999,7 +4032,7 @@ extension SignalServiceProtos_DataMessage.ClosedGroupUpdate: SwiftProtobuf.Messa
       case 1: try decoder.decodeSingularStringField(value: &self._name)
       case 2: try decoder.decodeSingularBytesField(value: &self._groupPublicKey)
       case 3: try decoder.decodeSingularBytesField(value: &self._groupPrivateKey)
-      case 4: try decoder.decodeRepeatedBytesField(value: &self.chainKeys)
+      case 4: try decoder.decodeRepeatedMessageField(value: &self.senderKeys)
       case 5: try decoder.decodeRepeatedStringField(value: &self.members)
       case 6: try decoder.decodeRepeatedStringField(value: &self.admins)
       case 7: try decoder.decodeSingularEnumField(value: &self._type)
@@ -4018,8 +4051,8 @@ extension SignalServiceProtos_DataMessage.ClosedGroupUpdate: SwiftProtobuf.Messa
     if let v = self._groupPrivateKey {
       try visitor.visitSingularBytesField(value: v, fieldNumber: 3)
     }
-    if !self.chainKeys.isEmpty {
-      try visitor.visitRepeatedBytesField(value: self.chainKeys, fieldNumber: 4)
+    if !self.senderKeys.isEmpty {
+      try visitor.visitRepeatedMessageField(value: self.senderKeys, fieldNumber: 4)
     }
     if !self.members.isEmpty {
       try visitor.visitRepeatedStringField(value: self.members, fieldNumber: 5)
@@ -4037,7 +4070,7 @@ extension SignalServiceProtos_DataMessage.ClosedGroupUpdate: SwiftProtobuf.Messa
     if lhs._name != rhs._name {return false}
     if lhs._groupPublicKey != rhs._groupPublicKey {return false}
     if lhs._groupPrivateKey != rhs._groupPrivateKey {return false}
-    if lhs.chainKeys != rhs.chainKeys {return false}
+    if lhs.senderKeys != rhs.senderKeys {return false}
     if lhs.members != rhs.members {return false}
     if lhs.admins != rhs.admins {return false}
     if lhs._type != rhs._type {return false}
@@ -4052,6 +4085,41 @@ extension SignalServiceProtos_DataMessage.ClosedGroupUpdate.TypeEnum: SwiftProto
     1: .same(proto: "INFO"),
     2: .same(proto: "CHAIN_KEY"),
   ]
+}
+
+extension SignalServiceProtos_DataMessage.ClosedGroupUpdate.SenderKey: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {
+  static let protoMessageName: String = SignalServiceProtos_DataMessage.ClosedGroupUpdate.protoMessageName + ".SenderKey"
+  static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
+    1: .same(proto: "chainKey"),
+    2: .same(proto: "keyIndex"),
+  ]
+
+  mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
+    while let fieldNumber = try decoder.nextFieldNumber() {
+      switch fieldNumber {
+      case 1: try decoder.decodeSingularBytesField(value: &self._chainKey)
+      case 2: try decoder.decodeSingularUInt32Field(value: &self._keyIndex)
+      default: break
+      }
+    }
+  }
+
+  func traverse<V: SwiftProtobuf.Visitor>(visitor: inout V) throws {
+    if let v = self._chainKey {
+      try visitor.visitSingularBytesField(value: v, fieldNumber: 1)
+    }
+    if let v = self._keyIndex {
+      try visitor.visitSingularUInt32Field(value: v, fieldNumber: 2)
+    }
+    try unknownFields.traverse(visitor: &visitor)
+  }
+
+  static func ==(lhs: SignalServiceProtos_DataMessage.ClosedGroupUpdate.SenderKey, rhs: SignalServiceProtos_DataMessage.ClosedGroupUpdate.SenderKey) -> Bool {
+    if lhs._chainKey != rhs._chainKey {return false}
+    if lhs._keyIndex != rhs._keyIndex {return false}
+    if lhs.unknownFields != rhs.unknownFields {return false}
+    return true
+  }
 }
 
 extension SignalServiceProtos_NullMessage: SwiftProtobuf.Message, SwiftProtobuf._MessageImplementationBase, SwiftProtobuf._ProtoNameProviding {

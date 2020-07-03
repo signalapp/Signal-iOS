@@ -3287,6 +3287,118 @@ extension SSKProtoDataMessageLokiProfile.SSKProtoDataMessageLokiProfileBuilder {
 
 #endif
 
+// MARK: - SSKProtoDataMessageClosedGroupUpdateSenderKey
+
+@objc public class SSKProtoDataMessageClosedGroupUpdateSenderKey: NSObject {
+
+    // MARK: - SSKProtoDataMessageClosedGroupUpdateSenderKeyBuilder
+
+    @objc public class func builder(chainKey: Data, keyIndex: UInt32) -> SSKProtoDataMessageClosedGroupUpdateSenderKeyBuilder {
+        return SSKProtoDataMessageClosedGroupUpdateSenderKeyBuilder(chainKey: chainKey, keyIndex: keyIndex)
+    }
+
+    // asBuilder() constructs a builder that reflects the proto's contents.
+    @objc public func asBuilder() -> SSKProtoDataMessageClosedGroupUpdateSenderKeyBuilder {
+        let builder = SSKProtoDataMessageClosedGroupUpdateSenderKeyBuilder(chainKey: chainKey, keyIndex: keyIndex)
+        return builder
+    }
+
+    @objc public class SSKProtoDataMessageClosedGroupUpdateSenderKeyBuilder: NSObject {
+
+        private var proto = SignalServiceProtos_DataMessage.ClosedGroupUpdate.SenderKey()
+
+        @objc fileprivate override init() {}
+
+        @objc fileprivate init(chainKey: Data, keyIndex: UInt32) {
+            super.init()
+
+            setChainKey(chainKey)
+            setKeyIndex(keyIndex)
+        }
+
+        @objc public func setChainKey(_ valueParam: Data) {
+            proto.chainKey = valueParam
+        }
+
+        @objc public func setKeyIndex(_ valueParam: UInt32) {
+            proto.keyIndex = valueParam
+        }
+
+        @objc public func build() throws -> SSKProtoDataMessageClosedGroupUpdateSenderKey {
+            return try SSKProtoDataMessageClosedGroupUpdateSenderKey.parseProto(proto)
+        }
+
+        @objc public func buildSerializedData() throws -> Data {
+            return try SSKProtoDataMessageClosedGroupUpdateSenderKey.parseProto(proto).serializedData()
+        }
+    }
+
+    fileprivate let proto: SignalServiceProtos_DataMessage.ClosedGroupUpdate.SenderKey
+
+    @objc public let chainKey: Data
+
+    @objc public let keyIndex: UInt32
+
+    private init(proto: SignalServiceProtos_DataMessage.ClosedGroupUpdate.SenderKey,
+                 chainKey: Data,
+                 keyIndex: UInt32) {
+        self.proto = proto
+        self.chainKey = chainKey
+        self.keyIndex = keyIndex
+    }
+
+    @objc
+    public func serializedData() throws -> Data {
+        return try self.proto.serializedData()
+    }
+
+    @objc public class func parseData(_ serializedData: Data) throws -> SSKProtoDataMessageClosedGroupUpdateSenderKey {
+        let proto = try SignalServiceProtos_DataMessage.ClosedGroupUpdate.SenderKey(serializedData: serializedData)
+        return try parseProto(proto)
+    }
+
+    fileprivate class func parseProto(_ proto: SignalServiceProtos_DataMessage.ClosedGroupUpdate.SenderKey) throws -> SSKProtoDataMessageClosedGroupUpdateSenderKey {
+        guard proto.hasChainKey else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: chainKey")
+        }
+        let chainKey = proto.chainKey
+
+        guard proto.hasKeyIndex else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: keyIndex")
+        }
+        let keyIndex = proto.keyIndex
+
+        // MARK: - Begin Validation Logic for SSKProtoDataMessageClosedGroupUpdateSenderKey -
+
+        // MARK: - End Validation Logic for SSKProtoDataMessageClosedGroupUpdateSenderKey -
+
+        let result = SSKProtoDataMessageClosedGroupUpdateSenderKey(proto: proto,
+                                                                   chainKey: chainKey,
+                                                                   keyIndex: keyIndex)
+        return result
+    }
+
+    @objc public override var debugDescription: String {
+        return "\(proto)"
+    }
+}
+
+#if DEBUG
+
+extension SSKProtoDataMessageClosedGroupUpdateSenderKey {
+    @objc public func serializedDataIgnoringErrors() -> Data? {
+        return try! self.serializedData()
+    }
+}
+
+extension SSKProtoDataMessageClosedGroupUpdateSenderKey.SSKProtoDataMessageClosedGroupUpdateSenderKeyBuilder {
+    @objc public func buildIgnoringErrors() -> SSKProtoDataMessageClosedGroupUpdateSenderKey? {
+        return try! self.build()
+    }
+}
+
+#endif
+
 // MARK: - SSKProtoDataMessageClosedGroupUpdate
 
 @objc public class SSKProtoDataMessageClosedGroupUpdate: NSObject {
@@ -3330,7 +3442,7 @@ extension SSKProtoDataMessageLokiProfile.SSKProtoDataMessageLokiProfileBuilder {
         if let _value = groupPrivateKey {
             builder.setGroupPrivateKey(_value)
         }
-        builder.setChainKeys(chainKeys)
+        builder.setSenderKeys(senderKeys)
         builder.setMembers(members)
         builder.setAdmins(admins)
         return builder
@@ -3361,14 +3473,14 @@ extension SSKProtoDataMessageLokiProfile.SSKProtoDataMessageLokiProfileBuilder {
             proto.groupPrivateKey = valueParam
         }
 
-        @objc public func addChainKeys(_ valueParam: Data) {
-            var items = proto.chainKeys
-            items.append(valueParam)
-            proto.chainKeys = items
+        @objc public func addSenderKeys(_ valueParam: SSKProtoDataMessageClosedGroupUpdateSenderKey) {
+            var items = proto.senderKeys
+            items.append(valueParam.proto)
+            proto.senderKeys = items
         }
 
-        @objc public func setChainKeys(_ wrappedItems: [Data]) {
-            proto.chainKeys = wrappedItems
+        @objc public func setSenderKeys(_ wrappedItems: [SSKProtoDataMessageClosedGroupUpdateSenderKey]) {
+            proto.senderKeys = wrappedItems.map { $0.proto }
         }
 
         @objc public func addMembers(_ valueParam: String) {
@@ -3408,6 +3520,8 @@ extension SSKProtoDataMessageLokiProfile.SSKProtoDataMessageLokiProfileBuilder {
 
     @objc public let groupPublicKey: Data
 
+    @objc public let senderKeys: [SSKProtoDataMessageClosedGroupUpdateSenderKey]
+
     @objc public let type: SSKProtoDataMessageClosedGroupUpdateType
 
     @objc public var name: String? {
@@ -3430,10 +3544,6 @@ extension SSKProtoDataMessageLokiProfile.SSKProtoDataMessageLokiProfileBuilder {
         return proto.hasGroupPrivateKey
     }
 
-    @objc public var chainKeys: [Data] {
-        return proto.chainKeys
-    }
-
     @objc public var members: [String] {
         return proto.members
     }
@@ -3444,9 +3554,11 @@ extension SSKProtoDataMessageLokiProfile.SSKProtoDataMessageLokiProfileBuilder {
 
     private init(proto: SignalServiceProtos_DataMessage.ClosedGroupUpdate,
                  groupPublicKey: Data,
+                 senderKeys: [SSKProtoDataMessageClosedGroupUpdateSenderKey],
                  type: SSKProtoDataMessageClosedGroupUpdateType) {
         self.proto = proto
         self.groupPublicKey = groupPublicKey
+        self.senderKeys = senderKeys
         self.type = type
     }
 
@@ -3466,6 +3578,9 @@ extension SSKProtoDataMessageLokiProfile.SSKProtoDataMessageLokiProfileBuilder {
         }
         let groupPublicKey = proto.groupPublicKey
 
+        var senderKeys: [SSKProtoDataMessageClosedGroupUpdateSenderKey] = []
+        senderKeys = try proto.senderKeys.map { try SSKProtoDataMessageClosedGroupUpdateSenderKey.parseProto($0) }
+
         guard proto.hasType else {
             throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: type")
         }
@@ -3477,6 +3592,7 @@ extension SSKProtoDataMessageLokiProfile.SSKProtoDataMessageLokiProfileBuilder {
 
         let result = SSKProtoDataMessageClosedGroupUpdate(proto: proto,
                                                           groupPublicKey: groupPublicKey,
+                                                          senderKeys: senderKeys,
                                                           type: type)
         return result
     }

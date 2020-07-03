@@ -248,11 +248,18 @@ message DataMessage {
       CHAIN_KEY = 2; // groupPublicKey, chainKeys
     }
 
+    message SenderKey {
+      // @required
+      optional bytes  chainKey = 1;
+      // @required
+      optional uint32 keyIndex = 2;
+    }
+
     optional string    name            = 1;
     // @required
     optional bytes     groupPublicKey  = 2;
     optional bytes     groupPrivateKey = 3;
-    repeated bytes     chainKeys       = 4;
+    repeated SenderKey senderKeys      = 4;
     repeated string    members         = 5;
     repeated string    admins          = 6;
     // @required
