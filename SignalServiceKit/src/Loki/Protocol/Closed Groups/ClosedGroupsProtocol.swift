@@ -13,6 +13,15 @@ import PromiseKit
 @objc(LKClosedGroupsProtocol)
 public final class ClosedGroupsProtocol : NSObject {
 
+    // TODO:
+    // • Always reset all ratchets if someone leaves or is kicked?
+    // • Validate that update messages come from admins
+    // • Closed group update message deserialization
+    // • Include key indexes
+    // • Multi device
+    //     • ClosedGroupsProtocol
+    //     • SyncMessagesProtocol
+
     /// - Note: It's recommended to batch fetch the device links for the given set of members before invoking this, to avoid
     /// the message sending pipeline making a request for each member.
     public static func createClosedGroup(name: String, members membersAsSet: Set<String>, transaction: YapDatabaseReadWriteTransaction) -> TSGroupThread {
