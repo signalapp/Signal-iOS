@@ -8291,17 +8291,20 @@ extension SSKProtoSyncMessage.SSKProtoSyncMessageBuilder {
 @objc
 public enum SSKProtoAttachmentPointerFlags: Int32 {
     case voiceMessage = 1
+    case borderless = 2
 }
 
 private func SSKProtoAttachmentPointerFlagsWrap(_ value: SignalServiceProtos_AttachmentPointer.Flags) -> SSKProtoAttachmentPointerFlags {
     switch value {
     case .voiceMessage: return .voiceMessage
+    case .borderless: return .borderless
     }
 }
 
 private func SSKProtoAttachmentPointerFlagsUnwrap(_ value: SSKProtoAttachmentPointerFlags) -> SignalServiceProtos_AttachmentPointer.Flags {
     switch value {
     case .voiceMessage: return .voiceMessage
+    case .borderless: return .borderless
     }
 }
 

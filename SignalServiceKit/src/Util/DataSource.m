@@ -225,6 +225,12 @@ NS_ASSUME_NONNULL_BEGIN
     return [MIMETypeUtil mimeTypeForFileExtension:self.fileExtension];
 }
 
+- (BOOL)hasStickerLikeProperties
+{
+    OWSAssertDebug(!self.isConsumed);
+    return [self.data ows_hasStickerLikeProperties];
+}
+
 @end
 
 #pragma mark -
@@ -395,6 +401,12 @@ NS_ASSUME_NONNULL_BEGIN
 {
     OWSAssertDebug(!self.isConsumed);
     return [OWSMediaUtils isValidVideoWithPath:self.dataUrl.path];
+}
+
+- (BOOL)hasStickerLikeProperties
+{
+    OWSAssertDebug(!self.isConsumed);
+    return [NSData ows_hasStickerLikePropertiesWithPath:self.dataUrl.path];
 }
 
 - (BOOL)writeToUrl:(NSURL *)dstUrl error:(NSError **)error

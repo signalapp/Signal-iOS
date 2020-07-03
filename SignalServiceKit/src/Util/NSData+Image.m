@@ -38,14 +38,25 @@ NSString *NSStringForImageFormat(ImageFormat value)
 
 #pragma mark -
 
+@interface ImageData ()
+
+@property (nonatomic) BOOL isValid;
+
+@property (nonatomic) ImageFormat imageFormat;
+@property (nonatomic) CGSize pixelSize;
+@property (nonatomic) BOOL hasAlpha;
+
+@end
+
 @implementation ImageData
 
-+ (instancetype)validWithImageFormat:(ImageFormat)imageFormat pixelSize:(CGSize)pixelSize
++ (instancetype)validWithImageFormat:(ImageFormat)imageFormat pixelSize:(CGSize)pixelSize hasAlpha:(BOOL)hasAlpha
 {
     ImageData *imageData = [ImageData new];
     imageData.isValid = YES;
     imageData.imageFormat = imageFormat;
     imageData.pixelSize = pixelSize;
+    imageData.hasAlpha = hasAlpha;
     return imageData;
 }
 
@@ -372,25 +383,11 @@ NSString *NSStringForImageFormat(ImageFormat value)
         return NO;
     }
 
-    NSDictionary *options = @{
-        (NSString *)kCGImageSourceShouldCache : @(NO),
-    };
-    NSDictionary *properties
-        = (__bridge_transfer NSDictionary *)CGImageSourceCopyPropertiesAtIndex(source, 0, (CFDictionaryRef)options);
-    BOOL result = NO;
-    if (properties) {
-        NSNumber *_Nullable hasAlpha = properties[(NSString *)kCGImagePropertyHasAlpha];
-        if (hasAlpha) {
-            result = hasAlpha.boolValue;
-        } else {
-            // This is not an error; kCGImagePropertyHasAlpha is an optional
-            // property.
-            OWSLogWarn(@"Could not determine transparency of image: %@", url);
-            result = NO;
-        }
-    }
+    ImageData *imageData = [self imageDataWithPath:filePath mimeType:nil];
+
     CFRelease(source);
-    return result;
+
+    return imageData.hasAlpha;
 }
 
 - (BOOL)isMaybeWebpData
@@ -442,6 +439,37 @@ NSString *NSStringForImageFormat(ImageFormat value)
 
     UIImage *uiImage = [UIImage imageWithCGImage:cgImage];
     return uiImage;
+}
+
++ (BOOL)ows_hasStickerLikePropertiesWithPath:(NSString *)filePath
+{
+    return [self ows_hasStickerLikePropertiesWithImageData:[self imageDataWithPath:filePath mimeType:nil]];
+}
+
+- (BOOL)ows_hasStickerLikeProperties
+{
+    ImageData *imageData = [self imageDataWithIsAnimated:NO imageFormat:[self ows_guessImageFormat]];
+    return [NSData ows_hasStickerLikePropertiesWithImageData:imageData];
+}
+
++ (BOOL)ows_hasStickerLikePropertiesWithImageData:(ImageData *)imageData
+{
+    if (!imageData.isValid) {
+        return NO;
+    }
+
+    // Stickers must be small
+    const CGFloat maxStickerHeight = 512;
+    if (imageData.pixelSize.height > maxStickerHeight || imageData.pixelSize.width > maxStickerHeight) {
+        return NO;
+    }
+
+    // Stickers must have an alpha channel
+    if (!imageData.hasAlpha) {
+        return NO;
+    }
+
+    return YES;
 }
 
 #pragma mark - Image Data
@@ -518,7 +546,7 @@ NSString *NSStringForImageFormat(ImageFormat value)
         if (![NSData ows_isValidImageDimension:imageSize depthBytes:1 isAnimated:YES]) {
             return ImageData.invalid;
         }
-        return [ImageData validWithImageFormat:imageFormat pixelSize:imageSize];
+        return [ImageData validWithImageFormat:imageFormat pixelSize:imageSize hasAlpha:YES];
     }
 
     CGImageSourceRef imageSource = CGImageSourceCreateWithData((__bridge CFDataRef)self, NULL);
@@ -536,8 +564,12 @@ NSString *NSStringForImageFormat(ImageFormat value)
 {
     OWSAssertDebug(imageSource);
 
-    NSDictionary *imageProperties
-        = (__bridge_transfer NSDictionary *)CGImageSourceCopyPropertiesAtIndex(imageSource, 0, NULL);
+    NSDictionary *options = @{
+        (NSString *)kCGImageSourceShouldCache : @(NO),
+    };
+
+    NSDictionary *imageProperties = (__bridge_transfer NSDictionary *)CGImageSourceCopyPropertiesAtIndex(
+        imageSource, 0, (CFDictionaryRef)options);
 
     if (!imageProperties) {
         return ImageData.invalid;
@@ -561,6 +593,12 @@ NSString *NSStringForImageFormat(ImageFormat value)
     if (orientationNumber != nil) {
         pixelSize = [self applyImageOrientation:(CGImagePropertyOrientation)orientationNumber.intValue
                                     toImageSize:pixelSize];
+    }
+
+    NSNumber *hasAlpha = imageProperties[(__bridge NSString *)kCGImagePropertyHasAlpha];
+    if (!hasAlpha) {
+        // This is not an error; kCGImagePropertyHasAlpha is an optional property.
+        OWSLogWarn(@"Could not determine transparency of image");
     }
 
     /* The number of bits in each color sample of each pixel. The value of this
@@ -590,7 +628,8 @@ NSString *NSStringForImageFormat(ImageFormat value)
     if (![self ows_isValidImageDimension:pixelSize depthBytes:depthBytes isAnimated:isAnimated]) {
         return ImageData.invalid;
     }
-    return [ImageData validWithImageFormat:imageFormat pixelSize:pixelSize];
+
+    return [ImageData validWithImageFormat:imageFormat pixelSize:pixelSize hasAlpha:hasAlpha.boolValue];
 }
 
 @end

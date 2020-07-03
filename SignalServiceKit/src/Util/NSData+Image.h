@@ -23,13 +23,12 @@ NSString *NSStringForImageFormat(ImageFormat value);
 
 @interface ImageData : NSObject
 
-@property (nonatomic) BOOL isValid;
+@property (nonatomic, readonly) BOOL isValid;
 
 // These properties are only set if isValid is true.
-@property (nonatomic) ImageFormat imageFormat;
-@property (nonatomic) CGSize pixelSize;
-
-// TODO: We could add an hasAlpha property.
+@property (nonatomic, readonly) ImageFormat imageFormat;
+@property (nonatomic, readonly) CGSize pixelSize;
+@property (nonatomic, readonly) BOOL hasAlpha;
 
 @end
 
@@ -54,6 +53,9 @@ NSString *NSStringForImageFormat(ImageFormat value);
 
 @property (nonatomic, readonly) BOOL isMaybeWebpData;
 - (nullable UIImage *)stillForWebpData;
+
++ (BOOL)ows_hasStickerLikePropertiesWithPath:(NSString *)filePath;
+- (BOOL)ows_hasStickerLikeProperties;
 
 #pragma mark - Image Data
 

@@ -78,6 +78,7 @@ NSError *SSKEnsureError(NSError *_Nullable error, OWSErrorCode fallbackCode, NSS
                     sourceFilename:(nullable NSString *)sourceFilename
                            caption:(nullable NSString *)caption
                     albumMessageId:(nullable NSString *)albumMessageId
+                      isBorderless:(BOOL)isBorderless
 {
     self = [super init];
     if (!self) {
@@ -89,6 +90,7 @@ NSError *SSKEnsureError(NSError *_Nullable error, OWSErrorCode fallbackCode, NSS
     _sourceFilename = sourceFilename;
     _caption = caption;
     _albumMessageId = albumMessageId;
+    _isBorderless = isBorderless;
 
     return self;
 }
@@ -105,6 +107,8 @@ NSError *SSKEnsureError(NSError *_Nullable error, OWSErrorCode fallbackCode, NSS
 
     if (isVoiceMessage) {
         attachmentStream.attachmentType = TSAttachmentTypeVoiceMessage;
+    } else if (self.isBorderless) {
+        attachmentStream.attachmentType = TSAttachmentTypeBorderless;
     }
 
     [attachmentStream writeConsumingDataSource:self.dataSource error:error];
@@ -549,7 +553,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                                                                                           contentType:contentType
                                                                                        sourceFilename:sourceFilename
                                                                                               caption:nil
-                                                                                       albumMessageId:albumMessageId];
+                                                                                       albumMessageId:albumMessageId
+                                                                                         isBorderless:NO];
     [self sendUnpreparedAttachments:@[
         attachmentInfo,
     ]

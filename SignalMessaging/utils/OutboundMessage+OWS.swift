@@ -53,6 +53,11 @@ extension OutgoingMessagePreparer {
                 isViewOnceMessage = true
                 break
             }
+
+            if attachment.isBorderless {
+                assert(mediaAttachments.count == 1)
+                break
+            }
         }
 
         // Discard quoted reply for view-once messages.

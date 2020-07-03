@@ -40,6 +40,7 @@ NS_SWIFT_NAME(OutgoingAttachmentInfo)
 @property (nonatomic, readonly, nullable) NSString *sourceFilename;
 @property (nonatomic, readonly, nullable) NSString *caption;
 @property (nonatomic, readonly, nullable) NSString *albumMessageId;
+@property (nonatomic, readonly) BOOL isBorderless;
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
@@ -48,7 +49,8 @@ NS_SWIFT_NAME(OutgoingAttachmentInfo)
                        contentType:(NSString *)contentType
                     sourceFilename:(nullable NSString *)sourceFilename
                            caption:(nullable NSString *)caption
-                    albumMessageId:(nullable NSString *)albumMessageId NS_DESIGNATED_INITIALIZER;
+                    albumMessageId:(nullable NSString *)albumMessageId
+                      isBorderless:(BOOL)isBorderless NS_DESIGNATED_INITIALIZER;
 
 - (nullable TSAttachmentStream *)asStreamConsumingDataSourceWithIsVoiceMessage:(BOOL)isVoiceMessage
                                                                          error:(NSError **)error;

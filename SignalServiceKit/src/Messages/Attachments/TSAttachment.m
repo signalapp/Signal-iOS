@@ -384,6 +384,11 @@ NSUInteger const TSAttachmentSchemaVersion = 5;
     return self.attachmentType == TSAttachmentTypeVoiceMessage;
 }
 
+- (BOOL)isBorderless
+{
+    return self.attachmentType == TSAttachmentTypeBorderless;
+}
+
 - (BOOL)isVisualMedia
 {
     return [MIMETypeUtil isVisualMedia:self.contentType];

@@ -36,7 +36,8 @@ class AttachmentMultisend {
                                               contentType: attachment.mimeType,
                                               sourceFilename: attachment.filenameOrDefault,
                                               caption: attachment.captionText,
-                                              albumMessageId: nil)
+                                              albumMessageId: nil,
+                                              isBorderless: attachment.isBorderless)
             }
 
             var threads: [TSThread] = []

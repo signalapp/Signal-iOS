@@ -1171,7 +1171,15 @@ typedef void (^OWSLoadedThumbnailSuccess)(OWSLoadedThumbnail *loadedThumbnail);
     builder.size = self.byteCount;
     builder.key = self.encryptionKey;
     builder.digest = self.digest;
-    builder.flags = self.isVoiceMessage ? SSKProtoAttachmentPointerFlagsVoiceMessage : 0;
+
+    if (self.isVoiceMessage) {
+        builder.flags = SSKProtoAttachmentPointerFlagsVoiceMessage;
+    } else if (self.isBorderless) {
+        builder.flags = SSKProtoAttachmentPointerFlagsBorderless;
+    } else {
+        builder.flags = 0;
+    }
+
     if (self.blurHash.length > 0) {
         builder.blurHash = self.blurHash;
     }

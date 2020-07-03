@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 NS_ASSUME_NONNULL_BEGIN
@@ -14,17 +14,23 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, nullable) NSString *sourceFilename;
 
 // Should not be called unless necessary as it can involve an expensive read.
-- (NSData *)data;
+@property (nonatomic, readonly) NSData *data;
 
 // The URL for the data.  Should always be a File URL.
 //
 // Should not be called unless necessary as it can involve an expensive write.
 //
 // Will only return nil in the error case.
-- (nullable NSURL *)dataUrl;
+@property (nonatomic, readonly, nullable) NSURL *dataUrl;
 
 // Will return zero in the error case.
-- (NSUInteger)dataLength;
+@property (nonatomic, readonly) NSUInteger dataLength;
+
+@property (nonatomic, readonly) BOOL isValidImage;
+
+@property (nonatomic, readonly) BOOL isValidVideo;
+
+@property (nonatomic, readonly) BOOL hasStickerLikeProperties;
 
 // Returns YES on success.
 - (BOOL)writeToUrl:(NSURL *)dstUrl error:(NSError **)error;
@@ -32,10 +38,6 @@ NS_ASSUME_NONNULL_BEGIN
 // Faster than `writeToUrl`, but a DataSource can only be moved once,
 // and cannot be used after it's been moved.
 - (BOOL)moveToUrlAndConsume:(NSURL *)dstUrl error:(NSError **)error;
-
-- (BOOL)isValidImage;
-
-- (BOOL)isValidVideo;
 
 @end
 
