@@ -16,7 +16,6 @@ public final class ClosedGroupsProtocol : NSObject {
     // TODO:
     // • Always reset all ratchets if someone leaves or is kicked?
     // • Closed group update message deserialization
-    // • Group model saving
     // • Multi device
     //     • ClosedGroupsProtocol
     //     • SyncMessagesProtocol
@@ -105,6 +104,10 @@ public final class ClosedGroupsProtocol : NSObject {
             let closedGroupUpdateMessage = ClosedGroupUpdateMessage(thread: thread, kind: closedGroupUpdateMessageKind)
             messageSenderJobQueue.add(message: closedGroupUpdateMessage, transaction: transaction)
         }
+        // Update the group
+        let groupIDAsData = groupID.data(using: String.Encoding.utf8)!
+        let newGroupModel = TSGroupModel(title: name, memberIds: members, image: nil, groupId: groupIDAsData, groupType: .closedGroup, adminIds: admins)
+        thread.setGroupModel(newGroupModel, with: transaction)
         // Notify the user
         let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .typeGroupUpdate)
         infoMessage.save(with: transaction)
@@ -149,6 +152,10 @@ public final class ClosedGroupsProtocol : NSObject {
             let closedGroupUpdateMessage = ClosedGroupUpdateMessage(thread: thread, kind: closedGroupUpdateMessageKind)
             messageSenderJobQueue.add(message: closedGroupUpdateMessage, transaction: transaction)
         }
+        // Update the group
+        let groupIDAsData = groupID.data(using: String.Encoding.utf8)!
+        let newGroupModel = TSGroupModel(title: name, memberIds: members, image: nil, groupId: groupIDAsData, groupType: .closedGroup, adminIds: admins)
+        thread.setGroupModel(newGroupModel, with: transaction)
         // Notify the user
         let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .typeGroupUpdate)
         infoMessage.save(with: transaction)
@@ -179,6 +186,13 @@ public final class ClosedGroupsProtocol : NSObject {
         Storage.removeAllClosedGroupRatchets(for: groupPublicKey, using: transaction)
         // Remove the group from the user's set of public keys to poll for
         Storage.removeClosedGroupPrivateKey(for: groupPublicKey, using: transaction)
+        // Update the group
+        let groupIDAsData = groupID.data(using: String.Encoding.utf8)!
+        let newGroupModel = TSGroupModel(title: name, memberIds: members, image: nil, groupId: groupIDAsData, groupType: .closedGroup, adminIds: admins)
+        thread.setGroupModel(newGroupModel, with: transaction)
+        // Notify the user
+        let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .typeGroupUpdate)
+        infoMessage.save(with: transaction)
     }
 
     @objc(handleSharedSenderKeysUpdateIfNeeded:from:transaction:)
