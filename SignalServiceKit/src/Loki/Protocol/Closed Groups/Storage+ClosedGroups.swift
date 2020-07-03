@@ -20,13 +20,13 @@ internal extension Storage {
         transaction.setObject(ratchet, forKey: senderPublicKey, inCollection: collection)
     }
 
-    internal static func getAllClosedGroupRatchets(for groupPublicKey: String) -> [ClosedGroupRatchet] {
+    internal static func getAllClosedGroupRatchets(for groupPublicKey: String) -> Set<ClosedGroupRatchet> {
         let collection = getClosedGroupRatchetCollection(for: groupPublicKey)
-        var result: [ClosedGroupRatchet] = []
+        var result: Set<ClosedGroupRatchet> = []
         read { transaction in
             transaction.enumerateRows(inCollection: collection) { _, object, _, _ in
                 guard let ratchet = object as? ClosedGroupRatchet else { return }
-                result.append(ratchet)
+                result.insert(ratchet)
             }
         }
         return result
@@ -62,5 +62,9 @@ internal extension Storage {
 
     internal static func setClosedGroupPrivateKey(_ privateKey: String, for publicKey: String, using transaction: YapDatabaseReadWriteTransaction) {
         transaction.setObject(privateKey, forKey: publicKey, inCollection: closedGroupPrivateKeyCollection)
+    }
+
+    internal static func removeClosedGroupPrivateKey(for publicKey: String, using transaction: YapDatabaseReadWriteTransaction) {
+        transaction.removeObject(forKey: publicKey, inCollection: closedGroupPrivateKeyCollection)
     }
 }
