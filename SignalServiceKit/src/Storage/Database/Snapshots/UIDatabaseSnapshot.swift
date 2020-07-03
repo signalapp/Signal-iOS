@@ -361,7 +361,6 @@ extension UIDatabaseObserver: TransactionObserver {
         }
 
         // Update the snapshot now.
-        lastSnapshotUpdateDate = Date()
         updateSnapshot()
     }
 
@@ -413,9 +412,21 @@ extension UIDatabaseObserver: TransactionObserver {
         return targetUpdateFrequencySeconds
     }
 
-    // See comment on databaseDidChange.
-    private func updateSnapshot() {
+    // NOTE: This should only be used in exceptional circumstances,
+    // e.g. after reloading the database due to a device transfer.
+    func forceUpdateSnapshot() {
         AssertIsOnMainThread()
+
+        Logger.info("")
+
+        updateSnapshot(canCheckpoint: false)
+    }
+
+    // See comment on databaseDidChange.
+    private func updateSnapshot(canCheckpoint: Bool = true) {
+        AssertIsOnMainThread()
+
+        lastSnapshotUpdateDate = Date()
 
         Logger.verbose("databaseSnapshotWillUpdate")
         for delegate in snapshotDelegates {
@@ -424,7 +435,7 @@ extension UIDatabaseObserver: TransactionObserver {
 
         latestSnapshot.read { db in
             do {
-                try self.fastForwardDatabaseSnapshot(db: db)
+                try self.fastForwardDatabaseSnapshot(db: db, canCheckpoint: canCheckpoint)
             } catch {
                 owsFailDebug("\(error)")
             }
@@ -469,14 +480,16 @@ extension UIDatabaseObserver: TransactionObserver {
     // Currently GRDB offers no built in way to fast-forward a
     // database snapshot.
     // See: https://github.com/groue/GRDB.swift/issues/619
-    func fastForwardDatabaseSnapshot(db: Database) throws {
+    func fastForwardDatabaseSnapshot(db: Database, canCheckpoint: Bool = true) throws {
         AssertIsOnMainThread()
 
         // [1] end the old transaction from the old db state
         try db.commit()
 
         // [2] Checkpoint the WAL
-        checkpointIfNecessary()
+        if canCheckpoint {
+            checkpointIfNecessary()
+        }
 
         // [3] open a new transaction from the current db state
         try db.beginTransaction(.deferred)
