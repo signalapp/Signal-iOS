@@ -243,9 +243,9 @@ message DataMessage {
 
   message ClosedGroupUpdate { // Loki
     enum Type {
-      NEW = 0; // groupPublicKey, name, groupPrivateKey, chainKeys, members, admins
-      INFO = 1; // groupPublicKey, name, chainKeys, members, admins
-      CHAIN_KEY = 2; // groupPublicKey, chainKeys
+      NEW        = 0; // groupPublicKey, name, groupPrivateKey, senderKeys, members, admins
+      INFO       = 1; // groupPublicKey, name, senderKeys, members, admins
+      SENDER_KEY = 2; // groupPublicKey, senderKeys
     }
 
     message SenderKey {

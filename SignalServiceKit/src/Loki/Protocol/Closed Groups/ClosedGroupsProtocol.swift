@@ -15,7 +15,6 @@ public final class ClosedGroupsProtocol : NSObject {
 
     // TODO:
     // • Always reset all ratchets if someone leaves or is kicked?
-    // • Closed group update message deserialization
     // • Multi device
     //     • ClosedGroupsProtocol
     //     • SyncMessagesProtocol
@@ -48,7 +47,7 @@ public final class ClosedGroupsProtocol : NSObject {
         // the user can only pick from existing contacts)
         establishSessionsIfNeeded(with: members, using: transaction)
         // Send a closed group update message to all members involved using established channels
-        let senderKeys = ratchets.map { ClosedGroupUpdateMessage.SenderKey(chainKey: Data(hex: $0.chainKey), keyIndex: $0.keyIndex) }
+        let senderKeys = ratchets.map { ClosedGroupSenderKey(chainKey: Data(hex: $0.chainKey), keyIndex: $0.keyIndex) }
         for member in members {
             let thread = TSContactThread.getOrCreateThread(withContactId: member, transaction: transaction)
             thread.save(with: transaction)
@@ -89,13 +88,13 @@ public final class ClosedGroupsProtocol : NSObject {
         }
         // Send a closed group update message to the existing members with the new members' ratchets (this message is
         // aimed at the group)
-        let senderKeys = ratchets.map { ClosedGroupUpdateMessage.SenderKey(chainKey: Data(hex: $0.chainKey), keyIndex: $0.keyIndex) }
+        let senderKeys = ratchets.map { ClosedGroupSenderKey(chainKey: Data(hex: $0.chainKey), keyIndex: $0.keyIndex) }
         let closedGroupUpdateMessageKind = ClosedGroupUpdateMessage.Kind.info(groupPublicKey: Data(hex: groupPublicKey), name: name, senderKeys: senderKeys, members: members, admins: admins)
         let closedGroupUpdateMessage = ClosedGroupUpdateMessage(thread: thread, kind: closedGroupUpdateMessageKind)
         messageSenderJobQueue.add(message: closedGroupUpdateMessage, transaction: transaction)
         // Send closed group update messages to the new members using established channels
         let allSenderKeys = Storage.getAllClosedGroupRatchets(for: groupPublicKey).map {
-            ClosedGroupUpdateMessage.SenderKey(chainKey: Data(hex: $0.chainKey), keyIndex: $0.keyIndex)
+            ClosedGroupSenderKey(chainKey: Data(hex: $0.chainKey), keyIndex: $0.keyIndex)
         }
         for member in newMembers {
             let closedGroupUpdateMessageKind = ClosedGroupUpdateMessage.Kind.info(groupPublicKey: Data(hex: groupPublicKey), name: name, senderKeys: allSenderKeys, members: members, admins: admins)
@@ -144,7 +143,7 @@ public final class ClosedGroupsProtocol : NSObject {
         }
         // Send a closed group update message to all members (minus the ones that were removed) with everyone's new
         // ratchets using established channels
-        let senderKeys = ratchets.map { ClosedGroupUpdateMessage.SenderKey(chainKey: Data(hex: $0.chainKey), keyIndex: $0.keyIndex) }
+        let senderKeys = ratchets.map { ClosedGroupSenderKey(chainKey: Data(hex: $0.chainKey), keyIndex: $0.keyIndex) }
         for member in members {
             let thread = TSContactThread.getOrCreateThread(withContactId: member, transaction: transaction)
             thread.save(with: transaction)
@@ -277,12 +276,12 @@ public final class ClosedGroupsProtocol : NSObject {
             Storage.removeAllClosedGroupRatchets(for: groupPublicKey, using: transaction)
             let userPublicKey = getUserHexEncodedPublicKey()
             let newRatchet = SharedSenderKeysImplementation.shared.generateRatchet(for: groupPublicKey, senderPublicKey: userPublicKey, using: transaction)
-            let newSenderKey = ClosedGroupUpdateMessage.SenderKey(chainKey: Data(hex: newRatchet.chainKey), keyIndex: newRatchet.keyIndex)
+            let newSenderKey = ClosedGroupSenderKey(chainKey: Data(hex: newRatchet.chainKey), keyIndex: newRatchet.keyIndex)
             Storage.setClosedGroupRatchet(for: groupPublicKey, senderPublicKey: userPublicKey, ratchet: newRatchet, using: transaction)
             for member in members {
                 let thread = TSContactThread.getOrCreateThread(withContactId: member, transaction: transaction)
                 thread.save(with: transaction)
-                let closedGroupUpdateMessageKind = ClosedGroupUpdateMessage.Kind.chainKey(groupPublicKey: Data(hex: groupPublicKey), senderKey: newSenderKey)
+                let closedGroupUpdateMessageKind = ClosedGroupUpdateMessage.Kind.senderKey(groupPublicKey: Data(hex: groupPublicKey), senderKey: newSenderKey)
                 let closedGroupUpdateMessage = ClosedGroupUpdateMessage(thread: thread, kind: closedGroupUpdateMessageKind)
                 let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
                 messageSenderJobQueue.add(message: closedGroupUpdateMessage, transaction: transaction)

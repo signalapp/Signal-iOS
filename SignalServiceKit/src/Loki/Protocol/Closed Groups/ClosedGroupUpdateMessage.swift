@@ -9,21 +9,11 @@ internal final class ClosedGroupUpdateMessage : TSOutgoingMessage {
     @objc internal override func shouldBeSaved() -> Bool { return false }
     @objc internal override func shouldSyncTranscript() -> Bool { return false }
 
-    // MARK: Sender Key
-    internal struct SenderKey {
-        internal let chainKey: Data
-        internal let keyIndex: UInt
-
-        internal func toProto() throws -> SSKProtoDataMessageClosedGroupUpdateSenderKey {
-            return try SSKProtoDataMessageClosedGroupUpdateSenderKey.builder(chainKey: chainKey, keyIndex: UInt32(keyIndex)).build()
-        }
-    }
-
     // MARK: Kind
     internal enum Kind {
-        case new(groupPublicKey: Data, name: String, groupPrivateKey: Data, senderKeys: [SenderKey], members: [String], admins: [String])
-        case info(groupPublicKey: Data, name: String, senderKeys: [SenderKey], members: [String], admins: [String])
-        case chainKey(groupPublicKey: Data, senderKey: SenderKey)
+        case new(groupPublicKey: Data, name: String, groupPrivateKey: Data, senderKeys: [ClosedGroupSenderKey], members: [String], admins: [String])
+        case info(groupPublicKey: Data, name: String, senderKeys: [ClosedGroupSenderKey], members: [String], admins: [String])
+        case senderKey(groupPublicKey: Data, senderKey: ClosedGroupSenderKey)
     }
 
     // MARK: Initialization
@@ -34,12 +24,63 @@ internal final class ClosedGroupUpdateMessage : TSOutgoingMessage {
             groupMetaMessage: .unspecified, quotedMessage: nil, contactShare: nil, linkPreview: nil)
     }
 
-    required init?(coder: NSCoder) {
+    required init(dictionary: [String:Any]) throws {
         preconditionFailure("Use init(thread:kind:) instead.")
     }
 
-    required init(dictionary: [String:Any]) throws {
-        preconditionFailure("Use init(thread:kind:) instead.")
+    // MARK: Coding
+    internal required init?(coder: NSCoder) {
+        guard let thread = coder.decodeObject(forKey: "thread") as? TSThread,
+            let timestamp = coder.decodeObject(forKey: "timestamp") as? UInt64,
+            let groupPublicKey = coder.decodeObject(forKey: "groupPublicKey") as? Data,
+            let senderKeys = coder.decodeObject(forKey: "senderKeys") as? [ClosedGroupSenderKey],
+            let rawKind = coder.decodeObject(forKey: "kind") as? String else { return nil }
+        switch rawKind {
+        case "new":
+            guard let name = coder.decodeObject(forKey: "name") as? String,
+                let groupPrivateKey = coder.decodeObject(forKey: "groupPrivateKey") as? Data,
+                let members = coder.decodeObject(forKey: "members") as? [String],
+                let admins = coder.decodeObject(forKey: "admins") as? [String] else { return nil }
+            self.kind = .new(groupPublicKey: groupPublicKey, name: name, groupPrivateKey: groupPrivateKey, senderKeys: senderKeys, members: members, admins: admins)
+        case "info":
+            guard let name = coder.decodeObject(forKey: "name") as? String,
+                let members = coder.decodeObject(forKey: "members") as? [String],
+                let admins = coder.decodeObject(forKey: "admins") as? [String] else { return nil }
+            self.kind = .info(groupPublicKey: groupPublicKey, name: name, senderKeys: senderKeys, members: members, admins: admins)
+        case "senderKey":
+            guard let senderKey = senderKeys.first else { return nil }
+            self.kind = .senderKey(groupPublicKey: groupPublicKey, senderKey: senderKey)
+        default: return nil
+        }
+        super.init(outgoingMessageWithTimestamp: timestamp, in: thread, messageBody: "",
+            attachmentIds: NSMutableArray(), expiresInSeconds: 0, expireStartedAt: 0, isVoiceMessage: false,
+            groupMetaMessage: .unspecified, quotedMessage: nil, contactShare: nil, linkPreview: nil)
+    }
+
+    internal override func encode(with coder: NSCoder) {
+        coder.encode(thread, forKey: "thread")
+        coder.encode(timestamp, forKey: "timestamp")
+        switch kind {
+        case .new(let groupPublicKey, let name, let groupPrivateKey, let senderKeys, let members, let admins):
+            coder.encode("new", forKey: "kind")
+            coder.encode(groupPublicKey, forKey: "groupPublicKey")
+            coder.encode(name, forKey: "name")
+            coder.encode(groupPrivateKey, forKey: "groupPrivateKey")
+            coder.encode(senderKeys, forKey: "senderKeys")
+            coder.encode(members, forKey: "members")
+            coder.encode(admins, forKey: "admins")
+        case .info(let groupPublicKey, let name, let senderKeys, let members, let admins):
+            coder.encode("info", forKey: "kind")
+            coder.encode(groupPublicKey, forKey: "groupPublicKey")
+            coder.encode(name, forKey: "name")
+            coder.encode(senderKeys, forKey: "senderKeys")
+            coder.encode(members, forKey: "members")
+            coder.encode(admins, forKey: "admins")
+        case .senderKey(let groupPublicKey, let senderKey):
+            coder.encode("senderKey", forKey: "kind")
+            coder.encode(groupPublicKey, forKey: "groupPublicKey")
+            coder.encode([ senderKey ], forKey: "senderKeys")
+        }
     }
 
     // MARK: Building
@@ -61,7 +102,7 @@ internal final class ClosedGroupUpdateMessage : TSOutgoingMessage {
                 closedGroupUpdate.setSenderKeys(try senderKeys.map { try $0.toProto() })
                 closedGroupUpdate.setMembers(members)
                 closedGroupUpdate.setAdmins(admins)
-            case .chainKey(let groupPublicKey, let senderKey):
+            case .senderKey(let groupPublicKey, let senderKey):
                 closedGroupUpdate = SSKProtoDataMessageClosedGroupUpdate.builder(groupPublicKey: groupPublicKey, type: .chainKey)
                 closedGroupUpdate.setSenderKeys([ try senderKey.toProto() ])
             }
