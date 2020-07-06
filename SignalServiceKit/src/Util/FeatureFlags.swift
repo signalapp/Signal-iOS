@@ -135,10 +135,10 @@ public class FeatureFlags: BaseFlags {
     public static let strictYDBExtensions = build.includes(.beta)
 
     @objc
-    public static var allowUUIDOnlyContacts = useOnlyModernContactDiscovery || groupsV2
+    public static let allowUUIDOnlyContacts = useOnlyModernContactDiscovery || groupsV2
 
     @objc
-    public static var uuidSafetyNumbers = allowUUIDOnlyContacts
+    public static let uuidSafetyNumbers = allowUUIDOnlyContacts
 
     @objc
     public static let useOnlyModernContactDiscovery = false
@@ -208,7 +208,7 @@ public class FeatureFlags: BaseFlags {
     public static let groupsV2SetCapability = groupsV2
 
     @objc
-    public static var groupsV2reapplyCurrentRevision = false
+    public static let groupsV2reapplyCurrentRevision = false
 
     @objc
     public static let linkedPhones = build.includes(.internalPreview)
@@ -253,7 +253,7 @@ public class FeatureFlags: BaseFlags {
         let flagMap = buildFlagMap()
         for key in Array(flagMap.keys).sorted() {
             let value = flagMap[key]
-            logFlag("Flag", key, value)
+            logFlag("FeatureFlag", key, value)
         }
     }
 }
@@ -270,7 +270,7 @@ public class DebugFlags: BaseFlags {
     public static let keepWebSocketOpenInBackground = false
 
     @objc
-    public static var audibleErrorLogging = build.includes(.qa)
+    public static let audibleErrorLogging = build.includes(.qa)
 
     @objc
     public static let verboseAboutView = build.includes(.qa)
@@ -286,8 +286,19 @@ public class DebugFlags: BaseFlags {
     public static let groupsV2IgnoreCapability = false
 
     // We can use this to test recovery from "missed updates".
+    private static let _groupsV2dontSendUpdates = AtomicBool(false)
     @objc
-    public static let groupsV2dontSendUpdates = false
+    public static var groupsV2dontSendUpdates: Bool {
+        get {
+            guard build.includes(.qa) else {
+                return false
+            }
+            return _groupsV2dontSendUpdates.get()
+        }
+        set {
+            _groupsV2dontSendUpdates.set(newValue)
+        }
+    }
 
     @objc
     public static let groupsV2showV2Indicator = FeatureFlags.groupsV2 && build.includes(.qa)
@@ -307,15 +318,26 @@ public class DebugFlags: BaseFlags {
     @objc
     public static let groupsV2IgnoreServerFlags = FeatureFlags.groupsV2 && build.includes(.qa)
 
-    // If set, this will invite instead of adding other users.
+    // If set, client will invite instead of adding other users.
+    private static let _groupsV2forceInvites = AtomicBool(false)
     @objc
-    public static let groupsV2forceInvites = false
+    public static var groupsV2forceInvites: Bool {
+        get {
+            guard build.includes(.qa) else {
+                return false
+            }
+            return _groupsV2forceInvites.get()
+        }
+        set {
+            _groupsV2forceInvites.set(newValue)
+        }
+    }
 
     @objc
-    public static var groupsV2memberStatusIndicators = FeatureFlags.groupsV2 && build.includes(.qa)
+    public static let groupsV2memberStatusIndicators = FeatureFlags.groupsV2 && build.includes(.qa)
 
     @objc
-    public static var groupsV2editMemberAccess = build.includes(.qa)
+    public static let groupsV2editMemberAccess = build.includes(.qa)
 
     @objc
     public static let isMessageProcessingVerbose = false
@@ -373,7 +395,7 @@ public class DebugFlags: BaseFlags {
         let flagMap = buildFlagMap()
         for key in Array(flagMap.keys).sorted() {
             let value = flagMap[key]
-            logFlag("Flag", key, value)
+            logFlag("DebugFlag", key, value)
         }
     }
 }
@@ -389,6 +411,9 @@ public class BaseFlags: NSObject {
         for i in 0 ..< count {
             let selector = property_getName(methods.advanced(by: Int(i)).pointee)
             if let key = String(cString: selector, encoding: .utf8) {
+                guard !key.hasPrefix("_") else {
+                    continue
+                }
                 if let value = flagFunc(key) {
                     result[key] = value
                 }
