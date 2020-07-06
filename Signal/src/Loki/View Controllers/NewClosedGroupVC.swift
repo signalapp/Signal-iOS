@@ -151,6 +151,14 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
     }
     
     @objc private func createClosedGroup() {
+        if ClosedGroupsProtocol.isSharedSenderKeysEnabled {
+            createSSKClosedGroup()
+        } else {
+            createLegacyClosedGroup()
+        }
+    }
+
+    private func createSSKClosedGroup() {
         func showError(title: String, message: String = "") {
             let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
@@ -179,6 +187,57 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
                     self?.presentingViewController?.dismiss(animated: true, completion: nil)
                     SignalApp.shared().presentConversation(for: thread, action: .compose, animated: false)
                 }
+            }
+        }
+    }
+
+    private func createLegacyClosedGroup() {
+        func showError(title: String, message: String = "") {
+            let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
+            presentAlert(alert)
+        }
+        guard let name = nameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines), name.count > 0 else {
+            return showError(title: NSLocalizedString("Please enter a group name", comment: ""))
+        }
+        guard name.count < 64 else {
+            return showError(title: NSLocalizedString("Please enter a shorter group name", comment: ""))
+        }
+        guard selectedContacts.count >= 2 else {
+            return showError(title: NSLocalizedString("Please pick at least 2 group members", comment: ""))
+        }
+        guard selectedContacts.count <= 10 else {
+            return showError(title: NSLocalizedString("A closed group cannot have more than 10 members", comment: ""))
+        }
+        let userPublicKey = getUserHexEncodedPublicKey()
+        let storage = OWSPrimaryStorage.shared()
+        var masterPublicKey = ""
+        storage.dbReadConnection.read { transaction in
+            masterPublicKey = storage.getMasterHexEncodedPublicKey(for: userPublicKey, in: transaction) ?? userPublicKey
+        }
+        let members = selectedContacts + [ masterPublicKey ]
+        let admins = [ masterPublicKey ]
+        let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(Randomness.generateRandomBytes(kGroupIdLength)!.toHexString())
+        let group = TSGroupModel(title: name, memberIds: members, image: nil, groupId: groupID, groupType: .closedGroup, adminIds: admins)
+        let thread = TSGroupThread.getOrCreateThread(with: group)
+        OWSProfileManager.shared().addThread(toProfileWhitelist: thread)
+        ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self] modalActivityIndicator in
+            let message = TSOutgoingMessage(in: thread, groupMetaMessage: .new, expiresInSeconds: 0)
+            message.update(withCustomMessage: "Closed group created")
+            DispatchQueue.main.async {
+                SSKEnvironment.shared.messageSender.send(message, success: {
+                    DispatchQueue.main.async {
+                        self?.presentingViewController?.dismiss(animated: true, completion: nil)
+                        SignalApp.shared().presentConversation(for: thread, action: .compose, animated: false)
+                    }
+                }, failure: { error in
+                    let message = TSErrorMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, failedMessageType: .groupCreationFailed)
+                    message.save()
+                    DispatchQueue.main.async {
+                        self?.presentingViewController?.dismiss(animated: true, completion: nil)
+                        SignalApp.shared().presentConversation(for: thread, action: .compose, animated: false)
+                    }
+                })
             }
         }
     }

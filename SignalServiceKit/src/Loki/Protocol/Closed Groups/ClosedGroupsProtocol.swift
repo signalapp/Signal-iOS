@@ -12,11 +12,7 @@ import PromiseKit
 /// See [the documentation](https://github.com/loki-project/session-protocol-docs/wiki/Medium-Size-Groups) for more information.
 @objc(LKClosedGroupsProtocol)
 public final class ClosedGroupsProtocol : NSObject {
-
-    // TODO:
-    // • Multi device
-    //     • ClosedGroupsProtocol
-    //     • SyncMessagesProtocol
+    public static let isSharedSenderKeysEnabled = true
 
     /// - Note: It's recommended to batch fetch the device links for the given set of members before invoking this, to avoid
     /// the message sending pipeline making a request for each member.
@@ -177,6 +173,7 @@ public final class ClosedGroupsProtocol : NSObject {
 
     @objc(handleSharedSenderKeysUpdateIfNeeded:from:transaction:)
     public static func handleSharedSenderKeysUpdateIfNeeded(_ dataMessage: SSKProtoDataMessage, from publicKey: String, using transaction: YapDatabaseReadWriteTransaction) {
+        guard isSharedSenderKeysEnabled else { return }
         // Note that `publicKey` is either the public key of the group or the public key of the
         // sender, depending on how the message was sent
         guard let closedGroupUpdate = dataMessage.closedGroupUpdate else { return }
