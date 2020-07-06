@@ -612,7 +612,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
                     resolve(error);
                 }];
 
-            if ([LKMultiDeviceProtocol isMultiDeviceRequiredForMessage:message]) { // Avoid the write transaction if possible
+            NSString *publicKey = recipients.firstObject.recipientId;
+            if ([LKMultiDeviceProtocol isMultiDeviceRequiredForMessage:message toPublicKey:publicKey]) { // Avoid the write transaction if possible
                 [self.primaryStorage.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
                     [LKMultiDeviceProtocol sendMessageToDestinationAndLinkedDevices:messageSend transaction:transaction];
                 }];
@@ -931,7 +932,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     OWSAssertDebug(messageSend);
     OWSAssertDebug(messageSend.thread || [messageSend.message isKindOfClass:[OWSOutgoingSyncMessage class]]);
     NSString *userPublicKey = OWSIdentityManager.sharedManager.identityKeyPair.hexEncodedPublicKey;
-    OWSAssertDebug(messageSend.isUDSend || [messageSend.recipient.recipientId isEqual:userPublicKey]);
+    if (!messageSend.isUDSend && ![messageSend.recipient.recipientId isEqual:userPublicKey]) {
+        [LKLogger print:@"[Loki] Non-UD send"];
+    }
 
     TSOutgoingMessage *message = messageSend.message;
     SignalRecipient *recipient = messageSend.recipient;
@@ -1132,7 +1135,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         if ([messageSend.thread isKindOfClass:TSGroupThread.class] && ((TSGroupThread *)messageSend.thread).usesSharedSenderKeys) {
             senderID = [LKGroupUtilities getDecodedGroupID:((TSGroupThread *)messageSend.thread).groupModel.groupId];
         } else {
-            OWSAssertDebug([senderID isEqual:@""]);
+            [LKLogger print:@"Non-UD send"];
         }
         uint32_t senderDeviceID = type == SSKProtoEnvelopeTypeUnidentifiedSender ? 0 : OWSDevicePrimaryDeviceId;
         NSString *content = signalMessageInfo[@"content"];

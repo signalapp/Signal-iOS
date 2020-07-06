@@ -1268,7 +1268,8 @@ NS_ASSUME_NONNULL_BEGIN
     // FIXME: This is horrible for performance
     // FIXME: ========
     // The envelope source is set during UD decryption
-    if ([ECKeyPair isValidHexEncodedPublicKeyWithCandidate:envelope.source] && dataMessage.publicChatInfo == nil) { // Handled in LokiPublicChatPoller for open group messages
+    if ([ECKeyPair isValidHexEncodedPublicKeyWithCandidate:envelope.source] && dataMessage.publicChatInfo == nil // Handled in LokiPublicChatPoller for open group messages
+        && envelope.type != SSKProtoEnvelopeTypeClosedGroupCiphertext) {
         dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
         dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
         [[LKMultiDeviceProtocol updateDeviceLinksIfNeededForPublicKey:envelope.source transaction:transaction].ensureOn(queue, ^() {

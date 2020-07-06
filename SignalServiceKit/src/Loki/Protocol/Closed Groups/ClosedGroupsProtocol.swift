@@ -28,7 +28,7 @@ public final class ClosedGroupsProtocol : NSObject {
         members.remove(userPublicKey)
         members.insert(UserDefaults.standard[.masterHexEncodedPublicKey] ?? userPublicKey)
         // Create ratchets for all members (and their linked devices)
-        var membersAndLinkedDevices: Set<String> = []
+        var membersAndLinkedDevices: Set<String> = members
         for member in members {
             let deviceLinks = OWSPrimaryStorage.shared().getDeviceLinks(for: member, in: transaction)
             membersAndLinkedDevices.formUnion(deviceLinks.flatMap { [ $0.master.hexEncodedPublicKey, $0.slave.hexEncodedPublicKey ] })
@@ -82,7 +82,7 @@ public final class ClosedGroupsProtocol : NSObject {
         var members = group.groupMemberIds
         members.append(contentsOf: newMembers)
         // Generate ratchets for the new members (and their linked devices)
-        var newMembersAndLinkedDevices: Set<String> = []
+        var newMembersAndLinkedDevices: Set<String> = newMembers
         for member in newMembers {
             let deviceLinks = OWSPrimaryStorage.shared().getDeviceLinks(for: member, in: transaction)
             newMembersAndLinkedDevices.formUnion(deviceLinks.flatMap { [ $0.master.hexEncodedPublicKey, $0.slave.hexEncodedPublicKey ] })

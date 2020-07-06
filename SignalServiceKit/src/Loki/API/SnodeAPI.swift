@@ -300,9 +300,7 @@ public final class SnodeAPI : NSObject {
         #if DEBUG
         assertOnQueue(SnodeAPI.workQueue)
         #endif
-        switch statusCode {
-        case 0, 400, 500, 503:
-            // The snode is unreachable
+        func handleBadSnode() {
             let oldFailureCount = SnodeAPI.snodeFailureCount[snode] ?? 0
             let newFailureCount = oldFailureCount + 1
             SnodeAPI.snodeFailureCount[snode] = newFailureCount
@@ -313,6 +311,11 @@ public final class SnodeAPI : NSObject {
                 SnodeAPI.dropSnodeFromSnodePool(snode)
                 SnodeAPI.snodeFailureCount[snode] = 0
             }
+        }
+        switch statusCode {
+        case 0, 400, 500, 503:
+            // The snode is unreachable
+            handleBadSnode()
         case 406:
             print("[Loki] The user's clock is out of sync with the service node network.")
             return SnodeAPI.SnodeAPIError.clockOutOfSync
@@ -323,8 +326,12 @@ public final class SnodeAPI : NSObject {
         case 432:
             // The proof of work difficulty is too low
             if let powDifficulty = json?["difficulty"] as? UInt {
-                print("[Loki] Setting proof of work difficulty to \(powDifficulty).")
-                SnodeAPI.powDifficulty = UInt(powDifficulty)
+                if powDifficulty < 100 {
+                    print("[Loki] Setting proof of work difficulty to \(powDifficulty).")
+                    SnodeAPI.powDifficulty = UInt(powDifficulty)
+                } else {
+                    handleBadSnode()
+                }
             } else {
                 print("[Loki] Failed to update proof of work difficulty.")
             }

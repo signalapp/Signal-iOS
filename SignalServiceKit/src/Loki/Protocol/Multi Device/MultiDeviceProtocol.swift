@@ -55,9 +55,10 @@ public final class MultiDeviceProtocol : NSObject {
 
     // MARK: - Sending (Part 1)
 
-    @objc(isMultiDeviceRequiredForMessage:)
-    public static func isMultiDeviceRequired(for message: TSOutgoingMessage) -> Bool {
+    @objc(isMultiDeviceRequiredForMessage:toPublicKey:)
+    public static func isMultiDeviceRequired(for message: TSOutgoingMessage, to publicKey: String) -> Bool {
         return !(message is DeviceLinkMessage) && !(message is UnlinkDeviceMessage) && (message.thread as? TSGroupThread)?.groupModel.groupType != .openGroup
+            && !Storage.getUserClosedGroupPublicKeys().contains(publicKey)
     }
 
     private static func copy(_ messageSend: OWSMessageSend, for destination: MultiDeviceDestination, with seal: Resolver<Void>) -> OWSMessageSend {
@@ -120,7 +121,7 @@ public final class MultiDeviceProtocol : NSObject {
         }
         let message = messageSend.message
         let messageSender = SSKEnvironment.shared.messageSender
-        if !isMultiDeviceRequired(for: message) {
+        if !isMultiDeviceRequired(for: message, to: messageSend.recipient.recipientId()) {
             print("[Loki] sendMessageToDestinationAndLinkedDevices(_:in:) invoked for a message that doesn't require multi device routing.")
             OWSDispatch.sendingQueue().async {
                 messageSender.sendMessage(messageSend)
