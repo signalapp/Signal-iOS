@@ -227,7 +227,7 @@ NS_ASSUME_NONNULL_BEGIN
 
     __block NSArray<SignalServiceAddress *> *whitelistedAddresses;
     [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
-        whitelistedAddresses = [self.profileManager allWhitelistedAddressesWithTransaction:transaction];
+        whitelistedAddresses = [self.profileManager allWhitelistedRegisteredAddressesWithTransaction:transaction];
     }];
 
     for (SignalServiceAddress *address in whitelistedAddresses) {
