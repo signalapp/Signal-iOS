@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -39,11 +39,12 @@ extension DispatchQueue {
         case .userInitiated:
             return DispatchQueue.sharedUserInitiated
 
-        case .default: fallthrough
-        case .utility:
+        case .default, .utility:
             return DispatchQueue.sharedUtility
 
-        case .background: fallthrough
+        case .background, .unspecified:
+            return DispatchQueue.sharedBackground
+
         default:
             return DispatchQueue.sharedBackground
 
@@ -80,7 +81,7 @@ internal extension DispatchQoS.QoSClass {
 
 @objc extension OWSDispatch {
     /// Returns the shared serial queue appropriate for the provided QoS
-    @objc public static func sharedQueue(at rawQoS: qos_class_t) -> DispatchQueue {
+    public static func sharedQueue(at rawQoS: qos_class_t) -> DispatchQueue {
         let qosClass = DispatchQoS.QoSClass(flooring: rawQoS)
         let qos = DispatchQoS(qosClass: qosClass, relativePriority: 0)
         return DispatchQueue.sharedQueue(at: qos)

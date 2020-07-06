@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2018 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -12,22 +12,22 @@ class DispatchQueueOWSTests: SSKBaseTestSwift {
     func testQoSFlooring() {
         // Setup: Construct a map, (QoSClass) -> (UInt32 that should floor to its key)
         let expectedQoSForRawValues: [DispatchQoS.QoSClass: [UInt32]] = [
-            .background : [
+            .background: [
                 QOS_CLASS_BACKGROUND.rawValue,
                 QOS_CLASS_BACKGROUND.rawValue + 1,
-                QOS_CLASS_UTILITY.rawValue - 1,
+                QOS_CLASS_UTILITY.rawValue - 1
             ],
             .utility: [
                 QOS_CLASS_UTILITY.rawValue,
                 QOS_CLASS_UTILITY.rawValue + 1,
-                QOS_CLASS_USER_INITIATED.rawValue - 1,
+                QOS_CLASS_USER_INITIATED.rawValue - 1
             ],
             .userInitiated: [
                 QOS_CLASS_USER_INITIATED.rawValue,
                 QOS_CLASS_USER_INITIATED.rawValue + 1,
-                QOS_CLASS_USER_INTERACTIVE.rawValue - 1,
+                QOS_CLASS_USER_INTERACTIVE.rawValue - 1
             ],
-            .userInteractive: [QOS_CLASS_USER_INTERACTIVE.rawValue],
+            .userInteractive: [QOS_CLASS_USER_INTERACTIVE.rawValue]
         ]
 
         // Test: Map the raw UInt32s to a QoSClass by flooring
@@ -65,7 +65,7 @@ class DispatchQueueOWSTests: SSKBaseTestSwift {
                 DispatchQueue.sharedUserInteractive,
                 DispatchQueue.sharedQueue(at: .userInteractive),
                 OWSDispatch.sharedQueue(at: QOS_CLASS_USER_INTERACTIVE)
-            ],
+            ]
         ]
 
         // Verify: All shared queues should refer to the same serial queue at the correct QoS

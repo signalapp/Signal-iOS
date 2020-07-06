@@ -19,10 +19,10 @@
 #import <SignalServiceKit/OWSBatchMessageProcessor.h>
 #import <SignalServiceKit/OWSBroadcastMediaMessageJobRecord.h>
 #import <SignalServiceKit/OWSDevice.h>
-#import <SignalServiceKit/OWSDispatch.h>
 #import <SignalServiceKit/OWSDisappearingConfigurationUpdateInfoMessage.h>
 #import <SignalServiceKit/OWSDisappearingMessagesConfiguration.h>
 #import <SignalServiceKit/OWSDisappearingMessagesFinder.h>
+#import <SignalServiceKit/OWSDispatch.h>
 #import <SignalServiceKit/OWSError.h>
 #import <SignalServiceKit/OWSFileSystem.h>
 #import <SignalServiceKit/OWSIncomingContactSyncJobRecord.h>
