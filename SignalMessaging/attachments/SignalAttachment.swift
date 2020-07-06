@@ -119,17 +119,17 @@ public class SignalAttachment: NSObject {
 
     @objc
     public var data: Data {
-        return dataSource.data()
+        return dataSource.data
     }
 
     @objc
     public var dataLength: UInt {
-        return dataSource.dataLength()
+        return dataSource.dataLength
     }
 
     @objc
     public var dataUrl: URL? {
-        return dataSource.dataUrl()
+        return dataSource.dataUrl
     }
 
     @objc
@@ -139,12 +139,12 @@ public class SignalAttachment: NSObject {
 
     @objc
     public var isValidImage: Bool {
-        return dataSource.isValidImage()
+        return dataSource.isValidImage
     }
 
     @objc
     public var isValidVideo: Bool {
-        return dataSource.isValidVideo()
+        return dataSource.isValidVideo
     }
 
     // This flag should be set for text attachments that can be sent as text messages.
@@ -293,7 +293,8 @@ public class SignalAttachment: NSObject {
                                       contentType: mimeType,
                                       sourceFilename: filenameOrDefault,
                                       caption: captionText,
-                                      albumMessageId: message.uniqueId)
+                                      albumMessageId: message.uniqueId,
+                                      isBorderless: isBorderless)
     }
 
     @objc
@@ -316,7 +317,7 @@ public class SignalAttachment: NSObject {
         if let cachedImage = cachedImage {
             return cachedImage
         }
-        guard let image = UIImage(data: dataSource.data()) else {
+        guard let image = UIImage(data: dataSource.data) else {
             return nil
         }
         cachedImage = image
@@ -354,6 +355,9 @@ public class SignalAttachment: NSObject {
             return nil
         }
     }
+
+    @objc
+    public var isBorderless = false
 
     // Returns the MIME type for this attachment or nil if no MIME type
     // can be identified.
@@ -591,16 +595,27 @@ public class SignalAttachment: NSObject {
         guard UIPasteboard.general.numberOfItems >= 1 else {
             return nil
         }
+
         // If pasteboard contains multiple items, use only the first.
         let itemSet = IndexSet(integer: 0)
         guard let pasteboardUTITypes = UIPasteboard.general.types(forItemSet: itemSet) else {
             return nil
         }
 
-        let pasteboardUTISet = Set<String>(filterDynamicUTITypes(pasteboardUTITypes[0]))
+        var pasteboardUTISet = Set<String>(filterDynamicUTITypes(pasteboardUTITypes[0]))
         guard pasteboardUTISet.count > 0 else {
             return nil
         }
+
+        // If we have the choice between a png and a jpg, always choose
+        // the png as it may have transparency. Apple provides both jpg
+        //  and png uti types when sending memoji stickers and
+        // `inputImageUTISet` is unordered, so without this check there
+        // is a 50/50 chance that we'd pick the jpg.
+        if pasteboardUTISet.isSuperset(of: [kUTTypeJPEG as String, kUTTypePNG as String]) {
+            pasteboardUTISet.remove(kUTTypeJPEG as String)
+        }
+
         for dataUTI in inputImageUTISet {
             if pasteboardUTISet.contains(dataUTI) {
                 guard let data = dataForFirstPasteboardItem(dataUTI: dataUTI) else {
@@ -608,8 +623,13 @@ public class SignalAttachment: NSObject {
                     return nil
                 }
                 let dataSource = DataSourceValue.dataSource(with: data, utiType: dataUTI)
+
+                // If the data source is sticker like AND we're pasting the attachment,
+                // we want to make it borderless.
+                let isBorderless = dataSource?.hasStickerLikeProperties ?? false
+
                 // Pasted images _SHOULD _NOT_ be resized, if possible.
-                return attachment(dataSource: dataSource, dataUTI: dataUTI, imageQuality: .medium)
+                return imageAttachment(dataSource: dataSource, dataUTI: dataUTI, imageQuality: .medium, isBorderless: isBorderless)
             }
         }
         for dataUTI in videoUTISet {
@@ -664,7 +684,7 @@ public class SignalAttachment: NSObject {
     // NOTE: The attachment returned by this method may not be valid.
     //       Check the attachment's error property.
     @objc
-    private class func imageAttachment(dataSource: DataSource?, dataUTI: String, imageQuality: TSImageQuality) -> SignalAttachment {
+    private class func imageAttachment(dataSource: DataSource?, dataUTI: String, imageQuality: TSImageQuality, isBorderless: Bool = false) -> SignalAttachment {
         assert(dataUTI.count > 0)
         assert(dataSource != nil)
         guard let dataSource = dataSource else {
@@ -675,19 +695,21 @@ public class SignalAttachment: NSObject {
 
         let attachment = SignalAttachment(dataSource: dataSource, dataUTI: dataUTI)
 
+        attachment.isBorderless = isBorderless
+
         guard inputImageUTISet.contains(dataUTI) else {
             attachment.error = .invalidFileFormat
             return attachment
         }
 
-        guard dataSource.dataLength() > 0 else {
+        guard dataSource.dataLength > 0 else {
             owsFailDebug("imageData was empty")
             attachment.error = .invalidData
             return attachment
         }
 
         if animatedImageUTISet.contains(dataUTI) {
-            guard dataSource.dataLength() <= kMaxFileSizeAnimatedImage else {
+            guard dataSource.dataLength <= kMaxFileSizeAnimatedImage else {
                 attachment.error = .fileSizeTooLarge
                 return attachment
             }
@@ -696,8 +718,8 @@ public class SignalAttachment: NSObject {
             Logger.verbose("Sending raw \(attachment.mimeType) to retain any animation")
             return attachment
         } else {
-            let imageClass = (dataSource.data() as NSData).isMaybeWebpData ? YYImage.self : UIImage.self
-            guard let image = imageClass.init(data: dataSource.data()) else {
+            let imageClass = (dataSource.data as NSData).isMaybeWebpData ? YYImage.self : UIImage.self
+            guard let image = imageClass.init(data: dataSource.data) else {
                 attachment.error = .couldNotParseImage
                 return attachment
             }
@@ -728,7 +750,7 @@ public class SignalAttachment: NSObject {
                 Logger.verbose("Rewriting attachment with metadata removed \(attachment.mimeType)")
                 return removeImageMetadata(attachment: attachment)
             } else {
-                Logger.verbose("Recompressing \(ByteCountFormatter.string(fromByteCount: Int64(dataSource.dataLength()), countStyle: .file)) attachment as supported image type.")
+                Logger.verbose("Recompressing \(ByteCountFormatter.string(fromByteCount: Int64(dataSource.dataLength), countStyle: .file)) attachment as supported image type.")
                 return convertAndCompressImage(image: image, attachment: attachment, filename: dataSource.sourceFilename, imageQuality: imageQuality)
             }
         }
@@ -747,7 +769,7 @@ public class SignalAttachment: NSObject {
             return false
         }
         if doesImageHaveAcceptableFileSize(dataSource: dataSource, imageQuality: imageQuality) &&
-            dataSource.dataLength() <= kMaxFileSizeImage {
+            dataSource.dataLength <= kMaxFileSizeImage {
             return true
         }
         return false
@@ -816,8 +838,9 @@ public class SignalAttachment: NSObject {
             dataSource.sourceFilename = newFilenameWithExtension
 
             if doesImageHaveAcceptableFileSize(dataSource: dataSource, imageQuality: imageQuality) &&
-                dataSource.dataLength() <= kMaxFileSizeImage {
+                dataSource.dataLength <= kMaxFileSizeImage {
                 let recompressedAttachment = SignalAttachment(dataSource: dataSource, dataUTI: dataUTI)
+                recompressedAttachment.isBorderless = attachment.isBorderless
                 recompressedAttachment.cachedImage = dstImage
                 Logger.verbose("Converted \(attachment.mimeType) to \(ByteCountFormatter.string(fromByteCount: Int64(imageData.count), countStyle: .file)) \(dataMIMEType)")
                 return recompressedAttachment
@@ -897,9 +920,9 @@ public class SignalAttachment: NSObject {
         case .original:
             return true
         case .medium:
-            return dataSource.dataLength() < UInt(1024 * 1024)
+            return dataSource.dataLength < UInt(1024 * 1024)
         case .compact:
-            return dataSource.dataLength() < UInt(400 * 1024)
+            return dataSource.dataLength < UInt(400 * 1024)
         }
     }
 
@@ -981,6 +1004,7 @@ public class SignalAttachment: NSObject {
             }
 
             let strippedAttachment = SignalAttachment(dataSource: dataSource, dataUTI: attachment.dataUTI)
+            strippedAttachment.isBorderless = attachment.isBorderless
             return strippedAttachment
 
         } else {
@@ -1034,7 +1058,7 @@ public class SignalAttachment: NSObject {
     public class func compressVideoAsMp4(dataSource: DataSource, dataUTI: String) -> (Promise<SignalAttachment>, AVAssetExportSession?) {
         Logger.debug("")
 
-        guard let url = dataSource.dataUrl() else {
+        guard let url = dataSource.dataUrl else {
             let attachment = SignalAttachment(dataSource: DataSourceValue.emptyDataSource(), dataUTI: dataUTI)
             attachment.error = .missingData
             return (Promise.value(attachment), nil)
@@ -1128,7 +1152,7 @@ public class SignalAttachment: NSObject {
             return false
         }
 
-        if dataSource.dataLength() <= kMaxFileSizeVideo {
+        if dataSource.dataLength <= kMaxFileSizeVideo {
             return true
         }
         return false
@@ -1245,14 +1269,14 @@ public class SignalAttachment: NSObject {
             }
         }
 
-        guard dataSource.dataLength() > 0 else {
+        guard dataSource.dataLength > 0 else {
             owsFailDebug("Empty attachment")
-            assert(dataSource.dataLength() > 0)
+            assert(dataSource.dataLength > 0)
             attachment.error = .invalidData
             return attachment
         }
 
-        guard dataSource.dataLength() <= maxFileSize else {
+        guard dataSource.dataLength <= maxFileSize else {
             attachment.error = .fileSizeTooLarge
             return attachment
         }

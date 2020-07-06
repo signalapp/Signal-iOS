@@ -26,6 +26,7 @@ public class ConversationMediaView: UIView {
     public let attachment: TSAttachment
     private let isOutgoing: Bool
     private let maxMessageWidth: CGFloat
+    private let isBorderless: Bool
     private var loadBlock : (() -> Void)?
     private var unloadBlock : (() -> Void)?
 
@@ -90,15 +91,17 @@ public class ConversationMediaView: UIView {
     public required init(mediaCache: NSCache<NSString, AnyObject>,
                          attachment: TSAttachment,
                          isOutgoing: Bool,
-                         maxMessageWidth: CGFloat) {
+                         maxMessageWidth: CGFloat,
+                         isBorderless: Bool) {
         self.mediaCache = mediaCache
         self.attachment = attachment
         self.isOutgoing = isOutgoing
         self.maxMessageWidth = maxMessageWidth
+        self.isBorderless = isBorderless
 
         super.init(frame: .zero)
 
-        backgroundColor = Theme.washColor
+        backgroundColor = isBorderless ? .clear : Theme.washColor
         clipsToBounds = true
 
         createContents()
@@ -312,7 +315,7 @@ public class ConversationMediaView: UIView {
         // some performance cost.
         animatedImageView.layer.minificationFilter = .trilinear
         animatedImageView.layer.magnificationFilter = .trilinear
-        animatedImageView.backgroundColor = Theme.washColor
+        animatedImageView.backgroundColor = isBorderless ? .clear : Theme.washColor
         addSubview(animatedImageView)
         animatedImageView.autoPinEdgesToSuperviewEdges()
         _ = addUploadProgressIfNecessary(animatedImageView)
@@ -368,7 +371,7 @@ public class ConversationMediaView: UIView {
         // some performance cost.
         stillImageView.layer.minificationFilter = .trilinear
         stillImageView.layer.magnificationFilter = .trilinear
-        stillImageView.backgroundColor = Theme.washColor
+        stillImageView.backgroundColor = isBorderless ? .clear : Theme.washColor
         addSubview(stillImageView)
         stillImageView.autoPinEdgesToSuperviewEdges()
         _ = addUploadProgressIfNecessary(stillImageView)

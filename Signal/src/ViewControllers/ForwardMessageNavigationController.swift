@@ -88,9 +88,19 @@ extension ForwardMessageNavigationController {
     }
 
     private var needsApproval: Bool {
-        return ![.audio,
+        guard ![.audio,
                  .genericAttachment,
-                 .stickerMessage].contains(conversationViewItem.messageCellType)
+                 .stickerMessage].contains(conversationViewItem.messageCellType) else { return false }
+
+        guard !isBorderless else { return false }
+
+        return true
+    }
+
+    private var isBorderless: Bool {
+        guard let mediaAlbumItems = conversationViewItem.mediaAlbumItems else { return false }
+
+        return mediaAlbumItems.count == 1 && mediaAlbumItems.first?.attachmentStream?.isBorderless == true
     }
 
     func showApprovalUI() throws {
@@ -219,21 +229,32 @@ extension ForwardMessageNavigationController {
                 self.send(body: nil, attachment: attachment, thread: thread)
             }
         case .mediaMessage:
-            guard let approvedAttachments = approvedAttachments else {
-                throw OWSAssertionError("Missing approvedAttachments.")
-            }
+            if isBorderless {
+                guard let attachmentStream = conversationViewItem.firstValidAlbumAttachment() else {
+                    throw OWSAssertionError("Missing attachmentStream.")
+                }
 
-            let conversations = selectedConversationsForConversationPicker
-            firstly {
-                AttachmentMultisend.sendApprovedMedia(conversations: conversations,
-                                                      approvalMessageText: self.approvalMessageText,
-                                                      approvedAttachments: approvedAttachments)
-            }.done { threads in
-                self.forwardMessageDelegate?.forwardMessageFlowDidComplete(viewItem: self.conversationViewItem,
-                                                                           threads: threads)
-            }.catch { error in
-                owsFailDebug("Error: \(error)")
-                // TODO: Do we need to call a delegate method?
+                send { thread in
+                    let attachment = try attachmentStream.cloneAsSignalAttachment()
+                    self.send(body: nil, attachment: attachment, thread: thread)
+                }
+            } else {
+                guard let approvedAttachments = approvedAttachments else {
+                    throw OWSAssertionError("Missing approvedAttachments.")
+                }
+
+                let conversations = selectedConversationsForConversationPicker
+                firstly {
+                    AttachmentMultisend.sendApprovedMedia(conversations: conversations,
+                                                          approvalMessageText: self.approvalMessageText,
+                                                          approvedAttachments: approvedAttachments)
+                }.done { threads in
+                    self.forwardMessageDelegate?.forwardMessageFlowDidComplete(viewItem: self.conversationViewItem,
+                                                                               threads: threads)
+                }.catch { error in
+                    owsFailDebug("Error: \(error)")
+                    // TODO: Do we need to call a delegate method?
+                }
             }
         case .unknown,
              .oversizeTextDownloading,
@@ -484,6 +505,7 @@ extension TSAttachmentStream {
             signalAttachment = SignalAttachment.attachment(dataSource: clonedDataSource, dataUTI: dataUTI, imageQuality: .original)
         }
         signalAttachment.captionText = caption
+        signalAttachment.isBorderless = isBorderless
         return signalAttachment
     }
 }

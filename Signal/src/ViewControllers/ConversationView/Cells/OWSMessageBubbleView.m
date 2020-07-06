@@ -240,6 +240,27 @@ typedef struct {
     return message.wasRemotelyDeleted;
 }
 
+- (BOOL)isBorderless
+{
+    if (self.hasBodyText) {
+        return NO;
+    }
+
+    return self.viewItem.mediaAlbumItems.count == 1
+        && self.viewItem.mediaAlbumItems.firstObject.attachment.attachmentType == TSAttachmentTypeBorderless;
+}
+
+- (CGFloat)maxMediaMessageWidth
+{
+    CGFloat maxMediaMessageWidth = self.conversationStyle.maxMediaMessageWidth;
+
+    if (self.isBorderless) {
+        return MIN(175, maxMediaMessageWidth);
+    }
+
+    return maxMediaMessageWidth;
+}
+
 #pragma mark - Load
 
 - (void)configureViews
@@ -595,13 +616,17 @@ typedef struct {
 {
     OWSAssertDebug([self.viewItem.interaction isKindOfClass:[TSMessage class]]);
 
+    if (self.isBorderless) {
+        return [UIColor clearColor];
+    }
+
     TSMessage *message = (TSMessage *)self.viewItem.interaction;
     return [self.conversationStyle bubbleColorWithMessage:message];
 }
 
 - (BOOL)isBubbleTransparent
 {
-    return self.wasRemotelyDeleted;
+    return self.wasRemotelyDeleted || self.isBorderless;
 }
 
 - (nullable UIColor *)bubbleStrokeColor
@@ -658,7 +683,7 @@ typedef struct {
 
 - (BOOL)canFooterOverlayMedia
 {
-    return self.hasBodyMediaWithThumbnail;
+    return self.hasBodyMediaWithThumbnail && !self.isBorderless;
 }
 
 - (BOOL)hasBottomFooter
@@ -870,11 +895,11 @@ typedef struct {
 {
     OWSAssertDebug(self.viewItem.mediaAlbumItems);
 
-    OWSMediaAlbumCellView *albumView =
-        [[OWSMediaAlbumCellView alloc] initWithMediaCache:self.cellMediaCache
-                                                    items:self.viewItem.mediaAlbumItems
-                                               isOutgoing:self.isOutgoing
-                                          maxMessageWidth:self.conversationStyle.maxMediaMessageWidth];
+    OWSMediaAlbumCellView *albumView = [[OWSMediaAlbumCellView alloc] initWithMediaCache:self.cellMediaCache
+                                                                                   items:self.viewItem.mediaAlbumItems
+                                                                              isOutgoing:self.isOutgoing
+                                                                         maxMessageWidth:self.maxMediaMessageWidth
+                                                                            isBorderless:self.isBorderless];
     self.loadCellContentBlock = ^{
         [albumView loadMedia];
     };
@@ -883,7 +908,7 @@ typedef struct {
     };
 
     // Only apply "inner shadow" for single media, not albums.
-    if (albumView.itemViews.count == 1) {
+    if (albumView.itemViews.count == 1 && !self.isBorderless) {
         UIView *itemView = albumView.itemViews.firstObject;
         OWSBubbleShapeView *innerShadowView = [[OWSBubbleShapeView alloc]
             initInnerShadowWithColor:(Theme.isDarkThemeEnabled ? UIColor.ows_whiteColor : UIColor.ows_blackColor)
@@ -1135,7 +1160,7 @@ typedef struct {
     OWSAssertDebug(self.conversationStyle);
     OWSAssertDebug(self.conversationStyle.maxMessageWidth > 0);
 
-    CGFloat maxMediaMessageWidth = self.conversationStyle.maxMediaMessageWidth;
+    CGFloat maxMediaMessageWidth = self.maxMediaMessageWidth;
     if (!self.hasFullWidthMediaView) {
         CGFloat hMargins = self.conversationStyle.textInsetHorizontal * 2;
         maxMediaMessageWidth -= hMargins;

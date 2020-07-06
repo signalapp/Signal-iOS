@@ -487,7 +487,8 @@ public class ConversationFactory: NSObject {
                                       contentType: "image/png",
                                       sourceFilename: nil,
                                       caption: caption,
-                                      albumMessageId: outgoingMessage.uniqueId)
+                                      albumMessageId: outgoingMessage.uniqueId,
+                                      isBorderless: false)
     }
 
 }
@@ -508,7 +509,7 @@ public class AttachmentStreamFactory: NSObject, Factory {
     class public func create(contentType: String, dataSource: DataSource, transaction: SDSAnyWriteTransaction) -> TSAttachmentStream {
         let factory = AttachmentStreamFactory()
         factory.contentTypeBuilder = { return contentType }
-        factory.byteCountBuilder = { return UInt32(dataSource.dataLength()) }
+        factory.byteCountBuilder = { return UInt32(dataSource.dataLength) }
         factory.sourceFilenameBuilder = { return dataSource.sourceFilename ?? "fake-filename.dat" }
 
         let attachmentStream = factory.build(transaction: transaction)

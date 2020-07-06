@@ -3621,7 +3621,13 @@ typedef enum : NSUInteger {
 {
     OWSLogError(@"");
 
-    [self showApprovalDialogForAttachment:attachment];
+    // If the thing we pasted is sticker-like, send it immediately
+    // and render it borderless.
+    if (attachment.isBorderless) {
+        [self tryToSendAttachments:@[ attachment ] messageText:nil];
+    } else {
+        [self showApprovalDialogForAttachment:attachment];
+    }
 }
 
 - (void)showApprovalDialogForAttachment:(SignalAttachment *_Nullable)attachment

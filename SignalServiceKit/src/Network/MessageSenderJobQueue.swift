@@ -41,7 +41,7 @@ public class MessageSenderJobQueue: NSObject, JobQueue {
 
     @objc(addMediaMessage:dataSource:contentType:sourceFilename:caption:albumMessageId:isTemporaryAttachment:)
     public func add(mediaMessage: TSOutgoingMessage, dataSource: DataSource, contentType: String, sourceFilename: String?, caption: String?, albumMessageId: String?, isTemporaryAttachment: Bool) {
-        let attachmentInfo = OutgoingAttachmentInfo(dataSource: dataSource, contentType: contentType, sourceFilename: sourceFilename, caption: caption, albumMessageId: albumMessageId)
+        let attachmentInfo = OutgoingAttachmentInfo(dataSource: dataSource, contentType: contentType, sourceFilename: sourceFilename, caption: caption, albumMessageId: albumMessageId, isBorderless: false)
         let message = OutgoingMessagePreparer(mediaMessage, unsavedAttachmentInfos: [attachmentInfo])
         add(message: message, isTemporaryAttachment: isTemporaryAttachment)
     }

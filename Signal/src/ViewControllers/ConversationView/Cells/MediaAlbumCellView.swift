@@ -7,6 +7,7 @@ import Foundation
 @objc(OWSMediaAlbumCellView)
 public class MediaAlbumCellView: UIStackView {
     private let items: [ConversationMediaAlbumItem]
+    private let isBorderless: Bool
 
     @objc
     public let itemViews: [ConversationMediaView]
@@ -26,19 +27,24 @@ public class MediaAlbumCellView: UIStackView {
     public required init(mediaCache: NSCache<NSString, AnyObject>,
                          items: [ConversationMediaAlbumItem],
                          isOutgoing: Bool,
-                         maxMessageWidth: CGFloat) {
+                         maxMessageWidth: CGFloat,
+                         isBorderless: Bool) {
         self.items = items
         self.itemViews = MediaAlbumCellView.itemsToDisplay(forItems: items).map {
             ConversationMediaView(mediaCache: mediaCache,
                                   attachment: $0.attachment,
                                   isOutgoing: isOutgoing,
-                                  maxMessageWidth: maxMessageWidth)
+                                  maxMessageWidth: maxMessageWidth,
+                                  isBorderless: isBorderless)
         }
+        self.isBorderless = isBorderless
 
         super.init(frame: .zero)
 
         // UIStackView's backgroundColor property has no effect.
-        addBackgroundView(withBackgroundColor: Theme.backgroundColor)
+        if !isBorderless {
+            addBackgroundView(withBackgroundColor: Theme.backgroundColor)
+        }
 
         createContents(maxMessageWidth: maxMessageWidth)
     }

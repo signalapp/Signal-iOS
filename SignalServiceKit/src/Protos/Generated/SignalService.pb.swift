@@ -2772,6 +2772,7 @@ struct SignalServiceProtos_AttachmentPointer {
   enum Flags: SwiftProtobuf.Enum {
     typealias RawValue = Int
     case voiceMessage // = 1
+    case borderless // = 2
 
     init() {
       self = .voiceMessage
@@ -2780,6 +2781,7 @@ struct SignalServiceProtos_AttachmentPointer {
     init?(rawValue: Int) {
       switch rawValue {
       case 1: self = .voiceMessage
+      case 2: self = .borderless
       default: return nil
       }
     }
@@ -2787,6 +2789,7 @@ struct SignalServiceProtos_AttachmentPointer {
     var rawValue: Int {
       switch self {
       case .voiceMessage: return 1
+      case .borderless: return 2
       }
     }
 
@@ -5546,7 +5549,8 @@ extension SignalServiceProtos_AttachmentPointer: SwiftProtobuf.Message, SwiftPro
 
 extension SignalServiceProtos_AttachmentPointer.Flags: SwiftProtobuf._ProtoNameProviding {
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
-    1: .same(proto: "VOICE_MESSAGE")
+    1: .same(proto: "VOICE_MESSAGE"),
+    2: .same(proto: "BORDERLESS")
   ]
 }
 

@@ -203,6 +203,8 @@ NS_ASSUME_NONNULL_BEGIN
         UInt32 flags = attachmentProto.flags;
         if ((flags & (UInt32)SSKProtoAttachmentPointerFlagsVoiceMessage) > 0) {
             attachmentType = TSAttachmentTypeVoiceMessage;
+        } else if ((flags & (UInt32)SSKProtoAttachmentPointerFlagsBorderless) > 0) {
+            attachmentType = TSAttachmentTypeBorderless;
         }
     }
     NSString *_Nullable caption;
