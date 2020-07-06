@@ -500,6 +500,9 @@
 /* Accessibility label for muting the microphone */
 "CALL_VIEW_MUTE_LABEL" = "ミュート";
 
+/* Error displayed on the 'call' view when the callee needs to grant permission before we can call them. Embeds {callee short name}. */
+"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ will get a message request from you. You can call once your message request is accepted.";
+
 /* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "カメラの方向を変更";
 
@@ -1662,7 +1665,7 @@
 "GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ が写真を削除しました。";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED" = "グループ写真を更新しました。";
+"GROUP_UPDATED_AVATAR_UPDATED" = "The group photo was updated.";
 
 /* Message indicating that the group's avatar was changed. */
 "GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "あなたがグループ写真を更新しました。";
@@ -1725,7 +1728,7 @@
 "GROUPS_REPLACE_ADMIN_BUTTON" = "新しい管理者を選択";
 
 /* Label for 'archived conversations' button. */
-"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "保存済みの会話";
+"HOME_VIEW_ARCHIVED_CONVERSATIONS" = "アーカイブ済みの会話";
 
 /* Table cell subtitle label for a conversation the user has blocked. */
 "HOME_VIEW_BLOCKED_CONVERSATION" = "ブロック済み";
@@ -1803,7 +1806,7 @@
 "IN_CALL_TERMINATED" = "通話が終了しました。";
 
 /* Label reminding the user that they are in archive mode. */
-"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "この会話は保存されます。新しいメッセージが届いた場合だけ受信箱に表示されます。";
+"INBOX_VIEW_ARCHIVE_MODE_REMINDER" = "この会話はアーカイブされます。新しいメッセージが届いた場合だけ受信箱に表示されます。";
 
 /* Message shown in the conversation list when the inbox is empty. */
 "INBOX_VIEW_EMPTY_INBOX" = "友達にメッセージを送って始めよう!";
@@ -1833,7 +1836,7 @@
 "INFO_MESSAGE_SYNCED_THREAD" = "携帯電話とiPadでメッセージを同期できます。\nセキュリティのため、会話記録はリンク先端末に転送されません。";
 
 /* Shown in inbox and conversation when a user joins Signal, embeds the new user's {{contact name}} */
-"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@はSignalにいます!";
+"INFO_MESSAGE_USER_JOINED_SIGNAL_BODY_FORMAT" = "%@は Signal を使っています。";
 
 /* accessibility label for the button which shows the sticker picker */
 "INPUT_TOOLBAR_STICKER_BUTTON_ACCESSIBILITY_LABEL" = "ステッカー";
@@ -2181,7 +2184,7 @@
 "MESSAGE_STATUS_FAILED_SHORT" = "送信に失敗";
 
 /* Label indicating that a message was only sent to some recipients. */
-"MESSAGE_STATUS_PARTIALLY_SENT" = "Partially sent, tap for details";
+"MESSAGE_STATUS_PARTIALLY_SENT" = "一部だけ送信しました、タップして詳細";
 
 /* status message for read messages */
 "MESSAGE_STATUS_READ" = "既読";
@@ -2820,7 +2823,7 @@
 "PRIVACY_VERIFICATION_FAILED_WITH_OLD_REMOTE_VERSION" = "相手先が古いバージョンのSignalを使っています。最新版にアップデートするようお願いしてください。";
 
 /* alert body */
-"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "QRコードは安全番号ではありません。Signal は最新バージョンですか?";
+"PRIVACY_VERIFICATION_FAILURE_INVALID_QRCODE" = "QRコードは安全番号ではありません。Signalは最新バージョンですか?";
 
 /* Paragraph(s) shown alongside the safety number when verifying privacy with {{contact name}} */
 "PRIVACY_VERIFICATION_INSTRUCTIONS" = "%@との端末間の暗号化が完全かどうかを確認するには，上記の番号と相手方に表示されている番号を比べてください。\n\nあるいは、相手方の端末上のQRコードを読み取るか、こちらのQRコードを相手に読み取ってもらってください。";
@@ -3090,13 +3093,13 @@
 "SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "とにかく送信する";
 
 /* Message for the 'safety number confirmation' view */
-"SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "The following people may have reinstalled or changed devices. Verify your safety number with them to ensure privacy.";
+"SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "下記の人はアプリを再インストールしたかデバイスを変更した可能性があります。プライバシーを保証するために安全番号を検証してください。";
 
 /* Text explaining that the given contact previously had their safety number verified. */
-"SAFETY_NUMBER_CONFIRMATION_PREVIOUSLY_VERIFIED" = "Previously Verified";
+"SAFETY_NUMBER_CONFIRMATION_PREVIOUSLY_VERIFIED" = "以前に検証済み";
 
 /* Title for the 'safety number confirmation' view */
-"SAFETY_NUMBER_CONFIRMATION_TITLE" = "Safety Number Changes";
+"SAFETY_NUMBER_CONFIRMATION_TITLE" = "安全番号を変更";
 
 /* View safety number action for the 'safety number confirmation' view */
 "SAFETY_NUMBER_CONFIRMATION_VIEW_ACTION" = "表示";
@@ -3654,7 +3657,7 @@
 "SETTINGS_SCREEN_LOCK_SWITCH_LABEL" = "画面ロック";
 
 /* No comment provided by engineer. */
-"SETTINGS_SCREEN_SECURITY" = "スクリーンセキュリティを有効化";
+"SETTINGS_SCREEN_SECURITY" = "画面のセキュリティを有効化";
 
 /* No comment provided by engineer. */
 "SETTINGS_SCREEN_SECURITY_DETAIL" = "Signalの画面をアプリ変更時に表示しません。";
@@ -3666,7 +3669,7 @@
 "SETTINGS_SECTION_TITLE_CALLING" = "通話";
 
 /* Section header */
-"SETTINGS_SECURITY_TITLE" = "スクリーン・セキュリティ";
+"SETTINGS_SECURITY_TITLE" = "画面のセキュリティ";
 
 /* No comment provided by engineer. */
 "SETTINGS_SUPPORT" = "サポート";
@@ -3957,7 +3960,7 @@
 "UPDATE_GROUP_FAILED" = "グループが更新できませんでした。";
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
-"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "この動作を完了できませんでした。インターネット接続を確認し再度試してください。";
+"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Group could not be updated. Check your internet connection and try again.";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "PINを作成";
