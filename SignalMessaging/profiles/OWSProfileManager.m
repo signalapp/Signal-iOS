@@ -1904,6 +1904,31 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
                                                                          profileKey:profileKey];
 }
 
+#pragma mark - Messaging History
+
+- (void)didSendOrReceiveMessageFromAddress:(SignalServiceAddress *)addressParam
+                               transaction:(SDSAnyWriteTransaction *)transaction
+{
+    SignalServiceAddress *address = [OWSUserProfile resolveUserProfileAddress:addressParam];
+    OWSAssertDebug(address.isValid);
+
+    OWSUserProfile *userProfile = [OWSUserProfile getOrBuildUserProfileForAddress:address transaction:transaction];
+
+    if (userProfile.lastMessagingDate != nil) {
+        // lastMessagingDate is coarse; we don't need to track
+        // every single message sent or received.  It is sufficient
+        // to update it only when the value changes by more than
+        // an hour.
+        NSTimeInterval lastMessagingInterval = fabs(userProfile.lastMessagingDate.timeIntervalSinceNow);
+        const NSTimeInterval lastMessagingResolution = 1 * kHourInterval;
+        if (lastMessagingInterval < lastMessagingResolution) {
+            return;
+        }
+    }
+
+    [userProfile updateWithLastMessagingDate:[NSDate new] transaction:transaction];
+}
+
 #pragma mark - User Interface
 
 - (void)presentAddThreadToProfileWhitelist:(TSThread *)thread

@@ -310,6 +310,12 @@ NS_ASSUME_NONNULL_BEGIN
     return nil;
 }
 
+- (void)didSendOrReceiveMessageFromAddress:(SignalServiceAddress *)address
+                               transaction:(SDSAnyWriteTransaction *)transaction
+{
+    // Do nothing.
+}
+
 @end
 
 #endif

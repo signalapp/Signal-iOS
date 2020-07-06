@@ -633,6 +633,18 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                  completion:nil];
 }
 
+- (void)updateWithLastMessagingDate:(NSDate *)lastMessagingDate transaction:(SDSAnyWriteTransaction *)transaction
+{
+    // We use wasLocallyInitiated = NO because we don't need
+    // to sync lastMessagingDate to the storage service.
+    [self
+               applyChanges:^(OWSUserProfile *userProfile) { userProfile.lastMessagingDate = lastMessagingDate; }
+               functionName:__PRETTY_FUNCTION__
+        wasLocallyInitiated:NO
+                transaction:transaction
+                 completion:nil];
+}
+
 // This should only be used in verbose, developer-only logs.
 - (NSString *)debugDescription
 {

@@ -383,6 +383,11 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     return SDSDatabaseStorage.shared;
 }
 
+- (OWSProfileManager *)profileManager
+{
+    return [OWSProfileManager sharedManager];
+}
+
 #pragma mark -
 
 - (NSOperationQueue *)sendingQueueForMessage:(TSOutgoingMessage *)message
@@ -1406,6 +1411,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         // If we've just delivered a message to a user, we know they
         // have a valid Signal account.
         [SignalRecipient markRecipientAsRegisteredAndGet:recipient.address transaction:transaction];
+
+        [self.profileManager didSendOrReceiveMessageFromAddress:recipient.address transaction:transaction];
     });
 
     messageSend.success();

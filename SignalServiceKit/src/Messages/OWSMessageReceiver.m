@@ -326,6 +326,11 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     return SDSDatabaseStorage.shared;
 }
 
+- (OWSProfileManager *)profileManager
+{
+    return [OWSProfileManager sharedManager];
+}
+
 #pragma mark - Notifications
 
 - (void)registrationStateDidChange:(NSNotification *)notification
@@ -467,6 +472,8 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
                                               plaintextData:result.plaintextData
                                             wasReceivedByUD:wasReceivedByUD
                                                 transaction:transaction];
+
+            [self.profileManager didSendOrReceiveMessageFromAddress:sourceAddress transaction:transaction];
 
             dispatch_async(self.serialQueue, ^{
                 completion(YES);
