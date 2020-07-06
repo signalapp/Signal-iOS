@@ -42,6 +42,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 @property (atomic, nullable) NSString *avatarUrlPath;
 @property (atomic, nullable) NSString *avatarFileName;
 @property (atomic, nullable) NSDate *lastFetchDate;
+@property (atomic, nullable) NSDate *lastMessagingDate;
 
 @property (atomic, readonly) NSUInteger userProfileSchemaVersion;
 @property (atomic, nullable, readonly) NSString *recipientPhoneNumber;
@@ -107,6 +108,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                       familyName:(nullable NSString *)familyName
                    isUuidCapable:(BOOL)isUuidCapable
                    lastFetchDate:(nullable NSDate *)lastFetchDate
+               lastMessagingDate:(nullable NSDate *)lastMessagingDate
                       profileKey:(nullable OWSAES256Key *)profileKey
                      profileName:(nullable NSString *)profileName
             recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
@@ -125,6 +127,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
     _familyName = familyName;
     _isUuidCapable = isUuidCapable;
     _lastFetchDate = lastFetchDate;
+    _lastMessagingDate = lastMessagingDate;
     _profileKey = profileKey;
     _profileName = profileName;
     _recipientPhoneNumber = recipientPhoneNumber;

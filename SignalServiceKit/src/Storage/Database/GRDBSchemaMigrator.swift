@@ -733,10 +733,11 @@ public class GRDBSchemaMigrator: NSObject {
             do {
                 try db.alter(table: "model_OWSUserProfile") { (table: TableAlteration) -> Void in
                     table.add(column: "lastFetchDate", .double)
+                    table.add(column: "lastMessagingDate", .double)
                 }
-                try db.create(index: "index_model_OWSUserProfile_on_lastFetchDate",
+                try db.create(index: "index_model_OWSUserProfile_on_lastFetchDate_and_lastMessagingDate",
                               on: "model_OWSUserProfile",
-                              columns: ["lastFetchDate"])
+                              columns: ["lastFetchDate", "lastMessagingDate"])
             } catch {
                 owsFail("Error: \(error)")
             }
