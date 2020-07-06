@@ -281,6 +281,7 @@ NS_ASSUME_NONNULL_BEGIN
                   isUuidCapable:(BOOL)isUuidCapable
                   avatarUrlPath:(nullable NSString *)avatarUrlPath
     optionalDecryptedAvatarData:(nullable NSData *)optionalDecryptedAvatarData
+                  lastFetchDate:(NSDate *)lastFetchDate
 {
     // Do nothing.
 }

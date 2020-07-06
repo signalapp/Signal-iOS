@@ -109,7 +109,8 @@ NS_ASSUME_NONNULL_BEGIN
                        username:(nullable NSString *)username
                   isUuidCapable:(BOOL)isUuidCapable
                   avatarUrlPath:(nullable NSString *)avatarUrlPath
-    optionalDecryptedAvatarData:(nullable NSData *)optionalDecryptedAvatarData;
+    optionalDecryptedAvatarData:(nullable NSData *)optionalDecryptedAvatarData
+                  lastFetchDate:(NSDate *)lastFetchDate;
 
 - (BOOL)recipientAddressIsUuidCapable:(SignalServiceAddress *)address transaction:(SDSAnyReadTransaction *)transaction;
 

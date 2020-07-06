@@ -41,6 +41,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 @property (atomic) BOOL isUuidCapable;
 @property (atomic, nullable) NSString *avatarUrlPath;
 @property (atomic, nullable) NSString *avatarFileName;
+@property (atomic, nullable) NSDate *lastFetchDate;
 
 @property (atomic, readonly) NSUInteger userProfileSchemaVersion;
 @property (atomic, nullable, readonly) NSString *recipientPhoneNumber;
@@ -482,6 +483,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                    username:(nullable NSString *)username
               isUuidCapable:(BOOL)isUuidCapable
               avatarUrlPath:(nullable NSString *)avatarUrlPath
+              lastFetchDate:(NSDate *)lastFetchDate
                 transaction:(SDSAnyWriteTransaction *)transaction
                  completion:(nullable OWSUserProfileCompletion)completion
 {
@@ -492,6 +494,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                    [userProfile setUsername:username];
                    [userProfile setIsUuidCapable:isUuidCapable];
                    [userProfile setAvatarUrlPath:avatarUrlPath];
+                   [userProfile setLastFetchDate:lastFetchDate];
                }
                functionName:__PRETTY_FUNCTION__
         wasLocallyInitiated:YES
@@ -505,6 +508,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
               isUuidCapable:(BOOL)isUuidCapable
               avatarUrlPath:(nullable NSString *)avatarUrlPath
              avatarFileName:(nullable NSString *)avatarFileName
+              lastFetchDate:(NSDate *)lastFetchDate
                 transaction:(SDSAnyWriteTransaction *)transaction
                  completion:(nullable OWSUserProfileCompletion)completion
 {
@@ -516,6 +520,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                    [userProfile setIsUuidCapable:isUuidCapable];
                    // Update the avatar properties in lockstep.
                    [userProfile setAvatarUrlPath:avatarUrlPath avatarFileName:avatarFileName];
+                   [userProfile setLastFetchDate:lastFetchDate];
                }
                functionName:__PRETTY_FUNCTION__
         wasLocallyInitiated:YES

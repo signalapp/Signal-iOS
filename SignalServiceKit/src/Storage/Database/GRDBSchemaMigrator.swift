@@ -80,6 +80,7 @@ public class GRDBSchemaMigrator: NSObject {
         case fixIncorrectIndexes
         case resetThreadVisibility
         case indexSignalRecipients
+        case trackUserProfileFetches
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -725,6 +726,19 @@ public class GRDBSchemaMigrator: NSObject {
             SignalRecipient.anyEnumerate(transaction: transaction.asAnyWrite) { (signalRecipient: SignalRecipient,
                 _: UnsafeMutablePointer<ObjCBool>) in
                 GRDBFullTextSearchFinder.modelWasInserted(model: signalRecipient, transaction: transaction)
+            }
+        }
+
+        migrator.registerMigration(MigrationId.trackUserProfileFetches.rawValue) { db in
+            do {
+                try db.alter(table: "model_OWSUserProfile") { (table: TableAlteration) -> Void in
+                    table.add(column: "lastFetchDate", .double)
+                }
+                try db.create(index: "index_model_OWSUserProfile_on_lastFetchDate",
+                              on: "model_OWSUserProfile",
+                              columns: ["lastFetchDate"])
+            } catch {
+                owsFail("Error: \(error)")
             }
         }
 
