@@ -65,6 +65,18 @@ public extension OWSProfileManager {
                                                            profileFamilyName: profileFamilyName,
                                                            profileAvatarData: profileAvatarData)
     }
+
+    @objc
+    func allWhitelistedAddresses(transaction: SDSAnyReadTransaction) -> [SignalServiceAddress] {
+        var addresses = Set<SignalServiceAddress>()
+        for uuid in whitelistedUUIDsStore.allKeys(transaction: transaction) {
+            addresses.insert(SignalServiceAddress(uuidString: uuid))
+        }
+        for phoneNumber in whitelistedPhoneNumbersStore.allKeys(transaction: transaction) {
+            addresses.insert(SignalServiceAddress(phoneNumber: phoneNumber))
+        }
+        return Array(addresses)
+    }
 }
 
 // MARK: -
