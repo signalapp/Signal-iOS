@@ -34,6 +34,7 @@ extern NSString *const kNSNotificationKey_ProfileGroupId;
 @property (atomic, readonly, nullable) NSString *avatarUrlPath;
 // This filename is relative to OWSProfileManager.profileAvatarsDirPath.
 @property (atomic, readonly, nullable) NSString *avatarFileName;
+@property (atomic, readonly, nullable) NSDate *lastFetchDate;
 
 + (instancetype)new NS_UNAVAILABLE;
 - (instancetype)init NS_UNAVAILABLE;
@@ -58,12 +59,13 @@ extern NSString *const kNSNotificationKey_ProfileGroupId;
                    avatarUrlPath:(nullable NSString *)avatarUrlPath
                       familyName:(nullable NSString *)familyName
                    isUuidCapable:(BOOL)isUuidCapable
+                   lastFetchDate:(nullable NSDate *)lastFetchDate
                       profileKey:(nullable OWSAES256Key *)profileKey
                      profileName:(nullable NSString *)profileName
             recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
                    recipientUUID:(nullable NSString *)recipientUUID
                         username:(nullable NSString *)username
-NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avatarUrlPath:familyName:isUuidCapable:profileKey:profileName:recipientPhoneNumber:recipientUUID:username:));
+NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avatarUrlPath:familyName:isUuidCapable:lastFetchDate:profileKey:profileName:recipientPhoneNumber:recipientUUID:username:));
 
 // clang-format on
 

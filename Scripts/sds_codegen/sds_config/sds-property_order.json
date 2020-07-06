@@ -183,6 +183,7 @@
     "UserProfileRecord.avatarUrlPath": 2, 
     "UserProfileRecord.familyName": 8, 
     "UserProfileRecord.isUuidCapable": 9, 
+    "UserProfileRecord.lastFetchDate": 10, 
     "UserProfileRecord.profileKey": 3, 
     "UserProfileRecord.profileName": 4, 
     "UserProfileRecord.recipientPhoneNumber": 5, 
