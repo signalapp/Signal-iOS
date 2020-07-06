@@ -156,6 +156,21 @@ public class BulkProfileFetch: NSObject {
         isUpdateInFlight = true
 
         // We need to throttle these jobs.
+        //
+        // The profile fetch rate limit is a bucket size of 4320, which
+        // refills at a rate of 3 per minute.
+        //
+        // This class handles the "bulk" profile fetches which
+        // are common but not urgent.  The app also does other
+        // "blocking" profile fetches which are less common but urgent.
+        // To ensure that "blocking" profile fetches never fail,
+        // the "bulk" profile fetches need to be cautious. This
+        // takes two forms:
+        //
+        // * Rate-limiting bulk profiles somewhat (faster than the
+        //   service rate limit).
+        // * Backing off aggressively if we hit the rate limit.
+        //
         // Always wait N seconds between update jobs.
         let updateDelaySeconds: TimeInterval = 0.1
 
@@ -171,7 +186,8 @@ public class BulkProfileFetch: NSObject {
         firstly { () -> Guarantee<Void> in
             if hasHitRateLimitRecently {
                 // Wait before updating if we've recently hit the rate limit.
-                return after(seconds: 5.0)
+                // This will give the rate limit bucket time to refill.
+                return after(seconds: 20.0)
             } else {
                 return Guarantee.value(())
             }
