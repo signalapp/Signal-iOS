@@ -154,20 +154,38 @@ public class BulkProfileFetch: NSObject {
 
         // Perform update.
         isUpdateInFlight = true
+
         // We need to throttle these jobs.
         // Always wait N seconds between update jobs.
-        let updateDelaySeconds: TimeInterval = 3
-        firstly {
+        let updateDelaySeconds: TimeInterval = 0.1
+
+        var hasHitRateLimitRecently = false
+        if let lastRateLimitErrorDate = self.lastRateLimitErrorDate {
+            let minElapsedSeconds = 5 * kMinuteInterval
+            let elapsedSeconds = abs(lastRateLimitErrorDate.timeIntervalSinceNow)
+            if elapsedSeconds < minElapsedSeconds {
+                hasHitRateLimitRecently = true
+            }
+        }
+
+        firstly { () -> Guarantee<Void> in
+            if hasHitRateLimitRecently {
+                // Wait before updating if we've recently hit the rate limit.
+                return after(seconds: 5.0)
+            } else {
+                return Guarantee.value(())
+            }
+        }.then(on: .global()) {
             self.profileManager.updateProfile(forAddressPromise: address,
                                               mainAppOnly: true,
                                               ignoreThrottling: false).asVoid()
-        }.done {
+        }.done(on: .global()) {
             self.serialQueue.asyncAfter(deadline: DispatchTime.now() + updateDelaySeconds) {
                 self.isUpdateInFlight = false
                 self.lastOutcomeMap[address] = UpdateOutcome(.success)
                 self.process()
             }
-        }.catch { error in
+        }.catch(on: .global()) { error in
             self.serialQueue.asyncAfter(deadline: DispatchTime.now() + updateDelaySeconds) {
                 self.isUpdateInFlight = false
                 switch error {
@@ -213,21 +231,12 @@ public class BulkProfileFetch: NSObject {
     private func shouldUpdateAddress(_ address: SignalServiceAddress) -> Bool {
         assertOnQueue(serialQueue)
 
-        // Skip if we've recently had a rate limit error.
-        if let lastRateLimitErrorDate = self.lastRateLimitErrorDate {
-            let minElapsedSeconds = 5 * kMinuteInterval
-            let elapsedSeconds = lastRateLimitErrorDate.timeIntervalSinceNow
-            guard elapsedSeconds >= minElapsedSeconds else {
-                return false
-            }
-        }
-
         guard let lastOutcome = lastOutcomeMap[address] else {
             return true
         }
 
         let minElapsedSeconds: TimeInterval
-        let elapsedSeconds = lastOutcome.date.timeIntervalSinceNow
+        let elapsedSeconds = abs(lastOutcome.date.timeIntervalSinceNow)
 
         switch lastOutcome.outcome {
         case .networkFailure:
