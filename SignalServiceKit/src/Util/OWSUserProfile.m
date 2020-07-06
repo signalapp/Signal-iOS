@@ -771,12 +771,16 @@ NSUInteger const kUserProfileSchemaVersion = 1;
 {
     [super anyDidInsertWithTransaction:transaction];
 
+    [self reindexAssociatedModels:transaction];
+
     [self.userProfileReadCache didInsertOrUpdateUserProfile:self transaction:transaction];
 }
 
 - (void)anyDidUpdateWithTransaction:(SDSAnyWriteTransaction *)transaction
 {
     [super anyDidUpdateWithTransaction:transaction];
+
+    [self reindexAssociatedModels:transaction];
 
     [self.userProfileReadCache didInsertOrUpdateUserProfile:self transaction:transaction];
 }
@@ -786,6 +790,33 @@ NSUInteger const kUserProfileSchemaVersion = 1;
     [super anyDidRemoveWithTransaction:transaction];
 
     [self.userProfileReadCache didRemoveUserProfile:self transaction:transaction];
+}
+
+- (void)reindexAssociatedModels:(SDSAnyWriteTransaction *)transaction
+{
+    // The profile can affect how accounts, recipients and contact threads are indexed, so we
+    // need to re-index them whenever the profile changes.
+    FullTextSearchFinder *fullTextSearchFinder = [FullTextSearchFinder new];
+
+    AnySignalAccountFinder *accountFinder = [AnySignalAccountFinder new];
+    SignalAccount *_Nullable signalAccount = [accountFinder signalAccountForAddress:self.address
+                                                                        transaction:transaction];
+    if (signalAccount != nil) {
+        [fullTextSearchFinder modelWasUpdatedObjcWithModel:signalAccount transaction:transaction];
+    }
+
+    AnySignalRecipientFinder *signalRecipientFinder = [AnySignalRecipientFinder new];
+    SignalRecipient *_Nullable signalRecipient = [signalRecipientFinder signalRecipientForAddress:self.address
+                                                                                      transaction:transaction];
+    if (signalRecipient != nil) {
+        [fullTextSearchFinder modelWasUpdatedObjcWithModel:signalRecipient transaction:transaction];
+    }
+
+    TSContactThread *_Nullable contactThread = [TSContactThread getThreadWithContactAddress:self.address
+                                                                                transaction:transaction];
+    if (contactThread != nil) {
+        [fullTextSearchFinder modelWasUpdatedObjcWithModel:contactThread transaction:transaction];
+    }
 }
 
 + (void)mergeUserProfilesIfNecessaryForAddress:(SignalServiceAddress *)address

@@ -79,6 +79,7 @@ public class GRDBSchemaMigrator: NSObject {
         case addMarkedUnreadIndexToThread
         case fixIncorrectIndexes
         case resetThreadVisibility
+        case indexSignalRecipients
 
         // NOTE: Every time we add a migration id, consider
         // incrementing grdbSchemaVersionLatest.
@@ -302,8 +303,9 @@ public class GRDBSchemaMigrator: NSObject {
             do {
                 try autoreleasepool {
                     let transaction = GRDBWriteTransaction(database: db)
+                    defer { transaction.finalizeTransaction() }
+
                     try dedupeSignalRecipients(transaction: transaction.asAnyWrite)
-                    transaction.finalizeTransaction()
                 }
 
                 try db.drop(index: "index_signal_recipients_on_recipientPhoneNumber")
@@ -600,9 +602,10 @@ public class GRDBSchemaMigrator: NSObject {
                 try db.drop(table: "model_OWSLinkedDeviceReadReceipt")
 
                 let transaction = GRDBWriteTransaction(database: db)
+                defer { transaction.finalizeTransaction() }
+
                 let viewOnceStore = SDSKeyValueStore(collection: "viewOnceMessages")
                 viewOnceStore.removeAll(transaction: transaction.asAnyWrite)
-                transaction.finalizeTransaction()
             } catch {
                 owsFail("Error: \(error)")
             }
@@ -715,6 +718,16 @@ public class GRDBSchemaMigrator: NSObject {
             }
         }
 
+        migrator.registerMigration(MigrationId.indexSignalRecipients.rawValue) { db in
+            let transaction = GRDBWriteTransaction(database: db)
+            defer { transaction.finalizeTransaction() }
+
+            SignalRecipient.anyEnumerate(transaction: transaction.asAnyWrite) { (signalRecipient: SignalRecipient,
+                _: UnsafeMutablePointer<ObjCBool>) in
+                GRDBFullTextSearchFinder.modelWasInserted(model: signalRecipient, transaction: transaction)
+            }
+        }
+
         // MARK: - Schema Migration Insertion Point
     }
 
@@ -726,8 +739,9 @@ public class GRDBSchemaMigrator: NSObject {
         migrator.registerMigration(MigrationId.dataMigration_populateGalleryItems.rawValue) { db in
             do {
                 let transaction = GRDBWriteTransaction(database: db)
+                defer { transaction.finalizeTransaction() }
+
                 try createInitialGalleryRecords(transaction: transaction)
-                transaction.finalizeTransaction()
             } catch {
                 owsFail("Error: \(error)")
             }
@@ -735,11 +749,12 @@ public class GRDBSchemaMigrator: NSObject {
 
         migrator.registerMigration(MigrationId.dataMigration_markOnboardedUsers_v2.rawValue) { db in
             let transaction = GRDBWriteTransaction(database: db)
+            defer { transaction.finalizeTransaction() }
+
             if TSAccountManager.sharedInstance().isRegistered(transaction: transaction.asAnyWrite) {
                 Logger.info("marking existing user as onboarded")
                 TSAccountManager.sharedInstance().setIsOnboarded(true, transaction: transaction.asAnyWrite)
             }
-            transaction.finalizeTransaction()
         }
 
         migrator.registerMigration(MigrationId.dataMigration_clearLaunchScreenCache.rawValue) { _ in
@@ -748,19 +763,20 @@ public class GRDBSchemaMigrator: NSObject {
 
         migrator.registerMigration(MigrationId.dataMigration_enableV2RegistrationLockIfNecessary.rawValue) { db in
             let transaction = GRDBWriteTransaction(database: db)
+            defer { transaction.finalizeTransaction() }
+
             guard KeyBackupService.hasMasterKey(transaction: transaction.asAnyWrite) else {
-                transaction.finalizeTransaction()
                 return
 
             }
             OWS2FAManager.keyValueStore().setBool(true, key: OWS2FAManager.isRegistrationLockV2EnabledKey, transaction: transaction.asAnyWrite)
-            transaction.finalizeTransaction()
         }
 
         migrator.registerMigration(MigrationId.dataMigration_resetStorageServiceData.rawValue) { db in
             let transaction = GRDBWriteTransaction(database: db)
+            defer { transaction.finalizeTransaction() }
+
             SSKEnvironment.shared.storageServiceManager.resetLocalData(transaction: transaction.asAnyWrite)
-            transaction.finalizeTransaction()
         }
 
         migrator.registerMigration(MigrationId.dataMigration_markAllInteractionsAsNotDeleted.rawValue) { db in

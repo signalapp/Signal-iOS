@@ -28,6 +28,15 @@ public class FullTextSearchFinder: NSObject {
         }
     }
 
+    @objc
+    public func modelWasUpdatedObjc(model: TSYapDatabaseObject, transaction: SDSAnyWriteTransaction) {
+        guard let model = model as? SDSModel else {
+            owsFailDebug("Invalid model.")
+            return
+        }
+        modelWasUpdated(model: model, transaction: transaction)
+    }
+
     public func modelWasUpdated(model: SDSModel, transaction: SDSAnyWriteTransaction) {
         assert(type(of: model).shouldBeIndexedForFTS)
 
@@ -342,6 +351,13 @@ class GRDBFullTextSearchFinder: NSObject {
                                                         return nil
             }
             return model
+        case SignalRecipient.collection():
+            guard let model = SignalRecipient.anyFetch(uniqueId: uniqueId,
+                                                     transaction: transaction.asAnyRead) else {
+                                                        owsFailDebug("Couldn't load record: \(collection)")
+                                                        return nil
+            }
+            return model
         default:
             owsFailDebug("Unexpected record type: \(collection)")
             return nil
@@ -515,6 +531,8 @@ class AnySearchIndexer {
             return self.messageIndexer.index(message, transaction: transaction)
         } else if let signalAccount = object as? SignalAccount {
             return self.recipientIndexer.index(signalAccount.recipientAddress, transaction: transaction)
+        } else if let signalRecipient = object as? SignalRecipient {
+            return self.recipientIndexer.index(signalRecipient.address, transaction: transaction)
         } else {
             return nil
         }
