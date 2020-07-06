@@ -1728,6 +1728,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
                   isUuidCapable:(BOOL)isUuidCapable
                   avatarUrlPath:(nullable NSString *)avatarUrlPath
     optionalDecryptedAvatarData:(nullable NSData *)optionalDecryptedAvatarData
+                  lastFetchDate:(NSDate *)lastFetchDate
 {
     SignalServiceAddress *address = [OWSUserProfile resolveUserProfileAddress:addressParam];
     OWSAssertDebug(address.isValid);
@@ -1781,6 +1782,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
                                    isUuidCapable:isUuidCapable
                                    avatarUrlPath:avatarUrlPath
                                   avatarFileName:avatarFileName
+                                   lastFetchDate:lastFetchDate
                                      transaction:transaction
                                       completion:nil];
             } else {
@@ -1789,6 +1791,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
                                         username:username
                                    isUuidCapable:isUuidCapable
                                    avatarUrlPath:avatarUrlPath
+                                   lastFetchDate:lastFetchDate
                                      transaction:transaction
                                       completion:nil];
             }
