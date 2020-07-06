@@ -3293,13 +3293,13 @@ extension SSKProtoDataMessageLokiProfile.SSKProtoDataMessageLokiProfileBuilder {
 
     // MARK: - SSKProtoDataMessageClosedGroupUpdateSenderKeyBuilder
 
-    @objc public class func builder(chainKey: Data, keyIndex: UInt32) -> SSKProtoDataMessageClosedGroupUpdateSenderKeyBuilder {
-        return SSKProtoDataMessageClosedGroupUpdateSenderKeyBuilder(chainKey: chainKey, keyIndex: keyIndex)
+    @objc public class func builder(chainKey: Data, keyIndex: UInt32, senderPublicKey: String) -> SSKProtoDataMessageClosedGroupUpdateSenderKeyBuilder {
+        return SSKProtoDataMessageClosedGroupUpdateSenderKeyBuilder(chainKey: chainKey, keyIndex: keyIndex, senderPublicKey: senderPublicKey)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc public func asBuilder() -> SSKProtoDataMessageClosedGroupUpdateSenderKeyBuilder {
-        let builder = SSKProtoDataMessageClosedGroupUpdateSenderKeyBuilder(chainKey: chainKey, keyIndex: keyIndex)
+        let builder = SSKProtoDataMessageClosedGroupUpdateSenderKeyBuilder(chainKey: chainKey, keyIndex: keyIndex, senderPublicKey: senderPublicKey)
         return builder
     }
 
@@ -3309,11 +3309,12 @@ extension SSKProtoDataMessageLokiProfile.SSKProtoDataMessageLokiProfileBuilder {
 
         @objc fileprivate override init() {}
 
-        @objc fileprivate init(chainKey: Data, keyIndex: UInt32) {
+        @objc fileprivate init(chainKey: Data, keyIndex: UInt32, senderPublicKey: String) {
             super.init()
 
             setChainKey(chainKey)
             setKeyIndex(keyIndex)
+            setSenderPublicKey(senderPublicKey)
         }
 
         @objc public func setChainKey(_ valueParam: Data) {
@@ -3322,6 +3323,10 @@ extension SSKProtoDataMessageLokiProfile.SSKProtoDataMessageLokiProfileBuilder {
 
         @objc public func setKeyIndex(_ valueParam: UInt32) {
             proto.keyIndex = valueParam
+        }
+
+        @objc public func setSenderPublicKey(_ valueParam: String) {
+            proto.senderPublicKey = valueParam
         }
 
         @objc public func build() throws -> SSKProtoDataMessageClosedGroupUpdateSenderKey {
@@ -3339,12 +3344,16 @@ extension SSKProtoDataMessageLokiProfile.SSKProtoDataMessageLokiProfileBuilder {
 
     @objc public let keyIndex: UInt32
 
+    @objc public let senderPublicKey: String
+
     private init(proto: SignalServiceProtos_DataMessage.ClosedGroupUpdate.SenderKey,
                  chainKey: Data,
-                 keyIndex: UInt32) {
+                 keyIndex: UInt32,
+                 senderPublicKey: String) {
         self.proto = proto
         self.chainKey = chainKey
         self.keyIndex = keyIndex
+        self.senderPublicKey = senderPublicKey
     }
 
     @objc
@@ -3368,13 +3377,19 @@ extension SSKProtoDataMessageLokiProfile.SSKProtoDataMessageLokiProfileBuilder {
         }
         let keyIndex = proto.keyIndex
 
+        guard proto.hasSenderPublicKey else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: senderPublicKey")
+        }
+        let senderPublicKey = proto.senderPublicKey
+
         // MARK: - Begin Validation Logic for SSKProtoDataMessageClosedGroupUpdateSenderKey -
 
         // MARK: - End Validation Logic for SSKProtoDataMessageClosedGroupUpdateSenderKey -
 
         let result = SSKProtoDataMessageClosedGroupUpdateSenderKey(proto: proto,
                                                                    chainKey: chainKey,
-                                                                   keyIndex: keyIndex)
+                                                                   keyIndex: keyIndex,
+                                                                   senderPublicKey: senderPublicKey)
         return result
     }
 
@@ -3408,14 +3423,14 @@ extension SSKProtoDataMessageClosedGroupUpdateSenderKey.SSKProtoDataMessageClose
     @objc public enum SSKProtoDataMessageClosedGroupUpdateType: Int32 {
         case new = 0
         case info = 1
-        case chainKey = 2
+        case senderKey = 2
     }
 
     private class func SSKProtoDataMessageClosedGroupUpdateTypeWrap(_ value: SignalServiceProtos_DataMessage.ClosedGroupUpdate.TypeEnum) -> SSKProtoDataMessageClosedGroupUpdateType {
         switch value {
         case .new: return .new
         case .info: return .info
-        case .chainKey: return .chainKey
+        case .senderKey: return .senderKey
         }
     }
 
@@ -3423,7 +3438,7 @@ extension SSKProtoDataMessageClosedGroupUpdateSenderKey.SSKProtoDataMessageClose
         switch value {
         case .new: return .new
         case .info: return .info
-        case .chainKey: return .chainKey
+        case .senderKey: return .senderKey
         }
     }
 

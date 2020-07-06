@@ -103,7 +103,7 @@ internal final class ClosedGroupUpdateMessage : TSOutgoingMessage {
                 closedGroupUpdate.setMembers(members)
                 closedGroupUpdate.setAdmins(admins)
             case .senderKey(let groupPublicKey, let senderKey):
-                closedGroupUpdate = SSKProtoDataMessageClosedGroupUpdate.builder(groupPublicKey: groupPublicKey, type: .chainKey)
+                closedGroupUpdate = SSKProtoDataMessageClosedGroupUpdate.builder(groupPublicKey: groupPublicKey, type: .senderKey)
                 closedGroupUpdate.setSenderKeys([ try senderKey.toProto() ])
             }
             builder.setClosedGroupUpdate(try closedGroupUpdate.build())

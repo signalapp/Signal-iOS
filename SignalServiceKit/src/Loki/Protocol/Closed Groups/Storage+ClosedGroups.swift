@@ -20,13 +20,14 @@ internal extension Storage {
         transaction.setObject(ratchet, forKey: senderPublicKey, inCollection: collection)
     }
 
-    internal static func getAllClosedGroupRatchets(for groupPublicKey: String) -> Set<ClosedGroupRatchet> {
+    internal static func getAllClosedGroupSenderKeys(for groupPublicKey: String) -> Set<ClosedGroupSenderKey> {
         let collection = getClosedGroupRatchetCollection(for: groupPublicKey)
-        var result: Set<ClosedGroupRatchet> = []
+        var result: Set<ClosedGroupSenderKey> = []
         read { transaction in
-            transaction.enumerateRows(inCollection: collection) { _, object, _, _ in
-                guard let ratchet = object as? ClosedGroupRatchet else { return }
-                result.insert(ratchet)
+            transaction.enumerateRows(inCollection: collection) { key, object, _, _ in
+                guard let senderPublicKey = key as? String, let ratchet = object as? ClosedGroupRatchet else { return }
+                let senderKey = ClosedGroupSenderKey(chainKey: Data(hex: ratchet.chainKey), keyIndex: ratchet.keyIndex, senderPublicKey: senderPublicKey)
+                result.insert(senderKey)
             }
         }
         return result

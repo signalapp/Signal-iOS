@@ -1546,14 +1546,14 @@ struct SignalServiceProtos_DataMessage {
     enum TypeEnum: SwiftProtobuf.Enum {
       typealias RawValue = Int
 
-      /// groupPublicKey, name, groupPrivateKey, chainKeys, members, admins
+      /// groupPublicKey, name, groupPrivateKey, senderKeys, members, admins
       case new // = 0
 
-      /// groupPublicKey, name, chainKeys, members, admins
+      /// groupPublicKey, name, senderKeys, members, admins
       case info // = 1
 
-      /// groupPublicKey, chainKeys
-      case chainKey // = 2
+      /// groupPublicKey, senderKeys
+      case senderKey // = 2
 
       init() {
         self = .new
@@ -1563,7 +1563,7 @@ struct SignalServiceProtos_DataMessage {
         switch rawValue {
         case 0: self = .new
         case 1: self = .info
-        case 2: self = .chainKey
+        case 2: self = .senderKey
         default: return nil
         }
       }
@@ -1572,7 +1572,7 @@ struct SignalServiceProtos_DataMessage {
         switch self {
         case .new: return 0
         case .info: return 1
-        case .chainKey: return 2
+        case .senderKey: return 2
         }
       }
 
@@ -1603,12 +1603,23 @@ struct SignalServiceProtos_DataMessage {
       /// Clears the value of `keyIndex`. Subsequent reads from it will return its default value.
       mutating func clearKeyIndex() {self._keyIndex = nil}
 
+      /// @required
+      var senderPublicKey: String {
+        get {return _senderPublicKey ?? String()}
+        set {_senderPublicKey = newValue}
+      }
+      /// Returns true if `senderPublicKey` has been explicitly set.
+      var hasSenderPublicKey: Bool {return self._senderPublicKey != nil}
+      /// Clears the value of `senderPublicKey`. Subsequent reads from it will return its default value.
+      mutating func clearSenderPublicKey() {self._senderPublicKey = nil}
+
       var unknownFields = SwiftProtobuf.UnknownStorage()
 
       init() {}
 
       fileprivate var _chainKey: Data? = nil
       fileprivate var _keyIndex: UInt32? = nil
+      fileprivate var _senderPublicKey: String? = nil
     }
 
     init() {}
@@ -4083,7 +4094,7 @@ extension SignalServiceProtos_DataMessage.ClosedGroupUpdate.TypeEnum: SwiftProto
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     0: .same(proto: "NEW"),
     1: .same(proto: "INFO"),
-    2: .same(proto: "CHAIN_KEY"),
+    2: .same(proto: "SENDER_KEY"),
   ]
 }
 
@@ -4092,6 +4103,7 @@ extension SignalServiceProtos_DataMessage.ClosedGroupUpdate.SenderKey: SwiftProt
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "chainKey"),
     2: .same(proto: "keyIndex"),
+    3: .same(proto: "senderPublicKey"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -4099,6 +4111,7 @@ extension SignalServiceProtos_DataMessage.ClosedGroupUpdate.SenderKey: SwiftProt
       switch fieldNumber {
       case 1: try decoder.decodeSingularBytesField(value: &self._chainKey)
       case 2: try decoder.decodeSingularUInt32Field(value: &self._keyIndex)
+      case 3: try decoder.decodeSingularStringField(value: &self._senderPublicKey)
       default: break
       }
     }
@@ -4111,12 +4124,16 @@ extension SignalServiceProtos_DataMessage.ClosedGroupUpdate.SenderKey: SwiftProt
     if let v = self._keyIndex {
       try visitor.visitSingularUInt32Field(value: v, fieldNumber: 2)
     }
+    if let v = self._senderPublicKey {
+      try visitor.visitSingularStringField(value: v, fieldNumber: 3)
+    }
     try unknownFields.traverse(visitor: &visitor)
   }
 
   static func ==(lhs: SignalServiceProtos_DataMessage.ClosedGroupUpdate.SenderKey, rhs: SignalServiceProtos_DataMessage.ClosedGroupUpdate.SenderKey) -> Bool {
     if lhs._chainKey != rhs._chainKey {return false}
     if lhs._keyIndex != rhs._keyIndex {return false}
+    if lhs._senderPublicKey != rhs._senderPublicKey {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }
