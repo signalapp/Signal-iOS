@@ -93,7 +93,7 @@ public enum StorageModeStrictness: Int {
 /// By centralizing feature flags here and documenting their rollout plan, it's easier to review
 /// which feature flags are in play.
 @objc(SSKFeatureFlags)
-public class FeatureFlags: NSObject {
+public class FeatureFlags: BaseFlags {
 
     @objc
     public static var storageMode: StorageMode {
@@ -233,12 +233,35 @@ public class FeatureFlags: NSObject {
 
     @objc
     public static let deviceTransferThrowAway = false
+
+    public static func buildFlagMap() -> [String: Any] {
+        BaseFlags.buildFlagMap(for: FeatureFlags.self) { (key: String) -> Any? in
+            FeatureFlags.value(forKey: key)
+        }
+    }
+
+    @objc
+    public static func logFlags() {
+        let logFlag = { (prefix: String, key: String, value: Any?) in
+            if let value = value {
+                Logger.info("\(prefix): \(key) = \(value)", function: "")
+            } else {
+                Logger.info("\(prefix): \(key) = nil", function: "")
+            }
+        }
+
+        let flagMap = buildFlagMap()
+        for key in Array(flagMap.keys).sorted() {
+            let value = flagMap[key]
+            logFlag("Flag", key, value)
+        }
+    }
 }
 
 /// Flags that we'll leave in the code base indefinitely that are helpful for
 /// development should go here, rather than cluttering up FeatureFlags.
 @objc(SSKDebugFlags)
-public class DebugFlags: NSObject {
+public class DebugFlags: BaseFlags {
     // DEBUG builds won't receive push notifications, which prevents receiving messages
     // while the app is backgrounded or the system call screen is active.
     //
@@ -330,4 +353,47 @@ public class DebugFlags: NSObject {
     // all beta users, but not production.
     @objc
     public static let forceVersionedProfiles = build.includes(.beta)
+
+    public static func buildFlagMap() -> [String: Any] {
+        BaseFlags.buildFlagMap(for: DebugFlags.self) { (key: String) -> Any? in
+            DebugFlags.value(forKey: key)
+        }
+    }
+
+    @objc
+    public static func logFlags() {
+        let logFlag = { (prefix: String, key: String, value: Any?) in
+            if let value = value {
+                Logger.info("\(prefix): \(key) = \(value)", function: "")
+            } else {
+                Logger.info("\(prefix): \(key) = nil", function: "")
+            }
+        }
+
+        let flagMap = buildFlagMap()
+        for key in Array(flagMap.keys).sorted() {
+            let value = flagMap[key]
+            logFlag("Flag", key, value)
+        }
+    }
+}
+
+// MARK: -
+
+@objc
+public class BaseFlags: NSObject {
+    static func buildFlagMap(for flagsClass: Any, flagFunc: (String) -> Any?) -> [String: Any] {
+        var result = [String: Any]()
+        var count: CUnsignedInt = 0
+        let methods = class_copyPropertyList(object_getClass(flagsClass), &count)!
+        for i in 0 ..< count {
+            let selector = property_getName(methods.advanced(by: Int(i)).pointee)
+            if let key = String(cString: selector, encoding: .utf8) {
+                if let value = flagFunc(key) {
+                    result[key] = value
+                }
+            }
+        }
+        return result
+    }
 }

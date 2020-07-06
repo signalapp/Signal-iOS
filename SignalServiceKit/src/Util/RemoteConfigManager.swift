@@ -6,7 +6,7 @@ import Foundation
 import PromiseKit
 
 @objc
-public class RemoteConfig: NSObject {
+public class RemoteConfig: BaseFlags {
 
     init(_ config: [String: Bool]) {
         self.config = config
@@ -82,9 +82,9 @@ public class RemoteConfig: NSObject {
 
         let logFlag = { (prefix: String, key: String, value: Any?) in
             if let value = value {
-                Logger.info("\(prefix): \(key) = \(value)")
+                Logger.info("\(prefix): \(key) = \(value)", function: "")
             } else {
-                Logger.info("\(prefix): \(key) = nil")
+                Logger.info("\(prefix): \(key) = nil", function: "")
             }
         }
 
@@ -98,14 +98,16 @@ public class RemoteConfig: NSObject {
             logFlag("Config.Sticky", flag.rawFlag, value)
         }
 
-        var count: CUnsignedInt = 0
-        let methods = class_copyPropertyList(object_getClass(RemoteConfig.self), &count)!
-        for i in 0 ..< count {
-            let selector = property_getName(methods.advanced(by: Int(i)).pointee)
-            if let key = String(cString: selector, encoding: .utf8) {
-                let value = RemoteConfig.value(forKey: key)
-                logFlag("Flag", key, value)
-            }
+        let flagMap = buildFlagMap()
+        for key in Array(flagMap.keys).sorted() {
+            let value = flagMap[key]
+            logFlag("Flag", key, value)
+        }
+    }
+
+    public static func buildFlagMap() -> [String: Any] {
+        BaseFlags.buildFlagMap(for: RemoteConfig.self) { (key: String) -> Any? in
+            RemoteConfig.value(forKey: key)
         }
     }
 }
