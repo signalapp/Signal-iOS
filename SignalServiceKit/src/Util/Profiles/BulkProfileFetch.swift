@@ -161,7 +161,7 @@ public class BulkProfileFetch: NSObject {
 
         var hasHitRateLimitRecently = false
         if let lastRateLimitErrorDate = self.lastRateLimitErrorDate {
-            let minElapsedSeconds = 10 * kMinuteInterval
+            let minElapsedSeconds = 5 * kMinuteInterval
             let elapsedSeconds = abs(lastRateLimitErrorDate.timeIntervalSinceNow)
             if elapsedSeconds < minElapsedSeconds {
                 hasHitRateLimitRecently = true
@@ -170,7 +170,7 @@ public class BulkProfileFetch: NSObject {
 
         firstly { () -> Guarantee<Void> in
             if hasHitRateLimitRecently {
-                // Slow down update rate substantially if we've recently hit the rate limit.
+                // Wait before updating if we've recently hit the rate limit.
                 return after(seconds: 5.0)
             } else {
                 return Guarantee.value(())
