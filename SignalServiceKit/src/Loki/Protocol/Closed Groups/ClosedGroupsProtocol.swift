@@ -118,12 +118,13 @@ public final class ClosedGroupsProtocol : NSObject {
     }
 
     public static func leave(_ groupPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) {
-        removeMembers([ getUserHexEncodedPublicKey() ], from: groupPublicKey, using: transaction)
+        let userPublicKey = UserDefaults.standard[.masterHexEncodedPublicKey] ?? getUserHexEncodedPublicKey()
+        removeMembers([ userPublicKey ], from: groupPublicKey, using: transaction)
     }
 
     public static func removeMembers(_ membersToRemove: Set<String>, from groupPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) {
         // Prepare
-        let userPublicKey = getUserHexEncodedPublicKey()
+        let userPublicKey = UserDefaults.standard[.masterHexEncodedPublicKey] ?? getUserHexEncodedPublicKey()
         let isUserLeaving = membersToRemove.contains(userPublicKey)
         guard !isUserLeaving || membersToRemove.count == 1 else {
             return print("[Loki] Can't remove self and others simultaneously.")
@@ -158,6 +159,7 @@ public final class ClosedGroupsProtocol : NSObject {
             // Establish sessions if needed
             establishSessionsIfNeeded(with: members, using: transaction) // This internally takes care of multi device
             // Send out the user's new ratchet to all members (minus the removed ones) and their linked devices using established channels
+            let userPublicKey = getUserHexEncodedPublicKey()
             let userRatchet = SharedSenderKeysImplementation.shared.generateRatchet(for: groupPublicKey, senderPublicKey: userPublicKey, using: transaction)
             let userSenderKey = ClosedGroupSenderKey(chainKey: Data(hex: userRatchet.chainKey), keyIndex: userRatchet.keyIndex, publicKey: userPublicKey)
             for member in members { // This internally takes care of multi device
@@ -223,8 +225,9 @@ public final class ClosedGroupsProtocol : NSObject {
     /// Invoked upon receiving a group update. A group update is sent out when a group's name is changed, when new users are added, when users leave or are
     /// kicked, or if the group admins are changed.
     private static func handleInfoMessage(_ closedGroupUpdate: SSKProtoDataMessageClosedGroupUpdate, from senderPublicKey: String,
-         using transaction: YapDatabaseReadWriteTransaction) {
+        using transaction: YapDatabaseReadWriteTransaction) {
         // Unwrap the message
+        let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
         let groupPublicKey = closedGroupUpdate.groupPublicKey.toHexString()
         let name = closedGroupUpdate.name
         let senderKeys = closedGroupUpdate.senderKeys
@@ -244,27 +247,32 @@ public final class ClosedGroupsProtocol : NSObject {
         guard isSenderAdmin else {
             return print("[Loki] Ignoring closed group update from non-admin.")
         }
-        // Establish sessions if needed (it's important that this happens before the code below)
-        establishSessionsIfNeeded(with: members, using: transaction) // This internally takes care of multi device
         // Store the ratchets for any new members (it's important that this happens before the code below)
         senderKeys.forEach { senderKey in
             let ratchet = ClosedGroupRatchet(chainKey: senderKey.chainKey.toHexString(), keyIndex: UInt(senderKey.keyIndex), messageKeys: [])
             Storage.setClosedGroupRatchet(for: groupPublicKey, senderPublicKey: senderKey.publicKey, ratchet: ratchet, using: transaction)
         }
-        // Delete all ratchets and send out the user's new ratchet using established channels if any member of the group left or was removed
+        // Delete all ratchets and either:
+        // • Send out the user's new ratchet using established channels if other members of the group left or were removed
+        // • Remove the group from the user's set of public keys to poll for if the current user was among the members that were removed
         let oldMembers = group.groupMemberIds
+        let userPublicKey = UserDefaults.standard[.masterHexEncodedPublicKey] ?? getUserHexEncodedPublicKey()
+        let wasUserRemoved = !members.contains(userPublicKey)
         if Set(members).intersection(oldMembers) != Set(oldMembers) {
             Storage.removeAllClosedGroupRatchets(for: groupPublicKey, using: transaction)
-            let userPublicKey = getUserHexEncodedPublicKey()
-            let userRatchet = SharedSenderKeysImplementation.shared.generateRatchet(for: groupPublicKey, senderPublicKey: userPublicKey, using: transaction)
-            let userSenderKey = ClosedGroupSenderKey(chainKey: Data(hex: userRatchet.chainKey), keyIndex: userRatchet.keyIndex, publicKey: userPublicKey)
-            for member in members {
-                let thread = TSContactThread.getOrCreateThread(withContactId: member, transaction: transaction)
-                thread.save(with: transaction)
-                let closedGroupUpdateMessageKind = ClosedGroupUpdateMessage.Kind.senderKey(groupPublicKey: Data(hex: groupPublicKey), senderKey: userSenderKey)
-                let closedGroupUpdateMessage = ClosedGroupUpdateMessage(thread: thread, kind: closedGroupUpdateMessageKind)
-                let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
-                messageSenderJobQueue.add(message: closedGroupUpdateMessage, transaction: transaction)
+            if wasUserRemoved {
+                Storage.removeClosedGroupPrivateKey(for: groupPublicKey, using: transaction)
+            } else {
+                establishSessionsIfNeeded(with: members, using: transaction) // This internally takes care of multi device
+                let userRatchet = SharedSenderKeysImplementation.shared.generateRatchet(for: groupPublicKey, senderPublicKey: userPublicKey, using: transaction)
+                let userSenderKey = ClosedGroupSenderKey(chainKey: Data(hex: userRatchet.chainKey), keyIndex: userRatchet.keyIndex, publicKey: userPublicKey)
+                for member in members {
+                    let thread = TSContactThread.getOrCreateThread(withContactId: member, transaction: transaction)
+                    thread.save(with: transaction)
+                    let closedGroupUpdateMessageKind = ClosedGroupUpdateMessage.Kind.senderKey(groupPublicKey: Data(hex: groupPublicKey), senderKey: userSenderKey)
+                    let closedGroupUpdateMessage = ClosedGroupUpdateMessage(thread: thread, kind: closedGroupUpdateMessageKind)
+                    messageSenderJobQueue.add(message: closedGroupUpdateMessage, transaction: transaction) // This internally takes care of multi device
+                }
             }
         }
         // Update the group
@@ -272,11 +280,12 @@ public final class ClosedGroupsProtocol : NSObject {
         let newGroupModel = TSGroupModel(title: name, memberIds: members, image: nil, groupId: groupIDAsData, groupType: .closedGroup, adminIds: admins)
         thread.setGroupModel(newGroupModel, with: transaction)
         // Notify the user
-        let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .typeGroupUpdate)
+        let infoMessageType: TSInfoMessageType = wasUserRemoved ? .typeGroupQuit : .typeGroupUpdate
+        let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: infoMessageType)
         infoMessage.save(with: transaction)
     }
 
-    /// Invoked upon receiving a chain key from another user.
+    /// Invoked upon receiving a sender key from another user.
     private static func handleSenderKeyMessage(_ closedGroupUpdate: SSKProtoDataMessageClosedGroupUpdate, from senderPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) {
         let groupPublicKey = closedGroupUpdate.groupPublicKey.toHexString()
         guard let senderKey = closedGroupUpdate.senderKeys.first else {
@@ -315,4 +324,3 @@ public final class ClosedGroupsProtocol : NSObject {
         return result
     }
 }
-
