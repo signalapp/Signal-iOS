@@ -14,7 +14,6 @@ import PromiseKit
 public final class ClosedGroupsProtocol : NSObject {
 
     // TODO:
-    // • Always reset all ratchets if someone leaves or is kicked?
     // • Multi device
     //     • ClosedGroupsProtocol
     //     • SyncMessagesProtocol
@@ -23,6 +22,7 @@ public final class ClosedGroupsProtocol : NSObject {
     /// the message sending pipeline making a request for each member.
     public static func createClosedGroup(name: String, members membersAsSet: Set<String>, transaction: YapDatabaseReadWriteTransaction) -> TSGroupThread {
         var membersAsSet = membersAsSet
+        let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
         let userPublicKey = getUserHexEncodedPublicKey()
         // Generate a key pair for the group
         let groupKeyPair = Curve25519.generateKeyPair()
@@ -53,7 +53,6 @@ public final class ClosedGroupsProtocol : NSObject {
             thread.save(with: transaction)
             let closedGroupUpdateMessageKind = ClosedGroupUpdateMessage.Kind.new(groupPublicKey: Data(hex: groupPublicKey), name: name, groupPrivateKey: groupKeyPair.privateKey, senderKeys: senderKeys, members: members, admins: admins)
             let closedGroupUpdateMessage = ClosedGroupUpdateMessage(thread: thread, kind: closedGroupUpdateMessageKind)
-            let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
             messageSenderJobQueue.add(message: closedGroupUpdateMessage, transaction: transaction)
         }
         // Add the group to the user's set of public keys to poll for
@@ -75,6 +74,9 @@ public final class ClosedGroupsProtocol : NSObject {
         let group = thread.groupModel
         let name = group.groupName!
         let admins = group.groupAdminIds
+        guard let groupPrivateKey = Storage.getClosedGroupPrivateKey(for: groupPublicKey) else {
+            return print("[Loki] Can't get private key for closed group.")
+        }
         // Add the members to the member list
         var members = group.groupMemberIds
         members.append(contentsOf: newMembersAsSet)
@@ -93,61 +95,13 @@ public final class ClosedGroupsProtocol : NSObject {
         let closedGroupUpdateMessage = ClosedGroupUpdateMessage(thread: thread, kind: closedGroupUpdateMessageKind)
         messageSenderJobQueue.add(message: closedGroupUpdateMessage, transaction: transaction)
         // Send closed group update messages to the new members using established channels
-        let allSenderKeys = Storage.getAllClosedGroupRatchets(for: groupPublicKey).map {
+        let allSenderKeys = Storage.getAllClosedGroupRatchets(for: groupPublicKey).map { // This includes the newly generated ratchets
             ClosedGroupSenderKey(chainKey: Data(hex: $0.chainKey), keyIndex: $0.keyIndex)
         }
         for member in newMembers {
-            let closedGroupUpdateMessageKind = ClosedGroupUpdateMessage.Kind.info(groupPublicKey: Data(hex: groupPublicKey), name: name, senderKeys: allSenderKeys, members: members, admins: admins)
             let thread = TSContactThread.getOrCreateThread(contactId: member)
             thread.save(with: transaction)
-            let closedGroupUpdateMessage = ClosedGroupUpdateMessage(thread: thread, kind: closedGroupUpdateMessageKind)
-            messageSenderJobQueue.add(message: closedGroupUpdateMessage, transaction: transaction)
-        }
-        // Update the group
-        let groupIDAsData = groupID.data(using: String.Encoding.utf8)!
-        let newGroupModel = TSGroupModel(title: name, memberIds: members, image: nil, groupId: groupIDAsData, groupType: .closedGroup, adminIds: admins)
-        thread.setGroupModel(newGroupModel, with: transaction)
-        // Notify the user
-        let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .typeGroupUpdate)
-        infoMessage.save(with: transaction)
-    }
-
-    public static func removeMembers(_ membersToRemoveAsSet: Set<String>, from groupPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) {
-        // Prepare
-        let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
-        let groupID = LKGroupUtilities.getEncodedClosedGroupID(groupPublicKey)
-        guard let thread = TSGroupThread.fetch(uniqueId: groupID, transaction: transaction) else {
-            return print("[Loki] Can't remove users from nonexistent closed group.")
-        }
-        let group = thread.groupModel
-        let name = group.groupName!
-        let admins = group.groupAdminIds
-        // Remove the members from the member list
-        var members = group.groupMemberIds
-        let indexes = membersToRemoveAsSet.compactMap { members.firstIndex(of: $0) }
-        guard indexes.count == membersToRemoveAsSet.count else {
-            return print("[Loki] Can't remove users from group.")
-        }
-        indexes.forEach { members.remove(at: $0) }
-        // Establish sessions if needed (shouldn't be necessary under normal circumstances as
-        // sessions would've already been established previously)
-        establishSessionsIfNeeded(with: group.groupMemberIds, using: transaction) // Intentionally not `members`
-        // Send a closed group update message to the removed members (this message is aimed at the group)
-        let closedGroupUpdateMessageKind = ClosedGroupUpdateMessage.Kind.info(groupPublicKey: Data(hex: groupPublicKey), name: name, senderKeys: [], members: members, admins: admins)
-        let closedGroupUpdateMessage = ClosedGroupUpdateMessage(thread: thread, kind: closedGroupUpdateMessageKind)
-        messageSenderJobQueue.add(message: closedGroupUpdateMessage, transaction: transaction)
-        // Generate new ratchets for everyone except the members that were removed (it's important that
-        // this happens after the code above)
-        let ratchets = members.map {
-            SharedSenderKeysImplementation.shared.generateRatchet(for: groupPublicKey, senderPublicKey: $0, using: transaction)
-        }
-        // Send a closed group update message to all members (minus the ones that were removed) with everyone's new
-        // ratchets using established channels
-        let senderKeys = ratchets.map { ClosedGroupSenderKey(chainKey: Data(hex: $0.chainKey), keyIndex: $0.keyIndex) }
-        for member in members {
-            let thread = TSContactThread.getOrCreateThread(withContactId: member, transaction: transaction)
-            thread.save(with: transaction)
-            let closedGroupUpdateMessageKind = ClosedGroupUpdateMessage.Kind.info(groupPublicKey: Data(hex: groupPublicKey), name: name, senderKeys: senderKeys, members: members, admins: admins)
+            let closedGroupUpdateMessageKind = ClosedGroupUpdateMessage.Kind.new(groupPublicKey: Data(hex: groupPublicKey), name: name, groupPrivateKey: Data(hex: groupPrivateKey), senderKeys: allSenderKeys, members: members, admins: admins)
             let closedGroupUpdateMessage = ClosedGroupUpdateMessage(thread: thread, kind: closedGroupUpdateMessageKind)
             messageSenderJobQueue.add(message: closedGroupUpdateMessage, transaction: transaction)
         }
@@ -161,36 +115,63 @@ public final class ClosedGroupsProtocol : NSObject {
     }
 
     public static func leave(_ groupPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) {
+        removeMembers([ getUserHexEncodedPublicKey() ], from: groupPublicKey, using: transaction)
+    }
+
+    public static func removeMembers(_ membersToRemove: Set<String>, from groupPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) {
+        let userPublicKey = getUserHexEncodedPublicKey()
+        let isUserLeaving = membersToRemove.contains(userPublicKey)
+        guard !isUserLeaving || membersToRemove.count == 1 else {
+            return print("[Loki] Can't remove self and others simultaneously.")
+        }
         // Prepare
+        let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
         let groupID = LKGroupUtilities.getEncodedClosedGroupID(groupPublicKey)
         guard let thread = TSGroupThread.fetch(uniqueId: groupID, transaction: transaction) else {
-            return print("[Loki] Can't leave nonexistent closed group.")
+            return print("[Loki] Can't remove users from nonexistent closed group.")
         }
         let group = thread.groupModel
         let name = group.groupName!
         let admins = group.groupAdminIds
-        // Remove the user from the member list
+        // Remove the members from the member list
         var members = group.groupMemberIds
-        guard let indexOfUser = members.firstIndex(of: getUserHexEncodedPublicKey()) else {
-            return print("[Loki] Can't leave group.")
+        let indexes = membersToRemove.compactMap { members.firstIndex(of: $0) }
+        guard indexes.count == membersToRemove.count else {
+            return print("[Loki] Can't remove users from group.")
         }
-        members.remove(at: indexOfUser)
-        // Send the update to the group (don't include new ratchets as everyone should generate new ratchets
-        // individually in this case)
+        indexes.forEach { members.remove(at: $0) }
+        // Send the update to the group (don't include new ratchets as everyone should generate new ratchets individually)
         let closedGroupUpdateMessageKind = ClosedGroupUpdateMessage.Kind.info(groupPublicKey: Data(hex: groupPublicKey), name: name, senderKeys: [], members: members, admins: admins)
         let closedGroupUpdateMessage = ClosedGroupUpdateMessage(thread: thread, kind: closedGroupUpdateMessageKind)
-        let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
         messageSenderJobQueue.add(message: closedGroupUpdateMessage, transaction: transaction)
-        // Delete all ratchets (it's important that this happens after the code above)
+        // Delete all ratchets (it's important that this happens after sending out the update)
         Storage.removeAllClosedGroupRatchets(for: groupPublicKey, using: transaction)
-        // Remove the group from the user's set of public keys to poll for
-        Storage.removeClosedGroupPrivateKey(for: groupPublicKey, using: transaction)
+        // Remove the group from the user's set of public keys to poll for if the user is leaving. Otherwise generate
+        // a new ratchet and send it out to all members (minus the removed ones) using established channels.
+        if isUserLeaving {
+            Storage.removeClosedGroupPrivateKey(for: groupPublicKey, using: transaction)
+        } else {
+            // Establish sessions if needed (shouldn't be necessary under normal circumstances as
+            // sessions would've already been established previously)
+            establishSessionsIfNeeded(with: members, using: transaction)
+            // Send out the user's new ratchet to all members (minus the removed ones) using established channels
+            let newRatchet = SharedSenderKeysImplementation.shared.generateRatchet(for: groupPublicKey, senderPublicKey: userPublicKey, using: transaction)
+            let newSenderKey = ClosedGroupSenderKey(chainKey: Data(hex: newRatchet.chainKey), keyIndex: newRatchet.keyIndex)
+            for member in members {
+                let thread = TSContactThread.getOrCreateThread(withContactId: member, transaction: transaction)
+                thread.save(with: transaction)
+                let closedGroupUpdateMessageKind = ClosedGroupUpdateMessage.Kind.senderKey(groupPublicKey: Data(hex: groupPublicKey), senderKey: newSenderKey)
+                let closedGroupUpdateMessage = ClosedGroupUpdateMessage(thread: thread, kind: closedGroupUpdateMessageKind)
+                messageSenderJobQueue.add(message: closedGroupUpdateMessage, transaction: transaction)
+            }
+        }
         // Update the group
         let groupIDAsData = groupID.data(using: String.Encoding.utf8)!
         let newGroupModel = TSGroupModel(title: name, memberIds: members, image: nil, groupId: groupIDAsData, groupType: .closedGroup, adminIds: admins)
         thread.setGroupModel(newGroupModel, with: transaction)
         // Notify the user
-        let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .typeGroupUpdate)
+        let infoMessageType: TSInfoMessageType = isUserLeaving ? .typeGroupQuit : .typeGroupUpdate
+        let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: infoMessageType)
         infoMessage.save(with: transaction)
     }
 
@@ -253,7 +234,7 @@ public final class ClosedGroupsProtocol : NSObject {
         // Check that the sender is an admin (before the update)
         var isSenderAdmin = false
         Storage.read { transaction in
-            isSenderAdmin = !thread.isUserAdmin(inGroup: senderPublicKey, transaction: transaction) // TODO: Validate that `senderPublicKey` here isn't the group public key
+            isSenderAdmin = !thread.isUserAdmin(inGroup: senderPublicKey, transaction: transaction)
         }
         guard isSenderAdmin else {
             return print("[Loki] Ignoring closed group update from non-admin.")
@@ -261,7 +242,7 @@ public final class ClosedGroupsProtocol : NSObject {
         // Establish sessions if needed (it's important that this happens before the code below)
         establishSessionsIfNeeded(with: members, using: transaction)
         // Parse out any new members and store their ratchets (it's important that
-        // this happens before handling removed members)
+        // this happens before the code below)
         let oldMembers = group.groupMemberIds
         let newMembers = members.filter { !oldMembers.contains($0) }
         if newMembers.count == senderKeys.count { // If someone left or was kicked the message won't have any sender keys
@@ -275,13 +256,12 @@ public final class ClosedGroupsProtocol : NSObject {
         if Set(members).intersection(oldMembers) != Set(oldMembers) {
             Storage.removeAllClosedGroupRatchets(for: groupPublicKey, using: transaction)
             let userPublicKey = getUserHexEncodedPublicKey()
-            let newRatchet = SharedSenderKeysImplementation.shared.generateRatchet(for: groupPublicKey, senderPublicKey: userPublicKey, using: transaction)
-            let newSenderKey = ClosedGroupSenderKey(chainKey: Data(hex: newRatchet.chainKey), keyIndex: newRatchet.keyIndex)
-            Storage.setClosedGroupRatchet(for: groupPublicKey, senderPublicKey: userPublicKey, ratchet: newRatchet, using: transaction)
+            let userRatchet = SharedSenderKeysImplementation.shared.generateRatchet(for: groupPublicKey, senderPublicKey: userPublicKey, using: transaction)
+            let userSenderKey = ClosedGroupSenderKey(chainKey: Data(hex: userRatchet.chainKey), keyIndex: userRatchet.keyIndex)
             for member in members {
                 let thread = TSContactThread.getOrCreateThread(withContactId: member, transaction: transaction)
                 thread.save(with: transaction)
-                let closedGroupUpdateMessageKind = ClosedGroupUpdateMessage.Kind.senderKey(groupPublicKey: Data(hex: groupPublicKey), senderKey: newSenderKey)
+                let closedGroupUpdateMessageKind = ClosedGroupUpdateMessage.Kind.senderKey(groupPublicKey: Data(hex: groupPublicKey), senderKey: userSenderKey)
                 let closedGroupUpdateMessage = ClosedGroupUpdateMessage(thread: thread, kind: closedGroupUpdateMessageKind)
                 let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
                 messageSenderJobQueue.add(message: closedGroupUpdateMessage, transaction: transaction)

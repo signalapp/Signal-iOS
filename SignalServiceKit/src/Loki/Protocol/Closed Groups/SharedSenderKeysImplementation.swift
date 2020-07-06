@@ -10,11 +10,11 @@ public final class SharedSenderKeysImplementation : NSObject, SharedSenderKeysPr
     // MARK: Documentation
     // A quick overview of how shared sender key based closed groups work:
     //
-    // • When a user creates the group, they generate a key pair for the group along with a ratchet for
+    // • When a user creates a group, they generate a key pair for the group along with a ratchet for
     //   every member of the group. They bundle this together with some other group info such as the group
     //   name in a `ClosedGroupUpdateMessage` and send that using established channels to every member of
     //   the group. Note that because a user can only pick from their existing contacts when selecting
-    //   the group members they don't need to establish sessions before being able to send the
+    //   the group members they shouldn't need to establish sessions before being able to send the
     //   `ClosedGroupUpdateMessage`. Another way to optimize the performance of the group creation process
     //   is to batch fetch the device links of all members involved ahead of time, rather than letting
     //   the sending pipeline do it separately for every user the `ClosedGroupUpdateMessage` is sent to.
@@ -25,8 +25,8 @@ public final class SharedSenderKeysImplementation : NSObject, SharedSenderKeysPr
     //   the message.
     // • When another user receives that message, they step the ratchet associated with the sender and
     //   use the resulting message key to decrypt the message.
-    // • When a user leaves the group, new ratchets must be generated for all members to ensure that the
-    //   user that left can't decrypt messages going forward. To this end every user deletes all ratchets
+    // • When a user leaves or is kicked from a group, all members must generate new ratchets to ensure that
+    //   removed users can't decrypt messages going forward. To this end every user deletes all ratchets
     //   associated with the group in question upon receiving a group update message that indicates that
     //   a user left. They then generate a new ratchet for themselves and send it out to all members of
     //   the group (again fetching device links ahead of time). The user should already have established
@@ -35,9 +35,6 @@ public final class SharedSenderKeysImplementation : NSObject, SharedSenderKeysPr
     //   send that bundled in a `ClosedGroupUpdateMessage` to the group. They send a
     //   `ClosedGroupUpdateMessage` with the newly generated ratchet but also the existing ratchets of
     //   every other member of the group to the user that joined.
-    // • When a user kicks a member from the group, they re-generate ratchets for everyone and send
-    //   those out to all members (minus the member that was just kicked) in a
-    //   `ClosedGroupUpdateMessage` using established channels.
 
     // MARK: Ratcheting Error
     public enum RatchetingError : LocalizedError {
