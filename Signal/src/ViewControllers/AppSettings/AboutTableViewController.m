@@ -151,6 +151,13 @@
                                              [weakSelf.navigationController pushViewController:flagsViewController
                                                                                       animated:YES];
                                          }]];
+    [debugSection
+        addItem:[OWSTableItem disclosureItemWithText:@"Testing"
+                                         actionBlock:^{
+                                             UIViewController *testingViewController = [TestingViewController new];
+                                             [weakSelf.navigationController pushViewController:testingViewController
+                                                                                      animated:YES];
+                                         }]];
 
     NSString *environmentName = TSConstants.isUsingProductionService ? @"Production" : @"Staging";
     [debugSection

@@ -1363,7 +1363,7 @@ public class GroupManager: NSObject {
     public static func sendGroupUpdateMessage(thread: TSGroupThread,
                                               changeActionsProtoData: Data? = nil) -> Promise<Void> {
 
-        guard !DebugFlags.groupsV2dontSendUpdates else {
+        guard !thread.isGroupV2Thread || !DebugFlags.groupsV2dontSendUpdates else {
             return Promise.value(())
         }
 
@@ -1439,7 +1439,7 @@ public class GroupManager: NSObject {
     }
 
     private static func sendDurableNewGroupMessage(forThread thread: TSGroupThread) -> Promise<Void> {
-        guard !DebugFlags.groupsV2dontSendUpdates else {
+        guard !thread.isGroupV2Thread || !DebugFlags.groupsV2dontSendUpdates else {
             return Promise.value(())
         }
 
