@@ -268,6 +268,11 @@ void uncaughtExceptionHandler(NSException *exception)
         [DebugLogger.sharedLogger enableErrorReporting];
     }
 
+#ifdef DEBUG
+    [SSKFeatureFlags logFlags];
+    [SSKDebugFlags logFlags];
+#endif
+
     OWSLogWarn(@"application: didFinishLaunchingWithOptions.");
     [Cryptography seedRandom];
 
