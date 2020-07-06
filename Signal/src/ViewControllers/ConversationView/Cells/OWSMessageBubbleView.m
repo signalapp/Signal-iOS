@@ -155,13 +155,13 @@ typedef struct {
         case 0:
             break;
         case 1:
-            return [UIFont ows_regularFontWithSize:basePointSize + 30.f];
         case 2:
-            return [UIFont ows_regularFontWithSize:basePointSize + 24.f];
+            return [UIFont ows_regularFontWithSize:basePointSize * 2.4f];
         case 3:
         case 4:
+            return [UIFont ows_regularFontWithSize:basePointSize * 2.2f];
         case 5:
-            return [UIFont ows_regularFontWithSize:basePointSize + 18.f];
+            return [UIFont ows_regularFontWithSize:basePointSize * 1.8f];
         default:
             OWSFailDebug(@"Unexpected jumbomoji count: %zd", self.displayableBodyText.jumbomojiCount);
             break;
@@ -243,7 +243,11 @@ typedef struct {
 - (BOOL)isBorderless
 {
     if (self.hasBodyText) {
-        return NO;
+        if (self.displayableBodyText.jumbomojiCount > 0) {
+            return YES;
+        } else {
+            return NO;
+        }
     }
 
     return self.viewItem.mediaAlbumItems.count == 1
