@@ -125,6 +125,9 @@ NS_ASSUME_NONNULL_BEGIN
                                                    avatarUrlPath:(NSString *)avatarUrlPath
                                                       profileKey:(OWSAES256Key *)profileKey;
 
+- (void)didSendOrReceiveMessageFromAddress:(SignalServiceAddress *)address
+                               transaction:(SDSAnyWriteTransaction *)transaction;
+
 @end
 
 NS_ASSUME_NONNULL_END
