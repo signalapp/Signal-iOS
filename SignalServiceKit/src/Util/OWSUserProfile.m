@@ -105,6 +105,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                    avatarUrlPath:(nullable NSString *)avatarUrlPath
                       familyName:(nullable NSString *)familyName
                    isUuidCapable:(BOOL)isUuidCapable
+                   lastFetchDate:(nullable NSDate *)lastFetchDate
                       profileKey:(nullable OWSAES256Key *)profileKey
                      profileName:(nullable NSString *)profileName
             recipientPhoneNumber:(nullable NSString *)recipientPhoneNumber
@@ -122,6 +123,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
     _avatarUrlPath = avatarUrlPath;
     _familyName = familyName;
     _isUuidCapable = isUuidCapable;
+    _lastFetchDate = lastFetchDate;
     _profileKey = profileKey;
     _profileName = profileName;
     _recipientPhoneNumber = recipientPhoneNumber;
