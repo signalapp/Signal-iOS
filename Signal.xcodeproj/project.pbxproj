@@ -103,6 +103,8 @@
 		3448E1622213585C004B052E /* OnboardingBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3448E1612213585C004B052E /* OnboardingBaseViewController.swift */; };
 		3448E16422135FFA004B052E /* OnboardingPhoneNumberViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3448E16322135FFA004B052E /* OnboardingPhoneNumberViewController.swift */; };
 		3448E1662215B313004B052E /* OnboardingCaptchaViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3448E1652215B313004B052E /* OnboardingCaptchaViewController.swift */; };
+		344A761124B366F4009D69A5 /* FlagsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344A761024B366F4009D69A5 /* FlagsViewController.swift */; };
+		344A761324B36C8C009D69A5 /* TestingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344A761224B36C8C009D69A5 /* TestingViewController.swift */; };
 		344DAEDF248A7526000AD4FA /* DebugUIStress.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344DAEDE248A7526000AD4FA /* DebugUIStress.swift */; };
 		344DC9AF226E483D004E7322 /* ManageStickersViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344DC9AE226E483C004E7322 /* ManageStickersViewController.swift */; };
 		344F248D2007CCD600CFB4F4 /* DisplayableText.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344F248C2007CCD600CFB4F4 /* DisplayableText.swift */; };
@@ -989,6 +991,8 @@
 		3448E16322135FFA004B052E /* OnboardingPhoneNumberViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingPhoneNumberViewController.swift; sourceTree = "<group>"; };
 		3448E1652215B313004B052E /* OnboardingCaptchaViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OnboardingCaptchaViewController.swift; sourceTree = "<group>"; };
 		34491FC11FB0F78500B3E5A3 /* my */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = my; path = translations/my.lproj/Localizable.strings; sourceTree = "<group>"; };
+		344A761024B366F4009D69A5 /* FlagsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = FlagsViewController.swift; sourceTree = "<group>"; };
+		344A761224B36C8C009D69A5 /* TestingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TestingViewController.swift; sourceTree = "<group>"; };
 		344DAEDE248A7526000AD4FA /* DebugUIStress.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DebugUIStress.swift; sourceTree = "<group>"; };
 		344DC9AE226E483C004E7322 /* ManageStickersViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ManageStickersViewController.swift; sourceTree = "<group>"; };
 		344F248C2007CCD600CFB4F4 /* DisplayableText.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = DisplayableText.swift; sourceTree = "<group>"; };
@@ -1984,6 +1988,7 @@
 				340FC887204DAC8C007AEB0F /* BlockListViewController.m */,
 				340FC889204DAC8C007AEB0F /* DomainFrontingCountryViewController.h */,
 				340FC87D204DAC8C007AEB0F /* DomainFrontingCountryViewController.m */,
+				344A761024B366F4009D69A5 /* FlagsViewController.swift */,
 				340FC88B204DAC8C007AEB0F /* NotificationSettingsOptionsViewController.h */,
 				340FC87B204DAC8C007AEB0F /* NotificationSettingsOptionsViewController.m */,
 				340FC88A204DAC8C007AEB0F /* NotificationSettingsViewController.h */,
@@ -2000,6 +2005,7 @@
 				340FC883204DAC8C007AEB0F /* OWSSoundSettingsViewController.m */,
 				340FC88F204DAC8C007AEB0F /* PrivacySettingsTableViewController.h */,
 				340FC87E204DAC8C007AEB0F /* PrivacySettingsTableViewController.m */,
+				344A761224B36C8C009D69A5 /* TestingViewController.swift */,
 			);
 			path = AppSettings;
 			sourceTree = "<group>";
@@ -4854,12 +4860,14 @@
 				34DBF004206BD5A500025978 /* OWSBubbleView.m in Sources */,
 				3496957021A301A100DCFE74 /* OWSBackupIO.m in Sources */,
 				8827004E23208A1900F01C46 /* AppearanceSettingsTableViewController.swift in Sources */,
+				344A761324B36C8C009D69A5 /* TestingViewController.swift in Sources */,
 				34E88D262098C5AE00A608F4 /* ContactViewController.swift in Sources */,
 				34AC0A23211C829F00997B47 /* OWSLabel.m in Sources */,
 				88F7EE93230253C5003ADF7D /* UsernameViewController.swift in Sources */,
 				34EA69422194DE8000702471 /* MediaUploadView.swift in Sources */,
 				76EB054018170B33006006FC /* AppDelegate.m in Sources */,
 				88D23D2C23CEC17400B0E74B /* CallAudioService.swift in Sources */,
+				344A761124B366F4009D69A5 /* FlagsViewController.swift in Sources */,
 				887889A52476E999001B5FCF /* OWSPinConfirmationViewController.swift in Sources */,
 				34D1F0831F8678AA0066283D /* ConversationInputTextView.m in Sources */,
 				346594802434D49F00E5C510 /* NewGroupState.swift in Sources */,

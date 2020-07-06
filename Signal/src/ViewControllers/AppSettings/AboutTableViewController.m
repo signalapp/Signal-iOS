@@ -143,6 +143,22 @@
 
     debugSection.headerTitle = @"Debug";
 
+    __weak AboutTableViewController *weakSelf = self;
+    [debugSection
+        addItem:[OWSTableItem disclosureItemWithText:@"Flags"
+                                         actionBlock:^{
+                                             UIViewController *flagsViewController = [FlagsViewController new];
+                                             [weakSelf.navigationController pushViewController:flagsViewController
+                                                                                      animated:YES];
+                                         }]];
+    [debugSection
+        addItem:[OWSTableItem disclosureItemWithText:@"Testing"
+                                         actionBlock:^{
+                                             UIViewController *testingViewController = [TestingViewController new];
+                                             [weakSelf.navigationController pushViewController:testingViewController
+                                                                                      animated:YES];
+                                         }]];
+
     NSString *environmentName = TSConstants.isUsingProductionService ? @"Production" : @"Staging";
     [debugSection
      addItem:[OWSTableItem labelItemWithText:[NSString stringWithFormat:@"Environment: %@", environmentName]]];

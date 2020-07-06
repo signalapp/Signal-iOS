@@ -93,7 +93,7 @@ public enum StorageModeStrictness: Int {
 /// By centralizing feature flags here and documenting their rollout plan, it's easier to review
 /// which feature flags are in play.
 @objc(SSKFeatureFlags)
-public class FeatureFlags: NSObject {
+public class FeatureFlags: BaseFlags {
 
     @objc
     public static var storageMode: StorageMode {
@@ -135,10 +135,10 @@ public class FeatureFlags: NSObject {
     public static let strictYDBExtensions = build.includes(.beta)
 
     @objc
-    public static var allowUUIDOnlyContacts = useOnlyModernContactDiscovery || groupsV2
+    public static let allowUUIDOnlyContacts = useOnlyModernContactDiscovery || groupsV2
 
     @objc
-    public static var uuidSafetyNumbers = allowUUIDOnlyContacts
+    public static let uuidSafetyNumbers = allowUUIDOnlyContacts
 
     @objc
     public static let useOnlyModernContactDiscovery = false
@@ -208,7 +208,7 @@ public class FeatureFlags: NSObject {
     public static let groupsV2SetCapability = groupsV2
 
     @objc
-    public static var groupsV2reapplyCurrentRevision = false
+    public static let groupsV2reapplyCurrentRevision = false
 
     @objc
     public static let linkedPhones = build.includes(.internalPreview)
@@ -233,12 +233,35 @@ public class FeatureFlags: NSObject {
 
     @objc
     public static let deviceTransferThrowAway = false
+
+    public static func buildFlagMap() -> [String: Any] {
+        BaseFlags.buildFlagMap(for: FeatureFlags.self) { (key: String) -> Any? in
+            FeatureFlags.value(forKey: key)
+        }
+    }
+
+    @objc
+    public static func logFlags() {
+        let logFlag = { (prefix: String, key: String, value: Any?) in
+            if let value = value {
+                Logger.info("\(prefix): \(key) = \(value)", function: "")
+            } else {
+                Logger.info("\(prefix): \(key) = nil", function: "")
+            }
+        }
+
+        let flagMap = buildFlagMap()
+        for key in Array(flagMap.keys).sorted() {
+            let value = flagMap[key]
+            logFlag("FeatureFlag", key, value)
+        }
+    }
 }
 
 /// Flags that we'll leave in the code base indefinitely that are helpful for
 /// development should go here, rather than cluttering up FeatureFlags.
 @objc(SSKDebugFlags)
-public class DebugFlags: NSObject {
+public class DebugFlags: BaseFlags {
     // DEBUG builds won't receive push notifications, which prevents receiving messages
     // while the app is backgrounded or the system call screen is active.
     //
@@ -247,7 +270,7 @@ public class DebugFlags: NSObject {
     public static let keepWebSocketOpenInBackground = false
 
     @objc
-    public static var audibleErrorLogging = build.includes(.qa)
+    public static let audibleErrorLogging = build.includes(.qa)
 
     @objc
     public static let verboseAboutView = build.includes(.qa)
@@ -263,8 +286,19 @@ public class DebugFlags: NSObject {
     public static let groupsV2IgnoreCapability = false
 
     // We can use this to test recovery from "missed updates".
+    private static let _groupsV2dontSendUpdates = AtomicBool(false)
     @objc
-    public static let groupsV2dontSendUpdates = false
+    public static var groupsV2dontSendUpdates: Bool {
+        get {
+            guard build.includes(.qa) else {
+                return false
+            }
+            return _groupsV2dontSendUpdates.get()
+        }
+        set {
+            _groupsV2dontSendUpdates.set(newValue)
+        }
+    }
 
     @objc
     public static let groupsV2showV2Indicator = FeatureFlags.groupsV2 && build.includes(.qa)
@@ -284,15 +318,26 @@ public class DebugFlags: NSObject {
     @objc
     public static let groupsV2IgnoreServerFlags = FeatureFlags.groupsV2 && build.includes(.qa)
 
-    // If set, this will invite instead of adding other users.
+    // If set, client will invite instead of adding other users.
+    private static let _groupsV2forceInvites = AtomicBool(false)
     @objc
-    public static let groupsV2forceInvites = false
+    public static var groupsV2forceInvites: Bool {
+        get {
+            guard build.includes(.qa) else {
+                return false
+            }
+            return _groupsV2forceInvites.get()
+        }
+        set {
+            _groupsV2forceInvites.set(newValue)
+        }
+    }
 
     @objc
-    public static var groupsV2memberStatusIndicators = FeatureFlags.groupsV2 && build.includes(.qa)
+    public static let groupsV2memberStatusIndicators = FeatureFlags.groupsV2 && build.includes(.qa)
 
     @objc
-    public static var groupsV2editMemberAccess = build.includes(.qa)
+    public static let groupsV2editMemberAccess = build.includes(.qa)
 
     @objc
     public static let isMessageProcessingVerbose = false
@@ -330,4 +375,50 @@ public class DebugFlags: NSObject {
     // all beta users, but not production.
     @objc
     public static let forceVersionedProfiles = build.includes(.beta)
+
+    public static func buildFlagMap() -> [String: Any] {
+        BaseFlags.buildFlagMap(for: DebugFlags.self) { (key: String) -> Any? in
+            DebugFlags.value(forKey: key)
+        }
+    }
+
+    @objc
+    public static func logFlags() {
+        let logFlag = { (prefix: String, key: String, value: Any?) in
+            if let value = value {
+                Logger.info("\(prefix): \(key) = \(value)", function: "")
+            } else {
+                Logger.info("\(prefix): \(key) = nil", function: "")
+            }
+        }
+
+        let flagMap = buildFlagMap()
+        for key in Array(flagMap.keys).sorted() {
+            let value = flagMap[key]
+            logFlag("DebugFlag", key, value)
+        }
+    }
+}
+
+// MARK: -
+
+@objc
+public class BaseFlags: NSObject {
+    static func buildFlagMap(for flagsClass: Any, flagFunc: (String) -> Any?) -> [String: Any] {
+        var result = [String: Any]()
+        var count: CUnsignedInt = 0
+        let methods = class_copyPropertyList(object_getClass(flagsClass), &count)!
+        for i in 0 ..< count {
+            let selector = property_getName(methods.advanced(by: Int(i)).pointee)
+            if let key = String(cString: selector, encoding: .utf8) {
+                guard !key.hasPrefix("_") else {
+                    continue
+                }
+                if let value = flagFunc(key) {
+                    result[key] = value
+                }
+            }
+        }
+        return result
+    }
 }
