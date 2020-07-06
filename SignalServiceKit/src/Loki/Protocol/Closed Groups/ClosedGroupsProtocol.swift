@@ -16,48 +16,43 @@ public final class ClosedGroupsProtocol : NSObject {
 
     /// - Note: It's recommended to batch fetch the device links for the given set of members before invoking this, to avoid the message sending pipeline
     /// making a request for each member.
-    public static func createClosedGroup(name: String, members membersAsSet: Set<String>, transaction: YapDatabaseReadWriteTransaction) -> TSGroupThread {
+    public static func createClosedGroup(name: String, members: Set<String>, transaction: YapDatabaseReadWriteTransaction) -> TSGroupThread {
         // Prepare
-        var membersAsSet = membersAsSet
+        var members = members
         let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
         let userPublicKey = getUserHexEncodedPublicKey()
         // Generate a key pair for the group
         let groupKeyPair = Curve25519.generateKeyPair()
         let groupPublicKey = groupKeyPair.hexEncodedPublicKey // Includes the "05" prefix
         // Ensure the current user's master device is the one that's included in the member list
-        membersAsSet.remove(userPublicKey)
-        membersAsSet.insert(UserDefaults.standard[.masterHexEncodedPublicKey] ?? userPublicKey)
-        // Create ratchets for all members (and their linked devices). The sorting that happens is needed because the receiving end assumes that the member
-        // list and sender key list are ordered the same.
-        var membersAndLinkedDevicesAsSet: Set<String> = []
-        for member in membersAsSet {
+        members.remove(userPublicKey)
+        members.insert(UserDefaults.standard[.masterHexEncodedPublicKey] ?? userPublicKey)
+        // Create ratchets for all members (and their linked devices)
+        var membersAndLinkedDevices: Set<String> = []
+        for member in members {
             let deviceLinks = OWSPrimaryStorage.shared().getDeviceLinks(for: member, in: transaction)
-            membersAndLinkedDevicesAsSet.formUnion(deviceLinks.flatMap { [ $0.master.hexEncodedPublicKey, $0.slave.hexEncodedPublicKey ] })
+            membersAndLinkedDevices.formUnion(deviceLinks.flatMap { [ $0.master.hexEncodedPublicKey, $0.slave.hexEncodedPublicKey ] })
         }
-        let members = [String](membersAsSet).sorted()
-        let membersAndLinkedDevices = [String](membersAndLinkedDevicesAsSet).sorted()
-        let ratchets = membersAndLinkedDevices.map {
-            SharedSenderKeysImplementation.shared.generateRatchet(for: groupPublicKey, senderPublicKey: $0, using: transaction)
+        let senderKeys: [ClosedGroupSenderKey] = membersAndLinkedDevices.map { publicKey in
+            let ratchet = SharedSenderKeysImplementation.shared.generateRatchet(for: groupPublicKey, senderPublicKey: publicKey, using: transaction)
+            return ClosedGroupSenderKey(chainKey: Data(hex: ratchet.chainKey), keyIndex: ratchet.keyIndex, publicKey: publicKey)
         }
         // Create the group
         let admins = [ UserDefaults.standard[.masterHexEncodedPublicKey] ?? userPublicKey ]
         let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
-        let group = TSGroupModel(title: name, memberIds: members, image: nil, groupId: groupID, groupType: .closedGroup, adminIds: admins)
+        let group = TSGroupModel(title: name, memberIds: [String](members), image: nil, groupId: groupID, groupType: .closedGroup, adminIds: admins)
         let thread = TSGroupThread.getOrCreateThread(with: group, transaction: transaction)
         thread.usesSharedSenderKeys = true
         thread.save(with: transaction)
         SSKEnvironment.shared.profileManager.addThread(toProfileWhitelist: thread)
         // Establish sessions if needed
-        establishSessionsIfNeeded(with: members, using: transaction) // Not `membersAndLinkedDevices` as this internally takes care of multi device already
+        establishSessionsIfNeeded(with: [String](members), using: transaction) // Not `membersAndLinkedDevices` as this internally takes care of multi device already
         // Send a closed group update message to all members (and their linked devices) using established channels
-        let senderKeys = zip(ratchets, membersAndLinkedDevices).map { ratchet, publicKey in
-            ClosedGroupSenderKey(chainKey: Data(hex: ratchet.chainKey), keyIndex: ratchet.keyIndex, senderPublicKey: publicKey)
-        }
         for member in members { // Not `membersAndLinkedDevices` as this internally takes care of multi device already
             let thread = TSContactThread.getOrCreateThread(withContactId: member, transaction: transaction)
             thread.save(with: transaction)
             let closedGroupUpdateMessageKind = ClosedGroupUpdateMessage.Kind.new(groupPublicKey: Data(hex: groupPublicKey), name: name,
-                groupPrivateKey: groupKeyPair.privateKey, senderKeys: senderKeys, members: members, admins: admins)
+                groupPrivateKey: groupKeyPair.privateKey, senderKeys: senderKeys, members: [String](members), admins: admins)
             let closedGroupUpdateMessage = ClosedGroupUpdateMessage(thread: thread, kind: closedGroupUpdateMessageKind)
             messageSenderJobQueue.add(message: closedGroupUpdateMessage, transaction: transaction)
         }
@@ -70,7 +65,7 @@ public final class ClosedGroupsProtocol : NSObject {
         return thread
     }
 
-    public static func addMembers(_ newMembersAsSet: Set<String>, to groupPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) {
+    public static func addMembers(_ newMembers: Set<String>, to groupPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) {
         // Prepare
         let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
         let groupID = LKGroupUtilities.getEncodedClosedGroupID(groupPublicKey)
@@ -85,32 +80,27 @@ public final class ClosedGroupsProtocol : NSObject {
         }
         // Add the members to the member list
         var members = group.groupMemberIds
-        members.append(contentsOf: newMembersAsSet)
-        // Generate ratchets for the new members (and their linked devices). The sorting that happens is needed because the receiving end assumes that the member
-        // list and sender key list are ordered the same.
-        var newMembersAndLinkedDevicesAsSet: Set<String> = []
-        for member in newMembersAsSet {
+        members.append(contentsOf: newMembers)
+        // Generate ratchets for the new members (and their linked devices)
+        var newMembersAndLinkedDevices: Set<String> = []
+        for member in newMembers {
             let deviceLinks = OWSPrimaryStorage.shared().getDeviceLinks(for: member, in: transaction)
-            newMembersAndLinkedDevicesAsSet.formUnion(deviceLinks.flatMap { [ $0.master.hexEncodedPublicKey, $0.slave.hexEncodedPublicKey ] })
+            newMembersAndLinkedDevices.formUnion(deviceLinks.flatMap { [ $0.master.hexEncodedPublicKey, $0.slave.hexEncodedPublicKey ] })
         }
-        members = members.sorted()
-        let newMembersAndLinkedDevices = [String](newMembersAndLinkedDevicesAsSet).sorted()
-        let ratchets = newMembersAndLinkedDevices.map {
-            SharedSenderKeysImplementation.shared.generateRatchet(for: groupPublicKey, senderPublicKey: $0, using: transaction)
+        let senderKeys: [ClosedGroupSenderKey] = newMembersAndLinkedDevices.map { publicKey in
+            let ratchet = SharedSenderKeysImplementation.shared.generateRatchet(for: groupPublicKey, senderPublicKey: publicKey, using: transaction)
+            return ClosedGroupSenderKey(chainKey: Data(hex: ratchet.chainKey), keyIndex: ratchet.keyIndex, publicKey: publicKey)
         }
         // Send a closed group update message to the existing members with the new members' ratchets (this message is aimed at the group)
-        let senderKeys = zip(ratchets, newMembersAndLinkedDevices).map { ratchet, publicKey in
-            ClosedGroupSenderKey(chainKey: Data(hex: ratchet.chainKey), keyIndex: ratchet.keyIndex, senderPublicKey: publicKey)
-        }
         let closedGroupUpdateMessageKind = ClosedGroupUpdateMessage.Kind.info(groupPublicKey: Data(hex: groupPublicKey), name: name, senderKeys: senderKeys,
             members: members, admins: admins)
         let closedGroupUpdateMessage = ClosedGroupUpdateMessage(thread: thread, kind: closedGroupUpdateMessageKind)
         messageSenderJobQueue.add(message: closedGroupUpdateMessage, transaction: transaction)
         // Establish sessions if needed
-        establishSessionsIfNeeded(with: [String](newMembersAsSet), using: transaction) // Not `newMembersAndLinkedDevices` as this internally takes care of multi device already
+        establishSessionsIfNeeded(with: [String](newMembers), using: transaction) // Not `newMembersAndLinkedDevices` as this internally takes care of multi device already
         // Send closed group update messages to the new members (and their linked devices) using established channels
         let allSenderKeys = [ClosedGroupSenderKey](Storage.getAllClosedGroupSenderKeys(for: groupPublicKey)) // This includes the newly generated sender keys
-        for member in newMembersAsSet { // Not `newMembersAndLinkedDevices` as this internally takes care of multi device already
+        for member in newMembers { // Not `newMembersAndLinkedDevices` as this internally takes care of multi device already
             let thread = TSContactThread.getOrCreateThread(contactId: member)
             thread.save(with: transaction)
             let closedGroupUpdateMessageKind = ClosedGroupUpdateMessage.Kind.new(groupPublicKey: Data(hex: groupPublicKey), name: name,
@@ -169,7 +159,7 @@ public final class ClosedGroupsProtocol : NSObject {
             establishSessionsIfNeeded(with: members, using: transaction) // This internally takes care of multi device
             // Send out the user's new ratchet to all members (minus the removed ones) and their linked devices using established channels
             let userRatchet = SharedSenderKeysImplementation.shared.generateRatchet(for: groupPublicKey, senderPublicKey: userPublicKey, using: transaction)
-            let userSenderKey = ClosedGroupSenderKey(chainKey: Data(hex: userRatchet.chainKey), keyIndex: userRatchet.keyIndex, senderPublicKey: userPublicKey)
+            let userSenderKey = ClosedGroupSenderKey(chainKey: Data(hex: userRatchet.chainKey), keyIndex: userRatchet.keyIndex, publicKey: userPublicKey)
             for member in members { // This internally takes care of multi device
                 let thread = TSContactThread.getOrCreateThread(withContactId: member, transaction: transaction)
                 thread.save(with: transaction)
@@ -210,9 +200,9 @@ public final class ClosedGroupsProtocol : NSObject {
         let members = closedGroupUpdate.members
         let admins = closedGroupUpdate.admins
         // Persist the ratchets
-        zip(members, senderKeys).forEach { (member, senderKey) in
+        senderKeys.forEach { senderKey in
             let ratchet = ClosedGroupRatchet(chainKey: senderKey.chainKey.toHexString(), keyIndex: UInt(senderKey.keyIndex), messageKeys: [])
-            Storage.setClosedGroupRatchet(for: groupPublicKey, senderPublicKey: member, ratchet: ratchet, using: transaction)
+            Storage.setClosedGroupRatchet(for: groupPublicKey, senderPublicKey: senderKey.publicKey, ratchet: ratchet, using: transaction)
         }
         // Create the group
         let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
@@ -259,7 +249,7 @@ public final class ClosedGroupsProtocol : NSObject {
         // Store the ratchets for any new members (it's important that this happens before the code below)
         senderKeys.forEach { senderKey in
             let ratchet = ClosedGroupRatchet(chainKey: senderKey.chainKey.toHexString(), keyIndex: UInt(senderKey.keyIndex), messageKeys: [])
-            Storage.setClosedGroupRatchet(for: groupPublicKey, senderPublicKey: senderKey.senderPublicKey, ratchet: ratchet, using: transaction)
+            Storage.setClosedGroupRatchet(for: groupPublicKey, senderPublicKey: senderKey.publicKey, ratchet: ratchet, using: transaction)
         }
         // Delete all ratchets and send out the user's new ratchet using established channels if any member of the group left or was removed
         let oldMembers = group.groupMemberIds
@@ -267,7 +257,7 @@ public final class ClosedGroupsProtocol : NSObject {
             Storage.removeAllClosedGroupRatchets(for: groupPublicKey, using: transaction)
             let userPublicKey = getUserHexEncodedPublicKey()
             let userRatchet = SharedSenderKeysImplementation.shared.generateRatchet(for: groupPublicKey, senderPublicKey: userPublicKey, using: transaction)
-            let userSenderKey = ClosedGroupSenderKey(chainKey: Data(hex: userRatchet.chainKey), keyIndex: userRatchet.keyIndex, senderPublicKey: userPublicKey)
+            let userSenderKey = ClosedGroupSenderKey(chainKey: Data(hex: userRatchet.chainKey), keyIndex: userRatchet.keyIndex, publicKey: userPublicKey)
             for member in members {
                 let thread = TSContactThread.getOrCreateThread(withContactId: member, transaction: transaction)
                 thread.save(with: transaction)

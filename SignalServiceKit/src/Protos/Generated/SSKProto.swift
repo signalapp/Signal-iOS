@@ -3293,13 +3293,13 @@ extension SSKProtoDataMessageLokiProfile.SSKProtoDataMessageLokiProfileBuilder {
 
     // MARK: - SSKProtoDataMessageClosedGroupUpdateSenderKeyBuilder
 
-    @objc public class func builder(chainKey: Data, keyIndex: UInt32, senderPublicKey: String) -> SSKProtoDataMessageClosedGroupUpdateSenderKeyBuilder {
-        return SSKProtoDataMessageClosedGroupUpdateSenderKeyBuilder(chainKey: chainKey, keyIndex: keyIndex, senderPublicKey: senderPublicKey)
+    @objc public class func builder(chainKey: Data, keyIndex: UInt32, publicKey: String) -> SSKProtoDataMessageClosedGroupUpdateSenderKeyBuilder {
+        return SSKProtoDataMessageClosedGroupUpdateSenderKeyBuilder(chainKey: chainKey, keyIndex: keyIndex, publicKey: publicKey)
     }
 
     // asBuilder() constructs a builder that reflects the proto's contents.
     @objc public func asBuilder() -> SSKProtoDataMessageClosedGroupUpdateSenderKeyBuilder {
-        let builder = SSKProtoDataMessageClosedGroupUpdateSenderKeyBuilder(chainKey: chainKey, keyIndex: keyIndex, senderPublicKey: senderPublicKey)
+        let builder = SSKProtoDataMessageClosedGroupUpdateSenderKeyBuilder(chainKey: chainKey, keyIndex: keyIndex, publicKey: publicKey)
         return builder
     }
 
@@ -3309,12 +3309,12 @@ extension SSKProtoDataMessageLokiProfile.SSKProtoDataMessageLokiProfileBuilder {
 
         @objc fileprivate override init() {}
 
-        @objc fileprivate init(chainKey: Data, keyIndex: UInt32, senderPublicKey: String) {
+        @objc fileprivate init(chainKey: Data, keyIndex: UInt32, publicKey: String) {
             super.init()
 
             setChainKey(chainKey)
             setKeyIndex(keyIndex)
-            setSenderPublicKey(senderPublicKey)
+            setPublicKey(publicKey)
         }
 
         @objc public func setChainKey(_ valueParam: Data) {
@@ -3325,8 +3325,8 @@ extension SSKProtoDataMessageLokiProfile.SSKProtoDataMessageLokiProfileBuilder {
             proto.keyIndex = valueParam
         }
 
-        @objc public func setSenderPublicKey(_ valueParam: String) {
-            proto.senderPublicKey = valueParam
+        @objc public func setPublicKey(_ valueParam: String) {
+            proto.publicKey = valueParam
         }
 
         @objc public func build() throws -> SSKProtoDataMessageClosedGroupUpdateSenderKey {
@@ -3344,16 +3344,16 @@ extension SSKProtoDataMessageLokiProfile.SSKProtoDataMessageLokiProfileBuilder {
 
     @objc public let keyIndex: UInt32
 
-    @objc public let senderPublicKey: String
+    @objc public let publicKey: String
 
     private init(proto: SignalServiceProtos_DataMessage.ClosedGroupUpdate.SenderKey,
                  chainKey: Data,
                  keyIndex: UInt32,
-                 senderPublicKey: String) {
+                 publicKey: String) {
         self.proto = proto
         self.chainKey = chainKey
         self.keyIndex = keyIndex
-        self.senderPublicKey = senderPublicKey
+        self.publicKey = publicKey
     }
 
     @objc
@@ -3377,10 +3377,10 @@ extension SSKProtoDataMessageLokiProfile.SSKProtoDataMessageLokiProfileBuilder {
         }
         let keyIndex = proto.keyIndex
 
-        guard proto.hasSenderPublicKey else {
-            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: senderPublicKey")
+        guard proto.hasPublicKey else {
+            throw SSKProtoError.invalidProtobuf(description: "\(logTag) missing required field: publicKey")
         }
-        let senderPublicKey = proto.senderPublicKey
+        let publicKey = proto.publicKey
 
         // MARK: - Begin Validation Logic for SSKProtoDataMessageClosedGroupUpdateSenderKey -
 
@@ -3389,7 +3389,7 @@ extension SSKProtoDataMessageLokiProfile.SSKProtoDataMessageLokiProfileBuilder {
         let result = SSKProtoDataMessageClosedGroupUpdateSenderKey(proto: proto,
                                                                    chainKey: chainKey,
                                                                    keyIndex: keyIndex,
-                                                                   senderPublicKey: senderPublicKey)
+                                                                   publicKey: publicKey)
         return result
     }
 

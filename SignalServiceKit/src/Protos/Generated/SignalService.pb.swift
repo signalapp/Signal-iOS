@@ -1604,14 +1604,14 @@ struct SignalServiceProtos_DataMessage {
       mutating func clearKeyIndex() {self._keyIndex = nil}
 
       /// @required
-      var senderPublicKey: String {
-        get {return _senderPublicKey ?? String()}
-        set {_senderPublicKey = newValue}
+      var publicKey: String {
+        get {return _publicKey ?? String()}
+        set {_publicKey = newValue}
       }
-      /// Returns true if `senderPublicKey` has been explicitly set.
-      var hasSenderPublicKey: Bool {return self._senderPublicKey != nil}
-      /// Clears the value of `senderPublicKey`. Subsequent reads from it will return its default value.
-      mutating func clearSenderPublicKey() {self._senderPublicKey = nil}
+      /// Returns true if `publicKey` has been explicitly set.
+      var hasPublicKey: Bool {return self._publicKey != nil}
+      /// Clears the value of `publicKey`. Subsequent reads from it will return its default value.
+      mutating func clearPublicKey() {self._publicKey = nil}
 
       var unknownFields = SwiftProtobuf.UnknownStorage()
 
@@ -1619,7 +1619,7 @@ struct SignalServiceProtos_DataMessage {
 
       fileprivate var _chainKey: Data? = nil
       fileprivate var _keyIndex: UInt32? = nil
-      fileprivate var _senderPublicKey: String? = nil
+      fileprivate var _publicKey: String? = nil
     }
 
     init() {}
@@ -4103,7 +4103,7 @@ extension SignalServiceProtos_DataMessage.ClosedGroupUpdate.SenderKey: SwiftProt
   static let _protobuf_nameMap: SwiftProtobuf._NameMap = [
     1: .same(proto: "chainKey"),
     2: .same(proto: "keyIndex"),
-    3: .same(proto: "senderPublicKey"),
+    3: .same(proto: "publicKey"),
   ]
 
   mutating func decodeMessage<D: SwiftProtobuf.Decoder>(decoder: inout D) throws {
@@ -4111,7 +4111,7 @@ extension SignalServiceProtos_DataMessage.ClosedGroupUpdate.SenderKey: SwiftProt
       switch fieldNumber {
       case 1: try decoder.decodeSingularBytesField(value: &self._chainKey)
       case 2: try decoder.decodeSingularUInt32Field(value: &self._keyIndex)
-      case 3: try decoder.decodeSingularStringField(value: &self._senderPublicKey)
+      case 3: try decoder.decodeSingularStringField(value: &self._publicKey)
       default: break
       }
     }
@@ -4124,7 +4124,7 @@ extension SignalServiceProtos_DataMessage.ClosedGroupUpdate.SenderKey: SwiftProt
     if let v = self._keyIndex {
       try visitor.visitSingularUInt32Field(value: v, fieldNumber: 2)
     }
-    if let v = self._senderPublicKey {
+    if let v = self._publicKey {
       try visitor.visitSingularStringField(value: v, fieldNumber: 3)
     }
     try unknownFields.traverse(visitor: &visitor)
@@ -4133,7 +4133,7 @@ extension SignalServiceProtos_DataMessage.ClosedGroupUpdate.SenderKey: SwiftProt
   static func ==(lhs: SignalServiceProtos_DataMessage.ClosedGroupUpdate.SenderKey, rhs: SignalServiceProtos_DataMessage.ClosedGroupUpdate.SenderKey) -> Bool {
     if lhs._chainKey != rhs._chainKey {return false}
     if lhs._keyIndex != rhs._keyIndex {return false}
-    if lhs._senderPublicKey != rhs._senderPublicKey {return false}
+    if lhs._publicKey != rhs._publicKey {return false}
     if lhs.unknownFields != rhs.unknownFields {return false}
     return true
   }

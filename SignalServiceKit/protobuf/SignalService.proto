@@ -250,11 +250,11 @@ message DataMessage {
 
     message SenderKey {
       // @required
-      optional bytes  chainKey        = 1;
+      optional bytes  chainKey  = 1;
       // @required
-      optional uint32 keyIndex        = 2;
+      optional uint32 keyIndex  = 2;
       // @required
-      optional string senderPublicKey = 3;
+      optional string publicKey = 3;
     }
 
     optional string    name            = 1;

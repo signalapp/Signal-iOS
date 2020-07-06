@@ -25,8 +25,8 @@ internal extension Storage {
         var result: Set<ClosedGroupSenderKey> = []
         read { transaction in
             transaction.enumerateRows(inCollection: collection) { key, object, _, _ in
-                guard let senderPublicKey = key as? String, let ratchet = object as? ClosedGroupRatchet else { return }
-                let senderKey = ClosedGroupSenderKey(chainKey: Data(hex: ratchet.chainKey), keyIndex: ratchet.keyIndex, senderPublicKey: senderPublicKey)
+                guard let publicKey = key as? String, let ratchet = object as? ClosedGroupRatchet else { return }
+                let senderKey = ClosedGroupSenderKey(chainKey: Data(hex: ratchet.chainKey), keyIndex: ratchet.keyIndex, publicKey: publicKey)
                 result.insert(senderKey)
             }
         }
