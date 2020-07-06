@@ -326,6 +326,7 @@ CREATE
             ,"familyName" TEXT
             ,"isUuidCapable" BOOLEAN NOT NULL DEFAULT 0
             ,"lastFetchDate" DOUBLE
+            ,"lastMessagingDate" DOUBLE
         )
 ;
 
@@ -336,8 +337,9 @@ CREATE
 ;
 
 CREATE
-    INDEX "index_model_OWSUserProfile_on_lastFetchDate"
+    INDEX "index_model_OWSUserProfile_on_lastFetchDate_and_lastMessagingDate"
         ON "model_OWSUserProfile"("lastFetchDate"
+    ,"lastMessagingDate"
 )
 ;
 
