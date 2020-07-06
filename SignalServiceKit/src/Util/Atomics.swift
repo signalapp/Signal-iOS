@@ -40,8 +40,7 @@ public class AtomicBool: NSObject {
 
     // Sets value to "toValue" IFF it currently has "fromValue",
     // otherwise throws.
-    @objc
-    public func transition(from fromValue: Bool, to toValue: Bool) throws {
+    private func transition(from fromValue: Bool, to toValue: Bool) throws {
         return try value.transition(from: fromValue, to: toValue)
     }
 
@@ -49,6 +48,16 @@ public class AtomicBool: NSObject {
     public func tryToSetFlag() -> Bool {
         do {
             try transition(from: false, to: true)
+            return true
+        } catch {
+            return false
+        }
+    }
+
+    @objc
+    public func tryToClearFlag() -> Bool {
+        do {
+            try transition(from: true, to: false)
             return true
         } catch {
             return false
