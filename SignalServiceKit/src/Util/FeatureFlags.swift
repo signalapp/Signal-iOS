@@ -176,7 +176,7 @@ public class FeatureFlags: BaseFlags {
     // on iPads, because we don't want to allow outgoing calls from an iPad until we're also ready
     // to receive them on iPad.
     @objc
-    public static let answerCallsOnSecondaryDevice: Bool = build.includes(.beta)
+    public static let answerCallsOnSecondaryDevice: Bool = true
 
     @objc
     public static let groupsV2 = build.includes(.qa)
