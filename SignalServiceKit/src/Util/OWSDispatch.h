@@ -11,6 +11,11 @@ NS_ASSUME_NONNULL_BEGIN
  */
 + (dispatch_queue_t)attachmentsQueue;
 
+@property (class, strong, nonatomic, readonly) dispatch_queue_t sharedUserInteractive;
+@property (class, strong, nonatomic, readonly) dispatch_queue_t sharedUserInitiated;
+@property (class, strong, nonatomic, readonly) dispatch_queue_t sharedUtility;
+@property (class, strong, nonatomic, readonly) dispatch_queue_t sharedBackground;
+
 @end
 
 NS_ASSUME_NONNULL_END
