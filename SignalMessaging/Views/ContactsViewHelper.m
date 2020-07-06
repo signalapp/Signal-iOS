@@ -93,6 +93,10 @@ NS_ASSUME_NONNULL_BEGIN
                                              selector:@selector(signalAccountsDidChange:)
                                                  name:OWSContactsManagerSignalAccountsDidChangeNotification
                                                object:nil];
+    [[NSNotificationCenter defaultCenter] addObserver:self
+                                             selector:@selector(profileWhitelistDidChange:)
+                                                 name:kNSNotificationNameProfileWhitelistDidChange
+                                               object:nil];
 }
 
 - (void)dealloc
@@ -101,6 +105,13 @@ NS_ASSUME_NONNULL_BEGIN
 }
 
 - (void)signalAccountsDidChange:(NSNotification *)notification
+{
+    OWSAssertIsOnMainThread();
+
+    [self updateContacts];
+}
+
+- (void)profileWhitelistDidChange:(NSNotification *)notification
 {
     OWSAssertIsOnMainThread();
 
@@ -211,7 +222,23 @@ NS_ASSUME_NONNULL_BEGIN
     NSMutableDictionary<NSString *, SignalAccount *> *phoneNumberSignalAccountMap = [NSMutableDictionary new];
     NSMutableDictionary<NSUUID *, SignalAccount *> *uuidSignalAccountMap = [NSMutableDictionary new];
     NSMutableArray<SignalAccount *> *signalAccounts = [NSMutableArray new];
-    for (SignalAccount *signalAccount in self.contactsManager.signalAccounts) {
+
+    NSMutableArray<SignalAccount *> *accountsToProcess = [self.contactsManager.signalAccounts mutableCopy];
+
+    __block NSArray<SignalServiceAddress *> *whitelistedAddresses;
+    [self.databaseStorage uiReadWithBlock:^(SDSAnyReadTransaction *transaction) {
+        whitelistedAddresses = [self.profileManager allWhitelistedRegisteredAddressesWithTransaction:transaction];
+    }];
+
+    for (SignalServiceAddress *address in whitelistedAddresses) {
+        if ([self.contactsManager isSystemContactWithAddress:address]) {
+            continue;
+        }
+
+        [accountsToProcess addObject:[[SignalAccount alloc] initWithSignalServiceAddress:address]];
+    }
+
+    for (SignalAccount *signalAccount in accountsToProcess) {
         if (![self isSignalAccountHidden:signalAccount]) {
             if (signalAccount.recipientPhoneNumber) {
                 phoneNumberSignalAccountMap[signalAccount.recipientPhoneNumber] = signalAccount;
@@ -222,9 +249,10 @@ NS_ASSUME_NONNULL_BEGIN
             [signalAccounts addObject:signalAccount];
         }
     }
+
     self.phoneNumberSignalAccountMap = [phoneNumberSignalAccountMap copy];
     self.uuidSignalAccountMap = [uuidSignalAccountMap copy];
-    self.signalAccounts = [signalAccounts copy];
+    self.signalAccounts = [signalAccounts sortedArrayUsingComparator:self.contactsManager.signalAccountComparator];
     self.nonSignalContacts = nil;
 
     // Don't fire delegate "change" events during initialization.
