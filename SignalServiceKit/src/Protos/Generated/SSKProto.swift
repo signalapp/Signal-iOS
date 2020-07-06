@@ -853,14 +853,12 @@ extension SSKProtoContent.SSKProtoContentBuilder {
 public enum SSKProtoCallMessageOfferType: Int32 {
     case offerAudioCall = 0
     case offerVideoCall = 1
-    case offerNeedPermission = 2
 }
 
 private func SSKProtoCallMessageOfferTypeWrap(_ value: SignalServiceProtos_CallMessage.Offer.TypeEnum) -> SSKProtoCallMessageOfferType {
     switch value {
     case .offerAudioCall: return .offerAudioCall
     case .offerVideoCall: return .offerVideoCall
-    case .offerNeedPermission: return .offerNeedPermission
     }
 }
 
@@ -868,7 +866,6 @@ private func SSKProtoCallMessageOfferTypeUnwrap(_ value: SSKProtoCallMessageOffe
     switch value {
     case .offerAudioCall: return .offerAudioCall
     case .offerVideoCall: return .offerVideoCall
-    case .offerNeedPermission: return .offerNeedPermission
     }
 }
 
@@ -1461,6 +1458,7 @@ public enum SSKProtoCallMessageHangupType: Int32 {
     case hangupAccepted = 1
     case hangupDeclined = 2
     case hangupBusy = 3
+    case hangupNeedPermission = 4
 }
 
 private func SSKProtoCallMessageHangupTypeWrap(_ value: SignalServiceProtos_CallMessage.Hangup.TypeEnum) -> SSKProtoCallMessageHangupType {
@@ -1469,6 +1467,7 @@ private func SSKProtoCallMessageHangupTypeWrap(_ value: SignalServiceProtos_Call
     case .hangupAccepted: return .hangupAccepted
     case .hangupDeclined: return .hangupDeclined
     case .hangupBusy: return .hangupBusy
+    case .hangupNeedPermission: return .hangupNeedPermission
     }
 }
 
@@ -1478,6 +1477,7 @@ private func SSKProtoCallMessageHangupTypeUnwrap(_ value: SSKProtoCallMessageHan
     case .hangupAccepted: return .hangupAccepted
     case .hangupDeclined: return .hangupDeclined
     case .hangupBusy: return .hangupBusy
+    case .hangupNeedPermission: return .hangupNeedPermission
     }
 }
 

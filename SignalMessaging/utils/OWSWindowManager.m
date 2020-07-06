@@ -283,7 +283,6 @@ const UIWindowLevel UIWindowLevel_ScreenBlocking(void)
 {
     OWSAssertIsOnMainThread();
     OWSAssertDebug(callViewController);
-    OWSAssertDebug(!self.callViewController);
 
     self.callViewController = callViewController;
 
