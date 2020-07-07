@@ -243,7 +243,7 @@ typedef struct {
 - (BOOL)isBorderless
 {
     if (self.hasBodyText) {
-        if (self.displayableBodyText.jumbomojiCount > 0) {
+        if (self.isJumbomoji) {
             return YES;
         } else {
             return NO;
@@ -252,6 +252,12 @@ typedef struct {
 
     return self.viewItem.mediaAlbumItems.count == 1
         && self.viewItem.mediaAlbumItems.firstObject.attachment.attachmentType == TSAttachmentTypeBorderless;
+}
+
+- (BOOL)isJumbomoji
+{
+    return self.viewItem.messageCellType == OWSMessageCellType_TextOnlyMessage && !self.viewItem.isQuotedReply
+        && self.displayableBodyText.jumbomojiCount > 0;
 }
 
 - (CGFloat)maxMediaMessageWidth
