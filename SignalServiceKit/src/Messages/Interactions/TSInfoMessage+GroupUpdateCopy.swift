@@ -1046,7 +1046,7 @@ extension GroupUpdateCopy {
         }
 
         // This might be zero if DMs are not enabled.
-        let durationString = NSString.formatDurationSeconds(newToken.durationSeconds, useShortFormat: false)
+        let durationString = newToken.durationString
 
         guard let oldToken = oldToken else {
             if newToken.isEnabled {

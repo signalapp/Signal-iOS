@@ -138,7 +138,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSString *)durationString
 {
-    return [NSString formatDurationSeconds:self.durationSeconds useShortFormat:NO];
+    return [NSString formatDurationLosslessWithDurationSeconds:self.durationSeconds];
 }
 
 - (BOOL)hasChangedWithTransaction:(SDSAnyReadTransaction *)transaction
