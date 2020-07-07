@@ -206,7 +206,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 }
 
-- (void)fetchAndUpdateLocalUsersProfile
+- (void)fetchLocalUsersProfile
 {
     // Do nothing.
 }
@@ -217,19 +217,19 @@ NS_ASSUME_NONNULL_BEGIN
     return [AnyPromise promiseWithValue:nil];
 }
 
-- (void)updateProfileForAddress:(nonnull SignalServiceAddress *)address
+- (void)fetchProfileForAddress:(nonnull SignalServiceAddress *)address
 {
     // Do nothing.
 }
 
-- (AnyPromise *)updateProfileForAddressPromise:(SignalServiceAddress *)address
+- (AnyPromise *)fetchProfileForAddressPromise:(SignalServiceAddress *)address
 {
     return [AnyPromise promiseWithValue:@(1)];
 }
 
-- (AnyPromise *)updateProfileForAddressPromise:(SignalServiceAddress *)address
-                                   mainAppOnly:(BOOL)mainAppOnly
-                              ignoreThrottling:(BOOL)ignoreThrottling
+- (AnyPromise *)fetchProfileForAddressPromise:(SignalServiceAddress *)address
+                                  mainAppOnly:(BOOL)mainAppOnly
+                             ignoreThrottling:(BOOL)ignoreThrottling
 {
     return [AnyPromise promiseWithValue:@(1)];
 }

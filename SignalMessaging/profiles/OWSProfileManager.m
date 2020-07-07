@@ -440,18 +440,18 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     });
 }
 
-- (void)fetchAndUpdateLocalUsersProfile
+- (void)fetchLocalUsersProfile
 {
     SignalServiceAddress *_Nullable localAddress = self.tsAccountManager.localAddress;
     if (!localAddress.isValid) {
         return;
     }
-    [self updateProfileForAddress:localAddress];
+    [self fetchProfileForAddress:localAddress];
 }
 
-- (void)updateProfileForAddress:(SignalServiceAddress *)address
+- (void)fetchProfileForAddress:(SignalServiceAddress *)address
 {
-    [ProfileFetcherJob fetchAndUpdateProfileWithAddress:address ignoreThrottling:YES];
+    [ProfileFetcherJob fetchProfileWithAddress:address ignoreThrottling:YES];
 }
 
 - (AnyPromise *)fetchLocalUsersProfilePromise
@@ -460,29 +460,27 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
     if (!localAddress.isValid) {
         return [AnyPromise promiseWithValue:OWSErrorMakeAssertionError(@"Missing local address.")];
     }
-    return [ProfileFetcherJob fetchAndUpdateProfilePromiseObjcWithAddress:localAddress
-                                                              mainAppOnly:NO
-                                                         ignoreThrottling:YES];
+    return [ProfileFetcherJob fetchProfilePromiseObjcWithAddress:localAddress mainAppOnly:NO ignoreThrottling:YES];
 }
 
-- (AnyPromise *)updateProfileForAddressPromise:(SignalServiceAddress *)address
+- (AnyPromise *)fetchProfileForAddressPromise:(SignalServiceAddress *)address
 {
-    return [ProfileFetcherJob fetchAndUpdateProfilePromiseObjcWithAddress:address mainAppOnly:NO ignoreThrottling:YES];
+    return [ProfileFetcherJob fetchProfilePromiseObjcWithAddress:address mainAppOnly:NO ignoreThrottling:YES];
 }
 
-- (AnyPromise *)updateProfileForAddressPromise:(SignalServiceAddress *)address
-                                   mainAppOnly:(BOOL)mainAppOnly
-                              ignoreThrottling:(BOOL)ignoreThrottling
+- (AnyPromise *)fetchProfileForAddressPromise:(SignalServiceAddress *)address
+                                  mainAppOnly:(BOOL)mainAppOnly
+                             ignoreThrottling:(BOOL)ignoreThrottling
 {
-    return [ProfileFetcherJob fetchAndUpdateProfilePromiseObjcWithAddress:address
-                                                              mainAppOnly:mainAppOnly
-                                                         ignoreThrottling:ignoreThrottling];
+    return [ProfileFetcherJob fetchProfilePromiseObjcWithAddress:address
+                                                     mainAppOnly:mainAppOnly
+                                                ignoreThrottling:ignoreThrottling];
 }
 
-- (void)fetchAndUpdateProfileForUsername:(NSString *)username
-                                 success:(void (^)(SignalServiceAddress *))success
-                                notFound:(void (^)(void))notFound
-                                 failure:(void (^)(NSError *))failure
+- (void)fetchProfileForUsername:(NSString *)username
+                        success:(void (^)(SignalServiceAddress *))success
+                       notFound:(void (^)(void))notFound
+                        failure:(void (^)(NSError *))failure
 {
     OWSAssertDebug(username.length > 0);
 
@@ -500,10 +498,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
             return;
         }
 
-        [ProfileFetcherJob fetchAndUpdateProfileWithUsername:username
-                                                     success:success
-                                                    notFound:notFound
-                                                     failure:failure];
+        [ProfileFetcherJob fetchProfileWithUsername:username success:success notFound:notFound failure:failure];
     });
 }
 
@@ -719,7 +714,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 
         // Fetch local profile.
         promise = promise.then(^(id value) {
-            [self fetchAndUpdateLocalUsersProfile];
+            [self fetchLocalUsersProfile];
 
             return @(1);
         });
@@ -1415,7 +1410,7 @@ const NSString *kNSNotificationKey_WasLocallyInitiated = @"kNSNotificationKey_Wa
 
                                   [self.udManager setUnidentifiedAccessMode:UnidentifiedAccessModeUnknown
                                                                     address:address];
-                                  [self updateProfileForAddress:address];
+                                  [self fetchProfileForAddress:address];
                               });
                           }];
 }

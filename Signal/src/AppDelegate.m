@@ -1236,7 +1236,7 @@ void uncaughtExceptionHandler(NSException *exception)
     [OWSOrphanDataCleaner auditOnLaunchIfNecessary];
 #endif
 
-    [self.profileManager fetchAndUpdateLocalUsersProfile];
+    [self.profileManager fetchLocalUsersProfile];
 
     [SignalApp.sharedApp ensureRootViewController:launchStartedAt];
 

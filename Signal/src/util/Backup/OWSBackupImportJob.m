@@ -173,7 +173,7 @@ NSString *const kOWSBackup_ImportDatabaseKeySpec = @"kOWSBackup_ImportDatabaseKe
             // Kick off lazy restore on main thread.
             [self.backupLazyRestore clearCompleteAndRunIfNecessary];
 
-            [self.profileManager fetchAndUpdateLocalUsersProfile];
+            [self.profileManager fetchLocalUsersProfile];
 
             // Make sure backup is enabled once we complete
             // a backup restore.

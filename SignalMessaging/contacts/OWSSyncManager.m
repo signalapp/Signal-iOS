@@ -521,9 +521,8 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
             OWSFailDebug(@"Unknown fetch latest type");
             break;
         case SSKProtoSyncMessageFetchLatestTypeLocalProfile: {
-            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
-                [self.profileManager fetchAndUpdateLocalUsersProfile];
-            });
+            dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0),
+                ^{ [self.profileManager fetchLocalUsersProfile]; });
             break;
         }
         case SSKProtoSyncMessageFetchLatestTypeStorageManifest:
