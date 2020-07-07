@@ -476,7 +476,7 @@ NSString *const OWSRequestKey_AuthKey = @"AuthKey";
     NSString *_Nullable registrationLockToken = [OWSKeyBackupService deriveRegistrationLockToken];
     if (registrationLockToken.length > 0 && OWS2FAManager.sharedManager.isRegistrationLockV2Enabled) {
         accountAttributes[@"registrationLock"] = registrationLockToken;
-    } else if (pin.length > 0 && OWS2FAManager.sharedManager.mode == OWS2FAMode_V1) {
+    } else if (pin.length > 0 && OWS2FAManager.sharedManager.mode != OWS2FAMode_V2) {
         accountAttributes[@"pin"] = pin;
     }
 
