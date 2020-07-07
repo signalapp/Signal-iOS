@@ -700,3 +700,25 @@ public extension OWSProfileManager {
         }
     }
 }
+
+// MARK: -
+
+extension OWSUserProfile {
+    #if TESTABLE_BUILD
+    func logDates(prefix: String) {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .short
+        formatter.timeStyle = .short
+
+        var lastFetchDateString = "nil"
+        if let lastFetchDate = lastFetchDate {
+            lastFetchDateString = formatter.string(from: lastFetchDate)
+        }
+        var lastMessagingDateString = "nil"
+        if let lastMessagingDate = lastMessagingDate {
+            lastMessagingDateString = formatter.string(from: lastMessagingDate)
+        }
+        Logger.verbose("\(prefix): \(address), lastFetchDate: \(lastFetchDateString), lastMessagingDate: \(lastMessagingDateString).")
+    }
+    #endif
+}

@@ -13,6 +13,7 @@
 #import "OWSMessageDecrypter.h"
 #import "OWSQueues.h"
 #import "OWSStorage.h"
+#import "ProfileManagerProtocol.h"
 #import "SSKEnvironment.h"
 #import "TSAccountManager.h"
 #import "TSErrorMessage.h"
@@ -326,9 +327,9 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
     return SDSDatabaseStorage.shared;
 }
 
-- (OWSProfileManager *)profileManager
+- (id<ProfileManagerProtocol>)profileManager
 {
-    return [OWSProfileManager sharedManager];
+    return SSKEnvironment.shared.profileManager;
 }
 
 #pragma mark - Notifications
@@ -473,7 +474,7 @@ NSString *const OWSMessageDecryptJobFinderExtensionGroup = @"OWSMessageProcessin
                                             wasReceivedByUD:wasReceivedByUD
                                                 transaction:transaction];
 
-            [self.profileManager didSendOrReceiveMessageFromAddress:sourceAddress transaction:transaction];
+            [self.profileManager didSendOrReceiveMessageFromAddress:result.sourceAddress transaction:transaction];
 
             dispatch_async(self.serialQueue, ^{
                 completion(YES);

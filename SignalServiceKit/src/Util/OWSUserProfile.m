@@ -645,6 +645,20 @@ NSUInteger const kUserProfileSchemaVersion = 1;
                  completion:nil];
 }
 
+#if TESTABLE_BUILD
+- (void)updateWithLastFetchDate:(NSDate *)lastFetchDate transaction:(SDSAnyWriteTransaction *)transaction
+{
+    // We use wasLocallyInitiated = NO because we don't need
+    // to sync lastMessagingDate to the storage service.
+    [self
+               applyChanges:^(OWSUserProfile *userProfile) { userProfile.lastFetchDate = lastFetchDate; }
+               functionName:__PRETTY_FUNCTION__
+        wasLocallyInitiated:NO
+                transaction:transaction
+                 completion:nil];
+}
+#endif
+
 // This should only be used in verbose, developer-only logs.
 - (NSString *)debugDescription
 {

@@ -150,6 +150,10 @@ NS_DESIGNATED_INITIALIZER NS_SWIFT_NAME(init(grdbId:uniqueId:avatarFileName:avat
 
 - (void)updateWithLastMessagingDate:(NSDate *)lastMessagingDate transaction:(SDSAnyWriteTransaction *)transaction;
 
+#if TESTABLE_BUILD
+- (void)updateWithLastFetchDate:(NSDate *)lastFetchDate transaction:(SDSAnyWriteTransaction *)transaction;
+#endif
+
 #pragma mark - Profile Avatars Directory
 
 + (NSString *)profileAvatarFilepathWithFilename:(NSString *)filename;

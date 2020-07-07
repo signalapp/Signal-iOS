@@ -21,6 +21,10 @@ public class BulkProfileFetch: NSObject {
         return SSKEnvironment.shared.reachabilityManager
     }
 
+    private var databaseStorage: SDSDatabaseStorage {
+        return .shared
+    }
+
     // MARK: - 
 
     private let serialQueue = DispatchQueue(label: "BulkProfileFetch")
@@ -62,9 +66,11 @@ public class BulkProfileFetch: NSObject {
 
         SwiftSingletons.register(self)
 
-        AppReadiness.runNowOrWhenAppDidBecomeReady {
-            // TODO: There would be benefit to trying to update
-            // missing & stale profiles on launch.
+        AppReadiness.runNowOrWhenAppDidBecomeReadyPolite {
+            // Try to update missing & stale profiles on launch.
+            DispatchQueue.global(qos: .utility).async {
+                self.fetchMissingAndStaleProfiles()
+            }
         }
 
         observeNotifications()
@@ -272,5 +278,35 @@ public class BulkProfileFetch: NSObject {
         }
 
         return elapsedSeconds >= minElapsedSeconds
+    }
+
+    private func fetchMissingAndStaleProfiles() {
+        databaseStorage.read(.promise) { (transaction: SDSAnyReadTransaction) -> [OWSUserProfile] in
+            let formatter = DateFormatter()
+            formatter.dateStyle = .short
+            formatter.timeStyle = .short
+
+            var userProfiles = [OWSUserProfile]()
+            let userProfileFinder = AnyUserProfileFinder()
+            userProfileFinder.enumerateMissingAndStaleUserProfiles(transaction: transaction) { (userProfile: OWSUserProfile) in
+                var lastFetchDateString = "nil"
+                if let lastFetchDate = userProfile.lastFetchDate {
+                    lastFetchDateString = formatter.string(from: lastFetchDate)
+                }
+                var lastMessagingDateString = "nil"
+                if let lastMessagingDate = userProfile.lastMessagingDate {
+                    lastMessagingDateString = formatter.string(from: lastMessagingDate)
+                }
+                Logger.verbose("Missing or stale profile: \(userProfile.address), lastFetchDate: \(lastFetchDateString), lastMessagingDate: \(lastMessagingDateString).")
+                userProfiles.append(userProfile)
+            }
+            return userProfiles
+        }.map(on: .global()) { (userProfiles: [OWSUserProfile]) -> Void in
+            let addresses: [SignalServiceAddress] = userProfiles.map { $0.address }
+            self.fetchAndUpdateProfiles(addresses: addresses)
+            Logger.verbose("Complete.")
+        }.catch(on: .global()) { (error: Error) -> Void in
+            owsFailDebug("Error: \(error)")
+        }
     }
 }
