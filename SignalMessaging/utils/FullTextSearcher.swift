@@ -321,8 +321,15 @@ public class FullTextSearcher: NSObject {
             owsFailDebug("localAddress was unexpectedly nil")
         }
 
+        // Filter out contact results with pending message requests.
+        var signalContacts = Array(signalContactMap.values).filter { (contactResult: ContactSearchResult) in
+            guard let thread = TSContactThread.getWithContactAddress(contactResult.recipientAddress, transaction: transaction) else {
+                // Do not filter out users with whom we've never had contact.
+                return true
+            }
+            return !thread.hasPendingMessageRequest(transaction: transaction.unwrapGrdbRead)
+        }
         // Order contact results by display name.
-        var signalContacts: [ContactSearchResult] = Array(signalContactMap.values)
         signalContacts.sort()
 
         // Order the conversation and message results in reverse chronological order.
