@@ -114,11 +114,11 @@ public final class MultiDeviceProtocol : NSObject {
     /// See [Multi Device Message Sending](https://github.com/loki-project/session-protocol-docs/wiki/Multi-Device-Message-Sending) for more information.
     @objc(sendMessageToDestinationAndLinkedDevices:transaction:)
     public static func sendMessageToDestinationAndLinkedDevices(_ messageSend: OWSMessageSend, in transaction: YapDatabaseReadTransaction) {
-        if !messageSend.isUDSend && messageSend.recipient.recipientId() != getUserHexEncodedPublicKey() {
-            #if DEBUG
-            preconditionFailure()
-            #endif
-        }
+//        if !messageSend.isUDSend && messageSend.recipient.recipientId() != getUserHexEncodedPublicKey() {
+//            #if DEBUG
+//            preconditionFailure()
+//            #endif
+//        }
         let message = messageSend.message
         let messageSender = SSKEnvironment.shared.messageSender
         if !isMultiDeviceRequired(for: message, to: messageSend.recipient.recipientId()) {
