@@ -40,6 +40,14 @@ func AssertIsOnUIDatabaseObserverSerialQueue() {
 @objc
 public class UIDatabaseObserver: NSObject {
 
+    // MARK: - Dependencies
+
+    private var tsAccountManager: TSAccountManager {
+        return .sharedInstance()
+    }
+
+    // MARK: -
+
     @objc
     public static let didUpdateUIDatabaseSnapshotNotification = Notification.Name("didUpdateUIDatabaseSnapshot")
 
@@ -369,6 +377,11 @@ extension UIDatabaseObserver: TransactionObserver {
     private func updateSnapshotIfNecessary() {
         AssertIsOnMainThread()
 
+        guard !tsAccountManager.isTransferInProgress else {
+            Logger.info("Skipping snapshot update; transfer in progress.")
+            return
+        }
+
         if let lastSnapshotUpdateDate = self.lastSnapshotUpdateDate {
             let secondsSinceLastUpdate = abs(lastSnapshotUpdateDate.timeIntervalSinceNow)
             // Don't update UI more often than Nx/second.
@@ -378,19 +391,10 @@ extension UIDatabaseObserver: TransactionObserver {
             }
         }
 
-        do {
-            // We only want to update the snapshot if we the flag needs to be cleared.
-            // This will throw AtomicError.invalidTransition if that flag isn't set.
-            try hasPendingSnapshotUpdate.transition(from: true, to: false)
-        } catch {
-            switch error {
-            case AtomicError.invalidTransition:
-                // If there's no new database changes, we don't need to update the snapshot.
-                return
-            default:
-                owsFailDebug("Error: \(error)")
-                return
-            }
+        // We only want to update the snapshot if the flag is set.
+        guard hasPendingSnapshotUpdate.tryToClearFlag() else {
+            // If there's no new database changes, we don't need to update the snapshot.
+            return
         }
 
         // Update the snapshot now.
@@ -589,7 +593,7 @@ extension UIDatabaseObserver: TransactionObserver {
         // See: https://www.sqlite.org/c3ref/wal_checkpoint_v2.html
         // See: https://www.sqlite.org/wal.html
         let shouldTryToCheckpoint = { () -> Bool in
-            guard !TSAccountManager.sharedInstance().isTransferInProgress else {
+            guard !tsAccountManager.isTransferInProgress else {
                 return false
             }
 

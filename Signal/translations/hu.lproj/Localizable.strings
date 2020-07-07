@@ -500,6 +500,9 @@
 /* Accessibility label for muting the microphone */
 "CALL_VIEW_MUTE_LABEL" = "Elnémítás";
 
+/* Error displayed on the 'call' view when the callee needs to grant permission before we can call them. Embeds {callee short name}. */
+"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ will get a message request from you. You can call once your message request is accepted.";
+
 /* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "Kamera váltás";
 
@@ -1662,7 +1665,7 @@
 "GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ eltávolította a csoport avatárt.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED" = "Csoport avatár frissítve.";
+"GROUP_UPDATED_AVATAR_UPDATED" = "The group photo was updated.";
 
 /* Message indicating that the group's avatar was changed. */
 "GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "Frissítetted a csoport avatárt.";
@@ -2181,7 +2184,7 @@
 "MESSAGE_STATUS_FAILED_SHORT" = "Sikertelen";
 
 /* Label indicating that a message was only sent to some recipients. */
-"MESSAGE_STATUS_PARTIALLY_SENT" = "Partially sent, tap for details";
+"MESSAGE_STATUS_PARTIALLY_SENT" = "Részlegesen elküldve, koppints a részletekért";
 
 /* status message for read messages */
 "MESSAGE_STATUS_READ" = "Elolvasva";
@@ -3090,13 +3093,13 @@
 "SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "Küldés ennek ellenére";
 
 /* Message for the 'safety number confirmation' view */
-"SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "The following people may have reinstalled or changed devices. Verify your safety number with them to ensure privacy.";
+"SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "A következő személyek lehet, hogy újratelepítették a Signalt vagy készüléket cseréltek. Ellenőrizd biztonsági számotokat a privacy biztosítása érdekében!";
 
 /* Text explaining that the given contact previously had their safety number verified. */
-"SAFETY_NUMBER_CONFIRMATION_PREVIOUSLY_VERIFIED" = "Previously Verified";
+"SAFETY_NUMBER_CONFIRMATION_PREVIOUSLY_VERIFIED" = "Már Ellenőrzött";
 
 /* Title for the 'safety number confirmation' view */
-"SAFETY_NUMBER_CONFIRMATION_TITLE" = "Safety Number Changes";
+"SAFETY_NUMBER_CONFIRMATION_TITLE" = "Biztonságiszám-változások";
 
 /* View safety number action for the 'safety number confirmation' view */
 "SAFETY_NUMBER_CONFIRMATION_VIEW_ACTION" = "Megtekintés";
@@ -3957,7 +3960,7 @@
 "UPDATE_GROUP_FAILED" = "A csoport frissítése sikertelen.";
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
-"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "A művelet végrehajtása sikertelen. Ellenőrizd a hálózati kapcsolatot és próbáld újra!";
+"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Group could not be updated. Check your internet connection and try again.";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "PIN létrehozása";

@@ -500,6 +500,9 @@
 /* Accessibility label for muting the microphone */
 "CALL_VIEW_MUTE_LABEL" = "השתק";
 
+/* Error displayed on the 'call' view when the callee needs to grant permission before we can call them. Embeds {callee short name}. */
+"CALL_VIEW_NEED_PERMISSION_ERROR_FORMAT" = "%@ will get a message request from you. You can call once your message request is accepted.";
+
 /* Accessibility label to toggle front- vs. rear-facing camera */
 "CALL_VIEW_SWITCH_CAMERA_DIRECTION" = "החלף כיוון מצלמה";
 
@@ -1662,7 +1665,7 @@
 "GROUP_UPDATED_AVATAR_REMOVED_BY_REMOTE_USER_FORMAT" = "%@ הסיר את התמונה.";
 
 /* Message indicating that the group's avatar was changed. */
-"GROUP_UPDATED_AVATAR_UPDATED" = "תמונת הקבוצה עודכנה.";
+"GROUP_UPDATED_AVATAR_UPDATED" = "The group photo was updated.";
 
 /* Message indicating that the group's avatar was changed. */
 "GROUP_UPDATED_AVATAR_UPDATED_BY_LOCAL_USER" = "עידכנת את התמונה.";
@@ -2181,7 +2184,7 @@
 "MESSAGE_STATUS_FAILED_SHORT" = "נכשל";
 
 /* Label indicating that a message was only sent to some recipients. */
-"MESSAGE_STATUS_PARTIALLY_SENT" = "Partially sent, tap for details";
+"MESSAGE_STATUS_PARTIALLY_SENT" = "נשלח חלקית, הקש לפרטים";
 
 /* status message for read messages */
 "MESSAGE_STATUS_READ" = "נקרא";
@@ -3090,13 +3093,13 @@
 "SAFETY_NUMBER_CHANGED_CONFIRM_SEND_ACTION" = "שלח בכל זאת";
 
 /* Message for the 'safety number confirmation' view */
-"SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "The following people may have reinstalled or changed devices. Verify your safety number with them to ensure privacy.";
+"SAFETY_NUMBER_CONFIRMATION_MESSAGE" = "האנשים הבאים ייתכן התקינו מחדש את היישום או שינו מכשירים. וודא את מספר הביטחון שלך איתם כדי להבטיח פרטיות.";
 
 /* Text explaining that the given contact previously had their safety number verified. */
-"SAFETY_NUMBER_CONFIRMATION_PREVIOUSLY_VERIFIED" = "Previously Verified";
+"SAFETY_NUMBER_CONFIRMATION_PREVIOUSLY_VERIFIED" = "וֻדָּא בעבר";
 
 /* Title for the 'safety number confirmation' view */
-"SAFETY_NUMBER_CONFIRMATION_TITLE" = "Safety Number Changes";
+"SAFETY_NUMBER_CONFIRMATION_TITLE" = "שינויי מספר ביטחון";
 
 /* View safety number action for the 'safety number confirmation' view */
 "SAFETY_NUMBER_CONFIRMATION_VIEW_ACTION" = "הצג";
@@ -3558,10 +3561,10 @@
 "SETTINGS_NAV_BAR_TITLE" = "הגדרות";
 
 /* When the local device discovers a contact has recently installed signal, the app can generates a message encouraging the local user to say hello. Turning this switch off disables that feature. */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "Count Muted Conversations";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_INCLUDES_MUTED_CONVERSATIONS" = "ספור שיחות מושתקות";
 
 /* table section header */
-"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "Badge Count";
+"SETTINGS_NOTIFICATION_BADGE_COUNT_TITLE" = "ספירת גשרים";
 
 /* table section footer */
 "SETTINGS_NOTIFICATION_CONTENT_DESCRIPTION" = "התראות של שיחות והודעות יכולות להופיע בזמן שהטלפון שלך נעול. אתה יכול להגביל מה ייראה בהתראות אלו.";
@@ -3957,7 +3960,7 @@
 "UPDATE_GROUP_FAILED" = "קבוצה לא יכלה להתעדכן.";
 
 /* Error indicating that a group could not be updated due to network connectivity problems. */
-"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "פעולה זאת לא יכלה להיות מושלמת. בדוק את חיבור האינטרנט שלך ונסה שוב.";
+"UPDATE_GROUP_FAILED_DUE_TO_NETWORK" = "Group could not be updated. Check your internet connection and try again.";
 
 /* Button to start a create pin flow from the one time splash screen that appears after upgrading */
 "UPGRADE_EXPERIENCE_INTRODUCING_PINS_CREATE_BUTTON" = "צור את ה־PIN שלך";
