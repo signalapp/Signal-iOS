@@ -388,6 +388,8 @@ void uncaughtExceptionHandler(NSException *exception)
                                                  name:NSNotificationName_2FAStateDidChange
                                                object:nil];
 
+    [OWSUUIDBackfillTask registerPostLaunchTaskWithCompletion:^{ OWSLogInfo(@"Finished backfill."); }];
+
     OWSLogInfo(@"application: didFinishLaunchingWithOptions completed.");
 
     OWSLogInfo(@"launchOptions: %@.", launchOptions);
