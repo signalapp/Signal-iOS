@@ -1,5 +1,5 @@
 //
-//  Copyright (c) 2019 Open Whisper Systems. All rights reserved.
+//  Copyright (c) 2020 Open Whisper Systems. All rights reserved.
 //
 
 import Foundation
@@ -63,7 +63,7 @@ public class DisappearingTimerConfigurationView: UIView {
         // Accessibility
         self.accessibilityLabel = NSLocalizedString("DISAPPEARING_MESSAGES_LABEL", comment: "Accessibility label for disappearing messages")
         let hintFormatString = NSLocalizedString("DISAPPEARING_MESSAGES_HINT", comment: "Accessibility hint that contains current timeout information")
-        let durationString = NSString.formatDurationSeconds(durationSeconds, useShortFormat: false)
+        let durationString = String.formatDurationLossless(durationSeconds: durationSeconds)
         self.accessibilityHint = String(format: hintFormatString, durationString)
 
         // Layout
@@ -90,7 +90,7 @@ public class DisappearingTimerConfigurationView: UIView {
             let location = gestureRecognizer.location(in: self)
             let isTouchUpInside = self.bounds.contains(location)
 
-            if (isTouchUpInside) {
+            if isTouchUpInside {
                 // Similar to a UIButton's touch-up-inside
                 self.delegate?.disappearingTimerConfigurationViewWasTapped(self)
             } else {

@@ -67,7 +67,7 @@ extension TSInfoMessage {
                                                                   updaterName: String?) -> String {
 
         // This might be zero if DMs are not enabled.
-        let durationString = NSString.formatDurationSeconds(newToken.durationSeconds, useShortFormat: false)
+        let durationString = newToken.durationString
 
         if wasAddedToExistingGroup {
             assert(newToken.isEnabled)
