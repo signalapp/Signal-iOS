@@ -17,6 +17,14 @@ public final class SyncMessagesProtocol : NSObject {
 
     internal static var storage: OWSPrimaryStorage { OWSPrimaryStorage.shared() }
 
+    // MARK: - Error
+
+    @objc(LKSyncMessagesProtocolError)
+    public class SyncMessagesProtocolError : NSError { // Not called `Error` for Obj-C interoperablity
+
+        @objc public static let privateKeyMissing = SyncMessagesProtocolError(domain: "SyncMessagesProtocolErrorDomain", code: 1, userInfo: [ NSLocalizedDescriptionKey : "Couldn't get private key for SSK based closed group." ])
+    }
+
     // MARK: - Sending
 
     @objc public static func syncProfile() {
@@ -57,6 +65,51 @@ public final class SyncMessagesProtocol : NSObject {
             return Promise(syncManager.syncContacts(for: friends)).map2 { _ in }
         }
         return AnyPromise.from(when(fulfilled: promises))
+    }
+
+    @objc(syncClosedGroup:transaction:)
+    public static func syncClosedGroup(_ thread: TSGroupThread, using transaction: YapDatabaseReadWriteTransaction) -> AnyPromise {
+        // Prepare
+        let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
+        let group = thread.groupModel
+        let groupPublicKey = LKGroupUtilities.getDecodedGroupID(group.groupId)
+        let name = group.groupName!
+        let members = group.groupMemberIds
+        let admins = group.groupAdminIds
+        guard let groupPrivateKey = Storage.getClosedGroupPrivateKey(for: groupPublicKey) else {
+            print("[Loki] Couldn't get private key for SSK based closed group.")
+            return AnyPromise.from(Promise<Void>(error: SyncMessagesProtocolError.privateKeyMissing))
+        }
+        // Generate ratchets for the user's linked devices
+        let userPublicKey = getUserHexEncodedPublicKey()
+        let masterPublicKey = UserDefaults.standard[.masterHexEncodedPublicKey] ?? userPublicKey
+        let deviceLinks = storage.getDeviceLinks(for: userPublicKey, in: transaction)
+        let linkedDevices = deviceLinks.flatMap { [ $0.master.hexEncodedPublicKey, $0.slave.hexEncodedPublicKey ] }.filter { $0 != userPublicKey }
+        let senderKeys: [ClosedGroupSenderKey] = linkedDevices.map { publicKey in
+            let ratchet = SharedSenderKeysImplementation.shared.generateRatchet(for: groupPublicKey, senderPublicKey: publicKey, using: transaction)
+            return ClosedGroupSenderKey(chainKey: Data(hex: ratchet.chainKey), keyIndex: ratchet.keyIndex, publicKey: publicKey)
+        }
+        // Send a closed group update message to the existing members with the linked devices' ratchets (this message is aimed at the group)
+        func sendMessageToGroup() {
+            let closedGroupUpdateMessageKind = ClosedGroupUpdateMessage.Kind.info(groupPublicKey: Data(hex: groupPublicKey), name: name, senderKeys: senderKeys,
+                members: members, admins: admins)
+            let closedGroupUpdateMessage = ClosedGroupUpdateMessage(thread: thread, kind: closedGroupUpdateMessageKind)
+            messageSenderJobQueue.add(message: closedGroupUpdateMessage, transaction: transaction)
+        }
+        sendMessageToGroup()
+        // Send closed group update messages to the linked devices using established channels
+        func sendMessageToLinkedDevices() {
+            let allSenderKeys = [ClosedGroupSenderKey](Storage.getAllClosedGroupSenderKeys(for: groupPublicKey)) // This includes the newly generated sender keys
+            let thread = TSContactThread.getOrCreateThread(withContactId: masterPublicKey, transaction: transaction)
+            thread.save(with: transaction)
+            let closedGroupUpdateMessageKind = ClosedGroupUpdateMessage.Kind.new(groupPublicKey: Data(hex: groupPublicKey), name: name,
+                groupPrivateKey: Data(hex: groupPrivateKey), senderKeys: allSenderKeys, members: members, admins: admins)
+            let closedGroupUpdateMessage = ClosedGroupUpdateMessage(thread: thread, kind: closedGroupUpdateMessageKind)
+            messageSenderJobQueue.add(message: closedGroupUpdateMessage, transaction: transaction) // This internally takes care of multi device
+        }
+        sendMessageToLinkedDevices()
+        // Return a dummy promise
+        return AnyPromise.from(Promise<Void> { $0.fulfill(()) })
     }
 
     @objc public static func syncAllClosedGroups() -> AnyPromise {

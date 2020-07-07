@@ -302,20 +302,28 @@ NSString *const kSyncManagerLastContactSyncKey = @"kTSStorageManagerOWSSyncManag
 
 - (AnyPromise *)syncGroupForThread:(TSGroupThread *)thread
 {
-    OWSSyncGroupsMessage *syncGroupsMessage = [[OWSSyncGroupsMessage alloc] initWithGroupThread:thread];
-    AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
-        [self.messageSender sendMessage:syncGroupsMessage
-            success:^{
-                OWSLogInfo(@"Successfully sent group sync message.");
-                resolve(@(1));
-            }
-            failure:^(NSError *error) {
-                OWSLogError(@"Failed to send group sync message due to error: %@.", error);
-                resolve(error);
-            }];
-    }];
-    [promise retainUntilComplete];
-    return promise;
+    if (thread.usesSharedSenderKeys) {
+        __block AnyPromise *promise;
+        [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
+            promise = [LKSyncMessagesProtocol syncClosedGroup:thread transaction:transaction];
+        } error:nil];
+        return promise;
+    } else {
+        OWSSyncGroupsMessage *syncGroupsMessage = [[OWSSyncGroupsMessage alloc] initWithGroupThread:thread];
+        AnyPromise *promise = [AnyPromise promiseWithResolverBlock:^(PMKResolver resolve) {
+            [self.messageSender sendMessage:syncGroupsMessage
+                success:^{
+                    OWSLogInfo(@"Successfully sent group sync message.");
+                    resolve(@(1));
+                }
+                failure:^(NSError *error) {
+                    OWSLogError(@"Failed to send group sync message due to error: %@.", error);
+                    resolve(error);
+                }];
+        }];
+        [promise retainUntilComplete];
+        return promise;
+    }
 }
 
 - (AnyPromise *)syncAllOpenGroups

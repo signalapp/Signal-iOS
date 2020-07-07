@@ -101,7 +101,7 @@ public final class ClosedGroupsProtocol : NSObject {
         // Send closed group update messages to the new members (and their linked devices) using established channels
         let allSenderKeys = [ClosedGroupSenderKey](Storage.getAllClosedGroupSenderKeys(for: groupPublicKey)) // This includes the newly generated sender keys
         for member in newMembers { // Not `newMembersAndLinkedDevices` as this internally takes care of multi device already
-            let thread = TSContactThread.getOrCreateThread(contactId: member)
+            let thread = TSContactThread.getOrCreateThread(withContactId: member, transaction: transaction)
             thread.save(with: transaction)
             let closedGroupUpdateMessageKind = ClosedGroupUpdateMessage.Kind.new(groupPublicKey: Data(hex: groupPublicKey), name: name,
                 groupPrivateKey: Data(hex: groupPrivateKey), senderKeys: allSenderKeys, members: members, admins: admins)

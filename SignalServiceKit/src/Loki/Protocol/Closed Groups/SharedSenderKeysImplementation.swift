@@ -124,6 +124,7 @@ public final class SharedSenderKeysImplementation : NSObject, SharedSenderKeysPr
         }
     }
 
+    // MARK: Public API
     @objc(encrypt:forGroupWithPublicKey:senderPublicKey:protocolContext:error:)
     public func encrypt(_ plaintext: Data, forGroupWithPublicKey groupPublicKey: String, senderPublicKey: String, protocolContext: Any) throws -> [Any] {
         let transaction = protocolContext as! YapDatabaseReadWriteTransaction
@@ -152,7 +153,7 @@ public final class SharedSenderKeysImplementation : NSObject, SharedSenderKeysPr
         let iv = ivAndCiphertext[0..<Int(SharedSenderKeysImplementation.ivSize)]
         let ciphertext = ivAndCiphertext[Int(SharedSenderKeysImplementation.ivSize)...]
         let gcm = GCM(iv: iv.bytes, tagLength: Int(SharedSenderKeysImplementation.gcmTagSize), mode: .combined)
-        let messageKey = ratchet.messageKeys.last!
+        guard let messageKey = ratchet.messageKeys.last else { throw RatchetingError.messageKeyMissing(targetKeyIndex: keyIndex, groupPublicKey: groupPublicKey, senderPublicKey: senderPublicKey) }
         let aes = try AES(key: Data(hex: messageKey).bytes, blockMode: gcm, padding: .noPadding)
         return Data(try aes.decrypt(ciphertext.bytes))
     }

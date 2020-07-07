@@ -543,10 +543,6 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         }
 
         [recipientIds addObject:recipientContactId];
-
-        if ([recipientIds containsObject:self.tsAccountManager.localNumber]) {
-            OWSFailDebug(@"Message send recipients should not include self.");
-        }
     } else {
         OWSFailDebug(@"Unknown message type: %@", [message class]);
         NSError *error = OWSErrorMakeFailedToSendOutgoingMessageError();
@@ -692,7 +688,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
 
     // In the "self-send" special case, we ony need to send a sync message with a delivery receipt
     // Loki: Take into account multi device
-    if ([LKSessionMetaProtocol isThreadNoteToSelf:thread] && !([message isKindOfClass:LKDeviceLinkMessage.class])) {
+    if ([LKSessionMetaProtocol isThreadNoteToSelf:thread]
+        && !([message isKindOfClass:LKDeviceLinkMessage.class]) && !([message isKindOfClass:LKClosedGroupUpdateMessage.class])) {
         // Don't mark self-sent messages as read (or sent) until the sync transcript is sent
         successHandler();
         return;
@@ -1135,7 +1132,7 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         if ([messageSend.thread isKindOfClass:TSGroupThread.class] && ((TSGroupThread *)messageSend.thread).usesSharedSenderKeys) {
             senderID = [LKGroupUtilities getDecodedGroupID:((TSGroupThread *)messageSend.thread).groupModel.groupId];
         } else {
-            [LKLogger print:@"Non-UD send"];
+            [LKLogger print:@"[Loki] Non-UD send"];
         }
         uint32_t senderDeviceID = type == SSKProtoEnvelopeTypeUnidentifiedSender ? 0 : OWSDevicePrimaryDeviceId;
         NSString *content = signalMessageInfo[@"content"];
@@ -1436,7 +1433,8 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         // Don't mark self-sent messages as read (or sent) until the sync transcript is sent
         // Loki: Take into account multi device
         BOOL isNoteToSelf = [LKSessionMetaProtocol isThreadNoteToSelf:message.thread];
-        if (isNoteToSelf && !([message isKindOfClass:LKDeviceLinkMessage.class])) {
+        if (isNoteToSelf && !([message isKindOfClass:LKDeviceLinkMessage.class])
+            && ![message isKindOfClass:LKClosedGroupUpdateMessage.class]) {
             [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
                 for (NSString *recipientId in message.sendingRecipientIds) {
                     [message updateWithReadRecipientId:recipientId readTimestamp:message.timestamp transaction:transaction];
