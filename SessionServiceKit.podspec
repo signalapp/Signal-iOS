@@ -38,11 +38,11 @@ A Swift/Objective-C library for communicating with the Session messaging service
 
   s.resources = ["SignalServiceKit/Resources/Certificates/*", "SignalServiceKit/src/Loki/Mnemonic/*.txt"]
 
-  s.dependency 'SessionCurve25519Kit', '~> 2.1.2'
+  s.dependency 'SessionCurve25519Kit', '~> 2.1.3'
   s.dependency 'CocoaLumberjack'
   s.dependency 'CryptoSwift', '~> 1.3'
   s.dependency 'AFNetworking'
-  s.dependency 'SessionAxolotlKit', '~> 1.0.2'
+  s.dependency 'SessionAxolotlKit', '~> 1.0.5'
   s.dependency 'Mantle'
   s.dependency 'YapDatabase/SQLCipher'
   s.dependency 'Starscream'
@@ -52,7 +52,7 @@ A Swift/Objective-C library for communicating with the Session messaging service
   s.dependency 'Reachability'
   s.dependency 'SwiftProtobuf', '~> 1.5.0'
   s.dependency 'SessionCoreKit', '~> 1.0.0'
-  s.dependency 'SessionMetadataKit', '~> 1.0.2'
+  s.dependency 'SessionMetadataKit', '~> 1.0.5'
   s.dependency 'PromiseKit', '~> 6.0'
 
   s.test_spec 'Tests' do |test_spec|

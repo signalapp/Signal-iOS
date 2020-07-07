@@ -162,7 +162,7 @@ final class LandingVC : BaseVC, LinkDeviceVCDelegate, DeviceLinkingModalDelegate
     
     func handleDeviceLinkingModalDismissed() {
         let appDelegate = UIApplication.shared.delegate as! AppDelegate
-        appDelegate.stopPollerIfNeeded()
+        appDelegate.stopPoller()
         TSAccountManager.sharedInstance().resetForReregistration()
     }
     

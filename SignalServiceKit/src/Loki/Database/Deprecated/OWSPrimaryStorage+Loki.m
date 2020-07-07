@@ -154,37 +154,6 @@
     [LKLogger print:[NSString stringWithFormat:@"[Loki] Removed pre key bundle from: %@.", hexEncodedPublicKey]];
 }
 
-# pragma mark - Last Message Hash
-
-#define LKLastMessageHashCollection @"LKLastMessageHashCollection"
-
-- (NSString *_Nullable)getLastMessageHashForSnode:(NSString *)snode transaction:(YapDatabaseReadWriteTransaction *)transaction {
-    NSDictionary *_Nullable dict = [transaction objectForKey:snode inCollection:LKLastMessageHashCollection];
-    if (dict == nil) { return nil; }
-    
-    NSString *_Nullable hash = dict[@"hash"];
-    if (hash == nil) { return nil; }
-    
-    // Check if the hash has expired
-    uint64_t now = NSDate.ows_millisecondTimeStamp;
-    NSNumber *_Nullable expiresAt = dict[@"expiresAt"];
-    if (expiresAt && expiresAt.unsignedLongLongValue <= now) {
-        [self removeLastMessageHashForSnode:snode transaction:transaction];
-        return nil;
-    }
-    
-    return hash;
-}
-
-- (void)setLastMessageHashForSnode:(NSString *)snode hash:(NSString *)hash expiresAt:(u_int64_t)expiresAt transaction:(YapDatabaseReadWriteTransaction *)transaction {
-    NSDictionary *dict = @{ @"hash" : hash, @"expiresAt": @(expiresAt) };
-    [transaction setObject:dict forKey:snode inCollection:LKLastMessageHashCollection];
-}
-
-- (void)removeLastMessageHashForSnode:(NSString *)snode transaction:(YapDatabaseReadWriteTransaction *)transaction {
-    [transaction removeObjectForKey:snode inCollection:LKLastMessageHashCollection];
-}
-
 # pragma mark - Open Groups
 
 #define LKMessageIDCollection @"LKMessageIDCollection"

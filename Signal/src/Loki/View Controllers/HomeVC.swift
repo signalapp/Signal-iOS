@@ -45,6 +45,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         result.register(ConversationCell.self, forCellReuseIdentifier: ConversationCell.reuseIdentifier)
         let bottomInset = Values.newConversationButtonBottomOffset + Values.newConversationButtonExpandedSize + Values.largeSpacing + Values.newConversationButtonCollapsedSize
         result.contentInset = UIEdgeInsets(top: 0, left: 0, bottom: bottomInset, right: 0)
+        result.showsVerticalScrollIndicator = false
         return result
     }()
 
@@ -148,6 +149,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
         if OWSIdentityManager.shared().identityKeyPair() != nil {
             let appDelegate = UIApplication.shared.delegate as! AppDelegate
             appDelegate.startPollerIfNeeded()
+            appDelegate.startClosedGroupPollerIfNeeded()
             appDelegate.startOpenGroupPollersIfNeeded()
         }
         // Populate onion request path countries cache
@@ -166,7 +168,7 @@ final class HomeVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UIScrol
                 publicKeys.insert(publicKey)
             }
         }
-        let _ = LokiFileServerAPI.getDeviceLinks(associatedWith: publicKeys)
+        let _ = FileServerAPI.getDeviceLinks(associatedWith: publicKeys)
         // Do initial update
         reload()
     }

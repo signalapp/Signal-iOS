@@ -66,8 +66,8 @@
     }
     // Build the device link message
     SSKProtoLokiDeviceLinkMessageBuilder *deviceLinkMessageBuilder = [SSKProtoLokiDeviceLinkMessage builder];
-    [deviceLinkMessageBuilder setMasterHexEncodedPublicKey:self.masterHexEncodedPublicKey];
-    [deviceLinkMessageBuilder setSlaveHexEncodedPublicKey:self.slaveHexEncodedPublicKey];
+    [deviceLinkMessageBuilder setMasterPublicKey:self.masterHexEncodedPublicKey];
+    [deviceLinkMessageBuilder setSlavePublicKey:self.slaveHexEncodedPublicKey];
     if (self.masterSignature != nil) { [deviceLinkMessageBuilder setMasterSignature:self.masterSignature]; }
     [deviceLinkMessageBuilder setSlaveSignature:self.slaveSignature];
     SSKProtoLokiDeviceLinkMessage *deviceLinkMessage = [deviceLinkMessageBuilder buildAndReturnError:&error];

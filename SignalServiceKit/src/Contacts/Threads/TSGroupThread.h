@@ -19,6 +19,7 @@ extern NSString *const TSGroupThread_NotificationKey_UniqueId;
 @property (nonatomic, strong) TSGroupModel *groupModel;
 @property (nonatomic, readonly) BOOL isRSSFeed;
 @property (nonatomic, readonly) BOOL isPublicChat;
+@property (nonatomic) BOOL usesSharedSenderKeys;
 
 + (instancetype)getOrCreateThreadWithGroupModel:(TSGroupModel *)groupModel;
 + (instancetype)getOrCreateThreadWithGroupModel:(TSGroupModel *)groupModel
@@ -38,14 +39,14 @@ extern NSString *const TSGroupThread_NotificationKey_UniqueId;
 
 - (BOOL)isLocalUserInGroup;
 - (BOOL)isCurrentUserInGroupWithTransaction:(YapDatabaseReadTransaction *)transaction;
-- (BOOL)isUserInGroup:(NSString *)hexEncodedPublicKey transaction:(YapDatabaseReadTransaction *)transaction;
+- (BOOL)isUserMemberInGroup:(NSString *)hexEncodedPublicKey transaction:(YapDatabaseReadTransaction *)transaction;
 - (BOOL)isUserAdminInGroup:(NSString *)hexEncodedPublicKey transaction:(YapDatabaseReadTransaction *)transaction;
 
 // all group threads containing recipient as a member
 + (NSArray<TSGroupThread *> *)groupThreadsWithRecipientId:(NSString *)recipientId
                                               transaction:(YapDatabaseReadWriteTransaction *)transaction;
 
-- (void)setGroupModel:(TSGroupModel *)newGroupModel withTransaction:(YapDatabaseReadTransaction *)transaction;
+- (void)setGroupModel:(TSGroupModel *)newGroupModel withTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 - (void)leaveGroupWithSneakyTransaction;
 - (void)leaveGroupWithTransaction:(YapDatabaseReadWriteTransaction *)transaction;
 

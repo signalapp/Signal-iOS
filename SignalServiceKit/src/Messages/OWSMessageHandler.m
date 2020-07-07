@@ -38,6 +38,8 @@ NSString *envelopeAddress(SSKProtoEnvelope *envelope)
             return @"UnidentifiedSender";
         case SSKProtoEnvelopeTypeFriendRequest:
             return @"LokiFriendRequest";
+        case SSKProtoEnvelopeTypeClosedGroupCiphertext:
+            return @"ClosedGroupCiphertext";
         default:
             // Shouldn't happen
             OWSProdFail([OWSAnalyticsEvents messageManagerErrorEnvelopeTypeOther]);

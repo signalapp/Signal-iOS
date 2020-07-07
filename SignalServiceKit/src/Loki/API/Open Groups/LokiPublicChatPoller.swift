@@ -8,7 +8,6 @@ public final class LokiPublicChatPoller : NSObject {
     private var pollForModeratorsTimer: Timer? = nil
     private var pollForDisplayNamesTimer: Timer? = nil
     private var hasStarted = false
-    private let userHexEncodedPublicKey = getUserHexEncodedPublicKey()
     
     // MARK: Settings
     private let pollForNewMessagesInterval: TimeInterval = 4
@@ -56,7 +55,7 @@ public final class LokiPublicChatPoller : NSObject {
     
     public func pollForNewMessages() -> Promise<Void> {
         let publicChat = self.publicChat
-        let userHexEncodedPublicKey = self.userHexEncodedPublicKey
+        let userHexEncodedPublicKey = getUserHexEncodedPublicKey()
         return LokiPublicChatAPI.getMessages(for: publicChat.channel, on: publicChat.server).done(on: DispatchQueue.global(qos: .default)) { messages in
             let uniqueHexEncodedPublicKeys = Set(messages.map { $0.hexEncodedPublicKey })
             func proceed() {
@@ -194,13 +193,13 @@ public final class LokiPublicChatPoller : NSObject {
                 return timeSinceLastUpdate > MultiDeviceProtocol.deviceLinkUpdateInterval
             }
             if !hexEncodedPublicKeysToUpdate.isEmpty {
-                LokiFileServerAPI.getDeviceLinks(associatedWith: hexEncodedPublicKeysToUpdate).done(on: DispatchQueue.global(qos: .default)) { _ in
+                FileServerAPI.getDeviceLinks(associatedWith: hexEncodedPublicKeysToUpdate).done(on: DispatchQueue.global(qos: .default)) { _ in
                     proceed()
                     hexEncodedPublicKeysToUpdate.forEach {
                         MultiDeviceProtocol.lastDeviceLinkUpdate[$0] = Date() // TODO: Doing this from a global queue seems a bit iffy
                     }
                 }.catch(on: DispatchQueue.global(qos: .default)) { error in
-                    if (error as? LokiDotNetAPI.LokiDotNetAPIError) == LokiDotNetAPI.LokiDotNetAPIError.parsingFailed {
+                    if (error as? DotNetAPI.DotNetAPIError) == DotNetAPI.DotNetAPIError.parsingFailed {
                         // Don't immediately re-fetch in case of failure due to a parsing error
                         hexEncodedPublicKeysToUpdate.forEach {
                             MultiDeviceProtocol.lastDeviceLinkUpdate[$0] = Date() // TODO: Doing this from a global queue seems a bit iffy

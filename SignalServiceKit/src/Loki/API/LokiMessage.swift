@@ -1,8 +1,8 @@
 import PromiseKit
 
 public struct LokiMessage {
-    /// The hex encoded public key of the receiver.
-    let destination: String
+    /// The hex encoded public key of the recipient.
+    let recipientPublicKey: String
     /// The content of the message.
     let data: LosslessStringConvertible
     /// The time to live for the message in milliseconds.
@@ -19,7 +19,7 @@ public struct LokiMessage {
     private(set) var nonce: String? = nil
     
     private init(destination: String, data: LosslessStringConvertible, ttl: UInt64, isPing: Bool) {
-        self.destination = destination
+        self.recipientPublicKey = destination
         self.data = data
         self.ttl = ttl
         self.isPing = isPing
@@ -31,7 +31,7 @@ public struct LokiMessage {
     public static func from(signalMessage: SignalMessage) -> LokiMessage? {
         // To match the desktop application, we have to wrap the data in an envelope and then wrap that in a websocket object
         do {
-            let wrappedMessage = try LokiMessageWrapper.wrap(message: signalMessage)
+            let wrappedMessage = try MessageWrapper.wrap(message: signalMessage)
             let data = wrappedMessage.base64EncodedString()
             let destination = signalMessage.recipientPublicKey
             var ttl = TTLUtilities.fallbackMessageTTL
@@ -52,20 +52,20 @@ public struct LokiMessage {
             DispatchQueue.global(qos: .userInitiated).async {
                 let now = NSDate.ows_millisecondTimeStamp()
                 let dataAsString = self.data as! String // Safe because of how from(signalMessage:with:) is implemented
-                if let nonce = ProofOfWork.calculate(data: dataAsString, pubKey: self.destination, timestamp: now, ttl: self.ttl) {
+                if let nonce = ProofOfWork.calculate(data: dataAsString, pubKey: self.recipientPublicKey, timestamp: now, ttl: self.ttl) {
                     var result = self
                     result.timestamp = now
                     result.nonce = nonce
                     seal.fulfill(result)
                 } else {
-                    seal.reject(LokiAPI.LokiAPIError.proofOfWorkCalculationFailed)
+                    seal.reject(SnodeAPI.SnodeAPIError.proofOfWorkCalculationFailed)
                 }
             }
         }
     }
     
     public func toJSON() -> JSON {
-        var result = [ "pubKey" : destination, "data" : data.description, "ttl" : String(ttl) ]
+        var result = [ "pubKey" : recipientPublicKey, "data" : data.description, "ttl" : String(ttl) ]
         if let timestamp = timestamp, let nonce = nonce {
             result["timestamp"] = String(timestamp)
             result["nonce"] = nonce

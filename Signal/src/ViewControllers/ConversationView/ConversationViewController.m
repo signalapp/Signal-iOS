@@ -1262,7 +1262,7 @@ typedef enum : NSUInteger {
 - (void)restoreSession {
     dispatch_async(dispatch_get_main_queue(), ^{
         [LKStorage writeSyncWithBlock:^(YapDatabaseReadWriteTransaction *transaction) {
-            [LKSessionManagementProtocol startSessionResetInThread:self.thread using:transaction];
+            [LKSessionManagementProtocol startSessionResetInThread:self.thread transaction:transaction];
         } error:nil];
     });
 }

@@ -60,7 +60,7 @@ public enum ProofOfWork {
     /// - Returns: A nonce string or `nil` if it failed
     public static func calculate(data: String, pubKey: String, timestamp: UInt64, ttl: UInt64) -> String? {
         let payload = createPayload(pubKey: pubKey, data: data, timestamp: timestamp, ttl: ttl)
-        let target = calcTarget(ttl: ttl, payloadLength: payload.count, nonceTrials: Int(LokiAPI.powDifficulty))
+        let target = calcTarget(ttl: ttl, payloadLength: payload.count, nonceTrials: Int(SnodeAPI.powDifficulty))
         
         // Start with the max value
         var trialValue = UInt64.max

@@ -22,7 +22,7 @@ final class NotificationServiceExtension : UNNotificationServiceExtension {
             // Modify the notification content here...
             let base64EncodedData = notificationContent.userInfo["ENCRYPTED_DATA"] as! String
             let data = Data(base64Encoded: base64EncodedData)!
-            let envelope = try? LokiMessageWrapper.unwrap(data: data)
+            let envelope = try? MessageWrapper.unwrap(data: data)
             let envelopeData = try? envelope?.serializedData()
             let decrypter = SSKEnvironment.shared.messageDecrypter
             if (envelope != nil && envelopeData != nil) {

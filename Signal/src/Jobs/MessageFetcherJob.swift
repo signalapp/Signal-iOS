@@ -199,7 +199,7 @@ public class MessageFetcherJob: NSObject {
     }
 
     private func fetchUndeliveredMessages() -> Promise<Set<Promise<[SSKProtoEnvelope]>>> {
-        return LokiAPI.getMessages()
+        return SnodeAPI.getMessages(for: getUserHexEncodedPublicKey())
     }
 
     private func acknowledgeDelivery(envelope: SSKProtoEnvelope) {

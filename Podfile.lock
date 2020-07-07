@@ -42,13 +42,13 @@ PODS:
   - PureLayout (3.1.6)
   - Reachability (3.2)
   - SAMKeychain (1.5.3)
-  - SessionAxolotlKit (1.0.2):
+  - SessionAxolotlKit (1.0.5):
     - CocoaLumberjack
     - SessionCoreKit (~> 1.0.0)
     - SessionCurve25519Kit (~> 2.1.2)
     - SessionHKDFKit (~> 0.0.5)
     - SwiftProtobuf (~> 1.5.0)
-  - SessionAxolotlKit/Tests (1.0.2):
+  - SessionAxolotlKit/Tests (1.0.5):
     - CocoaLumberjack
     - SessionCoreKit (~> 1.0.0)
     - SessionCurve25519Kit (~> 2.1.2)
@@ -60,10 +60,10 @@ PODS:
   - SessionCoreKit/Tests (1.0.0):
     - CocoaLumberjack
     - GRKOpenSSLFramework
-  - SessionCurve25519Kit (2.1.2):
+  - SessionCurve25519Kit (2.1.3):
     - CocoaLumberjack
     - SessionCoreKit (~> 1.0.0)
-  - SessionCurve25519Kit/Tests (2.1.2):
+  - SessionCurve25519Kit/Tests (2.1.3):
     - CocoaLumberjack
     - SessionCoreKit (~> 1.0.0)
   - SessionHKDFKit (0.0.5):
@@ -72,18 +72,18 @@ PODS:
   - SessionHKDFKit/Tests (0.0.5):
     - CocoaLumberjack
     - SessionCoreKit
-  - SessionMetadataKit (1.0.2):
+  - SessionMetadataKit (1.0.5):
     - CocoaLumberjack
     - CryptoSwift (~> 1.3)
-    - SessionAxolotlKit (~> 1.0.2)
+    - SessionAxolotlKit (~> 1.0.5)
     - SessionCoreKit (~> 1.0.0)
     - SessionCurve25519Kit (~> 2.1.2)
     - SessionHKDFKit (~> 0.0.5)
     - SwiftProtobuf (~> 1.5.0)
-  - SessionMetadataKit/Tests (1.0.2):
+  - SessionMetadataKit/Tests (1.0.5):
     - CocoaLumberjack
     - CryptoSwift (~> 1.3)
-    - SessionAxolotlKit (~> 1.0.2)
+    - SessionAxolotlKit (~> 1.0.5)
     - SessionCoreKit (~> 1.0.0)
     - SessionCurve25519Kit (~> 2.1.2)
     - SessionHKDFKit (~> 0.0.5)
@@ -98,10 +98,10 @@ PODS:
     - PromiseKit (~> 6.0)
     - Reachability
     - SAMKeychain
-    - SessionAxolotlKit (~> 1.0.2)
+    - SessionAxolotlKit (~> 1.0.5)
     - SessionCoreKit (~> 1.0.0)
-    - SessionCurve25519Kit (~> 2.1.2)
-    - SessionMetadataKit (~> 1.0.2)
+    - SessionCurve25519Kit (~> 2.1.3)
+    - SessionMetadataKit (~> 1.0.5)
     - Starscream
     - SwiftProtobuf (~> 1.5.0)
     - YapDatabase/SQLCipher
@@ -115,10 +115,10 @@ PODS:
     - PromiseKit (~> 6.0)
     - Reachability
     - SAMKeychain
-    - SessionAxolotlKit (~> 1.0.2)
+    - SessionAxolotlKit (~> 1.0.5)
     - SessionCoreKit (~> 1.0.0)
-    - SessionCurve25519Kit (~> 2.1.2)
-    - SessionMetadataKit (~> 1.0.2)
+    - SessionCurve25519Kit (~> 2.1.3)
+    - SessionMetadataKit (~> 1.0.5)
     - Starscream
     - SwiftProtobuf (~> 1.5.0)
     - YapDatabase/SQLCipher
@@ -277,19 +277,19 @@ CHECKOUT OPTIONS:
     :commit: b72c2d1e6132501db906de2cffa8ded7803c54f4
     :git: https://github.com/signalapp/Mantle
   SessionAxolotlKit:
-    :commit: 0338147cd5faefbb17e0bbf43cd008615ef64fe2
+    :commit: 27b63f4ecb890c38a78750e12d1569033074915b
     :git: https://github.com/loki-project/session-ios-protocol-kit.git
   SessionCoreKit:
     :commit: 0d66c90657b62cb66ecd2767c57408a951650f23
     :git: https://github.com/loki-project/session-ios-core-kit.git
   SessionCurve25519Kit:
-    :commit: ed4ae4576003905267d1573e336a003364564793
+    :commit: c3bc075d1e1c8339eebe2af184869de1a007d855
     :git: https://github.com/loki-project/session-ios-curve-25519-kit
   SessionHKDFKit:
     :commit: 0dcf8cf8a7995ef8663146f7063e6c1d7f5a3274
     :git: https://github.com/nielsandriesse/session-ios-hkdf-kit.git
   SessionMetadataKit:
-    :commit: bc6a425ac96dd6482b4e10df1eee1349153b2eca
+    :commit: bddba9ef2050af9a223f2698528776b6b80dc221
     :git: https://github.com/loki-project/session-ios-metadata-kit
   Starscream:
     :commit: b09ea163c3cb305152c65b299cb024610f52e735
@@ -312,15 +312,15 @@ SPEC CHECKSUMS:
   PureLayout: bd3c4ec3a3819ad387c99ebb72c6b129c3ed4d2d
   Reachability: 33e18b67625424e47b6cde6d202dce689ad7af96
   SAMKeychain: 483e1c9f32984d50ca961e26818a534283b4cd5c
-  SessionAxolotlKit: 88f72573df989042510d8a1737bd0c0057dda3da
+  SessionAxolotlKit: e6c39822a8ad68217966f02ce135291023938144
   SessionCoreKit: 778a3f6e3da788b43497734166646025b6392e88
-  SessionCurve25519Kit: cedc6c713f8182e6ee02bf9bd1b337552e00ebbb
+  SessionCurve25519Kit: 9bb9afe199e4bc23578a4b15932ad2c57bd047b1
   SessionHKDFKit: b0f4e669411703ab925aba07491c5611564d1419
-  SessionMetadataKit: 29d6b1c0f8dbe630ccddd73362b9eb3b1abc8a6d
-  SessionServiceKit: c792d64fc86aaa0f7325beaa36e1a9211a887359
+  SessionMetadataKit: f5d9cc78092f84f3940822506c14a381e79af9ff
+  SessionServiceKit: 0a50bd8482a0787a6f7134b4c0854a0a091535e8
   SQLCipher: e434ed542b24f38ea7b36468a13f9765e1b5c072
   SSZipArchive: 62d4947b08730e4cda640473b0066d209ff033c9
-  Starscream: ef3ece99d765eeccb67de105bfa143f929026cf5
+  Starscream: 8aaf1a7feb805c816d0e7d3190ef23856f6665b9
   SwiftProtobuf: 241400280f912735c1e1b9fe675fdd2c6c4d42e2
   YapDatabase: b418a4baa6906e8028748938f9159807fd039af4
   YYImage: 1e1b62a9997399593e4b9c4ecfbbabbf1d3f3b54

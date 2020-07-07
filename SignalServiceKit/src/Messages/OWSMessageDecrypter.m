@@ -283,6 +283,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                 // Return to avoid double-acknowledging.
                 return;
             }
+            case SSKProtoEnvelopeTypeClosedGroupCiphertext: // Loki: Fall through
             case SSKProtoEnvelopeTypeUnidentifiedSender: {
                 [self decryptUnidentifiedSender:envelope
                     successBlock:^(OWSMessageDecryptResult *result, YapDatabaseReadWriteTransaction *transaction) {
@@ -336,9 +337,9 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
     
     NSString *recipientId = envelope.source;
     ECKeyPair *identityKeyPair = self.identityManager.identityKeyPair;
-    FallBackSessionCipher *cipher = [[FallBackSessionCipher alloc] initWithRecipientId:recipientId privateKey:identityKeyPair.privateKey];
-    
-    NSData *_Nullable plaintextData = [[cipher decryptWithMessage:encryptedData] removePadding];
+    FallBackSessionCipher *cipher = [[FallBackSessionCipher alloc] initWithRecipientPublicKey:recipientId privateKey:identityKeyPair.privateKey];
+
+    NSData *_Nullable plaintextData = [[cipher decrypt:encryptedData] removePadding];
     if (!plaintextData) {
         NSString *errorString = [NSString stringWithFormat:@"Failed to decrypt friend request message from: %@.", recipientId];
         NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptMessage, errorString);
@@ -488,10 +489,11 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
         NSError *cipherError;
         SMKSecretSessionCipher *_Nullable cipher =
             [[SMKSecretSessionCipher alloc] initWithSessionResetImplementation:self.sessionResetImplementation
-                                                    sessionStore:self.primaryStorage
-                                                     preKeyStore:self.primaryStorage
-                                               signedPreKeyStore:self.primaryStorage
-                                                   identityStore:self.identityManager
+                                                                  sessionStore:self.primaryStorage
+                                                                   preKeyStore:self.primaryStorage
+                                                             signedPreKeyStore:self.primaryStorage
+                                                                 identityStore:self.identityManager
+                                                sharedSenderKeysImplementation:LKSharedSenderKeysImplementation.shared
                                                            error:&cipherError];
 
         if (cipherError || !cipher) {
@@ -503,6 +505,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
         NSError *decryptError;
         SMKDecryptResult *_Nullable decryptResult =
             [cipher throwswrapped_decryptMessageWithCertificateValidator:certificateValidator
+                                                         senderPublicKey:envelope.source
                                                           cipherTextData:encryptedData
                                                                timestamp:serverTimestamp
                                                         localRecipientId:localRecipientId
@@ -543,7 +546,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
 
                 identifiedEnvelope = [identifiedEnvelopeBuilder buildAndReturnError:&identifiedEnvelopeBuilderError];
                 if (identifiedEnvelopeBuilderError) {
-                    OWSFailDebug(@"failure identifiedEnvelopeBuilderError: %@", identifiedEnvelopeBuilderError);
+                    OWSFailDebug(@"identifiedEnvelopeBuilderError: %@", identifiedEnvelopeBuilderError);
                 }
             }
             OWSAssert(underlyingError);
@@ -596,7 +599,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
 
         long sourceDeviceId = decryptResult.senderDeviceId;
         if (sourceDeviceId < 1 || sourceDeviceId > UINT32_MAX) {
-            NSString *errorDescription = @"Invalid UD sender device id.";
+            NSString *errorDescription = @"Invalid UD sender device ID.";
             OWSFailDebug(@"%@", errorDescription);
             NSError *error = OWSErrorWithCodeDescription(OWSErrorCodeFailedToDecryptUDMessage, errorDescription);
             return failureBlock(error);
@@ -670,7 +673,7 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
         OWSAssertDebug(errorMessage);
         if (errorMessage != nil) {
             [errorMessage saveWithTransaction:transaction];
-            [LKSessionManagementProtocol handleDecryptionError:errorMessage.errorType forHexEncodedPublicKey:envelope.source using:transaction];
+            [LKSessionManagementProtocol handleDecryptionError:errorMessage.errorType forPublicKey:envelope.source transaction:transaction];
             [self notifyUserForErrorMessage:errorMessage envelope:envelope transaction:transaction];
         }
     } error:nil];
@@ -680,8 +683,8 @@ NSError *EnsureDecryptError(NSError *_Nullable error, NSString *fallbackErrorDes
                          envelope:(SSKProtoEnvelope *)envelope
                       transaction:(YapDatabaseReadWriteTransaction *)transaction
 {
-    NSString *hexEncodedPublicKey = [LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:envelope.source in:transaction] ?: envelope.source;
-    TSThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:hexEncodedPublicKey transaction:transaction];
+    NSString *masterPublicKey = [LKDatabaseUtilities getMasterHexEncodedPublicKeyFor:envelope.source in:transaction] ?: envelope.source;
+    TSThread *contactThread = [TSContactThread getOrCreateThreadWithContactId:masterPublicKey transaction:transaction];
     [SSKEnvironment.shared.notificationsManager notifyUserForErrorMessage:errorMessage
                                                                    thread:contactThread
                                                               transaction:transaction];

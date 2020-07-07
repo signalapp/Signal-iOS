@@ -4,7 +4,7 @@ import PromiseKit
 //
 // • Don't use a database transaction if you can avoid it.
 // • If you do need to use a database transaction, use a read transaction if possible.
-// • Consider making it the caller's responsibility to manage the database transaction (this helps avoid unnecessary transactions).
+// • For write transactions, consider making it the caller's responsibility to manage the database transaction (this helps avoid unnecessary transactions).
 // • Think carefully about adding a function; there might already be one for what you need.
 // • Document the expected cases in which a function will be used
 // • Express those cases in tests.

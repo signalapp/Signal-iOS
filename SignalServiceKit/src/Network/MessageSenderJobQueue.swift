@@ -186,10 +186,6 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
         return SSKEnvironment.shared.messageSender
     }
 
-    var dbConnection: YapDatabaseConnection {
-        return SSKEnvironment.shared.primaryStorage.dbReadWriteConnection
-    }
-
     // MARK: OWSOperation
 
     override public func run() {
@@ -199,6 +195,7 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
     override public func didSucceed() {
         try! Storage.writeSync { transaction in
             self.durableOperationDelegate?.durableOperationDidSucceed(self, transaction: transaction)
+
             if self.jobRecord.removeMessageAfterSending {
                 self.message.remove(with: transaction)
             }
@@ -232,6 +229,7 @@ public class MessageSenderOperation: OWSOperation, DurableOperation {
             self.durableOperationDelegate?.durableOperation(self, didFailWithError: error, transaction: transaction)
 
             self.message.update(sendingError: error, transaction: transaction)
+
             if self.jobRecord.removeMessageAfterSending {
                 self.message.remove(with: transaction)
             }

@@ -679,10 +679,10 @@ typedef NS_ENUM(NSInteger, HomeViewControllerSection) {
         [alert addAction:[UIAlertAction actionWithTitle:NSLocalizedString(@"OK", @"") style:UIAlertActionStyleDefault handler:^(UIAlertAction *action) {
             [ThreadUtil deleteAllContent];
             [SSKEnvironment.shared.identityManager clearIdentityKey];
-            [LKAPI clearSnodePool];
+            [LKSnodeAPI clearSnodePool];
             AppDelegate *appDelegate = (AppDelegate *)UIApplication.sharedApplication.delegate;
-            [appDelegate stopPollerIfNeeded];
-            [appDelegate stopOpenGroupPollersIfNeeded];
+            [appDelegate stopPoller];
+            [appDelegate stopOpenGroupPollers];
             [SSKEnvironment.shared.tsAccountManager resetForReregistration];
             UIViewController *rootViewController = [[OnboardingController new] initialViewController];
             OWSNavigationController *navigationController = [[OWSNavigationController alloc] initWithRootViewController:rootViewController];

@@ -19,16 +19,14 @@ NS_ASSUME_NONNULL_BEGIN
 - (nullable SSKProtoSyncMessageBuilder *)syncMessageBuilder
 {
     NSError *error;
-    NSMutableArray<SSKProtoSyncMessageOpenGroups *> *openGroupSyncMessages = @[].mutableCopy;
+    NSMutableArray<SSKProtoSyncMessageOpenGroupDetails *> *openGroupSyncMessages = @[].mutableCopy;
     __block NSDictionary<NSString *, LKPublicChat *> *openGroups;
     [OWSPrimaryStorage.sharedManager.dbReadConnection readWithBlock:^(YapDatabaseReadTransaction *transaction) {
         openGroups = [LKDatabaseUtilities getAllPublicChats:transaction];
     }];
     for (LKPublicChat *openGroup in openGroups.allValues) {
-        SSKProtoSyncMessageOpenGroupsBuilder *openGroupSyncMessageBuilder = [SSKProtoSyncMessageOpenGroups builder];
-        [openGroupSyncMessageBuilder setUrl:openGroup.server];
-        [openGroupSyncMessageBuilder setChannel:openGroup.channel];
-        SSKProtoSyncMessageOpenGroups *_Nullable openGroupSyncMessage = [openGroupSyncMessageBuilder buildAndReturnError:&error];
+        SSKProtoSyncMessageOpenGroupDetailsBuilder *openGroupSyncMessageBuilder = [SSKProtoSyncMessageOpenGroupDetails builderWithUrl:openGroup.server channelID:openGroup.channel];
+        SSKProtoSyncMessageOpenGroupDetails *_Nullable openGroupSyncMessage = [openGroupSyncMessageBuilder buildAndReturnError:&error];
         if (error || !openGroupSyncMessage) {
             OWSFailDebug(@"Couldn't build protobuf due to error: %@.", error);
             return nil;

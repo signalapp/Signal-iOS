@@ -286,7 +286,7 @@ NSString *const OWSReadReceiptManagerAreReadReceiptsEnabled = @"areReadReceiptsE
                 self.toLinkedDevicesReadReceiptMap[threadUniqueId] = newReadReceipt;
             }
 
-            if (![LKSessionMetaProtocol shouldSendReceiptForThread:message.thread]) {
+            if (![LKSessionMetaProtocol shouldSendReceiptInThread:message.thread]) {
                 return;
             }
             

@@ -36,7 +36,7 @@ internal final class SessionRequestMessage : TSOutgoingMessage {
             let preKeyBundleMessage = try preKeyBundleMessageBuilder.build()
             contentBuilder.setPrekeyBundleMessage(preKeyBundleMessage)
         } catch {
-            owsFailDebug("Failed to build pre key bundle message for: \(recipient.recipientId()) due to error: \(error).")
+            owsFailDebug("Failed to build session request message for: \(recipient.recipientId()) due to error: \(error).")
             return nil
         }
         // Return

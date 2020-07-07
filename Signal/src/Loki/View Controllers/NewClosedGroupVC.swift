@@ -1,5 +1,5 @@
 
-final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegate {
+final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegate, UITextFieldDelegate, UIScrollViewDelegate {
     private var selectedContacts: Set<String> = []
     
     private lazy var contacts: [String] = {
@@ -8,22 +8,22 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
         storage.dbReadConnection.read { transaction in
             TSContactThread.enumerateCollectionObjects(with: transaction) { object, _ in
                 guard let thread = object as? TSContactThread, thread.shouldThreadBeVisible && thread.isContactFriend else { return }
-                let hexEncodedPublicKey = thread.contactIdentifier()
-                guard UserDisplayNameUtilities.getPrivateChatDisplayName(for: hexEncodedPublicKey) != nil else { return }
+                let publicKey = thread.contactIdentifier()
+                guard UserDisplayNameUtilities.getPrivateChatDisplayName(for: publicKey) != nil else { return }
                 // We shouldn't be able to add slave devices to groups
-                guard storage.getMasterHexEncodedPublicKey(for: hexEncodedPublicKey, in: transaction) == nil else { return }
-                result.append(hexEncodedPublicKey)
+                guard storage.getMasterHexEncodedPublicKey(for: publicKey, in: transaction) == nil else { return }
+                result.append(publicKey)
             }
         }
         func getDisplayName(for hexEncodedPublicKey: String) -> String {
             return UserDisplayNameUtilities.getPrivateChatDisplayName(for: hexEncodedPublicKey) ?? "Unknown Contact"
         }
-        let userHexEncodedPublicKey = getUserHexEncodedPublicKey()
-        var linkedDeviceHexEncodedPublicKeys: Set<String> = [ userHexEncodedPublicKey ]
+        let userPublicKey = getUserHexEncodedPublicKey()
+        var userLinkedDevices: Set<String> = [ userPublicKey ]
         OWSPrimaryStorage.shared().dbReadConnection.read { transaction in
-            linkedDeviceHexEncodedPublicKeys = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: userHexEncodedPublicKey, in: transaction)
+            userLinkedDevices = LokiDatabaseUtilities.getLinkedDeviceHexEncodedPublicKeys(for: userPublicKey, in: transaction)
         }
-        result = result.filter { !linkedDeviceHexEncodedPublicKeys.contains($0) }
+        result = result.filter { !userLinkedDevices.contains($0) }
         result = result.sorted { getDisplayName(for: $0) < getDisplayName(for: $1) }
         return result
     }()
@@ -38,7 +38,7 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
         result.register(Cell.self, forCellReuseIdentifier: "Cell")
         result.separatorStyle = .none
         result.backgroundColor = .clear
-        result.showsVerticalScrollIndicator = false
+        result.isScrollEnabled = false
         return result
     }()
     
@@ -47,7 +47,7 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
         super.viewDidLoad()
         setUpGradientBackground()
         setUpNavBarStyle()
-        let customTitleFontSize = isIPhone5OrSmaller ? Values.largeFontSize : Values.veryLargeFontSize
+        let customTitleFontSize = Values.largeFontSize
         setNavBarTitle(NSLocalizedString("New Closed Group", comment: ""), customFontSize: customTitleFontSize)
         // Set up navigation bar buttons
         let closeButton = UIBarButtonItem(image: #imageLiteral(resourceName: "X"), style: .plain, target: self, action: #selector(close))
@@ -58,33 +58,29 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
         navigationItem.rightBarButtonItem = doneButton
         // Set up content
         if !contacts.isEmpty {
-            view.addSubview(nameTextField)
-            nameTextField.pin(.leading, to: .leading, of: view, withInset: Values.largeSpacing)
-            nameTextField.pin(.top, to: .top, of: view, withInset: Values.mediumSpacing)
-            nameTextField.pin(.trailing, to: .trailing, of: view, withInset: -Values.largeSpacing)
-            let explanationLabel = UILabel()
-            explanationLabel.textColor = Colors.text.withAlphaComponent(Values.unimportantElementOpacity)
-            explanationLabel.font = .systemFont(ofSize: Values.smallFontSize)
-            explanationLabel.text = NSLocalizedString("Closed groups support up to 10 members and provide the same privacy protections as one-on-one sessions.", comment: "")
-            explanationLabel.numberOfLines = 0
-            explanationLabel.textAlignment = .center
-            explanationLabel.lineBreakMode = .byWordWrapping
-            view.addSubview(explanationLabel)
-            explanationLabel.pin(.leading, to: .leading, of: view, withInset: Values.largeSpacing)
-            explanationLabel.pin(.top, to: .bottom, of: nameTextField, withInset: Values.mediumSpacing)
-            explanationLabel.pin(.trailing, to: .trailing, of: view, withInset: -Values.largeSpacing)
+            let mainStackView = UIStackView()
+            mainStackView.axis = .vertical
+            nameTextField.delegate = self
+            let nameTextFieldContainer = UIView()
+            nameTextFieldContainer.addSubview(nameTextField)
+            nameTextField.pin(.leading, to: .leading, of: nameTextFieldContainer, withInset: Values.largeSpacing)
+            nameTextField.pin(.top, to: .top, of: nameTextFieldContainer, withInset: Values.mediumSpacing)
+            nameTextFieldContainer.pin(.trailing, to: .trailing, of: nameTextField, withInset: Values.largeSpacing)
+            nameTextFieldContainer.pin(.bottom, to: .bottom, of: nameTextField, withInset: Values.largeSpacing)
+            mainStackView.addArrangedSubview(nameTextFieldContainer)
             let separator = UIView()
             separator.backgroundColor = Colors.separator
             separator.set(.height, to: Values.separatorThickness)
-            view.addSubview(separator)
-            separator.pin(.leading, to: .leading, of: view)
-            separator.pin(.top, to: .bottom, of: explanationLabel, withInset: Values.largeSpacing)
-            separator.pin(.trailing, to: .trailing, of: view)
-            view.addSubview(tableView)
-            tableView.pin(.leading, to: .leading, of: view)
-            tableView.pin(.top, to: .bottom, of: separator)
-            tableView.pin(.trailing, to: .trailing, of: view)
-            tableView.pin(.bottom, to: .bottom, of: view)
+            mainStackView.addArrangedSubview(separator)
+            tableView.set(.height, to: CGFloat(contacts.count * 67)) // A cell is exactly 67 points high
+            tableView.set(.width, to: UIScreen.main.bounds.width)
+            mainStackView.addArrangedSubview(tableView)
+            let scrollView = UIScrollView(wrapping: mainStackView, withInsets: UIEdgeInsets.zero)
+            scrollView.showsVerticalScrollIndicator = false
+            scrollView.delegate = self
+            view.addSubview(scrollView)
+            scrollView.set(.width, to: UIScreen.main.bounds.width)
+            scrollView.pin(to: view)
         } else {
             let explanationLabel = UILabel()
             explanationLabel.textColor = Colors.text
@@ -122,6 +118,22 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
     }
     
     // MARK: Interaction
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        crossfadeLabel.text = textField.text!.isEmpty ? NSLocalizedString("New Closed Group", comment: "") : textField.text!
+    }
+
+    func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        if nameTextField.isFirstResponder {
+            nameTextField.resignFirstResponder()
+        }
+        let nameTextFieldCenterY = nameTextField.convert(nameTextField.bounds.center, to: scrollView).y
+        let tableViewOriginY = tableView.convert(tableView.bounds.origin, to: scrollView).y
+        let titleLabelAlpha = 1 - (scrollView.contentOffset.y - nameTextFieldCenterY) / (tableViewOriginY - nameTextFieldCenterY)
+        let crossfadeLabelAlpha = 1 - titleLabelAlpha
+        navBarTitleLabel.alpha = titleLabelAlpha
+        crossfadeLabel.alpha = crossfadeLabelAlpha
+    }
+
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let contact = contacts[indexPath.row]
         if !selectedContacts.contains(contact) {
@@ -139,6 +151,47 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
     }
     
     @objc private func createClosedGroup() {
+        if ClosedGroupsProtocol.isSharedSenderKeysEnabled {
+            createSSKClosedGroup()
+        } else {
+            createLegacyClosedGroup()
+        }
+    }
+
+    private func createSSKClosedGroup() {
+        func showError(title: String, message: String = "") {
+            let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
+            presentAlert(alert)
+        }
+        guard let name = nameTextField.text?.trimmingCharacters(in: .whitespacesAndNewlines), name.count > 0 else {
+            return showError(title: NSLocalizedString("Please enter a group name", comment: ""))
+        }
+        guard name.count < 64 else {
+            return showError(title: NSLocalizedString("Please enter a shorter group name", comment: ""))
+        }
+        guard selectedContacts.count >= 2 else {
+            return showError(title: NSLocalizedString("Please pick at least 2 group members", comment: ""))
+        }
+        guard selectedContacts.count <= 20 else {
+            return showError(title: NSLocalizedString("A closed group cannot have more than 20 members", comment: ""))
+        }
+        let selectedContacts = self.selectedContacts
+        ModalActivityIndicatorViewController.present(fromViewController: navigationController!, canCancel: false) { [weak self] _ in
+            let _ = FileServerAPI.getDeviceLinks(associatedWith: selectedContacts).ensure2 {
+                var thread: TSGroupThread!
+                try! Storage.writeSync { transaction in
+                    thread = ClosedGroupsProtocol.createClosedGroup(name: name, members: selectedContacts, transaction: transaction)
+                }
+                DispatchQueue.main.async {
+                    self?.presentingViewController?.dismiss(animated: true, completion: nil)
+                    SignalApp.shared().presentConversation(for: thread, action: .compose, animated: false)
+                }
+            }
+        }
+    }
+
+    private func createLegacyClosedGroup() {
         func showError(title: String, message: String = "") {
             let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
             alert.addAction(UIAlertAction(title: NSLocalizedString("OK", comment: ""), style: .default, handler: nil))
@@ -156,14 +209,14 @@ final class NewClosedGroupVC : BaseVC, UITableViewDataSource, UITableViewDelegat
         guard selectedContacts.count <= 10 else {
             return showError(title: NSLocalizedString("A closed group cannot have more than 10 members", comment: ""))
         }
-        let userHexEncodedPublicKey = getUserHexEncodedPublicKey()
+        let userPublicKey = getUserHexEncodedPublicKey()
         let storage = OWSPrimaryStorage.shared()
-        var masterHexEncodedPublicKey = ""
+        var masterPublicKey = ""
         storage.dbReadConnection.read { transaction in
-            masterHexEncodedPublicKey = storage.getMasterHexEncodedPublicKey(for: userHexEncodedPublicKey, in: transaction) ?? userHexEncodedPublicKey
+            masterPublicKey = storage.getMasterHexEncodedPublicKey(for: userPublicKey, in: transaction) ?? userPublicKey
         }
-        let members = selectedContacts + [ masterHexEncodedPublicKey ]
-        let admins = [ masterHexEncodedPublicKey ]
+        let members = selectedContacts + [ masterPublicKey ]
+        let admins = [ masterPublicKey ]
         let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(Randomness.generateRandomBytes(kGroupIdLength)!.toHexString())
         let group = TSGroupModel(title: name, memberIds: members, image: nil, groupId: groupID, groupType: .closedGroup, adminIds: admins)
         let thread = TSGroupThread.getOrCreateThread(with: group)

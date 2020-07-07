@@ -16,13 +16,14 @@ option java_outer_classname = "SignalServiceProtos";
 
 message Envelope {
   enum Type {
-    UNKNOWN             = 0;
-    CIPHERTEXT          = 1;
-    KEY_EXCHANGE        = 2;
-    PREKEY_BUNDLE       = 3;
-    RECEIPT             = 5;
-    UNIDENTIFIED_SENDER = 6;
-    FRIEND_REQUEST      = 101; // Loki: Contains prekeys and a message; uses simple encryption
+    UNKNOWN                 = 0;
+    CIPHERTEXT              = 1;
+    KEY_EXCHANGE            = 2;
+    PREKEY_BUNDLE           = 3;
+    RECEIPT                 = 5;
+    UNIDENTIFIED_SENDER     = 6;
+    CLOSED_GROUP_CIPHERTEXT = 7; // Loki
+    FRIEND_REQUEST          = 101; // Loki: Contains pre keys and a message; uses simple encryption
   }
 
   // @required
@@ -38,10 +39,6 @@ message Envelope {
   optional string serverGuid      = 9;
   // We may eventually want to make this required.
   optional uint64 serverTimestamp = 10;
-
-  // Loki: This field is only here as a helper
-  // It shouldn't be set when sending a message
-  optional bool isPtpMessage = 999;
 }
 
 message TypingMessage {
@@ -65,7 +62,6 @@ message Content {
   optional ReceiptMessage           receiptMessage        = 5;
   optional TypingMessage            typingMessage         = 6;
   optional PrekeyBundleMessage      prekeyBundleMessage   = 101; // Loki
-  optional LokiAddressMessage       lokiAddressMessage    = 102; // Loki
   optional LokiDeviceLinkMessage    lokiDeviceLinkMessage = 103; // Loki
 }
 
@@ -79,24 +75,17 @@ message PrekeyBundleMessage { // Loki
   optional bytes  signature   = 7;
 }
 
-message LokiAddressMessage { // Loki
-  // The naming is a bit different from desktop because of swift auto generation
-  // It doesn't like p2p much :(
-  optional string ptpAddress  = 1;
-  optional uint32 ptpPort     = 2;
-}
-
 message LokiDeviceLinkMessage { // Loki
-  optional string masterHexEncodedPublicKey = 1;
-  optional string slaveHexEncodedPublicKey  = 2;
-  optional bytes  slaveSignature            = 3;
-  optional bytes  masterSignature           = 4;
+  optional string masterPublicKey = 1;
+  optional string slavePublicKey  = 2;
+  optional bytes  slaveSignature  = 3;
+  optional bytes  masterSignature = 4;
 }
 
 message CallMessage {
   message Offer {
     // @required
-    optional uint64 id          = 1;
+    optional uint64 id = 1;
     // Signal-iOS renamed the description field to avoid
     // conflicts with [NSObject description].
     // @required
@@ -105,7 +94,7 @@ message CallMessage {
 
   message Answer {
     // @required
-    optional uint64 id          = 1;
+    optional uint64 id = 1;
     // Signal-iOS renamed the description field to avoid
     // conflicts with [NSObject description].
     // @required
@@ -247,24 +236,51 @@ message DataMessage {
     optional AttachmentPointer image = 3;
   }
 
-  // Loki: A custom message for our profile
-  message LokiProfile {
+  message LokiProfile { // Loki
     optional string displayName = 1;
     optional string profilePicture = 2;
   }
 
-  optional string             body        = 1;
-  repeated AttachmentPointer  attachments = 2;
-  optional GroupContext       group       = 3;
-  optional uint32             flags       = 4;
-  optional uint32             expireTimer = 5;
-  optional bytes              profileKey  = 6;
-  optional uint64             timestamp   = 7;
-  optional Quote              quote       = 8;
-  repeated Contact            contact     = 9;
-  repeated Preview            preview     = 10;
-  optional LokiProfile        profile     = 101; // Loki: The current user's profile
-  optional PublicChatInfo     publicChatInfo = 999; // Loki: Internal public chat info
+  message ClosedGroupUpdate { // Loki
+    enum Type {
+      NEW        = 0; // groupPublicKey, name, groupPrivateKey, senderKeys, members, admins
+      INFO       = 1; // groupPublicKey, name, senderKeys, members, admins
+      SENDER_KEY = 2; // groupPublicKey, senderKeys
+    }
+
+    message SenderKey {
+      // @required
+      optional bytes  chainKey  = 1;
+      // @required
+      optional uint32 keyIndex  = 2;
+      // @required
+      optional string publicKey = 3;
+    }
+
+    optional string    name            = 1;
+    // @required
+    optional bytes     groupPublicKey  = 2;
+    optional bytes     groupPrivateKey = 3;
+    repeated SenderKey senderKeys      = 4;
+    repeated string    members         = 5;
+    repeated string    admins          = 6;
+    // @required
+    optional Type      type            = 7;
+  }
+
+  optional string            body              = 1;
+  repeated AttachmentPointer attachments       = 2;
+  optional GroupContext      group             = 3;
+  optional uint32            flags             = 4;
+  optional uint32            expireTimer       = 5;
+  optional bytes             profileKey        = 6;
+  optional uint64            timestamp         = 7;
+  optional Quote             quote             = 8;
+  repeated Contact           contact           = 9;
+  repeated Preview           preview           = 10;
+  optional LokiProfile       profile           = 101; // Loki: The current user's profile
+  optional ClosedGroupUpdate closedGroupUpdate = 103; // Loki
+  optional PublicChatInfo    publicChatInfo    = 999; // Loki: Internal public chat info
 }
 
 message NullMessage {
@@ -322,10 +338,11 @@ message SyncMessage {
     optional bytes             data = 101; // Loki
   }
 
-  // Loki
-  message OpenGroupDetails {
+  message OpenGroupDetails { // Loki
+    // @required
     optional string url       = 1;
-    optional uint64 channelId = 2;
+    // @required
+    optional uint64 channelID = 2;
   }
 
   message Blocked {
@@ -443,7 +460,7 @@ message GroupDetails {
   optional uint32 expireTimer = 6;
   optional string color       = 7;
   optional bool   blocked     = 8;
-  repeated string admins      = 9;  // Loki
+  repeated string admins      = 9; // Loki
 }
 
 // Internal - DO NOT SEND

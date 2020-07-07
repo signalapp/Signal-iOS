@@ -263,7 +263,7 @@ final class SettingsVC : BaseVC, AvatarViewHelperDelegate {
                 DispatchQueue.main.async {
                     modalActivityIndicator.dismiss {
                         var isMaxFileSizeExceeded = false
-                        if let error = error as? LokiDotNetAPI.LokiDotNetAPIError {
+                        if let error = error as? DotNetAPI.DotNetAPIError {
                             isMaxFileSizeExceeded = (error == .maxFileSizeExceeded)
                         }
                         let title = isMaxFileSizeExceeded ? "Maximum File Size Exceeded" : NSLocalizedString("Couldn't Update Profile", comment: "")

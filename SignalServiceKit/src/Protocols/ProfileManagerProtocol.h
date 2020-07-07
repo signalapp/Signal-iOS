@@ -28,6 +28,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (void)addUserToProfileWhitelist:(NSString *)recipientId;
 - (void)addGroupIdToProfileWhitelist:(NSData *)groupId;
+- (void)addThreadToProfileWhitelist:(TSThread *)thread;
 
 - (void)fetchLocalUsersProfile;
 
