@@ -68,10 +68,10 @@ public class VersionedProfilesImpl: NSObject, VersionedProfilesSwift {
             // TODO: This is temporary for testing.
             let localAddress = TSAccountManager.sharedInstance().localAddress!
             firstly {
-                ProfileFetcherJob.fetchAndUpdateProfilePromise(address: localAddress,
-                                                               mainAppOnly: false,
-                                                               ignoreThrottling: true,
-                                                               fetchType: .versioned)
+                ProfileFetcherJob.fetchProfilePromise(address: localAddress,
+                                                      mainAppOnly: false,
+                                                      ignoreThrottling: true,
+                                                      fetchType: .versioned)
             }.done { _ in
                     Logger.verbose("success")
             }.catch { error in

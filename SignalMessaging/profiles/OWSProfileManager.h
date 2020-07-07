@@ -65,13 +65,13 @@ typedef void (^ProfileManagerFailureBlock)(NSError *error);
 
 + (NSData *)avatarDataForAvatarImage:(UIImage *)image;
 
-- (void)fetchAndUpdateLocalUsersProfile;
+- (void)fetchLocalUsersProfile;
 
 // The completions are invoked on the main thread.
-- (void)fetchAndUpdateProfileForUsername:(NSString *)username
-                                 success:(void (^)(SignalServiceAddress *))successHandler
-                                notFound:(void (^)(void))notFoundHandler
-                                 failure:(void (^)(NSError *))failureHandler;
+- (void)fetchProfileForUsername:(NSString *)username
+                        success:(void (^)(SignalServiceAddress *))successHandler
+                       notFound:(void (^)(void))notFoundHandler
+                        failure:(void (^)(NSError *))failureHandler;
 
 #pragma mark - Local Profile Updates
 

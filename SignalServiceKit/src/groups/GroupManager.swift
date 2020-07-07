@@ -1342,12 +1342,12 @@ public class GroupManager: NSObject {
                 // Block on the outcome of the profile updates.
                 var promises = [Promise<Void>]()
                 for address in addressesWithoutCapability {
-                    promises.append(self.profileManager.updateProfile(forAddressPromise: address).asVoid())
+                    promises.append(self.profileManager.fetchProfile(forAddressPromise: address).asVoid())
                 }
                 return when(fulfilled: promises)
             } else {
                 // This will throttle, de-bounce, etc.
-                self.bulkProfileFetch.fetchAndUpdateProfiles(addresses: addressesWithoutCapability)
+                self.bulkProfileFetch.fetchProfiles(addresses: addressesWithoutCapability)
                 return Promise.value(())
             }
         }

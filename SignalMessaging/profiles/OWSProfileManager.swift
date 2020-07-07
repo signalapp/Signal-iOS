@@ -36,7 +36,7 @@ public extension OWSProfileManager {
             guard let localAddress = TSAccountManager.sharedInstance().localAddress else {
                 throw OWSAssertionError("missing local address")
             }
-            return ProfileFetcherJob.fetchAndUpdateProfilePromise(address: localAddress, mainAppOnly: false, ignoreThrottling: true, fetchType: .default).asVoid()
+            return ProfileFetcherJob.fetchProfilePromise(address: localAddress, mainAppOnly: false, ignoreThrottling: true, fetchType: .default).asVoid()
         }.done(on: .global()) { () -> Void in
             Logger.verbose("Profile update did complete.")
         }

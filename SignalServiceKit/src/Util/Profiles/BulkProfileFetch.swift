@@ -25,7 +25,7 @@ public class BulkProfileFetch: NSObject {
         return .shared
     }
 
-    // MARK: - 
+    // MARK: -
 
     private let serialQueue = DispatchQueue(label: "BulkProfileFetch")
 
@@ -94,19 +94,19 @@ public class BulkProfileFetch: NSObject {
 
     // This should be used for non-urgent profile updates.
     @objc
-    public func fetchAndUpdateProfiles(thread: TSThread) {
-        fetchAndUpdateProfiles(addresses: thread.recipientAddresses)
+    public func fetchProfiles(thread: TSThread) {
+        fetchProfiles(addresses: thread.recipientAddresses)
     }
 
     // This should be used for non-urgent profile updates.
     @objc
-    public func fetchAndUpdateProfile(address: SignalServiceAddress) {
-        fetchAndUpdateProfiles(addresses: [address])
+    public func fetchProfile(address: SignalServiceAddress) {
+        fetchProfiles(addresses: [address])
     }
 
     // This should be used for non-urgent profile updates.
     @objc
-    public func fetchAndUpdateProfiles(addresses: [SignalServiceAddress]) {
+    public func fetchProfiles(addresses: [SignalServiceAddress]) {
         serialQueue.async {
             guard let localAddress = self.tsAccountManager.localAddress else {
                 owsFailDebug("missing local address")
@@ -198,9 +198,9 @@ public class BulkProfileFetch: NSObject {
                 return Guarantee.value(())
             }
         }.then(on: .global()) {
-            self.profileManager.updateProfile(forAddressPromise: address,
-                                              mainAppOnly: true,
-                                              ignoreThrottling: false).asVoid()
+            self.profileManager.fetchProfile(forAddressPromise: address,
+                                             mainAppOnly: true,
+                                             ignoreThrottling: false).asVoid()
         }.done(on: .global()) {
             self.serialQueue.asyncAfter(deadline: DispatchTime.now() + updateDelaySeconds) {
                 self.isUpdateInFlight = false
@@ -303,7 +303,7 @@ public class BulkProfileFetch: NSObject {
             return userProfiles
         }.map(on: .global()) { (userProfiles: [OWSUserProfile]) -> Void in
             let addresses: [SignalServiceAddress] = userProfiles.map { $0.address }
-            self.fetchAndUpdateProfiles(addresses: addresses)
+            self.fetchProfiles(addresses: addresses)
             Logger.verbose("Complete.")
         }.catch(on: .global()) { (error: Error) -> Void in
             owsFailDebug("Error: \(error)")

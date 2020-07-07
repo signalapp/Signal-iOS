@@ -877,9 +877,7 @@ NSUInteger const kUserProfileSchemaVersion = 1;
         [userProfileForUuid updateWithProfileKey:userProfileForPhoneNumber.profileKey
                              wasLocallyInitiated:YES
                                      transaction:transaction
-                                      completion:^{
-                                          [self.profileManager updateProfileForAddress:address];
-                                      }];
+                                      completion:^{ [self.profileManager fetchProfileForAddress:address]; }];
     }
 }
 

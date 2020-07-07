@@ -129,18 +129,18 @@ public class ProfileFetcherJob: NSObject {
     private var backgroundTask: OWSBackgroundTask?
 
     @objc
-    public class func fetchAndUpdateProfilePromiseObjc(address: SignalServiceAddress,
-                                                       mainAppOnly: Bool,
-                                                       ignoreThrottling: Bool) -> AnyPromise {
-        return AnyPromise(fetchAndUpdateProfilePromise(address: address,
-                                                       mainAppOnly: mainAppOnly,
-                                                       ignoreThrottling: ignoreThrottling))
+    public class func fetchProfilePromiseObjc(address: SignalServiceAddress,
+                                              mainAppOnly: Bool,
+                                              ignoreThrottling: Bool) -> AnyPromise {
+        return AnyPromise(fetchProfilePromise(address: address,
+                                              mainAppOnly: mainAppOnly,
+                                              ignoreThrottling: ignoreThrottling))
     }
 
-    public class func fetchAndUpdateProfilePromise(address: SignalServiceAddress,
-                                                   mainAppOnly: Bool = true,
-                                                   ignoreThrottling: Bool = false,
-                                                   fetchType: ProfileFetchType = .default) -> Promise<SignalServiceProfile> {
+    public class func fetchProfilePromise(address: SignalServiceAddress,
+                                          mainAppOnly: Bool = true,
+                                          ignoreThrottling: Bool = false,
+                                          fetchType: ProfileFetchType = .default) -> Promise<SignalServiceProfile> {
         let subject = ProfileRequestSubject.address(address: address)
         let options = ProfileFetchOptions(mainAppOnly: mainAppOnly,
                                           ignoreThrottling: ignoreThrottling,
@@ -149,7 +149,7 @@ public class ProfileFetcherJob: NSObject {
     }
 
     @objc
-    public class func fetchAndUpdateProfile(address: SignalServiceAddress, ignoreThrottling: Bool) {
+    public class func fetchProfile(address: SignalServiceAddress, ignoreThrottling: Bool) {
         let subject = ProfileRequestSubject.address(address: address)
         let options = ProfileFetchOptions(ignoreThrottling: ignoreThrottling)
         firstly {
@@ -175,10 +175,10 @@ public class ProfileFetcherJob: NSObject {
     }
 
     @objc
-    public class func fetchAndUpdateProfile(username: String,
-                                            success: @escaping (_ address: SignalServiceAddress) -> Void,
-                                            notFound: @escaping () -> Void,
-                                            failure: @escaping (_ error: Error?) -> Void) {
+    public class func fetchProfile(username: String,
+                                   success: @escaping (_ address: SignalServiceAddress) -> Void,
+                                   notFound: @escaping () -> Void,
+                                   failure: @escaping (_ error: Error?) -> Void) {
         let subject = ProfileRequestSubject.username(username: username)
         let options = ProfileFetchOptions(ignoreThrottling: true)
         firstly {
@@ -470,7 +470,7 @@ public class ProfileFetcherJob: NSObject {
             }
             return self.profileManager.profileAvatarData(for: profileAddress,
                                                          transaction: transaction)
-            }) {
+        }) {
             Logger.verbose("Skipping avatar data download; already downloaded.")
             return updateProfile(fetchedProfile: fetchedProfile,
                                  optionalAvatarData: existingAvatarData)
