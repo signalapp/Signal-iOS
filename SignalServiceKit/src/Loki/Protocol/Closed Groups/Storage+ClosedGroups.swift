@@ -1,5 +1,5 @@
 
-internal extension Storage {
+public extension Storage {
 
     // MARK: Ratchets
     internal static func getClosedGroupRatchetCollection(for groupPublicKey: String) -> String {
@@ -39,12 +39,12 @@ internal extension Storage {
     }
 }
 
-@objc internal extension Storage {
+@objc public extension Storage {
 
     // MARK: Private Keys
     internal static let closedGroupPrivateKeyCollection = "LokiClosedGroupPrivateKeyCollection"
 
-    internal static func getUserClosedGroupPublicKeys() -> Set<String> {
+    public static func getUserClosedGroupPublicKeys() -> Set<String> {
         var result: Set<String> = []
         read { transaction in
             result = Set(transaction.allKeys(inCollection: closedGroupPrivateKeyCollection))

@@ -1509,8 +1509,17 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
         recipientUDAccess = [self.udManager udAccessForRecipientId:recipient.recipientId requireSyncAccess:YES];
     }
 
+    // Loki: If the message was aimed at an SSK based closed group, aim the sync transcript at
+    // the contact thread with the other device rather than also sending it to the group.
+    __block TSThread *thread = message.thread;
+    if ([thread isKindOfClass:TSGroupThread.class] && ((TSGroupThread *)thread).usesSharedSenderKeys) {
+        [LKStorage readWithBlock:^(YapDatabaseReadTransaction *transaction) {
+            thread = [TSContactThread getThreadWithContactId:otherDevice transaction:transaction];
+        }];
+    }
+
     OWSMessageSend *messageSend = [[OWSMessageSend alloc] initWithMessage:sentMessageTranscript
-        thread:message.thread
+        thread:thread
         recipient:recipient
         senderCertificate:senderCertificate
         udAccess:recipientUDAccess

@@ -141,21 +141,27 @@ final class DeviceLinksVC : BaseVC, UITableViewDataSource, UITableViewDelegate, 
     
     private func removeDeviceLink(_ deviceLink: DeviceLink) {
         FileServerAPI.removeDeviceLink(deviceLink).done { [weak self] in
-            let linkedDeviceHexEncodedPublicKey = deviceLink.other.hexEncodedPublicKey
-            guard let thread = TSContactThread.fetch(uniqueId: TSContactThread.threadId(fromContactId: linkedDeviceHexEncodedPublicKey)) else { return }
+            let linkedDevicePublicKey = deviceLink.other.hexEncodedPublicKey
+            guard let thread = TSContactThread.fetch(uniqueId: TSContactThread.threadId(fromContactId: linkedDevicePublicKey)) else { return }
             let unlinkDeviceMessage = UnlinkDeviceMessage(thread: thread)
             SSKEnvironment.shared.messageSender.send(unlinkDeviceMessage, success: {
                 let storage = OWSPrimaryStorage.shared()
                 try! Storage.writeSync { transaction in
-                    storage.removePreKeyBundle(forContact: linkedDeviceHexEncodedPublicKey, transaction: transaction)
-                    storage.deleteAllSessions(forContact: linkedDeviceHexEncodedPublicKey, protocolContext: transaction)
+                    storage.removePreKeyBundle(forContact: linkedDevicePublicKey, transaction: transaction)
+                    storage.deleteAllSessions(forContact: linkedDevicePublicKey, protocolContext: transaction)
+                    for groupPublicKey in Storage.getUserClosedGroupPublicKeys() {
+                        ClosedGroupsProtocol.removeMembers([ linkedDevicePublicKey ], from: groupPublicKey, using: transaction)
+                    }
                 }
             }, failure: { _ in
                 print("[Loki] Failed to send unlink device message.")
                 let storage = OWSPrimaryStorage.shared()
                 try! Storage.writeSync { transaction in
-                    storage.removePreKeyBundle(forContact: linkedDeviceHexEncodedPublicKey, transaction: transaction)
-                    storage.deleteAllSessions(forContact: linkedDeviceHexEncodedPublicKey, protocolContext: transaction)
+                    storage.removePreKeyBundle(forContact: linkedDevicePublicKey, transaction: transaction)
+                    storage.deleteAllSessions(forContact: linkedDevicePublicKey, protocolContext: transaction)
+                    for groupPublicKey in Storage.getUserClosedGroupPublicKeys() {
+                        ClosedGroupsProtocol.removeMembers([ linkedDevicePublicKey ], from: groupPublicKey, using: transaction)
+                    }
                 }
             })
             self?.updateDeviceLinks()

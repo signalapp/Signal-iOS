@@ -35,7 +35,7 @@ public final class SyncMessagesProtocol : NSObject {
                 guard device != userPublicKey else { continue }
                 let thread = TSContactThread.getOrCreateThread(withContactId: device, transaction: transaction)
                 thread.save(with: transaction)
-                let syncMessage = OWSOutgoingSyncMessage.init(in: thread, messageBody: "", attachmentId: nil)
+                let syncMessage = OWSOutgoingSyncMessage(in: thread, messageBody: "", attachmentId: nil)
                 syncMessage.save(with: transaction)
                 let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
                 messageSenderJobQueue.add(message: syncMessage, transaction: transaction)
@@ -83,7 +83,7 @@ public final class SyncMessagesProtocol : NSObject {
         // Generate ratchets for the user's linked devices
         let userPublicKey = getUserHexEncodedPublicKey()
         let masterPublicKey = UserDefaults.standard[.masterHexEncodedPublicKey] ?? userPublicKey
-        let deviceLinks = storage.getDeviceLinks(for: userPublicKey, in: transaction)
+        let deviceLinks = storage.getDeviceLinks(for: masterPublicKey, in: transaction)
         let linkedDevices = deviceLinks.flatMap { [ $0.master.hexEncodedPublicKey, $0.slave.hexEncodedPublicKey ] }.filter { $0 != userPublicKey }
         let senderKeys: [ClosedGroupSenderKey] = linkedDevices.map { publicKey in
             let ratchet = SharedSenderKeysImplementation.shared.generateRatchet(for: groupPublicKey, senderPublicKey: publicKey, using: transaction)
@@ -99,11 +99,12 @@ public final class SyncMessagesProtocol : NSObject {
         sendMessageToGroup()
         // Send closed group update messages to the linked devices using established channels
         func sendMessageToLinkedDevices() {
-            let allSenderKeys = [ClosedGroupSenderKey](Storage.getAllClosedGroupSenderKeys(for: groupPublicKey)) // This includes the newly generated sender keys
+            var allSenderKeys = Storage.getAllClosedGroupSenderKeys(for: groupPublicKey)
+            allSenderKeys.formUnion(senderKeys)
             let thread = TSContactThread.getOrCreateThread(withContactId: masterPublicKey, transaction: transaction)
             thread.save(with: transaction)
             let closedGroupUpdateMessageKind = ClosedGroupUpdateMessage.Kind.new(groupPublicKey: Data(hex: groupPublicKey), name: name,
-                groupPrivateKey: Data(hex: groupPrivateKey), senderKeys: allSenderKeys, members: members, admins: admins)
+                groupPrivateKey: Data(hex: groupPrivateKey), senderKeys: [ClosedGroupSenderKey](allSenderKeys), members: members, admins: admins)
             let closedGroupUpdateMessage = ClosedGroupUpdateMessage(thread: thread, kind: closedGroupUpdateMessageKind)
             messageSenderJobQueue.add(message: closedGroupUpdateMessage, transaction: transaction) // This internally takes care of multi device
         }

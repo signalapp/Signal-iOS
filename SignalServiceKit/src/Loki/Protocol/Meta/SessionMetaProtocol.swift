@@ -100,18 +100,31 @@ public final class SessionMetaProtocol : NSObject {
 
     // MARK: - Receiving
 
-    @objc(shouldSkipMessageDecryptResult:)
-    public static func shouldSkipMessageDecryptResult(_ result: OWSMessageDecryptResult) -> Bool {
-        // Called from OWSMessageReceiver to prevent messages from even being added to the processing queue.
-        // This intentionally doesn't take into account multi device.
-        return result.source == getUserHexEncodedPublicKey() // Should never occur
+    @objc(shouldSkipMessageDecryptResult:wrappedIn:)
+    public static func shouldSkipMessageDecryptResult(_ result: OWSMessageDecryptResult, wrappedIn envelope: SSKProtoEnvelope) -> Bool {
+        if result.source == getUserHexEncodedPublicKey() { return true }
+        var isLinkedDevice = false
+        Storage.read { transaction in
+            isLinkedDevice = LokiDatabaseUtilities.isUserLinkedDevice(result.source, transaction: transaction)
+        }
+        return isLinkedDevice && envelope.type == .closedGroupCiphertext
     }
 
     @objc(updateDisplayNameIfNeededForPublicKey:using:transaction:)
     public static func updateDisplayNameIfNeeded(for publicKey: String, using dataMessage: SSKProtoDataMessage, in transaction: YapDatabaseReadWriteTransaction) {
         guard let profile = dataMessage.profile, let rawDisplayName = profile.displayName, !rawDisplayName.isEmpty else { return }
-        let shortID = publicKey.substring(from: publicKey.index(publicKey.endIndex, offsetBy: -8))
-        let displayName = "\(rawDisplayName) (...\(shortID))"
+        let displayName: String
+        if UserDefaults.standard[.masterHexEncodedPublicKey] == publicKey {
+            displayName = rawDisplayName
+        } else {
+            let shortID = publicKey.substring(from: publicKey.index(publicKey.endIndex, offsetBy: -8))
+            let suffix = "(...\(shortID))"
+            if rawDisplayName.hasSuffix(suffix) {
+                displayName = rawDisplayName // FIXME: Workaround for a bug where the raw display name already has the short ID attached to it
+            } else {
+                displayName = "\(rawDisplayName) \(suffix)"
+            }
+        }
         let profileManager = SSKEnvironment.shared.profileManager
         profileManager.updateProfileForContact(withID: publicKey, displayName: displayName, with: transaction)
     }

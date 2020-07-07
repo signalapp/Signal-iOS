@@ -68,8 +68,8 @@ public final class ClosedGroupsProtocol : NSObject {
     public static func addMembers(_ newMembers: Set<String>, to groupPublicKey: String, using transaction: YapDatabaseReadWriteTransaction) {
         // Prepare
         let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
-        let groupID = LKGroupUtilities.getEncodedClosedGroupID(groupPublicKey)
-        guard let thread = TSGroupThread.fetch(uniqueId: groupID, transaction: transaction) else {
+        let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
+        guard let thread = TSGroupThread.fetch(uniqueId: TSGroupThread.threadId(fromGroupId: groupID), transaction: transaction) else {
             return print("[Loki] Can't add users to nonexistent closed group.")
         }
         let group = thread.groupModel
@@ -99,18 +99,18 @@ public final class ClosedGroupsProtocol : NSObject {
         // Establish sessions if needed
         establishSessionsIfNeeded(with: [String](newMembers), using: transaction) // Not `newMembersAndLinkedDevices` as this internally takes care of multi device already
         // Send closed group update messages to the new members (and their linked devices) using established channels
-        let allSenderKeys = [ClosedGroupSenderKey](Storage.getAllClosedGroupSenderKeys(for: groupPublicKey)) // This includes the newly generated sender keys
+        var allSenderKeys = Storage.getAllClosedGroupSenderKeys(for: groupPublicKey)
+        allSenderKeys.formUnion(senderKeys)
         for member in newMembers { // Not `newMembersAndLinkedDevices` as this internally takes care of multi device already
             let thread = TSContactThread.getOrCreateThread(withContactId: member, transaction: transaction)
             thread.save(with: transaction)
             let closedGroupUpdateMessageKind = ClosedGroupUpdateMessage.Kind.new(groupPublicKey: Data(hex: groupPublicKey), name: name,
-                groupPrivateKey: Data(hex: groupPrivateKey), senderKeys: allSenderKeys, members: members, admins: admins)
+                groupPrivateKey: Data(hex: groupPrivateKey), senderKeys: [ClosedGroupSenderKey](allSenderKeys), members: members, admins: admins)
             let closedGroupUpdateMessage = ClosedGroupUpdateMessage(thread: thread, kind: closedGroupUpdateMessageKind)
             messageSenderJobQueue.add(message: closedGroupUpdateMessage, transaction: transaction)
         }
         // Update the group
-        let groupIDAsData = groupID.data(using: String.Encoding.utf8)!
-        let newGroupModel = TSGroupModel(title: name, memberIds: members, image: nil, groupId: groupIDAsData, groupType: .closedGroup, adminIds: admins)
+        let newGroupModel = TSGroupModel(title: name, memberIds: members, image: nil, groupId: groupID, groupType: .closedGroup, adminIds: admins)
         thread.setGroupModel(newGroupModel, with: transaction)
         // Notify the user
         let infoMessage = TSInfoMessage(timestamp: NSDate.ows_millisecondTimeStamp(), in: thread, messageType: .typeGroupUpdate)
@@ -130,8 +130,8 @@ public final class ClosedGroupsProtocol : NSObject {
             return print("[Loki] Can't remove self and others simultaneously.")
         }
         let messageSenderJobQueue = SSKEnvironment.shared.messageSenderJobQueue
-        let groupID = LKGroupUtilities.getEncodedClosedGroupID(groupPublicKey)
-        guard let thread = TSGroupThread.fetch(uniqueId: groupID, transaction: transaction) else {
+        let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
+        guard let thread = TSGroupThread.fetch(uniqueId: TSGroupThread.threadId(fromGroupId: groupID), transaction: transaction) else {
             return print("[Loki] Can't remove users from nonexistent closed group.")
         }
         let group = thread.groupModel
@@ -171,8 +171,7 @@ public final class ClosedGroupsProtocol : NSObject {
             }
         }
         // Update the group
-        let groupIDAsData = groupID.data(using: String.Encoding.utf8)!
-        let newGroupModel = TSGroupModel(title: name, memberIds: members, image: nil, groupId: groupIDAsData, groupType: .closedGroup, adminIds: admins)
+        let newGroupModel = TSGroupModel(title: name, memberIds: members, image: nil, groupId: groupID, groupType: .closedGroup, adminIds: admins)
         thread.setGroupModel(newGroupModel, with: transaction)
         // Notify the user
         let infoMessageType: TSInfoMessageType = isUserLeaving ? .typeGroupQuit : .typeGroupUpdate
@@ -234,19 +233,11 @@ public final class ClosedGroupsProtocol : NSObject {
         let members = closedGroupUpdate.members
         let admins = closedGroupUpdate.admins
         // Get the group
-        let groupID = LKGroupUtilities.getEncodedClosedGroupID(groupPublicKey)
-        guard let thread = TSGroupThread.fetch(uniqueId: groupID, transaction: transaction) else {
+        let groupID = LKGroupUtilities.getEncodedClosedGroupIDAsData(groupPublicKey)
+        guard let thread = TSGroupThread.fetch(uniqueId: TSGroupThread.threadId(fromGroupId: groupID), transaction: transaction) else {
             return print("[Loki] Ignoring closed group update for nonexistent group.")
         }
         let group = thread.groupModel
-        // Check that the sender is an admin (before the update)
-        var isSenderAdmin = false
-        Storage.read { transaction in
-            isSenderAdmin = !thread.isUserAdmin(inGroup: senderPublicKey, transaction: transaction)
-        }
-        guard isSenderAdmin else {
-            return print("[Loki] Ignoring closed group update from non-admin.")
-        }
         // Store the ratchets for any new members (it's important that this happens before the code below)
         senderKeys.forEach { senderKey in
             let ratchet = ClosedGroupRatchet(chainKey: senderKey.chainKey.toHexString(), keyIndex: UInt(senderKey.keyIndex), messageKeys: [])
@@ -276,8 +267,7 @@ public final class ClosedGroupsProtocol : NSObject {
             }
         }
         // Update the group
-        let groupIDAsData = groupID.data(using: String.Encoding.utf8)!
-        let newGroupModel = TSGroupModel(title: name, memberIds: members, image: nil, groupId: groupIDAsData, groupType: .closedGroup, adminIds: admins)
+        let newGroupModel = TSGroupModel(title: name, memberIds: members, image: nil, groupId: groupID, groupType: .closedGroup, adminIds: admins)
         thread.setGroupModel(newGroupModel, with: transaction)
         // Notify the user
         let infoMessageType: TSInfoMessageType = wasUserRemoved ? .typeGroupQuit : .typeGroupUpdate
