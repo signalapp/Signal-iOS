@@ -225,4 +225,99 @@ class GRDBFinderTest: SignalBaseTest {
             XCTAssertEqual(3, finder.jobCount(transaction: transaction))
         }
     }
+
+    func testAnyUserProfileFinder_missingAndStaleUserProfiles() {
+
+        let dateWithOffsetFromNow = { (offset: TimeInterval) -> Date in
+            return Date(timeInterval: offset, since: Date())
+        }
+
+        let finder = AnyUserProfileFinder()
+
+        var expectedAddresses = Set<SignalServiceAddress>()
+        self.write { transaction in
+            let buildUserProfile = { () -> OWSUserProfile in
+                let address = CommonGenerator.address(hasPhoneNumber: true)
+                return OWSUserProfile.getOrBuild(for: address, transaction: transaction)
+            }
+
+            do {
+                // This profile is _not_ expected; lastMessagingDate is nil.
+                _ = buildUserProfile()
+            }
+
+            do {
+                // This profile is _not_ expected; lastMessagingDate is nil.
+                let userProfile = buildUserProfile()
+                userProfile.update(withLastFetch: dateWithOffsetFromNow(-1 * kMonthInterval), transaction: transaction)
+            }
+
+            do {
+                // This profile is _not_ expected; lastMessagingDate is nil.
+                let userProfile = buildUserProfile()
+                userProfile.update(withLastFetch: dateWithOffsetFromNow(-1 * kMinuteInterval), transaction: transaction)
+            }
+
+            do {
+                // This profile is _not_ expected; lastMessagingDate is old.
+                let userProfile = buildUserProfile()
+                userProfile.update(withLastMessagingDate: dateWithOffsetFromNow(-2 * kMonthInterval), transaction: transaction)
+            }
+
+            do {
+                // This profile is _not_ expected; lastMessagingDate is old.
+                let userProfile = buildUserProfile()
+                userProfile.update(withLastMessagingDate: dateWithOffsetFromNow(-2 * kMonthInterval), transaction: transaction)
+                userProfile.update(withLastFetch: dateWithOffsetFromNow(-1 * kMonthInterval), transaction: transaction)
+            }
+
+            do {
+                // This profile is _not_ expected; lastMessagingDate is old.
+                let userProfile = buildUserProfile()
+                userProfile.update(withLastMessagingDate: dateWithOffsetFromNow(-2 * kMonthInterval), transaction: transaction)
+                userProfile.update(withLastFetch: dateWithOffsetFromNow(-1 * kMinuteInterval), transaction: transaction)
+            }
+
+            do {
+                // This profile is expected; lastMessagingDate is recent and lastFetchDate is nil.
+                let userProfile = buildUserProfile()
+                userProfile.update(withLastMessagingDate: dateWithOffsetFromNow(-1 * kHourInterval), transaction: transaction)
+                expectedAddresses.insert(userProfile.address)
+                userProfile.logDates(prefix: "Expected profile")
+            }
+
+            do {
+                // This profile is expected; lastMessagingDate is recent and lastFetchDate is old.
+                let userProfile = buildUserProfile()
+                userProfile.update(withLastMessagingDate: dateWithOffsetFromNow(-1 * kHourInterval), transaction: transaction)
+                userProfile.update(withLastFetch: dateWithOffsetFromNow(-1 * kMonthInterval), transaction: transaction)
+                expectedAddresses.insert(userProfile.address)
+                userProfile.logDates(prefix: "Expected profile")
+            }
+
+            do {
+                // This profile is _not_ expected; lastFetchDate is recent.
+                let userProfile = buildUserProfile()
+                userProfile.update(withLastMessagingDate: dateWithOffsetFromNow(-1 * kHourInterval), transaction: transaction)
+                userProfile.update(withLastFetch: dateWithOffsetFromNow(-1 * kMinuteInterval), transaction: transaction)
+            }
+        }
+
+        var missingAndStaleAddresses = Set<SignalServiceAddress>()
+        self.read { transaction in
+            OWSUserProfile.anyEnumerate(transaction: transaction) { (userProfile: OWSUserProfile, _) in
+                userProfile.logDates(prefix: "Considering profile")
+            }
+
+            finder.enumerateMissingAndStaleUserProfiles(transaction: transaction) { (userProfile: OWSUserProfile) in
+                userProfile.logDates(prefix: "Missing or stale profile")
+                XCTAssertFalse(missingAndStaleAddresses.contains(userProfile.address))
+                missingAndStaleAddresses.insert(userProfile.address)
+            }
+        }
+
+        Logger.verbose("expectedAddresses: \(expectedAddresses)")
+        Logger.verbose("missingAndStaleAddresses: \(missingAndStaleAddresses)")
+        XCTAssertEqual(expectedAddresses, missingAndStaleAddresses)
+    }
 }

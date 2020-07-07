@@ -22,6 +22,7 @@
 #import "OWSRequestFactory.h"
 #import "OWSUploadOperation.h"
 #import "PreKeyBundle+jsonDict.h"
+#import "ProfileManagerProtocol.h"
 #import "SSKEnvironment.h"
 #import "SSKPreKeyStore.h"
 #import "SSKSessionStore.h"
@@ -383,9 +384,9 @@ NSString *const OWSMessageSenderRateLimitedException = @"RateLimitedException";
     return SDSDatabaseStorage.shared;
 }
 
-- (OWSProfileManager *)profileManager
+- (id<ProfileManagerProtocol>)profileManager
 {
-    return [OWSProfileManager sharedManager];
+    return SSKEnvironment.shared.profileManager;
 }
 
 #pragma mark -
