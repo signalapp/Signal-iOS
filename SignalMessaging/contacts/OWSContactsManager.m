@@ -878,11 +878,11 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
                                  transaction:(SDSAnyReadTransaction *)transaction
 {
     if (address.phoneNumber != nil) {
-        return address.phoneNumber;
+        return [address.phoneNumber filterStringForDisplay];
     }
 
     SignalAccount *_Nullable signalAccount = [self fetchSignalAccountForAddress:address transaction:transaction];
-    return signalAccount.recipientPhoneNumber;
+    return [signalAccount.recipientPhoneNumber filterStringForDisplay];
 }
 
 #pragma mark - View Helpers
@@ -1033,22 +1033,24 @@ NSString *const OWSContactsManagerKeyNextFullIntersectionDate = @"OWSContactsMan
 {
     OWSAssertDebug(address.isValid);
 
-    // Prefer a saved name from system contacts, if available
-    NSString *_Nullable savedContactName = [[self cachedContactNameForAddress:address
-                                                                  transaction:transaction] filterStringForDisplay];
+    // Prefer a saved name from system contacts, if available.
+    //
+    // We don't need to filterStringForDisplay(); this value is filtered within phoneNumberForAddress,
+    // Contact or SignalAccount.
+    NSString *_Nullable savedContactName = [self cachedContactNameForAddress:address transaction:transaction];
     if (savedContactName.length > 0) {
         return savedContactName;
     }
 
-    NSString *_Nullable profileName = [[self.profileManager fullNameForAddress:address
-                                                                   transaction:transaction] filterStringForDisplay];
+    // We don't need to filterStringForDisplay(); this value is filtered within OWSUserProfile.
+    NSString *_Nullable profileName = [self.profileManager fullNameForAddress:address transaction:transaction];
     // Include the profile name, if set.
     if (profileName.length > 0) {
         return profileName;
     }
 
-    NSString *_Nullable phoneNumber = [[self phoneNumberForAddress:address
-                                                       transaction:transaction] filterStringForDisplay];
+    // We don't need to filterStringForDisplay(); this value is filtered within phoneNumberForAddress.
+    NSString *_Nullable phoneNumber = [self phoneNumberForAddress:address transaction:transaction];
     if (phoneNumber.length > 0) {
         phoneNumber = [PhoneNumber bestEffortFormatPartialUserSpecifiedTextToLookLikeAPhoneNumber:phoneNumber];
         if (phoneNumber.length > 0) {
